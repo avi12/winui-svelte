@@ -10,6 +10,6 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [winuiSvelte()],
   resolve: {
-    alias: exportAliases(ExportTarget.Source)
+    alias: exportAliases(ExportTarget.SOURCE)
   }
 });

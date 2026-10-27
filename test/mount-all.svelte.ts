@@ -361,7 +361,7 @@ class Exercise {
     this.attempt({
       name,
       step: "constructor",
-      action: () => {
+      action() {
         holder.control = new controlClass();
       }
     });
@@ -529,7 +529,7 @@ function checkBehaviours({ connectors, failures }: {
 
   check({
     name: "a bindable goes both ways (ToggleSwitch.isOn)",
-    action: () => {
+    action() {
       const toggle = new bindings.ToggleSwitch();
       const state = $state<Record<string, NativeValue>>({ isOn: true });
       const close = open({
@@ -554,7 +554,7 @@ function checkBehaviours({ connectors, failures }: {
 
   check({
     name: "a bindable number goes both ways (Slider.value)",
-    action: () => {
+    action() {
       const slider = new bindings.Slider();
       const state = $state<Record<string, NativeValue>>({ value: SLIDER_FROM_STATE });
       const close = open({
@@ -576,7 +576,7 @@ function checkBehaviours({ connectors, failures }: {
 
   check({
     name: "a boolean-or-null bindable is written (CheckBox.isChecked)",
-    action: () => {
+    action() {
       const box = new bindings.CheckBox();
       const state = $state<Record<string, NativeValue>>({ isChecked: true });
       const close = open({
@@ -596,7 +596,7 @@ function checkBehaviours({ connectors, failures }: {
 
   check({
     name: "a changed prop is written again (Border.opacity)",
-    action: () => {
+    action() {
       const border = new bindings.Border();
       const props = $state<Record<string, NativeValue>>({ opacity: OPACITY_FIRST });
       const close = open({
@@ -616,7 +616,7 @@ function checkBehaviours({ connectors, failures }: {
 
   check({
     name: "an event prop is called (ToggleSwitch.onToggled)",
-    action: () => {
+    action() {
       const toggle = new bindings.ToggleSwitch();
       let calls = 0;
       function onToggled() {
@@ -640,7 +640,7 @@ function checkBehaviours({ connectors, failures }: {
 
   check({
     name: "conversions build what WinUI takes (Border)",
-    action: () => {
+    action() {
       const border = new bindings.Border();
       const props = {
         padding: [BORDER_PADDING_SIDES, BORDER_PADDING_ENDS],
@@ -674,7 +674,7 @@ function checkBehaviours({ connectors, failures }: {
 
   check({
     name: "a string is boxed for an object property (Button.content)",
-    action: () => {
+    action() {
       const button = new bindings.Button();
       const close = open({
         connect: connectorFor("Button"),
