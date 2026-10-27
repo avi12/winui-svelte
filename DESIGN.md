@@ -38,8 +38,8 @@ and Mica are real backdrops, accessibility is UI Automation's).
 - **Svelte's own compiler and runtime**, through Svelte's custom-renderer API
   (sveltejs/svelte#18042; installed from pkg.pr.new until it ships). Nothing
   Svelte does is re-implemented.
-- Generic: nothing in the package knows about any app (Edge+ is its first
-  user and its proving ground, in `app/panel-tauri`).
+- Generic: nothing in the package knows about any app ([Edge+](https://github.com/avi12/edge-plus)
+  is its first user and its proving ground).
 
 ## Layout
 
@@ -130,10 +130,10 @@ calls `flushSync`), and `hostState<T>()` / `send(action)` over a transport (type
 - Every generated component is mounted at least once in a real WinUI window
   run in the background (off screen, never activated), so a control the
   generator gets wrong fails a test.
-- Edge+'s window (`app/panel-tauri`) is checked pixel by pixel against its
-  references after every change (0 differing pixels).
-- `pnpm check:editor` opens every `.svelte` file of the package and the panel
-  in the Svelte language server VS Code runs (pinned, with
+- Edge+'s window is checked pixel by pixel against its references after every
+  change to the package (0 differing pixels).
+- `pnpm check:editor` opens every `.svelte` file of the package in the Svelte
+  language server VS Code runs (pinned, with
   `patches/svelte-language-server@0.18.5.patch`, which hides the `: any` hint
   it shows on every component tag for the content snippet it generates) and
   fails on any diagnostic or any inlay hint typed `any`: what the editor

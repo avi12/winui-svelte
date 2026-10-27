@@ -15,7 +15,7 @@
 {#snippet saved()}Saved {count} themes{/snippet}
 
 <fake-panel>
-  <fake-text-block>Edge+ {version} is ready</fake-text-block>
+  <fake-text-block>My app {version} is ready</fake-text-block>
   <fake-text-block>
     {status}
   </fake-text-block>

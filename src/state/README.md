@@ -97,8 +97,8 @@ link closes, waiting and later `send`s reject with `HostClosedError`.
 ## Running
 
 ```
-node --disable-warning=ExperimentalWarning --import ./examples/register-deps.ts --test "src/**/*.test.ts"
+pnpm test
 ```
 
-(from `packages/winui-svelte`; the examples borrow Edge+'s panel dependencies
-until the package has its own). Type check: `tsc -p tsconfig.state.json`.
+The state tests run with the rest of the package's (`src/state/**/*.test.ts`);
+`pnpm check` type-checks them.

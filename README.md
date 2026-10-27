@@ -34,8 +34,8 @@ backdrop. No browser engine is involved; there is no DOM.
 - **Windows only.** Windows 10 version 1809 (build 17763) and Windows 11, on
   the Windows App SDK (WinUI 3) through [dynwinrt](https://github.com/microsoft/dynwinrt).
 
-Built for [Edge+](../../README.md), whose settings panel is written with it
-(`app/panel-tauri`).
+Built for [Edge+](https://github.com/avi12/edge-plus), whose settings panel is
+written with it.
 
 > **Status: not published yet.** The package name is a working name, the
 > custom-renderer API it needs is a Svelte pull request that has not shipped
@@ -49,7 +49,7 @@ Built for [Edge+](../../README.md), whose settings panel is written with it
 | --- | --- |
 | OS | Windows 10 1809 (17763) or newer, Windows 11 |
 | Node | 24 or newer |
-| Windows App SDK runtime | 2.2, installed on the machine. A missing runtime makes `initWindowsAppSdk` throw `WindowsAppRuntimeMissing`; the package does not install it (Edge+ ships the installer and offers it) |
+| Windows App SDK runtime | 2.2, installed on the machine. A missing runtime makes `initWindowsAppSdk` throw `WindowsAppRuntimeMissing`; the package does not install it (your app ships the installer and offers it) |
 | Svelte | the build with the custom-renderer API: `svelte@https://pkg.pr.new/svelte@18042` until it is released |
 | Vite | 8 (for the dev server and hot reload) |
 
@@ -260,14 +260,14 @@ window as one deeply reactive object, and the window answers with actions; see
 [`src/state/README.md`](src/state/README.md) for the wire protocol, `hostState`
 and `send`.
 
-**Tauri** (what Edge+ does). The Rust core starts the window as a child process
+**Tauri** (what [Edge+](https://github.com/avi12/edge-plus) does). The Rust core starts the window as a child process
 (a sidecar: your `main.ts`, or a bundled executable with Node inside) with its
 stdin and stdout piped, writes request lines (`{"id":1,"type":"snapshot","data":{"name":"view","value":{...}},"timestamp":...}`)
 and later `patch` ones, and reads `action` requests back, answering each with a
 response line (`{"id":1,"response":null}` or `{"id":1,"error":"..."}`). In the window, `createStdioTransport()` and `reserveStdout()` (so a
 stray `console.log` goes to stderr and cannot corrupt the protocol) are the
-other end. `app/panel-tauri/ui/main.ts` is the working example, with the core in
-`app/panel-tauri/src-tauri`.
+other end. Edge+'s `app/panel-tauri` (`ui/main.ts`, with the core in
+`src-tauri`) is the working example.
 
 **Electron.** The main process starts the window with
 `utilityProcess.fork("main.js")` (or `child_process.spawn` of Node) and speaks
@@ -594,7 +594,7 @@ In this repository (a pnpm workspace; run these in `packages/winui-svelte`):
 | --- | --- |
 | `pnpm test` | the unit tests, the generator's tests, and the mount test: every component made and linked in a real WinUI window that opens off screen and never takes focus |
 | `pnpm lint` | oxlint, eslint, `tsc`, fallow and the check that the generated files are current |
-| `pnpm gen:components` | regenerates the components, their metadata, the class list `setup` writes and the tables and quick start in this README from WinUI's metadata (`pnpm restore` in `app/panel-tauri` first) |
+| `pnpm gen:components` | regenerates the components, their metadata, the class list `setup` writes and the tables and quick start in this README from WinUI's metadata (`pnpm restore` first) |
 | `pnpm build` | `dist/`: what is published (`pnpm pack` shows the tarball) |
 | `pwsh examples/hello/run.ps1` | the hello example in a background window, checked through UI Automation (`-Edit` also checks hot reload) |
 
@@ -602,5 +602,4 @@ In this repository (a pnpm workspace; run these in `packages/winui-svelte`):
 
 ## License
 
-[Apache License 2.0](../../LICENSE). Keep the [NOTICE](../../NOTICE) file with
-copies you distribute (section 4(d) of the license): it credits the author.
+[MIT](LICENSE).

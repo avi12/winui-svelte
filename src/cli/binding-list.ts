@@ -4,9 +4,9 @@ import { z } from "zod";
 
 // The class list `winapp` generates bindings for (package.json's
 // winapp.jsBindings.additionalWinmds), and how an app's list takes in the
-// classes this package needs. Shared by the generator, which keeps the
-// Edge+ panel's list current, and the `setup` command of an app that uses
-// the package.
+// classes this package needs. Shared by the generator, which keeps this
+// repository's list current, and the `setup` command of an app that uses the
+// package.
 
 const bindingEntrySchema = z.object({
   namespace: z.string(),

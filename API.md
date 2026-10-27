@@ -100,7 +100,7 @@ function mountControl<Props extends object>(component: Component<Props>, initial
 function registerControls(controls: Record<string, unknown>): void;
 
 // What class="..." does on an element, until the CSS runtime takes it over:
-// the app decides (Edge+ looks the name up in its XAML styles). With no
+// the app decides (for example, it looks the name up in its XAML styles). With no
 // handler, class is ignored.
 type ClassHandler = (control: UIElement, value: string) => void;
 function setClassHandler(handler: ClassHandler | null): void;
@@ -234,8 +234,8 @@ process, plain Node): its main thread calls `initWindowsAppSdk`, starts a
 worker whose file calls `runOnUiThread(() => ...)`, which loads the app and
 calls `runWindow`. A transport (JSON lines on stdio, a MessagePort) is not in
 these files: it is `src/state`'s, which uses `dispatch` to put host messages
-on the UI thread. Edge+'s `ui/main.ts`, `ui/window/worker.ts` and
-`ui/window/host/session.ts` are the working example.
+on the UI thread. `examples/counter` is the working example (its `launch.ts`
+is the host, its `window.ts` the UI-thread worker).
 
 ## Components written by hand (`winui-svelte/components`)
 
@@ -294,7 +294,7 @@ exactly those.
 ### Window
 
 ```svelte
-<Window title="Edge+" backdrop="acrylic" icon={iconPath} appUserModelId={id}
+<Window title="My app" backdrop="acrylic" icon={iconPath} appUserModelId={id}
         width={560} minWidth={560} maxWidth={560} minHeight={420} height={640}
         isMaximizable={false} placement={saved} activate={!isBackground}
         onActiveChanged={refresh} onBoundsChanged={report} onClosed={exitApplication}

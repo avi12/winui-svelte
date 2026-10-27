@@ -4,7 +4,7 @@ Question: does a `$state` change made inside a WinUI callback reach the
 controls without the app calling `flushSync`?
 
 Answer: yes, when the WinUI loop is started with `Application.startScheduled`
-(as Edge+'s `session.ts` does). WinUI then runs from a libuv callback with no
+(as a Tauri app's session does). WinUI then runs from a libuv callback with no
 JavaScript under it, so each time WinUI calls back into JS (an event, a
 `DispatcherQueue` timer tick) Node drains the microtask queue when that callback
 returns. Svelte schedules its flush with `queueMicrotask`, so the change is on

@@ -141,7 +141,7 @@ test("text written as children is a text block's text, and follows what it shows
   const root: object = mounted.root;
   assert.ok(root instanceof FakePanel);
   assert.deepEqual(textsOf(root), [
-    "Edge+ 0.2.0 is ready",
+    "My app 0.2.0 is ready",
     "Saved",
     "Saved 2 themes",
     wrappedSentence
@@ -152,6 +152,6 @@ test("text written as children is a text block's text, and follows what it shows
     status: "",
     count: 3
   });
-  assert.deepEqual(textsOf(root), ["Edge+ 0.3.0 is ready", "", "Saved 3 themes", wrappedSentence]);
+  assert.deepEqual(textsOf(root), ["My app 0.3.0 is ready", "", "Saved 3 themes", wrappedSentence]);
   mounted.unmount();
 });
