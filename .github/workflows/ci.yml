@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Fetches the Windows App SDK and generates the WinUI bindings the
+      # components import (.winapp/bindings, which is not committed).
+      - name: Cache the restored SDK and bindings
+        uses: actions/cache@v4
+        with:
+          path: .winapp
+          key: winapp-${{ hashFiles('winapp.yaml', 'package.json') }}
+      - run: pnpm restore
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+
+  consumer:
+    needs: verify
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm restore
+      - run: pnpm build
+      - name: Pack the tarball
+        run: pnpm pack --pack-destination ${{ runner.temp }}
+      - name: Install the tarball in a fresh app and run setup --dry-run
+        shell: pwsh
+        run: |
+          $app = Join-Path $env:RUNNER_TEMP 'consumer'
+          New-Item -ItemType Directory $app | Out-Null
+          Set-Location $app
+          '{ "name": "consumer", "private": true, "type": "module" }' | Set-Content package.json
+          $tarball = (Get-ChildItem $env:RUNNER_TEMP -Filter 'winui-svelte-*.tgz').FullName
+          pnpm add $tarball
+          pnpm exec winui-svelte setup --dry-run
+          if (-not (Test-Path winapp.yaml)) { throw 'setup --dry-run wrote no winapp.yaml' }
+          $manifest = Get-Content package.json -Raw | ConvertFrom-Json
+          if (-not $manifest.dependencies.svelte) { throw 'setup did not add the custom Svelte build' }
