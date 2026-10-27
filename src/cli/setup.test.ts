@@ -1,5 +1,5 @@
 import { mergedEntries } from "./binding-list.ts";
-import { packageJsonForApp, requiredBindings, winappYaml } from "./setup.ts";
+import { packageJsonForApp, requiredBindings, WINAPP_YAML } from "./setup.ts";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -31,7 +31,7 @@ const packageJsonSchema = z.object({
   })
 });
 
-function parsed(text: string): z.infer<typeof packageJsonSchema> {
+function parsed(text: string) {
   const result = packageJsonSchema.safeParse(JSON.parse(text));
   if (!result.success) {
     throw new TypeError("packageJsonForApp wrote no dependencies or winapp");
@@ -40,19 +40,20 @@ function parsed(text: string): z.infer<typeof packageJsonSchema> {
   return result.data;
 }
 
-function packagesOf(text: string): string[] {
+function packagesOf(text: string) {
   return text.split(/\r?\n/u).filter(line => /^\s+(name|version):/u.test(line));
 }
 
 test("an app with no bindings list gets one, and the link to the generated folder", () => {
-  const text = packageJsonForApp(
-    JSON.stringify({
+  const text = packageJsonForApp({
+    original: JSON.stringify({
       name: "demo",
       dependencies: {
         svelte: "5.0.0"
       }
-    }), required
-  );
+    }),
+    required
+  });
   const result = parsed(text);
   assert.equal(result.dependencies["@winapp/bindings"], "link:.winapp/bindings");
   assert.equal(result.dependencies["svelte"], "5.0.0");
@@ -77,17 +78,28 @@ test("the classes an app already lists stay, and setup twice changes nothing", (
       }
     }
   });
-  const once = packageJsonForApp(original, required);
+  const once = packageJsonForApp({
+    original,
+    required
+  });
   const result = parsed(once);
   assert.equal(result.dependencies["@winapp/bindings"], "link:elsewhere");
   const controls = result.winapp.jsBindings.additionalWinmds.find(entry => entry.namespace.endsWith(".Controls"));
   assert.deepEqual(controls?.classes, ["Button", "Slider", "StackPanel"]);
   assert.ok(result.winapp.jsBindings.additionalWinmds.some(entry => entry.namespace === "Windows.Storage"));
-  assert.equal(packageJsonForApp(once, required), once);
+  assert.equal(
+    packageJsonForApp({
+      original: once,
+      required
+    }), once
+  );
 });
 
 test("the file keeps its line endings", () => {
-  const crlf = packageJsonForApp("{\r\n  \"name\": \"demo\"\r\n}\r\n", required);
+  const crlf = packageJsonForApp({
+    original: "{\r\n  \"name\": \"demo\"\r\n}\r\n",
+    required
+  });
   assert.ok(crlf.includes("\r\n"));
   assert.ok(!/[^\r]\n/u.test(crlf));
 });
@@ -123,17 +135,20 @@ test("every class src/winui.ts imports is among the required bindings", () => {
 });
 
 test("mergedEntries sorts by namespace and keeps whole-namespace entries", () => {
-  const merged = mergedEntries([{ namespace: "Windows.Storage" }], [
-    {
-      namespace: "Microsoft.UI.Xaml",
-      name: "Window"
-    }
-  ]);
+  const merged = mergedEntries({
+    existing: [{ namespace: "Windows.Storage" }],
+    wanted: [
+      {
+        namespace: "Microsoft.UI.Xaml",
+        name: "Window"
+      }
+    ]
+  });
   assert.deepEqual(merged.map(entry => entry.namespace), ["Microsoft.UI.Xaml", "Windows.Storage"]);
 });
 
 // The repository's own winapp.yaml is the one the package is built with.
 test("the winapp.yaml setup writes names the SDK this repository is restored with", () => {
   const repositoryYaml = path.join(import.meta.dirname, "..", "..", "winapp.yaml");
-  assert.deepEqual(packagesOf(winappYaml), packagesOf(readFileSync(repositoryYaml, "utf8")));
+  assert.deepEqual(packagesOf(WINAPP_YAML), packagesOf(readFileSync(repositoryYaml, "utf8")));
 });

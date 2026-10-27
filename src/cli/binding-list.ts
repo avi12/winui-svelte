@@ -1,5 +1,5 @@
-import type { Json } from "../messaging/json.ts";
 import { readList, readRecord } from "./json-shape.ts";
+import type { Json } from "#src/messaging/json.js";
 import { z } from "zod";
 
 // The class list `winapp` generates bindings for (package.json's
@@ -11,37 +11,43 @@ import { z } from "zod";
 const bindingEntrySchema = z.object({
   namespace: z.string(),
   // Absent: every class of the namespace.
-  classes: z.array(z.string()).optional()
+  classes: z.exactOptional(z.array(z.string()))
 });
 
+/** One namespace in the class list: some of its classes, or all of them. */
 export type BindingEntry = z.infer<typeof bindingEntrySchema>;
 
+/** A WinUI class, by the namespace it lives in and its own name. */
 export interface ClassName {
   namespace: string;
   name: string;
 }
 
-// The entries of a parsed list; what is not an entry is left out.
-export function bindingEntriesOf(list: Json[]): BindingEntry[] {
+/** The entries of a parsed list; what is not an entry is left out. */
+export function bindingEntriesOf(list: Json[]) {
   return list.flatMap(item => {
     const entry = bindingEntrySchema.safeParse(item);
     return entry.success ? [entry.data] : [];
   });
 }
 
-function compareText(left: string, right: string): number {
-  return left.localeCompare(right);
-}
-
-// `existing` with the wanted classes added; the ones already there stay.
-export function mergedEntries(existing: BindingEntry[], wanted: ClassName[]): BindingEntry[] {
+/**
+ * `existing` with the wanted classes added; the ones already there stay. The
+ * result is sorted by namespace, and each namespace's classes by name.
+ */
+export function mergedEntries({ existing, wanted }: {
+  existing: BindingEntry[];
+  wanted: ClassName[];
+}) {
   const byNamespace = new Map<string, Set<string>>();
   const wholeNamespaces: BindingEntry[] = [];
   for (const entry of existing) {
-    if (entry.classes === undefined) {
+    const { classes } = entry;
+    const isWholeNamespace = classes === undefined;
+    if (isWholeNamespace) {
       wholeNamespaces.push(entry);
     } else {
-      byNamespace.set(entry.namespace, new Set([...byNamespace.get(entry.namespace) ?? [], ...entry.classes]));
+      byNamespace.set(entry.namespace, new Set([...byNamespace.get(entry.namespace) ?? [], ...classes]));
     }
   }
 
@@ -51,15 +57,22 @@ export function mergedEntries(existing: BindingEntry[], wanted: ClassName[]): Bi
 
   const entries = [...byNamespace.entries()].map(([namespace, classes]) => ({
     namespace,
-    classes: [...classes].sort(compareText)
+    classes: [...classes].sort((left, right) => left.localeCompare(right))
   }));
-  return [...entries, ...wholeNamespaces].sort((left, right) => compareText(left.namespace, right.namespace));
+  return [...entries, ...wholeNamespaces].sort((left, right) => left.namespace.localeCompare(right.namespace));
 }
 
-// package.json's text with the wanted classes in winapp.jsBindings, in the
-// file's own line endings. The list must exist (an app starts it); the rest
-// of the file is kept as it is.
-export function packageJsonWithBindings(original: string, wanted: ClassName[]): string {
+/**
+ * package.json's text with the wanted classes in winapp.jsBindings, in the
+ * file's own line endings. The list must exist (an app starts it); the rest
+ * of the file is kept as it is.
+ *
+ * @throws when package.json has no `winapp.jsBindings.additionalWinmds`
+ */
+export function packageJsonWithBindings({ original, wanted }: {
+  original: string;
+  wanted: ClassName[];
+}) {
   const newline = original.includes("\r\n") ? "\r\n" : "\n";
   const root = readRecord(JSON.parse(original));
   const winapp = readRecord(root?.["winapp"]);
@@ -73,7 +86,10 @@ export function packageJsonWithBindings(original: string, wanted: ClassName[]): 
 
   // Each level is a copy with its keys in their order, so putting it back
   // keeps the file's layout.
-  bindings["additionalWinmds"] = mergedEntries(bindingEntriesOf(list), wanted);
+  bindings["additionalWinmds"] = mergedEntries({
+    existing: bindingEntriesOf(list),
+    wanted
+  });
   winapp["jsBindings"] = bindings;
   root["winapp"] = winapp;
   return `${JSON.stringify(root, null, 2).replaceAll("\n", newline)}${newline}`;
