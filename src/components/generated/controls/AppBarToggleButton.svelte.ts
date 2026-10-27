@@ -28,23 +28,47 @@ export function linkAppBarToggleButton(
   link: Linker
 ) {
   linkToggleButton(control, props, bound, link);
-  link.property(props, "dynamicOverflowOrder", value => {
-    control.dynamicOverflowOrder = value;
+  link.property({
+    props,
+    key: "dynamicOverflowOrder",
+    apply: value => {
+      control.dynamicOverflowOrder = value;
+    }
   });
-  link.property(props, "icon", value => {
-    control.icon = value;
+  link.property({
+    props,
+    key: "icon",
+    apply: value => {
+      control.icon = value;
+    }
   });
-  link.property(props, "isCompact", value => {
-    control.isCompact = value;
+  link.property({
+    props,
+    key: "isCompact",
+    apply: value => {
+      control.isCompact = value;
+    }
   });
-  link.property(props, "keyboardAcceleratorTextOverride", value => {
-    control.keyboardAcceleratorTextOverride = value;
+  link.property({
+    props,
+    key: "keyboardAcceleratorTextOverride",
+    apply: value => {
+      control.keyboardAcceleratorTextOverride = value;
+    }
   });
-  link.property(props, "label", value => {
-    control.label = value;
+  link.property({
+    props,
+    key: "label",
+    apply: value => {
+      control.label = value;
+    }
   });
-  link.property(props, "labelPosition", value => {
-    control.labelPosition = enumValue({ table: CommandBarLabelPosition, input: value });
+  link.property({
+    props,
+    key: "labelPosition",
+    apply: value => {
+      control.labelPosition = enumValue({ table: CommandBarLabelPosition, input: value });
+    }
   });
 }
 

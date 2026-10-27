@@ -53,70 +53,144 @@ export function linkTabView(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "addTabButtonCommand", value => {
-    control.addTabButtonCommand = value;
-  });
-  link.property(props, "addTabButtonCommandParameter", value => {
-    control.addTabButtonCommandParameter = objectOf(value);
-  });
-  link.property(props, "allowDropTabs", value => {
-    control.allowDropTabs = value;
-  });
-  link.property(props, "canDragTabs", value => {
-    control.canDragTabs = value;
-  });
-  link.property(props, "canReorderTabs", value => {
-    control.canReorderTabs = value;
-  });
-  link.property(props, "canTearOutTabs", value => {
-    control.canTearOutTabs = value;
-  });
-  link.property(props, "closeButtonOverlayMode", value => {
-    control.closeButtonOverlayMode = enumValue({ table: TabViewCloseButtonOverlayMode, input: value });
-  });
-  link.property(props, "isAddTabButtonVisible", value => {
-    control.isAddTabButtonVisible = value;
-  });
-  link.property(props, "tabItemsSource", value => {
-    control.tabItemsSource = objectOf(value);
-  });
-  link.property(props, "tabItemTemplate", value => {
-    control.tabItemTemplate = value;
-  });
-  link.property(props, "tabItemTemplateSelector", value => {
-    control.tabItemTemplateSelector = value;
-  });
-  link.property(props, "tabStripFooter", value => {
-    control.tabStripFooter = objectOf(value);
-  });
-  link.property(props, "tabStripFooterTemplate", value => {
-    control.tabStripFooterTemplate = value;
-  });
-  link.property(props, "tabStripHeader", value => {
-    control.tabStripHeader = objectOf(value);
-  });
-  link.property(props, "tabStripHeaderTemplate", value => {
-    control.tabStripHeaderTemplate = value;
-  });
-  link.property(props, "tabWidthMode", value => {
-    control.tabWidthMode = enumValue({ table: TabViewWidthMode, input: value });
-  });
-  link.bindable(bound, "selectedIndex", {
-    read: () => control.selectedIndex,
-    write(value) {
-      control.selectedIndex = value;
+  link.property({
+    props,
+    key: "addTabButtonCommand",
+    apply: value => {
+      control.addTabButtonCommand = value;
     }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
-  link.bindable(bound, "selectedItem", {
-    read: () => objectInputOf(control.selectedItem),
-    write(value) {
-      control.selectedItem = objectOf(value);
+  });
+  link.property({
+    props,
+    key: "addTabButtonCommandParameter",
+    apply: value => {
+      control.addTabButtonCommandParameter = objectOf(value);
     }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "allowDropTabs",
+    apply: value => {
+      control.allowDropTabs = value;
+    }
+  });
+  link.property({
+    props,
+    key: "canDragTabs",
+    apply: value => {
+      control.canDragTabs = value;
+    }
+  });
+  link.property({
+    props,
+    key: "canReorderTabs",
+    apply: value => {
+      control.canReorderTabs = value;
+    }
+  });
+  link.property({
+    props,
+    key: "canTearOutTabs",
+    apply: value => {
+      control.canTearOutTabs = value;
+    }
+  });
+  link.property({
+    props,
+    key: "closeButtonOverlayMode",
+    apply: value => {
+      control.closeButtonOverlayMode = enumValue({ table: TabViewCloseButtonOverlayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "isAddTabButtonVisible",
+    apply: value => {
+      control.isAddTabButtonVisible = value;
+    }
+  });
+  link.property({
+    props,
+    key: "tabItemsSource",
+    apply: value => {
+      control.tabItemsSource = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "tabItemTemplate",
+    apply: value => {
+      control.tabItemTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "tabItemTemplateSelector",
+    apply: value => {
+      control.tabItemTemplateSelector = value;
+    }
+  });
+  link.property({
+    props,
+    key: "tabStripFooter",
+    apply: value => {
+      control.tabStripFooter = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "tabStripFooterTemplate",
+    apply: value => {
+      control.tabStripFooterTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "tabStripHeader",
+    apply: value => {
+      control.tabStripHeader = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "tabStripHeaderTemplate",
+    apply: value => {
+      control.tabStripHeaderTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "tabWidthMode",
+    apply: value => {
+      control.tabWidthMode = enumValue({ table: TabViewWidthMode, input: value });
+    }
+  });
+  link.bindable({
+    bound,
+    key: "selectedIndex",
+    access: {
+      read: () => control.selectedIndex,
+      write: value => {
+        control.selectedIndex = value;
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
+  link.bindable({
+    bound,
+    key: "selectedItem",
+    access: {
+      read: () => objectInputOf(control.selectedItem),
+      write: value => {
+        control.selectedItem = objectOf(value);
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
 
   if ("onAddTabButtonClick" in props) {
     link.add(control.onAddTabButtonClick((...args) => props.onAddTabButtonClick?.(...args)));

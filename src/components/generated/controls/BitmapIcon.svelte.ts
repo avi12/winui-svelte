@@ -23,11 +23,19 @@ export function linkBitmapIcon(
   link: Linker
 ) {
   linkIconElement(control, props, bound, link);
-  link.property(props, "showAsMonochrome", value => {
-    control.showAsMonochrome = value;
+  link.property({
+    props,
+    key: "showAsMonochrome",
+    apply: value => {
+      control.showAsMonochrome = value;
+    }
   });
-  link.property(props, "uriSource", value => {
-    control.uriSource = uriOf(value);
+  link.property({
+    props,
+    key: "uriSource",
+    apply: value => {
+      control.uriSource = uriOf(value);
+    }
   });
 }
 

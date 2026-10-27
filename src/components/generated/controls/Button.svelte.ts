@@ -21,8 +21,12 @@ export function linkButton(
   link: Linker
 ) {
   linkButtonBase(control, props, bound, link);
-  link.property(props, "flyout", value => {
-    control.flyout = value;
+  link.property({
+    props,
+    key: "flyout",
+    apply: value => {
+      control.flyout = value;
+    }
   });
 }
 

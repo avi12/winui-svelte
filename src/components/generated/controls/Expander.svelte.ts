@@ -29,27 +29,48 @@ export function linkExpander(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "expandDirection", value => {
-    control.expandDirection = enumValue({ table: ExpandDirection, input: value });
-  });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "headerTemplateSelector", value => {
-    control.headerTemplateSelector = value;
-  });
-  link.bindable(bound, "isExpanded", {
-    read: () => control.isExpanded,
-    write(value) {
-      control.isExpanded = value;
+  link.property({
+    props,
+    key: "expandDirection",
+    apply: value => {
+      control.expandDirection = enumValue({ table: ExpandDirection, input: value });
     }
-  }, [
-    handler => control.onExpanding(handler),
-    handler => control.onCollapsed(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "header",
+    apply: value => {
+      control.header = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply: value => {
+      control.headerTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "headerTemplateSelector",
+    apply: value => {
+      control.headerTemplateSelector = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isExpanded",
+    access: {
+      read: () => control.isExpanded,
+      write: value => {
+        control.isExpanded = value;
+      }
+    },
+    subscribers: [
+      handler => control.onExpanding(handler),
+      handler => control.onCollapsed(handler)
+    ]
+  });
 
   if ("onCollapsed" in props) {
     link.add(control.onCollapsed((...args) => props.onCollapsed?.(...args)));

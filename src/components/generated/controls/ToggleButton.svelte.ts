@@ -26,19 +26,28 @@ export function linkToggleButton(
   link: Linker
 ) {
   linkButtonBase(control, props, bound, link);
-  link.property(props, "isThreeState", value => {
-    control.isThreeState = value;
-  });
-  link.bindable(bound, "isChecked", {
-    read: () => control.isChecked,
-    write(value) {
-      control.isChecked = nullableBooleanOf(value);
+  link.property({
+    props,
+    key: "isThreeState",
+    apply: value => {
+      control.isThreeState = value;
     }
-  }, [
-    handler => control.onChecked(handler),
-    handler => control.onUnchecked(handler),
-    handler => control.onIndeterminate(handler)
-  ]);
+  });
+  link.bindable({
+    bound,
+    key: "isChecked",
+    access: {
+      read: () => control.isChecked,
+      write: value => {
+        control.isChecked = nullableBooleanOf(value);
+      }
+    },
+    subscribers: [
+      handler => control.onChecked(handler),
+      handler => control.onUnchecked(handler),
+      handler => control.onIndeterminate(handler)
+    ]
+  });
 
   if ("onChecked" in props) {
     link.add(control.onChecked((...args) => props.onChecked?.(...args)));

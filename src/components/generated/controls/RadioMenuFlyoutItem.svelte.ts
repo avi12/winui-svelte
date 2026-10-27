@@ -22,11 +22,19 @@ export function linkRadioMenuFlyoutItem(
   link: Linker
 ) {
   linkMenuFlyoutItem(control, props, bound, link);
-  link.property(props, "groupName", value => {
-    control.groupName = value;
+  link.property({
+    props,
+    key: "groupName",
+    apply: value => {
+      control.groupName = value;
+    }
   });
-  link.property(props, "isChecked", value => {
-    control.isChecked = value;
+  link.property({
+    props,
+    key: "isChecked",
+    apply: value => {
+      control.isChecked = value;
+    }
   });
 }
 

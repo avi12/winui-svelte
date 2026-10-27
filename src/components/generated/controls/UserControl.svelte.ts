@@ -23,8 +23,12 @@ export function linkUserControl(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.contentProperty(props, "content", value => {
-    control.content = value;
+  link.contentProperty({
+    props,
+    key: "content",
+    apply: value => {
+      control.content = value;
+    }
   });
 }
 

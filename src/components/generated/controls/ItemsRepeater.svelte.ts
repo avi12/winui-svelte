@@ -31,26 +31,54 @@ export function linkItemsRepeater(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "background", value => {
-    control.background = brushOf(value);
+  link.property({
+    props,
+    key: "background",
+    apply: value => {
+      control.background = brushOf(value);
+    }
   });
-  link.property(props, "horizontalCacheLength", value => {
-    control.horizontalCacheLength = value;
+  link.property({
+    props,
+    key: "horizontalCacheLength",
+    apply: value => {
+      control.horizontalCacheLength = value;
+    }
   });
-  link.property(props, "itemsSource", value => {
-    control.itemsSource = objectOf(value);
+  link.property({
+    props,
+    key: "itemsSource",
+    apply: value => {
+      control.itemsSource = objectOf(value);
+    }
   });
-  link.property(props, "itemTemplate", value => {
-    control.itemTemplate = objectOf(value);
+  link.property({
+    props,
+    key: "itemTemplate",
+    apply: value => {
+      control.itemTemplate = objectOf(value);
+    }
   });
-  link.property(props, "itemTransitionProvider", value => {
-    control.itemTransitionProvider = value;
+  link.property({
+    props,
+    key: "itemTransitionProvider",
+    apply: value => {
+      control.itemTransitionProvider = value;
+    }
   });
-  link.property(props, "layout", value => {
-    control.layout = value;
+  link.property({
+    props,
+    key: "layout",
+    apply: value => {
+      control.layout = value;
+    }
   });
-  link.property(props, "verticalCacheLength", value => {
-    control.verticalCacheLength = value;
+  link.property({
+    props,
+    key: "verticalCacheLength",
+    apply: value => {
+      control.verticalCacheLength = value;
+    }
   });
 
   if ("onElementClearing" in props) {

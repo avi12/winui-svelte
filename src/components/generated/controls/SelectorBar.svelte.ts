@@ -22,14 +22,19 @@ export function linkSelectorBar(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.bindable(bound, "selectedItem", {
-    read: () => control.selectedItem,
-    write(value) {
-      control.selectedItem = value;
-    }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
+  link.bindable({
+    bound,
+    key: "selectedItem",
+    access: {
+      read: () => control.selectedItem,
+      write: value => {
+        control.selectedItem = value;
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
 
   if ("onSelectionChanged" in props) {
     link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));

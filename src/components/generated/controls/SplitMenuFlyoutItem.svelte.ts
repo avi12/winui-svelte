@@ -24,11 +24,19 @@ export function linkSplitMenuFlyoutItem(
   link: Linker
 ) {
   linkMenuFlyoutItem(control, props, bound, link);
-  link.property(props, "subMenuItemStyle", value => {
-    control.subMenuItemStyle = value;
+  link.property({
+    props,
+    key: "subMenuItemStyle",
+    apply: value => {
+      control.subMenuItemStyle = value;
+    }
   });
-  link.property(props, "subMenuPresenterStyle", value => {
-    control.subMenuPresenterStyle = value;
+  link.property({
+    props,
+    key: "subMenuPresenterStyle",
+    apply: value => {
+      control.subMenuPresenterStyle = value;
+    }
   });
 }
 

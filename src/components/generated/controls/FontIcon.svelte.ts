@@ -29,26 +29,54 @@ export function linkFontIcon(
   link: Linker
 ) {
   linkIconElement(control, props, bound, link);
-  link.property(props, "fontFamily", value => {
-    control.fontFamily = fontFamilyOf(value);
+  link.property({
+    props,
+    key: "fontFamily",
+    apply: value => {
+      control.fontFamily = fontFamilyOf(value);
+    }
   });
-  link.property(props, "fontSize", value => {
-    control.fontSize = value;
+  link.property({
+    props,
+    key: "fontSize",
+    apply: value => {
+      control.fontSize = value;
+    }
   });
-  link.property(props, "fontStyle", value => {
-    control.fontStyle = enumValue({ table: FontStyle, input: value });
+  link.property({
+    props,
+    key: "fontStyle",
+    apply: value => {
+      control.fontStyle = enumValue({ table: FontStyle, input: value });
+    }
   });
-  link.property(props, "fontWeight", value => {
-    control.fontWeight = value;
+  link.property({
+    props,
+    key: "fontWeight",
+    apply: value => {
+      control.fontWeight = value;
+    }
   });
-  link.property(props, "glyph", value => {
-    control.glyph = value;
+  link.property({
+    props,
+    key: "glyph",
+    apply: value => {
+      control.glyph = value;
+    }
   });
-  link.property(props, "isTextScaleFactorEnabled", value => {
-    control.isTextScaleFactorEnabled = value;
+  link.property({
+    props,
+    key: "isTextScaleFactorEnabled",
+    apply: value => {
+      control.isTextScaleFactorEnabled = value;
+    }
   });
-  link.property(props, "mirroredWhenRightToLeft", value => {
-    control.mirroredWhenRightToLeft = value;
+  link.property({
+    props,
+    key: "mirroredWhenRightToLeft",
+    apply: value => {
+      control.mirroredWhenRightToLeft = value;
+    }
   });
 }
 

@@ -31,37 +31,81 @@ export function linkShape(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "fill", value => {
-    control.fill = brushOf(value);
+  link.property({
+    props,
+    key: "fill",
+    apply: value => {
+      control.fill = brushOf(value);
+    }
   });
-  link.property(props, "stretch", value => {
-    control.stretch = enumValue({ table: Stretch, input: value });
+  link.property({
+    props,
+    key: "stretch",
+    apply: value => {
+      control.stretch = enumValue({ table: Stretch, input: value });
+    }
   });
-  link.property(props, "stroke", value => {
-    control.stroke = brushOf(value);
+  link.property({
+    props,
+    key: "stroke",
+    apply: value => {
+      control.stroke = brushOf(value);
+    }
   });
-  link.property(props, "strokeDashArray", value => {
-    control.strokeDashArray = value;
+  link.property({
+    props,
+    key: "strokeDashArray",
+    apply: value => {
+      control.strokeDashArray = value;
+    }
   });
-  link.property(props, "strokeDashCap", value => {
-    control.strokeDashCap = enumValue({ table: PenLineCap, input: value });
+  link.property({
+    props,
+    key: "strokeDashCap",
+    apply: value => {
+      control.strokeDashCap = enumValue({ table: PenLineCap, input: value });
+    }
   });
-  link.property(props, "strokeDashOffset", value => {
-    control.strokeDashOffset = value;
+  link.property({
+    props,
+    key: "strokeDashOffset",
+    apply: value => {
+      control.strokeDashOffset = value;
+    }
   });
-  link.property(props, "strokeEndLineCap", value => {
-    control.strokeEndLineCap = enumValue({ table: PenLineCap, input: value });
+  link.property({
+    props,
+    key: "strokeEndLineCap",
+    apply: value => {
+      control.strokeEndLineCap = enumValue({ table: PenLineCap, input: value });
+    }
   });
-  link.property(props, "strokeLineJoin", value => {
-    control.strokeLineJoin = enumValue({ table: PenLineJoin, input: value });
+  link.property({
+    props,
+    key: "strokeLineJoin",
+    apply: value => {
+      control.strokeLineJoin = enumValue({ table: PenLineJoin, input: value });
+    }
   });
-  link.property(props, "strokeMiterLimit", value => {
-    control.strokeMiterLimit = value;
+  link.property({
+    props,
+    key: "strokeMiterLimit",
+    apply: value => {
+      control.strokeMiterLimit = value;
+    }
   });
-  link.property(props, "strokeStartLineCap", value => {
-    control.strokeStartLineCap = enumValue({ table: PenLineCap, input: value });
+  link.property({
+    props,
+    key: "strokeStartLineCap",
+    apply: value => {
+      control.strokeStartLineCap = enumValue({ table: PenLineCap, input: value });
+    }
   });
-  link.property(props, "strokeThickness", value => {
-    control.strokeThickness = value;
+  link.property({
+    props,
+    key: "strokeThickness",
+    apply: value => {
+      control.strokeThickness = value;
+    }
   });
 }

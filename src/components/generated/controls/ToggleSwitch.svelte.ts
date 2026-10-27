@@ -31,32 +31,61 @@ export function linkToggleSwitch(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.contentProperty(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "offContent", value => {
-    control.offContent = objectOf(value);
-  });
-  link.property(props, "offContentTemplate", value => {
-    control.offContentTemplate = value;
-  });
-  link.property(props, "onContent", value => {
-    control.onContent = objectOf(value);
-  });
-  link.property(props, "onContentTemplate", value => {
-    control.onContentTemplate = value;
-  });
-  link.bindable(bound, "isOn", {
-    read: () => control.isOn,
-    write(value) {
-      control.isOn = value;
+  link.contentProperty({
+    props,
+    key: "header",
+    apply: value => {
+      control.header = objectOf(value);
     }
-  }, [
-    handler => control.onToggled(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply: value => {
+      control.headerTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "offContent",
+    apply: value => {
+      control.offContent = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "offContentTemplate",
+    apply: value => {
+      control.offContentTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "onContent",
+    apply: value => {
+      control.onContent = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "onContentTemplate",
+    apply: value => {
+      control.onContentTemplate = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isOn",
+    access: {
+      read: () => control.isOn,
+      write: value => {
+        control.isOn = value;
+      }
+    },
+    subscribers: [
+      handler => control.onToggled(handler)
+    ]
+  });
 
   if ("onToggled" in props) {
     link.add(control.onToggled((...args) => props.onToggled?.(...args)));

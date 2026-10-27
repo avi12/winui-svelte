@@ -24,11 +24,19 @@ export function linkBreadcrumbBar(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "itemsSource", value => {
-    control.itemsSource = objectOf(value);
+  link.property({
+    props,
+    key: "itemsSource",
+    apply: value => {
+      control.itemsSource = objectOf(value);
+    }
   });
-  link.property(props, "itemTemplate", value => {
-    control.itemTemplate = objectOf(value);
+  link.property({
+    props,
+    key: "itemTemplate",
+    apply: value => {
+      control.itemTemplate = objectOf(value);
+    }
   });
 
   if ("onItemClicked" in props) {

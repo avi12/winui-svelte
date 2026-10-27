@@ -33,41 +33,82 @@ export function linkColorSpectrum(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "components", value => {
-    control.components = enumValue({ table: ColorSpectrumComponents, input: value });
-  });
-  link.property(props, "hsvColor", value => {
-    control.hsvColor = value;
-  });
-  link.property(props, "maxHue", value => {
-    control.maxHue = value;
-  });
-  link.property(props, "maxSaturation", value => {
-    control.maxSaturation = value;
-  });
-  link.property(props, "maxValue", value => {
-    control.maxValue = value;
-  });
-  link.property(props, "minHue", value => {
-    control.minHue = value;
-  });
-  link.property(props, "minSaturation", value => {
-    control.minSaturation = value;
-  });
-  link.property(props, "minValue", value => {
-    control.minValue = value;
-  });
-  link.property(props, "shape", value => {
-    control.shape = enumValue({ table: ColorSpectrumShape, input: value });
-  });
-  link.bindable(bound, "color", {
-    read: () => control.color,
-    write(value) {
-      control.color = colorOf(value);
+  link.property({
+    props,
+    key: "components",
+    apply: value => {
+      control.components = enumValue({ table: ColorSpectrumComponents, input: value });
     }
-  }, [
-    handler => control.onColorChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "hsvColor",
+    apply: value => {
+      control.hsvColor = value;
+    }
+  });
+  link.property({
+    props,
+    key: "maxHue",
+    apply: value => {
+      control.maxHue = value;
+    }
+  });
+  link.property({
+    props,
+    key: "maxSaturation",
+    apply: value => {
+      control.maxSaturation = value;
+    }
+  });
+  link.property({
+    props,
+    key: "maxValue",
+    apply: value => {
+      control.maxValue = value;
+    }
+  });
+  link.property({
+    props,
+    key: "minHue",
+    apply: value => {
+      control.minHue = value;
+    }
+  });
+  link.property({
+    props,
+    key: "minSaturation",
+    apply: value => {
+      control.minSaturation = value;
+    }
+  });
+  link.property({
+    props,
+    key: "minValue",
+    apply: value => {
+      control.minValue = value;
+    }
+  });
+  link.property({
+    props,
+    key: "shape",
+    apply: value => {
+      control.shape = enumValue({ table: ColorSpectrumShape, input: value });
+    }
+  });
+  link.bindable({
+    bound,
+    key: "color",
+    access: {
+      read: () => control.color,
+      write: value => {
+        control.color = colorOf(value);
+      }
+    },
+    subscribers: [
+      handler => control.onColorChanged(handler)
+    ]
+  });
 
   if ("onColorChanged" in props) {
     link.add(control.onColorChanged((...args) => props.onColorChanged?.(...args)));

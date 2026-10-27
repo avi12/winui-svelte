@@ -29,37 +29,67 @@ export function linkRadioButtons(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "itemsSource", value => {
-    control.itemsSource = objectOf(value);
-  });
-  link.property(props, "itemTemplate", value => {
-    control.itemTemplate = objectOf(value);
-  });
-  link.property(props, "maxColumns", value => {
-    control.maxColumns = value;
-  });
-  link.bindable(bound, "selectedIndex", {
-    read: () => control.selectedIndex,
-    write(value) {
-      control.selectedIndex = value;
+  link.property({
+    props,
+    key: "header",
+    apply: value => {
+      control.header = objectOf(value);
     }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
-  link.bindable(bound, "selectedItem", {
-    read: () => objectInputOf(control.selectedItem),
-    write(value) {
-      control.selectedItem = objectOf(value);
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply: value => {
+      control.headerTemplate = value;
     }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "itemsSource",
+    apply: value => {
+      control.itemsSource = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "itemTemplate",
+    apply: value => {
+      control.itemTemplate = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "maxColumns",
+    apply: value => {
+      control.maxColumns = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "selectedIndex",
+    access: {
+      read: () => control.selectedIndex,
+      write: value => {
+        control.selectedIndex = value;
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
+  link.bindable({
+    bound,
+    key: "selectedItem",
+    access: {
+      read: () => objectInputOf(control.selectedItem),
+      write: value => {
+        control.selectedItem = objectOf(value);
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
 
   if ("onSelectionChanged" in props) {
     link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));

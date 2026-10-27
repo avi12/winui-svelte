@@ -23,8 +23,12 @@ export function linkColorPickerSlider(
   link: Linker
 ) {
   linkSlider(control, props, bound, link);
-  link.property(props, "colorChannel", value => {
-    control.colorChannel = enumValue({ table: ColorPickerHsvChannel, input: value });
+  link.property({
+    props,
+    key: "colorChannel",
+    apply: value => {
+      control.colorChannel = enumValue({ table: ColorPickerHsvChannel, input: value });
+    }
   });
 }
 

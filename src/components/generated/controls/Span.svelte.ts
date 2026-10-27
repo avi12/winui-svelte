@@ -23,8 +23,12 @@ export function linkSpan(
   link: Linker
 ) {
   linkInline(control, props, bound, link);
-  link.contentProperty(props, "inlines", value => {
-    control.inlines = value;
+  link.contentProperty({
+    props,
+    key: "inlines",
+    apply: value => {
+      control.inlines = value;
+    }
   });
 }
 

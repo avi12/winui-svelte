@@ -27,14 +27,26 @@ export function linkFrame(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "cacheSize", value => {
-    control.cacheSize = value;
+  link.property({
+    props,
+    key: "cacheSize",
+    apply: value => {
+      control.cacheSize = value;
+    }
   });
-  link.property(props, "isNavigationStackEnabled", value => {
-    control.isNavigationStackEnabled = value;
+  link.property({
+    props,
+    key: "isNavigationStackEnabled",
+    apply: value => {
+      control.isNavigationStackEnabled = value;
+    }
   });
-  link.property(props, "sourcePageType", value => {
-    control.sourcePageType = value;
+  link.property({
+    props,
+    key: "sourcePageType",
+    apply: value => {
+      control.sourcePageType = value;
+    }
   });
 
   if ("onNavigated" in props) {

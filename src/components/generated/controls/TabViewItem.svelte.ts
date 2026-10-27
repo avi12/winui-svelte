@@ -26,17 +26,33 @@ export function linkTabViewItem(
   link: Linker
 ) {
   linkListViewItem(control, props, bound, link);
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
+  link.property({
+    props,
+    key: "header",
+    apply: value => {
+      control.header = objectOf(value);
+    }
   });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply: value => {
+      control.headerTemplate = value;
+    }
   });
-  link.property(props, "iconSource", value => {
-    control.iconSource = value;
+  link.property({
+    props,
+    key: "iconSource",
+    apply: value => {
+      control.iconSource = value;
+    }
   });
-  link.property(props, "isClosable", value => {
-    control.isClosable = value;
+  link.property({
+    props,
+    key: "isClosable",
+    apply: value => {
+      control.isClosable = value;
+    }
   });
 
   if ("onCloseRequested" in props) {

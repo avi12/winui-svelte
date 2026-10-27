@@ -30,30 +30,55 @@ export function linkToolTip(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "horizontalOffset", value => {
-    control.horizontalOffset = value;
-  });
-  link.property(props, "placement", value => {
-    control.placement = enumValue({ table: PlacementMode, input: value });
-  });
-  link.property(props, "placementRect", value => {
-    control.placementRect = value;
-  });
-  link.property(props, "placementTarget", value => {
-    control.placementTarget = value;
-  });
-  link.property(props, "verticalOffset", value => {
-    control.verticalOffset = value;
-  });
-  link.bindable(bound, "isOpen", {
-    read: () => control.isOpen,
-    write(value) {
-      control.isOpen = value;
+  link.property({
+    props,
+    key: "horizontalOffset",
+    apply: value => {
+      control.horizontalOffset = value;
     }
-  }, [
-    handler => control.onOpened(handler),
-    handler => control.onClosed(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "placement",
+    apply: value => {
+      control.placement = enumValue({ table: PlacementMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "placementRect",
+    apply: value => {
+      control.placementRect = value;
+    }
+  });
+  link.property({
+    props,
+    key: "placementTarget",
+    apply: value => {
+      control.placementTarget = value;
+    }
+  });
+  link.property({
+    props,
+    key: "verticalOffset",
+    apply: value => {
+      control.verticalOffset = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isOpen",
+    access: {
+      read: () => control.isOpen,
+      write: value => {
+        control.isOpen = value;
+      }
+    },
+    subscribers: [
+      handler => control.onOpened(handler),
+      handler => control.onClosed(handler)
+    ]
+  });
 
   if ("onClosed" in props) {
     link.add(control.onClosed((...args) => props.onClosed?.(...args)));

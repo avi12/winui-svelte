@@ -25,14 +25,26 @@ export function linkMediaPlayerPresenter(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "isFullWindow", value => {
-    control.isFullWindow = value;
+  link.property({
+    props,
+    key: "isFullWindow",
+    apply: value => {
+      control.isFullWindow = value;
+    }
   });
-  link.property(props, "mediaPlayer", value => {
-    control.mediaPlayer = value;
+  link.property({
+    props,
+    key: "mediaPlayer",
+    apply: value => {
+      control.mediaPlayer = value;
+    }
   });
-  link.property(props, "stretch", value => {
-    control.stretch = enumValue({ table: Stretch, input: value });
+  link.property({
+    props,
+    key: "stretch",
+    apply: value => {
+      control.stretch = enumValue({ table: Stretch, input: value });
+    }
   });
 }
 

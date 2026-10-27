@@ -24,17 +24,33 @@ export function linkLine(
   link: Linker
 ) {
   linkShape(control, props, bound, link);
-  link.property(props, "x1", value => {
-    control.x1 = value;
+  link.property({
+    props,
+    key: "x1",
+    apply: value => {
+      control.x1 = value;
+    }
   });
-  link.property(props, "x2", value => {
-    control.x2 = value;
+  link.property({
+    props,
+    key: "x2",
+    apply: value => {
+      control.x2 = value;
+    }
   });
-  link.property(props, "y1", value => {
-    control.y1 = value;
+  link.property({
+    props,
+    key: "y1",
+    apply: value => {
+      control.y1 = value;
+    }
   });
-  link.property(props, "y2", value => {
-    control.y2 = value;
+  link.property({
+    props,
+    key: "y2",
+    apply: value => {
+      control.y2 = value;
+    }
   });
 }
 

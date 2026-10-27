@@ -38,51 +38,104 @@ export function linkComboBox(
   link: Linker
 ) {
   linkSelector(control, props, bound, link);
-  link.property(props, "description", value => {
-    control.description = objectOf(value);
-  });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "isEditable", value => {
-    control.isEditable = value;
-  });
-  link.property(props, "isTextSearchEnabled", value => {
-    control.isTextSearchEnabled = value;
-  });
-  link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
-  });
-  link.property(props, "maxDropDownHeight", value => {
-    control.maxDropDownHeight = value;
-  });
-  link.property(props, "placeholderForeground", value => {
-    control.placeholderForeground = brushOf(value);
-  });
-  link.property(props, "placeholderText", value => {
-    control.placeholderText = value;
-  });
-  link.property(props, "selectionChangedTrigger", value => {
-    control.selectionChangedTrigger = enumValue({ table: ComboBoxSelectionChangedTrigger, input: value });
-  });
-  link.property(props, "text", value => {
-    control.text = value;
-  });
-  link.property(props, "textBoxStyle", value => {
-    control.textBoxStyle = value;
-  });
-  link.bindable(bound, "isDropDownOpen", {
-    read: () => control.isDropDownOpen,
-    write(value) {
-      control.isDropDownOpen = value;
+  link.property({
+    props,
+    key: "description",
+    apply: value => {
+      control.description = objectOf(value);
     }
-  }, [
-    handler => control.onDropDownOpened(handler),
-    handler => control.onDropDownClosed(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "header",
+    apply: value => {
+      control.header = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply: value => {
+      control.headerTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isEditable",
+    apply: value => {
+      control.isEditable = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isTextSearchEnabled",
+    apply: value => {
+      control.isTextSearchEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "lightDismissOverlayMode",
+    apply: value => {
+      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "maxDropDownHeight",
+    apply: value => {
+      control.maxDropDownHeight = value;
+    }
+  });
+  link.property({
+    props,
+    key: "placeholderForeground",
+    apply: value => {
+      control.placeholderForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "placeholderText",
+    apply: value => {
+      control.placeholderText = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionChangedTrigger",
+    apply: value => {
+      control.selectionChangedTrigger = enumValue({ table: ComboBoxSelectionChangedTrigger, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "text",
+    apply: value => {
+      control.text = value;
+    }
+  });
+  link.property({
+    props,
+    key: "textBoxStyle",
+    apply: value => {
+      control.textBoxStyle = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isDropDownOpen",
+    access: {
+      read: () => control.isDropDownOpen,
+      write: value => {
+        control.isDropDownOpen = value;
+      }
+    },
+    subscribers: [
+      handler => control.onDropDownOpened(handler),
+      handler => control.onDropDownClosed(handler)
+    ]
+  });
 
   if ("onDropDownClosed" in props) {
     link.add(control.onDropDownClosed((...args) => props.onDropDownClosed?.(...args)));

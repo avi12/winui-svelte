@@ -22,8 +22,12 @@ export function linkImageIcon(
   link: Linker
 ) {
   linkIconElement(control, props, bound, link);
-  link.property(props, "source", value => {
-    control.source = imageSourceOf(value);
+  link.property({
+    props,
+    key: "source",
+    apply: value => {
+      control.source = imageSourceOf(value);
+    }
   });
 }
 

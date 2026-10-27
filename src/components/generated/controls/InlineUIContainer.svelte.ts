@@ -23,8 +23,12 @@ export function linkInlineUIContainer(
   link: Linker
 ) {
   linkInline(control, props, bound, link);
-  link.contentProperty(props, "child", value => {
-    control.child = value;
+  link.contentProperty({
+    props,
+    key: "child",
+    apply: value => {
+      control.child = value;
+    }
   });
 }
 

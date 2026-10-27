@@ -61,89 +61,201 @@ export function linkScrollViewer(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "bringIntoViewOnFocusChange", value => {
-    control.bringIntoViewOnFocusChange = value;
+  link.property({
+    props,
+    key: "bringIntoViewOnFocusChange",
+    apply: value => {
+      control.bringIntoViewOnFocusChange = value;
+    }
   });
-  link.property(props, "canContentRenderOutsideBounds", value => {
-    control.canContentRenderOutsideBounds = value;
+  link.property({
+    props,
+    key: "canContentRenderOutsideBounds",
+    apply: value => {
+      control.canContentRenderOutsideBounds = value;
+    }
   });
-  link.property(props, "horizontalAnchorRatio", value => {
-    control.horizontalAnchorRatio = value;
+  link.property({
+    props,
+    key: "horizontalAnchorRatio",
+    apply: value => {
+      control.horizontalAnchorRatio = value;
+    }
   });
-  link.property(props, "horizontalScrollBarVisibility", value => {
-    control.horizontalScrollBarVisibility = enumValue({ table: ScrollBarVisibility, input: value });
+  link.property({
+    props,
+    key: "horizontalScrollBarVisibility",
+    apply: value => {
+      control.horizontalScrollBarVisibility = enumValue({ table: ScrollBarVisibility, input: value });
+    }
   });
-  link.property(props, "horizontalScrollMode", value => {
-    control.horizontalScrollMode = enumValue({ table: ScrollMode, input: value });
+  link.property({
+    props,
+    key: "horizontalScrollMode",
+    apply: value => {
+      control.horizontalScrollMode = enumValue({ table: ScrollMode, input: value });
+    }
   });
-  link.property(props, "horizontalSnapPointsAlignment", value => {
-    control.horizontalSnapPointsAlignment = enumValue({ table: SnapPointsAlignment, input: value });
+  link.property({
+    props,
+    key: "horizontalSnapPointsAlignment",
+    apply: value => {
+      control.horizontalSnapPointsAlignment = enumValue({ table: SnapPointsAlignment, input: value });
+    }
   });
-  link.property(props, "horizontalSnapPointsType", value => {
-    control.horizontalSnapPointsType = enumValue({ table: SnapPointsType, input: value });
+  link.property({
+    props,
+    key: "horizontalSnapPointsType",
+    apply: value => {
+      control.horizontalSnapPointsType = enumValue({ table: SnapPointsType, input: value });
+    }
   });
-  link.property(props, "isDeferredScrollingEnabled", value => {
-    control.isDeferredScrollingEnabled = value;
+  link.property({
+    props,
+    key: "isDeferredScrollingEnabled",
+    apply: value => {
+      control.isDeferredScrollingEnabled = value;
+    }
   });
-  link.property(props, "isHorizontalRailEnabled", value => {
-    control.isHorizontalRailEnabled = value;
+  link.property({
+    props,
+    key: "isHorizontalRailEnabled",
+    apply: value => {
+      control.isHorizontalRailEnabled = value;
+    }
   });
-  link.property(props, "isHorizontalScrollChainingEnabled", value => {
-    control.isHorizontalScrollChainingEnabled = value;
+  link.property({
+    props,
+    key: "isHorizontalScrollChainingEnabled",
+    apply: value => {
+      control.isHorizontalScrollChainingEnabled = value;
+    }
   });
-  link.property(props, "isScrollInertiaEnabled", value => {
-    control.isScrollInertiaEnabled = value;
+  link.property({
+    props,
+    key: "isScrollInertiaEnabled",
+    apply: value => {
+      control.isScrollInertiaEnabled = value;
+    }
   });
-  link.property(props, "isVerticalRailEnabled", value => {
-    control.isVerticalRailEnabled = value;
+  link.property({
+    props,
+    key: "isVerticalRailEnabled",
+    apply: value => {
+      control.isVerticalRailEnabled = value;
+    }
   });
-  link.property(props, "isVerticalScrollChainingEnabled", value => {
-    control.isVerticalScrollChainingEnabled = value;
+  link.property({
+    props,
+    key: "isVerticalScrollChainingEnabled",
+    apply: value => {
+      control.isVerticalScrollChainingEnabled = value;
+    }
   });
-  link.property(props, "isZoomChainingEnabled", value => {
-    control.isZoomChainingEnabled = value;
+  link.property({
+    props,
+    key: "isZoomChainingEnabled",
+    apply: value => {
+      control.isZoomChainingEnabled = value;
+    }
   });
-  link.property(props, "isZoomInertiaEnabled", value => {
-    control.isZoomInertiaEnabled = value;
+  link.property({
+    props,
+    key: "isZoomInertiaEnabled",
+    apply: value => {
+      control.isZoomInertiaEnabled = value;
+    }
   });
-  link.property(props, "leftHeader", value => {
-    control.leftHeader = value;
+  link.property({
+    props,
+    key: "leftHeader",
+    apply: value => {
+      control.leftHeader = value;
+    }
   });
-  link.property(props, "maxZoomFactor", value => {
-    control.maxZoomFactor = value;
+  link.property({
+    props,
+    key: "maxZoomFactor",
+    apply: value => {
+      control.maxZoomFactor = value;
+    }
   });
-  link.property(props, "minZoomFactor", value => {
-    control.minZoomFactor = value;
+  link.property({
+    props,
+    key: "minZoomFactor",
+    apply: value => {
+      control.minZoomFactor = value;
+    }
   });
-  link.property(props, "reduceViewportForCoreInputViewOcclusions", value => {
-    control.reduceViewportForCoreInputViewOcclusions = value;
+  link.property({
+    props,
+    key: "reduceViewportForCoreInputViewOcclusions",
+    apply: value => {
+      control.reduceViewportForCoreInputViewOcclusions = value;
+    }
   });
-  link.property(props, "topHeader", value => {
-    control.topHeader = value;
+  link.property({
+    props,
+    key: "topHeader",
+    apply: value => {
+      control.topHeader = value;
+    }
   });
-  link.property(props, "topLeftHeader", value => {
-    control.topLeftHeader = value;
+  link.property({
+    props,
+    key: "topLeftHeader",
+    apply: value => {
+      control.topLeftHeader = value;
+    }
   });
-  link.property(props, "verticalAnchorRatio", value => {
-    control.verticalAnchorRatio = value;
+  link.property({
+    props,
+    key: "verticalAnchorRatio",
+    apply: value => {
+      control.verticalAnchorRatio = value;
+    }
   });
-  link.property(props, "verticalScrollBarVisibility", value => {
-    control.verticalScrollBarVisibility = enumValue({ table: ScrollBarVisibility, input: value });
+  link.property({
+    props,
+    key: "verticalScrollBarVisibility",
+    apply: value => {
+      control.verticalScrollBarVisibility = enumValue({ table: ScrollBarVisibility, input: value });
+    }
   });
-  link.property(props, "verticalScrollMode", value => {
-    control.verticalScrollMode = enumValue({ table: ScrollMode, input: value });
+  link.property({
+    props,
+    key: "verticalScrollMode",
+    apply: value => {
+      control.verticalScrollMode = enumValue({ table: ScrollMode, input: value });
+    }
   });
-  link.property(props, "verticalSnapPointsAlignment", value => {
-    control.verticalSnapPointsAlignment = enumValue({ table: SnapPointsAlignment, input: value });
+  link.property({
+    props,
+    key: "verticalSnapPointsAlignment",
+    apply: value => {
+      control.verticalSnapPointsAlignment = enumValue({ table: SnapPointsAlignment, input: value });
+    }
   });
-  link.property(props, "verticalSnapPointsType", value => {
-    control.verticalSnapPointsType = enumValue({ table: SnapPointsType, input: value });
+  link.property({
+    props,
+    key: "verticalSnapPointsType",
+    apply: value => {
+      control.verticalSnapPointsType = enumValue({ table: SnapPointsType, input: value });
+    }
   });
-  link.property(props, "zoomMode", value => {
-    control.zoomMode = enumValue({ table: ZoomMode, input: value });
+  link.property({
+    props,
+    key: "zoomMode",
+    apply: value => {
+      control.zoomMode = enumValue({ table: ZoomMode, input: value });
+    }
   });
-  link.property(props, "zoomSnapPointsType", value => {
-    control.zoomSnapPointsType = enumValue({ table: SnapPointsType, input: value });
+  link.property({
+    props,
+    key: "zoomSnapPointsType",
+    apply: value => {
+      control.zoomSnapPointsType = enumValue({ table: SnapPointsType, input: value });
+    }
   });
 
   if ("onAnchorRequested" in props) {

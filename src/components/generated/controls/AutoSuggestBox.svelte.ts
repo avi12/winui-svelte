@@ -37,47 +37,96 @@ export function linkAutoSuggestBox(
   link: Linker
 ) {
   linkItemsControl(control, props, bound, link);
-  link.property(props, "autoMaximizeSuggestionArea", value => {
-    control.autoMaximizeSuggestionArea = value;
-  });
-  link.property(props, "description", value => {
-    control.description = objectOf(value);
-  });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "isSuggestionListOpen", value => {
-    control.isSuggestionListOpen = value;
-  });
-  link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
-  });
-  link.property(props, "maxSuggestionListHeight", value => {
-    control.maxSuggestionListHeight = value;
-  });
-  link.property(props, "placeholderText", value => {
-    control.placeholderText = value;
-  });
-  link.property(props, "queryIcon", value => {
-    control.queryIcon = value;
-  });
-  link.property(props, "textBoxStyle", value => {
-    control.textBoxStyle = value;
-  });
-  link.property(props, "textMemberPath", value => {
-    control.textMemberPath = value;
-  });
-  link.property(props, "updateTextOnSelect", value => {
-    control.updateTextOnSelect = value;
-  });
-  link.bindable(bound, "text", {
-    read: () => control.text,
-    write(value) {
-      control.text = value;
+  link.property({
+    props,
+    key: "autoMaximizeSuggestionArea",
+    apply: value => {
+      control.autoMaximizeSuggestionArea = value;
     }
-  }, [
-    handler => control.onTextChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "description",
+    apply: value => {
+      control.description = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "header",
+    apply: value => {
+      control.header = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "isSuggestionListOpen",
+    apply: value => {
+      control.isSuggestionListOpen = value;
+    }
+  });
+  link.property({
+    props,
+    key: "lightDismissOverlayMode",
+    apply: value => {
+      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "maxSuggestionListHeight",
+    apply: value => {
+      control.maxSuggestionListHeight = value;
+    }
+  });
+  link.property({
+    props,
+    key: "placeholderText",
+    apply: value => {
+      control.placeholderText = value;
+    }
+  });
+  link.property({
+    props,
+    key: "queryIcon",
+    apply: value => {
+      control.queryIcon = value;
+    }
+  });
+  link.property({
+    props,
+    key: "textBoxStyle",
+    apply: value => {
+      control.textBoxStyle = value;
+    }
+  });
+  link.property({
+    props,
+    key: "textMemberPath",
+    apply: value => {
+      control.textMemberPath = value;
+    }
+  });
+  link.property({
+    props,
+    key: "updateTextOnSelect",
+    apply: value => {
+      control.updateTextOnSelect = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "text",
+    access: {
+      read: () => control.text,
+      write: value => {
+        control.text = value;
+      }
+    },
+    subscribers: [
+      handler => control.onTextChanged(handler)
+    ]
+  });
 
   if ("onQuerySubmitted" in props) {
     link.add(control.onQuerySubmitted((...args) => props.onQuerySubmitted?.(...args)));

@@ -40,53 +40,110 @@ export function linkPasswordBox(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "description", value => {
-    control.description = objectOf(value);
-  });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "inputScope", value => {
-    control.inputScope = value;
-  });
-  link.property(props, "isPasswordRevealButtonEnabled", value => {
-    control.isPasswordRevealButtonEnabled = value;
-  });
-  link.property(props, "maxLength", value => {
-    control.maxLength = value;
-  });
-  link.property(props, "passwordChar", value => {
-    control.passwordChar = value;
-  });
-  link.property(props, "passwordRevealMode", value => {
-    control.passwordRevealMode = enumValue({ table: PasswordRevealMode, input: value });
-  });
-  link.property(props, "placeholderText", value => {
-    control.placeholderText = value;
-  });
-  link.property(props, "preventKeyboardDisplayOnProgrammaticFocus", value => {
-    control.preventKeyboardDisplayOnProgrammaticFocus = value;
-  });
-  link.property(props, "selectionFlyout", value => {
-    control.selectionFlyout = value;
-  });
-  link.property(props, "selectionHighlightColor", value => {
-    control.selectionHighlightColor = value;
-  });
-  link.property(props, "textReadingOrder", value => {
-    control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
-  });
-  link.bindable(bound, "password", {
-    read: () => control.password,
-    write(value) {
-      control.password = value;
+  link.property({
+    props,
+    key: "description",
+    apply: value => {
+      control.description = objectOf(value);
     }
-  }, [
-    handler => control.onPasswordChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "header",
+    apply: value => {
+      control.header = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply: value => {
+      control.headerTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "inputScope",
+    apply: value => {
+      control.inputScope = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isPasswordRevealButtonEnabled",
+    apply: value => {
+      control.isPasswordRevealButtonEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "maxLength",
+    apply: value => {
+      control.maxLength = value;
+    }
+  });
+  link.property({
+    props,
+    key: "passwordChar",
+    apply: value => {
+      control.passwordChar = value;
+    }
+  });
+  link.property({
+    props,
+    key: "passwordRevealMode",
+    apply: value => {
+      control.passwordRevealMode = enumValue({ table: PasswordRevealMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "placeholderText",
+    apply: value => {
+      control.placeholderText = value;
+    }
+  });
+  link.property({
+    props,
+    key: "preventKeyboardDisplayOnProgrammaticFocus",
+    apply: value => {
+      control.preventKeyboardDisplayOnProgrammaticFocus = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionFlyout",
+    apply: value => {
+      control.selectionFlyout = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionHighlightColor",
+    apply: value => {
+      control.selectionHighlightColor = value;
+    }
+  });
+  link.property({
+    props,
+    key: "textReadingOrder",
+    apply: value => {
+      control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
+    }
+  });
+  link.bindable({
+    bound,
+    key: "password",
+    access: {
+      read: () => control.password,
+      write: value => {
+        control.password = value;
+      }
+    },
+    subscribers: [
+      handler => control.onPasswordChanged(handler)
+    ]
+  });
 
   if ("onContextMenuOpening" in props) {
     link.add(control.onContextMenuOpening((...args) => props.onContextMenuOpening?.(...args)));

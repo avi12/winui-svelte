@@ -23,8 +23,12 @@ export function linkIconSourceElement(
   link: Linker
 ) {
   linkIconElement(control, props, bound, link);
-  link.contentProperty(props, "iconSource", value => {
-    control.iconSource = value;
+  link.contentProperty({
+    props,
+    key: "iconSource",
+    apply: value => {
+      control.iconSource = value;
+    }
   });
 }
 

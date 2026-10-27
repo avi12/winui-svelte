@@ -34,38 +34,82 @@ export function linkPipsPager(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "maxVisiblePips", value => {
-    control.maxVisiblePips = value;
+  link.property({
+    props,
+    key: "maxVisiblePips",
+    apply: value => {
+      control.maxVisiblePips = value;
+    }
   });
-  link.property(props, "nextButtonStyle", value => {
-    control.nextButtonStyle = value;
+  link.property({
+    props,
+    key: "nextButtonStyle",
+    apply: value => {
+      control.nextButtonStyle = value;
+    }
   });
-  link.property(props, "nextButtonVisibility", value => {
-    control.nextButtonVisibility = enumValue({ table: PipsPagerButtonVisibility, input: value });
+  link.property({
+    props,
+    key: "nextButtonVisibility",
+    apply: value => {
+      control.nextButtonVisibility = enumValue({ table: PipsPagerButtonVisibility, input: value });
+    }
   });
-  link.property(props, "normalPipStyle", value => {
-    control.normalPipStyle = value;
+  link.property({
+    props,
+    key: "normalPipStyle",
+    apply: value => {
+      control.normalPipStyle = value;
+    }
   });
-  link.property(props, "numberOfPages", value => {
-    control.numberOfPages = value;
+  link.property({
+    props,
+    key: "numberOfPages",
+    apply: value => {
+      control.numberOfPages = value;
+    }
   });
-  link.property(props, "orientation", value => {
-    control.orientation = enumValue({ table: Orientation, input: value });
+  link.property({
+    props,
+    key: "orientation",
+    apply: value => {
+      control.orientation = enumValue({ table: Orientation, input: value });
+    }
   });
-  link.property(props, "previousButtonStyle", value => {
-    control.previousButtonStyle = value;
+  link.property({
+    props,
+    key: "previousButtonStyle",
+    apply: value => {
+      control.previousButtonStyle = value;
+    }
   });
-  link.property(props, "previousButtonVisibility", value => {
-    control.previousButtonVisibility = enumValue({ table: PipsPagerButtonVisibility, input: value });
+  link.property({
+    props,
+    key: "previousButtonVisibility",
+    apply: value => {
+      control.previousButtonVisibility = enumValue({ table: PipsPagerButtonVisibility, input: value });
+    }
   });
-  link.property(props, "selectedPageIndex", value => {
-    control.selectedPageIndex = value;
+  link.property({
+    props,
+    key: "selectedPageIndex",
+    apply: value => {
+      control.selectedPageIndex = value;
+    }
   });
-  link.property(props, "selectedPipStyle", value => {
-    control.selectedPipStyle = value;
+  link.property({
+    props,
+    key: "selectedPipStyle",
+    apply: value => {
+      control.selectedPipStyle = value;
+    }
   });
-  link.property(props, "wrapMode", value => {
-    control.wrapMode = enumValue({ table: PipsPagerWrapMode, input: value });
+  link.property({
+    props,
+    key: "wrapMode",
+    apply: value => {
+      control.wrapMode = enumValue({ table: PipsPagerWrapMode, input: value });
+    }
   });
 
   if ("onSelectedIndexChanged" in props) {

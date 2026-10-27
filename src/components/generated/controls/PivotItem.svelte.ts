@@ -22,8 +22,12 @@ export function linkPivotItem(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
+  link.property({
+    props,
+    key: "header",
+    apply: value => {
+      control.header = objectOf(value);
+    }
   });
 }
 

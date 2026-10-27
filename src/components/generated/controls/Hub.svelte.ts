@@ -33,26 +33,54 @@ export function linkHub(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "defaultSectionIndex", value => {
-    control.defaultSectionIndex = value;
+  link.property({
+    props,
+    key: "defaultSectionIndex",
+    apply: value => {
+      control.defaultSectionIndex = value;
+    }
   });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
+  link.property({
+    props,
+    key: "header",
+    apply: value => {
+      control.header = objectOf(value);
+    }
   });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply: value => {
+      control.headerTemplate = value;
+    }
   });
-  link.property(props, "isActiveView", value => {
-    control.isActiveView = value;
+  link.property({
+    props,
+    key: "isActiveView",
+    apply: value => {
+      control.isActiveView = value;
+    }
   });
-  link.property(props, "isZoomedInView", value => {
-    control.isZoomedInView = value;
+  link.property({
+    props,
+    key: "isZoomedInView",
+    apply: value => {
+      control.isZoomedInView = value;
+    }
   });
-  link.property(props, "orientation", value => {
-    control.orientation = enumValue({ table: Orientation, input: value });
+  link.property({
+    props,
+    key: "orientation",
+    apply: value => {
+      control.orientation = enumValue({ table: Orientation, input: value });
+    }
   });
-  link.property(props, "semanticZoomOwner", value => {
-    control.semanticZoomOwner = value;
+  link.property({
+    props,
+    key: "semanticZoomOwner",
+    apply: value => {
+      control.semanticZoomOwner = value;
+    }
   });
 
   if ("onSectionHeaderClick" in props) {

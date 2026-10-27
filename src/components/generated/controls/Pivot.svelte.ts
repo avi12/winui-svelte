@@ -39,52 +39,102 @@ export function linkPivot(
   link: Linker
 ) {
   linkItemsControl(control, props, bound, link);
-  link.property(props, "headerFocusVisualPlacement", value => {
-    control.headerFocusVisualPlacement = enumValue({ table: PivotHeaderFocusVisualPlacement, input: value });
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "isHeaderItemsCarouselEnabled", value => {
-    control.isHeaderItemsCarouselEnabled = value;
-  });
-  link.property(props, "isLocked", value => {
-    control.isLocked = value;
-  });
-  link.property(props, "leftHeader", value => {
-    control.leftHeader = objectOf(value);
-  });
-  link.property(props, "leftHeaderTemplate", value => {
-    control.leftHeaderTemplate = value;
-  });
-  link.property(props, "rightHeader", value => {
-    control.rightHeader = objectOf(value);
-  });
-  link.property(props, "rightHeaderTemplate", value => {
-    control.rightHeaderTemplate = value;
-  });
-  link.property(props, "title", value => {
-    control.title = objectOf(value);
-  });
-  link.property(props, "titleTemplate", value => {
-    control.titleTemplate = value;
-  });
-  link.bindable(bound, "selectedIndex", {
-    read: () => control.selectedIndex,
-    write(value) {
-      control.selectedIndex = value;
+  link.property({
+    props,
+    key: "headerFocusVisualPlacement",
+    apply: value => {
+      control.headerFocusVisualPlacement = enumValue({ table: PivotHeaderFocusVisualPlacement, input: value });
     }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
-  link.bindable(bound, "selectedItem", {
-    read: () => objectInputOf(control.selectedItem),
-    write(value) {
-      control.selectedItem = objectOf(value);
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply: value => {
+      control.headerTemplate = value;
     }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "isHeaderItemsCarouselEnabled",
+    apply: value => {
+      control.isHeaderItemsCarouselEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isLocked",
+    apply: value => {
+      control.isLocked = value;
+    }
+  });
+  link.property({
+    props,
+    key: "leftHeader",
+    apply: value => {
+      control.leftHeader = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "leftHeaderTemplate",
+    apply: value => {
+      control.leftHeaderTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "rightHeader",
+    apply: value => {
+      control.rightHeader = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "rightHeaderTemplate",
+    apply: value => {
+      control.rightHeaderTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "title",
+    apply: value => {
+      control.title = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "titleTemplate",
+    apply: value => {
+      control.titleTemplate = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "selectedIndex",
+    access: {
+      read: () => control.selectedIndex,
+      write: value => {
+        control.selectedIndex = value;
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
+  link.bindable({
+    bound,
+    key: "selectedItem",
+    access: {
+      read: () => objectInputOf(control.selectedItem),
+      write: value => {
+        control.selectedItem = objectOf(value);
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
 
   if ("onPivotItemLoaded" in props) {
     link.add(control.onPivotItemLoaded((...args) => props.onPivotItemLoaded?.(...args)));

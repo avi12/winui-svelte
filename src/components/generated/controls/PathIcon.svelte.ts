@@ -21,8 +21,12 @@ export function linkPathIcon(
   link: Linker
 ) {
   linkIconElement(control, props, bound, link);
-  link.property(props, "data", value => {
-    control.data = value;
+  link.property({
+    props,
+    key: "data",
+    apply: value => {
+      control.data = value;
+    }
   });
 }
 

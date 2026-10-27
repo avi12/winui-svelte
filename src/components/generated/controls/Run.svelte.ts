@@ -26,11 +26,19 @@ export function linkRun(
   link: Linker
 ) {
   linkInline(control, props, bound, link);
-  link.property(props, "flowDirection", value => {
-    control.flowDirection = enumValue({ table: FlowDirection, input: value });
+  link.property({
+    props,
+    key: "flowDirection",
+    apply: value => {
+      control.flowDirection = enumValue({ table: FlowDirection, input: value });
+    }
   });
-  link.contentProperty(props, "text", value => {
-    control.text = value;
+  link.contentProperty({
+    props,
+    key: "text",
+    apply: value => {
+      control.text = value;
+    }
   });
 }
 

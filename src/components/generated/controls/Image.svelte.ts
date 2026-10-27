@@ -27,14 +27,26 @@ export function linkImage(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "nineGrid", value => {
-    control.nineGrid = thicknessOf(value);
+  link.property({
+    props,
+    key: "nineGrid",
+    apply: value => {
+      control.nineGrid = thicknessOf(value);
+    }
   });
-  link.property(props, "source", value => {
-    control.source = imageSourceOf(value);
+  link.property({
+    props,
+    key: "source",
+    apply: value => {
+      control.source = imageSourceOf(value);
+    }
   });
-  link.property(props, "stretch", value => {
-    control.stretch = enumValue({ table: Stretch, input: value });
+  link.property({
+    props,
+    key: "stretch",
+    apply: value => {
+      control.stretch = enumValue({ table: Stretch, input: value });
+    }
   });
 
   if ("onImageFailed" in props) {

@@ -61,86 +61,194 @@ export function linkFrameworkElement(
   link: Linker
 ) {
   linkUIElement(control, props, bound, link);
-  link.property(props, "gridRow", value => {
-    Grid.setRow(control, value);
+  link.property({
+    props,
+    key: "gridRow",
+    apply: value => {
+      Grid.setRow(control, value);
+    }
   });
-  link.property(props, "gridColumn", value => {
-    Grid.setColumn(control, value);
+  link.property({
+    props,
+    key: "gridColumn",
+    apply: value => {
+      Grid.setColumn(control, value);
+    }
   });
-  link.property(props, "gridRowSpan", value => {
-    Grid.setRowSpan(control, value);
+  link.property({
+    props,
+    key: "gridRowSpan",
+    apply: value => {
+      Grid.setRowSpan(control, value);
+    }
   });
-  link.property(props, "gridColumnSpan", value => {
-    Grid.setColumnSpan(control, value);
+  link.property({
+    props,
+    key: "gridColumnSpan",
+    apply: value => {
+      Grid.setColumnSpan(control, value);
+    }
   });
-  link.property(props, "allowFocusOnInteraction", value => {
-    control.allowFocusOnInteraction = value;
+  link.property({
+    props,
+    key: "allowFocusOnInteraction",
+    apply: value => {
+      control.allowFocusOnInteraction = value;
+    }
   });
-  link.property(props, "allowFocusWhenDisabled", value => {
-    control.allowFocusWhenDisabled = value;
+  link.property({
+    props,
+    key: "allowFocusWhenDisabled",
+    apply: value => {
+      control.allowFocusWhenDisabled = value;
+    }
   });
-  link.property(props, "dataContext", value => {
-    control.dataContext = objectOf(value);
+  link.property({
+    props,
+    key: "dataContext",
+    apply: value => {
+      control.dataContext = objectOf(value);
+    }
   });
-  link.property(props, "flowDirection", value => {
-    control.flowDirection = enumValue({ table: FlowDirection, input: value });
+  link.property({
+    props,
+    key: "flowDirection",
+    apply: value => {
+      control.flowDirection = enumValue({ table: FlowDirection, input: value });
+    }
   });
-  link.property(props, "focusVisualMargin", value => {
-    control.focusVisualMargin = thicknessOf(value);
+  link.property({
+    props,
+    key: "focusVisualMargin",
+    apply: value => {
+      control.focusVisualMargin = thicknessOf(value);
+    }
   });
-  link.property(props, "focusVisualPrimaryBrush", value => {
-    control.focusVisualPrimaryBrush = brushOf(value);
+  link.property({
+    props,
+    key: "focusVisualPrimaryBrush",
+    apply: value => {
+      control.focusVisualPrimaryBrush = brushOf(value);
+    }
   });
-  link.property(props, "focusVisualPrimaryThickness", value => {
-    control.focusVisualPrimaryThickness = thicknessOf(value);
+  link.property({
+    props,
+    key: "focusVisualPrimaryThickness",
+    apply: value => {
+      control.focusVisualPrimaryThickness = thicknessOf(value);
+    }
   });
-  link.property(props, "focusVisualSecondaryBrush", value => {
-    control.focusVisualSecondaryBrush = brushOf(value);
+  link.property({
+    props,
+    key: "focusVisualSecondaryBrush",
+    apply: value => {
+      control.focusVisualSecondaryBrush = brushOf(value);
+    }
   });
-  link.property(props, "focusVisualSecondaryThickness", value => {
-    control.focusVisualSecondaryThickness = thicknessOf(value);
+  link.property({
+    props,
+    key: "focusVisualSecondaryThickness",
+    apply: value => {
+      control.focusVisualSecondaryThickness = thicknessOf(value);
+    }
   });
-  link.property(props, "height", value => {
-    control.height = value;
+  link.property({
+    props,
+    key: "height",
+    apply: value => {
+      control.height = value;
+    }
   });
-  link.property(props, "horizontalAlignment", value => {
-    control.horizontalAlignment = enumValue({ table: HorizontalAlignment, input: value });
+  link.property({
+    props,
+    key: "horizontalAlignment",
+    apply: value => {
+      control.horizontalAlignment = enumValue({ table: HorizontalAlignment, input: value });
+    }
   });
-  link.property(props, "language", value => {
-    control.language = value;
+  link.property({
+    props,
+    key: "language",
+    apply: value => {
+      control.language = value;
+    }
   });
-  link.property(props, "margin", value => {
-    control.margin = thicknessOf(value);
+  link.property({
+    props,
+    key: "margin",
+    apply: value => {
+      control.margin = thicknessOf(value);
+    }
   });
-  link.property(props, "maxHeight", value => {
-    control.maxHeight = value;
+  link.property({
+    props,
+    key: "maxHeight",
+    apply: value => {
+      control.maxHeight = value;
+    }
   });
-  link.property(props, "maxWidth", value => {
-    control.maxWidth = value;
+  link.property({
+    props,
+    key: "maxWidth",
+    apply: value => {
+      control.maxWidth = value;
+    }
   });
-  link.property(props, "minHeight", value => {
-    control.minHeight = value;
+  link.property({
+    props,
+    key: "minHeight",
+    apply: value => {
+      control.minHeight = value;
+    }
   });
-  link.property(props, "minWidth", value => {
-    control.minWidth = value;
+  link.property({
+    props,
+    key: "minWidth",
+    apply: value => {
+      control.minWidth = value;
+    }
   });
-  link.property(props, "name", value => {
-    control.name = value;
+  link.property({
+    props,
+    key: "name",
+    apply: value => {
+      control.name = value;
+    }
   });
-  link.property(props, "requestedTheme", value => {
-    control.requestedTheme = enumValue({ table: ElementTheme, input: value });
+  link.property({
+    props,
+    key: "requestedTheme",
+    apply: value => {
+      control.requestedTheme = enumValue({ table: ElementTheme, input: value });
+    }
   });
-  link.property(props, "resources", value => {
-    control.resources = value;
+  link.property({
+    props,
+    key: "resources",
+    apply: value => {
+      control.resources = value;
+    }
   });
-  link.property(props, "tag", value => {
-    control.tag = objectOf(value);
+  link.property({
+    props,
+    key: "tag",
+    apply: value => {
+      control.tag = objectOf(value);
+    }
   });
-  link.property(props, "verticalAlignment", value => {
-    control.verticalAlignment = enumValue({ table: VerticalAlignment, input: value });
+  link.property({
+    props,
+    key: "verticalAlignment",
+    apply: value => {
+      control.verticalAlignment = enumValue({ table: VerticalAlignment, input: value });
+    }
   });
-  link.property(props, "width", value => {
-    control.width = value;
+  link.property({
+    props,
+    key: "width",
+    apply: value => {
+      control.width = value;
+    }
   });
 
   if ("onActualThemeChanged" in props) {

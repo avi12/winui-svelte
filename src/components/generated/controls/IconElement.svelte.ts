@@ -20,7 +20,11 @@ export function linkIconElement(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "foreground", value => {
-    control.foreground = brushOf(value);
+  link.property({
+    props,
+    key: "foreground",
+    apply: value => {
+      control.foreground = brushOf(value);
+    }
   });
 }

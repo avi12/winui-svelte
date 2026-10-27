@@ -26,11 +26,19 @@ export function linkRefreshVisualizer(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "content", value => {
-    control.content = value;
+  link.property({
+    props,
+    key: "content",
+    apply: value => {
+      control.content = value;
+    }
   });
-  link.property(props, "orientation", value => {
-    control.orientation = enumValue({ table: RefreshVisualizerOrientation, input: value });
+  link.property({
+    props,
+    key: "orientation",
+    apply: value => {
+      control.orientation = enumValue({ table: RefreshVisualizerOrientation, input: value });
+    }
   });
 
   if ("onRefreshRequested" in props) {

@@ -23,8 +23,12 @@ export function linkParagraph(
   link: Linker
 ) {
   linkBlock(control, props, bound, link);
-  link.property(props, "textIndent", value => {
-    control.textIndent = value;
+  link.property({
+    props,
+    key: "textIndent",
+    apply: value => {
+      control.textIndent = value;
+    }
   });
 }
 

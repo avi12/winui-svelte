@@ -22,11 +22,19 @@ export function linkAppBarElementContainer(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "dynamicOverflowOrder", value => {
-    control.dynamicOverflowOrder = value;
+  link.property({
+    props,
+    key: "dynamicOverflowOrder",
+    apply: value => {
+      control.dynamicOverflowOrder = value;
+    }
   });
-  link.property(props, "isCompact", value => {
-    control.isCompact = value;
+  link.property({
+    props,
+    key: "isCompact",
+    apply: value => {
+      control.isCompact = value;
+    }
   });
 }
 

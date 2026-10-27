@@ -38,50 +38,103 @@ export function linkInfoBar(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "actionButton", value => {
-    control.actionButton = value;
-  });
-  link.property(props, "closeButtonCommand", value => {
-    control.closeButtonCommand = value;
-  });
-  link.property(props, "closeButtonCommandParameter", value => {
-    control.closeButtonCommandParameter = objectOf(value);
-  });
-  link.property(props, "closeButtonStyle", value => {
-    control.closeButtonStyle = value;
-  });
-  link.property(props, "content", value => {
-    control.content = objectOf(value);
-  });
-  link.property(props, "contentTemplate", value => {
-    control.contentTemplate = value;
-  });
-  link.property(props, "iconSource", value => {
-    control.iconSource = value;
-  });
-  link.property(props, "isClosable", value => {
-    control.isClosable = value;
-  });
-  link.property(props, "isIconVisible", value => {
-    control.isIconVisible = value;
-  });
-  link.property(props, "message", value => {
-    control.message = value;
-  });
-  link.property(props, "severity", value => {
-    control.severity = enumValue({ table: InfoBarSeverity, input: value });
-  });
-  link.property(props, "title", value => {
-    control.title = value;
-  });
-  link.bindable(bound, "isOpen", {
-    read: () => control.isOpen,
-    write(value) {
-      control.isOpen = value;
+  link.property({
+    props,
+    key: "actionButton",
+    apply: value => {
+      control.actionButton = value;
     }
-  }, [
-    handler => control.onClosed(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "closeButtonCommand",
+    apply: value => {
+      control.closeButtonCommand = value;
+    }
+  });
+  link.property({
+    props,
+    key: "closeButtonCommandParameter",
+    apply: value => {
+      control.closeButtonCommandParameter = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "closeButtonStyle",
+    apply: value => {
+      control.closeButtonStyle = value;
+    }
+  });
+  link.property({
+    props,
+    key: "content",
+    apply: value => {
+      control.content = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "contentTemplate",
+    apply: value => {
+      control.contentTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "iconSource",
+    apply: value => {
+      control.iconSource = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isClosable",
+    apply: value => {
+      control.isClosable = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isIconVisible",
+    apply: value => {
+      control.isIconVisible = value;
+    }
+  });
+  link.property({
+    props,
+    key: "message",
+    apply: value => {
+      control.message = value;
+    }
+  });
+  link.property({
+    props,
+    key: "severity",
+    apply: value => {
+      control.severity = enumValue({ table: InfoBarSeverity, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "title",
+    apply: value => {
+      control.title = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isOpen",
+    access: {
+      read: () => control.isOpen,
+      write: value => {
+        control.isOpen = value;
+      }
+    },
+    subscribers: [
+      handler => control.onClosed(handler)
+    ]
+  });
 
   if ("onCloseButtonClick" in props) {
     link.add(control.onCloseButtonClick((...args) => props.onCloseButtonClick?.(...args)));

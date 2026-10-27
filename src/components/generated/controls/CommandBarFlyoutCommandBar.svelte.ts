@@ -21,8 +21,12 @@ export function linkCommandBarFlyoutCommandBar(
   link: Linker
 ) {
   linkCommandBar(control, props, bound, link);
-  link.property(props, "systemBackdrop", value => {
-    control.systemBackdrop = value;
+  link.property({
+    props,
+    key: "systemBackdrop",
+    apply: value => {
+      control.systemBackdrop = value;
+    }
   });
 }
 

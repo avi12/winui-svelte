@@ -25,36 +25,59 @@ export function linkSelector(
   link: Linker
 ) {
   linkItemsControl(control, props, bound, link);
-  link.property(props, "isSynchronizedWithCurrentItem", value => {
-    control.isSynchronizedWithCurrentItem = nullableBooleanOf(value);
+  link.property({
+    props,
+    key: "isSynchronizedWithCurrentItem",
+    apply: value => {
+      control.isSynchronizedWithCurrentItem = nullableBooleanOf(value);
+    }
   });
-  link.property(props, "selectedValuePath", value => {
-    control.selectedValuePath = value;
+  link.property({
+    props,
+    key: "selectedValuePath",
+    apply: value => {
+      control.selectedValuePath = value;
+    }
   });
-  link.bindable(bound, "selectedIndex", {
-    read: () => control.selectedIndex,
-    write(value) {
-      control.selectedIndex = value;
-    }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
-  link.bindable(bound, "selectedItem", {
-    read: () => objectInputOf(control.selectedItem),
-    write(value) {
-      control.selectedItem = objectOf(value);
-    }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
-  link.bindable(bound, "selectedValue", {
-    read: () => objectInputOf(control.selectedValue),
-    write(value) {
-      control.selectedValue = objectOf(value);
-    }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
+  link.bindable({
+    bound,
+    key: "selectedIndex",
+    access: {
+      read: () => control.selectedIndex,
+      write: value => {
+        control.selectedIndex = value;
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
+  link.bindable({
+    bound,
+    key: "selectedItem",
+    access: {
+      read: () => objectInputOf(control.selectedItem),
+      write: value => {
+        control.selectedItem = objectOf(value);
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
+  link.bindable({
+    bound,
+    key: "selectedValue",
+    access: {
+      read: () => objectInputOf(control.selectedValue),
+      write: value => {
+        control.selectedValue = objectOf(value);
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
 
   if ("onSelectionChanged" in props) {
     link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));

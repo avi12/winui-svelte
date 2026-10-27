@@ -23,8 +23,12 @@ export function linkSymbolIcon(
   link: Linker
 ) {
   linkIconElement(control, props, bound, link);
-  link.property(props, "symbol", value => {
-    control.symbol = enumValue({ table: Symbol, input: value });
+  link.property({
+    props,
+    key: "symbol",
+    apply: value => {
+      control.symbol = enumValue({ table: Symbol, input: value });
+    }
   });
 }
 

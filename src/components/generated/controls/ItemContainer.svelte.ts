@@ -22,11 +22,19 @@ export function linkItemContainer(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "child", value => {
-    control.child = value;
+  link.property({
+    props,
+    key: "child",
+    apply: value => {
+      control.child = value;
+    }
   });
-  link.property(props, "isSelected", value => {
-    control.isSelected = value;
+  link.property({
+    props,
+    key: "isSelected",
+    apply: value => {
+      control.isSelected = value;
+    }
   });
 }
 

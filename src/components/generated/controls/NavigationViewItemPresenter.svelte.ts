@@ -22,11 +22,19 @@ export function linkNavigationViewItemPresenter(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "icon", value => {
-    control.icon = value;
+  link.property({
+    props,
+    key: "icon",
+    apply: value => {
+      control.icon = value;
+    }
   });
-  link.property(props, "infoBadge", value => {
-    control.infoBadge = value;
+  link.property({
+    props,
+    key: "infoBadge",
+    apply: value => {
+      control.infoBadge = value;
+    }
   });
 }
 

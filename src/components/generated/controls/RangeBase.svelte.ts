@@ -23,26 +23,47 @@ export function linkRangeBase(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "largeChange", value => {
-    control.largeChange = value;
-  });
-  link.property(props, "maximum", value => {
-    control.maximum = value;
-  });
-  link.property(props, "minimum", value => {
-    control.minimum = value;
-  });
-  link.property(props, "smallChange", value => {
-    control.smallChange = value;
-  });
-  link.bindable(bound, "value", {
-    read: () => control.value,
-    write(value) {
-      control.value = value;
+  link.property({
+    props,
+    key: "largeChange",
+    apply: value => {
+      control.largeChange = value;
     }
-  }, [
-    handler => control.onValueChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "maximum",
+    apply: value => {
+      control.maximum = value;
+    }
+  });
+  link.property({
+    props,
+    key: "minimum",
+    apply: value => {
+      control.minimum = value;
+    }
+  });
+  link.property({
+    props,
+    key: "smallChange",
+    apply: value => {
+      control.smallChange = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "value",
+    access: {
+      read: () => control.value,
+      write: value => {
+        control.value = value;
+      }
+    },
+    subscribers: [
+      handler => control.onValueChanged(handler)
+    ]
+  });
 
   if ("onValueChanged" in props) {
     link.add(control.onValueChanged((...args) => props.onValueChanged?.(...args)));

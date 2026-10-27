@@ -27,14 +27,26 @@ export function linkViewbox(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.contentProperty(props, "child", value => {
-    control.child = value;
+  link.contentProperty({
+    props,
+    key: "child",
+    apply: value => {
+      control.child = value;
+    }
   });
-  link.property(props, "stretch", value => {
-    control.stretch = enumValue({ table: Stretch, input: value });
+  link.property({
+    props,
+    key: "stretch",
+    apply: value => {
+      control.stretch = enumValue({ table: Stretch, input: value });
+    }
   });
-  link.property(props, "stretchDirection", value => {
-    control.stretchDirection = enumValue({ table: StretchDirection, input: value });
+  link.property({
+    props,
+    key: "stretchDirection",
+    apply: value => {
+      control.stretchDirection = enumValue({ table: StretchDirection, input: value });
+    }
   });
 }
 

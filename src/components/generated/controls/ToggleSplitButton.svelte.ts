@@ -22,14 +22,19 @@ export function linkToggleSplitButton(
   link: Linker
 ) {
   linkSplitButton(control, props, bound, link);
-  link.bindable(bound, "isChecked", {
-    read: () => control.isChecked,
-    write(value) {
-      control.isChecked = value;
-    }
-  }, [
-    handler => control.onIsCheckedChanged(handler)
-  ]);
+  link.bindable({
+    bound,
+    key: "isChecked",
+    access: {
+      read: () => control.isChecked,
+      write: value => {
+        control.isChecked = value;
+      }
+    },
+    subscribers: [
+      handler => control.onIsCheckedChanged(handler)
+    ]
+  });
 
   if ("onIsCheckedChanged" in props) {
     link.add(control.onIsCheckedChanged((...args) => props.onIsCheckedChanged?.(...args)));

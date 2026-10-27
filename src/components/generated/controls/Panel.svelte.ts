@@ -24,13 +24,25 @@ export function linkPanel(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "background", value => {
-    control.background = brushOf(value);
+  link.property({
+    props,
+    key: "background",
+    apply: value => {
+      control.background = brushOf(value);
+    }
   });
-  link.property(props, "backgroundTransition", value => {
-    control.backgroundTransition = value;
+  link.property({
+    props,
+    key: "backgroundTransition",
+    apply: value => {
+      control.backgroundTransition = value;
+    }
   });
-  link.property(props, "childrenTransitions", value => {
-    control.childrenTransitions = value;
+  link.property({
+    props,
+    key: "childrenTransitions",
+    apply: value => {
+      control.childrenTransitions = value;
+    }
   });
 }

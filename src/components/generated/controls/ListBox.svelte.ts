@@ -24,11 +24,19 @@ export function linkListBox(
   link: Linker
 ) {
   linkSelector(control, props, bound, link);
-  link.property(props, "selectionMode", value => {
-    control.selectionMode = enumValue({ table: SelectionMode, input: value });
+  link.property({
+    props,
+    key: "selectionMode",
+    apply: value => {
+      control.selectionMode = enumValue({ table: SelectionMode, input: value });
+    }
   });
-  link.property(props, "singleSelectionFollowsFocus", value => {
-    control.singleSelectionFollowsFocus = value;
+  link.property({
+    props,
+    key: "singleSelectionFollowsFocus",
+    apply: value => {
+      control.singleSelectionFollowsFocus = value;
+    }
   });
 }
 

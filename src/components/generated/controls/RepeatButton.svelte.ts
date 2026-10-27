@@ -22,11 +22,19 @@ export function linkRepeatButton(
   link: Linker
 ) {
   linkButtonBase(control, props, bound, link);
-  link.property(props, "delay", value => {
-    control.delay = value;
+  link.property({
+    props,
+    key: "delay",
+    apply: value => {
+      control.delay = value;
+    }
   });
-  link.property(props, "interval", value => {
-    control.interval = value;
+  link.property({
+    props,
+    key: "interval",
+    apply: value => {
+      control.interval = value;
+    }
   });
 }
 

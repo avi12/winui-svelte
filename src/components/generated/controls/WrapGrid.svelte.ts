@@ -31,23 +31,47 @@ export function linkWrapGrid(
   link: Linker
 ) {
   linkOrientedVirtualizingPanel(control, props, bound, link);
-  link.property(props, "horizontalChildrenAlignment", value => {
-    control.horizontalChildrenAlignment = enumValue({ table: HorizontalAlignment, input: value });
+  link.property({
+    props,
+    key: "horizontalChildrenAlignment",
+    apply: value => {
+      control.horizontalChildrenAlignment = enumValue({ table: HorizontalAlignment, input: value });
+    }
   });
-  link.property(props, "itemHeight", value => {
-    control.itemHeight = value;
+  link.property({
+    props,
+    key: "itemHeight",
+    apply: value => {
+      control.itemHeight = value;
+    }
   });
-  link.property(props, "itemWidth", value => {
-    control.itemWidth = value;
+  link.property({
+    props,
+    key: "itemWidth",
+    apply: value => {
+      control.itemWidth = value;
+    }
   });
-  link.property(props, "maximumRowsOrColumns", value => {
-    control.maximumRowsOrColumns = value;
+  link.property({
+    props,
+    key: "maximumRowsOrColumns",
+    apply: value => {
+      control.maximumRowsOrColumns = value;
+    }
   });
-  link.property(props, "orientation", value => {
-    control.orientation = enumValue({ table: Orientation, input: value });
+  link.property({
+    props,
+    key: "orientation",
+    apply: value => {
+      control.orientation = enumValue({ table: Orientation, input: value });
+    }
   });
-  link.property(props, "verticalChildrenAlignment", value => {
-    control.verticalChildrenAlignment = enumValue({ table: VerticalAlignment, input: value });
+  link.property({
+    props,
+    key: "verticalChildrenAlignment",
+    apply: value => {
+      control.verticalChildrenAlignment = enumValue({ table: VerticalAlignment, input: value });
+    }
   });
 }
 

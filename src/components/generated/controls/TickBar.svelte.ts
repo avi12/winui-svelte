@@ -22,8 +22,12 @@ export function linkTickBar(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "fill", value => {
-    control.fill = brushOf(value);
+  link.property({
+    props,
+    key: "fill",
+    apply: value => {
+      control.fill = brushOf(value);
+    }
   });
 }
 

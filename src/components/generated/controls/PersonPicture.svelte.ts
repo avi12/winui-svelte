@@ -31,35 +31,75 @@ export function linkPersonPicture(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "badgeGlyph", value => {
-    control.badgeGlyph = value;
+  link.property({
+    props,
+    key: "badgeGlyph",
+    apply: value => {
+      control.badgeGlyph = value;
+    }
   });
-  link.property(props, "badgeImageSource", value => {
-    control.badgeImageSource = imageSourceOf(value);
+  link.property({
+    props,
+    key: "badgeImageSource",
+    apply: value => {
+      control.badgeImageSource = imageSourceOf(value);
+    }
   });
-  link.property(props, "badgeNumber", value => {
-    control.badgeNumber = value;
+  link.property({
+    props,
+    key: "badgeNumber",
+    apply: value => {
+      control.badgeNumber = value;
+    }
   });
-  link.property(props, "badgeText", value => {
-    control.badgeText = value;
+  link.property({
+    props,
+    key: "badgeText",
+    apply: value => {
+      control.badgeText = value;
+    }
   });
-  link.property(props, "contact", value => {
-    control.contact = value;
+  link.property({
+    props,
+    key: "contact",
+    apply: value => {
+      control.contact = value;
+    }
   });
-  link.property(props, "displayName", value => {
-    control.displayName = value;
+  link.property({
+    props,
+    key: "displayName",
+    apply: value => {
+      control.displayName = value;
+    }
   });
-  link.property(props, "initials", value => {
-    control.initials = value;
+  link.property({
+    props,
+    key: "initials",
+    apply: value => {
+      control.initials = value;
+    }
   });
-  link.property(props, "isGroup", value => {
-    control.isGroup = value;
+  link.property({
+    props,
+    key: "isGroup",
+    apply: value => {
+      control.isGroup = value;
+    }
   });
-  link.property(props, "preferSmallImage", value => {
-    control.preferSmallImage = value;
+  link.property({
+    props,
+    key: "preferSmallImage",
+    apply: value => {
+      control.preferSmallImage = value;
+    }
   });
-  link.property(props, "profilePicture", value => {
-    control.profilePicture = imageSourceOf(value);
+  link.property({
+    props,
+    key: "profilePicture",
+    apply: value => {
+      control.profilePicture = imageSourceOf(value);
+    }
   });
 }
 

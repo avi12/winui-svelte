@@ -246,8 +246,12 @@ function emitProperty({ property, className, imports }: {
       className
     })};`,
     body: [
-      `  link.${method}(props, "${property.key}", value => {`,
-      `    control.${property.key} = ${valueExpression(property)};`,
+      `  link.${method}({`,
+      "    props,",
+      `    key: "${property.key}",`,
+      "    apply: value => {",
+      `      control.${property.key} = ${valueExpression(property)};`,
+      "    }",
       "  });"
     ]
   };
@@ -262,8 +266,12 @@ function emitAttached({ attached, imports }: {
   return {
     member: `  ${attached.key}?: ${attachedType(attached)};`,
     body: [
-      `  link.property(props, "${attached.key}", value => {`,
-      `    ${attached.owner.name}.${attached.setter}(control, ${valueExpression(attached)});`,
+      "  link.property({",
+      "    props,",
+      `    key: "${attached.key}",`,
+      "    apply: value => {",
+      `      ${attached.owner.name}.${attached.setter}(control, ${valueExpression(attached)});`,
+      "    }",
       "  });"
     ]
   };
@@ -275,7 +283,7 @@ function emitBindable({ bindable, property, imports }: {
   imports: LevelImports;
 }) {
   imports.note(property);
-  const subscribers = bindable.events.map(name => `    handler => control.on${name}(handler)`);
+  const subscribers = bindable.events.map(name => `      handler => control.on${name}(handler)`);
   // The bindings read an Object property back as unknown.
   const isObject = property.kind === PropertyKind.OBJECT;
   if (isObject) {
@@ -284,14 +292,19 @@ function emitBindable({ bindable, property, imports }: {
 
   const read = isObject ? `objectInputOf(control.${bindable.key})` : `control.${bindable.key}`;
   return [
-    `  link.bindable(bound, "${bindable.key}", {`,
-    `    read: () => ${read},`,
-    "    write(value) {",
-    `      control.${bindable.key} = ${valueExpression(property)};`,
-    "    }",
-    "  }, [",
+    "  link.bindable({",
+    "    bound,",
+    `    key: "${bindable.key}",`,
+    "    access: {",
+    `      read: () => ${read},`,
+    "      write: value => {",
+    `        control.${bindable.key} = ${valueExpression(property)};`,
+    "      }",
+    "    },",
+    "    subscribers: [",
     subscribers.join(",\n"),
-    "  ]);"
+    "    ]",
+    "  });"
   ];
 }
 
@@ -422,8 +435,12 @@ function emitAttachedBody(level: ClassModel) {
     members: ["  attached?: AttachedInput;"],
     body: [
       ...hasEvents ? [""] : [],
-      "  link.property(props, \"attached\", value => {",
-      "    setAttached({ control, input: value });",
+      "  link.property({",
+      "    props,",
+      "    key: \"attached\",",
+      "    apply: value => {",
+      "      setAttached({ control, input: value });",
+      "    }",
       "  });"
     ]
   };
@@ -587,7 +604,7 @@ export function emitLevel(level: ClassModel) {
   const isBoundUsed = level.parent !== null || level.bindables.length > 0;
   const parentLink = [
     ...parentName === undefined ? [] : [`  link${parentName}(control, props, bound, link);`],
-    ...extras === null ? [] : [`  link${extras}(control, props, link);`]
+    ...extras === null ? [] : [`  link${extras}({ control, props, link });`]
   ];
   const lines = [
     GENERATED_HEADER,

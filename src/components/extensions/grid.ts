@@ -1,7 +1,7 @@
-import { gridLengthOf } from "../convert.ts";
-import { ColumnDefinition, RowDefinition } from "../generated/bindings.ts";
-import type { Grid } from "../generated/bindings.ts";
-import type { Linker } from "../runtime.svelte.ts";
+import { gridLengthOf } from "#src/components/convert.js";
+import { ColumnDefinition, RowDefinition } from "#src/components/generated/bindings.js";
+import type { Grid } from "#src/components/generated/bindings.js";
+import type { Linker } from "#src/components/runtime.svelte.js";
 
 // Hand-written props of the generated Grid: WinUI's ColumnDefinitions and
 // RowDefinitions are read-only collections, which the generator leaves out
@@ -10,8 +10,9 @@ import type { Linker } from "../runtime.svelte.ts";
 //
 //   <Grid columns="Auto,*,Auto" rows="Auto,Auto">
 
-const listSeparator = ",";
+const LIST_SEPARATOR = ",";
 
+/** The props the metadata cannot give the generated Grid. */
 export interface GridExtras {
   // "Auto", "*", "2*" or a number of pixels, separated by commas.
   columns?: string;
@@ -21,37 +22,58 @@ export interface GridExtras {
 type Definition = ColumnDefinition | RowDefinition;
 
 // The lengths replace the definitions the grid holds.
-function define<Item extends Definition>(
+function define<Item extends Definition>({ definitions, make, lengths }: {
   definitions: {
     clear(): void;
     append(item: Item): void;
-  },
-  make: (length: string) => Item,
-  lengths: string
-): void {
+  };
+  make: (length: string) => Item;
+  lengths: string;
+}) {
   definitions.clear();
-  for (const length of lengths.split(listSeparator)) {
+  for (const length of lengths.split(LIST_SEPARATOR)) {
     definitions.append(make(length.trim()));
   }
 }
 
-function column(length: string): ColumnDefinition {
+function column(length: string) {
   const definition = new ColumnDefinition();
   definition.width = gridLengthOf(length);
   return definition;
 }
 
-function row(length: string): RowDefinition {
+function row(length: string) {
   const definition = new RowDefinition();
   definition.height = gridLengthOf(length);
   return definition;
 }
 
-export function linkGridExtras(control: Grid, props: GridExtras, link: Linker): void {
-  link.property(props, "columns", lengths => {
-    define(control.columnDefinitions, column, lengths);
+/** Links the Grid's `columns` and `rows` props to its column and row definitions. */
+export function linkGridExtras({ control, props, link }: {
+  control: Grid;
+  props: GridExtras;
+  link: Linker;
+}) {
+  link.property({
+    props,
+    key: "columns",
+    apply: lengths => {
+      define({
+        definitions: control.columnDefinitions,
+        make: column,
+        lengths
+      });
+    }
   });
-  link.property(props, "rows", lengths => {
-    define(control.rowDefinitions, row, lengths);
+  link.property({
+    props,
+    key: "rows",
+    apply: lengths => {
+      define({
+        definitions: control.rowDefinitions,
+        make: row,
+        lengths
+      });
+    }
   });
 }

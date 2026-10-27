@@ -44,71 +44,159 @@ export function linkGridViewItemPresenter(
   link: Linker
 ) {
   linkContentPresenter(control, props, bound, link);
-  link.property(props, "checkBrush", value => {
-    control.checkBrush = brushOf(value);
+  link.property({
+    props,
+    key: "checkBrush",
+    apply: value => {
+      control.checkBrush = brushOf(value);
+    }
   });
-  link.property(props, "checkHintBrush", value => {
-    control.checkHintBrush = brushOf(value);
+  link.property({
+    props,
+    key: "checkHintBrush",
+    apply: value => {
+      control.checkHintBrush = brushOf(value);
+    }
   });
-  link.property(props, "checkSelectingBrush", value => {
-    control.checkSelectingBrush = brushOf(value);
+  link.property({
+    props,
+    key: "checkSelectingBrush",
+    apply: value => {
+      control.checkSelectingBrush = brushOf(value);
+    }
   });
-  link.property(props, "contentMargin", value => {
-    control.contentMargin = thicknessOf(value);
+  link.property({
+    props,
+    key: "contentMargin",
+    apply: value => {
+      control.contentMargin = thicknessOf(value);
+    }
   });
-  link.property(props, "disabledOpacity", value => {
-    control.disabledOpacity = value;
+  link.property({
+    props,
+    key: "disabledOpacity",
+    apply: value => {
+      control.disabledOpacity = value;
+    }
   });
-  link.property(props, "dragBackground", value => {
-    control.dragBackground = brushOf(value);
+  link.property({
+    props,
+    key: "dragBackground",
+    apply: value => {
+      control.dragBackground = brushOf(value);
+    }
   });
-  link.property(props, "dragForeground", value => {
-    control.dragForeground = brushOf(value);
+  link.property({
+    props,
+    key: "dragForeground",
+    apply: value => {
+      control.dragForeground = brushOf(value);
+    }
   });
-  link.property(props, "dragOpacity", value => {
-    control.dragOpacity = value;
+  link.property({
+    props,
+    key: "dragOpacity",
+    apply: value => {
+      control.dragOpacity = value;
+    }
   });
-  link.property(props, "focusBorderBrush", value => {
-    control.focusBorderBrush = brushOf(value);
+  link.property({
+    props,
+    key: "focusBorderBrush",
+    apply: value => {
+      control.focusBorderBrush = brushOf(value);
+    }
   });
-  link.property(props, "gridViewItemPresenterHorizontalContentAlignment", value => {
-    control.gridViewItemPresenterHorizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
+  link.property({
+    props,
+    key: "gridViewItemPresenterHorizontalContentAlignment",
+    apply: value => {
+      control.gridViewItemPresenterHorizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
+    }
   });
-  link.property(props, "gridViewItemPresenterPadding", value => {
-    control.gridViewItemPresenterPadding = thicknessOf(value);
+  link.property({
+    props,
+    key: "gridViewItemPresenterPadding",
+    apply: value => {
+      control.gridViewItemPresenterPadding = thicknessOf(value);
+    }
   });
-  link.property(props, "gridViewItemPresenterVerticalContentAlignment", value => {
-    control.gridViewItemPresenterVerticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
+  link.property({
+    props,
+    key: "gridViewItemPresenterVerticalContentAlignment",
+    apply: value => {
+      control.gridViewItemPresenterVerticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
+    }
   });
-  link.property(props, "placeholderBackground", value => {
-    control.placeholderBackground = brushOf(value);
+  link.property({
+    props,
+    key: "placeholderBackground",
+    apply: value => {
+      control.placeholderBackground = brushOf(value);
+    }
   });
-  link.property(props, "pointerOverBackground", value => {
-    control.pointerOverBackground = brushOf(value);
+  link.property({
+    props,
+    key: "pointerOverBackground",
+    apply: value => {
+      control.pointerOverBackground = brushOf(value);
+    }
   });
-  link.property(props, "pointerOverBackgroundMargin", value => {
-    control.pointerOverBackgroundMargin = thicknessOf(value);
+  link.property({
+    props,
+    key: "pointerOverBackgroundMargin",
+    apply: value => {
+      control.pointerOverBackgroundMargin = thicknessOf(value);
+    }
   });
-  link.property(props, "reorderHintOffset", value => {
-    control.reorderHintOffset = value;
+  link.property({
+    props,
+    key: "reorderHintOffset",
+    apply: value => {
+      control.reorderHintOffset = value;
+    }
   });
-  link.property(props, "selectedBackground", value => {
-    control.selectedBackground = brushOf(value);
+  link.property({
+    props,
+    key: "selectedBackground",
+    apply: value => {
+      control.selectedBackground = brushOf(value);
+    }
   });
-  link.property(props, "selectedBorderThickness", value => {
-    control.selectedBorderThickness = thicknessOf(value);
+  link.property({
+    props,
+    key: "selectedBorderThickness",
+    apply: value => {
+      control.selectedBorderThickness = thicknessOf(value);
+    }
   });
-  link.property(props, "selectedForeground", value => {
-    control.selectedForeground = brushOf(value);
+  link.property({
+    props,
+    key: "selectedForeground",
+    apply: value => {
+      control.selectedForeground = brushOf(value);
+    }
   });
-  link.property(props, "selectedPointerOverBackground", value => {
-    control.selectedPointerOverBackground = brushOf(value);
+  link.property({
+    props,
+    key: "selectedPointerOverBackground",
+    apply: value => {
+      control.selectedPointerOverBackground = brushOf(value);
+    }
   });
-  link.property(props, "selectedPointerOverBorderBrush", value => {
-    control.selectedPointerOverBorderBrush = brushOf(value);
+  link.property({
+    props,
+    key: "selectedPointerOverBorderBrush",
+    apply: value => {
+      control.selectedPointerOverBorderBrush = brushOf(value);
+    }
   });
-  link.property(props, "selectionCheckMarkVisualEnabled", value => {
-    control.selectionCheckMarkVisualEnabled = value;
+  link.property({
+    props,
+    key: "selectionCheckMarkVisualEnabled",
+    apply: value => {
+      control.selectionCheckMarkVisualEnabled = value;
+    }
   });
 }
 

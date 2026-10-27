@@ -24,11 +24,19 @@ export function linkPolygon(
   link: Linker
 ) {
   linkShape(control, props, bound, link);
-  link.property(props, "fillRule", value => {
-    control.fillRule = enumValue({ table: FillRule, input: value });
+  link.property({
+    props,
+    key: "fillRule",
+    apply: value => {
+      control.fillRule = enumValue({ table: FillRule, input: value });
+    }
   });
-  link.property(props, "points", value => {
-    control.points = value;
+  link.property({
+    props,
+    key: "points",
+    apply: value => {
+      control.points = value;
+    }
   });
 }
 

@@ -50,71 +50,152 @@ export function linkTeachingTip(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "actionButtonCommand", value => {
-    control.actionButtonCommand = value;
-  });
-  link.property(props, "actionButtonCommandParameter", value => {
-    control.actionButtonCommandParameter = objectOf(value);
-  });
-  link.property(props, "actionButtonContent", value => {
-    control.actionButtonContent = objectOf(value);
-  });
-  link.property(props, "actionButtonStyle", value => {
-    control.actionButtonStyle = value;
-  });
-  link.property(props, "closeButtonCommand", value => {
-    control.closeButtonCommand = value;
-  });
-  link.property(props, "closeButtonCommandParameter", value => {
-    control.closeButtonCommandParameter = objectOf(value);
-  });
-  link.property(props, "closeButtonContent", value => {
-    control.closeButtonContent = objectOf(value);
-  });
-  link.property(props, "closeButtonStyle", value => {
-    control.closeButtonStyle = value;
-  });
-  link.property(props, "heroContent", value => {
-    control.heroContent = value;
-  });
-  link.property(props, "heroContentPlacement", value => {
-    control.heroContentPlacement = enumValue({ table: TeachingTipHeroContentPlacementMode, input: value });
-  });
-  link.property(props, "iconSource", value => {
-    control.iconSource = value;
-  });
-  link.property(props, "isLightDismissEnabled", value => {
-    control.isLightDismissEnabled = value;
-  });
-  link.property(props, "placementMargin", value => {
-    control.placementMargin = thicknessOf(value);
-  });
-  link.property(props, "preferredPlacement", value => {
-    control.preferredPlacement = enumValue({ table: TeachingTipPlacementMode, input: value });
-  });
-  link.property(props, "shouldConstrainToRootBounds", value => {
-    control.shouldConstrainToRootBounds = value;
-  });
-  link.property(props, "subtitle", value => {
-    control.subtitle = value;
-  });
-  link.property(props, "tailVisibility", value => {
-    control.tailVisibility = enumValue({ table: TeachingTipTailVisibility, input: value });
-  });
-  link.property(props, "target", value => {
-    control.target = value;
-  });
-  link.property(props, "title", value => {
-    control.title = value;
-  });
-  link.bindable(bound, "isOpen", {
-    read: () => control.isOpen,
-    write(value) {
-      control.isOpen = value;
+  link.property({
+    props,
+    key: "actionButtonCommand",
+    apply: value => {
+      control.actionButtonCommand = value;
     }
-  }, [
-    handler => control.onClosed(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "actionButtonCommandParameter",
+    apply: value => {
+      control.actionButtonCommandParameter = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "actionButtonContent",
+    apply: value => {
+      control.actionButtonContent = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "actionButtonStyle",
+    apply: value => {
+      control.actionButtonStyle = value;
+    }
+  });
+  link.property({
+    props,
+    key: "closeButtonCommand",
+    apply: value => {
+      control.closeButtonCommand = value;
+    }
+  });
+  link.property({
+    props,
+    key: "closeButtonCommandParameter",
+    apply: value => {
+      control.closeButtonCommandParameter = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "closeButtonContent",
+    apply: value => {
+      control.closeButtonContent = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "closeButtonStyle",
+    apply: value => {
+      control.closeButtonStyle = value;
+    }
+  });
+  link.property({
+    props,
+    key: "heroContent",
+    apply: value => {
+      control.heroContent = value;
+    }
+  });
+  link.property({
+    props,
+    key: "heroContentPlacement",
+    apply: value => {
+      control.heroContentPlacement = enumValue({ table: TeachingTipHeroContentPlacementMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "iconSource",
+    apply: value => {
+      control.iconSource = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isLightDismissEnabled",
+    apply: value => {
+      control.isLightDismissEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "placementMargin",
+    apply: value => {
+      control.placementMargin = thicknessOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "preferredPlacement",
+    apply: value => {
+      control.preferredPlacement = enumValue({ table: TeachingTipPlacementMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "shouldConstrainToRootBounds",
+    apply: value => {
+      control.shouldConstrainToRootBounds = value;
+    }
+  });
+  link.property({
+    props,
+    key: "subtitle",
+    apply: value => {
+      control.subtitle = value;
+    }
+  });
+  link.property({
+    props,
+    key: "tailVisibility",
+    apply: value => {
+      control.tailVisibility = enumValue({ table: TeachingTipTailVisibility, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "target",
+    apply: value => {
+      control.target = value;
+    }
+  });
+  link.property({
+    props,
+    key: "title",
+    apply: value => {
+      control.title = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isOpen",
+    access: {
+      read: () => control.isOpen,
+      write: value => {
+        control.isOpen = value;
+      }
+    },
+    subscribers: [
+      handler => control.onClosed(handler)
+    ]
+  });
 
   if ("onActionButtonClick" in props) {
     link.add(control.onActionButtonClick((...args) => props.onActionButtonClick?.(...args)));

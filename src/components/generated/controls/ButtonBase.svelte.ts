@@ -24,14 +24,26 @@ export function linkButtonBase(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "clickMode", value => {
-    control.clickMode = enumValue({ table: ClickMode, input: value });
+  link.property({
+    props,
+    key: "clickMode",
+    apply: value => {
+      control.clickMode = enumValue({ table: ClickMode, input: value });
+    }
   });
-  link.property(props, "command", value => {
-    control.command = value;
+  link.property({
+    props,
+    key: "command",
+    apply: value => {
+      control.command = value;
+    }
   });
-  link.property(props, "commandParameter", value => {
-    control.commandParameter = objectOf(value);
+  link.property({
+    props,
+    key: "commandParameter",
+    apply: value => {
+      control.commandParameter = objectOf(value);
+    }
   });
 
   if ("onClick" in props) {

@@ -117,224 +117,516 @@ export function linkCalendarView(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property(props, "blackoutBackground", value => {
-    control.blackoutBackground = brushOf(value);
-  });
-  link.property(props, "blackoutForeground", value => {
-    control.blackoutForeground = brushOf(value);
-  });
-  link.property(props, "blackoutStrikethroughBrush", value => {
-    control.blackoutStrikethroughBrush = brushOf(value);
-  });
-  link.property(props, "calendarIdentifier", value => {
-    control.calendarIdentifier = value;
-  });
-  link.property(props, "calendarItemBackground", value => {
-    control.calendarItemBackground = brushOf(value);
-  });
-  link.property(props, "calendarItemBorderBrush", value => {
-    control.calendarItemBorderBrush = brushOf(value);
-  });
-  link.property(props, "calendarItemBorderThickness", value => {
-    control.calendarItemBorderThickness = thicknessOf(value);
-  });
-  link.property(props, "calendarItemCornerRadius", value => {
-    control.calendarItemCornerRadius = cornerRadiusOf(value);
-  });
-  link.property(props, "calendarItemDisabledBackground", value => {
-    control.calendarItemDisabledBackground = brushOf(value);
-  });
-  link.property(props, "calendarItemForeground", value => {
-    control.calendarItemForeground = brushOf(value);
-  });
-  link.property(props, "calendarItemHoverBackground", value => {
-    control.calendarItemHoverBackground = brushOf(value);
-  });
-  link.property(props, "calendarItemPressedBackground", value => {
-    control.calendarItemPressedBackground = brushOf(value);
-  });
-  link.property(props, "calendarViewDayItemStyle", value => {
-    control.calendarViewDayItemStyle = value;
-  });
-  link.property(props, "dayItemFontFamily", value => {
-    control.dayItemFontFamily = fontFamilyOf(value);
-  });
-  link.property(props, "dayItemFontSize", value => {
-    control.dayItemFontSize = value;
-  });
-  link.property(props, "dayItemFontStyle", value => {
-    control.dayItemFontStyle = enumValue({ table: FontStyle, input: value });
-  });
-  link.property(props, "dayItemFontWeight", value => {
-    control.dayItemFontWeight = value;
-  });
-  link.property(props, "dayItemMargin", value => {
-    control.dayItemMargin = thicknessOf(value);
-  });
-  link.property(props, "dayOfWeekFormat", value => {
-    control.dayOfWeekFormat = value;
-  });
-  link.property(props, "disabledForeground", value => {
-    control.disabledForeground = brushOf(value);
-  });
-  link.property(props, "displayMode", value => {
-    control.displayMode = enumValue({ table: CalendarViewDisplayMode, input: value });
-  });
-  link.property(props, "firstDayOfWeek", value => {
-    control.firstDayOfWeek = enumValue({ table: DayOfWeek, input: value });
-  });
-  link.property(props, "firstOfMonthLabelFontFamily", value => {
-    control.firstOfMonthLabelFontFamily = fontFamilyOf(value);
-  });
-  link.property(props, "firstOfMonthLabelFontSize", value => {
-    control.firstOfMonthLabelFontSize = value;
-  });
-  link.property(props, "firstOfMonthLabelFontStyle", value => {
-    control.firstOfMonthLabelFontStyle = enumValue({ table: FontStyle, input: value });
-  });
-  link.property(props, "firstOfMonthLabelFontWeight", value => {
-    control.firstOfMonthLabelFontWeight = value;
-  });
-  link.property(props, "firstOfMonthLabelMargin", value => {
-    control.firstOfMonthLabelMargin = thicknessOf(value);
-  });
-  link.property(props, "firstOfYearDecadeLabelFontFamily", value => {
-    control.firstOfYearDecadeLabelFontFamily = fontFamilyOf(value);
-  });
-  link.property(props, "firstOfYearDecadeLabelFontSize", value => {
-    control.firstOfYearDecadeLabelFontSize = value;
-  });
-  link.property(props, "firstOfYearDecadeLabelFontStyle", value => {
-    control.firstOfYearDecadeLabelFontStyle = enumValue({ table: FontStyle, input: value });
-  });
-  link.property(props, "firstOfYearDecadeLabelFontWeight", value => {
-    control.firstOfYearDecadeLabelFontWeight = value;
-  });
-  link.property(props, "firstOfYearDecadeLabelMargin", value => {
-    control.firstOfYearDecadeLabelMargin = thicknessOf(value);
-  });
-  link.property(props, "focusBorderBrush", value => {
-    control.focusBorderBrush = brushOf(value);
-  });
-  link.property(props, "horizontalDayItemAlignment", value => {
-    control.horizontalDayItemAlignment = enumValue({ table: HorizontalAlignment, input: value });
-  });
-  link.property(props, "horizontalFirstOfMonthLabelAlignment", value => {
-    control.horizontalFirstOfMonthLabelAlignment = enumValue({ table: HorizontalAlignment, input: value });
-  });
-  link.property(props, "hoverBorderBrush", value => {
-    control.hoverBorderBrush = brushOf(value);
-  });
-  link.property(props, "isGroupLabelVisible", value => {
-    control.isGroupLabelVisible = value;
-  });
-  link.property(props, "isOutOfScopeEnabled", value => {
-    control.isOutOfScopeEnabled = value;
-  });
-  link.property(props, "isTodayHighlighted", value => {
-    control.isTodayHighlighted = value;
-  });
-  link.property(props, "maxDate", value => {
-    control.maxDate = value;
-  });
-  link.property(props, "minDate", value => {
-    control.minDate = value;
-  });
-  link.property(props, "monthYearItemFontFamily", value => {
-    control.monthYearItemFontFamily = fontFamilyOf(value);
-  });
-  link.property(props, "monthYearItemFontSize", value => {
-    control.monthYearItemFontSize = value;
-  });
-  link.property(props, "monthYearItemFontStyle", value => {
-    control.monthYearItemFontStyle = enumValue({ table: FontStyle, input: value });
-  });
-  link.property(props, "monthYearItemFontWeight", value => {
-    control.monthYearItemFontWeight = value;
-  });
-  link.property(props, "monthYearItemMargin", value => {
-    control.monthYearItemMargin = thicknessOf(value);
-  });
-  link.property(props, "numberOfWeeksInView", value => {
-    control.numberOfWeeksInView = value;
-  });
-  link.property(props, "outOfScopeBackground", value => {
-    control.outOfScopeBackground = brushOf(value);
-  });
-  link.property(props, "outOfScopeForeground", value => {
-    control.outOfScopeForeground = brushOf(value);
-  });
-  link.property(props, "outOfScopeHoverForeground", value => {
-    control.outOfScopeHoverForeground = brushOf(value);
-  });
-  link.property(props, "outOfScopePressedForeground", value => {
-    control.outOfScopePressedForeground = brushOf(value);
-  });
-  link.property(props, "pressedBorderBrush", value => {
-    control.pressedBorderBrush = brushOf(value);
-  });
-  link.property(props, "pressedForeground", value => {
-    control.pressedForeground = brushOf(value);
-  });
-  link.property(props, "selectedBorderBrush", value => {
-    control.selectedBorderBrush = brushOf(value);
-  });
-  link.property(props, "selectedDisabledBorderBrush", value => {
-    control.selectedDisabledBorderBrush = brushOf(value);
-  });
-  link.property(props, "selectedDisabledForeground", value => {
-    control.selectedDisabledForeground = brushOf(value);
-  });
-  link.property(props, "selectedForeground", value => {
-    control.selectedForeground = brushOf(value);
-  });
-  link.property(props, "selectedHoverBorderBrush", value => {
-    control.selectedHoverBorderBrush = brushOf(value);
-  });
-  link.property(props, "selectedHoverForeground", value => {
-    control.selectedHoverForeground = brushOf(value);
-  });
-  link.property(props, "selectedPressedBorderBrush", value => {
-    control.selectedPressedBorderBrush = brushOf(value);
-  });
-  link.property(props, "selectedPressedForeground", value => {
-    control.selectedPressedForeground = brushOf(value);
-  });
-  link.property(props, "selectionMode", value => {
-    control.selectionMode = enumValue({ table: CalendarViewSelectionMode, input: value });
-  });
-  link.property(props, "todayBackground", value => {
-    control.todayBackground = brushOf(value);
-  });
-  link.property(props, "todayBlackoutBackground", value => {
-    control.todayBlackoutBackground = brushOf(value);
-  });
-  link.property(props, "todayBlackoutForeground", value => {
-    control.todayBlackoutForeground = brushOf(value);
-  });
-  link.property(props, "todayDisabledBackground", value => {
-    control.todayDisabledBackground = brushOf(value);
-  });
-  link.property(props, "todayFontWeight", value => {
-    control.todayFontWeight = value;
-  });
-  link.property(props, "todayForeground", value => {
-    control.todayForeground = brushOf(value);
-  });
-  link.property(props, "todayHoverBackground", value => {
-    control.todayHoverBackground = brushOf(value);
-  });
-  link.property(props, "todayPressedBackground", value => {
-    control.todayPressedBackground = brushOf(value);
-  });
-  link.property(props, "todaySelectedInnerBorderBrush", value => {
-    control.todaySelectedInnerBorderBrush = brushOf(value);
-  });
-  link.property(props, "verticalDayItemAlignment", value => {
-    control.verticalDayItemAlignment = enumValue({ table: VerticalAlignment, input: value });
-  });
-  link.property(props, "verticalFirstOfMonthLabelAlignment", value => {
-    control.verticalFirstOfMonthLabelAlignment = enumValue({ table: VerticalAlignment, input: value });
+  link.property({
+    props,
+    key: "blackoutBackground",
+    apply: value => {
+      control.blackoutBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "blackoutForeground",
+    apply: value => {
+      control.blackoutForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "blackoutStrikethroughBrush",
+    apply: value => {
+      control.blackoutStrikethroughBrush = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "calendarIdentifier",
+    apply: value => {
+      control.calendarIdentifier = value;
+    }
+  });
+  link.property({
+    props,
+    key: "calendarItemBackground",
+    apply: value => {
+      control.calendarItemBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "calendarItemBorderBrush",
+    apply: value => {
+      control.calendarItemBorderBrush = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "calendarItemBorderThickness",
+    apply: value => {
+      control.calendarItemBorderThickness = thicknessOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "calendarItemCornerRadius",
+    apply: value => {
+      control.calendarItemCornerRadius = cornerRadiusOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "calendarItemDisabledBackground",
+    apply: value => {
+      control.calendarItemDisabledBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "calendarItemForeground",
+    apply: value => {
+      control.calendarItemForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "calendarItemHoverBackground",
+    apply: value => {
+      control.calendarItemHoverBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "calendarItemPressedBackground",
+    apply: value => {
+      control.calendarItemPressedBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "calendarViewDayItemStyle",
+    apply: value => {
+      control.calendarViewDayItemStyle = value;
+    }
+  });
+  link.property({
+    props,
+    key: "dayItemFontFamily",
+    apply: value => {
+      control.dayItemFontFamily = fontFamilyOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "dayItemFontSize",
+    apply: value => {
+      control.dayItemFontSize = value;
+    }
+  });
+  link.property({
+    props,
+    key: "dayItemFontStyle",
+    apply: value => {
+      control.dayItemFontStyle = enumValue({ table: FontStyle, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "dayItemFontWeight",
+    apply: value => {
+      control.dayItemFontWeight = value;
+    }
+  });
+  link.property({
+    props,
+    key: "dayItemMargin",
+    apply: value => {
+      control.dayItemMargin = thicknessOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "dayOfWeekFormat",
+    apply: value => {
+      control.dayOfWeekFormat = value;
+    }
+  });
+  link.property({
+    props,
+    key: "disabledForeground",
+    apply: value => {
+      control.disabledForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "displayMode",
+    apply: value => {
+      control.displayMode = enumValue({ table: CalendarViewDisplayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "firstDayOfWeek",
+    apply: value => {
+      control.firstDayOfWeek = enumValue({ table: DayOfWeek, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "firstOfMonthLabelFontFamily",
+    apply: value => {
+      control.firstOfMonthLabelFontFamily = fontFamilyOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "firstOfMonthLabelFontSize",
+    apply: value => {
+      control.firstOfMonthLabelFontSize = value;
+    }
+  });
+  link.property({
+    props,
+    key: "firstOfMonthLabelFontStyle",
+    apply: value => {
+      control.firstOfMonthLabelFontStyle = enumValue({ table: FontStyle, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "firstOfMonthLabelFontWeight",
+    apply: value => {
+      control.firstOfMonthLabelFontWeight = value;
+    }
+  });
+  link.property({
+    props,
+    key: "firstOfMonthLabelMargin",
+    apply: value => {
+      control.firstOfMonthLabelMargin = thicknessOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "firstOfYearDecadeLabelFontFamily",
+    apply: value => {
+      control.firstOfYearDecadeLabelFontFamily = fontFamilyOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "firstOfYearDecadeLabelFontSize",
+    apply: value => {
+      control.firstOfYearDecadeLabelFontSize = value;
+    }
+  });
+  link.property({
+    props,
+    key: "firstOfYearDecadeLabelFontStyle",
+    apply: value => {
+      control.firstOfYearDecadeLabelFontStyle = enumValue({ table: FontStyle, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "firstOfYearDecadeLabelFontWeight",
+    apply: value => {
+      control.firstOfYearDecadeLabelFontWeight = value;
+    }
+  });
+  link.property({
+    props,
+    key: "firstOfYearDecadeLabelMargin",
+    apply: value => {
+      control.firstOfYearDecadeLabelMargin = thicknessOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "focusBorderBrush",
+    apply: value => {
+      control.focusBorderBrush = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "horizontalDayItemAlignment",
+    apply: value => {
+      control.horizontalDayItemAlignment = enumValue({ table: HorizontalAlignment, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "horizontalFirstOfMonthLabelAlignment",
+    apply: value => {
+      control.horizontalFirstOfMonthLabelAlignment = enumValue({ table: HorizontalAlignment, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "hoverBorderBrush",
+    apply: value => {
+      control.hoverBorderBrush = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "isGroupLabelVisible",
+    apply: value => {
+      control.isGroupLabelVisible = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isOutOfScopeEnabled",
+    apply: value => {
+      control.isOutOfScopeEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isTodayHighlighted",
+    apply: value => {
+      control.isTodayHighlighted = value;
+    }
+  });
+  link.property({
+    props,
+    key: "maxDate",
+    apply: value => {
+      control.maxDate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "minDate",
+    apply: value => {
+      control.minDate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "monthYearItemFontFamily",
+    apply: value => {
+      control.monthYearItemFontFamily = fontFamilyOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "monthYearItemFontSize",
+    apply: value => {
+      control.monthYearItemFontSize = value;
+    }
+  });
+  link.property({
+    props,
+    key: "monthYearItemFontStyle",
+    apply: value => {
+      control.monthYearItemFontStyle = enumValue({ table: FontStyle, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "monthYearItemFontWeight",
+    apply: value => {
+      control.monthYearItemFontWeight = value;
+    }
+  });
+  link.property({
+    props,
+    key: "monthYearItemMargin",
+    apply: value => {
+      control.monthYearItemMargin = thicknessOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "numberOfWeeksInView",
+    apply: value => {
+      control.numberOfWeeksInView = value;
+    }
+  });
+  link.property({
+    props,
+    key: "outOfScopeBackground",
+    apply: value => {
+      control.outOfScopeBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "outOfScopeForeground",
+    apply: value => {
+      control.outOfScopeForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "outOfScopeHoverForeground",
+    apply: value => {
+      control.outOfScopeHoverForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "outOfScopePressedForeground",
+    apply: value => {
+      control.outOfScopePressedForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "pressedBorderBrush",
+    apply: value => {
+      control.pressedBorderBrush = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "pressedForeground",
+    apply: value => {
+      control.pressedForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "selectedBorderBrush",
+    apply: value => {
+      control.selectedBorderBrush = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "selectedDisabledBorderBrush",
+    apply: value => {
+      control.selectedDisabledBorderBrush = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "selectedDisabledForeground",
+    apply: value => {
+      control.selectedDisabledForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "selectedForeground",
+    apply: value => {
+      control.selectedForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "selectedHoverBorderBrush",
+    apply: value => {
+      control.selectedHoverBorderBrush = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "selectedHoverForeground",
+    apply: value => {
+      control.selectedHoverForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "selectedPressedBorderBrush",
+    apply: value => {
+      control.selectedPressedBorderBrush = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "selectedPressedForeground",
+    apply: value => {
+      control.selectedPressedForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "selectionMode",
+    apply: value => {
+      control.selectionMode = enumValue({ table: CalendarViewSelectionMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "todayBackground",
+    apply: value => {
+      control.todayBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "todayBlackoutBackground",
+    apply: value => {
+      control.todayBlackoutBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "todayBlackoutForeground",
+    apply: value => {
+      control.todayBlackoutForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "todayDisabledBackground",
+    apply: value => {
+      control.todayDisabledBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "todayFontWeight",
+    apply: value => {
+      control.todayFontWeight = value;
+    }
+  });
+  link.property({
+    props,
+    key: "todayForeground",
+    apply: value => {
+      control.todayForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "todayHoverBackground",
+    apply: value => {
+      control.todayHoverBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "todayPressedBackground",
+    apply: value => {
+      control.todayPressedBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "todaySelectedInnerBorderBrush",
+    apply: value => {
+      control.todaySelectedInnerBorderBrush = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "verticalDayItemAlignment",
+    apply: value => {
+      control.verticalDayItemAlignment = enumValue({ table: VerticalAlignment, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "verticalFirstOfMonthLabelAlignment",
+    apply: value => {
+      control.verticalFirstOfMonthLabelAlignment = enumValue({ table: VerticalAlignment, input: value });
+    }
   });
 
   if ("onCalendarViewDayItemChanging" in props) {

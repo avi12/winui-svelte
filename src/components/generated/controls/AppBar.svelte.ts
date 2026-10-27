@@ -30,24 +30,41 @@ export function linkAppBar(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "closedDisplayMode", value => {
-    control.closedDisplayMode = enumValue({ table: AppBarClosedDisplayMode, input: value });
-  });
-  link.property(props, "isSticky", value => {
-    control.isSticky = value;
-  });
-  link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
-  });
-  link.bindable(bound, "isOpen", {
-    read: () => control.isOpen,
-    write(value) {
-      control.isOpen = value;
+  link.property({
+    props,
+    key: "closedDisplayMode",
+    apply: value => {
+      control.closedDisplayMode = enumValue({ table: AppBarClosedDisplayMode, input: value });
     }
-  }, [
-    handler => control.onOpened(handler),
-    handler => control.onClosed(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "isSticky",
+    apply: value => {
+      control.isSticky = value;
+    }
+  });
+  link.property({
+    props,
+    key: "lightDismissOverlayMode",
+    apply: value => {
+      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isOpen",
+    access: {
+      read: () => control.isOpen,
+      write: value => {
+        control.isOpen = value;
+      }
+    },
+    subscribers: [
+      handler => control.onOpened(handler),
+      handler => control.onClosed(handler)
+    ]
+  });
 
   if ("onClosed" in props) {
     link.add(control.onClosed((...args) => props.onClosed?.(...args)));
