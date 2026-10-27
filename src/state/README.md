@@ -11,7 +11,7 @@ under it, Node drains microtasks when each callback returns, and Svelte's
 `queueMicrotask` flush runs. Proven for a control event, a dispatcher timer and
 a host message by `examples/scheduling/run.ps1`. A host message is taken off its
 port by a timer (WinUI holds the thread, so port events never fire):
-`createMessagePortTransport(port, { poll })` takes that timer.
+`createMessagePortTransport({ port, poll })` takes that timer.
 
 ## Svelte's tools here
 
@@ -29,8 +29,8 @@ No store of our own is added: a `$state` object in a `.svelte.ts` is the store.
 State the host owns (Rust, Electron, Node) is one reactive object in the window.
 
 ```ts
-const channel = createHostChannel(createStdioTransport());
-const view = hostState<View>(channel, "view");   // View: the app's own type
+const channel = createHostChannel({ transport: createStdioTransport() });
+const view = hostState<View>({ channel, name: "view" });   // View: the app's own type
 view.current?.cards[0].title;                    // reactive, undefined before the snapshot
 await view.ready;                                // the first snapshot has arrived
 await channel.send({ kind: "toggle" });         // resolves when the host did it, rejects with HostError
@@ -47,7 +47,7 @@ types are further handlers on it, with the app's protocol as the second type
 parameter:
 
 ```ts
-const channel = createHostChannel<Action, NoticeProtocol>(transport);
+const channel = createHostChannel<Action, NoticeProtocol>({ transport });
 channel.messaging.onMessage(NoticeType.notice, message => show(message.data.text));
 await channel.messaging.sendMessage(NoticeType.place, 2);
 ```
@@ -88,7 +88,7 @@ root):
 A patch is applied property by property to the existing reactive object, so a
 binding re-runs only when what it read changed. Send the patches of a change
 before the action's answer: when `send` resolves, the state already shows the result.
-`diff(previous, next)` makes the operations for a JavaScript host; a Rust host
+`diff({ previous, next })` makes the operations for a JavaScript host; a Rust host
 sends the same shapes. A malformed message, a patch before its snapshot, a path
 that does not exist or a `type` nobody handles is reported to `onError` (stderr
 by default) and answered with an error; the remedy is a new snapshot. When the

@@ -12,23 +12,26 @@
 // is answered with an error and reported, never thrown into the transport's
 // loop.
 
-import { jsonSchema } from "../messaging/json.ts";
-import type { Json } from "../messaging/json.ts";
-import type { ProtocolWithReturn } from "../messaging/protocol-map.ts";
+import { jsonSchema } from "#src/messaging/json.js";
+import type { Json } from "#src/messaging/json.js";
+import type { ProtocolWithReturn } from "#src/messaging/protocol-map.js";
 import { z } from "zod";
 
 export type { Json };
 
 const pathSegmentSchema = z.union([z.string(), z.int()]);
 
+/** One step of a path into a value: an object key, or an array index. */
 export type PathSegment = z.infer<typeof pathSegmentSchema>;
 
+/** The state protocol's message types, as they are named on the wire. */
 export const MessageType = {
   snapshot: "snapshot",
   patch: "patch",
   action: "action"
 } as const;
 
+/** The kinds of change a patch holds. */
 export const PatchOperation = {
   // Sets the value at `path` (an object key, an array index, or the root
   // when the path is empty).
@@ -61,27 +64,38 @@ const patchOpSchema = z.discriminatedUnion("op", [
   })
 ]);
 
+/** A snapshot message's data: the whole value of a named state. */
 export const snapshotDataSchema = z.object({
   name: z.string(),
   value: jsonSchema
 });
 
+/** A patch message's data: changes to a named state, applied in order. */
 export const patchDataSchema = z.object({
   name: z.string(),
   ops: z.array(patchOpSchema)
 });
 
+/** One change in a patch, as `PatchOperation` names its kind. */
 export type PatchOp = z.infer<typeof patchOpSchema>;
+
+/** The data of a snapshot message. */
 export type SnapshotData = z.infer<typeof snapshotDataSchema>;
+
+/** The data of a patch message. */
 export type PatchData = z.infer<typeof patchDataSchema>;
 
-// `Action` is the app's own action type (Edge+ generates it from Rust).
+/**
+ * The messages of the state protocol, as a ProtocolMap. `Action` is the app's
+ * own action type (Edge+ generates it from Rust).
+ */
 export interface StateProtocol<Action extends Json = Json> {
   [MessageType.snapshot]: ProtocolWithReturn<SnapshotData, void>;
   [MessageType.patch]: ProtocolWithReturn<PatchData, void>;
   [MessageType.action]: ProtocolWithReturn<Action, void>;
 }
 
+/** Whether `value` is a JSON object: not an array, and not `null`. */
 export function isJsonObject(value: Json | undefined): value is Record<string, Json> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }

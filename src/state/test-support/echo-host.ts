@@ -1,8 +1,8 @@
-import { defineMessaging } from "../../messaging/index.ts";
-import { diff } from "../diff.ts";
-import type { Json, StateProtocol } from "../protocol.ts";
-import { isJsonObject, MessageType } from "../protocol.ts";
-import { createStdioTransport, reserveStdout } from "../transports/stdio.ts";
+import { defineMessaging } from "#src/messaging/index.js";
+import { diff } from "#src/state/diff.js";
+import type { Json, StateProtocol } from "#src/state/protocol.js";
+import { isJsonObject, MessageType } from "#src/state/protocol.js";
+import { createStdioTransport, reserveStdout } from "#src/state/transports/stdio.js";
 
 // A host in a child process, for stdio.test.ts: it owns { count } and
 // answers { kind: "increment" }, { kind: "fail" } and { kind: "log" } (which
@@ -17,12 +17,15 @@ let state: Json = { count: 0 };
 
 // The window going away rejects what is waiting; the process ends with its
 // stdin, so there is nothing to do about it.
-function ignoreClosed(): void {}
+function ignoreClosed() {}
 
-function publish(next: Json): void {
+function publish(next: Json) {
   messaging.sendMessage(MessageType.patch, {
     name: "counter",
-    ops: diff(state, next)
+    ops: diff({
+      previous: state,
+      next
+    })
   }).catch(ignoreClosed);
   state = next;
 }

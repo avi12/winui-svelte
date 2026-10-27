@@ -1,7 +1,7 @@
-import type { Frame as MessagingFrame } from "../../messaging/frame.ts";
-import type { Json } from "../../messaging/json.ts";
-import { jsonSchema } from "../../messaging/json.ts";
 import type { Transport, TransportListener } from "./transport.ts";
+import type { Frame as MessagingFrame } from "#src/messaging/frame.js";
+import type { Json } from "#src/messaging/json.js";
+import { jsonSchema } from "#src/messaging/json.js";
 
 // Two ends of an in-memory link, for tests and for a host and a window in one
 // process. Delivery is asynchronous (a microtask) and ordered, like a real
@@ -10,41 +10,48 @@ import type { Transport, TransportListener } from "./transport.ts";
 
 type Delivery = (listener: TransportListener) => void;
 
+/**
+ * One end of an in-memory link; `MemoryEnd.pair()` makes both. What an end
+ * sends arrives, in order, at the other end's listener.
+ */
 export class MemoryEnd<Frame = MessagingFrame> implements Transport<Frame> {
   private peer: MemoryEnd<Frame> | null = null;
   private listener: TransportListener | null = null;
   private readonly inbox: Delivery[] = [];
 
-  static pair<Frame = MessagingFrame>(): [MemoryEnd<Frame>, MemoryEnd<Frame>] {
+  /** Two ends that are each other's peer. */
+  static pair<Frame = MessagingFrame>() {
     const left = new MemoryEnd<Frame>();
     const right = new MemoryEnd<Frame>();
     left.peer = right;
     right.peer = left;
-    return [left, right];
+    return [left, right] as const;
   }
 
-  send(frame: Frame): void {
+  send(frame: Frame) {
     const copy = jsonSchema.parse(JSON.parse(JSON.stringify(frame)));
     this.peer?.receive(listener => listener.message(copy));
   }
 
-  // A JSON value that is no frame, which the other side must report (the
-  // messaging tests send it; fallow does not trace the tests).
-  sendJson(value: Json): void {
+  /**
+   * Sends a JSON value that is no frame, which the other side must report
+   * (the messaging tests send it; fallow does not trace the tests).
+   */
+  sendJson(value: Json) {
     this.peer?.receive(listener => listener.message(value));
   }
 
-  // A line the other side could not read.
-  sendMalformed(reason: string): void {
+  /** Sends a line the other side could not read. */
+  sendMalformed(reason: string) {
     this.peer?.receive(listener => listener.malformed(reason));
   }
 
-  // Ends this side: the other side is told the link closed.
-  close(): void {
+  /** Ends this side: the other side is told the link closed. */
+  close() {
     this.peer?.receive(listener => listener.closed());
   }
 
-  listen(listener: TransportListener): () => void {
+  listen(listener: TransportListener) {
     this.listener = listener;
     queueMicrotask(() => this.flush());
     return () => {
@@ -52,12 +59,12 @@ export class MemoryEnd<Frame = MessagingFrame> implements Transport<Frame> {
     };
   }
 
-  private receive(delivery: Delivery): void {
+  private receive(delivery: Delivery) {
     this.inbox.push(delivery);
     queueMicrotask(() => this.flush());
   }
 
-  private flush(): void {
+  private flush() {
     while (this.listener !== null && this.inbox.length > 0) {
       this.inbox.shift()?.(this.listener);
     }

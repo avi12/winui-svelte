@@ -8,7 +8,7 @@ import { compileModule } from "svelte/compiler";
 // compiled as it loads. Import this before the module under test.
 
 const svelteFolder = /[\\/]node_modules[\\/]svelte[\\/]/u;
-const runesExtension = ".svelte.ts";
+const RUNES_EXTENSION = ".svelte.ts";
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
@@ -23,7 +23,7 @@ registerHooks({
     });
   },
   load(url, context, nextLoad) {
-    if (!url.endsWith(runesExtension)) {
+    if (!url.endsWith(RUNES_EXTENSION)) {
       return nextLoad(url, context);
     }
 
