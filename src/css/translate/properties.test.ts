@@ -18,7 +18,10 @@ interface Lowered {
   warnings: string[];
 }
 
-function lower(elementType: string | null, declarations: string): Lowered {
+function lower({ elementType, declarations }: {
+  elementType: string | null;
+  declarations: string;
+}) {
   const selector = elementType === null ? ".t" : `${elementType}.t`;
   const translation = translateStyleSheet({
     file: "t.svelte",
@@ -33,16 +36,23 @@ function lower(elementType: string | null, declarations: string): Lowered {
     errors: translation.diagnostics.filter(diagnostic => diagnostic.severity === "error").map(formatDiagnostic),
     warnings: translation.diagnostics.filter(diagnostic => diagnostic.severity === "warning").map(formatDiagnostic)
   };
-  if (rule === undefined) {
+  const isRuleMissing = rule === undefined;
+  if (isRuleMissing) {
     return messages;
   }
 
   // As the runtime does: the keys the build resolved, no catalogue.
-  const lowered = lowerDeclarations(computeDeclarations([rule], []), {
-    elementType,
-    resolveVariable: resolveBuiltVariable,
-    hasStyle: () => true,
-    report() {}
+  const lowered = lowerDeclarations({
+    computed: computeDeclarations({
+      matched: [rule],
+      inline: []
+    }),
+    options: {
+      elementType,
+      resolveVariable: resolveBuiltVariable,
+      hasStyle: () => true,
+      report() {}
+    }
   });
   messages.setters = lowered.setters.map(entry => [entry.property, entry.kind === "setter" ? entry.value : entry.xaml]);
   messages.writes = lowered.writes.map(entry => [entry.target, entry.value]);
@@ -50,8 +60,14 @@ function lower(elementType: string | null, declarations: string): Lowered {
   return messages;
 }
 
-function setters(elementType: string | null, declarations: string): Array<[string, string]> {
-  const result = lower(elementType, declarations);
+function setters({ elementType, declarations }: {
+  elementType: string | null;
+  declarations: string;
+}) {
+  const result = lower({
+    elementType,
+    declarations
+  });
   assert.deepEqual(result.errors, [], declarations);
   return result.setters;
 }
@@ -181,38 +197,71 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ]]
 ];
 
-function compareText(left: readonly string[], right: readonly string[]): number {
-  return left.join().localeCompare(right.join());
+function sortedRows(rows: Array<[string, string]>) {
+  return rows.toSorted((left, right) => left.join().localeCompare(right.join()));
 }
 
 for (const [name, elementType, declarations, expected] of rows) {
   test(`${name}: ${declarations}`, () => {
     // The order of setters in a Style does not matter.
-    assert.deepEqual(setters(elementType, declarations).sort(compareText), expected.toSorted(compareText));
+    assert.deepEqual(
+      sortedRows(
+        setters({
+          elementType,
+          declarations
+        })
+      ), sortedRows(expected)
+    );
   });
 }
 
 test("a later declaration beats an earlier one, and !important beats a later one", () => {
-  assert.deepEqual(setters(null, "padding: 1px; padding: 2px"), [["Padding", "2,2,2,2"]]);
-  assert.deepEqual(setters(null, "opacity: 1 !important; opacity: 0.5"), [["Opacity", "1"]]);
+  assert.deepEqual(
+    setters({
+      elementType: null,
+      declarations: "padding: 1px; padding: 2px"
+    }), [["Padding", "2,2,2,2"]]
+  );
+  assert.deepEqual(
+    setters({
+      elementType: null,
+      declarations: "opacity: 1 !important; opacity: 0.5"
+    }), [["Opacity", "1"]]
+  );
 });
 
 test("grid templates are written to the grid, not set by a Style", () => {
-  const result = lower("grid", "grid-template-columns: auto 1fr 2fr 120px; grid-template-rows: repeat(2, auto)");
+  const result = lower({
+    elementType: "grid",
+    declarations: "grid-template-columns: auto 1fr 2fr 120px; grid-template-rows: repeat(2, auto)"
+  });
   assert.deepEqual(result.errors, []);
   assert.deepEqual(result.writes, [
     ["columns", "Auto,*,2*,120"],
     ["rows", "Auto,Auto"]
   ]);
-  assert.deepEqual(lower("grid", "grid-template-columns: none").writes, [["columns", ""]]);
+  assert.deepEqual(
+    lower({
+      elementType: "grid",
+      declarations: "grid-template-columns: none"
+    }).writes, [["columns", ""]]
+  );
 });
 
 test("-winui-based-on names a WinUI style", () => {
-  assert.equal(lower("text-block", "-winui-based-on: BodyTextBlockStyle").basedOn, "BodyTextBlockStyle");
+  assert.equal(
+    lower({
+      elementType: "text-block",
+      declarations: "-winui-based-on: BodyTextBlockStyle"
+    }).basedOn, "BodyTextBlockStyle"
+  );
 });
 
 test("cursor is ignored with a warning, not an error", () => {
-  const result = lower(null, "cursor: pointer; opacity: 1");
+  const result = lower({
+    elementType: null,
+    declarations: "cursor: pointer; opacity: 1"
+  });
   assert.deepEqual(result.errors, []);
   assert.equal(result.warnings.length, 1);
   assert.match(result.warnings[0] ?? "", /^t\.svelte:1:\d+: warning: cursor ignored/u);
@@ -220,7 +269,10 @@ test("cursor is ignored with a warning, not an error", () => {
 });
 
 test("a transition WinUI cannot animate warns and is dropped", () => {
-  const result = lower(null, "transition: color 1s, opacity 1s ease-out");
+  const result = lower({
+    elementType: null,
+    declarations: "transition: color 1s, opacity 1s ease-out"
+  });
   assert.deepEqual(result.errors, []);
   assert.equal(result.warnings.length, 2);
   assert.deepEqual(result.setters.map(([property]) => property), ["OpacityTransition"]);
@@ -251,7 +303,10 @@ const failures: Array<[string, string | null, string, RegExp]> = [
 
 for (const [name, elementType, declarations, pattern] of failures) {
   test(`fails the build: ${name}`, () => {
-    const result = lower(elementType, declarations);
+    const result = lower({
+      elementType,
+      declarations
+    });
     assert.ok(result.errors.length > 0, `no error for ${declarations}`);
     assert.match(result.errors.join("\n"), pattern);
   });

@@ -1,5 +1,5 @@
-import type { Json } from "../messaging/json.ts";
 import { describeError, errorOf } from "./diagnostics.ts";
+import type { Json } from "#src/messaging/json.js";
 import { format } from "node:util";
 import type { MessagePort } from "node:worker_threads";
 import { receiveMessageOnPort } from "node:worker_threads";
@@ -7,48 +7,54 @@ import type { HotPayload } from "vite";
 import type { HMRLogger, ModuleRunnerTransport } from "vite/module-runner";
 import { createNodeImportMeta, ESModulesEvaluator, ModuleRunner } from "vite/module-runner";
 
-// The window thread's side of vite-server.ts: a module runner that loads the
-// window's modules from the dev server and applies its hot updates.
-//
-// WinUI's message loop holds the window thread and never gives it back to
-// Node, so once the window is up, no 'message' event arrives here: the app
-// calls receive() from a timer of WinUI's own (a DispatcherQueue timer), on
-// the UI thread, and every reply and update is handled there.
-
+/**
+ * The window thread's side of `server.ts`: a module runner that loads the
+ * window's modules from the dev server and applies its hot updates.
+ *
+ * WinUI's message loop holds the window thread and never gives it back to
+ * Node, so once the window is up, no 'message' event arrives here: the app
+ * calls `receive()` from a timer of WinUI's own (a DispatcherQueue timer), on
+ * the UI thread, and every reply and update is handled there.
+ */
 export interface WindowModuleRunner {
   readonly runner: ModuleRunner;
-  // Takes in everything the server has sent.
+  /** Takes in everything the server has sent. */
   receive(): void;
 }
 
-// HMR's lines, sent for the server to print: this thread's own stderr is
-// written by its event loop, which WinUI holds, so all but the first line
-// would wait for the window to close. (Nor do they go to stdout, which is
-// often the host's channel, as Edge+'s core reads it line by line.)
-export const logEvent = "winui:log";
+/**
+ * The event HMR's lines are sent under, for the server to print: this
+ * thread's own stderr is written by its event loop, which WinUI holds, so all
+ * but the first line would wait for the window to close. (Nor do they go to
+ * stdout, which is often the host's channel, as Edge+'s core reads it line by
+ * line.)
+ */
+export const LOG_EVENT = "winui:log";
+
 // An invoke that times out uses a Node timer, which never fires while WinUI
 // holds the thread; a reply always comes.
-const noTimeout = 0;
-const fullReload = "full-reload";
+const NO_TIMEOUT = 0;
+const FULL_RELOAD = "full-reload";
 
 function isHotPayload(value: HotPayload | Json): value is HotPayload {
   return typeof value === "object" && value !== null && "type" in value;
 }
 
-function restartNotice(file: string | undefined): string {
+function restartNotice(file: string | undefined) {
   return `${file ?? "a module"} changed and no component takes it in place; restart the window to see it`;
 }
 
-export function createWindowModuleRunner(port: MessagePort): WindowModuleRunner {
+/** Creates the module runner for the window thread, over the port the dev server holds the other end of. */
+export function createWindowModuleRunner(port: MessagePort) {
   let handle: ((payload: HotPayload) => void) | null = null;
 
   // An error is described by where it is (a compile error's file and line),
   // not dumped with everything it carries.
-  function log(...messages: Array<string | Error>): void {
+  function log(...messages: Array<string | Error>) {
     const lines = messages.map(message => message instanceof Error ? describeError(message) : message);
     port.postMessage({
       type: "custom",
-      event: logEvent,
+      event: LOG_EVENT,
       data: format(...lines)
     });
   }
@@ -56,11 +62,11 @@ export function createWindowModuleRunner(port: MessagePort): WindowModuleRunner 
   // An update that cannot be applied (a component that no longer compiles)
   // is reported and the window goes on with the code it has: an exception
   // here would end it, since it surfaces in a callback WinUI made.
-  function reportFailure(error: Error): void {
+  function reportFailure(error: Error) {
     log("the hot update failed:", error);
   }
 
-  function handleSafely(payload: HotPayload): void {
+  function handleSafely(payload: HotPayload) {
     try {
       Promise.resolve(handle?.(payload)).catch((error: Error) => reportFailure(errorOf(error)));
     } catch (error) {
@@ -68,14 +74,15 @@ export function createWindowModuleRunner(port: MessagePort): WindowModuleRunner 
     }
   }
 
-  function deliver(message: HotPayload | Json): void {
+  function deliver(message: HotPayload | Json) {
     if (!isHotPayload(message)) {
       return;
     }
 
     // A change no module accepts would rerun the window's entry, which
     // starts a second window: the developer restarts it instead.
-    if (message.type === fullReload) {
+    const isFullReload = message.type === FULL_RELOAD;
+    if (isFullReload) {
       log(restartNotice(message.triggeredBy));
       return;
     }
@@ -97,7 +104,7 @@ export function createWindowModuleRunner(port: MessagePort): WindowModuleRunner 
     send(payload) {
       port.postMessage(payload);
     },
-    timeout: noTimeout
+    timeout: NO_TIMEOUT
   };
   const runner = new ModuleRunner({
     transport,
@@ -106,7 +113,7 @@ export function createWindowModuleRunner(port: MessagePort): WindowModuleRunner 
       logger
     }
   }, new ESModulesEvaluator());
-  return {
+  const windowRunner: WindowModuleRunner = {
     runner,
     receive() {
       for (let received = receiveMessageOnPort(port); received !== undefined; received = receiveMessageOnPort(port)) {
@@ -114,4 +121,5 @@ export function createWindowModuleRunner(port: MessagePort): WindowModuleRunner 
       }
     }
   };
+  return windowRunner;
 }

@@ -1,14 +1,17 @@
-import { parseSelectorList } from "../parse/selectors.ts";
 import { computeDeclarations, matchingRules, resolveBuiltVariable, styleXaml } from "./cascade.ts";
 import { loadWinuiCatalogue } from "./catalogue.ts";
 import { lowerDeclarations } from "./properties.ts";
 import { errorsOf, formatDiagnostic, translateStyleSheet } from "./translate.ts";
+import { parseSelectorList } from "#src/css/parse/selectors.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
 const resources = loadWinuiCatalogue();
 
-function translate(css: string, map?: { mappings: string }) {
+function translate({ css, map }: {
+  css: string;
+  map?: { mappings: string };
+}) {
   return translateStyleSheet({
     file: "card.svelte",
     css,
@@ -17,8 +20,8 @@ function translate(css: string, map?: { mappings: string }) {
   });
 }
 
-function errors(css: string): string[] {
-  return errorsOf(translate(css)).map(formatDiagnostic);
+function errors(css: string) {
+  return errorsOf(translate({ css })).map(formatDiagnostic);
 }
 
 test("selectors: classes, a type, a state and Svelte's scope", () => {
@@ -69,7 +72,7 @@ test("selectors: attributes, ids, other pseudo-classes and two states are reject
 });
 
 test("a sheet becomes rules in source order, one per selector", () => {
-  const { sheet, diagnostics } = translate(".card.svelte-x { padding: 12px 16px }\n.a, text-block.b { opacity: .5 }");
+  const { sheet, diagnostics } = translate({ css: ".card.svelte-x { padding: 12px 16px }\n.a, text-block.b { opacity: .5 }" });
   assert.deepEqual(diagnostics, []);
   assert.equal(sheet.id, "card.svelte");
   assert.deepEqual(sheet.rules.map(rule => [rule.elementType, rule.classes, rule.order]), [
@@ -80,7 +83,7 @@ test("a sheet becomes rules in source order, one per selector", () => {
 });
 
 test("a rule's shorthands are stored as longhands", () => {
-  const { sheet } = translate(".a { padding: 1px 2px; border: 1px solid red }");
+  const { sheet } = translate({ css: ".a { padding: 1px 2px; border: 1px solid red }" });
   assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => declaration.property), [
     "padding-top",
     "padding-right",
@@ -97,10 +100,12 @@ test("a rule's shorthands are stored as longhands", () => {
 
 test("custom properties on :root become a dictionary with light and dark", () => {
   const { sheet, diagnostics } = translate(
-    `
+    {
+      css: `
 :root { --accent: #0af; --gap: 8px }
 @media (prefers-color-scheme: dark) { :root { --accent: #fa0 } }
 .a { color: var(--accent) }`
+    }
   );
   assert.deepEqual(diagnostics, []);
   assert.deepEqual(sheet.rules.length, 1);
@@ -114,7 +119,7 @@ test("custom properties on :root become a dictionary with light and dark", () =>
 });
 
 test("a custom property declared on a class is hoisted to the resources", () => {
-  const { sheet, diagnostics } = translate(".a { --tone: red; color: var(--tone) }");
+  const { sheet, diagnostics } = translate({ css: ".a { --tone: red; color: var(--tone) }" });
   assert.deepEqual(diagnostics, []);
   assert.match(sheet.resourcesXaml ?? "", /<Color x:Key="Tone">#FF0000<\/Color>/u);
   assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => declaration.property), ["color"]);
@@ -142,7 +147,7 @@ test("var(): a color used where a brush is needed is explained", () => {
 });
 
 test("var(): brushes and thicknesses and radii resolve to ThemeResource", () => {
-  const { sheet, diagnostics } = translate(".a { padding: var(--button-padding); border-radius: var(--control-corner-radius); color: var(--text-fill-color-primary) }");
+  const { sheet, diagnostics } = translate({ css: ".a { padding: var(--button-padding); border-radius: var(--control-corner-radius); color: var(--text-fill-color-primary) }" });
   assert.deepEqual(diagnostics, []);
   assert.equal(sheet.rules.length, 1);
 });
@@ -158,7 +163,12 @@ test("what a sheet cannot say is an error with its position", () => {
 
 test("positions are mapped back to the .svelte file", () => {
   // Generated line 1 maps to line 10, column 0 (AAUA: +0,+0,+10,+0 is "AAUA" with U=10).
-  const result = translate("box-shadow: x;\n.a { box-shadow: y }", { mappings: "AAUA;AAAA" });
+  const result = translate({
+    css: "box-shadow: x;\n.a { box-shadow: y }",
+    map: {
+      mappings: "AAUA;AAAA"
+    }
+  });
   const messages = result.diagnostics.map(formatDiagnostic);
   assert.match(messages.join("\n"), /card\.svelte:11:/u);
 });
@@ -185,28 +195,41 @@ test("a syntax error is reported, not thrown", () => {
 
 // The cascade.
 
-function stylesFor(css: string, facts: {
-  elementType: string;
-  classes: string[];
-  states?: string[];
-}, inline = "") {
-  const { sheet } = translate(css);
+function stylesFor({ css, facts, inline = "" }: {
+  css: string;
+  facts: {
+    elementType: string;
+    classes: string[];
+    states?: string[];
+  };
+  inline?: unknown;
+}) {
+  const { sheet } = translate({ css });
   const ranked = sheet.rules.map(rule => ({
     rule,
     id: String(rule.order),
     rank: rule.order
   }));
-  const matched = matchingRules(ranked, {
-    elementType: facts.elementType,
-    classes: new Set(facts.classes),
-    states: new Set(facts.states?.flatMap(state => (state === "hover" ? ["hover" as const] : [])) ?? [])
+  const matched = matchingRules({
+    rules: ranked,
+    facts: {
+      elementType: facts.elementType,
+      classes: new Set(facts.classes),
+      states: new Set(facts.states?.flatMap(state => (state === "hover" ? ["hover" as const] : [])) ?? [])
+    }
   });
-  const inlineRule = translate(`.i { ${inline} }`).sheet.rules[0]?.declarations ?? [];
-  const lowered = lowerDeclarations(computeDeclarations(matched, inlineRule), {
-    elementType: facts.elementType,
-    resolveVariable: resolveBuiltVariable,
-    hasStyle: () => true,
-    report() {}
+  const inlineRule = translate({ css: `.i { ${inline} }` }).sheet.rules[0]?.declarations ?? [];
+  const lowered = lowerDeclarations({
+    computed: computeDeclarations({
+      matched,
+      inline: inlineRule
+    }),
+    options: {
+      elementType: facts.elementType,
+      resolveVariable: resolveBuiltVariable,
+      hasStyle: () => true,
+      report() {}
+    }
   });
   return lowered.setters.map(entry => [entry.property, entry.kind === "setter" ? entry.value : entry.xaml]);
 }
@@ -214,21 +237,30 @@ function stylesFor(css: string, facts: {
 test("cascade: every class must be on the element; a type-only rule matches the type", () => {
   const css = ".a.b { opacity: 0.1 }\ntext-block { opacity: 0.2 }";
   assert.deepEqual(
-    stylesFor(css, {
-      elementType: "border",
-      classes: ["a"]
+    stylesFor({
+      css,
+      facts: {
+        elementType: "border",
+        classes: ["a"]
+      }
     }), []
   );
   assert.deepEqual(
-    stylesFor(css, {
-      elementType: "border",
-      classes: ["a", "b"]
+    stylesFor({
+      css,
+      facts: {
+        elementType: "border",
+        classes: ["a", "b"]
+      }
     }), [["Opacity", "0.1"]]
   );
   assert.deepEqual(
-    stylesFor(css, {
-      elementType: "text-block",
-      classes: []
+    stylesFor({
+      css,
+      facts: {
+        elementType: "text-block",
+        classes: []
+      }
     }), [["Opacity", "0.2"]]
   );
 });
@@ -236,15 +268,21 @@ test("cascade: every class must be on the element; a type-only rule matches the 
 test("cascade: higher specificity wins whatever the order, then the later rule", () => {
   const css = ".a.b { opacity: 0.1 }\n.a { opacity: 0.2 }\n.b { opacity: 0.3 }";
   assert.deepEqual(
-    stylesFor(css, {
-      elementType: "border",
-      classes: ["a", "b"]
+    stylesFor({
+      css,
+      facts: {
+        elementType: "border",
+        classes: ["a", "b"]
+      }
     }), [["Opacity", "0.1"]]
   );
   assert.deepEqual(
-    stylesFor(css, {
-      elementType: "border",
-      classes: ["a"]
+    stylesFor({
+      css,
+      facts: {
+        elementType: "border",
+        classes: ["a"]
+      }
     }), [["Opacity", "0.2"]]
   );
 });
@@ -252,50 +290,64 @@ test("cascade: higher specificity wins whatever the order, then the later rule",
 test("cascade: a state rule applies only while its state is active", () => {
   const css = ".a { opacity: 1 }\n.a:hover { opacity: 0.5 }";
   assert.deepEqual(
-    stylesFor(css, {
-      elementType: "border",
-      classes: ["a"]
+    stylesFor({
+      css,
+      facts: {
+        elementType: "border",
+        classes: ["a"]
+      }
     }), [["Opacity", "1"]]
   );
   assert.deepEqual(
-    stylesFor(css, {
-      elementType: "border",
-      classes: ["a"],
-      states: ["hover"]
+    stylesFor({
+      css,
+      facts: {
+        elementType: "border",
+        classes: ["a"],
+        states: ["hover"]
+      }
     }), [["Opacity", "0.5"]]
   );
 });
 
 test("cascade: the element's own style beats every rule", () => {
   assert.deepEqual(
-    stylesFor(".a { opacity: 1 !important; width: 10px }", {
-      elementType: "border",
-      classes: ["a"]
-    }, "width: 20px; opacity: 0"), [["Opacity", "1"], ["Width", "20"]]
+    stylesFor({
+      css: ".a { opacity: 1 !important; width: 10px }",
+      facts: {
+        elementType: "border",
+        classes: ["a"]
+      },
+      inline: "width: 20px; opacity: 0"
+    }), [["Opacity", "1"], ["Width", "20"]]
   );
 });
 
 test("a Style as XAML: based on, setters, element-form setters", () => {
-  const xaml = styleXaml("K", "text-block", {
-    basedOn: "CaptionTextBlockStyle",
-    setters: [
-      {
-        kind: "setter",
-        property: "Foreground",
-        value: "{ThemeResource TextFillColorSecondaryBrush}"
-      },
-      {
-        kind: "content",
-        property: "OpacityTransition",
-        xaml: "<ScalarTransition Duration=\"0:0:0.200\"/>"
-      },
-      {
-        kind: "setter",
-        property: "FontFamily",
-        value: "A & \"B\""
-      }
-    ],
-    writes: []
+  const xaml = styleXaml({
+    key: "K",
+    elementType: "text-block",
+    lowered: {
+      basedOn: "CaptionTextBlockStyle",
+      setters: [
+        {
+          kind: "setter",
+          property: "Foreground",
+          value: "{ThemeResource TextFillColorSecondaryBrush}"
+        },
+        {
+          kind: "content",
+          property: "OpacityTransition",
+          xaml: "<ScalarTransition Duration=\"0:0:0.200\"/>"
+        },
+        {
+          kind: "setter",
+          property: "FontFamily",
+          value: "A & \"B\""
+        }
+      ],
+      writes: []
+    }
   });
   assert.equal(
     xaml, [

@@ -1,6 +1,6 @@
-import { cssHash } from "../css/runtime/sheet-module.ts";
 import { compileSvelte, rendererImport } from "./compile.ts";
-import { windowConfig, windowEnvironment, winuiPluginOptions, winuiSvelte } from "./plugin.ts";
+import { WINDOW_ENVIRONMENT, windowConfig, winuiPluginOptions, winuiSvelte } from "./plugin.ts";
+import { cssHash } from "#src/css/runtime/sheet-module.js";
 import assert from "node:assert/strict";
 import path from "node:path";
 import { test } from "node:test";
@@ -37,7 +37,7 @@ test("the window's module environment resolves Svelte's browser build", () => {
   const { resolve, environments } = windowConfig();
   assert.deepEqual(resolve, { conditions: ["browser"] });
   assert.deepEqual(environments, {
-    [windowEnvironment]: {
+    [WINDOW_ENVIRONMENT]: {
       consumer: "server",
       resolve: {
         conditions: ["browser", "development"],
@@ -52,7 +52,10 @@ test("the window's module environment resolves Svelte's browser build", () => {
 
 test("a bundled component carries the statements that register its <style>", () => {
   const component = path.join(import.meta.dirname, "styled.svelte");
-  const code = compileSvelte(component, "<border class=\"a\"></border>\n<style>\n  .a { padding: 4px }\n</style>\n");
+  const code = compileSvelte({
+    filename: component,
+    source: "<border class=\"a\"></border>\n<style>\n  .a { padding: 4px }\n</style>\n"
+  });
   assert.match(code, /registerStyleSheet as registerWinuiSheet \} from "winui-svelte\/css"/u);
   assert.match(code, /"id":"styled\.svelte"/u);
 });
@@ -60,7 +63,10 @@ test("a bundled component carries the statements that register its <style>", () 
 test("a <style> WinUI cannot say fails the bundle with the rule's line", () => {
   const component = path.join(import.meta.dirname, "broken.svelte");
   assert.throws(
-    () => compileSvelte(component, "<border class=\"a\"></border>\n<style>\n  .a { float: left }\n</style>\n"),
+    () => compileSvelte({
+      filename: component,
+      source: "<border class=\"a\"></border>\n<style>\n  .a { float: left }\n</style>\n"
+    }),
     /^Error: broken\.svelte:3:8: float has no WinUI meaning/u
   );
 });
@@ -68,7 +74,22 @@ test("a <style> WinUI cannot say fails the bundle with the rule's line", () => {
 test("a renderer given as a file is imported by relative path, a specifier as it is", () => {
   const component = path.join(import.meta.dirname, "a", "b.svelte");
   const renderer = path.join(import.meta.dirname, "c", "host.ts");
-  assert.equal(rendererImport(component, renderer), "../c/host.ts");
-  assert.equal(rendererImport(component, "winui-svelte/host"), "winui-svelte/host");
-  assert.match(compileSvelte(component, "<div></div>"), /from 'winui-svelte\/host'/u);
+  assert.equal(
+    rendererImport({
+      filename: component,
+      renderer
+    }), "../c/host.ts"
+  );
+  assert.equal(
+    rendererImport({
+      filename: component,
+      renderer: "winui-svelte/host"
+    }), "winui-svelte/host"
+  );
+  assert.match(
+    compileSvelte({
+      filename: component,
+      source: "<div></div>"
+    }), /from 'winui-svelte\/host'/u
+  );
 });

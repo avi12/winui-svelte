@@ -1,40 +1,45 @@
 import { describeError, errorOf } from "./diagnostics.ts";
-import { windowEnvironment, winuiSvelte } from "./plugin.ts";
+import { WINDOW_ENVIRONMENT, winuiSvelte } from "./plugin.ts";
 import type { WinuiSvelteOptions } from "./plugin.ts";
-import { logEvent } from "./runner.ts";
+import { LOG_EVENT } from "./runner.ts";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import type { MessagePort } from "node:worker_threads";
-import type { HotChannel, HotChannelClient, ResolvedConfig, ViteDevServer } from "vite";
+import type { HotChannel, HotChannelClient, ResolvedConfig } from "vite";
 import { createServer, DevEnvironment } from "vite";
-import type { FetchFunctionOptions, FetchResult } from "vite/module-runner";
+import type { FetchFunctionOptions } from "vite/module-runner";
 import { z } from "zod";
 
-// The development side of Svelte on WinUI: a Vite dev server, in-process and
-// with no HTTP server, that compiles a window's modules for a module runner
-// (runner.ts) on the window's thread and sends it hot updates, both over a
-// MessagePort. Components compile for the client with HMR and render through
-// the custom renderer; Svelte resolves to its browser build. The compile
-// settings are the plugin's (plugin.ts), from the app's Vite config or, with
-// none, the plugin's defaults.
-
+/**
+ * The development side of Svelte on WinUI: a Vite dev server, in-process and
+ * with no HTTP server, that compiles a window's modules for a module runner
+ * (`runner.ts`) on the window's thread and sends it hot updates, both over a
+ * MessagePort. Components compile for the client with HMR and render through
+ * the custom renderer; Svelte resolves to its browser build. The compile
+ * settings are the plugin's (`plugin.ts`), from the app's Vite config or,
+ * with none, the plugin's defaults.
+ */
 export interface ModuleServerOptions extends WinuiSvelteOptions {
-  // The folder of the window's sources, which Vite serves and watches.
+  /** The folder of the window's sources, which Vite serves and watches. */
   root: string;
-  // The runner's end of this port is the window thread's.
+  /** The runner's end of this port is the window thread's. */
   port: MessagePort;
-  // Modules Node loads itself rather than Vite, besides the package's own
-  // import site of the bindings: the app's import site of generated native
-  // bindings.
+  /**
+   * Modules Node loads itself rather than Vite, besides the package's own
+   * import site of the bindings: the app's import site of generated native
+   * bindings.
+   */
   isNative?: (file: string) => boolean;
-  // The app's Vite config, whose plugins should include winuiSvelte(); without
-  // one, the plugin's defaults serve.
+  /**
+   * The app's Vite config, whose plugins should include `winuiSvelte()`;
+   * without one, the plugin's defaults serve.
+   */
   configFile?: string;
 }
 
 // The package's import sites of the bindings (its own, and the generated
-// components'), which Node must load itself. Without an extension: from source they are .ts, from the published package
-// .js.
+// components'), which Node must load itself. Without an extension: from
+// source they are .ts, from the published package .js.
 const packageBindingsSites = [
   path.join(import.meta.dirname, "..", "winui"),
   path.join(import.meta.dirname, "..", "components", "generated", "bindings")
@@ -42,13 +47,19 @@ const packageBindingsSites = [
 const queryOrHash = /[?#].*$/u;
 const scriptExtension = /\.[cm]?[jt]s$/u;
 
-function isSameFile(file: string, other: string): boolean {
+function isSameFile({ file, other }: {
+  file: string;
+  other: string;
+}) {
   return path.relative(file, other) === "";
 }
 
-function isPackageBindingsSite(file: string): boolean {
+function isPackageBindingsSite(file: string) {
   const withoutExtension = file.replace(queryOrHash, "").replace(scriptExtension, "");
-  return packageBindingsSites.some(site => isSameFile(withoutExtension, site));
+  return packageBindingsSites.some(site => isSameFile({
+    file: withoutExtension,
+    other: site
+  }));
 }
 
 // What the runner sends: its module fetches (Vite's invoke, whose arguments
@@ -74,12 +85,12 @@ type Listener = (data: RunnerData, client: HotChannelClient) => void;
 
 // Vite's hot channel over a MessagePort: what the runner sends arrives as
 // custom events (module fetches among them), and the server's updates go back.
-function portChannel(port: MessagePort): HotChannel {
+function portChannel(port: MessagePort) {
   const listeners = new Map<string, Set<Listener>>();
   const client: HotChannelClient = {
     send: payload => port.postMessage(payload)
   };
-  return {
+  const channel: HotChannel = {
     // Only this process can reach the port.
     skipFsCheck: true,
     send: payload => port.postMessage(payload),
@@ -90,7 +101,8 @@ function portChannel(port: MessagePort): HotChannel {
     },
     off(event, listener) {
       for (const registered of listeners.get(event) ?? []) {
-        if (registered === listener) {
+        const isListener = registered === listener;
+        if (isListener) {
           listeners.get(event)?.delete(registered);
         }
       }
@@ -111,6 +123,7 @@ function portChannel(port: MessagePort): HotChannel {
       port.close();
     }
   };
+  return channel;
 }
 
 class WindowEnvironment extends DevEnvironment {
@@ -122,12 +135,13 @@ class WindowEnvironment extends DevEnvironment {
       transport: portChannel(port)
     });
     this.isNative = isNative;
-    this.hot.on(logEvent, (line: string) => {
+    this.hot.on(LOG_EVENT, (line: string) => {
       process.stderr.write(`[vite] ${line}\n`);
     });
   }
 
-  override async fetchModule(id: string, importer?: string, options?: FetchFunctionOptions): Promise<FetchResult> {
+  // eslint-disable-next-line no-restricted-syntax -- Vite's DevEnvironment.fetchModule is positional.
+  override async fetchModule(id: string, importer?: string, options?: FetchFunctionOptions) {
     const resolved = await this.pluginContainer.resolveId(id, importer);
     const file = resolved?.id.replace(queryOrHash, "");
     const isNativeFile = file !== undefined && this.isNative(file);
@@ -135,7 +149,7 @@ class WindowEnvironment extends DevEnvironment {
       return {
         externalize: pathToFileURL(file).href,
         type: "module"
-      };
+      } as const;
     }
 
     // The runner only learns that a fetch failed; the developer needs the file
@@ -149,8 +163,9 @@ class WindowEnvironment extends DevEnvironment {
   }
 }
 
-export async function startModuleServer(options: ModuleServerOptions): Promise<ViteDevServer> {
-  function isNative(file: string): boolean {
+/** Starts the dev server for a window's modules; the window thread's module runner loads from it. */
+export async function startModuleServer(options: ModuleServerOptions) {
+  function isNative(file: string) {
     return isPackageBindingsSite(file) || options.isNative?.(file) === true;
   }
 
@@ -167,7 +182,7 @@ export async function startModuleServer(options: ModuleServerOptions): Promise<V
     },
     plugins: hasConfigFile ? [] : winuiSvelte(options),
     environments: {
-      [windowEnvironment]: {
+      [WINDOW_ENVIRONMENT]: {
         dev: {
           createEnvironment: (name, config) => new WindowEnvironment(name, config, options.port, isNative)
         }

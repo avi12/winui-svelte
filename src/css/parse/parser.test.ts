@@ -5,9 +5,10 @@ import { test } from "node:test";
 
 test("a rule keeps its selector, declarations and their positions", () => {
   const [block] = parseCss(".card { padding: 12px 16px;\n  color: red !important }");
-  assert.equal(block?.kind, BlockKind.Rule);
+  assert.equal(block?.kind, BlockKind.RULE);
 
-  if (block?.kind !== BlockKind.Rule) {
+  const isRuleBlock = block?.kind === BlockKind.RULE;
+  if (!isRuleBlock) {
     return;
   }
 
@@ -27,9 +28,10 @@ test("a rule keeps its selector, declarations and their positions", () => {
 
 test("comments, strings and parentheses do not end a declaration", () => {
   const [block] = parseCss("a { /* x; y */ font-family: \"A;B\", serif; background: url(a;b) }");
-  assert.equal(block?.kind, BlockKind.Rule);
+  assert.equal(block?.kind, BlockKind.RULE);
 
-  if (block?.kind !== BlockKind.Rule) {
+  const isRuleBlock = block?.kind === BlockKind.RULE;
+  if (!isRuleBlock) {
     return;
   }
 
@@ -38,9 +40,10 @@ test("comments, strings and parentheses do not end a declaration", () => {
 
 test("a custom property keeps its case and a property is lower-cased", () => {
   const [block] = parseCss(":root { --Accent: #0af; COLOR: red }");
-  assert.equal(block?.kind, BlockKind.Rule);
+  assert.equal(block?.kind, BlockKind.RULE);
 
-  if (block?.kind !== BlockKind.Rule) {
+  const isRuleBlock = block?.kind === BlockKind.RULE;
+  if (!isRuleBlock) {
     return;
   }
 
@@ -50,11 +53,11 @@ test("a custom property keeps its case and a property is lower-cased", () => {
 test("@media holds rules and an at-rule ending in a semicolon has no children", () => {
   const blocks = parseCss("@import 'a.css'; @media (prefers-color-scheme: dark) { :root { --x: 1 } .a { color: red } }");
   const [importRule, media] = blocks;
-  assert.equal(importRule?.kind, BlockKind.AtRule);
-  assert.equal(media?.kind, BlockKind.AtRule);
+  assert.equal(importRule?.kind, BlockKind.AT_RULE);
+  assert.equal(media?.kind, BlockKind.AT_RULE);
 
-  const areAtRules = importRule?.kind === BlockKind.AtRule && media?.kind === BlockKind.AtRule;
-  if (!areAtRules) {
+  const isEachAtRule = importRule?.kind === BlockKind.AT_RULE && media?.kind === BlockKind.AT_RULE;
+  if (!isEachAtRule) {
     return;
   }
 
@@ -66,9 +69,10 @@ test("@media holds rules and an at-rule ending in a semicolon has no children", 
 
 test("a rule nested in a rule is recorded where it starts", () => {
   const [block] = parseCss(".a {\n  color: red;\n  &:hover { color: blue }\n  margin: 0 }");
-  assert.equal(block?.kind, BlockKind.Rule);
+  assert.equal(block?.kind, BlockKind.RULE);
 
-  if (block?.kind !== BlockKind.Rule) {
+  const isRuleBlock = block?.kind === BlockKind.RULE;
+  if (!isRuleBlock) {
     return;
   }
 

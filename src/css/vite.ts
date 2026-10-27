@@ -1,4 +1,4 @@
-import { compileSheetModule, SheetError, sheetSuffix } from "./runtime/sheet-module.ts";
+import { compileSheetModule, SHEET_SUFFIX, SheetError } from "./runtime/sheet-module.ts";
 import { loadWinuiCatalogue } from "./translate/catalogue.ts";
 import { formatDiagnostic } from "./translate/translate.ts";
 import { readFileSync } from "node:fs";
@@ -6,56 +6,61 @@ import path from "node:path";
 import type { CompileOptions } from "svelte/compiler";
 import type { Plugin } from "vite";
 
-// The Vite plugin that turns every component's <style> into the module that
-// registers its WinUI Styles. For `Card.svelte` it adds
-// `import "Card.svelte-winui-css.js"` to the compiled component; that module is
-// the translated sheet (see sheet-module.ts). Editing a <style> reloads that
-// module as well (hotUpdate), so the open window restyles in place.
-//
-//   plugins: [svelte({ compilerOptions: { cssHash } }), winuiCss({ root, compilerOptions })]
-//
-// `compilerOptions` must be the ones the component is compiled with, and its
-// cssHash the one exported from sheet-module.ts, so the scoping class the
-// sheet's selectors carry is the one the elements get.
-
+/** Options of the `winuiCss` Vite plugin. */
 export interface WinuiCssOptions {
-  // Sheet ids and diagnostics are paths relative to this; default Vite's root.
+  /** Sheet ids and diagnostics are paths relative to this; default Vite's root. */
   root?: string;
   compilerOptions?: CompileOptions;
-  // The module that exports registerStyleSheet, as the window imports it.
+  /** The module that exports registerStyleSheet, as the window imports it. */
   runtimeModule?: string;
-  // What a <style> WinUI cannot say does: "fail" the load, or "report" the
-  // line on stderr and register nothing, so an open window stays up (dev).
+  /**
+   * What a `<style>` WinUI cannot say does: "fail" the load, or "report" the
+   * line on stderr and register nothing, so an open window stays up (dev).
+   */
   onError?: "fail" | "report";
 }
 
-const pluginName = "winui-svelte:css";
-const defaultRuntimeModule = "winui-svelte/css";
-const queryStart = "?";
-const svelteExtension = ".svelte";
-
-const styleOpening = "<style";
+const PLUGIN_NAME = "winui-svelte:css";
+const DEFAULT_RUNTIME_MODULE = "winui-svelte/css";
+const QUERY_START = "?";
+const SVELTE_EXTENSION = ".svelte";
+const STYLE_OPENING = "<style";
 const styleBlocks = /<style[\s\S]*?<\/style>/gu;
-function withoutStyle(source: string): string {
-  return source.replace(styleBlocks, styleOpening);
+
+function withoutStyle(source: string) {
+  return source.replace(styleBlocks, STYLE_OPENING);
 }
 
-function isComponentId(id: string): boolean {
-  return id.endsWith(svelteExtension) && !id.includes(queryStart);
+function isComponentId(id: string) {
+  return id.endsWith(SVELTE_EXTENSION) && !id.includes(QUERY_START);
 }
 
-function isSheetId(id: string): boolean {
-  return id.endsWith(`${svelteExtension}${sheetSuffix}`);
+function isSheetId(id: string) {
+  return id.endsWith(`${SVELTE_EXTENSION}${SHEET_SUFFIX}`);
 }
 
-export function winuiCss(options: WinuiCssOptions): Plugin {
+/**
+ * The Vite plugin that turns every component's `<style>` into the module that
+ * registers its WinUI Styles. For `Card.svelte` it adds
+ * `import "Card.svelte-winui-css.js"` to the compiled component; that module
+ * is the translated sheet (see `sheet-module.ts`). Editing a `<style>`
+ * reloads that module as well (`hotUpdate`), so the open window restyles in
+ * place.
+ *
+ * `compilerOptions` must be the ones the component is compiled with, and its
+ * `cssHash` the one exported from `sheet-module.ts`, so the scoping class the
+ * sheet's selectors carry is the one the elements get:
+ *
+ *   plugins: [svelte({ compilerOptions: { cssHash } }), winuiCss({ root, compilerOptions })]
+ */
+export function winuiCss(options: WinuiCssOptions) {
   const resources = loadWinuiCatalogue();
-  const runtimeModule = options.runtimeModule ?? defaultRuntimeModule;
+  const runtimeModule = options.runtimeModule ?? DEFAULT_RUNTIME_MODULE;
   let root = options.root ?? "";
   // Each component as last compiled, less its <style> blocks.
   const withoutStyles = new Map<string, string>();
   return {
-    name: pluginName,
+    name: PLUGIN_NAME,
     enforce: "post",
     configResolved(config) {
       root = options.root ?? config.root;
@@ -67,13 +72,13 @@ export function winuiCss(options: WinuiCssOptions): Plugin {
 
       const source = readFileSync(id, "utf8");
       withoutStyles.set(id, withoutStyle(source));
-      const hasStyle = source.includes(styleOpening);
+      const hasStyle = source.includes(STYLE_OPENING);
       if (!hasStyle) {
         return null;
       }
 
       return {
-        code: `${code}\nimport ${JSON.stringify(`${id}${sheetSuffix}`)};\n`,
+        code: `${code}\nimport ${JSON.stringify(`${id}${SHEET_SUFFIX}`)};\n`,
         map: null
       };
     },
@@ -82,8 +87,9 @@ export function winuiCss(options: WinuiCssOptions): Plugin {
     // the sheet's: the component is left running, with its state, and its live
     // elements restyle.
     hotUpdate({ file, modules }) {
-      const sheet = this.environment.moduleGraph.getModuleById(`${file}${sheetSuffix}`);
-      if (sheet === undefined) {
+      const sheet = this.environment.moduleGraph.getModuleById(`${file}${SHEET_SUFFIX}`);
+      const isSheetMissing = sheet === undefined;
+      if (isSheetMissing) {
         return undefined;
       }
 
@@ -100,19 +106,19 @@ export function winuiCss(options: WinuiCssOptions): Plugin {
         return null;
       }
 
-      const component = source.slice(0, -sheetSuffix.length);
+      const component = source.slice(0, -SHEET_SUFFIX.length);
       const resolved = await this.resolve(component, importer, {
         ...resolveOptions,
         skipSelf: true
       });
-      return resolved === null ? null : `${resolved.id}${sheetSuffix}`;
+      return resolved === null ? null : `${resolved.id}${SHEET_SUFFIX}`;
     },
     load(id) {
       if (!isSheetId(id)) {
         return null;
       }
 
-      const filename = id.slice(0, -sheetSuffix.length);
+      const filename = id.slice(0, -SHEET_SUFFIX.length);
       this.addWatchFile(filename);
       try {
         const module = compileSheetModule({
@@ -136,12 +142,13 @@ export function winuiCss(options: WinuiCssOptions): Plugin {
           return "export default null;";
         }
 
-        if (error instanceof SheetError) {
+        const isSheetError = error instanceof SheetError;
+        if (isSheetError) {
           this.error(error.message);
         }
 
         throw error;
       }
     }
-  };
+  } satisfies Plugin;
 }
