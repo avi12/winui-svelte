@@ -18,7 +18,7 @@ export function linkFlipViewItem(
   props: FlipViewItemProps,
   bound: FlipViewItemBound,
   link: Linker
-): void {
+) {
   linkSelectorItem(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectFlipViewItem(
   control: FlipViewItem,
   props: FlipViewItemProps,
   bound: FlipViewItemBound
-): () => void {
+) {
   const link = new Linker();
   linkFlipViewItem(control, props, bound, link);
   return () => link.dispose();

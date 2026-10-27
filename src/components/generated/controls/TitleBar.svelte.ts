@@ -30,37 +30,77 @@ export function linkTitleBar(
   props: TitleBarProps,
   bound: TitleBarBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "autoRefreshDragRegions", value => {
-    control.autoRefreshDragRegions = value;
+  link.property({
+    props,
+    key: "autoRefreshDragRegions",
+    apply(value) {
+      control.autoRefreshDragRegions = value;
+    }
   });
-  link.property(props, "content", value => {
-    control.content = value;
+  link.property({
+    props,
+    key: "content",
+    apply(value) {
+      control.content = value;
+    }
   });
-  link.property(props, "iconSource", value => {
-    control.iconSource = value;
+  link.property({
+    props,
+    key: "iconSource",
+    apply(value) {
+      control.iconSource = value;
+    }
   });
-  link.property(props, "isBackButtonEnabled", value => {
-    control.isBackButtonEnabled = value;
+  link.property({
+    props,
+    key: "isBackButtonEnabled",
+    apply(value) {
+      control.isBackButtonEnabled = value;
+    }
   });
-  link.property(props, "isBackButtonVisible", value => {
-    control.isBackButtonVisible = value;
+  link.property({
+    props,
+    key: "isBackButtonVisible",
+    apply(value) {
+      control.isBackButtonVisible = value;
+    }
   });
-  link.property(props, "isPaneToggleButtonVisible", value => {
-    control.isPaneToggleButtonVisible = value;
+  link.property({
+    props,
+    key: "isPaneToggleButtonVisible",
+    apply(value) {
+      control.isPaneToggleButtonVisible = value;
+    }
   });
-  link.property(props, "leftHeader", value => {
-    control.leftHeader = value;
+  link.property({
+    props,
+    key: "leftHeader",
+    apply(value) {
+      control.leftHeader = value;
+    }
   });
-  link.property(props, "rightHeader", value => {
-    control.rightHeader = value;
+  link.property({
+    props,
+    key: "rightHeader",
+    apply(value) {
+      control.rightHeader = value;
+    }
   });
-  link.property(props, "subtitle", value => {
-    control.subtitle = value;
+  link.property({
+    props,
+    key: "subtitle",
+    apply(value) {
+      control.subtitle = value;
+    }
   });
-  link.property(props, "title", value => {
-    control.title = value;
+  link.property({
+    props,
+    key: "title",
+    apply(value) {
+      control.title = value;
+    }
   });
 
   if ("onBackRequested" in props) {
@@ -76,7 +116,7 @@ export function connectTitleBar(
   control: TitleBar,
   props: TitleBarProps,
   bound: TitleBarBound
-): () => void {
+) {
   const link = new Linker();
   linkTitleBar(control, props, bound, link);
   return () => link.dispose();

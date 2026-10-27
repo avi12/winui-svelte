@@ -45,70 +45,154 @@ export function linkListViewBase(
   props: ListViewBaseProps,
   bound: ListViewBaseBound,
   link: Linker
-): void {
+) {
   linkSelector(control, props, bound, link);
-  link.property(props, "canDragItems", value => {
-    control.canDragItems = value;
+  link.property({
+    props,
+    key: "canDragItems",
+    apply(value) {
+      control.canDragItems = value;
+    }
   });
-  link.property(props, "canReorderItems", value => {
-    control.canReorderItems = value;
+  link.property({
+    props,
+    key: "canReorderItems",
+    apply(value) {
+      control.canReorderItems = value;
+    }
   });
-  link.property(props, "dataFetchSize", value => {
-    control.dataFetchSize = value;
+  link.property({
+    props,
+    key: "dataFetchSize",
+    apply(value) {
+      control.dataFetchSize = value;
+    }
   });
-  link.property(props, "footer", value => {
-    control.footer = objectOf(value);
+  link.property({
+    props,
+    key: "footer",
+    apply(value) {
+      control.footer = objectOf(value);
+    }
   });
-  link.property(props, "footerTemplate", value => {
-    control.footerTemplate = value;
+  link.property({
+    props,
+    key: "footerTemplate",
+    apply(value) {
+      control.footerTemplate = value;
+    }
   });
-  link.property(props, "footerTransitions", value => {
-    control.footerTransitions = value;
+  link.property({
+    props,
+    key: "footerTransitions",
+    apply(value) {
+      control.footerTransitions = value;
+    }
   });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
+  link.property({
+    props,
+    key: "header",
+    apply(value) {
+      control.header = objectOf(value);
+    }
   });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply(value) {
+      control.headerTemplate = value;
+    }
   });
-  link.property(props, "headerTransitions", value => {
-    control.headerTransitions = value;
+  link.property({
+    props,
+    key: "headerTransitions",
+    apply(value) {
+      control.headerTransitions = value;
+    }
   });
-  link.property(props, "incrementalLoadingThreshold", value => {
-    control.incrementalLoadingThreshold = value;
+  link.property({
+    props,
+    key: "incrementalLoadingThreshold",
+    apply(value) {
+      control.incrementalLoadingThreshold = value;
+    }
   });
-  link.property(props, "incrementalLoadingTrigger", value => {
-    control.incrementalLoadingTrigger = enumValue(IncrementalLoadingTrigger, value);
+  link.property({
+    props,
+    key: "incrementalLoadingTrigger",
+    apply(value) {
+      control.incrementalLoadingTrigger = enumValue({ table: IncrementalLoadingTrigger, input: value });
+    }
   });
-  link.property(props, "isActiveView", value => {
-    control.isActiveView = value;
+  link.property({
+    props,
+    key: "isActiveView",
+    apply(value) {
+      control.isActiveView = value;
+    }
   });
-  link.property(props, "isItemClickEnabled", value => {
-    control.isItemClickEnabled = value;
+  link.property({
+    props,
+    key: "isItemClickEnabled",
+    apply(value) {
+      control.isItemClickEnabled = value;
+    }
   });
-  link.property(props, "isMultiSelectCheckBoxEnabled", value => {
-    control.isMultiSelectCheckBoxEnabled = value;
+  link.property({
+    props,
+    key: "isMultiSelectCheckBoxEnabled",
+    apply(value) {
+      control.isMultiSelectCheckBoxEnabled = value;
+    }
   });
-  link.property(props, "isSwipeEnabled", value => {
-    control.isSwipeEnabled = value;
+  link.property({
+    props,
+    key: "isSwipeEnabled",
+    apply(value) {
+      control.isSwipeEnabled = value;
+    }
   });
-  link.property(props, "isZoomedInView", value => {
-    control.isZoomedInView = value;
+  link.property({
+    props,
+    key: "isZoomedInView",
+    apply(value) {
+      control.isZoomedInView = value;
+    }
   });
-  link.property(props, "reorderMode", value => {
-    control.reorderMode = enumValue(ListViewReorderMode, value);
+  link.property({
+    props,
+    key: "reorderMode",
+    apply(value) {
+      control.reorderMode = enumValue({ table: ListViewReorderMode, input: value });
+    }
   });
-  link.property(props, "selectionMode", value => {
-    control.selectionMode = enumValue(ListViewSelectionMode, value);
+  link.property({
+    props,
+    key: "selectionMode",
+    apply(value) {
+      control.selectionMode = enumValue({ table: ListViewSelectionMode, input: value });
+    }
   });
-  link.property(props, "semanticZoomOwner", value => {
-    control.semanticZoomOwner = value;
+  link.property({
+    props,
+    key: "semanticZoomOwner",
+    apply(value) {
+      control.semanticZoomOwner = value;
+    }
   });
-  link.property(props, "showsScrollingPlaceholders", value => {
-    control.showsScrollingPlaceholders = value;
+  link.property({
+    props,
+    key: "showsScrollingPlaceholders",
+    apply(value) {
+      control.showsScrollingPlaceholders = value;
+    }
   });
-  link.property(props, "singleSelectionFollowsFocus", value => {
-    control.singleSelectionFollowsFocus = value;
+  link.property({
+    props,
+    key: "singleSelectionFollowsFocus",
+    apply(value) {
+      control.singleSelectionFollowsFocus = value;
+    }
   });
 
   if ("onChoosingGroupHeaderContainer" in props) {

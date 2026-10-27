@@ -36,31 +36,63 @@ export function linkStackPanel(
   props: StackPanelProps,
   bound: StackPanelBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
-  link.property(props, "areScrollSnapPointsRegular", value => {
-    control.areScrollSnapPointsRegular = value;
+  link.property({
+    props,
+    key: "areScrollSnapPointsRegular",
+    apply(value) {
+      control.areScrollSnapPointsRegular = value;
+    }
   });
-  link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+  link.property({
+    props,
+    key: "backgroundSizing",
+    apply(value) {
+      control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
+    }
   });
-  link.property(props, "borderBrush", value => {
-    control.borderBrush = brushOf(value);
+  link.property({
+    props,
+    key: "borderBrush",
+    apply(value) {
+      control.borderBrush = brushOf(value);
+    }
   });
-  link.property(props, "borderThickness", value => {
-    control.borderThickness = thicknessOf(value);
+  link.property({
+    props,
+    key: "borderThickness",
+    apply(value) {
+      control.borderThickness = thicknessOf(value);
+    }
   });
-  link.property(props, "cornerRadius", value => {
-    control.cornerRadius = cornerRadiusOf(value);
+  link.property({
+    props,
+    key: "cornerRadius",
+    apply(value) {
+      control.cornerRadius = cornerRadiusOf(value);
+    }
   });
-  link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+  link.property({
+    props,
+    key: "orientation",
+    apply(value) {
+      control.orientation = enumValue({ table: Orientation, input: value });
+    }
   });
-  link.property(props, "padding", value => {
-    control.padding = thicknessOf(value);
+  link.property({
+    props,
+    key: "padding",
+    apply(value) {
+      control.padding = thicknessOf(value);
+    }
   });
-  link.property(props, "spacing", value => {
-    control.spacing = value;
+  link.property({
+    props,
+    key: "spacing",
+    apply(value) {
+      control.spacing = value;
+    }
   });
 
   if ("onHorizontalSnapPointsChanged" in props) {
@@ -76,7 +108,7 @@ export function connectStackPanel(
   control: StackPanel,
   props: StackPanelProps,
   bound: StackPanelBound
-): () => void {
+) {
   const link = new Linker();
   linkStackPanel(control, props, bound, link);
   return () => link.dispose();

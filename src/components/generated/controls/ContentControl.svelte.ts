@@ -25,19 +25,35 @@ export function linkContentControl(
   props: ContentControlProps,
   bound: ContentControlBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.contentProperty(props, "content", value => {
-    control.content = objectOf(value);
+  link.contentProperty({
+    props,
+    key: "content",
+    apply(value) {
+      control.content = objectOf(value);
+    }
   });
-  link.property(props, "contentTemplate", value => {
-    control.contentTemplate = value;
+  link.property({
+    props,
+    key: "contentTemplate",
+    apply(value) {
+      control.contentTemplate = value;
+    }
   });
-  link.property(props, "contentTemplateSelector", value => {
-    control.contentTemplateSelector = value;
+  link.property({
+    props,
+    key: "contentTemplateSelector",
+    apply(value) {
+      control.contentTemplateSelector = value;
+    }
   });
-  link.property(props, "contentTransitions", value => {
-    control.contentTransitions = value;
+  link.property({
+    props,
+    key: "contentTransitions",
+    apply(value) {
+      control.contentTransitions = value;
+    }
   });
 }
 
@@ -45,7 +61,7 @@ export function connectContentControl(
   control: ContentControl,
   props: ContentControlProps,
   bound: ContentControlBound
-): () => void {
+) {
   const link = new Linker();
   linkContentControl(control, props, bound, link);
   return () => link.dispose();

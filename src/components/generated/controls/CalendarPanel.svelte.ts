@@ -18,7 +18,7 @@ export function linkCalendarPanel(
   props: CalendarPanelProps,
   bound: CalendarPanelBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectCalendarPanel(
   control: CalendarPanel,
   props: CalendarPanelProps,
   bound: CalendarPanelBound
-): () => void {
+) {
   const link = new Linker();
   linkCalendarPanel(control, props, bound, link);
   return () => link.dispose();

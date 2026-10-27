@@ -18,7 +18,7 @@ export function linkGridView(
   props: GridViewProps,
   bound: GridViewBound,
   link: Linker
-): void {
+) {
   linkListViewBase(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectGridView(
   control: GridView,
   props: GridViewProps,
   bound: GridViewBound
-): () => void {
+) {
   const link = new Linker();
   linkGridView(control, props, bound, link);
   return () => link.dispose();

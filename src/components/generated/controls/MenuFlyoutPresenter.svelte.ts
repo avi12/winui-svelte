@@ -20,13 +20,21 @@ export function linkMenuFlyoutPresenter(
   props: MenuFlyoutPresenterProps,
   bound: MenuFlyoutPresenterBound,
   link: Linker
-): void {
+) {
   linkItemsControl(control, props, bound, link);
-  link.property(props, "isDefaultShadowEnabled", value => {
-    control.isDefaultShadowEnabled = value;
+  link.property({
+    props,
+    key: "isDefaultShadowEnabled",
+    apply(value) {
+      control.isDefaultShadowEnabled = value;
+    }
   });
-  link.property(props, "systemBackdrop", value => {
-    control.systemBackdrop = value;
+  link.property({
+    props,
+    key: "systemBackdrop",
+    apply(value) {
+      control.systemBackdrop = value;
+    }
   });
 }
 
@@ -34,7 +42,7 @@ export function connectMenuFlyoutPresenter(
   control: MenuFlyoutPresenter,
   props: MenuFlyoutPresenterProps,
   bound: MenuFlyoutPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkMenuFlyoutPresenter(control, props, bound, link);
   return () => link.dispose();

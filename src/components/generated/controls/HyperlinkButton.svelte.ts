@@ -20,10 +20,14 @@ export function linkHyperlinkButton(
   props: HyperlinkButtonProps,
   bound: HyperlinkButtonBound,
   link: Linker
-): void {
+) {
   linkButtonBase(control, props, bound, link);
-  link.property(props, "navigateUri", value => {
-    control.navigateUri = uriOf(value);
+  link.property({
+    props,
+    key: "navigateUri",
+    apply(value) {
+      control.navigateUri = uriOf(value);
+    }
   });
 }
 
@@ -31,7 +35,7 @@ export function connectHyperlinkButton(
   control: HyperlinkButton,
   props: HyperlinkButtonProps,
   bound: HyperlinkButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkHyperlinkButton(control, props, bound, link);
   return () => link.dispose();

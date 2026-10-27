@@ -18,7 +18,7 @@ export function linkMenuBar(
   props: MenuBarProps,
   bound: MenuBarBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectMenuBar(
   control: MenuBar,
   props: MenuBarProps,
   bound: MenuBarBound
-): () => void {
+) {
   const link = new Linker();
   linkMenuBar(control, props, bound, link);
   return () => link.dispose();

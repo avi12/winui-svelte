@@ -11,8 +11,8 @@ import type { Snippet } from "svelte";
 
 export interface DatePickerProps extends ControlProps {
   children?: Snippet;
-  selectedDate?: DatePicker["selectedDate"];
-  date?: DatePicker["date"];
+  selectedDate?: DatePicker["selectedDate"] | undefined;
+  date?: DatePicker["date"] | undefined;
   calendarIdentifier?: string;
   dayFormat?: string;
   dayVisible?: boolean;
@@ -39,63 +39,125 @@ export function linkDatePicker(
   props: DatePickerProps,
   bound: DatePickerBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "calendarIdentifier", value => {
-    control.calendarIdentifier = value;
-  });
-  link.property(props, "dayFormat", value => {
-    control.dayFormat = value;
-  });
-  link.property(props, "dayVisible", value => {
-    control.dayVisible = value;
-  });
-  link.contentProperty(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
-  });
-  link.property(props, "maxYear", value => {
-    control.maxYear = value;
-  });
-  link.property(props, "minYear", value => {
-    control.minYear = value;
-  });
-  link.property(props, "monthFormat", value => {
-    control.monthFormat = value;
-  });
-  link.property(props, "monthVisible", value => {
-    control.monthVisible = value;
-  });
-  link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
-  });
-  link.property(props, "yearFormat", value => {
-    control.yearFormat = value;
-  });
-  link.property(props, "yearVisible", value => {
-    control.yearVisible = value;
-  });
-  link.bindable(bound, "date", {
-    read: () => control.date,
-    write(value) {
-      control.date = value;
+  link.property({
+    props,
+    key: "calendarIdentifier",
+    apply(value) {
+      control.calendarIdentifier = value;
     }
-  }, [
-    handler => control.onDateChanged(handler)
-  ]);
-  link.bindable(bound, "selectedDate", {
-    read: () => control.selectedDate,
-    write(value) {
-      control.selectedDate = value;
+  });
+  link.property({
+    props,
+    key: "dayFormat",
+    apply(value) {
+      control.dayFormat = value;
     }
-  }, [
-    handler => control.onSelectedDateChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "dayVisible",
+    apply(value) {
+      control.dayVisible = value;
+    }
+  });
+  link.contentProperty({
+    props,
+    key: "header",
+    apply(value) {
+      control.header = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply(value) {
+      control.headerTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "lightDismissOverlayMode",
+    apply(value) {
+      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "maxYear",
+    apply(value) {
+      control.maxYear = value;
+    }
+  });
+  link.property({
+    props,
+    key: "minYear",
+    apply(value) {
+      control.minYear = value;
+    }
+  });
+  link.property({
+    props,
+    key: "monthFormat",
+    apply(value) {
+      control.monthFormat = value;
+    }
+  });
+  link.property({
+    props,
+    key: "monthVisible",
+    apply(value) {
+      control.monthVisible = value;
+    }
+  });
+  link.property({
+    props,
+    key: "orientation",
+    apply(value) {
+      control.orientation = enumValue({ table: Orientation, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "yearFormat",
+    apply(value) {
+      control.yearFormat = value;
+    }
+  });
+  link.property({
+    props,
+    key: "yearVisible",
+    apply(value) {
+      control.yearVisible = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "date",
+    access: {
+      read: () => control.date,
+      write(value) {
+        control.date = value;
+      }
+    },
+    subscribers: [
+      handler => control.onDateChanged(handler)
+    ]
+  });
+  link.bindable({
+    bound,
+    key: "selectedDate",
+    access: {
+      read: () => control.selectedDate,
+      write(value) {
+        control.selectedDate = value;
+      }
+    },
+    subscribers: [
+      handler => control.onSelectedDateChanged(handler)
+    ]
+  });
 
   if ("onDateChanged" in props) {
     link.add(control.onDateChanged((...args) => props.onDateChanged?.(...args)));
@@ -110,7 +172,7 @@ export function connectDatePicker(
   control: DatePicker,
   props: DatePickerProps,
   bound: DatePickerBound
-): () => void {
+) {
   const link = new Linker();
   linkDatePicker(control, props, bound, link);
   return () => link.dispose();

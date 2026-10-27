@@ -18,7 +18,7 @@ export function linkListViewItem(
   props: ListViewItemProps,
   bound: ListViewItemBound,
   link: Linker
-): void {
+) {
   linkSelectorItem(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectListViewItem(
   control: ListViewItem,
   props: ListViewItemProps,
   bound: ListViewItemBound
-): () => void {
+) {
   const link = new Linker();
   linkListViewItem(control, props, bound, link);
   return () => link.dispose();

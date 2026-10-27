@@ -22,16 +22,28 @@ export function linkOrientedVirtualizingPanel(
   props: OrientedVirtualizingPanelProps,
   bound: OrientedVirtualizingPanelBound,
   link: Linker
-): void {
+) {
   linkVirtualizingPanel(control, props, bound, link);
-  link.property(props, "canHorizontallyScroll", value => {
-    control.canHorizontallyScroll = value;
+  link.property({
+    props,
+    key: "canHorizontallyScroll",
+    apply(value) {
+      control.canHorizontallyScroll = value;
+    }
   });
-  link.property(props, "canVerticallyScroll", value => {
-    control.canVerticallyScroll = value;
+  link.property({
+    props,
+    key: "canVerticallyScroll",
+    apply(value) {
+      control.canVerticallyScroll = value;
+    }
   });
-  link.property(props, "scrollOwner", value => {
-    control.scrollOwner = objectOf(value);
+  link.property({
+    props,
+    key: "scrollOwner",
+    apply(value) {
+      control.scrollOwner = objectOf(value);
+    }
   });
 
   if ("onHorizontalSnapPointsChanged" in props) {

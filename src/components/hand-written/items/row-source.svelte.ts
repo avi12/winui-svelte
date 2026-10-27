@@ -3,6 +3,7 @@
 // already, and its row components then follow each field).
 import type { Snippet } from "svelte";
 
+/** Holds the item a mounted row shows, as raw state a row component reads. */
 export class RowSource<Item> {
   current: Item;
 
@@ -11,7 +12,9 @@ export class RowSource<Item> {
   }
 }
 
-// Row.svelte's props: the app's item snippet and the item it shows.
+/**
+ * Row.svelte's props: the app's item snippet and the item it shows.
+ */
 export interface RowProps<Item> {
   snippet: Snippet<[Item]>;
   source: RowSource<Item>;

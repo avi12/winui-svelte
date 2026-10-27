@@ -24,16 +24,28 @@ export function linkCarouselPanel(
   props: CarouselPanelProps,
   bound: CarouselPanelBound,
   link: Linker
-): void {
+) {
   linkVirtualizingPanel(control, props, bound, link);
-  link.property(props, "canHorizontallyScroll", value => {
-    control.canHorizontallyScroll = value;
+  link.property({
+    props,
+    key: "canHorizontallyScroll",
+    apply(value) {
+      control.canHorizontallyScroll = value;
+    }
   });
-  link.property(props, "canVerticallyScroll", value => {
-    control.canVerticallyScroll = value;
+  link.property({
+    props,
+    key: "canVerticallyScroll",
+    apply(value) {
+      control.canVerticallyScroll = value;
+    }
   });
-  link.property(props, "scrollOwner", value => {
-    control.scrollOwner = objectOf(value);
+  link.property({
+    props,
+    key: "scrollOwner",
+    apply(value) {
+      control.scrollOwner = objectOf(value);
+    }
   });
 
   if ("onHorizontalSnapPointsChanged" in props) {
@@ -49,7 +61,7 @@ export function connectCarouselPanel(
   control: CarouselPanel,
   props: CarouselPanelProps,
   bound: CarouselPanelBound
-): () => void {
+) {
   const link = new Linker();
   linkCarouselPanel(control, props, bound, link);
   return () => link.dispose();

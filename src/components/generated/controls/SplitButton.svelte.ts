@@ -23,16 +23,28 @@ export function linkSplitButton(
   props: SplitButtonProps,
   bound: SplitButtonBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "command", value => {
-    control.command = value;
+  link.property({
+    props,
+    key: "command",
+    apply(value) {
+      control.command = value;
+    }
   });
-  link.property(props, "commandParameter", value => {
-    control.commandParameter = objectOf(value);
+  link.property({
+    props,
+    key: "commandParameter",
+    apply(value) {
+      control.commandParameter = objectOf(value);
+    }
   });
-  link.property(props, "flyout", value => {
-    control.flyout = value;
+  link.property({
+    props,
+    key: "flyout",
+    apply(value) {
+      control.flyout = value;
+    }
   });
 
   if ("onClick" in props) {
@@ -44,7 +56,7 @@ export function connectSplitButton(
   control: SplitButton,
   props: SplitButtonProps,
   bound: SplitButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkSplitButton(control, props, bound, link);
   return () => link.dispose();

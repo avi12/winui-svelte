@@ -11,7 +11,7 @@ import type { Snippet } from "svelte";
 
 export interface PopupProps extends FrameworkElementProps {
   children?: Snippet;
-  isOpen?: boolean;
+  isOpen?: boolean | undefined;
   child?: Popup["child"];
   childTransitions?: Popup["childTransitions"];
   desiredPlacement?: EnumInput<typeof PopupPlacementMode>;
@@ -36,47 +36,92 @@ export function linkPopup(
   props: PopupProps,
   bound: PopupBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.contentProperty(props, "child", value => {
-    control.child = value;
-  });
-  link.property(props, "childTransitions", value => {
-    control.childTransitions = value;
-  });
-  link.property(props, "desiredPlacement", value => {
-    control.desiredPlacement = enumValue(PopupPlacementMode, value);
-  });
-  link.property(props, "horizontalOffset", value => {
-    control.horizontalOffset = value;
-  });
-  link.property(props, "isLightDismissEnabled", value => {
-    control.isLightDismissEnabled = value;
-  });
-  link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
-  });
-  link.property(props, "placementTarget", value => {
-    control.placementTarget = value;
-  });
-  link.property(props, "shouldConstrainToRootBounds", value => {
-    control.shouldConstrainToRootBounds = value;
-  });
-  link.property(props, "systemBackdrop", value => {
-    control.systemBackdrop = value;
-  });
-  link.property(props, "verticalOffset", value => {
-    control.verticalOffset = value;
-  });
-  link.bindable(bound, "isOpen", {
-    read: () => control.isOpen,
-    write(value) {
-      control.isOpen = value;
+  link.contentProperty({
+    props,
+    key: "child",
+    apply(value) {
+      control.child = value;
     }
-  }, [
-    handler => control.onOpened(handler),
-    handler => control.onClosed(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "childTransitions",
+    apply(value) {
+      control.childTransitions = value;
+    }
+  });
+  link.property({
+    props,
+    key: "desiredPlacement",
+    apply(value) {
+      control.desiredPlacement = enumValue({ table: PopupPlacementMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "horizontalOffset",
+    apply(value) {
+      control.horizontalOffset = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isLightDismissEnabled",
+    apply(value) {
+      control.isLightDismissEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "lightDismissOverlayMode",
+    apply(value) {
+      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "placementTarget",
+    apply(value) {
+      control.placementTarget = value;
+    }
+  });
+  link.property({
+    props,
+    key: "shouldConstrainToRootBounds",
+    apply(value) {
+      control.shouldConstrainToRootBounds = value;
+    }
+  });
+  link.property({
+    props,
+    key: "systemBackdrop",
+    apply(value) {
+      control.systemBackdrop = value;
+    }
+  });
+  link.property({
+    props,
+    key: "verticalOffset",
+    apply(value) {
+      control.verticalOffset = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isOpen",
+    access: {
+      read: () => control.isOpen,
+      write(value) {
+        control.isOpen = value;
+      }
+    },
+    subscribers: [
+      handler => control.onOpened(handler),
+      handler => control.onClosed(handler)
+    ]
+  });
 
   if ("onActualPlacementChanged" in props) {
     link.add(control.onActualPlacementChanged((...args) => props.onActualPlacementChanged?.(...args)));
@@ -95,7 +140,7 @@ export function connectPopup(
   control: Popup,
   props: PopupProps,
   bound: PopupBound
-): () => void {
+) {
   const link = new Linker();
   linkPopup(control, props, bound, link);
   return () => link.dispose();

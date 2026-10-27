@@ -15,6 +15,6 @@ export function linkMenuFlyoutItemBase(
   props: MenuFlyoutItemBaseProps,
   bound: MenuFlyoutItemBaseBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
 }

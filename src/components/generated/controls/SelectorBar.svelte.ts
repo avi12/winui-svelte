@@ -7,7 +7,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface SelectorBarProps extends ControlProps {
-  selectedItem?: SelectorBar["selectedItem"];
+  selectedItem?: SelectorBar["selectedItem"] | undefined;
   onSelectionChanged?: Parameters<SelectorBar["onSelectionChanged"]>[0];
 }
 
@@ -20,16 +20,21 @@ export function linkSelectorBar(
   props: SelectorBarProps,
   bound: SelectorBarBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.bindable(bound, "selectedItem", {
-    read: () => control.selectedItem,
-    write(value) {
-      control.selectedItem = value;
-    }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
+  link.bindable({
+    bound,
+    key: "selectedItem",
+    access: {
+      read: () => control.selectedItem,
+      write(value) {
+        control.selectedItem = value;
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
 
   if ("onSelectionChanged" in props) {
     link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
@@ -40,7 +45,7 @@ export function connectSelectorBar(
   control: SelectorBar,
   props: SelectorBarProps,
   bound: SelectorBarBound
-): () => void {
+) {
   const link = new Linker();
   linkSelectorBar(control, props, bound, link);
   return () => link.dispose();

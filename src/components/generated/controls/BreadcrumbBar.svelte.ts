@@ -22,13 +22,21 @@ export function linkBreadcrumbBar(
   props: BreadcrumbBarProps,
   bound: BreadcrumbBarBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "itemsSource", value => {
-    control.itemsSource = objectOf(value);
+  link.property({
+    props,
+    key: "itemsSource",
+    apply(value) {
+      control.itemsSource = objectOf(value);
+    }
   });
-  link.property(props, "itemTemplate", value => {
-    control.itemTemplate = objectOf(value);
+  link.property({
+    props,
+    key: "itemTemplate",
+    apply(value) {
+      control.itemTemplate = objectOf(value);
+    }
   });
 
   if ("onItemClicked" in props) {
@@ -40,7 +48,7 @@ export function connectBreadcrumbBar(
   control: BreadcrumbBar,
   props: BreadcrumbBarProps,
   bound: BreadcrumbBarBound
-): () => void {
+) {
   const link = new Linker();
   linkBreadcrumbBar(control, props, bound, link);
   return () => link.dispose();

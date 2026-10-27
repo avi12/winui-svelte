@@ -18,7 +18,7 @@ export function linkUnderline(
   props: UnderlineProps,
   bound: UnderlineBound,
   link: Linker
-): void {
+) {
   linkSpan(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectUnderline(
   control: Underline,
   props: UnderlineProps,
   bound: UnderlineBound
-): () => void {
+) {
   const link = new Linker();
   linkUnderline(control, props, bound, link);
   return () => link.dispose();

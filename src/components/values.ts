@@ -1,8 +1,9 @@
-import type { NativeValue } from "../native-value.ts";
+import type { NativeValue } from "#src/native-value.js";
 
 // The plain values a component's props take, and how each is read: pure, so
 // they are tested without WinUI. convert.ts turns them into the bindings'.
 
+/** The four sides of a thickness (margin, padding, border width), in pixels. */
 export interface ThicknessValue {
   left: number;
   top: number;
@@ -10,6 +11,7 @@ export interface ThicknessValue {
   bottom: number;
 }
 
+/** The four corners of a corner radius, in pixels. */
 export interface CornerRadiusValue {
   topLeft: number;
   topRight: number;
@@ -17,6 +19,7 @@ export interface CornerRadiusValue {
   bottomLeft: number;
 }
 
+/** A color as WinUI's four 0-255 channels. */
 export interface ColorValue {
   a: number;
   r: number;
@@ -24,22 +27,21 @@ export interface ColorValue {
   b: number;
 }
 
+/** How a grid track is sized: to its content, to a pixel count, or to a share of what is left. */
 export const GridUnit = {
-  Auto: "auto",
-  Pixel: "pixel",
-  Star: "star"
+  AUTO: "auto",
+  PIXEL: "pixel",
+  STAR: "star"
 } as const;
 
+/** A grid track unit: one of the `GridUnit` values. */
 export type GridUnit = (typeof GridUnit)[keyof typeof GridUnit];
 
-export interface GridLengthParts {
-  unit: GridUnit;
-  value: number;
-}
-
-// 8 for every side, [8, 4] for left-right and top-bottom, [left, top, right,
-// bottom] as XAML writes them, or a string: CSS order ("top right bottom
-// left", 1 to 4 values, `px` allowed) or, with commas, XAML's.
+/**
+ * 8 for every side, [8, 4] for left-right and top-bottom, [left, top, right,
+ * bottom] as XAML writes them, or a string: CSS order ("top right bottom
+ * left", 1 to 4 values, `px` allowed) or, with commas, XAML's.
+ */
 export type ThicknessInput =
   | number
   | string
@@ -47,8 +49,10 @@ export type ThicknessInput =
   | readonly [number, number, number, number]
   | ThicknessValue;
 
-// The same four-sided input for a corner radius, in the order XAML writes the
-// corners: top left, top right, bottom right, bottom left.
+/**
+ * The same four-sided input for a corner radius, in the order XAML writes the
+ * corners: top left, top right, bottom right, bottom left.
+ */
 export type CornerRadiusInput =
   | number
   | string
@@ -56,33 +60,45 @@ export type CornerRadiusInput =
   | readonly [number, number, number, number]
   | CornerRadiusValue;
 
-// "#rgb", "#rrggbb", "#aarrggbb", "transparent", or WinUI's own value.
+/** "#rgb", "#rrggbb", "#aarrggbb", "transparent", or WinUI's own value. */
 export type ColorInput = string | ColorValue;
 
-// An object property such as a button's content: a string, number or boolean
-// (boxed first) or an object (a control, a WinRT value) as it is; null clears
-// it. WinUI types these Object, and they hold whatever the app puts there.
+/**
+ * An object property such as a button's content: a string, number or boolean
+ * (boxed first) or an object (a control, a WinRT value) as it is; null clears
+ * it. WinUI types these Object, and they hold whatever the app puts there.
+ */
 export type ObjectInput = string | number | boolean | object | null;
 
-// An object property that holds only a WinRT object (a collection, a template,
-// a scroll host), never a boxed value; null clears it.
+/**
+ * An object property that holds only a WinRT object (a collection, a template,
+ * a scroll host), never a boxed value; null clears it.
+ */
 export type ObjectReferenceInput = object | null;
 
-const cssSeparator = /\s+/u;
-const listSeparator = ",";
-const pixelSuffix = "px";
-const autoKeyword = "Auto";
-const starSuffix = "*";
-const maxChannel = 255;
-const hexRadix = 16;
-const shortHexLength = 3;
-const opaque = maxChannel;
-const colorPattern = /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/iu;
-const transparentName = "transparent";
+const CSS_SEPARATOR = /\s+/u;
+const LIST_SEPARATOR = ",";
+const PIXEL_SUFFIX = "px";
+const AUTO_KEYWORD = "Auto";
+const STAR_SUFFIX = "*";
+const MAX_CHANNEL = 255;
+const HEX_RADIX = 16;
+const SHORT_HEX_LENGTH = 3;
+const ALPHA_HEX_LENGTH = 8;
+const HEX_PAIR = /../gu;
+const COLOR_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/iu;
+const TRANSPARENT_NAME = "transparent";
 
-function toPixels(text: string): number {
+const SIDE_ORDER = {
+  XAML: "xaml",
+  CSS: "css"
+} as const;
+
+type SideOrder = (typeof SIDE_ORDER)[keyof typeof SIDE_ORDER];
+
+function toPixels(text: string) {
   const trimmed = text.trim();
-  const digits = trimmed.endsWith(pixelSuffix) ? trimmed.slice(0, -pixelSuffix.length) : trimmed;
+  const digits = trimmed.endsWith(PIXEL_SUFFIX) ? trimmed.slice(0, -PIXEL_SUFFIX.length) : trimmed;
   const value = Number(digits);
   const isLength = digits !== "" && !Number.isNaN(value);
   if (!isLength) {
@@ -94,102 +110,129 @@ function toPixels(text: string): number {
 
 // A list of 1 to 4 numbers as the four sides, in the order XAML writes them
 // (left, top, right, bottom) or CSS does (top, right, bottom, left).
-function sidesOf(values: readonly number[], order: "xaml" | "css"): [number, number, number, number] {
+function sidesOf({ values, order }: {
+  values: readonly number[];
+  order: SideOrder;
+}) {
   const [first = 0, second = first, third, fourth] = values;
-  if (order === "css") {
+  const isCssOrder = order === SIDE_ORDER.CSS;
+  if (isCssOrder) {
     const top = first;
     const right = second;
-    return [fourth ?? right, top, right, third ?? top];
+    return [fourth ?? right, top, right, third ?? top] as const;
   }
 
-  return [first, second, third ?? first, fourth ?? second];
+  return [first, second, third ?? first, fourth ?? second] as const;
 }
 
-function valuesOf(text: string): {
-  values: number[];
-  order: "xaml" | "css";
-} {
-  const isXaml = text.includes(listSeparator);
-  const parts = isXaml ? text.split(listSeparator) : text.trim().split(cssSeparator);
+function valuesOf(text: string) {
+  const isXaml = text.includes(LIST_SEPARATOR);
+  const parts = isXaml ? text.split(LIST_SEPARATOR) : text.trim().split(CSS_SEPARATOR);
   return {
     values: parts.map(toPixels),
-    order: isXaml ? "xaml" : "css"
+    order: isXaml ? SIDE_ORDER.XAML : SIDE_ORDER.CSS
   };
 }
 
-// The four sides of a thickness input as [left, top, right, bottom].
-export function thicknessSides(input: ThicknessInput): [number, number, number, number] {
-  if (typeof input === "number") {
-    return [input, input, input, input];
-  }
-
-  if (typeof input === "string") {
-    const { values, order } = valuesOf(input);
-    return sidesOf(values, order);
-  }
-
-  if ("left" in input) {
-    return [input.left, input.top, input.right, input.bottom];
-  }
-
-  return sidesOf(input, "xaml");
+function uniformSides(size: number) {
+  return [size, size, size, size] as const;
 }
 
-// The four corners of a radius input as [topLeft, topRight, bottomRight,
-// bottomLeft].
-export function cornerSides(input: CornerRadiusInput): [number, number, number, number] {
-  if (typeof input === "number") {
-    return [input, input, input, input];
+/** The four sides of a thickness input as [left, top, right, bottom]. */
+export function thicknessSides(input: ThicknessInput) {
+  const isNumber = typeof input === "number";
+  if (isNumber) {
+    return uniformSides(input);
   }
 
-  if (typeof input === "string") {
-    const { values } = valuesOf(input);
-    return sidesOf(values, "xaml");
+  const isText = typeof input === "string";
+  if (isText) {
+    return sidesOf(valuesOf(input));
   }
 
-  if ("topLeft" in input) {
-    return [input.topLeft, input.topRight, input.bottomRight, input.bottomLeft];
+  const isThickness = "left" in input;
+  if (isThickness) {
+    return [input.left, input.top, input.right, input.bottom] as const;
   }
 
-  return sidesOf(input, "xaml");
+  return sidesOf({
+    values: input,
+    order: SIDE_ORDER.XAML
+  });
 }
 
-// Pixels as a number, or "Auto", "*", "2*" or "120" as XAML writes them.
-export function gridLengthParts(input: number | string): GridLengthParts {
-  if (typeof input === "number") {
+/**
+ * The four corners of a radius input as [topLeft, topRight, bottomRight,
+ * bottomLeft].
+ */
+export function cornerSides(input: CornerRadiusInput) {
+  const isNumber = typeof input === "number";
+  if (isNumber) {
+    return uniformSides(input);
+  }
+
+  const isText = typeof input === "string";
+  if (isText) {
+    return sidesOf({
+      values: valuesOf(input).values,
+      order: SIDE_ORDER.XAML
+    });
+  }
+
+  const isCornerRadius = "topLeft" in input;
+  if (isCornerRadius) {
+    return [input.topLeft, input.topRight, input.bottomRight, input.bottomLeft] as const;
+  }
+
+  return sidesOf({
+    values: input,
+    order: SIDE_ORDER.XAML
+  });
+}
+
+/** Pixels as a number, or "Auto", "*", "2*" or "120" as XAML writes them. */
+export function gridLengthParts(input: number | string) {
+  const isNumber = typeof input === "number";
+  if (isNumber) {
     return {
-      unit: GridUnit.Pixel,
+      unit: GridUnit.PIXEL,
       value: input
     };
   }
 
   const text = input.trim();
-  if (text === autoKeyword) {
+  const isAuto = text === AUTO_KEYWORD;
+  if (isAuto) {
     return {
-      unit: GridUnit.Auto,
+      unit: GridUnit.AUTO,
       value: 1
     };
   }
 
-  if (text.endsWith(starSuffix)) {
-    const weight = text.slice(0, -starSuffix.length);
+  const isStar = text.endsWith(STAR_SUFFIX);
+  if (isStar) {
+    const weight = text.slice(0, -STAR_SUFFIX.length);
+    const isUnweighted = weight === "";
     return {
-      unit: GridUnit.Star,
-      value: weight === "" ? 1 : toPixels(weight)
+      unit: GridUnit.STAR,
+      value: isUnweighted ? 1 : toPixels(weight)
     };
   }
 
   return {
-    unit: GridUnit.Pixel,
+    unit: GridUnit.PIXEL,
     value: toPixels(text)
   };
 }
 
-// The text of a color as WinUI's four channels, or null when it is not one
-// (a theme resource name is then looked up).
-export function parseColor(text: string): ColorValue | null {
+/**
+ * The text of a color as WinUI's four channels, or null when it is not one
+ * (a theme resource name is then looked up).
+ */
+export function parseColor(text: string) {
   const name = text.trim().toLowerCase();
-  if (name === transparentName) {
+  const isTransparent = name === TRANSPARENT_NAME;
+  if (isTransparent) {
     return {
       a: 0,
       r: 0,
@@ -198,16 +241,17 @@ export function parseColor(text: string): ColorValue | null {
     };
   }
 
-  if (!colorPattern.test(name)) {
+  const isColor = COLOR_PATTERN.test(name);
+  if (!isColor) {
     return null;
   }
 
   const digits = name.slice(1);
-  const isShort = digits.length === shortHexLength;
+  const isShort = digits.length === SHORT_HEX_LENGTH;
   const expanded = isShort ? digits.split("").map(digit => `${digit}${digit}`).join("") : digits;
-  const hasAlpha = expanded.length > 6;
-  const channels = [...expanded.matchAll(/../gu)].map(match => Number.parseInt(match[0], hexRadix));
-  const [alpha = opaque, red = 0, green = 0, blue = 0] = hasAlpha ? channels : [opaque, ...channels];
+  const hasAlpha = expanded.length === ALPHA_HEX_LENGTH;
+  const channels = [...expanded.matchAll(HEX_PAIR)].map(match => Number.parseInt(match[0], HEX_RADIX));
+  const [alpha = MAX_CHANNEL, red = 0, green = 0, blue = 0] = hasAlpha ? channels : [MAX_CHANNEL, ...channels];
   return {
     a: alpha,
     r: red,
@@ -216,15 +260,20 @@ export function parseColor(text: string): ColorValue | null {
   };
 }
 
-// [Owner, "Property", value]: Owner's static Set<Property> is called with the
-// control and the value. A list of these sets several.
+/**
+ * [Owner, "Property", value]: Owner's static Set<Property> is called with the
+ * control and the value. A list of these sets several.
+ */
 export type AttachedEntry = readonly [owner: object, property: string, value: NativeValue];
+
+/** One attached entry, or a list of them. */
 export type AttachedInput = AttachedEntry | readonly AttachedEntry[];
 
 function isEntry(input: AttachedInput): input is AttachedEntry {
   return typeof input[1] === "string";
 }
 
-export function attachedList(input: AttachedInput): readonly AttachedEntry[] {
+/** An `attached` prop as a list of entries, whether it was written as one or several. */
+export function attachedList(input: AttachedInput) {
   return isEntry(input) ? [input] : input;
 }

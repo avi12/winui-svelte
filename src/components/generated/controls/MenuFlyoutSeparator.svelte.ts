@@ -18,7 +18,7 @@ export function linkMenuFlyoutSeparator(
   props: MenuFlyoutSeparatorProps,
   bound: MenuFlyoutSeparatorBound,
   link: Linker
-): void {
+) {
   linkMenuFlyoutItemBase(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectMenuFlyoutSeparator(
   control: MenuFlyoutSeparator,
   props: MenuFlyoutSeparatorProps,
   bound: MenuFlyoutSeparatorBound
-): () => void {
+) {
   const link = new Linker();
   linkMenuFlyoutSeparator(control, props, bound, link);
   return () => link.dispose();

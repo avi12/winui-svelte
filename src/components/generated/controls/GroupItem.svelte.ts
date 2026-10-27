@@ -18,7 +18,7 @@ export function linkGroupItem(
   props: GroupItemProps,
   bound: GroupItemBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectGroupItem(
   control: GroupItem,
   props: GroupItemProps,
   bound: GroupItemBound
-): () => void {
+) {
   const link = new Linker();
   linkGroupItem(control, props, bound, link);
   return () => link.dispose();

@@ -19,10 +19,14 @@ export function linkCommandBarFlyoutCommandBar(
   props: CommandBarFlyoutCommandBarProps,
   bound: CommandBarFlyoutCommandBarBound,
   link: Linker
-): void {
+) {
   linkCommandBar(control, props, bound, link);
-  link.property(props, "systemBackdrop", value => {
-    control.systemBackdrop = value;
+  link.property({
+    props,
+    key: "systemBackdrop",
+    apply(value) {
+      control.systemBackdrop = value;
+    }
   });
 }
 
@@ -30,7 +34,7 @@ export function connectCommandBarFlyoutCommandBar(
   control: CommandBarFlyoutCommandBar,
   props: CommandBarFlyoutCommandBarProps,
   bound: CommandBarFlyoutCommandBarBound
-): () => void {
+) {
   const link = new Linker();
   linkCommandBarFlyoutCommandBar(control, props, bound, link);
   return () => link.dispose();

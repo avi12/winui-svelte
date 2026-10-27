@@ -26,25 +26,49 @@ export function linkAnimatedVisualPlayer(
   props: AnimatedVisualPlayerProps,
   bound: AnimatedVisualPlayerBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "animationOptimization", value => {
-    control.animationOptimization = enumValue(PlayerAnimationOptimization, value);
+  link.property({
+    props,
+    key: "animationOptimization",
+    apply(value) {
+      control.animationOptimization = enumValue({ table: PlayerAnimationOptimization, input: value });
+    }
   });
-  link.property(props, "autoPlay", value => {
-    control.autoPlay = value;
+  link.property({
+    props,
+    key: "autoPlay",
+    apply(value) {
+      control.autoPlay = value;
+    }
   });
-  link.property(props, "fallbackContent", value => {
-    control.fallbackContent = value;
+  link.property({
+    props,
+    key: "fallbackContent",
+    apply(value) {
+      control.fallbackContent = value;
+    }
   });
-  link.property(props, "playbackRate", value => {
-    control.playbackRate = value;
+  link.property({
+    props,
+    key: "playbackRate",
+    apply(value) {
+      control.playbackRate = value;
+    }
   });
-  link.property(props, "source", value => {
-    control.source = value;
+  link.property({
+    props,
+    key: "source",
+    apply(value) {
+      control.source = value;
+    }
   });
-  link.property(props, "stretch", value => {
-    control.stretch = enumValue(Stretch, value);
+  link.property({
+    props,
+    key: "stretch",
+    apply(value) {
+      control.stretch = enumValue({ table: Stretch, input: value });
+    }
   });
 }
 
@@ -52,7 +76,7 @@ export function connectAnimatedVisualPlayer(
   control: AnimatedVisualPlayer,
   props: AnimatedVisualPlayerProps,
   bound: AnimatedVisualPlayerBound
-): () => void {
+) {
   const link = new Linker();
   linkAnimatedVisualPlayer(control, props, bound, link);
   return () => link.dispose();

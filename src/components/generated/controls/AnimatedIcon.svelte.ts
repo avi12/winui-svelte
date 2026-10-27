@@ -21,16 +21,28 @@ export function linkAnimatedIcon(
   props: AnimatedIconProps,
   bound: AnimatedIconBound,
   link: Linker
-): void {
+) {
   linkIconElement(control, props, bound, link);
-  link.property(props, "fallbackIconSource", value => {
-    control.fallbackIconSource = value;
+  link.property({
+    props,
+    key: "fallbackIconSource",
+    apply(value) {
+      control.fallbackIconSource = value;
+    }
   });
-  link.property(props, "mirroredWhenRightToLeft", value => {
-    control.mirroredWhenRightToLeft = value;
+  link.property({
+    props,
+    key: "mirroredWhenRightToLeft",
+    apply(value) {
+      control.mirroredWhenRightToLeft = value;
+    }
   });
-  link.property(props, "source", value => {
-    control.source = value;
+  link.property({
+    props,
+    key: "source",
+    apply(value) {
+      control.source = value;
+    }
   });
 }
 
@@ -38,7 +50,7 @@ export function connectAnimatedIcon(
   control: AnimatedIcon,
   props: AnimatedIconProps,
   bound: AnimatedIconBound
-): () => void {
+) {
   const link = new Linker();
   linkAnimatedIcon(control, props, bound, link);
   return () => link.dispose();

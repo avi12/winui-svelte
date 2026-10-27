@@ -1,4 +1,3 @@
-import type { LiveRow } from "./live-rows.ts";
 import { LiveRows } from "./live-rows.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -9,14 +8,14 @@ class Tally {
   made = 0;
   ended = 0;
 
-  get live(): number {
+  get live() {
     return this.made - this.ended;
   }
 
-  row(shown: string[]): LiveRow<string> {
+  row(shown: string[]) {
     this.made++;
     return {
-      update: item => shown.push(item),
+      update: (item: string) => shown.push(item),
       unmount: () => {
         this.ended++;
       }
@@ -28,8 +27,20 @@ test("a container keeps its row while it shows the same key, with the item it ha
   const tally = new Tally();
   const shown: string[] = [];
   const rows = new LiveRows<string, string>();
-  rows.fill("c1", "container 1", "a", "first a", () => tally.row(shown));
-  rows.fill("c1", "container 1", "a", "second a", () => tally.row(shown));
+  rows.fill({
+    containerId: "c1",
+    container: "container 1",
+    key: "a",
+    item: "first a",
+    create: () => tally.row(shown)
+  });
+  rows.fill({
+    containerId: "c1",
+    container: "container 1",
+    key: "a",
+    item: "second a",
+    create: () => tally.row(shown)
+  });
   assert.equal(tally.made, 1);
   assert.deepEqual(shown, ["second a"]);
   assert.equal(rows.count, 1);
@@ -38,8 +49,20 @@ test("a container keeps its row while it shows the same key, with the item it ha
 test("a container recycled to another key ends its row and gets a new one", () => {
   const tally = new Tally();
   const rows = new LiveRows<string, string>();
-  rows.fill("c1", "container 1", "a", "a", () => tally.row([]));
-  rows.fill("c1", "container 1", "b", "b", () => tally.row([]));
+  rows.fill({
+    containerId: "c1",
+    container: "container 1",
+    key: "a",
+    item: "a",
+    create: () => tally.row([])
+  });
+  rows.fill({
+    containerId: "c1",
+    container: "container 1",
+    key: "b",
+    item: "b",
+    create: () => tally.row([])
+  });
   assert.equal(tally.made, 2);
   assert.equal(tally.ended, 1);
   assert.equal(rows.count, 1);
@@ -48,7 +71,13 @@ test("a container recycled to another key ends its row and gets a new one", () =
 test("a container in the recycle queue ends its row, and releasing twice is harmless", () => {
   const tally = new Tally();
   const rows = new LiveRows<string, string>();
-  rows.fill("c1", "container 1", "a", "a", () => tally.row([]));
+  rows.fill({
+    containerId: "c1",
+    container: "container 1",
+    key: "a",
+    item: "a",
+    create: () => tally.row([])
+  });
   rows.release("c1");
   rows.release("c1");
   rows.release("never seen");
@@ -64,7 +93,13 @@ test("scrolling through a long list never holds more rows than containers", () =
   for (let index = 0; index < 1000; index++) {
     const container = `c${index % containers}`;
     rows.release(container);
-    rows.fill(container, container, `key ${index}`, `item ${index}`, () => tally.row([]));
+    rows.fill({
+      containerId: container,
+      container,
+      key: `key ${index}`,
+      item: `item ${index}`,
+      create: () => tally.row([])
+    });
     mostLive = Math.max(mostLive, tally.live);
   }
 
@@ -79,8 +114,20 @@ test("a changed item reaches the live rows of its key only", () => {
   const shownA: string[] = [];
   const shownB: string[] = [];
   const tally = new Tally();
-  rows.fill("c1", "container 1", "a", "a", () => tally.row(shownA));
-  rows.fill("c2", "container 2", "b", "b", () => tally.row(shownB));
+  rows.fill({
+    containerId: "c1",
+    container: "container 1",
+    key: "a",
+    item: "a",
+    create: () => tally.row(shownA)
+  });
+  rows.fill({
+    containerId: "c2",
+    container: "container 2",
+    key: "b",
+    item: "b",
+    create: () => tally.row(shownB)
+  });
   rows.refresh(key => (key === "a" ? "a, renamed" : undefined));
   assert.deepEqual(shownA, ["a, renamed"]);
   assert.deepEqual(shownB, []);

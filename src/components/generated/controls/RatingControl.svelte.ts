@@ -7,7 +7,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface RatingControlProps extends ControlProps {
-  value?: number;
+  value?: number | undefined;
   caption?: string;
   initialSetValue?: number;
   isClearEnabled?: boolean;
@@ -27,37 +27,70 @@ export function linkRatingControl(
   props: RatingControlProps,
   bound: RatingControlBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "caption", value => {
-    control.caption = value;
-  });
-  link.property(props, "initialSetValue", value => {
-    control.initialSetValue = value;
-  });
-  link.property(props, "isClearEnabled", value => {
-    control.isClearEnabled = value;
-  });
-  link.property(props, "isReadOnly", value => {
-    control.isReadOnly = value;
-  });
-  link.property(props, "itemInfo", value => {
-    control.itemInfo = value;
-  });
-  link.property(props, "maxRating", value => {
-    control.maxRating = value;
-  });
-  link.property(props, "placeholderValue", value => {
-    control.placeholderValue = value;
-  });
-  link.bindable(bound, "value", {
-    read: () => control.value,
-    write(value) {
-      control.value = value;
+  link.property({
+    props,
+    key: "caption",
+    apply(value) {
+      control.caption = value;
     }
-  }, [
-    handler => control.onValueChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "initialSetValue",
+    apply(value) {
+      control.initialSetValue = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isClearEnabled",
+    apply(value) {
+      control.isClearEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isReadOnly",
+    apply(value) {
+      control.isReadOnly = value;
+    }
+  });
+  link.property({
+    props,
+    key: "itemInfo",
+    apply(value) {
+      control.itemInfo = value;
+    }
+  });
+  link.property({
+    props,
+    key: "maxRating",
+    apply(value) {
+      control.maxRating = value;
+    }
+  });
+  link.property({
+    props,
+    key: "placeholderValue",
+    apply(value) {
+      control.placeholderValue = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "value",
+    access: {
+      read: () => control.value,
+      write(value) {
+        control.value = value;
+      }
+    },
+    subscribers: [
+      handler => control.onValueChanged(handler)
+    ]
+  });
 
   if ("onValueChanged" in props) {
     link.add(control.onValueChanged((...args) => props.onValueChanged?.(...args)));
@@ -68,7 +101,7 @@ export function connectRatingControl(
   control: RatingControl,
   props: RatingControlProps,
   bound: RatingControlBound
-): () => void {
+) {
   const link = new Linker();
   linkRatingControl(control, props, bound, link);
   return () => link.dispose();

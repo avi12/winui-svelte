@@ -23,16 +23,28 @@ export function linkRichTextBlockOverflow(
   props: RichTextBlockOverflowProps,
   bound: RichTextBlockOverflowBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "maxLines", value => {
-    control.maxLines = value;
+  link.property({
+    props,
+    key: "maxLines",
+    apply(value) {
+      control.maxLines = value;
+    }
   });
-  link.property(props, "overflowContentTarget", value => {
-    control.overflowContentTarget = value;
+  link.property({
+    props,
+    key: "overflowContentTarget",
+    apply(value) {
+      control.overflowContentTarget = value;
+    }
   });
-  link.property(props, "padding", value => {
-    control.padding = thicknessOf(value);
+  link.property({
+    props,
+    key: "padding",
+    apply(value) {
+      control.padding = thicknessOf(value);
+    }
   });
 
   if ("onIsTextTrimmedChanged" in props) {
@@ -44,7 +56,7 @@ export function connectRichTextBlockOverflow(
   control: RichTextBlockOverflow,
   props: RichTextBlockOverflowProps,
   bound: RichTextBlockOverflowBound
-): () => void {
+) {
   const link = new Linker();
   linkRichTextBlockOverflow(control, props, bound, link);
   return () => link.dispose();

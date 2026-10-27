@@ -34,49 +34,105 @@ export function linkParallaxView(
   props: ParallaxViewProps,
   bound: ParallaxViewBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "child", value => {
-    control.child = value;
+  link.property({
+    props,
+    key: "child",
+    apply(value) {
+      control.child = value;
+    }
   });
-  link.property(props, "horizontalShift", value => {
-    control.horizontalShift = value;
+  link.property({
+    props,
+    key: "horizontalShift",
+    apply(value) {
+      control.horizontalShift = value;
+    }
   });
-  link.property(props, "horizontalSourceEndOffset", value => {
-    control.horizontalSourceEndOffset = value;
+  link.property({
+    props,
+    key: "horizontalSourceEndOffset",
+    apply(value) {
+      control.horizontalSourceEndOffset = value;
+    }
   });
-  link.property(props, "horizontalSourceOffsetKind", value => {
-    control.horizontalSourceOffsetKind = enumValue(ParallaxSourceOffsetKind, value);
+  link.property({
+    props,
+    key: "horizontalSourceOffsetKind",
+    apply(value) {
+      control.horizontalSourceOffsetKind = enumValue({ table: ParallaxSourceOffsetKind, input: value });
+    }
   });
-  link.property(props, "horizontalSourceStartOffset", value => {
-    control.horizontalSourceStartOffset = value;
+  link.property({
+    props,
+    key: "horizontalSourceStartOffset",
+    apply(value) {
+      control.horizontalSourceStartOffset = value;
+    }
   });
-  link.property(props, "isHorizontalShiftClamped", value => {
-    control.isHorizontalShiftClamped = value;
+  link.property({
+    props,
+    key: "isHorizontalShiftClamped",
+    apply(value) {
+      control.isHorizontalShiftClamped = value;
+    }
   });
-  link.property(props, "isVerticalShiftClamped", value => {
-    control.isVerticalShiftClamped = value;
+  link.property({
+    props,
+    key: "isVerticalShiftClamped",
+    apply(value) {
+      control.isVerticalShiftClamped = value;
+    }
   });
-  link.property(props, "maxHorizontalShiftRatio", value => {
-    control.maxHorizontalShiftRatio = value;
+  link.property({
+    props,
+    key: "maxHorizontalShiftRatio",
+    apply(value) {
+      control.maxHorizontalShiftRatio = value;
+    }
   });
-  link.property(props, "maxVerticalShiftRatio", value => {
-    control.maxVerticalShiftRatio = value;
+  link.property({
+    props,
+    key: "maxVerticalShiftRatio",
+    apply(value) {
+      control.maxVerticalShiftRatio = value;
+    }
   });
-  link.property(props, "source", value => {
-    control.source = value;
+  link.property({
+    props,
+    key: "source",
+    apply(value) {
+      control.source = value;
+    }
   });
-  link.property(props, "verticalShift", value => {
-    control.verticalShift = value;
+  link.property({
+    props,
+    key: "verticalShift",
+    apply(value) {
+      control.verticalShift = value;
+    }
   });
-  link.property(props, "verticalSourceEndOffset", value => {
-    control.verticalSourceEndOffset = value;
+  link.property({
+    props,
+    key: "verticalSourceEndOffset",
+    apply(value) {
+      control.verticalSourceEndOffset = value;
+    }
   });
-  link.property(props, "verticalSourceOffsetKind", value => {
-    control.verticalSourceOffsetKind = enumValue(ParallaxSourceOffsetKind, value);
+  link.property({
+    props,
+    key: "verticalSourceOffsetKind",
+    apply(value) {
+      control.verticalSourceOffsetKind = enumValue({ table: ParallaxSourceOffsetKind, input: value });
+    }
   });
-  link.property(props, "verticalSourceStartOffset", value => {
-    control.verticalSourceStartOffset = value;
+  link.property({
+    props,
+    key: "verticalSourceStartOffset",
+    apply(value) {
+      control.verticalSourceStartOffset = value;
+    }
   });
 }
 
@@ -84,7 +140,7 @@ export function connectParallaxView(
   control: ParallaxView,
   props: ParallaxViewProps,
   bound: ParallaxViewBound
-): () => void {
+) {
   const link = new Linker();
   linkParallaxView(control, props, bound, link);
   return () => link.dispose();

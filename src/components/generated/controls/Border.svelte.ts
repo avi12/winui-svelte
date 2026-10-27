@@ -37,34 +37,70 @@ export function linkBorder(
   props: BorderProps,
   bound: BorderBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "background", value => {
-    control.background = brushOf(value);
+  link.property({
+    props,
+    key: "background",
+    apply(value) {
+      control.background = brushOf(value);
+    }
   });
-  link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+  link.property({
+    props,
+    key: "backgroundSizing",
+    apply(value) {
+      control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
+    }
   });
-  link.property(props, "backgroundTransition", value => {
-    control.backgroundTransition = value;
+  link.property({
+    props,
+    key: "backgroundTransition",
+    apply(value) {
+      control.backgroundTransition = value;
+    }
   });
-  link.property(props, "borderBrush", value => {
-    control.borderBrush = brushOf(value);
+  link.property({
+    props,
+    key: "borderBrush",
+    apply(value) {
+      control.borderBrush = brushOf(value);
+    }
   });
-  link.property(props, "borderThickness", value => {
-    control.borderThickness = thicknessOf(value);
+  link.property({
+    props,
+    key: "borderThickness",
+    apply(value) {
+      control.borderThickness = thicknessOf(value);
+    }
   });
-  link.contentProperty(props, "child", value => {
-    control.child = value;
+  link.contentProperty({
+    props,
+    key: "child",
+    apply(value) {
+      control.child = value;
+    }
   });
-  link.property(props, "childTransitions", value => {
-    control.childTransitions = value;
+  link.property({
+    props,
+    key: "childTransitions",
+    apply(value) {
+      control.childTransitions = value;
+    }
   });
-  link.property(props, "cornerRadius", value => {
-    control.cornerRadius = cornerRadiusOf(value);
+  link.property({
+    props,
+    key: "cornerRadius",
+    apply(value) {
+      control.cornerRadius = cornerRadiusOf(value);
+    }
   });
-  link.property(props, "padding", value => {
-    control.padding = thicknessOf(value);
+  link.property({
+    props,
+    key: "padding",
+    apply(value) {
+      control.padding = thicknessOf(value);
+    }
   });
 }
 
@@ -72,7 +108,7 @@ export function connectBorder(
   control: Border,
   props: BorderProps,
   bound: BorderBound
-): () => void {
+) {
   const link = new Linker();
   linkBorder(control, props, bound, link);
   return () => link.dispose();

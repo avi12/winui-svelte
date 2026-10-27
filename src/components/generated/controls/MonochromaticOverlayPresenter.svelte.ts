@@ -21,13 +21,21 @@ export function linkMonochromaticOverlayPresenter(
   props: MonochromaticOverlayPresenterProps,
   bound: MonochromaticOverlayPresenterBound,
   link: Linker
-): void {
+) {
   linkGrid(control, props, bound, link);
-  link.property(props, "replacementColor", value => {
-    control.replacementColor = colorOf(value);
+  link.property({
+    props,
+    key: "replacementColor",
+    apply(value) {
+      control.replacementColor = colorOf(value);
+    }
   });
-  link.property(props, "sourceElement", value => {
-    control.sourceElement = value;
+  link.property({
+    props,
+    key: "sourceElement",
+    apply(value) {
+      control.sourceElement = value;
+    }
   });
 }
 
@@ -35,7 +43,7 @@ export function connectMonochromaticOverlayPresenter(
   control: MonochromaticOverlayPresenter,
   props: MonochromaticOverlayPresenterProps,
   bound: MonochromaticOverlayPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkMonochromaticOverlayPresenter(control, props, bound, link);
   return () => link.dispose();

@@ -15,6 +15,6 @@ export function linkInline(
   props: InlineProps,
   bound: InlineBound,
   link: Linker
-): void {
+) {
   linkTextElement(control, props, bound, link);
 }

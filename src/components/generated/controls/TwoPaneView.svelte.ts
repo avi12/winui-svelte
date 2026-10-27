@@ -34,34 +34,70 @@ export function linkTwoPaneView(
   props: TwoPaneViewProps,
   bound: TwoPaneViewBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "minTallModeHeight", value => {
-    control.minTallModeHeight = value;
+  link.property({
+    props,
+    key: "minTallModeHeight",
+    apply(value) {
+      control.minTallModeHeight = value;
+    }
   });
-  link.property(props, "minWideModeWidth", value => {
-    control.minWideModeWidth = value;
+  link.property({
+    props,
+    key: "minWideModeWidth",
+    apply(value) {
+      control.minWideModeWidth = value;
+    }
   });
-  link.property(props, "pane1", value => {
-    control.pane1 = value;
+  link.property({
+    props,
+    key: "pane1",
+    apply(value) {
+      control.pane1 = value;
+    }
   });
-  link.property(props, "pane1Length", value => {
-    control.pane1Length = gridLengthOf(value);
+  link.property({
+    props,
+    key: "pane1Length",
+    apply(value) {
+      control.pane1Length = gridLengthOf(value);
+    }
   });
-  link.property(props, "pane2", value => {
-    control.pane2 = value;
+  link.property({
+    props,
+    key: "pane2",
+    apply(value) {
+      control.pane2 = value;
+    }
   });
-  link.property(props, "pane2Length", value => {
-    control.pane2Length = gridLengthOf(value);
+  link.property({
+    props,
+    key: "pane2Length",
+    apply(value) {
+      control.pane2Length = gridLengthOf(value);
+    }
   });
-  link.property(props, "panePriority", value => {
-    control.panePriority = enumValue(TwoPaneViewPriority, value);
+  link.property({
+    props,
+    key: "panePriority",
+    apply(value) {
+      control.panePriority = enumValue({ table: TwoPaneViewPriority, input: value });
+    }
   });
-  link.property(props, "tallModeConfiguration", value => {
-    control.tallModeConfiguration = enumValue(TwoPaneViewTallModeConfiguration, value);
+  link.property({
+    props,
+    key: "tallModeConfiguration",
+    apply(value) {
+      control.tallModeConfiguration = enumValue({ table: TwoPaneViewTallModeConfiguration, input: value });
+    }
   });
-  link.property(props, "wideModeConfiguration", value => {
-    control.wideModeConfiguration = enumValue(TwoPaneViewWideModeConfiguration, value);
+  link.property({
+    props,
+    key: "wideModeConfiguration",
+    apply(value) {
+      control.wideModeConfiguration = enumValue({ table: TwoPaneViewWideModeConfiguration, input: value });
+    }
   });
 
   if ("onModeChanged" in props) {
@@ -73,7 +109,7 @@ export function connectTwoPaneView(
   control: TwoPaneView,
   props: TwoPaneViewProps,
   bound: TwoPaneViewBound
-): () => void {
+) {
   const link = new Linker();
   linkTwoPaneView(control, props, bound, link);
   return () => link.dispose();

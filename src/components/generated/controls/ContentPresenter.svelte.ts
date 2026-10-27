@@ -74,88 +74,196 @@ export function linkContentPresenter(
   props: ContentPresenterProps,
   bound: ContentPresenterBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "background", value => {
-    control.background = brushOf(value);
+  link.property({
+    props,
+    key: "background",
+    apply(value) {
+      control.background = brushOf(value);
+    }
   });
-  link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+  link.property({
+    props,
+    key: "backgroundSizing",
+    apply(value) {
+      control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
+    }
   });
-  link.property(props, "backgroundTransition", value => {
-    control.backgroundTransition = value;
+  link.property({
+    props,
+    key: "backgroundTransition",
+    apply(value) {
+      control.backgroundTransition = value;
+    }
   });
-  link.property(props, "borderBrush", value => {
-    control.borderBrush = brushOf(value);
+  link.property({
+    props,
+    key: "borderBrush",
+    apply(value) {
+      control.borderBrush = brushOf(value);
+    }
   });
-  link.property(props, "borderThickness", value => {
-    control.borderThickness = thicknessOf(value);
+  link.property({
+    props,
+    key: "borderThickness",
+    apply(value) {
+      control.borderThickness = thicknessOf(value);
+    }
   });
-  link.property(props, "characterSpacing", value => {
-    control.characterSpacing = value;
+  link.property({
+    props,
+    key: "characterSpacing",
+    apply(value) {
+      control.characterSpacing = value;
+    }
   });
-  link.contentProperty(props, "content", value => {
-    control.content = objectOf(value);
+  link.contentProperty({
+    props,
+    key: "content",
+    apply(value) {
+      control.content = objectOf(value);
+    }
   });
-  link.property(props, "contentTemplate", value => {
-    control.contentTemplate = value;
+  link.property({
+    props,
+    key: "contentTemplate",
+    apply(value) {
+      control.contentTemplate = value;
+    }
   });
-  link.property(props, "contentTemplateSelector", value => {
-    control.contentTemplateSelector = value;
+  link.property({
+    props,
+    key: "contentTemplateSelector",
+    apply(value) {
+      control.contentTemplateSelector = value;
+    }
   });
-  link.property(props, "contentTransitions", value => {
-    control.contentTransitions = value;
+  link.property({
+    props,
+    key: "contentTransitions",
+    apply(value) {
+      control.contentTransitions = value;
+    }
   });
-  link.property(props, "cornerRadius", value => {
-    control.cornerRadius = cornerRadiusOf(value);
+  link.property({
+    props,
+    key: "cornerRadius",
+    apply(value) {
+      control.cornerRadius = cornerRadiusOf(value);
+    }
   });
-  link.property(props, "fontFamily", value => {
-    control.fontFamily = fontFamilyOf(value);
+  link.property({
+    props,
+    key: "fontFamily",
+    apply(value) {
+      control.fontFamily = fontFamilyOf(value);
+    }
   });
-  link.property(props, "fontSize", value => {
-    control.fontSize = value;
+  link.property({
+    props,
+    key: "fontSize",
+    apply(value) {
+      control.fontSize = value;
+    }
   });
-  link.property(props, "fontStretch", value => {
-    control.fontStretch = enumValue(FontStretch, value);
+  link.property({
+    props,
+    key: "fontStretch",
+    apply(value) {
+      control.fontStretch = enumValue({ table: FontStretch, input: value });
+    }
   });
-  link.property(props, "fontStyle", value => {
-    control.fontStyle = enumValue(FontStyle, value);
+  link.property({
+    props,
+    key: "fontStyle",
+    apply(value) {
+      control.fontStyle = enumValue({ table: FontStyle, input: value });
+    }
   });
-  link.property(props, "fontWeight", value => {
-    control.fontWeight = value;
+  link.property({
+    props,
+    key: "fontWeight",
+    apply(value) {
+      control.fontWeight = value;
+    }
   });
-  link.property(props, "foreground", value => {
-    control.foreground = brushOf(value);
+  link.property({
+    props,
+    key: "foreground",
+    apply(value) {
+      control.foreground = brushOf(value);
+    }
   });
-  link.property(props, "horizontalContentAlignment", value => {
-    control.horizontalContentAlignment = enumValue(HorizontalAlignment, value);
+  link.property({
+    props,
+    key: "horizontalContentAlignment",
+    apply(value) {
+      control.horizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
+    }
   });
-  link.property(props, "isTextScaleFactorEnabled", value => {
-    control.isTextScaleFactorEnabled = value;
+  link.property({
+    props,
+    key: "isTextScaleFactorEnabled",
+    apply(value) {
+      control.isTextScaleFactorEnabled = value;
+    }
   });
-  link.property(props, "lineHeight", value => {
-    control.lineHeight = value;
+  link.property({
+    props,
+    key: "lineHeight",
+    apply(value) {
+      control.lineHeight = value;
+    }
   });
-  link.property(props, "lineStackingStrategy", value => {
-    control.lineStackingStrategy = enumValue(LineStackingStrategy, value);
+  link.property({
+    props,
+    key: "lineStackingStrategy",
+    apply(value) {
+      control.lineStackingStrategy = enumValue({ table: LineStackingStrategy, input: value });
+    }
   });
-  link.property(props, "maxLines", value => {
-    control.maxLines = value;
+  link.property({
+    props,
+    key: "maxLines",
+    apply(value) {
+      control.maxLines = value;
+    }
   });
-  link.property(props, "opticalMarginAlignment", value => {
-    control.opticalMarginAlignment = enumValue(OpticalMarginAlignment, value);
+  link.property({
+    props,
+    key: "opticalMarginAlignment",
+    apply(value) {
+      control.opticalMarginAlignment = enumValue({ table: OpticalMarginAlignment, input: value });
+    }
   });
-  link.property(props, "padding", value => {
-    control.padding = thicknessOf(value);
+  link.property({
+    props,
+    key: "padding",
+    apply(value) {
+      control.padding = thicknessOf(value);
+    }
   });
-  link.property(props, "textLineBounds", value => {
-    control.textLineBounds = enumValue(TextLineBounds, value);
+  link.property({
+    props,
+    key: "textLineBounds",
+    apply(value) {
+      control.textLineBounds = enumValue({ table: TextLineBounds, input: value });
+    }
   });
-  link.property(props, "textWrapping", value => {
-    control.textWrapping = enumValue(TextWrapping, value);
+  link.property({
+    props,
+    key: "textWrapping",
+    apply(value) {
+      control.textWrapping = enumValue({ table: TextWrapping, input: value });
+    }
   });
-  link.property(props, "verticalContentAlignment", value => {
-    control.verticalContentAlignment = enumValue(VerticalAlignment, value);
+  link.property({
+    props,
+    key: "verticalContentAlignment",
+    apply(value) {
+      control.verticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
+    }
   });
 }
 
@@ -163,7 +271,7 @@ export function connectContentPresenter(
   control: ContentPresenter,
   props: ContentPresenterProps,
   bound: ContentPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkContentPresenter(control, props, bound, link);
   return () => link.dispose();

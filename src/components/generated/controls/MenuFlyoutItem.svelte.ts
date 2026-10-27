@@ -27,22 +27,42 @@ export function linkMenuFlyoutItem(
   props: MenuFlyoutItemProps,
   bound: MenuFlyoutItemBound,
   link: Linker
-): void {
+) {
   linkMenuFlyoutItemBase(control, props, bound, link);
-  link.property(props, "command", value => {
-    control.command = value;
+  link.property({
+    props,
+    key: "command",
+    apply(value) {
+      control.command = value;
+    }
   });
-  link.property(props, "commandParameter", value => {
-    control.commandParameter = objectOf(value);
+  link.property({
+    props,
+    key: "commandParameter",
+    apply(value) {
+      control.commandParameter = objectOf(value);
+    }
   });
-  link.property(props, "icon", value => {
-    control.icon = value;
+  link.property({
+    props,
+    key: "icon",
+    apply(value) {
+      control.icon = value;
+    }
   });
-  link.property(props, "keyboardAcceleratorTextOverride", value => {
-    control.keyboardAcceleratorTextOverride = value;
+  link.property({
+    props,
+    key: "keyboardAcceleratorTextOverride",
+    apply(value) {
+      control.keyboardAcceleratorTextOverride = value;
+    }
   });
-  link.contentProperty(props, "text", value => {
-    control.text = value;
+  link.contentProperty({
+    props,
+    key: "text",
+    apply(value) {
+      control.text = value;
+    }
   });
 
   if ("onClick" in props) {
@@ -54,7 +74,7 @@ export function connectMenuFlyoutItem(
   control: MenuFlyoutItem,
   props: MenuFlyoutItemProps,
   bound: MenuFlyoutItemBound
-): () => void {
+) {
   const link = new Linker();
   linkMenuFlyoutItem(control, props, bound, link);
   return () => link.dispose();

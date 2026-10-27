@@ -20,13 +20,21 @@ export function linkNavigationViewItemPresenter(
   props: NavigationViewItemPresenterProps,
   bound: NavigationViewItemPresenterBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "icon", value => {
-    control.icon = value;
+  link.property({
+    props,
+    key: "icon",
+    apply(value) {
+      control.icon = value;
+    }
   });
-  link.property(props, "infoBadge", value => {
-    control.infoBadge = value;
+  link.property({
+    props,
+    key: "infoBadge",
+    apply(value) {
+      control.infoBadge = value;
+    }
   });
 }
 
@@ -34,7 +42,7 @@ export function connectNavigationViewItemPresenter(
   control: NavigationViewItemPresenter,
   props: NavigationViewItemPresenterProps,
   bound: NavigationViewItemPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkNavigationViewItemPresenter(control, props, bound, link);
   return () => link.dispose();

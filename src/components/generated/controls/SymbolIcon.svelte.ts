@@ -21,10 +21,14 @@ export function linkSymbolIcon(
   props: SymbolIconProps,
   bound: SymbolIconBound,
   link: Linker
-): void {
+) {
   linkIconElement(control, props, bound, link);
-  link.property(props, "symbol", value => {
-    control.symbol = enumValue(Symbol, value);
+  link.property({
+    props,
+    key: "symbol",
+    apply(value) {
+      control.symbol = enumValue({ table: Symbol, input: value });
+    }
   });
 }
 
@@ -32,7 +36,7 @@ export function connectSymbolIcon(
   control: SymbolIcon,
   props: SymbolIconProps,
   bound: SymbolIconBound
-): () => void {
+) {
   const link = new Linker();
   linkSymbolIcon(control, props, bound, link);
   return () => link.dispose();

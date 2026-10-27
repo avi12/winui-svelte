@@ -20,13 +20,21 @@ export function linkAppBarSeparator(
   props: AppBarSeparatorProps,
   bound: AppBarSeparatorBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "dynamicOverflowOrder", value => {
-    control.dynamicOverflowOrder = value;
+  link.property({
+    props,
+    key: "dynamicOverflowOrder",
+    apply(value) {
+      control.dynamicOverflowOrder = value;
+    }
   });
-  link.property(props, "isCompact", value => {
-    control.isCompact = value;
+  link.property({
+    props,
+    key: "isCompact",
+    apply(value) {
+      control.isCompact = value;
+    }
   });
 }
 
@@ -34,7 +42,7 @@ export function connectAppBarSeparator(
   control: AppBarSeparator,
   props: AppBarSeparatorProps,
   bound: AppBarSeparatorBound
-): () => void {
+) {
   const link = new Linker();
   linkAppBarSeparator(control, props, bound, link);
   return () => link.dispose();

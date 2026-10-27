@@ -9,7 +9,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface NumberBoxProps extends ControlProps {
-  value?: number;
+  value?: number | undefined;
   acceptsExpression?: boolean;
   description?: ObjectInput;
   header?: ObjectInput;
@@ -40,70 +40,147 @@ export function linkNumberBox(
   props: NumberBoxProps,
   bound: NumberBoxBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "acceptsExpression", value => {
-    control.acceptsExpression = value;
-  });
-  link.property(props, "description", value => {
-    control.description = objectOf(value);
-  });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "isWrapEnabled", value => {
-    control.isWrapEnabled = value;
-  });
-  link.property(props, "largeChange", value => {
-    control.largeChange = value;
-  });
-  link.property(props, "maximum", value => {
-    control.maximum = value;
-  });
-  link.property(props, "minimum", value => {
-    control.minimum = value;
-  });
-  link.property(props, "numberFormatter", value => {
-    control.numberFormatter = value;
-  });
-  link.property(props, "placeholderText", value => {
-    control.placeholderText = value;
-  });
-  link.property(props, "preventKeyboardDisplayOnProgrammaticFocus", value => {
-    control.preventKeyboardDisplayOnProgrammaticFocus = value;
-  });
-  link.property(props, "selectionFlyout", value => {
-    control.selectionFlyout = value;
-  });
-  link.property(props, "selectionHighlightColor", value => {
-    control.selectionHighlightColor = value;
-  });
-  link.property(props, "smallChange", value => {
-    control.smallChange = value;
-  });
-  link.property(props, "spinButtonPlacementMode", value => {
-    control.spinButtonPlacementMode = enumValue(NumberBoxSpinButtonPlacementMode, value);
-  });
-  link.property(props, "text", value => {
-    control.text = value;
-  });
-  link.property(props, "textReadingOrder", value => {
-    control.textReadingOrder = enumValue(TextReadingOrder, value);
-  });
-  link.property(props, "validationMode", value => {
-    control.validationMode = enumValue(NumberBoxValidationMode, value);
-  });
-  link.bindable(bound, "value", {
-    read: () => control.value,
-    write(value) {
-      control.value = value;
+  link.property({
+    props,
+    key: "acceptsExpression",
+    apply(value) {
+      control.acceptsExpression = value;
     }
-  }, [
-    handler => control.onValueChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "description",
+    apply(value) {
+      control.description = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "header",
+    apply(value) {
+      control.header = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply(value) {
+      control.headerTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isWrapEnabled",
+    apply(value) {
+      control.isWrapEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "largeChange",
+    apply(value) {
+      control.largeChange = value;
+    }
+  });
+  link.property({
+    props,
+    key: "maximum",
+    apply(value) {
+      control.maximum = value;
+    }
+  });
+  link.property({
+    props,
+    key: "minimum",
+    apply(value) {
+      control.minimum = value;
+    }
+  });
+  link.property({
+    props,
+    key: "numberFormatter",
+    apply(value) {
+      control.numberFormatter = value;
+    }
+  });
+  link.property({
+    props,
+    key: "placeholderText",
+    apply(value) {
+      control.placeholderText = value;
+    }
+  });
+  link.property({
+    props,
+    key: "preventKeyboardDisplayOnProgrammaticFocus",
+    apply(value) {
+      control.preventKeyboardDisplayOnProgrammaticFocus = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionFlyout",
+    apply(value) {
+      control.selectionFlyout = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionHighlightColor",
+    apply(value) {
+      control.selectionHighlightColor = value;
+    }
+  });
+  link.property({
+    props,
+    key: "smallChange",
+    apply(value) {
+      control.smallChange = value;
+    }
+  });
+  link.property({
+    props,
+    key: "spinButtonPlacementMode",
+    apply(value) {
+      control.spinButtonPlacementMode = enumValue({ table: NumberBoxSpinButtonPlacementMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "text",
+    apply(value) {
+      control.text = value;
+    }
+  });
+  link.property({
+    props,
+    key: "textReadingOrder",
+    apply(value) {
+      control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "validationMode",
+    apply(value) {
+      control.validationMode = enumValue({ table: NumberBoxValidationMode, input: value });
+    }
+  });
+  link.bindable({
+    bound,
+    key: "value",
+    access: {
+      read: () => control.value,
+      write(value) {
+        control.value = value;
+      }
+    },
+    subscribers: [
+      handler => control.onValueChanged(handler)
+    ]
+  });
 
   if ("onValueChanged" in props) {
     link.add(control.onValueChanged((...args) => props.onValueChanged?.(...args)));
@@ -114,7 +191,7 @@ export function connectNumberBox(
   control: NumberBox,
   props: NumberBoxProps,
   bound: NumberBoxBound
-): () => void {
+) {
   const link = new Linker();
   linkNumberBox(control, props, bound, link);
   return () => link.dispose();

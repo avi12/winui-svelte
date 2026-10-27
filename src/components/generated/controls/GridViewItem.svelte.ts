@@ -18,7 +18,7 @@ export function linkGridViewItem(
   props: GridViewItemProps,
   bound: GridViewItemBound,
   link: Linker
-): void {
+) {
   linkSelectorItem(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectGridViewItem(
   control: GridViewItem,
   props: GridViewItemProps,
   bound: GridViewItemBound
-): () => void {
+) {
   const link = new Linker();
   linkGridViewItem(control, props, bound, link);
   return () => link.dispose();

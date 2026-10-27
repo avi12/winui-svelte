@@ -21,16 +21,28 @@ export function linkItemsRepeaterScrollHost(
   props: ItemsRepeaterScrollHostProps,
   bound: ItemsRepeaterScrollHostBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "horizontalAnchorRatio", value => {
-    control.horizontalAnchorRatio = value;
+  link.property({
+    props,
+    key: "horizontalAnchorRatio",
+    apply(value) {
+      control.horizontalAnchorRatio = value;
+    }
   });
-  link.property(props, "scrollViewer", value => {
-    control.scrollViewer = value;
+  link.property({
+    props,
+    key: "scrollViewer",
+    apply(value) {
+      control.scrollViewer = value;
+    }
   });
-  link.property(props, "verticalAnchorRatio", value => {
-    control.verticalAnchorRatio = value;
+  link.property({
+    props,
+    key: "verticalAnchorRatio",
+    apply(value) {
+      control.verticalAnchorRatio = value;
+    }
   });
 }
 
@@ -38,7 +50,7 @@ export function connectItemsRepeaterScrollHost(
   control: ItemsRepeaterScrollHost,
   props: ItemsRepeaterScrollHostProps,
   bound: ItemsRepeaterScrollHostBound
-): () => void {
+) {
   const link = new Linker();
   linkItemsRepeaterScrollHost(control, props, bound, link);
   return () => link.dispose();

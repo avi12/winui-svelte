@@ -19,62 +19,97 @@ class RecordedVector implements KeyVector<Held> {
   readonly held: Held[] = [];
   readonly changes: string[] = [];
 
-  get size(): number {
+  get size() {
     return this.held.length;
   }
 
-  getAt(index: number): Held {
-    return this.held[index];
+  getAt(index: number) {
+    const held = this.held[index];
+    const isPresent = held !== undefined;
+    if (!isPresent) {
+      throw new RangeError(`no entry at ${index}`);
+    }
+
+    return held;
   }
 
-  removeAt(index: number): void {
+  removeAt(index: number) {
     this.changes.push(`remove ${index}`);
     this.held.splice(index, 1);
   }
 
-  insertAt(index: number, held: Held): void {
+  // A property, not a method: its two positional parameters are IVector's.
+  readonly insertAt = (index: number, held: Held) => {
     this.changes.push(`insert ${index}`);
     this.held.splice(index, 0, held);
-  }
+  };
 
-  replaceAll(held: Held[]): void {
+  replaceAll(held: Held[]) {
     this.changes.push(`replaceAll ${held.length}`);
     this.held.splice(0, this.held.length, ...held);
   }
 
-  keys(): string {
+  keys() {
     return this.held.map(codec.unbox).join(",");
   }
 }
 
 test("an empty vector is filled by one reset", () => {
   const vector = new RecordedVector();
-  syncKeyVector(vector, codec, ["a", "b", "c"]);
+  syncKeyVector({
+    vector,
+    codec,
+    wanted: ["a", "b", "c"]
+  });
   assert.equal(vector.keys(), "a,b,c");
   assert.deepEqual(vector.changes, ["replaceAll 3"]);
 });
 
 test("a vector with keys changes only the keys that came or went", () => {
   const vector = new RecordedVector();
-  syncKeyVector(vector, codec, ["a", "b", "c", "d"]);
+  syncKeyVector({
+    vector,
+    codec,
+    wanted: ["a", "b", "c", "d"]
+  });
   vector.changes.length = 0;
-  syncKeyVector(vector, codec, ["a", "c", "d", "e"]);
+  syncKeyVector({
+    vector,
+    codec,
+    wanted: ["a", "c", "d", "e"]
+  });
   assert.equal(vector.keys(), "a,c,d,e");
   assert.deepEqual(vector.changes, ["remove 1", "insert 3"]);
 });
 
 test("the same keys change nothing", () => {
   const vector = new RecordedVector();
-  syncKeyVector(vector, codec, ["a", "b"]);
+  syncKeyVector({
+    vector,
+    codec,
+    wanted: ["a", "b"]
+  });
   vector.changes.length = 0;
-  syncKeyVector(vector, codec, ["a", "b"]);
+  syncKeyVector({
+    vector,
+    codec,
+    wanted: ["a", "b"]
+  });
   assert.deepEqual(vector.changes, []);
 });
 
 test("an emptied list leaves the vector empty", () => {
   const vector = new RecordedVector();
-  syncKeyVector(vector, codec, ["a", "b"]);
-  syncKeyVector(vector, codec, []);
+  syncKeyVector({
+    vector,
+    codec,
+    wanted: ["a", "b"]
+  });
+  syncKeyVector({
+    vector,
+    codec,
+    wanted: []
+  });
   assert.equal(vector.size, 0);
 });
 

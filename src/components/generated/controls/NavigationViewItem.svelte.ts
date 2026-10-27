@@ -26,28 +26,56 @@ export function linkNavigationViewItem(
   props: NavigationViewItemProps,
   bound: NavigationViewItemBound,
   link: Linker
-): void {
+) {
   linkNavigationViewItemBase(control, props, bound, link);
-  link.property(props, "hasUnrealizedChildren", value => {
-    control.hasUnrealizedChildren = value;
+  link.property({
+    props,
+    key: "hasUnrealizedChildren",
+    apply(value) {
+      control.hasUnrealizedChildren = value;
+    }
   });
-  link.property(props, "icon", value => {
-    control.icon = value;
+  link.property({
+    props,
+    key: "icon",
+    apply(value) {
+      control.icon = value;
+    }
   });
-  link.property(props, "infoBadge", value => {
-    control.infoBadge = value;
+  link.property({
+    props,
+    key: "infoBadge",
+    apply(value) {
+      control.infoBadge = value;
+    }
   });
-  link.property(props, "isChildSelected", value => {
-    control.isChildSelected = value;
+  link.property({
+    props,
+    key: "isChildSelected",
+    apply(value) {
+      control.isChildSelected = value;
+    }
   });
-  link.property(props, "isExpanded", value => {
-    control.isExpanded = value;
+  link.property({
+    props,
+    key: "isExpanded",
+    apply(value) {
+      control.isExpanded = value;
+    }
   });
-  link.property(props, "menuItemsSource", value => {
-    control.menuItemsSource = objectOf(value);
+  link.property({
+    props,
+    key: "menuItemsSource",
+    apply(value) {
+      control.menuItemsSource = objectOf(value);
+    }
   });
-  link.property(props, "selectsOnInvoked", value => {
-    control.selectsOnInvoked = value;
+  link.property({
+    props,
+    key: "selectsOnInvoked",
+    apply(value) {
+      control.selectsOnInvoked = value;
+    }
   });
 }
 
@@ -55,7 +83,7 @@ export function connectNavigationViewItem(
   control: NavigationViewItem,
   props: NavigationViewItemProps,
   bound: NavigationViewItemBound
-): () => void {
+) {
   const link = new Linker();
   linkNavigationViewItem(control, props, bound, link);
   return () => link.dispose();

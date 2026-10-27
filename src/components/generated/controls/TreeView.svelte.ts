@@ -9,7 +9,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface TreeViewProps extends ControlProps {
-  selectedItem?: ObjectInput;
+  selectedItem?: ObjectInput | undefined;
   canDragItems?: boolean;
   canReorderItems?: boolean;
   itemContainerStyle?: TreeView["itemContainerStyle"];
@@ -37,46 +37,91 @@ export function linkTreeView(
   props: TreeViewProps,
   bound: TreeViewBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "canDragItems", value => {
-    control.canDragItems = value;
-  });
-  link.property(props, "canReorderItems", value => {
-    control.canReorderItems = value;
-  });
-  link.property(props, "itemContainerStyle", value => {
-    control.itemContainerStyle = value;
-  });
-  link.property(props, "itemContainerStyleSelector", value => {
-    control.itemContainerStyleSelector = value;
-  });
-  link.property(props, "itemContainerTransitions", value => {
-    control.itemContainerTransitions = value;
-  });
-  link.property(props, "itemsSource", value => {
-    control.itemsSource = objectOf(value);
-  });
-  link.property(props, "itemTemplate", value => {
-    control.itemTemplate = value;
-  });
-  link.property(props, "itemTemplateSelector", value => {
-    control.itemTemplateSelector = value;
-  });
-  link.property(props, "selectedNode", value => {
-    control.selectedNode = value;
-  });
-  link.property(props, "selectionMode", value => {
-    control.selectionMode = enumValue(TreeViewSelectionMode, value);
-  });
-  link.bindable(bound, "selectedItem", {
-    read: () => objectInputOf(control.selectedItem),
-    write(value) {
-      control.selectedItem = objectOf(value);
+  link.property({
+    props,
+    key: "canDragItems",
+    apply(value) {
+      control.canDragItems = value;
     }
-  }, [
-    handler => control.onSelectionChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "canReorderItems",
+    apply(value) {
+      control.canReorderItems = value;
+    }
+  });
+  link.property({
+    props,
+    key: "itemContainerStyle",
+    apply(value) {
+      control.itemContainerStyle = value;
+    }
+  });
+  link.property({
+    props,
+    key: "itemContainerStyleSelector",
+    apply(value) {
+      control.itemContainerStyleSelector = value;
+    }
+  });
+  link.property({
+    props,
+    key: "itemContainerTransitions",
+    apply(value) {
+      control.itemContainerTransitions = value;
+    }
+  });
+  link.property({
+    props,
+    key: "itemsSource",
+    apply(value) {
+      control.itemsSource = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "itemTemplate",
+    apply(value) {
+      control.itemTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "itemTemplateSelector",
+    apply(value) {
+      control.itemTemplateSelector = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectedNode",
+    apply(value) {
+      control.selectedNode = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionMode",
+    apply(value) {
+      control.selectionMode = enumValue({ table: TreeViewSelectionMode, input: value });
+    }
+  });
+  link.bindable({
+    bound,
+    key: "selectedItem",
+    access: {
+      read: () => objectInputOf(control.selectedItem),
+      write(value) {
+        control.selectedItem = objectOf(value);
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
 
   if ("onCollapsed" in props) {
     link.add(control.onCollapsed((...args) => props.onCollapsed?.(...args)));
@@ -107,7 +152,7 @@ export function connectTreeView(
   control: TreeView,
   props: TreeViewProps,
   bound: TreeViewBound
-): () => void {
+) {
   const link = new Linker();
   linkTreeView(control, props, bound, link);
   return () => link.dispose();

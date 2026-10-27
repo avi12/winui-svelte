@@ -9,7 +9,7 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
 export interface AppBarProps extends ContentControlProps {
-  isOpen?: boolean;
+  isOpen?: boolean | undefined;
   closedDisplayMode?: EnumInput<typeof AppBarClosedDisplayMode>;
   isSticky?: boolean;
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
@@ -28,26 +28,43 @@ export function linkAppBar(
   props: AppBarProps,
   bound: AppBarBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "closedDisplayMode", value => {
-    control.closedDisplayMode = enumValue(AppBarClosedDisplayMode, value);
-  });
-  link.property(props, "isSticky", value => {
-    control.isSticky = value;
-  });
-  link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
-  });
-  link.bindable(bound, "isOpen", {
-    read: () => control.isOpen,
-    write(value) {
-      control.isOpen = value;
+  link.property({
+    props,
+    key: "closedDisplayMode",
+    apply(value) {
+      control.closedDisplayMode = enumValue({ table: AppBarClosedDisplayMode, input: value });
     }
-  }, [
-    handler => control.onOpened(handler),
-    handler => control.onClosed(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "isSticky",
+    apply(value) {
+      control.isSticky = value;
+    }
+  });
+  link.property({
+    props,
+    key: "lightDismissOverlayMode",
+    apply(value) {
+      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isOpen",
+    access: {
+      read: () => control.isOpen,
+      write(value) {
+        control.isOpen = value;
+      }
+    },
+    subscribers: [
+      handler => control.onOpened(handler),
+      handler => control.onClosed(handler)
+    ]
+  });
 
   if ("onClosed" in props) {
     link.add(control.onClosed((...args) => props.onClosed?.(...args)));
@@ -70,7 +87,7 @@ export function connectAppBar(
   control: AppBar,
   props: AppBarProps,
   bound: AppBarBound
-): () => void {
+) {
   const link = new Linker();
   linkAppBar(control, props, bound, link);
   return () => link.dispose();

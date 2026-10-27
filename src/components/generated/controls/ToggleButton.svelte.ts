@@ -8,7 +8,7 @@ import { linkButtonBase } from "./ButtonBase.svelte.ts";
 import type { ButtonBaseBound, ButtonBaseProps } from "./ButtonBase.svelte.ts";
 
 export interface ToggleButtonProps extends ButtonBaseProps {
-  isChecked?: NullableBooleanInput;
+  isChecked?: NullableBooleanInput | undefined;
   isThreeState?: boolean;
   onChecked?: Parameters<ToggleButton["onChecked"]>[0];
   onIndeterminate?: Parameters<ToggleButton["onIndeterminate"]>[0];
@@ -24,21 +24,30 @@ export function linkToggleButton(
   props: ToggleButtonProps,
   bound: ToggleButtonBound,
   link: Linker
-): void {
+) {
   linkButtonBase(control, props, bound, link);
-  link.property(props, "isThreeState", value => {
-    control.isThreeState = value;
-  });
-  link.bindable(bound, "isChecked", {
-    read: () => control.isChecked,
-    write(value) {
-      control.isChecked = nullableBooleanOf(value);
+  link.property({
+    props,
+    key: "isThreeState",
+    apply(value) {
+      control.isThreeState = value;
     }
-  }, [
-    handler => control.onChecked(handler),
-    handler => control.onUnchecked(handler),
-    handler => control.onIndeterminate(handler)
-  ]);
+  });
+  link.bindable({
+    bound,
+    key: "isChecked",
+    access: {
+      read: () => control.isChecked,
+      write(value) {
+        control.isChecked = nullableBooleanOf(value);
+      }
+    },
+    subscribers: [
+      handler => control.onChecked(handler),
+      handler => control.onUnchecked(handler),
+      handler => control.onIndeterminate(handler)
+    ]
+  });
 
   if ("onChecked" in props) {
     link.add(control.onChecked((...args) => props.onChecked?.(...args)));
@@ -57,7 +66,7 @@ export function connectToggleButton(
   control: ToggleButton,
   props: ToggleButtonProps,
   bound: ToggleButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkToggleButton(control, props, bound, link);
   return () => link.dispose();

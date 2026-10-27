@@ -24,19 +24,35 @@ export function linkAnnotatedScrollBar(
   props: AnnotatedScrollBarProps,
   bound: AnnotatedScrollBarBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "detailLabelTemplate", value => {
-    control.detailLabelTemplate = value;
+  link.property({
+    props,
+    key: "detailLabelTemplate",
+    apply(value) {
+      control.detailLabelTemplate = value;
+    }
   });
-  link.property(props, "labels", value => {
-    control.labels = value;
+  link.property({
+    props,
+    key: "labels",
+    apply(value) {
+      control.labels = value;
+    }
   });
-  link.property(props, "labelTemplate", value => {
-    control.labelTemplate = value;
+  link.property({
+    props,
+    key: "labelTemplate",
+    apply(value) {
+      control.labelTemplate = value;
+    }
   });
-  link.property(props, "smallChange", value => {
-    control.smallChange = value;
+  link.property({
+    props,
+    key: "smallChange",
+    apply(value) {
+      control.smallChange = value;
+    }
   });
 
   if ("onDetailLabelRequested" in props) {
@@ -52,7 +68,7 @@ export function connectAnnotatedScrollBar(
   control: AnnotatedScrollBar,
   props: AnnotatedScrollBarProps,
   bound: AnnotatedScrollBarBound
-): () => void {
+) {
   const link = new Linker();
   linkAnnotatedScrollBar(control, props, bound, link);
   return () => link.dispose();

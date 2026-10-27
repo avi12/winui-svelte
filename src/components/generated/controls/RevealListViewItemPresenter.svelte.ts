@@ -18,7 +18,7 @@ export function linkRevealListViewItemPresenter(
   props: RevealListViewItemPresenterProps,
   bound: RevealListViewItemPresenterBound,
   link: Linker
-): void {
+) {
   linkListViewItemPresenter(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectRevealListViewItemPresenter(
   control: RevealListViewItemPresenter,
   props: RevealListViewItemPresenterProps,
   bound: RevealListViewItemPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkRevealListViewItemPresenter(control, props, bound, link);
   return () => link.dispose();

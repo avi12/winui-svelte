@@ -18,7 +18,7 @@ export function linkNavigationViewItemSeparator(
   props: NavigationViewItemSeparatorProps,
   bound: NavigationViewItemSeparatorBound,
   link: Linker
-): void {
+) {
   linkNavigationViewItemBase(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectNavigationViewItemSeparator(
   control: NavigationViewItemSeparator,
   props: NavigationViewItemSeparatorProps,
   bound: NavigationViewItemSeparatorBound
-): () => void {
+) {
   const link = new Linker();
   linkNavigationViewItemSeparator(control, props, bound, link);
   return () => link.dispose();

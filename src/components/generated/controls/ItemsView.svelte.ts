@@ -29,28 +29,56 @@ export function linkItemsView(
   props: ItemsViewProps,
   bound: ItemsViewBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "isItemInvokedEnabled", value => {
-    control.isItemInvokedEnabled = value;
+  link.property({
+    props,
+    key: "isItemInvokedEnabled",
+    apply(value) {
+      control.isItemInvokedEnabled = value;
+    }
   });
-  link.property(props, "itemsSource", value => {
-    control.itemsSource = objectOf(value);
+  link.property({
+    props,
+    key: "itemsSource",
+    apply(value) {
+      control.itemsSource = objectOf(value);
+    }
   });
-  link.property(props, "itemTemplate", value => {
-    control.itemTemplate = value;
+  link.property({
+    props,
+    key: "itemTemplate",
+    apply(value) {
+      control.itemTemplate = value;
+    }
   });
-  link.property(props, "itemTransitionProvider", value => {
-    control.itemTransitionProvider = value;
+  link.property({
+    props,
+    key: "itemTransitionProvider",
+    apply(value) {
+      control.itemTransitionProvider = value;
+    }
   });
-  link.property(props, "layout", value => {
-    control.layout = value;
+  link.property({
+    props,
+    key: "layout",
+    apply(value) {
+      control.layout = value;
+    }
   });
-  link.property(props, "selectionMode", value => {
-    control.selectionMode = enumValue(ItemsViewSelectionMode, value);
+  link.property({
+    props,
+    key: "selectionMode",
+    apply(value) {
+      control.selectionMode = enumValue({ table: ItemsViewSelectionMode, input: value });
+    }
   });
-  link.property(props, "verticalScrollController", value => {
-    control.verticalScrollController = value;
+  link.property({
+    props,
+    key: "verticalScrollController",
+    apply(value) {
+      control.verticalScrollController = value;
+    }
   });
 
   if ("onItemInvoked" in props) {
@@ -66,7 +94,7 @@ export function connectItemsView(
   control: ItemsView,
   props: ItemsViewProps,
   bound: ItemsViewBound
-): () => void {
+) {
   const link = new Linker();
   linkItemsView(control, props, bound, link);
   return () => link.dispose();

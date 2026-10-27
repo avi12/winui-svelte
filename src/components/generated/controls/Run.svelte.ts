@@ -24,13 +24,21 @@ export function linkRun(
   props: RunProps,
   bound: RunBound,
   link: Linker
-): void {
+) {
   linkInline(control, props, bound, link);
-  link.property(props, "flowDirection", value => {
-    control.flowDirection = enumValue(FlowDirection, value);
+  link.property({
+    props,
+    key: "flowDirection",
+    apply(value) {
+      control.flowDirection = enumValue({ table: FlowDirection, input: value });
+    }
   });
-  link.contentProperty(props, "text", value => {
-    control.text = value;
+  link.contentProperty({
+    props,
+    key: "text",
+    apply(value) {
+      control.text = value;
+    }
   });
 }
 
@@ -38,7 +46,7 @@ export function connectRun(
   control: Run,
   props: RunProps,
   bound: RunBound
-): () => void {
+) {
   const link = new Linker();
   linkRun(control, props, bound, link);
   return () => link.dispose();

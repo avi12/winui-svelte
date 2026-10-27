@@ -18,7 +18,7 @@ export function linkListViewHeaderItem(
   props: ListViewHeaderItemProps,
   bound: ListViewHeaderItemBound,
   link: Linker
-): void {
+) {
   linkListViewBaseHeaderItem(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectListViewHeaderItem(
   control: ListViewHeaderItem,
   props: ListViewHeaderItemProps,
   bound: ListViewHeaderItemBound
-): () => void {
+) {
   const link = new Linker();
   linkListViewHeaderItem(control, props, bound, link);
   return () => link.dispose();

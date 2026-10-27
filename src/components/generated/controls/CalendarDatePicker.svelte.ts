@@ -9,7 +9,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface CalendarDatePickerProps extends ControlProps {
-  date?: CalendarDatePicker["date"];
+  date?: CalendarDatePicker["date"] | undefined;
   calendarIdentifier?: string;
   calendarViewStyle?: CalendarDatePicker["calendarViewStyle"];
   dateFormat?: string;
@@ -42,67 +42,140 @@ export function linkCalendarDatePicker(
   props: CalendarDatePickerProps,
   bound: CalendarDatePickerBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "calendarIdentifier", value => {
-    control.calendarIdentifier = value;
-  });
-  link.property(props, "calendarViewStyle", value => {
-    control.calendarViewStyle = value;
-  });
-  link.property(props, "dateFormat", value => {
-    control.dateFormat = value;
-  });
-  link.property(props, "dayOfWeekFormat", value => {
-    control.dayOfWeekFormat = value;
-  });
-  link.property(props, "description", value => {
-    control.description = objectOf(value);
-  });
-  link.property(props, "displayMode", value => {
-    control.displayMode = enumValue(CalendarViewDisplayMode, value);
-  });
-  link.property(props, "firstDayOfWeek", value => {
-    control.firstDayOfWeek = enumValue(DayOfWeek, value);
-  });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "isCalendarOpen", value => {
-    control.isCalendarOpen = value;
-  });
-  link.property(props, "isGroupLabelVisible", value => {
-    control.isGroupLabelVisible = value;
-  });
-  link.property(props, "isOutOfScopeEnabled", value => {
-    control.isOutOfScopeEnabled = value;
-  });
-  link.property(props, "isTodayHighlighted", value => {
-    control.isTodayHighlighted = value;
-  });
-  link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
-  });
-  link.property(props, "maxDate", value => {
-    control.maxDate = value;
-  });
-  link.property(props, "minDate", value => {
-    control.minDate = value;
-  });
-  link.property(props, "placeholderText", value => {
-    control.placeholderText = value;
-  });
-  link.bindable(bound, "date", {
-    read: () => control.date,
-    write(value) {
-      control.date = value;
+  link.property({
+    props,
+    key: "calendarIdentifier",
+    apply(value) {
+      control.calendarIdentifier = value;
     }
-  }, [
-    handler => control.onDateChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "calendarViewStyle",
+    apply(value) {
+      control.calendarViewStyle = value;
+    }
+  });
+  link.property({
+    props,
+    key: "dateFormat",
+    apply(value) {
+      control.dateFormat = value;
+    }
+  });
+  link.property({
+    props,
+    key: "dayOfWeekFormat",
+    apply(value) {
+      control.dayOfWeekFormat = value;
+    }
+  });
+  link.property({
+    props,
+    key: "description",
+    apply(value) {
+      control.description = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "displayMode",
+    apply(value) {
+      control.displayMode = enumValue({ table: CalendarViewDisplayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "firstDayOfWeek",
+    apply(value) {
+      control.firstDayOfWeek = enumValue({ table: DayOfWeek, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "header",
+    apply(value) {
+      control.header = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply(value) {
+      control.headerTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isCalendarOpen",
+    apply(value) {
+      control.isCalendarOpen = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isGroupLabelVisible",
+    apply(value) {
+      control.isGroupLabelVisible = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isOutOfScopeEnabled",
+    apply(value) {
+      control.isOutOfScopeEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isTodayHighlighted",
+    apply(value) {
+      control.isTodayHighlighted = value;
+    }
+  });
+  link.property({
+    props,
+    key: "lightDismissOverlayMode",
+    apply(value) {
+      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "maxDate",
+    apply(value) {
+      control.maxDate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "minDate",
+    apply(value) {
+      control.minDate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "placeholderText",
+    apply(value) {
+      control.placeholderText = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "date",
+    access: {
+      read: () => control.date,
+      write(value) {
+        control.date = value;
+      }
+    },
+    subscribers: [
+      handler => control.onDateChanged(handler)
+    ]
+  });
 
   if ("onCalendarViewDayItemChanging" in props) {
     link.add(control.onCalendarViewDayItemChanging((...args) => props.onCalendarViewDayItemChanging?.(...args)));
@@ -125,7 +198,7 @@ export function connectCalendarDatePicker(
   control: CalendarDatePicker,
   props: CalendarDatePickerProps,
   bound: CalendarDatePickerBound
-): () => void {
+) {
   const link = new Linker();
   linkCalendarDatePicker(control, props, bound, link);
   return () => link.dispose();

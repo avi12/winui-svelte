@@ -24,13 +24,21 @@ export function linkRefreshVisualizer(
   props: RefreshVisualizerProps,
   bound: RefreshVisualizerBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "content", value => {
-    control.content = value;
+  link.property({
+    props,
+    key: "content",
+    apply(value) {
+      control.content = value;
+    }
   });
-  link.property(props, "orientation", value => {
-    control.orientation = enumValue(RefreshVisualizerOrientation, value);
+  link.property({
+    props,
+    key: "orientation",
+    apply(value) {
+      control.orientation = enumValue({ table: RefreshVisualizerOrientation, input: value });
+    }
   });
 
   if ("onRefreshRequested" in props) {
@@ -46,7 +54,7 @@ export function connectRefreshVisualizer(
   control: RefreshVisualizer,
   props: RefreshVisualizerProps,
   bound: RefreshVisualizerBound
-): () => void {
+) {
   const link = new Linker();
   linkRefreshVisualizer(control, props, bound, link);
   return () => link.dispose();

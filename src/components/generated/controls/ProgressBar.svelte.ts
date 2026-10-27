@@ -21,16 +21,28 @@ export function linkProgressBar(
   props: ProgressBarProps,
   bound: ProgressBarBound,
   link: Linker
-): void {
+) {
   linkRangeBase(control, props, bound, link);
-  link.property(props, "isIndeterminate", value => {
-    control.isIndeterminate = value;
+  link.property({
+    props,
+    key: "isIndeterminate",
+    apply(value) {
+      control.isIndeterminate = value;
+    }
   });
-  link.property(props, "showError", value => {
-    control.showError = value;
+  link.property({
+    props,
+    key: "showError",
+    apply(value) {
+      control.showError = value;
+    }
   });
-  link.property(props, "showPaused", value => {
-    control.showPaused = value;
+  link.property({
+    props,
+    key: "showPaused",
+    apply(value) {
+      control.showPaused = value;
+    }
   });
 }
 
@@ -38,7 +50,7 @@ export function connectProgressBar(
   control: ProgressBar,
   props: ProgressBarProps,
   bound: ProgressBarBound
-): () => void {
+) {
   const link = new Linker();
   linkProgressBar(control, props, bound, link);
   return () => link.dispose();

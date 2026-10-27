@@ -20,10 +20,14 @@ export function linkPivotItem(
   props: PivotItemProps,
   bound: PivotItemBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
+  link.property({
+    props,
+    key: "header",
+    apply(value) {
+      control.header = objectOf(value);
+    }
   });
 }
 
@@ -31,7 +35,7 @@ export function connectPivotItem(
   control: PivotItem,
   props: PivotItemProps,
   bound: PivotItemBound
-): () => void {
+) {
   const link = new Linker();
   linkPivotItem(control, props, bound, link);
   return () => link.dispose();

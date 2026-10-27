@@ -7,7 +7,7 @@ import { linkSplitButton } from "./SplitButton.svelte.ts";
 import type { SplitButtonBound, SplitButtonProps } from "./SplitButton.svelte.ts";
 
 export interface ToggleSplitButtonProps extends SplitButtonProps {
-  isChecked?: boolean;
+  isChecked?: boolean | undefined;
   onIsCheckedChanged?: Parameters<ToggleSplitButton["onIsCheckedChanged"]>[0];
 }
 
@@ -20,16 +20,21 @@ export function linkToggleSplitButton(
   props: ToggleSplitButtonProps,
   bound: ToggleSplitButtonBound,
   link: Linker
-): void {
+) {
   linkSplitButton(control, props, bound, link);
-  link.bindable(bound, "isChecked", {
-    read: () => control.isChecked,
-    write(value) {
-      control.isChecked = value;
-    }
-  }, [
-    handler => control.onIsCheckedChanged(handler)
-  ]);
+  link.bindable({
+    bound,
+    key: "isChecked",
+    access: {
+      read: () => control.isChecked,
+      write(value) {
+        control.isChecked = value;
+      }
+    },
+    subscribers: [
+      handler => control.onIsCheckedChanged(handler)
+    ]
+  });
 
   if ("onIsCheckedChanged" in props) {
     link.add(control.onIsCheckedChanged((...args) => props.onIsCheckedChanged?.(...args)));
@@ -40,7 +45,7 @@ export function connectToggleSplitButton(
   control: ToggleSplitButton,
   props: ToggleSplitButtonProps,
   bound: ToggleSplitButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkToggleSplitButton(control, props, bound, link);
   return () => link.dispose();

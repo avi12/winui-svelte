@@ -25,22 +25,42 @@ export function linkMapControl(
   props: MapControlProps,
   bound: MapControlBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "center", value => {
-    control.center = value;
+  link.property({
+    props,
+    key: "center",
+    apply(value) {
+      control.center = value;
+    }
   });
-  link.property(props, "interactiveControlsVisible", value => {
-    control.interactiveControlsVisible = value;
+  link.property({
+    props,
+    key: "interactiveControlsVisible",
+    apply(value) {
+      control.interactiveControlsVisible = value;
+    }
   });
-  link.property(props, "layers", value => {
-    control.layers = value;
+  link.property({
+    props,
+    key: "layers",
+    apply(value) {
+      control.layers = value;
+    }
   });
-  link.property(props, "mapServiceToken", value => {
-    control.mapServiceToken = value;
+  link.property({
+    props,
+    key: "mapServiceToken",
+    apply(value) {
+      control.mapServiceToken = value;
+    }
   });
-  link.property(props, "zoomLevel", value => {
-    control.zoomLevel = value;
+  link.property({
+    props,
+    key: "zoomLevel",
+    apply(value) {
+      control.zoomLevel = value;
+    }
   });
 
   if ("onMapElementClick" in props) {
@@ -56,7 +76,7 @@ export function connectMapControl(
   control: MapControl,
   props: MapControlProps,
   bound: MapControlBound
-): () => void {
+) {
   const link = new Linker();
   linkMapControl(control, props, bound, link);
   return () => link.dispose();

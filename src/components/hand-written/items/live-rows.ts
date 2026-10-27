@@ -4,6 +4,7 @@
 // no longer shown must end (its effects, its controls), or a long list leaks
 // one component per row it ever showed.
 
+/** One mounted row of the list, as the rows registry holds it. */
 export interface LiveRow<Item> {
   // Shows `item` in the same row (the key stayed, what it stands for changed).
   update(item: Item): void;
@@ -17,16 +18,26 @@ interface Entry<Item, Container> {
   row: LiveRow<Item>;
 }
 
+/** The live rows of a virtualized list, by the id of the container that shows each. */
 export class LiveRows<Item, Container> {
   private readonly entries = new Map<string, Entry<Item, Container>>();
 
-  get count(): number {
+  /** How many rows are mounted. */
+  get count() {
     return this.entries.size;
   }
 
-  // The container (by its id) now shows `key`. Its row stays when the key is
-  // the same, else it is replaced by a new one from `create`.
-  fill(containerId: string, container: Container, key: string, item: Item, create: () => LiveRow<Item>): void {
+  /**
+   * The container (by its id) now shows `key`. Its row stays when the key is
+   * the same, else it is replaced by a new one from `create`.
+   */
+  fill({ containerId, container, key, item, create }: {
+    containerId: string;
+    container: Container;
+    key: string;
+    item: Item;
+    create: () => LiveRow<Item>;
+  }) {
     const existing = this.entries.get(containerId);
     const isSameRow = existing !== undefined && existing.key === key;
     if (isSameRow) {
@@ -42,28 +53,33 @@ export class LiveRows<Item, Container> {
     });
   }
 
-  // The container went to the recycle queue.
-  release(containerId: string): void {
+  /** The container went to the recycle queue: its row ends. */
+  release(containerId: string) {
     this.entries.get(containerId)?.row.unmount();
     this.entries.delete(containerId);
   }
 
-  // The items changed: every live row shows what its key stands for now. A key
-  // that is gone keeps its row until its container is recycled.
-  refresh(itemOf: (key: string) => Item | undefined): void {
+  /**
+   * The items changed: every live row shows what its key stands for now. A key
+   * that is gone keeps its row until its container is recycled.
+   */
+  refresh(itemOf: (key: string) => Item | undefined) {
     for (const entry of this.entries.values()) {
       const item = itemOf(entry.key);
-      if (item !== undefined) {
+      const hasItem = item !== undefined;
+      if (hasItem) {
         entry.row.update(item);
       }
     }
   }
 
-  containers(): Container[] {
+  /** The containers that have a row. */
+  containers() {
     return [...this.entries.values()].map(entry => entry.container);
   }
 
-  clear(): void {
+  /** Ends every row. */
+  clear() {
     for (const entry of this.entries.values()) {
       entry.row.unmount();
     }

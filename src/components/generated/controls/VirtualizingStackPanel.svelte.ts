@@ -26,13 +26,21 @@ export function linkVirtualizingStackPanel(
   props: VirtualizingStackPanelProps,
   bound: VirtualizingStackPanelBound,
   link: Linker
-): void {
+) {
   linkOrientedVirtualizingPanel(control, props, bound, link);
-  link.property(props, "areScrollSnapPointsRegular", value => {
-    control.areScrollSnapPointsRegular = value;
+  link.property({
+    props,
+    key: "areScrollSnapPointsRegular",
+    apply(value) {
+      control.areScrollSnapPointsRegular = value;
+    }
   });
-  link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+  link.property({
+    props,
+    key: "orientation",
+    apply(value) {
+      control.orientation = enumValue({ table: Orientation, input: value });
+    }
   });
 
   if ("onCleanUpVirtualizedItemEvent" in props) {
@@ -44,7 +52,7 @@ export function connectVirtualizingStackPanel(
   control: VirtualizingStackPanel,
   props: VirtualizingStackPanelProps,
   bound: VirtualizingStackPanelBound
-): () => void {
+) {
   const link = new Linker();
   linkVirtualizingStackPanel(control, props, bound, link);
   return () => link.dispose();

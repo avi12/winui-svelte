@@ -18,7 +18,7 @@ export function linkBold(
   props: BoldProps,
   bound: BoldBound,
   link: Linker
-): void {
+) {
   linkSpan(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectBold(
   control: Bold,
   props: BoldProps,
   bound: BoldBound
-): () => void {
+) {
   const link = new Linker();
   linkBold(control, props, bound, link);
   return () => link.dispose();

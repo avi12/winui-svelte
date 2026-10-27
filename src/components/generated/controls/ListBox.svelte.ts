@@ -22,13 +22,21 @@ export function linkListBox(
   props: ListBoxProps,
   bound: ListBoxBound,
   link: Linker
-): void {
+) {
   linkSelector(control, props, bound, link);
-  link.property(props, "selectionMode", value => {
-    control.selectionMode = enumValue(SelectionMode, value);
+  link.property({
+    props,
+    key: "selectionMode",
+    apply(value) {
+      control.selectionMode = enumValue({ table: SelectionMode, input: value });
+    }
   });
-  link.property(props, "singleSelectionFollowsFocus", value => {
-    control.singleSelectionFollowsFocus = value;
+  link.property({
+    props,
+    key: "singleSelectionFollowsFocus",
+    apply(value) {
+      control.singleSelectionFollowsFocus = value;
+    }
   });
 }
 
@@ -36,7 +44,7 @@ export function connectListBox(
   control: ListBox,
   props: ListBoxProps,
   bound: ListBoxBound
-): () => void {
+) {
   const link = new Linker();
   linkListBox(control, props, bound, link);
   return () => link.dispose();

@@ -20,10 +20,14 @@ export function linkTickBar(
   props: TickBarProps,
   bound: TickBarBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "fill", value => {
-    control.fill = brushOf(value);
+  link.property({
+    props,
+    key: "fill",
+    apply(value) {
+      control.fill = brushOf(value);
+    }
   });
 }
 
@@ -31,7 +35,7 @@ export function connectTickBar(
   control: TickBar,
   props: TickBarProps,
   bound: TickBarBound
-): () => void {
+) {
   const link = new Linker();
   linkTickBar(control, props, bound, link);
   return () => link.dispose();

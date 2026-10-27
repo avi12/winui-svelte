@@ -1,7 +1,3 @@
-import type { BoxedValue, NativeValue } from "../native-value.ts";
-import { boxedObject } from "../native-value.ts";
-import type { NodeAttachment } from "../renderer/host/control.ts";
-import { read } from "../renderer/host/reflect.ts";
 import {
   Application,
   BitmapImage,
@@ -17,13 +13,9 @@ import type { ImageSource, UIElement } from "./generated/bindings.ts";
 import type {
   AttachedInput,
   ColorInput,
-  ColorValue,
   CornerRadiusInput,
-  CornerRadiusValue,
-  GridLengthParts,
   ObjectInput,
-  ThicknessInput,
-  ThicknessValue
+  ThicknessInput
 } from "./values.ts";
 import {
   attachedList,
@@ -33,6 +25,10 @@ import {
   parseColor,
   thicknessSides
 } from "./values.ts";
+import type { BoxedValue, NativeValue } from "#src/native-value.js";
+import { boxedObject } from "#src/native-value.js";
+import type { NodeAttachment } from "#src/renderer/host/control.js";
+import { read } from "#src/renderer/host/reflect.js";
 
 // A prop's value as the bindings take it: the generated components call these
 // where a prop is not already the bindings' own type.
@@ -46,69 +42,100 @@ export type {
   ThicknessInput
 } from "./values.ts";
 
-// RelativePanel places an element by another element, or by that element's
-// name.
+/**
+ * RelativePanel places an element by another element, or by that element's
+ * name.
+ */
 export type ElementReferenceInput = string | UIElement;
 
-// What every component takes besides its control's properties; the element
-// itself gets them (the CSS runtime reads them).
+/**
+ * What every component takes besides its control's properties; the element
+ * itself gets them (the CSS runtime reads them).
+ */
 export interface ElementProps {
   class?: string;
   style?: string;
-  // `{@attach ...}` on the component, handed on to its element.
+  // An `@attach` on the component, handed on to its element.
   [attachment: symbol]: NodeAttachment;
 }
 
-// A member of an enum by name or value. A flag enum also takes a combination
-// of its members' values.
+/**
+ * A member of an enum by name or value. A flag enum also takes a combination
+ * of its members' values.
+ */
 export type EnumInput<Table extends Record<string, number>> = keyof Table | number;
 
+/** A grid track's size as the bindings take it. */
 export interface GridLengthValue {
   value: number;
   gridUnitType: GridUnitType;
 }
 
+/** A grid length: pixels, "Auto", "*", "2*" as XAML writes them, or WinUI's own value. */
 export type GridLengthInput = number | string | GridLengthValue;
+
+/** A color string (see `ColorInput`), a theme resource name, or a brush. */
 export type BrushInput = string | Brush;
+
+/** A URI string or an image source. */
 export type ImageSourceInput = string | ImageSource;
+
+/** A font family name or a font family. */
 export type FontFamilyInput = string | FontFamily;
+
+/** A URI string or a URI. */
 export type UriInput = string | Uri;
 
-const gridUnits = new Map<GridUnit, GridUnitType>([
-  [GridUnit.Auto, GridUnitType.Auto],
-  [GridUnit.Pixel, GridUnitType.Pixel],
-  [GridUnit.Star, GridUnitType.Star]
-]);
-const maxInt32 = 2 ** 31 - 1;
+/** A nullable boolean property such as ToggleButton.IsChecked. */
+export type NullableBooleanInput = boolean | null;
 
-function isFlagMask(members: readonly number[]): boolean {
+const GRID_UNIT_TYPES = new Map<GridUnit, GridUnitType>([
+  [GridUnit.AUTO, GridUnitType.Auto],
+  [GridUnit.PIXEL, GridUnitType.Pixel],
+  [GridUnit.STAR, GridUnitType.Star]
+]);
+const INT32_BITS = 32;
+const MAX_INT32 = 2 ** (INT32_BITS - 1) - 1;
+
+function isFlagMask(members: readonly number[]) {
   const flags = members.filter(member => member !== 0);
   const isEachABit = flags.every(member => (member & (member - 1)) === 0);
   return flags.length > 1 && isEachABit;
 }
 
-// A number is a member of the table, or a combination of the bits of a flag
-// enum's members.
-function isMember<Table extends Record<string, number>>(table: Table, value: NativeValue): value is Table[keyof Table] {
+// A guard for the table's members: a number is one, or a combination of the
+// bits of a flag enum's members.
+function memberGuard<Table extends Record<string, number>>(table: Table) {
   const members: number[] = Object.values(table);
-  const mask = members.reduce((all, member) => all | member, 0);
-  const isCombination = typeof value === "number" && isFlagMask(members) && (value & ~mask) === 0;
-  return members.some(member => member === value) || isCombination;
+  let mask = 0;
+  for (const member of members) {
+    mask |= member;
+  }
+
+  const isFlagEnum = isFlagMask(members);
+  return (value: NativeValue): value is Table[keyof Table] => {
+    const isCombination = typeof value === "number" && isFlagEnum && (value & ~mask) === 0;
+    return members.some(member => member === value) || isCombination;
+  };
 }
 
-export function enumValue<Table extends Record<string, number>>(
-  table: Table,
-  input: EnumInput<Table>
-): Table[keyof Table] {
-  const value: NativeValue = typeof input === "number" ? input : read(table, String(input));
-  if (isMember(table, value)) {
+/** A member of the enum table by name or number; throws a `RangeError` naming the members when it is none. */
+export function enumValue<Table extends Record<string, number>>({ table, input }: {
+  table: Table;
+  input: EnumInput<Table>;
+}) {
+  const isNumber = typeof input === "number";
+  const value: NativeValue = isNumber ? input : read(table, String(input));
+  const isMember = memberGuard(table);
+  if (isMember(value)) {
     return value;
   }
 
   throw new RangeError(`${String(input)} is not one of ${Object.keys(table).join(", ")}`);
 }
 
-export function thicknessOf(input: ThicknessInput): ThicknessValue {
+/** A thickness prop as the bindings' `Thickness`. */
+export function thicknessOf(input: ThicknessInput) {
   const [left, top, right, bottom] = thicknessSides(input);
   return {
     left,
@@ -118,7 +145,8 @@ export function thicknessOf(input: ThicknessInput): ThicknessValue {
   };
 }
 
-export function cornerRadiusOf(input: CornerRadiusInput): CornerRadiusValue {
+/** A corner radius prop as the bindings' `CornerRadius`. */
+export function cornerRadiusOf(input: CornerRadiusInput) {
   const [topLeft, topRight, bottomRight, bottomLeft] = cornerSides(input);
   return {
     topLeft,
@@ -128,14 +156,17 @@ export function cornerRadiusOf(input: CornerRadiusInput): CornerRadiusValue {
   };
 }
 
-export function gridLengthOf(input: GridLengthInput): GridLengthValue {
-  if (typeof input === "object") {
+/** A grid length prop as the bindings' `GridLength`. */
+export function gridLengthOf(input: GridLengthInput) {
+  const isGridLength = typeof input === "object";
+  if (isGridLength) {
     return input;
   }
 
-  const parts: GridLengthParts = gridLengthParts(input);
-  const gridUnitType = gridUnits.get(parts.unit);
-  if (gridUnitType === undefined) {
+  const parts = gridLengthParts(input);
+  const gridUnitType = GRID_UNIT_TYPES.get(parts.unit);
+  const isKnownUnit = gridUnitType !== undefined;
+  if (!isKnownUnit) {
     throw new RangeError(`no grid unit for ${parts.unit}`);
   }
 
@@ -145,13 +176,16 @@ export function gridLengthOf(input: GridLengthInput): GridLengthValue {
   };
 }
 
-export function colorOf(input: ColorInput): ColorValue {
-  if (typeof input === "object") {
+/** A color prop as the bindings' `Color`; throws a `TypeError` for text that is not a color. */
+export function colorOf(input: ColorInput) {
+  const isColor = typeof input === "object";
+  if (isColor) {
     return input;
   }
 
   const color = parseColor(input);
-  if (color === null) {
+  const isParsed = color !== null;
+  if (!isParsed) {
     throw new TypeError(`"${input}" is not a color (#rgb, #rrggbb or #aarrggbb)`);
   }
 
@@ -162,21 +196,26 @@ function isBrush(value: object): value is Brush {
   return value instanceof Brush;
 }
 
-// A color makes a solid brush; any other string names a theme resource of the
-// application, which holds the brush.
-export function brushOf(input: BrushInput): Brush {
-  if (typeof input === "object") {
+/**
+ * A color makes a solid brush; any other string names a theme resource of the
+ * application, which holds the brush.
+ */
+export function brushOf(input: BrushInput) {
+  const isBrushValue = typeof input === "object";
+  if (isBrushValue) {
     return input;
   }
 
   const color = parseColor(input);
-  if (color !== null) {
+  const isColor = color !== null;
+  if (isColor) {
     return new SolidColorBrush(color);
   }
 
   const resources = Application.current.resources;
   const key = PropertyValue.createString(input);
-  if (!resources.hasKey(key)) {
+  const isResource = resources.hasKey(key);
+  if (!isResource) {
     throw new TypeError(`"${input}" is neither a color nor a resource the application holds`);
   }
 
@@ -189,23 +228,28 @@ export function brushOf(input: BrushInput): Brush {
   return found;
 }
 
-export type NullableBooleanInput = boolean | null;
-
-// A nullable boolean property (ToggleButton.IsChecked) takes a boxed value.
-export function nullableBooleanOf(input: NullableBooleanInput): IReference_Boolean | null {
-  return input === null ? null : IReference_Boolean.from(PropertyValue.createBoolean(input));
+/** A nullable boolean property (ToggleButton.IsChecked) takes a boxed value. */
+export function nullableBooleanOf(isOn: NullableBooleanInput) {
+  const isUnset = isOn === null;
+  return isUnset ? null : IReference_Boolean.from(PropertyValue.createBoolean(isOn));
 }
 
-export function uriOf(input: UriInput): Uri {
-  return typeof input === "string" ? new Uri(input) : input;
+/** A URI prop as a `Uri`. */
+export function uriOf(input: UriInput) {
+  const isText = typeof input === "string";
+  return isText ? new Uri(input) : input;
 }
 
-export function fontFamilyOf(input: FontFamilyInput): FontFamily {
-  return typeof input === "string" ? new FontFamily(input) : input;
+/** A font family prop as a `FontFamily`. */
+export function fontFamilyOf(input: FontFamilyInput) {
+  const isText = typeof input === "string";
+  return isText ? new FontFamily(input) : input;
 }
 
-export function imageSourceOf(input: ImageSourceInput): ImageSource {
-  if (typeof input !== "string") {
+/** An image source prop as an `ImageSource`; a string is the URI of a bitmap. */
+export function imageSourceOf(input: ImageSourceInput) {
+  const isSource = typeof input !== "string";
+  if (isSource) {
     return input;
   }
 
@@ -214,29 +258,36 @@ export function imageSourceOf(input: ImageSourceInput): ImageSource {
   return image;
 }
 
-// A property of type object takes only a boxed value: a string, number or
-// boolean is boxed, anything else is the WinRT object it already is.
-export function objectOf(input: ObjectInput): BoxedValue {
-  if (typeof input === "string") {
+/**
+ * A property of type object takes only a boxed value: a string, number or
+ * boolean is boxed, anything else is the WinRT object it already is.
+ */
+export function objectOf(input: ObjectInput) {
+  const isText = typeof input === "string";
+  if (isText) {
     return boxedObject(PropertyValue.createString(input));
   }
 
-  if (typeof input === "boolean") {
+  const isFlag = typeof input === "boolean";
+  if (isFlag) {
     return boxedObject(PropertyValue.createBoolean(input));
   }
 
-  if (typeof input === "number") {
-    const isInteger = Number.isInteger(input) && Math.abs(input) <= maxInt32;
+  const isNumber = typeof input === "number";
+  if (isNumber) {
+    const isInteger = Number.isInteger(input) && Math.abs(input) <= MAX_INT32;
     return isInteger ? boxedObject(PropertyValue.createInt32(input)) : boxedObject(PropertyValue.createDouble(input));
   }
 
   return input;
 }
 
-// An object property read back, for a bindable prop: the bindings type it
-// unknown (an IInspectable they cannot name). A value no prop could have set
-// reads as null.
-export function objectInputOf(value: BoxedValue): ObjectInput {
+/**
+ * An object property read back, for a bindable prop: the bindings type it
+ * unknown (an IInspectable they cannot name). A value no prop could have set
+ * reads as null.
+ */
+export function objectInputOf(value: BoxedValue) {
   const isObjectInput =
     typeof value === "string" ||
     typeof value === "number" ||
@@ -246,11 +297,15 @@ export function objectInputOf(value: BoxedValue): ObjectInput {
   return isObjectInput ? value : null;
 }
 
-// Calls each Owner.set<Property>(control, value) an `attached` prop lists.
-export function setAttached(control: object, input: AttachedInput): void {
+/** Calls each Owner.set<Property>(control, value) an `attached` prop lists. */
+export function setAttached({ control, input }: {
+  control: object;
+  input: AttachedInput;
+}) {
   for (const [owner, property, value] of attachedList(input)) {
     const setter = read(owner, `set${property}`);
-    if (typeof setter !== "function") {
+    const isFunction = typeof setter === "function";
+    if (!isFunction) {
       throw new TypeError(`attached={[Owner, "${property}", …]}: the owner has no set${property}`);
     }
 

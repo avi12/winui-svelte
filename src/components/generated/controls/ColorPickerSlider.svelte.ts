@@ -21,10 +21,14 @@ export function linkColorPickerSlider(
   props: ColorPickerSliderProps,
   bound: ColorPickerSliderBound,
   link: Linker
-): void {
+) {
   linkSlider(control, props, bound, link);
-  link.property(props, "colorChannel", value => {
-    control.colorChannel = enumValue(ColorPickerHsvChannel, value);
+  link.property({
+    props,
+    key: "colorChannel",
+    apply(value) {
+      control.colorChannel = enumValue({ table: ColorPickerHsvChannel, input: value });
+    }
   });
 }
 
@@ -32,7 +36,7 @@ export function connectColorPickerSlider(
   control: ColorPickerSlider,
   props: ColorPickerSliderProps,
   bound: ColorPickerSliderBound
-): () => void {
+) {
   const link = new Linker();
   linkColorPickerSlider(control, props, bound, link);
   return () => link.dispose();

@@ -21,13 +21,21 @@ export function linkSystemBackdropElement(
   props: SystemBackdropElementProps,
   bound: SystemBackdropElementBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "cornerRadius", value => {
-    control.cornerRadius = cornerRadiusOf(value);
+  link.property({
+    props,
+    key: "cornerRadius",
+    apply(value) {
+      control.cornerRadius = cornerRadiusOf(value);
+    }
   });
-  link.property(props, "systemBackdrop", value => {
-    control.systemBackdrop = value;
+  link.property({
+    props,
+    key: "systemBackdrop",
+    apply(value) {
+      control.systemBackdrop = value;
+    }
   });
 }
 
@@ -35,7 +43,7 @@ export function connectSystemBackdropElement(
   control: SystemBackdropElement,
   props: SystemBackdropElementProps,
   bound: SystemBackdropElementBound
-): () => void {
+) {
   const link = new Linker();
   linkSystemBackdropElement(control, props, bound, link);
   return () => link.dispose();

@@ -23,21 +23,41 @@ export function linkBlock(
   props: BlockProps,
   bound: BlockBound,
   link: Linker
-): void {
+) {
   linkTextElement(control, props, bound, link);
-  link.property(props, "horizontalTextAlignment", value => {
-    control.horizontalTextAlignment = enumValue(TextAlignment, value);
+  link.property({
+    props,
+    key: "horizontalTextAlignment",
+    apply(value) {
+      control.horizontalTextAlignment = enumValue({ table: TextAlignment, input: value });
+    }
   });
-  link.property(props, "lineHeight", value => {
-    control.lineHeight = value;
+  link.property({
+    props,
+    key: "lineHeight",
+    apply(value) {
+      control.lineHeight = value;
+    }
   });
-  link.property(props, "lineStackingStrategy", value => {
-    control.lineStackingStrategy = enumValue(LineStackingStrategy, value);
+  link.property({
+    props,
+    key: "lineStackingStrategy",
+    apply(value) {
+      control.lineStackingStrategy = enumValue({ table: LineStackingStrategy, input: value });
+    }
   });
-  link.property(props, "margin", value => {
-    control.margin = thicknessOf(value);
+  link.property({
+    props,
+    key: "margin",
+    apply(value) {
+      control.margin = thicknessOf(value);
+    }
   });
-  link.property(props, "textAlignment", value => {
-    control.textAlignment = enumValue(TextAlignment, value);
+  link.property({
+    props,
+    key: "textAlignment",
+    apply(value) {
+      control.textAlignment = enumValue({ table: TextAlignment, input: value });
+    }
   });
 }

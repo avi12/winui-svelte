@@ -15,6 +15,6 @@ export function linkVirtualizingPanel(
   props: VirtualizingPanelProps,
   bound: VirtualizingPanelBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
 }

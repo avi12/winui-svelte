@@ -35,29 +35,57 @@ export function linkGrid(
   props: GridProps,
   bound: GridBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
-  linkGridExtras(control, props, link);
-  link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+  linkGridExtras({ control, props, link });
+  link.property({
+    props,
+    key: "backgroundSizing",
+    apply(value) {
+      control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
+    }
   });
-  link.property(props, "borderBrush", value => {
-    control.borderBrush = brushOf(value);
+  link.property({
+    props,
+    key: "borderBrush",
+    apply(value) {
+      control.borderBrush = brushOf(value);
+    }
   });
-  link.property(props, "borderThickness", value => {
-    control.borderThickness = thicknessOf(value);
+  link.property({
+    props,
+    key: "borderThickness",
+    apply(value) {
+      control.borderThickness = thicknessOf(value);
+    }
   });
-  link.property(props, "columnSpacing", value => {
-    control.columnSpacing = value;
+  link.property({
+    props,
+    key: "columnSpacing",
+    apply(value) {
+      control.columnSpacing = value;
+    }
   });
-  link.property(props, "cornerRadius", value => {
-    control.cornerRadius = cornerRadiusOf(value);
+  link.property({
+    props,
+    key: "cornerRadius",
+    apply(value) {
+      control.cornerRadius = cornerRadiusOf(value);
+    }
   });
-  link.property(props, "padding", value => {
-    control.padding = thicknessOf(value);
+  link.property({
+    props,
+    key: "padding",
+    apply(value) {
+      control.padding = thicknessOf(value);
+    }
   });
-  link.property(props, "rowSpacing", value => {
-    control.rowSpacing = value;
+  link.property({
+    props,
+    key: "rowSpacing",
+    apply(value) {
+      control.rowSpacing = value;
+    }
   });
 }
 
@@ -65,7 +93,7 @@ export function connectGrid(
   control: Grid,
   props: GridProps,
   bound: GridBound
-): () => void {
+) {
   const link = new Linker();
   linkGrid(control, props, bound, link);
   return () => link.dispose();

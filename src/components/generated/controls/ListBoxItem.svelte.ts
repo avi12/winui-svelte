@@ -18,7 +18,7 @@ export function linkListBoxItem(
   props: ListBoxItemProps,
   bound: ListBoxItemBound,
   link: Linker
-): void {
+) {
   linkSelectorItem(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectListBoxItem(
   control: ListBoxItem,
   props: ListBoxItemProps,
   bound: ListBoxItemBound
-): () => void {
+) {
   const link = new Linker();
   linkListBoxItem(control, props, bound, link);
   return () => link.dispose();

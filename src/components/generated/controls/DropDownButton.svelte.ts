@@ -18,7 +18,7 @@ export function linkDropDownButton(
   props: DropDownButtonProps,
   bound: DropDownButtonBound,
   link: Linker
-): void {
+) {
   linkButton(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectDropDownButton(
   control: DropDownButton,
   props: DropDownButtonProps,
   bound: DropDownButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkDropDownButton(control, props, bound, link);
   return () => link.dispose();

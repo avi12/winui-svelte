@@ -20,13 +20,21 @@ export function linkRectangle(
   props: RectangleProps,
   bound: RectangleBound,
   link: Linker
-): void {
+) {
   linkShape(control, props, bound, link);
-  link.property(props, "radiusX", value => {
-    control.radiusX = value;
+  link.property({
+    props,
+    key: "radiusX",
+    apply(value) {
+      control.radiusX = value;
+    }
   });
-  link.property(props, "radiusY", value => {
-    control.radiusY = value;
+  link.property({
+    props,
+    key: "radiusY",
+    apply(value) {
+      control.radiusY = value;
+    }
   });
 }
 
@@ -34,7 +42,7 @@ export function connectRectangle(
   control: Rectangle,
   props: RectangleProps,
   bound: RectangleBound
-): () => void {
+) {
   const link = new Linker();
   linkRectangle(control, props, bound, link);
   return () => link.dispose();

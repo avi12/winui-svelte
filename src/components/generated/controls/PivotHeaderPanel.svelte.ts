@@ -18,7 +18,7 @@ export function linkPivotHeaderPanel(
   props: PivotHeaderPanelProps,
   bound: PivotHeaderPanelBound,
   link: Linker
-): void {
+) {
   linkCanvas(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectPivotHeaderPanel(
   control: PivotHeaderPanel,
   props: PivotHeaderPanelProps,
   bound: PivotHeaderPanelBound
-): () => void {
+) {
   const link = new Linker();
   linkPivotHeaderPanel(control, props, bound, link);
   return () => link.dispose();

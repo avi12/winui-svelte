@@ -27,28 +27,56 @@ export function linkMediaPlayerElement(
   props: MediaPlayerElementProps,
   bound: MediaPlayerElementBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "areTransportControlsEnabled", value => {
-    control.areTransportControlsEnabled = value;
+  link.property({
+    props,
+    key: "areTransportControlsEnabled",
+    apply(value) {
+      control.areTransportControlsEnabled = value;
+    }
   });
-  link.property(props, "autoPlay", value => {
-    control.autoPlay = value;
+  link.property({
+    props,
+    key: "autoPlay",
+    apply(value) {
+      control.autoPlay = value;
+    }
   });
-  link.property(props, "isFullWindow", value => {
-    control.isFullWindow = value;
+  link.property({
+    props,
+    key: "isFullWindow",
+    apply(value) {
+      control.isFullWindow = value;
+    }
   });
-  link.property(props, "posterSource", value => {
-    control.posterSource = imageSourceOf(value);
+  link.property({
+    props,
+    key: "posterSource",
+    apply(value) {
+      control.posterSource = imageSourceOf(value);
+    }
   });
-  link.property(props, "source", value => {
-    control.source = value;
+  link.property({
+    props,
+    key: "source",
+    apply(value) {
+      control.source = value;
+    }
   });
-  link.property(props, "stretch", value => {
-    control.stretch = enumValue(Stretch, value);
+  link.property({
+    props,
+    key: "stretch",
+    apply(value) {
+      control.stretch = enumValue({ table: Stretch, input: value });
+    }
   });
-  link.property(props, "transportControls", value => {
-    control.transportControls = value;
+  link.property({
+    props,
+    key: "transportControls",
+    apply(value) {
+      control.transportControls = value;
+    }
   });
 }
 
@@ -56,7 +84,7 @@ export function connectMediaPlayerElement(
   control: MediaPlayerElement,
   props: MediaPlayerElementProps,
   bound: MediaPlayerElementBound
-): () => void {
+) {
   const link = new Linker();
   linkMediaPlayerElement(control, props, bound, link);
   return () => link.dispose();

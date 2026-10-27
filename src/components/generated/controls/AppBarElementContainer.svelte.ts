@@ -20,13 +20,21 @@ export function linkAppBarElementContainer(
   props: AppBarElementContainerProps,
   bound: AppBarElementContainerBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "dynamicOverflowOrder", value => {
-    control.dynamicOverflowOrder = value;
+  link.property({
+    props,
+    key: "dynamicOverflowOrder",
+    apply(value) {
+      control.dynamicOverflowOrder = value;
+    }
   });
-  link.property(props, "isCompact", value => {
-    control.isCompact = value;
+  link.property({
+    props,
+    key: "isCompact",
+    apply(value) {
+      control.isCompact = value;
+    }
   });
 }
 
@@ -34,7 +42,7 @@ export function connectAppBarElementContainer(
   control: AppBarElementContainer,
   props: AppBarElementContainerProps,
   bound: AppBarElementContainerBound
-): () => void {
+) {
   const link = new Linker();
   linkAppBarElementContainer(control, props, bound, link);
   return () => link.dispose();

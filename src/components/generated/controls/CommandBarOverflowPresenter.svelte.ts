@@ -18,7 +18,7 @@ export function linkCommandBarOverflowPresenter(
   props: CommandBarOverflowPresenterProps,
   bound: CommandBarOverflowPresenterBound,
   link: Linker
-): void {
+) {
   linkItemsControl(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectCommandBarOverflowPresenter(
   control: CommandBarOverflowPresenter,
   props: CommandBarOverflowPresenterProps,
   bound: CommandBarOverflowPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkCommandBarOverflowPresenter(control, props, bound, link);
   return () => link.dispose();

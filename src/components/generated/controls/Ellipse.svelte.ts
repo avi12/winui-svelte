@@ -18,7 +18,7 @@ export function linkEllipse(
   props: EllipseProps,
   bound: EllipseBound,
   link: Linker
-): void {
+) {
   linkShape(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectEllipse(
   control: Ellipse,
   props: EllipseProps,
   bound: EllipseBound
-): () => void {
+) {
   const link = new Linker();
   linkEllipse(control, props, bound, link);
   return () => link.dispose();

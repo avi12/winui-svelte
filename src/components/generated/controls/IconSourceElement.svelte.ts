@@ -21,10 +21,14 @@ export function linkIconSourceElement(
   props: IconSourceElementProps,
   bound: IconSourceElementBound,
   link: Linker
-): void {
+) {
   linkIconElement(control, props, bound, link);
-  link.contentProperty(props, "iconSource", value => {
-    control.iconSource = value;
+  link.contentProperty({
+    props,
+    key: "iconSource",
+    apply(value) {
+      control.iconSource = value;
+    }
   });
 }
 
@@ -32,7 +36,7 @@ export function connectIconSourceElement(
   control: IconSourceElement,
   props: IconSourceElementProps,
   bound: IconSourceElementBound
-): () => void {
+) {
   const link = new Linker();
   linkIconSourceElement(control, props, bound, link);
   return () => link.dispose();

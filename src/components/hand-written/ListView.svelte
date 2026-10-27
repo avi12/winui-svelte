@@ -1,9 +1,9 @@
 <script generics="Item" lang="ts">
-  import type { ListView } from "../generated/bindings.ts";
-  import { connectListView } from "../generated/controls/ListView.svelte.ts";
-  import { attachmentsOf, control } from "../runtime.ts";
   import { attachItems } from "./items/items-host.svelte.ts";
   import type { ItemsComponentProps } from "./items/items-props.ts";
+  import type { ListView } from "#src/components/generated/bindings.js";
+  import { connectListView } from "#src/components/generated/controls/ListView.svelte.js";
+  import { attachmentsOf, control } from "#src/components/runtime.js";
   import { untrack } from "svelte";
 
   // Written by hand (scripts/codegen/tables.ts: handWrittenComponents): the
@@ -38,9 +38,12 @@
     }
   };
 
-  function connect(native: ListView): () => void {
+  function connect(native: ListView) {
     const disconnectProperties = connectListView(native, rest, bound);
-    const items = attachItems(native, rest);
+    const items = attachItems({
+      view: native,
+      props: rest
+    });
     handle = items.handle;
     return () => {
       items.dispose();

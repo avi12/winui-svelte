@@ -28,28 +28,56 @@ export function linkItemsPresenter(
   props: ItemsPresenterProps,
   bound: ItemsPresenterBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "footer", value => {
-    control.footer = objectOf(value);
+  link.property({
+    props,
+    key: "footer",
+    apply(value) {
+      control.footer = objectOf(value);
+    }
   });
-  link.property(props, "footerTemplate", value => {
-    control.footerTemplate = value;
+  link.property({
+    props,
+    key: "footerTemplate",
+    apply(value) {
+      control.footerTemplate = value;
+    }
   });
-  link.property(props, "footerTransitions", value => {
-    control.footerTransitions = value;
+  link.property({
+    props,
+    key: "footerTransitions",
+    apply(value) {
+      control.footerTransitions = value;
+    }
   });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
+  link.property({
+    props,
+    key: "header",
+    apply(value) {
+      control.header = objectOf(value);
+    }
   });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply(value) {
+      control.headerTemplate = value;
+    }
   });
-  link.property(props, "headerTransitions", value => {
-    control.headerTransitions = value;
+  link.property({
+    props,
+    key: "headerTransitions",
+    apply(value) {
+      control.headerTransitions = value;
+    }
   });
-  link.property(props, "padding", value => {
-    control.padding = thicknessOf(value);
+  link.property({
+    props,
+    key: "padding",
+    apply(value) {
+      control.padding = thicknessOf(value);
+    }
   });
 
   if ("onHorizontalSnapPointsChanged" in props) {
@@ -65,7 +93,7 @@ export function connectItemsPresenter(
   control: ItemsPresenter,
   props: ItemsPresenterProps,
   bound: ItemsPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkItemsPresenter(control, props, bound, link);
   return () => link.dispose();

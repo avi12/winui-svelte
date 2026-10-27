@@ -16,7 +16,9 @@ type LooseKeys<Props> = {
   [Key in keyof Props]-?: IsLoose<Props[Key]> extends true ? Key : never;
 }[keyof Props];
 
-// true, or what is wrong: the component's name and its loose props.
+/**
+ * true, or what is wrong: the component's name and its loose props.
+ */
 export type StrictProps<Name extends string, Props> = [LooseKeys<Props>] extends [never]
   ? true
   : {
@@ -24,5 +26,7 @@ export type StrictProps<Name extends string, Props> = [LooseKeys<Props>] extends
     looseProps: LooseKeys<Props>;
   };
 
-// Fails to compile unless the check is true.
+/**
+ * Fails to compile unless the check is true.
+ */
 export type Expect<Check extends true> = Check;

@@ -11,7 +11,7 @@ import type { Snippet } from "svelte";
 
 export interface SplitViewProps extends ControlProps {
   children?: Snippet;
-  isPaneOpen?: boolean;
+  isPaneOpen?: boolean | undefined;
   compactPaneLength?: number;
   content?: SplitView["content"];
   displayMode?: EnumInput<typeof SplitViewDisplayMode>;
@@ -35,41 +35,78 @@ export function linkSplitView(
   props: SplitViewProps,
   bound: SplitViewBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "compactPaneLength", value => {
-    control.compactPaneLength = value;
-  });
-  link.contentProperty(props, "content", value => {
-    control.content = value;
-  });
-  link.property(props, "displayMode", value => {
-    control.displayMode = enumValue(SplitViewDisplayMode, value);
-  });
-  link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
-  });
-  link.property(props, "openPaneLength", value => {
-    control.openPaneLength = value;
-  });
-  link.property(props, "pane", value => {
-    control.pane = value;
-  });
-  link.property(props, "paneBackground", value => {
-    control.paneBackground = brushOf(value);
-  });
-  link.property(props, "panePlacement", value => {
-    control.panePlacement = enumValue(SplitViewPanePlacement, value);
-  });
-  link.bindable(bound, "isPaneOpen", {
-    read: () => control.isPaneOpen,
-    write(value) {
-      control.isPaneOpen = value;
+  link.property({
+    props,
+    key: "compactPaneLength",
+    apply(value) {
+      control.compactPaneLength = value;
     }
-  }, [
-    handler => control.onPaneOpened(handler),
-    handler => control.onPaneClosed(handler)
-  ]);
+  });
+  link.contentProperty({
+    props,
+    key: "content",
+    apply(value) {
+      control.content = value;
+    }
+  });
+  link.property({
+    props,
+    key: "displayMode",
+    apply(value) {
+      control.displayMode = enumValue({ table: SplitViewDisplayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "lightDismissOverlayMode",
+    apply(value) {
+      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "openPaneLength",
+    apply(value) {
+      control.openPaneLength = value;
+    }
+  });
+  link.property({
+    props,
+    key: "pane",
+    apply(value) {
+      control.pane = value;
+    }
+  });
+  link.property({
+    props,
+    key: "paneBackground",
+    apply(value) {
+      control.paneBackground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "panePlacement",
+    apply(value) {
+      control.panePlacement = enumValue({ table: SplitViewPanePlacement, input: value });
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isPaneOpen",
+    access: {
+      read: () => control.isPaneOpen,
+      write(value) {
+        control.isPaneOpen = value;
+      }
+    },
+    subscribers: [
+      handler => control.onPaneOpened(handler),
+      handler => control.onPaneClosed(handler)
+    ]
+  });
 
   if ("onPaneClosed" in props) {
     link.add(control.onPaneClosed((...args) => props.onPaneClosed?.(...args)));
@@ -92,7 +129,7 @@ export function connectSplitView(
   control: SplitView,
   props: SplitViewProps,
   bound: SplitViewBound
-): () => void {
+) {
   const link = new Linker();
   linkSplitView(control, props, bound, link);
   return () => link.dispose();

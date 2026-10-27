@@ -21,10 +21,14 @@ export function linkInlineUIContainer(
   props: InlineUIContainerProps,
   bound: InlineUIContainerBound,
   link: Linker
-): void {
+) {
   linkInline(control, props, bound, link);
-  link.contentProperty(props, "child", value => {
-    control.child = value;
+  link.contentProperty({
+    props,
+    key: "child",
+    apply(value) {
+      control.child = value;
+    }
   });
 }
 
@@ -32,7 +36,7 @@ export function connectInlineUIContainer(
   control: InlineUIContainer,
   props: InlineUIContainerProps,
   bound: InlineUIContainerBound
-): () => void {
+) {
   const link = new Linker();
   linkInlineUIContainer(control, props, bound, link);
   return () => link.dispose();

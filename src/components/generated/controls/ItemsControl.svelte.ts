@@ -30,34 +30,70 @@ export function linkItemsControl(
   props: ItemsControlProps,
   bound: ItemsControlBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "displayMemberPath", value => {
-    control.displayMemberPath = value;
+  link.property({
+    props,
+    key: "displayMemberPath",
+    apply(value) {
+      control.displayMemberPath = value;
+    }
   });
-  link.property(props, "groupStyleSelector", value => {
-    control.groupStyleSelector = value;
+  link.property({
+    props,
+    key: "groupStyleSelector",
+    apply(value) {
+      control.groupStyleSelector = value;
+    }
   });
-  link.property(props, "itemContainerStyle", value => {
-    control.itemContainerStyle = value;
+  link.property({
+    props,
+    key: "itemContainerStyle",
+    apply(value) {
+      control.itemContainerStyle = value;
+    }
   });
-  link.property(props, "itemContainerStyleSelector", value => {
-    control.itemContainerStyleSelector = value;
+  link.property({
+    props,
+    key: "itemContainerStyleSelector",
+    apply(value) {
+      control.itemContainerStyleSelector = value;
+    }
   });
-  link.property(props, "itemContainerTransitions", value => {
-    control.itemContainerTransitions = value;
+  link.property({
+    props,
+    key: "itemContainerTransitions",
+    apply(value) {
+      control.itemContainerTransitions = value;
+    }
   });
-  link.property(props, "itemsPanel", value => {
-    control.itemsPanel = value;
+  link.property({
+    props,
+    key: "itemsPanel",
+    apply(value) {
+      control.itemsPanel = value;
+    }
   });
-  link.property(props, "itemsSource", value => {
-    control.itemsSource = objectOf(value);
+  link.property({
+    props,
+    key: "itemsSource",
+    apply(value) {
+      control.itemsSource = objectOf(value);
+    }
   });
-  link.property(props, "itemTemplate", value => {
-    control.itemTemplate = value;
+  link.property({
+    props,
+    key: "itemTemplate",
+    apply(value) {
+      control.itemTemplate = value;
+    }
   });
-  link.property(props, "itemTemplateSelector", value => {
-    control.itemTemplateSelector = value;
+  link.property({
+    props,
+    key: "itemTemplateSelector",
+    apply(value) {
+      control.itemTemplateSelector = value;
+    }
   });
 }
 
@@ -65,7 +101,7 @@ export function connectItemsControl(
   control: ItemsControl,
   props: ItemsControlProps,
   bound: ItemsControlBound
-): () => void {
+) {
   const link = new Linker();
   linkItemsControl(control, props, bound, link);
   return () => link.dispose();

@@ -46,82 +46,182 @@ export function linkMediaTransportControls(
   props: MediaTransportControlsProps,
   bound: MediaTransportControlsBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "fastPlayFallbackBehaviour", value => {
-    control.fastPlayFallbackBehaviour = enumValue(FastPlayFallbackBehaviour, value);
+  link.property({
+    props,
+    key: "fastPlayFallbackBehaviour",
+    apply(value) {
+      control.fastPlayFallbackBehaviour = enumValue({ table: FastPlayFallbackBehaviour, input: value });
+    }
   });
-  link.property(props, "isCompact", value => {
-    control.isCompact = value;
+  link.property({
+    props,
+    key: "isCompact",
+    apply(value) {
+      control.isCompact = value;
+    }
   });
-  link.property(props, "isFastForwardButtonVisible", value => {
-    control.isFastForwardButtonVisible = value;
+  link.property({
+    props,
+    key: "isFastForwardButtonVisible",
+    apply(value) {
+      control.isFastForwardButtonVisible = value;
+    }
   });
-  link.property(props, "isFastForwardEnabled", value => {
-    control.isFastForwardEnabled = value;
+  link.property({
+    props,
+    key: "isFastForwardEnabled",
+    apply(value) {
+      control.isFastForwardEnabled = value;
+    }
   });
-  link.property(props, "isFastRewindButtonVisible", value => {
-    control.isFastRewindButtonVisible = value;
+  link.property({
+    props,
+    key: "isFastRewindButtonVisible",
+    apply(value) {
+      control.isFastRewindButtonVisible = value;
+    }
   });
-  link.property(props, "isFastRewindEnabled", value => {
-    control.isFastRewindEnabled = value;
+  link.property({
+    props,
+    key: "isFastRewindEnabled",
+    apply(value) {
+      control.isFastRewindEnabled = value;
+    }
   });
-  link.property(props, "isNextTrackButtonVisible", value => {
-    control.isNextTrackButtonVisible = value;
+  link.property({
+    props,
+    key: "isNextTrackButtonVisible",
+    apply(value) {
+      control.isNextTrackButtonVisible = value;
+    }
   });
-  link.property(props, "isPlaybackRateButtonVisible", value => {
-    control.isPlaybackRateButtonVisible = value;
+  link.property({
+    props,
+    key: "isPlaybackRateButtonVisible",
+    apply(value) {
+      control.isPlaybackRateButtonVisible = value;
+    }
   });
-  link.property(props, "isPlaybackRateEnabled", value => {
-    control.isPlaybackRateEnabled = value;
+  link.property({
+    props,
+    key: "isPlaybackRateEnabled",
+    apply(value) {
+      control.isPlaybackRateEnabled = value;
+    }
   });
-  link.property(props, "isPreviousTrackButtonVisible", value => {
-    control.isPreviousTrackButtonVisible = value;
+  link.property({
+    props,
+    key: "isPreviousTrackButtonVisible",
+    apply(value) {
+      control.isPreviousTrackButtonVisible = value;
+    }
   });
-  link.property(props, "isRepeatButtonVisible", value => {
-    control.isRepeatButtonVisible = value;
+  link.property({
+    props,
+    key: "isRepeatButtonVisible",
+    apply(value) {
+      control.isRepeatButtonVisible = value;
+    }
   });
-  link.property(props, "isRepeatEnabled", value => {
-    control.isRepeatEnabled = value;
+  link.property({
+    props,
+    key: "isRepeatEnabled",
+    apply(value) {
+      control.isRepeatEnabled = value;
+    }
   });
-  link.property(props, "isSeekBarVisible", value => {
-    control.isSeekBarVisible = value;
+  link.property({
+    props,
+    key: "isSeekBarVisible",
+    apply(value) {
+      control.isSeekBarVisible = value;
+    }
   });
-  link.property(props, "isSeekEnabled", value => {
-    control.isSeekEnabled = value;
+  link.property({
+    props,
+    key: "isSeekEnabled",
+    apply(value) {
+      control.isSeekEnabled = value;
+    }
   });
-  link.property(props, "isSkipBackwardButtonVisible", value => {
-    control.isSkipBackwardButtonVisible = value;
+  link.property({
+    props,
+    key: "isSkipBackwardButtonVisible",
+    apply(value) {
+      control.isSkipBackwardButtonVisible = value;
+    }
   });
-  link.property(props, "isSkipBackwardEnabled", value => {
-    control.isSkipBackwardEnabled = value;
+  link.property({
+    props,
+    key: "isSkipBackwardEnabled",
+    apply(value) {
+      control.isSkipBackwardEnabled = value;
+    }
   });
-  link.property(props, "isSkipForwardButtonVisible", value => {
-    control.isSkipForwardButtonVisible = value;
+  link.property({
+    props,
+    key: "isSkipForwardButtonVisible",
+    apply(value) {
+      control.isSkipForwardButtonVisible = value;
+    }
   });
-  link.property(props, "isSkipForwardEnabled", value => {
-    control.isSkipForwardEnabled = value;
+  link.property({
+    props,
+    key: "isSkipForwardEnabled",
+    apply(value) {
+      control.isSkipForwardEnabled = value;
+    }
   });
-  link.property(props, "isStopButtonVisible", value => {
-    control.isStopButtonVisible = value;
+  link.property({
+    props,
+    key: "isStopButtonVisible",
+    apply(value) {
+      control.isStopButtonVisible = value;
+    }
   });
-  link.property(props, "isStopEnabled", value => {
-    control.isStopEnabled = value;
+  link.property({
+    props,
+    key: "isStopEnabled",
+    apply(value) {
+      control.isStopEnabled = value;
+    }
   });
-  link.property(props, "isVolumeButtonVisible", value => {
-    control.isVolumeButtonVisible = value;
+  link.property({
+    props,
+    key: "isVolumeButtonVisible",
+    apply(value) {
+      control.isVolumeButtonVisible = value;
+    }
   });
-  link.property(props, "isVolumeEnabled", value => {
-    control.isVolumeEnabled = value;
+  link.property({
+    props,
+    key: "isVolumeEnabled",
+    apply(value) {
+      control.isVolumeEnabled = value;
+    }
   });
-  link.property(props, "isZoomButtonVisible", value => {
-    control.isZoomButtonVisible = value;
+  link.property({
+    props,
+    key: "isZoomButtonVisible",
+    apply(value) {
+      control.isZoomButtonVisible = value;
+    }
   });
-  link.property(props, "isZoomEnabled", value => {
-    control.isZoomEnabled = value;
+  link.property({
+    props,
+    key: "isZoomEnabled",
+    apply(value) {
+      control.isZoomEnabled = value;
+    }
   });
-  link.property(props, "showAndHideAutomatically", value => {
-    control.showAndHideAutomatically = value;
+  link.property({
+    props,
+    key: "showAndHideAutomatically",
+    apply(value) {
+      control.showAndHideAutomatically = value;
+    }
   });
 
   if ("onThumbnailRequested" in props) {
@@ -133,7 +233,7 @@ export function connectMediaTransportControls(
   control: MediaTransportControls,
   props: MediaTransportControlsProps,
   bound: MediaTransportControlsBound
-): () => void {
+) {
   const link = new Linker();
   linkMediaTransportControls(control, props, bound, link);
   return () => link.dispose();

@@ -24,16 +24,28 @@ export function linkScrollBar(
   props: ScrollBarProps,
   bound: ScrollBarBound,
   link: Linker
-): void {
+) {
   linkRangeBase(control, props, bound, link);
-  link.property(props, "indicatorMode", value => {
-    control.indicatorMode = enumValue(ScrollingIndicatorMode, value);
+  link.property({
+    props,
+    key: "indicatorMode",
+    apply(value) {
+      control.indicatorMode = enumValue({ table: ScrollingIndicatorMode, input: value });
+    }
   });
-  link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+  link.property({
+    props,
+    key: "orientation",
+    apply(value) {
+      control.orientation = enumValue({ table: Orientation, input: value });
+    }
   });
-  link.property(props, "viewportSize", value => {
-    control.viewportSize = value;
+  link.property({
+    props,
+    key: "viewportSize",
+    apply(value) {
+      control.viewportSize = value;
+    }
   });
 
   if ("onScroll" in props) {
@@ -45,7 +57,7 @@ export function connectScrollBar(
   control: ScrollBar,
   props: ScrollBarProps,
   bound: ScrollBarBound
-): () => void {
+) {
   const link = new Linker();
   linkScrollBar(control, props, bound, link);
   return () => link.dispose();

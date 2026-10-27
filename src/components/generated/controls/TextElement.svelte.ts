@@ -36,65 +36,145 @@ export function linkTextElement(
   props: TextElementProps,
   _bound: TextElementBound,
   link: Linker
-): void {
-  link.property(props, "accessKey", value => {
-    control.accessKey = value;
+) {
+  link.property({
+    props,
+    key: "accessKey",
+    apply(value) {
+      control.accessKey = value;
+    }
   });
-  link.property(props, "accessKeyScopeOwner", value => {
-    control.accessKeyScopeOwner = value;
+  link.property({
+    props,
+    key: "accessKeyScopeOwner",
+    apply(value) {
+      control.accessKeyScopeOwner = value;
+    }
   });
-  link.property(props, "allowFocusOnInteraction", value => {
-    control.allowFocusOnInteraction = value;
+  link.property({
+    props,
+    key: "allowFocusOnInteraction",
+    apply(value) {
+      control.allowFocusOnInteraction = value;
+    }
   });
-  link.property(props, "characterSpacing", value => {
-    control.characterSpacing = value;
+  link.property({
+    props,
+    key: "characterSpacing",
+    apply(value) {
+      control.characterSpacing = value;
+    }
   });
-  link.property(props, "exitDisplayModeOnAccessKeyInvoked", value => {
-    control.exitDisplayModeOnAccessKeyInvoked = value;
+  link.property({
+    props,
+    key: "exitDisplayModeOnAccessKeyInvoked",
+    apply(value) {
+      control.exitDisplayModeOnAccessKeyInvoked = value;
+    }
   });
-  link.property(props, "fontFamily", value => {
-    control.fontFamily = fontFamilyOf(value);
+  link.property({
+    props,
+    key: "fontFamily",
+    apply(value) {
+      control.fontFamily = fontFamilyOf(value);
+    }
   });
-  link.property(props, "fontSize", value => {
-    control.fontSize = value;
+  link.property({
+    props,
+    key: "fontSize",
+    apply(value) {
+      control.fontSize = value;
+    }
   });
-  link.property(props, "fontStretch", value => {
-    control.fontStretch = enumValue(FontStretch, value);
+  link.property({
+    props,
+    key: "fontStretch",
+    apply(value) {
+      control.fontStretch = enumValue({ table: FontStretch, input: value });
+    }
   });
-  link.property(props, "fontStyle", value => {
-    control.fontStyle = enumValue(FontStyle, value);
+  link.property({
+    props,
+    key: "fontStyle",
+    apply(value) {
+      control.fontStyle = enumValue({ table: FontStyle, input: value });
+    }
   });
-  link.property(props, "fontWeight", value => {
-    control.fontWeight = value;
+  link.property({
+    props,
+    key: "fontWeight",
+    apply(value) {
+      control.fontWeight = value;
+    }
   });
-  link.property(props, "foreground", value => {
-    control.foreground = brushOf(value);
+  link.property({
+    props,
+    key: "foreground",
+    apply(value) {
+      control.foreground = brushOf(value);
+    }
   });
-  link.property(props, "isAccessKeyScope", value => {
-    control.isAccessKeyScope = value;
+  link.property({
+    props,
+    key: "isAccessKeyScope",
+    apply(value) {
+      control.isAccessKeyScope = value;
+    }
   });
-  link.property(props, "isTextScaleFactorEnabled", value => {
-    control.isTextScaleFactorEnabled = value;
+  link.property({
+    props,
+    key: "isTextScaleFactorEnabled",
+    apply(value) {
+      control.isTextScaleFactorEnabled = value;
+    }
   });
-  link.property(props, "keyTipHorizontalOffset", value => {
-    control.keyTipHorizontalOffset = value;
+  link.property({
+    props,
+    key: "keyTipHorizontalOffset",
+    apply(value) {
+      control.keyTipHorizontalOffset = value;
+    }
   });
-  link.property(props, "keyTipPlacementMode", value => {
-    control.keyTipPlacementMode = enumValue(KeyTipPlacementMode, value);
+  link.property({
+    props,
+    key: "keyTipPlacementMode",
+    apply(value) {
+      control.keyTipPlacementMode = enumValue({ table: KeyTipPlacementMode, input: value });
+    }
   });
-  link.property(props, "keyTipVerticalOffset", value => {
-    control.keyTipVerticalOffset = value;
+  link.property({
+    props,
+    key: "keyTipVerticalOffset",
+    apply(value) {
+      control.keyTipVerticalOffset = value;
+    }
   });
-  link.property(props, "language", value => {
-    control.language = value;
+  link.property({
+    props,
+    key: "language",
+    apply(value) {
+      control.language = value;
+    }
   });
-  link.property(props, "textDecorations", value => {
-    control.textDecorations = enumValue(TextDecorations, value);
+  link.property({
+    props,
+    key: "textDecorations",
+    apply(value) {
+      control.textDecorations = enumValue({ table: TextDecorations, input: value });
+    }
   });
-  link.property(props, "xamlRoot", value => {
-    control.xamlRoot = value;
+  link.property({
+    props,
+    key: "xamlRoot",
+    apply(value) {
+      control.xamlRoot = value;
+    }
   });
-  link.property(props, "attached", value => {
-    setAttached(control, value);
+  link.property({
+    props,
+    key: "attached",
+    apply(value) {
+      setAttached({ control, input: value });
+    }
   });
 }

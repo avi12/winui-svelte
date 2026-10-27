@@ -22,13 +22,21 @@ export function linkSplitMenuFlyoutItem(
   props: SplitMenuFlyoutItemProps,
   bound: SplitMenuFlyoutItemBound,
   link: Linker
-): void {
+) {
   linkMenuFlyoutItem(control, props, bound, link);
-  link.property(props, "subMenuItemStyle", value => {
-    control.subMenuItemStyle = value;
+  link.property({
+    props,
+    key: "subMenuItemStyle",
+    apply(value) {
+      control.subMenuItemStyle = value;
+    }
   });
-  link.property(props, "subMenuPresenterStyle", value => {
-    control.subMenuPresenterStyle = value;
+  link.property({
+    props,
+    key: "subMenuPresenterStyle",
+    apply(value) {
+      control.subMenuPresenterStyle = value;
+    }
   });
 }
 
@@ -36,7 +44,7 @@ export function connectSplitMenuFlyoutItem(
   control: SplitMenuFlyoutItem,
   props: SplitMenuFlyoutItemProps,
   bound: SplitMenuFlyoutItemBound
-): () => void {
+) {
   const link = new Linker();
   linkSplitMenuFlyoutItem(control, props, bound, link);
   return () => link.dispose();

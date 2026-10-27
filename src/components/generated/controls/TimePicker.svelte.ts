@@ -11,8 +11,8 @@ import type { Snippet } from "svelte";
 
 export interface TimePickerProps extends ControlProps {
   children?: Snippet;
-  time?: TimePicker["time"];
-  selectedTime?: TimePicker["selectedTime"];
+  time?: TimePicker["time"] | undefined;
+  selectedTime?: TimePicker["selectedTime"] | undefined;
   clockIdentifier?: string;
   header?: ObjectInput;
   headerTemplate?: TimePicker["headerTemplate"];
@@ -31,39 +31,69 @@ export function linkTimePicker(
   props: TimePickerProps,
   bound: TimePickerBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "clockIdentifier", value => {
-    control.clockIdentifier = value;
-  });
-  link.contentProperty(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
-  });
-  link.property(props, "minuteIncrement", value => {
-    control.minuteIncrement = value;
-  });
-  link.bindable(bound, "selectedTime", {
-    read: () => control.selectedTime,
-    write(value) {
-      control.selectedTime = value;
+  link.property({
+    props,
+    key: "clockIdentifier",
+    apply(value) {
+      control.clockIdentifier = value;
     }
-  }, [
-    handler => control.onSelectedTimeChanged(handler)
-  ]);
-  link.bindable(bound, "time", {
-    read: () => control.time,
-    write(value) {
-      control.time = value;
+  });
+  link.contentProperty({
+    props,
+    key: "header",
+    apply(value) {
+      control.header = objectOf(value);
     }
-  }, [
-    handler => control.onTimeChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply(value) {
+      control.headerTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "lightDismissOverlayMode",
+    apply(value) {
+      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "minuteIncrement",
+    apply(value) {
+      control.minuteIncrement = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "selectedTime",
+    access: {
+      read: () => control.selectedTime,
+      write(value) {
+        control.selectedTime = value;
+      }
+    },
+    subscribers: [
+      handler => control.onSelectedTimeChanged(handler)
+    ]
+  });
+  link.bindable({
+    bound,
+    key: "time",
+    access: {
+      read: () => control.time,
+      write(value) {
+        control.time = value;
+      }
+    },
+    subscribers: [
+      handler => control.onTimeChanged(handler)
+    ]
+  });
 
   if ("onSelectedTimeChanged" in props) {
     link.add(control.onSelectedTimeChanged((...args) => props.onSelectedTimeChanged?.(...args)));
@@ -78,7 +108,7 @@ export function connectTimePicker(
   control: TimePicker,
   props: TimePickerProps,
   bound: TimePickerBound
-): () => void {
+) {
   const link = new Linker();
   linkTimePicker(control, props, bound, link);
   return () => link.dispose();

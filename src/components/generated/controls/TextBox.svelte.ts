@@ -15,7 +15,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface TextBoxProps extends ControlProps {
-  text?: string;
+  text?: string | undefined;
   acceptsReturn?: boolean;
   characterCasing?: EnumInput<typeof CharacterCasing>;
   description?: ObjectInput;
@@ -65,91 +65,196 @@ export function linkTextBox(
   props: TextBoxProps,
   bound: TextBoxBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "acceptsReturn", value => {
-    control.acceptsReturn = value;
-  });
-  link.property(props, "characterCasing", value => {
-    control.characterCasing = enumValue(CharacterCasing, value);
-  });
-  link.property(props, "description", value => {
-    control.description = objectOf(value);
-  });
-  link.property(props, "desiredCandidateWindowAlignment", value => {
-    control.desiredCandidateWindowAlignment = enumValue(CandidateWindowAlignment, value);
-  });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
-  });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
-  });
-  link.property(props, "horizontalTextAlignment", value => {
-    control.horizontalTextAlignment = enumValue(TextAlignment, value);
-  });
-  link.property(props, "inputScope", value => {
-    control.inputScope = value;
-  });
-  link.property(props, "isColorFontEnabled", value => {
-    control.isColorFontEnabled = value;
-  });
-  link.property(props, "isReadOnly", value => {
-    control.isReadOnly = value;
-  });
-  link.property(props, "isSpellCheckEnabled", value => {
-    control.isSpellCheckEnabled = value;
-  });
-  link.property(props, "isTextPredictionEnabled", value => {
-    control.isTextPredictionEnabled = value;
-  });
-  link.property(props, "maxLength", value => {
-    control.maxLength = value;
-  });
-  link.property(props, "placeholderForeground", value => {
-    control.placeholderForeground = brushOf(value);
-  });
-  link.property(props, "placeholderText", value => {
-    control.placeholderText = value;
-  });
-  link.property(props, "preventKeyboardDisplayOnProgrammaticFocus", value => {
-    control.preventKeyboardDisplayOnProgrammaticFocus = value;
-  });
-  link.property(props, "selectedText", value => {
-    control.selectedText = value;
-  });
-  link.property(props, "selectionFlyout", value => {
-    control.selectionFlyout = value;
-  });
-  link.property(props, "selectionHighlightColor", value => {
-    control.selectionHighlightColor = value;
-  });
-  link.property(props, "selectionHighlightColorWhenNotFocused", value => {
-    control.selectionHighlightColorWhenNotFocused = value;
-  });
-  link.property(props, "selectionLength", value => {
-    control.selectionLength = value;
-  });
-  link.property(props, "selectionStart", value => {
-    control.selectionStart = value;
-  });
-  link.property(props, "textAlignment", value => {
-    control.textAlignment = enumValue(TextAlignment, value);
-  });
-  link.property(props, "textReadingOrder", value => {
-    control.textReadingOrder = enumValue(TextReadingOrder, value);
-  });
-  link.property(props, "textWrapping", value => {
-    control.textWrapping = enumValue(TextWrapping, value);
-  });
-  link.bindable(bound, "text", {
-    read: () => control.text,
-    write(value) {
-      control.text = value;
+  link.property({
+    props,
+    key: "acceptsReturn",
+    apply(value) {
+      control.acceptsReturn = value;
     }
-  }, [
-    handler => control.onTextChanged(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "characterCasing",
+    apply(value) {
+      control.characterCasing = enumValue({ table: CharacterCasing, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "description",
+    apply(value) {
+      control.description = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "desiredCandidateWindowAlignment",
+    apply(value) {
+      control.desiredCandidateWindowAlignment = enumValue({ table: CandidateWindowAlignment, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "header",
+    apply(value) {
+      control.header = objectOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply(value) {
+      control.headerTemplate = value;
+    }
+  });
+  link.property({
+    props,
+    key: "horizontalTextAlignment",
+    apply(value) {
+      control.horizontalTextAlignment = enumValue({ table: TextAlignment, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "inputScope",
+    apply(value) {
+      control.inputScope = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isColorFontEnabled",
+    apply(value) {
+      control.isColorFontEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isReadOnly",
+    apply(value) {
+      control.isReadOnly = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isSpellCheckEnabled",
+    apply(value) {
+      control.isSpellCheckEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "isTextPredictionEnabled",
+    apply(value) {
+      control.isTextPredictionEnabled = value;
+    }
+  });
+  link.property({
+    props,
+    key: "maxLength",
+    apply(value) {
+      control.maxLength = value;
+    }
+  });
+  link.property({
+    props,
+    key: "placeholderForeground",
+    apply(value) {
+      control.placeholderForeground = brushOf(value);
+    }
+  });
+  link.property({
+    props,
+    key: "placeholderText",
+    apply(value) {
+      control.placeholderText = value;
+    }
+  });
+  link.property({
+    props,
+    key: "preventKeyboardDisplayOnProgrammaticFocus",
+    apply(value) {
+      control.preventKeyboardDisplayOnProgrammaticFocus = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectedText",
+    apply(value) {
+      control.selectedText = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionFlyout",
+    apply(value) {
+      control.selectionFlyout = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionHighlightColor",
+    apply(value) {
+      control.selectionHighlightColor = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionHighlightColorWhenNotFocused",
+    apply(value) {
+      control.selectionHighlightColorWhenNotFocused = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionLength",
+    apply(value) {
+      control.selectionLength = value;
+    }
+  });
+  link.property({
+    props,
+    key: "selectionStart",
+    apply(value) {
+      control.selectionStart = value;
+    }
+  });
+  link.property({
+    props,
+    key: "textAlignment",
+    apply(value) {
+      control.textAlignment = enumValue({ table: TextAlignment, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "textReadingOrder",
+    apply(value) {
+      control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "textWrapping",
+    apply(value) {
+      control.textWrapping = enumValue({ table: TextWrapping, input: value });
+    }
+  });
+  link.bindable({
+    bound,
+    key: "text",
+    access: {
+      read: () => control.text,
+      write(value) {
+        control.text = value;
+      }
+    },
+    subscribers: [
+      handler => control.onTextChanged(handler)
+    ]
+  });
 
   if ("onBeforeTextChanging" in props) {
     link.add(control.onBeforeTextChanging((...args) => props.onBeforeTextChanging?.(...args)));
@@ -208,7 +313,7 @@ export function connectTextBox(
   control: TextBox,
   props: TextBoxProps,
   bound: TextBoxBound
-): () => void {
+) {
   const link = new Linker();
   linkTextBox(control, props, bound, link);
   return () => link.dispose();

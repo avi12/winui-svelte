@@ -19,10 +19,14 @@ export function linkToggleMenuFlyoutItem(
   props: ToggleMenuFlyoutItemProps,
   bound: ToggleMenuFlyoutItemBound,
   link: Linker
-): void {
+) {
   linkMenuFlyoutItem(control, props, bound, link);
-  link.property(props, "isChecked", value => {
-    control.isChecked = value;
+  link.property({
+    props,
+    key: "isChecked",
+    apply(value) {
+      control.isChecked = value;
+    }
   });
 }
 
@@ -30,7 +34,7 @@ export function connectToggleMenuFlyoutItem(
   control: ToggleMenuFlyoutItem,
   props: ToggleMenuFlyoutItemProps,
   bound: ToggleMenuFlyoutItemBound
-): () => void {
+) {
   const link = new Linker();
   linkToggleMenuFlyoutItem(control, props, bound, link);
   return () => link.dispose();

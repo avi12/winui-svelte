@@ -27,22 +27,42 @@ export function linkSemanticZoom(
   props: SemanticZoomProps,
   bound: SemanticZoomBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "canChangeViews", value => {
-    control.canChangeViews = value;
+  link.property({
+    props,
+    key: "canChangeViews",
+    apply(value) {
+      control.canChangeViews = value;
+    }
   });
-  link.property(props, "isZoomedInViewActive", value => {
-    control.isZoomedInViewActive = value;
+  link.property({
+    props,
+    key: "isZoomedInViewActive",
+    apply(value) {
+      control.isZoomedInViewActive = value;
+    }
   });
-  link.property(props, "isZoomOutButtonEnabled", value => {
-    control.isZoomOutButtonEnabled = value;
+  link.property({
+    props,
+    key: "isZoomOutButtonEnabled",
+    apply(value) {
+      control.isZoomOutButtonEnabled = value;
+    }
   });
-  link.contentProperty(props, "zoomedInView", value => {
-    control.zoomedInView = value;
+  link.contentProperty({
+    props,
+    key: "zoomedInView",
+    apply(value) {
+      control.zoomedInView = value;
+    }
   });
-  link.property(props, "zoomedOutView", value => {
-    control.zoomedOutView = value;
+  link.property({
+    props,
+    key: "zoomedOutView",
+    apply(value) {
+      control.zoomedOutView = value;
+    }
   });
 
   if ("onViewChangeCompleted" in props) {
@@ -58,7 +78,7 @@ export function connectSemanticZoom(
   control: SemanticZoom,
   props: SemanticZoomProps,
   bound: SemanticZoomBound
-): () => void {
+) {
   const link = new Linker();
   linkSemanticZoom(control, props, bound, link);
   return () => link.dispose();

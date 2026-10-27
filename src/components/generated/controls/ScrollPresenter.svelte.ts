@@ -54,61 +54,133 @@ export function linkScrollPresenter(
   props: ScrollPresenterProps,
   bound: ScrollPresenterBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
-  link.property(props, "background", value => {
-    control.background = brushOf(value);
+  link.property({
+    props,
+    key: "background",
+    apply(value) {
+      control.background = brushOf(value);
+    }
   });
-  link.property(props, "content", value => {
-    control.content = value;
+  link.property({
+    props,
+    key: "content",
+    apply(value) {
+      control.content = value;
+    }
   });
-  link.property(props, "contentOrientation", value => {
-    control.contentOrientation = enumValue(ScrollingContentOrientation, value);
+  link.property({
+    props,
+    key: "contentOrientation",
+    apply(value) {
+      control.contentOrientation = enumValue({ table: ScrollingContentOrientation, input: value });
+    }
   });
-  link.property(props, "horizontalAnchorRatio", value => {
-    control.horizontalAnchorRatio = value;
+  link.property({
+    props,
+    key: "horizontalAnchorRatio",
+    apply(value) {
+      control.horizontalAnchorRatio = value;
+    }
   });
-  link.property(props, "horizontalScrollChainMode", value => {
-    control.horizontalScrollChainMode = enumValue(ScrollingChainMode, value);
+  link.property({
+    props,
+    key: "horizontalScrollChainMode",
+    apply(value) {
+      control.horizontalScrollChainMode = enumValue({ table: ScrollingChainMode, input: value });
+    }
   });
-  link.property(props, "horizontalScrollController", value => {
-    control.horizontalScrollController = value;
+  link.property({
+    props,
+    key: "horizontalScrollController",
+    apply(value) {
+      control.horizontalScrollController = value;
+    }
   });
-  link.property(props, "horizontalScrollMode", value => {
-    control.horizontalScrollMode = enumValue(ScrollingScrollMode, value);
+  link.property({
+    props,
+    key: "horizontalScrollMode",
+    apply(value) {
+      control.horizontalScrollMode = enumValue({ table: ScrollingScrollMode, input: value });
+    }
   });
-  link.property(props, "horizontalScrollRailMode", value => {
-    control.horizontalScrollRailMode = enumValue(ScrollingRailMode, value);
+  link.property({
+    props,
+    key: "horizontalScrollRailMode",
+    apply(value) {
+      control.horizontalScrollRailMode = enumValue({ table: ScrollingRailMode, input: value });
+    }
   });
-  link.property(props, "ignoredInputKinds", value => {
-    control.ignoredInputKinds = enumValue(ScrollingInputKinds, value);
+  link.property({
+    props,
+    key: "ignoredInputKinds",
+    apply(value) {
+      control.ignoredInputKinds = enumValue({ table: ScrollingInputKinds, input: value });
+    }
   });
-  link.property(props, "maxZoomFactor", value => {
-    control.maxZoomFactor = value;
+  link.property({
+    props,
+    key: "maxZoomFactor",
+    apply(value) {
+      control.maxZoomFactor = value;
+    }
   });
-  link.property(props, "minZoomFactor", value => {
-    control.minZoomFactor = value;
+  link.property({
+    props,
+    key: "minZoomFactor",
+    apply(value) {
+      control.minZoomFactor = value;
+    }
   });
-  link.property(props, "verticalAnchorRatio", value => {
-    control.verticalAnchorRatio = value;
+  link.property({
+    props,
+    key: "verticalAnchorRatio",
+    apply(value) {
+      control.verticalAnchorRatio = value;
+    }
   });
-  link.property(props, "verticalScrollChainMode", value => {
-    control.verticalScrollChainMode = enumValue(ScrollingChainMode, value);
+  link.property({
+    props,
+    key: "verticalScrollChainMode",
+    apply(value) {
+      control.verticalScrollChainMode = enumValue({ table: ScrollingChainMode, input: value });
+    }
   });
-  link.property(props, "verticalScrollController", value => {
-    control.verticalScrollController = value;
+  link.property({
+    props,
+    key: "verticalScrollController",
+    apply(value) {
+      control.verticalScrollController = value;
+    }
   });
-  link.property(props, "verticalScrollMode", value => {
-    control.verticalScrollMode = enumValue(ScrollingScrollMode, value);
+  link.property({
+    props,
+    key: "verticalScrollMode",
+    apply(value) {
+      control.verticalScrollMode = enumValue({ table: ScrollingScrollMode, input: value });
+    }
   });
-  link.property(props, "verticalScrollRailMode", value => {
-    control.verticalScrollRailMode = enumValue(ScrollingRailMode, value);
+  link.property({
+    props,
+    key: "verticalScrollRailMode",
+    apply(value) {
+      control.verticalScrollRailMode = enumValue({ table: ScrollingRailMode, input: value });
+    }
   });
-  link.property(props, "zoomChainMode", value => {
-    control.zoomChainMode = enumValue(ScrollingChainMode, value);
+  link.property({
+    props,
+    key: "zoomChainMode",
+    apply(value) {
+      control.zoomChainMode = enumValue({ table: ScrollingChainMode, input: value });
+    }
   });
-  link.property(props, "zoomMode", value => {
-    control.zoomMode = enumValue(ScrollingZoomMode, value);
+  link.property({
+    props,
+    key: "zoomMode",
+    apply(value) {
+      control.zoomMode = enumValue({ table: ScrollingZoomMode, input: value });
+    }
   });
 
   if ("onAnchorRequested" in props) {
@@ -152,7 +224,7 @@ export function connectScrollPresenter(
   control: ScrollPresenter,
   props: ScrollPresenterProps,
   bound: ScrollPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkScrollPresenter(control, props, bound, link);
   return () => link.dispose();

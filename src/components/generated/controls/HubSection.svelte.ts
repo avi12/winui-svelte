@@ -25,19 +25,35 @@ export function linkHubSection(
   props: HubSectionProps,
   bound: HubSectionBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.contentProperty(props, "contentTemplate", value => {
-    control.contentTemplate = value;
+  link.contentProperty({
+    props,
+    key: "contentTemplate",
+    apply(value) {
+      control.contentTemplate = value;
+    }
   });
-  link.property(props, "header", value => {
-    control.header = objectOf(value);
+  link.property({
+    props,
+    key: "header",
+    apply(value) {
+      control.header = objectOf(value);
+    }
   });
-  link.property(props, "headerTemplate", value => {
-    control.headerTemplate = value;
+  link.property({
+    props,
+    key: "headerTemplate",
+    apply(value) {
+      control.headerTemplate = value;
+    }
   });
-  link.property(props, "isHeaderInteractive", value => {
-    control.isHeaderInteractive = value;
+  link.property({
+    props,
+    key: "isHeaderInteractive",
+    apply(value) {
+      control.isHeaderInteractive = value;
+    }
   });
 }
 
@@ -45,7 +61,7 @@ export function connectHubSection(
   control: HubSection,
   props: HubSectionProps,
   bound: HubSectionBound
-): () => void {
+) {
   const link = new Linker();
   linkHubSection(control, props, bound, link);
   return () => link.dispose();

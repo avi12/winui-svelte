@@ -22,19 +22,35 @@ export function linkSwipeControl(
   props: SwipeControlProps,
   bound: SwipeControlBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "bottomItems", value => {
-    control.bottomItems = value;
+  link.property({
+    props,
+    key: "bottomItems",
+    apply(value) {
+      control.bottomItems = value;
+    }
   });
-  link.property(props, "leftItems", value => {
-    control.leftItems = value;
+  link.property({
+    props,
+    key: "leftItems",
+    apply(value) {
+      control.leftItems = value;
+    }
   });
-  link.property(props, "rightItems", value => {
-    control.rightItems = value;
+  link.property({
+    props,
+    key: "rightItems",
+    apply(value) {
+      control.rightItems = value;
+    }
   });
-  link.property(props, "topItems", value => {
-    control.topItems = value;
+  link.property({
+    props,
+    key: "topItems",
+    apply(value) {
+      control.topItems = value;
+    }
   });
 }
 
@@ -42,7 +58,7 @@ export function connectSwipeControl(
   control: SwipeControl,
   props: SwipeControlProps,
   bound: SwipeControlBound
-): () => void {
+) {
   const link = new Linker();
   linkSwipeControl(control, props, bound, link);
   return () => link.dispose();

@@ -19,10 +19,14 @@ export function linkPathIcon(
   props: PathIconProps,
   bound: PathIconBound,
   link: Linker
-): void {
+) {
   linkIconElement(control, props, bound, link);
-  link.property(props, "data", value => {
-    control.data = value;
+  link.property({
+    props,
+    key: "data",
+    apply(value) {
+      control.data = value;
+    }
   });
 }
 
@@ -30,7 +34,7 @@ export function connectPathIcon(
   control: PathIcon,
   props: PathIconProps,
   bound: PathIconBound
-): () => void {
+) {
   const link = new Linker();
   linkPathIcon(control, props, bound, link);
   return () => link.dispose();

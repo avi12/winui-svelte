@@ -22,19 +22,35 @@ export function linkLine(
   props: LineProps,
   bound: LineBound,
   link: Linker
-): void {
+) {
   linkShape(control, props, bound, link);
-  link.property(props, "x1", value => {
-    control.x1 = value;
+  link.property({
+    props,
+    key: "x1",
+    apply(value) {
+      control.x1 = value;
+    }
   });
-  link.property(props, "x2", value => {
-    control.x2 = value;
+  link.property({
+    props,
+    key: "x2",
+    apply(value) {
+      control.x2 = value;
+    }
   });
-  link.property(props, "y1", value => {
-    control.y1 = value;
+  link.property({
+    props,
+    key: "y1",
+    apply(value) {
+      control.y1 = value;
+    }
   });
-  link.property(props, "y2", value => {
-    control.y2 = value;
+  link.property({
+    props,
+    key: "y2",
+    apply(value) {
+      control.y2 = value;
+    }
   });
 }
 
@@ -42,7 +58,7 @@ export function connectLine(
   control: Line,
   props: LineProps,
   bound: LineBound
-): () => void {
+) {
   const link = new Linker();
   linkLine(control, props, bound, link);
   return () => link.dispose();

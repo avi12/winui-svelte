@@ -9,7 +9,7 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
 export interface ToolTipProps extends ContentControlProps {
-  isOpen?: boolean;
+  isOpen?: boolean | undefined;
   horizontalOffset?: number;
   placement?: EnumInput<typeof PlacementMode>;
   placementRect?: ToolTip["placementRect"];
@@ -28,32 +28,57 @@ export function linkToolTip(
   props: ToolTipProps,
   bound: ToolTipBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
-  link.property(props, "horizontalOffset", value => {
-    control.horizontalOffset = value;
-  });
-  link.property(props, "placement", value => {
-    control.placement = enumValue(PlacementMode, value);
-  });
-  link.property(props, "placementRect", value => {
-    control.placementRect = value;
-  });
-  link.property(props, "placementTarget", value => {
-    control.placementTarget = value;
-  });
-  link.property(props, "verticalOffset", value => {
-    control.verticalOffset = value;
-  });
-  link.bindable(bound, "isOpen", {
-    read: () => control.isOpen,
-    write(value) {
-      control.isOpen = value;
+  link.property({
+    props,
+    key: "horizontalOffset",
+    apply(value) {
+      control.horizontalOffset = value;
     }
-  }, [
-    handler => control.onOpened(handler),
-    handler => control.onClosed(handler)
-  ]);
+  });
+  link.property({
+    props,
+    key: "placement",
+    apply(value) {
+      control.placement = enumValue({ table: PlacementMode, input: value });
+    }
+  });
+  link.property({
+    props,
+    key: "placementRect",
+    apply(value) {
+      control.placementRect = value;
+    }
+  });
+  link.property({
+    props,
+    key: "placementTarget",
+    apply(value) {
+      control.placementTarget = value;
+    }
+  });
+  link.property({
+    props,
+    key: "verticalOffset",
+    apply(value) {
+      control.verticalOffset = value;
+    }
+  });
+  link.bindable({
+    bound,
+    key: "isOpen",
+    access: {
+      read: () => control.isOpen,
+      write(value) {
+        control.isOpen = value;
+      }
+    },
+    subscribers: [
+      handler => control.onOpened(handler),
+      handler => control.onClosed(handler)
+    ]
+  });
 
   if ("onClosed" in props) {
     link.add(control.onClosed((...args) => props.onClosed?.(...args)));
@@ -68,7 +93,7 @@ export function connectToolTip(
   control: ToolTip,
   props: ToolTipProps,
   bound: ToolTipBound
-): () => void {
+) {
   const link = new Linker();
   linkToolTip(control, props, bound, link);
   return () => link.dispose();

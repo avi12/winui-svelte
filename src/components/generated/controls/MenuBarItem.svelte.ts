@@ -19,10 +19,14 @@ export function linkMenuBarItem(
   props: MenuBarItemProps,
   bound: MenuBarItemBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
-  link.property(props, "title", value => {
-    control.title = value;
+  link.property({
+    props,
+    key: "title",
+    apply(value) {
+      control.title = value;
+    }
   });
 }
 
@@ -30,7 +34,7 @@ export function connectMenuBarItem(
   control: MenuBarItem,
   props: MenuBarItemProps,
   bound: MenuBarItemBound
-): () => void {
+) {
   const link = new Linker();
   linkMenuBarItem(control, props, bound, link);
   return () => link.dispose();

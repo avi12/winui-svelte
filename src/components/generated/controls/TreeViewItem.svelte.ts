@@ -27,31 +27,63 @@ export function linkTreeViewItem(
   props: TreeViewItemProps,
   bound: TreeViewItemBound,
   link: Linker
-): void {
+) {
   linkListViewItem(control, props, bound, link);
-  link.property(props, "collapsedGlyph", value => {
-    control.collapsedGlyph = value;
+  link.property({
+    props,
+    key: "collapsedGlyph",
+    apply(value) {
+      control.collapsedGlyph = value;
+    }
   });
-  link.property(props, "expandedGlyph", value => {
-    control.expandedGlyph = value;
+  link.property({
+    props,
+    key: "expandedGlyph",
+    apply(value) {
+      control.expandedGlyph = value;
+    }
   });
-  link.property(props, "glyphBrush", value => {
-    control.glyphBrush = brushOf(value);
+  link.property({
+    props,
+    key: "glyphBrush",
+    apply(value) {
+      control.glyphBrush = brushOf(value);
+    }
   });
-  link.property(props, "glyphOpacity", value => {
-    control.glyphOpacity = value;
+  link.property({
+    props,
+    key: "glyphOpacity",
+    apply(value) {
+      control.glyphOpacity = value;
+    }
   });
-  link.property(props, "glyphSize", value => {
-    control.glyphSize = value;
+  link.property({
+    props,
+    key: "glyphSize",
+    apply(value) {
+      control.glyphSize = value;
+    }
   });
-  link.property(props, "hasUnrealizedChildren", value => {
-    control.hasUnrealizedChildren = value;
+  link.property({
+    props,
+    key: "hasUnrealizedChildren",
+    apply(value) {
+      control.hasUnrealizedChildren = value;
+    }
   });
-  link.property(props, "isExpanded", value => {
-    control.isExpanded = value;
+  link.property({
+    props,
+    key: "isExpanded",
+    apply(value) {
+      control.isExpanded = value;
+    }
   });
-  link.property(props, "itemsSource", value => {
-    control.itemsSource = objectOf(value);
+  link.property({
+    props,
+    key: "itemsSource",
+    apply(value) {
+      control.itemsSource = objectOf(value);
+    }
   });
 }
 
@@ -59,7 +91,7 @@ export function connectTreeViewItem(
   control: TreeViewItem,
   props: TreeViewItemProps,
   bound: TreeViewItemBound
-): () => void {
+) {
   const link = new Linker();
   linkTreeViewItem(control, props, bound, link);
   return () => link.dispose();

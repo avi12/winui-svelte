@@ -31,22 +31,42 @@ export function linkRelativePanel(
   props: RelativePanelProps,
   bound: RelativePanelBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
-  link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+  link.property({
+    props,
+    key: "backgroundSizing",
+    apply(value) {
+      control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
+    }
   });
-  link.property(props, "borderBrush", value => {
-    control.borderBrush = brushOf(value);
+  link.property({
+    props,
+    key: "borderBrush",
+    apply(value) {
+      control.borderBrush = brushOf(value);
+    }
   });
-  link.property(props, "borderThickness", value => {
-    control.borderThickness = thicknessOf(value);
+  link.property({
+    props,
+    key: "borderThickness",
+    apply(value) {
+      control.borderThickness = thicknessOf(value);
+    }
   });
-  link.property(props, "cornerRadius", value => {
-    control.cornerRadius = cornerRadiusOf(value);
+  link.property({
+    props,
+    key: "cornerRadius",
+    apply(value) {
+      control.cornerRadius = cornerRadiusOf(value);
+    }
   });
-  link.property(props, "padding", value => {
-    control.padding = thicknessOf(value);
+  link.property({
+    props,
+    key: "padding",
+    apply(value) {
+      control.padding = thicknessOf(value);
+    }
   });
 }
 
@@ -54,7 +74,7 @@ export function connectRelativePanel(
   control: RelativePanel,
   props: RelativePanelProps,
   bound: RelativePanelBound
-): () => void {
+) {
   const link = new Linker();
   linkRelativePanel(control, props, bound, link);
   return () => link.dispose();
