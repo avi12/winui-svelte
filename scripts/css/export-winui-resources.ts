@@ -10,12 +10,12 @@ import { z } from "zod";
 //
 //   node scripts/css/export-winui-resources.ts [path/to/generic.xaml]
 //
-// The default is the Windows App SDK WinUI package that app/panel-tauri's
-// .winapp/winmds.lock.json names, from the NuGet cache it lists.
+// The default is the Windows App SDK WinUI package that .winapp/winmds.lock.json
+// (`pnpm restore` writes it) names, from the NuGet cache it lists.
 
 const sourceFolder = import.meta.dirname;
 const outputFile = path.join(sourceFolder, "..", "..", "src", "css", "winui-resources.g.json");
-const lockFile = path.join(sourceFolder, "..", "..", "..", "..", "app", "panel-tauri", ".winapp", "winmds.lock.json");
+const lockFile = path.join(sourceFolder, "..", "..", ".winapp", "winmds.lock.json");
 const winUiPackage = "Microsoft.WindowsAppSDK.WinUI";
 const genericXamlInPackage = path.join("lib", "native", "Microsoft.UI", "Themes", "generic.xaml");
 

@@ -21,7 +21,6 @@ import {
   mkdirSync,
   readFileSync,
   rmSync,
-  symlinkSync,
   writeFileSync
 } from "node:fs";
 import path from "node:path";
@@ -29,15 +28,16 @@ import { parseArgs } from "node:util";
 
 // Generates the components from WinUI's metadata:
 //
-//   node scripts/codegen/generate.ts --project ../../app/panel-tauri [--check]
+//   node scripts/codegen/generate.ts [--project <folder>] [--check]
 //
-// --project names the folder `winapp restore` was run in: its
-// .winapp/winmds.lock.json says where the metadata is, and its package.json
-// lists the classes the bindings are generated for (the generator adds the
-// ones the components need). --check writes nothing and fails when a file
-// differs from what would be written, as the lint gate does.
+// The project is the folder `winapp restore` was run in (this repository by
+// default): its .winapp/winmds.lock.json says where the metadata is, and its
+// package.json lists the classes the bindings are generated for (the generator
+// adds the ones the components need). --check writes nothing and fails when a
+// file differs from what would be written, as the lint gate does.
 
-const generatedFolder = path.join(import.meta.dirname, "..", "..", "src", "components", "generated");
+const packageFolder = path.join(import.meta.dirname, "..", "..");
+const generatedFolder = path.join(packageFolder, "src", "components", "generated");
 const lockPath = [".winapp", "winmds.lock.json"];
 const bindingsPath = [".winapp", "bindings"];
 
@@ -60,7 +60,6 @@ interface ReadmeBlock {
   body: string;
 }
 
-const packageFolder = path.join(import.meta.dirname, "..", "..");
 // The hello example's files, which the quick start shows as they are.
 const quickStartFiles = ["vite.config.ts", "App.svelte", "window.ts", "main.ts"];
 
@@ -194,22 +193,6 @@ function reportMissingBindings(project: string, wanted: TypeName[]): void {
   }
 }
 
-// The generated files import the bindings as #winui/..., which the package's
-// package.json maps into its own .winapp; Node's imports map cannot point out
-// of the package, so .winapp here is a junction to the project's. The same
-// goes for node_modules, where svelte and dynwinrt are installed. (Until the
-// package is a workspace member with dependencies of its own.)
-function linkProjectFolders(project: string): void {
-  for (const name of [".winapp", "node_modules"]) {
-    const link = path.join(import.meta.dirname, "..", "..", name);
-    const target = path.join(project, name);
-    const canLink = !existsSync(link) && existsSync(target);
-    if (canLink) {
-      symlinkSync(target, link, "junction");
-    }
-  }
-}
-
 function normalized(text: string): string {
   return text.replaceAll("\r\n", "\n");
 }
@@ -224,12 +207,8 @@ const { values } = parseArgs({
     }
   }
 });
-if (values.project === undefined) {
-  throw new Error("--project names the folder winapp restore was run in");
-}
-
-linkProjectFolders(path.resolve(values.project));
-const output = generatedFiles(path.resolve(values.project));
+const project = path.resolve(values.project ?? packageFolder);
+const output = generatedFiles(project);
 const wanted = new Set(output.map(entry => entry.file));
 const stale = filesIn(generatedFolder).filter(file => !wanted.has(file));
 const differing = output.filter(entry => {

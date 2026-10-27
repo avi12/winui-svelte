@@ -1,7 +1,7 @@
 import { mergedEntries } from "./binding-list.ts";
 import { packageJsonForApp, requiredBindings, winappYaml } from "./setup.ts";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 import { z } from "zod";
@@ -132,12 +132,8 @@ test("mergedEntries sorts by namespace and keeps whole-namespace entries", () =>
   assert.deepEqual(merged.map(entry => entry.namespace), ["Microsoft.UI.Xaml", "Windows.Storage"]);
 });
 
-// The panel's winapp.yaml is the one the package is built with.
-test("the winapp.yaml setup writes names the SDK the panel is restored with", () => {
-  const panel = path.join(import.meta.dirname, "..", "..", "..", "..", "app", "panel-tauri", "winapp.yaml");
-  if (!existsSync(panel)) {
-    return;
-  }
-
-  assert.deepEqual(packagesOf(winappYaml), packagesOf(readFileSync(panel, "utf8")));
+// The repository's own winapp.yaml is the one the package is built with.
+test("the winapp.yaml setup writes names the SDK this repository is restored with", () => {
+  const repositoryYaml = path.join(import.meta.dirname, "..", "..", "winapp.yaml");
+  assert.deepEqual(packagesOf(winappYaml), packagesOf(readFileSync(repositoryYaml, "utf8")));
 });

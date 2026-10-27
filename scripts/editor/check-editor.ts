@@ -1,10 +1,10 @@
 // Fails when the editor would underline anything: every .svelte file of the
-// package and of each --project is opened in the Svelte language server (the
+// package and of each extra --project folder is opened in the Svelte language server (the
 // version VS Code's Svelte extension bundles, pinned, with the patch in
 // patches/), and any diagnostic, or an inlay hint that shows a type collapsed
 // to any, fails.
 //
-//   node scripts/editor/check-editor.ts --project ../../app/panel-tauri
+//   node scripts/editor/check-editor.ts [--project <another folder>]
 //
 // svelte-check runs the same plugins, and both parse with the project's Svelte
 // for a file a tsconfig covers. They part where none does: the server then
