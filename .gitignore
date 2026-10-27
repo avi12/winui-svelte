@@ -1,6 +1,7 @@
 .winapp
 node_modules
-# pnpm build: the published output, and the license files it copies in.
+# pnpm build: the published output.
 dist
-LICENSE
-NOTICE
+# The tarballs pnpm pack makes for the package check.
+*.tgz
+.claude/worktrees

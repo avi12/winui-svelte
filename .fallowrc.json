@@ -1,5 +1,5 @@
 {
-  "$schema": "../../app/panel-tauri/node_modules/fallow/schema.json",
+  "$schema": "./node_modules/fallow/schema.json",
   // The package.json exports are its entry points, as are the tests, the
   // scripts that package.json runs, the CSS part's surface (which the renderer
   // takes over) and the examples.
@@ -30,6 +30,8 @@
     "scripts/css/export-winui-resources.ts",
     "scripts/pack/build.ts",
     "scripts/editor/check-editor.ts",
+    "scripts/pack/check-package.ts",
+    "scripts/pack/treeshake-app/main.ts",
     // Read by tsc only: it fails there on a component prop typed any or
     // unknown.
     "src/components/generated/props-strictness.ts",
@@ -51,7 +53,16 @@
   // The bindings are reached through the #winui/* import map, the linters run
   // from package.json scripts, and the editor check starts the Svelte language
   // server as a process.
-  "ignoreDependencies": ["@winapp/bindings", "oxlint-tsgolint", "@sveltejs/package", "svelte-language-server"],
+  "ignoreDependencies": [
+    "@winapp/bindings",
+    "oxlint-tsgolint",
+    "@sveltejs/package",
+    "svelte-language-server",
+    "publint",
+    "@arethetypeswrong/cli",
+    "@microsoft/dynwinrt-codegen",
+    "postcss-html"
+  ],
   // Generated from WinUI's metadata: 167 components that differ by their
   // property lists, and an app renders them, not the package.
   // Called on the in-memory link by the state tests, through a type fallow
