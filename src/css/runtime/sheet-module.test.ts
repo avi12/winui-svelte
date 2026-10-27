@@ -1,5 +1,5 @@
-import { loadWinuiCatalogue } from "../translate/catalogue.ts";
 import { compileSheetModule, cssHash, SheetError } from "./sheet-module.ts";
+import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { compile } from "svelte/compiler";
@@ -7,9 +7,9 @@ import { compile } from "svelte/compiler";
 // Real Svelte compiles; the sheet must carry the class the elements get.
 
 const resources = loadWinuiCatalogue();
-const filename = "C:/app/ui/card.svelte";
+const FILENAME = "C:/app/ui/card.svelte";
 
-const source = `<border class="card" class:big={true}>
+const SOURCE = `<border class="card" class:big={true}>
   <text-block class="title">hi</text-block>
 </border>
 
@@ -23,7 +23,7 @@ const source = `<border class="card" class:big={true}>
 
 function moduleFor(text: string) {
   return compileSheetModule({
-    filename,
+    filename: FILENAME,
     source: text,
     sheetId: "ui/card.svelte",
     resources,
@@ -32,9 +32,9 @@ function moduleFor(text: string) {
 }
 
 test("the sheet's selectors carry the class the component's elements get", () => {
-  const result = moduleFor(source);
-  const component = compile(source, {
-    filename,
+  const result = moduleFor(SOURCE);
+  const component = compile(SOURCE, {
+    filename: FILENAME,
     generate: "client",
     runes: true,
     cssHash
@@ -50,8 +50,8 @@ test("the sheet's selectors carry the class the component's elements get", () =>
 
 test("the module registers the sheet, and accepts hot updates when asked", () => {
   const result = compileSheetModule({
-    filename,
-    source,
+    filename: FILENAME,
+    source: SOURCE,
     sheetId: "ui/card.svelte",
     resources,
     runtimeModule: "winui-svelte/css",
@@ -60,7 +60,7 @@ test("the module registers the sheet, and accepts hot updates when asked", () =>
   assert.match(result?.code ?? "", /^import \{ registerStyleSheet as registerWinuiSheet \} from "winui-svelte\/css";/u);
   assert.match(result?.code ?? "", /registerWinuiSheet\(\{"id":"ui\/card\.svelte","rules":/u);
   assert.match(result?.code ?? "", /import\.meta\.hot\.accept\(\)/u);
-  assert.doesNotMatch(moduleFor(source)?.code ?? "", /import\.meta\.hot/u);
+  assert.doesNotMatch(moduleFor(SOURCE)?.code ?? "", /import\.meta\.hot/u);
 });
 
 test("a component without a <style> has no sheet", () => {

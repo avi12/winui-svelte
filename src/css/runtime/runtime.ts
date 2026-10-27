@@ -1,53 +1,65 @@
-import type { NativeValue } from "../../native-value.ts";
-import type { LowerOptions } from "../parse/reader.ts";
-import type { RankedRule } from "../translate/cascade.ts";
+import { parseInlineStyle } from "./inline.ts";
+import type { LowerOptions } from "#src/css/parse/reader.js";
+import type { RankedRule } from "#src/css/translate/cascade.js";
 import {
   computeDeclarations,
   matchingRanked,
   resolveBuiltVariable,
   styleDictionaryXaml,
   xamlTypeName
-} from "../translate/cascade.ts";
-import type { LoweredStyle } from "../translate/properties.ts";
-import { lowerDeclarations } from "../translate/properties.ts";
-import type { Declaration, PseudoState, StyleSheetData } from "../translate/types.ts";
-import { parseInlineStyle } from "./inline.ts";
+} from "#src/css/translate/cascade.js";
+import type { LoweredStyle } from "#src/css/translate/properties.js";
+import { lowerDeclarations } from "#src/css/translate/properties.js";
+import type { Declaration, StyleSheetData } from "#src/css/translate/types.js";
+import { PseudoState } from "#src/css/translate/types.js";
+import type { NativeValue } from "#src/native-value.js";
 
-// Applies the translated stylesheets to the controls the renderer makes: for
-// each element it matches the rules by type, classes and states (CSS's
-// cascade), builds the WinUI Style the result calls for, and keeps it in step
-// as classes, states and the sheets themselves change (hot reload).
-//
-// Nothing here imports WinUI: it reaches the controls through `CssNative`
-// (native.ts is the one implementation), so the logic runs under node --test.
-
+/**
+ * What the CSS runtime needs of WinUI. Nothing in the runtime imports WinUI:
+ * it reaches the controls through this seam (`native.ts` is the one
+ * implementation), so the logic runs under `node --test`.
+ */
 export interface CssNative {
-  // XamlReader.load of a ResourceDictionary.
+  /** XamlReader.load of a ResourceDictionary. */
   loadDictionary(xaml: string): object;
   mergeIntoApplication(dictionary: object): void;
   lookupStyle(dictionary: object, key: string): object;
-  // Whether the application's resources (merged dictionaries included) hold `key`.
+  /** Whether the application's resources (merged dictionaries included) hold `key`. */
   hasApplicationResource(key: string): boolean;
   setStyle(control: object, style: object | null): void;
-  // A grid's columns or rows, from "Auto,*,2*,120" (empty clears them).
+  /** A grid's columns or rows, from "Auto,*,2*,120" (empty clears them). */
   setGridDefinitions(control: object, target: "columns" | "rows", lengths: string): void;
-  // Calls `handler` on a WinUI event (PointerEntered...); null if the control has no such event.
+  /** Calls `handler` on a WinUI event (PointerEntered...); null if the control has no such event. */
   subscribe(control: object, event: string, handler: () => void): (() => void) | null;
-  read(control: object, property: string): NativeValue;
+  read(input: {
+    control: object;
+    property: string;
+  }): NativeValue;
 }
 
+/**
+ * The CSS runtime's handle on one element: it matches the stylesheets'
+ * rules by type, classes and states (CSS's cascade), builds the WinUI Style
+ * the result calls for, and keeps it in step as classes, states and the
+ * sheets themselves change (hot reload).
+ */
 export interface StyledElement {
-  // The whole class attribute, on every change.
+  /** The whole class attribute, on every change. */
   setClasses(classNames: string): void;
-  // The whole style attribute, which Svelte keeps as one string whether it
-  // was written as style="..." or as style:name={value}; null removes it.
+  /**
+   * The whole style attribute, which Svelte keeps as one string whether it
+   * was written as style="..." or as style:name={value}; null removes it.
+   */
   setInlineStyle(cssText: string | null): void;
   dispose(): void;
 }
 
-const rankStride = 100_000;
-const keyboardFocus = 2;
-const cacheLimit = 2000;
+const RANK_STRIDE = 100_000;
+const KEYBOARD_FOCUS = 2;
+const CACHE_LIMIT = 2000;
+const ID_SEPARATOR = "#";
+// Each Style is loaded in a dictionary of its own, so one key does for all.
+const STYLE_RESOURCE_KEY = "css-style";
 const classSeparator = /\s+/u;
 
 type ReadProperty = (property: string) => NativeValue;
@@ -62,11 +74,11 @@ interface StateSupport {
   initially?(read: ReadProperty): boolean;
 }
 
-function isAlways(): boolean {
+function isAlways() {
   return true;
 }
 
-function isNever(): boolean {
+function isNever() {
   return false;
 }
 
@@ -74,7 +86,7 @@ function isNever(): boolean {
 // pointer events itself (a Button marks PointerPressed handled), so `:active`
 // only works on controls that leave them to the tree.
 const stateSupport: ReadonlyMap<PseudoState, StateSupport> = new Map<PseudoState, StateSupport>([
-  ["hover", {
+  [PseudoState.HOVER, {
     bindings: [
       {
         event: "PointerEntered",
@@ -86,7 +98,7 @@ const stateSupport: ReadonlyMap<PseudoState, StateSupport> = new Map<PseudoState
       }
     ]
   }],
-  ["active", {
+  [PseudoState.ACTIVE, {
     bindings: [
       {
         event: "PointerPressed",
@@ -106,7 +118,7 @@ const stateSupport: ReadonlyMap<PseudoState, StateSupport> = new Map<PseudoState
       }
     ]
   }],
-  ["focus", {
+  [PseudoState.FOCUS, {
     bindings: [
       {
         event: "GotFocus",
@@ -118,11 +130,11 @@ const stateSupport: ReadonlyMap<PseudoState, StateSupport> = new Map<PseudoState
       }
     ]
   }],
-  ["focus-visible", {
+  [PseudoState.FOCUS_VISIBLE, {
     bindings: [
       {
         event: "GotFocus",
-        isActive: read => read("focusState") === keyboardFocus
+        isActive: read => read("focusState") === KEYBOARD_FOCUS
       },
       {
         event: "LostFocus",
@@ -130,14 +142,14 @@ const stateSupport: ReadonlyMap<PseudoState, StateSupport> = new Map<PseudoState
       }
     ]
   }],
-  ["disabled", {
+  [PseudoState.DISABLED, {
     bindings: [{
       event: "IsEnabledChanged",
       isActive: read => read("isEnabled") === false
     }],
     initially: read => read("isEnabled") === false
   }],
-  ["checked", {
+  [PseudoState.CHECKED, {
     bindings: [
       {
         event: "Checked",
@@ -163,10 +175,9 @@ interface BuiltStyle {
 
 interface RegisteredSheet {
   sheet: StyleSheetData;
-  // Keeps its place in the cascade when a hot reload replaces it.
+  /** Keeps its place in the cascade when a hot reload replaces it. */
   sequence: number;
-  // Counts the times the sheet was registered, to tell its rules from the ones
-  // it replaced.
+  /** Counts the times the sheet was registered, to tell its rules from the ones it replaced. */
   version: number;
 }
 
@@ -174,22 +185,24 @@ const sheets = new Map<string, RegisteredSheet>();
 const elements = new Set<ElementStyle>();
 const builtStyles = new Map<string, BuiltStyle>();
 const warned = new Set<string>();
-let native: CssNative | null = null;
-let rules: RankedRule[] = [];
-let nextSequence = 0;
-// Each Style is loaded in a dictionary of its own, so one key does for all.
-const styleResourceKey = "css-style";
 const stylesByXaml = new Map<string, object>();
 // Each element type's Default<Type>Style, or null where WinUI has none.
 const defaultStyles = new Map<string, string | null>();
+let native: CssNative | null = null;
+let rules: RankedRule[] = [];
+let nextSequence = 0;
 
 // WinUI gives a control its Fluent look through an implicit style based on
 // Default<Type>Style. A Style set on the control replaces that implicit one, so
 // a Style that names no base builds on it: a class adds to the control's look,
 // as CSS does, instead of dropping it (a ToggleSwitch lost its MinWidth of 0).
-function defaultStyleOf(currentNative: CssNative, elementType: string): string | null {
+function defaultStyleOf({ currentNative, elementType }: {
+  currentNative: CssNative;
+  elementType: string;
+}) {
   const known = defaultStyles.get(elementType);
-  if (known !== undefined) {
+  const hasKnown = known !== undefined;
+  if (hasKnown) {
     return known;
   }
 
@@ -199,32 +212,30 @@ function defaultStyleOf(currentNative: CssNative, elementType: string): string |
   return found;
 }
 
-function warnOnce(message: string): void {
+function warnOnce(message: string) {
   if (!warned.has(message)) {
     warned.add(message);
     process.stderr.write(`winui-svelte css: ${message}\n`);
   }
 }
 
-const idSeparator = "#";
-
 // A rule's id and its sheet's version, to tell it from the rule of the same
 // name in the sheet a hot reload replaced.
-function versionedId(id: string): string {
-  const sheetId = id.slice(0, id.lastIndexOf(idSeparator));
+function versionedId(id: string) {
+  const sheetId = id.slice(0, id.lastIndexOf(ID_SEPARATOR));
   return `${id}@${sheets.get(sheetId)?.version ?? 0}`;
 }
 
-function rebuildRules(): void {
+function rebuildRules() {
   rules = [...sheets.values()].flatMap(({ sheet, sequence }) => sheet.rules.map(rule => ({
     rule,
-    id: `${sheet.id}${idSeparator}${rule.order}`,
-    rank: sequence * rankStride + rule.order
+    id: `${sheet.id}${ID_SEPARATOR}${rule.order}`,
+    rank: sequence * RANK_STRIDE + rule.order
   })));
   builtStyles.clear();
 }
 
-function mergeResources(registered: RegisteredSheet): void {
+function mergeResources(registered: RegisteredSheet) {
   const xaml = registered.sheet.resourcesXaml;
   const currentNative = native;
   const canMerge = currentNative !== null && xaml !== null;
@@ -235,15 +246,18 @@ function mergeResources(registered: RegisteredSheet): void {
   currentNative.mergeIntoApplication(currentNative.loadDictionary(xaml));
 }
 
-function refreshAll(): void {
+function refreshAll() {
   for (const element of elements) {
     element.refresh();
   }
 }
 
-// Same id replaces the sheet (hot reload): its custom properties are merged
-// again after the old ones, so they win, and every live element re-applies.
-export function registerStyleSheet(sheet: StyleSheetData): void {
+/**
+ * Registers a translated stylesheet. The same id replaces the sheet (hot
+ * reload): its custom properties are merged again after the old ones, so
+ * they win, and every live element re-applies.
+ */
+export function registerStyleSheet(sheet: StyleSheetData) {
   const previous = sheets.get(sheet.id);
   const registered: RegisteredSheet = {
     sheet,
@@ -256,15 +270,19 @@ export function registerStyleSheet(sheet: StyleSheetData): void {
   refreshAll();
 }
 
-export function unregisterStyleSheet(id: string): void {
+/** Removes a stylesheet, and every live element re-applies. */
+export function unregisterStyleSheet(id: string) {
   sheets.delete(id);
   rebuildRules();
   refreshAll();
 }
 
-// Once, after Application.create has installed WinUI's own resources: sheets
-// registered before it (component modules load first) are merged now.
-export function installCssRuntime(implementation: CssNative): void {
+/**
+ * Connects the runtime to WinUI. Called once, after Application.create has
+ * installed WinUI's own resources: sheets registered before it (component
+ * modules load first) are merged now.
+ */
+export function installCssRuntime(implementation: CssNative) {
   native = implementation;
   for (const registered of sheets.values()) {
     mergeResources(registered);
@@ -275,33 +293,51 @@ export function installCssRuntime(implementation: CssNative): void {
   refreshAll();
 }
 
-function lowerOptions(elementType: string, problems: string[]): LowerOptions {
-  return {
+function lowerOptions({ elementType, problems }: {
+  elementType: string;
+  problems: string[];
+}) {
+  const options: LowerOptions = {
     elementType,
     resolveVariable: resolveBuiltVariable,
     // The build checked every -winui-based-on against WinUI's styles.
     hasStyle: isAlways,
-    report(severity, message, position) {
-      if (severity === "error") {
+    report({ severity, message, position }) {
+      const isError = severity === "error";
+      if (isError) {
         problems.push(`${message} (${position.line}:${position.column})`);
       } else {
         warnOnce(message);
       }
     }
   };
+  return options;
 }
 
-function buildStyle(elementType: string, matched: RankedRule[], inline: Declaration[]): BuiltStyle {
-  if (native === null) {
+function buildStyle({ elementType, matched, inline }: {
+  elementType: string;
+  matched: RankedRule[];
+  inline: Declaration[];
+}) {
+  const currentNative = native;
+  const isNativeMissing = currentNative === null;
+  if (isNativeMissing) {
     throw new Error("installCss has not been called");
   }
 
   const problems: string[] = [];
-  const lowered = lowerDeclarations(
-    computeDeclarations(matched.map(ranked => ranked.rule), inline),
-    lowerOptions(elementType, problems)
-  );
-  if (problems.length > 0) {
+  const lowered = lowerDeclarations({
+    computed: computeDeclarations({
+      matched: matched.map(ranked => ranked.rule),
+      inline
+    }),
+    options: lowerOptions({
+      elementType,
+      problems
+    })
+  });
+  const hasProblems = problems.length > 0;
+  if (hasProblems) {
     const where = matched.map(ranked => ranked.id).join(", ");
     throw new Error(`<${elementType}> cannot take the style of ${where === "" ? "its style attribute" : where}: ${problems.join("; ")}`);
   }
@@ -318,18 +354,26 @@ function buildStyle(elementType: string, matched: RankedRule[], inline: Declarat
   // element's declarations as they were does not set a new one on it.
   const based = {
     ...lowered,
-    basedOn: lowered.basedOn ?? defaultStyleOf(native, elementType)
+    basedOn: lowered.basedOn ?? defaultStyleOf({
+      currentNative,
+      elementType
+    })
   };
-  const xaml = styleDictionaryXaml(styleResourceKey, elementType, based);
+  const xaml = styleDictionaryXaml({
+    key: STYLE_RESOURCE_KEY,
+    elementType,
+    lowered: based
+  });
   const known = stylesByXaml.get(xaml);
-  if (known !== undefined) {
+  const hasKnown = known !== undefined;
+  if (hasKnown) {
     return {
       style: known,
       writes: lowered.writes
     };
   }
 
-  const style = native.lookupStyle(native.loadDictionary(xaml), styleResourceKey);
+  const style = currentNative.lookupStyle(currentNative.loadDictionary(xaml), STYLE_RESOURCE_KEY);
   stylesByXaml.set(xaml, style);
   return {
     style,
@@ -337,18 +381,29 @@ function buildStyle(elementType: string, matched: RankedRule[], inline: Declarat
   };
 }
 
-function builtFor(key: string, elementType: string, matched: RankedRule[], inline: Declaration[]): BuiltStyle {
+function builtFor({ key, elementType, matched, inline }: {
+  key: string;
+  elementType: string;
+  matched: RankedRule[];
+  inline: Declaration[];
+}) {
   const known = builtStyles.get(key);
-  if (known !== undefined) {
+  const hasKnown = known !== undefined;
+  if (hasKnown) {
     return known;
   }
 
-  if (builtStyles.size >= cacheLimit) {
+  const isCacheFull = builtStyles.size >= CACHE_LIMIT;
+  if (isCacheFull) {
     builtStyles.clear();
     stylesByXaml.clear();
   }
 
-  const built = buildStyle(elementType, matched, inline);
+  const built = buildStyle({
+    elementType,
+    matched,
+    inline
+  });
   builtStyles.set(key, built);
   return built;
 }
@@ -371,49 +426,63 @@ class ElementStyle implements StyledElement {
     elements.add(this);
   }
 
-  setClasses(classNames: string): void {
+  setClasses(classNames: string) {
     this.classes = new Set(classNames.split(classSeparator).filter(name => name !== ""));
     this.refresh();
   }
 
-  setInlineStyle(cssText: string | null): void {
-    this.inlineText = cssText === null || cssText.trim() === "" ? null : cssText;
+  setInlineStyle(cssText: string | null) {
+    const isBlank = cssText === null || cssText.trim() === "";
+    this.inlineText = isBlank ? null : cssText;
     this.refresh();
   }
 
-  dispose(): void {
+  dispose() {
     this.isDisposed = true;
     elements.delete(this);
     for (const unsubscribers of this.subscriptions.values()) {
-      unsubscribers.forEach(unsubscribe => unsubscribe());
+      for (const unsubscribe of unsubscribers) {
+        unsubscribe();
+      }
     }
 
     this.subscriptions.clear();
   }
 
-  private inlineDeclarations(): Declaration[] {
+  private inlineDeclarations() {
     const problems: string[] = [];
-    const options = lowerOptions(this.elementType, problems);
-    const declarations = this.inlineText === null ? [] : parseInlineStyle(this.inlineText, options);
-    if (problems.length > 0) {
+    const options = lowerOptions({
+      elementType: this.elementType,
+      problems
+    });
+    const declarations = this.inlineText === null ? [] : parseInlineStyle({
+      cssText: this.inlineText,
+      options
+    });
+    const hasProblems = problems.length > 0;
+    if (hasProblems) {
       throw new Error(`<${this.elementType}> style: ${problems.join("; ")}`);
     }
 
     return declarations;
   }
 
-  refresh(): void {
+  refresh() {
     const currentNative = native;
     const canRefresh = currentNative !== null && !this.isDisposed;
     if (!canRefresh) {
       return;
     }
 
-    const candidates = matchingRanked(rules, {
-      elementType: this.elementType,
-      classes: this.classes,
-      states: this.states
-    }, true);
+    const candidates = matchingRanked({
+      rules,
+      facts: {
+        elementType: this.elementType,
+        classes: this.classes,
+        states: this.states
+      },
+      isStateIgnored: true
+    });
     this.syncStates(new Set(candidates.flatMap(({ rule }) => (rule.state === null ? [] : [rule.state]))));
     const matched = candidates.filter(({ rule }) => rule.state === null || this.states.has(rule.state));
     const inline = this.inlineDeclarations();
@@ -421,30 +490,44 @@ class ElementStyle implements StyledElement {
     // The key carries each rule's sheet version, so an element is restyled
     // only when a sheet it matches was replaced.
     const key = [this.elementType, ...matched.map(({ id }) => versionedId(id)), inlineKey].join("|");
-    if (key === this.appliedKey) {
+    const isKeyApplied = key === this.appliedKey;
+    if (isKeyApplied) {
       return;
     }
 
     const isUnstyled = matched.length === 0 && inline.length === 0;
-    const hadStyle = this.appliedKey !== null;
-    const isStillUnstyled = isUnstyled && !hadStyle;
+    const hasAppliedStyle = this.appliedKey !== null;
+    const isStillUnstyled = isUnstyled && !hasAppliedStyle;
     if (isStillUnstyled) {
       return;
     }
 
-    const built = builtFor(key, this.elementType, matched, inline);
-    if (built.style !== this.appliedStyle) {
+    const built = builtFor({
+      key,
+      elementType: this.elementType,
+      matched,
+      inline
+    });
+    const isStyleApplied = built.style === this.appliedStyle;
+    if (!isStyleApplied) {
       currentNative.setStyle(this.control, built.style);
       this.appliedStyle = built.style;
     }
 
-    this.applyWrites(currentNative, built);
+    this.applyWrites({
+      currentNative,
+      built
+    });
     this.appliedKey = isUnstyled ? null : key;
   }
 
-  private applyWrites(currentNative: CssNative, built: BuiltStyle): void {
+  private applyWrites({ currentNative, built }: {
+    currentNative: CssNative;
+    built: BuiltStyle;
+  }) {
     const signature = built.writes.map(write => `${write.target}=${write.value}`).join(";");
-    if (signature === this.appliedWrites) {
+    const isSignatureApplied = signature === this.appliedWrites;
+    if (isSignatureApplied) {
       return;
     }
 
@@ -455,13 +538,19 @@ class ElementStyle implements StyledElement {
     this.appliedWrites = signature;
   }
 
-  private readProperty: ReadProperty = property => (native === null ? undefined : native.read(this.control, property));
+  private readProperty: ReadProperty = property => (native === null ? undefined : native.read({
+    control: this.control,
+    property
+  }));
 
   // Listens for exactly the states some matching rule asks about.
-  private syncStates(wanted: Set<PseudoState>): void {
+  private syncStates(wanted: Set<PseudoState>) {
     for (const [state, unsubscribers] of this.subscriptions) {
       if (!wanted.has(state)) {
-        unsubscribers.forEach(unsubscribe => unsubscribe());
+        for (const unsubscribe of unsubscribers) {
+          unsubscribe();
+        }
+
         this.subscriptions.delete(state);
         this.states.delete(state);
       }
@@ -474,7 +563,7 @@ class ElementStyle implements StyledElement {
     }
   }
 
-  private subscribeTo(state: PseudoState): void {
+  private subscribeTo(state: PseudoState) {
     const support = stateSupport.get(state);
     const currentNative = native;
     const canSubscribe = currentNative !== null && support !== undefined;
@@ -497,24 +586,30 @@ class ElementStyle implements StyledElement {
           this.refresh();
         }
       });
-      if (unsubscribe !== null) {
+      const hasUnsubscribe = unsubscribe !== null;
+      if (hasUnsubscribe) {
         unsubscribers.push(unsubscribe);
       }
     }
 
-    if (unsubscribers.length === 0) {
+    const hasNoSubscriptions = unsubscribers.length === 0;
+    if (hasNoSubscriptions) {
       warnOnce(`:${state} on <${this.elementType}> does nothing: the control reports none of ${support.bindings.map(binding => binding.event).join(", ")}`);
     }
 
     this.subscriptions.set(state, unsubscribers);
 
-    if (support.initially?.(this.readProperty) === true) {
+    const isInitiallySupported = support.initially?.(this.readProperty) === true;
+    if (isInitiallySupported) {
       this.states.add(state);
     }
   }
 }
 
-// One per element the renderer creates that is given class, style or style:.
-export function styledElement(control: object, elementType: string): StyledElement {
+/** One per element the renderer creates that is given class, style or style:. */
+export function styledElement({ control, elementType }: {
+  control: object;
+  elementType: string;
+}) {
   return new ElementStyle(control, elementType);
 }

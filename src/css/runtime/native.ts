@@ -1,11 +1,6 @@
-import type { BoxedValue, NativeValue } from "../../native-value.ts";
 import type { CssNative } from "./runtime.ts";
 import { installCssRuntime } from "./runtime.ts";
-
-// The one place the CSS runtime touches WinUI: how a dictionary is loaded and
-// merged, a Style looked up and set on a control, a grid's definitions
-// replaced, and a control's event subscribed. Given the package's WinUI
-// import site (the module namespace), so it names no binding path.
+import type { BoxedValue, NativeValue } from "#src/native-value.js";
 
 interface ProjectedType<Instance extends object> {
   readonly prototype: Instance;
@@ -20,6 +15,12 @@ interface ListLike {
   clear(): void;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention -- CssWinui mirrors WinUI's projected, PascalCase names. */
+
+/**
+ * The WinUI the CSS runtime touches: the package's WinUI import site (the
+ * module namespace), so the runtime names no binding path.
+ */
 export interface CssWinui {
   Application: {
     current: {
@@ -40,15 +41,20 @@ export interface CssWinui {
   };
 }
 
-const listSeparator = ",";
-const starSuffix = "*";
-const autoLength = "Auto";
+/* eslint-enable @typescript-eslint/naming-convention */
+
+const LIST_SEPARATOR = ",";
+const STAR_SUFFIX = "*";
+const AUTO_LENGTH = "Auto";
 
 function isRecord(value: NativeValue): value is Record<string, NativeValue> {
   return (typeof value === "object" || typeof value === "function") && value !== null;
 }
 
-function read(target: NativeValue, key: string): NativeValue {
+function readMember({ target, key }: {
+  target: NativeValue;
+  key: string;
+}) {
   return isRecord(target) ? target[key] : undefined;
 }
 
@@ -65,16 +71,20 @@ function isEventMethod(value: NativeValue): value is (handler: () => void) => Na
 }
 
 // "Auto", "*", "2*" or pixels, as WinUI's GridLength.
-function gridLength(winui: CssWinui, text: string): object {
-  if (text === autoLength) {
+function gridLength({ winui, text }: {
+  winui: CssWinui;
+  text: string;
+}) {
+  const isAuto = text === AUTO_LENGTH;
+  if (isAuto) {
     return {
       value: 1,
       gridUnitType: winui.GridUnitType.Auto
     };
   }
 
-  if (text.endsWith(starSuffix)) {
-    const weight = text.slice(0, -starSuffix.length);
+  if (text.endsWith(STAR_SUFFIX)) {
+    const weight = text.slice(0, -STAR_SUFFIX.length);
     return {
       value: weight === "" ? 1 : Number(weight),
       gridUnitType: winui.GridUnitType.Star
@@ -87,8 +97,13 @@ function gridLength(winui: CssWinui, text: string): object {
   };
 }
 
-export function createCssNative(winui: CssWinui): CssNative {
-  return {
+/**
+ * The one place the CSS runtime touches WinUI: how a dictionary is loaded and
+ * merged, a Style looked up and set on a control, a grid's definitions
+ * replaced, and a control's event subscribed.
+ */
+export function createCssNative(winui: CssWinui) {
+  const native: CssNative = {
     loadDictionary: xaml => winui.projectAs(winui.XamlReader.load(xaml), winui.ResourceDictionary),
     mergeIntoApplication(dictionary) {
       const merged = winui.Application.current.resources.mergedDictionaries;
@@ -116,20 +131,31 @@ export function createCssNative(winui: CssWinui): CssNative {
     },
     setGridDefinitions(control, target, lengths) {
       const isColumns = target === "columns";
-      const definitions = read(control, isColumns ? "columnDefinitions" : "rowDefinitions");
+      const definitions = readMember({
+        target: control,
+        key: isColumns ? "columnDefinitions" : "rowDefinitions"
+      });
       if (!isList(definitions)) {
         throw new TypeError(`${target} are set on a grid`);
       }
 
       definitions.clear();
-      for (const length of lengths === "" ? [] : lengths.split(listSeparator)) {
+      for (const length of lengths === "" ? [] : lengths.split(LIST_SEPARATOR)) {
         const definition = isColumns ? new winui.ColumnDefinition() : new winui.RowDefinition();
-        Object.assign(definition, { [isColumns ? "width" : "height"]: gridLength(winui, length.trim()) });
+        Object.assign(definition, {
+          [isColumns ? "width" : "height"]: gridLength({
+            winui,
+            text: length.trim()
+          })
+        });
         definitions.append(definition);
       }
     },
     subscribe(control, event, handler) {
-      const subscribe = read(control, `on${event}`);
+      const subscribe = readMember({
+        target: control,
+        key: `on${event}`
+      });
       if (!isEventMethod(subscribe)) {
         return null;
       }
@@ -137,11 +163,15 @@ export function createCssNative(winui: CssWinui): CssNative {
       const unsubscribe = subscribe.call(control, handler);
       return typeof unsubscribe === "function" ? () => unsubscribe() : null;
     },
-    read
+    read: ({ control, property }) => readMember({
+      target: control,
+      key: property
+    })
   };
+  return native;
 }
 
-// The renderer's single call, after Application.create: `installCss(winui)`.
-export function installCss(winui: CssWinui): void {
+/** The renderer's single call, after Application.create: `installCss(winui)`. */
+export function installCss(winui: CssWinui) {
   installCssRuntime(createCssNative(winui));
 }
