@@ -49,11 +49,10 @@ function isShipped(file: string) {
 // A .svelte file's imports of .ts modules, as the .js they are compiled to; a
 // .d.svelte.ts import is a type and stays.
 function withCompiledImports(source: string) {
-  function compiledImport(whole: string, quote: string, target: string) {
-    return target.endsWith(".d.svelte") ? whole : `${quote}${target}.js${quote}`;
-  }
-
-  return source.replaceAll(relativeTsImport, compiledImport);
+  return source.replaceAll(relativeTsImport, (whole: string, quote: string, target: string) => {
+    const isDeclarationImport = target.endsWith(".d.svelte");
+    return isDeclarationImport ? whole : `${quote}${target}.js${quote}`;
+  });
 }
 
 // `#src/x/y.js` as the path from the file to dist/x/y.js: the same specifier,

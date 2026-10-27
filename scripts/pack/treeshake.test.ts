@@ -36,7 +36,7 @@ async function bundleOfOneButton() {
     logLevel: "warn",
     plugins: [winuiSvelte()],
     resolve: {
-      alias: exportAliases(ExportTarget.Built)
+      alias: exportAliases(ExportTarget.BUILT)
     },
     build: {
       write: false,

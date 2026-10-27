@@ -19,8 +19,8 @@ const manifestSchema = z.object({
 });
 
 export const ExportTarget = {
-  Built: "dist",
-  Source: "src"
+  BUILT: "dist",
+  SOURCE: "src"
 } as const;
 
 export type ExportTarget = typeof ExportTarget[keyof typeof ExportTarget];
@@ -31,8 +31,11 @@ export interface Alias {
 }
 
 // ./dist/renderer/host/host.js is built from ./src/renderer/host/host.ts.
-function targetFile(builtFile: string, target: ExportTarget) {
-  const file = target === ExportTarget.Built ?
+function targetFile({ builtFile, target }: {
+  builtFile: string;
+  target: ExportTarget;
+}) {
+  const file = target === ExportTarget.BUILT ?
     builtFile :
     builtFile.replace(BUILT_FOLDER, SOURCE_FOLDER).replace(builtExtension, ".ts");
   return path.join(PACKAGE_ROOT, file);
@@ -45,7 +48,10 @@ export function exportAliases(target: ExportTarget) {
     const isBuilt = builtFile.startsWith(BUILT_FOLDER);
     return isBuilt ? [{
       find: new RegExp(`^${PACKAGE_NAME}${subpath.slice(1)}$`, "u"),
-      replacement: targetFile(builtFile, target)
+      replacement: targetFile({
+        builtFile,
+        target
+      })
     }] : [];
   });
 }

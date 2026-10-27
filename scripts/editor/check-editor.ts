@@ -56,7 +56,10 @@ function commonFolder(folders: string[]) {
   return common;
 }
 
-async function problemsOf(server: LanguageServer, file: string) {
+async function problemsOf({ server, file }: {
+  server: LanguageServer;
+  file: string;
+}) {
   const where = path.relative(process.cwd(), file);
   const problems = server.diagnosticsOf(file).map(diagnostic => {
     const { line, character } = diagnostic.range.start;
@@ -95,7 +98,12 @@ try {
 
   await server.settle(files);
   for (const file of files) {
-    problems.push(...await problemsOf(server, file));
+    problems.push(
+      ...await problemsOf({
+        server,
+        file
+      })
+    );
   }
 } finally {
   server.stop();

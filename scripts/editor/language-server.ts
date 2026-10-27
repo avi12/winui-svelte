@@ -123,7 +123,7 @@ export class LanguageServer {
 
   async start(rootFolder: string) {
     const rootUri = pathToFileURL(rootFolder).href;
-    await this.request("initialize", {
+    const params = {
       processId: process.pid,
       rootUri,
       workspaceFolders: [{
@@ -142,18 +142,29 @@ export class LanguageServer {
       initializationOptions: {
         configuration: Object.fromEntries(configuration)
       }
+    };
+    await this.request({
+      method: "initialize",
+      params
     });
-    this.notify("initialized", {});
+    this.notify({
+      method: "initialized",
+      params: {}
+    });
   }
 
   open(file: string) {
-    this.notify("textDocument/didOpen", {
+    const params = {
       textDocument: {
         uri: pathToFileURL(file).href,
         languageId: "svelte",
         version: 1,
         text: readFileSync(file, "utf8")
       }
+    };
+    this.notify({
+      method: "textDocument/didOpen",
+      params
     });
   }
 
@@ -161,7 +172,8 @@ export class LanguageServer {
   async settle(files: string[]) {
     const deadline = Date.now() + SETTLE_TIMEOUT_MILLISECONDS;
     while (Date.now() < deadline) {
-      if (this.exitCode !== undefined) {
+      const hasExited = this.exitCode !== undefined;
+      if (hasExited) {
         throw new Error(`The Svelte language server exited (${String(this.exitCode)}).`);
       }
 
@@ -183,7 +195,7 @@ export class LanguageServer {
 
   async inlayHintsOf(file: string) {
     const lineCount = readFileSync(file, "utf8").split("\n").length;
-    const hints = await this.request("textDocument/inlayHint", {
+    const params = {
       textDocument: {
         uri: pathToFileURL(file).href
       },
@@ -197,6 +209,10 @@ export class LanguageServer {
           character: 0
         }
       }
+    };
+    const hints = await this.request({
+      method: "textDocument/inlayHint",
+      params
     });
     return z.array(inlayHintSchema).nullable().parse(hints) ?? [];
   }
@@ -205,7 +221,10 @@ export class LanguageServer {
     this.server.kill();
   }
 
-  private request(method: string, params: Json) {
+  private request({ method, params }: {
+    method: string;
+    params: Json;
+  }) {
     const id = this.nextId;
     this.nextId++;
     this.send({
@@ -216,7 +235,10 @@ export class LanguageServer {
     return new Promise(resolve => this.pending.set(id, resolve));
   }
 
-  private notify(method: string, params: Json) {
+  private notify({ method, params }: {
+    method: string;
+    params: Json;
+  }) {
     this.send({
       method,
       params
@@ -238,7 +260,8 @@ export class LanguageServer {
     this.buffer = Buffer.concat([this.buffer, chunk]);
     while (true) {
       const headerEnd = this.buffer.indexOf(HEADER_SEPARATOR);
-      if (headerEnd < 0) {
+      const hasHeader = headerEnd >= 0;
+      if (!hasHeader) {
         return;
       }
 
@@ -264,7 +287,8 @@ export class LanguageServer {
       return;
     }
 
-    if (message.method === "textDocument/publishDiagnostics") {
+    const isPublishedDiagnostics = message.method === "textDocument/publishDiagnostics";
+    if (isPublishedDiagnostics) {
       const published = publishedSchema.parse(message.params);
       this.diagnostics.set(uriKey(published.uri), published.diagnostics);
       this.lastPublish = Date.now();

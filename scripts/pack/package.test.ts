@@ -25,7 +25,8 @@ function targetsOf(entry: Json) {
   const targets: string[] = [];
   const pending: Json[] = [entry];
   for (const current of pending) {
-    if (typeof current === "string") {
+    const isTarget = typeof current === "string";
+    if (isTarget) {
       targets.push(current);
       continue;
     }
@@ -55,7 +56,8 @@ test("no export or bin points at a TypeScript source", () => {
 
 test("every export has types, and a default that is JavaScript", () => {
   for (const [name, entry] of Object.entries(manifest.exports)) {
-    if (name === "./package.json") {
+    const isPackageJson = name === "./package.json";
+    if (isPackageJson) {
       continue;
     }
 

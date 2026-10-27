@@ -37,10 +37,16 @@ const PREFIX_OFFSET = 345;
 const PREFIX_BYTES = 155;
 const OCTAL = 8;
 const BYTES_PER_KILOBYTE = 1024;
+const FORBIDDEN_LISTED = 20;
 
-function textAt(block: Buffer, offset: number, length: number) {
+function textAt({ block, offset, length }: {
+  block: Buffer;
+  offset: number;
+  length: number;
+}) {
   const end = block.indexOf(0, offset);
-  const stop = end === -1 || end > offset + length ? offset + length : end;
+  const isTerminatedInside = end !== -1 && end <= offset + length;
+  const stop = isTerminatedInside ? end : offset + length;
   return block.toString("utf8", offset, stop);
 }
 
@@ -50,14 +56,30 @@ function tarballFiles(tarball: string) {
   let position = 0;
   while (position + TAR_BLOCK_BYTES <= archive.length) {
     const header = archive.subarray(position, position + TAR_BLOCK_BYTES);
-    const name = textAt(header, 0, NAME_BYTES);
-    if (name === "") {
+    const name = textAt({
+      block: header,
+      offset: 0,
+      length: NAME_BYTES
+    });
+    const isEnd = name === "";
+    if (isEnd) {
       break;
     }
 
-    const prefix = textAt(header, PREFIX_OFFSET, PREFIX_BYTES);
-    files.push(prefix === "" ? name : `${prefix}/${name}`);
-    const size = Number.parseInt(textAt(header, SIZE_OFFSET, SIZE_BYTES).trim(), OCTAL);
+    const prefix = textAt({
+      block: header,
+      offset: PREFIX_OFFSET,
+      length: PREFIX_BYTES
+    });
+    const hasPrefix = prefix !== "";
+    files.push(hasPrefix ? `${prefix}/${name}` : name);
+    const size = Number.parseInt(
+      textAt({
+        block: header,
+        offset: SIZE_OFFSET,
+        length: SIZE_BYTES
+      }).trim(), OCTAL
+    );
     position += TAR_BLOCK_BYTES + Math.ceil(size / TAR_BLOCK_BYTES) * TAR_BLOCK_BYTES;
   }
 
@@ -67,7 +89,8 @@ function tarballFiles(tarball: string) {
 // pnpm sets npm_execpath to its own script, which Node runs directly (no shell).
 function run(args: string[]) {
   const pnpmScript = process.env["npm_execpath"];
-  if (pnpmScript === undefined) {
+  const isRunThroughPnpm = pnpmScript !== undefined;
+  if (!isRunThroughPnpm) {
     throw new Error("Run this through pnpm: pnpm check:package");
   }
 
@@ -86,8 +109,9 @@ try {
   const tarball = path.join(PACK_FOLDER, readdirSync(PACK_FOLDER).filter(name => name.endsWith(".tgz"))[0] ?? "");
   const files = tarballFiles(tarball);
   const forbidden = files.filter(file => forbiddenInTarball.some(pattern => pattern.test(file)));
-  if (forbidden.length > 0) {
-    throw new Error(`The tarball holds files that must not ship:\n${forbidden.slice(0, 20).join("\n")}`);
+  const hasForbidden = forbidden.length > 0;
+  if (hasForbidden) {
+    throw new Error(`The tarball holds files that must not ship:\n${forbidden.slice(0, FORBIDDEN_LISTED).join("\n")}`);
   }
 
   const kilobytes = Math.round(statSync(tarball).size / BYTES_PER_KILOBYTE);
