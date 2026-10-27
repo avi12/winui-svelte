@@ -24,7 +24,7 @@ export function linkRadioButton(
   link.property({
     props,
     key: "groupName",
-    apply: value => {
+    apply(value) {
       control.groupName = value;
     }
   });

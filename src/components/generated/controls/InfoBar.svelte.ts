@@ -41,84 +41,84 @@ export function linkInfoBar(
   link.property({
     props,
     key: "actionButton",
-    apply: value => {
+    apply(value) {
       control.actionButton = value;
     }
   });
   link.property({
     props,
     key: "closeButtonCommand",
-    apply: value => {
+    apply(value) {
       control.closeButtonCommand = value;
     }
   });
   link.property({
     props,
     key: "closeButtonCommandParameter",
-    apply: value => {
+    apply(value) {
       control.closeButtonCommandParameter = objectOf(value);
     }
   });
   link.property({
     props,
     key: "closeButtonStyle",
-    apply: value => {
+    apply(value) {
       control.closeButtonStyle = value;
     }
   });
   link.property({
     props,
     key: "content",
-    apply: value => {
+    apply(value) {
       control.content = objectOf(value);
     }
   });
   link.property({
     props,
     key: "contentTemplate",
-    apply: value => {
+    apply(value) {
       control.contentTemplate = value;
     }
   });
   link.property({
     props,
     key: "iconSource",
-    apply: value => {
+    apply(value) {
       control.iconSource = value;
     }
   });
   link.property({
     props,
     key: "isClosable",
-    apply: value => {
+    apply(value) {
       control.isClosable = value;
     }
   });
   link.property({
     props,
     key: "isIconVisible",
-    apply: value => {
+    apply(value) {
       control.isIconVisible = value;
     }
   });
   link.property({
     props,
     key: "message",
-    apply: value => {
+    apply(value) {
       control.message = value;
     }
   });
   link.property({
     props,
     key: "severity",
-    apply: value => {
+    apply(value) {
       control.severity = enumValue({ table: InfoBarSeverity, input: value });
     }
   });
   link.property({
     props,
     key: "title",
-    apply: value => {
+    apply(value) {
       control.title = value;
     }
   });
@@ -127,7 +127,7 @@ export function linkInfoBar(
     key: "isOpen",
     access: {
       read: () => control.isOpen,
-      write: value => {
+      write(value) {
         control.isOpen = value;
       }
     },

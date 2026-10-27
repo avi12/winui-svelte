@@ -39,63 +39,63 @@ export function linkTwoPaneView(
   link.property({
     props,
     key: "minTallModeHeight",
-    apply: value => {
+    apply(value) {
       control.minTallModeHeight = value;
     }
   });
   link.property({
     props,
     key: "minWideModeWidth",
-    apply: value => {
+    apply(value) {
       control.minWideModeWidth = value;
     }
   });
   link.property({
     props,
     key: "pane1",
-    apply: value => {
+    apply(value) {
       control.pane1 = value;
     }
   });
   link.property({
     props,
     key: "pane1Length",
-    apply: value => {
+    apply(value) {
       control.pane1Length = gridLengthOf(value);
     }
   });
   link.property({
     props,
     key: "pane2",
-    apply: value => {
+    apply(value) {
       control.pane2 = value;
     }
   });
   link.property({
     props,
     key: "pane2Length",
-    apply: value => {
+    apply(value) {
       control.pane2Length = gridLengthOf(value);
     }
   });
   link.property({
     props,
     key: "panePriority",
-    apply: value => {
+    apply(value) {
       control.panePriority = enumValue({ table: TwoPaneViewPriority, input: value });
     }
   });
   link.property({
     props,
     key: "tallModeConfiguration",
-    apply: value => {
+    apply(value) {
       control.tallModeConfiguration = enumValue({ table: TwoPaneViewTallModeConfiguration, input: value });
     }
   });
   link.property({
     props,
     key: "wideModeConfiguration",
-    apply: value => {
+    apply(value) {
       control.wideModeConfiguration = enumValue({ table: TwoPaneViewWideModeConfiguration, input: value });
     }
   });

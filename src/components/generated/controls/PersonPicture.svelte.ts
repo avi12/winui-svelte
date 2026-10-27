@@ -34,70 +34,70 @@ export function linkPersonPicture(
   link.property({
     props,
     key: "badgeGlyph",
-    apply: value => {
+    apply(value) {
       control.badgeGlyph = value;
     }
   });
   link.property({
     props,
     key: "badgeImageSource",
-    apply: value => {
+    apply(value) {
       control.badgeImageSource = imageSourceOf(value);
     }
   });
   link.property({
     props,
     key: "badgeNumber",
-    apply: value => {
+    apply(value) {
       control.badgeNumber = value;
     }
   });
   link.property({
     props,
     key: "badgeText",
-    apply: value => {
+    apply(value) {
       control.badgeText = value;
     }
   });
   link.property({
     props,
     key: "contact",
-    apply: value => {
+    apply(value) {
       control.contact = value;
     }
   });
   link.property({
     props,
     key: "displayName",
-    apply: value => {
+    apply(value) {
       control.displayName = value;
     }
   });
   link.property({
     props,
     key: "initials",
-    apply: value => {
+    apply(value) {
       control.initials = value;
     }
   });
   link.property({
     props,
     key: "isGroup",
-    apply: value => {
+    apply(value) {
       control.isGroup = value;
     }
   });
   link.property({
     props,
     key: "preferSmallImage",
-    apply: value => {
+    apply(value) {
       control.preferSmallImage = value;
     }
   });
   link.property({
     props,
     key: "profilePicture",
-    apply: value => {
+    apply(value) {
       control.profilePicture = imageSourceOf(value);
     }
   });

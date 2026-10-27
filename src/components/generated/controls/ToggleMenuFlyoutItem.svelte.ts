@@ -24,7 +24,7 @@ export function linkToggleMenuFlyoutItem(
   link.property({
     props,
     key: "isChecked",
-    apply: value => {
+    apply(value) {
       control.isChecked = value;
     }
   });

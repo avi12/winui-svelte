@@ -32,35 +32,35 @@ export function linkRadioButtons(
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "itemsSource",
-    apply: value => {
+    apply(value) {
       control.itemsSource = objectOf(value);
     }
   });
   link.property({
     props,
     key: "itemTemplate",
-    apply: value => {
+    apply(value) {
       control.itemTemplate = objectOf(value);
     }
   });
   link.property({
     props,
     key: "maxColumns",
-    apply: value => {
+    apply(value) {
       control.maxColumns = value;
     }
   });
@@ -69,7 +69,7 @@ export function linkRadioButtons(
     key: "selectedIndex",
     access: {
       read: () => control.selectedIndex,
-      write: value => {
+      write(value) {
         control.selectedIndex = value;
       }
     },
@@ -82,7 +82,7 @@ export function linkRadioButtons(
     key: "selectedItem",
     access: {
       read: () => objectInputOf(control.selectedItem),
-      write: value => {
+      write(value) {
         control.selectedItem = objectOf(value);
       }
     },

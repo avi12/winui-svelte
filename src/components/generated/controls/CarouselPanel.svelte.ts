@@ -29,21 +29,21 @@ export function linkCarouselPanel(
   link.property({
     props,
     key: "canHorizontallyScroll",
-    apply: value => {
+    apply(value) {
       control.canHorizontallyScroll = value;
     }
   });
   link.property({
     props,
     key: "canVerticallyScroll",
-    apply: value => {
+    apply(value) {
       control.canVerticallyScroll = value;
     }
   });
   link.property({
     props,
     key: "scrollOwner",
-    apply: value => {
+    apply(value) {
       control.scrollOwner = objectOf(value);
     }
   });

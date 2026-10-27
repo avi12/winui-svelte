@@ -34,49 +34,49 @@ export function linkItemsView(
   link.property({
     props,
     key: "isItemInvokedEnabled",
-    apply: value => {
+    apply(value) {
       control.isItemInvokedEnabled = value;
     }
   });
   link.property({
     props,
     key: "itemsSource",
-    apply: value => {
+    apply(value) {
       control.itemsSource = objectOf(value);
     }
   });
   link.property({
     props,
     key: "itemTemplate",
-    apply: value => {
+    apply(value) {
       control.itemTemplate = value;
     }
   });
   link.property({
     props,
     key: "itemTransitionProvider",
-    apply: value => {
+    apply(value) {
       control.itemTransitionProvider = value;
     }
   });
   link.property({
     props,
     key: "layout",
-    apply: value => {
+    apply(value) {
       control.layout = value;
     }
   });
   link.property({
     props,
     key: "selectionMode",
-    apply: value => {
+    apply(value) {
       control.selectionMode = enumValue({ table: ItemsViewSelectionMode, input: value });
     }
   });
   link.property({
     props,
     key: "verticalScrollController",
-    apply: value => {
+    apply(value) {
       control.verticalScrollController = value;
     }
   });

@@ -120,511 +120,511 @@ export function linkCalendarView(
   link.property({
     props,
     key: "blackoutBackground",
-    apply: value => {
+    apply(value) {
       control.blackoutBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "blackoutForeground",
-    apply: value => {
+    apply(value) {
       control.blackoutForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "blackoutStrikethroughBrush",
-    apply: value => {
+    apply(value) {
       control.blackoutStrikethroughBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "calendarIdentifier",
-    apply: value => {
+    apply(value) {
       control.calendarIdentifier = value;
     }
   });
   link.property({
     props,
     key: "calendarItemBackground",
-    apply: value => {
+    apply(value) {
       control.calendarItemBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "calendarItemBorderBrush",
-    apply: value => {
+    apply(value) {
       control.calendarItemBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "calendarItemBorderThickness",
-    apply: value => {
+    apply(value) {
       control.calendarItemBorderThickness = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "calendarItemCornerRadius",
-    apply: value => {
+    apply(value) {
       control.calendarItemCornerRadius = cornerRadiusOf(value);
     }
   });
   link.property({
     props,
     key: "calendarItemDisabledBackground",
-    apply: value => {
+    apply(value) {
       control.calendarItemDisabledBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "calendarItemForeground",
-    apply: value => {
+    apply(value) {
       control.calendarItemForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "calendarItemHoverBackground",
-    apply: value => {
+    apply(value) {
       control.calendarItemHoverBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "calendarItemPressedBackground",
-    apply: value => {
+    apply(value) {
       control.calendarItemPressedBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "calendarViewDayItemStyle",
-    apply: value => {
+    apply(value) {
       control.calendarViewDayItemStyle = value;
     }
   });
   link.property({
     props,
     key: "dayItemFontFamily",
-    apply: value => {
+    apply(value) {
       control.dayItemFontFamily = fontFamilyOf(value);
     }
   });
   link.property({
     props,
     key: "dayItemFontSize",
-    apply: value => {
+    apply(value) {
       control.dayItemFontSize = value;
     }
   });
   link.property({
     props,
     key: "dayItemFontStyle",
-    apply: value => {
+    apply(value) {
       control.dayItemFontStyle = enumValue({ table: FontStyle, input: value });
     }
   });
   link.property({
     props,
     key: "dayItemFontWeight",
-    apply: value => {
+    apply(value) {
       control.dayItemFontWeight = value;
     }
   });
   link.property({
     props,
     key: "dayItemMargin",
-    apply: value => {
+    apply(value) {
       control.dayItemMargin = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "dayOfWeekFormat",
-    apply: value => {
+    apply(value) {
       control.dayOfWeekFormat = value;
     }
   });
   link.property({
     props,
     key: "disabledForeground",
-    apply: value => {
+    apply(value) {
       control.disabledForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "displayMode",
-    apply: value => {
+    apply(value) {
       control.displayMode = enumValue({ table: CalendarViewDisplayMode, input: value });
     }
   });
   link.property({
     props,
     key: "firstDayOfWeek",
-    apply: value => {
+    apply(value) {
       control.firstDayOfWeek = enumValue({ table: DayOfWeek, input: value });
     }
   });
   link.property({
     props,
     key: "firstOfMonthLabelFontFamily",
-    apply: value => {
+    apply(value) {
       control.firstOfMonthLabelFontFamily = fontFamilyOf(value);
     }
   });
   link.property({
     props,
     key: "firstOfMonthLabelFontSize",
-    apply: value => {
+    apply(value) {
       control.firstOfMonthLabelFontSize = value;
     }
   });
   link.property({
     props,
     key: "firstOfMonthLabelFontStyle",
-    apply: value => {
+    apply(value) {
       control.firstOfMonthLabelFontStyle = enumValue({ table: FontStyle, input: value });
     }
   });
   link.property({
     props,
     key: "firstOfMonthLabelFontWeight",
-    apply: value => {
+    apply(value) {
       control.firstOfMonthLabelFontWeight = value;
     }
   });
   link.property({
     props,
     key: "firstOfMonthLabelMargin",
-    apply: value => {
+    apply(value) {
       control.firstOfMonthLabelMargin = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "firstOfYearDecadeLabelFontFamily",
-    apply: value => {
+    apply(value) {
       control.firstOfYearDecadeLabelFontFamily = fontFamilyOf(value);
     }
   });
   link.property({
     props,
     key: "firstOfYearDecadeLabelFontSize",
-    apply: value => {
+    apply(value) {
       control.firstOfYearDecadeLabelFontSize = value;
     }
   });
   link.property({
     props,
     key: "firstOfYearDecadeLabelFontStyle",
-    apply: value => {
+    apply(value) {
       control.firstOfYearDecadeLabelFontStyle = enumValue({ table: FontStyle, input: value });
     }
   });
   link.property({
     props,
     key: "firstOfYearDecadeLabelFontWeight",
-    apply: value => {
+    apply(value) {
       control.firstOfYearDecadeLabelFontWeight = value;
     }
   });
   link.property({
     props,
     key: "firstOfYearDecadeLabelMargin",
-    apply: value => {
+    apply(value) {
       control.firstOfYearDecadeLabelMargin = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "focusBorderBrush",
-    apply: value => {
+    apply(value) {
       control.focusBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "horizontalDayItemAlignment",
-    apply: value => {
+    apply(value) {
       control.horizontalDayItemAlignment = enumValue({ table: HorizontalAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "horizontalFirstOfMonthLabelAlignment",
-    apply: value => {
+    apply(value) {
       control.horizontalFirstOfMonthLabelAlignment = enumValue({ table: HorizontalAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "hoverBorderBrush",
-    apply: value => {
+    apply(value) {
       control.hoverBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "isGroupLabelVisible",
-    apply: value => {
+    apply(value) {
       control.isGroupLabelVisible = value;
     }
   });
   link.property({
     props,
     key: "isOutOfScopeEnabled",
-    apply: value => {
+    apply(value) {
       control.isOutOfScopeEnabled = value;
     }
   });
   link.property({
     props,
     key: "isTodayHighlighted",
-    apply: value => {
+    apply(value) {
       control.isTodayHighlighted = value;
     }
   });
   link.property({
     props,
     key: "maxDate",
-    apply: value => {
+    apply(value) {
       control.maxDate = value;
     }
   });
   link.property({
     props,
     key: "minDate",
-    apply: value => {
+    apply(value) {
       control.minDate = value;
     }
   });
   link.property({
     props,
     key: "monthYearItemFontFamily",
-    apply: value => {
+    apply(value) {
       control.monthYearItemFontFamily = fontFamilyOf(value);
     }
   });
   link.property({
     props,
     key: "monthYearItemFontSize",
-    apply: value => {
+    apply(value) {
       control.monthYearItemFontSize = value;
     }
   });
   link.property({
     props,
     key: "monthYearItemFontStyle",
-    apply: value => {
+    apply(value) {
       control.monthYearItemFontStyle = enumValue({ table: FontStyle, input: value });
     }
   });
   link.property({
     props,
     key: "monthYearItemFontWeight",
-    apply: value => {
+    apply(value) {
       control.monthYearItemFontWeight = value;
     }
   });
   link.property({
     props,
     key: "monthYearItemMargin",
-    apply: value => {
+    apply(value) {
       control.monthYearItemMargin = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "numberOfWeeksInView",
-    apply: value => {
+    apply(value) {
       control.numberOfWeeksInView = value;
     }
   });
   link.property({
     props,
     key: "outOfScopeBackground",
-    apply: value => {
+    apply(value) {
       control.outOfScopeBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "outOfScopeForeground",
-    apply: value => {
+    apply(value) {
       control.outOfScopeForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "outOfScopeHoverForeground",
-    apply: value => {
+    apply(value) {
       control.outOfScopeHoverForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "outOfScopePressedForeground",
-    apply: value => {
+    apply(value) {
       control.outOfScopePressedForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "pressedBorderBrush",
-    apply: value => {
+    apply(value) {
       control.pressedBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "pressedForeground",
-    apply: value => {
+    apply(value) {
       control.pressedForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedBorderBrush",
-    apply: value => {
+    apply(value) {
       control.selectedBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedDisabledBorderBrush",
-    apply: value => {
+    apply(value) {
       control.selectedDisabledBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedDisabledForeground",
-    apply: value => {
+    apply(value) {
       control.selectedDisabledForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedForeground",
-    apply: value => {
+    apply(value) {
       control.selectedForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedHoverBorderBrush",
-    apply: value => {
+    apply(value) {
       control.selectedHoverBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedHoverForeground",
-    apply: value => {
+    apply(value) {
       control.selectedHoverForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedPressedBorderBrush",
-    apply: value => {
+    apply(value) {
       control.selectedPressedBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedPressedForeground",
-    apply: value => {
+    apply(value) {
       control.selectedPressedForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectionMode",
-    apply: value => {
+    apply(value) {
       control.selectionMode = enumValue({ table: CalendarViewSelectionMode, input: value });
     }
   });
   link.property({
     props,
     key: "todayBackground",
-    apply: value => {
+    apply(value) {
       control.todayBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "todayBlackoutBackground",
-    apply: value => {
+    apply(value) {
       control.todayBlackoutBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "todayBlackoutForeground",
-    apply: value => {
+    apply(value) {
       control.todayBlackoutForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "todayDisabledBackground",
-    apply: value => {
+    apply(value) {
       control.todayDisabledBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "todayFontWeight",
-    apply: value => {
+    apply(value) {
       control.todayFontWeight = value;
     }
   });
   link.property({
     props,
     key: "todayForeground",
-    apply: value => {
+    apply(value) {
       control.todayForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "todayHoverBackground",
-    apply: value => {
+    apply(value) {
       control.todayHoverBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "todayPressedBackground",
-    apply: value => {
+    apply(value) {
       control.todayPressedBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "todaySelectedInnerBorderBrush",
-    apply: value => {
+    apply(value) {
       control.todaySelectedInnerBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "verticalDayItemAlignment",
-    apply: value => {
+    apply(value) {
       control.verticalDayItemAlignment = enumValue({ table: VerticalAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "verticalFirstOfMonthLabelAlignment",
-    apply: value => {
+    apply(value) {
       control.verticalFirstOfMonthLabelAlignment = enumValue({ table: VerticalAlignment, input: value });
     }
   });

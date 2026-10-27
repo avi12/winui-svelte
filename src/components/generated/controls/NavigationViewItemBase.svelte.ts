@@ -21,7 +21,7 @@ export function linkNavigationViewItemBase(
   link.property({
     props,
     key: "isSelected",
-    apply: value => {
+    apply(value) {
       control.isSelected = value;
     }
   });

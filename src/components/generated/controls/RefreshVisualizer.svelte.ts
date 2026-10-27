@@ -29,14 +29,14 @@ export function linkRefreshVisualizer(
   link.property({
     props,
     key: "content",
-    apply: value => {
+    apply(value) {
       control.content = value;
     }
   });
   link.property({
     props,
     key: "orientation",
-    apply: value => {
+    apply(value) {
       control.orientation = enumValue({ table: RefreshVisualizerOrientation, input: value });
     }
   });

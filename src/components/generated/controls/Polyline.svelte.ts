@@ -27,14 +27,14 @@ export function linkPolyline(
   link.property({
     props,
     key: "fillRule",
-    apply: value => {
+    apply(value) {
       control.fillRule = enumValue({ table: FillRule, input: value });
     }
   });
   link.property({
     props,
     key: "points",
-    apply: value => {
+    apply(value) {
       control.points = value;
     }
   });

@@ -26,21 +26,21 @@ export function linkItemsRepeaterScrollHost(
   link.property({
     props,
     key: "horizontalAnchorRatio",
-    apply: value => {
+    apply(value) {
       control.horizontalAnchorRatio = value;
     }
   });
   link.property({
     props,
     key: "scrollViewer",
-    apply: value => {
+    apply(value) {
       control.scrollViewer = value;
     }
   });
   link.property({
     props,
     key: "verticalAnchorRatio",
-    apply: value => {
+    apply(value) {
       control.verticalAnchorRatio = value;
     }
   });

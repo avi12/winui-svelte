@@ -46,133 +46,133 @@ export function linkColorPicker(
   link.property({
     props,
     key: "colorSpectrumComponents",
-    apply: value => {
+    apply(value) {
       control.colorSpectrumComponents = enumValue({ table: ColorSpectrumComponents, input: value });
     }
   });
   link.property({
     props,
     key: "colorSpectrumShape",
-    apply: value => {
+    apply(value) {
       control.colorSpectrumShape = enumValue({ table: ColorSpectrumShape, input: value });
     }
   });
   link.property({
     props,
     key: "isAlphaEnabled",
-    apply: value => {
+    apply(value) {
       control.isAlphaEnabled = value;
     }
   });
   link.property({
     props,
     key: "isAlphaSliderVisible",
-    apply: value => {
+    apply(value) {
       control.isAlphaSliderVisible = value;
     }
   });
   link.property({
     props,
     key: "isAlphaTextInputVisible",
-    apply: value => {
+    apply(value) {
       control.isAlphaTextInputVisible = value;
     }
   });
   link.property({
     props,
     key: "isColorChannelTextInputVisible",
-    apply: value => {
+    apply(value) {
       control.isColorChannelTextInputVisible = value;
     }
   });
   link.property({
     props,
     key: "isColorPreviewVisible",
-    apply: value => {
+    apply(value) {
       control.isColorPreviewVisible = value;
     }
   });
   link.property({
     props,
     key: "isColorSliderVisible",
-    apply: value => {
+    apply(value) {
       control.isColorSliderVisible = value;
     }
   });
   link.property({
     props,
     key: "isColorSpectrumVisible",
-    apply: value => {
+    apply(value) {
       control.isColorSpectrumVisible = value;
     }
   });
   link.property({
     props,
     key: "isHexInputVisible",
-    apply: value => {
+    apply(value) {
       control.isHexInputVisible = value;
     }
   });
   link.property({
     props,
     key: "isMoreButtonVisible",
-    apply: value => {
+    apply(value) {
       control.isMoreButtonVisible = value;
     }
   });
   link.property({
     props,
     key: "maxHue",
-    apply: value => {
+    apply(value) {
       control.maxHue = value;
     }
   });
   link.property({
     props,
     key: "maxSaturation",
-    apply: value => {
+    apply(value) {
       control.maxSaturation = value;
     }
   });
   link.property({
     props,
     key: "maxValue",
-    apply: value => {
+    apply(value) {
       control.maxValue = value;
     }
   });
   link.property({
     props,
     key: "minHue",
-    apply: value => {
+    apply(value) {
       control.minHue = value;
     }
   });
   link.property({
     props,
     key: "minSaturation",
-    apply: value => {
+    apply(value) {
       control.minSaturation = value;
     }
   });
   link.property({
     props,
     key: "minValue",
-    apply: value => {
+    apply(value) {
       control.minValue = value;
     }
   });
   link.property({
     props,
     key: "orientation",
-    apply: value => {
+    apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
     }
   });
   link.property({
     props,
     key: "previousColor",
-    apply: value => {
+    apply(value) {
       control.previousColor = value;
     }
   });
@@ -181,7 +181,7 @@ export function linkColorPicker(
     key: "color",
     access: {
       read: () => control.color,
-      write: value => {
+      write(value) {
         control.color = colorOf(value);
       }
     },

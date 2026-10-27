@@ -25,7 +25,7 @@ export function linkImageIcon(
   link.property({
     props,
     key: "source",
-    apply: value => {
+    apply(value) {
       control.source = imageSourceOf(value);
     }
   });

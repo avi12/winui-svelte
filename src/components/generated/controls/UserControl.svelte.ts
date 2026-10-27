@@ -26,7 +26,7 @@ export function linkUserControl(
   link.contentProperty({
     props,
     key: "content",
-    apply: value => {
+    apply(value) {
       control.content = value;
     }
   });

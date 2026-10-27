@@ -28,21 +28,21 @@ export function linkSplitButton(
   link.property({
     props,
     key: "command",
-    apply: value => {
+    apply(value) {
       control.command = value;
     }
   });
   link.property({
     props,
     key: "commandParameter",
-    apply: value => {
+    apply(value) {
       control.commandParameter = objectOf(value);
     }
   });
   link.property({
     props,
     key: "flyout",
-    apply: value => {
+    apply(value) {
       control.flyout = value;
     }
   });

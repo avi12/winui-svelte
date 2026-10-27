@@ -25,7 +25,7 @@ export function linkTickBar(
   link.property({
     props,
     key: "fill",
-    apply: value => {
+    apply(value) {
       control.fill = brushOf(value);
     }
   });

@@ -29,28 +29,28 @@ export function linkTabViewItem(
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "iconSource",
-    apply: value => {
+    apply(value) {
       control.iconSource = value;
     }
   });
   link.property({
     props,
     key: "isClosable",
-    apply: value => {
+    apply(value) {
       control.isClosable = value;
     }
   });

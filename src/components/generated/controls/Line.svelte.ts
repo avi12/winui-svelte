@@ -27,28 +27,28 @@ export function linkLine(
   link.property({
     props,
     key: "x1",
-    apply: value => {
+    apply(value) {
       control.x1 = value;
     }
   });
   link.property({
     props,
     key: "x2",
-    apply: value => {
+    apply(value) {
       control.x2 = value;
     }
   });
   link.property({
     props,
     key: "y1",
-    apply: value => {
+    apply(value) {
       control.y1 = value;
     }
   });
   link.property({
     props,
     key: "y2",
-    apply: value => {
+    apply(value) {
       control.y2 = value;
     }
   });

@@ -73,210 +73,210 @@ export function linkNavigationView(
   link.property({
     props,
     key: "alwaysShowHeader",
-    apply: value => {
+    apply(value) {
       control.alwaysShowHeader = value;
     }
   });
   link.property({
     props,
     key: "autoSuggestBox",
-    apply: value => {
+    apply(value) {
       control.autoSuggestBox = value;
     }
   });
   link.property({
     props,
     key: "compactModeThresholdWidth",
-    apply: value => {
+    apply(value) {
       control.compactModeThresholdWidth = value;
     }
   });
   link.property({
     props,
     key: "compactPaneLength",
-    apply: value => {
+    apply(value) {
       control.compactPaneLength = value;
     }
   });
   link.property({
     props,
     key: "contentOverlay",
-    apply: value => {
+    apply(value) {
       control.contentOverlay = value;
     }
   });
   link.property({
     props,
     key: "expandedModeThresholdWidth",
-    apply: value => {
+    apply(value) {
       control.expandedModeThresholdWidth = value;
     }
   });
   link.property({
     props,
     key: "footerMenuItemsSource",
-    apply: value => {
+    apply(value) {
       control.footerMenuItemsSource = objectOf(value);
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "isBackButtonVisible",
-    apply: value => {
+    apply(value) {
       control.isBackButtonVisible = enumValue({ table: NavigationViewBackButtonVisible, input: value });
     }
   });
   link.property({
     props,
     key: "isBackEnabled",
-    apply: value => {
+    apply(value) {
       control.isBackEnabled = value;
     }
   });
   link.property({
     props,
     key: "isPaneToggleButtonVisible",
-    apply: value => {
+    apply(value) {
       control.isPaneToggleButtonVisible = value;
     }
   });
   link.property({
     props,
     key: "isPaneVisible",
-    apply: value => {
+    apply(value) {
       control.isPaneVisible = value;
     }
   });
   link.property({
     props,
     key: "isSettingsVisible",
-    apply: value => {
+    apply(value) {
       control.isSettingsVisible = value;
     }
   });
   link.property({
     props,
     key: "isTitleBarAutoPaddingEnabled",
-    apply: value => {
+    apply(value) {
       control.isTitleBarAutoPaddingEnabled = value;
     }
   });
   link.property({
     props,
     key: "menuItemContainerStyle",
-    apply: value => {
+    apply(value) {
       control.menuItemContainerStyle = value;
     }
   });
   link.property({
     props,
     key: "menuItemContainerStyleSelector",
-    apply: value => {
+    apply(value) {
       control.menuItemContainerStyleSelector = value;
     }
   });
   link.property({
     props,
     key: "menuItemsSource",
-    apply: value => {
+    apply(value) {
       control.menuItemsSource = objectOf(value);
     }
   });
   link.property({
     props,
     key: "menuItemTemplate",
-    apply: value => {
+    apply(value) {
       control.menuItemTemplate = value;
     }
   });
   link.property({
     props,
     key: "menuItemTemplateSelector",
-    apply: value => {
+    apply(value) {
       control.menuItemTemplateSelector = value;
     }
   });
   link.property({
     props,
     key: "openPaneLength",
-    apply: value => {
+    apply(value) {
       control.openPaneLength = value;
     }
   });
   link.property({
     props,
     key: "overflowLabelMode",
-    apply: value => {
+    apply(value) {
       control.overflowLabelMode = enumValue({ table: NavigationViewOverflowLabelMode, input: value });
     }
   });
   link.property({
     props,
     key: "paneCustomContent",
-    apply: value => {
+    apply(value) {
       control.paneCustomContent = value;
     }
   });
   link.property({
     props,
     key: "paneDisplayMode",
-    apply: value => {
+    apply(value) {
       control.paneDisplayMode = enumValue({ table: NavigationViewPaneDisplayMode, input: value });
     }
   });
   link.property({
     props,
     key: "paneFooter",
-    apply: value => {
+    apply(value) {
       control.paneFooter = value;
     }
   });
   link.property({
     props,
     key: "paneHeader",
-    apply: value => {
+    apply(value) {
       control.paneHeader = value;
     }
   });
   link.property({
     props,
     key: "paneTitle",
-    apply: value => {
+    apply(value) {
       control.paneTitle = value;
     }
   });
   link.property({
     props,
     key: "paneToggleButtonStyle",
-    apply: value => {
+    apply(value) {
       control.paneToggleButtonStyle = value;
     }
   });
   link.property({
     props,
     key: "selectionFollowsFocus",
-    apply: value => {
+    apply(value) {
       control.selectionFollowsFocus = enumValue({ table: NavigationViewSelectionFollowsFocus, input: value });
     }
   });
   link.property({
     props,
     key: "shoulderNavigationEnabled",
-    apply: value => {
+    apply(value) {
       control.shoulderNavigationEnabled = enumValue({ table: NavigationViewShoulderNavigationEnabled, input: value });
     }
   });
@@ -285,7 +285,7 @@ export function linkNavigationView(
     key: "isPaneOpen",
     access: {
       read: () => control.isPaneOpen,
-      write: value => {
+      write(value) {
         control.isPaneOpen = value;
       }
     },
@@ -299,7 +299,7 @@ export function linkNavigationView(
     key: "selectedItem",
     access: {
       read: () => objectInputOf(control.selectedItem),
-      write: value => {
+      write(value) {
         control.selectedItem = objectOf(value);
       }
     },

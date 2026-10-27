@@ -30,35 +30,35 @@ export function linkMapControl(
   link.property({
     props,
     key: "center",
-    apply: value => {
+    apply(value) {
       control.center = value;
     }
   });
   link.property({
     props,
     key: "interactiveControlsVisible",
-    apply: value => {
+    apply(value) {
       control.interactiveControlsVisible = value;
     }
   });
   link.property({
     props,
     key: "layers",
-    apply: value => {
+    apply(value) {
       control.layers = value;
     }
   });
   link.property({
     props,
     key: "mapServiceToken",
-    apply: value => {
+    apply(value) {
       control.mapServiceToken = value;
     }
   });
   link.property({
     props,
     key: "zoomLevel",
-    apply: value => {
+    apply(value) {
       control.zoomLevel = value;
     }
   });

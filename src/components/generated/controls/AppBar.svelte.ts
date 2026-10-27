@@ -33,21 +33,21 @@ export function linkAppBar(
   link.property({
     props,
     key: "closedDisplayMode",
-    apply: value => {
+    apply(value) {
       control.closedDisplayMode = enumValue({ table: AppBarClosedDisplayMode, input: value });
     }
   });
   link.property({
     props,
     key: "isSticky",
-    apply: value => {
+    apply(value) {
       control.isSticky = value;
     }
   });
   link.property({
     props,
     key: "lightDismissOverlayMode",
-    apply: value => {
+    apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
     }
   });
@@ -56,7 +56,7 @@ export function linkAppBar(
     key: "isOpen",
     access: {
       read: () => control.isOpen,
-      write: value => {
+      write(value) {
         control.isOpen = value;
       }
     },

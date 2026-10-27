@@ -35,70 +35,70 @@ export function linkTitleBar(
   link.property({
     props,
     key: "autoRefreshDragRegions",
-    apply: value => {
+    apply(value) {
       control.autoRefreshDragRegions = value;
     }
   });
   link.property({
     props,
     key: "content",
-    apply: value => {
+    apply(value) {
       control.content = value;
     }
   });
   link.property({
     props,
     key: "iconSource",
-    apply: value => {
+    apply(value) {
       control.iconSource = value;
     }
   });
   link.property({
     props,
     key: "isBackButtonEnabled",
-    apply: value => {
+    apply(value) {
       control.isBackButtonEnabled = value;
     }
   });
   link.property({
     props,
     key: "isBackButtonVisible",
-    apply: value => {
+    apply(value) {
       control.isBackButtonVisible = value;
     }
   });
   link.property({
     props,
     key: "isPaneToggleButtonVisible",
-    apply: value => {
+    apply(value) {
       control.isPaneToggleButtonVisible = value;
     }
   });
   link.property({
     props,
     key: "leftHeader",
-    apply: value => {
+    apply(value) {
       control.leftHeader = value;
     }
   });
   link.property({
     props,
     key: "rightHeader",
-    apply: value => {
+    apply(value) {
       control.rightHeader = value;
     }
   });
   link.property({
     props,
     key: "subtitle",
-    apply: value => {
+    apply(value) {
       control.subtitle = value;
     }
   });
   link.property({
     props,
     key: "title",
-    apply: value => {
+    apply(value) {
       control.title = value;
     }
   });

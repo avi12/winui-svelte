@@ -25,7 +25,7 @@ export function linkHyperlinkButton(
   link.property({
     props,
     key: "navigateUri",
-    apply: value => {
+    apply(value) {
       control.navigateUri = uriOf(value);
     }
   });

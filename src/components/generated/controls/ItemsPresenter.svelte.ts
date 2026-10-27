@@ -33,49 +33,49 @@ export function linkItemsPresenter(
   link.property({
     props,
     key: "footer",
-    apply: value => {
+    apply(value) {
       control.footer = objectOf(value);
     }
   });
   link.property({
     props,
     key: "footerTemplate",
-    apply: value => {
+    apply(value) {
       control.footerTemplate = value;
     }
   });
   link.property({
     props,
     key: "footerTransitions",
-    apply: value => {
+    apply(value) {
       control.footerTransitions = value;
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "headerTransitions",
-    apply: value => {
+    apply(value) {
       control.headerTransitions = value;
     }
   });
   link.property({
     props,
     key: "padding",
-    apply: value => {
+    apply(value) {
       control.padding = thicknessOf(value);
     }
   });

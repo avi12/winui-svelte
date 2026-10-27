@@ -50,147 +50,147 @@ export function linkListViewBase(
   link.property({
     props,
     key: "canDragItems",
-    apply: value => {
+    apply(value) {
       control.canDragItems = value;
     }
   });
   link.property({
     props,
     key: "canReorderItems",
-    apply: value => {
+    apply(value) {
       control.canReorderItems = value;
     }
   });
   link.property({
     props,
     key: "dataFetchSize",
-    apply: value => {
+    apply(value) {
       control.dataFetchSize = value;
     }
   });
   link.property({
     props,
     key: "footer",
-    apply: value => {
+    apply(value) {
       control.footer = objectOf(value);
     }
   });
   link.property({
     props,
     key: "footerTemplate",
-    apply: value => {
+    apply(value) {
       control.footerTemplate = value;
     }
   });
   link.property({
     props,
     key: "footerTransitions",
-    apply: value => {
+    apply(value) {
       control.footerTransitions = value;
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "headerTransitions",
-    apply: value => {
+    apply(value) {
       control.headerTransitions = value;
     }
   });
   link.property({
     props,
     key: "incrementalLoadingThreshold",
-    apply: value => {
+    apply(value) {
       control.incrementalLoadingThreshold = value;
     }
   });
   link.property({
     props,
     key: "incrementalLoadingTrigger",
-    apply: value => {
+    apply(value) {
       control.incrementalLoadingTrigger = enumValue({ table: IncrementalLoadingTrigger, input: value });
     }
   });
   link.property({
     props,
     key: "isActiveView",
-    apply: value => {
+    apply(value) {
       control.isActiveView = value;
     }
   });
   link.property({
     props,
     key: "isItemClickEnabled",
-    apply: value => {
+    apply(value) {
       control.isItemClickEnabled = value;
     }
   });
   link.property({
     props,
     key: "isMultiSelectCheckBoxEnabled",
-    apply: value => {
+    apply(value) {
       control.isMultiSelectCheckBoxEnabled = value;
     }
   });
   link.property({
     props,
     key: "isSwipeEnabled",
-    apply: value => {
+    apply(value) {
       control.isSwipeEnabled = value;
     }
   });
   link.property({
     props,
     key: "isZoomedInView",
-    apply: value => {
+    apply(value) {
       control.isZoomedInView = value;
     }
   });
   link.property({
     props,
     key: "reorderMode",
-    apply: value => {
+    apply(value) {
       control.reorderMode = enumValue({ table: ListViewReorderMode, input: value });
     }
   });
   link.property({
     props,
     key: "selectionMode",
-    apply: value => {
+    apply(value) {
       control.selectionMode = enumValue({ table: ListViewSelectionMode, input: value });
     }
   });
   link.property({
     props,
     key: "semanticZoomOwner",
-    apply: value => {
+    apply(value) {
       control.semanticZoomOwner = value;
     }
   });
   link.property({
     props,
     key: "showsScrollingPlaceholders",
-    apply: value => {
+    apply(value) {
       control.showsScrollingPlaceholders = value;
     }
   });
   link.property({
     props,
     key: "singleSelectionFollowsFocus",
-    apply: value => {
+    apply(value) {
       control.singleSelectionFollowsFocus = value;
     }
   });

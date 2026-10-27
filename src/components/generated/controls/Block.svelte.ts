@@ -28,35 +28,35 @@ export function linkBlock(
   link.property({
     props,
     key: "horizontalTextAlignment",
-    apply: value => {
+    apply(value) {
       control.horizontalTextAlignment = enumValue({ table: TextAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "lineHeight",
-    apply: value => {
+    apply(value) {
       control.lineHeight = value;
     }
   });
   link.property({
     props,
     key: "lineStackingStrategy",
-    apply: value => {
+    apply(value) {
       control.lineStackingStrategy = enumValue({ table: LineStackingStrategy, input: value });
     }
   });
   link.property({
     props,
     key: "margin",
-    apply: value => {
+    apply(value) {
       control.margin = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "textAlignment",
-    apply: value => {
+    apply(value) {
       control.textAlignment = enumValue({ table: TextAlignment, input: value });
     }
   });

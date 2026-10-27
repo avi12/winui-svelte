@@ -27,28 +27,28 @@ export function linkSwipeControl(
   link.property({
     props,
     key: "bottomItems",
-    apply: value => {
+    apply(value) {
       control.bottomItems = value;
     }
   });
   link.property({
     props,
     key: "leftItems",
-    apply: value => {
+    apply(value) {
       control.leftItems = value;
     }
   });
   link.property({
     props,
     key: "rightItems",
-    apply: value => {
+    apply(value) {
       control.rightItems = value;
     }
   });
   link.property({
     props,
     key: "topItems",
-    apply: value => {
+    apply(value) {
       control.topItems = value;
     }
   });

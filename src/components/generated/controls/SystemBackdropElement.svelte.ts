@@ -26,14 +26,14 @@ export function linkSystemBackdropElement(
   link.property({
     props,
     key: "cornerRadius",
-    apply: value => {
+    apply(value) {
       control.cornerRadius = cornerRadiusOf(value);
     }
   });
   link.property({
     props,
     key: "systemBackdrop",
-    apply: value => {
+    apply(value) {
       control.systemBackdrop = value;
     }
   });

@@ -28,14 +28,14 @@ export function linkSelector(
   link.property({
     props,
     key: "isSynchronizedWithCurrentItem",
-    apply: value => {
+    apply(value) {
       control.isSynchronizedWithCurrentItem = nullableBooleanOf(value);
     }
   });
   link.property({
     props,
     key: "selectedValuePath",
-    apply: value => {
+    apply(value) {
       control.selectedValuePath = value;
     }
   });
@@ -44,7 +44,7 @@ export function linkSelector(
     key: "selectedIndex",
     access: {
       read: () => control.selectedIndex,
-      write: value => {
+      write(value) {
         control.selectedIndex = value;
       }
     },
@@ -57,7 +57,7 @@ export function linkSelector(
     key: "selectedItem",
     access: {
       read: () => objectInputOf(control.selectedItem),
-      write: value => {
+      write(value) {
         control.selectedItem = objectOf(value);
       }
     },
@@ -70,7 +70,7 @@ export function linkSelector(
     key: "selectedValue",
     access: {
       read: () => objectInputOf(control.selectedValue),
-      write: value => {
+      write(value) {
         control.selectedValue = objectOf(value);
       }
     },

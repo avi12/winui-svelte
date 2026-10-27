@@ -47,119 +47,119 @@ export function linkCalendarDatePicker(
   link.property({
     props,
     key: "calendarIdentifier",
-    apply: value => {
+    apply(value) {
       control.calendarIdentifier = value;
     }
   });
   link.property({
     props,
     key: "calendarViewStyle",
-    apply: value => {
+    apply(value) {
       control.calendarViewStyle = value;
     }
   });
   link.property({
     props,
     key: "dateFormat",
-    apply: value => {
+    apply(value) {
       control.dateFormat = value;
     }
   });
   link.property({
     props,
     key: "dayOfWeekFormat",
-    apply: value => {
+    apply(value) {
       control.dayOfWeekFormat = value;
     }
   });
   link.property({
     props,
     key: "description",
-    apply: value => {
+    apply(value) {
       control.description = objectOf(value);
     }
   });
   link.property({
     props,
     key: "displayMode",
-    apply: value => {
+    apply(value) {
       control.displayMode = enumValue({ table: CalendarViewDisplayMode, input: value });
     }
   });
   link.property({
     props,
     key: "firstDayOfWeek",
-    apply: value => {
+    apply(value) {
       control.firstDayOfWeek = enumValue({ table: DayOfWeek, input: value });
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "isCalendarOpen",
-    apply: value => {
+    apply(value) {
       control.isCalendarOpen = value;
     }
   });
   link.property({
     props,
     key: "isGroupLabelVisible",
-    apply: value => {
+    apply(value) {
       control.isGroupLabelVisible = value;
     }
   });
   link.property({
     props,
     key: "isOutOfScopeEnabled",
-    apply: value => {
+    apply(value) {
       control.isOutOfScopeEnabled = value;
     }
   });
   link.property({
     props,
     key: "isTodayHighlighted",
-    apply: value => {
+    apply(value) {
       control.isTodayHighlighted = value;
     }
   });
   link.property({
     props,
     key: "lightDismissOverlayMode",
-    apply: value => {
+    apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
     }
   });
   link.property({
     props,
     key: "maxDate",
-    apply: value => {
+    apply(value) {
       control.maxDate = value;
     }
   });
   link.property({
     props,
     key: "minDate",
-    apply: value => {
+    apply(value) {
       control.minDate = value;
     }
   });
   link.property({
     props,
     key: "placeholderText",
-    apply: value => {
+    apply(value) {
       control.placeholderText = value;
     }
   });
@@ -168,7 +168,7 @@ export function linkCalendarDatePicker(
     key: "date",
     access: {
       read: () => control.date,
-      write: value => {
+      write(value) {
         control.date = value;
       }
     },

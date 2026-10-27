@@ -33,56 +33,56 @@ export function linkItemsWrapGrid(
   link.property({
     props,
     key: "areStickyGroupHeadersEnabled",
-    apply: value => {
+    apply(value) {
       control.areStickyGroupHeadersEnabled = value;
     }
   });
   link.property({
     props,
     key: "cacheLength",
-    apply: value => {
+    apply(value) {
       control.cacheLength = value;
     }
   });
   link.property({
     props,
     key: "groupHeaderPlacement",
-    apply: value => {
+    apply(value) {
       control.groupHeaderPlacement = enumValue({ table: GroupHeaderPlacement, input: value });
     }
   });
   link.property({
     props,
     key: "groupPadding",
-    apply: value => {
+    apply(value) {
       control.groupPadding = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "itemHeight",
-    apply: value => {
+    apply(value) {
       control.itemHeight = value;
     }
   });
   link.property({
     props,
     key: "itemWidth",
-    apply: value => {
+    apply(value) {
       control.itemWidth = value;
     }
   });
   link.property({
     props,
     key: "maximumRowsOrColumns",
-    apply: value => {
+    apply(value) {
       control.maximumRowsOrColumns = value;
     }
   });
   link.property({
     props,
     key: "orientation",
-    apply: value => {
+    apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
     }
   });

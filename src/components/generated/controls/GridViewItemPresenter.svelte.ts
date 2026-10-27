@@ -47,154 +47,154 @@ export function linkGridViewItemPresenter(
   link.property({
     props,
     key: "checkBrush",
-    apply: value => {
+    apply(value) {
       control.checkBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "checkHintBrush",
-    apply: value => {
+    apply(value) {
       control.checkHintBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "checkSelectingBrush",
-    apply: value => {
+    apply(value) {
       control.checkSelectingBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "contentMargin",
-    apply: value => {
+    apply(value) {
       control.contentMargin = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "disabledOpacity",
-    apply: value => {
+    apply(value) {
       control.disabledOpacity = value;
     }
   });
   link.property({
     props,
     key: "dragBackground",
-    apply: value => {
+    apply(value) {
       control.dragBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "dragForeground",
-    apply: value => {
+    apply(value) {
       control.dragForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "dragOpacity",
-    apply: value => {
+    apply(value) {
       control.dragOpacity = value;
     }
   });
   link.property({
     props,
     key: "focusBorderBrush",
-    apply: value => {
+    apply(value) {
       control.focusBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "gridViewItemPresenterHorizontalContentAlignment",
-    apply: value => {
+    apply(value) {
       control.gridViewItemPresenterHorizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "gridViewItemPresenterPadding",
-    apply: value => {
+    apply(value) {
       control.gridViewItemPresenterPadding = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "gridViewItemPresenterVerticalContentAlignment",
-    apply: value => {
+    apply(value) {
       control.gridViewItemPresenterVerticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "placeholderBackground",
-    apply: value => {
+    apply(value) {
       control.placeholderBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "pointerOverBackground",
-    apply: value => {
+    apply(value) {
       control.pointerOverBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "pointerOverBackgroundMargin",
-    apply: value => {
+    apply(value) {
       control.pointerOverBackgroundMargin = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "reorderHintOffset",
-    apply: value => {
+    apply(value) {
       control.reorderHintOffset = value;
     }
   });
   link.property({
     props,
     key: "selectedBackground",
-    apply: value => {
+    apply(value) {
       control.selectedBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedBorderThickness",
-    apply: value => {
+    apply(value) {
       control.selectedBorderThickness = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "selectedForeground",
-    apply: value => {
+    apply(value) {
       control.selectedForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedPointerOverBackground",
-    apply: value => {
+    apply(value) {
       control.selectedPointerOverBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectedPointerOverBorderBrush",
-    apply: value => {
+    apply(value) {
       control.selectedPointerOverBorderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "selectionCheckMarkVisualEnabled",
-    apply: value => {
+    apply(value) {
       control.selectionCheckMarkVisualEnabled = value;
     }
   });

@@ -30,28 +30,28 @@ export function linkHubSection(
   link.contentProperty({
     props,
     key: "contentTemplate",
-    apply: value => {
+    apply(value) {
       control.contentTemplate = value;
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "isHeaderInteractive",
-    apply: value => {
+    apply(value) {
       control.isHeaderInteractive = value;
     }
   });

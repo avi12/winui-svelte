@@ -56,112 +56,112 @@ export function linkTabView(
   link.property({
     props,
     key: "addTabButtonCommand",
-    apply: value => {
+    apply(value) {
       control.addTabButtonCommand = value;
     }
   });
   link.property({
     props,
     key: "addTabButtonCommandParameter",
-    apply: value => {
+    apply(value) {
       control.addTabButtonCommandParameter = objectOf(value);
     }
   });
   link.property({
     props,
     key: "allowDropTabs",
-    apply: value => {
+    apply(value) {
       control.allowDropTabs = value;
     }
   });
   link.property({
     props,
     key: "canDragTabs",
-    apply: value => {
+    apply(value) {
       control.canDragTabs = value;
     }
   });
   link.property({
     props,
     key: "canReorderTabs",
-    apply: value => {
+    apply(value) {
       control.canReorderTabs = value;
     }
   });
   link.property({
     props,
     key: "canTearOutTabs",
-    apply: value => {
+    apply(value) {
       control.canTearOutTabs = value;
     }
   });
   link.property({
     props,
     key: "closeButtonOverlayMode",
-    apply: value => {
+    apply(value) {
       control.closeButtonOverlayMode = enumValue({ table: TabViewCloseButtonOverlayMode, input: value });
     }
   });
   link.property({
     props,
     key: "isAddTabButtonVisible",
-    apply: value => {
+    apply(value) {
       control.isAddTabButtonVisible = value;
     }
   });
   link.property({
     props,
     key: "tabItemsSource",
-    apply: value => {
+    apply(value) {
       control.tabItemsSource = objectOf(value);
     }
   });
   link.property({
     props,
     key: "tabItemTemplate",
-    apply: value => {
+    apply(value) {
       control.tabItemTemplate = value;
     }
   });
   link.property({
     props,
     key: "tabItemTemplateSelector",
-    apply: value => {
+    apply(value) {
       control.tabItemTemplateSelector = value;
     }
   });
   link.property({
     props,
     key: "tabStripFooter",
-    apply: value => {
+    apply(value) {
       control.tabStripFooter = objectOf(value);
     }
   });
   link.property({
     props,
     key: "tabStripFooterTemplate",
-    apply: value => {
+    apply(value) {
       control.tabStripFooterTemplate = value;
     }
   });
   link.property({
     props,
     key: "tabStripHeader",
-    apply: value => {
+    apply(value) {
       control.tabStripHeader = objectOf(value);
     }
   });
   link.property({
     props,
     key: "tabStripHeaderTemplate",
-    apply: value => {
+    apply(value) {
       control.tabStripHeaderTemplate = value;
     }
   });
   link.property({
     props,
     key: "tabWidthMode",
-    apply: value => {
+    apply(value) {
       control.tabWidthMode = enumValue({ table: TabViewWidthMode, input: value });
     }
   });
@@ -170,7 +170,7 @@ export function linkTabView(
     key: "selectedIndex",
     access: {
       read: () => control.selectedIndex,
-      write: value => {
+      write(value) {
         control.selectedIndex = value;
       }
     },
@@ -183,7 +183,7 @@ export function linkTabView(
     key: "selectedItem",
     access: {
       read: () => objectInputOf(control.selectedItem),
-      write: value => {
+      write(value) {
         control.selectedItem = objectOf(value);
       }
     },

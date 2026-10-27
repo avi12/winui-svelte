@@ -249,7 +249,7 @@ function emitProperty({ property, className, imports }: {
       `  link.${method}({`,
       "    props,",
       `    key: "${property.key}",`,
-      "    apply: value => {",
+      "    apply(value) {",
       `      control.${property.key} = ${valueExpression(property)};`,
       "    }",
       "  });"
@@ -269,7 +269,7 @@ function emitAttached({ attached, imports }: {
       "  link.property({",
       "    props,",
       `    key: "${attached.key}",`,
-      "    apply: value => {",
+      "    apply(value) {",
       `      ${attached.owner.name}.${attached.setter}(control, ${valueExpression(attached)});`,
       "    }",
       "  });"
@@ -297,7 +297,7 @@ function emitBindable({ bindable, property, imports }: {
     `    key: "${bindable.key}",`,
     "    access: {",
     `      read: () => ${read},`,
-    "      write: value => {",
+    "      write(value) {",
     `        control.${bindable.key} = ${valueExpression(property)};`,
     "      }",
     "    },",
@@ -440,7 +440,7 @@ function emitAttachedBody(level: ClassModel) {
       "  link.property({",
       "    props,",
       "    key: \"attached\",",
-      "    apply: value => {",
+      "    apply(value) {",
       "      setAttached({ control, input: value });",
       "    }",
       "  });"

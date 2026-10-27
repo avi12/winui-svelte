@@ -26,7 +26,7 @@ export function linkParagraph(
   link.property({
     props,
     key: "textIndent",
-    apply: value => {
+    apply(value) {
       control.textIndent = value;
     }
   });

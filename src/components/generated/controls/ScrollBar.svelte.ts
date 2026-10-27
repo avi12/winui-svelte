@@ -29,21 +29,21 @@ export function linkScrollBar(
   link.property({
     props,
     key: "indicatorMode",
-    apply: value => {
+    apply(value) {
       control.indicatorMode = enumValue({ table: ScrollingIndicatorMode, input: value });
     }
   });
   link.property({
     props,
     key: "orientation",
-    apply: value => {
+    apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
     }
   });
   link.property({
     props,
     key: "viewportSize",
-    apply: value => {
+    apply(value) {
       control.viewportSize = value;
     }
   });

@@ -25,14 +25,14 @@ export function linkRadioMenuFlyoutItem(
   link.property({
     props,
     key: "groupName",
-    apply: value => {
+    apply(value) {
       control.groupName = value;
     }
   });
   link.property({
     props,
     key: "isChecked",
-    apply: value => {
+    apply(value) {
       control.isChecked = value;
     }
   });

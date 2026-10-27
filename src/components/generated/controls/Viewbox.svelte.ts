@@ -30,21 +30,21 @@ export function linkViewbox(
   link.contentProperty({
     props,
     key: "child",
-    apply: value => {
+    apply(value) {
       control.child = value;
     }
   });
   link.property({
     props,
     key: "stretch",
-    apply: value => {
+    apply(value) {
       control.stretch = enumValue({ table: Stretch, input: value });
     }
   });
   link.property({
     props,
     key: "stretchDirection",
-    apply: value => {
+    apply(value) {
       control.stretchDirection = enumValue({ table: StretchDirection, input: value });
     }
   });

@@ -31,14 +31,14 @@ export function linkVirtualizingStackPanel(
   link.property({
     props,
     key: "areScrollSnapPointsRegular",
-    apply: value => {
+    apply(value) {
       control.areScrollSnapPointsRegular = value;
     }
   });
   link.property({
     props,
     key: "orientation",
-    apply: value => {
+    apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
     }
   });

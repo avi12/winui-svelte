@@ -24,7 +24,7 @@ export function linkFlyoutPresenter(
   link.property({
     props,
     key: "isDefaultShadowEnabled",
-    apply: value => {
+    apply(value) {
       control.isDefaultShadowEnabled = value;
     }
   });

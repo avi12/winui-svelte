@@ -25,14 +25,14 @@ export function linkRectangle(
   link.property({
     props,
     key: "radiusX",
-    apply: value => {
+    apply(value) {
       control.radiusX = value;
     }
   });
   link.property({
     props,
     key: "radiusY",
-    apply: value => {
+    apply(value) {
       control.radiusY = value;
     }
   });

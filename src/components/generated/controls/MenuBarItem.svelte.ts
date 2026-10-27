@@ -24,7 +24,7 @@ export function linkMenuBarItem(
   link.property({
     props,
     key: "title",
-    apply: value => {
+    apply(value) {
       control.title = value;
     }
   });

@@ -28,21 +28,21 @@ export function linkPage(
   link.property({
     props,
     key: "bottomAppBar",
-    apply: value => {
+    apply(value) {
       control.bottomAppBar = value;
     }
   });
   link.property({
     props,
     key: "navigationCacheMode",
-    apply: value => {
+    apply(value) {
       control.navigationCacheMode = enumValue({ table: NavigationCacheMode, input: value });
     }
   });
   link.property({
     props,
     key: "topAppBar",
-    apply: value => {
+    apply(value) {
       control.topAppBar = value;
     }
   });

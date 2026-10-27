@@ -31,49 +31,49 @@ export function linkNavigationViewItem(
   link.property({
     props,
     key: "hasUnrealizedChildren",
-    apply: value => {
+    apply(value) {
       control.hasUnrealizedChildren = value;
     }
   });
   link.property({
     props,
     key: "icon",
-    apply: value => {
+    apply(value) {
       control.icon = value;
     }
   });
   link.property({
     props,
     key: "infoBadge",
-    apply: value => {
+    apply(value) {
       control.infoBadge = value;
     }
   });
   link.property({
     props,
     key: "isChildSelected",
-    apply: value => {
+    apply(value) {
       control.isChildSelected = value;
     }
   });
   link.property({
     props,
     key: "isExpanded",
-    apply: value => {
+    apply(value) {
       control.isExpanded = value;
     }
   });
   link.property({
     props,
     key: "menuItemsSource",
-    apply: value => {
+    apply(value) {
       control.menuItemsSource = objectOf(value);
     }
   });
   link.property({
     props,
     key: "selectsOnInvoked",
-    apply: value => {
+    apply(value) {
       control.selectsOnInvoked = value;
     }
   });

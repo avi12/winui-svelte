@@ -27,14 +27,14 @@ export function linkListBox(
   link.property({
     props,
     key: "selectionMode",
-    apply: value => {
+    apply(value) {
       control.selectionMode = enumValue({ table: SelectionMode, input: value });
     }
   });
   link.property({
     props,
     key: "singleSelectionFollowsFocus",
-    apply: value => {
+    apply(value) {
       control.singleSelectionFollowsFocus = value;
     }
   });

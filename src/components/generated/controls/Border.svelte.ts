@@ -42,63 +42,63 @@ export function linkBorder(
   link.property({
     props,
     key: "background",
-    apply: value => {
+    apply(value) {
       control.background = brushOf(value);
     }
   });
   link.property({
     props,
     key: "backgroundSizing",
-    apply: value => {
+    apply(value) {
       control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
     }
   });
   link.property({
     props,
     key: "backgroundTransition",
-    apply: value => {
+    apply(value) {
       control.backgroundTransition = value;
     }
   });
   link.property({
     props,
     key: "borderBrush",
-    apply: value => {
+    apply(value) {
       control.borderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "borderThickness",
-    apply: value => {
+    apply(value) {
       control.borderThickness = thicknessOf(value);
     }
   });
   link.contentProperty({
     props,
     key: "child",
-    apply: value => {
+    apply(value) {
       control.child = value;
     }
   });
   link.property({
     props,
     key: "childTransitions",
-    apply: value => {
+    apply(value) {
       control.childTransitions = value;
     }
   });
   link.property({
     props,
     key: "cornerRadius",
-    apply: value => {
+    apply(value) {
       control.cornerRadius = cornerRadiusOf(value);
     }
   });
   link.property({
     props,
     key: "padding",
-    apply: value => {
+    apply(value) {
       control.padding = thicknessOf(value);
     }
   });

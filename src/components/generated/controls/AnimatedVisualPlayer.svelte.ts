@@ -31,42 +31,42 @@ export function linkAnimatedVisualPlayer(
   link.property({
     props,
     key: "animationOptimization",
-    apply: value => {
+    apply(value) {
       control.animationOptimization = enumValue({ table: PlayerAnimationOptimization, input: value });
     }
   });
   link.property({
     props,
     key: "autoPlay",
-    apply: value => {
+    apply(value) {
       control.autoPlay = value;
     }
   });
   link.property({
     props,
     key: "fallbackContent",
-    apply: value => {
+    apply(value) {
       control.fallbackContent = value;
     }
   });
   link.property({
     props,
     key: "playbackRate",
-    apply: value => {
+    apply(value) {
       control.playbackRate = value;
     }
   });
   link.property({
     props,
     key: "source",
-    apply: value => {
+    apply(value) {
       control.source = value;
     }
   });
   link.property({
     props,
     key: "stretch",
-    apply: value => {
+    apply(value) {
       control.stretch = enumValue({ table: Stretch, input: value });
     }
   });

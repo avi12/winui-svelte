@@ -42,70 +42,70 @@ export function linkTreeView(
   link.property({
     props,
     key: "canDragItems",
-    apply: value => {
+    apply(value) {
       control.canDragItems = value;
     }
   });
   link.property({
     props,
     key: "canReorderItems",
-    apply: value => {
+    apply(value) {
       control.canReorderItems = value;
     }
   });
   link.property({
     props,
     key: "itemContainerStyle",
-    apply: value => {
+    apply(value) {
       control.itemContainerStyle = value;
     }
   });
   link.property({
     props,
     key: "itemContainerStyleSelector",
-    apply: value => {
+    apply(value) {
       control.itemContainerStyleSelector = value;
     }
   });
   link.property({
     props,
     key: "itemContainerTransitions",
-    apply: value => {
+    apply(value) {
       control.itemContainerTransitions = value;
     }
   });
   link.property({
     props,
     key: "itemsSource",
-    apply: value => {
+    apply(value) {
       control.itemsSource = objectOf(value);
     }
   });
   link.property({
     props,
     key: "itemTemplate",
-    apply: value => {
+    apply(value) {
       control.itemTemplate = value;
     }
   });
   link.property({
     props,
     key: "itemTemplateSelector",
-    apply: value => {
+    apply(value) {
       control.itemTemplateSelector = value;
     }
   });
   link.property({
     props,
     key: "selectedNode",
-    apply: value => {
+    apply(value) {
       control.selectedNode = value;
     }
   });
   link.property({
     props,
     key: "selectionMode",
-    apply: value => {
+    apply(value) {
       control.selectionMode = enumValue({ table: TreeViewSelectionMode, input: value });
     }
   });
@@ -114,7 +114,7 @@ export function linkTreeView(
     key: "selectedItem",
     access: {
       read: () => objectInputOf(control.selectedItem),
-      write: value => {
+      write(value) {
         control.selectedItem = objectOf(value);
       }
     },

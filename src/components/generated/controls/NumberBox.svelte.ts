@@ -45,126 +45,126 @@ export function linkNumberBox(
   link.property({
     props,
     key: "acceptsExpression",
-    apply: value => {
+    apply(value) {
       control.acceptsExpression = value;
     }
   });
   link.property({
     props,
     key: "description",
-    apply: value => {
+    apply(value) {
       control.description = objectOf(value);
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "isWrapEnabled",
-    apply: value => {
+    apply(value) {
       control.isWrapEnabled = value;
     }
   });
   link.property({
     props,
     key: "largeChange",
-    apply: value => {
+    apply(value) {
       control.largeChange = value;
     }
   });
   link.property({
     props,
     key: "maximum",
-    apply: value => {
+    apply(value) {
       control.maximum = value;
     }
   });
   link.property({
     props,
     key: "minimum",
-    apply: value => {
+    apply(value) {
       control.minimum = value;
     }
   });
   link.property({
     props,
     key: "numberFormatter",
-    apply: value => {
+    apply(value) {
       control.numberFormatter = value;
     }
   });
   link.property({
     props,
     key: "placeholderText",
-    apply: value => {
+    apply(value) {
       control.placeholderText = value;
     }
   });
   link.property({
     props,
     key: "preventKeyboardDisplayOnProgrammaticFocus",
-    apply: value => {
+    apply(value) {
       control.preventKeyboardDisplayOnProgrammaticFocus = value;
     }
   });
   link.property({
     props,
     key: "selectionFlyout",
-    apply: value => {
+    apply(value) {
       control.selectionFlyout = value;
     }
   });
   link.property({
     props,
     key: "selectionHighlightColor",
-    apply: value => {
+    apply(value) {
       control.selectionHighlightColor = value;
     }
   });
   link.property({
     props,
     key: "smallChange",
-    apply: value => {
+    apply(value) {
       control.smallChange = value;
     }
   });
   link.property({
     props,
     key: "spinButtonPlacementMode",
-    apply: value => {
+    apply(value) {
       control.spinButtonPlacementMode = enumValue({ table: NumberBoxSpinButtonPlacementMode, input: value });
     }
   });
   link.property({
     props,
     key: "text",
-    apply: value => {
+    apply(value) {
       control.text = value;
     }
   });
   link.property({
     props,
     key: "textReadingOrder",
-    apply: value => {
+    apply(value) {
       control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
     }
   });
   link.property({
     props,
     key: "validationMode",
-    apply: value => {
+    apply(value) {
       control.validationMode = enumValue({ table: NumberBoxValidationMode, input: value });
     }
   });
@@ -173,7 +173,7 @@ export function linkNumberBox(
     key: "value",
     access: {
       read: () => control.value,
-      write: value => {
+      write(value) {
         control.value = value;
       }
     },

@@ -68,161 +68,161 @@ export function linkRichEditBox(
   link.property({
     props,
     key: "acceptsReturn",
-    apply: value => {
+    apply(value) {
       control.acceptsReturn = value;
     }
   });
   link.property({
     props,
     key: "characterCasing",
-    apply: value => {
+    apply(value) {
       control.characterCasing = enumValue({ table: CharacterCasing, input: value });
     }
   });
   link.property({
     props,
     key: "clipboardCopyFormat",
-    apply: value => {
+    apply(value) {
       control.clipboardCopyFormat = enumValue({ table: RichEditClipboardFormat, input: value });
     }
   });
   link.property({
     props,
     key: "description",
-    apply: value => {
+    apply(value) {
       control.description = objectOf(value);
     }
   });
   link.property({
     props,
     key: "desiredCandidateWindowAlignment",
-    apply: value => {
+    apply(value) {
       control.desiredCandidateWindowAlignment = enumValue({ table: CandidateWindowAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "disabledFormattingAccelerators",
-    apply: value => {
+    apply(value) {
       control.disabledFormattingAccelerators = enumValue({ table: DisabledFormattingAccelerators, input: value });
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "horizontalTextAlignment",
-    apply: value => {
+    apply(value) {
       control.horizontalTextAlignment = enumValue({ table: TextAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "inputScope",
-    apply: value => {
+    apply(value) {
       control.inputScope = value;
     }
   });
   link.property({
     props,
     key: "isColorFontEnabled",
-    apply: value => {
+    apply(value) {
       control.isColorFontEnabled = value;
     }
   });
   link.property({
     props,
     key: "isReadOnly",
-    apply: value => {
+    apply(value) {
       control.isReadOnly = value;
     }
   });
   link.property({
     props,
     key: "isSpellCheckEnabled",
-    apply: value => {
+    apply(value) {
       control.isSpellCheckEnabled = value;
     }
   });
   link.property({
     props,
     key: "isTextPredictionEnabled",
-    apply: value => {
+    apply(value) {
       control.isTextPredictionEnabled = value;
     }
   });
   link.property({
     props,
     key: "maxLength",
-    apply: value => {
+    apply(value) {
       control.maxLength = value;
     }
   });
   link.property({
     props,
     key: "placeholderText",
-    apply: value => {
+    apply(value) {
       control.placeholderText = value;
     }
   });
   link.property({
     props,
     key: "preventKeyboardDisplayOnProgrammaticFocus",
-    apply: value => {
+    apply(value) {
       control.preventKeyboardDisplayOnProgrammaticFocus = value;
     }
   });
   link.property({
     props,
     key: "selectionFlyout",
-    apply: value => {
+    apply(value) {
       control.selectionFlyout = value;
     }
   });
   link.property({
     props,
     key: "selectionHighlightColor",
-    apply: value => {
+    apply(value) {
       control.selectionHighlightColor = value;
     }
   });
   link.property({
     props,
     key: "selectionHighlightColorWhenNotFocused",
-    apply: value => {
+    apply(value) {
       control.selectionHighlightColorWhenNotFocused = value;
     }
   });
   link.property({
     props,
     key: "textAlignment",
-    apply: value => {
+    apply(value) {
       control.textAlignment = enumValue({ table: TextAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "textReadingOrder",
-    apply: value => {
+    apply(value) {
       control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
     }
   });
   link.property({
     props,
     key: "textWrapping",
-    apply: value => {
+    apply(value) {
       control.textWrapping = enumValue({ table: TextWrapping, input: value });
     }
   });

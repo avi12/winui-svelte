@@ -27,21 +27,21 @@ export function linkButtonBase(
   link.property({
     props,
     key: "clickMode",
-    apply: value => {
+    apply(value) {
       control.clickMode = enumValue({ table: ClickMode, input: value });
     }
   });
   link.property({
     props,
     key: "command",
-    apply: value => {
+    apply(value) {
       control.command = value;
     }
   });
   link.property({
     props,
     key: "commandParameter",
-    apply: value => {
+    apply(value) {
       control.commandParameter = objectOf(value);
     }
   });

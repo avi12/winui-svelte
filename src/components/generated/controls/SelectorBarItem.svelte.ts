@@ -25,14 +25,14 @@ export function linkSelectorBarItem(
   link.property({
     props,
     key: "icon",
-    apply: value => {
+    apply(value) {
       control.icon = value;
     }
   });
   link.property({
     props,
     key: "text",
-    apply: value => {
+    apply(value) {
       control.text = value;
     }
   });

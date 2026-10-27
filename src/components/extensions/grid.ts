@@ -57,7 +57,7 @@ export function linkGridExtras({ control, props, link }: {
   link.property({
     props,
     key: "columns",
-    apply: lengths => {
+    apply(lengths) {
       define({
         definitions: control.columnDefinitions,
         make: column,
@@ -68,7 +68,7 @@ export function linkGridExtras({ control, props, link }: {
   link.property({
     props,
     key: "rows",
-    apply: lengths => {
+    apply(lengths) {
       define({
         definitions: control.rowDefinitions,
         make: row,

@@ -23,7 +23,7 @@ export function linkIconElement(
   link.property({
     props,
     key: "foreground",
-    apply: value => {
+    apply(value) {
       control.foreground = brushOf(value);
     }
   });

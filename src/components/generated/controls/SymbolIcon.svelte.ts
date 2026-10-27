@@ -26,7 +26,7 @@ export function linkSymbolIcon(
   link.property({
     props,
     key: "symbol",
-    apply: value => {
+    apply(value) {
       control.symbol = enumValue({ table: Symbol, input: value });
     }
   });

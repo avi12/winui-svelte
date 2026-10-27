@@ -37,77 +37,77 @@ export function linkPipsPager(
   link.property({
     props,
     key: "maxVisiblePips",
-    apply: value => {
+    apply(value) {
       control.maxVisiblePips = value;
     }
   });
   link.property({
     props,
     key: "nextButtonStyle",
-    apply: value => {
+    apply(value) {
       control.nextButtonStyle = value;
     }
   });
   link.property({
     props,
     key: "nextButtonVisibility",
-    apply: value => {
+    apply(value) {
       control.nextButtonVisibility = enumValue({ table: PipsPagerButtonVisibility, input: value });
     }
   });
   link.property({
     props,
     key: "normalPipStyle",
-    apply: value => {
+    apply(value) {
       control.normalPipStyle = value;
     }
   });
   link.property({
     props,
     key: "numberOfPages",
-    apply: value => {
+    apply(value) {
       control.numberOfPages = value;
     }
   });
   link.property({
     props,
     key: "orientation",
-    apply: value => {
+    apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
     }
   });
   link.property({
     props,
     key: "previousButtonStyle",
-    apply: value => {
+    apply(value) {
       control.previousButtonStyle = value;
     }
   });
   link.property({
     props,
     key: "previousButtonVisibility",
-    apply: value => {
+    apply(value) {
       control.previousButtonVisibility = enumValue({ table: PipsPagerButtonVisibility, input: value });
     }
   });
   link.property({
     props,
     key: "selectedPageIndex",
-    apply: value => {
+    apply(value) {
       control.selectedPageIndex = value;
     }
   });
   link.property({
     props,
     key: "selectedPipStyle",
-    apply: value => {
+    apply(value) {
       control.selectedPipStyle = value;
     }
   });
   link.property({
     props,
     key: "wrapMode",
-    apply: value => {
+    apply(value) {
       control.wrapMode = enumValue({ table: PipsPagerWrapMode, input: value });
     }
   });

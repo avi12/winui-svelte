@@ -25,14 +25,14 @@ export function linkMenuFlyoutPresenter(
   link.property({
     props,
     key: "isDefaultShadowEnabled",
-    apply: value => {
+    apply(value) {
       control.isDefaultShadowEnabled = value;
     }
   });
   link.property({
     props,
     key: "systemBackdrop",
-    apply: value => {
+    apply(value) {
       control.systemBackdrop = value;
     }
   });

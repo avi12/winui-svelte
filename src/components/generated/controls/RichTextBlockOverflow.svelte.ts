@@ -28,21 +28,21 @@ export function linkRichTextBlockOverflow(
   link.property({
     props,
     key: "maxLines",
-    apply: value => {
+    apply(value) {
       control.maxLines = value;
     }
   });
   link.property({
     props,
     key: "overflowContentTarget",
-    apply: value => {
+    apply(value) {
       control.overflowContentTarget = value;
     }
   });
   link.property({
     props,
     key: "padding",
-    apply: value => {
+    apply(value) {
       control.padding = thicknessOf(value);
     }
   });

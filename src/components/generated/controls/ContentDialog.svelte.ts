@@ -49,126 +49,126 @@ export function linkContentDialog(
   link.property({
     props,
     key: "closeButtonCommand",
-    apply: value => {
+    apply(value) {
       control.closeButtonCommand = value;
     }
   });
   link.property({
     props,
     key: "closeButtonCommandParameter",
-    apply: value => {
+    apply(value) {
       control.closeButtonCommandParameter = objectOf(value);
     }
   });
   link.property({
     props,
     key: "closeButtonStyle",
-    apply: value => {
+    apply(value) {
       control.closeButtonStyle = value;
     }
   });
   link.property({
     props,
     key: "closeButtonText",
-    apply: value => {
+    apply(value) {
       control.closeButtonText = value;
     }
   });
   link.property({
     props,
     key: "defaultButton",
-    apply: value => {
+    apply(value) {
       control.defaultButton = enumValue({ table: ContentDialogButton, input: value });
     }
   });
   link.property({
     props,
     key: "fullSizeDesired",
-    apply: value => {
+    apply(value) {
       control.fullSizeDesired = value;
     }
   });
   link.property({
     props,
     key: "isPrimaryButtonEnabled",
-    apply: value => {
+    apply(value) {
       control.isPrimaryButtonEnabled = value;
     }
   });
   link.property({
     props,
     key: "isSecondaryButtonEnabled",
-    apply: value => {
+    apply(value) {
       control.isSecondaryButtonEnabled = value;
     }
   });
   link.property({
     props,
     key: "primaryButtonCommand",
-    apply: value => {
+    apply(value) {
       control.primaryButtonCommand = value;
     }
   });
   link.property({
     props,
     key: "primaryButtonCommandParameter",
-    apply: value => {
+    apply(value) {
       control.primaryButtonCommandParameter = objectOf(value);
     }
   });
   link.property({
     props,
     key: "primaryButtonStyle",
-    apply: value => {
+    apply(value) {
       control.primaryButtonStyle = value;
     }
   });
   link.property({
     props,
     key: "primaryButtonText",
-    apply: value => {
+    apply(value) {
       control.primaryButtonText = value;
     }
   });
   link.property({
     props,
     key: "secondaryButtonCommand",
-    apply: value => {
+    apply(value) {
       control.secondaryButtonCommand = value;
     }
   });
   link.property({
     props,
     key: "secondaryButtonCommandParameter",
-    apply: value => {
+    apply(value) {
       control.secondaryButtonCommandParameter = objectOf(value);
     }
   });
   link.property({
     props,
     key: "secondaryButtonStyle",
-    apply: value => {
+    apply(value) {
       control.secondaryButtonStyle = value;
     }
   });
   link.property({
     props,
     key: "secondaryButtonText",
-    apply: value => {
+    apply(value) {
       control.secondaryButtonText = value;
     }
   });
   link.property({
     props,
     key: "title",
-    apply: value => {
+    apply(value) {
       control.title = objectOf(value);
     }
   });
   link.property({
     props,
     key: "titleTemplate",
-    apply: value => {
+    apply(value) {
       control.titleTemplate = value;
     }
   });

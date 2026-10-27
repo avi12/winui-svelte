@@ -25,14 +25,14 @@ export function linkRepeatButton(
   link.property({
     props,
     key: "delay",
-    apply: value => {
+    apply(value) {
       control.delay = value;
     }
   });
   link.property({
     props,
     key: "interval",
-    apply: value => {
+    apply(value) {
       control.interval = value;
     }
   });

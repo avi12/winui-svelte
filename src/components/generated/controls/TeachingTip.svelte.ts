@@ -53,133 +53,133 @@ export function linkTeachingTip(
   link.property({
     props,
     key: "actionButtonCommand",
-    apply: value => {
+    apply(value) {
       control.actionButtonCommand = value;
     }
   });
   link.property({
     props,
     key: "actionButtonCommandParameter",
-    apply: value => {
+    apply(value) {
       control.actionButtonCommandParameter = objectOf(value);
     }
   });
   link.property({
     props,
     key: "actionButtonContent",
-    apply: value => {
+    apply(value) {
       control.actionButtonContent = objectOf(value);
     }
   });
   link.property({
     props,
     key: "actionButtonStyle",
-    apply: value => {
+    apply(value) {
       control.actionButtonStyle = value;
     }
   });
   link.property({
     props,
     key: "closeButtonCommand",
-    apply: value => {
+    apply(value) {
       control.closeButtonCommand = value;
     }
   });
   link.property({
     props,
     key: "closeButtonCommandParameter",
-    apply: value => {
+    apply(value) {
       control.closeButtonCommandParameter = objectOf(value);
     }
   });
   link.property({
     props,
     key: "closeButtonContent",
-    apply: value => {
+    apply(value) {
       control.closeButtonContent = objectOf(value);
     }
   });
   link.property({
     props,
     key: "closeButtonStyle",
-    apply: value => {
+    apply(value) {
       control.closeButtonStyle = value;
     }
   });
   link.property({
     props,
     key: "heroContent",
-    apply: value => {
+    apply(value) {
       control.heroContent = value;
     }
   });
   link.property({
     props,
     key: "heroContentPlacement",
-    apply: value => {
+    apply(value) {
       control.heroContentPlacement = enumValue({ table: TeachingTipHeroContentPlacementMode, input: value });
     }
   });
   link.property({
     props,
     key: "iconSource",
-    apply: value => {
+    apply(value) {
       control.iconSource = value;
     }
   });
   link.property({
     props,
     key: "isLightDismissEnabled",
-    apply: value => {
+    apply(value) {
       control.isLightDismissEnabled = value;
     }
   });
   link.property({
     props,
     key: "placementMargin",
-    apply: value => {
+    apply(value) {
       control.placementMargin = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "preferredPlacement",
-    apply: value => {
+    apply(value) {
       control.preferredPlacement = enumValue({ table: TeachingTipPlacementMode, input: value });
     }
   });
   link.property({
     props,
     key: "shouldConstrainToRootBounds",
-    apply: value => {
+    apply(value) {
       control.shouldConstrainToRootBounds = value;
     }
   });
   link.property({
     props,
     key: "subtitle",
-    apply: value => {
+    apply(value) {
       control.subtitle = value;
     }
   });
   link.property({
     props,
     key: "tailVisibility",
-    apply: value => {
+    apply(value) {
       control.tailVisibility = enumValue({ table: TeachingTipTailVisibility, input: value });
     }
   });
   link.property({
     props,
     key: "target",
-    apply: value => {
+    apply(value) {
       control.target = value;
     }
   });
   link.property({
     props,
     key: "title",
-    apply: value => {
+    apply(value) {
       control.title = value;
     }
   });
@@ -188,7 +188,7 @@ export function linkTeachingTip(
     key: "isOpen",
     access: {
       read: () => control.isOpen,
-      write: value => {
+      write(value) {
         control.isOpen = value;
       }
     },

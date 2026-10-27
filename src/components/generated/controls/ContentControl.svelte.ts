@@ -30,28 +30,28 @@ export function linkContentControl(
   link.contentProperty({
     props,
     key: "content",
-    apply: value => {
+    apply(value) {
       control.content = objectOf(value);
     }
   });
   link.property({
     props,
     key: "contentTemplate",
-    apply: value => {
+    apply(value) {
       control.contentTemplate = value;
     }
   });
   link.property({
     props,
     key: "contentTemplateSelector",
-    apply: value => {
+    apply(value) {
       control.contentTemplateSelector = value;
     }
   });
   link.property({
     props,
     key: "contentTransitions",
-    apply: value => {
+    apply(value) {
       control.contentTransitions = value;
     }
   });

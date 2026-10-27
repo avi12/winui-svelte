@@ -26,14 +26,14 @@ export function linkInfoBarPanel(
   link.property({
     props,
     key: "horizontalOrientationPadding",
-    apply: value => {
+    apply(value) {
       control.horizontalOrientationPadding = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "verticalOrientationPadding",
-    apply: value => {
+    apply(value) {
       control.verticalOrientationPadding = thicknessOf(value);
     }
   });

@@ -29,14 +29,14 @@ export function linkRun(
   link.property({
     props,
     key: "flowDirection",
-    apply: value => {
+    apply(value) {
       control.flowDirection = enumValue({ table: FlowDirection, input: value });
     }
   });
   link.contentProperty({
     props,
     key: "text",
-    apply: value => {
+    apply(value) {
       control.text = value;
     }
   });

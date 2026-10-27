@@ -31,42 +31,42 @@ export function linkVariableSizedWrapGrid(
   link.property({
     props,
     key: "horizontalChildrenAlignment",
-    apply: value => {
+    apply(value) {
       control.horizontalChildrenAlignment = enumValue({ table: HorizontalAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "itemHeight",
-    apply: value => {
+    apply(value) {
       control.itemHeight = value;
     }
   });
   link.property({
     props,
     key: "itemWidth",
-    apply: value => {
+    apply(value) {
       control.itemWidth = value;
     }
   });
   link.property({
     props,
     key: "maximumRowsOrColumns",
-    apply: value => {
+    apply(value) {
       control.maximumRowsOrColumns = value;
     }
   });
   link.property({
     props,
     key: "orientation",
-    apply: value => {
+    apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
     }
   });
   link.property({
     props,
     key: "verticalChildrenAlignment",
-    apply: value => {
+    apply(value) {
       control.verticalChildrenAlignment = enumValue({ table: VerticalAlignment, input: value });
     }
   });

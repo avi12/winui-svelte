@@ -40,77 +40,77 @@ export function linkAutoSuggestBox(
   link.property({
     props,
     key: "autoMaximizeSuggestionArea",
-    apply: value => {
+    apply(value) {
       control.autoMaximizeSuggestionArea = value;
     }
   });
   link.property({
     props,
     key: "description",
-    apply: value => {
+    apply(value) {
       control.description = objectOf(value);
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "isSuggestionListOpen",
-    apply: value => {
+    apply(value) {
       control.isSuggestionListOpen = value;
     }
   });
   link.property({
     props,
     key: "lightDismissOverlayMode",
-    apply: value => {
+    apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
     }
   });
   link.property({
     props,
     key: "maxSuggestionListHeight",
-    apply: value => {
+    apply(value) {
       control.maxSuggestionListHeight = value;
     }
   });
   link.property({
     props,
     key: "placeholderText",
-    apply: value => {
+    apply(value) {
       control.placeholderText = value;
     }
   });
   link.property({
     props,
     key: "queryIcon",
-    apply: value => {
+    apply(value) {
       control.queryIcon = value;
     }
   });
   link.property({
     props,
     key: "textBoxStyle",
-    apply: value => {
+    apply(value) {
       control.textBoxStyle = value;
     }
   });
   link.property({
     props,
     key: "textMemberPath",
-    apply: value => {
+    apply(value) {
       control.textMemberPath = value;
     }
   });
   link.property({
     props,
     key: "updateTextOnSelect",
-    apply: value => {
+    apply(value) {
       control.updateTextOnSelect = value;
     }
   });
@@ -119,7 +119,7 @@ export function linkAutoSuggestBox(
     key: "text",
     access: {
       read: () => control.text,
-      write: value => {
+      write(value) {
         control.text = value;
       }
     },

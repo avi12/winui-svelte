@@ -35,70 +35,70 @@ export function linkGlyphs(
   link.property({
     props,
     key: "colorFontPaletteIndex",
-    apply: value => {
+    apply(value) {
       control.colorFontPaletteIndex = value;
     }
   });
   link.property({
     props,
     key: "fill",
-    apply: value => {
+    apply(value) {
       control.fill = brushOf(value);
     }
   });
   link.property({
     props,
     key: "fontRenderingEmSize",
-    apply: value => {
+    apply(value) {
       control.fontRenderingEmSize = value;
     }
   });
   link.property({
     props,
     key: "fontUri",
-    apply: value => {
+    apply(value) {
       control.fontUri = uriOf(value);
     }
   });
   link.property({
     props,
     key: "indices",
-    apply: value => {
+    apply(value) {
       control.indices = value;
     }
   });
   link.property({
     props,
     key: "isColorFontEnabled",
-    apply: value => {
+    apply(value) {
       control.isColorFontEnabled = value;
     }
   });
   link.property({
     props,
     key: "originX",
-    apply: value => {
+    apply(value) {
       control.originX = value;
     }
   });
   link.property({
     props,
     key: "originY",
-    apply: value => {
+    apply(value) {
       control.originY = value;
     }
   });
   link.property({
     props,
     key: "styleSimulations",
-    apply: value => {
+    apply(value) {
       control.styleSimulations = enumValue({ table: StyleSimulations, input: value });
     }
   });
   link.property({
     props,
     key: "unicodeString",
-    apply: value => {
+    apply(value) {
       control.unicodeString = value;
     }
   });

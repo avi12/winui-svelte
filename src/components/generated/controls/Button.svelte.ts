@@ -24,7 +24,7 @@ export function linkButton(
   link.property({
     props,
     key: "flyout",
-    apply: value => {
+    apply(value) {
       control.flyout = value;
     }
   });

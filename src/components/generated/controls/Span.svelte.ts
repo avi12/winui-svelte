@@ -26,7 +26,7 @@ export function linkSpan(
   link.contentProperty({
     props,
     key: "inlines",
-    apply: value => {
+    apply(value) {
       control.inlines = value;
     }
   });

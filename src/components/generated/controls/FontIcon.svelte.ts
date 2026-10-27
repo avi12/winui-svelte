@@ -32,49 +32,49 @@ export function linkFontIcon(
   link.property({
     props,
     key: "fontFamily",
-    apply: value => {
+    apply(value) {
       control.fontFamily = fontFamilyOf(value);
     }
   });
   link.property({
     props,
     key: "fontSize",
-    apply: value => {
+    apply(value) {
       control.fontSize = value;
     }
   });
   link.property({
     props,
     key: "fontStyle",
-    apply: value => {
+    apply(value) {
       control.fontStyle = enumValue({ table: FontStyle, input: value });
     }
   });
   link.property({
     props,
     key: "fontWeight",
-    apply: value => {
+    apply(value) {
       control.fontWeight = value;
     }
   });
   link.property({
     props,
     key: "glyph",
-    apply: value => {
+    apply(value) {
       control.glyph = value;
     }
   });
   link.property({
     props,
     key: "isTextScaleFactorEnabled",
-    apply: value => {
+    apply(value) {
       control.isTextScaleFactorEnabled = value;
     }
   });
   link.property({
     props,
     key: "mirroredWhenRightToLeft",
-    apply: value => {
+    apply(value) {
       control.mirroredWhenRightToLeft = value;
     }
   });

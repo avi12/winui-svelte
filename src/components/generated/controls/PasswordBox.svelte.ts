@@ -43,91 +43,91 @@ export function linkPasswordBox(
   link.property({
     props,
     key: "description",
-    apply: value => {
+    apply(value) {
       control.description = objectOf(value);
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "inputScope",
-    apply: value => {
+    apply(value) {
       control.inputScope = value;
     }
   });
   link.property({
     props,
     key: "isPasswordRevealButtonEnabled",
-    apply: value => {
+    apply(value) {
       control.isPasswordRevealButtonEnabled = value;
     }
   });
   link.property({
     props,
     key: "maxLength",
-    apply: value => {
+    apply(value) {
       control.maxLength = value;
     }
   });
   link.property({
     props,
     key: "passwordChar",
-    apply: value => {
+    apply(value) {
       control.passwordChar = value;
     }
   });
   link.property({
     props,
     key: "passwordRevealMode",
-    apply: value => {
+    apply(value) {
       control.passwordRevealMode = enumValue({ table: PasswordRevealMode, input: value });
     }
   });
   link.property({
     props,
     key: "placeholderText",
-    apply: value => {
+    apply(value) {
       control.placeholderText = value;
     }
   });
   link.property({
     props,
     key: "preventKeyboardDisplayOnProgrammaticFocus",
-    apply: value => {
+    apply(value) {
       control.preventKeyboardDisplayOnProgrammaticFocus = value;
     }
   });
   link.property({
     props,
     key: "selectionFlyout",
-    apply: value => {
+    apply(value) {
       control.selectionFlyout = value;
     }
   });
   link.property({
     props,
     key: "selectionHighlightColor",
-    apply: value => {
+    apply(value) {
       control.selectionHighlightColor = value;
     }
   });
   link.property({
     props,
     key: "textReadingOrder",
-    apply: value => {
+    apply(value) {
       control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
     }
   });
@@ -136,7 +136,7 @@ export function linkPasswordBox(
     key: "password",
     access: {
       read: () => control.password,
-      write: value => {
+      write(value) {
         control.password = value;
       }
     },

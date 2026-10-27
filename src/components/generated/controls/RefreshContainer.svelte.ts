@@ -28,14 +28,14 @@ export function linkRefreshContainer(
   link.property({
     props,
     key: "pullDirection",
-    apply: value => {
+    apply(value) {
       control.pullDirection = enumValue({ table: RefreshPullDirection, input: value });
     }
   });
   link.property({
     props,
     key: "visualizer",
-    apply: value => {
+    apply(value) {
       control.visualizer = value;
     }
   });

@@ -24,7 +24,7 @@ export function linkCommandBarFlyoutCommandBar(
   link.property({
     props,
     key: "systemBackdrop",
-    apply: value => {
+    apply(value) {
       control.systemBackdrop = value;
     }
   });

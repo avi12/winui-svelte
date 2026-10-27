@@ -32,28 +32,28 @@ export function linkExpander(
   link.property({
     props,
     key: "expandDirection",
-    apply: value => {
+    apply(value) {
       control.expandDirection = enumValue({ table: ExpandDirection, input: value });
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "headerTemplateSelector",
-    apply: value => {
+    apply(value) {
       control.headerTemplateSelector = value;
     }
   });
@@ -62,7 +62,7 @@ export function linkExpander(
     key: "isExpanded",
     access: {
       read: () => control.isExpanded,
-      write: value => {
+      write(value) {
         control.isExpanded = value;
       }
     },

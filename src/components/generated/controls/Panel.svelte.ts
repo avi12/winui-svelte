@@ -27,21 +27,21 @@ export function linkPanel(
   link.property({
     props,
     key: "background",
-    apply: value => {
+    apply(value) {
       control.background = brushOf(value);
     }
   });
   link.property({
     props,
     key: "backgroundTransition",
-    apply: value => {
+    apply(value) {
       control.backgroundTransition = value;
     }
   });
   link.property({
     props,
     key: "childrenTransitions",
-    apply: value => {
+    apply(value) {
       control.childrenTransitions = value;
     }
   });

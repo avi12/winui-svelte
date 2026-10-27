@@ -32,56 +32,56 @@ export function linkTreeViewItem(
   link.property({
     props,
     key: "collapsedGlyph",
-    apply: value => {
+    apply(value) {
       control.collapsedGlyph = value;
     }
   });
   link.property({
     props,
     key: "expandedGlyph",
-    apply: value => {
+    apply(value) {
       control.expandedGlyph = value;
     }
   });
   link.property({
     props,
     key: "glyphBrush",
-    apply: value => {
+    apply(value) {
       control.glyphBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "glyphOpacity",
-    apply: value => {
+    apply(value) {
       control.glyphOpacity = value;
     }
   });
   link.property({
     props,
     key: "glyphSize",
-    apply: value => {
+    apply(value) {
       control.glyphSize = value;
     }
   });
   link.property({
     props,
     key: "hasUnrealizedChildren",
-    apply: value => {
+    apply(value) {
       control.hasUnrealizedChildren = value;
     }
   });
   link.property({
     props,
     key: "isExpanded",
-    apply: value => {
+    apply(value) {
       control.isExpanded = value;
     }
   });
   link.property({
     props,
     key: "itemsSource",
-    apply: value => {
+    apply(value) {
       control.itemsSource = objectOf(value);
     }
   });

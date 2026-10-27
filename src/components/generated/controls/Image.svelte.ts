@@ -30,21 +30,21 @@ export function linkImage(
   link.property({
     props,
     key: "nineGrid",
-    apply: value => {
+    apply(value) {
       control.nineGrid = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "source",
-    apply: value => {
+    apply(value) {
       control.source = imageSourceOf(value);
     }
   });
   link.property({
     props,
     key: "stretch",
-    apply: value => {
+    apply(value) {
       control.stretch = enumValue({ table: Stretch, input: value });
     }
   });

@@ -32,49 +32,49 @@ export function linkRatingControl(
   link.property({
     props,
     key: "caption",
-    apply: value => {
+    apply(value) {
       control.caption = value;
     }
   });
   link.property({
     props,
     key: "initialSetValue",
-    apply: value => {
+    apply(value) {
       control.initialSetValue = value;
     }
   });
   link.property({
     props,
     key: "isClearEnabled",
-    apply: value => {
+    apply(value) {
       control.isClearEnabled = value;
     }
   });
   link.property({
     props,
     key: "isReadOnly",
-    apply: value => {
+    apply(value) {
       control.isReadOnly = value;
     }
   });
   link.property({
     props,
     key: "itemInfo",
-    apply: value => {
+    apply(value) {
       control.itemInfo = value;
     }
   });
   link.property({
     props,
     key: "maxRating",
-    apply: value => {
+    apply(value) {
       control.maxRating = value;
     }
   });
   link.property({
     props,
     key: "placeholderValue",
-    apply: value => {
+    apply(value) {
       control.placeholderValue = value;
     }
   });
@@ -83,7 +83,7 @@ export function linkRatingControl(
     key: "value",
     access: {
       read: () => control.value,
-      write: value => {
+      write(value) {
         control.value = value;
       }
     },

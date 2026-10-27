@@ -34,49 +34,49 @@ export function linkItemsRepeater(
   link.property({
     props,
     key: "background",
-    apply: value => {
+    apply(value) {
       control.background = brushOf(value);
     }
   });
   link.property({
     props,
     key: "horizontalCacheLength",
-    apply: value => {
+    apply(value) {
       control.horizontalCacheLength = value;
     }
   });
   link.property({
     props,
     key: "itemsSource",
-    apply: value => {
+    apply(value) {
       control.itemsSource = objectOf(value);
     }
   });
   link.property({
     props,
     key: "itemTemplate",
-    apply: value => {
+    apply(value) {
       control.itemTemplate = objectOf(value);
     }
   });
   link.property({
     props,
     key: "itemTransitionProvider",
-    apply: value => {
+    apply(value) {
       control.itemTransitionProvider = value;
     }
   });
   link.property({
     props,
     key: "layout",
-    apply: value => {
+    apply(value) {
       control.layout = value;
     }
   });
   link.property({
     props,
     key: "verticalCacheLength",
-    apply: value => {
+    apply(value) {
       control.verticalCacheLength = value;
     }
   });

@@ -31,42 +31,42 @@ export function linkItemsStackPanel(
   link.property({
     props,
     key: "areStickyGroupHeadersEnabled",
-    apply: value => {
+    apply(value) {
       control.areStickyGroupHeadersEnabled = value;
     }
   });
   link.property({
     props,
     key: "cacheLength",
-    apply: value => {
+    apply(value) {
       control.cacheLength = value;
     }
   });
   link.property({
     props,
     key: "groupHeaderPlacement",
-    apply: value => {
+    apply(value) {
       control.groupHeaderPlacement = enumValue({ table: GroupHeaderPlacement, input: value });
     }
   });
   link.property({
     props,
     key: "groupPadding",
-    apply: value => {
+    apply(value) {
       control.groupPadding = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "itemsUpdatingScrollMode",
-    apply: value => {
+    apply(value) {
       control.itemsUpdatingScrollMode = enumValue({ table: ItemsUpdatingScrollMode, input: value });
     }
   });
   link.property({
     props,
     key: "orientation",
-    apply: value => {
+    apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
     }
   });

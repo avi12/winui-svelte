@@ -35,63 +35,63 @@ export function linkItemsControl(
   link.property({
     props,
     key: "displayMemberPath",
-    apply: value => {
+    apply(value) {
       control.displayMemberPath = value;
     }
   });
   link.property({
     props,
     key: "groupStyleSelector",
-    apply: value => {
+    apply(value) {
       control.groupStyleSelector = value;
     }
   });
   link.property({
     props,
     key: "itemContainerStyle",
-    apply: value => {
+    apply(value) {
       control.itemContainerStyle = value;
     }
   });
   link.property({
     props,
     key: "itemContainerStyleSelector",
-    apply: value => {
+    apply(value) {
       control.itemContainerStyleSelector = value;
     }
   });
   link.property({
     props,
     key: "itemContainerTransitions",
-    apply: value => {
+    apply(value) {
       control.itemContainerTransitions = value;
     }
   });
   link.property({
     props,
     key: "itemsPanel",
-    apply: value => {
+    apply(value) {
       control.itemsPanel = value;
     }
   });
   link.property({
     props,
     key: "itemsSource",
-    apply: value => {
+    apply(value) {
       control.itemsSource = objectOf(value);
     }
   });
   link.property({
     props,
     key: "itemTemplate",
-    apply: value => {
+    apply(value) {
       control.itemTemplate = value;
     }
   });
   link.property({
     props,
     key: "itemTemplateSelector",
-    apply: value => {
+    apply(value) {
       control.itemTemplateSelector = value;
     }
   });

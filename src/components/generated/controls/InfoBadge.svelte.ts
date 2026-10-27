@@ -25,14 +25,14 @@ export function linkInfoBadge(
   link.property({
     props,
     key: "iconSource",
-    apply: value => {
+    apply(value) {
       control.iconSource = value;
     }
   });
   link.property({
     props,
     key: "value",
-    apply: value => {
+    apply(value) {
       control.value = value;
     }
   });

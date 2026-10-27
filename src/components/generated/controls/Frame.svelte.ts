@@ -30,21 +30,21 @@ export function linkFrame(
   link.property({
     props,
     key: "cacheSize",
-    apply: value => {
+    apply(value) {
       control.cacheSize = value;
     }
   });
   link.property({
     props,
     key: "isNavigationStackEnabled",
-    apply: value => {
+    apply(value) {
       control.isNavigationStackEnabled = value;
     }
   });
   link.property({
     props,
     key: "sourcePageType",
-    apply: value => {
+    apply(value) {
       control.sourcePageType = value;
     }
   });

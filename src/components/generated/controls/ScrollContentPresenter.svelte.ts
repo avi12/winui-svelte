@@ -29,35 +29,35 @@ export function linkScrollContentPresenter(
   link.property({
     props,
     key: "canContentRenderOutsideBounds",
-    apply: value => {
+    apply(value) {
       control.canContentRenderOutsideBounds = value;
     }
   });
   link.property({
     props,
     key: "canHorizontallyScroll",
-    apply: value => {
+    apply(value) {
       control.canHorizontallyScroll = value;
     }
   });
   link.property({
     props,
     key: "canVerticallyScroll",
-    apply: value => {
+    apply(value) {
       control.canVerticallyScroll = value;
     }
   });
   link.property({
     props,
     key: "scrollOwner",
-    apply: value => {
+    apply(value) {
       control.scrollOwner = objectOf(value);
     }
   });
   link.property({
     props,
     key: "sizesContentToTemplatedParent",
-    apply: value => {
+    apply(value) {
       control.sizesContentToTemplatedParent = value;
     }
   });

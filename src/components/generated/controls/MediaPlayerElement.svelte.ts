@@ -32,49 +32,49 @@ export function linkMediaPlayerElement(
   link.property({
     props,
     key: "areTransportControlsEnabled",
-    apply: value => {
+    apply(value) {
       control.areTransportControlsEnabled = value;
     }
   });
   link.property({
     props,
     key: "autoPlay",
-    apply: value => {
+    apply(value) {
       control.autoPlay = value;
     }
   });
   link.property({
     props,
     key: "isFullWindow",
-    apply: value => {
+    apply(value) {
       control.isFullWindow = value;
     }
   });
   link.property({
     props,
     key: "posterSource",
-    apply: value => {
+    apply(value) {
       control.posterSource = imageSourceOf(value);
     }
   });
   link.property({
     props,
     key: "source",
-    apply: value => {
+    apply(value) {
       control.source = value;
     }
   });
   link.property({
     props,
     key: "stretch",
-    apply: value => {
+    apply(value) {
       control.stretch = enumValue({ table: Stretch, input: value });
     }
   });
   link.property({
     props,
     key: "transportControls",
-    apply: value => {
+    apply(value) {
       control.transportControls = value;
     }
   });

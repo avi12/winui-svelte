@@ -21,7 +21,7 @@ export function linkSelectorItem(
   link.property({
     props,
     key: "isSelected",
-    apply: value => {
+    apply(value) {
       control.isSelected = value;
     }
   });

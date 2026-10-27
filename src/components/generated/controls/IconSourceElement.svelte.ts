@@ -26,7 +26,7 @@ export function linkIconSourceElement(
   link.contentProperty({
     props,
     key: "iconSource",
-    apply: value => {
+    apply(value) {
       control.iconSource = value;
     }
   });

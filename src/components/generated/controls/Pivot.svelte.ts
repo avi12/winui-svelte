@@ -42,70 +42,70 @@ export function linkPivot(
   link.property({
     props,
     key: "headerFocusVisualPlacement",
-    apply: value => {
+    apply(value) {
       control.headerFocusVisualPlacement = enumValue({ table: PivotHeaderFocusVisualPlacement, input: value });
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "isHeaderItemsCarouselEnabled",
-    apply: value => {
+    apply(value) {
       control.isHeaderItemsCarouselEnabled = value;
     }
   });
   link.property({
     props,
     key: "isLocked",
-    apply: value => {
+    apply(value) {
       control.isLocked = value;
     }
   });
   link.property({
     props,
     key: "leftHeader",
-    apply: value => {
+    apply(value) {
       control.leftHeader = objectOf(value);
     }
   });
   link.property({
     props,
     key: "leftHeaderTemplate",
-    apply: value => {
+    apply(value) {
       control.leftHeaderTemplate = value;
     }
   });
   link.property({
     props,
     key: "rightHeader",
-    apply: value => {
+    apply(value) {
       control.rightHeader = objectOf(value);
     }
   });
   link.property({
     props,
     key: "rightHeaderTemplate",
-    apply: value => {
+    apply(value) {
       control.rightHeaderTemplate = value;
     }
   });
   link.property({
     props,
     key: "title",
-    apply: value => {
+    apply(value) {
       control.title = objectOf(value);
     }
   });
   link.property({
     props,
     key: "titleTemplate",
-    apply: value => {
+    apply(value) {
       control.titleTemplate = value;
     }
   });
@@ -114,7 +114,7 @@ export function linkPivot(
     key: "selectedIndex",
     access: {
       read: () => control.selectedIndex,
-      write: value => {
+      write(value) {
         control.selectedIndex = value;
       }
     },
@@ -127,7 +127,7 @@ export function linkPivot(
     key: "selectedItem",
     access: {
       read: () => objectInputOf(control.selectedItem),
-      write: value => {
+      write(value) {
         control.selectedItem = objectOf(value);
       }
     },

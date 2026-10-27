@@ -25,14 +25,14 @@ export function linkAppBarSeparator(
   link.property({
     props,
     key: "dynamicOverflowOrder",
-    apply: value => {
+    apply(value) {
       control.dynamicOverflowOrder = value;
     }
   });
   link.property({
     props,
     key: "isCompact",
-    apply: value => {
+    apply(value) {
       control.isCompact = value;
     }
   });

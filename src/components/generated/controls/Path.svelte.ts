@@ -24,7 +24,7 @@ export function linkPath(
   link.property({
     props,
     key: "data",
-    apply: value => {
+    apply(value) {
       control.data = value;
     }
   });

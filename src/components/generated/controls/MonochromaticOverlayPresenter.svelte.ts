@@ -26,14 +26,14 @@ export function linkMonochromaticOverlayPresenter(
   link.property({
     props,
     key: "replacementColor",
-    apply: value => {
+    apply(value) {
       control.replacementColor = colorOf(value);
     }
   });
   link.property({
     props,
     key: "sourceElement",
-    apply: value => {
+    apply(value) {
       control.sourceElement = value;
     }
   });

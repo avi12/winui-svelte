@@ -64,189 +64,189 @@ export function linkFrameworkElement(
   link.property({
     props,
     key: "gridRow",
-    apply: value => {
+    apply(value) {
       Grid.setRow(control, value);
     }
   });
   link.property({
     props,
     key: "gridColumn",
-    apply: value => {
+    apply(value) {
       Grid.setColumn(control, value);
     }
   });
   link.property({
     props,
     key: "gridRowSpan",
-    apply: value => {
+    apply(value) {
       Grid.setRowSpan(control, value);
     }
   });
   link.property({
     props,
     key: "gridColumnSpan",
-    apply: value => {
+    apply(value) {
       Grid.setColumnSpan(control, value);
     }
   });
   link.property({
     props,
     key: "allowFocusOnInteraction",
-    apply: value => {
+    apply(value) {
       control.allowFocusOnInteraction = value;
     }
   });
   link.property({
     props,
     key: "allowFocusWhenDisabled",
-    apply: value => {
+    apply(value) {
       control.allowFocusWhenDisabled = value;
     }
   });
   link.property({
     props,
     key: "dataContext",
-    apply: value => {
+    apply(value) {
       control.dataContext = objectOf(value);
     }
   });
   link.property({
     props,
     key: "flowDirection",
-    apply: value => {
+    apply(value) {
       control.flowDirection = enumValue({ table: FlowDirection, input: value });
     }
   });
   link.property({
     props,
     key: "focusVisualMargin",
-    apply: value => {
+    apply(value) {
       control.focusVisualMargin = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "focusVisualPrimaryBrush",
-    apply: value => {
+    apply(value) {
       control.focusVisualPrimaryBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "focusVisualPrimaryThickness",
-    apply: value => {
+    apply(value) {
       control.focusVisualPrimaryThickness = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "focusVisualSecondaryBrush",
-    apply: value => {
+    apply(value) {
       control.focusVisualSecondaryBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "focusVisualSecondaryThickness",
-    apply: value => {
+    apply(value) {
       control.focusVisualSecondaryThickness = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "height",
-    apply: value => {
+    apply(value) {
       control.height = value;
     }
   });
   link.property({
     props,
     key: "horizontalAlignment",
-    apply: value => {
+    apply(value) {
       control.horizontalAlignment = enumValue({ table: HorizontalAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "language",
-    apply: value => {
+    apply(value) {
       control.language = value;
     }
   });
   link.property({
     props,
     key: "margin",
-    apply: value => {
+    apply(value) {
       control.margin = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "maxHeight",
-    apply: value => {
+    apply(value) {
       control.maxHeight = value;
     }
   });
   link.property({
     props,
     key: "maxWidth",
-    apply: value => {
+    apply(value) {
       control.maxWidth = value;
     }
   });
   link.property({
     props,
     key: "minHeight",
-    apply: value => {
+    apply(value) {
       control.minHeight = value;
     }
   });
   link.property({
     props,
     key: "minWidth",
-    apply: value => {
+    apply(value) {
       control.minWidth = value;
     }
   });
   link.property({
     props,
     key: "name",
-    apply: value => {
+    apply(value) {
       control.name = value;
     }
   });
   link.property({
     props,
     key: "requestedTheme",
-    apply: value => {
+    apply(value) {
       control.requestedTheme = enumValue({ table: ElementTheme, input: value });
     }
   });
   link.property({
     props,
     key: "resources",
-    apply: value => {
+    apply(value) {
       control.resources = value;
     }
   });
   link.property({
     props,
     key: "tag",
-    apply: value => {
+    apply(value) {
       control.tag = objectOf(value);
     }
   });
   link.property({
     props,
     key: "verticalAlignment",
-    apply: value => {
+    apply(value) {
       control.verticalAlignment = enumValue({ table: VerticalAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "width",
-    apply: value => {
+    apply(value) {
       control.width = value;
     }
   });

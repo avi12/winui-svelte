@@ -29,7 +29,7 @@ export function linkToggleButton(
   link.property({
     props,
     key: "isThreeState",
-    apply: value => {
+    apply(value) {
       control.isThreeState = value;
     }
   });
@@ -38,7 +38,7 @@ export function linkToggleButton(
     key: "isChecked",
     access: {
       read: () => control.isChecked,
-      write: value => {
+      write(value) {
         control.isChecked = nullableBooleanOf(value);
       }
     },

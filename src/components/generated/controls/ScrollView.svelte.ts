@@ -59,119 +59,119 @@ export function linkScrollView(
   link.property({
     props,
     key: "content",
-    apply: value => {
+    apply(value) {
       control.content = value;
     }
   });
   link.property({
     props,
     key: "contentOrientation",
-    apply: value => {
+    apply(value) {
       control.contentOrientation = enumValue({ table: ScrollingContentOrientation, input: value });
     }
   });
   link.property({
     props,
     key: "horizontalAnchorRatio",
-    apply: value => {
+    apply(value) {
       control.horizontalAnchorRatio = value;
     }
   });
   link.property({
     props,
     key: "horizontalScrollBarVisibility",
-    apply: value => {
+    apply(value) {
       control.horizontalScrollBarVisibility = enumValue({ table: ScrollingScrollBarVisibility, input: value });
     }
   });
   link.property({
     props,
     key: "horizontalScrollChainMode",
-    apply: value => {
+    apply(value) {
       control.horizontalScrollChainMode = enumValue({ table: ScrollingChainMode, input: value });
     }
   });
   link.property({
     props,
     key: "horizontalScrollMode",
-    apply: value => {
+    apply(value) {
       control.horizontalScrollMode = enumValue({ table: ScrollingScrollMode, input: value });
     }
   });
   link.property({
     props,
     key: "horizontalScrollRailMode",
-    apply: value => {
+    apply(value) {
       control.horizontalScrollRailMode = enumValue({ table: ScrollingRailMode, input: value });
     }
   });
   link.property({
     props,
     key: "ignoredInputKinds",
-    apply: value => {
+    apply(value) {
       control.ignoredInputKinds = enumValue({ table: ScrollingInputKinds, input: value });
     }
   });
   link.property({
     props,
     key: "maxZoomFactor",
-    apply: value => {
+    apply(value) {
       control.maxZoomFactor = value;
     }
   });
   link.property({
     props,
     key: "minZoomFactor",
-    apply: value => {
+    apply(value) {
       control.minZoomFactor = value;
     }
   });
   link.property({
     props,
     key: "verticalAnchorRatio",
-    apply: value => {
+    apply(value) {
       control.verticalAnchorRatio = value;
     }
   });
   link.property({
     props,
     key: "verticalScrollBarVisibility",
-    apply: value => {
+    apply(value) {
       control.verticalScrollBarVisibility = enumValue({ table: ScrollingScrollBarVisibility, input: value });
     }
   });
   link.property({
     props,
     key: "verticalScrollChainMode",
-    apply: value => {
+    apply(value) {
       control.verticalScrollChainMode = enumValue({ table: ScrollingChainMode, input: value });
     }
   });
   link.property({
     props,
     key: "verticalScrollMode",
-    apply: value => {
+    apply(value) {
       control.verticalScrollMode = enumValue({ table: ScrollingScrollMode, input: value });
     }
   });
   link.property({
     props,
     key: "verticalScrollRailMode",
-    apply: value => {
+    apply(value) {
       control.verticalScrollRailMode = enumValue({ table: ScrollingRailMode, input: value });
     }
   });
   link.property({
     props,
     key: "zoomChainMode",
-    apply: value => {
+    apply(value) {
       control.zoomChainMode = enumValue({ table: ScrollingChainMode, input: value });
     }
   });
   link.property({
     props,
     key: "zoomMode",
-    apply: value => {
+    apply(value) {
       control.zoomMode = enumValue({ table: ScrollingZoomMode, input: value });
     }
   });

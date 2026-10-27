@@ -88,7 +88,6 @@ const ALPHA_HEX_LENGTH = 8;
 const HEX_PAIR = /../gu;
 const COLOR_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/iu;
 const TRANSPARENT_NAME = "transparent";
-const SIDE_COUNT = 4;
 
 const SIDE_ORDER = {
   XAML: "xaml",
@@ -136,7 +135,7 @@ function valuesOf(text: string) {
 }
 
 function uniformSides(size: number) {
-  return Array.from({ length: SIDE_COUNT }, () => size) as [number, number, number, number];
+  return [size, size, size, size] as const;
 }
 
 /** The four sides of a thickness input as [left, top, right, bottom]. */
@@ -249,7 +248,7 @@ export function parseColor(text: string) {
 
   const digits = name.slice(1);
   const isShort = digits.length === SHORT_HEX_LENGTH;
-  const expanded = isShort ? [...digits].map(digit => `${digit}${digit}`).join("") : digits;
+  const expanded = isShort ? digits.split("").map(digit => `${digit}${digit}`).join("") : digits;
   const hasAlpha = expanded.length === ALPHA_HEX_LENGTH;
   const channels = [...expanded.matchAll(HEX_PAIR)].map(match => Number.parseInt(match[0], HEX_RADIX));
   const [alpha = MAX_CHANNEL, red = 0, green = 0, blue = 0] = hasAlpha ? channels : [MAX_CHANNEL, ...channels];

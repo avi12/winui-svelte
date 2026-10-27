@@ -26,7 +26,7 @@ export function linkInlineUIContainer(
   link.contentProperty({
     props,
     key: "child",
-    apply: value => {
+    apply(value) {
       control.child = value;
     }
   });

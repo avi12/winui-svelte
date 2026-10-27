@@ -26,21 +26,21 @@ export function linkProgressBar(
   link.property({
     props,
     key: "isIndeterminate",
-    apply: value => {
+    apply(value) {
       control.isIndeterminate = value;
     }
   });
   link.property({
     props,
     key: "showError",
-    apply: value => {
+    apply(value) {
       control.showError = value;
     }
   });
   link.property({
     props,
     key: "showPaused",
-    apply: value => {
+    apply(value) {
       control.showPaused = value;
     }
   });

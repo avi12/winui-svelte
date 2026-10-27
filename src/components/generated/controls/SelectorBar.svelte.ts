@@ -27,7 +27,7 @@ export function linkSelectorBar(
     key: "selectedItem",
     access: {
       read: () => control.selectedItem,
-      write: value => {
+      write(value) {
         control.selectedItem = value;
       }
     },

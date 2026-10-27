@@ -32,35 +32,35 @@ export function linkSemanticZoom(
   link.property({
     props,
     key: "canChangeViews",
-    apply: value => {
+    apply(value) {
       control.canChangeViews = value;
     }
   });
   link.property({
     props,
     key: "isZoomedInViewActive",
-    apply: value => {
+    apply(value) {
       control.isZoomedInViewActive = value;
     }
   });
   link.property({
     props,
     key: "isZoomOutButtonEnabled",
-    apply: value => {
+    apply(value) {
       control.isZoomOutButtonEnabled = value;
     }
   });
   link.contentProperty({
     props,
     key: "zoomedInView",
-    apply: value => {
+    apply(value) {
       control.zoomedInView = value;
     }
   });
   link.property({
     props,
     key: "zoomedOutView",
-    apply: value => {
+    apply(value) {
       control.zoomedOutView = value;
     }
   });

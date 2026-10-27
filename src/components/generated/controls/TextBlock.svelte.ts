@@ -72,175 +72,175 @@ export function linkTextBlock(
   link.property({
     props,
     key: "characterSpacing",
-    apply: value => {
+    apply(value) {
       control.characterSpacing = value;
     }
   });
   link.property({
     props,
     key: "fontFamily",
-    apply: value => {
+    apply(value) {
       control.fontFamily = fontFamilyOf(value);
     }
   });
   link.property({
     props,
     key: "fontSize",
-    apply: value => {
+    apply(value) {
       control.fontSize = value;
     }
   });
   link.property({
     props,
     key: "fontStretch",
-    apply: value => {
+    apply(value) {
       control.fontStretch = enumValue({ table: FontStretch, input: value });
     }
   });
   link.property({
     props,
     key: "fontStyle",
-    apply: value => {
+    apply(value) {
       control.fontStyle = enumValue({ table: FontStyle, input: value });
     }
   });
   link.property({
     props,
     key: "fontWeight",
-    apply: value => {
+    apply(value) {
       control.fontWeight = value;
     }
   });
   link.property({
     props,
     key: "foreground",
-    apply: value => {
+    apply(value) {
       control.foreground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "horizontalTextAlignment",
-    apply: value => {
+    apply(value) {
       control.horizontalTextAlignment = enumValue({ table: TextAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "isColorFontEnabled",
-    apply: value => {
+    apply(value) {
       control.isColorFontEnabled = value;
     }
   });
   link.property({
     props,
     key: "isTextScaleFactorEnabled",
-    apply: value => {
+    apply(value) {
       control.isTextScaleFactorEnabled = value;
     }
   });
   link.property({
     props,
     key: "isTextSelectionEnabled",
-    apply: value => {
+    apply(value) {
       control.isTextSelectionEnabled = value;
     }
   });
   link.property({
     props,
     key: "lineHeight",
-    apply: value => {
+    apply(value) {
       control.lineHeight = value;
     }
   });
   link.property({
     props,
     key: "lineStackingStrategy",
-    apply: value => {
+    apply(value) {
       control.lineStackingStrategy = enumValue({ table: LineStackingStrategy, input: value });
     }
   });
   link.property({
     props,
     key: "maxLines",
-    apply: value => {
+    apply(value) {
       control.maxLines = value;
     }
   });
   link.property({
     props,
     key: "opticalMarginAlignment",
-    apply: value => {
+    apply(value) {
       control.opticalMarginAlignment = enumValue({ table: OpticalMarginAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "padding",
-    apply: value => {
+    apply(value) {
       control.padding = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "selectionFlyout",
-    apply: value => {
+    apply(value) {
       control.selectionFlyout = value;
     }
   });
   link.property({
     props,
     key: "selectionHighlightColor",
-    apply: value => {
+    apply(value) {
       control.selectionHighlightColor = value;
     }
   });
   link.property({
     props,
     key: "text",
-    apply: value => {
+    apply(value) {
       control.text = value;
     }
   });
   link.property({
     props,
     key: "textAlignment",
-    apply: value => {
+    apply(value) {
       control.textAlignment = enumValue({ table: TextAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "textDecorations",
-    apply: value => {
+    apply(value) {
       control.textDecorations = enumValue({ table: TextDecorations, input: value });
     }
   });
   link.property({
     props,
     key: "textLineBounds",
-    apply: value => {
+    apply(value) {
       control.textLineBounds = enumValue({ table: TextLineBounds, input: value });
     }
   });
   link.property({
     props,
     key: "textReadingOrder",
-    apply: value => {
+    apply(value) {
       control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
     }
   });
   link.property({
     props,
     key: "textTrimming",
-    apply: value => {
+    apply(value) {
       control.textTrimming = enumValue({ table: TextTrimming, input: value });
     }
   });
   link.property({
     props,
     key: "textWrapping",
-    apply: value => {
+    apply(value) {
       control.textWrapping = enumValue({ table: TextWrapping, input: value });
     }
   });

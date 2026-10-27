@@ -33,35 +33,35 @@ export function linkToolTip(
   link.property({
     props,
     key: "horizontalOffset",
-    apply: value => {
+    apply(value) {
       control.horizontalOffset = value;
     }
   });
   link.property({
     props,
     key: "placement",
-    apply: value => {
+    apply(value) {
       control.placement = enumValue({ table: PlacementMode, input: value });
     }
   });
   link.property({
     props,
     key: "placementRect",
-    apply: value => {
+    apply(value) {
       control.placementRect = value;
     }
   });
   link.property({
     props,
     key: "placementTarget",
-    apply: value => {
+    apply(value) {
       control.placementTarget = value;
     }
   });
   link.property({
     props,
     key: "verticalOffset",
-    apply: value => {
+    apply(value) {
       control.verticalOffset = value;
     }
   });
@@ -70,7 +70,7 @@ export function linkToolTip(
     key: "isOpen",
     access: {
       read: () => control.isOpen,
-      write: value => {
+      write(value) {
         control.isOpen = value;
       }
     },

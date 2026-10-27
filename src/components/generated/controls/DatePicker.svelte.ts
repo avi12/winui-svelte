@@ -44,91 +44,91 @@ export function linkDatePicker(
   link.property({
     props,
     key: "calendarIdentifier",
-    apply: value => {
+    apply(value) {
       control.calendarIdentifier = value;
     }
   });
   link.property({
     props,
     key: "dayFormat",
-    apply: value => {
+    apply(value) {
       control.dayFormat = value;
     }
   });
   link.property({
     props,
     key: "dayVisible",
-    apply: value => {
+    apply(value) {
       control.dayVisible = value;
     }
   });
   link.contentProperty({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "lightDismissOverlayMode",
-    apply: value => {
+    apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
     }
   });
   link.property({
     props,
     key: "maxYear",
-    apply: value => {
+    apply(value) {
       control.maxYear = value;
     }
   });
   link.property({
     props,
     key: "minYear",
-    apply: value => {
+    apply(value) {
       control.minYear = value;
     }
   });
   link.property({
     props,
     key: "monthFormat",
-    apply: value => {
+    apply(value) {
       control.monthFormat = value;
     }
   });
   link.property({
     props,
     key: "monthVisible",
-    apply: value => {
+    apply(value) {
       control.monthVisible = value;
     }
   });
   link.property({
     props,
     key: "orientation",
-    apply: value => {
+    apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
     }
   });
   link.property({
     props,
     key: "yearFormat",
-    apply: value => {
+    apply(value) {
       control.yearFormat = value;
     }
   });
   link.property({
     props,
     key: "yearVisible",
-    apply: value => {
+    apply(value) {
       control.yearVisible = value;
     }
   });
@@ -137,7 +137,7 @@ export function linkDatePicker(
     key: "date",
     access: {
       read: () => control.date,
-      write: value => {
+      write(value) {
         control.date = value;
       }
     },
@@ -150,7 +150,7 @@ export function linkDatePicker(
     key: "selectedDate",
     access: {
       read: () => control.selectedDate,
-      write: value => {
+      write(value) {
         control.selectedDate = value;
       }
     },

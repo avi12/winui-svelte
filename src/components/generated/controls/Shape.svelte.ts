@@ -34,77 +34,77 @@ export function linkShape(
   link.property({
     props,
     key: "fill",
-    apply: value => {
+    apply(value) {
       control.fill = brushOf(value);
     }
   });
   link.property({
     props,
     key: "stretch",
-    apply: value => {
+    apply(value) {
       control.stretch = enumValue({ table: Stretch, input: value });
     }
   });
   link.property({
     props,
     key: "stroke",
-    apply: value => {
+    apply(value) {
       control.stroke = brushOf(value);
     }
   });
   link.property({
     props,
     key: "strokeDashArray",
-    apply: value => {
+    apply(value) {
       control.strokeDashArray = value;
     }
   });
   link.property({
     props,
     key: "strokeDashCap",
-    apply: value => {
+    apply(value) {
       control.strokeDashCap = enumValue({ table: PenLineCap, input: value });
     }
   });
   link.property({
     props,
     key: "strokeDashOffset",
-    apply: value => {
+    apply(value) {
       control.strokeDashOffset = value;
     }
   });
   link.property({
     props,
     key: "strokeEndLineCap",
-    apply: value => {
+    apply(value) {
       control.strokeEndLineCap = enumValue({ table: PenLineCap, input: value });
     }
   });
   link.property({
     props,
     key: "strokeLineJoin",
-    apply: value => {
+    apply(value) {
       control.strokeLineJoin = enumValue({ table: PenLineJoin, input: value });
     }
   });
   link.property({
     props,
     key: "strokeMiterLimit",
-    apply: value => {
+    apply(value) {
       control.strokeMiterLimit = value;
     }
   });
   link.property({
     props,
     key: "strokeStartLineCap",
-    apply: value => {
+    apply(value) {
       control.strokeStartLineCap = enumValue({ table: PenLineCap, input: value });
     }
   });
   link.property({
     props,
     key: "strokeThickness",
-    apply: value => {
+    apply(value) {
       control.strokeThickness = value;
     }
   });

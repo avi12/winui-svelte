@@ -25,14 +25,14 @@ export function linkNavigationViewItemPresenter(
   link.property({
     props,
     key: "icon",
-    apply: value => {
+    apply(value) {
       control.icon = value;
     }
   });
   link.property({
     props,
     key: "infoBadge",
-    apply: value => {
+    apply(value) {
       control.infoBadge = value;
     }
   });

@@ -36,63 +36,63 @@ export function linkColorSpectrum(
   link.property({
     props,
     key: "components",
-    apply: value => {
+    apply(value) {
       control.components = enumValue({ table: ColorSpectrumComponents, input: value });
     }
   });
   link.property({
     props,
     key: "hsvColor",
-    apply: value => {
+    apply(value) {
       control.hsvColor = value;
     }
   });
   link.property({
     props,
     key: "maxHue",
-    apply: value => {
+    apply(value) {
       control.maxHue = value;
     }
   });
   link.property({
     props,
     key: "maxSaturation",
-    apply: value => {
+    apply(value) {
       control.maxSaturation = value;
     }
   });
   link.property({
     props,
     key: "maxValue",
-    apply: value => {
+    apply(value) {
       control.maxValue = value;
     }
   });
   link.property({
     props,
     key: "minHue",
-    apply: value => {
+    apply(value) {
       control.minHue = value;
     }
   });
   link.property({
     props,
     key: "minSaturation",
-    apply: value => {
+    apply(value) {
       control.minSaturation = value;
     }
   });
   link.property({
     props,
     key: "minValue",
-    apply: value => {
+    apply(value) {
       control.minValue = value;
     }
   });
   link.property({
     props,
     key: "shape",
-    apply: value => {
+    apply(value) {
       control.shape = enumValue({ table: ColorSpectrumShape, input: value });
     }
   });
@@ -101,7 +101,7 @@ export function linkColorSpectrum(
     key: "color",
     access: {
       read: () => control.color,
-      write: value => {
+      write(value) {
         control.color = colorOf(value);
       }
     },

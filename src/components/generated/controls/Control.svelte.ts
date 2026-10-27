@@ -73,168 +73,168 @@ export function linkControl(
   link.property({
     props,
     key: "background",
-    apply: value => {
+    apply(value) {
       control.background = brushOf(value);
     }
   });
   link.property({
     props,
     key: "backgroundSizing",
-    apply: value => {
+    apply(value) {
       control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
     }
   });
   link.property({
     props,
     key: "borderBrush",
-    apply: value => {
+    apply(value) {
       control.borderBrush = brushOf(value);
     }
   });
   link.property({
     props,
     key: "borderThickness",
-    apply: value => {
+    apply(value) {
       control.borderThickness = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "characterSpacing",
-    apply: value => {
+    apply(value) {
       control.characterSpacing = value;
     }
   });
   link.property({
     props,
     key: "cornerRadius",
-    apply: value => {
+    apply(value) {
       control.cornerRadius = cornerRadiusOf(value);
     }
   });
   link.property({
     props,
     key: "defaultStyleResourceUri",
-    apply: value => {
+    apply(value) {
       control.defaultStyleResourceUri = uriOf(value);
     }
   });
   link.property({
     props,
     key: "elementSoundMode",
-    apply: value => {
+    apply(value) {
       control.elementSoundMode = enumValue({ table: ElementSoundMode, input: value });
     }
   });
   link.property({
     props,
     key: "fontFamily",
-    apply: value => {
+    apply(value) {
       control.fontFamily = fontFamilyOf(value);
     }
   });
   link.property({
     props,
     key: "fontSize",
-    apply: value => {
+    apply(value) {
       control.fontSize = value;
     }
   });
   link.property({
     props,
     key: "fontStretch",
-    apply: value => {
+    apply(value) {
       control.fontStretch = enumValue({ table: FontStretch, input: value });
     }
   });
   link.property({
     props,
     key: "fontStyle",
-    apply: value => {
+    apply(value) {
       control.fontStyle = enumValue({ table: FontStyle, input: value });
     }
   });
   link.property({
     props,
     key: "fontWeight",
-    apply: value => {
+    apply(value) {
       control.fontWeight = value;
     }
   });
   link.property({
     props,
     key: "foreground",
-    apply: value => {
+    apply(value) {
       control.foreground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "horizontalContentAlignment",
-    apply: value => {
+    apply(value) {
       control.horizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
     }
   });
   link.property({
     props,
     key: "isEnabled",
-    apply: value => {
+    apply(value) {
       control.isEnabled = value;
     }
   });
   link.property({
     props,
     key: "isFocusEngaged",
-    apply: value => {
+    apply(value) {
       control.isFocusEngaged = value;
     }
   });
   link.property({
     props,
     key: "isFocusEngagementEnabled",
-    apply: value => {
+    apply(value) {
       control.isFocusEngagementEnabled = value;
     }
   });
   link.property({
     props,
     key: "isTextScaleFactorEnabled",
-    apply: value => {
+    apply(value) {
       control.isTextScaleFactorEnabled = value;
     }
   });
   link.property({
     props,
     key: "padding",
-    apply: value => {
+    apply(value) {
       control.padding = thicknessOf(value);
     }
   });
   link.property({
     props,
     key: "requiresPointer",
-    apply: value => {
+    apply(value) {
       control.requiresPointer = enumValue({ table: RequiresPointer, input: value });
     }
   });
   link.property({
     props,
     key: "tabNavigation",
-    apply: value => {
+    apply(value) {
       control.tabNavigation = enumValue({ table: KeyboardNavigationMode, input: value });
     }
   });
   link.property({
     props,
     key: "template",
-    apply: value => {
+    apply(value) {
       control.template = value;
     }
   });
   link.property({
     props,
     key: "verticalContentAlignment",
-    apply: value => {
+    apply(value) {
       control.verticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
     }
   });

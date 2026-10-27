@@ -26,28 +26,28 @@ export function linkRangeBase(
   link.property({
     props,
     key: "largeChange",
-    apply: value => {
+    apply(value) {
       control.largeChange = value;
     }
   });
   link.property({
     props,
     key: "maximum",
-    apply: value => {
+    apply(value) {
       control.maximum = value;
     }
   });
   link.property({
     props,
     key: "minimum",
-    apply: value => {
+    apply(value) {
       control.minimum = value;
     }
   });
   link.property({
     props,
     key: "smallChange",
-    apply: value => {
+    apply(value) {
       control.smallChange = value;
     }
   });
@@ -56,7 +56,7 @@ export function linkRangeBase(
     key: "value",
     access: {
       read: () => control.value,
-      write: value => {
+      write(value) {
         control.value = value;
       }
     },

@@ -207,847 +207,847 @@ export function linkUIElement(
   link.property({
     props,
     key: "canvasLeft",
-    apply: value => {
+    apply(value) {
       Canvas.setLeft(control, value);
     }
   });
   link.property({
     props,
     key: "canvasTop",
-    apply: value => {
+    apply(value) {
       Canvas.setTop(control, value);
     }
   });
   link.property({
     props,
     key: "canvasZIndex",
-    apply: value => {
+    apply(value) {
       Canvas.setZIndex(control, value);
     }
   });
   link.property({
     props,
     key: "relativePanelLeftOf",
-    apply: value => {
+    apply(value) {
       RelativePanel.setLeftOf(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "relativePanelAbove",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAbove(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "relativePanelRightOf",
-    apply: value => {
+    apply(value) {
       RelativePanel.setRightOf(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "relativePanelBelow",
-    apply: value => {
+    apply(value) {
       RelativePanel.setBelow(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "relativePanelAlignHorizontalCenterWith",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignHorizontalCenterWith(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "relativePanelAlignVerticalCenterWith",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignVerticalCenterWith(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "relativePanelAlignLeftWith",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignLeftWith(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "relativePanelAlignTopWith",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignTopWith(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "relativePanelAlignRightWith",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignRightWith(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "relativePanelAlignBottomWith",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignBottomWith(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "relativePanelAlignLeftWithPanel",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignLeftWithPanel(control, value);
     }
   });
   link.property({
     props,
     key: "relativePanelAlignTopWithPanel",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignTopWithPanel(control, value);
     }
   });
   link.property({
     props,
     key: "relativePanelAlignRightWithPanel",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignRightWithPanel(control, value);
     }
   });
   link.property({
     props,
     key: "relativePanelAlignBottomWithPanel",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignBottomWithPanel(control, value);
     }
   });
   link.property({
     props,
     key: "relativePanelAlignHorizontalCenterWithPanel",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignHorizontalCenterWithPanel(control, value);
     }
   });
   link.property({
     props,
     key: "relativePanelAlignVerticalCenterWithPanel",
-    apply: value => {
+    apply(value) {
       RelativePanel.setAlignVerticalCenterWithPanel(control, value);
     }
   });
   link.property({
     props,
     key: "variableSizedWrapGridRowSpan",
-    apply: value => {
+    apply(value) {
       VariableSizedWrapGrid.setRowSpan(control, value);
     }
   });
   link.property({
     props,
     key: "variableSizedWrapGridColumnSpan",
-    apply: value => {
+    apply(value) {
       VariableSizedWrapGrid.setColumnSpan(control, value);
     }
   });
   link.property({
     props,
     key: "scrollViewerHorizontalScrollBarVisibility",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setHorizontalScrollBarVisibility(control, enumValue({ table: ScrollBarVisibility, input: value }));
     }
   });
   link.property({
     props,
     key: "scrollViewerVerticalScrollBarVisibility",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setVerticalScrollBarVisibility(control, enumValue({ table: ScrollBarVisibility, input: value }));
     }
   });
   link.property({
     props,
     key: "scrollViewerIsHorizontalRailEnabled",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setIsHorizontalRailEnabled(control, value);
     }
   });
   link.property({
     props,
     key: "scrollViewerIsVerticalRailEnabled",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setIsVerticalRailEnabled(control, value);
     }
   });
   link.property({
     props,
     key: "scrollViewerIsHorizontalScrollChainingEnabled",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setIsHorizontalScrollChainingEnabled(control, value);
     }
   });
   link.property({
     props,
     key: "scrollViewerIsVerticalScrollChainingEnabled",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setIsVerticalScrollChainingEnabled(control, value);
     }
   });
   link.property({
     props,
     key: "scrollViewerIsZoomChainingEnabled",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setIsZoomChainingEnabled(control, value);
     }
   });
   link.property({
     props,
     key: "scrollViewerIsScrollInertiaEnabled",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setIsScrollInertiaEnabled(control, value);
     }
   });
   link.property({
     props,
     key: "scrollViewerIsZoomInertiaEnabled",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setIsZoomInertiaEnabled(control, value);
     }
   });
   link.property({
     props,
     key: "scrollViewerHorizontalScrollMode",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setHorizontalScrollMode(control, enumValue({ table: ScrollMode, input: value }));
     }
   });
   link.property({
     props,
     key: "scrollViewerVerticalScrollMode",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setVerticalScrollMode(control, enumValue({ table: ScrollMode, input: value }));
     }
   });
   link.property({
     props,
     key: "scrollViewerZoomMode",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setZoomMode(control, enumValue({ table: ZoomMode, input: value }));
     }
   });
   link.property({
     props,
     key: "scrollViewerCanContentRenderOutsideBounds",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setCanContentRenderOutsideBounds(control, value);
     }
   });
   link.property({
     props,
     key: "scrollViewerIsDeferredScrollingEnabled",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setIsDeferredScrollingEnabled(control, value);
     }
   });
   link.property({
     props,
     key: "scrollViewerBringIntoViewOnFocusChange",
-    apply: value => {
+    apply(value) {
       ScrollViewer.setBringIntoViewOnFocusChange(control, value);
     }
   });
   link.property({
     props,
     key: "toolTipPlacement",
-    apply: value => {
+    apply(value) {
       ToolTipService.setPlacement(control, enumValue({ table: PlacementMode, input: value }));
     }
   });
   link.property({
     props,
     key: "toolTipPlacementTarget",
-    apply: value => {
+    apply(value) {
       ToolTipService.setPlacementTarget(control, value);
     }
   });
   link.property({
     props,
     key: "toolTip",
-    apply: value => {
+    apply(value) {
       ToolTipService.setToolTip(control, objectOf(value));
     }
   });
   link.property({
     props,
     key: "automationAcceleratorKey",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setAcceleratorKey(control, value);
     }
   });
   link.property({
     props,
     key: "automationAccessKey",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setAccessKey(control, value);
     }
   });
   link.property({
     props,
     key: "automationId",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setAutomationId(control, value);
     }
   });
   link.property({
     props,
     key: "automationHelpText",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setHelpText(control, value);
     }
   });
   link.property({
     props,
     key: "automationIsRequiredForForm",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setIsRequiredForForm(control, value);
     }
   });
   link.property({
     props,
     key: "automationItemStatus",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setItemStatus(control, value);
     }
   });
   link.property({
     props,
     key: "automationItemType",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setItemType(control, value);
     }
   });
   link.property({
     props,
     key: "automationLabeledBy",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setLabeledBy(control, value);
     }
   });
   link.property({
     props,
     key: "automationName",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setName(control, value);
     }
   });
   link.property({
     props,
     key: "automationLiveSetting",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setLiveSetting(control, enumValue({ table: AutomationLiveSetting, input: value }));
     }
   });
   link.property({
     props,
     key: "automationAccessibilityView",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setAccessibilityView(control, enumValue({ table: AccessibilityView, input: value }));
     }
   });
   link.property({
     props,
     key: "automationPositionInSet",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setPositionInSet(control, value);
     }
   });
   link.property({
     props,
     key: "automationSizeOfSet",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setSizeOfSet(control, value);
     }
   });
   link.property({
     props,
     key: "automationLevel",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setLevel(control, value);
     }
   });
   link.property({
     props,
     key: "automationLandmarkType",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setLandmarkType(control, enumValue({ table: AutomationLandmarkType, input: value }));
     }
   });
   link.property({
     props,
     key: "automationLocalizedLandmarkType",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setLocalizedLandmarkType(control, value);
     }
   });
   link.property({
     props,
     key: "automationIsPeripheral",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setIsPeripheral(control, value);
     }
   });
   link.property({
     props,
     key: "automationIsDataValidForForm",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setIsDataValidForForm(control, value);
     }
   });
   link.property({
     props,
     key: "automationFullDescription",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setFullDescription(control, value);
     }
   });
   link.property({
     props,
     key: "automationLocalizedControlType",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setLocalizedControlType(control, value);
     }
   });
   link.property({
     props,
     key: "automationCulture",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setCulture(control, value);
     }
   });
   link.property({
     props,
     key: "automationHeadingLevel",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setHeadingLevel(control, enumValue({ table: AutomationHeadingLevel, input: value }));
     }
   });
   link.property({
     props,
     key: "automationIsDialog",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setIsDialog(control, value);
     }
   });
   link.property({
     props,
     key: "automationControlType",
-    apply: value => {
+    apply(value) {
       AutomationProperties.setAutomationControlType(control, enumValue({ table: AutomationControlType, input: value }));
     }
   });
   link.property({
     props,
     key: "accessKey",
-    apply: value => {
+    apply(value) {
       control.accessKey = value;
     }
   });
   link.property({
     props,
     key: "accessKeyScopeOwner",
-    apply: value => {
+    apply(value) {
       control.accessKeyScopeOwner = value;
     }
   });
   link.property({
     props,
     key: "allowDrop",
-    apply: value => {
+    apply(value) {
       control.allowDrop = value;
     }
   });
   link.property({
     props,
     key: "cacheMode",
-    apply: value => {
+    apply(value) {
       control.cacheMode = value;
     }
   });
   link.property({
     props,
     key: "canBeScrollAnchor",
-    apply: value => {
+    apply(value) {
       control.canBeScrollAnchor = value;
     }
   });
   link.property({
     props,
     key: "canDrag",
-    apply: value => {
+    apply(value) {
       control.canDrag = value;
     }
   });
   link.property({
     props,
     key: "centerPoint",
-    apply: value => {
+    apply(value) {
       control.centerPoint = value;
     }
   });
   link.property({
     props,
     key: "clip",
-    apply: value => {
+    apply(value) {
       control.clip = value;
     }
   });
   link.property({
     props,
     key: "compositeMode",
-    apply: value => {
+    apply(value) {
       control.compositeMode = enumValue({ table: ElementCompositeMode, input: value });
     }
   });
   link.property({
     props,
     key: "contextFlyout",
-    apply: value => {
+    apply(value) {
       control.contextFlyout = value;
     }
   });
   link.property({
     props,
     key: "exitDisplayModeOnAccessKeyInvoked",
-    apply: value => {
+    apply(value) {
       control.exitDisplayModeOnAccessKeyInvoked = value;
     }
   });
   link.property({
     props,
     key: "highContrastAdjustment",
-    apply: value => {
+    apply(value) {
       control.highContrastAdjustment = enumValue({ table: ElementHighContrastAdjustment, input: value });
     }
   });
   link.property({
     props,
     key: "isAccessKeyScope",
-    apply: value => {
+    apply(value) {
       control.isAccessKeyScope = value;
     }
   });
   link.property({
     props,
     key: "isDoubleTapEnabled",
-    apply: value => {
+    apply(value) {
       control.isDoubleTapEnabled = value;
     }
   });
   link.property({
     props,
     key: "isHitTestVisible",
-    apply: value => {
+    apply(value) {
       control.isHitTestVisible = value;
     }
   });
   link.property({
     props,
     key: "isHoldingEnabled",
-    apply: value => {
+    apply(value) {
       control.isHoldingEnabled = value;
     }
   });
   link.property({
     props,
     key: "isRightTapEnabled",
-    apply: value => {
+    apply(value) {
       control.isRightTapEnabled = value;
     }
   });
   link.property({
     props,
     key: "isTabStop",
-    apply: value => {
+    apply(value) {
       control.isTabStop = value;
     }
   });
   link.property({
     props,
     key: "isTapEnabled",
-    apply: value => {
+    apply(value) {
       control.isTapEnabled = value;
     }
   });
   link.property({
     props,
     key: "keyboardAcceleratorPlacementMode",
-    apply: value => {
+    apply(value) {
       control.keyboardAcceleratorPlacementMode = enumValue({ table: KeyboardAcceleratorPlacementMode, input: value });
     }
   });
   link.property({
     props,
     key: "keyboardAcceleratorPlacementTarget",
-    apply: value => {
+    apply(value) {
       control.keyboardAcceleratorPlacementTarget = value;
     }
   });
   link.property({
     props,
     key: "keyTipHorizontalOffset",
-    apply: value => {
+    apply(value) {
       control.keyTipHorizontalOffset = value;
     }
   });
   link.property({
     props,
     key: "keyTipPlacementMode",
-    apply: value => {
+    apply(value) {
       control.keyTipPlacementMode = enumValue({ table: KeyTipPlacementMode, input: value });
     }
   });
   link.property({
     props,
     key: "keyTipTarget",
-    apply: value => {
+    apply(value) {
       control.keyTipTarget = value;
     }
   });
   link.property({
     props,
     key: "keyTipVerticalOffset",
-    apply: value => {
+    apply(value) {
       control.keyTipVerticalOffset = value;
     }
   });
   link.property({
     props,
     key: "manipulationMode",
-    apply: value => {
+    apply(value) {
       control.manipulationMode = enumValue({ table: ManipulationModes, input: value });
     }
   });
   link.property({
     props,
     key: "opacity",
-    apply: value => {
+    apply(value) {
       control.opacity = value;
     }
   });
   link.property({
     props,
     key: "opacityTransition",
-    apply: value => {
+    apply(value) {
       control.opacityTransition = value;
     }
   });
   link.property({
     props,
     key: "projection",
-    apply: value => {
+    apply(value) {
       control.projection = value;
     }
   });
   link.property({
     props,
     key: "rasterizationScale",
-    apply: value => {
+    apply(value) {
       control.rasterizationScale = value;
     }
   });
   link.property({
     props,
     key: "renderTransform",
-    apply: value => {
+    apply(value) {
       control.renderTransform = value;
     }
   });
   link.property({
     props,
     key: "renderTransformOrigin",
-    apply: value => {
+    apply(value) {
       control.renderTransformOrigin = value;
     }
   });
   link.property({
     props,
     key: "rotation",
-    apply: value => {
+    apply(value) {
       control.rotation = value;
     }
   });
   link.property({
     props,
     key: "rotationAxis",
-    apply: value => {
+    apply(value) {
       control.rotationAxis = value;
     }
   });
   link.property({
     props,
     key: "rotationTransition",
-    apply: value => {
+    apply(value) {
       control.rotationTransition = value;
     }
   });
   link.property({
     props,
     key: "scale",
-    apply: value => {
+    apply(value) {
       control.scale = value;
     }
   });
   link.property({
     props,
     key: "scaleTransition",
-    apply: value => {
+    apply(value) {
       control.scaleTransition = value;
     }
   });
   link.property({
     props,
     key: "shadow",
-    apply: value => {
+    apply(value) {
       control.shadow = value;
     }
   });
   link.property({
     props,
     key: "tabFocusNavigation",
-    apply: value => {
+    apply(value) {
       control.tabFocusNavigation = enumValue({ table: KeyboardNavigationMode, input: value });
     }
   });
   link.property({
     props,
     key: "tabIndex",
-    apply: value => {
+    apply(value) {
       control.tabIndex = value;
     }
   });
   link.property({
     props,
     key: "transform3D",
-    apply: value => {
+    apply(value) {
       control.transform3D = value;
     }
   });
   link.property({
     props,
     key: "transformMatrix",
-    apply: value => {
+    apply(value) {
       control.transformMatrix = value;
     }
   });
   link.property({
     props,
     key: "transitions",
-    apply: value => {
+    apply(value) {
       control.transitions = value;
     }
   });
   link.property({
     props,
     key: "translation",
-    apply: value => {
+    apply(value) {
       control.translation = value;
     }
   });
   link.property({
     props,
     key: "translationTransition",
-    apply: value => {
+    apply(value) {
       control.translationTransition = value;
     }
   });
   link.property({
     props,
     key: "useLayoutRounding",
-    apply: value => {
+    apply(value) {
       control.useLayoutRounding = value;
     }
   });
   link.property({
     props,
     key: "useSystemFocusVisuals",
-    apply: value => {
+    apply(value) {
       control.useSystemFocusVisuals = value;
     }
   });
   link.property({
     props,
     key: "visibility",
-    apply: value => {
+    apply(value) {
       control.visibility = enumValue({ table: Visibility, input: value });
     }
   });
   link.property({
     props,
     key: "xamlRoot",
-    apply: value => {
+    apply(value) {
       control.xamlRoot = value;
     }
   });
   link.property({
     props,
     key: "xYFocusDown",
-    apply: value => {
+    apply(value) {
       control.xYFocusDown = value;
     }
   });
   link.property({
     props,
     key: "xYFocusDownNavigationStrategy",
-    apply: value => {
+    apply(value) {
       control.xYFocusDownNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
     }
   });
   link.property({
     props,
     key: "xYFocusKeyboardNavigation",
-    apply: value => {
+    apply(value) {
       control.xYFocusKeyboardNavigation = enumValue({ table: XYFocusKeyboardNavigationMode, input: value });
     }
   });
   link.property({
     props,
     key: "xYFocusLeft",
-    apply: value => {
+    apply(value) {
       control.xYFocusLeft = value;
     }
   });
   link.property({
     props,
     key: "xYFocusLeftNavigationStrategy",
-    apply: value => {
+    apply(value) {
       control.xYFocusLeftNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
     }
   });
   link.property({
     props,
     key: "xYFocusRight",
-    apply: value => {
+    apply(value) {
       control.xYFocusRight = value;
     }
   });
   link.property({
     props,
     key: "xYFocusRightNavigationStrategy",
-    apply: value => {
+    apply(value) {
       control.xYFocusRightNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
     }
   });
   link.property({
     props,
     key: "xYFocusUp",
-    apply: value => {
+    apply(value) {
       control.xYFocusUp = value;
     }
   });
   link.property({
     props,
     key: "xYFocusUpNavigationStrategy",
-    apply: value => {
+    apply(value) {
       control.xYFocusUpNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
     }
   });
@@ -1215,7 +1215,7 @@ export function linkUIElement(
   link.property({
     props,
     key: "attached",
-    apply: value => {
+    apply(value) {
       setAttached({ control, input: value });
     }
   });

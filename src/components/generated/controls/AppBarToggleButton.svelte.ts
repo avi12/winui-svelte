@@ -31,42 +31,42 @@ export function linkAppBarToggleButton(
   link.property({
     props,
     key: "dynamicOverflowOrder",
-    apply: value => {
+    apply(value) {
       control.dynamicOverflowOrder = value;
     }
   });
   link.property({
     props,
     key: "icon",
-    apply: value => {
+    apply(value) {
       control.icon = value;
     }
   });
   link.property({
     props,
     key: "isCompact",
-    apply: value => {
+    apply(value) {
       control.isCompact = value;
     }
   });
   link.property({
     props,
     key: "keyboardAcceleratorTextOverride",
-    apply: value => {
+    apply(value) {
       control.keyboardAcceleratorTextOverride = value;
     }
   });
   link.property({
     props,
     key: "label",
-    apply: value => {
+    apply(value) {
       control.label = value;
     }
   });
   link.property({
     props,
     key: "labelPosition",
-    apply: value => {
+    apply(value) {
       control.labelPosition = enumValue({ table: CommandBarLabelPosition, input: value });
     }
   });

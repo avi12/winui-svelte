@@ -40,56 +40,56 @@ export function linkSplitView(
   link.property({
     props,
     key: "compactPaneLength",
-    apply: value => {
+    apply(value) {
       control.compactPaneLength = value;
     }
   });
   link.contentProperty({
     props,
     key: "content",
-    apply: value => {
+    apply(value) {
       control.content = value;
     }
   });
   link.property({
     props,
     key: "displayMode",
-    apply: value => {
+    apply(value) {
       control.displayMode = enumValue({ table: SplitViewDisplayMode, input: value });
     }
   });
   link.property({
     props,
     key: "lightDismissOverlayMode",
-    apply: value => {
+    apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
     }
   });
   link.property({
     props,
     key: "openPaneLength",
-    apply: value => {
+    apply(value) {
       control.openPaneLength = value;
     }
   });
   link.property({
     props,
     key: "pane",
-    apply: value => {
+    apply(value) {
       control.pane = value;
     }
   });
   link.property({
     props,
     key: "paneBackground",
-    apply: value => {
+    apply(value) {
       control.paneBackground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "panePlacement",
-    apply: value => {
+    apply(value) {
       control.panePlacement = enumValue({ table: SplitViewPanePlacement, input: value });
     }
   });
@@ -98,7 +98,7 @@ export function linkSplitView(
     key: "isPaneOpen",
     access: {
       read: () => control.isPaneOpen,
-      write: value => {
+      write(value) {
         control.isPaneOpen = value;
       }
     },

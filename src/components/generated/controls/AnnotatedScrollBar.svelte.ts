@@ -29,28 +29,28 @@ export function linkAnnotatedScrollBar(
   link.property({
     props,
     key: "detailLabelTemplate",
-    apply: value => {
+    apply(value) {
       control.detailLabelTemplate = value;
     }
   });
   link.property({
     props,
     key: "labels",
-    apply: value => {
+    apply(value) {
       control.labels = value;
     }
   });
   link.property({
     props,
     key: "labelTemplate",
-    apply: value => {
+    apply(value) {
       control.labelTemplate = value;
     }
   });
   link.property({
     props,
     key: "smallChange",
-    apply: value => {
+    apply(value) {
       control.smallChange = value;
     }
   });

@@ -41,91 +41,91 @@ export function linkHyperlink(
   link.property({
     props,
     key: "elementSoundMode",
-    apply: value => {
+    apply(value) {
       control.elementSoundMode = enumValue({ table: ElementSoundMode, input: value });
     }
   });
   link.property({
     props,
     key: "isTabStop",
-    apply: value => {
+    apply(value) {
       control.isTabStop = value;
     }
   });
   link.property({
     props,
     key: "navigateUri",
-    apply: value => {
+    apply(value) {
       control.navigateUri = uriOf(value);
     }
   });
   link.property({
     props,
     key: "tabIndex",
-    apply: value => {
+    apply(value) {
       control.tabIndex = value;
     }
   });
   link.property({
     props,
     key: "underlineStyle",
-    apply: value => {
+    apply(value) {
       control.underlineStyle = enumValue({ table: UnderlineStyle, input: value });
     }
   });
   link.property({
     props,
     key: "xYFocusDown",
-    apply: value => {
+    apply(value) {
       control.xYFocusDown = value;
     }
   });
   link.property({
     props,
     key: "xYFocusDownNavigationStrategy",
-    apply: value => {
+    apply(value) {
       control.xYFocusDownNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
     }
   });
   link.property({
     props,
     key: "xYFocusLeft",
-    apply: value => {
+    apply(value) {
       control.xYFocusLeft = value;
     }
   });
   link.property({
     props,
     key: "xYFocusLeftNavigationStrategy",
-    apply: value => {
+    apply(value) {
       control.xYFocusLeftNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
     }
   });
   link.property({
     props,
     key: "xYFocusRight",
-    apply: value => {
+    apply(value) {
       control.xYFocusRight = value;
     }
   });
   link.property({
     props,
     key: "xYFocusRightNavigationStrategy",
-    apply: value => {
+    apply(value) {
       control.xYFocusRightNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
     }
   });
   link.property({
     props,
     key: "xYFocusUp",
-    apply: value => {
+    apply(value) {
       control.xYFocusUp = value;
     }
   });
   link.property({
     props,
     key: "xYFocusUpNavigationStrategy",
-    apply: value => {
+    apply(value) {
       control.xYFocusUpNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
     }
   });

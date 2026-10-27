@@ -41,84 +41,84 @@ export function linkComboBox(
   link.property({
     props,
     key: "description",
-    apply: value => {
+    apply(value) {
       control.description = objectOf(value);
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "isEditable",
-    apply: value => {
+    apply(value) {
       control.isEditable = value;
     }
   });
   link.property({
     props,
     key: "isTextSearchEnabled",
-    apply: value => {
+    apply(value) {
       control.isTextSearchEnabled = value;
     }
   });
   link.property({
     props,
     key: "lightDismissOverlayMode",
-    apply: value => {
+    apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
     }
   });
   link.property({
     props,
     key: "maxDropDownHeight",
-    apply: value => {
+    apply(value) {
       control.maxDropDownHeight = value;
     }
   });
   link.property({
     props,
     key: "placeholderForeground",
-    apply: value => {
+    apply(value) {
       control.placeholderForeground = brushOf(value);
     }
   });
   link.property({
     props,
     key: "placeholderText",
-    apply: value => {
+    apply(value) {
       control.placeholderText = value;
     }
   });
   link.property({
     props,
     key: "selectionChangedTrigger",
-    apply: value => {
+    apply(value) {
       control.selectionChangedTrigger = enumValue({ table: ComboBoxSelectionChangedTrigger, input: value });
     }
   });
   link.property({
     props,
     key: "text",
-    apply: value => {
+    apply(value) {
       control.text = value;
     }
   });
   link.property({
     props,
     key: "textBoxStyle",
-    apply: value => {
+    apply(value) {
       control.textBoxStyle = value;
     }
   });
@@ -127,7 +127,7 @@ export function linkComboBox(
     key: "isDropDownOpen",
     access: {
       read: () => control.isDropDownOpen,
-      write: value => {
+      write(value) {
         control.isDropDownOpen = value;
       }
     },

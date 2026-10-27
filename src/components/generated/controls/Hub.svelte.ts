@@ -36,49 +36,49 @@ export function linkHub(
   link.property({
     props,
     key: "defaultSectionIndex",
-    apply: value => {
+    apply(value) {
       control.defaultSectionIndex = value;
     }
   });
   link.property({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "isActiveView",
-    apply: value => {
+    apply(value) {
       control.isActiveView = value;
     }
   });
   link.property({
     props,
     key: "isZoomedInView",
-    apply: value => {
+    apply(value) {
       control.isZoomedInView = value;
     }
   });
   link.property({
     props,
     key: "orientation",
-    apply: value => {
+    apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
     }
   });
   link.property({
     props,
     key: "semanticZoomOwner",
-    apply: value => {
+    apply(value) {
       control.semanticZoomOwner = value;
     }
   });

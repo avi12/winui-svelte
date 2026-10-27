@@ -26,14 +26,14 @@ export function linkBitmapIcon(
   link.property({
     props,
     key: "showAsMonochrome",
-    apply: value => {
+    apply(value) {
       control.showAsMonochrome = value;
     }
   });
   link.property({
     props,
     key: "uriSource",
-    apply: value => {
+    apply(value) {
       control.uriSource = uriOf(value);
     }
   });

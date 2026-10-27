@@ -25,14 +25,14 @@ export function linkItemContainer(
   link.property({
     props,
     key: "child",
-    apply: value => {
+    apply(value) {
       control.child = value;
     }
   });
   link.property({
     props,
     key: "isSelected",
-    apply: value => {
+    apply(value) {
       control.isSelected = value;
     }
   });

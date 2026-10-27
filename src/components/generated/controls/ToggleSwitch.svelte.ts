@@ -34,42 +34,42 @@ export function linkToggleSwitch(
   link.contentProperty({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "offContent",
-    apply: value => {
+    apply(value) {
       control.offContent = objectOf(value);
     }
   });
   link.property({
     props,
     key: "offContentTemplate",
-    apply: value => {
+    apply(value) {
       control.offContentTemplate = value;
     }
   });
   link.property({
     props,
     key: "onContent",
-    apply: value => {
+    apply(value) {
       control.onContent = objectOf(value);
     }
   });
   link.property({
     props,
     key: "onContentTemplate",
-    apply: value => {
+    apply(value) {
       control.onContentTemplate = value;
     }
   });
@@ -78,7 +78,7 @@ export function linkToggleSwitch(
     key: "isOn",
     access: {
       read: () => control.isOn,
-      write: value => {
+      write(value) {
         control.isOn = value;
       }
     },

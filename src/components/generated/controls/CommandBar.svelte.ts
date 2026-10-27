@@ -32,28 +32,28 @@ export function linkCommandBar(
   link.property({
     props,
     key: "commandBarOverflowPresenterStyle",
-    apply: value => {
+    apply(value) {
       control.commandBarOverflowPresenterStyle = value;
     }
   });
   link.property({
     props,
     key: "defaultLabelPosition",
-    apply: value => {
+    apply(value) {
       control.defaultLabelPosition = enumValue({ table: CommandBarDefaultLabelPosition, input: value });
     }
   });
   link.property({
     props,
     key: "isDynamicOverflowEnabled",
-    apply: value => {
+    apply(value) {
       control.isDynamicOverflowEnabled = value;
     }
   });
   link.property({
     props,
     key: "overflowButtonVisibility",
-    apply: value => {
+    apply(value) {
       control.overflowButtonVisibility = enumValue({ table: CommandBarOverflowButtonVisibility, input: value });
     }
   });

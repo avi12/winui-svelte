@@ -27,7 +27,7 @@ export function linkToggleSplitButton(
     key: "isChecked",
     access: {
       read: () => control.isChecked,
-      write: value => {
+      write(value) {
         control.isChecked = value;
       }
     },

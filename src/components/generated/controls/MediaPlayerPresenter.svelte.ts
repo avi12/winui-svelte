@@ -28,21 +28,21 @@ export function linkMediaPlayerPresenter(
   link.property({
     props,
     key: "isFullWindow",
-    apply: value => {
+    apply(value) {
       control.isFullWindow = value;
     }
   });
   link.property({
     props,
     key: "mediaPlayer",
-    apply: value => {
+    apply(value) {
       control.mediaPlayer = value;
     }
   });
   link.property({
     props,
     key: "stretch",
-    apply: value => {
+    apply(value) {
       control.stretch = enumValue({ table: Stretch, input: value });
     }
   });

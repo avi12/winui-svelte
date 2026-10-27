@@ -41,70 +41,70 @@ export function linkPopup(
   link.contentProperty({
     props,
     key: "child",
-    apply: value => {
+    apply(value) {
       control.child = value;
     }
   });
   link.property({
     props,
     key: "childTransitions",
-    apply: value => {
+    apply(value) {
       control.childTransitions = value;
     }
   });
   link.property({
     props,
     key: "desiredPlacement",
-    apply: value => {
+    apply(value) {
       control.desiredPlacement = enumValue({ table: PopupPlacementMode, input: value });
     }
   });
   link.property({
     props,
     key: "horizontalOffset",
-    apply: value => {
+    apply(value) {
       control.horizontalOffset = value;
     }
   });
   link.property({
     props,
     key: "isLightDismissEnabled",
-    apply: value => {
+    apply(value) {
       control.isLightDismissEnabled = value;
     }
   });
   link.property({
     props,
     key: "lightDismissOverlayMode",
-    apply: value => {
+    apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
     }
   });
   link.property({
     props,
     key: "placementTarget",
-    apply: value => {
+    apply(value) {
       control.placementTarget = value;
     }
   });
   link.property({
     props,
     key: "shouldConstrainToRootBounds",
-    apply: value => {
+    apply(value) {
       control.shouldConstrainToRootBounds = value;
     }
   });
   link.property({
     props,
     key: "systemBackdrop",
-    apply: value => {
+    apply(value) {
       control.systemBackdrop = value;
     }
   });
   link.property({
     props,
     key: "verticalOffset",
-    apply: value => {
+    apply(value) {
       control.verticalOffset = value;
     }
   });
@@ -113,7 +113,7 @@ export function linkPopup(
     key: "isOpen",
     access: {
       read: () => control.isOpen,
-      write: value => {
+      write(value) {
         control.isOpen = value;
       }
     },

@@ -36,35 +36,35 @@ export function linkTimePicker(
   link.property({
     props,
     key: "clockIdentifier",
-    apply: value => {
+    apply(value) {
       control.clockIdentifier = value;
     }
   });
   link.contentProperty({
     props,
     key: "header",
-    apply: value => {
+    apply(value) {
       control.header = objectOf(value);
     }
   });
   link.property({
     props,
     key: "headerTemplate",
-    apply: value => {
+    apply(value) {
       control.headerTemplate = value;
     }
   });
   link.property({
     props,
     key: "lightDismissOverlayMode",
-    apply: value => {
+    apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
     }
   });
   link.property({
     props,
     key: "minuteIncrement",
-    apply: value => {
+    apply(value) {
       control.minuteIncrement = value;
     }
   });
@@ -73,7 +73,7 @@ export function linkTimePicker(
     key: "selectedTime",
     access: {
       read: () => control.selectedTime,
-      write: value => {
+      write(value) {
         control.selectedTime = value;
       }
     },
@@ -86,7 +86,7 @@ export function linkTimePicker(
     key: "time",
     access: {
       read: () => control.time,
-      write: value => {
+      write(value) {
         control.time = value;
       }
     },
