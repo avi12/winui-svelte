@@ -1,23 +1,24 @@
-import { defineMessaging } from "../messaging/index.ts";
-import type { ProtocolWithReturn } from "../messaging/index.ts";
 import type { Json, StateProtocol } from "./protocol.ts";
 import { MessageType, PatchOperation } from "./protocol.ts";
 import "./test-support/svelte-runes.ts";
 import { MemoryEnd } from "./transports/memory.ts";
+import { defineMessaging } from "#src/messaging/index.js";
+import type { ProtocolWithReturn } from "#src/messaging/index.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
 const { createHostChannel, HostClosedError, HostError, hostState } = await import("./channel.svelte.ts");
 const { track } = await import("./test-support/track.svelte.ts");
 
-// A type alias, not an interface: only an alias is assignable to Json.
-type View = {
+// Extends a record of Json: an interface alone is not assignable to Json, as
+// it has no index signature.
+interface View extends Record<string, Json> {
   title: string;
   cards: Array<{
     title: string;
     isOn: boolean;
   }>;
-};
+}
 
 const initial: View = {
   title: "Edge+",
@@ -44,12 +45,20 @@ interface NoticeProtocol {
 // A channel on one end of a memory link and the host's messaging on the other.
 // `actions` lists what the host received; it answers each by what `answer`
 // returns (resolving at once by default).
-function setup(onError: (error: Error) => void = error => {
-  throw error;
-}, answer: (action: Json) => Promise<void> | void = () => {}) {
+function setup({
+  onError = error => {
+    throw error;
+  }, answer = () => {}
+}: {
+  onError?(error: Error): void;
+  answer?(action: Json): Promise<void> | void;
+} = {}) {
   const [windowEnd, hostEnd] = MemoryEnd.pair();
-  const channel = createHostChannel<Json, NoticeProtocol>(windowEnd, { onError });
-  const host = defineMessaging<StateProtocol & NoticeProtocol>(hostEnd);
+  const channel = createHostChannel<Json, NoticeProtocol>({
+    transport: windowEnd,
+    onError
+  });
+  const host = defineMessaging<StateProtocol & NoticeProtocol>({ transport: hostEnd });
   const actions: Json[] = [];
   host.onMessage(MessageType.action, message => {
     actions.push(message.data);
@@ -63,15 +72,18 @@ function setup(onError: (error: Error) => void = error => {
   };
 }
 
-function ignore(): void {}
+function ignore() {}
 
-async function settle(): Promise<void> {
+async function settle() {
   await new Promise(resolve => setTimeout(resolve, 5));
 }
 
 test("a snapshot makes the state ready and `ready` settles with it", async () => {
   const { channel, host } = setup();
-  const view = hostState<View>(channel, "view");
+  const view = hostState<View>({
+    channel,
+    name: "view"
+  });
   assert.equal(view.isReady, false);
   assert.equal(view.current, undefined);
   void host.sendMessage(MessageType.snapshot, {
@@ -84,7 +96,10 @@ test("a snapshot makes the state ready and `ready` settles with it", async () =>
 
 test("a patch changes only the bindings that read the changed property", async () => {
   const { channel, host } = setup();
-  const view = hostState<View>(channel, "view");
+  const view = hostState<View>({
+    channel,
+    name: "view"
+  });
   void host.sendMessage(MessageType.snapshot, {
     name: "view",
     value: initial
@@ -133,7 +148,10 @@ test("a patch changes only the bindings that read the changed property", async (
 
 test("a later snapshot is merged in place: unchanged parts do not re-run", async () => {
   const { channel, host } = setup();
-  const view = hostState<View>(channel, "view");
+  const view = hostState<View>({
+    channel,
+    name: "view"
+  });
   void host.sendMessage(MessageType.snapshot, {
     name: "view",
     value: initial
@@ -158,17 +176,22 @@ test("a later snapshot is merged in place: unchanged parts do not re-run", async
 });
 
 test("send resolves on the host's answer, after the patches sent before it", async () => {
-  const { channel, host, actions } = setup(undefined, () => {
-    void host.sendMessage(MessageType.patch, {
-      name: "view",
-      ops: [{
-        op: PatchOperation.set,
-        path: ["cards", 0, "isOn"],
-        value: true
-      }]
-    });
+  const { channel, host, actions } = setup({
+    answer() {
+      void host.sendMessage(MessageType.patch, {
+        name: "view",
+        ops: [{
+          op: PatchOperation.set,
+          path: ["cards", 0, "isOn"],
+          value: true
+        }]
+      });
+    }
   });
-  const view = hostState<View>(channel, "view");
+  const view = hostState<View>({
+    channel,
+    name: "view"
+  });
   void host.sendMessage(MessageType.snapshot, {
     name: "view",
     value: initial
@@ -187,10 +210,12 @@ test("send resolves on the host's answer, after the patches sent before it", asy
 
 test("answers out of order settle the action they belong to", async () => {
   const waiting = new Map<string, PromiseWithResolvers<void>>();
-  const { channel } = setup(undefined, action => {
-    const answer = Promise.withResolvers<void>();
-    waiting.set(String(action), answer);
-    return answer.promise;
+  const { channel } = setup({
+    answer(action) {
+      const answer = Promise.withResolvers<void>();
+      waiting.set(String(action), answer);
+      return answer.promise;
+    }
   });
   const order: string[] = [];
   const first = channel.send("first").then(() => order.push("first"));
@@ -205,16 +230,21 @@ test("answers out of order settle the action they belong to", async () => {
 });
 
 test("a host failure rejects with HostError carrying the host's text", async () => {
-  const { channel } = setup(undefined, () => {
-    throw new Error("Edge is not running");
+  const { channel } = setup({
+    answer() {
+      throw new Error("Edge is not running");
+    }
   });
   await assert.rejects(channel.send("go"), error => error instanceof HostError && error.message === "Edge is not running");
 });
 
 test("malformed lines and messages are reported, dropped, and the channel goes on", async () => {
   const errors: string[] = [];
-  const { channel, host, hostEnd } = setup(error => errors.push(error.message));
-  const view = hostState<View>(channel, "view");
+  const { channel, host, hostEnd } = setup({ onError: error => errors.push(error.message) });
+  const view = hostState<View>({
+    channel,
+    name: "view"
+  });
   hostEnd.sendMalformed("Unexpected token");
   hostEnd.send({
     id: 90,
@@ -266,8 +296,10 @@ test("malformed lines and messages are reported, dropped, and the channel goes o
 });
 
 test("the app's own message types are handlers on channel.messaging", async () => {
-  const { channel, host } = setup(error => {
-    throw error;
+  const { channel, host } = setup({
+    onError(error) {
+      throw error;
+    }
   });
   const notices: string[] = [];
   channel.messaging.onMessage(NoticeType.notice, message => {
@@ -280,7 +312,7 @@ test("the app's own message types are handlers on channel.messaging", async () =
 });
 
 test("closing the link rejects waiting actions and later sends", async () => {
-  const { channel, hostEnd } = setup(undefined, () => new Promise<void>(() => {}));
+  const { channel, hostEnd } = setup({ answer: () => new Promise<void>(() => {}) });
   const waiting = channel.send("a");
   await settle();
   hostEnd.close();
@@ -290,9 +322,20 @@ test("closing the link rejects waiting actions and later sends", async () => {
 
 test("two names are two independent states", async () => {
   const { channel, host } = setup();
-  const left = hostState<Json>(channel, "left");
-  const right = hostState<Json>(channel, "right");
-  assert.equal(hostState<Json>(channel, "left"), left);
+  const left = hostState<Json>({
+    channel,
+    name: "left"
+  });
+  const right = hostState<Json>({
+    channel,
+    name: "right"
+  });
+  assert.equal(
+    hostState<Json>({
+      channel,
+      name: "left"
+    }), left
+  );
   void host.sendMessage(MessageType.snapshot, {
     name: "right",
     value: [1]

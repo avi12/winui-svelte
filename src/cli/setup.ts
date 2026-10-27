@@ -1,7 +1,7 @@
-import { customSvelteSource } from "../vite/custom-svelte.ts";
 import type { BindingEntry } from "./binding-list.ts";
 import { bindingEntriesOf, packageJsonWithBindings } from "./binding-list.ts";
 import { readList, readRecord } from "./json-shape.ts";
+import { customSvelteSource } from "#src/vite/custom-svelte.js";
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -23,13 +23,13 @@ import path from "node:path";
 // What it cannot do is link the generated folder into node_modules: the app's
 // package manager does that, so it is run once more afterwards.
 
-const bindingsDependency = "@winapp/bindings";
-const bindingsLink = "link:.winapp/bindings";
-const winappFile = "winapp.yaml";
+const BINDINGS_DEPENDENCY = "@winapp/bindings";
+const BINDINGS_LINK = "link:.winapp/bindings";
+const WINAPP_FILE = "winapp.yaml";
 const requiredBindingsUrl = new URL("../components/generated/required-bindings.json", import.meta.url);
 
-// The Windows App SDK this package is built and tested against.
-export const winappYaml = `# winapp restore reads this: the Windows App SDK the window is drawn with, and
+/** The `winapp.yaml` an app gets: the Windows App SDK this package is built and tested against. */
+export const WINAPP_YAML = `# winapp restore reads this: the Windows App SDK the window is drawn with, and
 # what restore itself needs (CppWinRT and the Windows SDK's metadata) to
 # generate the bindings in .winapp/bindings from package.json's
 # winapp.jsBindings.
@@ -46,31 +46,49 @@ packages:
     version: 10.0.28000.2270
 `;
 
+/** What `setup` is asked to prepare. */
 export interface SetupOptions {
-  // The app's folder (the one with its package.json).
+  /** The app's folder (the one with its package.json). */
   directory: string;
-  // The `winapp` command, when it is not in the app's node_modules/.bin or on
-  // PATH.
+
+  /** The `winapp` command, when it is not in the app's node_modules/.bin or on PATH. */
   winapp?: string;
-  // Write the files only; do not run winapp.
+
+  /** Write the files only; do not run winapp. */
   isDryRun?: boolean;
 }
 
-export function requiredBindings(): BindingEntry[] {
+/**
+ * The classes this package needs bindings for, as the generator wrote them to
+ * `required-bindings.json`.
+ *
+ * @throws when that file is not a list
+ */
+export function requiredBindings() {
   const list = readList(JSON.parse(readFileSync(requiredBindingsUrl, "utf8")));
-  if (list === undefined) {
+  const isList = list !== undefined;
+  if (!isList) {
     throw new TypeError("required-bindings.json is not a list");
   }
 
   return bindingEntriesOf(list);
 }
 
-// package.json's text ready for the package's controls: the class list started
-// if the app has none, filled with what the package needs, and the
-// @winapp/bindings dependency present.
-export function packageJsonForApp(original: string, required: BindingEntry[]): string {
+/**
+ * package.json's text ready for the package's controls: the class list started
+ * if the app has none, filled with what the package needs, and the
+ * `@winapp/bindings` dependency present. The custom Svelte build is added
+ * unless the app already names a Svelte.
+ *
+ * @throws when `original` is not a JSON object
+ */
+export function packageJsonForApp({ original, required }: {
+  original: string;
+  required: BindingEntry[];
+}) {
   const parsed = readRecord(JSON.parse(original));
-  if (parsed === undefined) {
+  const isObject = parsed !== undefined;
+  if (!isObject) {
     throw new TypeError("package.json is not an object");
   }
 
@@ -78,7 +96,7 @@ export function packageJsonForApp(original: string, required: BindingEntry[]): s
   const jsBindings = readRecord(winapp["jsBindings"]) ?? {};
   const additionalWinmds = readList(jsBindings["additionalWinmds"]) ?? [];
   const dependencies = readRecord(parsed["dependencies"]) ?? {};
-  dependencies[bindingsDependency] ??= bindingsLink;
+  dependencies[BINDINGS_DEPENDENCY] ??= BINDINGS_LINK;
   const devDependencies = readRecord(parsed["devDependencies"]) ?? {};
   const hasSvelte = "svelte" in dependencies || "svelte" in devDependencies;
   if (!hasSvelte) {
@@ -101,20 +119,28 @@ export function packageJsonForApp(original: string, required: BindingEntry[]): s
     namespace: entry.namespace,
     name
   })));
-  return packageJsonWithBindings(JSON.stringify(started, null, 2).replaceAll("\n", newline), wanted);
+  return packageJsonWithBindings({
+    original: JSON.stringify(started, null, 2).replaceAll("\n", newline),
+    wanted
+  });
 }
 
 // The app's own winapp, then PATH's.
-function winappCommand(options: SetupOptions): string {
-  if (options.winapp !== undefined) {
-    return options.winapp;
+function winappCommand({ directory, winapp }: SetupOptions) {
+  const isNamed = winapp !== undefined;
+  if (isNamed) {
+    return winapp;
   }
 
-  const local = path.join(options.directory, "node_modules", ".bin", "winapp.cmd");
+  const local = path.join(directory, "node_modules", ".bin", "winapp.cmd");
   return existsSync(local) ? local : "winapp";
 }
 
-function runWinapp(command: string, directory: string, args: string[]): void {
+function runWinapp({ command, directory, args }: {
+  command: string;
+  directory: string;
+  args: string[];
+}) {
   process.stdout.write(`> winapp ${args.join(" ")}\n`);
   // A .cmd shim needs a shell on Windows.
   execFileSync(command, args, {
@@ -124,23 +150,44 @@ function runWinapp(command: string, directory: string, args: string[]): void {
   });
 }
 
-export function setup(options: SetupOptions): void {
-  const yamlPath = path.join(options.directory, winappFile);
+/**
+ * Prepares the app in `directory` to use the package's controls: writes
+ * `winapp.yaml` (when the app has none) and `package.json`, then runs winapp
+ * to restore the SDK and generate the bindings, unless `isDryRun`.
+ */
+export function setup(options: SetupOptions) {
+  const yamlPath = path.join(options.directory, WINAPP_FILE);
   if (!existsSync(yamlPath)) {
-    writeFileSync(yamlPath, winappYaml);
-    process.stdout.write(`wrote ${winappFile}\n`);
+    writeFileSync(yamlPath, WINAPP_YAML);
+    process.stdout.write(`wrote ${WINAPP_FILE}\n`);
   }
 
   const packagePath = path.join(options.directory, "package.json");
-  writeFileSync(packagePath, packageJsonForApp(readFileSync(packagePath, "utf8"), requiredBindings()));
+  const original = readFileSync(packagePath, "utf8");
+  writeFileSync(
+    packagePath, packageJsonForApp({
+      original,
+      required: requiredBindings()
+    })
+  );
   process.stdout.write("package.json: winapp.jsBindings and the @winapp/bindings dependency are in place\n");
 
-  if (options.isDryRun === true) {
+  const { directory, isDryRun } = options;
+  const isDryRunRequested = isDryRun === true;
+  if (isDryRunRequested) {
     return;
   }
 
   const command = winappCommand(options);
-  runWinapp(command, options.directory, ["restore"]);
-  runWinapp(command, options.directory, ["node", "generate-bindings"]);
+  runWinapp({
+    command,
+    directory,
+    args: ["restore"]
+  });
+  runWinapp({
+    command,
+    directory,
+    args: ["node", "generate-bindings"]
+  });
   process.stdout.write("done: run your package manager's install once more to link @winapp/bindings\n");
 }

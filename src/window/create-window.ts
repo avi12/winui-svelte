@@ -1,42 +1,54 @@
-import type { Mounted } from "../renderer/host/mount.svelte.ts";
-import { mountControl } from "../renderer/host/mount.svelte.ts";
-import { Grid, Window } from "../winui.ts";
-import type { FrameworkElement } from "../winui.ts";
 import { applyBackdrop, Backdrop } from "./backdrop.ts";
+import type { Mounted } from "#src/renderer/host/mount.svelte.js";
+import { mountControl } from "#src/renderer/host/mount.svelte.js";
+import { Grid, Window } from "#src/winui.js";
+import type { FrameworkElement } from "#src/winui.js";
 import type { Component } from "svelte";
 
 interface WindowChrome {
   title?: string;
-  // In device pixels.
+
+  /** In device pixels. */
   size?: {
     width: number;
     height: number;
   };
   backdrop?: Backdrop;
   extendsIntoTitleBar?: boolean;
-  // Shown without taking focus from whatever the user is doing: for tests and
-  // captures.
+
+  /**
+   * Shown without taking focus from whatever the user is doing: for tests and
+   * captures.
+   */
   isBackground?: boolean;
 }
 
 interface ComponentContent<Props extends object> {
-  // Mounted, so its props can change and it can be unmounted.
+  /** Mounted, so its props can change and it can be unmounted. */
   component: Component<Props>;
   props: Props;
 }
 
 interface ControlContent {
-  // A control made elsewhere.
+  /** A control made elsewhere. */
   control: FrameworkElement;
 }
 
+/** What `createWindow` opens: the window's chrome, and a component or a control as its content. */
 export type WindowOptions<Props extends object> = WindowChrome & (ComponentContent<Props> | ControlContent);
 
+/** A window `createWindow` opened. */
 export interface AppWindow<Props extends object> {
+  /** The native WinUI window. */
   readonly window: Window;
-  // Null when the content was a control.
+
+  /** The mounted component; null when the content was a control. */
   readonly mounted: Mounted<Props> | null;
+
+  /** Closes the window. */
   close(): void;
+
+  /** Calls `listener` once the window has closed. */
   onClosed(listener: () => void): void;
 }
 
@@ -48,28 +60,39 @@ function isComponentContent<Props extends object>(
   return "component" in options;
 }
 
-const chromeDefaults = {
-  backdrop: Backdrop.None,
+const CHROME_DEFAULTS = {
+  backdrop: Backdrop.none,
   extendsIntoTitleBar: false,
   title: ""
 };
 
-function applyChrome(window: Window, chrome: WindowChrome): void {
-  const { backdrop, extendsIntoTitleBar, title } = {
-    ...chromeDefaults,
+function applyChrome({ window, chrome }: {
+  window: Window;
+  chrome: WindowChrome;
+}) {
+  const { backdrop, extendsIntoTitleBar: isExtended, title } = {
+    ...CHROME_DEFAULTS,
     ...chrome
   };
-  applyBackdrop(window, backdrop);
-  window.extendsContentIntoTitleBar = extendsIntoTitleBar;
+  applyBackdrop({
+    window,
+    backdrop
+  });
+  window.extendsContentIntoTitleBar = isExtended;
   window.title = title;
 
-  if (chrome.size !== undefined) {
-    window.appWindow.resize(chrome.size);
+  const { size } = chrome;
+  const hasSize = size !== undefined;
+  if (hasSize) {
+    window.appWindow.resize(size);
   }
 }
 
 // Puts the content in the window; the mounted component, if it is one.
-function placeContent<Props extends object>(window: Window, options: WindowOptions<Props>): Mounted<Props> | null {
+function placeContent<Props extends object>({ window, options }: {
+  window: Window;
+  options: WindowOptions<Props>;
+}) {
   if (!isComponentContent(options)) {
     window.content = options.control;
     return null;
@@ -89,19 +112,28 @@ function placeContent<Props extends object>(window: Window, options: WindowOptio
   return mounted;
 }
 
-// Opens a window around a component or a control. Call it on the UI thread,
-// from `onStart` (application.ts) or later.
-export function createWindow<Props extends object>(options: WindowOptions<Props>): AppWindow<Props> {
+/**
+ * Opens a window around a component or a control. Call it on the UI thread,
+ * from `onStart` (application.ts) or later.
+ */
+export function createWindow<Props extends object>(options: WindowOptions<Props>) {
   const window = new Window();
-  applyChrome(window, options);
-  const mounted = placeContent(window, options);
-  if (options.isBackground === true) {
+  applyChrome({
+    window,
+    chrome: options
+  });
+  const mounted = placeContent({
+    window,
+    options
+  });
+  const isBackground = options.isBackground === true;
+  if (isBackground) {
     window.appWindow.showWithActivation(false);
   } else {
     window.activate();
   }
 
-  return {
+  const appWindow: AppWindow<Props> = {
     window,
     mounted,
     close() {
@@ -111,4 +143,5 @@ export function createWindow<Props extends object>(options: WindowOptions<Props>
       window.onClosed(listener);
     }
   };
+  return appWindow;
 }

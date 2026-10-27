@@ -1,37 +1,45 @@
-import "../test-support/svelte-runes.ts";
 import { createStdioTransport } from "./stdio.ts";
+import type { Json } from "#src/messaging/json.js";
+import "#src/state/test-support/svelte-runes.js";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import path from "node:path";
+import { PassThrough } from "node:stream";
 import { test } from "node:test";
 
-const { createHostChannel, HostError, hostState } = await import("../channel.svelte.ts");
+const { createHostChannel, HostError, hostState } = await import("#src/state/channel.svelte.js");
 
 // A hung host must fail the test, not hold the run open.
-const hostTimeoutMilliseconds = 30_000;
-const echoHost = path.join(import.meta.dirname, "..", "test-support", "echo-host.ts");
+const HOST_TIMEOUT_MILLISECONDS = 30_000;
+const ECHO_HOST = path.join(import.meta.dirname, "..", "test-support", "echo-host.ts");
 
-type Counter = {
+// Extends a record of Json: an interface alone is not assignable to Json, as
+// it has no index signature.
+interface Counter extends Record<string, Json> {
   count: number;
-};
+}
 
-test("state and actions round-trip with a host in a child process over stdio", { timeout: hostTimeoutMilliseconds }, async testContext => {
-  const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", echoHost], { stdio: ["pipe", "pipe", "pipe"] });
+test("state and actions round-trip with a host in a child process over stdio", { timeout: HOST_TIMEOUT_MILLISECONDS }, async testContext => {
+  const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", ECHO_HOST], { stdio: ["pipe", "pipe", "pipe"] });
   const stderr: string[] = [];
   child.stderr.on("data", chunk => stderr.push(String(chunk)));
   const errors: Error[] = [];
-  const channel = createHostChannel(
-    createStdioTransport({
+  const channel = createHostChannel({
+    transport: createStdioTransport({
       input: child.stdout,
       output: child.stdin
-    }), { onError: error => errors.push(error) }
-  );
+    }),
+    onError: error => errors.push(error)
+  });
   // The after hook also runs when the timeout abandons the test body.
   testContext.after(() => {
     channel.dispose();
     child.kill();
   });
-  const counter = hostState<Counter>(channel, "counter");
+  const counter = hostState<Counter>({
+    channel,
+    name: "counter"
+  });
   assert.deepEqual(await counter.ready, { count: 0 });
 
   await channel.send({ kind: "increment" });
@@ -48,7 +56,6 @@ test("state and actions round-trip with a host in a child process over stdio", {
 });
 
 test("a line that is not JSON is reported as malformed, and later lines still arrive", async () => {
-  const { PassThrough } = await import("node:stream");
   const input = new PassThrough();
   const output = new PassThrough();
   const seen: string[] = [];

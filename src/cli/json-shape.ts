@@ -1,5 +1,5 @@
-import { jsonSchema } from "../messaging/json.ts";
-import type { Json } from "../messaging/json.ts";
+import { jsonSchema } from "#src/messaging/json.js";
+import type { Json } from "#src/messaging/json.js";
 import { z } from "zod";
 
 // The two shapes a parsed package.json or catalogue is walked through: each
@@ -9,12 +9,14 @@ import { z } from "zod";
 const recordSchema = z.record(z.string(), jsonSchema);
 const listSchema = z.array(jsonSchema);
 
-export function readRecord(value: Json | undefined): Record<string, Json> | undefined {
+/** `value` when it is a JSON object, else `undefined`. */
+export function readRecord(value: Json | undefined) {
   const record = recordSchema.safeParse(value);
   return record.success ? record.data : undefined;
 }
 
-export function readList(value: Json | undefined): Json[] | undefined {
+/** `value` when it is a JSON array, else `undefined`. */
+export function readList(value: Json | undefined) {
   const list = listSchema.safeParse(value);
   return list.success ? list.data : undefined;
 }

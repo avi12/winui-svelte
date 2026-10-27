@@ -1,6 +1,6 @@
-import { MemoryEnd } from "#src/state/transports/memory.js";
 import { defineMessaging, MessagingClosedError, MessagingError } from "./messaging.ts";
 import type { ProtocolWithReturn } from "./protocol-map.ts";
+import { MemoryEnd } from "#src/state/transports/memory.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -24,8 +24,14 @@ function pair(onError: (error: Error) => void = () => {}) {
   return {
     left,
     right,
-    caller: defineMessaging<PingProtocol>(left, { onError }),
-    callee: defineMessaging<PingProtocol>(right, { onError })
+    caller: defineMessaging<PingProtocol>({
+      transport: left,
+      onError
+    }),
+    callee: defineMessaging<PingProtocol>({
+      transport: right,
+      onError
+    })
   };
 }
 
@@ -80,8 +86,11 @@ test("a handler that throws rejects the sender, and is reported", async () => {
 test("a message nobody handles rejects the sender", async () => {
   const unhandled: string[] = [];
   const [left, right] = MemoryEnd.pair();
-  const caller = defineMessaging<PingProtocol>(left);
-  defineMessaging<PingProtocol>(right, { onUnhandled: frame => unhandled.push(frame.type) });
+  const caller = defineMessaging<PingProtocol>({ transport: left });
+  defineMessaging<PingProtocol>({
+    transport: right,
+    onUnhandled: frame => unhandled.push(frame.type)
+  });
   await assert.rejects(caller.sendMessage(PingType.refresh), /no handler for message "refresh"/u);
   assert.deepEqual(unhandled, ["refresh"]);
 });
@@ -111,14 +120,20 @@ test("a closed link rejects what waits", async () => {
 
 test("an unanswered message times out", async () => {
   const [left] = MemoryEnd.pair();
-  const caller = defineMessaging<PingProtocol>(left, { timeoutMilliseconds: 10 });
+  const caller = defineMessaging<PingProtocol>({
+    transport: left,
+    timeoutMilliseconds: 10
+  });
   await assert.rejects(caller.sendMessage(PingType.refresh), /no answer to message "refresh"/u);
 });
 
 test("a stray frame is reported, not thrown", async () => {
   const reported: string[] = [];
   const [left, right] = MemoryEnd.pair();
-  defineMessaging<PingProtocol>(right, { onError: error => reported.push(error.message) });
+  defineMessaging<PingProtocol>({
+    transport: right,
+    onError: error => reported.push(error.message)
+  });
   left.sendJson({ hello: "world" });
   await new Promise(resolve => setTimeout(resolve, 5));
   assert.equal(reported.length, 1);

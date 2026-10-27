@@ -1,18 +1,19 @@
-import type { Transport } from "#src/state/transports/transport.js";
 import type { Frame, RequestFrame, ResponseFrame } from "./frame.ts";
 import { requestFrameSchema, responseFrameSchema } from "./frame.ts";
 import type { WireValue } from "./json.ts";
 import type { GetReturnType, MessageHandler, RemoveListener, SendArguments } from "./protocol-map.ts";
+import type { Transport } from "#src/state/transports/transport.js";
 
-// defineMessaging(transport) is webext-core's defineExtensionMessaging for
-// any link the state channel's transports provide (stdio, a worker's
-// MessagePort, memory): sendMessage(type, data) resolves with what the other
-// end's onMessage(type, handler) returns, and rejects with what it threw.
-
+/**
+ * What goes wrong at the messaging layer: a handler that threw (the sender
+ * rejects with its message), a message nobody handles, a timeout, or a frame
+ * that is not a message.
+ */
 export class MessagingError extends Error {
   override readonly name: string = "MessagingError";
 }
 
+/** What a pending `sendMessage` rejects with when the link closes first. */
 export class MessagingClosedError extends MessagingError {
   override readonly name: string = "MessagingClosedError";
 
@@ -21,28 +22,52 @@ export class MessagingClosedError extends MessagingError {
   }
 }
 
+/** How one end of a link reacts to what it cannot answer. */
 export interface MessagingOptions {
-  // A request unanswered for this long rejects; unlimited when absent.
+  /** A request unanswered for this long rejects; unlimited when absent. */
   timeoutMilliseconds?: number;
-  // A request whose type has no handler here is answered with an error; this
-  // also reports it.
+
+  /**
+   * A request whose type has no handler here is answered with an error; this
+   * also reports it.
+   */
   onUnhandled?(frame: RequestFrame): void;
-  // A frame that is neither a request nor a response, or a handler that threw.
+
+  /** A frame that is neither a request nor a response, or a handler that threw. */
   onError?(error: Error): void;
-  // The current time for a request's timestamp.
+
+  /** The current time for a request's timestamp. */
   now?(): number;
 }
 
+/** One end of a link: the link's transport, and how that end reacts. */
+export interface MessagingSetup extends MessagingOptions {
+  transport: Transport<Frame>;
+}
+
+/** One end of a typed link, as `defineMessaging` returns it. */
 export interface Messaging<TProtocolMap> {
+  /**
+   * Sends a message and resolves with what the other end's handler returns.
+   * Rejects with what that handler threw, with a timeout, or when the link closes.
+   */
   sendMessage<TType extends keyof TProtocolMap & string>(
     ...parameters: SendArguments<TProtocolMap, TType>
   ): Promise<GetReturnType<TProtocolMap[TType]>>;
+
+  /**
+   * Answers messages of one type. A type takes one handler; the returned
+   * function removes it.
+   */
   onMessage<TType extends keyof TProtocolMap & string>(
     type: TType,
     handler: MessageHandler<TProtocolMap, TType>
   ): RemoveListener;
+
+  /** Removes every handler, leaving the link open. */
   removeAllListeners(): void;
-  // Stops listening and rejects what is still waiting.
+
+  /** Stops listening and rejects what is still waiting. */
   close(): void;
 }
 
@@ -52,22 +77,31 @@ interface Pending {
   timer: ReturnType<typeof setTimeout> | null;
 }
 
-export function defineMessaging<TProtocolMap>(
-  transport: Transport<Frame>,
-  options: MessagingOptions = {}
-): Messaging<TProtocolMap> {
-  const { now = Date.now, onError = () => {}, onUnhandled = () => {}, timeoutMilliseconds } = options;
+/**
+ * `defineExtensionMessaging` from webext-core for any link the state
+ * channel's transports provide (stdio, a worker's MessagePort, memory):
+ * `sendMessage(type, data)` resolves with what the other end's
+ * `onMessage(type, handler)` returns, and rejects with what it threw.
+ */
+export function defineMessaging<TProtocolMap>({
+  transport,
+  now = Date.now,
+  onError = () => {},
+  onUnhandled = () => {},
+  timeoutMilliseconds
+}: MessagingSetup) {
   const pending = new Map<number, Pending>();
   const handlers = new Map<string, (frame: RequestFrame) => WireValue | Promise<WireValue>>();
   let nextIdentifier = 0;
 
-  function respond(frame: ResponseFrame): void {
+  function respond(frame: ResponseFrame) {
     transport.send(frame);
   }
 
-  async function answer(request: RequestFrame): Promise<void> {
+  async function answer(request: RequestFrame) {
     const handler = handlers.get(request.type);
-    if (handler === undefined) {
+    const isHandled = handler !== undefined;
+    if (!isHandled) {
       onUnhandled(request);
       respond({
         id: request.id,
@@ -92,29 +126,34 @@ export function defineMessaging<TProtocolMap>(
     }
   }
 
-  function clearTimer(waiting: Pending): void {
-    if (waiting.timer !== null) {
-      clearTimeout(waiting.timer);
+  function clearTimer(waiting: Pending) {
+    const { timer } = waiting;
+    const isTimed = timer !== null;
+    if (isTimed) {
+      clearTimeout(timer);
     }
   }
 
-  function settle(frame: ResponseFrame): void {
+  function settle(frame: ResponseFrame) {
     const waiting = pending.get(frame.id);
-    if (waiting === undefined) {
+    const isWaiting = waiting !== undefined;
+    if (!isWaiting) {
       return;
     }
 
     pending.delete(frame.id);
     clearTimer(waiting);
 
-    if (typeof frame.error === "string") {
-      waiting.reject(new MessagingError(frame.error));
+    const { error } = frame;
+    const hasError = typeof error === "string";
+    if (hasError) {
+      waiting.reject(new MessagingError(error));
     } else {
       waiting.resolve(frame.response);
     }
   }
 
-  function rejectAll(error: Error): void {
+  function rejectAll(error: Error) {
     for (const waiting of pending.values()) {
       clearTimer(waiting);
       waiting.reject(error);
@@ -142,7 +181,7 @@ export function defineMessaging<TProtocolMap>(
     }
   });
 
-  return {
+  const messaging: Messaging<TProtocolMap> = {
     sendMessage(...parameters) {
       const [type, data] = parameters;
       nextIdentifier += 1;
@@ -171,7 +210,8 @@ export function defineMessaging<TProtocolMap>(
       });
     },
     onMessage(type, handler) {
-      if (handlers.has(type)) {
+      const hasHandler = handlers.has(type);
+      if (hasHandler) {
         throw new MessagingError(`message "${type}" already has a handler`);
       }
 
@@ -192,4 +232,5 @@ export function defineMessaging<TProtocolMap>(
       rejectAll(new MessagingClosedError());
     }
   };
+  return messaging;
 }

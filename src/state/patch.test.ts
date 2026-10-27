@@ -1,18 +1,20 @@
-import { read } from "../renderer/host/reflect.ts";
 import { diff } from "./diff.ts";
-import type { Holder } from "./patch.ts";
 import { applyOps, PatchError, reconcile } from "./patch.ts";
 import type { Json, PatchOp } from "./protocol.ts";
 import { isJsonObject, patchDataSchema, PatchOperation, snapshotDataSchema } from "./protocol.ts";
+import { read } from "#src/renderer/host/reflect.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { z } from "zod";
 
-function clone(value: Json): Json {
+function clone(value: Json) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function valueAt(value: Json | undefined, ...path: Array<string | number>): Json | undefined {
+function valueAt({ value, path }: {
+  value: Json | undefined;
+  path: Array<string | number>;
+}) {
   let current = value;
   for (const key of path) {
     if (Array.isArray(current)) {
@@ -27,22 +29,33 @@ function valueAt(value: Json | undefined, ...path: Array<string | number>): Json
   return current;
 }
 
-function holderOf(value: Json): Holder {
+function holderOf(value: Json) {
   return { current: clone(value) };
 }
 
 test("set changes one property and keeps its neighbours' identity", () => {
   const holder = holderOf({ cards: [{ title: "a" }, { title: "b" }] });
   const before = holder.current;
-  const cardB = valueAt(holder.current, "cards", 1);
-  applyOps(holder, [{
-    op: PatchOperation.set,
-    path: ["cards", 0, "title"],
-    value: "A"
-  }]);
+  const cardB = valueAt({
+    value: holder.current,
+    path: ["cards", 1]
+  });
+  applyOps({
+    holder,
+    ops: [{
+      op: PatchOperation.set,
+      path: ["cards", 0, "title"],
+      value: "A"
+    }]
+  });
   assert.equal(holder.current, before);
   assert.deepEqual(holder.current, { cards: [{ title: "A" }, { title: "b" }] });
-  assert.equal(valueAt(holder.current, "cards", 1), cardB);
+  assert.equal(
+    valueAt({
+      value: holder.current,
+      path: ["cards", 1]
+    }), cardB
+  );
 });
 
 test("remove deletes a key or an array element; splice replaces a range", () => {
@@ -51,23 +64,26 @@ test("remove deletes a key or an array element; splice replaces a range", () => 
     b: 2,
     list: [1, 2, 3, 4]
   });
-  applyOps(holder, [
-    {
-      op: PatchOperation.remove,
-      path: ["a"]
-    },
-    {
-      op: PatchOperation.remove,
-      path: ["list", 0]
-    },
-    {
-      op: PatchOperation.splice,
-      path: ["list"],
-      start: 1,
-      deleteCount: 1,
-      items: [9, 9]
-    }
-  ]);
+  applyOps({
+    holder,
+    ops: [
+      {
+        op: PatchOperation.remove,
+        path: ["a"]
+      },
+      {
+        op: PatchOperation.remove,
+        path: ["list", 0]
+      },
+      {
+        op: PatchOperation.splice,
+        path: ["list"],
+        start: 1,
+        deleteCount: 1,
+        items: [9, 9]
+      }
+    ]
+  });
   assert.deepEqual(holder.current, {
     b: 2,
     list: [2, 9, 9, 4]
@@ -81,28 +97,44 @@ test("an empty path sets the root, merged in place", () => {
     },
     drop: 1
   });
-  const keep = valueAt(holder.current, "keep");
-  applyOps(holder, [{
-    op: PatchOperation.set,
-    path: [],
-    value: {
-      keep: {
-        x: 2
+  const keep = valueAt({
+    value: holder.current,
+    path: ["keep"]
+  });
+  applyOps({
+    holder,
+    ops: [{
+      op: PatchOperation.set,
+      path: [],
+      value: {
+        keep: {
+          x: 2
+        }
       }
-    }
-  }]);
+    }]
+  });
   assert.deepEqual(holder.current, {
     keep: {
       x: 2
     }
   });
-  assert.equal(valueAt(holder.current, "keep"), keep);
+  assert.equal(
+    valueAt({
+      value: holder.current,
+      path: ["keep"]
+    }), keep
+  );
 });
 
 test("reconcile turns an array into the next one without replacing it", () => {
   const list = [{ n: 1 }, { n: 2 }, { n: 3 }];
   const first = list[0];
-  assert.equal(reconcile(list, [{ n: 1 }, { n: 5 }]), list);
+  assert.equal(
+    reconcile({
+      previous: list,
+      next: [{ n: 1 }, { n: 5 }]
+    }), list
+  );
   assert.deepEqual(list, [{ n: 1 }, { n: 5 }]);
   assert.equal(list[0], first);
 });
@@ -148,7 +180,10 @@ test("bad operations throw PatchError and never touch the prototype", () => {
     }
   ];
   for (const operation of bad) {
-    assert.throws(() => applyOps(holder, [operation]), PatchError, JSON.stringify(operation));
+    assert.throws(() => applyOps({
+      holder,
+      ops: [operation]
+    }), PatchError, JSON.stringify(operation));
   }
 
   assert.equal(read({}, "polluted"), undefined);
@@ -173,23 +208,41 @@ test("diff then apply reproduces the next value, for many shapes", () => {
   ];
   for (const [before, after] of pairs) {
     const holder = holderOf(before);
-    applyOps(holder, diff(before, after));
+    applyOps({
+      holder,
+      ops: diff({
+        previous: before,
+        next: after
+      })
+    });
     assert.deepEqual(holder.current, after, JSON.stringify([before, after]));
   }
 });
 
 test("an unchanged value diffs to nothing; a one-field change to one operation", () => {
-  assert.deepEqual(diff({ a: [1, { b: 2 }] }, { a: [1, { b: 2 }] }), []);
+  assert.deepEqual(
+    diff({
+      previous: {
+        a: [1, { b: 2 }]
+      },
+      next: {
+        a: [1, { b: 2 }]
+      }
+    }), []
+  );
   assert.equal(
     diff({
-      a: {
-        b: 1,
-        c: 1
-      }
-    }, {
-      a: {
-        b: 2,
-        c: 1
+      previous: {
+        a: {
+          b: 1,
+          c: 1
+        }
+      },
+      next: {
+        a: {
+          b: 2,
+          c: 1
+        }
       }
     }).length, 1
   );
@@ -201,56 +254,91 @@ type Candidate = Json | {
   value: undefined;
 };
 
-function accepts(schema: z.ZodType, value: Candidate): boolean {
+function accepts({ schema, value }: {
+  schema: z.ZodType;
+  value: Candidate;
+}) {
   return schema.safeParse(value).success;
 }
 
 test("data schemas accept the protocol and reject the rest", () => {
   assert.ok(
-    accepts(snapshotDataSchema, {
-      name: "v",
+    accepts({
+      schema: snapshotDataSchema,
       value: {
-        a: [1]
+        name: "v",
+        value: {
+          a: [1]
+        }
       }
     })
   );
   assert.ok(
-    accepts(patchDataSchema, {
-      name: "v",
-      ops: [{
-        op: "remove",
-        path: ["a", 0]
-      }]
-    })
-  );
-  assert.ok(!accepts(snapshotDataSchema, { value: 1 }));
-  assert.ok(
-    !accepts(patchDataSchema, {
-      name: "v",
-      ops: [{
-        op: "move",
-        path: []
-      }]
+    accepts({
+      schema: patchDataSchema,
+      value: {
+        name: "v",
+        ops: [{
+          op: "remove",
+          path: ["a", 0]
+        }]
+      }
     })
   );
   assert.ok(
-    !accepts(patchDataSchema, {
-      name: "v",
-      ops: [{
-        op: "splice",
-        path: [],
-        start: -1,
-        deleteCount: 0,
-        items: []
-      }]
+    !accepts({
+      schema: snapshotDataSchema,
+      value: {
+        value: 1
+      }
     })
   );
   assert.ok(
-    !accepts(snapshotDataSchema, {
-      name: "v",
-      value: undefined
+    !accepts({
+      schema: patchDataSchema,
+      value: {
+        name: "v",
+        ops: [{
+          op: "move",
+          path: []
+        }]
+      }
     })
   );
-  assert.ok(!accepts(snapshotDataSchema, "snapshot"));
-  assert.ok(!accepts(patchDataSchema, null));
+  assert.ok(
+    !accepts({
+      schema: patchDataSchema,
+      value: {
+        name: "v",
+        ops: [{
+          op: "splice",
+          path: [],
+          start: -1,
+          deleteCount: 0,
+          items: []
+        }]
+      }
+    })
+  );
+  assert.ok(
+    !accepts({
+      schema: snapshotDataSchema,
+      value: {
+        name: "v",
+        value: undefined
+      }
+    })
+  );
+  assert.ok(
+    !accepts({
+      schema: snapshotDataSchema,
+      value: "snapshot"
+    })
+  );
+  assert.ok(
+    !accepts({
+      schema: patchDataSchema,
+      value: null
+    })
+  );
 });
