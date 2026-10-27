@@ -1,38 +1,29 @@
-import { PseudoState } from "../translate/types.ts";
 import { splitCommas } from "./values.ts";
+import { PseudoState } from "#src/css/translate/types.js";
 
-// The selectors a component's stylesheet may use: a compound of an element
-// type (kebab case, `text-block`), classes (`.a.b`), and at most one state.
-// WinUI's Styles apply to one element by its own type and classes, so there is
-// no way to say "inside" or "next to"; a combinator is an error that says so.
-// Svelte's scoping class (`.svelte-abc123`) is an ordinary class here: the
-// element carries it, which is what keeps one component's `.card` from
-// styling another's.
+const COMBINATOR_REASON = "descendant, child and sibling selectors have no WinUI meaning (a style applies to an element by its own type and classes; give the element a class)";
+const CLASS_WEIGHT = 1;
+const TYPE_WEIGHT = 1;
+const states = new Set<string>(Object.values(PseudoState));
+const identifier = /^-?[a-z_][\w-]*/iu;
 
+/**
+ * A selector a component's stylesheet may use: a compound of an element type
+ * (kebab case, `text-block`), classes (`.a.b`) and at most one state. WinUI's
+ * Styles apply to one element by its own type and classes, so there is no way
+ * to say "inside" or "next to"; a combinator is an error that says so.
+ * Svelte's scoping class (`.svelte-abc123`) is an ordinary class here: the
+ * element carries it, which is what keeps one component's `.card` from
+ * styling another's.
+ */
 export interface ParsedSelector {
   elementType: string | null;
   classes: string[];
   state: PseudoState | null;
   specificity: number;
-  // `:root`, which declares custom properties and styles no element.
+  /** `:root`, which declares custom properties and styles no element. */
   isRoot: boolean;
 }
-
-export type SelectorResult =
-  | {
-    isValid: true;
-    selector: ParsedSelector;
-  }
-  | {
-    isValid: false;
-    reason: string;
-  };
-
-const combinatorReason = "descendant, child and sibling selectors have no WinUI meaning (a style applies to an element by its own type and classes; give the element a class)";
-const states = new Set<string>(Object.values(PseudoState));
-const identifier = /^-?[a-z_][\w-]*/iu;
-const classWeight = 1;
-const typeWeight = 1;
 
 class Compound {
   elementType: string | null = null;
@@ -42,83 +33,130 @@ class Compound {
   isRoot = false;
 }
 
-function fail(reason: string): SelectorResult {
-  return {
-    isValid: false,
-    reason
-  };
-}
-
 // What reading one piece of a compound consumed, or why it cannot be read.
 interface Step {
   length: number;
   problem: string | null;
 }
 
-function failedStep(problem: string): Step {
+function fail(reason: string) {
+  return {
+    isValid: false,
+    reason
+  } as const;
+}
+
+function failedStep(problem: string) {
   return {
     length: 0,
     problem
   };
 }
 
-function readWhere(rest: string, openLength: number, compound: Compound): Step {
-  const end = matchingParenthesis(rest, openLength - 1);
-  const problem = readCompound(rest.slice(openLength, end), compound, 0);
+function readWhere({ rest, openLength, compound }: {
+  rest: string;
+  openLength: number;
+  compound: Compound;
+}) {
+  const end = matchingParenthesis({
+    text: rest,
+    open: openLength - 1
+  });
+  const problem: string | null = readCompound({
+    text: rest.slice(openLength, end),
+    compound,
+    weight: 0
+  });
   return {
     length: end + 1,
     problem
   };
 }
 
-function readClass(rest: string, compound: Compound, weight: number): Step {
+function readClass({ rest, compound, weight }: {
+  rest: string;
+  compound: Compound;
+  weight: number;
+}) {
   const name = identifier.exec(rest.slice(1))?.[0];
-  if (name === undefined) {
+  const isNameMissing = name === undefined;
+  if (isNameMissing) {
     return failedStep(`"${rest}" is not a class name`);
   }
 
   compound.classes.push(name);
-  compound.specificity += weight * classWeight;
+  compound.specificity += weight * CLASS_WEIGHT;
   return {
     length: 1 + name.length,
     problem: null
   };
 }
 
-function readPseudoClass(rest: string, compound: Compound, weight: number): Step {
+function readPseudoClass({ rest, compound, weight }: {
+  rest: string;
+  compound: Compound;
+  weight: number;
+}) {
   const name = identifier.exec(rest.slice(1))?.[0]?.toLowerCase();
   return {
     length: 1 + (name?.length ?? 0),
-    problem: readPseudo(compound, name, weight)
+    problem: readPseudo({
+      compound,
+      name,
+      weight
+    })
   };
 }
 
-function readElementType(rest: string, compound: Compound, weight: number): Step {
+function readElementType({ rest, compound, weight }: {
+  rest: string;
+  compound: Compound;
+  weight: number;
+}) {
   const name = identifier.exec(rest)?.[0] ?? "";
   compound.elementType = name.toLowerCase();
-  compound.specificity += weight * typeWeight;
+  compound.specificity += weight * TYPE_WEIGHT;
   return {
     length: name.length,
     problem: null
   };
 }
 
-function readStep(rest: string, isStart: boolean, compound: Compound, weight: number): Step {
+function readStep({ rest, isStart, compound, weight }: {
+  rest: string;
+  isStart: boolean;
+  compound: Compound;
+  weight: number;
+}) {
   const where = /^:where\(/iu.exec(rest);
-  if (where !== null) {
-    return readWhere(rest, where[0].length, compound);
+  const hasWhere = where !== null;
+  if (hasWhere) {
+    return readWhere({
+      rest,
+      openLength: where[0].length,
+      compound
+    });
   }
 
   const character = rest.charAt(0);
   const isPseudo = character === ":" && !rest.startsWith("::");
   const isUniversal = character === "*" && isStart;
   const isTypeSelector = isStart && identifier.test(rest);
-  if (character === ".") {
-    return readClass(rest, compound, weight);
+  const isClassStart = character === ".";
+  if (isClassStart) {
+    return readClass({
+      rest,
+      compound,
+      weight
+    });
   }
 
   if (isPseudo) {
-    return readPseudoClass(rest, compound, weight);
+    return readPseudoClass({
+      rest,
+      compound,
+      weight
+    });
   }
 
   if (isUniversal) {
@@ -129,18 +167,37 @@ function readStep(rest: string, isStart: boolean, compound: Compound, weight: nu
   }
 
   if (isTypeSelector) {
-    return readElementType(rest, compound, weight);
+    return readElementType({
+      rest,
+      compound,
+      weight
+    });
   }
 
-  return failedStep(unsupportedCharacter(character, rest));
+  return failedStep(
+    unsupportedCharacter({
+      character,
+      rest
+    })
+  );
 }
 
 // Reads one compound from `text`; `weight` is 0 inside :where().
-function readCompound(text: string, compound: Compound, weight: number): string | null {
+function readCompound({ text, compound, weight }: {
+  text: string;
+  compound: Compound;
+  weight: number;
+}) {
   let index = 0;
   while (index < text.length) {
-    const step = readStep(text.slice(index), index === 0, compound, weight);
-    if (step.problem !== null) {
+    const step: Step = readStep({
+      rest: text.slice(index),
+      isStart: index === 0,
+      compound,
+      weight
+    });
+    const hasProblem = step.problem !== null;
+    if (hasProblem) {
       return step.problem;
     }
 
@@ -150,13 +207,17 @@ function readCompound(text: string, compound: Compound, weight: number): string 
   return null;
 }
 
-function matchingParenthesis(text: string, open: number): number {
+function matchingParenthesis({ text, open }: {
+  text: string;
+  open: number;
+}) {
   let depth = 0;
   for (let index = open; index < text.length; index++) {
     depth += text[index] === "(" ? 1 : 0;
     depth -= text[index] === ")" ? 1 : 0;
 
-    if (depth === 0) {
+    const isBalanced = depth === 0;
+    if (isBalanced) {
       return index;
     }
   }
@@ -164,8 +225,13 @@ function matchingParenthesis(text: string, open: number): number {
   return text.length;
 }
 
-function readPseudo(compound: Compound, name: string | undefined, weight: number): string | null {
-  if (name === "root") {
+function readPseudo({ compound, name, weight }: {
+  compound: Compound;
+  name: string | undefined;
+  weight: number;
+}) {
+  const isRootPseudo = name === "root";
+  if (isRootPseudo) {
     compound.isRoot = true;
     return null;
   }
@@ -176,42 +242,56 @@ function readPseudo(compound: Compound, name: string | undefined, weight: number
     return `:${name ?? ""} has no WinUI meaning (a control reports ${known})`;
   }
 
-  if (compound.state !== null) {
+  const hasState = compound.state !== null;
+  if (hasState) {
     return "only one state (:hover, :focus...) can be on a selector";
   }
 
   compound.state = stateOf(name);
-  compound.specificity += weight * classWeight;
+  compound.specificity += weight * CLASS_WEIGHT;
   return null;
 }
 
-function stateOf(name: string): PseudoState | null {
+function stateOf(name: string) {
   return Object.values(PseudoState).find(state => state === name) ?? null;
 }
 
-function unsupportedCharacter(character: string, rest: string): string {
+function unsupportedCharacter({ character, rest }: {
+  character: string;
+  rest: string;
+}) {
   const isCombinator = character === " " || character === ">" || character === "+" || character === "~";
   if (isCombinator) {
-    return combinatorReason;
+    return COMBINATOR_REASON;
   }
 
-  if (character === "[") {
+  const isAttributeSelector = character === "[";
+  if (isAttributeSelector) {
     return "attribute selectors have no WinUI meaning (use a class)";
   }
 
-  if (character === "#") {
+  const isIdSelector = character === "#";
+  if (isIdSelector) {
     return "id selectors have no WinUI meaning (use a class)";
   }
 
   return `"${rest}" has no WinUI meaning in a selector`;
 }
 
-// A comma-separated list, each of which becomes a rule.
-export function parseSelectorList(text: string): SelectorResult[] {
+/**
+ * Parses a comma-separated selector list, each of which becomes a rule. Each
+ * result is the parsed selector, or the reason it has no WinUI meaning.
+ */
+export function parseSelectorList(text: string) {
   return splitCommas(text).map(selector => {
     const compound = new Compound();
-    const problem = readCompound(selector.trim(), compound, 1);
-    if (problem !== null) {
+    const problem = readCompound({
+      text: selector.trim(),
+      compound,
+      weight: 1
+    });
+    const hasProblem = problem !== null;
+    if (hasProblem) {
       return fail(problem);
     }
 
@@ -230,6 +310,6 @@ export function parseSelectorList(text: string): SelectorResult[] {
         specificity: compound.specificity,
         isRoot: compound.isRoot
       }
-    };
+    } as const;
   });
 }

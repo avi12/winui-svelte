@@ -1,36 +1,35 @@
-import type { Declaration, SourcePosition } from "../translate/types.ts";
+import type { Declaration, SourcePosition } from "#src/css/translate/types.js";
 
-// The CSS Svelte emits for a component, read into rules and at-rules with the
-// position of every declaration. Only what a stylesheet written for a
-// component can hold: style rules, @media blocks, declarations and comments.
-// Anything else (nesting, @import, @keyframes...) is reported by the caller
-// as having no WinUI meaning, with the position this gives it.
-
+/** The two kinds of block a stylesheet holds. */
 export const BlockKind = {
-  Rule: "rule",
-  AtRule: "at-rule"
+  RULE: "rule",
+  AT_RULE: "at-rule"
 } as const;
 
+/** A style rule: a selector and its declarations. */
 export interface RuleBlock {
-  kind: typeof BlockKind.Rule;
+  kind: typeof BlockKind.RULE;
   selector: string;
   at: SourcePosition;
   declarations: Declaration[];
-  // A rule nested in this one, which has no WinUI meaning.
+  /** A rule nested in this one, which has no WinUI meaning. */
   nested: SourcePosition[];
 }
 
+/** An at-rule (@media, @import...), with its blocks when it has a body. */
 export interface AtRuleBlock {
-  kind: typeof BlockKind.AtRule;
+  kind: typeof BlockKind.AT_RULE;
   name: string;
   prelude: string;
   at: SourcePosition;
-  // Absent for an at-rule that ends with `;` (@import).
+  /** Null for an at-rule that ends with `;` (@import). */
   children: Block[] | null;
 }
 
+/** One top-level thing in a stylesheet. */
 export type Block = RuleBlock | AtRuleBlock;
 
+/** A stylesheet that cannot be read at all, with where it went wrong. */
 export class CssSyntaxError extends Error {
   readonly position: SourcePosition;
 
@@ -41,7 +40,7 @@ export class CssSyntaxError extends Error {
 }
 
 const quoteCharacters = new Set(["\"", "'"]);
-const newline = "\n";
+const NEWLINE = "\n";
 
 class Cursor {
   readonly text: string;
@@ -51,22 +50,24 @@ class Cursor {
   constructor(text: string) {
     this.text = text;
     for (let i = 0; i < text.length; i++) {
-      if (text[i] === newline) {
+      const isNewline = text[i] === NEWLINE;
+      if (isNewline) {
         this.lineStarts.push(i + 1);
       }
     }
   }
 
-  get isAtEnd(): boolean {
+  get isAtEnd() {
     return this.index >= this.text.length;
   }
 
-  positionAt(index: number): SourcePosition {
+  positionAt(index: number) {
     let low = 0;
     let high = this.lineStarts.length - 1;
     while (low < high) {
       const middle = Math.ceil((low + high) / 2);
-      if ((this.lineStarts[middle] ?? 0) <= index) {
+      const isLineStartBeforeIndex = (this.lineStarts[middle] ?? 0) <= index;
+      if (isLineStartBeforeIndex) {
         low = middle;
       } else {
         high = middle - 1;
@@ -79,7 +80,7 @@ class Cursor {
     };
   }
 
-  skipComment(): boolean {
+  skipComment() {
     const isComment = this.text.startsWith("/*", this.index);
     if (!isComment) {
       return false;
@@ -90,7 +91,7 @@ class Cursor {
     return true;
   }
 
-  skipSpace(): void {
+  skipSpace() {
     while (!this.isAtEnd) {
       const character = this.text[this.index] ?? "";
       const isSpace = character.trim() === "";
@@ -102,7 +103,7 @@ class Cursor {
     }
   }
 
-  skipString(): void {
+  skipString() {
     const quote = this.text[this.index];
     this.index++;
     while (!this.isAtEnd && this.text[this.index] !== quote) {
@@ -115,10 +116,10 @@ class Cursor {
 }
 
 const Terminator = {
-  OpenBrace: "{",
-  CloseBrace: "}",
-  Semicolon: ";",
-  End: ""
+  OPEN_BRACE: "{",
+  CLOSE_BRACE: "}",
+  SEMICOLON: ";",
+  END: ""
 } as const;
 type Terminator = (typeof Terminator)[keyof typeof Terminator];
 
@@ -130,7 +131,7 @@ interface Prelude {
 
 // Reads up to the next `{`, `;` or `}` outside parentheses and strings,
 // without consuming the terminator.
-function readPrelude(cursor: Cursor): Prelude {
+function readPrelude(cursor: Cursor) {
   cursor.skipSpace();
   const start = cursor.index;
   const position = cursor.positionAt(start);
@@ -151,15 +152,16 @@ function readPrelude(cursor: Cursor): Prelude {
       continue;
     }
 
-    if (character === "(") {
+    const isOpeningParenthesis = character === "(";
+    if (isOpeningParenthesis) {
       depth++;
     } else if (character === ")") {
       depth--;
     }
 
-    const isTerminatorCharacter = character === Terminator.OpenBrace
-      || character === Terminator.CloseBrace
-      || character === Terminator.Semicolon;
+    const isTerminatorCharacter = character === Terminator.OPEN_BRACE
+      || character === Terminator.CLOSE_BRACE
+      || character === Terminator.SEMICOLON;
     const isTerminator = depth <= 0 && isTerminatorCharacter;
     if (isTerminator) {
       return {
@@ -176,13 +178,14 @@ function readPrelude(cursor: Cursor): Prelude {
   return {
     text: text.trim(),
     at: position,
-    terminator: Terminator.End
+    terminator: Terminator.END
   };
 }
 
-function toDeclaration(prelude: Prelude): Declaration {
+function toDeclaration(prelude: Prelude) {
   const colon = prelude.text.indexOf(":");
-  if (colon === -1) {
+  const isColonMissing = colon === -1;
+  if (isColonMissing) {
     throw new CssSyntaxError(`expected "property: value", found "${prelude.text}"`, prelude.at);
   }
 
@@ -200,12 +203,16 @@ function toDeclaration(prelude: Prelude): Declaration {
 }
 
 // After the `{` of a style rule.
-function readRuleBody(cursor: Cursor, block: RuleBlock): void {
+function readRuleBody({ cursor, block }: {
+  cursor: Cursor;
+  block: RuleBlock;
+}) {
   while (!cursor.isAtEnd) {
     const prelude = readPrelude(cursor);
     cursor.index++;
 
-    if (prelude.terminator === Terminator.OpenBrace) {
+    const isNestedRule = prelude.terminator === Terminator.OPEN_BRACE;
+    if (isNestedRule) {
       // Nesting: skip its body and record where it was.
       block.nested.push(prelude.at);
       skipBody(cursor);
@@ -217,13 +224,14 @@ function readRuleBody(cursor: Cursor, block: RuleBlock): void {
       block.declarations.push(toDeclaration(prelude));
     }
 
-    if (prelude.terminator === Terminator.CloseBrace) {
+    const isRuleEnd = prelude.terminator === Terminator.CLOSE_BRACE;
+    if (isRuleEnd) {
       return;
     }
   }
 }
 
-function skipBody(cursor: Cursor): void {
+function skipBody(cursor: Cursor) {
   let depth = 1;
   while (!cursor.isAtEnd && depth > 0) {
     const character = cursor.text[cursor.index] ?? "";
@@ -237,9 +245,10 @@ function skipBody(cursor: Cursor): void {
       continue;
     }
 
-    if (character === Terminator.OpenBrace) {
+    const isOpeningBrace = character === Terminator.OPEN_BRACE;
+    if (isOpeningBrace) {
       depth++;
-    } else if (character === Terminator.CloseBrace) {
+    } else if (character === Terminator.CLOSE_BRACE) {
       depth--;
     }
 
@@ -247,11 +256,14 @@ function skipBody(cursor: Cursor): void {
   }
 }
 
-function readBlocks(cursor: Cursor, isNested: boolean): Block[] {
+function readBlocks({ cursor, isNested }: {
+  cursor: Cursor;
+  isNested: boolean;
+}) {
   const blocks: Block[] = [];
   while (!cursor.isAtEnd) {
     const prelude = readPrelude(cursor);
-    const isClose = prelude.terminator === Terminator.CloseBrace;
+    const isClose = prelude.terminator === Terminator.CLOSE_BRACE;
     if (isClose) {
       if (isNested) {
         cursor.index++;
@@ -262,27 +274,33 @@ function readBlocks(cursor: Cursor, isNested: boolean): Block[] {
     }
 
     const isAtRule = prelude.text.startsWith("@");
-    const isBlock = prelude.terminator === Terminator.OpenBrace;
+    const isBlock = prelude.terminator === Terminator.OPEN_BRACE;
     cursor.index++;
 
     if (isAtRule) {
       const [name = "", ...rest] = prelude.text.slice(1).split(/\s+/u);
       blocks.push({
-        kind: BlockKind.AtRule,
+        kind: BlockKind.AT_RULE,
         name: name.toLowerCase(),
         prelude: rest.join(" "),
         at: prelude.at,
-        children: isBlock ? readBlocks(cursor, true) : null
+        children: isBlock ? readBlocks({
+          cursor,
+          isNested: true
+        }) : null
       });
     } else if (isBlock) {
       const block: RuleBlock = {
-        kind: BlockKind.Rule,
+        kind: BlockKind.RULE,
         selector: prelude.text,
         at: prelude.at,
         declarations: [],
         nested: []
       };
-      readRuleBody(cursor, block);
+      readRuleBody({
+        cursor,
+        block
+      });
       blocks.push(block);
     }
   }
@@ -290,7 +308,16 @@ function readBlocks(cursor: Cursor, isNested: boolean): Block[] {
   return blocks;
 }
 
-// Positions are in `css`: 1-based line and column.
-export function parseCss(css: string): Block[] {
-  return readBlocks(new Cursor(css), false);
+/**
+ * Reads the CSS Svelte emits for a component into rules and at-rules, with
+ * the 1-based line and column of every declaration. Only what a stylesheet
+ * written for a component can hold: style rules, @media blocks, declarations
+ * and comments. Anything else (nesting, @import, @keyframes...) is reported
+ * by the caller as having no WinUI meaning, with the position this gives it.
+ */
+export function parseCss(css: string) {
+  return readBlocks({
+    cursor: new Cursor(css),
+    isNested: false
+  });
 }

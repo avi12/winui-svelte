@@ -1,5 +1,5 @@
+import { parseColor } from "./colors.ts";
 import {
-  parseColor,
   parseLength,
   parseMilliseconds,
   parseNumber,
