@@ -32,9 +32,8 @@
     "src/**/*.svelte",
     "examples/**/*.ts",
     "examples/**/*.svelte",
-    "test/example-process.ts",
-    "test/lists.test.ts",
-    "test/window.test.ts",
+    "test/**/*.ts",
+    "test/**/*.svelte.ts",
     "scripts/**/*.ts",
     "scripts/pack/treeshake-app/**/*.svelte"
   ]
