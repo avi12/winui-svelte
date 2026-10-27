@@ -1,0 +1,29 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="WinuiSvelte" />
+    <!-- The checks `pnpm check:webstorm` fails on: this list is the only one
+         (see scripts/editor/webstorm/problems.ts). A check is added by naming
+         its inspection id; ids are in the runner's .descriptions.json. -->
+
+    <!-- TypeScript, as the IDE's own type evaluator reports it -->
+    <inspection_tool class="TypeScriptValidateTypes" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="TypeScriptValidateGenericTypes" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="TypeScriptUnresolvedReference" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="TypeScriptCheckImport" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="TypeScriptLibrary" enabled="true" level="ERROR" enabled_by_default="true" />
+
+    <!-- JavaScript and ECMAScript, which also covers the script of a .svelte file -->
+    <inspection_tool class="JSAnnotator" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="JSUnresolvedReference" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="JSFileReferences" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="JSValidateTypes" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="UnreachableCodeJS" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="JSUnusedLocalSymbols" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="JSUnusedAssignment" enabled="true" level="WARNING" enabled_by_default="true" />
+
+    <!-- Svelte -->
+    <inspection_tool class="SvelteUnresolvedComponent" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="SvelteGenericsRequiresTypeScript" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="SvelteGenericsOnInstanceScriptOnly" enabled="true" level="ERROR" enabled_by_default="true" />
+  </profile>
+</component>
