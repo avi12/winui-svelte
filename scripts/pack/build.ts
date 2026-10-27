@@ -32,6 +32,12 @@ const copiedExtensions = [".svelte", ".json"];
 const declarationSuffix = ".d.svelte.ts";
 // `from "./x.ts"` and `import("./x.ts")` in a .svelte script.
 const relativeTsImport = /(["'])(\.{1,2}\/[^"']*?)\.ts\1/gu;
+// `from "#src/x/y.js"`: package.json's `imports` maps #src/*.js to src/*.ts,
+// which a published package does not have, so the build points each at dist/
+// instead. (Written .js, because TypeScript refuses to leave a non-relative
+// .ts import unrewritten.)
+const sourceAliasImport = /(["'])#src\/([^"']*?)(\.js|\.svelte|\.json)\1/gu;
+const aliasedExtensions = [".js", ".ts", ".svelte"];
 
 function isShipped(file: string): boolean {
   const isDeclaration = file.endsWith(declarationSuffix);
@@ -48,6 +54,28 @@ function withCompiledImports(source: string): string {
   }
 
   return source.replaceAll(relativeTsImport, compiledImport);
+}
+
+// `#src/x/y.js` as the path from the file to dist/x/y.js: the same specifier,
+// relative, which TypeScript finds as y.d.ts and Node as y.js.
+function withRelativeAliases({ file, source }: { file: string; source: string }) {
+  function relativeImport(_whole: string, quote: string, target: string, extension: string) {
+    const relative = path.relative(path.dirname(file), path.join(outputFolder, target)).replaceAll("\\", "/");
+    const specifier = relative.startsWith(".") ? relative : `./${relative}`;
+    return `${quote}${specifier}${extension}${quote}`;
+  }
+
+  return source.replaceAll(sourceAliasImport, relativeImport);
+}
+
+function resolveSourceAliases() {
+  const files = filesIn(outputFolder).filter(file => aliasedExtensions.includes(path.extname(file)));
+  for (const file of files) {
+    const source = readFileSync(file, "utf8");
+    if (source.includes("#src/")) {
+      writeFileSync(file, withRelativeAliases({ file, source }));
+    }
+  }
 }
 
 function copyShipped(): void {
@@ -87,4 +115,5 @@ rmSync(outputFolder, {
 });
 compile();
 copyShipped();
+resolveSourceAliases();
 process.stdout.write(`dist: ${filesIn(outputFolder).length} files\n`);

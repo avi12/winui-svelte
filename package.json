@@ -116,6 +116,9 @@
     "./package.json": "./package.json"
   },
   "imports": {
+    "#src/*.js": "./src/*.ts",
+    "#src/*.svelte": "./src/*.svelte",
+    "#src/*.json": "./src/*.json",
     "#winui/*": "@winapp/bindings/*"
   },
   "files": [
