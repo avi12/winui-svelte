@@ -1,7 +1,7 @@
 import type { BindingEntry } from "./binding-list.ts";
 import { bindingEntriesOf, packageJsonWithBindings } from "./binding-list.ts";
 import { readList, readRecord } from "./json-shape.ts";
-import { customSvelteSource } from "#src/vite/custom-svelte.js";
+import { CUSTOM_SVELTE_SOURCE } from "#src/vite/custom-svelte.js";
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -100,7 +100,7 @@ export function packageJsonForApp({ original, required }: {
   const devDependencies = readRecord(parsed["devDependencies"]) ?? {};
   const hasSvelte = "svelte" in dependencies || "svelte" in devDependencies;
   if (!hasSvelte) {
-    dependencies["svelte"] = customSvelteSource;
+    dependencies["svelte"] = CUSTOM_SVELTE_SOURCE;
   }
 
   const newline = original.includes("\r\n") ? "\r\n" : "\n";

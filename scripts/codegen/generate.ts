@@ -52,7 +52,7 @@ function updatedPackageJson({ packagePath, wanted }: {
 }) {
   return {
     file: packagePath,
-    text: packageJsonWithBindings(readFileSync(packagePath, "utf8"), wanted)
+    text: packageJsonWithBindings({ original: readFileSync(packagePath, "utf8"), wanted })
   };
 }
 

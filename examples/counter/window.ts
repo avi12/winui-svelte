@@ -32,8 +32,9 @@ await runOnUiThread(async () => {
   const port = portFrom(workerData);
   await runWindow({
     onStart() {
-      const channel = createHostChannel(
-        createMessagePortTransport(port, {
+      const channel = createHostChannel({
+        transport: createMessagePortTransport({
+          port,
           poll(drain) {
             return startTimer({
               milliseconds: POLL_MILLISECONDS,
@@ -41,7 +42,7 @@ await runOnUiThread(async () => {
             });
           }
         })
-      );
+      });
       createWindow({
         component: appComponent,
         props: {

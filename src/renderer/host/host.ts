@@ -226,12 +226,10 @@ function stylingOf({ element, control }: {
   element: WinuiElement;
   control: UIElement;
 }) {
-  element.native.styled ??= styledElement(
-    control, elementType({
-      element,
-      control
-    })
-  );
+  element.native.styled ??= styledElement({
+    control,
+    elementType: elementType({ element, control })
+  });
   return element.native.styled;
 }
 

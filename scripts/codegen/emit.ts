@@ -725,7 +725,7 @@ export function emitControlsTable(model: Model) {
 // setup` reads it): the components' hierarchy, what the conversions build and
 // what the package itself reaches (the core classes).
 export function emitRequiredBindings(model: Model) {
-  return `${JSON.stringify(mergedEntries([], requestedClasses(model)), null, 2)}\n`;
+  return `${JSON.stringify(mergedEntries({ existing: [], wanted: requestedClasses(model) }), null, 2)}\n`;
 }
 
 export function emitIndex(model: Model) {

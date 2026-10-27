@@ -28,7 +28,8 @@ const worker = new Worker(new URL("./window.ts", import.meta.url), {
   },
   transferList: [channel.port2]
 });
-const messaging = defineMessaging<StateProtocol>(createMessagePortTransport(channel.port1), {
+const messaging = defineMessaging<StateProtocol>({
+  transport: createMessagePortTransport({ port: channel.port1 }),
   onError: error => process.stderr.write(
     `host: ${error.message}
 `
@@ -42,7 +43,7 @@ let state: Json = {
 function publish(next: Json) {
   void messaging.sendMessage(MessageType.patch, {
     name: VIEW_NAME,
-    ops: diff(state, next)
+    ops: diff({ previous: state, next })
   });
   state = next;
 }
