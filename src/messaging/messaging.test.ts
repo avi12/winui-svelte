@@ -1,4 +1,4 @@
-import { MemoryEnd } from "../state/transports/memory.ts";
+import { MemoryEnd } from "#src/state/transports/memory.js";
 import { defineMessaging, MessagingClosedError, MessagingError } from "./messaging.ts";
 import type { ProtocolWithReturn } from "./protocol-map.ts";
 import assert from "node:assert/strict";

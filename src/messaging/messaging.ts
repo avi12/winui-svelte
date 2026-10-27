@@ -1,4 +1,4 @@
-import type { Transport } from "../state/transports/transport.ts";
+import type { Transport } from "#src/state/transports/transport.js";
 import type { Frame, RequestFrame, ResponseFrame } from "./frame.ts";
 import { requestFrameSchema, responseFrameSchema } from "./frame.ts";
 import type { WireValue } from "./json.ts";

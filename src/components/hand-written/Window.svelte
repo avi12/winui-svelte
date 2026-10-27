@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { attachWindow } from "../../window/window-host.svelte.ts";
+  import { attachWindow } from "#src/window/window-host.svelte.js";
   import type { FrameworkElement, Grid } from "../generated/bindings.ts";
-  import { control } from "../runtime.ts";
+  import { control } from "#src/components/runtime.js";
   import type { WindowComponentProps } from "./window-props.ts";
   import { untrack } from "svelte";
 
