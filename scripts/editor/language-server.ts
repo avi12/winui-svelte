@@ -2,8 +2,8 @@
 // runs: it opens files the way the editor does and asks for what the editor
 // shows (diagnostics and inlay hints). Set EDITOR_CHECK_DEBUG to see the
 // server's own log.
-import type { Json } from "../../src/messaging/json.ts";
-import { jsonSchema } from "../../src/messaging/json.ts";
+import type { Json } from "#src/messaging/json.js";
+import { jsonSchema } from "#src/messaging/json.js";
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";

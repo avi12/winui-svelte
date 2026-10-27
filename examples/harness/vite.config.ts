@@ -1,5 +1,5 @@
-import { exportAliases, ExportTarget } from "../../scripts/export-aliases.ts";
-import { winuiSvelte } from "../../src/vite/plugin.ts";
+import { exportAliases, ExportTarget } from "#scripts/export-aliases.ts";
+import { winuiSvelte } from "#src/vite/plugin.js";
 import { defineConfig } from "vite";
 
 // What the examples' and the mount test's module server read: the plugin, and

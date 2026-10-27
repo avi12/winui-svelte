@@ -1,5 +1,5 @@
-import { jsonSchema } from "../../src/messaging/json.ts";
-import type { Json } from "../../src/messaging/json.ts";
+import { jsonSchema } from "#src/messaging/json.js";
+import type { Json } from "#src/messaging/json.js";
 import { z } from "zod";
 
 // What an example's entry module and the harness (launch.ts, worker.ts) say to

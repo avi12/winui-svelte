@@ -1,5 +1,5 @@
-import { winuiSvelte } from "../../src/vite/plugin.ts";
-import { exportAliases, ExportTarget } from "../export-aliases.ts";
+import { winuiSvelte } from "#src/vite/plugin.js";
+import { exportAliases, ExportTarget } from "#scripts/export-aliases.ts";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import path from "node:path";

@@ -1,5 +1,5 @@
-import { jsonSchema } from "../../src/messaging/json.ts";
-import type { Json } from "../../src/messaging/json.ts";
+import { jsonSchema } from "#src/messaging/json.js";
+import type { Json } from "#src/messaging/json.js";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";

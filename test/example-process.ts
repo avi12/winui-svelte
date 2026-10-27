@@ -1,4 +1,4 @@
-import { jsonSchema } from "../src/messaging/json.ts";
+import { jsonSchema } from "#src/messaging/json.js";
 import { spawn } from "node:child_process";
 import type { ChildProcessByStdio } from "node:child_process";
 import { existsSync } from "node:fs";

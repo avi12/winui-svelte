@@ -1,7 +1,7 @@
-import * as bindings from "../../src/components/generated/bindings.ts";
-import { registerControls } from "../../src/renderer/host/host.ts";
-import { runWindow } from "../../src/window/index.ts";
-import { DispatcherQueue } from "../../src/winui.ts";
+import * as bindings from "#src/components/generated/bindings.js";
+import { registerControls } from "#src/renderer/host/host.js";
+import { runWindow } from "#src/window/index.js";
+import { DispatcherQueue } from "#src/winui.js";
 import type { ExampleCommand, ExampleHost } from "./contract.ts";
 import { exampleCommandSchema, exampleModuleSchema } from "./contract.ts";
 import type { MessagePort } from "node:worker_threads";

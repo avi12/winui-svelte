@@ -1,10 +1,10 @@
-import * as bindings from "../src/components/generated/bindings.ts";
-import type { LevelMetadata } from "../src/components/generated/metadata.ts";
-import { levels } from "../src/components/generated/metadata.ts";
-import ToggleSwitch from "../src/components/generated/ToggleSwitch.svelte";
-import type { NativeValue } from "../src/native-value.ts";
-import { mountControl } from "../src/renderer/host/mount.svelte.ts";
-import { read } from "../src/renderer/host/reflect.ts";
+import * as bindings from "#src/components/generated/bindings.js";
+import type { LevelMetadata } from "#src/components/generated/metadata.js";
+import { levels } from "#src/components/generated/metadata.js";
+import ToggleSwitch from "#src/components/generated/ToggleSwitch.svelte";
+import type { NativeValue } from "#src/native-value.js";
+import { mountControl } from "#src/renderer/host/mount.svelte.js";
+import { read } from "#src/renderer/host/reflect.js";
 import type { Counts, Failure, Report } from "./mount-report.ts";
 import { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
 import { Application } from "#winui/microsoft/ui/xaml/Application";
@@ -101,7 +101,7 @@ async function loadConnectors(): Promise<Map<string, Connect>> {
   // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
   const connectors = new Map<string, Connect>();
   for (const name of componentNames()) {
-    const loaded: Record<string, NativeValue> = await import(`../src/components/generated/controls/${name}.svelte.ts`);
+    const loaded: Record<string, NativeValue> = await import(`#src/components/generated/controls/${name}.svelte.js`);
     const connect = loaded[`connect${name}`];
     if (!isConnect(connect)) {
       throw new Error(`${name} has no connect${name}`);

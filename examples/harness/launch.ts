@@ -1,5 +1,5 @@
-import { startModuleServer } from "../../src/vite/server.ts";
-import { initWindowsAppSdk } from "../../src/window/bootstrap.ts";
+import { startModuleServer } from "#src/vite/server.js";
+import { initWindowsAppSdk } from "#src/window/bootstrap.js";
 import path from "node:path";
 import { createInterface } from "node:readline";
 import { parseArgs } from "node:util";

@@ -1,4 +1,4 @@
-import { createWindowModuleRunner } from "../src/vite/runner.ts";
+import { createWindowModuleRunner } from "#src/vite/runner.js";
 import type { Report } from "./mount-report.ts";
 import { roInitialize } from "@microsoft/dynwinrt";
 import { MessagePort, parentPort, workerData } from "node:worker_threads";
