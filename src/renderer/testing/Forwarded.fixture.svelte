@@ -2,8 +2,8 @@
   // A component shaped as the generated ones are, for element-ref.test.ts:
   // its rest props go to its control, and the attachments written on it are
   // spread onto its element.
-  import { attachmentsOf, control } from "../host/control.ts";
-  import type { NodeAttachment } from "../host/control.ts";
+  import { attachmentsOf, control } from "#src/renderer/host/control.js";
+  import type { NodeAttachment } from "#src/renderer/host/control.js";
   import type { Snippet } from "svelte";
 
   interface Props {

@@ -1,5 +1,5 @@
-import type { ElementNode, FragmentNode, NativeHost, TreeNode } from "../tree/tree.ts";
-import { createTreeRenderer, NodeType } from "../tree/tree.ts";
+import type { ElementNode, FragmentNode, NativeHost, TreeNode } from "#src/renderer/tree/tree.js";
+import { createTreeRenderer, NodeType } from "#src/renderer/tree/tree.js";
 
 // A host with no platform behind it, for the tests: each element counts how
 // often its children changed and how many events it listens to; its
@@ -38,17 +38,26 @@ const probeRenderer = createTreeRenderer(probeHost);
 
 // The tree as text: an element as name(children), text in quotes, a comment
 // as #. Fragments show their children.
-export function outline(node: TreeNode<ProbeNative> | FragmentNode<ProbeNative>): string {
-  if (node.type === NodeType.Text) {
+export function outline(node: TreeNode<ProbeNative> | FragmentNode<ProbeNative>) {
+  const isText = node.type === NodeType.TEXT;
+  if (isText) {
     return `"${node.value}"`;
   }
 
-  if (node.type === NodeType.Comment) {
+  const isComment = node.type === NodeType.COMMENT;
+  if (isComment) {
     return "#";
   }
 
-  const children = node.children.map(outline).join(" ");
-  return node.type === NodeType.Element ? `${node.name}(${children})` : children;
+  const outlines: string[] = [];
+  for (const child of node.children) {
+    outlines.push(outline(child));
+  }
+
+  const children = outlines.join(" ");
+  return node.type === NodeType.ELEMENT ? `${node.name}(${children})` : children;
 }
 
+// Svelte's customRenderer option imports the renderer module's default export.
+// eslint-disable-next-line no-restricted-exports -- Svelte requires the default export
 export default probeRenderer;

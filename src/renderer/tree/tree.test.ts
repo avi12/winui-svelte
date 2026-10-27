@@ -1,14 +1,13 @@
-import type { ProbeElement } from "../testing/tree-probe.ts";
-import probeRenderer, { outline } from "../testing/tree-probe.ts";
 import { nextSibling } from "./tree.ts";
+import probeRenderer, { outline } from "#src/renderer/testing/tree-probe.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-function panel(): ProbeElement {
+function panel() {
   return probeRenderer.createElement("stack-panel");
 }
 
-function block(name: string): ProbeElement {
+function block(name: string) {
   return probeRenderer.createElement(name);
 }
 

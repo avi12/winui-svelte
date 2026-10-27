@@ -9,22 +9,29 @@ interface Item {
   made: number;
 }
 
-function arrayItems(items: Item[]): KeyedItems<Item> {
+function arrayItems(items: Item[]) {
   return {
     get size() {
       return items.length;
     },
-    getAt: index => items[index],
+    getAt(index) {
+      const item = items[index];
+      if (!item) {
+        throw new RangeError(`no item at ${index}`);
+      }
+
+      return item;
+    },
     removeAt(index) {
       items.splice(index, 1);
     },
     insertAt(index, item) {
       items.splice(index, 0, item);
     }
-  };
+  } satisfies KeyedItems<Item>;
 }
 
-function keys(items: Item[]): string {
+function keys(items: Item[]) {
   return items.map(item => item.key).join(",");
 }
 
@@ -66,8 +73,7 @@ test("a keyed list is synced touching only what changed", () => {
 
   list.move = (from, to) => {
     moves.push([from, to]);
-    const [moving] = items.splice(from, 1);
-    items.splice(to, 0, moving);
+    items.splice(to, 0, ...items.splice(from, 1));
   };
   syncKeyed(list, ["a", "b"]);
   assert.equal(keys(items), "a,b", "a move callback reorders too");

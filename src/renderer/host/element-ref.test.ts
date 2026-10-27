@@ -1,6 +1,6 @@
-import { svelteHooks } from "../../vite/loader.ts";
-import { fakeControls, FakePanel, FakeTextBlock, FakeToggle } from "../testing/fake-controls.ts";
 import { registerControls } from "./host.ts";
+import { fakeControls, FakePanel, FakeTextBlock, FakeToggle } from "#src/renderer/testing/fake-controls.js";
+import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import path from "node:path";
@@ -12,7 +12,7 @@ import { test } from "node:test";
 registerControls(fakeControls);
 registerHooks(svelteHooks(path.join(import.meta.dirname, "host.ts")));
 const { mountControl } = await import("./mount.svelte.ts");
-const { default: Labeled } = await import("../testing/Labeled.fixture.svelte");
+const { default: Labeled } = await import("#src/renderer/testing/Labeled.fixture.svelte");
 
 interface Props {
   isLabelShown: boolean;
