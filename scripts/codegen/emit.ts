@@ -768,6 +768,9 @@ function quoted(values: string[]) {
 }
 
 export function emitMetadata(model: Model) {
+  // WebStorm reads these strings as TypeScript (they begin with `export`) and
+  // flags the type `LevelMetadata`, which they define in another string.
+  // noinspection JSUnresolvedReference
   const lines = [
     GENERATED_HEADER,
     "",
