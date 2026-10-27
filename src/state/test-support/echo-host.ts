@@ -9,7 +9,8 @@ import { createStdioTransport, reserveStdout } from "../transports/stdio.ts";
 // prints with console.log, to prove stdout stays the protocol's).
 
 reserveStdout();
-const messaging = defineMessaging<StateProtocol>(createStdioTransport(), {
+const messaging = defineMessaging<StateProtocol>({
+  transport: createStdioTransport(),
   onError: error => process.stderr.write(`host: ${error.message}\n`)
 });
 let state: Json = { count: 0 };

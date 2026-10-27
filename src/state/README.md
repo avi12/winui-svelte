@@ -72,7 +72,7 @@ response  {id, response}  or  {id, error}
 | host to window | `patch` | `{name, ops}` applied in place, in order | `null` |
 | window to host | `action` | the action | `null`, or `error` text when the host could not |
 
-A host written in JavaScript uses `defineMessaging<StateProtocol>(transport)`
+A host written in JavaScript uses `defineMessaging<StateProtocol>({ transport })`
 from `winui-svelte/messaging` and registers `onMessage(MessageType.action, ...)`
 (a thrown error is the refusal); a Rust host reads and writes the frames.
 Ids are the sender's own counter, and a response carries the id of its request.

@@ -104,7 +104,8 @@ class Channel<Action extends Json, Extra extends object> implements HostChannel<
 
   constructor(transport: Transport, options: ChannelOptions) {
     const report = options.onError ?? writeToStderr;
-    this.messaging = defineMessaging<StateProtocol<Action> & Extra>(transport, {
+    this.messaging = defineMessaging<StateProtocol<Action> & Extra>({
+      transport,
       onError: report,
       onUnhandled: frame => report(new Error(`no handler for message "${frame.type}"`))
     });

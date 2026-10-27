@@ -49,7 +49,7 @@ function setup(onError: (error: Error) => void = error => {
 }, answer: (action: Json) => Promise<void> | void = () => {}) {
   const [windowEnd, hostEnd] = MemoryEnd.pair();
   const channel = createHostChannel<Json, NoticeProtocol>(windowEnd, { onError });
-  const host = defineMessaging<StateProtocol & NoticeProtocol>(hostEnd);
+  const host = defineMessaging<StateProtocol & NoticeProtocol>({ transport: hostEnd });
   const actions: Json[] = [];
   host.onMessage(MessageType.action, message => {
     actions.push(message.data);
