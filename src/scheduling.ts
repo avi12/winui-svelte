@@ -8,26 +8,39 @@ import { flushSync } from "svelte";
 
 const flushListeners = new Set<() => void>();
 
-// Svelte's flushSync(), then every onFlush listener.
-export function flush(): void {
+/**
+ * Applies pending state changes at once: Svelte's `flushSync()`, then every
+ * `onFlush` listener.
+ */
+export function flush() {
   flushSync();
   for (const listener of flushListeners) {
     listener();
   }
 }
 
-// For parts that must act after Svelte has applied a batch (the CSS runtime).
-// Returns what removes the listener.
-export function onFlush(listener: () => void): () => void {
+/**
+ * Registers a listener for parts that must act after Svelte has applied a
+ * batch of changes (the CSS runtime).
+ *
+ * @param listener - Called after every flush.
+ * @returns A function that removes the listener.
+ */
+export function onFlush(listener: () => void) {
   flushListeners.add(listener);
   return () => {
     flushListeners.delete(listener);
   };
 }
 
-// Runs `work` on the UI thread's dispatcher queue, then flush(). Called on
-// the UI thread (the only one with a queue to get).
-export function dispatch(work: () => void): void {
+/**
+ * Runs `work` on the UI thread's dispatcher queue, then flushes. Called on
+ * the UI thread, the only one with a queue to get.
+ *
+ * @param work - What to run on the UI thread.
+ * @throws {Error} When the dispatcher queue is shutting down.
+ */
+export function dispatch(work: () => void) {
   const isQueued = DispatcherQueue.getForCurrentThread().tryEnqueue(() => {
     work();
     flush();

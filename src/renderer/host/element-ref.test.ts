@@ -1,6 +1,6 @@
-import { svelteHooks } from "#src/vite/loader.js";
-import { fakeControls, FakePanel, FakeTextBlock, FakeToggle } from "#src/renderer/testing/fake-controls.js";
 import { registerControls } from "./host.ts";
+import { fakeControls, FakePanel, FakeTextBlock, FakeToggle } from "#src/renderer/testing/fake-controls.js";
+import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import path from "node:path";
