@@ -18,7 +18,7 @@ export function linkCanvas(
   props: CanvasProps,
   bound: CanvasBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectCanvas(
   control: Canvas,
   props: CanvasProps,
   bound: CanvasBound
-): () => void {
+) {
   const link = new Linker();
   linkCanvas(control, props, bound, link);
   return () => link.dispose();

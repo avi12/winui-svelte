@@ -22,10 +22,10 @@ export function linkPolyline(
   props: PolylineProps,
   bound: PolylineBound,
   link: Linker
-): void {
+) {
   linkShape(control, props, bound, link);
   link.property(props, "fillRule", value => {
-    control.fillRule = enumValue(FillRule, value);
+    control.fillRule = enumValue({ table: FillRule, input: value });
   });
   link.property(props, "points", value => {
     control.points = value;
@@ -36,7 +36,7 @@ export function connectPolyline(
   control: Polyline,
   props: PolylineProps,
   bound: PolylineBound
-): () => void {
+) {
   const link = new Linker();
   linkPolyline(control, props, bound, link);
   return () => link.dispose();

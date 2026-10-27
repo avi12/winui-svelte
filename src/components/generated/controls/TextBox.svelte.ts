@@ -65,19 +65,19 @@ export function linkTextBox(
   props: TextBoxProps,
   bound: TextBoxBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "acceptsReturn", value => {
     control.acceptsReturn = value;
   });
   link.property(props, "characterCasing", value => {
-    control.characterCasing = enumValue(CharacterCasing, value);
+    control.characterCasing = enumValue({ table: CharacterCasing, input: value });
   });
   link.property(props, "description", value => {
     control.description = objectOf(value);
   });
   link.property(props, "desiredCandidateWindowAlignment", value => {
-    control.desiredCandidateWindowAlignment = enumValue(CandidateWindowAlignment, value);
+    control.desiredCandidateWindowAlignment = enumValue({ table: CandidateWindowAlignment, input: value });
   });
   link.property(props, "header", value => {
     control.header = objectOf(value);
@@ -86,7 +86,7 @@ export function linkTextBox(
     control.headerTemplate = value;
   });
   link.property(props, "horizontalTextAlignment", value => {
-    control.horizontalTextAlignment = enumValue(TextAlignment, value);
+    control.horizontalTextAlignment = enumValue({ table: TextAlignment, input: value });
   });
   link.property(props, "inputScope", value => {
     control.inputScope = value;
@@ -134,13 +134,13 @@ export function linkTextBox(
     control.selectionStart = value;
   });
   link.property(props, "textAlignment", value => {
-    control.textAlignment = enumValue(TextAlignment, value);
+    control.textAlignment = enumValue({ table: TextAlignment, input: value });
   });
   link.property(props, "textReadingOrder", value => {
-    control.textReadingOrder = enumValue(TextReadingOrder, value);
+    control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
   });
   link.property(props, "textWrapping", value => {
-    control.textWrapping = enumValue(TextWrapping, value);
+    control.textWrapping = enumValue({ table: TextWrapping, input: value });
   });
   link.bindable(bound, "text", {
     read: () => control.text,
@@ -208,7 +208,7 @@ export function connectTextBox(
   control: TextBox,
   props: TextBoxProps,
   bound: TextBoxBound
-): () => void {
+) {
   const link = new Linker();
   linkTextBox(control, props, bound, link);
   return () => link.dispose();

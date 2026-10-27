@@ -20,7 +20,7 @@ export function linkSelectorBarItem(
   props: SelectorBarItemProps,
   bound: SelectorBarItemBound,
   link: Linker
-): void {
+) {
   linkItemContainer(control, props, bound, link);
   link.property(props, "icon", value => {
     control.icon = value;
@@ -34,7 +34,7 @@ export function connectSelectorBarItem(
   control: SelectorBarItem,
   props: SelectorBarItemProps,
   bound: SelectorBarItemBound
-): () => void {
+) {
   const link = new Linker();
   linkSelectorBarItem(control, props, bound, link);
   return () => link.dispose();

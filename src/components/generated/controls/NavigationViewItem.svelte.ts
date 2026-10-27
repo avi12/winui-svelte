@@ -26,7 +26,7 @@ export function linkNavigationViewItem(
   props: NavigationViewItemProps,
   bound: NavigationViewItemBound,
   link: Linker
-): void {
+) {
   linkNavigationViewItemBase(control, props, bound, link);
   link.property(props, "hasUnrealizedChildren", value => {
     control.hasUnrealizedChildren = value;
@@ -55,7 +55,7 @@ export function connectNavigationViewItem(
   control: NavigationViewItem,
   props: NavigationViewItemProps,
   bound: NavigationViewItemBound
-): () => void {
+) {
   const link = new Linker();
   linkNavigationViewItem(control, props, bound, link);
   return () => link.dispose();

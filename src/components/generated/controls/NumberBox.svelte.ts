@@ -40,7 +40,7 @@ export function linkNumberBox(
   props: NumberBoxProps,
   bound: NumberBoxBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "acceptsExpression", value => {
     control.acceptsExpression = value;
@@ -85,16 +85,16 @@ export function linkNumberBox(
     control.smallChange = value;
   });
   link.property(props, "spinButtonPlacementMode", value => {
-    control.spinButtonPlacementMode = enumValue(NumberBoxSpinButtonPlacementMode, value);
+    control.spinButtonPlacementMode = enumValue({ table: NumberBoxSpinButtonPlacementMode, input: value });
   });
   link.property(props, "text", value => {
     control.text = value;
   });
   link.property(props, "textReadingOrder", value => {
-    control.textReadingOrder = enumValue(TextReadingOrder, value);
+    control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
   });
   link.property(props, "validationMode", value => {
-    control.validationMode = enumValue(NumberBoxValidationMode, value);
+    control.validationMode = enumValue({ table: NumberBoxValidationMode, input: value });
   });
   link.bindable(bound, "value", {
     read: () => control.value,
@@ -114,7 +114,7 @@ export function connectNumberBox(
   control: NumberBox,
   props: NumberBoxProps,
   bound: NumberBoxBound
-): () => void {
+) {
   const link = new Linker();
   linkNumberBox(control, props, bound, link);
   return () => link.dispose();

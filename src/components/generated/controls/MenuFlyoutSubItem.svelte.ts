@@ -22,7 +22,7 @@ export function linkMenuFlyoutSubItem(
   props: MenuFlyoutSubItemProps,
   bound: MenuFlyoutSubItemBound,
   link: Linker
-): void {
+) {
   linkMenuFlyoutItemBase(control, props, bound, link);
   link.property(props, "icon", value => {
     control.icon = value;
@@ -36,7 +36,7 @@ export function connectMenuFlyoutSubItem(
   control: MenuFlyoutSubItem,
   props: MenuFlyoutSubItemProps,
   bound: MenuFlyoutSubItemBound
-): () => void {
+) {
   const link = new Linker();
   linkMenuFlyoutSubItem(control, props, bound, link);
   return () => link.dispose();

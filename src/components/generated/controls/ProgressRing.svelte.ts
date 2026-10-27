@@ -23,7 +23,7 @@ export function linkProgressRing(
   props: ProgressRingProps,
   bound: ProgressRingBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "isActive", value => {
     control.isActive = value;
@@ -46,7 +46,7 @@ export function connectProgressRing(
   control: ProgressRing,
   props: ProgressRingProps,
   bound: ProgressRingBound
-): () => void {
+) {
   const link = new Linker();
   linkProgressRing(control, props, bound, link);
   return () => link.dispose();

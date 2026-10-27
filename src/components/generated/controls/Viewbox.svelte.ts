@@ -25,16 +25,16 @@ export function linkViewbox(
   props: ViewboxProps,
   bound: ViewboxBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.contentProperty(props, "child", value => {
     control.child = value;
   });
   link.property(props, "stretch", value => {
-    control.stretch = enumValue(Stretch, value);
+    control.stretch = enumValue({ table: Stretch, input: value });
   });
   link.property(props, "stretchDirection", value => {
-    control.stretchDirection = enumValue(StretchDirection, value);
+    control.stretchDirection = enumValue({ table: StretchDirection, input: value });
   });
 }
 
@@ -42,7 +42,7 @@ export function connectViewbox(
   control: Viewbox,
   props: ViewboxProps,
   bound: ViewboxBound
-): () => void {
+) {
   const link = new Linker();
   linkViewbox(control, props, bound, link);
   return () => link.dispose();

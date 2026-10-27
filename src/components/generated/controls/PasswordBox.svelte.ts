@@ -38,7 +38,7 @@ export function linkPasswordBox(
   props: PasswordBoxProps,
   bound: PasswordBoxBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "description", value => {
     control.description = objectOf(value);
@@ -62,7 +62,7 @@ export function linkPasswordBox(
     control.passwordChar = value;
   });
   link.property(props, "passwordRevealMode", value => {
-    control.passwordRevealMode = enumValue(PasswordRevealMode, value);
+    control.passwordRevealMode = enumValue({ table: PasswordRevealMode, input: value });
   });
   link.property(props, "placeholderText", value => {
     control.placeholderText = value;
@@ -77,7 +77,7 @@ export function linkPasswordBox(
     control.selectionHighlightColor = value;
   });
   link.property(props, "textReadingOrder", value => {
-    control.textReadingOrder = enumValue(TextReadingOrder, value);
+    control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
   });
   link.bindable(bound, "password", {
     read: () => control.password,
@@ -109,7 +109,7 @@ export function connectPasswordBox(
   control: PasswordBox,
   props: PasswordBoxProps,
   bound: PasswordBoxBound
-): () => void {
+) {
   const link = new Linker();
   linkPasswordBox(control, props, bound, link);
   return () => link.dispose();

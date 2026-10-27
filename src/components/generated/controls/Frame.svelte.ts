@@ -25,7 +25,7 @@ export function linkFrame(
   props: FrameProps,
   bound: FrameBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "cacheSize", value => {
     control.cacheSize = value;
@@ -58,7 +58,7 @@ export function connectFrame(
   control: Frame,
   props: FrameProps,
   bound: FrameBound
-): () => void {
+) {
   const link = new Linker();
   linkFrame(control, props, bound, link);
   return () => link.dispose();

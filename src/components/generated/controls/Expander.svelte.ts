@@ -27,10 +27,10 @@ export function linkExpander(
   props: ExpanderProps,
   bound: ExpanderBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "expandDirection", value => {
-    control.expandDirection = enumValue(ExpandDirection, value);
+    control.expandDirection = enumValue({ table: ExpandDirection, input: value });
   });
   link.property(props, "header", value => {
     control.header = objectOf(value);
@@ -64,7 +64,7 @@ export function connectExpander(
   control: Expander,
   props: ExpanderProps,
   bound: ExpanderBound
-): () => void {
+) {
   const link = new Linker();
   linkExpander(control, props, bound, link);
   return () => link.dispose();

@@ -68,7 +68,7 @@ export function linkNavigationView(
   props: NavigationViewProps,
   bound: NavigationViewBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "alwaysShowHeader", value => {
     control.alwaysShowHeader = value;
@@ -98,7 +98,7 @@ export function linkNavigationView(
     control.headerTemplate = value;
   });
   link.property(props, "isBackButtonVisible", value => {
-    control.isBackButtonVisible = enumValue(NavigationViewBackButtonVisible, value);
+    control.isBackButtonVisible = enumValue({ table: NavigationViewBackButtonVisible, input: value });
   });
   link.property(props, "isBackEnabled", value => {
     control.isBackEnabled = value;
@@ -134,13 +134,13 @@ export function linkNavigationView(
     control.openPaneLength = value;
   });
   link.property(props, "overflowLabelMode", value => {
-    control.overflowLabelMode = enumValue(NavigationViewOverflowLabelMode, value);
+    control.overflowLabelMode = enumValue({ table: NavigationViewOverflowLabelMode, input: value });
   });
   link.property(props, "paneCustomContent", value => {
     control.paneCustomContent = value;
   });
   link.property(props, "paneDisplayMode", value => {
-    control.paneDisplayMode = enumValue(NavigationViewPaneDisplayMode, value);
+    control.paneDisplayMode = enumValue({ table: NavigationViewPaneDisplayMode, input: value });
   });
   link.property(props, "paneFooter", value => {
     control.paneFooter = value;
@@ -155,10 +155,10 @@ export function linkNavigationView(
     control.paneToggleButtonStyle = value;
   });
   link.property(props, "selectionFollowsFocus", value => {
-    control.selectionFollowsFocus = enumValue(NavigationViewSelectionFollowsFocus, value);
+    control.selectionFollowsFocus = enumValue({ table: NavigationViewSelectionFollowsFocus, input: value });
   });
   link.property(props, "shoulderNavigationEnabled", value => {
-    control.shoulderNavigationEnabled = enumValue(NavigationViewShoulderNavigationEnabled, value);
+    control.shoulderNavigationEnabled = enumValue({ table: NavigationViewShoulderNavigationEnabled, input: value });
   });
   link.bindable(bound, "isPaneOpen", {
     read: () => control.isPaneOpen,
@@ -223,7 +223,7 @@ export function connectNavigationView(
   control: NavigationView,
   props: NavigationViewProps,
   bound: NavigationViewBound
-): () => void {
+) {
   const link = new Linker();
   linkNavigationView(control, props, bound, link);
   return () => link.dispose();

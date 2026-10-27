@@ -42,7 +42,7 @@ export function linkGridViewItemPresenter(
   props: GridViewItemPresenterProps,
   bound: GridViewItemPresenterBound,
   link: Linker
-): void {
+) {
   linkContentPresenter(control, props, bound, link);
   link.property(props, "checkBrush", value => {
     control.checkBrush = brushOf(value);
@@ -72,13 +72,13 @@ export function linkGridViewItemPresenter(
     control.focusBorderBrush = brushOf(value);
   });
   link.property(props, "gridViewItemPresenterHorizontalContentAlignment", value => {
-    control.gridViewItemPresenterHorizontalContentAlignment = enumValue(HorizontalAlignment, value);
+    control.gridViewItemPresenterHorizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
   });
   link.property(props, "gridViewItemPresenterPadding", value => {
     control.gridViewItemPresenterPadding = thicknessOf(value);
   });
   link.property(props, "gridViewItemPresenterVerticalContentAlignment", value => {
-    control.gridViewItemPresenterVerticalContentAlignment = enumValue(VerticalAlignment, value);
+    control.gridViewItemPresenterVerticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
   });
   link.property(props, "placeholderBackground", value => {
     control.placeholderBackground = brushOf(value);
@@ -116,7 +116,7 @@ export function connectGridViewItemPresenter(
   control: GridViewItemPresenter,
   props: GridViewItemPresenterProps,
   bound: GridViewItemPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkGridViewItemPresenter(control, props, bound, link);
   return () => link.dispose();

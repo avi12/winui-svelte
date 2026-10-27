@@ -28,7 +28,7 @@ export function linkItemsWrapGrid(
   props: ItemsWrapGridProps,
   bound: ItemsWrapGridBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
   link.property(props, "areStickyGroupHeadersEnabled", value => {
     control.areStickyGroupHeadersEnabled = value;
@@ -37,7 +37,7 @@ export function linkItemsWrapGrid(
     control.cacheLength = value;
   });
   link.property(props, "groupHeaderPlacement", value => {
-    control.groupHeaderPlacement = enumValue(GroupHeaderPlacement, value);
+    control.groupHeaderPlacement = enumValue({ table: GroupHeaderPlacement, input: value });
   });
   link.property(props, "groupPadding", value => {
     control.groupPadding = thicknessOf(value);
@@ -52,7 +52,7 @@ export function linkItemsWrapGrid(
     control.maximumRowsOrColumns = value;
   });
   link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+    control.orientation = enumValue({ table: Orientation, input: value });
   });
 }
 
@@ -60,7 +60,7 @@ export function connectItemsWrapGrid(
   control: ItemsWrapGrid,
   props: ItemsWrapGridProps,
   bound: ItemsWrapGridBound
-): () => void {
+) {
   const link = new Linker();
   linkItemsWrapGrid(control, props, bound, link);
   return () => link.dispose();

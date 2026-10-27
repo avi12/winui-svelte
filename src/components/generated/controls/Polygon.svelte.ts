@@ -22,10 +22,10 @@ export function linkPolygon(
   props: PolygonProps,
   bound: PolygonBound,
   link: Linker
-): void {
+) {
   linkShape(control, props, bound, link);
   link.property(props, "fillRule", value => {
-    control.fillRule = enumValue(FillRule, value);
+    control.fillRule = enumValue({ table: FillRule, input: value });
   });
   link.property(props, "points", value => {
     control.points = value;
@@ -36,7 +36,7 @@ export function connectPolygon(
   control: Polygon,
   props: PolygonProps,
   bound: PolygonBound
-): () => void {
+) {
   const link = new Linker();
   linkPolygon(control, props, bound, link);
   return () => link.dispose();

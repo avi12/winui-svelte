@@ -18,7 +18,7 @@ export function linkIconElement(
   props: IconElementProps,
   bound: IconElementBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "foreground", value => {
     control.foreground = brushOf(value);

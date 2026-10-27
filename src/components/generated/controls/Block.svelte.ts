@@ -23,21 +23,21 @@ export function linkBlock(
   props: BlockProps,
   bound: BlockBound,
   link: Linker
-): void {
+) {
   linkTextElement(control, props, bound, link);
   link.property(props, "horizontalTextAlignment", value => {
-    control.horizontalTextAlignment = enumValue(TextAlignment, value);
+    control.horizontalTextAlignment = enumValue({ table: TextAlignment, input: value });
   });
   link.property(props, "lineHeight", value => {
     control.lineHeight = value;
   });
   link.property(props, "lineStackingStrategy", value => {
-    control.lineStackingStrategy = enumValue(LineStackingStrategy, value);
+    control.lineStackingStrategy = enumValue({ table: LineStackingStrategy, input: value });
   });
   link.property(props, "margin", value => {
     control.margin = thicknessOf(value);
   });
   link.property(props, "textAlignment", value => {
-    control.textAlignment = enumValue(TextAlignment, value);
+    control.textAlignment = enumValue({ table: TextAlignment, input: value });
   });
 }

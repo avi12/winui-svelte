@@ -27,7 +27,7 @@ export function linkSemanticZoom(
   props: SemanticZoomProps,
   bound: SemanticZoomBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "canChangeViews", value => {
     control.canChangeViews = value;
@@ -58,7 +58,7 @@ export function connectSemanticZoom(
   control: SemanticZoom,
   props: SemanticZoomProps,
   bound: SemanticZoomBound
-): () => void {
+) {
   const link = new Linker();
   linkSemanticZoom(control, props, bound, link);
   return () => link.dispose();

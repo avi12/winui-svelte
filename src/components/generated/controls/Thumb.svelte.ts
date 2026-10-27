@@ -21,7 +21,7 @@ export function linkThumb(
   props: ThumbProps,
   bound: ThumbBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
 
   if ("onDragCompleted" in props) {
@@ -41,7 +41,7 @@ export function connectThumb(
   control: Thumb,
   props: ThumbProps,
   bound: ThumbBound
-): () => void {
+) {
   const link = new Linker();
   linkThumb(control, props, bound, link);
   return () => link.dispose();

@@ -21,7 +21,7 @@ export function linkParagraph(
   props: ParagraphProps,
   bound: ParagraphBound,
   link: Linker
-): void {
+) {
   linkBlock(control, props, bound, link);
   link.property(props, "textIndent", value => {
     control.textIndent = value;
@@ -32,7 +32,7 @@ export function connectParagraph(
   control: Paragraph,
   props: ParagraphProps,
   bound: ParagraphBound
-): () => void {
+) {
   const link = new Linker();
   linkParagraph(control, props, bound, link);
   return () => link.dispose();

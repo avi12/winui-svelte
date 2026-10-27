@@ -59,7 +59,7 @@ export function linkScrollViewer(
   props: ScrollViewerProps,
   bound: ScrollViewerBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "bringIntoViewOnFocusChange", value => {
     control.bringIntoViewOnFocusChange = value;
@@ -71,16 +71,16 @@ export function linkScrollViewer(
     control.horizontalAnchorRatio = value;
   });
   link.property(props, "horizontalScrollBarVisibility", value => {
-    control.horizontalScrollBarVisibility = enumValue(ScrollBarVisibility, value);
+    control.horizontalScrollBarVisibility = enumValue({ table: ScrollBarVisibility, input: value });
   });
   link.property(props, "horizontalScrollMode", value => {
-    control.horizontalScrollMode = enumValue(ScrollMode, value);
+    control.horizontalScrollMode = enumValue({ table: ScrollMode, input: value });
   });
   link.property(props, "horizontalSnapPointsAlignment", value => {
-    control.horizontalSnapPointsAlignment = enumValue(SnapPointsAlignment, value);
+    control.horizontalSnapPointsAlignment = enumValue({ table: SnapPointsAlignment, input: value });
   });
   link.property(props, "horizontalSnapPointsType", value => {
-    control.horizontalSnapPointsType = enumValue(SnapPointsType, value);
+    control.horizontalSnapPointsType = enumValue({ table: SnapPointsType, input: value });
   });
   link.property(props, "isDeferredScrollingEnabled", value => {
     control.isDeferredScrollingEnabled = value;
@@ -128,22 +128,22 @@ export function linkScrollViewer(
     control.verticalAnchorRatio = value;
   });
   link.property(props, "verticalScrollBarVisibility", value => {
-    control.verticalScrollBarVisibility = enumValue(ScrollBarVisibility, value);
+    control.verticalScrollBarVisibility = enumValue({ table: ScrollBarVisibility, input: value });
   });
   link.property(props, "verticalScrollMode", value => {
-    control.verticalScrollMode = enumValue(ScrollMode, value);
+    control.verticalScrollMode = enumValue({ table: ScrollMode, input: value });
   });
   link.property(props, "verticalSnapPointsAlignment", value => {
-    control.verticalSnapPointsAlignment = enumValue(SnapPointsAlignment, value);
+    control.verticalSnapPointsAlignment = enumValue({ table: SnapPointsAlignment, input: value });
   });
   link.property(props, "verticalSnapPointsType", value => {
-    control.verticalSnapPointsType = enumValue(SnapPointsType, value);
+    control.verticalSnapPointsType = enumValue({ table: SnapPointsType, input: value });
   });
   link.property(props, "zoomMode", value => {
-    control.zoomMode = enumValue(ZoomMode, value);
+    control.zoomMode = enumValue({ table: ZoomMode, input: value });
   });
   link.property(props, "zoomSnapPointsType", value => {
-    control.zoomSnapPointsType = enumValue(SnapPointsType, value);
+    control.zoomSnapPointsType = enumValue({ table: SnapPointsType, input: value });
   });
 
   if ("onAnchorRequested" in props) {
@@ -171,7 +171,7 @@ export function connectScrollViewer(
   control: ScrollViewer,
   props: ScrollViewerProps,
   bound: ScrollViewerBound
-): () => void {
+) {
   const link = new Linker();
   linkScrollViewer(control, props, bound, link);
   return () => link.dispose();

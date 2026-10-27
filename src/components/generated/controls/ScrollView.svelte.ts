@@ -54,31 +54,31 @@ export function linkScrollView(
   props: ScrollViewProps,
   bound: ScrollViewBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "content", value => {
     control.content = value;
   });
   link.property(props, "contentOrientation", value => {
-    control.contentOrientation = enumValue(ScrollingContentOrientation, value);
+    control.contentOrientation = enumValue({ table: ScrollingContentOrientation, input: value });
   });
   link.property(props, "horizontalAnchorRatio", value => {
     control.horizontalAnchorRatio = value;
   });
   link.property(props, "horizontalScrollBarVisibility", value => {
-    control.horizontalScrollBarVisibility = enumValue(ScrollingScrollBarVisibility, value);
+    control.horizontalScrollBarVisibility = enumValue({ table: ScrollingScrollBarVisibility, input: value });
   });
   link.property(props, "horizontalScrollChainMode", value => {
-    control.horizontalScrollChainMode = enumValue(ScrollingChainMode, value);
+    control.horizontalScrollChainMode = enumValue({ table: ScrollingChainMode, input: value });
   });
   link.property(props, "horizontalScrollMode", value => {
-    control.horizontalScrollMode = enumValue(ScrollingScrollMode, value);
+    control.horizontalScrollMode = enumValue({ table: ScrollingScrollMode, input: value });
   });
   link.property(props, "horizontalScrollRailMode", value => {
-    control.horizontalScrollRailMode = enumValue(ScrollingRailMode, value);
+    control.horizontalScrollRailMode = enumValue({ table: ScrollingRailMode, input: value });
   });
   link.property(props, "ignoredInputKinds", value => {
-    control.ignoredInputKinds = enumValue(ScrollingInputKinds, value);
+    control.ignoredInputKinds = enumValue({ table: ScrollingInputKinds, input: value });
   });
   link.property(props, "maxZoomFactor", value => {
     control.maxZoomFactor = value;
@@ -90,22 +90,22 @@ export function linkScrollView(
     control.verticalAnchorRatio = value;
   });
   link.property(props, "verticalScrollBarVisibility", value => {
-    control.verticalScrollBarVisibility = enumValue(ScrollingScrollBarVisibility, value);
+    control.verticalScrollBarVisibility = enumValue({ table: ScrollingScrollBarVisibility, input: value });
   });
   link.property(props, "verticalScrollChainMode", value => {
-    control.verticalScrollChainMode = enumValue(ScrollingChainMode, value);
+    control.verticalScrollChainMode = enumValue({ table: ScrollingChainMode, input: value });
   });
   link.property(props, "verticalScrollMode", value => {
-    control.verticalScrollMode = enumValue(ScrollingScrollMode, value);
+    control.verticalScrollMode = enumValue({ table: ScrollingScrollMode, input: value });
   });
   link.property(props, "verticalScrollRailMode", value => {
-    control.verticalScrollRailMode = enumValue(ScrollingRailMode, value);
+    control.verticalScrollRailMode = enumValue({ table: ScrollingRailMode, input: value });
   });
   link.property(props, "zoomChainMode", value => {
-    control.zoomChainMode = enumValue(ScrollingChainMode, value);
+    control.zoomChainMode = enumValue({ table: ScrollingChainMode, input: value });
   });
   link.property(props, "zoomMode", value => {
-    control.zoomMode = enumValue(ScrollingZoomMode, value);
+    control.zoomMode = enumValue({ table: ScrollingZoomMode, input: value });
   });
 
   if ("onAnchorRequested" in props) {
@@ -149,7 +149,7 @@ export function connectScrollView(
   control: ScrollView,
   props: ScrollViewProps,
   bound: ScrollViewBound
-): () => void {
+) {
   const link = new Linker();
   linkScrollView(control, props, bound, link);
   return () => link.dispose();

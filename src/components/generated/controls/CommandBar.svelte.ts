@@ -27,19 +27,19 @@ export function linkCommandBar(
   props: CommandBarProps,
   bound: CommandBarBound,
   link: Linker
-): void {
+) {
   linkAppBar(control, props, bound, link);
   link.property(props, "commandBarOverflowPresenterStyle", value => {
     control.commandBarOverflowPresenterStyle = value;
   });
   link.property(props, "defaultLabelPosition", value => {
-    control.defaultLabelPosition = enumValue(CommandBarDefaultLabelPosition, value);
+    control.defaultLabelPosition = enumValue({ table: CommandBarDefaultLabelPosition, input: value });
   });
   link.property(props, "isDynamicOverflowEnabled", value => {
     control.isDynamicOverflowEnabled = value;
   });
   link.property(props, "overflowButtonVisibility", value => {
-    control.overflowButtonVisibility = enumValue(CommandBarOverflowButtonVisibility, value);
+    control.overflowButtonVisibility = enumValue({ table: CommandBarOverflowButtonVisibility, input: value });
   });
 
   if ("onDynamicOverflowItemsChanging" in props) {
@@ -51,7 +51,7 @@ export function connectCommandBar(
   control: CommandBar,
   props: CommandBarProps,
   bound: CommandBarBound
-): () => void {
+) {
   const link = new Linker();
   linkCommandBar(control, props, bound, link);
   return () => link.dispose();

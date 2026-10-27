@@ -51,7 +51,7 @@ export function linkTabView(
   props: TabViewProps,
   bound: TabViewBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "addTabButtonCommand", value => {
     control.addTabButtonCommand = value;
@@ -72,7 +72,7 @@ export function linkTabView(
     control.canTearOutTabs = value;
   });
   link.property(props, "closeButtonOverlayMode", value => {
-    control.closeButtonOverlayMode = enumValue(TabViewCloseButtonOverlayMode, value);
+    control.closeButtonOverlayMode = enumValue({ table: TabViewCloseButtonOverlayMode, input: value });
   });
   link.property(props, "isAddTabButtonVisible", value => {
     control.isAddTabButtonVisible = value;
@@ -99,7 +99,7 @@ export function linkTabView(
     control.tabStripHeaderTemplate = value;
   });
   link.property(props, "tabWidthMode", value => {
-    control.tabWidthMode = enumValue(TabViewWidthMode, value);
+    control.tabWidthMode = enumValue({ table: TabViewWidthMode, input: value });
   });
   link.bindable(bound, "selectedIndex", {
     read: () => control.selectedIndex,
@@ -175,7 +175,7 @@ export function connectTabView(
   control: TabView,
   props: TabViewProps,
   bound: TabViewBound
-): () => void {
+) {
   const link = new Linker();
   linkTabView(control, props, bound, link);
   return () => link.dispose();

@@ -20,7 +20,7 @@ export function linkAppBarElementContainer(
   props: AppBarElementContainerProps,
   bound: AppBarElementContainerBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "dynamicOverflowOrder", value => {
     control.dynamicOverflowOrder = value;
@@ -34,7 +34,7 @@ export function connectAppBarElementContainer(
   control: AppBarElementContainer,
   props: AppBarElementContainerProps,
   bound: AppBarElementContainerBound
-): () => void {
+) {
   const link = new Linker();
   linkAppBarElementContainer(control, props, bound, link);
   return () => link.dispose();

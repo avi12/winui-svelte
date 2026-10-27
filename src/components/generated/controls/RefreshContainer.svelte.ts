@@ -23,10 +23,10 @@ export function linkRefreshContainer(
   props: RefreshContainerProps,
   bound: RefreshContainerBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "pullDirection", value => {
-    control.pullDirection = enumValue(RefreshPullDirection, value);
+    control.pullDirection = enumValue({ table: RefreshPullDirection, input: value });
   });
   link.property(props, "visualizer", value => {
     control.visualizer = value;
@@ -41,7 +41,7 @@ export function connectRefreshContainer(
   control: RefreshContainer,
   props: RefreshContainerProps,
   bound: RefreshContainerBound
-): () => void {
+) {
   const link = new Linker();
   linkRefreshContainer(control, props, bound, link);
   return () => link.dispose();

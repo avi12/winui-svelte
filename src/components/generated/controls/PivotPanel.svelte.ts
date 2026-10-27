@@ -20,7 +20,7 @@ export function linkPivotPanel(
   props: PivotPanelProps,
   bound: PivotPanelBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
 
   if ("onHorizontalSnapPointsChanged" in props) {
@@ -36,7 +36,7 @@ export function connectPivotPanel(
   control: PivotPanel,
   props: PivotPanelProps,
   bound: PivotPanelBound
-): () => void {
+) {
   const link = new Linker();
   linkPivotPanel(control, props, bound, link);
   return () => link.dispose();

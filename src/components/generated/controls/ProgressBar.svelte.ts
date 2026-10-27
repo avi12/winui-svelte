@@ -21,7 +21,7 @@ export function linkProgressBar(
   props: ProgressBarProps,
   bound: ProgressBarBound,
   link: Linker
-): void {
+) {
   linkRangeBase(control, props, bound, link);
   link.property(props, "isIndeterminate", value => {
     control.isIndeterminate = value;
@@ -38,7 +38,7 @@ export function connectProgressBar(
   control: ProgressBar,
   props: ProgressBarProps,
   bound: ProgressBarBound
-): () => void {
+) {
   const link = new Linker();
   linkProgressBar(control, props, bound, link);
   return () => link.dispose();

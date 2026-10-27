@@ -67,7 +67,7 @@ export function linkTextBlock(
   props: TextBlockProps,
   bound: TextBlockBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "characterSpacing", value => {
     control.characterSpacing = value;
@@ -79,10 +79,10 @@ export function linkTextBlock(
     control.fontSize = value;
   });
   link.property(props, "fontStretch", value => {
-    control.fontStretch = enumValue(FontStretch, value);
+    control.fontStretch = enumValue({ table: FontStretch, input: value });
   });
   link.property(props, "fontStyle", value => {
-    control.fontStyle = enumValue(FontStyle, value);
+    control.fontStyle = enumValue({ table: FontStyle, input: value });
   });
   link.property(props, "fontWeight", value => {
     control.fontWeight = value;
@@ -91,7 +91,7 @@ export function linkTextBlock(
     control.foreground = brushOf(value);
   });
   link.property(props, "horizontalTextAlignment", value => {
-    control.horizontalTextAlignment = enumValue(TextAlignment, value);
+    control.horizontalTextAlignment = enumValue({ table: TextAlignment, input: value });
   });
   link.property(props, "isColorFontEnabled", value => {
     control.isColorFontEnabled = value;
@@ -106,13 +106,13 @@ export function linkTextBlock(
     control.lineHeight = value;
   });
   link.property(props, "lineStackingStrategy", value => {
-    control.lineStackingStrategy = enumValue(LineStackingStrategy, value);
+    control.lineStackingStrategy = enumValue({ table: LineStackingStrategy, input: value });
   });
   link.property(props, "maxLines", value => {
     control.maxLines = value;
   });
   link.property(props, "opticalMarginAlignment", value => {
-    control.opticalMarginAlignment = enumValue(OpticalMarginAlignment, value);
+    control.opticalMarginAlignment = enumValue({ table: OpticalMarginAlignment, input: value });
   });
   link.property(props, "padding", value => {
     control.padding = thicknessOf(value);
@@ -127,22 +127,22 @@ export function linkTextBlock(
     control.text = value;
   });
   link.property(props, "textAlignment", value => {
-    control.textAlignment = enumValue(TextAlignment, value);
+    control.textAlignment = enumValue({ table: TextAlignment, input: value });
   });
   link.property(props, "textDecorations", value => {
-    control.textDecorations = enumValue(TextDecorations, value);
+    control.textDecorations = enumValue({ table: TextDecorations, input: value });
   });
   link.property(props, "textLineBounds", value => {
-    control.textLineBounds = enumValue(TextLineBounds, value);
+    control.textLineBounds = enumValue({ table: TextLineBounds, input: value });
   });
   link.property(props, "textReadingOrder", value => {
-    control.textReadingOrder = enumValue(TextReadingOrder, value);
+    control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
   });
   link.property(props, "textTrimming", value => {
-    control.textTrimming = enumValue(TextTrimming, value);
+    control.textTrimming = enumValue({ table: TextTrimming, input: value });
   });
   link.property(props, "textWrapping", value => {
-    control.textWrapping = enumValue(TextWrapping, value);
+    control.textWrapping = enumValue({ table: TextWrapping, input: value });
   });
 
   if ("onContextMenuOpening" in props) {
@@ -162,7 +162,7 @@ export function connectTextBlock(
   control: TextBlock,
   props: TextBlockProps,
   bound: TextBlockBound
-): () => void {
+) {
   const link = new Linker();
   linkTextBlock(control, props, bound, link);
   return () => link.dispose();

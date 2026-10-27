@@ -23,13 +23,13 @@ export function linkPage(
   props: PageProps,
   bound: PageBound,
   link: Linker
-): void {
+) {
   linkUserControl(control, props, bound, link);
   link.property(props, "bottomAppBar", value => {
     control.bottomAppBar = value;
   });
   link.property(props, "navigationCacheMode", value => {
-    control.navigationCacheMode = enumValue(NavigationCacheMode, value);
+    control.navigationCacheMode = enumValue({ table: NavigationCacheMode, input: value });
   });
   link.property(props, "topAppBar", value => {
     control.topAppBar = value;
@@ -40,7 +40,7 @@ export function connectPage(
   control: Page,
   props: PageProps,
   bound: PageBound
-): () => void {
+) {
   const link = new Linker();
   linkPage(control, props, bound, link);
   return () => link.dispose();

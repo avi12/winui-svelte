@@ -18,7 +18,7 @@ export function linkListView(
   props: ListViewProps,
   bound: ListViewBound,
   link: Linker
-): void {
+) {
   linkListViewBase(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectListView(
   control: ListView,
   props: ListViewProps,
   bound: ListViewBound
-): () => void {
+) {
   const link = new Linker();
   linkListView(control, props, bound, link);
   return () => link.dispose();

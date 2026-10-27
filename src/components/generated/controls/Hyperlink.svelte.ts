@@ -36,10 +36,10 @@ export function linkHyperlink(
   props: HyperlinkProps,
   bound: HyperlinkBound,
   link: Linker
-): void {
+) {
   linkSpan(control, props, bound, link);
   link.property(props, "elementSoundMode", value => {
-    control.elementSoundMode = enumValue(ElementSoundMode, value);
+    control.elementSoundMode = enumValue({ table: ElementSoundMode, input: value });
   });
   link.property(props, "isTabStop", value => {
     control.isTabStop = value;
@@ -51,31 +51,31 @@ export function linkHyperlink(
     control.tabIndex = value;
   });
   link.property(props, "underlineStyle", value => {
-    control.underlineStyle = enumValue(UnderlineStyle, value);
+    control.underlineStyle = enumValue({ table: UnderlineStyle, input: value });
   });
   link.property(props, "xYFocusDown", value => {
     control.xYFocusDown = value;
   });
   link.property(props, "xYFocusDownNavigationStrategy", value => {
-    control.xYFocusDownNavigationStrategy = enumValue(XYFocusNavigationStrategy, value);
+    control.xYFocusDownNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
   });
   link.property(props, "xYFocusLeft", value => {
     control.xYFocusLeft = value;
   });
   link.property(props, "xYFocusLeftNavigationStrategy", value => {
-    control.xYFocusLeftNavigationStrategy = enumValue(XYFocusNavigationStrategy, value);
+    control.xYFocusLeftNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
   });
   link.property(props, "xYFocusRight", value => {
     control.xYFocusRight = value;
   });
   link.property(props, "xYFocusRightNavigationStrategy", value => {
-    control.xYFocusRightNavigationStrategy = enumValue(XYFocusNavigationStrategy, value);
+    control.xYFocusRightNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
   });
   link.property(props, "xYFocusUp", value => {
     control.xYFocusUp = value;
   });
   link.property(props, "xYFocusUpNavigationStrategy", value => {
-    control.xYFocusUpNavigationStrategy = enumValue(XYFocusNavigationStrategy, value);
+    control.xYFocusUpNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
   });
 
   if ("onClick" in props) {
@@ -95,7 +95,7 @@ export function connectHyperlink(
   control: Hyperlink,
   props: HyperlinkProps,
   bound: HyperlinkBound
-): () => void {
+) {
   const link = new Linker();
   linkHyperlink(control, props, bound, link);
   return () => link.dispose();

@@ -46,10 +46,10 @@ export function linkMediaTransportControls(
   props: MediaTransportControlsProps,
   bound: MediaTransportControlsBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "fastPlayFallbackBehaviour", value => {
-    control.fastPlayFallbackBehaviour = enumValue(FastPlayFallbackBehaviour, value);
+    control.fastPlayFallbackBehaviour = enumValue({ table: FastPlayFallbackBehaviour, input: value });
   });
   link.property(props, "isCompact", value => {
     control.isCompact = value;
@@ -133,7 +133,7 @@ export function connectMediaTransportControls(
   control: MediaTransportControls,
   props: MediaTransportControlsProps,
   bound: MediaTransportControlsBound
-): () => void {
+) {
   const link = new Linker();
   linkMediaTransportControls(control, props, bound, link);
   return () => link.dispose();

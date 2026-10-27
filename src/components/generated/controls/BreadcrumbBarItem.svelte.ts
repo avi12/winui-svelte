@@ -18,7 +18,7 @@ export function linkBreadcrumbBarItem(
   props: BreadcrumbBarItemProps,
   bound: BreadcrumbBarItemBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectBreadcrumbBarItem(
   control: BreadcrumbBarItem,
   props: BreadcrumbBarItemProps,
   bound: BreadcrumbBarItemBound
-): () => void {
+) {
   const link = new Linker();
   linkBreadcrumbBarItem(control, props, bound, link);
   return () => link.dispose();

@@ -23,7 +23,7 @@ export function linkRichTextBlockOverflow(
   props: RichTextBlockOverflowProps,
   bound: RichTextBlockOverflowBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "maxLines", value => {
     control.maxLines = value;
@@ -44,7 +44,7 @@ export function connectRichTextBlockOverflow(
   control: RichTextBlockOverflow,
   props: RichTextBlockOverflowProps,
   bound: RichTextBlockOverflowBound
-): () => void {
+) {
   const link = new Linker();
   linkRichTextBlockOverflow(control, props, bound, link);
   return () => link.dispose();

@@ -41,13 +41,13 @@ export function linkColorPicker(
   props: ColorPickerProps,
   bound: ColorPickerBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "colorSpectrumComponents", value => {
-    control.colorSpectrumComponents = enumValue(ColorSpectrumComponents, value);
+    control.colorSpectrumComponents = enumValue({ table: ColorSpectrumComponents, input: value });
   });
   link.property(props, "colorSpectrumShape", value => {
-    control.colorSpectrumShape = enumValue(ColorSpectrumShape, value);
+    control.colorSpectrumShape = enumValue({ table: ColorSpectrumShape, input: value });
   });
   link.property(props, "isAlphaEnabled", value => {
     control.isAlphaEnabled = value;
@@ -95,7 +95,7 @@ export function linkColorPicker(
     control.minValue = value;
   });
   link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+    control.orientation = enumValue({ table: Orientation, input: value });
   });
   link.property(props, "previousColor", value => {
     control.previousColor = value;
@@ -118,7 +118,7 @@ export function connectColorPicker(
   control: ColorPicker,
   props: ColorPickerProps,
   bound: ColorPickerBound
-): () => void {
+) {
   const link = new Linker();
   linkColorPicker(control, props, bound, link);
   return () => link.dispose();

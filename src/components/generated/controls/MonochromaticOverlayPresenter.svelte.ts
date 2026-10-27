@@ -21,7 +21,7 @@ export function linkMonochromaticOverlayPresenter(
   props: MonochromaticOverlayPresenterProps,
   bound: MonochromaticOverlayPresenterBound,
   link: Linker
-): void {
+) {
   linkGrid(control, props, bound, link);
   link.property(props, "replacementColor", value => {
     control.replacementColor = colorOf(value);
@@ -35,7 +35,7 @@ export function connectMonochromaticOverlayPresenter(
   control: MonochromaticOverlayPresenter,
   props: MonochromaticOverlayPresenterProps,
   bound: MonochromaticOverlayPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkMonochromaticOverlayPresenter(control, props, bound, link);
   return () => link.dispose();

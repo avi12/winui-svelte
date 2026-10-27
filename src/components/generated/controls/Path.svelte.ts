@@ -19,7 +19,7 @@ export function linkPath(
   props: PathProps,
   bound: PathBound,
   link: Linker
-): void {
+) {
   linkShape(control, props, bound, link);
   link.property(props, "data", value => {
     control.data = value;
@@ -30,7 +30,7 @@ export function connectPath(
   control: Path,
   props: PathProps,
   bound: PathBound
-): () => void {
+) {
   const link = new Linker();
   linkPath(control, props, bound, link);
   return () => link.dispose();

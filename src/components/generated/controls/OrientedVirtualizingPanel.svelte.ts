@@ -22,7 +22,7 @@ export function linkOrientedVirtualizingPanel(
   props: OrientedVirtualizingPanelProps,
   bound: OrientedVirtualizingPanelBound,
   link: Linker
-): void {
+) {
   linkVirtualizingPanel(control, props, bound, link);
   link.property(props, "canHorizontallyScroll", value => {
     control.canHorizontallyScroll = value;

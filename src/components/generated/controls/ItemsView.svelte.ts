@@ -29,7 +29,7 @@ export function linkItemsView(
   props: ItemsViewProps,
   bound: ItemsViewBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "isItemInvokedEnabled", value => {
     control.isItemInvokedEnabled = value;
@@ -47,7 +47,7 @@ export function linkItemsView(
     control.layout = value;
   });
   link.property(props, "selectionMode", value => {
-    control.selectionMode = enumValue(ItemsViewSelectionMode, value);
+    control.selectionMode = enumValue({ table: ItemsViewSelectionMode, input: value });
   });
   link.property(props, "verticalScrollController", value => {
     control.verticalScrollController = value;
@@ -66,7 +66,7 @@ export function connectItemsView(
   control: ItemsView,
   props: ItemsViewProps,
   bound: ItemsViewBound
-): () => void {
+) {
   const link = new Linker();
   linkItemsView(control, props, bound, link);
   return () => link.dispose();

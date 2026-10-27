@@ -31,7 +31,7 @@ export function linkSlider(
   props: SliderProps,
   bound: SliderBound,
   link: Linker
-): void {
+) {
   linkRangeBase(control, props, bound, link);
   link.property(props, "header", value => {
     control.header = objectOf(value);
@@ -49,10 +49,10 @@ export function linkSlider(
     control.isThumbToolTipEnabled = value;
   });
   link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+    control.orientation = enumValue({ table: Orientation, input: value });
   });
   link.property(props, "snapsTo", value => {
-    control.snapsTo = enumValue(SliderSnapsTo, value);
+    control.snapsTo = enumValue({ table: SliderSnapsTo, input: value });
   });
   link.property(props, "stepFrequency", value => {
     control.stepFrequency = value;
@@ -64,7 +64,7 @@ export function linkSlider(
     control.tickFrequency = value;
   });
   link.property(props, "tickPlacement", value => {
-    control.tickPlacement = enumValue(TickPlacement, value);
+    control.tickPlacement = enumValue({ table: TickPlacement, input: value });
   });
 }
 
@@ -72,7 +72,7 @@ export function connectSlider(
   control: Slider,
   props: SliderProps,
   bound: SliderBound
-): () => void {
+) {
   const link = new Linker();
   linkSlider(control, props, bound, link);
   return () => link.dispose();

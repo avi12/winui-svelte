@@ -18,7 +18,7 @@ export function linkTreeViewList(
   props: TreeViewListProps,
   bound: TreeViewListBound,
   link: Linker
-): void {
+) {
   linkListView(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectTreeViewList(
   control: TreeViewList,
   props: TreeViewListProps,
   bound: TreeViewListBound
-): () => void {
+) {
   const link = new Linker();
   linkTreeViewList(control, props, bound, link);
   return () => link.dispose();

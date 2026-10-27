@@ -42,7 +42,7 @@ export function linkCalendarDatePicker(
   props: CalendarDatePickerProps,
   bound: CalendarDatePickerBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "calendarIdentifier", value => {
     control.calendarIdentifier = value;
@@ -60,10 +60,10 @@ export function linkCalendarDatePicker(
     control.description = objectOf(value);
   });
   link.property(props, "displayMode", value => {
-    control.displayMode = enumValue(CalendarViewDisplayMode, value);
+    control.displayMode = enumValue({ table: CalendarViewDisplayMode, input: value });
   });
   link.property(props, "firstDayOfWeek", value => {
-    control.firstDayOfWeek = enumValue(DayOfWeek, value);
+    control.firstDayOfWeek = enumValue({ table: DayOfWeek, input: value });
   });
   link.property(props, "header", value => {
     control.header = objectOf(value);
@@ -84,7 +84,7 @@ export function linkCalendarDatePicker(
     control.isTodayHighlighted = value;
   });
   link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
+    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
   });
   link.property(props, "maxDate", value => {
     control.maxDate = value;
@@ -125,7 +125,7 @@ export function connectCalendarDatePicker(
   control: CalendarDatePicker,
   props: CalendarDatePickerProps,
   bound: CalendarDatePickerBound
-): () => void {
+) {
   const link = new Linker();
   linkCalendarDatePicker(control, props, bound, link);
   return () => link.dispose();

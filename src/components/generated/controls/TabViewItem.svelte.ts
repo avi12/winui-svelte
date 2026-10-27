@@ -24,7 +24,7 @@ export function linkTabViewItem(
   props: TabViewItemProps,
   bound: TabViewItemBound,
   link: Linker
-): void {
+) {
   linkListViewItem(control, props, bound, link);
   link.property(props, "header", value => {
     control.header = objectOf(value);
@@ -48,7 +48,7 @@ export function connectTabViewItem(
   control: TabViewItem,
   props: TabViewItemProps,
   bound: TabViewItemBound
-): () => void {
+) {
   const link = new Linker();
   linkTabViewItem(control, props, bound, link);
   return () => link.dispose();

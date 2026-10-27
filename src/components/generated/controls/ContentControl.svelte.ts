@@ -25,7 +25,7 @@ export function linkContentControl(
   props: ContentControlProps,
   bound: ContentControlBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.contentProperty(props, "content", value => {
     control.content = objectOf(value);
@@ -45,7 +45,7 @@ export function connectContentControl(
   control: ContentControl,
   props: ContentControlProps,
   bound: ContentControlBound
-): () => void {
+) {
   const link = new Linker();
   linkContentControl(control, props, bound, link);
   return () => link.dispose();

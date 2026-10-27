@@ -21,7 +21,7 @@ export function linkInfoBarPanel(
   props: InfoBarPanelProps,
   bound: InfoBarPanelBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
   link.property(props, "horizontalOrientationPadding", value => {
     control.horizontalOrientationPadding = thicknessOf(value);
@@ -35,7 +35,7 @@ export function connectInfoBarPanel(
   control: InfoBarPanel,
   props: InfoBarPanelProps,
   bound: InfoBarPanelBound
-): () => void {
+) {
   const link = new Linker();
   linkInfoBarPanel(control, props, bound, link);
   return () => link.dispose();

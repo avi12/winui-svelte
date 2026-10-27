@@ -36,7 +36,7 @@ export function linkComboBox(
   props: ComboBoxProps,
   bound: ComboBoxBound,
   link: Linker
-): void {
+) {
   linkSelector(control, props, bound, link);
   link.property(props, "description", value => {
     control.description = objectOf(value);
@@ -54,7 +54,7 @@ export function linkComboBox(
     control.isTextSearchEnabled = value;
   });
   link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
+    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
   });
   link.property(props, "maxDropDownHeight", value => {
     control.maxDropDownHeight = value;
@@ -66,7 +66,7 @@ export function linkComboBox(
     control.placeholderText = value;
   });
   link.property(props, "selectionChangedTrigger", value => {
-    control.selectionChangedTrigger = enumValue(ComboBoxSelectionChangedTrigger, value);
+    control.selectionChangedTrigger = enumValue({ table: ComboBoxSelectionChangedTrigger, input: value });
   });
   link.property(props, "text", value => {
     control.text = value;
@@ -101,7 +101,7 @@ export function connectComboBox(
   control: ComboBox,
   props: ComboBoxProps,
   bound: ComboBoxBound
-): () => void {
+) {
   const link = new Linker();
   linkComboBox(control, props, bound, link);
   return () => link.dispose();

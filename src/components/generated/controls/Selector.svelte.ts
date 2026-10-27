@@ -23,7 +23,7 @@ export function linkSelector(
   props: SelectorProps,
   bound: SelectorBound,
   link: Linker
-): void {
+) {
   linkItemsControl(control, props, bound, link);
   link.property(props, "isSynchronizedWithCurrentItem", value => {
     control.isSynchronizedWithCurrentItem = nullableBooleanOf(value);

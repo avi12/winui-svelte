@@ -48,7 +48,7 @@ export function linkTeachingTip(
   props: TeachingTipProps,
   bound: TeachingTipBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "actionButtonCommand", value => {
     control.actionButtonCommand = value;
@@ -78,7 +78,7 @@ export function linkTeachingTip(
     control.heroContent = value;
   });
   link.property(props, "heroContentPlacement", value => {
-    control.heroContentPlacement = enumValue(TeachingTipHeroContentPlacementMode, value);
+    control.heroContentPlacement = enumValue({ table: TeachingTipHeroContentPlacementMode, input: value });
   });
   link.property(props, "iconSource", value => {
     control.iconSource = value;
@@ -90,7 +90,7 @@ export function linkTeachingTip(
     control.placementMargin = thicknessOf(value);
   });
   link.property(props, "preferredPlacement", value => {
-    control.preferredPlacement = enumValue(TeachingTipPlacementMode, value);
+    control.preferredPlacement = enumValue({ table: TeachingTipPlacementMode, input: value });
   });
   link.property(props, "shouldConstrainToRootBounds", value => {
     control.shouldConstrainToRootBounds = value;
@@ -99,7 +99,7 @@ export function linkTeachingTip(
     control.subtitle = value;
   });
   link.property(props, "tailVisibility", value => {
-    control.tailVisibility = enumValue(TeachingTipTailVisibility, value);
+    control.tailVisibility = enumValue({ table: TeachingTipTailVisibility, input: value });
   });
   link.property(props, "target", value => {
     control.target = value;
@@ -137,7 +137,7 @@ export function connectTeachingTip(
   control: TeachingTip,
   props: TeachingTipProps,
   bound: TeachingTipBound
-): () => void {
+) {
   const link = new Linker();
   linkTeachingTip(control, props, bound, link);
   return () => link.dispose();

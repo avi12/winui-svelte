@@ -34,7 +34,7 @@ export function linkParallaxView(
   props: ParallaxViewProps,
   bound: ParallaxViewBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "child", value => {
     control.child = value;
@@ -46,7 +46,7 @@ export function linkParallaxView(
     control.horizontalSourceEndOffset = value;
   });
   link.property(props, "horizontalSourceOffsetKind", value => {
-    control.horizontalSourceOffsetKind = enumValue(ParallaxSourceOffsetKind, value);
+    control.horizontalSourceOffsetKind = enumValue({ table: ParallaxSourceOffsetKind, input: value });
   });
   link.property(props, "horizontalSourceStartOffset", value => {
     control.horizontalSourceStartOffset = value;
@@ -73,7 +73,7 @@ export function linkParallaxView(
     control.verticalSourceEndOffset = value;
   });
   link.property(props, "verticalSourceOffsetKind", value => {
-    control.verticalSourceOffsetKind = enumValue(ParallaxSourceOffsetKind, value);
+    control.verticalSourceOffsetKind = enumValue({ table: ParallaxSourceOffsetKind, input: value });
   });
   link.property(props, "verticalSourceStartOffset", value => {
     control.verticalSourceStartOffset = value;
@@ -84,7 +84,7 @@ export function connectParallaxView(
   control: ParallaxView,
   props: ParallaxViewProps,
   bound: ParallaxViewBound
-): () => void {
+) {
   const link = new Linker();
   linkParallaxView(control, props, bound, link);
   return () => link.dispose();

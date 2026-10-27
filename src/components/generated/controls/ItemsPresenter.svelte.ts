@@ -28,7 +28,7 @@ export function linkItemsPresenter(
   props: ItemsPresenterProps,
   bound: ItemsPresenterBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "footer", value => {
     control.footer = objectOf(value);
@@ -65,7 +65,7 @@ export function connectItemsPresenter(
   control: ItemsPresenter,
   props: ItemsPresenterProps,
   bound: ItemsPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkItemsPresenter(control, props, bound, link);
   return () => link.dispose();

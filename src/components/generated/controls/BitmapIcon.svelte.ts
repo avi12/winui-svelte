@@ -21,7 +21,7 @@ export function linkBitmapIcon(
   props: BitmapIconProps,
   bound: BitmapIconBound,
   link: Linker
-): void {
+) {
   linkIconElement(control, props, bound, link);
   link.property(props, "showAsMonochrome", value => {
     control.showAsMonochrome = value;
@@ -35,7 +35,7 @@ export function connectBitmapIcon(
   control: BitmapIcon,
   props: BitmapIconProps,
   bound: BitmapIconBound
-): () => void {
+) {
   const link = new Linker();
   linkBitmapIcon(control, props, bound, link);
   return () => link.dispose();

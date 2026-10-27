@@ -18,7 +18,7 @@ export function linkLineBreak(
   props: LineBreakProps,
   bound: LineBreakBound,
   link: Linker
-): void {
+) {
   linkInline(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectLineBreak(
   control: LineBreak,
   props: LineBreakProps,
   bound: LineBreakBound
-): () => void {
+) {
   const link = new Linker();
   linkLineBreak(control, props, bound, link);
   return () => link.dispose();

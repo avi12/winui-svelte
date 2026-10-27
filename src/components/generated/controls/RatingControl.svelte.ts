@@ -27,7 +27,7 @@ export function linkRatingControl(
   props: RatingControlProps,
   bound: RatingControlBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "caption", value => {
     control.caption = value;
@@ -68,7 +68,7 @@ export function connectRatingControl(
   control: RatingControl,
   props: RatingControlProps,
   bound: RatingControlBound
-): () => void {
+) {
   const link = new Linker();
   linkRatingControl(control, props, bound, link);
   return () => link.dispose();

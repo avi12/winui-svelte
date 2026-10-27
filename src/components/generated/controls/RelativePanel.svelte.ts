@@ -31,10 +31,10 @@ export function linkRelativePanel(
   props: RelativePanelProps,
   bound: RelativePanelBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
   link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+    control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
   });
   link.property(props, "borderBrush", value => {
     control.borderBrush = brushOf(value);
@@ -54,7 +54,7 @@ export function connectRelativePanel(
   control: RelativePanel,
   props: RelativePanelProps,
   bound: RelativePanelBound
-): () => void {
+) {
   const link = new Linker();
   linkRelativePanel(control, props, bound, link);
   return () => link.dispose();

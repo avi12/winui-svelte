@@ -20,7 +20,7 @@ export function linkToggleSplitButton(
   props: ToggleSplitButtonProps,
   bound: ToggleSplitButtonBound,
   link: Linker
-): void {
+) {
   linkSplitButton(control, props, bound, link);
   link.bindable(bound, "isChecked", {
     read: () => control.isChecked,
@@ -40,7 +40,7 @@ export function connectToggleSplitButton(
   control: ToggleSplitButton,
   props: ToggleSplitButtonProps,
   bound: ToggleSplitButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkToggleSplitButton(control, props, bound, link);
   return () => link.dispose();

@@ -23,7 +23,7 @@ export function linkMediaPlayerPresenter(
   props: MediaPlayerPresenterProps,
   bound: MediaPlayerPresenterBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "isFullWindow", value => {
     control.isFullWindow = value;
@@ -32,7 +32,7 @@ export function linkMediaPlayerPresenter(
     control.mediaPlayer = value;
   });
   link.property(props, "stretch", value => {
-    control.stretch = enumValue(Stretch, value);
+    control.stretch = enumValue({ table: Stretch, input: value });
   });
 }
 
@@ -40,7 +40,7 @@ export function connectMediaPlayerPresenter(
   control: MediaPlayerPresenter,
   props: MediaPlayerPresenterProps,
   bound: MediaPlayerPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkMediaPlayerPresenter(control, props, bound, link);
   return () => link.dispose();

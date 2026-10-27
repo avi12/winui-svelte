@@ -19,7 +19,7 @@ export function linkFlipView(
   props: FlipViewProps,
   bound: FlipViewBound,
   link: Linker
-): void {
+) {
   linkSelector(control, props, bound, link);
   link.property(props, "useTouchAnimationsForAllNavigation", value => {
     control.useTouchAnimationsForAllNavigation = value;
@@ -30,7 +30,7 @@ export function connectFlipView(
   control: FlipView,
   props: FlipViewProps,
   bound: FlipViewBound
-): () => void {
+) {
   const link = new Linker();
   linkFlipView(control, props, bound, link);
   return () => link.dispose();

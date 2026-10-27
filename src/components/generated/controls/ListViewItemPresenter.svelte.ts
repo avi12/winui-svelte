@@ -90,7 +90,7 @@ export function linkListViewItemPresenter(
   props: ListViewItemPresenterProps,
   bound: ListViewItemPresenterBound,
   link: Linker
-): void {
+) {
   linkContentPresenter(control, props, bound, link);
   link.property(props, "checkBoxBorderBrush", value => {
     control.checkBoxBorderBrush = brushOf(value);
@@ -141,7 +141,7 @@ export function linkListViewItemPresenter(
     control.checkHintBrush = brushOf(value);
   });
   link.property(props, "checkMode", value => {
-    control.checkMode = enumValue(ListViewItemPresenterCheckMode, value);
+    control.checkMode = enumValue({ table: ListViewItemPresenterCheckMode, input: value });
   });
   link.property(props, "checkPressedBrush", value => {
     control.checkPressedBrush = brushOf(value);
@@ -171,13 +171,13 @@ export function linkListViewItemPresenter(
     control.focusSecondaryBorderBrush = brushOf(value);
   });
   link.property(props, "listViewItemPresenterHorizontalContentAlignment", value => {
-    control.listViewItemPresenterHorizontalContentAlignment = enumValue(HorizontalAlignment, value);
+    control.listViewItemPresenterHorizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
   });
   link.property(props, "listViewItemPresenterPadding", value => {
     control.listViewItemPresenterPadding = thicknessOf(value);
   });
   link.property(props, "listViewItemPresenterVerticalContentAlignment", value => {
-    control.listViewItemPresenterVerticalContentAlignment = enumValue(VerticalAlignment, value);
+    control.listViewItemPresenterVerticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
   });
   link.property(props, "placeholderBackground", value => {
     control.placeholderBackground = brushOf(value);
@@ -258,7 +258,7 @@ export function linkListViewItemPresenter(
     control.selectionIndicatorDisabledBrush = brushOf(value);
   });
   link.property(props, "selectionIndicatorMode", value => {
-    control.selectionIndicatorMode = enumValue(ListViewItemPresenterSelectionIndicatorMode, value);
+    control.selectionIndicatorMode = enumValue({ table: ListViewItemPresenterSelectionIndicatorMode, input: value });
   });
   link.property(props, "selectionIndicatorPointerOverBrush", value => {
     control.selectionIndicatorPointerOverBrush = brushOf(value);
@@ -275,7 +275,7 @@ export function connectListViewItemPresenter(
   control: ListViewItemPresenter,
   props: ListViewItemPresenterProps,
   bound: ListViewItemPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkListViewItemPresenter(control, props, bound, link);
   return () => link.dispose();

@@ -22,7 +22,7 @@ export function linkBreadcrumbBar(
   props: BreadcrumbBarProps,
   bound: BreadcrumbBarBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "itemsSource", value => {
     control.itemsSource = objectOf(value);
@@ -40,7 +40,7 @@ export function connectBreadcrumbBar(
   control: BreadcrumbBar,
   props: BreadcrumbBarProps,
   bound: BreadcrumbBarBound
-): () => void {
+) {
   const link = new Linker();
   linkBreadcrumbBar(control, props, bound, link);
   return () => link.dispose();

@@ -45,7 +45,7 @@ export function linkListViewBase(
   props: ListViewBaseProps,
   bound: ListViewBaseBound,
   link: Linker
-): void {
+) {
   linkSelector(control, props, bound, link);
   link.property(props, "canDragItems", value => {
     control.canDragItems = value;
@@ -78,7 +78,7 @@ export function linkListViewBase(
     control.incrementalLoadingThreshold = value;
   });
   link.property(props, "incrementalLoadingTrigger", value => {
-    control.incrementalLoadingTrigger = enumValue(IncrementalLoadingTrigger, value);
+    control.incrementalLoadingTrigger = enumValue({ table: IncrementalLoadingTrigger, input: value });
   });
   link.property(props, "isActiveView", value => {
     control.isActiveView = value;
@@ -96,10 +96,10 @@ export function linkListViewBase(
     control.isZoomedInView = value;
   });
   link.property(props, "reorderMode", value => {
-    control.reorderMode = enumValue(ListViewReorderMode, value);
+    control.reorderMode = enumValue({ table: ListViewReorderMode, input: value });
   });
   link.property(props, "selectionMode", value => {
-    control.selectionMode = enumValue(ListViewSelectionMode, value);
+    control.selectionMode = enumValue({ table: ListViewSelectionMode, input: value });
   });
   link.property(props, "semanticZoomOwner", value => {
     control.semanticZoomOwner = value;

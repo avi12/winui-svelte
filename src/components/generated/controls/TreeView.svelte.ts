@@ -37,7 +37,7 @@ export function linkTreeView(
   props: TreeViewProps,
   bound: TreeViewBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "canDragItems", value => {
     control.canDragItems = value;
@@ -67,7 +67,7 @@ export function linkTreeView(
     control.selectedNode = value;
   });
   link.property(props, "selectionMode", value => {
-    control.selectionMode = enumValue(TreeViewSelectionMode, value);
+    control.selectionMode = enumValue({ table: TreeViewSelectionMode, input: value });
   });
   link.bindable(bound, "selectedItem", {
     read: () => objectInputOf(control.selectedItem),
@@ -107,7 +107,7 @@ export function connectTreeView(
   control: TreeView,
   props: TreeViewProps,
   bound: TreeViewBound
-): () => void {
+) {
   const link = new Linker();
   linkTreeView(control, props, bound, link);
   return () => link.dispose();

@@ -1,5 +1,3 @@
-import { packageJsonWithBindings } from "../../src/cli/binding-list.ts";
-import { filesIn } from "../files-in.ts";
 import {
   bindingModule,
   emitBindings,
@@ -16,6 +14,8 @@ import type { Model } from "./model.ts";
 import { bindingClasses, buildModel, requestedClasses } from "./model.ts";
 import { handWrittenComponents } from "./tables.ts";
 import type { TypeName } from "./winmd.ts";
+import { filesIn } from "#scripts/files-in.ts";
+import { packageJsonWithBindings } from "#src/cli/binding-list.js";
 import {
   existsSync,
   mkdirSync,
@@ -36,17 +36,20 @@ import { parseArgs } from "node:util";
 // adds the ones the components need). --check writes nothing and fails when a
 // file differs from what would be written, as the lint gate does.
 
-const packageFolder = path.join(import.meta.dirname, "..", "..");
-const generatedFolder = path.join(packageFolder, "src", "components", "generated");
-const lockPath = [".winapp", "winmds.lock.json"];
-const bindingsPath = [".winapp", "bindings"];
+const PACKAGE_FOLDER = path.join(import.meta.dirname, "..", "..");
+const GENERATED_FOLDER = path.join(PACKAGE_FOLDER, "src", "components", "generated");
+const LOCK_PATH = [".winapp", "winmds.lock.json"];
+const BINDINGS_PATH = [".winapp", "bindings"];
 
 interface OutputFile {
   file: string;
   text: string;
 }
 
-function updatedPackageJson(packagePath: string, wanted: TypeName[]): OutputFile {
+function updatedPackageJson({ packagePath, wanted }: {
+  packagePath: string;
+  wanted: TypeName[];
+}) {
   return {
     file: packagePath,
     text: packageJsonWithBindings(readFileSync(packagePath, "utf8"), wanted)
@@ -63,8 +66,8 @@ interface ReadmeBlock {
 // The hello example's files, which the quick start shows as they are.
 const quickStartFiles = ["vite.config.ts", "App.svelte", "window.ts", "main.ts"];
 
-function exampleBlock(name: string): ReadmeBlock {
-  const source = readFileSync(path.join(packageFolder, "examples", "hello", name), "utf8");
+function exampleBlock(name: string) {
+  const source = readFileSync(path.join(PACKAGE_FOLDER, "examples", "hello", name), "utf8");
   const language = path.extname(name).slice(1);
   return {
     name: `hello/${name}`,
@@ -73,8 +76,8 @@ function exampleBlock(name: string): ReadmeBlock {
 }
 
 // README.md with each block's body between its markers.
-function updatedReadme(blocks: ReadmeBlock[]): OutputFile {
-  const file = path.join(packageFolder, "README.md");
+function updatedReadme(blocks: ReadmeBlock[]) {
+  const file = path.join(PACKAGE_FOLDER, "README.md");
   const original = readFileSync(file, "utf8");
   let text = normalized(original);
   for (const block of blocks) {
@@ -99,7 +102,7 @@ function updatedReadme(blocks: ReadmeBlock[]): OutputFile {
 
 // A table entry that names no component, or whose module is missing, would
 // leave the index exporting nothing: fail here, with the entry.
-function checkHandWritten(model: Model): void {
+function checkHandWritten(model: Model) {
   const components = new Set(model.classes.filter(level => level.isComponent).map(level => level.type.name));
   for (const [name, module] of handWrittenComponents) {
     const isComponent = components.has(name);
@@ -107,7 +110,7 @@ function checkHandWritten(model: Model): void {
       throw new Error(`handWrittenComponents names ${name}, which is not a generated component`);
     }
 
-    const file = path.join(generatedFolder, module);
+    const file = path.join(GENERATED_FOLDER, module);
     const isPresent = existsSync(file) && existsSync(file.replace(/\.svelte$/u, ".d.svelte.ts"));
     if (!isPresent) {
       throw new Error(`handWrittenComponents: ${file} and its .d.svelte.ts must exist`);
@@ -115,35 +118,35 @@ function checkHandWritten(model: Model): void {
   }
 }
 
-function generatedFiles(project: string): OutputFile[] {
-  const model = buildModel(path.join(project, ...lockPath));
+function generatedFiles(project: string) {
+  const model = buildModel(path.join(project, ...LOCK_PATH));
   checkHandWritten(model);
   const output: OutputFile[] = [
     {
-      file: path.join(generatedFolder, "bindings.ts"),
+      file: path.join(GENERATED_FOLDER, "bindings.ts"),
       text: emitBindings(model)
     },
     {
-      file: path.join(generatedFolder, "index.ts"),
+      file: path.join(GENERATED_FOLDER, "index.ts"),
       text: emitIndex(model)
     },
     {
-      file: path.join(generatedFolder, "metadata.ts"),
+      file: path.join(GENERATED_FOLDER, "metadata.ts"),
       text: emitMetadata(model)
     },
     {
-      file: path.join(generatedFolder, "props-strictness.ts"),
+      file: path.join(GENERATED_FOLDER, "props-strictness.ts"),
       text: emitStrictness(model)
     },
     {
-      file: path.join(generatedFolder, "required-bindings.json"),
+      file: path.join(GENERATED_FOLDER, "required-bindings.json"),
       text: emitRequiredBindings(model)
     }
   ];
   for (const level of model.classes) {
     const name = level.type.name;
     output.push({
-      file: path.join(generatedFolder, "controls", `${name}.svelte.ts`),
+      file: path.join(GENERATED_FOLDER, "controls", `${name}.svelte.ts`),
       text: emitLevel(level)
     });
 
@@ -151,11 +154,11 @@ function generatedFiles(project: string): OutputFile[] {
     if (isGenerated) {
       output.push(
         {
-          file: path.join(generatedFolder, `${name}.svelte`),
+          file: path.join(GENERATED_FOLDER, `${name}.svelte`),
           text: emitComponent(level)
         },
         {
-          file: path.join(generatedFolder, `${name}.d.svelte.ts`),
+          file: path.join(GENERATED_FOLDER, `${name}.d.svelte.ts`),
           text: emitDeclaration(level)
         }
       );
@@ -171,16 +174,28 @@ function generatedFiles(project: string): OutputFile[] {
       ...quickStartFiles.map(exampleBlock)
     ])
   );
-  output.push(updatedPackageJson(path.join(project, "package.json"), requestedClasses(model)));
-  reportMissingBindings(project, bindingClasses(model));
+  output.push(
+    updatedPackageJson({
+      packagePath: path.join(project, "package.json"),
+      wanted: requestedClasses(model)
+    })
+  );
+  reportMissingBindings({
+    project,
+    wanted: bindingClasses(model)
+  });
   return output;
 }
 
 // After `pnpm bindings`, a class the components import that the bindings do
 // not hold would fail only when the window loads: say so now.
-function reportMissingBindings(project: string, wanted: TypeName[]): void {
-  const folder = path.join(project, ...bindingsPath);
-  if (!existsSync(folder)) {
+function reportMissingBindings({ project, wanted }: {
+  project: string;
+  wanted: TypeName[];
+}) {
+  const folder = path.join(project, ...BINDINGS_PATH);
+  const hasBindings = existsSync(folder);
+  if (!hasBindings) {
     return;
   }
 
@@ -188,12 +203,13 @@ function reportMissingBindings(project: string, wanted: TypeName[]): void {
     const module = bindingModule(type).replace("#winui", folder);
     return !existsSync(`${module}.js`);
   });
-  if (missing.length > 0) {
+  const hasMissing = missing.length > 0;
+  if (hasMissing) {
     process.stderr.write(`bindings missing for ${missing.map(type => type.name).join(", ")}; run pnpm bindings\n`);
   }
 }
 
-function normalized(text: string): string {
+function normalized(text: string) {
   return text.replaceAll("\r\n", "\n");
 }
 
@@ -207,17 +223,23 @@ const { values } = parseArgs({
     }
   }
 });
-const project = path.resolve(values.project ?? packageFolder);
-const output = generatedFiles(project);
+const PROJECT_FOLDER = path.resolve(values.project ?? PACKAGE_FOLDER);
+const output = generatedFiles(PROJECT_FOLDER);
 const wanted = new Set(output.map(entry => entry.file));
-const stale = filesIn(generatedFolder).filter(file => !wanted.has(file));
+const stale = filesIn(GENERATED_FOLDER).filter(file => !wanted.has(file));
 const differing = output.filter(entry => {
   const isPresent = existsSync(entry.file);
-  return !isPresent || normalized(readFileSync(entry.file, "utf8")) !== normalized(entry.text);
+  if (!isPresent) {
+    return true;
+  }
+
+  return normalized(readFileSync(entry.file, "utf8")) !== normalized(entry.text);
 });
-if (values.check === true) {
+const IS_CHECK = values.check === true;
+if (IS_CHECK) {
   const problems = [...differing.map(entry => entry.file), ...stale];
-  if (problems.length > 0) {
+  const hasProblems = problems.length > 0;
+  if (hasProblems) {
     process.stderr.write(`the generated components are stale; run pnpm gen:components\n${problems.join("\n")}\n`);
     process.exitCode = 1;
   }

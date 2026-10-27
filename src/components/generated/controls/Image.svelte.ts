@@ -25,7 +25,7 @@ export function linkImage(
   props: ImageProps,
   bound: ImageBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "nineGrid", value => {
     control.nineGrid = thicknessOf(value);
@@ -34,7 +34,7 @@ export function linkImage(
     control.source = imageSourceOf(value);
   });
   link.property(props, "stretch", value => {
-    control.stretch = enumValue(Stretch, value);
+    control.stretch = enumValue({ table: Stretch, input: value });
   });
 
   if ("onImageFailed" in props) {
@@ -50,7 +50,7 @@ export function connectImage(
   control: Image,
   props: ImageProps,
   bound: ImageBound
-): () => void {
+) {
   const link = new Linker();
   linkImage(control, props, bound, link);
   return () => link.dispose();

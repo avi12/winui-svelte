@@ -18,7 +18,7 @@ export function linkItalic(
   props: ItalicProps,
   bound: ItalicBound,
   link: Linker
-): void {
+) {
   linkSpan(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectItalic(
   control: Italic,
   props: ItalicProps,
   bound: ItalicBound
-): () => void {
+) {
   const link = new Linker();
   linkItalic(control, props, bound, link);
   return () => link.dispose();

@@ -39,7 +39,7 @@ export function linkDatePicker(
   props: DatePickerProps,
   bound: DatePickerBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "calendarIdentifier", value => {
     control.calendarIdentifier = value;
@@ -57,7 +57,7 @@ export function linkDatePicker(
     control.headerTemplate = value;
   });
   link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
+    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
   });
   link.property(props, "maxYear", value => {
     control.maxYear = value;
@@ -72,7 +72,7 @@ export function linkDatePicker(
     control.monthVisible = value;
   });
   link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+    control.orientation = enumValue({ table: Orientation, input: value });
   });
   link.property(props, "yearFormat", value => {
     control.yearFormat = value;
@@ -110,7 +110,7 @@ export function connectDatePicker(
   control: DatePicker,
   props: DatePickerProps,
   bound: DatePickerBound
-): () => void {
+) {
   const link = new Linker();
   linkDatePicker(control, props, bound, link);
   return () => link.dispose();

@@ -20,7 +20,7 @@ export function linkInfoBadge(
   props: InfoBadgeProps,
   bound: InfoBadgeBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "iconSource", value => {
     control.iconSource = value;
@@ -34,7 +34,7 @@ export function connectInfoBadge(
   control: InfoBadge,
   props: InfoBadgeProps,
   bound: InfoBadgeBound
-): () => void {
+) {
   const link = new Linker();
   linkInfoBadge(control, props, bound, link);
   return () => link.dispose();

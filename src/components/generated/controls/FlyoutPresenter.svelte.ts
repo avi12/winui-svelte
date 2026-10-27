@@ -19,7 +19,7 @@ export function linkFlyoutPresenter(
   props: FlyoutPresenterProps,
   bound: FlyoutPresenterBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "isDefaultShadowEnabled", value => {
     control.isDefaultShadowEnabled = value;
@@ -30,7 +30,7 @@ export function connectFlyoutPresenter(
   control: FlyoutPresenter,
   props: FlyoutPresenterProps,
   bound: FlyoutPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkFlyoutPresenter(control, props, bound, link);
   return () => link.dispose();

@@ -18,7 +18,7 @@ export function linkComboBoxItem(
   props: ComboBoxItemProps,
   bound: ComboBoxItemBound,
   link: Linker
-): void {
+) {
   linkSelectorItem(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectComboBoxItem(
   control: ComboBoxItem,
   props: ComboBoxItemProps,
   bound: ComboBoxItemBound
-): () => void {
+) {
   const link = new Linker();
   linkComboBoxItem(control, props, bound, link);
   return () => link.dispose();

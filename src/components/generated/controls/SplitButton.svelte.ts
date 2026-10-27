@@ -23,7 +23,7 @@ export function linkSplitButton(
   props: SplitButtonProps,
   bound: SplitButtonBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "command", value => {
     control.command = value;
@@ -44,7 +44,7 @@ export function connectSplitButton(
   control: SplitButton,
   props: SplitButtonProps,
   bound: SplitButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkSplitButton(control, props, bound, link);
   return () => link.dispose();

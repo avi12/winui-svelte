@@ -36,7 +36,7 @@ export function linkInfoBar(
   props: InfoBarProps,
   bound: InfoBarBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "actionButton", value => {
     control.actionButton = value;
@@ -69,7 +69,7 @@ export function linkInfoBar(
     control.message = value;
   });
   link.property(props, "severity", value => {
-    control.severity = enumValue(InfoBarSeverity, value);
+    control.severity = enumValue({ table: InfoBarSeverity, input: value });
   });
   link.property(props, "title", value => {
     control.title = value;
@@ -100,7 +100,7 @@ export function connectInfoBar(
   control: InfoBar,
   props: InfoBarProps,
   bound: InfoBarBound
-): () => void {
+) {
   const link = new Linker();
   linkInfoBar(control, props, bound, link);
   return () => link.dispose();

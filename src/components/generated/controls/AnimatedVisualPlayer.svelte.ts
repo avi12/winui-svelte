@@ -26,10 +26,10 @@ export function linkAnimatedVisualPlayer(
   props: AnimatedVisualPlayerProps,
   bound: AnimatedVisualPlayerBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "animationOptimization", value => {
-    control.animationOptimization = enumValue(PlayerAnimationOptimization, value);
+    control.animationOptimization = enumValue({ table: PlayerAnimationOptimization, input: value });
   });
   link.property(props, "autoPlay", value => {
     control.autoPlay = value;
@@ -44,7 +44,7 @@ export function linkAnimatedVisualPlayer(
     control.source = value;
   });
   link.property(props, "stretch", value => {
-    control.stretch = enumValue(Stretch, value);
+    control.stretch = enumValue({ table: Stretch, input: value });
   });
 }
 
@@ -52,7 +52,7 @@ export function connectAnimatedVisualPlayer(
   control: AnimatedVisualPlayer,
   props: AnimatedVisualPlayerProps,
   bound: AnimatedVisualPlayerBound
-): () => void {
+) {
   const link = new Linker();
   linkAnimatedVisualPlayer(control, props, bound, link);
   return () => link.dispose();

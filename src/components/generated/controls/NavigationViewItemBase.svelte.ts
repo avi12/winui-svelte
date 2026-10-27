@@ -16,7 +16,7 @@ export function linkNavigationViewItemBase(
   props: NavigationViewItemBaseProps,
   bound: NavigationViewItemBaseBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "isSelected", value => {
     control.isSelected = value;

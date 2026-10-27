@@ -20,7 +20,7 @@ export function linkSelectorBar(
   props: SelectorBarProps,
   bound: SelectorBarBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.bindable(bound, "selectedItem", {
     read: () => control.selectedItem,
@@ -40,7 +40,7 @@ export function connectSelectorBar(
   control: SelectorBar,
   props: SelectorBarProps,
   bound: SelectorBarBound
-): () => void {
+) {
   const link = new Linker();
   linkSelectorBar(control, props, bound, link);
   return () => link.dispose();

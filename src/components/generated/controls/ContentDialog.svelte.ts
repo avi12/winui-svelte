@@ -44,7 +44,7 @@ export function linkContentDialog(
   props: ContentDialogProps,
   bound: ContentDialogBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "closeButtonCommand", value => {
     control.closeButtonCommand = value;
@@ -59,7 +59,7 @@ export function linkContentDialog(
     control.closeButtonText = value;
   });
   link.property(props, "defaultButton", value => {
-    control.defaultButton = enumValue(ContentDialogButton, value);
+    control.defaultButton = enumValue({ table: ContentDialogButton, input: value });
   });
   link.property(props, "fullSizeDesired", value => {
     control.fullSizeDesired = value;
@@ -130,7 +130,7 @@ export function connectContentDialog(
   control: ContentDialog,
   props: ContentDialogProps,
   bound: ContentDialogBound
-): () => void {
+) {
   const link = new Linker();
   linkContentDialog(control, props, bound, link);
   return () => link.dispose();

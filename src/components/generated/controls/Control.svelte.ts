@@ -68,13 +68,13 @@ export function linkControl(
   props: ControlProps,
   bound: ControlBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "background", value => {
     control.background = brushOf(value);
   });
   link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+    control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
   });
   link.property(props, "borderBrush", value => {
     control.borderBrush = brushOf(value);
@@ -92,7 +92,7 @@ export function linkControl(
     control.defaultStyleResourceUri = uriOf(value);
   });
   link.property(props, "elementSoundMode", value => {
-    control.elementSoundMode = enumValue(ElementSoundMode, value);
+    control.elementSoundMode = enumValue({ table: ElementSoundMode, input: value });
   });
   link.property(props, "fontFamily", value => {
     control.fontFamily = fontFamilyOf(value);
@@ -101,10 +101,10 @@ export function linkControl(
     control.fontSize = value;
   });
   link.property(props, "fontStretch", value => {
-    control.fontStretch = enumValue(FontStretch, value);
+    control.fontStretch = enumValue({ table: FontStretch, input: value });
   });
   link.property(props, "fontStyle", value => {
-    control.fontStyle = enumValue(FontStyle, value);
+    control.fontStyle = enumValue({ table: FontStyle, input: value });
   });
   link.property(props, "fontWeight", value => {
     control.fontWeight = value;
@@ -113,7 +113,7 @@ export function linkControl(
     control.foreground = brushOf(value);
   });
   link.property(props, "horizontalContentAlignment", value => {
-    control.horizontalContentAlignment = enumValue(HorizontalAlignment, value);
+    control.horizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
   });
   link.property(props, "isEnabled", value => {
     control.isEnabled = value;
@@ -131,16 +131,16 @@ export function linkControl(
     control.padding = thicknessOf(value);
   });
   link.property(props, "requiresPointer", value => {
-    control.requiresPointer = enumValue(RequiresPointer, value);
+    control.requiresPointer = enumValue({ table: RequiresPointer, input: value });
   });
   link.property(props, "tabNavigation", value => {
-    control.tabNavigation = enumValue(KeyboardNavigationMode, value);
+    control.tabNavigation = enumValue({ table: KeyboardNavigationMode, input: value });
   });
   link.property(props, "template", value => {
     control.template = value;
   });
   link.property(props, "verticalContentAlignment", value => {
-    control.verticalContentAlignment = enumValue(VerticalAlignment, value);
+    control.verticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
   });
 
   if ("onFocusDisengaged" in props) {

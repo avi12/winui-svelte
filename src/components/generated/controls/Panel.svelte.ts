@@ -22,7 +22,7 @@ export function linkPanel(
   props: PanelProps,
   bound: PanelBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "background", value => {
     control.background = brushOf(value);

@@ -21,7 +21,7 @@ export function linkSystemBackdropElement(
   props: SystemBackdropElementProps,
   bound: SystemBackdropElementBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "cornerRadius", value => {
     control.cornerRadius = cornerRadiusOf(value);
@@ -35,7 +35,7 @@ export function connectSystemBackdropElement(
   control: SystemBackdropElement,
   props: SystemBackdropElementProps,
   bound: SystemBackdropElementBound
-): () => void {
+) {
   const link = new Linker();
   linkSystemBackdropElement(control, props, bound, link);
   return () => link.dispose();

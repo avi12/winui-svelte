@@ -27,7 +27,7 @@ export function linkFontIcon(
   props: FontIconProps,
   bound: FontIconBound,
   link: Linker
-): void {
+) {
   linkIconElement(control, props, bound, link);
   link.property(props, "fontFamily", value => {
     control.fontFamily = fontFamilyOf(value);
@@ -36,7 +36,7 @@ export function linkFontIcon(
     control.fontSize = value;
   });
   link.property(props, "fontStyle", value => {
-    control.fontStyle = enumValue(FontStyle, value);
+    control.fontStyle = enumValue({ table: FontStyle, input: value });
   });
   link.property(props, "fontWeight", value => {
     control.fontWeight = value;
@@ -56,7 +56,7 @@ export function connectFontIcon(
   control: FontIcon,
   props: FontIconProps,
   bound: FontIconBound
-): () => void {
+) {
   const link = new Linker();
   linkFontIcon(control, props, bound, link);
   return () => link.dispose();

@@ -36,7 +36,7 @@ export function linkTextElement(
   props: TextElementProps,
   _bound: TextElementBound,
   link: Linker
-): void {
+) {
   link.property(props, "accessKey", value => {
     control.accessKey = value;
   });
@@ -59,10 +59,10 @@ export function linkTextElement(
     control.fontSize = value;
   });
   link.property(props, "fontStretch", value => {
-    control.fontStretch = enumValue(FontStretch, value);
+    control.fontStretch = enumValue({ table: FontStretch, input: value });
   });
   link.property(props, "fontStyle", value => {
-    control.fontStyle = enumValue(FontStyle, value);
+    control.fontStyle = enumValue({ table: FontStyle, input: value });
   });
   link.property(props, "fontWeight", value => {
     control.fontWeight = value;
@@ -80,7 +80,7 @@ export function linkTextElement(
     control.keyTipHorizontalOffset = value;
   });
   link.property(props, "keyTipPlacementMode", value => {
-    control.keyTipPlacementMode = enumValue(KeyTipPlacementMode, value);
+    control.keyTipPlacementMode = enumValue({ table: KeyTipPlacementMode, input: value });
   });
   link.property(props, "keyTipVerticalOffset", value => {
     control.keyTipVerticalOffset = value;
@@ -89,12 +89,12 @@ export function linkTextElement(
     control.language = value;
   });
   link.property(props, "textDecorations", value => {
-    control.textDecorations = enumValue(TextDecorations, value);
+    control.textDecorations = enumValue({ table: TextDecorations, input: value });
   });
   link.property(props, "xamlRoot", value => {
     control.xamlRoot = value;
   });
   link.property(props, "attached", value => {
-    setAttached(control, value);
+    setAttached({ control, input: value });
   });
 }

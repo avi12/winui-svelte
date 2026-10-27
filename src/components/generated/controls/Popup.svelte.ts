@@ -36,7 +36,7 @@ export function linkPopup(
   props: PopupProps,
   bound: PopupBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.contentProperty(props, "child", value => {
     control.child = value;
@@ -45,7 +45,7 @@ export function linkPopup(
     control.childTransitions = value;
   });
   link.property(props, "desiredPlacement", value => {
-    control.desiredPlacement = enumValue(PopupPlacementMode, value);
+    control.desiredPlacement = enumValue({ table: PopupPlacementMode, input: value });
   });
   link.property(props, "horizontalOffset", value => {
     control.horizontalOffset = value;
@@ -54,7 +54,7 @@ export function linkPopup(
     control.isLightDismissEnabled = value;
   });
   link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
+    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
   });
   link.property(props, "placementTarget", value => {
     control.placementTarget = value;
@@ -95,7 +95,7 @@ export function connectPopup(
   control: Popup,
   props: PopupProps,
   bound: PopupBound
-): () => void {
+) {
   const link = new Linker();
   linkPopup(control, props, bound, link);
   return () => link.dispose();

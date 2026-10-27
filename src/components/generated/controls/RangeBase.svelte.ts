@@ -21,7 +21,7 @@ export function linkRangeBase(
   props: RangeBaseProps,
   bound: RangeBaseBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "largeChange", value => {
     control.largeChange = value;

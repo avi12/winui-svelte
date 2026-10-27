@@ -35,7 +35,7 @@ export function linkSplitView(
   props: SplitViewProps,
   bound: SplitViewBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "compactPaneLength", value => {
     control.compactPaneLength = value;
@@ -44,10 +44,10 @@ export function linkSplitView(
     control.content = value;
   });
   link.property(props, "displayMode", value => {
-    control.displayMode = enumValue(SplitViewDisplayMode, value);
+    control.displayMode = enumValue({ table: SplitViewDisplayMode, input: value });
   });
   link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
+    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
   });
   link.property(props, "openPaneLength", value => {
     control.openPaneLength = value;
@@ -59,7 +59,7 @@ export function linkSplitView(
     control.paneBackground = brushOf(value);
   });
   link.property(props, "panePlacement", value => {
-    control.panePlacement = enumValue(SplitViewPanePlacement, value);
+    control.panePlacement = enumValue({ table: SplitViewPanePlacement, input: value });
   });
   link.bindable(bound, "isPaneOpen", {
     read: () => control.isPaneOpen,
@@ -92,7 +92,7 @@ export function connectSplitView(
   control: SplitView,
   props: SplitViewProps,
   bound: SplitViewBound
-): () => void {
+) {
   const link = new Linker();
   linkSplitView(control, props, bound, link);
   return () => link.dispose();

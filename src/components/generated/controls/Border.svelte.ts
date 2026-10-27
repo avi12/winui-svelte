@@ -37,13 +37,13 @@ export function linkBorder(
   props: BorderProps,
   bound: BorderBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "background", value => {
     control.background = brushOf(value);
   });
   link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+    control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
   });
   link.property(props, "backgroundTransition", value => {
     control.backgroundTransition = value;
@@ -72,7 +72,7 @@ export function connectBorder(
   control: Border,
   props: BorderProps,
   bound: BorderBound
-): () => void {
+) {
   const link = new Linker();
   linkBorder(control, props, bound, link);
   return () => link.dispose();

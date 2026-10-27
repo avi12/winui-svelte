@@ -27,7 +27,7 @@ export function linkTreeViewItem(
   props: TreeViewItemProps,
   bound: TreeViewItemBound,
   link: Linker
-): void {
+) {
   linkListViewItem(control, props, bound, link);
   link.property(props, "collapsedGlyph", value => {
     control.collapsedGlyph = value;
@@ -59,7 +59,7 @@ export function connectTreeViewItem(
   control: TreeViewItem,
   props: TreeViewItemProps,
   bound: TreeViewItemBound
-): () => void {
+) {
   const link = new Linker();
   linkTreeViewItem(control, props, bound, link);
   return () => link.dispose();

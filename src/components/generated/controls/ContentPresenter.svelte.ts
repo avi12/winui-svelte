@@ -74,13 +74,13 @@ export function linkContentPresenter(
   props: ContentPresenterProps,
   bound: ContentPresenterBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "background", value => {
     control.background = brushOf(value);
   });
   link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+    control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
   });
   link.property(props, "backgroundTransition", value => {
     control.backgroundTransition = value;
@@ -116,10 +116,10 @@ export function linkContentPresenter(
     control.fontSize = value;
   });
   link.property(props, "fontStretch", value => {
-    control.fontStretch = enumValue(FontStretch, value);
+    control.fontStretch = enumValue({ table: FontStretch, input: value });
   });
   link.property(props, "fontStyle", value => {
-    control.fontStyle = enumValue(FontStyle, value);
+    control.fontStyle = enumValue({ table: FontStyle, input: value });
   });
   link.property(props, "fontWeight", value => {
     control.fontWeight = value;
@@ -128,7 +128,7 @@ export function linkContentPresenter(
     control.foreground = brushOf(value);
   });
   link.property(props, "horizontalContentAlignment", value => {
-    control.horizontalContentAlignment = enumValue(HorizontalAlignment, value);
+    control.horizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
   });
   link.property(props, "isTextScaleFactorEnabled", value => {
     control.isTextScaleFactorEnabled = value;
@@ -137,25 +137,25 @@ export function linkContentPresenter(
     control.lineHeight = value;
   });
   link.property(props, "lineStackingStrategy", value => {
-    control.lineStackingStrategy = enumValue(LineStackingStrategy, value);
+    control.lineStackingStrategy = enumValue({ table: LineStackingStrategy, input: value });
   });
   link.property(props, "maxLines", value => {
     control.maxLines = value;
   });
   link.property(props, "opticalMarginAlignment", value => {
-    control.opticalMarginAlignment = enumValue(OpticalMarginAlignment, value);
+    control.opticalMarginAlignment = enumValue({ table: OpticalMarginAlignment, input: value });
   });
   link.property(props, "padding", value => {
     control.padding = thicknessOf(value);
   });
   link.property(props, "textLineBounds", value => {
-    control.textLineBounds = enumValue(TextLineBounds, value);
+    control.textLineBounds = enumValue({ table: TextLineBounds, input: value });
   });
   link.property(props, "textWrapping", value => {
-    control.textWrapping = enumValue(TextWrapping, value);
+    control.textWrapping = enumValue({ table: TextWrapping, input: value });
   });
   link.property(props, "verticalContentAlignment", value => {
-    control.verticalContentAlignment = enumValue(VerticalAlignment, value);
+    control.verticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
   });
 }
 
@@ -163,7 +163,7 @@ export function connectContentPresenter(
   control: ContentPresenter,
   props: ContentPresenterProps,
   bound: ContentPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkContentPresenter(control, props, bound, link);
   return () => link.dispose();

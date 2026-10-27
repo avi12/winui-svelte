@@ -35,11 +35,11 @@ export function linkGrid(
   props: GridProps,
   bound: GridBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
   linkGridExtras(control, props, link);
   link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+    control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
   });
   link.property(props, "borderBrush", value => {
     control.borderBrush = brushOf(value);
@@ -65,7 +65,7 @@ export function connectGrid(
   control: Grid,
   props: GridProps,
   bound: GridBound
-): () => void {
+) {
   const link = new Linker();
   linkGrid(control, props, bound, link);
   return () => link.dispose();

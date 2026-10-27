@@ -24,7 +24,7 @@ export function linkScrollContentPresenter(
   props: ScrollContentPresenterProps,
   bound: ScrollContentPresenterBound,
   link: Linker
-): void {
+) {
   linkContentPresenter(control, props, bound, link);
   link.property(props, "canContentRenderOutsideBounds", value => {
     control.canContentRenderOutsideBounds = value;
@@ -47,7 +47,7 @@ export function connectScrollContentPresenter(
   control: ScrollContentPresenter,
   props: ScrollContentPresenterProps,
   bound: ScrollContentPresenterBound
-): () => void {
+) {
   const link = new Linker();
   linkScrollContentPresenter(control, props, bound, link);
   return () => link.dispose();

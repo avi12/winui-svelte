@@ -31,10 +31,10 @@ export function linkColorSpectrum(
   props: ColorSpectrumProps,
   bound: ColorSpectrumBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "components", value => {
-    control.components = enumValue(ColorSpectrumComponents, value);
+    control.components = enumValue({ table: ColorSpectrumComponents, input: value });
   });
   link.property(props, "hsvColor", value => {
     control.hsvColor = value;
@@ -58,7 +58,7 @@ export function linkColorSpectrum(
     control.minValue = value;
   });
   link.property(props, "shape", value => {
-    control.shape = enumValue(ColorSpectrumShape, value);
+    control.shape = enumValue({ table: ColorSpectrumShape, input: value });
   });
   link.bindable(bound, "color", {
     read: () => control.color,
@@ -78,7 +78,7 @@ export function connectColorSpectrum(
   control: ColorSpectrum,
   props: ColorSpectrumProps,
   bound: ColorSpectrumBound
-): () => void {
+) {
   const link = new Linker();
   linkColorSpectrum(control, props, bound, link);
   return () => link.dispose();

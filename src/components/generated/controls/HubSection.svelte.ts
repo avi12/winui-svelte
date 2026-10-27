@@ -25,7 +25,7 @@ export function linkHubSection(
   props: HubSectionProps,
   bound: HubSectionBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.contentProperty(props, "contentTemplate", value => {
     control.contentTemplate = value;
@@ -45,7 +45,7 @@ export function connectHubSection(
   control: HubSection,
   props: HubSectionProps,
   bound: HubSectionBound
-): () => void {
+) {
   const link = new Linker();
   linkHubSection(control, props, bound, link);
   return () => link.dispose();

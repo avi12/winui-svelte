@@ -25,7 +25,7 @@ export function linkMapControl(
   props: MapControlProps,
   bound: MapControlBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "center", value => {
     control.center = value;
@@ -56,7 +56,7 @@ export function connectMapControl(
   control: MapControl,
   props: MapControlProps,
   bound: MapControlBound
-): () => void {
+) {
   const link = new Linker();
   linkMapControl(control, props, bound, link);
   return () => link.dispose();

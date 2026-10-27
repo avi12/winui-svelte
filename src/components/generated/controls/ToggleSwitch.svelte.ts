@@ -29,7 +29,7 @@ export function linkToggleSwitch(
   props: ToggleSwitchProps,
   bound: ToggleSwitchBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.contentProperty(props, "header", value => {
     control.header = objectOf(value);
@@ -67,7 +67,7 @@ export function connectToggleSwitch(
   control: ToggleSwitch,
   props: ToggleSwitchProps,
   bound: ToggleSwitchBound
-): () => void {
+) {
   const link = new Linker();
   linkToggleSwitch(control, props, bound, link);
   return () => link.dispose();

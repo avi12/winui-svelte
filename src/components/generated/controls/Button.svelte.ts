@@ -19,7 +19,7 @@ export function linkButton(
   props: ButtonProps,
   bound: ButtonBound,
   link: Linker
-): void {
+) {
   linkButtonBase(control, props, bound, link);
   link.property(props, "flyout", value => {
     control.flyout = value;
@@ -30,7 +30,7 @@ export function connectButton(
   control: Button,
   props: ButtonProps,
   bound: ButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkButton(control, props, bound, link);
   return () => link.dispose();

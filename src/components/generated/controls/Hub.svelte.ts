@@ -31,7 +31,7 @@ export function linkHub(
   props: HubProps,
   bound: HubBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "defaultSectionIndex", value => {
     control.defaultSectionIndex = value;
@@ -49,7 +49,7 @@ export function linkHub(
     control.isZoomedInView = value;
   });
   link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+    control.orientation = enumValue({ table: Orientation, input: value });
   });
   link.property(props, "semanticZoomOwner", value => {
     control.semanticZoomOwner = value;
@@ -68,7 +68,7 @@ export function connectHub(
   control: Hub,
   props: HubProps,
   bound: HubBound
-): () => void {
+) {
   const link = new Linker();
   linkHub(control, props, bound, link);
   return () => link.dispose();

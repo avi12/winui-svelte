@@ -29,7 +29,7 @@ export function linkItemsRepeater(
   props: ItemsRepeaterProps,
   bound: ItemsRepeaterBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "background", value => {
     control.background = brushOf(value);
@@ -70,7 +70,7 @@ export function connectItemsRepeater(
   control: ItemsRepeater,
   props: ItemsRepeaterProps,
   bound: ItemsRepeaterBound
-): () => void {
+) {
   const link = new Linker();
   linkItemsRepeater(control, props, bound, link);
   return () => link.dispose();

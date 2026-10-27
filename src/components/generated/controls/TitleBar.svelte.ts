@@ -30,7 +30,7 @@ export function linkTitleBar(
   props: TitleBarProps,
   bound: TitleBarBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "autoRefreshDragRegions", value => {
     control.autoRefreshDragRegions = value;
@@ -76,7 +76,7 @@ export function connectTitleBar(
   control: TitleBar,
   props: TitleBarProps,
   bound: TitleBarBound
-): () => void {
+) {
   const link = new Linker();
   linkTitleBar(control, props, bound, link);
   return () => link.dispose();

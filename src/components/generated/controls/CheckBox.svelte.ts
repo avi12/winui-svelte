@@ -18,7 +18,7 @@ export function linkCheckBox(
   props: CheckBoxProps,
   bound: CheckBoxBound,
   link: Linker
-): void {
+) {
   linkToggleButton(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectCheckBox(
   control: CheckBox,
   props: CheckBoxProps,
   bound: CheckBoxBound
-): () => void {
+) {
   const link = new Linker();
   linkCheckBox(control, props, bound, link);
   return () => link.dispose();

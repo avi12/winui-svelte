@@ -28,13 +28,13 @@ export function linkToolTip(
   props: ToolTipProps,
   bound: ToolTipBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "horizontalOffset", value => {
     control.horizontalOffset = value;
   });
   link.property(props, "placement", value => {
-    control.placement = enumValue(PlacementMode, value);
+    control.placement = enumValue({ table: PlacementMode, input: value });
   });
   link.property(props, "placementRect", value => {
     control.placementRect = value;
@@ -68,7 +68,7 @@ export function connectToolTip(
   control: ToolTip,
   props: ToolTipProps,
   bound: ToolTipBound
-): () => void {
+) {
   const link = new Linker();
   linkToolTip(control, props, bound, link);
   return () => link.dispose();

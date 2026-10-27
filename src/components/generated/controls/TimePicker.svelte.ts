@@ -31,7 +31,7 @@ export function linkTimePicker(
   props: TimePickerProps,
   bound: TimePickerBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "clockIdentifier", value => {
     control.clockIdentifier = value;
@@ -43,7 +43,7 @@ export function linkTimePicker(
     control.headerTemplate = value;
   });
   link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
+    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
   });
   link.property(props, "minuteIncrement", value => {
     control.minuteIncrement = value;
@@ -78,7 +78,7 @@ export function connectTimePicker(
   control: TimePicker,
   props: TimePickerProps,
   bound: TimePickerBound
-): () => void {
+) {
   const link = new Linker();
   linkTimePicker(control, props, bound, link);
   return () => link.dispose();

@@ -24,7 +24,7 @@ export function linkAnnotatedScrollBar(
   props: AnnotatedScrollBarProps,
   bound: AnnotatedScrollBarBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "detailLabelTemplate", value => {
     control.detailLabelTemplate = value;
@@ -52,7 +52,7 @@ export function connectAnnotatedScrollBar(
   control: AnnotatedScrollBar,
   props: AnnotatedScrollBarProps,
   bound: AnnotatedScrollBarBound
-): () => void {
+) {
   const link = new Linker();
   linkAnnotatedScrollBar(control, props, bound, link);
   return () => link.dispose();

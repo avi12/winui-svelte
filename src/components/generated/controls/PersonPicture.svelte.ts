@@ -29,7 +29,7 @@ export function linkPersonPicture(
   props: PersonPictureProps,
   bound: PersonPictureBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "badgeGlyph", value => {
     control.badgeGlyph = value;
@@ -67,7 +67,7 @@ export function connectPersonPicture(
   control: PersonPicture,
   props: PersonPictureProps,
   bound: PersonPictureBound
-): () => void {
+) {
   const link = new Linker();
   linkPersonPicture(control, props, bound, link);
   return () => link.dispose();

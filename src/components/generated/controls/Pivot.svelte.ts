@@ -37,10 +37,10 @@ export function linkPivot(
   props: PivotProps,
   bound: PivotBound,
   link: Linker
-): void {
+) {
   linkItemsControl(control, props, bound, link);
   link.property(props, "headerFocusVisualPlacement", value => {
-    control.headerFocusVisualPlacement = enumValue(PivotHeaderFocusVisualPlacement, value);
+    control.headerFocusVisualPlacement = enumValue({ table: PivotHeaderFocusVisualPlacement, input: value });
   });
   link.property(props, "headerTemplate", value => {
     control.headerTemplate = value;
@@ -111,7 +111,7 @@ export function connectPivot(
   control: Pivot,
   props: PivotProps,
   bound: PivotBound
-): () => void {
+) {
   const link = new Linker();
   linkPivot(control, props, bound, link);
   return () => link.dispose();

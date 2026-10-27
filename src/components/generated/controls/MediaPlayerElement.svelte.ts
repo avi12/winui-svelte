@@ -27,7 +27,7 @@ export function linkMediaPlayerElement(
   props: MediaPlayerElementProps,
   bound: MediaPlayerElementBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "areTransportControlsEnabled", value => {
     control.areTransportControlsEnabled = value;
@@ -45,7 +45,7 @@ export function linkMediaPlayerElement(
     control.source = value;
   });
   link.property(props, "stretch", value => {
-    control.stretch = enumValue(Stretch, value);
+    control.stretch = enumValue({ table: Stretch, input: value });
   });
   link.property(props, "transportControls", value => {
     control.transportControls = value;
@@ -56,7 +56,7 @@ export function connectMediaPlayerElement(
   control: MediaPlayerElement,
   props: MediaPlayerElementProps,
   bound: MediaPlayerElementBound
-): () => void {
+) {
   const link = new Linker();
   linkMediaPlayerElement(control, props, bound, link);
   return () => link.dispose();

@@ -26,7 +26,7 @@ export function linkAppBarToggleButton(
   props: AppBarToggleButtonProps,
   bound: AppBarToggleButtonBound,
   link: Linker
-): void {
+) {
   linkToggleButton(control, props, bound, link);
   link.property(props, "dynamicOverflowOrder", value => {
     control.dynamicOverflowOrder = value;
@@ -44,7 +44,7 @@ export function linkAppBarToggleButton(
     control.label = value;
   });
   link.property(props, "labelPosition", value => {
-    control.labelPosition = enumValue(CommandBarLabelPosition, value);
+    control.labelPosition = enumValue({ table: CommandBarLabelPosition, input: value });
   });
 }
 
@@ -52,7 +52,7 @@ export function connectAppBarToggleButton(
   control: AppBarToggleButton,
   props: AppBarToggleButtonProps,
   bound: AppBarToggleButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkAppBarToggleButton(control, props, bound, link);
   return () => link.dispose();

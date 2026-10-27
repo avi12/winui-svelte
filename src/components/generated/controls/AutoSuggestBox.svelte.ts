@@ -35,7 +35,7 @@ export function linkAutoSuggestBox(
   props: AutoSuggestBoxProps,
   bound: AutoSuggestBoxBound,
   link: Linker
-): void {
+) {
   linkItemsControl(control, props, bound, link);
   link.property(props, "autoMaximizeSuggestionArea", value => {
     control.autoMaximizeSuggestionArea = value;
@@ -50,7 +50,7 @@ export function linkAutoSuggestBox(
     control.isSuggestionListOpen = value;
   });
   link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
+    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
   });
   link.property(props, "maxSuggestionListHeight", value => {
     control.maxSuggestionListHeight = value;
@@ -96,7 +96,7 @@ export function connectAutoSuggestBox(
   control: AutoSuggestBox,
   props: AutoSuggestBoxProps,
   bound: AutoSuggestBoxBound
-): () => void {
+) {
   const link = new Linker();
   linkAutoSuggestBox(control, props, bound, link);
   return () => link.dispose();

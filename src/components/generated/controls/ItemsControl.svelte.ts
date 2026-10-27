@@ -30,7 +30,7 @@ export function linkItemsControl(
   props: ItemsControlProps,
   bound: ItemsControlBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "displayMemberPath", value => {
     control.displayMemberPath = value;
@@ -65,7 +65,7 @@ export function connectItemsControl(
   control: ItemsControl,
   props: ItemsControlProps,
   bound: ItemsControlBound
-): () => void {
+) {
   const link = new Linker();
   linkItemsControl(control, props, bound, link);
   return () => link.dispose();

@@ -203,7 +203,7 @@ export function linkUIElement(
   props: UIElementProps,
   _bound: UIElementBound,
   link: Linker
-): void {
+) {
   link.property(props, "canvasLeft", value => {
     Canvas.setLeft(control, value);
   });
@@ -268,10 +268,10 @@ export function linkUIElement(
     VariableSizedWrapGrid.setColumnSpan(control, value);
   });
   link.property(props, "scrollViewerHorizontalScrollBarVisibility", value => {
-    ScrollViewer.setHorizontalScrollBarVisibility(control, enumValue(ScrollBarVisibility, value));
+    ScrollViewer.setHorizontalScrollBarVisibility(control, enumValue({ table: ScrollBarVisibility, input: value }));
   });
   link.property(props, "scrollViewerVerticalScrollBarVisibility", value => {
-    ScrollViewer.setVerticalScrollBarVisibility(control, enumValue(ScrollBarVisibility, value));
+    ScrollViewer.setVerticalScrollBarVisibility(control, enumValue({ table: ScrollBarVisibility, input: value }));
   });
   link.property(props, "scrollViewerIsHorizontalRailEnabled", value => {
     ScrollViewer.setIsHorizontalRailEnabled(control, value);
@@ -295,13 +295,13 @@ export function linkUIElement(
     ScrollViewer.setIsZoomInertiaEnabled(control, value);
   });
   link.property(props, "scrollViewerHorizontalScrollMode", value => {
-    ScrollViewer.setHorizontalScrollMode(control, enumValue(ScrollMode, value));
+    ScrollViewer.setHorizontalScrollMode(control, enumValue({ table: ScrollMode, input: value }));
   });
   link.property(props, "scrollViewerVerticalScrollMode", value => {
-    ScrollViewer.setVerticalScrollMode(control, enumValue(ScrollMode, value));
+    ScrollViewer.setVerticalScrollMode(control, enumValue({ table: ScrollMode, input: value }));
   });
   link.property(props, "scrollViewerZoomMode", value => {
-    ScrollViewer.setZoomMode(control, enumValue(ZoomMode, value));
+    ScrollViewer.setZoomMode(control, enumValue({ table: ZoomMode, input: value }));
   });
   link.property(props, "scrollViewerCanContentRenderOutsideBounds", value => {
     ScrollViewer.setCanContentRenderOutsideBounds(control, value);
@@ -313,7 +313,7 @@ export function linkUIElement(
     ScrollViewer.setBringIntoViewOnFocusChange(control, value);
   });
   link.property(props, "toolTipPlacement", value => {
-    ToolTipService.setPlacement(control, enumValue(PlacementMode, value));
+    ToolTipService.setPlacement(control, enumValue({ table: PlacementMode, input: value }));
   });
   link.property(props, "toolTipPlacementTarget", value => {
     ToolTipService.setPlacementTarget(control, value);
@@ -349,10 +349,10 @@ export function linkUIElement(
     AutomationProperties.setName(control, value);
   });
   link.property(props, "automationLiveSetting", value => {
-    AutomationProperties.setLiveSetting(control, enumValue(AutomationLiveSetting, value));
+    AutomationProperties.setLiveSetting(control, enumValue({ table: AutomationLiveSetting, input: value }));
   });
   link.property(props, "automationAccessibilityView", value => {
-    AutomationProperties.setAccessibilityView(control, enumValue(AccessibilityView, value));
+    AutomationProperties.setAccessibilityView(control, enumValue({ table: AccessibilityView, input: value }));
   });
   link.property(props, "automationPositionInSet", value => {
     AutomationProperties.setPositionInSet(control, value);
@@ -364,7 +364,7 @@ export function linkUIElement(
     AutomationProperties.setLevel(control, value);
   });
   link.property(props, "automationLandmarkType", value => {
-    AutomationProperties.setLandmarkType(control, enumValue(AutomationLandmarkType, value));
+    AutomationProperties.setLandmarkType(control, enumValue({ table: AutomationLandmarkType, input: value }));
   });
   link.property(props, "automationLocalizedLandmarkType", value => {
     AutomationProperties.setLocalizedLandmarkType(control, value);
@@ -385,13 +385,13 @@ export function linkUIElement(
     AutomationProperties.setCulture(control, value);
   });
   link.property(props, "automationHeadingLevel", value => {
-    AutomationProperties.setHeadingLevel(control, enumValue(AutomationHeadingLevel, value));
+    AutomationProperties.setHeadingLevel(control, enumValue({ table: AutomationHeadingLevel, input: value }));
   });
   link.property(props, "automationIsDialog", value => {
     AutomationProperties.setIsDialog(control, value);
   });
   link.property(props, "automationControlType", value => {
-    AutomationProperties.setAutomationControlType(control, enumValue(AutomationControlType, value));
+    AutomationProperties.setAutomationControlType(control, enumValue({ table: AutomationControlType, input: value }));
   });
   link.property(props, "accessKey", value => {
     control.accessKey = value;
@@ -418,7 +418,7 @@ export function linkUIElement(
     control.clip = value;
   });
   link.property(props, "compositeMode", value => {
-    control.compositeMode = enumValue(ElementCompositeMode, value);
+    control.compositeMode = enumValue({ table: ElementCompositeMode, input: value });
   });
   link.property(props, "contextFlyout", value => {
     control.contextFlyout = value;
@@ -427,7 +427,7 @@ export function linkUIElement(
     control.exitDisplayModeOnAccessKeyInvoked = value;
   });
   link.property(props, "highContrastAdjustment", value => {
-    control.highContrastAdjustment = enumValue(ElementHighContrastAdjustment, value);
+    control.highContrastAdjustment = enumValue({ table: ElementHighContrastAdjustment, input: value });
   });
   link.property(props, "isAccessKeyScope", value => {
     control.isAccessKeyScope = value;
@@ -451,7 +451,7 @@ export function linkUIElement(
     control.isTapEnabled = value;
   });
   link.property(props, "keyboardAcceleratorPlacementMode", value => {
-    control.keyboardAcceleratorPlacementMode = enumValue(KeyboardAcceleratorPlacementMode, value);
+    control.keyboardAcceleratorPlacementMode = enumValue({ table: KeyboardAcceleratorPlacementMode, input: value });
   });
   link.property(props, "keyboardAcceleratorPlacementTarget", value => {
     control.keyboardAcceleratorPlacementTarget = value;
@@ -460,7 +460,7 @@ export function linkUIElement(
     control.keyTipHorizontalOffset = value;
   });
   link.property(props, "keyTipPlacementMode", value => {
-    control.keyTipPlacementMode = enumValue(KeyTipPlacementMode, value);
+    control.keyTipPlacementMode = enumValue({ table: KeyTipPlacementMode, input: value });
   });
   link.property(props, "keyTipTarget", value => {
     control.keyTipTarget = value;
@@ -469,7 +469,7 @@ export function linkUIElement(
     control.keyTipVerticalOffset = value;
   });
   link.property(props, "manipulationMode", value => {
-    control.manipulationMode = enumValue(ManipulationModes, value);
+    control.manipulationMode = enumValue({ table: ManipulationModes, input: value });
   });
   link.property(props, "opacity", value => {
     control.opacity = value;
@@ -508,7 +508,7 @@ export function linkUIElement(
     control.shadow = value;
   });
   link.property(props, "tabFocusNavigation", value => {
-    control.tabFocusNavigation = enumValue(KeyboardNavigationMode, value);
+    control.tabFocusNavigation = enumValue({ table: KeyboardNavigationMode, input: value });
   });
   link.property(props, "tabIndex", value => {
     control.tabIndex = value;
@@ -535,7 +535,7 @@ export function linkUIElement(
     control.useSystemFocusVisuals = value;
   });
   link.property(props, "visibility", value => {
-    control.visibility = enumValue(Visibility, value);
+    control.visibility = enumValue({ table: Visibility, input: value });
   });
   link.property(props, "xamlRoot", value => {
     control.xamlRoot = value;
@@ -544,28 +544,28 @@ export function linkUIElement(
     control.xYFocusDown = value;
   });
   link.property(props, "xYFocusDownNavigationStrategy", value => {
-    control.xYFocusDownNavigationStrategy = enumValue(XYFocusNavigationStrategy, value);
+    control.xYFocusDownNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
   });
   link.property(props, "xYFocusKeyboardNavigation", value => {
-    control.xYFocusKeyboardNavigation = enumValue(XYFocusKeyboardNavigationMode, value);
+    control.xYFocusKeyboardNavigation = enumValue({ table: XYFocusKeyboardNavigationMode, input: value });
   });
   link.property(props, "xYFocusLeft", value => {
     control.xYFocusLeft = value;
   });
   link.property(props, "xYFocusLeftNavigationStrategy", value => {
-    control.xYFocusLeftNavigationStrategy = enumValue(XYFocusNavigationStrategy, value);
+    control.xYFocusLeftNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
   });
   link.property(props, "xYFocusRight", value => {
     control.xYFocusRight = value;
   });
   link.property(props, "xYFocusRightNavigationStrategy", value => {
-    control.xYFocusRightNavigationStrategy = enumValue(XYFocusNavigationStrategy, value);
+    control.xYFocusRightNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
   });
   link.property(props, "xYFocusUp", value => {
     control.xYFocusUp = value;
   });
   link.property(props, "xYFocusUpNavigationStrategy", value => {
-    control.xYFocusUpNavigationStrategy = enumValue(XYFocusNavigationStrategy, value);
+    control.xYFocusUpNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
   });
 
   if ("onAccessKeyDisplayDismissed" in props) {
@@ -729,6 +729,6 @@ export function linkUIElement(
   }
 
   link.property(props, "attached", value => {
-    setAttached(control, value);
+    setAttached({ control, input: value });
   });
 }

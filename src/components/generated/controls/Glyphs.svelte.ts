@@ -30,7 +30,7 @@ export function linkGlyphs(
   props: GlyphsProps,
   bound: GlyphsBound,
   link: Linker
-): void {
+) {
   linkFrameworkElement(control, props, bound, link);
   link.property(props, "colorFontPaletteIndex", value => {
     control.colorFontPaletteIndex = value;
@@ -57,7 +57,7 @@ export function linkGlyphs(
     control.originY = value;
   });
   link.property(props, "styleSimulations", value => {
-    control.styleSimulations = enumValue(StyleSimulations, value);
+    control.styleSimulations = enumValue({ table: StyleSimulations, input: value });
   });
   link.property(props, "unicodeString", value => {
     control.unicodeString = value;
@@ -68,7 +68,7 @@ export function connectGlyphs(
   control: Glyphs,
   props: GlyphsProps,
   bound: GlyphsBound
-): () => void {
+) {
   const link = new Linker();
   linkGlyphs(control, props, bound, link);
   return () => link.dispose();

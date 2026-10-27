@@ -63,25 +63,25 @@ export function linkRichEditBox(
   props: RichEditBoxProps,
   bound: RichEditBoxBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "acceptsReturn", value => {
     control.acceptsReturn = value;
   });
   link.property(props, "characterCasing", value => {
-    control.characterCasing = enumValue(CharacterCasing, value);
+    control.characterCasing = enumValue({ table: CharacterCasing, input: value });
   });
   link.property(props, "clipboardCopyFormat", value => {
-    control.clipboardCopyFormat = enumValue(RichEditClipboardFormat, value);
+    control.clipboardCopyFormat = enumValue({ table: RichEditClipboardFormat, input: value });
   });
   link.property(props, "description", value => {
     control.description = objectOf(value);
   });
   link.property(props, "desiredCandidateWindowAlignment", value => {
-    control.desiredCandidateWindowAlignment = enumValue(CandidateWindowAlignment, value);
+    control.desiredCandidateWindowAlignment = enumValue({ table: CandidateWindowAlignment, input: value });
   });
   link.property(props, "disabledFormattingAccelerators", value => {
-    control.disabledFormattingAccelerators = enumValue(DisabledFormattingAccelerators, value);
+    control.disabledFormattingAccelerators = enumValue({ table: DisabledFormattingAccelerators, input: value });
   });
   link.property(props, "header", value => {
     control.header = objectOf(value);
@@ -90,7 +90,7 @@ export function linkRichEditBox(
     control.headerTemplate = value;
   });
   link.property(props, "horizontalTextAlignment", value => {
-    control.horizontalTextAlignment = enumValue(TextAlignment, value);
+    control.horizontalTextAlignment = enumValue({ table: TextAlignment, input: value });
   });
   link.property(props, "inputScope", value => {
     control.inputScope = value;
@@ -126,13 +126,13 @@ export function linkRichEditBox(
     control.selectionHighlightColorWhenNotFocused = value;
   });
   link.property(props, "textAlignment", value => {
-    control.textAlignment = enumValue(TextAlignment, value);
+    control.textAlignment = enumValue({ table: TextAlignment, input: value });
   });
   link.property(props, "textReadingOrder", value => {
-    control.textReadingOrder = enumValue(TextReadingOrder, value);
+    control.textReadingOrder = enumValue({ table: TextReadingOrder, input: value });
   });
   link.property(props, "textWrapping", value => {
-    control.textWrapping = enumValue(TextWrapping, value);
+    control.textWrapping = enumValue({ table: TextWrapping, input: value });
   });
 
   if ("onCandidateWindowBoundsChanged" in props) {
@@ -188,7 +188,7 @@ export function connectRichEditBox(
   control: RichEditBox,
   props: RichEditBoxProps,
   bound: RichEditBoxBound
-): () => void {
+) {
   const link = new Linker();
   linkRichEditBox(control, props, bound, link);
   return () => link.dispose();

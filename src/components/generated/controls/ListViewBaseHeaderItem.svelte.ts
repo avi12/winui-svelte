@@ -15,6 +15,6 @@ export function linkListViewBaseHeaderItem(
   props: ListViewBaseHeaderItemProps,
   bound: ListViewBaseHeaderItemBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
 }

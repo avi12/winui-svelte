@@ -24,7 +24,7 @@ export function linkCarouselPanel(
   props: CarouselPanelProps,
   bound: CarouselPanelBound,
   link: Linker
-): void {
+) {
   linkVirtualizingPanel(control, props, bound, link);
   link.property(props, "canHorizontallyScroll", value => {
     control.canHorizontallyScroll = value;
@@ -49,7 +49,7 @@ export function connectCarouselPanel(
   control: CarouselPanel,
   props: CarouselPanelProps,
   bound: CarouselPanelBound
-): () => void {
+) {
   const link = new Linker();
   linkCarouselPanel(control, props, bound, link);
   return () => link.dispose();

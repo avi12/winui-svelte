@@ -18,7 +18,7 @@ export const rootClasses: TypeName[] = [
 
 // The winmd the components are read from; the rest only resolve the types
 // their properties name.
-export const componentWinmd = "Microsoft.UI.Xaml.winmd";
+export const COMPONENT_WINMD = "Microsoft.UI.Xaml.winmd";
 export const referenceWinmds = [
   "Microsoft.UI.Text.winmd",
   "Microsoft.UI.winmd",
@@ -386,21 +386,21 @@ export const supportEnums: TypeName[] = [
 
 // How a property's value is written, by the type it holds.
 export const PropertyKind = {
-  Boolean: "boolean",
-  Number: "number",
-  String: "string",
-  Enum: "enum",
-  Thickness: "thickness",
-  CornerRadius: "cornerRadius",
-  GridLength: "gridLength",
-  Brush: "brush",
-  Color: "color",
-  ImageSource: "imageSource",
-  FontFamily: "fontFamily",
-  Uri: "uri",
-  NullableBoolean: "nullableBoolean",
-  Object: "object",
-  Passthrough: "passthrough"
+  BOOLEAN: "boolean",
+  NUMBER: "number",
+  STRING: "string",
+  ENUM: "enum",
+  THICKNESS: "thickness",
+  CORNER_RADIUS: "cornerRadius",
+  GRID_LENGTH: "gridLength",
+  BRUSH: "brush",
+  COLOR: "color",
+  IMAGE_SOURCE: "imageSource",
+  FONT_FAMILY: "fontFamily",
+  URI: "uri",
+  NULLABLE_BOOLEAN: "nullableBoolean",
+  OBJECT: "object",
+  PASSTHROUGH: "passthrough"
 } as const;
 
 export type PropertyKind = (typeof PropertyKind)[keyof typeof PropertyKind];
@@ -408,14 +408,14 @@ export type PropertyKind = (typeof PropertyKind)[keyof typeof PropertyKind];
 // By the full name of the type; anything else a value or a class is handed
 // on as the bindings type it.
 export const kindOfType = new Map<string, PropertyKind>([
-  ["Microsoft.UI.Xaml.Thickness", PropertyKind.Thickness],
-  ["Microsoft.UI.Xaml.CornerRadius", PropertyKind.CornerRadius],
-  ["Microsoft.UI.Xaml.GridLength", PropertyKind.GridLength],
-  ["Microsoft.UI.Xaml.Media.Brush", PropertyKind.Brush],
-  ["Windows.UI.Color", PropertyKind.Color],
-  ["Microsoft.UI.Xaml.Media.ImageSource", PropertyKind.ImageSource],
-  ["Microsoft.UI.Xaml.Media.FontFamily", PropertyKind.FontFamily],
-  ["Windows.Foundation.Uri", PropertyKind.Uri]
+  ["Microsoft.UI.Xaml.Thickness", PropertyKind.THICKNESS],
+  ["Microsoft.UI.Xaml.CornerRadius", PropertyKind.CORNER_RADIUS],
+  ["Microsoft.UI.Xaml.GridLength", PropertyKind.GRID_LENGTH],
+  ["Microsoft.UI.Xaml.Media.Brush", PropertyKind.BRUSH],
+  ["Windows.UI.Color", PropertyKind.COLOR],
+  ["Microsoft.UI.Xaml.Media.ImageSource", PropertyKind.IMAGE_SOURCE],
+  ["Microsoft.UI.Xaml.Media.FontFamily", PropertyKind.FONT_FAMILY],
+  ["Windows.Foundation.Uri", PropertyKind.URI]
 ]);
 
 export const numericPrimitives = new Set(["SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Single", "Double"]);

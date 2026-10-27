@@ -27,7 +27,7 @@ export function linkRadioButtons(
   props: RadioButtonsProps,
   bound: RadioButtonsBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "header", value => {
     control.header = objectOf(value);
@@ -70,7 +70,7 @@ export function connectRadioButtons(
   control: RadioButtons,
   props: RadioButtonsProps,
   bound: RadioButtonsBound
-): () => void {
+) {
   const link = new Linker();
   linkRadioButtons(control, props, bound, link);
   return () => link.dispose();

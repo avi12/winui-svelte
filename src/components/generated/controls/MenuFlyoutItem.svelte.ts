@@ -27,7 +27,7 @@ export function linkMenuFlyoutItem(
   props: MenuFlyoutItemProps,
   bound: MenuFlyoutItemBound,
   link: Linker
-): void {
+) {
   linkMenuFlyoutItemBase(control, props, bound, link);
   link.property(props, "command", value => {
     control.command = value;
@@ -54,7 +54,7 @@ export function connectMenuFlyoutItem(
   control: MenuFlyoutItem,
   props: MenuFlyoutItemProps,
   bound: MenuFlyoutItemBound
-): () => void {
+) {
   const link = new Linker();
   linkMenuFlyoutItem(control, props, bound, link);
   return () => link.dispose();

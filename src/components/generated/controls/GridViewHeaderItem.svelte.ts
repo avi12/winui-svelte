@@ -18,7 +18,7 @@ export function linkGridViewHeaderItem(
   props: GridViewHeaderItemProps,
   bound: GridViewHeaderItemBound,
   link: Linker
-): void {
+) {
   linkListViewBaseHeaderItem(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectGridViewHeaderItem(
   control: GridViewHeaderItem,
   props: GridViewHeaderItemProps,
   bound: GridViewHeaderItemBound
-): () => void {
+) {
   const link = new Linker();
   linkGridViewHeaderItem(control, props, bound, link);
   return () => link.dispose();

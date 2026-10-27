@@ -32,7 +32,7 @@ export function linkPipsPager(
   props: PipsPagerProps,
   bound: PipsPagerBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "maxVisiblePips", value => {
     control.maxVisiblePips = value;
@@ -41,7 +41,7 @@ export function linkPipsPager(
     control.nextButtonStyle = value;
   });
   link.property(props, "nextButtonVisibility", value => {
-    control.nextButtonVisibility = enumValue(PipsPagerButtonVisibility, value);
+    control.nextButtonVisibility = enumValue({ table: PipsPagerButtonVisibility, input: value });
   });
   link.property(props, "normalPipStyle", value => {
     control.normalPipStyle = value;
@@ -50,13 +50,13 @@ export function linkPipsPager(
     control.numberOfPages = value;
   });
   link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+    control.orientation = enumValue({ table: Orientation, input: value });
   });
   link.property(props, "previousButtonStyle", value => {
     control.previousButtonStyle = value;
   });
   link.property(props, "previousButtonVisibility", value => {
-    control.previousButtonVisibility = enumValue(PipsPagerButtonVisibility, value);
+    control.previousButtonVisibility = enumValue({ table: PipsPagerButtonVisibility, input: value });
   });
   link.property(props, "selectedPageIndex", value => {
     control.selectedPageIndex = value;
@@ -65,7 +65,7 @@ export function linkPipsPager(
     control.selectedPipStyle = value;
   });
   link.property(props, "wrapMode", value => {
-    control.wrapMode = enumValue(PipsPagerWrapMode, value);
+    control.wrapMode = enumValue({ table: PipsPagerWrapMode, input: value });
   });
 
   if ("onSelectedIndexChanged" in props) {
@@ -77,7 +77,7 @@ export function connectPipsPager(
   control: PipsPager,
   props: PipsPagerProps,
   bound: PipsPagerBound
-): () => void {
+) {
   const link = new Linker();
   linkPipsPager(control, props, bound, link);
   return () => link.dispose();

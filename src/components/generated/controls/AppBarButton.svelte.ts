@@ -26,7 +26,7 @@ export function linkAppBarButton(
   props: AppBarButtonProps,
   bound: AppBarButtonBound,
   link: Linker
-): void {
+) {
   linkButton(control, props, bound, link);
   link.property(props, "dynamicOverflowOrder", value => {
     control.dynamicOverflowOrder = value;
@@ -44,7 +44,7 @@ export function linkAppBarButton(
     control.label = value;
   });
   link.property(props, "labelPosition", value => {
-    control.labelPosition = enumValue(CommandBarLabelPosition, value);
+    control.labelPosition = enumValue({ table: CommandBarLabelPosition, input: value });
   });
 }
 
@@ -52,7 +52,7 @@ export function connectAppBarButton(
   control: AppBarButton,
   props: AppBarButtonProps,
   bound: AppBarButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkAppBarButton(control, props, bound, link);
   return () => link.dispose();

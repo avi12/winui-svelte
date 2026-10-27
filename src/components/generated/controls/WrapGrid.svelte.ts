@@ -29,10 +29,10 @@ export function linkWrapGrid(
   props: WrapGridProps,
   bound: WrapGridBound,
   link: Linker
-): void {
+) {
   linkOrientedVirtualizingPanel(control, props, bound, link);
   link.property(props, "horizontalChildrenAlignment", value => {
-    control.horizontalChildrenAlignment = enumValue(HorizontalAlignment, value);
+    control.horizontalChildrenAlignment = enumValue({ table: HorizontalAlignment, input: value });
   });
   link.property(props, "itemHeight", value => {
     control.itemHeight = value;
@@ -44,10 +44,10 @@ export function linkWrapGrid(
     control.maximumRowsOrColumns = value;
   });
   link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+    control.orientation = enumValue({ table: Orientation, input: value });
   });
   link.property(props, "verticalChildrenAlignment", value => {
-    control.verticalChildrenAlignment = enumValue(VerticalAlignment, value);
+    control.verticalChildrenAlignment = enumValue({ table: VerticalAlignment, input: value });
   });
 }
 
@@ -55,7 +55,7 @@ export function connectWrapGrid(
   control: WrapGrid,
   props: WrapGridProps,
   bound: WrapGridBound
-): () => void {
+) {
   const link = new Linker();
   linkWrapGrid(control, props, bound, link);
   return () => link.dispose();

@@ -36,13 +36,13 @@ export function linkStackPanel(
   props: StackPanelProps,
   bound: StackPanelBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
   link.property(props, "areScrollSnapPointsRegular", value => {
     control.areScrollSnapPointsRegular = value;
   });
   link.property(props, "backgroundSizing", value => {
-    control.backgroundSizing = enumValue(BackgroundSizing, value);
+    control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
   });
   link.property(props, "borderBrush", value => {
     control.borderBrush = brushOf(value);
@@ -54,7 +54,7 @@ export function linkStackPanel(
     control.cornerRadius = cornerRadiusOf(value);
   });
   link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+    control.orientation = enumValue({ table: Orientation, input: value });
   });
   link.property(props, "padding", value => {
     control.padding = thicknessOf(value);
@@ -76,7 +76,7 @@ export function connectStackPanel(
   control: StackPanel,
   props: StackPanelProps,
   bound: StackPanelBound
-): () => void {
+) {
   const link = new Linker();
   linkStackPanel(control, props, bound, link);
   return () => link.dispose();

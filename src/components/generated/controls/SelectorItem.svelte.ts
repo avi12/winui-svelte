@@ -16,7 +16,7 @@ export function linkSelectorItem(
   props: SelectorItemProps,
   bound: SelectorItemBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "isSelected", value => {
     control.isSelected = value;

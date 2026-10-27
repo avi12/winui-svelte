@@ -22,10 +22,10 @@ export function linkButtonBase(
   props: ButtonBaseProps,
   bound: ButtonBaseBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "clickMode", value => {
-    control.clickMode = enumValue(ClickMode, value);
+    control.clickMode = enumValue({ table: ClickMode, input: value });
   });
   link.property(props, "command", value => {
     control.command = value;

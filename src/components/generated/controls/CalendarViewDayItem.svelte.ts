@@ -19,7 +19,7 @@ export function linkCalendarViewDayItem(
   props: CalendarViewDayItemProps,
   bound: CalendarViewDayItemBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.property(props, "isBlackout", value => {
     control.isBlackout = value;
@@ -30,7 +30,7 @@ export function connectCalendarViewDayItem(
   control: CalendarViewDayItem,
   props: CalendarViewDayItemProps,
   bound: CalendarViewDayItemBound
-): () => void {
+) {
   const link = new Linker();
   linkCalendarViewDayItem(control, props, bound, link);
   return () => link.dispose();

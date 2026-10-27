@@ -22,7 +22,7 @@ export function linkSwipeControl(
   props: SwipeControlProps,
   bound: SwipeControlBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "bottomItems", value => {
     control.bottomItems = value;
@@ -42,7 +42,7 @@ export function connectSwipeControl(
   control: SwipeControl,
   props: SwipeControlProps,
   bound: SwipeControlBound
-): () => void {
+) {
   const link = new Linker();
   linkSwipeControl(control, props, bound, link);
   return () => link.dispose();

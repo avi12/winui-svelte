@@ -24,7 +24,7 @@ export function linkToggleButton(
   props: ToggleButtonProps,
   bound: ToggleButtonBound,
   link: Linker
-): void {
+) {
   linkButtonBase(control, props, bound, link);
   link.property(props, "isThreeState", value => {
     control.isThreeState = value;
@@ -57,7 +57,7 @@ export function connectToggleButton(
   control: ToggleButton,
   props: ToggleButtonProps,
   bound: ToggleButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkToggleButton(control, props, bound, link);
   return () => link.dispose();

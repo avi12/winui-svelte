@@ -26,7 +26,7 @@ export function linkItemsStackPanel(
   props: ItemsStackPanelProps,
   bound: ItemsStackPanelBound,
   link: Linker
-): void {
+) {
   linkPanel(control, props, bound, link);
   link.property(props, "areStickyGroupHeadersEnabled", value => {
     control.areStickyGroupHeadersEnabled = value;
@@ -35,16 +35,16 @@ export function linkItemsStackPanel(
     control.cacheLength = value;
   });
   link.property(props, "groupHeaderPlacement", value => {
-    control.groupHeaderPlacement = enumValue(GroupHeaderPlacement, value);
+    control.groupHeaderPlacement = enumValue({ table: GroupHeaderPlacement, input: value });
   });
   link.property(props, "groupPadding", value => {
     control.groupPadding = thicknessOf(value);
   });
   link.property(props, "itemsUpdatingScrollMode", value => {
-    control.itemsUpdatingScrollMode = enumValue(ItemsUpdatingScrollMode, value);
+    control.itemsUpdatingScrollMode = enumValue({ table: ItemsUpdatingScrollMode, input: value });
   });
   link.property(props, "orientation", value => {
-    control.orientation = enumValue(Orientation, value);
+    control.orientation = enumValue({ table: Orientation, input: value });
   });
 }
 
@@ -52,7 +52,7 @@ export function connectItemsStackPanel(
   control: ItemsStackPanel,
   props: ItemsStackPanelProps,
   bound: ItemsStackPanelBound
-): () => void {
+) {
   const link = new Linker();
   linkItemsStackPanel(control, props, bound, link);
   return () => link.dispose();

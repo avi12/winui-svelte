@@ -18,7 +18,7 @@ export function linkNavigationViewItemHeader(
   props: NavigationViewItemHeaderProps,
   bound: NavigationViewItemHeaderBound,
   link: Linker
-): void {
+) {
   linkNavigationViewItemBase(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectNavigationViewItemHeader(
   control: NavigationViewItemHeader,
   props: NavigationViewItemHeaderProps,
   bound: NavigationViewItemHeaderBound
-): () => void {
+) {
   const link = new Linker();
   linkNavigationViewItemHeader(control, props, bound, link);
   return () => link.dispose();

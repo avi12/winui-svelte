@@ -20,7 +20,7 @@ export function linkRadioMenuFlyoutItem(
   props: RadioMenuFlyoutItemProps,
   bound: RadioMenuFlyoutItemBound,
   link: Linker
-): void {
+) {
   linkMenuFlyoutItem(control, props, bound, link);
   link.property(props, "groupName", value => {
     control.groupName = value;
@@ -34,7 +34,7 @@ export function connectRadioMenuFlyoutItem(
   control: RadioMenuFlyoutItem,
   props: RadioMenuFlyoutItemProps,
   bound: RadioMenuFlyoutItemBound
-): () => void {
+) {
   const link = new Linker();
   linkRadioMenuFlyoutItem(control, props, bound, link);
   return () => link.dispose();

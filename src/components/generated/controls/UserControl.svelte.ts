@@ -21,7 +21,7 @@ export function linkUserControl(
   props: UserControlProps,
   bound: UserControlBound,
   link: Linker
-): void {
+) {
   linkControl(control, props, bound, link);
   link.contentProperty(props, "content", value => {
     control.content = value;
@@ -32,7 +32,7 @@ export function connectUserControl(
   control: UserControl,
   props: UserControlProps,
   bound: UserControlBound
-): () => void {
+) {
   const link = new Linker();
   linkUserControl(control, props, bound, link);
   return () => link.dispose();

@@ -21,7 +21,7 @@ export function linkSpan(
   props: SpanProps,
   bound: SpanBound,
   link: Linker
-): void {
+) {
   linkInline(control, props, bound, link);
   link.contentProperty(props, "inlines", value => {
     control.inlines = value;
@@ -32,7 +32,7 @@ export function connectSpan(
   control: Span,
   props: SpanProps,
   bound: SpanBound
-): () => void {
+) {
   const link = new Linker();
   linkSpan(control, props, bound, link);
   return () => link.dispose();

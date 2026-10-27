@@ -59,7 +59,7 @@ export function linkFrameworkElement(
   props: FrameworkElementProps,
   bound: FrameworkElementBound,
   link: Linker
-): void {
+) {
   linkUIElement(control, props, bound, link);
   link.property(props, "gridRow", value => {
     Grid.setRow(control, value);
@@ -83,7 +83,7 @@ export function linkFrameworkElement(
     control.dataContext = objectOf(value);
   });
   link.property(props, "flowDirection", value => {
-    control.flowDirection = enumValue(FlowDirection, value);
+    control.flowDirection = enumValue({ table: FlowDirection, input: value });
   });
   link.property(props, "focusVisualMargin", value => {
     control.focusVisualMargin = thicknessOf(value);
@@ -104,7 +104,7 @@ export function linkFrameworkElement(
     control.height = value;
   });
   link.property(props, "horizontalAlignment", value => {
-    control.horizontalAlignment = enumValue(HorizontalAlignment, value);
+    control.horizontalAlignment = enumValue({ table: HorizontalAlignment, input: value });
   });
   link.property(props, "language", value => {
     control.language = value;
@@ -128,7 +128,7 @@ export function linkFrameworkElement(
     control.name = value;
   });
   link.property(props, "requestedTheme", value => {
-    control.requestedTheme = enumValue(ElementTheme, value);
+    control.requestedTheme = enumValue({ table: ElementTheme, input: value });
   });
   link.property(props, "resources", value => {
     control.resources = value;
@@ -137,7 +137,7 @@ export function linkFrameworkElement(
     control.tag = objectOf(value);
   });
   link.property(props, "verticalAlignment", value => {
-    control.verticalAlignment = enumValue(VerticalAlignment, value);
+    control.verticalAlignment = enumValue({ table: VerticalAlignment, input: value });
   });
   link.property(props, "width", value => {
     control.width = value;

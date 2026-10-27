@@ -18,7 +18,7 @@ export function linkTabViewListView(
   props: TabViewListViewProps,
   bound: TabViewListViewBound,
   link: Linker
-): void {
+) {
   linkListView(control, props, bound, link);
 }
 
@@ -26,7 +26,7 @@ export function connectTabViewListView(
   control: TabViewListView,
   props: TabViewListViewProps,
   bound: TabViewListViewBound
-): () => void {
+) {
   const link = new Linker();
   linkTabViewListView(control, props, bound, link);
   return () => link.dispose();

@@ -19,7 +19,7 @@ export function linkRadioButton(
   props: RadioButtonProps,
   bound: RadioButtonBound,
   link: Linker
-): void {
+) {
   linkToggleButton(control, props, bound, link);
   link.property(props, "groupName", value => {
     control.groupName = value;
@@ -30,7 +30,7 @@ export function connectRadioButton(
   control: RadioButton,
   props: RadioButtonProps,
   bound: RadioButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkRadioButton(control, props, bound, link);
   return () => link.dispose();

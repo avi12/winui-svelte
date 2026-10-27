@@ -28,16 +28,16 @@ export function linkAppBar(
   props: AppBarProps,
   bound: AppBarBound,
   link: Linker
-): void {
+) {
   linkContentControl(control, props, bound, link);
   link.property(props, "closedDisplayMode", value => {
-    control.closedDisplayMode = enumValue(AppBarClosedDisplayMode, value);
+    control.closedDisplayMode = enumValue({ table: AppBarClosedDisplayMode, input: value });
   });
   link.property(props, "isSticky", value => {
     control.isSticky = value;
   });
   link.property(props, "lightDismissOverlayMode", value => {
-    control.lightDismissOverlayMode = enumValue(LightDismissOverlayMode, value);
+    control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
   });
   link.bindable(bound, "isOpen", {
     read: () => control.isOpen,
@@ -70,7 +70,7 @@ export function connectAppBar(
   control: AppBar,
   props: AppBarProps,
   bound: AppBarBound
-): () => void {
+) {
   const link = new Linker();
   linkAppBar(control, props, bound, link);
   return () => link.dispose();

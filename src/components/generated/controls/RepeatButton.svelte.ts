@@ -20,7 +20,7 @@ export function linkRepeatButton(
   props: RepeatButtonProps,
   bound: RepeatButtonBound,
   link: Linker
-): void {
+) {
   linkButtonBase(control, props, bound, link);
   link.property(props, "delay", value => {
     control.delay = value;
@@ -34,7 +34,7 @@ export function connectRepeatButton(
   control: RepeatButton,
   props: RepeatButtonProps,
   bound: RepeatButtonBound
-): () => void {
+) {
   const link = new Linker();
   linkRepeatButton(control, props, bound, link);
   return () => link.dispose();
