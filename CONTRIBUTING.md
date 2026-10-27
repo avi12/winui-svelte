@@ -30,7 +30,8 @@ to its `package.json` and runs `winapp`.
 | Command | What it does |
 | --- | --- |
 | `pnpm build` | compiles `src` into `dist/` (what is published) |
-| `pnpm lint` | build, oxlint, ESLint, stylelint, `tsc`, `svelte-check`, the editor check, fallow, the generated-files check and the tarball check |
+| `pnpm lint` | every check, one after another even when one fails: build, oxlint, ESLint (Google TypeScript style and the house rules in `CLAUDE.md`), stylelint, `tsc`, `svelte-check`, the editor check, fallow, the generated-files check and the tarball check |
+| `pnpm lint:summary` | counts the violations per rule and per folder (`--folder src/css` lists one folder's files) |
 | `pnpm test` | build, then every unit test and the mount test (every component made in a real WinUI window that opens off screen and never takes focus) |
 | `pnpm test:windows` | the example windows, checked through UI Automation |
 | `pnpm gen:components` | regenerates `src/components/generated` from WinUI's metadata. Never edit those files by hand |

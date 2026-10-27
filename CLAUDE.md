@@ -52,7 +52,7 @@ allowlist, and `pnpm pack --dry-run` must not list it).
 - No em dashes; use hyphens
 
 # Naming
-- Full words, no abbreviations (`direction`, not `dir`). Allowed idioms: `i`/`j` loop counters, `x`/`y`, `hwnd`, `rva`, `dip`
+- Full words, no abbreviations (`direction`, not `dir`). Allowed idioms (the `id-length` allow-list): `i`/`j` loop counters, `x`/`y`, `id`, `to`, `on`, `ok`, `T` for a type parameter and `_` for an unused parameter; `hwnd`, `rva` and `dip` are long enough
 - Booleans carry `is` / `has` / `can` / `should` and read positively (`isEnabled`, never `isDisabled`)
 - An index variable is `i`-prefixed (`iItem`), or a bare `i` in a loop
 - Generated and hand-written components mirror WinUI's own names (`StackPanel`, `childrenTransitions`); props are the WinUI property in `lowerCamelCase`, events `on` + the WinUI event name
@@ -66,7 +66,31 @@ allowlist, and `pnpm pack --dry-run` must not list it).
 - An unknown attribute or a wrong value type on a component must fail `svelte-check`; keep a test that proves it
 
 # Linting
-After each change run `pnpm lint` (oxlint type-aware, ESLint, stylelint, `svelte-check`, the editor-diagnostics probe, fallow, `pnpm gen:components:check`) and `pnpm test`. Fix what they flag; never silence a rule to pass. After anything that removes or rewires code, run the dead-code audit (`pnpm fallow`) and clean up the orphans by hand.
+After each change run `pnpm lint` and `pnpm test`. Fix what they flag; never silence a rule to pass. After anything that removes or rewires code, run the dead-code audit (`pnpm fallow`) and clean up the orphans by hand.
+
+- `pnpm lint` runs every step even when an earlier one fails, so one run lists everything: `build`, oxlint (type-aware), ESLint, stylelint, `check` (tsc and `svelte-check`), `check:editor` (the VS Code Svelte language server's diagnostics), fallow, `gen:components:check` and `check:package` (publint and are-the-types-wrong on the packed tarball). It exits 1 if any failed
+- `pnpm lint:summary [eslint|oxlint|tsc|svelte-check ...] [--folder src/css]` counts the violations per rule and per top-level folder (and lists the files of one folder). Use it to pick an area and watch its count fall
+- `pnpm build` fails only when tsc emitted nothing; type errors are `pnpm check`'s to report
+- Every rule below is an error. The rules live in `eslint-config/google-style.js` (ESLint, applied to `.ts` and `.svelte`) and `.oxlintrc.json`; the compiler flags in `tsconfig.json`
+
+## What the tools enforce
+- **Compiler:** `strict`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `noPropertyAccessFromIndexSignature`, `noImplicitOverride`, `noImplicitReturns`, `noUncheckedSideEffectImports`, `verbatimModuleSyntax`, unreachable code and unused locals
+- **Google style:** named exports only, no `any` / `@ts-ignore` / `@ts-nocheck` (`@ts-expect-error` needs a description), `consistent-type-imports`, no non-null assertion, no object-literal assertion (and oxlint bans every other assertion except `as const`), `===`, braces on every block with the body on its own line, `prefer-const`, no `var`, `for...of` instead of index loops and `for...in`, `only-throw-error`, no namespaces / `require` / wrapper types, `T[]` for simple types, `interface` over a type alias, no parameter properties except `readonly` ones, no `public` keyword
+- **Naming:** UpperCamelCase types, classes, enums and components; lowerCamelCase variables, functions and properties; `CONSTANT_CASE` module constants and enum members; no `I` prefix; no leading `_` except on an unused parameter; a boolean variable, parameter or class property starts `is` / `has` / `can` / `should`; no names under 3 characters beyond the allow-list
+- **House rules:** a compound or comparing `if` condition (and a compound ternary condition) is extracted into a named boolean (an `else if` stays inline); no `.forEach` / `.reduce`; one destructured parameter from two (declarations and methods); no written return types (a type predicate is the exception); no magic numbers beyond `0`, `1`, `-1`, `2`; early returns (`no-else-return`, `no-lonely-if`, `max-depth` 3, `max-nested-callbacks` 3, no nested ternary); no `../` import (use `#src/*.js`); no import cycle (type-only ones are ignored); no em dash
+- **Public API:** JSDoc with a description on every exported function, class, interface, type alias and enum in `src/`, no types in the JSDoc
+- **Tree shaking:** a statement at the top level of a module in `src/` (a call, an `if`, a loop, a `try`) fails; the entry points (`src/cli/main.ts`, `src/window/bootstrap.ts`, `src/window/thread.ts`) are exempt, and a test bundles a one-component app against a size budget
+- **Generated components** (`src/components/generated`) are excluded from the style rules because the generator is where they are fixed; tsc, `svelte-check`, `props-strictness.ts`, the editor check and `gen:components:check` cover them
+
+## What no tool enforces (review catches it)
+- A type assertion with a one-line reason: oxlint's rule is stricter and allows none, so a genuinely needed assertion takes a `// oxlint-disable-next-line` with the reason
+- An `if` whose condition is a call with an unclear intent: only compound conditions and comparisons are flagged
+- A function with 2+ parameters that is an exempt shape (a key/value accessor, a callback whose signature WinUI or Svelte dictates): the rule flags it, and the disable comment carries the reason
+- A boolean named `allowDrop`-style because it mirrors a WinUI property: the prefix rule covers variables, parameters and class properties, not interface or object-literal keys
+- JSDoc on an export of an internal module that no entry point re-exports: the rule asks for it anyway; its description is not judged
+- DRY, single source of truth, separation of concerns, "inline a variable used once", and "no comment that restates the code"
+- A top-level initializer that does work (`const registry = register()`): only statements are flagged; the bundle-size test is the backstop
+- Hungarian-style and abbreviated names that happen to be 3+ characters
 
 # Commits and releases
 - Digestible commits: one self-contained logical change each, with a message saying what and why; large work lands as a sequence

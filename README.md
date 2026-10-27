@@ -593,7 +593,7 @@ In this repository (a pnpm workspace; run these in `packages/winui-svelte`):
 | | |
 | --- | --- |
 | `pnpm test` | the unit tests, the generator's tests, and the mount test: every component made and linked in a real WinUI window that opens off screen and never takes focus |
-| `pnpm lint` | oxlint, eslint, `tsc`, fallow and the check that the generated files are current |
+| `pnpm lint` | every check: oxlint, ESLint (Google TypeScript style), `tsc`, `svelte-check`, the editor check, fallow, the check that the generated files are current and the tarball check; `pnpm lint:summary` counts the violations per rule and folder |
 | `pnpm gen:components` | regenerates the components, their metadata, the class list `setup` writes and the tables and quick start in this README from WinUI's metadata (`pnpm restore` first) |
 | `pnpm build` | `dist/`: what is published (`pnpm pack` shows the tarball) |
 | `pwsh examples/hello/run.ps1` | the hello example in a background window, checked through UI Automation (`-Edit` also checks hot reload) |
