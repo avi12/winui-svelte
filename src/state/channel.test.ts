@@ -177,7 +177,7 @@ test("a later snapshot is merged in place: unchanged parts do not re-run", async
 
 test("send resolves on the host's answer, after the patches sent before it", async () => {
   const { channel, host, actions } = setup({
-    answer: () => {
+    answer() {
       void host.sendMessage(MessageType.patch, {
         name: "view",
         ops: [{
@@ -211,7 +211,7 @@ test("send resolves on the host's answer, after the patches sent before it", asy
 test("answers out of order settle the action they belong to", async () => {
   const waiting = new Map<string, PromiseWithResolvers<void>>();
   const { channel } = setup({
-    answer: action => {
+    answer(action) {
       const answer = Promise.withResolvers<void>();
       waiting.set(String(action), answer);
       return answer.promise;
@@ -231,7 +231,7 @@ test("answers out of order settle the action they belong to", async () => {
 
 test("a host failure rejects with HostError carrying the host's text", async () => {
   const { channel } = setup({
-    answer: () => {
+    answer() {
       throw new Error("Edge is not running");
     }
   });
@@ -297,7 +297,7 @@ test("malformed lines and messages are reported, dropped, and the channel goes o
 
 test("the app's own message types are handlers on channel.messaging", async () => {
   const { channel, host } = setup({
-    onError: error => {
+    onError(error) {
       throw error;
     }
   });
