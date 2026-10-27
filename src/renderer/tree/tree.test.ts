@@ -1,5 +1,5 @@
-import type { ProbeElement } from "../testing/tree-probe.ts";
-import probeRenderer, { outline } from "../testing/tree-probe.ts";
+import type { ProbeElement } from "#src/renderer/testing/tree-probe.js";
+import probeRenderer, { outline } from "#src/renderer/testing/tree-probe.js";
 import { nextSibling } from "./tree.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";

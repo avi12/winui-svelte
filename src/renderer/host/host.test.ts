@@ -1,12 +1,12 @@
-import type { NativeValue } from "../../native-value.ts";
-import { svelteHooks } from "../../vite/loader.ts";
+import type { NativeValue } from "#src/native-value.js";
+import { svelteHooks } from "#src/vite/loader.js";
 import {
   FakeBorder,
   fakeControls,
   FakePanel,
   FakeTextBlock,
   FakeToggle
-} from "../testing/fake-controls.ts";
+} from "#src/renderer/testing/fake-controls.js";
 import { registerControls, setClassHandler } from "./host.ts";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
@@ -23,8 +23,8 @@ setClassHandler((control, value) => {
 });
 registerHooks(svelteHooks(path.join(import.meta.dirname, "host.ts")));
 const { mountControl } = await import("./mount.svelte.ts");
-const { default: Fixture } = await import("../testing/Host.fixture.svelte");
-const { default: TextFixture } = await import("../testing/Text.fixture.svelte");
+const { default: Fixture } = await import("#src/renderer/testing/Host.fixture.svelte");
+const { default: TextFixture } = await import("#src/renderer/testing/Text.fixture.svelte");
 
 interface TextProps extends Record<string, NativeValue> {
   version: string;

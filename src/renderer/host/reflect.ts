@@ -1,4 +1,4 @@
-import type { NativeValue } from "../../native-value.ts";
+import type { NativeValue } from "#src/native-value.js";
 
 // Reading and writing a native control by property name, for the renderer,
 // which knows a control only by the kebab-case tag it was made from.

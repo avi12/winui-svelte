@@ -2,8 +2,8 @@
   // A label and the toggle it names, for element-ref.test.ts: the label is a
   // component, so its ref reaches it through a forwarded attachment, and the
   // toggle points at it the way automationLabeledBy does.
-  import { control } from "../host/control.ts";
-  import { elementRef } from "../host/element-ref.svelte.ts";
+  import { control } from "#src/renderer/host/control.js";
+  import { elementRef } from "#src/renderer/host/element-ref.svelte.js";
   import type { FakeTextBlock, FakeToggle } from "./fake-controls.ts";
   import Forwarded from "./Forwarded.fixture.svelte";
 

@@ -2,7 +2,7 @@
   // Components for host.test.ts: a toggle that takes its state through the
   // control attachment, a raw `on-content`, a conditional toggle and a hosted
   // control.
-  import { control } from "../host/control.ts";
+  import { control } from "#src/renderer/host/control.js";
   import type { FakeToggle } from "./fake-controls.ts";
 
   interface Props {

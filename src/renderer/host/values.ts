@@ -1,5 +1,5 @@
-import { boxedObject } from "../../native-value.ts";
-import { GridUnitType, PropertyValue } from "../../winui.ts";
+import { boxedObject } from "#src/native-value.js";
+import { GridUnitType, PropertyValue } from "#src/winui.js";
 
 // WinRT's plain values, built the way the bindings take them.
 

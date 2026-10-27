@@ -1,4 +1,4 @@
-import type { NativeValue } from "../../native-value.ts";
+import type { NativeValue } from "#src/native-value.js";
 import { read } from "./reflect.ts";
 
 // The element's native control, handed to code. Svelte runs an attachment in

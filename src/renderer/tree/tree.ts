@@ -1,4 +1,4 @@
-import type { NativeValue } from "../../native-value.ts";
+import type { NativeValue } from "#src/native-value.js";
 import { createRenderer } from "svelte/renderer";
 
 // The tree of nodes a Svelte custom renderer keeps, with no platform in it:
