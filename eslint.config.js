@@ -1,16 +1,42 @@
+import { everyFileRules, sourceRules, syntaxRules, treeShakingSyntax, typeAwareRules } from "./eslint-config/google-style.js";
 import expandNestedObjectExpression from "./eslint-rules/expand-nested-object-expression.js";
 import expandNestedTypeLiteral from "./eslint-rules/expand-nested-type-literal.js";
 import expandSvelteBlock from "./eslint-rules/expand-svelte-block.js";
 import multilineArgumentParenthesisNewline from "./eslint-rules/multiline-arg-paren-newline.js";
+import noEmDash from "./eslint-rules/no-em-dash.js";
 import noPaddedTag from "./eslint-rules/no-padded-tag.js";
 import stylistic from "@stylistic/eslint-plugin";
 import importNewlines from "eslint-plugin-import-newlines";
+import jsdoc from "eslint-plugin-jsdoc";
 import perfectionist from "eslint-plugin-perfectionist";
 import svelteEslint from "eslint-plugin-svelte";
 import { globalIgnores } from "eslint/config";
 import globals from "globals";
 import svelteParser from "svelte-eslint-parser";
 import typescriptEslint from "typescript-eslint";
+
+const projectSyntax = [
+  {
+    selector: "MemberExpression[object.name='Reflect']",
+    message: "Do not use Reflect. Use direct property access instead."
+  },
+  {
+    selector: "VariableDeclarator[init.type='ConditionalExpression'][init.consequent.type='ArrowFunctionExpression']",
+    message: "Declare a named function instead of assigning an arrow function to a variable - fold the condition inside the function body."
+  },
+  {
+    selector: "VariableDeclarator[init.type='ConditionalExpression'][init.alternate.type='ArrowFunctionExpression']",
+    message: "Declare a named function instead of assigning an arrow function to a variable - fold the condition inside the function body."
+  },
+  {
+    // Svelte content tags only: a `{cond ? a : b}` that outputs text reads as
+    // markup in an {#if}/{:else} block. Attribute values may keep a ternary.
+    selector: "SvelteMustacheTag:not([parent.type='SvelteAttribute']):not([parent.type='SvelteStyleDirective']) > ConditionalExpression",
+    message: "Do not use a ternary in a template tag - use an {#if}/{:else} block instead."
+  }
+];
+
+const restrictedSyntax = [...projectSyntax, ...syntaxRules];
 
 // Adapted from avi/pade. Logic and correctness rules live in oxlint
 // (.oxlintrc.json) - ESLint only carries what oxlint cannot: formatting,
@@ -42,17 +68,6 @@ const tsStyleRules = {
   "@stylistic/quotes": ["error", "double", { allowTemplateLiterals: "always" }],
   "@stylistic/quote-props": ["error", "as-needed"],
   "@stylistic/semi": ["error"],
-  "@typescript-eslint/naming-convention": [
-    "error",
-    {
-      selector: "interface",
-      format: ["PascalCase"],
-      custom: {
-        regex: "^I[A-Z]",
-        match: false
-      }
-    }
-  ],
   "@stylistic/indent": ["error", 2],
   "@stylistic/arrow-parens": ["error", "as-needed"],
   "@stylistic/object-curly-spacing": ["error", "always"],
@@ -204,6 +219,14 @@ const tsStyleRules = {
   "no-restricted-imports": [
     "error",
     {
+      // CLAUDE.md: an import outside the current folder goes through #src/*,
+      // never a ../ path.
+      patterns: [
+        {
+          regex: "^\\.\\./",
+          message: "Import through #src/* instead of a parent-relative ../ path."
+        }
+      ],
       paths: [
         {
           name: "@microsoft/dynwinrt/win32/unsafe",
@@ -219,46 +242,16 @@ const tsStyleRules = {
   // Arrow-function-to-variable is enforced by oxlint's func-style (allowArrowFunctions:
   // false), but that only catches a direct `const x = () => ...` - a ternary that
   // picks between two arrows evades it, so the selectors below close that gap.
-  "no-restricted-syntax": [
-    "error",
-    {
-      selector: "ForOfStatement > CallExpression[callee.object.name='Object'][callee.property.name='keys']",
-      message: "Use a for-in loop instead of for-of Object.keys()."
-    },
-    {
-      selector: "MemberExpression[object.name='Reflect']",
-      message: "Do not use Reflect. Use direct property access instead."
-    },
-    {
-      selector: "VariableDeclarator[init.type='ConditionalExpression'][init.consequent.type='ArrowFunctionExpression']",
-      message: "Declare a named function instead of assigning an arrow function to a variable - fold the condition inside the function body."
-    },
-    {
-      selector: "VariableDeclarator[init.type='ConditionalExpression'][init.alternate.type='ArrowFunctionExpression']",
-      message: "Declare a named function instead of assigning an arrow function to a variable - fold the condition inside the function body."
-    },
-    {
-      selector: "TSUnknownKeyword",
-      message: "Use the precise type (a schema's z.infer, Json, a generic, a union), not unknown."
-    },
-    {
-      // CLAUDE.md: a compound condition is extracted into a named boolean.
-      selector: "IfStatement > LogicalExpression.test",
-      message: "Extract the condition into a descriptively-named const (is/has/can/should) right before the if."
-    },
-    {
-      // Svelte content tags only: a `{cond ? a : b}` that outputs text reads as
-      // markup in an {#if}/{:else} block. Attribute values may keep a ternary.
-      selector: "SvelteMustacheTag:not([parent.type='SvelteAttribute']):not([parent.type='SvelteStyleDirective']) > ConditionalExpression",
-      message: "Do not use a ternary in a template tag - use an {#if}/{:else} block instead."
-    }
-  ]
+  "no-restricted-syntax": ["error", ...restrictedSyntax],
+  ...everyFileRules
 };
+
 
 const sharedPlugins = {
   "@stylistic": stylistic,
   "@typescript-eslint": typescriptEslint.plugin,
   "import-newlines": importNewlines,
+  jsdoc,
   perfectionist,
   local: {
     rules: {
@@ -266,25 +259,44 @@ const sharedPlugins = {
       "expand-nested-type-literal": expandNestedTypeLiteral,
       "expand-svelte-block": expandSvelteBlock,
       "multiline-arg-paren-newline": multilineArgumentParenthesisNewline,
+      "no-em-dash": noEmDash,
       "no-padded-tag": noPaddedTag
     }
   }
 };
+
+// Type-aware rules read the same tsconfig tsc does; a file it does not list
+// (the config files) is linted by the default project.
+const typeAwareParserOptions = {
+  projectService: {
+    allowDefaultProject: ["*.config.js", "eslint-config/*.js"]
+  },
+  tsconfigRootDir: import.meta.dirname
+};
+
+const testFiles = ["**/*.test.ts", "test/**", "**/*.fixture.svelte", "src/state/test-support/**", "src/renderer/testing/**"];
+const sourceFiles = ["src/**/*.ts", "src/**/*.svelte"];
+// What runs on import by design: a command-line entry or a worker's first line.
+const entryFiles = ["src/cli/main.ts", "src/window/bootstrap.ts", "src/window/thread.ts"];
 
 // The window runs under Node, not in a webview.
 export default [
   ...svelteEslint.configs["flat/recommended"],
   // The generated components are written by scripts/codegen from WinUI's
   // metadata, not by hand.
-  globalIgnores(["node_modules/", "dist/", "eslint-rules/", ".winapp/", "src/components/generated/", ".claude/worktrees/"]),
+  globalIgnores(["node_modules/", "dist/", "eslint-rules/", "eslint-config/", ".winapp/", ".verify/", "src/components/generated/", ".claude/worktrees/"]),
   {
     files: ["**/*.{ts,js,mjs}"],
     languageOptions: {
       parser: typescriptEslint.parser,
+      parserOptions: typeAwareParserOptions,
       globals: globals.node
     },
     plugins: sharedPlugins,
-    rules: tsStyleRules
+    rules: {
+      ...tsStyleRules,
+      ...typeAwareRules
+    }
   },
   {
     files: ["**/*.svelte"],
@@ -292,28 +304,68 @@ export default [
       parser: svelteParser,
       parserOptions: {
         parser: typescriptEslint.parser,
-        extraFileExtensions: [".svelte"]
+        extraFileExtensions: [".svelte"],
+        ...typeAwareParserOptions
       },
       globals: globals.node
     },
     plugins: sharedPlugins,
     rules: {
       ...tsStyleRules,
+      ...typeAwareRules,
       "svelte/no-at-html-tags": "off",
       "svelte/indent": ["error", { indent: 2 }],
       "svelte/sort-attributes": "error",
       "svelte/shorthand-directive": "error",
       "svelte/first-attribute-linebreak": ["error"],
       "svelte/shorthand-attribute": ["error", { prefer: "always" }],
-      "local/expand-svelte-block": "error",
-      "prefer-const": ["error", { destructuring: "all" }]
+      "local/expand-svelte-block": "error"
+    }
+  },
+  {
+    // The package's own code: documented API, and no work at import time.
+    files: sourceFiles,
+    ignores: testFiles,
+    rules: {
+      ...sourceRules,
+      "no-restricted-syntax": ["error", ...restrictedSyntax, ...treeShakingSyntax]
+    }
+  },
+  {
+    // Entry points run on import by design.
+    files: entryFiles,
+    rules: {
+      "no-restricted-syntax": ["error", ...restrictedSyntax]
+    }
+  },
+  {
+    // A test names its numbers in the assertion they belong to, and nests
+    // describe/it callbacks.
+    files: testFiles,
+    rules: {
+      "@typescript-eslint/no-magic-numbers": "off",
+      "max-nested-callbacks": "off"
+    }
+  },
+  {
+    // A tool's config file is its default export.
+    files: ["*.config.{js,ts}", "**/vite.config.ts"],
+    rules: {
+      "no-restricted-exports": "off"
     }
   },
   {
     // The one file that binds Win32 exports.
     files: ["src/window/native.ts"],
     rules: {
-      "no-restricted-imports": "off"
+      "no-restricted-imports": ["error", {
+        patterns: [
+          {
+            regex: "^\\.\\./",
+            message: "Import through #src/* instead of a parent-relative ../ path."
+          }
+        ]
+      }]
     }
   }
 ];
