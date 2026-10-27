@@ -30,7 +30,7 @@ to its `package.json` and runs `winapp`.
 | Command | What it does |
 | --- | --- |
 | `pnpm build` | compiles `src` into `dist/` (what is published) |
-| `pnpm lint` | every check, one after another even when one fails: build, oxlint, ESLint (Google TypeScript style and the house rules in `CLAUDE.md`), stylelint, `tsc`, `svelte-check`, the editor check, fallow, the generated-files check and the tarball check |
+| `pnpm lint` | every check, one after another even when one fails: build, oxlint, ESLint (Google TypeScript style and the house rules in `CLAUDE.md`), stylelint, `tsc`, `svelte-check`, the editor checks (VS Code and WebStorm), fallow, the generated-files check and the tarball check |
 | `pnpm lint:summary` | counts the violations per rule and per folder (`--folder src/css` lists one folder's files) |
 | `pnpm test` | build, then every unit test and the mount test (every component made in a real WinUI window that opens off screen and never takes focus) |
 | `pnpm test:windows` | the example windows, checked through UI Automation |
@@ -40,6 +40,32 @@ to its `package.json` and runs `winapp`.
 Examples and tests resolve `winui-svelte` the way a consumer does, through
 `package.json`'s `exports`, which point at `dist/`: run `pnpm build` after
 changing `src/` and before running an example.
+
+## Editor integration
+
+Two checks run what an editor underlines, so a pass in `pnpm lint` means the
+editor is clean too:
+
+| Check | Asks | Notes |
+| --- | --- | --- |
+| `pnpm check:editor` | the Svelte language server VS Code's Svelte extension runs | any diagnostic, and any inlay hint where a type collapsed to `any`, fails |
+| `pnpm check:webstorm` | WebStorm's own command-line inspections | runs where WebStorm is installed (`WEBSTORM_HOME`, the per-user install, the Toolbox, Program Files) and the Svelte plugin is in its config; elsewhere it skips and passes. About a minute; `--require` makes a missing WebStorm a failure |
+
+`check:webstorm` starts a WebStorm of its own, isolated under `.verify/webstorm`,
+so it is safe to run while WebStorm is open on this project. Its checks are
+listed in `scripts/editor/webstorm/profile.xml`.
+
+To make your editor show what the checks see:
+
+- **VS Code**: install the Svelte extension. Its server uses the workspace's
+  TypeScript and Svelte; the `svelte.language-server.ls-path` user setting can
+  point it at this repo's `node_modules/svelte-language-server/bin/server.js`,
+  the pinned and patched server the check runs.
+- **WebStorm**: install the Svelte plugin (Settings, Plugins, Marketplace). Under
+  Settings, Languages & Frameworks, TypeScript, leave the language service on and
+  choose this repo's TypeScript (`node_modules/typescript/lib`); under
+  Svelte, use this repo's `svelte` package. The `#src/*`, `#scripts/*` and
+  `#examples/*` imports are read from `package.json`.
 
 ## The Svelte build
 
