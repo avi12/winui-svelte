@@ -5,3 +5,5 @@ dist
 # The tarballs pnpm pack makes for the package check.
 *.tgz
 .claude/worktrees
+# Scratch space for checks and fresh-clone verification; deleted when done.
+.verify

@@ -1,12 +1,12 @@
 import { execFileSync } from "node:child_process";
 import {
+  mkdirSync,
   mkdtempSync,
   readdirSync,
   readFileSync,
   rmSync,
   statSync
 } from "node:fs";
-import { tmpdir } from "node:os";
 import path from "node:path";
 import { gunzipSync } from "node:zlib";
 
@@ -77,7 +77,10 @@ function run(args: string[]): void {
   });
 }
 
-const packFolder = mkdtempSync(path.join(tmpdir(), "winui-svelte-pack-"));
+// Inside the repository (gitignored), so the check writes nowhere else.
+const scratchFolder = path.join(packageRoot, ".verify");
+mkdirSync(scratchFolder, { recursive: true });
+const packFolder = mkdtempSync(path.join(scratchFolder, "pack-"));
 try {
   run(["pack", "--pack-destination", packFolder]);
   const tarball = path.join(packFolder, readdirSync(packFolder).filter(name => name.endsWith(".tgz"))[0] ?? "");
