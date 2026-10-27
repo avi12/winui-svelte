@@ -30,6 +30,7 @@
     "scripts/css/export-winui-resources.ts",
     "scripts/pack/build.ts",
     "scripts/editor/check-editor.ts",
+    "scripts/lint/summary.ts",
     "scripts/pack/check-package.ts",
     "scripts/pack/treeshake-app/main.ts",
     // Read by tsc only: it fails there on a component prop typed any or
