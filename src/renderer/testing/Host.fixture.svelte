@@ -1,9 +1,9 @@
 <script lang="ts">
+  import type { FakeToggle } from "./fake-controls.ts";
   // Components for host.test.ts: a toggle that takes its state through the
   // control attachment, a raw `on-content`, a conditional toggle and a hosted
   // control.
   import { control } from "#src/renderer/host/control.js";
-  import type { FakeToggle } from "./fake-controls.ts";
 
   interface Props {
     isOn: boolean;
@@ -13,26 +13,26 @@
     hosted: object;
   }
 
-  const { isOn, label, isShown, log, hosted }: Props = $props();
+  const props: Props = $props();
 </script>
 
 <fake-panel class="card">
   <fake-toggle
     {@attach control<FakeToggle>(toggle => {
-      log("attached");
+      props.log("attached");
       $effect(() => {
-        toggle.isOn = isOn;
+        toggle.isOn = props.isOn;
       });
-      return () => log("cleanup");
+      return () => props.log("cleanup");
     })}
-    on-content={() => label}
-    ontoggled={() => log("toggled")}
+    on-content={() => props.label}
+    ontoggled={() => props.log("toggled")}
   ></fake-toggle>
   <fake-toggle on-content={() => "Static"}></fake-toggle>
-  {#if isShown}
+  {#if props.isShown}
     <fake-panel>
-      <fake-toggle ontoggled={() => log("toggled")}></fake-toggle>
-      <host element={hosted}></host>
+      <fake-toggle ontoggled={() => props.log("toggled")}></fake-toggle>
+      <host element={props.hosted}></host>
     </fake-panel>
   {/if}
 </fake-panel>

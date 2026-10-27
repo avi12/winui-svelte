@@ -7,15 +7,17 @@ import { createRenderer } from "svelte/renderer";
 // object it stands for; the host is told when an element's children change,
 // so it can bring the native children in line.
 
+/** The kinds of node the tree holds. */
 export const NodeType = {
-  Fragment: "fragment",
-  Element: "element",
-  Text: "text",
-  Comment: "comment"
+  FRAGMENT: "fragment",
+  ELEMENT: "element",
+  TEXT: "text",
+  COMMENT: "comment"
 } as const;
 
+/** An element: a tag, the native object it stands for, and its attributes and children. */
 export interface ElementNode<Native> {
-  type: typeof NodeType.Element;
+  type: typeof NodeType.ELEMENT;
   name: string;
   native: Native;
   attributes: Map<string, NativeValue>;
@@ -25,29 +27,36 @@ export interface ElementNode<Native> {
   listeners: Map<string, Map<NativeValue, () => void>>;
 }
 
+/** The root Svelte builds a block in before inserting it, or mounts a component on. */
 export interface FragmentNode<Native> {
-  type: typeof NodeType.Fragment;
+  type: typeof NodeType.FRAGMENT;
   children: Array<TreeNode<Native>>;
   parent: null;
 }
 
+/** A run of text. */
 export interface TextNode<Native> {
-  type: typeof NodeType.Text;
+  type: typeof NodeType.TEXT;
   value: string;
   parent: ParentNode<Native> | null;
 }
 
+/** The comment Svelte anchors an `{#if}` or `{#each}` block on. */
 export interface CommentNode<Native> {
-  type: typeof NodeType.Comment;
+  type: typeof NodeType.COMMENT;
   value: string;
   parent: ParentNode<Native> | null;
 }
 
+/** A node that has children. */
 export type ParentNode<Native> = ElementNode<Native> | FragmentNode<Native>;
+
+/** A node that can sit in a parent's children. */
 export type TreeNode<Native> = ElementNode<Native> | TextNode<Native> | CommentNode<Native>;
+
 type AnyNode<Native> = TreeNode<Native> | FragmentNode<Native>;
 
-// What the tree asks of the platform its elements stand for.
+/** What the tree asks of the platform its elements stand for. */
 export interface NativeHost<Native> {
   create(name: string): Native;
   setAttribute(element: ElementNode<Native>, name: string, value: NativeValue): void;
@@ -62,16 +71,26 @@ export interface NativeHost<Native> {
   listen(element: ElementNode<Native>, type: string, handler: NativeValue): (() => void) | null;
 }
 
-export function parentElement<Native>(node: TreeNode<Native>): ElementNode<Native> | null {
-  return node.parent?.type === NodeType.Element ? node.parent : null;
+/**
+ * The element a node sits in.
+ *
+ * @param node - Any node in the tree.
+ * @returns Its parent when that is an element, or `null` for a node in a fragment or a loose one.
+ */
+export function parentElement<Native>(node: TreeNode<Native>) {
+  return node.parent?.type === NodeType.ELEMENT ? node.parent : null;
 }
 
-function notify<Native>(host: NativeHost<Native>, parent: ParentNode<Native> | null): void {
-  if (parent === null) {
+function notify<Native>({ host, parent }: {
+  host: NativeHost<Native>;
+  parent: ParentNode<Native> | null;
+}) {
+  if (!parent) {
     return;
   }
 
-  if (parent.type === NodeType.Element) {
+  const isElement = parent.type === NodeType.ELEMENT;
+  if (isElement) {
     host.childrenChanged(parent);
   } else {
     host.fragmentChanged(parent);
@@ -79,9 +98,9 @@ function notify<Native>(host: NativeHost<Native>, parent: ParentNode<Native> | n
 }
 
 // Takes a node out of its parent's children, leaving the host untold.
-function unlink<Native>(node: TreeNode<Native>): ParentNode<Native> | null {
+function unlink<Native>(node: TreeNode<Native>) {
   const parent = node.parent;
-  if (parent === null) {
+  if (!parent) {
     return null;
   }
 
@@ -91,89 +110,145 @@ function unlink<Native>(node: TreeNode<Native>): ParentNode<Native> | null {
 }
 
 // Puts an unlinked node before the anchor, or last when there is none.
-function link<Native>(parent: ParentNode<Native>, node: TreeNode<Native>, anchor: TreeNode<Native> | null): void {
+function link<Native>({ parent, node, anchor }: {
+  parent: ParentNode<Native>;
+  node: TreeNode<Native>;
+  anchor: TreeNode<Native> | null;
+}) {
   const position = anchor === null ? -1 : parent.children.indexOf(anchor);
-  if (position < 0) {
-    parent.children.push(node);
-  } else {
+  const isAnchorFound = position >= 0;
+  if (isAnchorFound) {
     parent.children.splice(position, 0, node);
+  } else {
+    parent.children.push(node);
   }
 
   node.parent = parent;
 }
 
-function removeNode<Native>(host: NativeHost<Native>, node: TreeNode<Native>): void {
-  notify(host, unlink(node));
+function removeNode<Native>({ host, node }: {
+  host: NativeHost<Native>;
+  node: TreeNode<Native>;
+}) {
+  notify({
+    host,
+    parent: unlink(node)
+  });
 }
 
 // Inserting a fragment moves all its children; the parent hears of it once.
-function insertFragment<Native>(
-  host: NativeHost<Native>,
-  parent: ParentNode<Native>,
-  fragment: FragmentNode<Native>,
-  anchor: TreeNode<Native> | null
-): void {
+function insertFragment<Native>({ host, parent, fragment, anchor }: {
+  host: NativeHost<Native>;
+  parent: ParentNode<Native>;
+  fragment: FragmentNode<Native>;
+  anchor: TreeNode<Native> | null;
+}) {
   for (const child of fragment.children.splice(0)) {
     child.parent = null;
-    link(parent, child, anchor);
+    link({
+      parent,
+      node: child,
+      anchor
+    });
   }
 
-  notify(host, parent);
+  notify({
+    host,
+    parent
+  });
 }
 
 // A node already in the tree is moved: a keyed {#each} reorders this way. A
 // move within one parent tells the host once, after the move.
-function insertNode<Native>(
-  host: NativeHost<Native>,
-  parent: ParentNode<Native>,
-  node: AnyNode<Native>,
-  anchor: TreeNode<Native> | null
-): void {
-  if (node.type === NodeType.Fragment) {
-    insertFragment(host, parent, node, anchor);
+function insertNode<Native>({ host, parent, node, anchor }: {
+  host: NativeHost<Native>;
+  parent: ParentNode<Native>;
+  node: AnyNode<Native>;
+  anchor: TreeNode<Native> | null;
+}) {
+  const isFragment = node.type === NodeType.FRAGMENT;
+  if (isFragment) {
+    insertFragment({
+      host,
+      parent,
+      fragment: node,
+      anchor
+    });
     return;
   }
 
-  if (node === anchor) {
+  const isAnchoredOnItself = node === anchor;
+  if (isAnchoredOnItself) {
     return;
   }
 
   const previousParent = unlink(node);
-  link(parent, node, anchor);
+  link({
+    parent,
+    node,
+    anchor
+  });
 
-  if (previousParent !== parent) {
-    notify(host, previousParent);
+  const hasChangedParent = previousParent !== parent;
+  if (hasChangedParent) {
+    notify({
+      host,
+      parent: previousParent
+    });
   }
 
-  notify(host, parent);
+  notify({
+    host,
+    parent
+  });
 }
 
-export function nextSibling<Native>(node: TreeNode<Native>): TreeNode<Native> | null {
+/**
+ * The node after a node in its parent's children.
+ *
+ * @param node - Any node in the tree.
+ * @returns The next sibling, or `null` for the last child or a loose node.
+ */
+export function nextSibling<Native>(node: TreeNode<Native>) {
   const siblings = node.parent?.children ?? [];
   return siblings[siblings.indexOf(node) + 1] ?? null;
 }
 
 // An element's text replaces all its children with one text node.
-function setElementText<Native>(host: NativeHost<Native>, element: ElementNode<Native>, text: string): void {
+function setElementText<Native>({ host, element, text }: {
+  host: NativeHost<Native>;
+  element: ElementNode<Native>;
+  text: string;
+}) {
   for (const child of element.children.splice(0)) {
     child.parent = null;
   }
 
-  link(element, createText<Native>(text), null);
-  notify(host, element);
+  link({
+    parent: element,
+    node: createText<Native>(text),
+    anchor: null
+  });
+  notify({
+    host,
+    parent: element
+  });
 }
 
-function createText<Native>(value: string): TextNode<Native> {
+function createText<Native>(value: string) {
   return {
-    type: NodeType.Text,
+    type: NodeType.TEXT,
     value,
     parent: null
-  };
+  } satisfies TextNode<Native>;
 }
 
-function listenersOf<Native>(element: ElementNode<Native>, type: string): Map<NativeValue, () => void> {
+function listenersOf<Native>({ element, type }: {
+  element: ElementNode<Native>;
+  type: string;
+}) {
   const existing = element.listeners.get(type);
-  if (existing !== undefined) {
+  if (existing) {
     return existing;
   }
 
@@ -182,6 +257,14 @@ function listenersOf<Native>(element: ElementNode<Native>, type: string): Map<Na
   return created;
 }
 
+/**
+ * Builds the Svelte renderer for a platform, over a tree that tells the
+ * platform what changed. A component compiled with `customRenderer` draws
+ * through it.
+ *
+ * @param host - The platform's side: making elements and applying attributes, and hearing of changes.
+ * @returns The renderer Svelte's `mount` takes.
+ */
 export function createTreeRenderer<Native>(host: NativeHost<Native>) {
   return createRenderer<{
     fragment: FragmentNode<Native>;
@@ -191,14 +274,14 @@ export function createTreeRenderer<Native>(host: NativeHost<Native>) {
   }>({
     createFragment() {
       return {
-        type: NodeType.Fragment,
+        type: NodeType.FRAGMENT,
         children: [],
         parent: null
       };
     },
     createElement(name) {
       return {
-        type: NodeType.Element,
+        type: NodeType.ELEMENT,
         name,
         native: host.create(name),
         attributes: new Map(),
@@ -212,7 +295,7 @@ export function createTreeRenderer<Native>(host: NativeHost<Native>) {
     },
     createComment(data) {
       return {
-        type: NodeType.Comment,
+        type: NodeType.COMMENT,
         value: data,
         parent: null
       };
@@ -239,13 +322,21 @@ export function createTreeRenderer<Native>(host: NativeHost<Native>) {
       return element.attributes.has(name);
     },
     setText(node, text) {
-      if (node.type === NodeType.Element) {
-        setElementText(host, node, text);
+      const isElement = node.type === NodeType.ELEMENT;
+      if (isElement) {
+        setElementText({
+          host,
+          element: node,
+          text
+        });
         return;
       }
 
       node.value = text;
-      notify(host, node.parent);
+      notify({
+        host,
+        parent: node.parent
+      });
     },
     getFirstChild(element) {
       return element.children[0] ?? null;
@@ -257,10 +348,18 @@ export function createTreeRenderer<Native>(host: NativeHost<Native>) {
       return nextSibling(node);
     },
     insert(parent, node, anchor) {
-      insertNode(host, parent, node, anchor);
+      insertNode({
+        host,
+        parent,
+        node,
+        anchor
+      });
     },
     remove(node) {
-      removeNode(host, node);
+      removeNode({
+        host,
+        node
+      });
       host.removed(node);
     },
     getParent(node) {
@@ -268,8 +367,11 @@ export function createTreeRenderer<Native>(host: NativeHost<Native>) {
     },
     addEventListener(target, type, handler) {
       const unsubscribe = host.listen(target, type, handler);
-      if (unsubscribe !== null) {
-        listenersOf(target, type).set(handler, unsubscribe);
+      if (unsubscribe) {
+        listenersOf({
+          element: target,
+          type
+        }).set(handler, unsubscribe);
       }
     },
     removeEventListener(target, type, handler) {

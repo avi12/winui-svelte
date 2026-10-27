@@ -3,11 +3,11 @@
   let items = $state(["a", "b", "c"]);
   let isHeaderShown = $state(true);
 
-  export function showItems(next: string[]): void {
+  export function showItems(next: string[]) {
     items = next;
   }
 
-  export function showHeader(isShown: boolean): void {
+  export function showHeader(isShown: boolean) {
     isHeaderShown = isShown;
   }
 </script>

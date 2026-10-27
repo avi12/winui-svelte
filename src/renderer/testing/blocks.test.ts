@@ -1,7 +1,7 @@
-import { svelteHooks } from "#src/vite/loader.js";
-import { NodeType } from "#src/renderer/tree/tree.js";
 import type { ProbeElement } from "./tree-probe.ts";
 import probeRenderer, { outline } from "./tree-probe.ts";
+import { NodeType } from "#src/renderer/tree/tree.js";
+import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import path from "node:path";
@@ -14,12 +14,22 @@ registerHooks(svelteHooks(path.join(import.meta.dirname, "tree-probe.ts")));
 const { flushSync, mount } = await import("svelte");
 const { default: Blocks } = await import("./Blocks.fixture.svelte");
 
-function elementsOf(panel: ProbeElement): ProbeElement[] {
-  return panel.children.flatMap(child => child.type === NodeType.Element ? [child] : []);
+// What the fixture exports, which its component type does not say.
+interface BlocksExports {
+  showItems(next: string[]): void;
+  showHeader(isShown: boolean): void;
+}
+
+function isBlocksExports(value: object): value is BlocksExports {
+  return "showItems" in value && "showHeader" in value;
+}
+
+function elementsOf(panel: ProbeElement) {
+  return panel.children.flatMap(child => child.type === NodeType.ELEMENT ? [child] : []);
 }
 
 // The panel's text blocks, by their text: what the window would show.
-function shown(panel: ProbeElement): string {
+function shown(panel: ProbeElement) {
   return elementsOf(panel).map(element => outline(element).replaceAll(/^text-block\("|"\)$/gu, "")).join(",");
 }
 
@@ -29,9 +39,10 @@ test("{#if} and keyed {#each} render, update and reorder through the tree", () =
     target,
     renderer: probeRenderer
   });
+  assert.ok(isBlocksExports(blocks));
   flushSync();
   const [panel] = target.children;
-  assert.ok(panel?.type === NodeType.Element);
+  assert.ok(panel?.type === NodeType.ELEMENT);
   assert.equal(shown(panel), "header,a,b,c,footer");
 
   const [, itemA, itemB, itemC] = elementsOf(panel);

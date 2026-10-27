@@ -2,6 +2,7 @@
 // add/delete transition plays for exactly the rows that came or went, not for
 // every row a clear-and-refill would recreate.
 
+/** A list that can be read and changed by position. */
 export interface KeyedItems<T> {
   readonly size: number;
   getAt(index: number): T;
@@ -9,6 +10,7 @@ export interface KeyedItems<T> {
   insertAt(index: number, item: T): void;
 }
 
+/** A list to sync, and how to key, make and move its items. */
 export interface KeyedList<T> {
   items: KeyedItems<T>;
   keyOf(item: T): string;
@@ -18,38 +20,77 @@ export interface KeyedList<T> {
   move?(from: number, to: number): void;
 }
 
-export function syncKeyed<T>(list: KeyedList<T>, wantedKeys: readonly string[]): void {
-  removeUnwanted(list, new Set(wantedKeys));
-  for (let i = 0; i < wantedKeys.length; i++) {
-    place(list, wantedKeys[i], i);
+/**
+ * Brings a list to the wanted keys, in order, removing, inserting and moving
+ * only the items that differ.
+ *
+ * @param list - The list to change.
+ * @param wantedKeys - The keys the list should hold, in the order it should hold them.
+ */
+export function syncKeyed<T>(list: KeyedList<T>, wantedKeys: readonly string[]) {
+  removeUnwanted({
+    list,
+    wanted: new Set(wantedKeys)
+  });
+  for (const [index, key] of wantedKeys.entries()) {
+    place({
+      list,
+      key,
+      index
+    });
   }
 }
 
-function removeUnwanted<T>(list: KeyedList<T>, wanted: Set<string>): void {
+function removeUnwanted<T>({ list, wanted }: {
+  list: KeyedList<T>;
+  wanted: Set<string>;
+}) {
   for (let i = list.items.size - 1; i >= 0; i--) {
-    if (!wanted.has(list.keyOf(list.items.getAt(i)))) {
+    const isWanted = wanted.has(list.keyOf(list.items.getAt(i)));
+    if (!isWanted) {
       list.items.removeAt(i);
     }
   }
 }
 
-function keyAt<T>(list: KeyedList<T>, index: number): string | undefined {
-  return index < list.items.size ? list.keyOf(list.items.getAt(index)) : undefined;
+function keyAt<T>({ list, index }: {
+  list: KeyedList<T>;
+  index: number;
+}) {
+  const isInList = index < list.items.size;
+  return isInList ? list.keyOf(list.items.getAt(index)) : undefined;
+}
+
+function canMove<T>(list: KeyedList<T>): list is KeyedList<T> & Required<Pick<KeyedList<T>, "move">> {
+  return list.move !== undefined;
 }
 
 // Every key before `index` is already in place.
-function place<T>(list: KeyedList<T>, key: string, index: number): void {
-  if (keyAt(list, index) === key) {
+function place<T>({ list, key, index }: {
+  list: KeyedList<T>;
+  key: string;
+  index: number;
+}) {
+  const isInPlace = keyAt({
+    list,
+    index
+  }) === key;
+  if (isInPlace) {
     return;
   }
 
-  const existing = indexOf(list, key, index + 1);
-  if (existing < 0) {
+  const existing = indexOf({
+    list,
+    key,
+    start: index + 1
+  });
+  const isMissing = existing < 0;
+  if (isMissing) {
     list.items.insertAt(index, list.create(key));
     return;
   }
 
-  if (list.move !== undefined) {
+  if (canMove(list)) {
     list.move(existing, index);
     return;
   }
@@ -59,9 +100,14 @@ function place<T>(list: KeyedList<T>, key: string, index: number): void {
   list.items.insertAt(index, item);
 }
 
-function indexOf<T>(list: KeyedList<T>, key: string, start: number): number {
+function indexOf<T>({ list, key, start }: {
+  list: KeyedList<T>;
+  key: string;
+  start: number;
+}) {
   for (let i = start; i < list.items.size; i++) {
-    if (list.keyOf(list.items.getAt(i)) === key) {
+    const isKeyFound = list.keyOf(list.items.getAt(i)) === key;
+    if (isKeyFound) {
       return i;
     }
   }

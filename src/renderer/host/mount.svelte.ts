@@ -1,5 +1,3 @@
-import { flush } from "#src/scheduling.js";
-import type { FrameworkElement } from "#src/winui.js";
 import renderer, {
   releaseFragment,
   rootControl,
@@ -7,6 +5,8 @@ import renderer, {
   unwatchRoot,
   watchRoot
 } from "./host.ts";
+import { flush } from "#src/scheduling.js";
+import type { FrameworkElement } from "#src/winui.js";
 import type { Component } from "svelte";
 import { mount, unmount } from "svelte";
 
@@ -15,6 +15,7 @@ import { mount, unmount } from "svelte";
 // reads them. Updates are flushed at once, since WinUI's loop holds the
 // thread and Node's microtasks are not a place to wait for them.
 
+/** A component mounted on WinUI, and what to do with it. */
 export interface Mounted<Props> {
   readonly root: FrameworkElement;
   set(changes: Partial<Props>): void;
@@ -30,10 +31,17 @@ export interface Mounted<Props> {
   unmount(): void;
 }
 
+/**
+ * Mounts a Svelte component on WinUI.
+ *
+ * @param component - The component to mount.
+ * @param initial - Its props.
+ * @returns The component's root control, and `set`, `onRootChange` and `unmount` to drive it.
+ */
 export function mountControl<Props extends object>(
   component: Component<Props>,
   initial: Props
-): Mounted<Props> {
+) {
   const props = $state(initial);
   const fragment = renderer.createFragment();
   const instance = mount(component, {
@@ -48,12 +56,20 @@ export function mountControl<Props extends object>(
   const rootListeners = new Set<(root: FrameworkElement) => void>();
   // A new root (a hot update, or a root inside {#if}) takes the old one's
   // place in the page, which holds the old control by then.
-  watchRoot(fragment, control => {
-    const isReplaced = control !== null && control !== root;
-    if (isReplaced) {
-      swapControl(root, control);
-      root = control;
-      rootListeners.forEach(listener => listener(control));
+  watchRoot({
+    fragment,
+    onChange(control) {
+      const isReplaced = control !== null && control !== root;
+      if (isReplaced) {
+        swapControl({
+          previous: root,
+          next: control
+        });
+        root = control;
+        for (const listener of rootListeners) {
+          listener(control);
+        }
+      }
     }
   });
   return {
@@ -74,5 +90,5 @@ export function mountControl<Props extends object>(
       void unmount(instance);
       releaseFragment(fragment);
     }
-  };
+  } satisfies Mounted<Props>;
 }

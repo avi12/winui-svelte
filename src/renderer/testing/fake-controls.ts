@@ -8,27 +8,29 @@
 class FakeCollection {
   readonly items: object[] = [];
 
-  get size(): number {
+  get size() {
     return this.items.length;
   }
 
-  indexOf(item: object): number {
+  indexOf(item: object) {
     return this.items.indexOf(item);
   }
 
-  insertAt(index: number, item: object): void {
+  // WinUI's own InsertAt(index, item), which the renderer calls by name.
+  // eslint-disable-next-line no-restricted-syntax -- mirrors WinUI's signature
+  insertAt(index: number, item: object) {
     this.items.splice(index, 0, item);
   }
 
-  removeAt(index: number): void {
+  removeAt(index: number) {
     this.items.splice(index, 1);
   }
 
-  append(item: object): void {
+  append(item: object) {
     this.items.push(item);
   }
 
-  clear(): void {
+  clear() {
     this.items.length = 0;
   }
 }
@@ -48,7 +50,7 @@ export class FakeToggle {
   labeledBy: object | null = null;
   subscriptions = 0;
 
-  onToggled(_handler: (isOn: boolean) => void): () => void {
+  onToggled(_handler: (isOn: boolean) => void) {
     this.subscriptions++;
     return () => {
       this.subscriptions--;
@@ -66,9 +68,7 @@ export class FakeTextBlock {
   text = "";
 }
 
-export const fakeControls = {
-  FakePanel,
-  FakeToggle,
-  FakeBorder,
-  FakeTextBlock
-};
+// By the class names a tag spells: <fake-panel> is FakePanel.
+export const fakeControls = Object.fromEntries(
+  [FakePanel, FakeToggle, FakeBorder, FakeTextBlock].map(control => [control.name, control])
+);

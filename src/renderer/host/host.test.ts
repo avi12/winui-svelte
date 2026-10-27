@@ -1,5 +1,5 @@
+import { registerControls, setClassHandler } from "./host.ts";
 import type { NativeValue } from "#src/native-value.js";
-import { svelteHooks } from "#src/vite/loader.js";
 import {
   FakeBorder,
   fakeControls,
@@ -7,7 +7,7 @@ import {
   FakeTextBlock,
   FakeToggle
 } from "#src/renderer/testing/fake-controls.js";
-import { registerControls, setClassHandler } from "./host.ts";
+import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import path from "node:path";
@@ -124,13 +124,13 @@ test("a hosted control can be placed again after its subtree is removed", () => 
   assert.equal(panel.children.items.includes(hosted), true);
 });
 
-function textsOf(panel: FakePanel): Array<string | null> {
+function textsOf(panel: FakePanel) {
   return panel.children.items.map(item => (item instanceof FakeTextBlock ? item.text : null));
 }
 
 // The fixture's last block, as a browser shows it: its line breaks and
 // indentation collapse to single spaces, its no-break space stays.
-const wrappedSentence = "A sentence long enough to wrap over lines, indented.";
+const WRAPPED_SENTENCE = "A sentence long enough to wrap over lines, indented.";
 
 test("text written as children is a text block's text, and follows what it shows", () => {
   const mounted = mountControl<TextProps>(TextFixture, {
@@ -144,7 +144,7 @@ test("text written as children is a text block's text, and follows what it shows
     "My app 0.2.0 is ready",
     "Saved",
     "Saved 2 themes",
-    wrappedSentence
+    WRAPPED_SENTENCE
   ]);
 
   mounted.set({
@@ -152,6 +152,6 @@ test("text written as children is a text block's text, and follows what it shows
     status: "",
     count: 3
   });
-  assert.deepEqual(textsOf(root), ["My app 0.3.0 is ready", "", "Saved 3 themes", wrappedSentence]);
+  assert.deepEqual(textsOf(root), ["My app 0.3.0 is ready", "", "Saved 3 themes", WRAPPED_SENTENCE]);
   mounted.unmount();
 });

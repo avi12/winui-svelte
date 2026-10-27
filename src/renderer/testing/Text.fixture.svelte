@@ -9,15 +9,15 @@
     count: number;
   }
 
-  const { version, status, count }: Props = $props();
+  const props: Props = $props();
 </script>
 
-{#snippet saved()}Saved {count} themes{/snippet}
+{#snippet saved()}Saved {props.count} themes{/snippet}
 
 <fake-panel>
-  <fake-text-block>My app {version} is ready</fake-text-block>
+  <fake-text-block>My app {props.version} is ready</fake-text-block>
   <fake-text-block>
-    {status}
+    {props.status}
   </fake-text-block>
   <fake-text-block>{@render saved()}</fake-text-block>
   <fake-text-block>
