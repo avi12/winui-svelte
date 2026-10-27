@@ -26,12 +26,10 @@ import path from "node:path";
 // as source and fails, so tsc and a copy do it.)
 
 const packageRoot = path.join(import.meta.dirname, "..", "..");
-const repositoryRoot = path.join(packageRoot, "..", "..");
 const sourceFolder = path.join(packageRoot, "src");
 const outputFolder = path.join(packageRoot, "dist");
 const copiedExtensions = [".svelte", ".json"];
 const declarationSuffix = ".d.svelte.ts";
-const legalFiles = ["LICENSE", "NOTICE"];
 // `from "./x.ts"` and `import("./x.ts")` in a .svelte script.
 const relativeTsImport = /(["'])(\.{1,2}\/[^"']*?)\.ts\1/gu;
 
@@ -73,18 +71,10 @@ function compile(): void {
   });
 }
 
-// The license text travels with the package; the repository holds the one.
-function copyLegalFiles(): void {
-  for (const name of legalFiles) {
-    copyFileSync(path.join(repositoryRoot, name), path.join(packageRoot, name));
-  }
-}
-
 rmSync(outputFolder, {
   recursive: true,
   force: true
 });
 compile();
 copyShipped();
-copyLegalFiles();
 process.stdout.write(`dist: ${filesIn(outputFolder).length} files\n`);

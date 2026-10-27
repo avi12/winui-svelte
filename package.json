@@ -1,7 +1,6 @@
 {
   "name": "winui-svelte",
   "version": "0.0.0",
-  "private": true,
   "description": "WinUI 3 controls as Svelte components: native Windows apps in Svelte, for Tauri, Electron or Node",
   "keywords": [
     "svelte",
@@ -12,10 +11,24 @@
     "desktop",
     "windows-app-sdk",
     "tauri",
-    "electron"
+    "electron",
+    "svelte5",
+    "xaml",
+    "winrt",
+    "dynwinrt"
   ],
-  "license": "Apache-2.0",
+  "homepage": "https://github.com/avi12/winui-svelte#readme",
+  "bugs": {
+    "url": "https://github.com/avi12/winui-svelte/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avi12/winui-svelte.git"
+  },
+  "license": "MIT",
+  "author": "Avi Hanan",
   "type": "module",
+  "packageManager": "pnpm@11.13.1",
   "os": [
     "win32"
   ],
@@ -23,26 +36,83 @@
     "node": ">=24"
   },
   "bin": {
-    "winui-svelte": "./src/cli/main.ts"
+    "winui-svelte": "./dist/cli/main.js"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./components": "./src/components/index.ts",
-    "./state": "./src/state/index.ts",
-    "./state/host": "./src/state/host.ts",
-    "./messaging": "./src/messaging/index.ts",
-    "./host": "./src/renderer/host/host.ts",
-    "./keyed-list": "./src/renderer/list/keyed-list.ts",
-    "./css": "./src/css/index.ts",
-    "./css/vite": "./src/css/vite.ts",
-    "./css/sheet-module": "./src/css/runtime/sheet-module.ts",
-    "./vite": "./src/vite/index.ts",
-    "./runner": "./src/vite/runner.ts",
-    "./compile": "./src/vite/compile.ts",
-    "./testing": "./src/vite/loader.ts",
-    "./bootstrap": "./src/window/bootstrap.ts",
-    "./thread": "./src/window/thread.ts",
-    "./window": "./src/window/index.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "svelte": "./dist/components/index.js",
+      "default": "./dist/components/index.js"
+    },
+    "./state": {
+      "types": "./dist/state/index.d.ts",
+      "svelte": "./dist/state/index.js",
+      "default": "./dist/state/index.js"
+    },
+    "./state/host": {
+      "types": "./dist/state/host.d.ts",
+      "default": "./dist/state/host.js"
+    },
+    "./messaging": {
+      "types": "./dist/messaging/index.d.ts",
+      "default": "./dist/messaging/index.js"
+    },
+    "./host": {
+      "types": "./dist/renderer/host/host.d.ts",
+      "svelte": "./dist/renderer/host/host.js",
+      "default": "./dist/renderer/host/host.js"
+    },
+    "./keyed-list": {
+      "types": "./dist/renderer/list/keyed-list.d.ts",
+      "svelte": "./dist/renderer/list/keyed-list.js",
+      "default": "./dist/renderer/list/keyed-list.js"
+    },
+    "./css": {
+      "types": "./dist/css/index.d.ts",
+      "default": "./dist/css/index.js"
+    },
+    "./css/vite": {
+      "types": "./dist/css/vite.d.ts",
+      "default": "./dist/css/vite.js"
+    },
+    "./css/sheet-module": {
+      "types": "./dist/css/runtime/sheet-module.d.ts",
+      "default": "./dist/css/runtime/sheet-module.js"
+    },
+    "./vite": {
+      "types": "./dist/vite/index.d.ts",
+      "default": "./dist/vite/index.js"
+    },
+    "./runner": {
+      "types": "./dist/vite/runner.d.ts",
+      "default": "./dist/vite/runner.js"
+    },
+    "./compile": {
+      "types": "./dist/vite/compile.d.ts",
+      "default": "./dist/vite/compile.js"
+    },
+    "./testing": {
+      "types": "./dist/vite/loader.d.ts",
+      "default": "./dist/vite/loader.js"
+    },
+    "./bootstrap": {
+      "types": "./dist/window/bootstrap.d.ts",
+      "default": "./dist/window/bootstrap.js"
+    },
+    "./thread": {
+      "types": "./dist/window/thread.d.ts",
+      "default": "./dist/window/thread.js"
+    },
+    "./window": {
+      "types": "./dist/window/index.d.ts",
+      "svelte": "./dist/window/index.js",
+      "default": "./dist/window/index.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
@@ -51,105 +121,25 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE",
-    "NOTICE"
+    "LICENSE"
   ],
-  "sideEffects": [
-    "./dist/components/runtime.js",
-    "./src/components/runtime.ts"
-  ],
+  "sideEffects": false,
   "publishConfig": {
-    "bin": {
-      "winui-svelte": "./dist/cli/main.js"
-    },
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "svelte": "./dist/index.js",
-        "default": "./dist/index.js"
-      },
-      "./components": {
-        "types": "./dist/components/index.d.ts",
-        "svelte": "./dist/components/index.js",
-        "default": "./dist/components/index.js"
-      },
-      "./state": {
-        "types": "./dist/state/index.d.ts",
-        "svelte": "./dist/state/index.js",
-        "default": "./dist/state/index.js"
-      },
-      "./state/host": {
-        "types": "./dist/state/host.d.ts",
-        "default": "./dist/state/host.js"
-      },
-      "./messaging": {
-        "types": "./dist/messaging/index.d.ts",
-        "default": "./dist/messaging/index.js"
-      },
-      "./host": {
-        "types": "./dist/renderer/host/host.d.ts",
-        "svelte": "./dist/renderer/host/host.js",
-        "default": "./dist/renderer/host/host.js"
-      },
-      "./keyed-list": {
-        "types": "./dist/renderer/list/keyed-list.d.ts",
-        "svelte": "./dist/renderer/list/keyed-list.js",
-        "default": "./dist/renderer/list/keyed-list.js"
-      },
-      "./css": {
-        "types": "./dist/css/index.d.ts",
-        "default": "./dist/css/index.js"
-      },
-      "./css/vite": {
-        "types": "./dist/css/vite.d.ts",
-        "default": "./dist/css/vite.js"
-      },
-      "./css/sheet-module": {
-        "types": "./dist/css/runtime/sheet-module.d.ts",
-        "default": "./dist/css/runtime/sheet-module.js"
-      },
-      "./vite": {
-        "types": "./dist/vite/index.d.ts",
-        "default": "./dist/vite/index.js"
-      },
-      "./runner": {
-        "types": "./dist/vite/runner.d.ts",
-        "default": "./dist/vite/runner.js"
-      },
-      "./compile": {
-        "types": "./dist/vite/compile.d.ts",
-        "default": "./dist/vite/compile.js"
-      },
-      "./testing": {
-        "types": "./dist/vite/loader.d.ts",
-        "default": "./dist/vite/loader.js"
-      },
-      "./bootstrap": {
-        "types": "./dist/window/bootstrap.d.ts",
-        "default": "./dist/window/bootstrap.js"
-      },
-      "./thread": {
-        "types": "./dist/window/thread.d.ts",
-        "default": "./dist/window/thread.js"
-      },
-      "./window": {
-        "types": "./dist/window/index.d.ts",
-        "svelte": "./dist/window/index.js",
-        "default": "./dist/window/index.js"
-      },
-      "./package.json": "./package.json"
-    }
+    "access": "public"
   },
   "scripts": {
+    "restore": "winapp restore",
+    "bindings": "winapp node generate-bindings",
     "build": "node --disable-warning=ExperimentalWarning scripts/pack/build.ts",
     "check": "tsc --noEmit && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
-    "check:editor": "node --disable-warning=ExperimentalWarning scripts/editor/check-editor.ts --project ../../app/panel-tauri",
-    "lint": "oxlint --type-aware && eslint . && stylelint \"**/*.svelte\" --config ../../app/panel-tauri/.stylelintrc.json --ignore-pattern src/components/generated && pnpm check && pnpm check:editor && pnpm fallow && pnpm gen:components:check",
+    "check:editor": "node --disable-warning=ExperimentalWarning scripts/editor/check-editor.ts",
+    "check:package": "node --disable-warning=ExperimentalWarning scripts/pack/check-package.ts",
     "fallow": "fallow",
-    "gen:components": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts --project ../../app/panel-tauri",
-    "gen:components:check": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts --project ../../app/panel-tauri --check",
-    "test": "node --disable-warning=ExperimentalWarning --test --test-timeout=120000 \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" test/mount-all.test.ts",
-    "test:windows": "node --disable-warning=ExperimentalWarning --test --test-timeout=120000 test/lists.test.ts test/window.test.ts"
+    "gen:components": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts",
+    "gen:components:check": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts --check",
+    "lint": "pnpm build && oxlint --type-aware && eslint . && stylelint \"**/*.svelte\" --ignore-pattern src/components/generated && pnpm check && pnpm check:editor && pnpm fallow && pnpm gen:components:check && pnpm check:package",
+    "test": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" test/mount-all.test.ts",
+    "test:windows": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 test/lists.test.ts test/window.test.ts"
   },
   "dependencies": {
     "@sveltejs/vite-plugin-svelte": "7.3.1",
@@ -167,19 +157,358 @@
     }
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@microsoft/dynwinrt": "0.1.0-preview.23",
+    "@microsoft/dynwinrt-codegen": "0.1.0-preview.23",
+    "@microsoft/winappcli": "0.7.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "^24.10.0",
-    "@winapp/bindings": "link:../../app/panel-tauri/.winapp/bindings",
+    "@winapp/bindings": "link:.winapp/bindings",
+    "esbuild": "~0.25.12",
     "eslint": "^10.12.0",
+    "eslint-plugin-import-newlines": "^2.0.0",
+    "eslint-plugin-perfectionist": "^5.12.1",
+    "eslint-plugin-svelte": "^3.23.1",
     "fallow": "2.103.0",
+    "globals": "^17.13.0",
     "oxlint": "1.88.0",
     "oxlint-tsgolint": "^7.0.2004",
+    "postcss": "^8.5.31",
+    "postcss-html": "^1.8.1",
+    "publint": "^0.3.25",
     "stylelint": "^17.16.0",
+    "stylelint-config-ccb": "^3.32.0",
     "svelte": "https://pkg.pr.new/svelte@18042",
     "svelte-check": "^4.7.7",
+    "svelte-eslint-parser": "^1.10.0",
     "svelte-language-server": "0.18.5",
     "typescript": "^6.0.3",
-    "vite": "8.3.4",
-    "winui-svelte": "link:."
+    "typescript-eslint": "^8.71.2",
+    "vite": "8.3.4"
+  },
+  "winapp": {
+    "jsBindings": {
+      "additionalWinmds": [
+        {
+          "namespace": "Microsoft.UI.Dispatching",
+          "classes": [
+            "DispatcherQueue",
+            "DispatcherQueueTimer"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Input",
+          "classes": [
+            "InputNonClientPointerSource"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Windowing",
+          "classes": [
+            "AppWindow",
+            "DisplayArea",
+            "OverlappedPresenter"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml",
+          "classes": [
+            "Application",
+            "DataTemplate",
+            "DependencyObject",
+            "FrameworkElement",
+            "ResourceDictionary",
+            "ScalarTransition",
+            "Style",
+            "UIElement",
+            "VisualStateManager",
+            "Window"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Automation",
+          "classes": [
+            "AutomationProperties"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Controls",
+          "classes": [
+            "AnimatedIcon",
+            "AnimatedVisualPlayer",
+            "AnnotatedScrollBar",
+            "AppBar",
+            "AppBarButton",
+            "AppBarElementContainer",
+            "AppBarSeparator",
+            "AppBarToggleButton",
+            "AutoSuggestBox",
+            "BitmapIcon",
+            "Border",
+            "BreadcrumbBar",
+            "BreadcrumbBarItem",
+            "Button",
+            "CalendarDatePicker",
+            "CalendarView",
+            "CalendarViewDayItem",
+            "Canvas",
+            "CheckBox",
+            "ColorPicker",
+            "ColumnDefinition",
+            "ComboBox",
+            "ComboBoxItem",
+            "CommandBar",
+            "CommandBarOverflowPresenter",
+            "ContainerContentChangingEventArgs",
+            "ContentControl",
+            "ContentDialog",
+            "ContentPresenter",
+            "Control",
+            "DatePicker",
+            "DropDownButton",
+            "Expander",
+            "FlipView",
+            "FlipViewItem",
+            "FlyoutPresenter",
+            "FontIcon",
+            "Frame",
+            "Grid",
+            "GridView",
+            "GridViewHeaderItem",
+            "GridViewItem",
+            "GroupItem",
+            "Hub",
+            "HubSection",
+            "HyperlinkButton",
+            "IconElement",
+            "IconSourceElement",
+            "Image",
+            "ImageIcon",
+            "InfoBadge",
+            "InfoBar",
+            "ItemContainer",
+            "ItemsControl",
+            "ItemsPresenter",
+            "ItemsRepeater",
+            "ItemsRepeaterScrollHost",
+            "ItemsStackPanel",
+            "ItemsView",
+            "ItemsWrapGrid",
+            "ListBox",
+            "ListBoxItem",
+            "ListView",
+            "ListViewBase",
+            "ListViewBaseHeaderItem",
+            "ListViewHeaderItem",
+            "ListViewItem",
+            "MapControl",
+            "MediaPlayerElement",
+            "MediaPlayerPresenter",
+            "MediaTransportControls",
+            "MenuBar",
+            "MenuBarItem",
+            "MenuFlyoutItem",
+            "MenuFlyoutItemBase",
+            "MenuFlyoutPresenter",
+            "MenuFlyoutSeparator",
+            "MenuFlyoutSubItem",
+            "NavigationView",
+            "NavigationViewItem",
+            "NavigationViewItemBase",
+            "NavigationViewItemHeader",
+            "NavigationViewItemSeparator",
+            "NumberBox",
+            "Page",
+            "Panel",
+            "ParallaxView",
+            "PasswordBox",
+            "PathIcon",
+            "PersonPicture",
+            "PipsPager",
+            "Pivot",
+            "PivotItem",
+            "ProgressBar",
+            "ProgressRing",
+            "RadioButton",
+            "RadioButtons",
+            "RadioMenuFlyoutItem",
+            "RatingControl",
+            "RefreshContainer",
+            "RefreshVisualizer",
+            "RelativePanel",
+            "RevealListViewItemPresenter",
+            "RichEditBox",
+            "RichTextBlock",
+            "RichTextBlockOverflow",
+            "RowDefinition",
+            "ScrollContentPresenter",
+            "ScrollView",
+            "ScrollViewer",
+            "SelectorBar",
+            "SelectorBarItem",
+            "SemanticZoom",
+            "Slider",
+            "SplitButton",
+            "SplitMenuFlyoutItem",
+            "SplitView",
+            "StackPanel",
+            "SwipeControl",
+            "SymbolIcon",
+            "SystemBackdropElement",
+            "TabView",
+            "TabViewItem",
+            "TeachingTip",
+            "TextBlock",
+            "TextBox",
+            "TimePicker",
+            "TitleBar",
+            "ToggleMenuFlyoutItem",
+            "ToggleSplitButton",
+            "ToggleSwitch",
+            "ToolTip",
+            "ToolTipService",
+            "TreeView",
+            "TreeViewItem",
+            "TreeViewList",
+            "TwoPaneView",
+            "UserControl",
+            "VariableSizedWrapGrid",
+            "Viewbox",
+            "VirtualizingPanel",
+            "VirtualizingStackPanel",
+            "WrapGrid",
+            "XamlControlsResources"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Controls.Primitives",
+          "classes": [
+            "ButtonBase",
+            "CalendarPanel",
+            "CarouselPanel",
+            "ColorPickerSlider",
+            "ColorSpectrum",
+            "CommandBarFlyoutCommandBar",
+            "GridViewItemPresenter",
+            "InfoBarPanel",
+            "ListViewItemPresenter",
+            "MonochromaticOverlayPresenter",
+            "NavigationViewItemPresenter",
+            "OrientedVirtualizingPanel",
+            "PivotHeaderItem",
+            "PivotHeaderPanel",
+            "PivotPanel",
+            "Popup",
+            "RangeBase",
+            "RepeatButton",
+            "ScrollBar",
+            "ScrollPresenter",
+            "Selector",
+            "SelectorItem",
+            "TabViewListView",
+            "Thumb",
+            "TickBar",
+            "ToggleButton"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Documents",
+          "classes": [
+            "Block",
+            "Bold",
+            "Glyphs",
+            "Hyperlink",
+            "Inline",
+            "InlineUIContainer",
+            "Italic",
+            "LineBreak",
+            "Paragraph",
+            "Run",
+            "Span",
+            "TextElement",
+            "Underline"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Input",
+          "classes": [
+            "KeyRoutedEventArgs"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Markup",
+          "classes": [
+            "XamlReader"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Media",
+          "classes": [
+            "Brush",
+            "DesktopAcrylicBackdrop",
+            "DoubleCollection",
+            "FontFamily",
+            "ImageSource",
+            "MicaBackdrop",
+            "SolidColorBrush",
+            "SystemBackdrop",
+            "VisualTreeHelper"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Media.Animation",
+          "classes": [
+            "AddDeleteThemeTransition",
+            "ReorderThemeTransition",
+            "RepositionThemeTransition",
+            "TransitionCollection"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Media.Imaging",
+          "classes": [
+            "BitmapImage"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Shapes",
+          "classes": [
+            "Ellipse",
+            "Line",
+            "Path",
+            "Polygon",
+            "Polyline",
+            "Rectangle",
+            "Shape"
+          ]
+        },
+        {
+          "namespace": "Microsoft.Windows.Storage.Pickers",
+          "classes": [
+            "FileOpenPicker",
+            "FolderPicker"
+          ]
+        },
+        {
+          "namespace": "Windows.ApplicationModel.DataTransfer",
+          "classes": [
+            "StandardDataFormats"
+          ]
+        },
+        {
+          "namespace": "Windows.Foundation",
+          "classes": [
+            "PropertyValue",
+            "Uri"
+          ]
+        },
+        {
+          "namespace": "Windows.UI.ViewManagement",
+          "classes": [
+            "UISettings"
+          ]
+        }
+      ]
+    }
   }
 }

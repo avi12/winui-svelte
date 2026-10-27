@@ -29,6 +29,7 @@ initWinappsdk(windowsAppSdkMajor, windowsAppSdkMinor);
 const modules = new MessageChannel();
 const server = await startModuleServer({
   root: packageRoot,
+  configFile: path.join(packageRoot, "examples", "harness", "vite.config.ts"),
   port: modules.port1,
   // The generated bindings are CommonJS that Node loads itself.
   isNative(file) {

@@ -6,9 +6,8 @@ import path from "node:path";
 import { test } from "node:test";
 import { z } from "zod";
 
-// The source exports and what pnpm publishes (publishConfig) are two tables of
-// one list of entry points: they must name the same entries, and a published
-// entry must point at a file `pnpm build` makes.
+// package.json's exports and bin are what a consumer resolves, so they point at
+// what `pnpm build` makes (dist), never at the TypeScript sources.
 
 const packageRoot = path.join(import.meta.dirname, "..", "..");
 
@@ -16,10 +15,10 @@ const exportsSchema = z.record(z.string(), jsonSchema);
 
 const manifestSchema = z.object({
   exports: exportsSchema,
-  publishConfig: z.object({
-    exports: exportsSchema,
-    bin: z.record(z.string(), z.string())
-  })
+  bin: z.record(z.string(), z.string()),
+  files: z.array(z.string()),
+  sideEffects: z.literal(false),
+  license: z.literal("MIT")
 });
 
 function targetsOf(entry: Json): string[] {
@@ -32,31 +31,42 @@ function targetsOf(entry: Json): string[] {
 }
 
 const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(packageRoot, "package.json"), "utf8")));
-const sourceExports = manifest.exports;
-const publishedExports = manifest.publishConfig.exports;
+const isBuilt = existsSync(path.join(packageRoot, "dist"));
 
-test("the published exports name the same entries as the source exports", () => {
-  assert.deepEqual(Object.keys(publishedExports).sort(), Object.keys(sourceExports).sort());
+test("no export or bin points at a TypeScript source", () => {
+  const targets = [
+    ...Object.values(manifest.exports).flatMap(targetsOf),
+    ...Object.values(manifest.bin)
+  ].filter(target => target !== "./package.json");
+  for (const target of targets) {
+    assert.ok(target.startsWith("./dist/"), `${target} is not in dist`);
+    assert.ok(!target.endsWith(".ts") || target.endsWith(".d.ts"), `${target} is a source file`);
+  }
 });
 
-test("every source export is a file of the repository", () => {
-  for (const [name, entry] of Object.entries(sourceExports)) {
-    for (const target of targetsOf(entry)) {
-      assert.ok(existsSync(path.join(packageRoot, target)), `${name} points at ${target}, which is missing`);
+test("every export has types, and a default that is JavaScript", () => {
+  for (const [name, entry] of Object.entries(manifest.exports)) {
+    if (name === "./package.json") {
+      continue;
     }
+
+    const conditions = exportsSchema.parse(entry);
+    assert.ok(typeof conditions["types"] === "string", `${name} has no types`);
+    assert.ok(String(conditions["default"]).endsWith(".js"), `${name} has no JavaScript default`);
   }
 });
 
-test("every published export is a file of dist once it is built", { skip: !existsSync(path.join(packageRoot, "dist")) }, () => {
-  for (const [name, entry] of Object.entries(publishedExports)) {
-    for (const target of targetsOf(entry).filter(file => file.startsWith("./dist/"))) {
-      assert.ok(existsSync(path.join(packageRoot, target)), `${name} points at ${target}, which pnpm build did not make`);
-    }
+test("every export and the bin is a file of dist once it is built", { skip: !isBuilt }, () => {
+  const targets = [
+    ...Object.values(manifest.exports).flatMap(targetsOf),
+    ...Object.values(manifest.bin)
+  ];
+  for (const target of targets) {
+    assert.ok(existsSync(path.join(packageRoot, target)), `${target} is missing: pnpm build did not make it`);
   }
 });
 
-test("the published bin is a file of dist once it is built", { skip: !existsSync(path.join(packageRoot, "dist")) }, () => {
-  for (const target of Object.values(manifest.publishConfig.bin)) {
-    assert.ok(existsSync(path.join(packageRoot, target)), `bin points at ${target}`);
-  }
+test("the published files never include the contributor notes", () => {
+  assert.ok(!manifest.files.includes("CLAUDE.md"));
+  assert.ok(manifest.files.includes("LICENSE"));
 });
