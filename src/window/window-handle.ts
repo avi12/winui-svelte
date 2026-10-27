@@ -1,10 +1,13 @@
-import type { AppWindow, Window } from "../winui.ts";
-import { OverlappedPresenter, projectAs } from "../winui.ts";
 import { scaleOf } from "./native.ts";
+import type { Window } from "#src/winui.js";
+import { OverlappedPresenter, projectAs } from "#src/winui.js";
 
-// What app code does with an open window: `bind:handle` on <Window> gives it
-// one. The native Window and AppWindow are there for what this does not cover.
+/**
+ * What app code does with an open window: `bind:handle` on `<Window>` gives it
+ * one. The native Window and AppWindow are there for what this does not cover.
+ */
 export class WindowHandle {
+  /** The native WinUI window. */
   readonly window: Window;
   private isClosed = false;
 
@@ -15,47 +18,53 @@ export class WindowHandle {
     });
   }
 
-  get appWindow(): AppWindow {
+  /** The native AppWindow: position, size, icon and the rest of the windowing API. */
+  get appWindow() {
     return this.window.appWindow;
   }
 
-  // Device pixels per device-independent pixel (the window's DPI over 96).
-  get scale(): number {
+  /** Device pixels per device-independent pixel (the window's DPI over 96). */
+  get scale() {
     return scaleOf(this.appWindow.id.value);
   }
 
-  // The overlapped presenter (minimize, maximize, restore, the size limits):
-  // what a window has until the app gives it another (compact overlay, full
-  // screen).
-  get presenter(): OverlappedPresenter {
+  /**
+   * The overlapped presenter (minimize, maximize, restore, the size limits):
+   * what a window has until the app gives it another (compact overlay, full
+   * screen).
+   */
+  get presenter() {
     return projectAs(this.appWindow.presenter, OverlappedPresenter);
   }
 
-  activate(): void {
+  /** Shows the window and gives it focus. */
+  activate() {
     this.window.activate();
   }
 
-  minimize(): void {
+  /** Minimizes the window. */
+  minimize() {
     this.presenter.minimize();
   }
 
-  maximize(): void {
+  /** Maximizes the window. */
+  maximize() {
     this.presenter.maximize();
   }
 
-  // Out of minimized or maximized to its normal size.
-  restore(): void {
+  /** Out of minimized or maximized to its normal size. */
+  restore() {
     this.presenter.restore();
   }
 
-  // Restored, shown and focused: what launching an app again does.
-  bringToFront(): void {
+  /** Restored, shown and focused: what launching an app again does. */
+  bringToFront() {
     this.restore();
     this.activate();
   }
 
-  // Closing a closed window is a no-op.
-  close(): void {
+  /** Closes the window. Closing a closed window is a no-op. */
+  close() {
     if (!this.isClosed) {
       this.window.close();
     }
