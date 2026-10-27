@@ -1,4 +1,4 @@
-import { ResourceKind } from "../../src/css/runtime/resources.ts";
+import { ResourceKind } from "#src/css/runtime/resources.js";
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
@@ -13,29 +13,29 @@ import { z } from "zod";
 // The default is the Windows App SDK WinUI package that .winapp/winmds.lock.json
 // (`pnpm restore` writes it) names, from the NuGet cache it lists.
 
-const sourceFolder = import.meta.dirname;
-const outputFile = path.join(sourceFolder, "..", "..", "src", "css", "winui-resources.g.json");
-const lockFile = path.join(sourceFolder, "..", "..", ".winapp", "winmds.lock.json");
-const winUiPackage = "Microsoft.WindowsAppSDK.WinUI";
-const genericXamlInPackage = path.join("lib", "native", "Microsoft.UI", "Themes", "generic.xaml");
+const SOURCE_FOLDER = import.meta.dirname;
+const OUTPUT_FILE = path.join(SOURCE_FOLDER, "..", "..", "src", "css", "winui-resources.g.json");
+const LOCK_FILE = path.join(SOURCE_FOLDER, "..", "..", ".winapp", "winmds.lock.json");
+const WINUI_PACKAGE = "Microsoft.WindowsAppSDK.WinUI";
+const GENERIC_XAML_IN_PACKAGE = path.join("lib", "native", "Microsoft.UI", "Themes", "generic.xaml");
 
 // The tag a resource is declared with, and the kind that makes it.
 const kindOfTag = new Map<string, ResourceKind>([
-  ["SolidColorBrush", ResourceKind.Brush],
-  ["media:SolidColorBrush", ResourceKind.Brush],
-  ["AcrylicBrush", ResourceKind.Brush],
-  ["LinearGradientBrush", ResourceKind.Brush],
-  ["Color", ResourceKind.Color],
-  ["Thickness", ResourceKind.Thickness],
-  ["x:Double", ResourceKind.Double],
-  ["CornerRadius", ResourceKind.CornerRadius],
-  ["FontWeight", ResourceKind.FontWeight],
-  ["FontFamily", ResourceKind.FontFamily],
-  ["x:String", ResourceKind.String],
-  ["x:Boolean", ResourceKind.Boolean],
-  ["GridLength", ResourceKind.GridLength],
-  ["StaticResource", ResourceKind.Alias],
-  ["Style", ResourceKind.Style]
+  ["SolidColorBrush", ResourceKind.BRUSH],
+  ["media:SolidColorBrush", ResourceKind.BRUSH],
+  ["AcrylicBrush", ResourceKind.BRUSH],
+  ["LinearGradientBrush", ResourceKind.BRUSH],
+  ["Color", ResourceKind.COLOR],
+  ["Thickness", ResourceKind.THICKNESS],
+  ["x:Double", ResourceKind.DOUBLE],
+  ["CornerRadius", ResourceKind.CORNER_RADIUS],
+  ["FontWeight", ResourceKind.FONT_WEIGHT],
+  ["FontFamily", ResourceKind.FONT_FAMILY],
+  ["x:String", ResourceKind.STRING],
+  ["x:Boolean", ResourceKind.BOOLEAN],
+  ["GridLength", ResourceKind.GRID_LENGTH],
+  ["StaticResource", ResourceKind.ALIAS],
+  ["Style", ResourceKind.STYLE]
 ]);
 
 // Colors the framework provides to every app, which generic.xaml only refers to.
@@ -59,16 +59,16 @@ const frameworkColors = [
 ];
 
 // Code-unit order, so the file does not change with the machine's locale.
-function compareKeys(left: string, right: string): number {
-  if (left === right) {
+function compareKeys({ left, right }: {
+  left: string;
+  right: string;
+}) {
+  const isSameKey = left === right;
+  if (isSameKey) {
     return 0;
   }
 
   return left < right ? -1 : 1;
-}
-
-function compareEntries<Value>(left: [string, Value], right: [string, Value]): number {
-  return compareKeys(left[0], right[0]);
 }
 
 const lockFileSchema = z.object({
@@ -78,29 +78,31 @@ const lockFileSchema = z.object({
       version: z.union([z.string(), z.number()])
     })
   ),
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- the lock file's own key.
   nuget_cache_dir: z.string()
 });
 
-function defaultGenericXaml(): string {
-  const parsedLock = lockFileSchema.safeParse(JSON.parse(readFileSync(lockFile, "utf8")));
+function defaultGenericXaml() {
+  const parsedLock = lockFileSchema.safeParse(JSON.parse(readFileSync(LOCK_FILE, "utf8")));
   if (!parsedLock.success) {
-    throw new TypeError(`${lockFile} is not a winapp lock file`);
+    throw new TypeError(`${LOCK_FILE} is not a winapp lock file`);
   }
 
   const { packages, nuget_cache_dir: cacheFolder } = parsedLock.data;
-  const winUi = packages.find(candidate => candidate.name === winUiPackage);
-  if (winUi === undefined) {
-    throw new Error(`${lockFile} names no ${winUiPackage}`);
+  const winUi = packages.find(candidate => candidate.name === WINUI_PACKAGE);
+  const isWinUiMissing = winUi === undefined;
+  if (isWinUiMissing) {
+    throw new Error(`${LOCK_FILE} names no ${WINUI_PACKAGE}`);
   }
 
   const version = String(winUi.version);
-  return path.join(cacheFolder, winUiPackage.toLowerCase(), version, genericXamlInPackage);
+  return path.join(cacheFolder, WINUI_PACKAGE.toLowerCase(), version, GENERIC_XAML_IN_PACKAGE);
 }
 
-const xamlFile = process.argv[2] ?? defaultGenericXaml();
-const xaml = readFileSync(xamlFile, "utf8");
+const XAML_FILE = process.argv[2] ?? defaultGenericXaml();
+const XAML = readFileSync(XAML_FILE, "utf8");
 const byKind = new Map<ResourceKind, Set<string>>();
-for (const match of xaml.matchAll(/<([\w:]+)\s+x:Key="([^"]+)"/gu)) {
+for (const match of XAML.matchAll(/<([\w:]+)\s+x:Key="([^"]+)"/gu)) {
   const kind = kindOfTag.get(match[1] ?? "");
   const key = match[2];
   const isResource = kind !== undefined && key !== undefined;
@@ -111,18 +113,26 @@ for (const match of xaml.matchAll(/<([\w:]+)\s+x:Key="([^"]+)"/gu)) {
   }
 }
 
-const colors = byKind.get(ResourceKind.Color) ?? new Set<string>();
+const colors = byKind.get(ResourceKind.COLOR) ?? new Set<string>();
 for (const color of frameworkColors) {
   colors.add(color);
 }
 
-byKind.set(ResourceKind.Color, colors);
+byKind.set(ResourceKind.COLOR, colors);
 const output = Object.fromEntries(
-  [...byKind].sort(compareEntries).map(([kind, keys]) => [kind, [...keys].sort(compareKeys)])
+  [...byKind]
+    .sort((left, right) => compareKeys({
+      left: left[0],
+      right: right[0]
+    }))
+    .map(([kind, keys]) => [kind, [...keys].sort((left, right) => compareKeys({
+      left,
+      right
+    }))])
 );
 writeFileSync(
-  outputFile, `${JSON.stringify({
-    source: `${winUiPackage} ${/([\d.]+)[\\/]lib[\\/]/u.exec(xamlFile)?.[1] ?? "?"}`,
+  OUTPUT_FILE, `${JSON.stringify({
+    source: `${WINUI_PACKAGE} ${/([\d.]+)[\\/]lib[\\/]/u.exec(XAML_FILE)?.[1] ?? "?"}`,
     ...output
   })}\n`
 );
