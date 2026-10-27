@@ -9,7 +9,7 @@ import { linkSelector } from "./Selector.svelte.ts";
 import type { SelectorBound, SelectorProps } from "./Selector.svelte.ts";
 
 export interface ComboBoxProps extends SelectorProps {
-  isDropDownOpen?: boolean;
+  isDropDownOpen?: boolean | undefined;
   description?: ObjectInput;
   header?: ObjectInput;
   headerTemplate?: ComboBox["headerTemplate"];

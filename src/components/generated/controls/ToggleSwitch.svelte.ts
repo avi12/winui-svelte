@@ -10,7 +10,7 @@ import type { Snippet } from "svelte";
 
 export interface ToggleSwitchProps extends ControlProps {
   children?: Snippet;
-  isOn?: boolean;
+  isOn?: boolean | undefined;
   header?: ObjectInput;
   headerTemplate?: ToggleSwitch["headerTemplate"];
   offContent?: ObjectInput;

@@ -11,8 +11,8 @@ import type { Snippet } from "svelte";
 
 export interface TimePickerProps extends ControlProps {
   children?: Snippet;
-  time?: TimePicker["time"];
-  selectedTime?: TimePicker["selectedTime"];
+  time?: TimePicker["time"] | undefined;
+  selectedTime?: TimePicker["selectedTime"] | undefined;
   clockIdentifier?: string;
   header?: ObjectInput;
   headerTemplate?: TimePicker["headerTemplate"];

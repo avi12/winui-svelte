@@ -6,7 +6,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface RangeBaseProps extends ControlProps {
-  value?: number;
+  value?: number | undefined;
   largeChange?: number;
   maximum?: number;
   minimum?: number;

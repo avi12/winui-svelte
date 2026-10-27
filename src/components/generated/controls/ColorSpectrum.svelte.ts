@@ -9,7 +9,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface ColorSpectrumProps extends ControlProps {
-  color?: ColorInput;
+  color?: ColorInput | undefined;
   components?: EnumInput<typeof ColorSpectrumComponents>;
   hsvColor?: ColorSpectrum["hsvColor"];
   maxHue?: number;

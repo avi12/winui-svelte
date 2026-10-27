@@ -9,7 +9,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface NumberBoxProps extends ControlProps {
-  value?: number;
+  value?: number | undefined;
   acceptsExpression?: boolean;
   description?: ObjectInput;
   header?: ObjectInput;

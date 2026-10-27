@@ -13,7 +13,7 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
 export interface TeachingTipProps extends ContentControlProps {
-  isOpen?: boolean;
+  isOpen?: boolean | undefined;
   actionButtonCommand?: TeachingTip["actionButtonCommand"];
   actionButtonCommandParameter?: ObjectInput;
   actionButtonContent?: ObjectInput;

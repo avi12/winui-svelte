@@ -9,7 +9,7 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
 export interface ToolTipProps extends ContentControlProps {
-  isOpen?: boolean;
+  isOpen?: boolean | undefined;
   horizontalOffset?: number;
   placement?: EnumInput<typeof PlacementMode>;
   placementRect?: ToolTip["placementRect"];

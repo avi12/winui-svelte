@@ -9,7 +9,7 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
 export interface AppBarProps extends ContentControlProps {
-  isOpen?: boolean;
+  isOpen?: boolean | undefined;
   closedDisplayMode?: EnumInput<typeof AppBarClosedDisplayMode>;
   isSticky?: boolean;
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;

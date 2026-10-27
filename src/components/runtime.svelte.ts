@@ -39,16 +39,12 @@ export class Linker {
     key: Key;
     apply: (value: Given<Props[Key]>) => void;
   }) {
-    const isGiven = key in props;
-    if (isGiven) {
-      $effect(() => {
-        const value = props[key];
-        const isSet = value !== undefined;
-        if (isSet) {
-          this.write(() => apply(value));
-        }
-      });
-    }
+    this.follow({
+      props,
+      key,
+      apply,
+      isBlocked: () => false
+    });
   }
 
   /** The property the children are: a child, when there is one, is the value. */
@@ -57,12 +53,28 @@ export class Linker {
     key: Key;
     apply: (value: Given<Props[Key]>) => void;
   }) {
+    this.follow({
+      props,
+      key,
+      apply,
+      isBlocked: () => props.children !== undefined
+    });
+  }
+
+  // The effect both kinds of property share: the prop's value is written to
+  // the control unless it is unset or `isBlocked` (read inside the effect, so
+  // it is tracked) says something else holds the value.
+  private follow<Props extends object, Key extends keyof Props>({ props, key, apply, isBlocked }: {
+    props: Props;
+    key: Key;
+    apply: (value: Given<Props[Key]>) => void;
+    isBlocked: () => boolean;
+  }) {
     const isGiven = key in props;
     if (isGiven) {
       $effect(() => {
         const value = props[key];
-        const hasChildren = props.children !== undefined;
-        const isWritable = value !== undefined && !hasChildren;
+        const isWritable = value !== undefined && !isBlocked();
         if (isWritable) {
           this.write(() => apply(value));
         }

@@ -8,7 +8,7 @@ import { linkButtonBase } from "./ButtonBase.svelte.ts";
 import type { ButtonBaseBound, ButtonBaseProps } from "./ButtonBase.svelte.ts";
 
 export interface ToggleButtonProps extends ButtonBaseProps {
-  isChecked?: NullableBooleanInput;
+  isChecked?: NullableBooleanInput | undefined;
   isThreeState?: boolean;
   onChecked?: Parameters<ToggleButton["onChecked"]>[0];
   onIndeterminate?: Parameters<ToggleButton["onIndeterminate"]>[0];

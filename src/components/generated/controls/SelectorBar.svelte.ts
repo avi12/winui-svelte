@@ -7,7 +7,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface SelectorBarProps extends ControlProps {
-  selectedItem?: SelectorBar["selectedItem"];
+  selectedItem?: SelectorBar["selectedItem"] | undefined;
   onSelectionChanged?: Parameters<SelectorBar["onSelectionChanged"]>[0];
 }
 

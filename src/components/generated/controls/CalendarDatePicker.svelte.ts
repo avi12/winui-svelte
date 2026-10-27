@@ -9,7 +9,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface CalendarDatePickerProps extends ControlProps {
-  date?: CalendarDatePicker["date"];
+  date?: CalendarDatePicker["date"] | undefined;
   calendarIdentifier?: string;
   calendarViewStyle?: CalendarDatePicker["calendarViewStyle"];
   dateFormat?: string;

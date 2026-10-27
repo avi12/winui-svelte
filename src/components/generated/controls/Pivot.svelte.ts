@@ -9,8 +9,8 @@ import { linkItemsControl } from "./ItemsControl.svelte.ts";
 import type { ItemsControlBound, ItemsControlProps } from "./ItemsControl.svelte.ts";
 
 export interface PivotProps extends ItemsControlProps {
-  selectedItem?: ObjectInput;
-  selectedIndex?: number;
+  selectedItem?: ObjectInput | undefined;
+  selectedIndex?: number | undefined;
   headerFocusVisualPlacement?: EnumInput<typeof PivotHeaderFocusVisualPlacement>;
   headerTemplate?: Pivot["headerTemplate"];
   isHeaderItemsCarouselEnabled?: boolean;

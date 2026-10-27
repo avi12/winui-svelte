@@ -7,7 +7,7 @@ import { linkSplitButton } from "./SplitButton.svelte.ts";
 import type { SplitButtonBound, SplitButtonProps } from "./SplitButton.svelte.ts";
 
 export interface ToggleSplitButtonProps extends SplitButtonProps {
-  isChecked?: boolean;
+  isChecked?: boolean | undefined;
   onIsCheckedChanged?: Parameters<ToggleSplitButton["onIsCheckedChanged"]>[0];
 }
 

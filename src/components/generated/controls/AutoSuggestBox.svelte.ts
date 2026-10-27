@@ -9,7 +9,7 @@ import { linkItemsControl } from "./ItemsControl.svelte.ts";
 import type { ItemsControlBound, ItemsControlProps } from "./ItemsControl.svelte.ts";
 
 export interface AutoSuggestBoxProps extends ItemsControlProps {
-  text?: string;
+  text?: string | undefined;
   autoMaximizeSuggestionArea?: boolean;
   description?: ObjectInput;
   header?: ObjectInput;

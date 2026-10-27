@@ -1,5 +1,5 @@
-import { handWrittenComponents } from "../../scripts/codegen/tables.ts";
 import { levels } from "./generated/metadata.ts";
+import { handWrittenComponents } from "#scripts/codegen/tables.ts";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { stripTypeScriptTypes } from "node:module";
@@ -11,17 +11,23 @@ import { compile, compileModule } from "svelte/compiler";
 // as the window has: a component that does not compile, or compiles with a
 // warning, fails here and not when the window loads it.
 
-const generated = path.join(import.meta.dirname, "generated");
-const rendererPath = "../renderer.ts";
+const GENERATED_FOLDER = path.join(import.meta.dirname, "generated");
+const RENDERER_PATH = "../renderer.ts";
 
-function filesIn(folder: string, suffix: string): string[] {
+function filesIn({ folder, suffix }: {
+  folder: string;
+  suffix: string;
+}) {
   return readdirSync(folder)
     .filter(name => name.endsWith(suffix) && !name.endsWith(".d.svelte.ts"))
     .map(name => path.join(folder, name));
 }
 
 test("every component compiles without a warning", () => {
-  const files = filesIn(generated, ".svelte");
+  const files = filesIn({
+    folder: GENERATED_FOLDER,
+    suffix: ".svelte"
+  });
   assert.ok(files.length > 100, `only ${files.length} components`);
   for (const file of files) {
     const result = compile(readFileSync(file, "utf8"), {
@@ -29,7 +35,7 @@ test("every component compiles without a warning", () => {
       generate: "client",
       runes: true,
       experimental: {
-        customRenderer: rendererPath
+        customRenderer: RENDERER_PATH
       }
     });
     const warnings = result.warnings.map(warning => `${path.basename(file)}: ${warning.message}`);
@@ -38,7 +44,10 @@ test("every component compiles without a warning", () => {
 });
 
 test("every level's module compiles", () => {
-  const files = filesIn(path.join(generated, "controls"), ".svelte.ts");
+  const files = filesIn({
+    folder: path.join(GENERATED_FOLDER, "controls"),
+    suffix: ".svelte.ts"
+  });
   assert.equal(files.length, Object.keys(levels).length);
   for (const file of files) {
     compileModule(stripTypeScriptTypes(readFileSync(file, "utf8")), {
@@ -50,17 +59,23 @@ test("every level's module compiles", () => {
 
 test("each component has a declaration and a level, or is written by hand", () => {
   const components = Object.entries(levels).filter(([, level]) => level.isComponent);
-  const generatedNames = filesIn(generated, ".svelte").map(file => path.basename(file, ".svelte"));
+  const generatedNames = filesIn({
+    folder: GENERATED_FOLDER,
+    suffix: ".svelte"
+  }).map(file => path.basename(file, ".svelte"));
   const handWritten = [...handWrittenComponents.keys()];
   assert.deepEqual([...generatedNames, ...handWritten].sort(), components.map(([name]) => name).sort());
   for (const [name, module] of handWrittenComponents) {
-    assert.ok(existsSync(path.join(generated, module)), `${name}: ${module} is missing`);
+    assert.ok(existsSync(path.join(GENERATED_FOLDER, module)), `${name}: ${module} is missing`);
   }
 });
 
 test("a hand-written component compiles without a warning", () => {
   const handWrittenFolder = path.join(import.meta.dirname, "hand-written");
-  const files = filesIn(handWrittenFolder, ".svelte");
+  const files = filesIn({
+    folder: handWrittenFolder,
+    suffix: ".svelte"
+  });
   assert.ok(files.length > 0);
   for (const file of files) {
     const result = compile(readFileSync(file, "utf8"), {
@@ -68,7 +83,7 @@ test("a hand-written component compiles without a warning", () => {
       generate: "client",
       runes: true,
       experimental: {
-        customRenderer: rendererPath
+        customRenderer: RENDERER_PATH
       }
     });
     const warnings = result.warnings.map(warning => `${path.basename(file)}: ${warning.message}`);

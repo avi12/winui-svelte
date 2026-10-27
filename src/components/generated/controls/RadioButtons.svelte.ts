@@ -8,8 +8,8 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface RadioButtonsProps extends ControlProps {
-  selectedItem?: ObjectInput;
-  selectedIndex?: number;
+  selectedItem?: ObjectInput | undefined;
+  selectedIndex?: number | undefined;
   header?: ObjectInput;
   headerTemplate?: RadioButtons["headerTemplate"];
   itemsSource?: ObjectReferenceInput;

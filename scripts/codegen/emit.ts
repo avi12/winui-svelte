@@ -396,11 +396,13 @@ function emitBindableBody({ level, imports }: {
       throw new Error(`${className}.${bindable.key} is bindable but not a property`);
     }
 
+    // A binding that was never set reads as undefined, and exactOptionalPropertyTypes
+    // keeps an optional prop from holding it unless it says so.
     members.unshift(
       `  ${property.key}?: ${propertyType({
         property,
         className
-      })};`
+      })} | undefined;`
     );
     body.push(
       ...emitBindable({

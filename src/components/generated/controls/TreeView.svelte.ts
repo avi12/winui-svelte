@@ -9,7 +9,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface TreeViewProps extends ControlProps {
-  selectedItem?: ObjectInput;
+  selectedItem?: ObjectInput | undefined;
   canDragItems?: boolean;
   canReorderItems?: boolean;
   itemContainerStyle?: TreeView["itemContainerStyle"];

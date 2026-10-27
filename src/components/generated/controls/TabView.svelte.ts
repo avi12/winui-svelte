@@ -9,8 +9,8 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface TabViewProps extends ControlProps {
-  selectedItem?: ObjectInput;
-  selectedIndex?: number;
+  selectedItem?: ObjectInput | undefined;
+  selectedIndex?: number | undefined;
   addTabButtonCommand?: TabView["addTabButtonCommand"];
   addTabButtonCommandParameter?: ObjectInput;
   allowDropTabs?: boolean;

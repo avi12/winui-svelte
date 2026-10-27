@@ -9,7 +9,7 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
 export interface ExpanderProps extends ContentControlProps {
-  isExpanded?: boolean;
+  isExpanded?: boolean | undefined;
   expandDirection?: EnumInput<typeof ExpandDirection>;
   header?: ObjectInput;
   headerTemplate?: Expander["headerTemplate"];

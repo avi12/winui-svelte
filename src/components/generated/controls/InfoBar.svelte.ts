@@ -9,7 +9,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface InfoBarProps extends ControlProps {
-  isOpen?: boolean;
+  isOpen?: boolean | undefined;
   actionButton?: InfoBar["actionButton"];
   closeButtonCommand?: InfoBar["closeButtonCommand"];
   closeButtonCommandParameter?: ObjectInput;

@@ -7,7 +7,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface RatingControlProps extends ControlProps {
-  value?: number;
+  value?: number | undefined;
   caption?: string;
   initialSetValue?: number;
   isClearEnabled?: boolean;

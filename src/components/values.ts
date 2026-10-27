@@ -37,12 +37,6 @@ export const GridUnit = {
 /** A grid track unit: one of the `GridUnit` values. */
 export type GridUnit = (typeof GridUnit)[keyof typeof GridUnit];
 
-/** A grid length read from a prop: its unit and its number (pixels or star weight). */
-export interface GridLengthParts {
-  unit: GridUnit;
-  value: number;
-}
-
 /**
  * 8 for every side, [8, 4] for left-right and top-bottom, [left, top, right,
  * bottom] as XAML writes them, or a string: CSS order ("top right bottom

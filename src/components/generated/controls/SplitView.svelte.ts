@@ -11,7 +11,7 @@ import type { Snippet } from "svelte";
 
 export interface SplitViewProps extends ControlProps {
   children?: Snippet;
-  isPaneOpen?: boolean;
+  isPaneOpen?: boolean | undefined;
   compactPaneLength?: number;
   content?: SplitView["content"];
   displayMode?: EnumInput<typeof SplitViewDisplayMode>;

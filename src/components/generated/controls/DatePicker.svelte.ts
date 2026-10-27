@@ -11,8 +11,8 @@ import type { Snippet } from "svelte";
 
 export interface DatePickerProps extends ControlProps {
   children?: Snippet;
-  selectedDate?: DatePicker["selectedDate"];
-  date?: DatePicker["date"];
+  selectedDate?: DatePicker["selectedDate"] | undefined;
+  date?: DatePicker["date"] | undefined;
   calendarIdentifier?: string;
   dayFormat?: string;
   dayVisible?: boolean;

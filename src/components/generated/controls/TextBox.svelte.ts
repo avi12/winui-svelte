@@ -15,7 +15,7 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface TextBoxProps extends ControlProps {
-  text?: string;
+  text?: string | undefined;
   acceptsReturn?: boolean;
   characterCasing?: EnumInput<typeof CharacterCasing>;
   description?: ObjectInput;

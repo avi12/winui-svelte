@@ -3,9 +3,9 @@
 // importing it, the registration of the generated bindings with the renderer,
 // so a `<toggle-switch>` a component renders is made as a ToggleSwitch.
 
-import { registerControls } from "../renderer/host/host.ts";
 import * as bindings from "./generated/bindings.ts";
+import { registerControls } from "#src/renderer/host/host.js";
 
-export { attachmentsOf, control } from "../renderer/host/control.ts";
+export { attachmentsOf, control } from "#src/renderer/host/control.js";
 
 registerControls(bindings);

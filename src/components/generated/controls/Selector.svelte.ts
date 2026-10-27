@@ -8,9 +8,9 @@ import { linkItemsControl } from "./ItemsControl.svelte.ts";
 import type { ItemsControlBound, ItemsControlProps } from "./ItemsControl.svelte.ts";
 
 export interface SelectorProps extends ItemsControlProps {
-  selectedValue?: ObjectInput;
-  selectedItem?: ObjectInput;
-  selectedIndex?: number;
+  selectedValue?: ObjectInput | undefined;
+  selectedItem?: ObjectInput | undefined;
+  selectedIndex?: number | undefined;
   isSynchronizedWithCurrentItem?: NullableBooleanInput;
   selectedValuePath?: string;
   onSelectionChanged?: Parameters<Selector["onSelectionChanged"]>[0];

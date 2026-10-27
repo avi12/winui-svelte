@@ -11,7 +11,7 @@ import type { Snippet } from "svelte";
 
 export interface PopupProps extends FrameworkElementProps {
   children?: Snippet;
-  isOpen?: boolean;
+  isOpen?: boolean | undefined;
   child?: Popup["child"];
   childTransitions?: Popup["childTransitions"];
   desiredPlacement?: EnumInput<typeof PopupPlacementMode>;
