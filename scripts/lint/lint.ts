@@ -13,6 +13,7 @@ const STEPS = [
   "lint:stylelint",
   "check",
   "check:editor",
+  "check:webstorm",
   "fallow",
   "gen:components:check",
   "check:package"
