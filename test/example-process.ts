@@ -22,6 +22,13 @@ const reportSchema = z.record(z.string(), jsonSchema);
 
 export type Report = z.infer<typeof reportSchema>;
 
+// A command sent to the example and the kind of report that answers it.
+export interface Exchange {
+  command: Report;
+  kind: string;
+  timeoutMilliseconds?: number;
+}
+
 export class ExampleProcess {
   readonly pid: number;
   readonly exited: Promise<number | null>;
@@ -36,7 +43,9 @@ export class ExampleProcess {
       const isReportLine = line.startsWith("{");
       if (isReportLine) {
         this.reports.push(reportSchema.parse(JSON.parse(line)));
-        this.waiting.splice(0).forEach(wake => wake());
+        for (const wake of this.waiting.splice(0)) {
+          wake();
+        }
       }
     });
     this.exited = new Promise(resolve => {
@@ -44,7 +53,10 @@ export class ExampleProcess {
     });
   }
 
-  static start(entry: string, flags: string[] = []) {
+  static start({ entry, flags = [] }: {
+    entry: string;
+    flags?: string[];
+  }) {
     const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", LAUNCHER, entry, ...flags], {
       cwd: PACKAGE_ROOT,
       stdio: ["pipe", "pipe", "inherit"]
@@ -58,13 +70,14 @@ export class ExampleProcess {
 
   // Sends `command` and resolves with the next report of `kind`. The first
   // command also waits for the window to load, which takes a while.
-  async ask(command: Report, kind: string, timeoutMilliseconds = START_MILLISECONDS) {
+  async ask({ command, kind, timeoutMilliseconds = START_MILLISECONDS }: Exchange) {
     const from = this.reports.length;
     this.send(command);
     const deadline = Date.now() + timeoutMilliseconds;
     while (Date.now() < deadline) {
       const found = this.reports.slice(from).find(report => report["kind"] === kind);
-      if (found !== undefined) {
+      const isFound = found !== undefined;
+      if (isFound) {
         return found;
       }
 
@@ -79,10 +92,18 @@ export class ExampleProcess {
 
   // WinUI lays out on its own schedule: give it a moment to realize the
   // containers a command changed, then ask.
-  async settled(command: Report, kind: string) {
-    await this.ask(command, kind);
+  async settled({ command, kind }: Exchange) {
+    await this.ask({
+      command,
+      kind
+    });
     await new Promise(resolve => setTimeout(resolve, LAYOUT_MILLISECONDS));
-    return this.ask({ cmd: "stats" }, "stats");
+    return this.ask({
+      command: {
+        cmd: "stats"
+      },
+      kind: "stats"
+    });
   }
 
   // For a test that failed: end this process, and only it.
@@ -91,9 +112,13 @@ export class ExampleProcess {
   }
 }
 
-export function numberOf(report: Report, field: string) {
+export function numberOf({ report, field }: {
+  report: Report;
+  field: string;
+}) {
   const value = report[field];
-  if (typeof value !== "number") {
+  const isNumber = typeof value === "number";
+  if (!isNumber) {
     throw new TypeError(`the report has no number "${field}"`);
   }
 
