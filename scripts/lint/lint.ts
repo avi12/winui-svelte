@@ -5,7 +5,7 @@ import path from "node:path";
 // failed, so a single run lists everything to fix. Exits 1 if any step failed.
 // `pnpm lint:summary` counts what they report per rule and folder.
 
-const packageRoot = path.join(import.meta.dirname, "..", "..");
+const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const STEPS = [
   "build",
   "lint:oxlint",
@@ -20,10 +20,17 @@ const STEPS = [
 
 function runStep(name: string) {
   const pnpmScript = process.env["npm_execpath"];
-  const options = { cwd: packageRoot, stdio: "inherit" } as const;
-  const result = pnpmScript === undefined
-    ? spawnSync("pnpm", ["run", name], { ...options, shell: true })
-    : spawnSync(process.execPath, [pnpmScript, "run", name], options);
+  const isRunThroughPnpm = pnpmScript !== undefined;
+  const result = isRunThroughPnpm
+    ? spawnSync(process.execPath, [pnpmScript, "run", name], {
+      cwd: PACKAGE_ROOT,
+      stdio: "inherit"
+    })
+    : spawnSync("pnpm", ["run", name], {
+      cwd: PACKAGE_ROOT,
+      stdio: "inherit",
+      shell: true
+    });
   return result.status === 0;
 }
 
@@ -31,13 +38,15 @@ function main() {
   const failed: string[] = [];
   for (const step of STEPS) {
     console.log(`\n==> pnpm ${step}`);
-    if (runStep(step) === false) {
+
+    if (!runStep(step)) {
       failed.push(step);
     }
   }
 
-  console.log(failed.length === 0 ? "\nlint: every step passed" : `\nlint: failed steps: ${failed.join(", ")}`);
-  process.exitCode = failed.length === 0 ? 0 : 1;
+  const isPassing = failed.length === 0;
+  console.log(isPassing ? "\nlint: every step passed" : `\nlint: failed steps: ${failed.join(", ")}`);
+  process.exitCode = isPassing ? 0 : 1;
 }
 
 main();

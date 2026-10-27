@@ -1,4 +1,10 @@
-import { everyFileRules, sourceRules, syntaxRules, treeShakingSyntax, typeAwareRules } from "./eslint-config/google-style.js";
+import {
+  everyFileRules,
+  sourceRules,
+  syntaxRules,
+  treeShakingSyntax,
+  typeAwareRules
+} from "./eslint-config/google-style.js";
 import expandNestedObjectExpression from "./eslint-rules/expand-nested-object-expression.js";
 import expandNestedTypeLiteral from "./eslint-rules/expand-nested-type-literal.js";
 import expandSvelteBlock from "./eslint-rules/expand-svelte-block.js";
@@ -246,7 +252,6 @@ const tsStyleRules = {
   ...everyFileRules
 };
 
-
 const sharedPlugins = {
   "@stylistic": stylistic,
   "@typescript-eslint": typescriptEslint.plugin,
@@ -352,10 +357,12 @@ export default [
     }
   },
   {
-    // A tool's config file is its default export.
+    // A tool's config file is its default export, and its keys are the
+    // tool's own option names.
     files: ["*.config.{js,ts}", "**/vite.config.ts"],
     rules: {
-      "no-restricted-exports": "off"
+      "no-restricted-exports": "off",
+      "@typescript-eslint/naming-convention": "off"
     }
   },
   {

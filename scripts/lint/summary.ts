@@ -8,18 +8,48 @@ import path from "node:path";
 //   pnpm lint:summary eslint tsc       only these (eslint, oxlint, tsc, svelte-check)
 //   pnpm lint:summary --folder src/css only the folder's violations, with files
 
-const packageRoot = path.join(import.meta.dirname, "..", "..");
-const MAX_OUTPUT_BYTES = 512 * 1024 * 1024;
+const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
+const BYTES_PER_KILOBYTE = 1024;
+const OUTPUT_LIMIT_MEGABYTES = 512;
+const MAX_OUTPUT_BYTES = OUTPUT_LIMIT_MEGABYTES * BYTES_PER_KILOBYTE * BYTES_PER_KILOBYTE;
 const TOOL_NAMES = ["eslint", "oxlint", "tsc", "svelte-check"];
 const FOLDER_FLAG = "--folder";
 const SOURCE_FOLDER = "src";
-const FILE_COLUMN_WIDTH = 6;
+const COUNT_COLUMN_WIDTH = 6;
+const TSC_PROJECTS = ["tsconfig.json", "src/css/tsconfig.json"];
+const TSC_ERROR_LINE = /^(.+?)\((\d+),\d+\): error (TS\d+):/u;
+const SYNTAX_RULE = "no-restricted-syntax";
+const SYNTAX_MESSAGE_LENGTH = 70;
+const SVELTE_CHECK_LINE_BASE = 1;
+const TSC_CODE_GROUP = 3;
+const TSC_FILE_GROUP = 1;
+const TSC_LINE_GROUP = 2;
 
 interface Violation {
   tool: string;
   rule: string;
   file: string;
   line: number;
+}
+
+interface EslintMessage {
+  ruleId: string | null;
+  message: string;
+  line: number;
+  fatal?: boolean;
+}
+
+interface EslintFile {
+  filePath: string;
+  messages: EslintMessage[];
+}
+
+interface OxlintDiagnostic {
+  code: string;
+  filename: string;
+  labels?: Array<{
+    span: { line: number };
+  }>;
 }
 
 interface SvelteCheckLine {
@@ -29,9 +59,18 @@ interface SvelteCheckLine {
   code?: string | number;
 }
 
-function run(binary: string, argumentList: string[]) {
-  const result = spawnSync(process.execPath, [path.join(packageRoot, "node_modules", binary), ...argumentList], {
-    cwd: packageRoot,
+interface Counted {
+  label: string;
+  count: number;
+}
+
+function run({ binary, argumentList }: {
+  binary: string;
+  argumentList: string[];
+}) {
+  const script = path.join(PACKAGE_ROOT, "node_modules", binary);
+  const result = spawnSync(process.execPath, [script, ...argumentList], {
+    cwd: PACKAGE_ROOT,
     encoding: "utf8",
     maxBuffer: MAX_OUTPUT_BYTES
   });
@@ -39,42 +78,53 @@ function run(binary: string, argumentList: string[]) {
 }
 
 function relativeFile(file: string) {
-  return path.relative(packageRoot, file).replaceAll("\\", "/");
+  return path.relative(PACKAGE_ROOT, file).replaceAll("\\", "/");
 }
 
 // `src/<area>` for the package's own code, the first folder for anything else.
 function folderOf(file: string) {
   const [first = "", second = ""] = file.split("/");
-  const isSource = first === SOURCE_FOLDER && second.includes(".") === false && second !== "";
-  return isSource ? `${first}/${second}` : first;
+  const isAreaFolder = first === SOURCE_FOLDER && second !== "" && !second.includes(".");
+  return isAreaFolder ? `${first}/${second}` : first;
 }
 
 // no-restricted-syntax carries many of CLAUDE.md's rules; its message says which.
-const SYNTAX_RULE = "no-restricted-syntax";
-const SYNTAX_MESSAGE_LENGTH = 70;
-
-function ruleLabel(message: { ruleId: string | null; message: string; fatal?: boolean }) {
-  if (message.ruleId === SYNTAX_RULE) {
-    return `${SYNTAX_RULE}: ${message.message.slice(0, SYNTAX_MESSAGE_LENGTH)}`;
+function eslintRuleLabel(message: EslintMessage) {
+  const text = message.message.slice(0, SYNTAX_MESSAGE_LENGTH);
+  const rule = message.ruleId;
+  const isSyntaxRule = rule === SYNTAX_RULE;
+  if (isSyntaxRule) {
+    return `${SYNTAX_RULE}: ${text}`;
   }
 
-  return message.ruleId ?? (message.fatal === true ? `parse-error: ${message.message.slice(0, SYNTAX_MESSAGE_LENGTH)}` : "unknown");
+  const isWithoutRule = rule === null;
+  if (isWithoutRule) {
+    return message.fatal === true ? `parse-error: ${text}` : "unknown";
+  }
+
+  return rule;
 }
 
 function eslintViolations() {
-  const report: { filePath: string; messages: { ruleId: string | null; message: string; line: number; fatal?: boolean }[] }[] =
-    JSON.parse(run("eslint/bin/eslint.js", [".", "--format", "json"]));
+  const output = run({
+    binary: "eslint/bin/eslint.js",
+    argumentList: [".", "--format", "json"]
+  });
+  const report: EslintFile[] = JSON.parse(output);
   return report.flatMap(entry => entry.messages.map(message => ({
     tool: "eslint",
-    rule: ruleLabel(message),
+    rule: eslintRuleLabel(message),
     file: relativeFile(entry.filePath),
     line: message.line
   })));
 }
 
 function oxlintViolations() {
-  const report: { diagnostics: { code: string; filename: string; labels?: { span: { line: number } }[] }[] } =
-    JSON.parse(run("oxlint/bin/oxlint", ["--type-aware", "--format", "json"]));
+  const output = run({
+    binary: "oxlint/bin/oxlint",
+    argumentList: ["--type-aware", "--format", "json"]
+  });
+  const report: { diagnostics: OxlintDiagnostic[] } = JSON.parse(output);
   return report.diagnostics.map(diagnostic => ({
     tool: "oxlint",
     rule: diagnostic.code,
@@ -84,22 +134,24 @@ function oxlintViolations() {
 }
 
 function tscViolations() {
-  const projects = ["tsconfig.json", "src/css/tsconfig.json"];
-  const pattern = /^(.+?)\((\d+),\d+\): error (TS\d+):/u;
   const violations: Violation[] = [];
-  for (const project of projects) {
-    const output = run("typescript/bin/tsc", ["--noEmit", "--pretty", "false", "-p", project]);
+  for (const project of TSC_PROJECTS) {
+    const output = run({
+      binary: "typescript/bin/tsc",
+      argumentList: ["--noEmit", "--pretty", "false", "-p", project]
+    });
     for (const line of output.split("\n")) {
-      const match = pattern.exec(line);
-      if (match === null) {
+      const match = TSC_ERROR_LINE.exec(line);
+      const isOtherLine = match === null;
+      if (isOtherLine) {
         continue;
       }
 
       violations.push({
         tool: "tsc",
-        rule: match[3] ?? "TS",
-        file: relativeFile(path.resolve(packageRoot, match[1] ?? "")),
-        line: Number(match[2])
+        rule: match[TSC_CODE_GROUP] ?? "TS",
+        file: relativeFile(path.resolve(PACKAGE_ROOT, match[TSC_FILE_GROUP] ?? "")),
+        line: Number(match[TSC_LINE_GROUP])
       });
     }
   }
@@ -107,46 +159,87 @@ function tscViolations() {
 }
 
 function svelteCheckViolations() {
-  const output = run("svelte-check/bin/svelte-check", [
-    "--tsconfig", "./tsconfig.json", "--output", "machine-verbose"
-  ]);
+  const output = run({
+    binary: "svelte-check/bin/svelte-check",
+    argumentList: ["--tsconfig", "./tsconfig.json", "--output", "machine-verbose"]
+  });
   const violations: Violation[] = [];
   for (const line of output.split("\n")) {
     const jsonStart = line.indexOf("{");
-    if (jsonStart < 0) {
+    const isNotJson = jsonStart < 0;
+    if (isNotJson) {
       continue;
     }
 
     const parsed: SvelteCheckLine = JSON.parse(line.slice(jsonStart));
     const isProblem = parsed.type === "ERROR" || parsed.type === "WARNING";
-    if (isProblem === false) {
+    if (!isProblem) {
       continue;
     }
 
     violations.push({
       tool: "svelte-check",
       rule: String(parsed.code ?? "svelte"),
-      file: relativeFile(path.resolve(packageRoot, parsed.filename ?? "")),
-      line: (parsed.start?.line ?? 0) + 1
+      file: relativeFile(path.resolve(PACKAGE_ROOT, parsed.filename ?? "")),
+      line: (parsed.start?.line ?? 0) + SVELTE_CHECK_LINE_BASE
     });
   }
   return violations;
 }
 
-function countBy(violations: Violation[], key: (violation: Violation) => string) {
+const RUNNERS: Record<string, () => Violation[]> = {
+  eslint: eslintViolations,
+  oxlint: oxlintViolations,
+  tsc: tscViolations,
+  "svelte-check": svelteCheckViolations
+};
+
+function countBy({ violations, labelOf }: {
+  violations: Violation[];
+  labelOf: (violation: Violation) => string;
+}) {
   const counts = new Map<string, number>();
   for (const violation of violations) {
-    const label = key(violation);
+    const label = labelOf(violation);
     counts.set(label, (counts.get(label) ?? 0) + 1);
   }
-  return [...counts].sort((left, right) => right[1] - left[1]);
+
+  const counted: Counted[] = [...counts].map(([label, count]) => ({
+    label,
+    count
+  }));
+  return counted.sort((left, right) => right.count - left.count);
 }
 
-function printTable(title: string, rows: [string, number][]) {
+function printTable({ title, rows }: {
+  title: string;
+  rows: Counted[];
+}) {
   console.log(`\n${title}`);
-  for (const [label, count] of rows) {
-    console.log(`${String(count).padStart(FILE_COLUMN_WIDTH)}  ${label}`);
+  for (const row of rows) {
+    console.log(`${String(row.count).padStart(COUNT_COLUMN_WIDTH)}  ${row.label}`);
   }
+}
+
+function printFolder({ folder, violations }: {
+  folder: string;
+  violations: Violation[];
+}) {
+  const inFolder = violations.filter(violation => violation.file.startsWith(folder));
+  printTable({
+    title: `${folder}: by rule`,
+    rows: countBy({
+      violations: inFolder,
+      labelOf: violation => `${violation.tool}  ${violation.rule}`
+    })
+  });
+  printTable({
+    title: `${folder}: by file`,
+    rows: countBy({
+      violations: inFolder,
+      labelOf: violation => violation.file
+    })
+  });
 }
 
 function main() {
@@ -155,28 +248,42 @@ function main() {
   const folder = folderIndex < 0 ? undefined : argumentList[folderIndex + 1];
   const requested = argumentList.filter(argument => TOOL_NAMES.includes(argument));
   const tools = requested.length === 0 ? TOOL_NAMES : requested;
-  const runners: Record<string, () => Violation[]> = {
-    eslint: eslintViolations,
-    oxlint: oxlintViolations,
-    tsc: tscViolations,
-    "svelte-check": svelteCheckViolations
-  };
 
   let violations: Violation[] = [];
   for (const tool of tools) {
-    violations = violations.concat(runners[tool]?.() ?? []);
+    violations = violations.concat(RUNNERS[tool]?.() ?? []);
   }
 
-  if (folder !== undefined) {
-    const inFolder = violations.filter(violation => violation.file.startsWith(folder));
-    printTable(`${folder}: by rule`, countBy(inFolder, violation => `${violation.tool}  ${violation.rule}`));
-    printTable(`${folder}: by file`, countBy(inFolder, violation => violation.file));
+  const isOneFolder = folder !== undefined;
+  if (isOneFolder) {
+    printFolder({
+      folder,
+      violations
+    });
     return;
   }
 
-  printTable("By rule", countBy(violations, violation => `${violation.tool}  ${violation.rule}`));
-  printTable("By folder", countBy(violations, violation => folderOf(violation.file)));
-  printTable("By tool", countBy(violations, violation => violation.tool));
+  printTable({
+    title: "By rule",
+    rows: countBy({
+      violations,
+      labelOf: violation => `${violation.tool}  ${violation.rule}`
+    })
+  });
+  printTable({
+    title: "By folder",
+    rows: countBy({
+      violations,
+      labelOf: violation => folderOf(violation.file)
+    })
+  });
+  printTable({
+    title: "By tool",
+    rows: countBy({
+      violations,
+      labelOf: violation => violation.tool
+    })
+  });
   console.log(`\nTotal: ${violations.length}`);
 }
 
