@@ -10,7 +10,7 @@ import { initWindowsAppSdk } from "winui-svelte/bootstrap";
 const WINDOWS_APP_SDK_MAJOR = 2;
 const WINDOWS_APP_SDK_MINOR = 2;
 
-export function startWindowsAppSdk(): void {
+export function startWindowsAppSdk() {
   initWindowsAppSdk({
     major: WINDOWS_APP_SDK_MAJOR,
     minor: WINDOWS_APP_SDK_MINOR,

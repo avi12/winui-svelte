@@ -5,13 +5,20 @@
   import { withControl } from "winui-svelte";
 
   // No flushSync anywhere: the question is who applies the change.
-  function click(): void {
+  function click() {
     probe.count += 1;
     watch("click");
   }
 </script>
 
-<stack-panel padding="12,12,12,12" spacing={8}>
+<stack-panel class="probe">
   <text-block {@attach withControl(TextBlock, control => observe(() => control.text))}>count={probe.count}</text-block>
   <button onclick={click}>Click via UIA</button>
 </stack-panel>
+
+<style>
+  .probe {
+    gap: 8px;
+    padding: 12px;
+  }
+</style>

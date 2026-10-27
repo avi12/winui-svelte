@@ -18,19 +18,22 @@ await runOnUiThread(async () => {
   registerHooks(svelteHooks());
   await import("winui-svelte/components");
   const { createWindow, runWindow, startTimer } = await import("winui-svelte/window");
-  const { default: Probe } = await import("./Probe.svelte");
+  const { default: probeComponent } = await import("./Probe.svelte");
   const { probe } = await import("./probe-state.svelte.ts");
   const { look, record, watch } = await import("./watch.ts");
 
   await runWindow({
     onStart() {
       createWindow({
-        component: Probe,
+        component: probeComponent,
         props: {},
         title: "scheduling-probe",
         isBackground: true
       });
-      record("window shown", "");
+      record({
+        label: "window shown",
+        text: ""
+      });
 
       // Trigger B: a DispatcherQueue timer callback.
       startTimer({
@@ -51,8 +54,11 @@ await runOnUiThread(async () => {
       startTimer({
         milliseconds: INBOX_MILLISECONDS,
         onTick() {
-          const received = parentPort === null ? undefined : receiveMessageOnPort(parentPort);
-          if (received !== undefined) {
+          const port = parentPort;
+          const hasPort = port !== null;
+          const received = hasPort ? receiveMessageOnPort(port) : undefined;
+          const hasMessage = received !== undefined;
+          if (hasMessage) {
             probe.count = MESSAGE_COUNT;
             watch("host message");
           }

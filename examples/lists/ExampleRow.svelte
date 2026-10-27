@@ -2,7 +2,11 @@
   import type { ExampleItem } from "./example-item.ts";
   import { rowStats } from "./row-stats.ts";
 
-  const { row }: { row: ExampleItem } = $props();
+  interface Props {
+    row: ExampleItem;
+  }
+
+  const { row }: Props = $props();
 
   rowStats.created++;
   $effect(() => () => {
@@ -10,7 +14,19 @@
   });
 </script>
 
-<stack-panel orientation="Horizontal" padding="12,8,12,8" spacing={12}>
+<stack-panel class="row">
   <text-block>{row.name}</text-block>
-  <text-block opacity={0.6}>#{row.id}</text-block>
+  <text-block class="id">#{row.id}</text-block>
 </stack-panel>
+
+<style>
+  .row {
+    flex-direction: row;
+    gap: 12px;
+    padding: 8px 12px;
+  }
+
+  .id {
+    opacity: 0.6;
+  }
+</style>

@@ -8,8 +8,12 @@
   import { exitApplication } from "winui-svelte/window";
   import { Backdrop } from "winui-svelte/window";
 
+  const WINDOW_WIDTH = 520;
+  const WINDOW_HEIGHT = 360;
+  const WINDOW_MIN_WIDTH = 400;
+
   // The material named, or acrylic.
-  function backdropOf(name: Json | undefined): Backdrop {
+  function backdropOf(name: Json | undefined) {
     return Object.values(Backdrop).find(candidate => candidate === name) ?? Backdrop.Acrylic;
   }
 
@@ -19,7 +23,7 @@
   // svelte-ignore state_referenced_locally
   let backdrop = $state(backdropOf(host.options["backdrop"]));
   let title = $state("Window example");
-  let width = $state(520);
+  let width = $state(WINDOW_WIDTH);
   let handle: WindowHandle | undefined = $state();
   let lastBounds: WindowBounds | null = null;
   let boundsReports = 0;
@@ -27,7 +31,7 @@
   let closes = 0;
 
   // The kind of material the window holds now, read back from WinUI.
-  function backdropName(): string {
+  function backdropName() {
     const held = handle?.window.systemBackdrop;
     const isUnset = held === undefined || held === null;
     if (isUnset) {
@@ -44,7 +48,7 @@
 
   // Reports what the window shows after the props the command changed have
   // reached it.
-  function report(kind: string): void {
+  function report(kind: string) {
     flush();
     const appWindow = handle?.appWindow;
     host.report({
@@ -97,9 +101,9 @@
   activate={false}
   appUserModelId="winui-svelte.examples.window"
   {backdrop}
-  height={360}
+  height={WINDOW_HEIGHT}
   isMaximizable={false}
-  minWidth={400}
+  minWidth={WINDOW_MIN_WIDTH}
   onActiveChanged={isActive => {
     if (isActive) {
       activations++;
@@ -122,12 +126,34 @@
   bind:handle
 >
   {#snippet titleBar()}
-    <stack-panel height={40} orientation="Horizontal" padding="14,0,0,0" spacing={10}>
-      <text-block vertical-alignment="Center">{title}</text-block>
+    <stack-panel class="title-bar">
+      <text-block class="title">{title}</text-block>
     </stack-panel>
   {/snippet}
-  <stack-panel padding="24" spacing={8}>
-    <text-block font-size={20}>Backdrop: {backdrop}</text-block>
+  <stack-panel class="content">
+    <text-block class="heading">Backdrop: {backdrop}</text-block>
     <text-block>The content runs into the title bar; the backdrop shows through.</text-block>
   </stack-panel>
 </Window>
+
+<style>
+  .title-bar {
+    flex-direction: row;
+    gap: 10px;
+    height: 40px;
+    padding: 0 0 0 14px;
+  }
+
+  .title {
+    align-self: center;
+  }
+
+  .content {
+    gap: 8px;
+    padding: 24px;
+  }
+
+  .heading {
+    font-size: 20px;
+  }
+</style>

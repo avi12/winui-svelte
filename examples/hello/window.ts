@@ -25,7 +25,7 @@ await runOnUiThread(async () => {
   // share one renderer.
   const { runner, receive } = createWindowModuleRunner(parsedData.data.modules);
   const { createWindow, runWindow, startTimer } = await runner.import<typeof WindowModule>("winui-svelte/window");
-  const { default: App } = await runner.import("/App.svelte");
+  const { default: appComponent } = await runner.import("/App.svelte");
   await runWindow({
     onStart() {
       startTimer({
@@ -33,7 +33,7 @@ await runOnUiThread(async () => {
         onTick: receive
       });
       createWindow({
-        component: App,
+        component: appComponent,
         props: {},
         title: "Hello",
         size: windowSize,

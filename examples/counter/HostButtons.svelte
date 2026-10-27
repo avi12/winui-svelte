@@ -8,7 +8,7 @@
   let outcome = $state("no action yet");
 
   // An action's promise settles with the host's reply; a refusal rejects.
-  async function run(action: CounterAction): Promise<void> {
+  async function run(action: CounterAction) {
     try {
       await channel.send(action);
       outcome = `${action.kind}: ok`;
@@ -18,8 +18,14 @@
   }
 </script>
 
-<stack-panel spacing={8}>
+<stack-panel class="buttons">
   <button onclick={() => run({ kind: "increment" })}>Host +1</button>
   <button onclick={() => run({ kind: "fail" })}>Host fails</button>
   <text-block>outcome: {outcome}</text-block>
 </stack-panel>
+
+<style>
+  .buttons {
+    gap: 8px;
+  }
+</style>

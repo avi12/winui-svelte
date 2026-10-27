@@ -34,7 +34,8 @@ const { values, positionals } = parseArgs({
   }
 });
 const ENTRY = positionals[0];
-if (ENTRY === undefined) {
+const IS_ENTRY_MISSING = ENTRY === undefined;
+if (IS_ENTRY_MISSING) {
   throw new Error("name the example's entry module, relative to the package");
 }
 
@@ -68,7 +69,8 @@ link.port1.on("message", message => {
 const byteOrderMark = /^﻿/u;
 createInterface({ input: process.stdin }).on("line", line => {
   const command = line.replace(byteOrderMark, "").trim();
-  if (command.length > 0) {
+  const isCommandWritten = command.length > 0;
+  if (isCommandWritten) {
     link.port1.postMessage(JSON.parse(command));
   }
 }).on("close", () => {

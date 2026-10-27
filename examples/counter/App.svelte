@@ -23,7 +23,7 @@
   });
 </script>
 
-<stack-panel padding="12,12,12,12" spacing={8}>
+<stack-panel class="counter">
   <text-block>host count: {view.current?.count ?? "waiting"}</text-block>
   <text-block>host history length: {view.current?.history.length ?? 0}</text-block>
   <text-block>local count: {tallies.localCount} (doubled {tallies.doubled})</text-block>
@@ -31,3 +31,10 @@
   <button onclick={() => tallies.bump("local")}>Local +1</button>
   <HostButtons />
 </stack-panel>
+
+<style>
+  .counter {
+    gap: 8px;
+    padding: 12px;
+  }
+</style>

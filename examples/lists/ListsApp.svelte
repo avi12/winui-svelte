@@ -8,16 +8,24 @@
   import type { ListHandle } from "winui-svelte/components";
   import { exitApplication } from "winui-svelte/window";
 
-  const defaultRows = 1000;
-  // The host is the harness's, handed over once: it never changes.
-  const { host }: { host: ExampleHost } = $props();
+  const DEFAULT_ROWS = 1000;
+  const FIRST_ROWS_REPORTED = 5;
+  const WINDOW_HEIGHT = 640;
+  const WINDOW_WIDTH = 420;
+
+  interface Props {
+    // The harness's, handed over once: it never changes.
+    host: ExampleHost;
+  }
+
+  const { host }: Props = $props();
 
   // svelte-ignore state_referenced_locally
-  let rows = $state(makeItems(Number(host.options["rows"] ?? defaultRows)));
+  let rows = $state(makeItems(Number(host.options["rows"] ?? DEFAULT_ROWS)));
   let handle: ListHandle | undefined = $state();
   let reorders = 0;
 
-  function report(kind: string): void {
+  function report(kind: string) {
     host.report({
       kind,
       rows: rows.length,
@@ -25,11 +33,11 @@
       destroyed: rowStats.destroyed,
       live: liveRows(),
       reorders,
-      first: rows.slice(0, 5).map(row => row.id)
+      first: rows.slice(0, FIRST_ROWS_REPORTED).map(row => row.id)
     });
   }
 
-  function reorder(order: string[]): void {
+  function reorder(order: string[]) {
     reorders++;
     const byId = new Map(rows.map(row => [row.id, row]));
     rows = order.flatMap(id => byId.get(id) ?? []);
@@ -53,7 +61,8 @@
     }],
     ["rename", command => {
       const row = rows.find(candidate => candidate.id === command["key"]);
-      if (row !== undefined) {
+      const isFound = row !== undefined;
+      if (isFound) {
         row.name = String(command["name"]);
       }
 
@@ -79,14 +88,14 @@
 
 <Window
   activate={false}
-  height={640}
+  height={WINDOW_HEIGHT}
   onClosed={exitApplication}
   placement={{
     x: -8000,
     y: 0
   }}
   title="Lists example"
-  width={420}
+  width={WINDOW_WIDTH}
 >
   {#if host.options["view"] === "grid"}
     <GridView

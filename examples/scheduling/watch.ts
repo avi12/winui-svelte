@@ -13,7 +13,10 @@ function readNothing() {
   return "";
 }
 
-export function record(label: string, text: string) {
+export function record({ label, text }: {
+  label: string;
+  text: string;
+}) {
   const elapsed = (performance.now() - CLOCK_START).toFixed(0).padStart(TIME_WIDTH);
   appendFileSync(LOG_PATH, `${elapsed}ms  ${label.padEnd(LABEL_WIDTH)} ${text}\n`);
 }
@@ -24,13 +27,25 @@ export function observe(read: () => string) {
 }
 
 export function look(label: string) {
-  record(label, readText());
+  record({
+    label,
+    text: readText()
+  });
 }
 
 // Called right after a state change made by `trigger`: records the control's
 // text now, after the next microtask, and after a promise continuation.
 export function watch(trigger: string) {
-  record(`${trigger}: sync`, readText());
-  queueMicrotask(() => record(`${trigger}: queueMicrotask`, readText()));
-  void Promise.resolve().then(() => record(`${trigger}: promise.then`, readText()));
+  record({
+    label: `${trigger}: sync`,
+    text: readText()
+  });
+  queueMicrotask(() => record({
+    label: `${trigger}: queueMicrotask`,
+    text: readText()
+  }));
+  void Promise.resolve().then(() => record({
+    label: `${trigger}: promise.then`,
+    text: readText()
+  }));
 }

@@ -4,8 +4,26 @@
   let isOn = $state(true);
 </script>
 
-<StackPanel padding={24} spacing={12}>
-  <TextBlock fontSize={24} text="Hello from WinUI" />
+<StackPanel class="hello">
+  <TextBlock class="title">Hello from WinUI</TextBlock>
   <ToggleSwitch header="Lights" bind:isOn />
-  <TextBlock text={isOn ? "The lights are on" : "The lights are off"} />
+  <TextBlock>
+    {#if isOn}
+      The lights are on
+    {:else}
+      The lights are off
+    {/if}
+  </TextBlock>
 </StackPanel>
+
+<!-- Global: Svelte does not scope a class passed to a component. -->
+<style>
+  :global(.hello) {
+    gap: 12px;
+    padding: 24px;
+  }
+
+  :global(.title) {
+    font-size: 24px;
+  }
+</style>

@@ -19,9 +19,15 @@ const ticksPerMillisecond = 10_000n;
 // stops.
 const heldTimers = new Set<ReturnType<ReturnType<typeof DispatcherQueue.getForCurrentThread>["createTimer"]>>();
 
-export type RunExample = (entry: string, link: MessagePort, options: Record<string, string>) => Promise<void>;
+export interface ExampleRun {
+  entry: string;
+  link: MessagePort;
+  options: Record<string, string>;
+}
 
-export async function runExample(entry: string, link: MessagePort, options: Record<string, string>) {
+export type RunExample = (run: ExampleRun) => Promise<void>;
+
+export async function runExample({ entry, link, options }: ExampleRun) {
   const parsedExample = exampleModuleSchema.safeParse(await import(/* @vite-ignore */ entry));
   if (!parsedExample.success) {
     throw new Error(`${entry} exports no start()`);
@@ -48,7 +54,9 @@ export async function runExample(entry: string, link: MessagePort, options: Reco
         while (received !== undefined) {
           const parsedCommand = exampleCommandSchema.safeParse(received.message);
           if (parsedCommand.success) {
-            handlers.forEach(handler => handler(parsedCommand.data));
+            for (const handler of handlers) {
+              handler(parsedCommand.data);
+            }
           }
 
           received = receiveMessageOnPort(link);
