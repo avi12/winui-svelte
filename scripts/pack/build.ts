@@ -1,4 +1,4 @@
-import { filesIn } from "../files-in.ts";
+import { filesIn } from "#scripts/files-in.ts";
 import { spawnSync } from "node:child_process";
 import {
   copyFileSync,
@@ -59,13 +59,11 @@ function withCompiledImports(source: string): string {
 // `#src/x/y.js` as the path from the file to dist/x/y.js: the same specifier,
 // relative, which TypeScript finds as y.d.ts and Node as y.js.
 function withRelativeAliases({ file, source }: { file: string; source: string }) {
-  function relativeImport(_whole: string, quote: string, target: string, extension: string) {
+  return source.replaceAll(sourceAliasImport, (_whole: string, quote: string, target: string, extension: string) => {
     const relative = path.relative(path.dirname(file), path.join(outputFolder, target)).replaceAll("\\", "/");
     const specifier = relative.startsWith(".") ? relative : `./${relative}`;
     return `${quote}${specifier}${extension}${quote}`;
-  }
-
-  return source.replaceAll(sourceAliasImport, relativeImport);
+  });
 }
 
 function resolveSourceAliases() {
