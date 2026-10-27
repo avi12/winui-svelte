@@ -9,6 +9,7 @@ import { read } from "#src/renderer/host/reflect.js";
 import { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
 import { Application } from "#winui/microsoft/ui/xaml/Application";
 import { Window } from "#winui/microsoft/ui/xaml/Window";
+import assert from "node:assert/strict";
 import { appendFileSync } from "node:fs";
 import { flushSync } from "svelte";
 
@@ -26,9 +27,9 @@ const offScreen = {
   width: 700,
   height: 4000
 };
-const layoutMilliseconds = 1500;
+const LAYOUT_MILLISECONDS = 1500;
 const ticksPerMillisecond = 10_000n;
-const attachedPrefix = "set";
+const ATTACHED_PREFIX = "set";
 // WinUI refuses the composite transform properties (rotation, scale, …) on an
 // element whose RenderTransform, its origin, Projection or Transform3D is in
 // use, so the sweep, which writes back every default, leaves these out.
@@ -54,6 +55,22 @@ const refusedByWinui = new Map<string, string[]>([
   ["RichTextBlockOverflow", ["isTabStop", "tabIndex"]]
 ]);
 
+// What the behaviour checks write and expect, named so a reader sees which
+// number is the state's and which is the user's.
+const SLIDER_FROM_STATE = 30;
+const SLIDER_FROM_USER = 70;
+// Typed as number: a literal type would make the second assertion on the same
+// property a comparison TypeScript sees as never true.
+const OPACITY_FIRST: number = 0.5;
+const OPACITY_CHANGED: number = 0.25;
+const BORDER_PADDING_SIDES = 8;
+const BORDER_PADDING_ENDS = 4;
+const BORDER_CORNER_RADIUS = 6;
+const BORDER_WIDTH = 120;
+const BORDER_GRID_ROW = 2;
+const BORDER_CANVAS_LEFT = 7;
+const HORIZONTAL_ALIGNMENT_CENTER = 1;
+
 type Linked = () => void;
 type Connect = (control: object, props: object, bound: object) => Linked;
 
@@ -63,11 +80,12 @@ const heldTimers = new Set<object>();
 
 // A native failure takes the process down without a message, so the last
 // component started is written, synchronously, where this variable says.
-const traceFile = process.env["WINUI_SVELTE_TRACE"];
+const TRACE_FILE = process.env["WINUI_SVELTE_TRACE"];
 
 function trace(line: string) {
-  if (traceFile !== undefined) {
-    appendFileSync(traceFile, `${Date.now() % 1_000_000} ${line}\n`);
+  const isTracing = TRACE_FILE !== undefined;
+  if (isTracing) {
+    appendFileSync(TRACE_FILE, `${Date.now() % 1_000_000} ${line}\n`);
   }
 }
 
@@ -121,20 +139,39 @@ interface Sample {
   counts: Counts;
 }
 
-function attachedValue(owner: string, setter: string, control: object) {
-  const getter = `get${setter.slice(attachedPrefix.length)}`;
+function emptySample() {
+  const sample: Sample = {
+    props: {},
+    state: {},
+    counts: {
+      properties: 0,
+      events: 0,
+      attached: 0,
+      bindables: 0
+    }
+  };
+  return sample;
+}
+
+function attachedValue({ owner, setter, control }: {
+  owner: string;
+  setter: string;
+  control: object;
+}) {
+  const getter = `get${setter.slice(ATTACHED_PREFIX.length)}`;
   const holder = read(bindings, owner);
   const method = read(holder, getter);
   return typeof method === "function" ? method.apply(holder, [control]) : undefined;
 }
 
-function samplePropertiesOf(
-  sample: Sample,
-  name: string,
-  level: LevelMetadata,
-  control: object,
-  isWanted: (key: string) => boolean
-) {
+interface SampleSource {
+  sample: Sample;
+  level: LevelMetadata;
+  control: object;
+  isWanted: (key: string) => boolean;
+}
+
+function samplePropertiesOf({ sample, name, level, control, isWanted }: SampleSource & { name: string }) {
   for (const key of level.properties) {
     const value = read(control, key);
     const isBindable = level.bindables.includes(key);
@@ -151,14 +188,13 @@ function samplePropertiesOf(
   }
 }
 
-function sampleAttachedOf(
-  sample: Sample,
-  level: LevelMetadata,
-  control: object,
-  isWanted: (key: string) => boolean
-) {
+function sampleAttachedOf({ sample, level, control, isWanted }: SampleSource) {
   for (const [key, [owner, setter]] of Object.entries(level.attached).filter(([key]) => isWanted(key))) {
-    const value = attachedValue(owner, setter, control);
+    const value = attachedValue({
+      owner,
+      setter,
+      control
+    });
     const isPresent = value !== undefined && value !== null;
     if (isPresent) {
       sample.props[key] = value;
@@ -167,20 +203,36 @@ function sampleAttachedOf(
   }
 }
 
-function sampleOf(name: string, control: object, only: ReadonlySet<string> | null) {
+function sampleOf({ name, control, only }: {
+  name: string;
+  control: object;
+  only: ReadonlySet<string> | null;
+}) {
   const sample = emptySample();
   function isWanted(key: string) {
-    return only === null || only.has(key);
+    const isEverything = only === null;
+    return isEverything || only.has(key);
   }
 
   for (const level of chainOf(name)) {
-    samplePropertiesOf(sample, name, level, control, isWanted);
+    samplePropertiesOf({
+      sample,
+      name,
+      level,
+      control,
+      isWanted
+    });
     for (const key of level.events.filter(isWanted)) {
       sample.props[key] = () => undefined;
       sample.counts.events++;
     }
 
-    sampleAttachedOf(sample, level, control, isWanted);
+    sampleAttachedOf({
+      sample,
+      level,
+      control,
+      isWanted
+    });
   }
 
   return sample;
@@ -188,7 +240,10 @@ function sampleOf(name: string, control: object, only: ReadonlySet<string> | nul
 
 // The props the component gets, and the bindables as getters and setters over
 // state the test holds, as the component's own destructuring would.
-function boundOver(state: Record<string, NativeValue>, name: string) {
+function boundOver({ state, name }: {
+  state: Record<string, NativeValue>;
+  name: string;
+}) {
   const bound: Record<string, NativeValue> = {};
   for (const level of chainOf(name)) {
     for (const key of level.bindables) {
@@ -207,9 +262,16 @@ function boundOver(state: Record<string, NativeValue>, name: string) {
 
 function unlinkNothing() {}
 
+interface Opening {
+  connect: Connect;
+  control: object;
+  props: object;
+  bound: object;
+}
+
 // Links the control inside an effect root, as the component's attachment
 // would; what it returns ends the root and the subscriptions.
-function open(connect: Connect, control: object, props: object, bound: object) {
+function open({ connect, control, props, bound }: Opening) {
   let unlink: Linked = unlinkNothing;
   const stop = $effect.root(() => {
     unlink = connect(control, props, bound);
@@ -220,8 +282,21 @@ function open(connect: Connect, control: object, props: object, bound: object) {
   };
 }
 
-function link(connect: Connect, name: string, control: object, sample: Sample) {
-  const close = open(connect, control, sample.props, boundOver(sample.state, name));
+function link({ connect, name, control, sample }: {
+  connect: Connect;
+  name: string;
+  control: object;
+  sample: Sample;
+}) {
+  const close = open({
+    connect,
+    control,
+    props: sample.props,
+    bound: boundOver({
+      state: sample.state,
+      name
+    })
+  });
   try {
     flushSync();
   } finally {
@@ -229,21 +304,9 @@ function link(connect: Connect, name: string, control: object, sample: Sample) {
   }
 }
 
-function emptySample() {
-  return {
-    props: {},
-    state: {},
-    counts: {
-      properties: 0,
-      events: 0,
-      attached: 0,
-      bindables: 0
-    }
-  };
-}
-
 function describe(value: NativeValue) {
-  return typeof value === "object" && value !== null ? JSON.stringify(value, (_key, part) => typeof part === "bigint" ? String(part) : part) : String(value);
+  const isObject = typeof value === "object" && value !== null;
+  return isObject ? JSON.stringify(value, (_key, part) => typeof part === "bigint" ? String(part) : part) : String(value);
 }
 
 class Exercise {
@@ -261,7 +324,11 @@ class Exercise {
     this.panel = panel;
   }
 
-  private attempt(name: string, step: string, action: () => void) {
+  private attempt({ name, step, action }: {
+    name: string;
+    step: string;
+    action: () => void;
+  }) {
     try {
       action();
       return true;
@@ -275,10 +342,13 @@ class Exercise {
     }
   }
 
-  component(name: string, connect: Connect) {
+  component({ name, connect }: {
+    name: string;
+    connect: Connect;
+  }) {
     trace(`${name}`);
-    const Control = read(bindings, name);
-    if (!isConstructor(Control)) {
+    const controlClass = read(bindings, name);
+    if (!isConstructor(controlClass)) {
       this.failures.push({
         name,
         step: "bindings",
@@ -287,31 +357,58 @@ class Exercise {
       return;
     }
 
-    let control: object | null = null;
-    const isMade = this.attempt(name, "constructor", () => {
-      control = new Control();
+    const holder: { control: object | null } = { control: null };
+    this.attempt({
+      name,
+      step: "constructor",
+      action: () => {
+        holder.control = new controlClass();
+      }
     });
-    if (!isMade) {
+    const made = holder.control;
+    if (!made) {
       return;
     }
 
-    if (control === null) {
-      return;
-    }
-
-    const isLinked = this.attempt(name, "default props", () => link(connect, name, new Control(), emptySample()));
+    const isLinked = this.attempt({
+      name,
+      step: "default props",
+      action: () => link({
+        connect,
+        name,
+        control: new controlClass(),
+        sample: emptySample()
+      })
+    });
     // Every value is the control's own default, so an object it holds (its
     // resources, its transitions) goes back to the control that holds it.
-    const made: object = control;
-    const sample = sampleOf(name, made, null);
-    const isFull = this.attempt(name, "all props", () => link(connect, name, made, sample));
+    const sample = sampleOf({
+      name,
+      control: made,
+      only: null
+    });
+    const isFull = this.attempt({
+      name,
+      step: "all props",
+      action: () => link({
+        connect,
+        name,
+        control: made,
+        sample
+      })
+    });
     if (isFull) {
       this.exercised.properties += sample.counts.properties;
       this.exercised.events += sample.counts.events;
       this.exercised.attached += sample.counts.attached;
       this.exercised.bindables += sample.counts.bindables;
     } else {
-      this.bisect(name, connect, Control, sample);
+      this.bisect({
+        name,
+        connect,
+        controlClass,
+        sample
+      });
     }
 
     const isFullyMounted = isLinked && isFull;
@@ -324,19 +421,37 @@ class Exercise {
     const canPlace = isPlaced && isElement(made);
     if (canPlace) {
       const element = made;
-      this.attempt(name, "place in a panel", () => this.panel.children.append(element));
+      this.attempt({
+        name,
+        step: "place in a panel",
+        action: () => this.panel.children.append(element)
+      });
     }
   }
 
   // Which key made the full mount fail: each one alone, and when every one
   // alone is fine, the smallest set that still fails together (the keys
   // dropped one at a time while it fails).
-  private bisect(name: string, connect: Connect, Control: new () => object, sample: Sample) {
+  private bisect({ name, connect, controlClass, sample }: {
+    name: string;
+    connect: Connect;
+    controlClass: new () => object;
+    sample: Sample;
+  }) {
     const keys = [...Object.keys(sample.props), ...Object.keys(sample.state)];
     function fails(subset: string[]) {
-      const control = new Control();
+      const control = new controlClass();
       try {
-        link(connect, name, control, sampleOf(name, control, new Set(subset)));
+        link({
+          connect,
+          name,
+          control,
+          sample: sampleOf({
+            name,
+            control,
+            only: new Set(subset)
+          })
+        });
         return false;
       } catch {
         return true;
@@ -345,8 +460,21 @@ class Exercise {
 
     let isAnyAloneFailing = false;
     for (const key of keys) {
-      const control = new Control();
-      const isFine = this.attempt(name, `${key} = ${describe(sample.props[key] ?? sample.state[key])}`, () => link(connect, name, control, sampleOf(name, control, new Set([key]))));
+      const control = new controlClass();
+      const isFine = this.attempt({
+        name,
+        step: `${key} = ${describe(sample.props[key] ?? sample.state[key])}`,
+        action: () => link({
+          connect,
+          name,
+          control,
+          sample: sampleOf({
+            name,
+            control,
+            only: new Set([key])
+          })
+        })
+      });
       isAnyAloneFailing = isAnyAloneFailing || !isFine;
     }
 
@@ -368,9 +496,15 @@ class Exercise {
   }
 }
 
-function checkBehaviours(connectors: Map<string, Connect>, failures: Failure[]) {
+function checkBehaviours({ connectors, failures }: {
+  connectors: Map<string, Connect>;
+  failures: Failure[];
+}) {
   let count = 0;
-  function check(name: string, action: () => void) {
+  function check({ name, action }: {
+    name: string;
+    action: () => void;
+  }) {
     count++;
     try {
       action();
@@ -385,108 +519,175 @@ function checkBehaviours(connectors: Map<string, Connect>, failures: Failure[]) 
 
   function connectorFor(name: string) {
     const connect = connectors.get(name);
-    if (connect === undefined) {
+    const isUnknown = connect === undefined;
+    if (isUnknown) {
       throw new Error(`no component ${name}`);
     }
 
     return connect;
   }
 
-  function expect(isTrue: boolean, message: string) {
-    if (!isTrue) {
-      throw new Error(message);
+  check({
+    name: "a bindable goes both ways (ToggleSwitch.isOn)",
+    action: () => {
+      const toggle = new bindings.ToggleSwitch();
+      const state = $state<Record<string, NativeValue>>({ isOn: true });
+      const close = open({
+        connect: connectorFor("ToggleSwitch"),
+        control: toggle,
+        props: {},
+        bound: boundOver({
+          state,
+          name: "ToggleSwitch"
+        })
+      });
+      flushSync();
+      assert.ok(toggle.isOn, "the state's true did not reach the switch");
+      toggle.isOn = false;
+      assert.ok(state["isOn"] === false, "the user's flip did not reach the state");
+      state["isOn"] = true;
+      flushSync();
+      assert.ok(toggle.isOn, "the state's change did not reach the switch");
+      close();
     }
-  }
-
-  check("a bindable goes both ways (ToggleSwitch.isOn)", () => {
-    const toggle = new bindings.ToggleSwitch();
-    const state = $state<Record<string, NativeValue>>({ isOn: true });
-    const close = open(connectorFor("ToggleSwitch"), toggle, {}, boundOver(state, "ToggleSwitch"));
-    flushSync();
-    expect(toggle.isOn, "the state's true did not reach the switch");
-    toggle.isOn = false;
-    expect(state["isOn"] === false, "the user's flip did not reach the state");
-    state["isOn"] = true;
-    flushSync();
-    expect(toggle.isOn, "the state's change did not reach the switch");
-    close();
   });
 
-  check("a bindable number goes both ways (Slider.value)", () => {
-    const slider = new bindings.Slider();
-    const state = $state<Record<string, NativeValue>>({ value: 30 });
-    const close = open(connectorFor("Slider"), slider, {}, boundOver(state, "Slider"));
-    flushSync();
-    expect(slider.value === 30, "the state's value did not reach the slider");
-    slider.value = 70;
-    expect(state["value"] === 70, "the user's value did not reach the state");
-    close();
-  });
-
-  check("a boolean-or-null bindable is written (CheckBox.isChecked)", () => {
-    const box = new bindings.CheckBox();
-    const state = $state<Record<string, NativeValue>>({ isChecked: true });
-    const close = open(connectorFor("CheckBox"), box, {}, boundOver(state, "CheckBox"));
-    flushSync();
-    expect(box.isChecked === true, `the state's true did not reach the box (it reads ${String(box.isChecked)})`);
-    close();
-  });
-
-  check("a changed prop is written again (Border.opacity)", () => {
-    const border = new bindings.Border();
-    const props = $state<Record<string, NativeValue>>({ opacity: 0.5 });
-    const close = open(connectorFor("Border"), border, props, {});
-    flushSync();
-    expect(border.opacity === 0.5, "the first value was not written");
-    props["opacity"] = 0.25;
-    flushSync();
-    expect(border.opacity === 0.25, "the changed value was not written");
-    close();
-  });
-
-  check("an event prop is called (ToggleSwitch.onToggled)", () => {
-    const toggle = new bindings.ToggleSwitch();
-    let calls = 0;
-    function onToggled() {
-      calls++;
+  check({
+    name: "a bindable number goes both ways (Slider.value)",
+    action: () => {
+      const slider = new bindings.Slider();
+      const state = $state<Record<string, NativeValue>>({ value: SLIDER_FROM_STATE });
+      const close = open({
+        connect: connectorFor("Slider"),
+        control: slider,
+        props: {},
+        bound: boundOver({
+          state,
+          name: "Slider"
+        })
+      });
+      flushSync();
+      assert.ok(slider.value === SLIDER_FROM_STATE, "the state's value did not reach the slider");
+      slider.value = SLIDER_FROM_USER;
+      assert.ok(state["value"] === SLIDER_FROM_USER, "the user's value did not reach the state");
+      close();
     }
-
-    const close = open(connectorFor("ToggleSwitch"), toggle, { onToggled }, {});
-    flushSync();
-    toggle.isOn = true;
-    expect(calls === 1, `the handler was called ${calls} times, not once`);
-    close();
   });
 
-  check("conversions build what WinUI takes (Border)", () => {
-    const border = new bindings.Border();
-    const props = {
-      padding: [8, 4],
-      cornerRadius: 6,
-      background: "#336699",
-      horizontalAlignment: "Center",
-      width: 120,
-      gridRow: 2,
-      attached: [bindings.Canvas, "Left", 7]
-    };
-    const close = open(connectorFor("Border"), border, props, {});
-    flushSync();
-    expect(border.padding.left === 8 && border.padding.top === 4, "padding [8, 4] is not left/right 8, top/bottom 4");
-    expect(border.cornerRadius.topLeft === 6, "cornerRadius 6 is not 6 on every corner");
-    expect(border.horizontalAlignment === 1, "horizontalAlignment Center is not 1");
-    expect(border.width === 120, "width was not written");
-    expect(bindings.Grid.getRow(border) === 2, "gridRow 2 did not reach Grid.Row");
-    expect(bindings.Canvas.getLeft(border) === 7, "attached Canvas.Left 7 did not reach Canvas.Left");
-    expect(border.background !== null, "the background color made no brush");
-    close();
+  check({
+    name: "a boolean-or-null bindable is written (CheckBox.isChecked)",
+    action: () => {
+      const box = new bindings.CheckBox();
+      const state = $state<Record<string, NativeValue>>({ isChecked: true });
+      const close = open({
+        connect: connectorFor("CheckBox"),
+        control: box,
+        props: {},
+        bound: boundOver({
+          state,
+          name: "CheckBox"
+        })
+      });
+      flushSync();
+      assert.ok(box.isChecked === true, `the state's true did not reach the box (it reads ${String(box.isChecked)})`);
+      close();
+    }
   });
 
-  check("a string is boxed for an object property (Button.content)", () => {
-    const button = new bindings.Button();
-    const close = open(connectorFor("Button"), button, { content: "OK" }, {});
-    flushSync();
-    expect(button.content !== null, "the content was not written");
-    close();
+  check({
+    name: "a changed prop is written again (Border.opacity)",
+    action: () => {
+      const border = new bindings.Border();
+      const props = $state<Record<string, NativeValue>>({ opacity: OPACITY_FIRST });
+      const close = open({
+        connect: connectorFor("Border"),
+        control: border,
+        props,
+        bound: {}
+      });
+      flushSync();
+      assert.ok(border.opacity === OPACITY_FIRST, "the first value was not written");
+      props["opacity"] = OPACITY_CHANGED;
+      flushSync();
+      assert.ok(border.opacity === OPACITY_CHANGED, "the changed value was not written");
+      close();
+    }
+  });
+
+  check({
+    name: "an event prop is called (ToggleSwitch.onToggled)",
+    action: () => {
+      const toggle = new bindings.ToggleSwitch();
+      let calls = 0;
+      function onToggled() {
+        calls++;
+      }
+
+      const close = open({
+        connect: connectorFor("ToggleSwitch"),
+        control: toggle,
+        props: {
+          onToggled
+        },
+        bound: {}
+      });
+      flushSync();
+      toggle.isOn = true;
+      assert.ok(calls === 1, `the handler was called ${calls} times, not once`);
+      close();
+    }
+  });
+
+  check({
+    name: "conversions build what WinUI takes (Border)",
+    action: () => {
+      const border = new bindings.Border();
+      const props = {
+        padding: [BORDER_PADDING_SIDES, BORDER_PADDING_ENDS],
+        cornerRadius: BORDER_CORNER_RADIUS,
+        background: "#336699",
+        horizontalAlignment: "Center",
+        width: BORDER_WIDTH,
+        gridRow: BORDER_GRID_ROW,
+        attached: [bindings.Canvas, "Left", BORDER_CANVAS_LEFT]
+      };
+      const close = open({
+        connect: connectorFor("Border"),
+        control: border,
+        props,
+        bound: {}
+      });
+      flushSync();
+      const isPaddingOnSides = border.padding.left === BORDER_PADDING_SIDES;
+      const isPaddingOnEnds = border.padding.top === BORDER_PADDING_ENDS;
+      const isPaddingFromTwoNumbers = isPaddingOnSides && isPaddingOnEnds;
+      assert.ok(isPaddingFromTwoNumbers, "padding [8, 4] is not left/right 8, top/bottom 4");
+      assert.ok(border.cornerRadius.topLeft === BORDER_CORNER_RADIUS, "cornerRadius 6 is not 6 on every corner");
+      assert.ok(border.horizontalAlignment === HORIZONTAL_ALIGNMENT_CENTER, "horizontalAlignment Center is not 1");
+      assert.ok(border.width === BORDER_WIDTH, "width was not written");
+      assert.ok(bindings.Grid.getRow(border) === BORDER_GRID_ROW, "gridRow 2 did not reach Grid.Row");
+      assert.ok(bindings.Canvas.getLeft(border) === BORDER_CANVAS_LEFT, "attached Canvas.Left 7 did not reach Canvas.Left");
+      assert.ok(border.background !== null, "the background color made no brush");
+      close();
+    }
+  });
+
+  check({
+    name: "a string is boxed for an object property (Button.content)",
+    action: () => {
+      const button = new bindings.Button();
+      const close = open({
+        connect: connectorFor("Button"),
+        control: button,
+        props: {
+          content: "OK"
+        },
+        bound: {}
+      });
+      flushSync();
+      assert.ok(button.content !== null, "the content was not written");
+      close();
+    }
   });
 
   return count;
@@ -494,24 +695,30 @@ function checkBehaviours(connectors: Map<string, Connect>, failures: Failure[]) 
 
 function statistics() {
   const all = Object.values(levels);
-  function sum(pick: (level: LevelMetadata) => number) {
-    return all.reduce((total, level) => total + pick(level), 0);
+  const totals = {
+    properties: 0,
+    events: 0,
+    attached: 0,
+    bindables: 0
+  };
+  for (const level of all) {
+    totals.properties += level.properties.length;
+    totals.events += level.events.length;
+    totals.attached += Object.keys(level.attached).length;
+    totals.bindables += level.bindables.length;
   }
 
   return {
     components: componentNames().length,
-    properties: sum(level => level.properties.length),
-    events: sum(level => level.events.length),
-    attached: sum(level => Object.keys(level.attached).length),
-    bindables: sum(level => level.bindables.length)
-  };
+    ...totals
+  } satisfies Pick<Report, "components" | "properties" | "events" | "attached" | "bindables">;
 }
 
-function launch(
-  connectors: Map<string, Connect>,
-  report: (result: Report) => void,
-  throughRenderer: (failures: Failure[]) => void
-) {
+function launch({ connectors, report, throughRenderer }: {
+  connectors: Map<string, Connect>;
+  report: (result: Report) => void;
+  throughRenderer: (failures: Failure[]) => void;
+}) {
   const panel = new bindings.StackPanel();
   const window = new Window();
   window.content = panel;
@@ -519,12 +726,18 @@ function launch(
   const only = new RegExp(process.env["WINUI_SVELTE_ONLY"] ?? ".");
   for (const [name, connect] of connectors) {
     if (only.test(name)) {
-      exercise.component(name, connect);
+      exercise.component({
+        name,
+        connect
+      });
     }
   }
 
   trace("behaviours");
-  const behaviours = checkBehaviours(connectors, exercise.failures) + 1;
+  const behaviours = checkBehaviours({
+    connectors,
+    failures: exercise.failures
+  }) + 1;
   throughRenderer(exercise.failures);
   trace("show");
   window.appWindow.moveAndResize(offScreen);
@@ -532,7 +745,7 @@ function launch(
   trace("shown");
   // Let WinUI measure and arrange what was placed before the verdict.
   const timer = DispatcherQueue.getForCurrentThread().createTimer();
-  timer.interval = { duration: BigInt(layoutMilliseconds) * ticksPerMillisecond };
+  timer.interval = { duration: BigInt(LAYOUT_MILLISECONDS) * ticksPerMillisecond };
   timer.isRepeating = false;
   timer.onTick(() => {
     const result: Report = {
@@ -560,17 +773,20 @@ function checkComponentThroughRenderer(failures: Failure[]) {
         toggles++;
       }
     });
-    if (read(mounted.root, "isOn") !== true) {
+    const isSwitchOn = read(mounted.root, "isOn") === true;
+    if (!isSwitchOn) {
       throw new Error("<ToggleSwitch isOn> did not turn the switch on");
     }
 
     mounted.set({ isOn: false });
 
-    if (read(mounted.root, "isOn") !== false) {
+    const isSwitchOff = read(mounted.root, "isOn") === false;
+    if (!isSwitchOff) {
       throw new Error("a changed isOn prop did not reach the switch");
     }
 
-    if (toggles === 0) {
+    const hasHandlerRun = toggles !== 0;
+    if (!hasHandlerRun) {
       throw new Error("onToggled was not called when the prop turned the switch off");
     }
   } catch (error) {
@@ -587,6 +803,10 @@ export async function run(report: (result: Report) => void) {
   const connectors = await loadConnectors();
   trace("loaded");
   await Application.startScheduled(() => {
-    Application.create(() => launch(connectors, report, checkComponentThroughRenderer));
+    Application.create(() => launch({
+      connectors,
+      report,
+      throughRenderer: checkComponentThroughRenderer
+    }));
   });
 }
