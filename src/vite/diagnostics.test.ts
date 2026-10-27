@@ -6,12 +6,15 @@ import { test } from "node:test";
 // A broken .svelte file is reported with its file, line and column, so the
 // host's stderr says where to look rather than the window just ending.
 
-const brokenSource = "<script>\n  let a = 1;\n</script>\n\n<div>\n  {#if a}\n</div>\n";
-const brokenFile = "C:/app/bad.svelte";
+const BROKEN_SOURCE = "<script>\n  let a = 1;\n</script>\n\n<div>\n  {#if a}\n</div>\n";
+const BROKEN_FILE = "C:/app/bad.svelte";
 
-function compileBroken(): Error | null {
+function compileBroken() {
   try {
-    compileSvelte(brokenFile, brokenSource);
+    compileSvelte({
+      filename: BROKEN_FILE,
+      source: BROKEN_SOURCE
+    });
   } catch (error) {
     return errorOf(error);
   }
@@ -34,7 +37,7 @@ test("a diagnostic is read from Svelte's error, or from the Vite error that wrap
   const direct = compileDiagnostic(error.cause);
   assert.equal(direct?.line, 7);
   assert.equal(direct?.column, 1);
-  assert.equal(direct?.file, brokenFile);
+  assert.equal(direct?.file, BROKEN_FILE);
 
   const wrapped = compileDiagnostic(new Error("transform failed", { cause: error.cause }));
   assert.deepEqual(wrapped, direct);
