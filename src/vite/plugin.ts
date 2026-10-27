@@ -1,6 +1,7 @@
 import { cssHash } from "../css/runtime/sheet-module.ts";
 import { winuiCss } from "../css/vite.ts";
 import { winuiRenderer } from "./compile.ts";
+import { assertCustomRendererSvelte } from "./custom-svelte.ts";
 import type { Options } from "@sveltejs/vite-plugin-svelte";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import type { CompileOptions } from "svelte/compiler";
@@ -87,6 +88,7 @@ export function windowConfig(): UserConfig {
 }
 
 export function winuiSvelte(options: WinuiSvelteOptions = {}): Plugin[] {
+  assertCustomRendererSvelte();
   const environment: Plugin = {
     name: "winui-svelte:environment",
     config: windowConfig

@@ -1,3 +1,4 @@
+import { customSvelteSource } from "../vite/custom-svelte.ts";
 import type { BindingEntry } from "./binding-list.ts";
 import { bindingEntriesOf, packageJsonWithBindings } from "./binding-list.ts";
 import { readList, readRecord } from "./json-shape.ts";
@@ -11,8 +12,10 @@ import path from "node:path";
 //
 //   1. winapp.yaml, which names the Windows App SDK and the tools `winapp`
 //      needs (kept if the app has one);
-//   2. package.json: the classes the package uses in winapp.jsBindings, and
-//      the @winapp/bindings dependency that links the generated folder;
+//   2. package.json: the classes the package uses in winapp.jsBindings, the
+//      @winapp/bindings dependency that links the generated folder, and the
+//      Svelte build with the custom-renderer option (unless the app already
+//      names a Svelte);
 //   3. `winapp restore` and `winapp node generate-bindings`, which fetch the
 //      SDK, write .winapp (metadata, the bootstrapper) and generate the
 //      bindings in .winapp/bindings.
@@ -76,6 +79,12 @@ export function packageJsonForApp(original: string, required: BindingEntry[]): s
   const additionalWinmds = readList(jsBindings["additionalWinmds"]) ?? [];
   const dependencies = readRecord(parsed["dependencies"]) ?? {};
   dependencies[bindingsDependency] ??= bindingsLink;
+  const devDependencies = readRecord(parsed["devDependencies"]) ?? {};
+  const hasSvelte = "svelte" in dependencies || "svelte" in devDependencies;
+  if (!hasSvelte) {
+    dependencies["svelte"] = customSvelteSource;
+  }
+
   const newline = original.includes("\r\n") ? "\r\n" : "\n";
   const started = {
     ...parsed,

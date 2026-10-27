@@ -9,8 +9,10 @@ const usage = `winui-svelte setup [directory] [--dry-run] [--winapp <command>]
 
   setup   Prepares an app to use the controls: winapp.yaml, the classes the
           package needs in package.json's winapp.jsBindings, the
-          @winapp/bindings dependency, and the bindings themselves, generated
-          with winapp (restore, then node generate-bindings).
+          @winapp/bindings dependency, the Svelte build with the custom-renderer
+          option (unless package.json already names a Svelte), and the bindings
+          themselves, generated with winapp (restore, then node
+          generate-bindings).
 
   directory   the app's folder (the current folder by default)
   --dry-run   write the files, do not run winapp
