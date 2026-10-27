@@ -283,7 +283,11 @@ const entryFiles = ["src/cli/main.ts", "src/window/bootstrap.ts", "src/window/th
 export default [
   ...svelteEslint.configs["flat/recommended"],
   // The generated components are written by scripts/codegen from WinUI's
-  // metadata, not by hand.
+  // metadata, not by hand, so the style rules (naming, JSDoc, magic numbers,
+  // return types, default exports) are not applied to them: the generator is
+  // where they are fixed. What does apply is checked elsewhere: tsc and
+  // svelte-check (strict flags), props-strictness.ts (no prop typed any or
+  // unknown), the editor check (no any hint) and gen:components:check.
   globalIgnores(["node_modules/", "dist/", "eslint-rules/", "eslint-config/", ".winapp/", ".verify/", "src/components/generated/", ".claude/worktrees/"]),
   {
     files: ["**/*.{ts,js,mjs}"],
