@@ -23,8 +23,8 @@ allowlist, and `pnpm pack --dry-run` must not list it).
 | Comments | JSDoc on every exported symbol | Zero comments by default | JSDoc (TSDoc) on the public API only, saying what a reader cannot see from the name and type. No comment that restates code; a comment on internals only for a WinUI quirk, a required order or a dead end |
 | Braces | Always, body on its own line | `if` always braced | Both agree: braces on every `if`/`else`/`for`/`while`, K&R, body on the next line |
 | Constants | `CONSTANT_CASE` | `SCREAMING_SNAKE_CASE` | Same thing |
-| Enums | `enum` allowed, no `const enum` | Strings are enums | A closed set of values is an `enum` (or an `as const` object plus its union type when it crosses the wire). Never `const enum` |
-| Imports | Relative within the project, no deep `../../../` | `@` alias over `../` | `#src/*` subpath import (declared in `package.json` `imports`) for anything outside the current folder; `./x` stays for the same folder |
+| Enums | `enum` allowed, no `const enum` | Strings are enums | A closed set of values is an `as const` object plus its union type (`export const X = { A: "a" } as const; export type X = typeof X[keyof typeof X]`): the package runs under Node's type stripping with `erasableSyntaxOnly`, which forbids `enum`. Never `const enum` |
+| Imports | Relative within the project, no deep `../../../` | `@` alias over `../` | Relative imports (`./x`, `../x`): the build compiles each file in place, and a path alias would need a second map for `dist`. The one subpath import is `#winui/*`, the bindings an app generates for itself. Keep `../` chains short by keeping folders shallow |
 | Parameters | n/a | 2+ parameters take one destructured object | Adopt it, public API included. Exempt: key/value accessors and callbacks whose signature WinUI or Svelte dictates |
 
 # Google style, in short (the guide has the rest)
