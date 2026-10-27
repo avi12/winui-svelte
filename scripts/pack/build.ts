@@ -1,5 +1,5 @@
 import { filesIn } from "../files-in.ts";
-import { execFileSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import {
   copyFileSync,
   mkdirSync,
@@ -63,12 +63,22 @@ function copyShipped(): void {
   }
 }
 
-function compile(): void {
+// tsc exits 2 when it reports type errors but still emitted. The type check
+// belongs to `pnpm check` (and so to lint, which every release runs), so the
+// build only fails when nothing was emitted: that way an area's refactor can be
+// built and tested while another area still has type errors to fix.
+const TSC_EMITTED_WITH_ERRORS = 2;
+
+function compile() {
   const tsc = createRequire(import.meta.url).resolve("typescript/bin/tsc");
-  execFileSync(process.execPath, [tsc, "-p", path.join(packageRoot, "tsconfig.build.json")], {
+  const result = spawnSync(process.execPath, [tsc, "-p", path.join(packageRoot, "tsconfig.build.json")], {
     cwd: packageRoot,
     stdio: "inherit"
   });
+  const isFailed = result.status !== 0 && result.status !== TSC_EMITTED_WITH_ERRORS;
+  if (isFailed) {
+    throw new Error(`tsc failed with exit code ${result.status}`);
+  }
 }
 
 rmSync(outputFolder, {
