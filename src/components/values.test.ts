@@ -44,19 +44,19 @@ test("a corner radius reads like a thickness, in corner order", () => {
 
 test("a grid length is pixels, Auto or a star weight", () => {
   assert.deepEqual(gridLengthParts(120), {
-    unit: GridUnit.Pixel,
+    unit: GridUnit.PIXEL,
     value: 120
   });
   assert.deepEqual(gridLengthParts("Auto"), {
-    unit: GridUnit.Auto,
+    unit: GridUnit.AUTO,
     value: 1
   });
   assert.deepEqual(gridLengthParts("*"), {
-    unit: GridUnit.Star,
+    unit: GridUnit.STAR,
     value: 1
   });
   assert.deepEqual(gridLengthParts("2*"), {
-    unit: GridUnit.Star,
+    unit: GridUnit.STAR,
     value: 2
   });
 });
