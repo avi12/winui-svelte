@@ -1,27 +1,41 @@
-import type { LowerOptions } from "../parse/reader.ts";
-import { Reader } from "../parse/reader.ts";
-import { parseLength, parseVariable, splitSlash } from "../parse/values.ts";
+import { CORNERS, SIDES } from "./box-properties.ts";
 import type { Declaration } from "./types.ts";
+import { Reader } from "#src/css/parse/reader.js";
+import type { LowerOptions } from "#src/css/parse/reader.js";
+import { parseLength, parseVariable, splitSlash } from "#src/css/parse/values.js";
 
-// CSS shorthands, expanded into the longhands the property table lowers
-// (margin into its four sides, border into width, style and color...). A
-// shorthand whose whole value is one `var(--name)` stays as it is: the
-// resource holds the complete value (a Thickness, a CornerRadius).
+/** What an expansion reads: the shorthand declaration and a reader over its value. */
+interface ExpansionInput {
+  declaration: Declaration;
+  reader: Reader;
+}
 
-const sides = ["top", "right", "bottom", "left"] as const;
-const corners = ["top-left", "top-right", "bottom-right", "bottom-left"] as const;
+type Expansion = (input: ExpansionInput) => Declaration[];
+
+const MAX_BOX_VALUES = 4;
+const MAX_PAIR_VALUES = 2;
+
 // CSS's thin, medium and thick, in pixels.
-const borderWidthKeywords = new Map([
+const BORDER_WIDTH_KEYWORDS = new Map([
   ["thin", "1px"],
   ["medium", "3px"],
   ["thick", "5px"]
 ]);
-const borderStyles = new Set(["none", "solid", "hidden"]);
-const unsupportedBorderStyles = new Set(["dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]);
-const fontStyles = new Set(["normal", "italic", "oblique"]);
-const fontWeightWords = new Set(["normal", "bold", "bolder", "lighter"]);
+const BORDER_STYLES = new Set(["none", "solid", "hidden"]);
+const UNSUPPORTED_BORDER_STYLES = new Set(["dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]);
+const FONT_STYLES = new Set(["normal", "italic", "oblique"]);
+const FONT_WEIGHT_WORDS = new Set(["normal", "bold", "bolder", "lighter"]);
+const IMAGE_OR_GRADIENT = /^(url|image|image-set|(repeating-)?(linear|radial|conic)-gradient)\(/iu;
 
-function longhand(declaration: Declaration, property: string, value: string): Declaration {
+// The shorthands whose whole value may be one var() to a WinUI Thickness or
+// CornerRadius: not expanded.
+const WHOLE_VARIABLE_SHORTHANDS = new Set(["margin", "padding", "border-width", "border-radius"]);
+
+function longhand({ declaration, property, value }: {
+  declaration: Declaration;
+  property: string;
+  value: string;
+}) {
   return {
     ...declaration,
     property,
@@ -30,49 +44,58 @@ function longhand(declaration: Declaration, property: string, value: string): De
 }
 
 // CSS's one-to-four value box: top, right, bottom, left (or the four corners).
-function box(values: string[]): [string, string, string, string] | null {
+function box(values: string[]) {
   const [first, second = first, third = first, fourth = second] = values;
-  const isCounted = values.length >= 1 && values.length <= 4;
-  return isCounted && first !== undefined && second !== undefined && third !== undefined && fourth !== undefined
-    ? [first, second, third, fourth]
-    : null;
+  const isCounted = values.length >= 1 && values.length <= MAX_BOX_VALUES;
+  const isComplete = first !== undefined && second !== undefined && third !== undefined && fourth !== undefined;
+  const isBox = isCounted && isComplete;
+  return isBox ? [first, second, third, fourth] : null;
 }
 
-function isWholeVariable(declaration: Declaration): boolean {
+function isWholeVariable(declaration: Declaration) {
   return parseVariable(declaration.value) !== null;
 }
 
-function expandBox(
-  declaration: Declaration,
-  names: readonly string[],
-  reader: Reader,
-  template: (name: string) => string
-): Declaration[] {
+function expandBox({ declaration, names, reader, template }: {
+  declaration: Declaration;
+  names: readonly string[];
+  reader: Reader;
+  template(name: string): string;
+}) {
   const values = box(reader.words);
-  if (values === null) {
+  const isValuesMissing = values === null;
+  if (isValuesMissing) {
     reader.expected("one to four values");
     return [];
   }
 
-  return names.map((name, index) => longhand(declaration, template(name), values[index] ?? ""));
+  return names.map((name, index) => longhand({
+    declaration,
+    property: template(name),
+    value: values[index] ?? ""
+  }));
 }
 
-function expandBorder(declaration: Declaration, reader: Reader, sideNames: readonly string[]): Declaration[] {
+function expandBorder({ declaration, reader, sideNames }: {
+  declaration: Declaration;
+  reader: Reader;
+  sideNames: readonly string[];
+}) {
   let width = "medium";
-  let style: string | null = null;
+  let style = "";
   let color: string | null = null;
   for (const word of reader.words) {
     const lower = word.toLowerCase();
-    const isWidth = parseLength(word) !== null || borderWidthKeywords.has(lower);
-    if (unsupportedBorderStyles.has(lower)) {
+    const isWidth = parseLength(word) !== null || BORDER_WIDTH_KEYWORDS.has(lower);
+    if (UNSUPPORTED_BORDER_STYLES.has(lower)) {
       reader.error(`${reader.declaration.property}: ${lower} has no WinUI meaning (a WinUI border is solid; use solid or none)`);
       return [];
     }
 
-    if (borderStyles.has(lower)) {
+    if (BORDER_STYLES.has(lower)) {
       style = lower;
     } else if (isWidth) {
-      width = borderWidthKeywords.get(lower) ?? word;
+      width = BORDER_WIDTH_KEYWORDS.get(lower) ?? word;
     } else if (color === null) {
       color = word;
     } else {
@@ -81,37 +104,56 @@ function expandBorder(declaration: Declaration, reader: Reader, sideNames: reado
     }
   }
 
-  if (style === null) {
+  const isStyleMissing = style === "";
+  if (isStyleMissing) {
     reader.expected("a style (solid or none)");
     return [];
   }
 
-  const widths = sideNames.map(side => longhand(declaration, `border-${side}-width`, width));
-  const rest = [longhand(declaration, "border-style", style)];
-  const colors = color === null ? [] : [longhand(declaration, "border-color", color)];
+  const widths = sideNames.map(side => longhand({
+    declaration,
+    property: `border-${side}-width`,
+    value: width
+  }));
+  const rest = [longhand({
+    declaration,
+    property: "border-style",
+    value: style
+  })];
+  const colors = color === null ? [] : [longhand({
+    declaration,
+    property: "border-color",
+    value: color
+  })];
   return [...widths, ...rest, ...colors];
 }
 
-function expandBackground(declaration: Declaration, reader: Reader): Declaration[] {
+function expandBackground({ declaration, reader }: ExpansionInput) {
   const word = reader.single();
-  if (word === null) {
+  const isWordMissing = word === null;
+  if (isWordMissing) {
     return [];
   }
 
-  const isImageOrGradient = /^(url|image|image-set|(repeating-)?(linear|radial|conic)-gradient)\(/iu.test(word);
+  const isImageOrGradient = IMAGE_OR_GRADIENT.test(word);
   if (isImageOrGradient) {
     reader.error(`${declaration.property} ${word}: images and gradients have no Style value in WinUI; declare a brush resource and use var(--its-name)`);
     return [];
   }
 
   const value = word.toLowerCase() === "none" ? "transparent" : word;
-  return [longhand(declaration, "background-color", value)];
+  return [longhand({
+    declaration,
+    property: "background-color",
+    value
+  })];
 }
 
-function expandFont(declaration: Declaration, reader: Reader): Declaration[] {
+function expandFont({ declaration, reader }: ExpansionInput) {
   const words = reader.words;
   const sizeIndex = words.findIndex(word => parseLength(splitSlash(word)[0] ?? "") !== null);
-  if (sizeIndex === -1) {
+  const isSizeMissing = sizeIndex === -1;
+  if (isSizeMissing) {
     reader.expected("[style] [weight] size[/line-height] family");
     return [];
   }
@@ -119,44 +161,94 @@ function expandFont(declaration: Declaration, reader: Reader): Declaration[] {
   const result: Declaration[] = [];
   for (const word of words.slice(0, sizeIndex)) {
     const lower = word.toLowerCase();
-    const isStyle = fontStyles.has(lower);
-    const isWeight = fontWeightWords.has(lower) || /^\d+$/u.test(word);
+    const isStyle = FONT_STYLES.has(lower);
+    const isWeight = FONT_WEIGHT_WORDS.has(lower) || /^\d+$/u.test(word);
     if (isStyle) {
-      result.push(longhand(declaration, "font-style", lower));
+      result.push(
+        longhand({
+          declaration,
+          property: "font-style",
+          value: lower
+        })
+      );
     } else if (isWeight) {
-      result.push(longhand(declaration, "font-weight", lower));
+      result.push(
+        longhand({
+          declaration,
+          property: "font-weight",
+          value: lower
+        })
+      );
     }
   }
 
   const [size = "", lineHeight] = splitSlash(words[sizeIndex] ?? "");
-  result.push(longhand(declaration, "font-size", size));
+  result.push(
+    longhand({
+      declaration,
+      property: "font-size",
+      value: size
+    })
+  );
 
-  if (lineHeight !== undefined) {
-    result.push(longhand(declaration, "line-height", lineHeight));
+  const hasLineHeight = lineHeight !== undefined;
+  if (hasLineHeight) {
+    result.push(
+      longhand({
+        declaration,
+        property: "line-height",
+        value: lineHeight
+      })
+    );
   }
 
   const family = words.slice(sizeIndex + 1).join(" ");
   const hasFamily = family !== "";
   if (hasFamily) {
-    result.push(longhand(declaration, "font-family", family));
+    result.push(
+      longhand({
+        declaration,
+        property: "font-family",
+        value: family
+      })
+    );
   }
 
   return result;
 }
 
-function expandPair(declaration: Declaration, reader: Reader, names: readonly [string, string]): Declaration[] {
+function expandPair({ declaration, reader, names }: {
+  declaration: Declaration;
+  reader: Reader;
+  names: readonly [string, string];
+}) {
   const [first, second] = reader.words;
-  const isValid = first !== undefined && reader.words.length <= 2;
+  const isValid = first !== undefined && reader.words.length <= MAX_PAIR_VALUES;
   if (!isValid) {
     reader.expected("one or two values");
     return [];
   }
 
-  return [longhand(declaration, names[0], first), longhand(declaration, names[1], second ?? first)];
+  return [
+    longhand({
+      declaration,
+      property: names[0],
+      value: first
+    }),
+    longhand({
+      declaration,
+      property: names[1],
+      value: second ?? first
+    })
+  ];
 }
 
 // `2`, `span 2`, or `2 / 4`, `2 / span 2`: a start and an end line.
-function expandLines(declaration: Declaration, reader: Reader, axis: "column" | "row"): Declaration[] {
+function expandLines({ declaration, reader, axis }: {
+  declaration: Declaration;
+  reader: Reader;
+  axis: "column" | "row";
+}) {
   const [start, end, ...rest] = splitSlash(declaration.value);
   const isValid = start !== undefined && start !== "" && rest.length === 0;
   if (!isValid) {
@@ -164,63 +256,139 @@ function expandLines(declaration: Declaration, reader: Reader, axis: "column" | 
     return [];
   }
 
-  const startDeclaration = longhand(declaration, `grid-${axis}-start`, start);
-  return end === undefined ? [startDeclaration] : [startDeclaration, longhand(declaration, `grid-${axis}-end`, end)];
+  const startDeclaration = longhand({
+    declaration,
+    property: `grid-${axis}-start`,
+    value: start
+  });
+  return end === undefined
+    ? [startDeclaration]
+    : [startDeclaration, longhand({
+      declaration,
+      property: `grid-${axis}-end`,
+      value: end
+    })];
 }
 
-type Expansion = (declaration: Declaration, reader: Reader) => Declaration[];
+function expandRadius({ declaration, reader }: ExpansionInput) {
+  const isElliptical = declaration.value.includes("/");
+  if (isElliptical) {
+    reader.error("border-radius: elliptical corners (a / b) have no WinUI meaning; a CornerRadius is circular");
+    return [];
+  }
+
+  return expandBox({
+    declaration,
+    names: CORNERS,
+    reader,
+    template: name => `border-${name}-radius`
+  });
+}
+
+function expandFlow({ declaration, reader }: ExpansionInput) {
+  const [direction = ""] = reader.words;
+  return [longhand({
+    declaration,
+    property: "flex-direction",
+    value: direction
+  })];
+}
+
+function sideExpansion(side: (typeof SIDES)[number]) {
+  function expandSide({ declaration, reader }: ExpansionInput) {
+    return expandBorder({
+      declaration,
+      reader,
+      sideNames: [side]
+    });
+  }
+
+  return [`border-${side}`, expandSide] as const;
+}
 
 const expansions = new Map<string, Expansion>([
-  ["margin", (declaration, reader) => expandBox(declaration, sides, reader, name => `margin-${name}`)],
-  ["padding", (declaration, reader) => expandBox(declaration, sides, reader, name => `padding-${name}`)],
-  ["border-width", (declaration, reader) => expandBox(declaration, sides, reader, name => `border-${name}-width`)],
+  ["margin", ({ declaration, reader }) => expandBox({
+    declaration,
+    names: SIDES,
+    reader,
+    template: name => `margin-${name}`
+  })],
+  ["padding", ({ declaration, reader }) => expandBox({
+    declaration,
+    names: SIDES,
+    reader,
+    template: name => `padding-${name}`
+  })],
   [
-    "border-radius",
-    (declaration, reader) => {
-      if (declaration.value.includes("/")) {
-        reader.error("border-radius: elliptical corners (a / b) have no WinUI meaning; a CornerRadius is circular");
-        return [];
-      }
-
-      return expandBox(declaration, corners, reader, name => `border-${name}-radius`);
-    }
+    "border-width",
+    ({ declaration, reader }) => expandBox({
+      declaration,
+      names: SIDES,
+      reader,
+      template: name => `border-${name}-width`
+    })
   ],
-  ["border", (declaration, reader) => expandBorder(declaration, reader, sides)],
-  ...sides.map((side): [string, Expansion] => [
-    `border-${side}`,
-    (declaration, reader) => expandBorder(declaration, reader, [side])
-  ]),
+  ["border-radius", expandRadius],
+  ["border", ({ declaration, reader }) => expandBorder({
+    declaration,
+    reader,
+    sideNames: SIDES
+  })],
+  ...SIDES.map(sideExpansion),
   ["background", expandBackground],
   ["font", expandFont],
-  ["gap", (declaration, reader) => expandPair(declaration, reader, ["row-gap", "column-gap"])],
-  ["overflow", (declaration, reader) => expandPair(declaration, reader, ["overflow-x", "overflow-y"])],
-  ["place-self", (declaration, reader) => expandPair(declaration, reader, ["align-self", "justify-self"])],
-  ["grid-column", (declaration, reader) => expandLines(declaration, reader, "column")],
-  ["grid-row", (declaration, reader) => expandLines(declaration, reader, "row")],
-  [
-    "flex-flow",
-    (declaration, reader) => {
-      const [direction = ""] = reader.words;
-      return [longhand(declaration, "flex-direction", direction)];
-    }
-  ]
+  ["gap", ({ declaration, reader }) => expandPair({
+    declaration,
+    reader,
+    names: ["row-gap", "column-gap"]
+  })],
+  ["overflow", ({ declaration, reader }) => expandPair({
+    declaration,
+    reader,
+    names: ["overflow-x", "overflow-y"]
+  })],
+  ["place-self", ({ declaration, reader }) => expandPair({
+    declaration,
+    reader,
+    names: ["align-self", "justify-self"]
+  })],
+  ["grid-column", ({ declaration, reader }) => expandLines({
+    declaration,
+    reader,
+    axis: "column"
+  })],
+  ["grid-row", ({ declaration, reader }) => expandLines({
+    declaration,
+    reader,
+    axis: "row"
+  })],
+  ["flex-flow", expandFlow]
 ]);
 
-// The shorthands whose whole value may be one var() to a WinUI Thickness or
-// CornerRadius: not expanded.
-const wholeVariableShorthands = new Set(["margin", "padding", "border-width", "border-radius"]);
-
-export function expandDeclaration(declaration: Declaration, options: LowerOptions): Declaration[] {
+/**
+ * Expands a CSS shorthand into the longhands the property table lowers
+ * (margin into its four sides, border into width, style and color...). A
+ * shorthand whose whole value is one `var(--name)` stays as it is: the
+ * resource holds the complete value (a Thickness, a CornerRadius).
+ */
+export function expandDeclaration({ declaration, options }: {
+  declaration: Declaration;
+  options: LowerOptions;
+}) {
   const expansion = expansions.get(declaration.property);
-  if (expansion === undefined) {
+  const isExpansionMissing = expansion === undefined;
+  if (isExpansionMissing) {
     return [declaration];
   }
 
-  const keepsVariable = wholeVariableShorthands.has(declaration.property) && isWholeVariable(declaration);
-  if (keepsVariable) {
+  const shouldKeepVariable = WHOLE_VARIABLE_SHORTHANDS.has(declaration.property) && isWholeVariable(declaration);
+  if (shouldKeepVariable) {
     return [declaration];
   }
 
   const reader = new Reader(declaration, options);
-  return expansion(declaration, reader);
+  return expansion({
+    declaration,
+    reader
+  });
 }

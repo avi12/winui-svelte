@@ -1,55 +1,88 @@
-import type { VariableResolution } from "../runtime/resources.ts";
 import type { LoweredStyle } from "./properties.ts";
 import type { Declaration, PseudoState, Rule } from "./types.ts";
 
-// CSS's cascade for one element: which rules apply to it (its type, classes and
-// current states), in what order, and the XAML Style that results. Pure: the
-// runtime hands the result to XamlReader.
-
+/**
+ * CSS's cascade for one element: which rules apply to it (its type, classes
+ * and current states), in what order, and the XAML Style that results. Pure:
+ * the runtime hands the result to XamlReader.
+ */
 export interface RankedRule {
   rule: Rule;
-  // Names the rule across sheets, for caching what it styles.
+  /** Names the rule across sheets, for caching what it styles. */
   id: string;
-  // The order across sheets: a rule registered later ranks higher.
+  /** The order across sheets: a rule registered later ranks higher. */
   rank: number;
 }
 
+/** What the cascade knows about an element when it picks the rules that style it. */
 export interface ElementFacts {
   elementType: string;
   classes: ReadonlySet<string>;
   states: ReadonlySet<PseudoState>;
 }
 
-function ruleApplies(rule: Rule, facts: ElementFacts, isStateIgnored: boolean): boolean {
+/** The XML namespaces every XAML document the runtime hands to XamlReader declares. */
+export const XAML_NAMESPACES = "xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"";
+
+const XML_ESCAPES = new Map([
+  ["&", "&amp;"],
+  ["<", "&lt;"],
+  [">", "&gt;"],
+  ["\"", "&quot;"]
+]);
+
+function ruleApplies({ rule, facts, isStateIgnored }: {
+  rule: Rule;
+  facts: ElementFacts;
+  isStateIgnored: boolean;
+}) {
   const isTypeMatch = rule.elementType === null || rule.elementType === facts.elementType;
   const hasClasses = rule.classes.every(name => facts.classes.has(name));
   const isStateActive = rule.state === null || isStateIgnored || facts.states.has(rule.state);
   return isTypeMatch && hasClasses && isStateActive;
 }
 
-// The rules that style the element, lowest priority first. With
-// `isStateIgnored`, a state rule counts whether or not its state is active:
-// that is how the runtime learns which events an element needs.
-export function matchingRanked(
-  rules: readonly RankedRule[],
-  facts: ElementFacts,
-  isStateIgnored = false
-): RankedRule[] {
+/**
+ * The rules that style the element, lowest priority first. With
+ * `isStateIgnored`, a state rule counts whether or not its state is active:
+ * that is how the runtime learns which events an element needs.
+ */
+export function matchingRanked({ rules, facts, isStateIgnored = false }: {
+  rules: readonly RankedRule[];
+  facts: ElementFacts;
+  isStateIgnored?: boolean;
+}) {
   return rules
-    .filter(ranked => ruleApplies(ranked.rule, facts, isStateIgnored))
+    .filter(ranked => ruleApplies({
+      rule: ranked.rule,
+      facts,
+      isStateIgnored
+    }))
     .sort((first, second) => first.rule.specificity - second.rule.specificity || first.rank - second.rank);
 }
 
-export function matchingRules(rules: readonly RankedRule[], facts: ElementFacts, isStateIgnored = false): Rule[] {
-  return matchingRanked(rules, facts, isStateIgnored).map(ranked => ranked.rule);
+/** The same rules as `matchingRanked`, without their ranks. */
+export function matchingRules({ rules, facts, isStateIgnored = false }: {
+  rules: readonly RankedRule[];
+  facts: ElementFacts;
+  isStateIgnored?: boolean;
+}) {
+  return matchingRanked({
+    rules,
+    facts,
+    isStateIgnored
+  }).map(ranked => ranked.rule);
 }
 
-// Later declarations win; `!important` ones win over every other. The
-// element's own `style` declarations come last.
-export function computeDeclarations(
-  matched: readonly Rule[],
-  inline: readonly Declaration[]
-): Map<string, Declaration> {
+/**
+ * The declarations that win for an element: later ones win, `!important`
+ * ones win over every other, and the element's own `style` declarations
+ * come last.
+ */
+export function computeDeclarations({ matched, inline }: {
+  matched: readonly Rule[];
+  inline: readonly Declaration[];
+}) {
   const normal = new Map<string, Declaration>();
   const important = new Map<string, Declaration>();
   const declarations = [...matched.flatMap(rule => rule.declarations), ...inline];
@@ -60,44 +93,48 @@ export function computeDeclarations(
   return new Map([...normal, ...important]);
 }
 
-// The runtime does not know WinUI's resource names: the build wrote the key
-// each var() resolved to on its declaration.
-export function resolveBuiltVariable(declaration: Declaration, name: string): VariableResolution {
-  if (declaration.resource === undefined) {
+/**
+ * Resolves a `var()` for the runtime, which does not know WinUI's resource
+ * names: the build wrote the key each `var()` resolved to on its declaration.
+ */
+export function resolveBuiltVariable({ declaration, name }: {
+  declaration: Declaration;
+  name: string;
+}) {
+  const { resource } = declaration;
+  const isResourceMissing = resource === undefined;
+  if (isResourceMissing) {
     return {
       isFound: false,
       reason: `${name} was not resolved at build time (var() works in a <style> block, not in a style attribute)`
-    };
+    } as const;
   }
 
   return {
     isFound: true,
-    key: declaration.resource
-  };
+    key: resource
+  } as const;
 }
 
-const xmlEscapes = new Map([
-  ["&", "&amp;"],
-  ["<", "&lt;"],
-  [">", "&gt;"],
-  ["\"", "&quot;"]
-]);
-
-function escapeAttribute(value: string): string {
-  return value.replace(/[&<>"]/gu, character => xmlEscapes.get(character) ?? character);
+function escapeAttribute(value: string) {
+  return value.replace(/[&<>"]/gu, character => XML_ESCAPES.get(character) ?? character);
 }
 
-// "stack-panel" as StackPanel, the XAML name of the control.
-export function xamlTypeName(elementType: string): string {
+/** "stack-panel" as StackPanel, the XAML name of the control. */
+export function xamlTypeName(elementType: string) {
   return elementType.split("-").map(word => `${word.charAt(0).toUpperCase()}${word.slice(1)}`).join("");
 }
 
-export const XamlNamespaces = `xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"`;
-
-export function styleXaml(key: string, elementType: string, lowered: LoweredStyle): string {
+/** The XAML of a Style for one element type, from what a rule set lowered to. */
+export function styleXaml({ key, elementType, lowered }: {
+  key: string;
+  elementType: string;
+  lowered: LoweredStyle;
+}) {
   const basedOn = lowered.basedOn === null ? "" : ` BasedOn="{StaticResource ${lowered.basedOn}}"`;
   const setters = lowered.setters.map(entry => {
-    if (entry.kind === "setter") {
+    const isSetter = entry.kind === "setter";
+    if (isSetter) {
       return `  <Setter Property="${entry.property}" Value="${escapeAttribute(entry.value)}"/>`;
     }
 
@@ -110,7 +147,15 @@ export function styleXaml(key: string, elementType: string, lowered: LoweredStyl
   ].join("\n");
 }
 
-// A dictionary that holds one style, as XamlReader loads it.
-export function styleDictionaryXaml(key: string, elementType: string, lowered: LoweredStyle): string {
-  return `<ResourceDictionary ${XamlNamespaces}>\n${styleXaml(key, elementType, lowered)}\n</ResourceDictionary>`;
+/** A dictionary that holds one style, as XamlReader loads it. */
+export function styleDictionaryXaml({ key, elementType, lowered }: {
+  key: string;
+  elementType: string;
+  lowered: LoweredStyle;
+}) {
+  return `<ResourceDictionary ${XAML_NAMESPACES}>\n${styleXaml({
+    key,
+    elementType,
+    lowered
+  })}\n</ResourceDictionary>`;
 }
