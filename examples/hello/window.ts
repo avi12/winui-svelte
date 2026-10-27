@@ -7,7 +7,7 @@ import { z } from "zod";
 // The window: WinUI's thread. Its modules come from the host's dev server, and
 // a timer takes the server's hot updates in, since WinUI holds this thread.
 
-const receiveMilliseconds = 30;
+const RECEIVE_MILLISECONDS = 30;
 const windowSize = {
   width: 480,
   height: 320
@@ -29,7 +29,7 @@ await runOnUiThread(async () => {
   await runWindow({
     onStart() {
       startTimer({
-        milliseconds: receiveMilliseconds,
+        milliseconds: RECEIVE_MILLISECONDS,
         onTick: receive
       });
       createWindow({

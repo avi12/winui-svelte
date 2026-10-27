@@ -7,14 +7,14 @@ import { Worker } from "node:worker_threads";
 //
 //   node --disable-warning=ExperimentalWarning examples/scheduling/launch.ts
 
-const messageDelayMilliseconds = 2500;
+const MESSAGE_DELAY_MILLISECONDS = 2500;
 
 startWindowsAppSdk();
 process.stdout.write(`pid ${process.pid}\n`);
 
 const worker = new Worker(new URL("./window.ts", import.meta.url));
 // A message from the main thread, for the "host message" trigger.
-setTimeout(() => worker.postMessage({ type: "bump" }), messageDelayMilliseconds);
+setTimeout(() => worker.postMessage({ type: "bump" }), MESSAGE_DELAY_MILLISECONDS);
 worker.on("exit", code => process.exit(code));
 worker.on("error", error => {
   process.stderr.write(`${error.stack ?? String(error)}\n`);

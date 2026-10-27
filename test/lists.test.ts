@@ -1,4 +1,4 @@
-import { ExampleProcess, isWindowsAppSdkRestored, numberOf } from "./example-process.ts";
+import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED, numberOf } from "./example-process.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -6,22 +6,22 @@ import { test } from "node:test";
 // never activated: a ListView of 1000 rows, each a Svelte component. Skipped
 // where the Windows App SDK was not restored.
 
-const timeoutMilliseconds = 300_000;
-const rowCount = 1000;
+const TIMEOUT_MILLISECONDS = 300_000;
+const ROW_COUNT = 1000;
 // A 640 pixel window shows 16 rows; the list also realizes a few pages beyond
 // its edges (ItemsStackPanel.CacheLength), about 76 in all.
-const mostContainers = 150;
+const MOST_CONTAINERS = 150;
 
 test("a list of 1000 rows keeps a screenful of rows, recycles them and ends none twice", {
-  skip: !isWindowsAppSdkRestored,
-  timeout: timeoutMilliseconds
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
 }, async () => {
   const example = ExampleProcess.start("examples/lists/main.ts");
   try {
     const opened = await example.settled({ cmd: "stats" }, "stats");
-    assert.equal(numberOf(opened, "rows"), rowCount);
+    assert.equal(numberOf(opened, "rows"), ROW_COUNT);
     const shown = numberOf(opened, "live");
-    assert.ok(shown > 5 && shown < mostContainers, `${shown} rows shown of ${rowCount}`);
+    assert.ok(shown > 5 && shown < MOST_CONTAINERS, `${shown} rows shown of ${ROW_COUNT}`);
     assert.equal(numberOf(opened, "destroyed"), 0);
 
     const scrolled = await example.settled({
@@ -29,7 +29,7 @@ test("a list of 1000 rows keeps a screenful of rows, recycles them and ends none
       key: "row-900"
     }, "scrolled");
     const afterScroll = numberOf(scrolled, "live");
-    assert.ok(afterScroll < mostContainers, `${afterScroll} rows alive after scrolling to the end`);
+    assert.ok(afterScroll < MOST_CONTAINERS, `${afterScroll} rows alive after scrolling to the end`);
     assert.ok(numberOf(scrolled, "destroyed") > 0, "no row was ended by the scroll");
     assert.equal(numberOf(scrolled, "created") - numberOf(scrolled, "destroyed"), afterScroll);
 
@@ -37,7 +37,7 @@ test("a list of 1000 rows keeps a screenful of rows, recycles them and ends none
       cmd: "scroll",
       key: "row-0"
     }, "scrolled");
-    assert.ok(numberOf(back, "live") < mostContainers, "rows piled up scrolling back");
+    assert.ok(numberOf(back, "live") < MOST_CONTAINERS, "rows piled up scrolling back");
 
     // A rename reaches the row that shows it without making a new one.
     const before = await example.ask({ cmd: "stats" }, "stats");
@@ -57,16 +57,16 @@ test("a list of 1000 rows keeps a screenful of rows, recycles them and ends none
     }, "moved");
     assert.deepEqual(moved["first"], ["row-0", "row-1", "row-3", "row-2", "row-4"]);
     assert.equal(numberOf(moved, "reorders"), 1);
-    assert.equal(numberOf(moved, "rows"), rowCount);
+    assert.equal(numberOf(moved, "rows"), ROW_COUNT);
 
     // A row that goes takes its component with it.
     const removed = await example.settled({
       cmd: "remove",
       key: "row-1"
     }, "removed");
-    assert.equal(numberOf(removed, "rows"), rowCount - 1);
+    assert.equal(numberOf(removed, "rows"), ROW_COUNT - 1);
     assert.deepEqual(removed["first"], ["row-0", "row-3", "row-2", "row-4", "row-5"]);
-    assert.ok(numberOf(removed, "live") < mostContainers);
+    assert.ok(numberOf(removed, "live") < MOST_CONTAINERS);
 
     const cleared = await example.settled({ cmd: "clear" }, "cleared");
     assert.equal(numberOf(cleared, "rows"), 0);
@@ -80,14 +80,14 @@ test("a list of 1000 rows keeps a screenful of rows, recycles them and ends none
 });
 
 test("a grid view of 1000 items realizes only the ones it shows", {
-  skip: !isWindowsAppSdkRestored,
-  timeout: timeoutMilliseconds
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
 }, async () => {
   const example = ExampleProcess.start("examples/lists/main.ts", ["--view", "grid"]);
   try {
     const opened = await example.settled({ cmd: "stats" }, "stats");
     const shown = numberOf(opened, "live");
-    assert.ok(shown > 5 && shown < rowCount / 2, `${shown} items shown of ${rowCount}`);
+    assert.ok(shown > 5 && shown < ROW_COUNT / 2, `${shown} items shown of ${ROW_COUNT}`);
     example.send({ cmd: "close" });
     assert.equal(await example.exited, 0);
   } finally {

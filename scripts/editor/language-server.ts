@@ -51,13 +51,13 @@ const configurationRequestSchema = z.object({
   items: z.array(z.object({ section: z.string().optional() }))
 });
 
-const headerSeparator = "\r\n\r\n";
+const HEADER_SEPARATOR = "\r\n\r\n";
 const contentLengthPattern = /Content-Length: (\d+)/i;
 // The server publishes a file's diagnostics more than once (Svelte's first,
 // TypeScript's after); it has settled when nothing new arrives for this long.
-const settleMilliseconds = 4000;
-const pollMilliseconds = 250;
-const settleTimeoutMilliseconds = 300_000;
+const SETTLE_MILLISECONDS = 4000;
+const POLL_MILLISECONDS = 250;
+const SETTLE_TIMEOUT_MILLISECONDS = 300_000;
 
 // The editor's inlay hints, all on, so a type that collapsed to any shows.
 const inlayHints = {
@@ -159,19 +159,19 @@ export class LanguageServer {
 
   // Waits until every opened file has diagnostics and none arrived lately.
   async settle(files: string[]) {
-    const deadline = Date.now() + settleTimeoutMilliseconds;
+    const deadline = Date.now() + SETTLE_TIMEOUT_MILLISECONDS;
     while (Date.now() < deadline) {
       if (this.exitCode !== undefined) {
         throw new Error(`The Svelte language server exited (${String(this.exitCode)}).`);
       }
 
       const hasEveryFile = files.every(file => this.diagnostics.has(fileKey(file)));
-      const isSettled = hasEveryFile && Date.now() - this.lastPublish > settleMilliseconds;
+      const isSettled = hasEveryFile && Date.now() - this.lastPublish > SETTLE_MILLISECONDS;
       if (isSettled) {
         return;
       }
 
-      await sleep(pollMilliseconds);
+      await sleep(POLL_MILLISECONDS);
     }
 
     throw new Error("The Svelte language server did not finish checking in time.");
@@ -230,20 +230,20 @@ export class LanguageServer {
         ...message
       }), "utf8"
     );
-    this.server.stdin.write(`Content-Length: ${body.length}${headerSeparator}`);
+    this.server.stdin.write(`Content-Length: ${body.length}${HEADER_SEPARATOR}`);
     this.server.stdin.write(body);
   }
 
   private receive(chunk: Buffer) {
     this.buffer = Buffer.concat([this.buffer, chunk]);
     while (true) {
-      const headerEnd = this.buffer.indexOf(headerSeparator);
+      const headerEnd = this.buffer.indexOf(HEADER_SEPARATOR);
       if (headerEnd < 0) {
         return;
       }
 
       const length = Number(contentLengthPattern.exec(this.buffer.subarray(0, headerEnd).toString())?.[1] ?? 0);
-      const bodyStart = headerEnd + headerSeparator.length;
+      const bodyStart = headerEnd + HEADER_SEPARATOR.length;
       const isComplete = this.buffer.length >= bodyStart + length;
       if (!isComplete) {
         return;

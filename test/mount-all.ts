@@ -12,29 +12,29 @@ import { MessageChannel, Worker } from "node:worker_threads";
 // (mount-all.worker.ts) loads every module from this thread's Vite server
 // first.
 
-const windowsAppSdkMajor = 2;
-const windowsAppSdkMinor = 2;
-const packageRoot = path.join(import.meta.dirname, "..");
-const bindingsFolder = ".winapp/bindings/";
+const WINDOWS_APP_SDK_MAJOR = 2;
+const WINDOWS_APP_SDK_MINOR = 2;
+const PACKAGE_ROOT = path.join(import.meta.dirname, "..");
+const BINDINGS_FOLDER = ".winapp/bindings/";
 
 process.env["WINAPPSDK_BOOTSTRAP_DLL_PATH"] ??= path.join(
-  packageRoot,
+  PACKAGE_ROOT,
   ".winapp",
   "bin",
   process.arch,
   "Microsoft.WindowsAppRuntime.Bootstrap.dll"
 );
-initWinappsdk(windowsAppSdkMajor, windowsAppSdkMinor);
+initWinappsdk(WINDOWS_APP_SDK_MAJOR, WINDOWS_APP_SDK_MINOR);
 
 const modules = new MessageChannel();
 const server = await startModuleServer({
-  root: packageRoot,
-  configFile: path.join(packageRoot, "examples", "harness", "vite.config.ts"),
+  root: PACKAGE_ROOT,
+  configFile: path.join(PACKAGE_ROOT, "examples", "harness", "vite.config.ts"),
   port: modules.port1,
   // The generated bindings are CommonJS that Node loads itself.
   isNative(file) {
     const normalized = file.replaceAll("\\", "/");
-    return normalized.includes(bindingsFolder);
+    return normalized.includes(BINDINGS_FOLDER);
   }
 });
 const worker = new Worker(new URL("mount-all.worker.ts", import.meta.url), {

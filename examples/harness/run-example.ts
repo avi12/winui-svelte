@@ -12,7 +12,7 @@ import { receiveMessageOnPort } from "node:worker_threads";
 // taken off the port by a dispatcher timer (WinUI holds the thread, so the
 // port's events never fire).
 
-const commandMilliseconds = 30;
+const COMMAND_MILLISECONDS = 30;
 const ticksPerMillisecond = 10_000n;
 
 // Held for as long as the window runs: a timer whose wrapper is collected
@@ -41,7 +41,7 @@ export async function runExample(entry: string, link: MessagePort, options: Reco
       registerControls(bindings);
       start(host);
       const timer = DispatcherQueue.getForCurrentThread().createTimer();
-      timer.interval = { duration: BigInt(commandMilliseconds) * ticksPerMillisecond };
+      timer.interval = { duration: BigInt(COMMAND_MILLISECONDS) * ticksPerMillisecond };
       timer.isRepeating = true;
       timer.onTick(() => {
         let received = receiveMessageOnPort(link);

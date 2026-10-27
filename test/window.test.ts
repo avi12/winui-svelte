@@ -1,4 +1,4 @@
-import { ExampleProcess, isWindowsAppSdkRestored, numberOf } from "./example-process.ts";
+import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED, numberOf } from "./example-process.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -7,15 +7,15 @@ import { test } from "node:test";
 // from WinUI, and its props followed live. Skipped where the Windows App SDK
 // was not restored. (examples/window/run.ps1 captures each backdrop.)
 
-const timeoutMilliseconds = 300_000;
-const openedWidth = 520;
-const openedHeight = 360;
-const minimumWidth = 400;
-const widenedTo = 600;
+const TIMEOUT_MILLISECONDS = 300_000;
+const OPENED_WIDTH = 520;
+const OPENED_HEIGHT = 360;
+const MINIMUM_WIDTH = 400;
+const WIDENED_TO = 600;
 
 test("a window opens as its props say, follows them, and reports what happens to it", {
-  skip: !isWindowsAppSdkRestored,
-  timeout: timeoutMilliseconds
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
 }, async () => {
   const example = ExampleProcess.start("examples/window/main.ts");
   try {
@@ -25,9 +25,9 @@ test("a window opens as its props say, follows them, and reports what happens to
     assert.equal(opened["extendsIntoTitleBar"], true, "a title bar snippet extends the content into the title bar");
     assert.equal(opened["backdrop"], "acrylic");
     assert.equal(opened["isMaximizable"], false);
-    assert.equal(numberOf(opened, "width"), Math.round(openedWidth * scale));
-    assert.equal(numberOf(opened, "height"), Math.round(openedHeight * scale));
-    assert.equal(numberOf(opened, "minimumWidth"), Math.round(minimumWidth * scale));
+    assert.equal(numberOf(opened, "width"), Math.round(OPENED_WIDTH * scale));
+    assert.equal(numberOf(opened, "height"), Math.round(OPENED_HEIGHT * scale));
+    assert.equal(numberOf(opened, "minimumWidth"), Math.round(MINIMUM_WIDTH * scale));
     assert.equal(numberOf(opened, "x"), -8000, "the placement is where it opened");
     assert.equal(numberOf(opened, "activations"), 0, "activate={false} opens without taking focus");
 
@@ -47,9 +47,9 @@ test("a window opens as its props say, follows them, and reports what happens to
 
     const widened = await example.ask({
       cmd: "width",
-      value: widenedTo
+      value: WIDENED_TO
     }, "width");
-    assert.equal(numberOf(widened, "width"), Math.round(widenedTo * scale), "a new width prop resizes the window");
+    assert.equal(numberOf(widened, "width"), Math.round(WIDENED_TO * scale), "a new width prop resizes the window");
     const moved = await example.ask({
       cmd: "move",
       x: -7000,
@@ -60,8 +60,8 @@ test("a window opens as its props say, follows them, and reports what happens to
     assert.deepEqual(moved["lastBounds"], {
       x: -7000,
       y: 50,
-      width: Math.round(widenedTo * scale),
-      height: Math.round(openedHeight * scale)
+      width: Math.round(WIDENED_TO * scale),
+      height: Math.round(OPENED_HEIGHT * scale)
     });
 
     example.send({ cmd: "close" });

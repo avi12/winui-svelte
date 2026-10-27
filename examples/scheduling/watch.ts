@@ -3,10 +3,10 @@ import { appendFileSync } from "node:fs";
 // What the experiment saw, one line per observation, written with a plain
 // synchronous append because a worker's stdout waits for the thread that
 // WinUI is holding.
-const logPath = process.env["SCHEDULING_LOG"] ?? "scheduling.log";
-const clockStart = performance.now();
-const timeWidth = 6;
-const labelWidth = 28;
+const LOG_PATH = process.env["SCHEDULING_LOG"] ?? "scheduling.log";
+const CLOCK_START = performance.now();
+const TIME_WIDTH = 6;
+const LABEL_WIDTH = 28;
 let readText = readNothing;
 
 function readNothing() {
@@ -14,8 +14,8 @@ function readNothing() {
 }
 
 export function record(label: string, text: string) {
-  const elapsed = (performance.now() - clockStart).toFixed(0).padStart(timeWidth);
-  appendFileSync(logPath, `${elapsed}ms  ${label.padEnd(labelWidth)} ${text}\n`);
+  const elapsed = (performance.now() - CLOCK_START).toFixed(0).padStart(TIME_WIDTH);
+  appendFileSync(LOG_PATH, `${elapsed}ms  ${label.padEnd(LABEL_WIDTH)} ${text}\n`);
 }
 
 // What the observed control shows right now.

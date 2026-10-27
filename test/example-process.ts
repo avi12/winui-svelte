@@ -11,12 +11,12 @@ import { z } from "zod";
 // window is off screen and never activated, its reports come back as objects,
 // and it is driven by commands. Only the process this started is ever ended.
 
-const packageRoot = path.join(import.meta.dirname, "..");
-const launcher = path.join(packageRoot, "examples", "harness", "launch.ts");
-const bootstrapPath = path.join(packageRoot, ".winapp", "bin", process.arch, "Microsoft.WindowsAppRuntime.Bootstrap.dll");
-export const isWindowsAppSdkRestored = existsSync(bootstrapPath);
-const startMilliseconds = 90_000;
-const layoutMilliseconds = 900;
+const PACKAGE_ROOT = path.join(import.meta.dirname, "..");
+const LAUNCHER = path.join(PACKAGE_ROOT, "examples", "harness", "launch.ts");
+const BOOTSTRAP_PATH = path.join(PACKAGE_ROOT, ".winapp", "bin", process.arch, "Microsoft.WindowsAppRuntime.Bootstrap.dll");
+export const IS_WINDOWS_APP_SDK_RESTORED = existsSync(BOOTSTRAP_PATH);
+const START_MILLISECONDS = 90_000;
+const LAYOUT_MILLISECONDS = 900;
 
 const reportSchema = z.record(z.string(), jsonSchema);
 
@@ -45,8 +45,8 @@ export class ExampleProcess {
   }
 
   static start(entry: string, flags: string[] = []) {
-    const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", launcher, entry, ...flags], {
-      cwd: packageRoot,
+    const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", LAUNCHER, entry, ...flags], {
+      cwd: PACKAGE_ROOT,
       stdio: ["pipe", "pipe", "inherit"]
     });
     return new ExampleProcess(child);
@@ -58,7 +58,7 @@ export class ExampleProcess {
 
   // Sends `command` and resolves with the next report of `kind`. The first
   // command also waits for the window to load, which takes a while.
-  async ask(command: Report, kind: string, timeoutMilliseconds = startMilliseconds) {
+  async ask(command: Report, kind: string, timeoutMilliseconds = START_MILLISECONDS) {
     const from = this.reports.length;
     this.send(command);
     const deadline = Date.now() + timeoutMilliseconds;
@@ -81,7 +81,7 @@ export class ExampleProcess {
   // containers a command changed, then ask.
   async settled(command: Report, kind: string) {
     await this.ask(command, kind);
-    await new Promise(resolve => setTimeout(resolve, layoutMilliseconds));
+    await new Promise(resolve => setTimeout(resolve, LAYOUT_MILLISECONDS));
     return this.ask({ cmd: "stats" }, "stats");
   }
 

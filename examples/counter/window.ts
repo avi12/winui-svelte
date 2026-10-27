@@ -8,7 +8,7 @@ import { z } from "zod";
 // layer. The host's messages come in through a MessagePort drained by a
 // DispatcherQueue timer, and no code here calls flushSync.
 
-const pollMilliseconds = 30;
+const POLL_MILLISECONDS = 30;
 
 const workerDataSchema = z.object({ port: z.instanceof(MessagePort) });
 
@@ -36,7 +36,7 @@ await runOnUiThread(async () => {
         createMessagePortTransport(port, {
           poll(drain) {
             return startTimer({
-              milliseconds: pollMilliseconds,
+              milliseconds: POLL_MILLISECONDS,
               onTick: drain
             });
           }

@@ -8,10 +8,10 @@ import { z } from "zod";
 // of entry points: they name the built files (dist), which a consumer gets;
 // the sources are the same paths under src.
 
-const packageRoot = path.join(import.meta.dirname, "..");
-const packageName = "winui-svelte";
-const builtFolder = "./dist/";
-const sourceFolder = "./src/";
+const PACKAGE_ROOT = path.join(import.meta.dirname, "..");
+const PACKAGE_NAME = "winui-svelte";
+const BUILT_FOLDER = "./dist/";
+const SOURCE_FOLDER = "./src/";
 const builtExtension = /\.js$/u;
 
 const manifestSchema = z.object({
@@ -34,17 +34,17 @@ export interface Alias {
 function targetFile(builtFile: string, target: ExportTarget) {
   const file = target === ExportTarget.Built ?
     builtFile :
-    builtFile.replace(builtFolder, sourceFolder).replace(builtExtension, ".ts");
-  return path.join(packageRoot, file);
+    builtFile.replace(BUILT_FOLDER, SOURCE_FOLDER).replace(builtExtension, ".ts");
+  return path.join(PACKAGE_ROOT, file);
 }
 
 export function exportAliases(target: ExportTarget) {
-  const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(packageRoot, "package.json"), "utf8")));
+  const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8")));
   return Object.entries(manifest.exports).flatMap(([subpath, entry]) => {
     const builtFile = typeof entry === "string" ? entry : entry.default;
-    const isBuilt = builtFile.startsWith(builtFolder);
+    const isBuilt = builtFile.startsWith(BUILT_FOLDER);
     return isBuilt ? [{
-      find: new RegExp(`^${packageName}${subpath.slice(1)}$`, "u"),
+      find: new RegExp(`^${PACKAGE_NAME}${subpath.slice(1)}$`, "u"),
       replacement: targetFile(builtFile, target)
     }] : [];
   });

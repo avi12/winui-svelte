@@ -14,25 +14,25 @@ import { build } from "vite";
 // and no import-time work. The first test holds the line against growth. The
 // second is the goal: a Button must not import the bindings of every control.
 
-const packageRoot = path.join(import.meta.dirname, "..", "..");
-const appFolder = path.join(import.meta.dirname, "treeshake-app");
-const isBuilt = existsSync(path.join(packageRoot, "dist"));
-const bundleTimeoutMilliseconds = 120_000;
+const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
+const APP_FOLDER = path.join(import.meta.dirname, "treeshake-app");
+const IS_BUILT = existsSync(path.join(PACKAGE_ROOT, "dist"));
+const BUNDLE_TIMEOUT_MILLISECONDS = 120_000;
 const bindingImport = /#winui\/[\w./-]+/gu;
 const externalModule = new RegExp(String.raw`^#winui/|@winapp[\\/]bindings|\.winapp[\\/]bindings|@microsoft[\\/]dynwinrt`, "u");
 
 // Measured with one <Button>: today's bundle. Lower it when the package gets
 // smaller; never raise it to make a change pass.
-const budgetBytes = 130_000;
-const budgetBindings = 340;
+const BUDGET_BYTES = 130_000;
+const BUDGET_BINDINGS = 340;
 // What the goal allows: the bindings of the controls and enums the app uses,
 // and the renderer's own handful.
-const goalBindings = 40;
+const GOAL_BINDINGS = 40;
 
 async function bundleOfOneButton() {
   const result = await build({
     configFile: false,
-    root: appFolder,
+    root: APP_FOLDER,
     logLevel: "warn",
     plugins: [winuiSvelte()],
     resolve: {
@@ -57,19 +57,19 @@ async function bundleOfOneButton() {
 }
 
 test("an app with one Button stays within the bundle budget", {
-  skip: !isBuilt,
-  timeout: bundleTimeoutMilliseconds
+  skip: !IS_BUILT,
+  timeout: BUNDLE_TIMEOUT_MILLISECONDS
 }, async () => {
   const bundle = await bundleOfOneButton();
-  assert.ok(bundle.bytes <= budgetBytes, `${bundle.bytes} bytes is over the ${budgetBytes} budget`);
-  assert.ok(bundle.bindings <= budgetBindings, `${bundle.bindings} binding imports is over the ${budgetBindings} budget`);
+  assert.ok(bundle.bytes <= BUDGET_BYTES, `${bundle.bytes} bytes is over the ${BUDGET_BYTES} budget`);
+  assert.ok(bundle.bindings <= BUDGET_BINDINGS, `${bundle.bindings} binding imports is over the ${BUDGET_BINDINGS} budget`);
 });
 
 test("an app with one Button imports only the bindings it uses", {
-  skip: !isBuilt,
-  timeout: bundleTimeoutMilliseconds,
+  skip: !IS_BUILT,
+  timeout: BUNDLE_TIMEOUT_MILLISECONDS,
   todo: "every generated component imports the bindings of all controls through runtime.ts"
 }, async () => {
   const bundle = await bundleOfOneButton();
-  assert.ok(bundle.bindings <= goalBindings, `${bundle.bindings} binding imports for one Button, the goal is ${goalBindings}`);
+  assert.ok(bundle.bindings <= GOAL_BINDINGS, `${bundle.bindings} binding imports for one Button, the goal is ${GOAL_BINDINGS}`);
 });

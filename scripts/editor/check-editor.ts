@@ -16,7 +16,7 @@ import { readdirSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 
-const packageFolder = path.resolve(import.meta.dirname, "../..");
+const PACKAGE_FOLDER = path.resolve(import.meta.dirname, "../..");
 const skippedFolders = ["node_modules", "dist", ".winapp", "target"];
 const anyTypePattern = /:\s*any\b/;
 
@@ -45,7 +45,7 @@ function labelOf(hint: InlayHint) {
 // The folder both the package and the projects sit under: the editor's
 // workspace, so each file finds its own tsconfig as it does there.
 function commonFolder(folders: string[]) {
-  const [first = packageFolder, ...rest] = folders;
+  const [first = PACKAGE_FOLDER, ...rest] = folders;
   let common = first;
   for (const folder of rest) {
     while (path.relative(common, folder).startsWith("..")) {
@@ -82,10 +82,10 @@ const { values } = parseArgs({
     }
   }
 });
-const folders = [packageFolder, ...values.project.map(project => path.resolve(project))];
+const folders = [PACKAGE_FOLDER, ...values.project.map(project => path.resolve(project))];
 const files = folders.flatMap(folder => svelteFilesIn(folder));
 
-const server = new LanguageServer(packageFolder);
+const server = new LanguageServer(PACKAGE_FOLDER);
 const problems: string[] = [];
 try {
   await server.start(commonFolder(folders));

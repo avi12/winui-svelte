@@ -8,7 +8,7 @@ import { z } from "zod";
 // example needs through the module server (run-example.ts and what it
 // imports; WinUI's loop takes the thread once the window runs).
 
-const runExampleModule = "/examples/harness/run-example.ts";
+const RUN_EXAMPLE_MODULE = "/examples/harness/run-example.ts";
 
 const portsSchema = z.object({
   modules: z.instanceof(MessagePort),
@@ -25,6 +25,6 @@ await runOnUiThread(async () => {
 
   const data = parsedPorts.data;
   const { runner } = createWindowModuleRunner(data.modules);
-  const { runExample } = await runner.import<{ runExample: RunExample }>(runExampleModule);
+  const { runExample } = await runner.import<{ runExample: RunExample }>(RUN_EXAMPLE_MODULE);
   await runExample(data.entry, data.link, data.options);
 });

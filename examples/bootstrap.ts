@@ -7,13 +7,13 @@ import { initWindowsAppSdk } from "winui-svelte/bootstrap";
 //
 //   node --disable-warning=ExperimentalWarning examples/counter/launch.ts
 
-const windowsAppSdkMajor = 2;
-const windowsAppSdkMinor = 2;
+const WINDOWS_APP_SDK_MAJOR = 2;
+const WINDOWS_APP_SDK_MINOR = 2;
 
 export function startWindowsAppSdk(): void {
   initWindowsAppSdk({
-    major: windowsAppSdkMajor,
-    minor: windowsAppSdkMinor,
+    major: WINDOWS_APP_SDK_MAJOR,
+    minor: WINDOWS_APP_SDK_MINOR,
     folders: [path.join(process.cwd(), ".winapp", "bin", process.arch)]
   });
 }

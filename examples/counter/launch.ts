@@ -1,5 +1,5 @@
 import { startWindowsAppSdk } from "../bootstrap.ts";
-import { viewName } from "./app-types.ts";
+import { VIEW_NAME } from "./app-types.ts";
 import { MessageChannel, Worker } from "node:worker_threads";
 import { defineMessaging } from "winui-svelte/messaging";
 import type { Json, StateProtocol } from "winui-svelte/state/host";
@@ -16,7 +16,7 @@ import { createMessagePortTransport, diff, isJsonObject, MessageType } from "win
 // (from the package's folder: the Windows App SDK's bootstrapper is looked for
 // in its .winapp)
 
-const maximumHistory = 5;
+const MAXIMUM_HISTORY = 5;
 
 startWindowsAppSdk();
 process.stdout.write(`pid ${process.pid}\n`);
@@ -41,7 +41,7 @@ let state: Json = {
 
 function publish(next: Json) {
   void messaging.sendMessage(MessageType.patch, {
-    name: viewName,
+    name: VIEW_NAME,
     ops: diff(state, next)
   });
   state = next;
@@ -59,11 +59,11 @@ messaging.onMessage(MessageType.action, message => {
 
   publish({
     count: count + 1,
-    history: [...history, count + 1].slice(-maximumHistory)
+    history: [...history, count + 1].slice(-MAXIMUM_HISTORY)
   });
 });
 void messaging.sendMessage(MessageType.snapshot, {
-  name: viewName,
+  name: VIEW_NAME,
   value: state
 });
 worker.on("exit", code => process.exit(code));

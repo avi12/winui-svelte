@@ -14,7 +14,7 @@ import { gunzipSync } from "node:zlib";
 // way a consumer meets it: publint for the manifest, @arethetypeswrong/cli for
 // the types of every entry point, and the file list for what must never ship.
 
-const packageRoot = path.join(import.meta.dirname, "..", "..");
+const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const forbiddenInTarball = [
   /^package\/CLAUDE\.md$/u,
   /^package\/CONTRIBUTING\.md$/u,
@@ -29,14 +29,14 @@ const forbiddenInTarball = [
 
 // A tar archive is 512-byte blocks: a header (name at 0, size in octal at 124,
 // a ustar prefix at 345) then the file's data padded to a block.
-const tarBlockBytes = 512;
-const nameBytes = 100;
-const sizeOffset = 124;
-const sizeBytes = 12;
-const prefixOffset = 345;
-const prefixBytes = 155;
-const octal = 8;
-const bytesPerKilobyte = 1024;
+const TAR_BLOCK_BYTES = 512;
+const NAME_BYTES = 100;
+const SIZE_OFFSET = 124;
+const SIZE_BYTES = 12;
+const PREFIX_OFFSET = 345;
+const PREFIX_BYTES = 155;
+const OCTAL = 8;
+const BYTES_PER_KILOBYTE = 1024;
 
 function textAt(block: Buffer, offset: number, length: number) {
   const end = block.indexOf(0, offset);
@@ -48,17 +48,17 @@ function tarballFiles(tarball: string) {
   const archive = gunzipSync(readFileSync(tarball));
   const files: string[] = [];
   let position = 0;
-  while (position + tarBlockBytes <= archive.length) {
-    const header = archive.subarray(position, position + tarBlockBytes);
-    const name = textAt(header, 0, nameBytes);
+  while (position + TAR_BLOCK_BYTES <= archive.length) {
+    const header = archive.subarray(position, position + TAR_BLOCK_BYTES);
+    const name = textAt(header, 0, NAME_BYTES);
     if (name === "") {
       break;
     }
 
-    const prefix = textAt(header, prefixOffset, prefixBytes);
+    const prefix = textAt(header, PREFIX_OFFSET, PREFIX_BYTES);
     files.push(prefix === "" ? name : `${prefix}/${name}`);
-    const size = Number.parseInt(textAt(header, sizeOffset, sizeBytes).trim(), octal);
-    position += tarBlockBytes + Math.ceil(size / tarBlockBytes) * tarBlockBytes;
+    const size = Number.parseInt(textAt(header, SIZE_OFFSET, SIZE_BYTES).trim(), OCTAL);
+    position += TAR_BLOCK_BYTES + Math.ceil(size / TAR_BLOCK_BYTES) * TAR_BLOCK_BYTES;
   }
 
   return files;
@@ -72,25 +72,25 @@ function run(args: string[]) {
   }
 
   execFileSync(process.execPath, [pnpmScript, ...args], {
-    cwd: packageRoot,
+    cwd: PACKAGE_ROOT,
     stdio: "inherit"
   });
 }
 
 // Inside the repository (gitignored), so the check writes nowhere else.
-const scratchFolder = path.join(packageRoot, ".verify");
-mkdirSync(scratchFolder, { recursive: true });
-const packFolder = mkdtempSync(path.join(scratchFolder, "pack-"));
+const SCRATCH_FOLDER = path.join(PACKAGE_ROOT, ".verify");
+mkdirSync(SCRATCH_FOLDER, { recursive: true });
+const PACK_FOLDER = mkdtempSync(path.join(SCRATCH_FOLDER, "pack-"));
 try {
-  run(["pack", "--pack-destination", packFolder]);
-  const tarball = path.join(packFolder, readdirSync(packFolder).filter(name => name.endsWith(".tgz"))[0] ?? "");
+  run(["pack", "--pack-destination", PACK_FOLDER]);
+  const tarball = path.join(PACK_FOLDER, readdirSync(PACK_FOLDER).filter(name => name.endsWith(".tgz"))[0] ?? "");
   const files = tarballFiles(tarball);
   const forbidden = files.filter(file => forbiddenInTarball.some(pattern => pattern.test(file)));
   if (forbidden.length > 0) {
     throw new Error(`The tarball holds files that must not ship:\n${forbidden.slice(0, 20).join("\n")}`);
   }
 
-  const kilobytes = Math.round(statSync(tarball).size / bytesPerKilobyte);
+  const kilobytes = Math.round(statSync(tarball).size / BYTES_PER_KILOBYTE);
   console.log(`Tarball: ${files.length} files, ${kilobytes} kB packed`);
   run(["exec", "publint", "run", tarball, "--strict"]);
   // The types import the WinUI bindings an app generates for itself
@@ -106,7 +106,7 @@ try {
     "internal-resolution-error"
   ]);
 } finally {
-  rmSync(packFolder, {
+  rmSync(PACK_FOLDER, {
     recursive: true,
     force: true
   });

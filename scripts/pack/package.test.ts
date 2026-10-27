@@ -9,7 +9,7 @@ import { z } from "zod";
 // package.json's exports and bin are what a consumer resolves, so they point at
 // what `pnpm build` makes (dist), never at the TypeScript sources.
 
-const packageRoot = path.join(import.meta.dirname, "..", "..");
+const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 
 const exportsSchema = z.record(z.string(), jsonSchema);
 
@@ -39,8 +39,8 @@ function targetsOf(entry: Json) {
   return targets;
 }
 
-const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(packageRoot, "package.json"), "utf8")));
-const isBuilt = existsSync(path.join(packageRoot, "dist"));
+const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8")));
+const IS_BUILT = existsSync(path.join(PACKAGE_ROOT, "dist"));
 
 test("no export or bin points at a TypeScript source", () => {
   const targets = [
@@ -65,13 +65,13 @@ test("every export has types, and a default that is JavaScript", () => {
   }
 });
 
-test("every export and the bin is a file of dist once it is built", { skip: !isBuilt }, () => {
+test("every export and the bin is a file of dist once it is built", { skip: !IS_BUILT }, () => {
   const targets = [
     ...Object.values(manifest.exports).flatMap(targetsOf),
     ...Object.values(manifest.bin)
   ];
   for (const target of targets) {
-    assert.ok(existsSync(path.join(packageRoot, target)), `${target} is missing: pnpm build did not make it`);
+    assert.ok(existsSync(path.join(PACKAGE_ROOT, target)), `${target} is missing: pnpm build did not make it`);
   }
 });
 

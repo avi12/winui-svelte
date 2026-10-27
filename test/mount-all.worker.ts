@@ -8,7 +8,7 @@ import { z } from "zod";
 // test needs through the dev server, and only then WinUI, which keeps the
 // thread for the rest of the run.
 
-const singleThreadedApartment = 0;
+const SINGLE_THREADED_APARTMENT = 0;
 
 const workerDataSchema = z.object({ modules: z.instanceof(MessagePort) });
 
@@ -16,13 +16,13 @@ interface Harness {
   run(report: (result: Report) => void): Promise<void>;
 }
 
-roInitialize(singleThreadedApartment);
+roInitialize(SINGLE_THREADED_APARTMENT);
 const data = workerDataSchema.parse(workerData);
 
 const { runner } = createWindowModuleRunner(data.modules);
 const harness = await runner.import<Harness>("/test/mount-all.svelte.ts");
-const isHarness = typeof harness.run === "function";
-if (!isHarness) {
+const IS_HARNESS = typeof harness.run === "function";
+if (!IS_HARNESS) {
   throw new Error("mount-all.svelte.ts exports no run()");
 }
 

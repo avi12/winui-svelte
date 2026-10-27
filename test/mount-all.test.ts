@@ -11,16 +11,16 @@ import { promisify } from "node:util";
 // SDK was not restored. The report is also what says how much was covered.
 
 const run = promisify(execFile);
-const script = path.join(import.meta.dirname, "mount-all.ts");
-const bootstrap = path.join(import.meta.dirname, "..", ".winapp", "bin", process.arch, "Microsoft.WindowsAppRuntime.Bootstrap.dll");
-const timeoutMilliseconds = 240_000;
+const SCRIPT = path.join(import.meta.dirname, "mount-all.ts");
+const BOOTSTRAP = path.join(import.meta.dirname, "..", ".winapp", "bin", process.arch, "Microsoft.WindowsAppRuntime.Bootstrap.dll");
+const TIMEOUT_MILLISECONDS = 240_000;
 
 test("every component mounts in a WinUI window", {
-  skip: !existsSync(bootstrap),
-  timeout: timeoutMilliseconds
+  skip: !existsSync(BOOTSTRAP),
+  timeout: TIMEOUT_MILLISECONDS
 }, async () => {
-  const { stdout } = await run(process.execPath, ["--disable-warning=ExperimentalWarning", script], {
-    timeout: timeoutMilliseconds,
+  const { stdout } = await run(process.execPath, ["--disable-warning=ExperimentalWarning", SCRIPT], {
+    timeout: TIMEOUT_MILLISECONDS,
     maxBuffer: 64 * 1024 * 1024
   });
   const lines = stdout.trim().split("\n");

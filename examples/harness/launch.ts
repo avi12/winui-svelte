@@ -15,9 +15,9 @@ import { MessageChannel, Worker } from "node:worker_threads";
 // example reports, one JSON object per line. Each line on stdin is a command
 // for the example. The process ends when the window closes or stdin does.
 
-const windowsAppSdkMajor = 2;
-const windowsAppSdkMinor = 2;
-const packageRoot = path.join(import.meta.dirname, "..", "..");
+const WINDOWS_APP_SDK_MAJOR = 2;
+const WINDOWS_APP_SDK_MINOR = 2;
+const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -33,22 +33,22 @@ const { values, positionals } = parseArgs({
     }
   }
 });
-const entry = positionals[0];
-if (entry === undefined) {
+const ENTRY = positionals[0];
+if (ENTRY === undefined) {
   throw new Error("name the example's entry module, relative to the package");
 }
 
 initWindowsAppSdk({
-  major: windowsAppSdkMajor,
-  minor: windowsAppSdkMinor,
-  folders: [path.join(packageRoot, ".winapp", "bin", process.arch)]
+  major: WINDOWS_APP_SDK_MAJOR,
+  minor: WINDOWS_APP_SDK_MINOR,
+  folders: [path.join(PACKAGE_ROOT, ".winapp", "bin", process.arch)]
 });
 process.stdout.write(`pid ${process.pid}\n`);
 
 const modules = new MessageChannel();
 const link = new MessageChannel();
 const server = await startModuleServer({
-  root: packageRoot,
+  root: PACKAGE_ROOT,
   configFile: path.join(import.meta.dirname, "vite.config.ts"),
   port: modules.port1
 });
@@ -56,7 +56,7 @@ const worker = new Worker(new URL("worker.ts", import.meta.url), {
   workerData: {
     modules: modules.port2,
     link: link.port2,
-    entry: `/${entry}`,
+    entry: `/${ENTRY}`,
     options: values
   },
   transferList: [modules.port2, link.port2]

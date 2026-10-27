@@ -25,11 +25,11 @@ import path from "node:path";
 // (@sveltejs/package, the usual tool, hands a *.d.svelte.ts file to TypeScript
 // as source and fails, so tsc and a copy do it.)
 
-const packageRoot = path.join(import.meta.dirname, "..", "..");
-const sourceFolder = path.join(packageRoot, "src");
-const outputFolder = path.join(packageRoot, "dist");
+const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
+const SOURCE_FOLDER = path.join(PACKAGE_ROOT, "src");
+const OUTPUT_FOLDER = path.join(PACKAGE_ROOT, "dist");
 const copiedExtensions = [".svelte", ".json"];
-const declarationSuffix = ".d.svelte.ts";
+const DECLARATION_SUFFIX = ".d.svelte.ts";
 // `from "./x.ts"` and `import("./x.ts")` in a .svelte script.
 const relativeTsImport = /(["'])(\.{1,2}\/[^"']*?)\.ts\1/gu;
 // `from "#src/x/y.js"`: package.json's `imports` maps #src/*.js to src/*.ts,
@@ -40,7 +40,7 @@ const sourceAliasImport = /(["'])#src\/([^"']*?)(\.js|\.svelte|\.json)\1/gu;
 const aliasedExtensions = [".js", ".ts", ".svelte"];
 
 function isShipped(file: string) {
-  const isDeclaration = file.endsWith(declarationSuffix);
+  const isDeclaration = file.endsWith(DECLARATION_SUFFIX);
   const isCopied = copiedExtensions.includes(path.extname(file));
   const isTestSupport = /\.fixture\.svelte$|\.test\./u.test(file);
   return (isDeclaration || isCopied) && !isTestSupport;
@@ -63,14 +63,14 @@ function withRelativeAliases({ file, source }: {
   source: string;
 }) {
   return source.replaceAll(sourceAliasImport, (_whole: string, quote: string, target: string, extension: string) => {
-    const relative = path.relative(path.dirname(file), path.join(outputFolder, target)).replaceAll("\\", "/");
+    const relative = path.relative(path.dirname(file), path.join(OUTPUT_FOLDER, target)).replaceAll("\\", "/");
     const specifier = relative.startsWith(".") ? relative : `./${relative}`;
     return `${quote}${specifier}${extension}${quote}`;
   });
 }
 
 function resolveSourceAliases() {
-  const files = filesIn(outputFolder).filter(file => aliasedExtensions.includes(path.extname(file)));
+  const files = filesIn(OUTPUT_FOLDER).filter(file => aliasedExtensions.includes(path.extname(file)));
   for (const file of files) {
     const source = readFileSync(file, "utf8");
     if (source.includes("#src/")) {
@@ -85,8 +85,8 @@ function resolveSourceAliases() {
 }
 
 function copyShipped() {
-  for (const file of filesIn(sourceFolder).filter(isShipped)) {
-    const target = path.join(outputFolder, path.relative(sourceFolder, file));
+  for (const file of filesIn(SOURCE_FOLDER).filter(isShipped)) {
+    const target = path.join(OUTPUT_FOLDER, path.relative(SOURCE_FOLDER, file));
     mkdirSync(path.dirname(target), { recursive: true });
 
     if (file.endsWith(".svelte")) {
@@ -105,8 +105,8 @@ const TSC_EMITTED_WITH_ERRORS = 2;
 
 function compile() {
   const tsc = createRequire(import.meta.url).resolve("typescript/bin/tsc");
-  const result = spawnSync(process.execPath, [tsc, "-p", path.join(packageRoot, "tsconfig.build.json")], {
-    cwd: packageRoot,
+  const result = spawnSync(process.execPath, [tsc, "-p", path.join(PACKAGE_ROOT, "tsconfig.build.json")], {
+    cwd: PACKAGE_ROOT,
     stdio: "inherit"
   });
   const isFailed = result.status !== 0 && result.status !== TSC_EMITTED_WITH_ERRORS;
@@ -115,11 +115,11 @@ function compile() {
   }
 }
 
-rmSync(outputFolder, {
+rmSync(OUTPUT_FOLDER, {
   recursive: true,
   force: true
 });
 compile();
 copyShipped();
 resolveSourceAliases();
-process.stdout.write(`dist: ${filesIn(outputFolder).length} files\n`);
+process.stdout.write(`dist: ${filesIn(OUTPUT_FOLDER).length} files\n`);
