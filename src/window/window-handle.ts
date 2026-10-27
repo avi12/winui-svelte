@@ -35,12 +35,10 @@ export class WindowHandle {
     this.window.activate();
   }
 
-  // fallow-ignore-next-line unused-class-member
   minimize(): void {
     this.presenter.minimize();
   }
 
-  // fallow-ignore-next-line unused-class-member
   maximize(): void {
     this.presenter.maximize();
   }
@@ -51,7 +49,6 @@ export class WindowHandle {
   }
 
   // Restored, shown and focused: what launching an app again does.
-  // fallow-ignore-next-line unused-class-member
   bringToFront(): void {
     this.restore();
     this.activate();

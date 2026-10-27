@@ -20,10 +20,6 @@ test("every component mounts in a WinUI window", {
   timeout: timeoutMilliseconds
 }, async () => {
   const { stdout } = await run(process.execPath, ["--disable-warning=ExperimentalWarning", script], {
-    env: {
-      ...process.env,
-      EDGEPLUS_WINDOW_BACKGROUND: "1"
-    },
     timeout: timeoutMilliseconds,
     maxBuffer: 64 * 1024 * 1024
   });

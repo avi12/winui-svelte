@@ -30,7 +30,6 @@ export class MemoryEnd<Frame = MessagingFrame> implements Transport<Frame> {
 
   // A JSON value that is no frame, which the other side must report (the
   // messaging tests send it; fallow does not trace the tests).
-  // fallow-ignore-next-line unused-class-member
   sendJson(value: Json): void {
     this.peer?.receive(listener => listener.message(value));
   }

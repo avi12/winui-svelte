@@ -14,10 +14,7 @@
   }
 
   // The host is the harness's, handed over once: it never changes.
-  const { host, icon }: {
-    host: ExampleHost;
-    icon: string;
-  } = $props();
+  const { host }: { host: ExampleHost } = $props();
 
   // svelte-ignore state_referenced_locally
   let backdrop = $state(backdropOf(host.options["backdrop"]));
@@ -101,7 +98,6 @@
   appUserModelId="winui-svelte.examples.window"
   {backdrop}
   height={360}
-  {icon}
   isMaximizable={false}
   minWidth={400}
   onActiveChanged={isActive => {
