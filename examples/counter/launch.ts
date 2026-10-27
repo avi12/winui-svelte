@@ -1,4 +1,4 @@
-import { startWindowsAppSdk } from "../bootstrap.ts";
+import { startWindowsAppSdk } from "#examples/bootstrap.ts";
 import { VIEW_NAME } from "./app-types.ts";
 import { MessageChannel, Worker } from "node:worker_threads";
 import { defineMessaging } from "winui-svelte/messaging";

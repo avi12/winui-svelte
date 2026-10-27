@@ -120,6 +120,7 @@
     "#src/*.svelte": "./src/*.svelte",
     "#src/*.json": "./src/*.json",
     "#scripts/*.ts": "./scripts/*.ts",
+    "#examples/*.ts": "./examples/*.ts",
     "#winui/*": "@winapp/bindings/*"
   },
   "files": [

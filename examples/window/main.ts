@@ -1,4 +1,4 @@
-import type { ExampleHost } from "../harness/contract.ts";
+import type { ExampleHost } from "#examples/harness/contract.ts";
 import WindowApp from "./WindowApp.svelte";
 import { mountControl } from "winui-svelte";
 

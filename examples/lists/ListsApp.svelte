@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ExampleCommand, ExampleHost } from "../harness/contract.ts";
+  import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import type { ExampleItem } from "./example-item.ts";
   import { makeItems } from "./example-item.ts";
   import ExampleRow from "./ExampleRow.svelte";

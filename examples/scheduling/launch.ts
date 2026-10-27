@@ -1,4 +1,4 @@
-import { startWindowsAppSdk } from "../bootstrap.ts";
+import { startWindowsAppSdk } from "#examples/bootstrap.ts";
 import { Worker } from "node:worker_threads";
 
 // The scheduling experiment (see README.md here): a background WinUI window
