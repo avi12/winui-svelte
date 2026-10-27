@@ -1,3 +1,4 @@
+import type { Counts, Failure, Report } from "./mount-report.ts";
 import * as bindings from "#src/components/generated/bindings.js";
 import type { LevelMetadata } from "#src/components/generated/metadata.js";
 import { levels } from "#src/components/generated/metadata.js";
@@ -5,7 +6,6 @@ import ToggleSwitch from "#src/components/generated/ToggleSwitch.svelte";
 import type { NativeValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
 import { read } from "#src/renderer/host/reflect.js";
-import type { Counts, Failure, Report } from "./mount-report.ts";
 import { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
 import { Application } from "#winui/microsoft/ui/xaml/Application";
 import { Window } from "#winui/microsoft/ui/xaml/Window";
@@ -65,7 +65,7 @@ const heldTimers = new Set<object>();
 // component started is written, synchronously, where this variable says.
 const traceFile = process.env["WINUI_SVELTE_TRACE"];
 
-function trace(line: string): void {
+function trace(line: string) {
   if (traceFile !== undefined) {
     appendFileSync(traceFile, `${Date.now() % 1_000_000} ${line}\n`);
   }
@@ -83,7 +83,7 @@ function isConnect(value: NativeValue): value is Connect {
   return typeof value === "function";
 }
 
-function chainOf(name: string): LevelMetadata[] {
+function chainOf(name: string) {
   const chain: LevelMetadata[] = [];
   let level: LevelMetadata | undefined = levels[name];
   for (; level !== undefined; level = level.parent === null ? undefined : levels[level.parent]) {
@@ -93,11 +93,11 @@ function chainOf(name: string): LevelMetadata[] {
   return chain;
 }
 
-function componentNames(): string[] {
+function componentNames() {
   return Object.entries(levels).filter(([, level]) => level.isComponent).map(([name]) => name);
 }
 
-async function loadConnectors(): Promise<Map<string, Connect>> {
+async function loadConnectors() {
   // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
   const connectors = new Map<string, Connect>();
   for (const name of componentNames()) {
@@ -121,7 +121,7 @@ interface Sample {
   counts: Counts;
 }
 
-function attachedValue(owner: string, setter: string, control: object): NativeValue {
+function attachedValue(owner: string, setter: string, control: object) {
   const getter = `get${setter.slice(attachedPrefix.length)}`;
   const holder = read(bindings, owner);
   const method = read(holder, getter);
@@ -134,7 +134,7 @@ function samplePropertiesOf(
   level: LevelMetadata,
   control: object,
   isWanted: (key: string) => boolean
-): void {
+) {
   for (const key of level.properties) {
     const value = read(control, key);
     const isBindable = level.bindables.includes(key);
@@ -156,7 +156,7 @@ function sampleAttachedOf(
   level: LevelMetadata,
   control: object,
   isWanted: (key: string) => boolean
-): void {
+) {
   for (const [key, [owner, setter]] of Object.entries(level.attached).filter(([key]) => isWanted(key))) {
     const value = attachedValue(owner, setter, control);
     const isPresent = value !== undefined && value !== null;
@@ -167,9 +167,9 @@ function sampleAttachedOf(
   }
 }
 
-function sampleOf(name: string, control: object, only: ReadonlySet<string> | null): Sample {
+function sampleOf(name: string, control: object, only: ReadonlySet<string> | null) {
   const sample = emptySample();
-  function isWanted(key: string): boolean {
+  function isWanted(key: string) {
     return only === null || only.has(key);
   }
 
@@ -188,7 +188,7 @@ function sampleOf(name: string, control: object, only: ReadonlySet<string> | nul
 
 // The props the component gets, and the bindables as getters and setters over
 // state the test holds, as the component's own destructuring would.
-function boundOver(state: Record<string, NativeValue>, name: string): object {
+function boundOver(state: Record<string, NativeValue>, name: string) {
   const bound: Record<string, NativeValue> = {};
   for (const level of chainOf(name)) {
     for (const key of level.bindables) {
@@ -205,11 +205,11 @@ function boundOver(state: Record<string, NativeValue>, name: string): object {
   return bound;
 }
 
-function unlinkNothing(): void {}
+function unlinkNothing() {}
 
 // Links the control inside an effect root, as the component's attachment
 // would; what it returns ends the root and the subscriptions.
-function open(connect: Connect, control: object, props: object, bound: object): () => void {
+function open(connect: Connect, control: object, props: object, bound: object) {
   let unlink: Linked = unlinkNothing;
   const stop = $effect.root(() => {
     unlink = connect(control, props, bound);
@@ -220,7 +220,7 @@ function open(connect: Connect, control: object, props: object, bound: object): 
   };
 }
 
-function link(connect: Connect, name: string, control: object, sample: Sample): void {
+function link(connect: Connect, name: string, control: object, sample: Sample) {
   const close = open(connect, control, sample.props, boundOver(sample.state, name));
   try {
     flushSync();
@@ -229,7 +229,7 @@ function link(connect: Connect, name: string, control: object, sample: Sample): 
   }
 }
 
-function emptySample(): Sample {
+function emptySample() {
   return {
     props: {},
     state: {},
@@ -242,7 +242,7 @@ function emptySample(): Sample {
   };
 }
 
-function describe(value: NativeValue): string {
+function describe(value: NativeValue) {
   return typeof value === "object" && value !== null ? JSON.stringify(value, (_key, part) => typeof part === "bigint" ? String(part) : part) : String(value);
 }
 
@@ -261,7 +261,7 @@ class Exercise {
     this.panel = panel;
   }
 
-  private attempt(name: string, step: string, action: () => void): boolean {
+  private attempt(name: string, step: string, action: () => void) {
     try {
       action();
       return true;
@@ -275,7 +275,7 @@ class Exercise {
     }
   }
 
-  component(name: string, connect: Connect): void {
+  component(name: string, connect: Connect) {
     trace(`${name}`);
     const Control = read(bindings, name);
     if (!isConstructor(Control)) {
@@ -331,9 +331,9 @@ class Exercise {
   // Which key made the full mount fail: each one alone, and when every one
   // alone is fine, the smallest set that still fails together (the keys
   // dropped one at a time while it fails).
-  private bisect(name: string, connect: Connect, Control: new () => object, sample: Sample): void {
+  private bisect(name: string, connect: Connect, Control: new () => object, sample: Sample) {
     const keys = [...Object.keys(sample.props), ...Object.keys(sample.state)];
-    function fails(subset: string[]): boolean {
+    function fails(subset: string[]) {
       const control = new Control();
       try {
         link(connect, name, control, sampleOf(name, control, new Set(subset)));
@@ -368,9 +368,9 @@ class Exercise {
   }
 }
 
-function checkBehaviours(connectors: Map<string, Connect>, failures: Failure[]): number {
+function checkBehaviours(connectors: Map<string, Connect>, failures: Failure[]) {
   let count = 0;
-  function check(name: string, action: () => void): void {
+  function check(name: string, action: () => void) {
     count++;
     try {
       action();
@@ -383,7 +383,7 @@ function checkBehaviours(connectors: Map<string, Connect>, failures: Failure[]):
     }
   }
 
-  function connectorFor(name: string): Connect {
+  function connectorFor(name: string) {
     const connect = connectors.get(name);
     if (connect === undefined) {
       throw new Error(`no component ${name}`);
@@ -392,7 +392,7 @@ function checkBehaviours(connectors: Map<string, Connect>, failures: Failure[]):
     return connect;
   }
 
-  function expect(isTrue: boolean, message: string): void {
+  function expect(isTrue: boolean, message: string) {
     if (!isTrue) {
       throw new Error(message);
     }
@@ -447,7 +447,7 @@ function checkBehaviours(connectors: Map<string, Connect>, failures: Failure[]):
   check("an event prop is called (ToggleSwitch.onToggled)", () => {
     const toggle = new bindings.ToggleSwitch();
     let calls = 0;
-    function onToggled(): void {
+    function onToggled() {
       calls++;
     }
 
@@ -492,9 +492,9 @@ function checkBehaviours(connectors: Map<string, Connect>, failures: Failure[]):
   return count;
 }
 
-function statistics(): Pick<Report, "components" | "properties" | "events" | "attached" | "bindables"> {
+function statistics() {
   const all = Object.values(levels);
-  function sum(pick: (level: LevelMetadata) => number): number {
+  function sum(pick: (level: LevelMetadata) => number) {
     return all.reduce((total, level) => total + pick(level), 0);
   }
 
@@ -511,7 +511,7 @@ function launch(
   connectors: Map<string, Connect>,
   report: (result: Report) => void,
   throughRenderer: (failures: Failure[]) => void
-): void {
+) {
   const panel = new bindings.StackPanel();
   const window = new Window();
   window.content = panel;
@@ -550,7 +550,7 @@ function launch(
 }
 
 // A generated .svelte component through the renderer, as an app would use it.
-function checkComponentThroughRenderer(failures: Failure[]): void {
+function checkComponentThroughRenderer(failures: Failure[]) {
   try {
     let toggles = 0;
     const mounted = mountControl(ToggleSwitch, {
@@ -582,7 +582,7 @@ function checkComponentThroughRenderer(failures: Failure[]): void {
   }
 }
 
-export async function run(report: (result: Report) => void): Promise<void> {
+export async function run(report: (result: Report) => void) {
   trace("loading");
   const connectors = await loadConnectors();
   trace("loaded");

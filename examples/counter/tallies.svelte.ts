@@ -7,7 +7,7 @@ export class Tallies {
   readonly buttonsUsed = new SvelteSet<string>();
   readonly doubled = $derived(this.localCount * 2);
 
-  bump(button: string): void {
+  bump(button: string) {
     this.localCount++;
     this.buttonsUsed.add(button);
   }

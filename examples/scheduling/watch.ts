@@ -9,27 +9,27 @@ const timeWidth = 6;
 const labelWidth = 28;
 let readText = readNothing;
 
-function readNothing(): string {
+function readNothing() {
   return "";
 }
 
-export function record(label: string, text: string): void {
+export function record(label: string, text: string) {
   const elapsed = (performance.now() - clockStart).toFixed(0).padStart(timeWidth);
   appendFileSync(logPath, `${elapsed}ms  ${label.padEnd(labelWidth)} ${text}\n`);
 }
 
 // What the observed control shows right now.
-export function observe(read: () => string): void {
+export function observe(read: () => string) {
   readText = read;
 }
 
-export function look(label: string): void {
+export function look(label: string) {
   record(label, readText());
 }
 
 // Called right after a state change made by `trigger`: records the control's
 // text now, after the next microtask, and after a promise continuation.
-export function watch(trigger: string): void {
+export function watch(trigger: string) {
   record(`${trigger}: sync`, readText());
   queueMicrotask(() => record(`${trigger}: queueMicrotask`, readText()));
   void Promise.resolve().then(() => record(`${trigger}: promise.then`, readText()));

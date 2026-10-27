@@ -38,13 +38,13 @@ const prefixBytes = 155;
 const octal = 8;
 const bytesPerKilobyte = 1024;
 
-function textAt(block: Buffer, offset: number, length: number): string {
+function textAt(block: Buffer, offset: number, length: number) {
   const end = block.indexOf(0, offset);
   const stop = end === -1 || end > offset + length ? offset + length : end;
   return block.toString("utf8", offset, stop);
 }
 
-function tarballFiles(tarball: string): string[] {
+function tarballFiles(tarball: string) {
   const archive = gunzipSync(readFileSync(tarball));
   const files: string[] = [];
   let position = 0;
@@ -65,7 +65,7 @@ function tarballFiles(tarball: string): string[] {
 }
 
 // pnpm sets npm_execpath to its own script, which Node runs directly (no shell).
-function run(args: string[]): void {
+function run(args: string[]) {
   const pnpmScript = process.env["npm_execpath"];
   if (pnpmScript === undefined) {
     throw new Error("Run this through pnpm: pnpm check:package");

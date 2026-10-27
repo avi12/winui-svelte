@@ -1,5 +1,5 @@
-import { winuiSvelte } from "#src/vite/plugin.js";
 import { exportAliases, ExportTarget } from "#scripts/export-aliases.ts";
+import { winuiSvelte } from "#src/vite/plugin.js";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -29,12 +29,7 @@ const budgetBindings = 340;
 // and the renderer's own handful.
 const goalBindings = 40;
 
-interface Bundle {
-  bytes: number;
-  bindings: number;
-}
-
-async function bundleOfOneButton(): Promise<Bundle> {
+async function bundleOfOneButton() {
   const result = await build({
     configFile: false,
     root: appFolder,

@@ -1,6 +1,6 @@
-import { startModuleServer } from "#src/vite/server.js";
 import type { Report } from "./mount-report.ts";
 import { initWinappsdk } from "@microsoft/dynwinrt";
+import { startModuleServer } from "#src/vite/server.js";
 import path from "node:path";
 import { MessageChannel, Worker } from "node:worker_threads";
 

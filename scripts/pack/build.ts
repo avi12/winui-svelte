@@ -39,7 +39,7 @@ const relativeTsImport = /(["'])(\.{1,2}\/[^"']*?)\.ts\1/gu;
 const sourceAliasImport = /(["'])#src\/([^"']*?)(\.js|\.svelte|\.json)\1/gu;
 const aliasedExtensions = [".js", ".ts", ".svelte"];
 
-function isShipped(file: string): boolean {
+function isShipped(file: string) {
   const isDeclaration = file.endsWith(declarationSuffix);
   const isCopied = copiedExtensions.includes(path.extname(file));
   const isTestSupport = /\.fixture\.svelte$|\.test\./u.test(file);
@@ -48,8 +48,8 @@ function isShipped(file: string): boolean {
 
 // A .svelte file's imports of .ts modules, as the .js they are compiled to; a
 // .d.svelte.ts import is a type and stays.
-function withCompiledImports(source: string): string {
-  function compiledImport(whole: string, quote: string, target: string): string {
+function withCompiledImports(source: string) {
+  function compiledImport(whole: string, quote: string, target: string) {
     return target.endsWith(".d.svelte") ? whole : `${quote}${target}.js${quote}`;
   }
 
@@ -58,7 +58,10 @@ function withCompiledImports(source: string): string {
 
 // `#src/x/y.js` as the path from the file to dist/x/y.js: the same specifier,
 // relative, which TypeScript finds as y.d.ts and Node as y.js.
-function withRelativeAliases({ file, source }: { file: string; source: string }) {
+function withRelativeAliases({ file, source }: {
+  file: string;
+  source: string;
+}) {
   return source.replaceAll(sourceAliasImport, (_whole: string, quote: string, target: string, extension: string) => {
     const relative = path.relative(path.dirname(file), path.join(outputFolder, target)).replaceAll("\\", "/");
     const specifier = relative.startsWith(".") ? relative : `./${relative}`;
@@ -71,12 +74,17 @@ function resolveSourceAliases() {
   for (const file of files) {
     const source = readFileSync(file, "utf8");
     if (source.includes("#src/")) {
-      writeFileSync(file, withRelativeAliases({ file, source }));
+      writeFileSync(
+        file, withRelativeAliases({
+          file,
+          source
+        })
+      );
     }
   }
 }
 
-function copyShipped(): void {
+function copyShipped() {
   for (const file of filesIn(sourceFolder).filter(isShipped)) {
     const target = path.join(outputFolder, path.relative(sourceFolder, file));
     mkdirSync(path.dirname(target), { recursive: true });

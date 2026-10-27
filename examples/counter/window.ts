@@ -12,7 +12,7 @@ const pollMilliseconds = 30;
 
 const workerDataSchema = z.object({ port: z.instanceof(MessagePort) });
 
-function portFrom(data: object): MessagePort {
+function portFrom(data: object) {
   const parsed = workerDataSchema.safeParse(data);
   if (!parsed.success) {
     throw new Error("the host passed no port");

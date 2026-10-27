@@ -1,7 +1,7 @@
 <script lang="ts">
+  import type { ExampleCommand, ExampleHost } from "../harness/contract.ts";
   import type { Json } from "#src/messaging/json.js";
   import { DesktopAcrylicBackdrop, MicaBackdrop, MicaKind, projectAs } from "#src/winui.js";
-  import type { ExampleCommand, ExampleHost } from "../harness/contract.ts";
   import { flush } from "winui-svelte";
   import { Window } from "winui-svelte/components";
   import type { WindowBounds, WindowHandle } from "winui-svelte/components";

@@ -86,15 +86,15 @@ const configuration = new Map<string, Json>([
 
 // One key per file however the server spells its URI (it lower-cases the
 // drive and escapes its colon).
-function fileKey(file: string): string {
+function fileKey(file: string) {
   return uriKey(pathToFileURL(file).href);
 }
 
-function uriKey(uri: string): string {
+function uriKey(uri: string) {
   return decodeURIComponent(uri).toLowerCase();
 }
 
-function sleep(milliseconds: number): Promise<void> {
+function sleep(milliseconds: number) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
@@ -112,7 +112,7 @@ export class LanguageServer {
     this.server = spawn(process.execPath, [serverPath, "--stdio"], { stdio: ["pipe", "pipe", "pipe"] });
     this.server.stdout.on("data", (chunk: Buffer) => this.receive(chunk));
     this.server.stderr.on("data", (chunk: Buffer) => {
-      if (process.env.EDITOR_CHECK_DEBUG) {
+      if (process.env["EDITOR_CHECK_DEBUG"]) {
         process.stderr.write(chunk);
       }
     });
@@ -121,7 +121,7 @@ export class LanguageServer {
     });
   }
 
-  async start(rootFolder: string): Promise<void> {
+  async start(rootFolder: string) {
     const rootUri = pathToFileURL(rootFolder).href;
     await this.request("initialize", {
       processId: process.pid,
@@ -146,7 +146,7 @@ export class LanguageServer {
     this.notify("initialized", {});
   }
 
-  open(file: string): void {
+  open(file: string) {
     this.notify("textDocument/didOpen", {
       textDocument: {
         uri: pathToFileURL(file).href,
@@ -158,7 +158,7 @@ export class LanguageServer {
   }
 
   // Waits until every opened file has diagnostics and none arrived lately.
-  async settle(files: string[]): Promise<void> {
+  async settle(files: string[]) {
     const deadline = Date.now() + settleTimeoutMilliseconds;
     while (Date.now() < deadline) {
       if (this.exitCode !== undefined) {
@@ -177,11 +177,11 @@ export class LanguageServer {
     throw new Error("The Svelte language server did not finish checking in time.");
   }
 
-  diagnosticsOf(file: string): Diagnostic[] {
+  diagnosticsOf(file: string) {
     return this.diagnostics.get(fileKey(file)) ?? [];
   }
 
-  async inlayHintsOf(file: string): Promise<InlayHint[]> {
+  async inlayHintsOf(file: string) {
     const lineCount = readFileSync(file, "utf8").split("\n").length;
     const hints = await this.request("textDocument/inlayHint", {
       textDocument: {
@@ -201,11 +201,11 @@ export class LanguageServer {
     return z.array(inlayHintSchema).nullable().parse(hints) ?? [];
   }
 
-  stop(): void {
+  stop() {
     this.server.kill();
   }
 
-  private request(method: string, params: Json): Promise<Json | undefined> {
+  private request(method: string, params: Json) {
     const id = this.nextId;
     this.nextId++;
     this.send({
@@ -216,14 +216,14 @@ export class LanguageServer {
     return new Promise(resolve => this.pending.set(id, resolve));
   }
 
-  private notify(method: string, params: Json): void {
+  private notify(method: string, params: Json) {
     this.send({
       method,
       params
     });
   }
 
-  private send(message: Message): void {
+  private send(message: Message) {
     const body = Buffer.from(
       JSON.stringify({
         jsonrpc: "2.0",
@@ -234,7 +234,7 @@ export class LanguageServer {
     this.server.stdin.write(body);
   }
 
-  private receive(chunk: Buffer): void {
+  private receive(chunk: Buffer) {
     this.buffer = Buffer.concat([this.buffer, chunk]);
     while (true) {
       const headerEnd = this.buffer.indexOf(headerSeparator);
@@ -255,7 +255,7 @@ export class LanguageServer {
     }
   }
 
-  private handle(message: Message): void {
+  private handle(message: Message) {
     const resolve = message.id === undefined ? undefined : this.pending.get(message.id);
     const isResponse = resolve !== undefined && message.method === undefined;
     if (isResponse) {

@@ -22,7 +22,7 @@ const anyTypePattern = /:\s*any\b/;
 
 // Walked by hand, not recursively by readdir: node_modules holds the package's
 // link to itself, which a recursive walk follows without end.
-function svelteFilesIn(folder: string): string[] {
+function svelteFilesIn(folder: string) {
   const files: string[] = [];
   for (const entry of readdirSync(folder, { withFileTypes: true })) {
     const entryPath = path.join(folder, entry.name);
@@ -38,13 +38,13 @@ function svelteFilesIn(folder: string): string[] {
   return files;
 }
 
-function labelOf(hint: InlayHint): string {
+function labelOf(hint: InlayHint) {
   return typeof hint.label === "string" ? hint.label : hint.label.map(part => part.value).join("");
 }
 
 // The folder both the package and the projects sit under: the editor's
 // workspace, so each file finds its own tsconfig as it does there.
-function commonFolder(folders: string[]): string {
+function commonFolder(folders: string[]) {
   const [first = packageFolder, ...rest] = folders;
   let common = first;
   for (const folder of rest) {
@@ -56,7 +56,7 @@ function commonFolder(folders: string[]): string {
   return common;
 }
 
-async function problemsOf(server: LanguageServer, file: string): Promise<string[]> {
+async function problemsOf(server: LanguageServer, file: string) {
   const where = path.relative(process.cwd(), file);
   const problems = server.diagnosticsOf(file).map(diagnostic => {
     const { line, character } = diagnostic.range.start;

@@ -39,7 +39,7 @@ let state: Json = {
   history: []
 };
 
-function publish(next: Json): void {
+function publish(next: Json) {
   void messaging.sendMessage(MessageType.patch, {
     name: viewName,
     ops: diff(state, next)

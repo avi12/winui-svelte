@@ -2,10 +2,10 @@
 // Rust or other native host would generate, written by hand for this example.
 // A type, not an interface: only a type alias is assignable to Json, whose
 // objects have an index signature.
-export type CounterView = {
+export interface CounterView {
   count: number;
   history: number[];
-};
+}
 
 export type CounterAction = { kind: "increment" } | { kind: "fail" };
 

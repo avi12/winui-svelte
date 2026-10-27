@@ -6,6 +6,6 @@ export const rowStats = {
   destroyed: 0
 };
 
-export function liveRows(): number {
+export function liveRows() {
   return rowStats.created - rowStats.destroyed;
 }

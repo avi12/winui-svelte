@@ -3,7 +3,7 @@ export interface ExampleItem {
   name: string;
 }
 
-export function makeItems(count: number): ExampleItem[] {
+export function makeItems(count: number) {
   return Array.from({ length: count }, (_unused, index) => ({
     id: `row-${index}`,
     name: `Item ${index}`

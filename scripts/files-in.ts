@@ -2,7 +2,7 @@ import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 // Every file under the folder, at any depth; none when the folder is missing.
-export function filesIn(folder: string): string[] {
+export function filesIn(folder: string) {
   if (!existsSync(folder)) {
     return [];
   }

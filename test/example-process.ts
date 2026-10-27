@@ -44,7 +44,7 @@ export class ExampleProcess {
     });
   }
 
-  static start(entry: string, flags: string[] = []): ExampleProcess {
+  static start(entry: string, flags: string[] = []) {
     const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", launcher, entry, ...flags], {
       cwd: packageRoot,
       stdio: ["pipe", "pipe", "inherit"]
@@ -52,13 +52,13 @@ export class ExampleProcess {
     return new ExampleProcess(child);
   }
 
-  send(command: Report): void {
+  send(command: Report) {
     this.child.stdin.write(`${JSON.stringify(command)}\n`);
   }
 
   // Sends `command` and resolves with the next report of `kind`. The first
   // command also waits for the window to load, which takes a while.
-  async ask(command: Report, kind: string, timeoutMilliseconds = startMilliseconds): Promise<Report> {
+  async ask(command: Report, kind: string, timeoutMilliseconds = startMilliseconds) {
     const from = this.reports.length;
     this.send(command);
     const deadline = Date.now() + timeoutMilliseconds;
@@ -79,19 +79,19 @@ export class ExampleProcess {
 
   // WinUI lays out on its own schedule: give it a moment to realize the
   // containers a command changed, then ask.
-  async settled(command: Report, kind: string): Promise<Report> {
+  async settled(command: Report, kind: string) {
     await this.ask(command, kind);
     await new Promise(resolve => setTimeout(resolve, layoutMilliseconds));
     return this.ask({ cmd: "stats" }, "stats");
   }
 
   // For a test that failed: end this process, and only it.
-  kill(): void {
+  kill() {
     this.child.kill();
   }
 }
 
-export function numberOf(report: Report, field: string): number {
+export function numberOf(report: Report, field: string) {
   const value = report[field];
   if (typeof value !== "number") {
     throw new TypeError(`the report has no number "${field}"`);

@@ -1,6 +1,6 @@
+import type { RunExample } from "./run-example.ts";
 import { createWindowModuleRunner } from "#src/vite/runner.js";
 import { runOnUiThread } from "#src/window/thread.js";
-import type { RunExample } from "./run-example.ts";
 import { MessagePort, workerData } from "node:worker_threads";
 import { z } from "zod";
 

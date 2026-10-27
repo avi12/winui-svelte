@@ -21,13 +21,22 @@ const manifestSchema = z.object({
   license: z.literal("MIT")
 });
 
-function targetsOf(entry: Json): string[] {
-  if (typeof entry === "string") {
-    return [entry];
+function targetsOf(entry: Json) {
+  const targets: string[] = [];
+  const pending: Json[] = [entry];
+  for (const current of pending) {
+    if (typeof current === "string") {
+      targets.push(current);
+      continue;
+    }
+
+    const nested = exportsSchema.safeParse(current);
+    if (nested.success) {
+      pending.push(...Object.values(nested.data));
+    }
   }
 
-  const nested = exportsSchema.safeParse(entry);
-  return nested.success ? Object.values(nested.data).flatMap(targetsOf) : [];
+  return targets;
 }
 
 const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(packageRoot, "package.json"), "utf8")));

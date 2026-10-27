@@ -31,14 +31,14 @@ export interface Alias {
 }
 
 // ./dist/renderer/host/host.js is built from ./src/renderer/host/host.ts.
-function targetFile(builtFile: string, target: ExportTarget): string {
+function targetFile(builtFile: string, target: ExportTarget) {
   const file = target === ExportTarget.Built ?
     builtFile :
     builtFile.replace(builtFolder, sourceFolder).replace(builtExtension, ".ts");
   return path.join(packageRoot, file);
 }
 
-export function exportAliases(target: ExportTarget): Alias[] {
+export function exportAliases(target: ExportTarget) {
   const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(packageRoot, "package.json"), "utf8")));
   return Object.entries(manifest.exports).flatMap(([subpath, entry]) => {
     const builtFile = typeof entry === "string" ? entry : entry.default;

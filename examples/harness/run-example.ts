@@ -1,9 +1,9 @@
+import type { ExampleCommand, ExampleHost } from "./contract.ts";
+import { exampleCommandSchema, exampleModuleSchema } from "./contract.ts";
 import * as bindings from "#src/components/generated/bindings.js";
 import { registerControls } from "#src/renderer/host/host.js";
 import { runWindow } from "#src/window/index.js";
 import { DispatcherQueue } from "#src/winui.js";
-import type { ExampleCommand, ExampleHost } from "./contract.ts";
-import { exampleCommandSchema, exampleModuleSchema } from "./contract.ts";
 import type { MessagePort } from "node:worker_threads";
 import { receiveMessageOnPort } from "node:worker_threads";
 
@@ -21,7 +21,7 @@ const heldTimers = new Set<ReturnType<ReturnType<typeof DispatcherQueue.getForCu
 
 export type RunExample = (entry: string, link: MessagePort, options: Record<string, string>) => Promise<void>;
 
-export async function runExample(entry: string, link: MessagePort, options: Record<string, string>): Promise<void> {
+export async function runExample(entry: string, link: MessagePort, options: Record<string, string>) {
   const parsedExample = exampleModuleSchema.safeParse(await import(/* @vite-ignore */ entry));
   if (!parsedExample.success) {
     throw new Error(`${entry} exports no start()`);
