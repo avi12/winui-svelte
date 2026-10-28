@@ -1,3 +1,4 @@
+import { FONT_WEIGHTS } from "#src/css/translate/text-properties.js";
 import type { NativeValue } from "#src/native-value.js";
 
 // The plain values a component's props take, and how each is read: pure, so
@@ -126,23 +127,8 @@ export interface FontWeightValue {
   weight: number;
 }
 
-const FONT_WEIGHTS = {
-  thin: 100,
-  extraLight: 200,
-  light: 300,
-  semiLight: 350,
-  normal: 400,
-  regular: 400,
-  medium: 500,
-  semiBold: 600,
-  bold: 700,
-  extraBold: 800,
-  black: 900,
-  extraBlack: 950
-} as const;
-
-/** The names WinUI's FontWeights gives the weights, and "regular" for normal. */
-export type FontWeightName = keyof typeof FONT_WEIGHTS;
+/** The names WinUI's FontWeights gives the weights, in any case. */
+export type FontWeightName = Uncapitalize<(typeof FONT_WEIGHTS)[number]["name"]>;
 
 /** A weight by name ("bold") or number (700), or WinUI's own value. */
 export type FontWeightInput = FontWeightName | number | FontWeightValue;
@@ -153,8 +139,8 @@ export interface PointValue {
   y: number;
 }
 
-/** A point: [x, y], "x,y", or {x, y}. */
-export type PointInput = readonly [number, number] | string | PointValue;
+/** A point: [x, y], or {x, y}. */
+export type PointInput = readonly [number, number] | PointValue;
 
 /** A width and a height in device-independent pixels. */
 export interface SizeValue {
@@ -162,8 +148,8 @@ export interface SizeValue {
   height: number;
 }
 
-/** A size: [width, height], "width,height", or {width, height}. */
-export type SizeInput = readonly [number, number] | string | SizeValue;
+/** A size: [width, height], or {width, height}. */
+export type SizeInput = readonly [number, number] | SizeValue;
 
 /** A rectangle in device-independent pixels. */
 export interface RectValue {
@@ -173,8 +159,8 @@ export interface RectValue {
   height: number;
 }
 
-/** A rectangle: [x, y, width, height], "x,y,width,height", or {x, y, width, height}. */
-export type RectInput = readonly [number, number, number, number] | string | RectValue;
+/** A rectangle: [x, y, width, height], or {x, y, width, height}. */
+export type RectInput = readonly [number, number, number, number] | RectValue;
 
 /** A 2D transform matrix as WinUI stores it. */
 export interface MatrixValue {
@@ -186,8 +172,8 @@ export interface MatrixValue {
   offsetY: number;
 }
 
-/** A matrix: [m11, m12, m21, m22, offsetX, offsetY], the same as a string, or the object with those names. */
-export type MatrixInput = readonly [number, number, number, number, number, number] | string | MatrixValue;
+/** A matrix: [m11, m12, m21, m22, offsetX, offsetY], or the object with those names. */
+export type MatrixInput = readonly [number, number, number, number, number, number] | MatrixValue;
 
 /** Three numbers: a scale, a translation, an axis. */
 export interface Vector3Value {
@@ -196,8 +182,8 @@ export interface Vector3Value {
   z: number;
 }
 
-/** A vector: [x, y, z], "x,y,z", or {x, y, z}. */
-export type Vector3Input = readonly [number, number, number] | string | Vector3Value;
+/** A vector: [x, y, z], or {x, y, z}. */
+export type Vector3Input = readonly [number, number, number] | Vector3Value;
 
 /** A moment as WinUI stores it: 100 ns ticks since 1601-01-01 UTC. */
 export interface DateTimeValue {
@@ -215,6 +201,7 @@ export type PointListInput = readonly PointInput[] | string;
 
 const CSS_SEPARATOR = /\s+/u;
 const LIST_SEPARATOR = ",";
+const SPACE = " ";
 const PIXEL_SUFFIX = "px";
 const AUTO_KEYWORD = "Auto";
 const STAR_SUFFIX = "*";
@@ -246,14 +233,8 @@ const NEGATIVE_SIGN = "-";
 const AUTOMATIC_NAMES = new Set(["auto", "automatic"]);
 const FOREVER_NAME = "forever";
 const COUNT_PATTERN = /^(\d+(?:\.\d+)?)x$/iu;
-const MIN_FONT_WEIGHT = 1;
 const MAX_FONT_WEIGHT = 999;
-const NUMBER_SEPARATOR = /[\s,]+/u;
 const POINT_LENGTH = 2;
-const SIZE_LENGTH = 2;
-const RECT_LENGTH = 4;
-const MATRIX_LENGTH = 6;
-const VECTOR3_LENGTH = 3;
 // WinRT's DateTime counts from 1601-01-01 UTC, JavaScript's Date from 1970.
 const EPOCH_OFFSET_MILLISECONDS = 11_644_473_600_000;
 const SVG_EXTENSION = ".svg";
@@ -587,145 +568,44 @@ export function repeatParts(input: number | string) {
   };
 }
 
-/** The weight a name, a number or numeric text stands for; throws a `RangeError` for any other. */
+/**
+ * The weight a name (WinUI's FontWeights, in any case), a number or numeric
+ * text stands for; throws a `RangeError` for any other.
+ */
 export function fontWeightNumber(input: number | string) {
-  const isNumber = typeof input === "number";
-  const wanted = isNumber ? input : input.trim().toLowerCase();
-  const named = Object.entries(FONT_WEIGHTS).find(([name]) => name.toLowerCase() === wanted);
-  const isNamed = named !== undefined;
-  if (isNamed) {
-    return named[1];
-  }
-
-  const weight = Number(wanted);
-  const isWeight = Number.isInteger(weight) && weight >= MIN_FONT_WEIGHT && weight <= MAX_FONT_WEIGHT;
+  const wanted = `${input}`.toLowerCase();
+  const named = FONT_WEIGHTS.find(({ name }) => name.toLowerCase() === wanted);
+  const weight = named?.weight ?? Number(input);
+  const isWeight = weight >= 1 && weight <= MAX_FONT_WEIGHT;
   if (!isWeight) {
-    throw new RangeError(`${String(input)} is not a font weight (a name, or ${MIN_FONT_WEIGHT} to ${MAX_FONT_WEIGHT})`);
+    throw new RangeError(`${input} is no font weight`);
   }
 
   return weight;
 }
 
-function numbersOf(text: string) {
-  const parts = text.trim().split(NUMBER_SEPARATOR);
-  const numbers = parts.map(Number);
-  const isEmpty = parts[0] === "";
-  const isNumbers = !isEmpty && numbers.every(value => Number.isFinite(value));
-  if (!isNumbers) {
-    throw new TypeError(`"${text}" is not a list of numbers`);
-  }
-
-  return numbers;
-}
-
-// The numbers of an array or a text, when there are as many as the value has.
-function fixedNumbers({ input, length, label }: {
-  input: string | readonly number[];
-  length: number;
-  label: string;
-}) {
-  const isText = typeof input === "string";
-  const numbers = isText ? numbersOf(input) : input;
-  const isFixed = numbers.length === length;
-  if (!isFixed) {
-    throw new TypeError(`${isText ? input : `[${numbers.join(", ")}]`} is not ${label}`);
-  }
-
-  return numbers;
-}
-
-/** The x and y of a point input. */
-export function pointCoordinates(input: PointInput) {
-  const isObject = typeof input === "object" && "x" in input;
-  if (isObject) {
-    return [input.x, input.y] as const;
-  }
-
-  const [x = 0, y = 0] = fixedNumbers({
-    input,
-    length: POINT_LENGTH,
-    label: "a point (x,y)"
-  });
-  return [x, y] as const;
-}
-
-/** The width and height of a size input. */
-export function sizeDimensions(input: SizeInput) {
-  const isObject = typeof input === "object" && "width" in input;
-  if (isObject) {
-    return [input.width, input.height] as const;
-  }
-
-  const [width = 0, height = 0] = fixedNumbers({
-    input,
-    length: SIZE_LENGTH,
-    label: "a size (width,height)"
-  });
-  return [width, height] as const;
-}
-
-/** The x, y, width and height of a rect input. */
-export function rectBounds(input: RectInput) {
-  const isObject = typeof input === "object" && "width" in input;
-  if (isObject) {
-    return [input.x, input.y, input.width, input.height] as const;
-  }
-
-  const [x = 0, y = 0, width = 0, height = 0] = fixedNumbers({
-    input,
-    length: RECT_LENGTH,
-    label: "a rect (x,y,width,height)"
-  });
-  return [x, y, width, height] as const;
-}
-
-/** The six cells of a matrix input: m11, m12, m21, m22, offsetX, offsetY. */
-export function matrixCells(input: MatrixInput) {
-  const isObject = typeof input === "object" && "m11" in input;
-  if (isObject) {
-    return [input.m11, input.m12, input.m21, input.m22, input.offsetX, input.offsetY] as const;
-  }
-
-  const [m11 = 0, m12 = 0, m21 = 0, m22 = 0, offsetX = 0, offsetY = 0] = fixedNumbers({
-    input,
-    length: MATRIX_LENGTH,
-    label: "a matrix (m11,m12,m21,m22,offsetX,offsetY)"
-  });
-  return [m11, m12, m21, m22, offsetX, offsetY] as const;
-}
-
-/** The x, y and z of a vector input. */
-export function vectorComponents(input: Vector3Input) {
-  const isObject = typeof input === "object" && "z" in input;
-  if (isObject) {
-    return [input.x, input.y, input.z] as const;
-  }
-
-  const [x = 0, y = 0, depth = 0] = fixedNumbers({
-    input,
-    length: VECTOR3_LENGTH,
-    label: "a vector (x,y,z)"
-  });
-  return [x, y, depth] as const;
+// The numbers of a text separated by commas or spaces ("0,0 10,10", "4 2").
+function numbersOfText(text: string) {
+  return valuesOf(text.replaceAll(LIST_SEPARATOR, SPACE)).values;
 }
 
 /** A list of numbers input as an array. */
 export function numberList(input: NumbersInput) {
   const isText = typeof input === "string";
-  return isText ? numbersOf(input) : input;
+  return isText ? numbersOfText(input) : input;
 }
 
-/** A point list input as [x, y] pairs. */
+/** A point list input as points: text of coordinate pairs becomes [x, y] pairs. */
 export function pointList(input: PointListInput) {
   const isText = typeof input === "string";
   if (!isText) {
-    return input.map(pointCoordinates);
+    return input;
   }
 
-  const numbers = numbersOf(input);
+  const numbers = numbersOfText(input);
   const isPairs = numbers.length % POINT_LENGTH === 0;
   if (!isPairs) {
-    throw new TypeError(`"${input}" is not a list of points (x,y pairs)`);
+    throw new TypeError(`${input} is not x, y pairs`);
   }
 
   const points: Array<readonly [number, number]> = [];

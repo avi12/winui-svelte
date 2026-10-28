@@ -8,21 +8,16 @@ import {
   gridLengthParts,
   GridUnit,
   isSvgUri,
-  matrixCells,
   numberList,
   parseColor,
   pathMarkup,
-  pointCoordinates,
   pointList,
-  rectBounds,
   RepeatKind,
   repeatParts,
-  sizeDimensions,
   thicknessSides,
   ticksDate,
   ticksMilliseconds,
-  timeSpanTicks,
-  vectorComponents
+  timeSpanTicks
 } from "./values.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -181,83 +176,35 @@ test("a font weight is a name or a number from 1 to 999", () => {
   assert.equal(fontWeightNumber("bold"), 700);
   assert.equal(fontWeightNumber("SemiBold"), 600);
   assert.equal(fontWeightNumber("semilight"), 350);
-  assert.equal(fontWeightNumber("regular"), 400);
+  assert.equal(fontWeightNumber("normal"), 400);
   assert.equal(fontWeightNumber(550), 550);
   assert.equal(fontWeightNumber("700"), 700);
 });
 
 test("a font weight that is none fails", () => {
-  assert.throws(() => fontWeightNumber("heavyish"), /heavyish is not a font weight/u);
-  assert.throws(() => fontWeightNumber(0), /0 is not a font weight/u);
-  assert.throws(() => fontWeightNumber(1000), /1000 is not a font weight/u);
-  assert.throws(() => fontWeightNumber(400.5), /is not a font weight/u);
-});
-
-test("a point is an array, text or an object", () => {
-  assert.deepEqual(pointCoordinates([1, 2]), [1, 2]);
-  assert.deepEqual(pointCoordinates("1, 2"), [1, 2]);
-  assert.deepEqual(pointCoordinates("1 2"), [1, 2]);
-  assert.deepEqual(
-    pointCoordinates({
-      x: 3,
-      y: 4
-    }), [3, 4]
-  );
-  assert.throws(() => pointCoordinates("1,2,3"), /is not a point/u);
-  assert.throws(() => pointCoordinates("one,two"), /is not a list of numbers/u);
-});
-
-test("a size, a rect, a matrix and a vector read the same three ways", () => {
-  assert.deepEqual(sizeDimensions([10, 20]), [10, 20]);
-  assert.deepEqual(sizeDimensions("10,20"), [10, 20]);
-  assert.deepEqual(
-    sizeDimensions({
-      width: 10,
-      height: 20
-    }), [10, 20]
-  );
-  assert.deepEqual(rectBounds([1, 2, 3, 4]), [1, 2, 3, 4]);
-  assert.deepEqual(rectBounds("1,2,3,4"), [1, 2, 3, 4]);
-  assert.deepEqual(
-    rectBounds({
-      x: 1,
-      y: 2,
-      width: 3,
-      height: 4
-    }), [1, 2, 3, 4]
-  );
-  assert.deepEqual(matrixCells([1, 0, 0, 1, 5, 6]), [1, 0, 0, 1, 5, 6]);
-  assert.deepEqual(
-    matrixCells({
-      m11: 1,
-      m12: 2,
-      m21: 3,
-      m22: 4,
-      offsetX: 5,
-      offsetY: 6
-    }), [1, 2, 3, 4, 5, 6]
-  );
-  assert.deepEqual(vectorComponents([1, 2, 3]), [1, 2, 3]);
-  assert.deepEqual(vectorComponents("1 2 3"), [1, 2, 3]);
-  assert.throws(() => rectBounds("1 2 3"), /is not a rect/u);
+  assert.throws(() => fontWeightNumber("heavyish"), /heavyish is no font weight/u);
+  assert.throws(() => fontWeightNumber(0), /0 is no font weight/u);
+  assert.throws(() => fontWeightNumber(1000), /1000 is no font weight/u);
+  assert.throws(() => fontWeightNumber(Number.NaN), /NaN is no font weight/u);
 });
 
 test("a list of numbers is an array or text", () => {
   assert.deepEqual(numberList([4, 2]), [4, 2]);
   assert.deepEqual(numberList("4 2"), [4, 2]);
   assert.deepEqual(numberList("4,2,1"), [4, 2, 1]);
-  assert.throws(() => numberList(""), /is not a list of numbers/u);
+  assert.throws(() => numberList(""), /is not a length/u);
+  assert.throws(() => numberList("four"), /"four" is not a length/u);
 });
 
 test("a list of points is points, or text of pairs", () => {
-  assert.deepEqual(
-    pointList([[0, 0], "10,10", {
-      x: 20,
-      y: 0
-    }]), [[0, 0], [10, 10], [20, 0]]
-  );
+  const points = [[0, 0], {
+    x: 20,
+    y: 0
+  }] as const;
+  assert.equal(pointList(points), points);
   assert.deepEqual(pointList("0,0 10,10 20,0"), [[0, 0], [10, 10], [20, 0]]);
-  assert.throws(() => pointList("0,0 10"), /is not a list of points/u);
+  assert.deepEqual(pointList("0 0, 10 10"), [[0, 0], [10, 10]]);
+  assert.throws(() => pointList("0,0 10"), /0,0 10 is not x, y pairs/u);
 });
 
 test("a date is a Date, milliseconds or ISO text, in ticks since 1601", () => {

@@ -6,7 +6,8 @@ import { parseNumber, splitCommas } from "#src/css/parse/values.js";
 /** WinUI's CharacterSpacing counts thousandths of an em. */
 const CHARACTER_SPACING_PER_EM = 1000;
 
-const FONT_WEIGHTS = [
+/** WinUI's FontWeights, by name and weight. */
+export const FONT_WEIGHTS = [
   {
     name: "Thin",
     weight: 100

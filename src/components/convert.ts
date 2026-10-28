@@ -57,21 +57,16 @@ import {
   gridLengthParts,
   GridUnit,
   isSvgUri,
-  matrixCells,
   numberList,
   parseColor,
   pathMarkup,
-  pointCoordinates,
   pointList,
-  rectBounds,
   RepeatKind,
   repeatParts,
-  sizeDimensions,
   thicknessSides,
   ticksDate,
   ticksMilliseconds,
-  timeSpanTicks,
-  vectorComponents
+  timeSpanTicks
 } from "./values.ts";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import { boxedObject } from "#src/native-value.js";
@@ -173,14 +168,16 @@ export type InputScopeInput =
   | ReadonlyArray<EnumInput<typeof InputScopeNameValue>>
   | InputScope;
 
-const GRID_UNIT_TYPES = new Map<GridUnit, GridUnitType>([
-  [GridUnit.AUTO, GridUnitType.Auto],
-  [GridUnit.PIXEL, GridUnitType.Pixel],
-  [GridUnit.STAR, GridUnitType.Star]
-]);
-
 // Built when used, not at import: a table that names a binding at the top
 // level keeps that binding in the bundle of every app that imports this module.
+function gridUnitTypes() {
+  return new Map<GridUnit, GridUnitType>([
+    [GridUnit.AUTO, GridUnitType.Auto],
+    [GridUnit.PIXEL, GridUnitType.Pixel],
+    [GridUnit.STAR, GridUnitType.Star]
+  ]);
+}
+
 function durationTypes() {
   return new Map<DurationKind, DurationType>([
     [DurationKind.AUTOMATIC, DurationType.Automatic],
@@ -283,7 +280,7 @@ export function gridLengthOf(input: GridLengthInput) {
   return {
     value: parts.value,
     gridUnitType: nativeMember({
-      table: GRID_UNIT_TYPES,
+      table: gridUnitTypes(),
       key: parts.unit
     })
   };
@@ -426,7 +423,12 @@ export function fontWeightInputOf(value: FontWeightValue) {
 
 /** A point prop as the bindings' `Point`. */
 export function pointOf(input: PointInput) {
-  const [x, y] = pointCoordinates(input);
+  const isValue = "x" in input;
+  if (isValue) {
+    return input;
+  }
+
+  const [x, y] = input;
   return {
     x,
     y
@@ -435,7 +437,12 @@ export function pointOf(input: PointInput) {
 
 /** A size prop as the bindings' `Size`. */
 export function sizeOf(input: SizeInput) {
-  const [width, height] = sizeDimensions(input);
+  const isValue = "width" in input;
+  if (isValue) {
+    return input;
+  }
+
+  const [width, height] = input;
   return {
     width,
     height
@@ -444,7 +451,12 @@ export function sizeOf(input: SizeInput) {
 
 /** A rect prop as the bindings' `Rect`. */
 export function rectOf(input: RectInput) {
-  const [x, y, width, height] = rectBounds(input);
+  const isValue = "width" in input;
+  if (isValue) {
+    return input;
+  }
+
+  const [x, y, width, height] = input;
   return {
     x,
     y,
@@ -455,7 +467,12 @@ export function rectOf(input: RectInput) {
 
 /** A matrix prop as the bindings' `Matrix`. */
 export function matrixOf(input: MatrixInput) {
-  const [m11, m12, m21, m22, offsetX, offsetY] = matrixCells(input);
+  const isValue = "m11" in input;
+  if (isValue) {
+    return input;
+  }
+
+  const [m11, m12, m21, m22, offsetX, offsetY] = input;
   return {
     m11,
     m12,
@@ -468,7 +485,12 @@ export function matrixOf(input: MatrixInput) {
 
 /** A vector prop as the bindings' `Vector3`. */
 export function vector3Of(input: Vector3Input) {
-  const [x, y, depth] = vectorComponents(input);
+  const isValue = "z" in input;
+  if (isValue) {
+    return input;
+  }
+
+  const [x, y, depth] = input;
   return {
     x,
     y,
@@ -499,11 +521,8 @@ export function pointCollectionOf(input: PointCollectionInput) {
   }
 
   const points = new PointCollection();
-  for (const [x, y] of pointList(input)) {
-    points.append({
-      x,
-      y
-    });
+  for (const point of pointList(input)) {
+    points.append(pointOf(point));
   }
 
   return points;
