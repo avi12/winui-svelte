@@ -5,11 +5,12 @@ import { LiveRows } from "./live-rows.ts";
 import type { RowProps } from "./row-source.svelte.ts";
 import { RowSource } from "./row-source.svelte.ts";
 import Row from "./Row.svelte";
-import { DynWinRtType, DynWinRtValue, unboxObject } from "@microsoft/dynwinrt";
+import { DynWinRtType, DynWinRtValue } from "@microsoft/dynwinrt";
 import type { ContentControl, FrameworkElement } from "#src/components/generated/bindings.js";
 import { IVector_Object, PropertyValue } from "#src/components/generated/bindings.js";
 import type { BoxedValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
+import { unboxed } from "#src/renderer/host/values.js";
 import type { Snippet } from "svelte";
 
 // What every control that shows the app's items by a snippet shares: the keys
@@ -40,11 +41,12 @@ export interface ItemRowsProps<Item> {
 
 /** The text of a boxed key; a value that is not a key reads as the empty text. */
 export function keyText(boxedKey: BoxedValue) {
-  const value = unboxObject(boxedKey);
+  const value = unboxed(boxedKey);
   return typeof value === "string" ? value : "";
 }
 
-const keyBox: KeyBox<BoxedValue> = {
+/** How a key is held in a control's items: as a boxed string. */
+export const keyBox: KeyBox<BoxedValue> = {
   box: key => PropertyValue.createString(key),
   unbox: keyText
 };
@@ -60,6 +62,7 @@ export class ItemRows<Item> {
   private nextContainerId = 0;
 
   private keyOrder: string[] = [];
+  private isChangingKeys = false;
 
   constructor({ props, onSynced }: {
     props: ItemRowsProps<Item>;
@@ -78,6 +81,11 @@ export class ItemRows<Item> {
     return this.keyOrder;
   }
 
+  /** The rows are changing the control's items: what it reports meanwhile (a selection lost) is not the user's. */
+  get isChanging() {
+    return this.isChangingKeys;
+  }
+
   /** The user left the control's items in `order` (a drag): it is the list's order now. */
   adoptOrder(order: string[]) {
     this.keyOrder = order;
@@ -88,8 +96,10 @@ export class ItemRows<Item> {
     key: string;
     target: number;
   }) {
-    this.keys.removeAt(this.keyOrder.indexOf(key));
-    this.keys.insertAt(target, keyBox.box(key));
+    this.changingKeys(() => {
+      this.keys.removeAt(this.keyOrder.indexOf(key));
+      this.keys.insertAt(target, keyBox.box(key));
+    });
     this.keyOrder = this.readOrder();
   }
 
@@ -159,18 +169,27 @@ export class ItemRows<Item> {
     // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
     this.itemsByKey = new Map(keyed);
     this.keyOrder = wanted;
-    syncKeyVector({
+    this.changingKeys(() => syncKeyVector({
       vector: this.keys,
       codec: keyBox,
       wanted
-    });
+    }));
     this.rows.refresh(key => this.itemsByKey.get(key));
+  }
+
+  private changingKeys(change: () => void) {
+    this.isChangingKeys = true;
+    try {
+      change();
+    } finally {
+      this.isChangingKeys = false;
+    }
   }
 
   // WinUI hands back a new wrapper for the same container, so a container is
   // known by an id kept in its Tag.
   private containerId(container: FrameworkElement) {
-    const known = container.tag === null ? null : unboxObject(container.tag);
+    const known = unboxed(container.tag);
     const isKnown = typeof known === "string";
     if (isKnown) {
       return known;

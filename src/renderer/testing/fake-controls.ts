@@ -33,6 +33,19 @@ class FakeCollection {
   clear() {
     this.items.length = 0;
   }
+
+  // What the user does to a tab strip or a tree: the control reorders its own
+  // collection, and the renderer is not told.
+  moveNatively({ from, to }: {
+    from: number;
+    to: number;
+  }) {
+    const [item] = this.items.splice(from, 1);
+    const isMoved = item !== undefined;
+    if (isMoved) {
+      this.items.splice(to, 0, item);
+    }
+  }
 }
 
 export class FakePanel {

@@ -4,6 +4,7 @@
   import ExampleRow from "./ExampleRow.svelte";
   import { liveRows, rowStats } from "./row-stats.ts";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
+  import { unboxed } from "winui-svelte";
   import { GridView, ListView, MoveDirection, Window } from "winui-svelte/components";
   import type { ListHandle } from "winui-svelte/components";
   import { exitApplication } from "winui-svelte/window";
@@ -23,7 +24,26 @@
   // svelte-ignore state_referenced_locally
   let rows = $state(makeItems(Number(host.options["rows"] ?? DEFAULT_ROWS)));
   let handle: ListHandle | undefined = $state();
+  let selectedKey: string | undefined = $state();
+  // The list's own control, to read what it holds and to select as a user does.
+  let view: {
+    selectedIndex: number;
+    selectedItems: {
+      size: number;
+      getAt(index: number): unknown;
+    } | null;
+  } | undefined;
   let reorders = 0;
+
+  function controlSelected() {
+    const selected = view?.selectedItems;
+    const hasSelected = selected !== undefined && selected !== null;
+    if (!hasSelected) {
+      return [];
+    }
+
+    return Array.from({ length: selected.size }, (_, index) => String(unboxed(selected.getAt(index))));
+  }
 
   function report(kind: string) {
     host.report({
@@ -33,6 +53,8 @@
       destroyed: rowStats.destroyed,
       live: liveRows(),
       reorders,
+      selectedKey: selectedKey ?? null,
+      controlSelected: controlSelected(),
       first: rows.slice(0, FIRST_ROWS_REPORTED).map(row => row.id)
     });
   }
@@ -53,6 +75,17 @@
         direction
       });
       report("moved");
+    }],
+    ["select", command => {
+      selectedKey = command["key"] === null ? undefined : String(command["key"]);
+      report("selected");
+    }],
+    ["pick", command => {
+      if (view) {
+        view.selectedIndex = Number(command["index"]);
+      }
+
+      report("picked");
     }],
     ["scroll", command => {
       handle?.scrollToKey(String(command["key"]));
@@ -116,10 +149,14 @@
       items={rows}
       key={row => row.id}
       keyboardReorder
+      onControl={control => {
+        view = control;
+      }}
       onReorder={reorder}
       reorderable
-      selectionMode="None"
+      selectionMode={host.options["selection"] === "single" ? "Single" : "None"}
       bind:handle
+      bind:selectedKey
     />
   {/if}
 </Window>

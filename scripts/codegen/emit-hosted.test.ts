@@ -35,9 +35,13 @@ for (const name of ["ListView", "GridView"]) {
   test(`${name} is generic over its items and hands the app the list handle`, () => {
     const component = emitComponent(hosted(name));
     assert.match(component, /<script generics="Item" lang="ts">/u);
-    assert.match(component, /let \{ handle = \$bindable\(\), class: className, style, \.\.\.rest \}/u);
+    assert.match(
+      component,
+      /let \{ handle = \$bindable\(\), selectedKey = \$bindable\(\), selectedKeys = \$bindable\(\), class: className, style, \.\.\.rest \}/u
+    );
+    assert.match(component, /const selection = \{\n    get selectedKey\(\) \{\n      return selectedKey;\n    \},\n    set selectedKey\(next\) \{/u);
     assert.match(component, new RegExp(`ListComponentProps<Item, ${name}ComponentProps>`, "u"));
-    assert.match(component, /attachItems\(\{ view: native, props: rest \}\)/u);
+    assert.match(component, /attachItems\(\{ view: native, props: rest, selection \}\)/u);
     assert.match(component, /handle = items\.handle;/u);
     assert.doesNotMatch(component, /children/u);
     assert.doesNotMatch(component, /attachRepeaterItems/u);
@@ -56,7 +60,7 @@ for (const name of ["ItemsRepeater", "BreadcrumbBar"]) {
     assert.match(component, /<script generics="Item" lang="ts">/u);
     assert.match(component, /attachRepeaterItems\(\{ owner: native, props: rest, kind: RepeaterElement\.SLOT \}\)/u);
     assert.match(component, /RepeaterComponentProps<Item, /u);
-    assert.doesNotMatch(component, /handle/u);
+    assert.doesNotMatch(component, /handle|selection/u);
     assert.doesNotMatch(component, /children/u);
     assert.doesNotMatch(component, /attachItems/u);
   });

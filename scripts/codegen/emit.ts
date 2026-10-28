@@ -531,10 +531,6 @@ function allBindables(level: ClassModel) {
   return chain(level).flatMap(entry => entry.bindables);
 }
 
-function allBindableNames(level: ClassModel) {
-  return allBindables(level).map(bindable => bindable.key);
-}
-
 // The <property> element a snippet fills its property through, rendered
 // while the prop holds one.
 function propertyBlock({ key, snippet, isSnippetTested }: {
@@ -881,7 +877,9 @@ export function emitLevel(level: ClassModel) {
 
 // What a component that shows items by a snippet is made of, by host: the
 // types of its props and of the component (items-props.ts), the call that
-// connects the host, and whether the app gets the list's handle.
+// connects the host, whether the app gets the list's handle, and the props the
+// host owns that the app can bind (the host reads and writes them through the
+// component's `bound` bag).
 const hosts = new Map<ItemsHost, {
   props: string;
   component: string;
@@ -889,6 +887,7 @@ const hosts = new Map<ItemsHost, {
   imports: string[];
   attach: string;
   hasHandle: boolean;
+  bindables: string[];
 }>([
   [
     ItemsHost.LIST,
@@ -897,8 +896,9 @@ const hosts = new Map<ItemsHost, {
       component: "ListComponent",
       module: "items-host.svelte.ts",
       imports: ["attachItems"],
-      attach: "attachItems({ view: native, props: rest })",
-      hasHandle: true
+      attach: "attachItems({ view: native, props: rest, selection: bound })",
+      hasHandle: true,
+      bindables: ["selectedKey", "selectedKeys"]
     }
   ],
   [
@@ -909,7 +909,8 @@ const hosts = new Map<ItemsHost, {
       module: "repeater-host.svelte.ts",
       imports: ["attachRepeaterItems", "RepeaterElement"],
       attach: "attachRepeaterItems({ owner: native, props: rest, kind: RepeaterElement.SLOT })",
-      hasHandle: false
+      hasHandle: false,
+      bindables: []
     }
   ],
   [
@@ -920,7 +921,8 @@ const hosts = new Map<ItemsHost, {
       module: "repeater-host.svelte.ts",
       imports: ["attachRepeaterItems", "RepeaterElement"],
       attach: "attachRepeaterItems({ owner: native, props: rest, kind: RepeaterElement.ITEM_CONTAINER })",
-      hasHandle: false
+      hasHandle: false,
+      bindables: []
     }
   ]
 ]);
@@ -964,10 +966,17 @@ function overlayOf(name: string) {
   return kind === undefined ? undefined : overlayHosts.get(kind);
 }
 
-// What the component binds: the control's bindables, and `open` for an overlay.
+// What the component binds, the one list the props, the bag, the declaration
+// and the README read: the control's bindables, what its items host owns
+// (`selectedKey`), and `open` for an overlay.
 function componentBindableNames(level: ClassModel) {
-  const isOverlay = overlayOf(level.type.name) !== undefined;
-  return [...allBindableNames(level), ...isOverlay ? [OVERLAY_BINDABLE] : []];
+  const name = level.type.name;
+  const isOverlay = overlayOf(name) !== undefined;
+  return [
+    ...allBindables(level).map(bindable => bindable.key),
+    ...hostOf(name)?.bindables ?? [],
+    ...isOverlay ? [OVERLAY_BINDABLE] : []
+  ];
 }
 
 function emitOverlayDeclaration({ level, overlay }: {
@@ -1019,7 +1028,7 @@ export function emitDeclaration(level: ClassModel) {
     ].join("\n")}\n`;
   }
 
-  const bindings = allBindableNames(level).map(key => `"${key}"`).join(" | ");
+  const bindings = componentBindableNames(level).map(key => `"${key}"`).join(" | ");
   return `${[
     GENERATED_HEADER,
     "",
@@ -1047,6 +1056,15 @@ function hostedPropsType({ name, host, overlay }: {
   return isOverlay ? `${overlay.props}<${name}ComponentProps>` : `${name}ComponentProps`;
 }
 
+// An object whose members read and write the component's bindable props, to
+// hand to code that cannot reach the props themselves.
+function bagOf(keys: string[]) {
+  const members = keys.map(
+    key => `    get ${key}() {\n      return ${key};\n    },\n    set ${key}(next) {\n      ${key} = next;\n    }`
+  );
+  return keys.length === 0 ? "{}" : `{\n${members.join(",\n")}\n  }`;
+}
+
 export function emitComponent(level: ClassModel) {
   const name = level.type.name;
   const host = hostOf(name);
@@ -1064,10 +1082,7 @@ export function emitComponent(level: ClassModel) {
     "style",
     "...rest"
   ];
-  const bag = bindables.map(
-    key => `    get ${key}() {\n      return ${key};\n    },\n    set ${key}(next) {\n      ${key} = next;\n    }`
-  );
-  const bound = bindables.length === 0 ? "{}" : `{\n${bag.join(",\n")}\n  }`;
+  const bound = bagOf(bindables);
   const connect = isHosted ? "connect(native)" : `connect${name}(native, rest, bound)`;
   const attachment = isOverlay
     ? `{@attach placedControl((placed: PlacedControl<${name}>) => untrack(() => connect(placed)))}`

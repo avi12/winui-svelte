@@ -430,6 +430,25 @@ function keyOf(control: object) {
   return key;
 }
 
+// A control can reorder (a tab strip's tabs, a tree's nodes) or drop its own
+// items without telling the renderer. `placed` is put back in the collection's
+// order, found through the collection's own indexOf: it compares the controls
+// themselves, where a read hands back a new wrapper every time. A control the
+// collection dropped has position -1, which is no array index: it is left out
+// with the holes.
+function resyncPlaced({ placed, collection }: {
+  placed: object[];
+  collection: NativeValue;
+}) {
+  const ordered: object[] = [];
+  for (const control of placed) {
+    const position = Number(call(collection, "indexOf", control));
+    ordered[position] = control;
+  }
+
+  placed.splice(0, placed.length, ...ordered.filter(() => true));
+}
+
 // The native collection as keyed-list sees it, read through `placed`: a
 // collection hands back a new wrapper for a control on every read.
 function placedItems({ element, collection }: {
@@ -437,6 +456,10 @@ function placedItems({ element, collection }: {
   collection: NativeValue;
 }) {
   const placed = element.native.placed;
+  resyncPlaced({
+    placed,
+    collection
+  });
   return {
     get size() {
       return placed.length;

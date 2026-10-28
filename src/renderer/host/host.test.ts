@@ -29,6 +29,7 @@ registerHooks(svelteHooks(path.join(import.meta.dirname, "host.ts")));
 const { mountControl } = await import("./mount.svelte.ts");
 const { default: Fixture } = await import("#src/renderer/testing/Host.fixture.svelte");
 const { default: PropertyFixture } = await import("#src/renderer/testing/Property.fixture.svelte");
+const { default: ReorderableFixture } = await import("#src/renderer/testing/Reorderable.fixture.svelte");
 const { default: TextFixture } = await import("#src/renderer/testing/Text.fixture.svelte");
 const placed = await import("#src/renderer/testing/Placed.fixture.svelte");
 
@@ -230,5 +231,37 @@ test("a placed control says which control it sits in, through a <property> eleme
   assert.ok(inButton?.parent() instanceof FakeButton, "a flyout in a button's Flyout property sits in the button");
   assert.equal(inPanel?.parent(), panel, "a flyout among a panel's children sits in the panel");
   assert.equal(found.get("panel")?.parent(), null, "the root is placed in the window, which is no control");
+  mounted.unmount();
+});
+
+test("a child the control reordered itself stays in step with the tree", () => {
+  const mounted = mountControl<{ items: string[] }>({
+    component: ReorderableFixture,
+    props: {
+      items: ["a", "b", "c", "d"]
+    }
+  });
+  const root: object = mounted.root;
+  assert.ok(root instanceof FakePanel);
+  assert.deepEqual(textsOf(root), ["a", "b", "c", "d"]);
+
+  root.children.moveNatively({
+    from: 0,
+    to: 2
+  });
+  assert.deepEqual(textsOf(root), ["b", "c", "a", "d"]);
+
+  mounted.set({ items: ["b", "c", "d"] });
+  assert.deepEqual(textsOf(root), ["b", "c", "d"], "the item that went is the one removed");
+
+  mounted.set({ items: ["b", "c", "d", "e"] });
+  assert.deepEqual(textsOf(root), ["b", "c", "d", "e"], "and one added lands at the end");
+
+  root.children.moveNatively({
+    from: 3,
+    to: 0
+  });
+  mounted.set({ items: ["e", "b", "c", "d"] });
+  assert.deepEqual(textsOf(root), ["e", "b", "c", "d"], "a move the tree also made is no further move");
   mounted.unmount();
 });

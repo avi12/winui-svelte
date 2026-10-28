@@ -1,5 +1,13 @@
 import type { ItemRowsProps } from "./item-rows.svelte.ts";
-import { ItemRows, keyText, SLOT_ELEMENT, templateOf } from "./item-rows.svelte.ts";
+import {
+  ItemRows,
+  keyBox,
+  keyText,
+  SLOT_ELEMENT,
+  templateOf
+} from "./item-rows.svelte.ts";
+import type { SelectionBound, SelectionView } from "./key-selection.ts";
+import { KeySelection, SelectionKind } from "./key-selection.ts";
 import { movedIndex, MoveDirection, sameOrder } from "./reorder.ts";
 import type { ContainerContentChangingEventArgs, ListViewBase } from "#src/components/generated/bindings.js";
 import {
@@ -10,12 +18,15 @@ import {
   DependencyObject,
   FocusState,
   KeyRoutedEventArgs,
+  ListViewSelectionMode,
   projectAs,
   VirtualKey,
   VisualStateManager,
   VisualTreeHelper,
   XamlReader
 } from "#src/components/generated/bindings.js";
+import type { BoxedValue } from "#src/native-value.js";
+import { untrack } from "svelte";
 
 // What ListView and GridView add to the control: a list of the app's items,
 // shown by a row the app writes as a snippet.
@@ -30,12 +41,26 @@ import {
 
 const NORMAL_STATE = "Normal";
 
+const selectionKinds = new Map<ListViewSelectionMode, SelectionKind>([
+  [ListViewSelectionMode.None, SelectionKind.NONE],
+  [ListViewSelectionMode.Single, SelectionKind.SINGLE],
+  [ListViewSelectionMode.Multiple, SelectionKind.MULTIPLE],
+  [ListViewSelectionMode.Extended, SelectionKind.MULTIPLE]
+]);
+
 /** What a list component takes besides its control's properties: the items and how a row shows one. */
 export interface ItemsHostProps<Item> extends ItemRowsProps<Item> {
   // The user drags an item to a new place (the control's own reorder).
   reorderable?: boolean;
   // Alt+Up / Alt+Down moves the focused item one place.
   keyboardReorder?: boolean;
+  // The key of the selected item, in the single selection modes: bind it to
+  // read the user's choice or to select an item. It follows the item when the
+  // items reorder, and is cleared when the item goes. Undefined is no selection.
+  selectedKey?: string | undefined;
+  // The keys of the selected items, in the list's order, in the multiple
+  // selection modes (the same as selectedKey in the single one).
+  selectedKeys?: string[] | undefined;
   // The keys in the order the user left them in, after a drag or a keyboard
   // move. The list keeps that order until `items` changes; an app that keeps
   // its own order updates `items` from it.
@@ -79,24 +104,45 @@ class ItemsHost<Item> implements ListHandle {
   private readonly view: ListViewBase;
   private readonly props: ItemsHostProps<Item>;
   private readonly rows: ItemRows<Item>;
+  private readonly selection: KeySelection<BoxedValue>;
   private readonly unsubscribe: Array<() => void> = [];
+  private isDragging = false;
 
-  constructor(view: ListViewBase, props: ItemsHostProps<Item>) {
+  constructor({ view, props, selection }: {
+    view: ListViewBase;
+    props: ItemsHostProps<Item>;
+    selection: SelectionBound;
+  }) {
     this.view = view;
     this.props = props;
     this.rows = new ItemRows({
       props,
-      onSynced: () => this.resetRowStates()
+      onSynced: () => {
+        this.resetRowStates();
+        untrack(() => this.selection.apply());
+      }
+    });
+    this.selection = new KeySelection({
+      view: this.selectionView(),
+      codec: keyBox,
+      bound: selection,
+      order: () => this.rows.order,
+      isPaused: () => this.rows.isChanging || this.isDragging
     });
     view.itemTemplate = projectAs(XamlReader.load(templateOf(SLOT_ELEMENT)), DataTemplate);
     view.itemsSource = this.rows.keys;
     this.unsubscribe.push(
       view.onContainerContentChanging((_sender, args) => this.fill(args)),
+      view.onDragItemsStarting(() => {
+        this.isDragging = true;
+      }),
       view.onDragItemsCompleted(() => this.dragCompleted()),
+      view.onSelectionChanged(() => this.selection.changed()),
       // Preview: the list's items take the arrow keys to move focus before a
       // bubbling KeyDown would see them.
       view.onPreviewKeyDown((_sender, args) => this.keyDown(projectAs(args, KeyRoutedEventArgs)))
     );
+    $effect(() => this.selection.apply());
     $effect(() => {
       const isReorderable = props.reorderable;
       const isSpecified = isReorderable !== undefined;
@@ -106,6 +152,27 @@ class ItemsHost<Item> implements ListHandle {
         view.allowDrop = isReorderable;
       }
     });
+  }
+
+  // The selection as the control holds it: boxed keys, found by the very boxes
+  // the control's items are.
+  private selectionView() {
+    const { view, rows } = this;
+    return {
+      get kind() {
+        return selectionKinds.get(view.selectionMode) ?? SelectionKind.NONE;
+      },
+      get selected() {
+        const selected = view.selectedItems;
+        const isMissing = selected === null;
+        if (isMissing) {
+          throw new Error("the list has no selected items vector");
+        }
+
+        return selected;
+      },
+      boxOf: key => rows.keys.getAt(rows.order.indexOf(key))
+    } satisfies SelectionView<BoxedValue>;
   }
 
   dispose() {
@@ -139,6 +206,7 @@ class ItemsHost<Item> implements ListHandle {
   }
 
   private dragCompleted() {
+    this.isDragging = false;
     // WinUI can leave the dragged (or last pressed) row in its Pressed or
     // PointerOver look after a drop; every row goes back to Normal.
     this.resetRowStates();
@@ -151,6 +219,8 @@ class ItemsHost<Item> implements ListHandle {
       this.rows.adoptOrder(order);
       this.props.onReorder?.([...order]);
     }
+
+    this.selection.apply();
   }
 
   private keyDown(event: KeyRoutedEventArgs) {
@@ -204,6 +274,7 @@ class ItemsHost<Item> implements ListHandle {
       key,
       target
     });
+    this.selection.apply();
     this.props.onReorder?.([...this.rows.order]);
     this.focus(key);
   }
@@ -253,11 +324,16 @@ class ItemsHost<Item> implements ListHandle {
  * Connects the control to the props: call it from the component's control
  * attachment.
  */
-export function attachItems<Item>({ view, props }: {
+export function attachItems<Item>({ view, props, selection }: {
   view: ListViewBase;
   props: ItemsHostProps<Item>;
+  selection: SelectionBound;
 }) {
-  const host = new ItemsHost(view, props);
+  const host = new ItemsHost({
+    view,
+    props,
+    selection
+  });
   const releaseControl = props.onControl?.(view);
   return {
     handle: host,

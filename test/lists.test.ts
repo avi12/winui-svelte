@@ -215,3 +215,92 @@ test("a grid view of 1000 items realizes only the ones it shows", {
     example.kill();
   }
 });
+
+test("a list's selected key and its selection follow each other, through moves and removals", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const example = ExampleProcess.start({
+    entry: "examples/lists/main.ts",
+    flags: ["--selection", "single"]
+  });
+  try {
+    const none = await example.settled({
+      command: {
+        cmd: "stats"
+      },
+      kind: "stats"
+    });
+    assert.equal(none["selectedKey"], null);
+    assert.deepEqual(none["controlSelected"], []);
+
+    // The app sets the key: the control selects that item.
+    const selected = await example.settled({
+      command: {
+        cmd: "select",
+        key: "row-3"
+      },
+      kind: "selected"
+    });
+    assert.deepEqual(selected["controlSelected"], ["row-3"]);
+    assert.equal(selected["selectedKey"], "row-3");
+
+    // The items reorder (the control removes and inserts the item): the same item stays selected.
+    const moved = await example.settled({
+      command: {
+        cmd: "move",
+        key: "row-3",
+        direction: "down"
+      },
+      kind: "moved"
+    });
+    assert.deepEqual(moved["first"], ["row-0", "row-1", "row-2", "row-4", "row-3"]);
+    assert.deepEqual(moved["controlSelected"], ["row-3"]);
+    assert.equal(moved["selectedKey"], "row-3");
+
+    // The user picks an item: the key follows.
+    const picked = await example.settled({
+      command: {
+        cmd: "pick",
+        index: 1
+      },
+      kind: "picked"
+    });
+    assert.deepEqual(picked["controlSelected"], ["row-1"]);
+    assert.equal(picked["selectedKey"], "row-1");
+
+    // The selected item goes: nothing is selected, and the key is cleared.
+    const removed = await example.settled({
+      command: {
+        cmd: "remove",
+        key: "row-1"
+      },
+      kind: "removed"
+    });
+    assert.deepEqual(removed["controlSelected"], []);
+    assert.equal(removed["selectedKey"], null);
+
+    // No key clears the selection.
+    await example.settled({
+      command: {
+        cmd: "select",
+        key: "row-2"
+      },
+      kind: "selected"
+    });
+    const cleared = await example.settled({
+      command: {
+        cmd: "select",
+        key: null
+      },
+      kind: "selected"
+    });
+    assert.deepEqual(cleared["controlSelected"], []);
+    assert.equal(cleared["selectedKey"], null);
+
+    example.send({ cmd: "close" });
+    assert.equal(await example.exited, 0);
+  } finally {
+    example.kill();
+  }
+});
