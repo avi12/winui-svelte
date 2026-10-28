@@ -1,5 +1,6 @@
 import { registerControls, setClassHandler } from "./host.ts";
 import type { NativeValue } from "#src/native-value.js";
+import type { PlacedControl } from "#src/renderer/host/control.js";
 import {
   FakeBorder,
   FakeButton,
@@ -29,6 +30,7 @@ const { mountControl } = await import("./mount.svelte.ts");
 const { default: Fixture } = await import("#src/renderer/testing/Host.fixture.svelte");
 const { default: PropertyFixture } = await import("#src/renderer/testing/Property.fixture.svelte");
 const { default: TextFixture } = await import("#src/renderer/testing/Text.fixture.svelte");
+const placed = await import("#src/renderer/testing/Placed.fixture.svelte");
 
 interface TextProps extends Record<string, NativeValue> {
   version: string;
@@ -210,5 +212,23 @@ test("a <property> element fills its parent's property and gives it back when it
   });
   assert.equal(flyoutOf(conditionalButton), null);
   assert.deepEqual(textsOf(panel), ["First"]);
+  mounted.unmount();
+});
+
+test("a placed control says which control it sits in, through a <property> element too", () => {
+  const found = new Map<string, PlacedControl<object>>();
+  const mounted = mountControl({
+    component: placed.default,
+    props: {
+      found: (name: string, where: PlacedControl<object>) => found.set(name, where)
+    }
+  });
+  const panel = found.get("panel")?.control;
+  const inButton = found.get("inButton");
+  const inPanel = found.get("inPanel");
+  assert.ok(panel instanceof FakePanel);
+  assert.ok(inButton?.parent() instanceof FakeButton, "a flyout in a button's Flyout property sits in the button");
+  assert.equal(inPanel?.parent(), panel, "a flyout among a panel's children sits in the panel");
+  assert.equal(found.get("panel")?.parent(), null, "the root is placed in the window, which is no control");
   mounted.unmount();
 });
