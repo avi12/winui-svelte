@@ -1,10 +1,23 @@
 import {
   attachedList,
   cornerSides,
+  dateTicks,
+  DurationKind,
+  durationParts,
+  fontWeightNumber,
   gridLengthParts,
   GridUnit,
+  isSvgUri,
+  numberList,
   parseColor,
-  thicknessSides
+  pathMarkup,
+  pointList,
+  RepeatKind,
+  repeatParts,
+  thicknessSides,
+  ticksDate,
+  ticksMilliseconds,
+  timeSpanTicks
 } from "./values.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -87,4 +100,140 @@ test("attached takes one entry or a list of them", () => {
   const owner = {};
   assert.deepEqual(attachedList([owner, "Row", 1]), [[owner, "Row", 1]]);
   assert.deepEqual(attachedList([[owner, "Row", 1], [owner, "Column", 2]]), [[owner, "Row", 1], [owner, "Column", 2]]);
+});
+
+const TICKS_PER_SECOND = 10_000_000n;
+
+test("a number is milliseconds, text carries its unit", () => {
+  assert.equal(timeSpanTicks(300), 3_000_000n);
+  assert.equal(timeSpanTicks("0.3s"), 3_000_000n);
+  assert.equal(timeSpanTicks("300ms"), 3_000_000n);
+  assert.equal(timeSpanTicks("2 m"), 120n * TICKS_PER_SECOND);
+  assert.equal(timeSpanTicks("1h"), 3600n * TICKS_PER_SECOND);
+  assert.equal(timeSpanTicks("-1s"), -TICKS_PER_SECOND);
+});
+
+test("a time span can be written as a clock", () => {
+  assert.equal(timeSpanTicks("0:00:05"), 5n * TICKS_PER_SECOND);
+  assert.equal(timeSpanTicks("00:00:00.3"), 3_000_000n);
+  assert.equal(timeSpanTicks("1:30"), 5400n * TICKS_PER_SECOND);
+  assert.equal(timeSpanTicks("-0:00:01"), -TICKS_PER_SECOND);
+});
+
+test("a time span that is none fails with the text", () => {
+  assert.throws(() => timeSpanTicks("soon"), /"soon" is not a time span/u);
+  assert.throws(() => timeSpanTicks(Number.NaN), /NaN is not a time span/u);
+  assert.throws(() => timeSpanTicks("1:2:3:4"), /is not a time span/u);
+});
+
+test("ticks read back as the milliseconds they came from", () => {
+  assert.equal(ticksMilliseconds(timeSpanTicks(250)), 250);
+});
+
+test("a duration is a time span, auto or forever", () => {
+  assert.deepEqual(durationParts("0.3s"), {
+    kind: DurationKind.TIME_SPAN,
+    ticks: 3_000_000n
+  });
+  assert.deepEqual(durationParts(500), {
+    kind: DurationKind.TIME_SPAN,
+    ticks: 5_000_000n
+  });
+  assert.deepEqual(durationParts(" Auto "), {
+    kind: DurationKind.AUTOMATIC,
+    ticks: 0n
+  });
+  assert.deepEqual(durationParts("forever"), {
+    kind: DurationKind.FOREVER,
+    ticks: 0n
+  });
+});
+
+test("a repeat is a count, a length of time or forever", () => {
+  assert.deepEqual(repeatParts(3), {
+    kind: RepeatKind.COUNT,
+    count: 3,
+    ticks: 0n
+  });
+  assert.deepEqual(repeatParts("2.5x"), {
+    kind: RepeatKind.COUNT,
+    count: 2.5,
+    ticks: 0n
+  });
+  assert.deepEqual(repeatParts("2s"), {
+    kind: RepeatKind.DURATION,
+    count: 0,
+    ticks: 2n * TICKS_PER_SECOND
+  });
+  assert.deepEqual(repeatParts("Forever"), {
+    kind: RepeatKind.FOREVER,
+    count: 0,
+    ticks: 0n
+  });
+});
+
+test("a font weight is a name or a number from 1 to 999", () => {
+  assert.equal(fontWeightNumber("bold"), 700);
+  assert.equal(fontWeightNumber("SemiBold"), 600);
+  assert.equal(fontWeightNumber("semilight"), 350);
+  assert.equal(fontWeightNumber("normal"), 400);
+  assert.equal(fontWeightNumber(550), 550);
+  assert.equal(fontWeightNumber("700"), 700);
+});
+
+test("a font weight that is none fails", () => {
+  assert.throws(() => fontWeightNumber("heavyish"), /heavyish is no font weight/u);
+  assert.throws(() => fontWeightNumber(0), /0 is no font weight/u);
+  assert.throws(() => fontWeightNumber(1000), /1000 is no font weight/u);
+  assert.throws(() => fontWeightNumber(Number.NaN), /NaN is no font weight/u);
+});
+
+test("a list of numbers is an array or text", () => {
+  assert.deepEqual(numberList([4, 2]), [4, 2]);
+  assert.deepEqual(numberList("4 2"), [4, 2]);
+  assert.deepEqual(numberList("4,2,1"), [4, 2, 1]);
+  assert.throws(() => numberList(""), /is not a length/u);
+  assert.throws(() => numberList("four"), /"four" is not a length/u);
+});
+
+test("a list of points is points, or text of pairs", () => {
+  const points = [[0, 0], {
+    x: 20,
+    y: 0
+  }] as const;
+  assert.equal(pointList(points), points);
+  assert.deepEqual(pointList("0,0 10,10 20,0"), [[0, 0], [10, 10], [20, 0]]);
+  assert.deepEqual(pointList("0 0, 10 10"), [[0, 0], [10, 10]]);
+  assert.throws(() => pointList("0,0 10"), /0,0 10 is not x, y pairs/u);
+});
+
+test("a date is a Date, milliseconds or ISO text, in ticks since 1601", () => {
+  const unixEpochTicks = 116_444_736_000_000_000n;
+  assert.equal(dateTicks(0), unixEpochTicks);
+  assert.equal(dateTicks(new Date(0)), unixEpochTicks);
+  assert.equal(dateTicks("1970-01-01T00:00:00Z"), unixEpochTicks);
+  assert.equal(dateTicks(1000), unixEpochTicks + TICKS_PER_SECOND);
+  assert.throws(() => dateTicks("someday"), /someday is not a date/u);
+  assert.throws(() => dateTicks(new Date(Number.NaN)), /is not a date/u);
+});
+
+test("ticks read back as the Date they came from", () => {
+  const moment = new Date("2026-10-29T12:34:56.789Z");
+  assert.equal(ticksDate(dateTicks(moment)).toISOString(), moment.toISOString());
+});
+
+test("an SVG is told by the extension of its path, or by its data URI", () => {
+  assert.equal(isSvgUri("ms-appx:///Assets/logo.svg"), true);
+  assert.equal(isSvgUri("https://example.com/logo.SVG?v=2#top"), true);
+  assert.equal(isSvgUri("data:image/svg+xml;base64,PHN2Zz48L3N2Zz4="), true);
+  assert.equal(isSvgUri("ms-appx:///Assets/logo.png"), false);
+  assert.equal(isSvgUri("https://example.com/svg/logo.png?file=a.svg"), false);
+});
+
+test("path data is wrapped as the XAML of a Path, with its characters escaped", () => {
+  assert.equal(
+    pathMarkup("M0,0 L10,10"),
+    "<Path xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Data=\"M0,0 L10,10\"/>"
+  );
+  assert.match(pathMarkup("M0,0\"/><Button/>"), /Data="M0,0&quot;\/&gt;&lt;Button\/&gt;"/u);
 });

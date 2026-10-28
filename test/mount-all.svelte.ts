@@ -5,6 +5,7 @@ import * as bindings from "#src/components/generated/bindings.js";
 import type { LevelMetadata } from "#src/components/generated/metadata.js";
 import { levels } from "#src/components/generated/metadata.js";
 import ToggleSwitch from "#src/components/generated/ToggleSwitch.svelte";
+import { ticksDate } from "#src/components/values.js";
 import type { NativeValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
 import { isRecord, read, vectorOf } from "#src/renderer/host/reflect.js";
@@ -81,6 +82,16 @@ const BORDER_WIDTH = 120;
 const BORDER_GRID_ROW = 2;
 const BORDER_CANVAS_LEFT = 7;
 const HORIZONTAL_ALIGNMENT_CENTER = 1;
+const ANIMATION_TICKS = 3_000_000n;
+const BEGIN_TICKS = 1_000_000n;
+const DURATION_TYPE_TIME_SPAN = 1;
+const REPEAT_TYPE_FOREVER = 2;
+const BOLD_WEIGHT = 700;
+const POLYGON_POINT_COUNT = 3;
+const DASH_COUNT = 2;
+const SUGGESTION_COUNT = 2;
+const PICKED_DATE = new Date(Date.UTC(2020, 5, 15, 12));
+const DATE_TOLERANCE_MILLISECONDS = 86_400_000;
 
 type Linked = () => void;
 type Connect = (control: object, props: object, bound: object) => Linked;
@@ -680,6 +691,182 @@ function checkBehaviours({ connectors, failures }: {
       assert.ok(bindings.Grid.getRow(border) === BORDER_GRID_ROW, "gridRow 2 did not reach Grid.Row");
       assert.ok(bindings.Canvas.getLeft(border) === BORDER_CANVAS_LEFT, "attached Canvas.Left 7 did not reach Canvas.Left");
       assert.ok(border.background !== null, "the background color made no brush");
+      close();
+    }
+  });
+
+  function checkProps({ name, component, control, props, verify }: {
+    name: string;
+    component: string;
+    control: object;
+    props: object;
+    verify: () => void;
+  }) {
+    check({
+      name,
+      action() {
+        const close = open({
+          connect: connectorFor(component),
+          control,
+          props,
+          bound: {}
+        });
+        try {
+          flushSync();
+          verify();
+        } finally {
+          close();
+        }
+      }
+    });
+  }
+
+  const animation = new bindings.DoubleAnimation();
+  checkProps({
+    name: "a duration text is a time span (DoubleAnimation.duration)",
+    component: "DoubleAnimation",
+    control: animation,
+    props: {
+      duration: "0.3s"
+    },
+    verify() {
+      assert.ok(animation.duration.timeSpan.duration === ANIMATION_TICKS, "duration \"0.3s\" is not 3,000,000 ticks");
+      assert.ok(animation.duration.type === DURATION_TYPE_TIME_SPAN, "duration \"0.3s\" is not a time span");
+    }
+  });
+  const repeating = new bindings.DoubleAnimation();
+  checkProps({
+    name: "a repeat text is a repeat behavior (DoubleAnimation.repeatBehavior)",
+    component: "DoubleAnimation",
+    control: repeating,
+    props: {
+      repeatBehavior: "forever"
+    },
+    verify() {
+      assert.ok(repeating.repeatBehavior.type === REPEAT_TYPE_FOREVER, "repeatBehavior \"forever\" is not Forever");
+    }
+  });
+  const delayed = new bindings.DoubleAnimation();
+  checkProps({
+    name: "a nullable time span text is written (DoubleAnimation.beginTime)",
+    component: "DoubleAnimation",
+    control: delayed,
+    props: {
+      beginTime: "100ms"
+    },
+    verify() {
+      assert.ok(delayed.beginTime?.duration === BEGIN_TICKS, "beginTime \"100ms\" did not reach the animation");
+    }
+  });
+  const block = new bindings.TextBlock();
+  checkProps({
+    name: "a font weight name is a weight (TextBlock.fontWeight)",
+    component: "TextBlock",
+    control: block,
+    props: {
+      fontWeight: "bold"
+    },
+    verify() {
+      assert.ok(block.fontWeight.weight === BOLD_WEIGHT, "fontWeight \"bold\" is not 700");
+    }
+  });
+  const polygon = new bindings.Polygon();
+  checkProps({
+    name: "text of coordinate pairs is a point collection (Polygon.points)",
+    component: "Polygon",
+    control: polygon,
+    props: {
+      points: "0,0 10,0 10,10"
+    },
+    verify() {
+      assert.ok(
+        sizeOf({
+          control: polygon,
+          property: "points"
+        }) === POLYGON_POINT_COUNT, "points \"0,0 10,0 10,10\" are not three points"
+      );
+    }
+  });
+  const rectangle = new bindings.Rectangle();
+  checkProps({
+    name: "an array of numbers is a double collection (Rectangle.strokeDashArray)",
+    component: "Rectangle",
+    control: rectangle,
+    props: {
+      strokeDashArray: [4, 2]
+    },
+    verify() {
+      assert.ok(
+        sizeOf({
+          control: rectangle,
+          property: "strokeDashArray"
+        }) === DASH_COUNT, "strokeDashArray [4, 2] is not two numbers"
+      );
+    }
+  });
+  const suggest = new bindings.AutoSuggestBox();
+  checkProps({
+    name: "an array is a collection of boxed items (AutoSuggestBox.itemsSource)",
+    component: "AutoSuggestBox",
+    control: suggest,
+    props: {
+      itemsSource: ["one", "two"]
+    },
+    verify() {
+      const items = bindings.IVector_Object.from(read(suggest, "itemsSource"));
+      assert.ok(items.size === SUGGESTION_COUNT, "itemsSource [\"one\", \"two\"] is not a collection of two");
+    }
+  });
+  const path = new bindings.Path();
+  checkProps({
+    name: "path data makes a geometry (Path.data)",
+    component: "Path",
+    control: path,
+    props: {
+      data: "M0,0 L10,10"
+    },
+    verify() {
+      assert.ok(path.data !== null, "the path data made no geometry");
+    }
+  });
+
+  check({
+    name: "an .svg source string makes an SvgImageSource (Image.source)",
+    action() {
+      const image = new bindings.Image();
+      const close = open({
+        connect: connectorFor("Image"),
+        control: image,
+        props: {
+          source: "ms-appx:///Assets/missing.svg"
+        },
+        bound: {}
+      });
+      flushSync();
+      const source = bindings.projectAs(image.source, bindings.SvgImageSource);
+      assert.ok(source.uriSource.absoluteUri.endsWith(".svg"), "the source is not an SVG image of that URI");
+      close();
+    }
+  });
+
+  check({
+    name: "a bindable date reaches the picker (DatePicker.date)",
+    action() {
+      const picker = new bindings.DatePicker();
+      const state = $state<Record<string, NativeValue>>({ date: PICKED_DATE });
+      const close = open({
+        connect: connectorFor("DatePicker"),
+        control: picker,
+        props: {},
+        bound: boundOver({
+          state,
+          name: "DatePicker"
+        })
+      });
+      flushSync();
+      const shown = ticksDate(picker.date.universalTime);
+      const isNearPicked = Math.abs(shown.getTime() - PICKED_DATE.getTime()) < DATE_TOLERANCE_MILLISECONDS;
+      assert.ok(isNearPicked, `the state's Date reached the picker as ${shown.toISOString()}`);
       close();
     }
   });

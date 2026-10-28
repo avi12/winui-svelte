@@ -3,16 +3,20 @@
 import {
   brushOf,
   cornerRadiusOf,
+  dateTimeOf,
   enumValue,
   fontFamilyOf,
+  fontWeightOf,
   thicknessOf
 } from "../../convert.ts";
 import type {
   BrushInput,
   CornerRadiusInput,
+  DateInput,
   ElementProps,
   EnumInput,
   FontFamilyInput,
+  FontWeightInput,
   ThicknessInput
 } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
@@ -46,7 +50,7 @@ export interface CalendarViewProps extends ControlProps {
   dayItemFontFamily?: FontFamilyInput;
   dayItemFontSize?: number;
   dayItemFontStyle?: EnumInput<typeof FontStyle>;
-  dayItemFontWeight?: CalendarView["dayItemFontWeight"];
+  dayItemFontWeight?: FontWeightInput;
   dayItemMargin?: ThicknessInput;
   dayOfWeekFormat?: string;
   disabledForeground?: BrushInput | Snippet;
@@ -55,12 +59,12 @@ export interface CalendarViewProps extends ControlProps {
   firstOfMonthLabelFontFamily?: FontFamilyInput;
   firstOfMonthLabelFontSize?: number;
   firstOfMonthLabelFontStyle?: EnumInput<typeof FontStyle>;
-  firstOfMonthLabelFontWeight?: CalendarView["firstOfMonthLabelFontWeight"];
+  firstOfMonthLabelFontWeight?: FontWeightInput;
   firstOfMonthLabelMargin?: ThicknessInput;
   firstOfYearDecadeLabelFontFamily?: FontFamilyInput;
   firstOfYearDecadeLabelFontSize?: number;
   firstOfYearDecadeLabelFontStyle?: EnumInput<typeof FontStyle>;
-  firstOfYearDecadeLabelFontWeight?: CalendarView["firstOfYearDecadeLabelFontWeight"];
+  firstOfYearDecadeLabelFontWeight?: FontWeightInput;
   firstOfYearDecadeLabelMargin?: ThicknessInput;
   focusBorderBrush?: BrushInput | Snippet;
   horizontalDayItemAlignment?: EnumInput<typeof HorizontalAlignment>;
@@ -69,12 +73,12 @@ export interface CalendarViewProps extends ControlProps {
   isGroupLabelVisible?: boolean;
   isOutOfScopeEnabled?: boolean;
   isTodayHighlighted?: boolean;
-  maxDate?: CalendarView["maxDate"];
-  minDate?: CalendarView["minDate"];
+  maxDate?: DateInput;
+  minDate?: DateInput;
   monthYearItemFontFamily?: FontFamilyInput;
   monthYearItemFontSize?: number;
   monthYearItemFontStyle?: EnumInput<typeof FontStyle>;
-  monthYearItemFontWeight?: CalendarView["monthYearItemFontWeight"];
+  monthYearItemFontWeight?: FontWeightInput;
   monthYearItemMargin?: ThicknessInput;
   numberOfWeeksInView?: number;
   outOfScopeBackground?: BrushInput | Snippet;
@@ -96,7 +100,7 @@ export interface CalendarViewProps extends ControlProps {
   todayBlackoutBackground?: BrushInput | Snippet;
   todayBlackoutForeground?: BrushInput | Snippet;
   todayDisabledBackground?: BrushInput | Snippet;
-  todayFontWeight?: CalendarView["todayFontWeight"];
+  todayFontWeight?: FontWeightInput;
   todayForeground?: BrushInput | Snippet;
   todayHoverBackground?: BrushInput | Snippet;
   todayPressedBackground?: BrushInput | Snippet;
@@ -234,7 +238,7 @@ export function linkCalendarView(
     props,
     key: "dayItemFontWeight",
     apply(value) {
-      control.dayItemFontWeight = value;
+      control.dayItemFontWeight = fontWeightOf(value);
     }
   });
   link.property({
@@ -297,7 +301,7 @@ export function linkCalendarView(
     props,
     key: "firstOfMonthLabelFontWeight",
     apply(value) {
-      control.firstOfMonthLabelFontWeight = value;
+      control.firstOfMonthLabelFontWeight = fontWeightOf(value);
     }
   });
   link.property({
@@ -332,7 +336,7 @@ export function linkCalendarView(
     props,
     key: "firstOfYearDecadeLabelFontWeight",
     apply(value) {
-      control.firstOfYearDecadeLabelFontWeight = value;
+      control.firstOfYearDecadeLabelFontWeight = fontWeightOf(value);
     }
   });
   link.property({
@@ -395,14 +399,14 @@ export function linkCalendarView(
     props,
     key: "maxDate",
     apply(value) {
-      control.maxDate = value;
+      control.maxDate = dateTimeOf(value);
     }
   });
   link.property({
     props,
     key: "minDate",
     apply(value) {
-      control.minDate = value;
+      control.minDate = dateTimeOf(value);
     }
   });
   link.property({
@@ -430,7 +434,7 @@ export function linkCalendarView(
     props,
     key: "monthYearItemFontWeight",
     apply(value) {
-      control.monthYearItemFontWeight = value;
+      control.monthYearItemFontWeight = fontWeightOf(value);
     }
   });
   link.property({
@@ -584,7 +588,7 @@ export function linkCalendarView(
     props,
     key: "todayFontWeight",
     apply(value) {
-      control.todayFontWeight = value;
+      control.todayFontWeight = fontWeightOf(value);
     }
   });
   link.property({

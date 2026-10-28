@@ -5,6 +5,7 @@ import {
   cornerRadiusOf,
   enumValue,
   fontFamilyOf,
+  fontWeightOf,
   thicknessOf,
   uriOf
 } from "../../convert.ts";
@@ -13,6 +14,7 @@ import type {
   CornerRadiusInput,
   EnumInput,
   FontFamilyInput,
+  FontWeightInput,
   ThicknessInput,
   UriInput
 } from "../../convert.ts";
@@ -45,7 +47,7 @@ export interface ControlProps extends FrameworkElementProps {
   fontSize?: number;
   fontStretch?: EnumInput<typeof FontStretch>;
   fontStyle?: EnumInput<typeof FontStyle>;
-  fontWeight?: Control["fontWeight"];
+  fontWeight?: FontWeightInput;
   foreground?: BrushInput | Snippet;
   horizontalContentAlignment?: EnumInput<typeof HorizontalAlignment>;
   isEnabled?: boolean;
@@ -159,7 +161,7 @@ export function linkControl(
     props,
     key: "fontWeight",
     apply(value) {
-      control.fontWeight = value;
+      control.fontWeight = fontWeightOf(value);
     }
   });
   link.property({

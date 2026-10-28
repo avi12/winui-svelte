@@ -6,5 +6,6 @@ export { default as Window } from "./hand-written/Window.svelte";
 export type { WindowComponentProps } from "./hand-written/Window.d.svelte.ts";
 export type { ListHandle } from "./hand-written/items/items-host.svelte.ts";
 export { MoveDirection } from "./hand-written/items/reorder.ts";
+export { ticksDate, ticksMilliseconds } from "./values.ts";
 export type { WindowHandle } from "#src/window/window-handle.js";
 export type { WindowBounds, WindowPlacement } from "#src/window/window-host.svelte.js";

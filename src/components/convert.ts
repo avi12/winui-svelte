@@ -2,34 +2,80 @@ import {
   Application,
   BitmapImage,
   Brush,
+  DoubleCollection,
+  DurationType,
   FontFamily,
   GridUnitType,
+  InputScope,
+  InputScopeName,
+  InputScopeNameValue,
   IReference_Boolean,
+  IReference_DateTime,
   IReference_Double,
+  IReference_Point,
+  IReference_Rect,
+  IReference_TimeSpan,
+  IVector_Object,
+  Path,
+  PathGeometry,
+  PointCollection,
+  projectAs,
   PropertyValue,
+  RepeatBehaviorType,
   SolidColorBrush,
-  Uri
+  SvgImageSource,
+  Uri,
+  XamlReader
 } from "./generated/bindings.ts";
-import type { ImageSource, UIElement } from "./generated/bindings.ts";
+import type { Geometry, ImageSource, UIElement } from "./generated/bindings.ts";
 import type {
   AttachedInput,
   ColorInput,
   CornerRadiusInput,
+  DateInput,
+  DateTimeValue,
+  DurationInput,
+  FontWeightInput,
+  KeyTimeInput,
+  MatrixInput,
+  NumbersInput,
   ObjectInput,
-  ThicknessInput
+  ObjectReferenceInput,
+  PointInput,
+  PointListInput,
+  RectInput,
+  RepeatBehaviorInput,
+  SizeInput,
+  ThicknessInput,
+  TimeSpanInput,
+  TimeSpanValue,
+  Vector3Input
 } from "./values.ts";
 import {
   attachedList,
   cornerSides,
+  dateTicks,
+  DurationKind,
+  durationParts,
+  fontWeightNumber,
   gridLengthParts,
   GridUnit,
+  isSvgUri,
+  numberList,
   parseColor,
-  thicknessSides
+  pathMarkup,
+  pointList,
+  RepeatKind,
+  repeatParts,
+  thicknessSides,
+  ticksDate,
+  ticksMilliseconds,
+  timeSpanTicks
 } from "./values.ts";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import { boxedObject } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
-import { read } from "#src/renderer/host/reflect.js";
+import { read, write } from "#src/renderer/host/reflect.js";
 
 // A prop's value as the bindings take it: the generated components call these
 // where a prop is not already the bindings' own type.
@@ -38,9 +84,21 @@ export type {
   AttachedInput,
   ColorInput,
   CornerRadiusInput,
+  DateInput,
+  DurationInput,
+  FontWeightInput,
+  KeyTimeInput,
+  MatrixInput,
+  NumbersInput,
   ObjectInput,
   ObjectReferenceInput,
-  ThicknessInput
+  PointInput,
+  RectInput,
+  RepeatBehaviorInput,
+  SizeInput,
+  ThicknessInput,
+  TimeSpanInput,
+  Vector3Input
 } from "./values.ts";
 
 /**
@@ -78,8 +136,11 @@ export type GridLengthInput = number | string | GridLengthValue;
 /** A color string (see `ColorInput`), a theme resource name, or a brush. */
 export type BrushInput = string | Brush;
 
-/** A URI string or an image source. */
+/** A URI string (a `.svg` is an SVG image, any other a bitmap) or an image source. */
 export type ImageSourceInput = string | ImageSource;
+
+/** Path data as XAML writes it ("M0,0 L10,10 Z") or a geometry. */
+export type GeometryInput = string | Geometry;
 
 /** A font family name or a font family. */
 export type FontFamilyInput = string | FontFamily;
@@ -93,11 +154,64 @@ export type NullableBooleanInput = boolean | null;
 /** A nullable number property (an animation's `to`): a number, or null for unset. */
 export type NullableDoubleInput = number | null;
 
-const GRID_UNIT_TYPES = new Map<GridUnit, GridUnitType>([
-  [GridUnit.AUTO, GridUnitType.Auto],
-  [GridUnit.PIXEL, GridUnitType.Pixel],
-  [GridUnit.STAR, GridUnitType.Star]
-]);
+/** A time span (see `TimeSpanInput`), or null for unset (Timeline.beginTime). */
+export type NullableTimeSpanInput = TimeSpanInput | null;
+
+/** A date (see `DateInput`), or null for none picked (DatePicker.selectedDate). */
+export type NullableDateInput = DateInput | null;
+
+/** A point, or null for unset. */
+export type NullablePointInput = PointInput | null;
+
+/** A rect, or null for unset. */
+export type NullableRectInput = RectInput | null;
+
+/** A color (see `ColorInput`), or null for unset. */
+export type NullableColorInput = ColorInput | null;
+
+/**
+ * The items a control shows: a WinRT collection (or null) as it is, or an
+ * array, which is made a collection of boxed items.
+ */
+export type CollectionInput = ObjectReferenceInput | readonly ObjectInput[];
+
+/** A list of points: points or text of coordinate pairs, or a `PointCollection`. */
+export type PointCollectionInput = PointListInput | PointCollection;
+
+/** A list of numbers (a dash pattern): numbers or text, or a `DoubleCollection`. */
+export type DoubleCollectionInput = NumbersInput | DoubleCollection;
+
+/** An input mode by name or number, several of them, or an `InputScope`. */
+export type InputScopeInput =
+  | EnumInput<typeof InputScopeNameValue>
+  | ReadonlyArray<EnumInput<typeof InputScopeNameValue>>
+  | InputScope;
+
+// Built when used, not at import: a table that names a binding at the top
+// level keeps that binding in the bundle of every app that imports this module.
+function gridUnitTypes() {
+  return new Map<GridUnit, GridUnitType>([
+    [GridUnit.AUTO, GridUnitType.Auto],
+    [GridUnit.PIXEL, GridUnitType.Pixel],
+    [GridUnit.STAR, GridUnitType.Star]
+  ]);
+}
+
+function durationTypes() {
+  return new Map<DurationKind, DurationType>([
+    [DurationKind.AUTOMATIC, DurationType.Automatic],
+    [DurationKind.TIME_SPAN, DurationType.TimeSpan],
+    [DurationKind.FOREVER, DurationType.Forever]
+  ]);
+}
+
+function repeatBehaviorTypes() {
+  return new Map<RepeatKind, RepeatBehaviorType>([
+    [RepeatKind.COUNT, RepeatBehaviorType.Count],
+    [RepeatKind.DURATION, RepeatBehaviorType.Duration],
+    [RepeatKind.FOREVER, RepeatBehaviorType.Forever]
+  ]);
+}
 const INT32_BITS = 32;
 const MAX_INT32 = 2 ** (INT32_BITS - 1) - 1;
 
@@ -160,6 +274,20 @@ export function cornerRadiusOf(input: CornerRadiusInput) {
   };
 }
 
+// The bindings' member for a parsed kind; a kind the table lacks is a bug here.
+function nativeMember<Key extends string, Member>({ table, key }: {
+  table: ReadonlyMap<Key, Member>;
+  key: Key;
+}) {
+  const member = table.get(key);
+  const isKnown = member !== undefined;
+  if (!isKnown) {
+    throw new RangeError(`no bindings member for ${key}`);
+  }
+
+  return member;
+}
+
 /** A grid length prop as the bindings' `GridLength`. */
 export function gridLengthOf(input: GridLengthInput) {
   const isGridLength = typeof input === "object";
@@ -168,15 +296,12 @@ export function gridLengthOf(input: GridLengthInput) {
   }
 
   const parts = gridLengthParts(input);
-  const gridUnitType = GRID_UNIT_TYPES.get(parts.unit);
-  const isKnownUnit = gridUnitType !== undefined;
-  if (!isKnownUnit) {
-    throw new RangeError(`no grid unit for ${parts.unit}`);
-  }
-
   return {
     value: parts.value,
-    gridUnitType
+    gridUnitType: nativeMember({
+      table: gridUnitTypes(),
+      key: parts.unit
+    })
   };
 }
 
@@ -232,6 +357,292 @@ export function brushOf(input: BrushInput) {
   return found;
 }
 
+/** A time span prop as the bindings' `TimeSpan`; throws a `TypeError` for text that is not one. */
+export function timeSpanOf(input: TimeSpanInput) {
+  const isValue = typeof input === "object";
+  if (isValue) {
+    return input;
+  }
+
+  return { duration: timeSpanTicks(input) };
+}
+
+/** A time span prop read back as milliseconds. */
+export function timeSpanInputOf(value: TimeSpanValue) {
+  return ticksMilliseconds(value.duration);
+}
+
+/** A duration prop as the bindings' `Duration`. */
+export function durationOf(input: DurationInput) {
+  const isValue = typeof input === "object";
+  if (isValue) {
+    return input;
+  }
+
+  const { kind, ticks } = durationParts(input);
+  return {
+    timeSpan: {
+      duration: ticks
+    },
+    type: nativeMember({
+      table: durationTypes(),
+      key: kind
+    })
+  };
+}
+
+/** A key time prop as the bindings' `KeyTime`. */
+export function keyTimeOf(input: KeyTimeInput) {
+  const isValue = typeof input === "object";
+  if (isValue) {
+    return input;
+  }
+
+  return {
+    timeSpan: {
+      duration: timeSpanTicks(input)
+    }
+  };
+}
+
+/** A repeat behavior prop as the bindings' `RepeatBehavior`. */
+export function repeatBehaviorOf(input: RepeatBehaviorInput) {
+  const isValue = typeof input === "object";
+  if (isValue) {
+    return input;
+  }
+
+  const { kind, count, ticks } = repeatParts(input);
+  return {
+    count,
+    duration: {
+      duration: ticks
+    },
+    type: nativeMember({
+      table: repeatBehaviorTypes(),
+      key: kind
+    })
+  };
+}
+
+/** A font weight prop as the bindings' `FontWeight`; throws a `RangeError` for a weight that is none. */
+export function fontWeightOf(input: FontWeightInput) {
+  const isValue = typeof input === "object";
+  if (isValue) {
+    return input;
+  }
+
+  return { weight: fontWeightNumber(input) };
+}
+
+/** A point prop as the bindings' `Point`. */
+export function pointOf(input: PointInput) {
+  const isValue = "x" in input;
+  if (isValue) {
+    return input;
+  }
+
+  const [x, y] = input;
+  return {
+    x,
+    y
+  };
+}
+
+/** A size prop as the bindings' `Size`. */
+export function sizeOf(input: SizeInput) {
+  const isValue = "width" in input;
+  if (isValue) {
+    return input;
+  }
+
+  const [width, height] = input;
+  return {
+    width,
+    height
+  };
+}
+
+/** A rect prop as the bindings' `Rect`. */
+export function rectOf(input: RectInput) {
+  const isValue = "width" in input;
+  if (isValue) {
+    return input;
+  }
+
+  const [x, y, width, height] = input;
+  return {
+    x,
+    y,
+    width,
+    height
+  };
+}
+
+/** A matrix prop as the bindings' `Matrix`. */
+export function matrixOf(input: MatrixInput) {
+  const isValue = "m11" in input;
+  if (isValue) {
+    return input;
+  }
+
+  const [m11, m12, m21, m22, offsetX, offsetY] = input;
+  return {
+    m11,
+    m12,
+    m21,
+    m22,
+    offsetX,
+    offsetY
+  };
+}
+
+/** A vector prop as the bindings' `Vector3`. */
+export function vector3Of(input: Vector3Input) {
+  const isValue = "z" in input;
+  if (isValue) {
+    return input;
+  }
+
+  const [x, y, depth] = input;
+  return {
+    x,
+    y,
+    z: depth
+  };
+}
+
+/** A date prop as the bindings' `DateTime`; throws a `TypeError` for text that is not a date. */
+export function dateTimeOf(input: DateInput) {
+  const isValue = typeof input === "object" && "universalTime" in input;
+  if (isValue) {
+    return input;
+  }
+
+  return { universalTime: dateTicks(input) };
+}
+
+/** A date prop read back as a `Date`. */
+export function dateInputOf(value: DateTimeValue) {
+  return ticksDate(value.universalTime);
+}
+
+/** A nullable time span prop takes a boxed value. */
+export function nullableTimeSpanOf(input: NullableTimeSpanInput) {
+  const isUnset = input === null;
+  return isUnset ? null : IReference_TimeSpan.from(PropertyValue.createTimeSpan(timeSpanOf(input)));
+}
+
+/** A nullable time span prop read back as milliseconds, or null. */
+export function nullableTimeSpanInputOf(value: TimeSpanValue | null) {
+  const isUnset = value === null;
+  return isUnset ? null : timeSpanInputOf(value);
+}
+
+/** A nullable date prop takes a boxed value. */
+export function nullableDateTimeOf(input: NullableDateInput) {
+  const isUnset = input === null;
+  return isUnset ? null : IReference_DateTime.from(PropertyValue.createDateTime(dateTimeOf(input)));
+}
+
+/** A nullable date prop read back as a `Date`, or null. */
+export function nullableDateInputOf(value: DateTimeValue | null) {
+  const isUnset = value === null;
+  return isUnset ? null : dateInputOf(value);
+}
+
+/** A nullable point prop takes a boxed value. */
+export function nullablePointOf(input: NullablePointInput) {
+  const isUnset = input === null;
+  return isUnset ? null : IReference_Point.from(PropertyValue.createPoint(pointOf(input)));
+}
+
+/** A nullable rect prop takes a boxed value. */
+export function nullableRectOf(input: NullableRectInput) {
+  const isUnset = input === null;
+  return isUnset ? null : IReference_Rect.from(PropertyValue.createRect(rectOf(input)));
+}
+
+/** A nullable color prop: PropertyValue cannot box a color, so the color is handed on as it is. */
+export function nullableColorOf(input: NullableColorInput) {
+  const isUnset = input === null;
+  return isUnset ? null : colorOf(input);
+}
+
+/** A list of points prop as a `PointCollection`; a collection is used as it is. */
+export function pointCollectionOf(input: PointCollectionInput) {
+  const isCollection = input instanceof PointCollection;
+  if (isCollection) {
+    return input;
+  }
+
+  const points = new PointCollection();
+  for (const point of pointList(input)) {
+    points.append(pointOf(point));
+  }
+
+  return points;
+}
+
+/** A list of numbers prop as a `DoubleCollection`; a collection is used as it is. */
+export function doubleCollectionOf(input: DoubleCollectionInput) {
+  const isCollection = input instanceof DoubleCollection;
+  if (isCollection) {
+    return input;
+  }
+
+  const numbers = new DoubleCollection();
+  for (const value of numberList(input)) {
+    numbers.append(value);
+  }
+
+  return numbers;
+}
+
+function isItemList(input: CollectionInput): input is readonly ObjectInput[] {
+  return Array.isArray(input);
+}
+
+/** An items source prop as a collection: an array is made one, each item boxed as `objectOf` boxes it. */
+export function collectionOf(input: CollectionInput) {
+  const isList = isItemList(input);
+  if (!isList) {
+    return input;
+  }
+
+  return IVector_Object.create(input.map(item => objectOf(item)));
+}
+
+/** An input scope prop as an `InputScope` holding a name for each member. */
+export function inputScopeOf(input: InputScopeInput) {
+  const isScope = input instanceof InputScope;
+  if (isScope) {
+    return input;
+  }
+
+  const scope = new InputScope();
+  const names = scope.names;
+  const hasNames = names !== null;
+  if (!hasNames) {
+    throw new Error("a new input scope holds no list of names");
+  }
+
+  const isList = typeof input === "object";
+  const members = isList ? input : [input];
+  for (const member of members) {
+    names.append(
+      new InputScopeName(
+        enumValue({
+          table: InputScopeNameValue,
+          input: member
+        })
+      )
+    );
+  }
+
+  return scope;
+}
+
 /** A nullable boolean property (ToggleButton.IsChecked) takes a boxed value. */
 export function nullableBooleanOf(isOn: NullableBooleanInput) {
   const isUnset = isOn === null;
@@ -256,16 +667,43 @@ export function fontFamilyOf(input: FontFamilyInput) {
   return isText ? new FontFamily(input) : input;
 }
 
-/** An image source prop as an `ImageSource`; a string is the URI of a bitmap. */
+/**
+ * An image source prop as an `ImageSource`; a string is the URI of an SVG image
+ * when it ends in `.svg`, else of a bitmap.
+ */
 export function imageSourceOf(input: ImageSourceInput) {
   const isSource = typeof input !== "string";
   if (isSource) {
     return input;
   }
 
+  const isSvg = isSvgUri(input);
+  if (isSvg) {
+    const svg = new SvgImageSource();
+    svg.uriSource = new Uri(input);
+    return svg;
+  }
+
   const image = new BitmapImage();
   image.uriSource = new Uri(input);
   return image;
+}
+
+/**
+ * A geometry prop as a `Geometry`; a string is path data, which XAML's reader
+ * parses into the geometry of a Path. WinUI lets a geometry belong to one
+ * owner, so it is taken from that Path before it is handed on.
+ */
+export function geometryOf(input: GeometryInput) {
+  const isGeometry = typeof input !== "string";
+  if (isGeometry) {
+    return input;
+  }
+
+  const path = projectAs(XamlReader.load(pathMarkup(input)), Path);
+  const geometry = projectAs(path.data, PathGeometry);
+  write(path, "data", null);
+  return geometry;
 }
 
 /**
