@@ -1,16 +1,9 @@
 import { CORNERS, SIDES } from "./box-properties.ts";
+import type { Expansion, ExpansionInput } from "./property-kit.ts";
 import type { Declaration } from "./types.ts";
 import { Reader } from "#src/css/parse/reader.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 import { parseLength, parseVariable, splitSlash } from "#src/css/parse/values.js";
-
-/** What an expansion reads: the shorthand declaration and a reader over its value. */
-interface ExpansionInput {
-  declaration: Declaration;
-  reader: Reader;
-}
-
-type Expansion = (input: ExpansionInput) => Declaration[];
 
 const MAX_BOX_VALUES = 4;
 const MAX_PAIR_VALUES = 2;
@@ -23,8 +16,7 @@ const BORDER_WIDTH_KEYWORDS = new Map([
 ]);
 const DEFAULT_BORDER_WIDTH = "medium";
 const BORDER_STYLES = new Set(["none", "solid", "hidden"]);
-// An outline's `auto` is the browser's own focus ring: WinUI's own is the nearest.
-const OUTLINE_STYLES = new Set(["none", "solid", "auto"]);
+
 const UNSUPPORTED_BORDER_STYLES = new Set(["dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]);
 const FONT_STYLES = new Set(["normal", "italic", "oblique"]);
 const FONT_WEIGHT_WORDS = new Set(["normal", "bold", "bolder", "lighter"]);
@@ -34,7 +26,8 @@ const IMAGE_OR_GRADIENT = /^(url|image|image-set|(repeating-)?(linear|radial|con
 // CornerRadius: not expanded.
 const WHOLE_VARIABLE_SHORTHANDS = new Set(["margin", "padding", "border-width", "border-radius"]);
 
-function longhand({ declaration, property, value }: {
+/** A declaration that is `declaration` with another property and value: the longhand a shorthand expands to. */
+export function longhand({ declaration, property, value }: {
   declaration: Declaration;
   property: string;
   value: string;
@@ -79,12 +72,14 @@ function expandBox({ declaration, names, reader, template }: {
   }));
 }
 
-// The width, style and color of a border or outline, in any order; null after an error.
-function readLineWords({ reader, styles, noun }: {
+/**
+ * The width, style and color of a border or an outline, in any order; null
+ * after an error. A width keyword is in pixels, and a missing width is CSS's
+ * `medium`.
+ */
+export function readLineWords({ reader, styles }: {
   reader: Reader;
   styles: ReadonlySet<string>;
-  /** What WinUI draws, for the message about a style it cannot. */
-  noun: string;
 }) {
   let width = DEFAULT_BORDER_WIDTH;
   let style = "";
@@ -93,7 +88,7 @@ function readLineWords({ reader, styles, noun }: {
     const lower = word.toLowerCase();
     const isWidth = parseLength(word) !== null || BORDER_WIDTH_KEYWORDS.has(lower);
     if (UNSUPPORTED_BORDER_STYLES.has(lower)) {
-      return reader.error(`${reader.declaration.property}: ${lower} has no WinUI meaning (a WinUI ${noun} is solid; use solid or none)`);
+      return reader.error(`${reader.declaration.property}: ${lower} has no WinUI meaning (WinUI draws solid lines only; use solid or none)`);
     }
 
     if (styles.has(lower)) {
@@ -126,8 +121,7 @@ function expandBorder({ declaration, reader, sideNames }: {
 }) {
   const words = readLineWords({
     reader,
-    styles: BORDER_STYLES,
-    noun: "border"
+    styles: BORDER_STYLES
   });
   const isWordsMissing = words === null;
   if (isWordsMissing) {
@@ -150,37 +144,6 @@ function expandBorder({ declaration, reader, sideNames }: {
     value: words.color
   })];
   return [...widths, ...rest, ...colors];
-}
-
-function expandOutline({ declaration, reader }: ExpansionInput) {
-  const words = readLineWords({
-    reader,
-    styles: OUTLINE_STYLES,
-    noun: "focus visual"
-  });
-  const isWordsMissing = words === null;
-  if (isWordsMissing) {
-    return [];
-  }
-
-  const colors = words.color === null ? [] : [longhand({
-    declaration,
-    property: "outline-color",
-    value: words.color
-  })];
-  return [
-    longhand({
-      declaration,
-      property: "outline-width",
-      value: words.width
-    }),
-    longhand({
-      declaration,
-      property: "outline-style",
-      value: words.style
-    }),
-    ...colors
-  ];
 }
 
 function expandBackground({ declaration, reader }: ExpansionInput) {
@@ -393,7 +356,6 @@ const expansions = new Map<string, Expansion>([
     sideNames: SIDES
   })],
   ...SIDES.map(sideExpansion),
-  ["outline", expandOutline],
   ["background", expandBackground],
   ["font", expandFont],
   ["gap", ({ declaration, reader }) => expandPair({
@@ -430,11 +392,13 @@ const expansions = new Map<string, Expansion>([
  * shorthand whose whole value is one `var(--name)` stays as it is: the
  * resource holds the complete value (a Thickness, a CornerRadius).
  */
-export function expandDeclaration({ declaration, options }: {
+export function expandDeclaration({ declaration, options, extra = new Map() }: {
   declaration: Declaration;
   options: LowerOptions;
+  /** The shorthands of the groups an app opted into. */
+  extra?: ReadonlyMap<string, Expansion>;
 }) {
-  const expansion = expansions.get(declaration.property);
+  const expansion = expansions.get(declaration.property) ?? extra.get(declaration.property);
   const isExpansionMissing = expansion === undefined;
   if (isExpansionMissing) {
     return [declaration];

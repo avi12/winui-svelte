@@ -77,6 +77,22 @@
       "types": "./dist/css/gradients.d.ts",
       "default": "./dist/css/gradients.js"
     },
+    "./css/focus": {
+      "types": "./dist/css/focus.d.ts",
+      "default": "./dist/css/focus.js"
+    },
+    "./css/resources": {
+      "types": "./dist/css/resources.d.ts",
+      "default": "./dist/css/resources.js"
+    },
+    "./css/surface": {
+      "types": "./dist/css/surface.d.ts",
+      "default": "./dist/css/surface.js"
+    },
+    "./css/transform": {
+      "types": "./dist/css/transform.d.ts",
+      "default": "./dist/css/transform.js"
+    },
     "./css/vite": {
       "types": "./dist/css/vite.d.ts",
       "default": "./dist/css/vite.js"

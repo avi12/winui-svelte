@@ -13,10 +13,6 @@ interface DictionaryLike {
 interface ListLike {
   append(item: object): void;
   clear(): void;
-}
-
-interface IndexedListLike {
-  append(item: object): void;
   indexOf(item: object): number;
   removeAt(index: number): void;
 }
@@ -69,11 +65,7 @@ function isDictionary(value: NativeValue): value is DictionaryLike {
 }
 
 function isList(value: NativeValue): value is ListLike {
-  return isRecord(value) && typeof value["append"] === "function" && typeof value["clear"] === "function";
-}
-
-function isIndexedList(value: NativeValue): value is IndexedListLike {
-  return isRecord(value) && typeof value["append"] === "function" && typeof value["indexOf"] === "function" && typeof value["removeAt"] === "function";
+  return isRecord(value) && ["append", "clear", "indexOf", "removeAt"].every(method => typeof value[method] === "function");
 }
 
 function isEventMethod(value: NativeValue): value is (handler: () => void) => NativeValue {
@@ -127,7 +119,7 @@ export function createCssNative(winui: CssWinui) {
         }),
         key: "mergedDictionaries"
       });
-      if (!isIndexedList(merged)) {
+      if (!isList(merged)) {
         throw new TypeError("not a FrameworkElement");
       }
 
@@ -182,20 +174,8 @@ export function createCssNative(winui: CssWinui) {
         definitions.append(definition);
       }
     },
-    setCenterPoint(control, { x, y }) {
-      Object.assign(control, {
-        centerPoint: {
-          x,
-          y,
-          z: 0
-        }
-      });
-    },
-    useSystemFocusVisuals(control) {
-      const isControl = "useSystemFocusVisuals" in control;
-      if (isControl) {
-        Object.assign(control, { useSystemFocusVisuals: true });
-      }
+    assign(control, values) {
+      Object.assign(control, values);
     },
     subscribe(control, event, handler) {
       const subscribe = readMember({

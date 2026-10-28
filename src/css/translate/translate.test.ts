@@ -159,10 +159,10 @@ test("a custom property of a class is a resource of that rule, not of the app", 
   assert.deepEqual(diagnostics, []);
   assert.equal(sheet.resourcesXaml, null);
   assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => declaration.property), ["color"]);
-  assert.deepEqual(sheet.rules[0]?.resources.map(({ scheme, key }) => [scheme, key]), [
-    ["Default", "Tone"],
-    ["Default", "ToneBrush"]
-  ]);
+  const xaml = sheet.rules[0]?.resourcesXaml ?? "";
+  assert.match(xaml, /<ResourceDictionary x:Key="Default">/u);
+  assert.match(xaml, /<Color x:Key="Tone">#FF0000<\/Color>/u);
+  assert.match(xaml, /<SolidColorBrush x:Key="ToneBrush"/u);
 });
 
 test("a custom property of a class can differ by color scheme, and :root stays the app's", () => {
@@ -172,8 +172,11 @@ test("a custom property of a class can differ by color scheme, and :root stays t
   assert.deepEqual(diagnostics, []);
   assert.match(sheet.resourcesXaml ?? "", /Accent/u);
   assert.doesNotMatch(sheet.resourcesXaml ?? "", /ButtonBackground/u);
-  const schemes = sheet.rules.flatMap(rule => rule.resources.map(resource => resource.scheme));
-  assert.deepEqual(schemes, ["Default", "Dark"]);
+  const [light, dark] = sheet.rules.map(rule => rule.resourcesXaml ?? "");
+  assert.match(light ?? "", /x:Key="Default"/u);
+  assert.match(dark ?? "", /x:Key="Dark"/u);
+  assert.doesNotMatch(dark ?? "", /x:Key="Default"/u);
+  assert.match(dark ?? "", /Color="#EEEEEE"/u);
 });
 
 test("a custom property on a state rule is an error that names the resource to override", () => {
@@ -185,7 +188,7 @@ test("a custom property of a key WinUI defines keeps WinUI's kind", () => {
     css: ".a { --button-background-pointer-over: red; --control-corner-radius: 6px; --button-padding: 4px; --system-accent-color: #0af }"
   });
   assert.deepEqual(diagnostics, []);
-  const xaml = sheet.rules[0]?.resources.map(resource => resource.xaml).join("\n") ?? "";
+  const xaml = sheet.rules[0]?.resourcesXaml ?? "";
   assert.match(xaml, /<SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#FF0000"\/>/u);
   assert.doesNotMatch(xaml, /<Color x:Key="ButtonBackgroundPointerOver"/u);
   assert.match(xaml, /<CornerRadius x:Key="ControlCornerRadius">6<\/CornerRadius>/u);
@@ -231,7 +234,7 @@ test("var(): a custom property of another sheet is unknown here", () => {
 
 test("what a sheet cannot say is an error with its position", () => {
   const result = errors(".a { color: red }\n.b {\n  box-shadow: 0 0 2px red;\n}");
-  assert.deepEqual(result, ["card.svelte:3:3: box-shadow has no WinUI meaning (a WinUI shadow is a ThemeShadow set on the element, not a Style value)"]);
+  assert.deepEqual(result, ["card.svelte:3:3: box-shadow has no WinUI meaning (a WinUI shadow is a ThemeShadow, which takes no blur, offset, spread or color: use -winui-elevation, its depth in px)"]);
 });
 
 test("positions are mapped back to the .svelte file", () => {

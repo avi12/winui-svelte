@@ -1,8 +1,16 @@
 import { hasStyle } from "./resources.ts";
 import type { CssNative } from "./runtime.ts";
-import { installCssRuntime, registerStyleSheet, styledElement, unregisterStyleSheet } from "./runtime.ts";
+import {
+  installCssRuntime,
+  registerPropertyGroups,
+  registerStyleSheet,
+  styledElement,
+  unregisterStyleSheet
+} from "./runtime.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
-import type { OriginPoint } from "#src/css/translate/transform-origin.js";
+import { focusGroups } from "#src/css/translate/focus-properties.js";
+import { resourceGroups } from "#src/css/translate/resource-properties.js";
+import { transformGroups } from "#src/css/translate/transform-properties.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
 import type { NativeValue } from "#src/native-value.js";
 import { read } from "#src/renderer/host/reflect.js";
@@ -18,9 +26,8 @@ interface FakeControl {
   style: string | null;
   styleChanges: number;
   columns: string | null;
-  centerPoint: OriginPoint | null;
+  assigned: Record<string, unknown>;
   resources: string[];
-  focusVisuals: boolean;
   handlers: Map<string, () => void>;
   properties: Record<string, NativeValue>;
 }
@@ -30,9 +37,8 @@ function control(properties: Record<string, NativeValue> = {}) {
     style: null,
     styleChanges: 0,
     columns: null,
-    centerPoint: null,
+    assigned: {},
     resources: [],
-    focusVisuals: false,
     handlers: new Map(),
     properties
   };
@@ -75,11 +81,8 @@ const fakeNative: CssNative = {
   setGridDefinitions(target, kind, lengths) {
     fake(target).columns = `${kind}:${lengths}`;
   },
-  setCenterPoint(target, point) {
-    fake(target).centerPoint = point;
-  },
-  useSystemFocusVisuals(target) {
-    fake(target).focusVisuals = true;
+  assign(target, values) {
+    Object.assign(fake(target).assigned, values);
   },
   subscribe(target, event, handler) {
     const fakeControl = fake(target);
@@ -377,6 +380,7 @@ test("a grid's templates are written to its definitions", () => {
 });
 
 test("a scaled element pivots about its centre and follows its size", () => {
+  registerPropertyGroups(transformGroups());
   registerStyleSheet(
     sheet({
       id: "pivot.svelte",
@@ -392,22 +396,37 @@ test("a scaled element pivots about its centre and follows its size", () => {
     elementType: "border"
   });
   element.setClasses("grow");
-  assert.deepEqual(target.centerPoint, {
-    x: 50,
-    y: 20
+  assert.deepEqual(fake(target).assigned, {
+    centerPoint: {
+      x: 50,
+      y: 20,
+      z: 0
+    },
+    renderTransformOrigin: {
+      x: 0.5,
+      y: 0.5
+    }
   });
 
   target.properties["actualWidth"] = 200;
   target.handlers.get("SizeChanged")?.();
-  assert.deepEqual(target.centerPoint, {
+  assert.deepEqual(fake(target).assigned["centerPoint"], {
     x: 100,
-    y: 20
+    y: 20,
+    z: 0
   });
 
   element.setClasses("corner");
-  assert.deepEqual(target.centerPoint, {
-    x: 200,
-    y: 10
+  assert.deepEqual(fake(target).assigned, {
+    centerPoint: {
+      x: 200,
+      y: 10,
+      z: 0
+    },
+    renderTransformOrigin: {
+      x: 1,
+      y: 0.25
+    }
   });
 
   element.dispose();
@@ -415,6 +434,7 @@ test("a scaled element pivots about its centre and follows its size", () => {
 });
 
 test("a custom property on a class is a resource of the elements that have it", () => {
+  registerPropertyGroups(resourceGroups());
   registerStyleSheet(
     sheet({
       id: "danger.svelte",
@@ -439,8 +459,8 @@ test("a custom property on a class is a resource of the elements that have it", 
   assert.doesNotMatch(mergedResources.join("\n"), /ButtonBackgroundPointerOver/u);
 
   dangerElement.setClasses("danger loud");
-  assert.equal(danger.resources.length, 1);
-  assert.match(danger.resources[0] ?? "", /Color="#0000FF"/u);
+  assert.equal(danger.resources.length, 2);
+  assert.match(danger.resources.at(-1) ?? "", /Color="#0000FF"/u);
 
   dangerElement.setClasses("");
   assert.deepEqual(danger.resources, []);
@@ -451,19 +471,20 @@ test("a custom property on a class is a resource of the elements that have it", 
 });
 
 test("an outline turns on the control's system focus visuals", () => {
+  registerPropertyGroups(focusGroups());
   registerStyleSheet(
     sheet({
       id: "focus.svelte",
       css: ".ring { outline: 2px solid #0af }"
     })
   );
-  const target = control();
+  const target = control({ useSystemFocusVisuals: false });
   const element = styledElement({
     control: target,
     elementType: "button"
   });
   element.setClasses("ring");
-  assert.equal(target.focusVisuals, true);
+  assert.equal(fake(target).assigned["useSystemFocusVisuals"], true);
   assert.match(target.style ?? "", /<Setter Property="FocusVisualPrimaryBrush" Value="#00AAFF"\/>/u);
   element.dispose();
 });

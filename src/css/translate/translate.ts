@@ -1,5 +1,5 @@
-import { gradientGroups } from "./background-properties.ts";
-import { computeDeclarations, resourceDictionaryXaml } from "./cascade.ts";
+import { computeDeclarations } from "./cascade.ts";
+import { LAZY_GROUPS } from "./lazy-groups.ts";
 import { lowerDeclarations } from "./properties.ts";
 import { expandDeclaration } from "./shorthands.ts";
 import { ColorScheme } from "./types.ts";
@@ -13,7 +13,7 @@ import type {
   StyleSheetData,
   Translation
 } from "./types.ts";
-import { variableEntries } from "./variables.ts";
+import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
 import type { AtRuleBlock, Block, RuleBlock } from "#src/css/parse/parser.js";
 import { BlockKind, CssSyntaxError, parseCss } from "#src/css/parse/parser.js";
@@ -170,7 +170,7 @@ function scopedResources({ translator, customProperties, scheme }: {
     translator.kinds.set(entry.key, entry.kind);
   }
 
-  return entries.map(entryOf);
+  return entries.length === 0 ? null : resourceDictionaryXaml(entries.map(entryOf));
 }
 
 function entryOf({ scheme, key, xaml }: VariableEntry) {
@@ -223,7 +223,7 @@ function addSelectorRule({ translator, block, selector, scheme }: {
     });
   }
 
-  const resources = hasState ? [] : scopedResources({
+  const resourcesXaml = hasState ? null : scopedResources({
     translator,
     customProperties,
     scheme
@@ -237,7 +237,7 @@ function addSelectorRule({ translator, block, selector, scheme }: {
     });
   }
 
-  const isUseless = isSchemeConditional && resources.length === 0;
+  const isUseless = isSchemeConditional && resourcesXaml === null;
   if (isUseless) {
     return;
   }
@@ -249,7 +249,7 @@ function addSelectorRule({ translator, block, selector, scheme }: {
     specificity: selector.specificity,
     order: translator.nextOrder,
     declarations: isSchemeConditional ? [] : properties,
-    resources
+    resourcesXaml
   });
   translator.nextOrder++;
 }
@@ -387,6 +387,8 @@ function validateRules({ translator, catalogue }: {
   translator: Translator;
   catalogue: ResourceCatalogue;
 }) {
+  const groups = LAZY_GROUPS.flatMap(lazy => lazy.groups());
+  const shorthands = new Map(groups.flatMap(group => [...group.shorthands ?? []]));
   for (const rule of translator.rules) {
     const options: LowerOptions = {
       elementType: rule.elementType,
@@ -415,7 +417,8 @@ function validateRules({ translator, catalogue }: {
     };
     const expanded = rule.declarations.flatMap(declaration => expandDeclaration({
       declaration,
-      options
+      options,
+      extra: shorthands
     }));
     rule.declarations = expanded;
     lowerDeclarations({
@@ -424,7 +427,7 @@ function validateRules({ translator, catalogue }: {
         inline: []
       }),
       options,
-      extraGroups: gradientGroups()
+      extraGroups: groups
     });
   }
 }

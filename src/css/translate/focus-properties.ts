@@ -1,9 +1,19 @@
 import { setter } from "./property-kit.ts";
-import type { GroupInput, Output } from "./property-kit.ts";
+import type {
+  ExpansionInput,
+  GroupInput,
+  Output,
+  PropertyGroup,
+  WriteContext
+} from "./property-kit.ts";
+import { longhand, readLineWords } from "./shorthands.ts";
 import type { Reader } from "#src/css/parse/reader.js";
 
-/** The members `outline` is lowered from. */
+/** The members `outline` is lowered from: the longhands, since a sheet keeps its shorthands expanded. */
 export const OUTLINE_MEMBERS = ["outline-width", "outline-style", "outline-color", "outline-offset"];
+const FOCUS_VISUALS_TARGET = "focusVisuals";
+// An outline's `auto` is the browser's own focus ring: WinUI's own is the nearest.
+const STYLES = new Set(["none", "solid", "auto"]);
 
 const VISIBLE_STYLES = new Set(["solid", "auto"]);
 
@@ -61,7 +71,7 @@ function brushOf(reader: Reader | undefined) {
  * visual draws only when the control uses the system's, which the runtime sets
  * (a write, since a Style can set it on a Control and not on other types).
  */
-export function outline(input: GroupInput) {
+function outline(input: GroupInput) {
   const style = input.readers.get("outline-style")?.declaration.value.toLowerCase() ?? "";
   const width = pixelsOf(input.readers.get("outline-width"));
   const brush = brushOf(input.readers.get("outline-color"));
@@ -124,8 +134,69 @@ export function outline(input: GroupInput) {
     }),
     {
       kind: "write",
-      target: "focusVisuals",
+      target: FOCUS_VISUALS_TARGET,
       value: "true"
     } as const
   ];
+}
+
+// `outline: 2px solid red` as its longhands.
+function expandOutline({ declaration, reader }: ExpansionInput) {
+  const words = readLineWords({
+    reader,
+    styles: STYLES
+  });
+  const isWordsMissing = words === null;
+  if (isWordsMissing) {
+    return [];
+  }
+
+  const colors = words.color === null ? [] : [longhand({
+    declaration,
+    property: "outline-color",
+    value: words.color
+  })];
+  return [
+    longhand({
+      declaration,
+      property: "outline-width",
+      value: words.width
+    }),
+    longhand({
+      declaration,
+      property: "outline-style",
+      value: words.style
+    }),
+    ...colors
+  ];
+}
+
+// The focus visual draws only when the control uses the system's, which a
+// Style can set on a Control and not on other types: set where there is one.
+function useSystemFocusVisuals({ native, control }: WriteContext) {
+  const isControl = native.read({
+    control,
+    property: "useSystemFocusVisuals"
+  }) !== undefined;
+  if (isControl) {
+    native.assign(control, { useSystemFocusVisuals: true });
+  }
+
+  return null;
+}
+
+/**
+ * The property groups of `outline`. Apart from the built-in groups, as the
+ * gradients are: a sheet that uses an outline registers them
+ * (`registerPropertyGroups`), so a window with none carries none of it.
+ */
+export function focusGroups() {
+  return [{
+    members: OUTLINE_MEMBERS,
+    lower: outline,
+    shorthands: new Map([["outline", expandOutline]]),
+    writes: {
+      [FOCUS_VISUALS_TARGET]: useSystemFocusVisuals
+    }
+  } satisfies PropertyGroup];
 }

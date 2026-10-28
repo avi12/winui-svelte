@@ -87,11 +87,11 @@ export interface Rule {
   order: number;
   declarations: Declaration[];
   /**
-   * The custom properties declared in this rule: resources set on each element
-   * it matches (and so seen by the element's children), where `:root` sets
-   * them for the whole app.
+   * A XAML ResourceDictionary of the custom properties declared in this rule,
+   * or null: resources set on each element the rule matches (and so seen by the
+   * element's children), where `:root` sets them for the whole app.
    */
-  resources: ResourceEntry[];
+  resourcesXaml: string | null;
 }
 
 /** A component's stylesheet as data. */

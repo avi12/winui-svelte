@@ -1,11 +1,6 @@
+import { parseAngle } from "./angles.ts";
 import { parseColor } from "./colors.ts";
-import {
-  parseLength,
-  parseNumber,
-  parsePercent,
-  splitCommas,
-  splitWords
-} from "./values.ts";
+import { parseLength, parsePercent, splitCommas, splitWords } from "./values.ts";
 
 /** A place in an element's bounding box, as fractions of its width and height. */
 export interface GradientPoint {
@@ -47,9 +42,6 @@ interface Failure {
 }
 
 const GRADIENT_FUNCTION = /^(repeating-)?(linear|radial|conic)-gradient\((.*)\)$/isu;
-const ANGLE = /^(-?(?:\d+\.?\d*|\.\d+))(deg|grad|rad|turn)$/iu;
-const GRADIANS_PER_TURN = 400;
-const DEGREES_PER_TURN = 360;
 const FRACTION_DIGITS = 4;
 const CARDINAL_TOLERANCE = 1e-9;
 const MIDDLE = 0.5;
@@ -58,13 +50,6 @@ const MAX_STOP_POSITIONS = 2;
 const TRANSPARENT_ALPHA_PREFIX = "#00";
 const ARGB_LENGTH = 9;
 const RGB_DIGITS = 6;
-
-const TURNS_PER_UNIT = new Map([
-  ["deg", 1 / DEGREES_PER_TURN],
-  ["grad", 1 / GRADIANS_PER_TURN],
-  ["rad", 1 / (2 * Math.PI)],
-  ["turn", 1]
-]);
 
 const HORIZONTAL_SIDES = new Map([
   ["left", 0],
@@ -102,24 +87,6 @@ function point({ x, y }: GradientPoint) {
 
 function isFailure(value: object): value is Failure {
   return "isValid" in value && value.isValid === false;
-}
-
-// `0deg`-style angle in radians, or null when the word is not an angle. A bare
-// 0 is an angle in CSS.
-function parseAngle(word: string) {
-  const isZero = parseNumber(word) === 0;
-  if (isZero) {
-    return 0;
-  }
-
-  const match = ANGLE.exec(word);
-  const isMatchMissing = match === null;
-  if (isMatchMissing) {
-    return null;
-  }
-
-  const turns = (TURNS_PER_UNIT.get((match[2] ?? "").toLowerCase()) ?? 0) * Number(match[1]);
-  return turns * 2 * Math.PI;
 }
 
 // `to right`, `to bottom left`: the keyword corner or side, exactly. The

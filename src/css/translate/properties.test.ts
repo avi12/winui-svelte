@@ -1,6 +1,6 @@
-import { gradientGroups } from "./background-properties.ts";
 import { computeDeclarations, resolveBuiltVariable } from "./cascade.ts";
 import { loadWinuiCatalogue } from "./catalogue.ts";
+import { LAZY_GROUPS } from "./lazy-groups.ts";
 import { lowerDeclarations } from "./properties.ts";
 import { formatDiagnostic, translateStyleSheet } from "./translate.ts";
 import assert from "node:assert/strict";
@@ -54,7 +54,7 @@ function lower({ elementType, declarations }: {
       hasStyle: () => true,
       report() {}
     },
-    extraGroups: gradientGroups()
+    extraGroups: LAZY_GROUPS.flatMap(lazy => lazy.groups())
   });
   messages.setters = lowered.setters.map(entry => [entry.property, entry.kind === "setter" ? entry.value : entry.xaml]);
   messages.writes = lowered.writes.map(entry => [entry.target, entry.value]);
@@ -195,6 +195,35 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ["translate", null, "translate: 0 4px", [["Translation", "0,4,0"]]],
   ["scale", null, "scale: 1.1", [["Scale", "1.1,1.1,1"]]],
   ["rotate", null, "rotate: 45deg", [["Rotation", "45"]]],
+  ["transform: one function", null, "transform: rotate(45deg)", [["RenderTransform", "<RotateTransform Angle=\"45\"/>"]]],
+  ["transform: translate", null, "transform: translate(10px, 4px)", [["RenderTransform", "<TranslateTransform X=\"10\" Y=\"4\"/>"]]],
+  ["transform: translate with one length", null, "transform: translate(10px)", [["RenderTransform", "<TranslateTransform X=\"10\" Y=\"0\"/>"]]],
+  ["transform: scale with one factor", null, "transform: scale(1.5)", [["RenderTransform", "<ScaleTransform ScaleX=\"1.5\" ScaleY=\"1.5\"/>"]]],
+  ["transform: skew in turns", null, "transform: skew(0.125turn, 5deg)", [["RenderTransform", "<SkewTransform AngleX=\"45\" AngleY=\"5\"/>"]]],
+  ["transform: matrix", null, "transform: matrix(1, 0, 0, 1, 20, 10)", [["RenderTransform", "<MatrixTransform Matrix=\"1,0,0,1,20,10\"/>"]]],
+  ["transform: a list acts right to left", null, "transform: translate(10px, 0) rotate(90deg) scale(2)", [[
+    "RenderTransform",
+    "<TransformGroup><ScaleTransform ScaleX=\"2\" ScaleY=\"2\"/><RotateTransform Angle=\"90\"/><TranslateTransform X=\"10\" Y=\"0\"/></TransformGroup>"
+  ]]],
+  ["transform none sets nothing", null, "transform: none", []],
+  ["elevation is a ThemeShadow lifted by its depth", null, "-winui-elevation: 16px", [
+    ["Shadow", "<ThemeShadow/>"],
+    ["Translation", "0,0,16"]
+  ]],
+  ["elevation keeps the x and y of translate", null, "translate: 4px 8px; -winui-elevation: 32px", [
+    ["Shadow", "<ThemeShadow/>"],
+    ["Translation", "4,8,32"]
+  ]],
+  ["backdrop blur is an acrylic tinted by the background", null, "background-color: rgba(255, 0, 0, 0.5); backdrop-filter: blur(20px)", [[
+    "Background",
+    "<AcrylicBrush TintColor=\"#FF0000\" TintOpacity=\"0.502\" FallbackColor=\"#FF0000\"/>"
+  ]]],
+  ["backdrop blur of an opaque color", null, "background-color: #123456; backdrop-filter: blur(4px)", [[
+    "Background",
+    "<AcrylicBrush TintColor=\"#123456\" TintOpacity=\"1\" FallbackColor=\"#123456\"/>"
+  ]]],
+  ["backdrop blur with no color is an untinted acrylic", null, "backdrop-filter: blur(4px)", [["Background", "<AcrylicBrush/>"]]],
+  ["backdrop none sets nothing", null, "backdrop-filter: none", []],
   ["border without a width is CSS's medium", null, "border: solid red", [
     ["BorderThickness", "3,3,3,3"],
     ["BorderBrush", "#FF0000"]
@@ -323,6 +352,52 @@ test("a transform-origin that is not a pair of positions fails the build", () =>
   }
 });
 
+test("a transform pivots about the centre, or transform-origin", () => {
+  assert.deepEqual(
+    lower({
+      elementType: null,
+      declarations: "transform: rotate(10deg)"
+    }).writes, [["origin", "50%,50%"]]
+  );
+  assert.deepEqual(
+    lower({
+      elementType: null,
+      declarations: "transform: rotate(10deg); scale: 2; transform-origin: top left"
+    }).writes, [["origin", "0%,0%"]]
+  );
+  assert.deepEqual(
+    lower({
+      elementType: null,
+      declarations: "transform: rotate(10deg); scale: 2"
+    }).writes, [["origin", "50%,50%"]]
+  );
+});
+
+test("elevation and a backdrop blur warn what WinUI cannot do", () => {
+  const elevation = lower({
+    elementType: null,
+    declarations: "-winui-elevation: 8px"
+  });
+  assert.deepEqual(elevation.errors, []);
+  assert.match(elevation.warnings.join(" "), /-winui-elevation: a ThemeShadow draws with no receivers on Windows 11 and later/u);
+  const backdrop = lower({
+    elementType: null,
+    declarations: "backdrop-filter: blur(10px)"
+  });
+  assert.match(backdrop.warnings.join(" "), /the blur radius is ignored/u);
+  assert.match(backdrop.warnings.join(" "), /no literal background-color/u);
+});
+
+test("a transition on transform warns that nothing animates it", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "transform: rotate(10deg); transition: transform 200ms, opacity 200ms"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.match(result.warnings.join(" "), /transition: transform cannot be animated/u);
+  assert.deepEqual(result.setters.map(([property]) => property).toSorted(), ["OpacityTransition", "RenderTransform"]);
+});
+
 test("an outline makes the control use the system's focus visuals", () => {
   assert.deepEqual(
     lower({
@@ -397,7 +472,7 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["layered images", null, "background-image: linear-gradient(red, blue), linear-gradient(blue, red)", /background-image: several images have no WinUI meaning/u],
   ["a unitless line height", null, "line-height: 1.5", /a multiple of the font size has no WinUI meaning/u],
   ["opacity out of range", null, "opacity: 2", /opacity: expected a number or percentage from 0 to 1/u],
-  ["a dashed border", null, "border: 1px dashed red", /border: dashed has no WinUI meaning \(a WinUI border is solid/u],
+  ["a dashed border", null, "border: 1px dashed red", /border: dashed has no WinUI meaning \(WinUI draws solid lines only/u],
   ["border without a style", null, "border: 1px red", /border: expected a style/u],
   ["elliptical corners", null, "border-radius: 10px / 20px", /elliptical corners/u],
   ["gap on a border", "border", "gap: 4px", /gap has no WinUI meaning on <border>/u],
@@ -406,7 +481,15 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["minmax in a template", "grid", "grid-template-columns: minmax(10px, 1fr)", /minmax\(\) has no WinUI meaning/u],
   ["overflow on a border", "border", "overflow: hidden", /overflow-x: hidden has no WinUI meaning on <border>/u],
   ["letter spacing in px", null, "letter-spacing: 2px", /expected normal or a size in em/u],
-  ["a dashed outline", null, "outline: 2px dashed red", /outline: dashed has no WinUI meaning \(a WinUI focus visual is solid/u],
+  ["a backdrop filter other than blur", null, "backdrop-filter: saturate(2)", /backdrop-filter: saturate\(2\) has no WinUI meaning \(only blur\(\) has/u],
+  ["a blur radius that is not a length", null, "backdrop-filter: blur(big)", /backdrop-filter: expected a blur radius in px, found "big"/u],
+  ["an elevation that is not a length", null, "-winui-elevation: high", /-winui-elevation: expected a length in px/u],
+  ["a 3D transform", null, "transform: rotateX(45deg)", /transform: rotateX\(45deg\) has no WinUI meaning \(a RenderTransform is two-dimensional/u],
+  ["an unknown transform function", null, "transform: wobble(3)", /transform: wobble\(3\) has no WinUI meaning \(WinUI has no such transform/u],
+  ["a transform length in a percentage", null, "transform: translate(50%)", /transform: translate\(\) expected a length in px, found "50%"/u],
+  ["a transform with too many arguments", null, "transform: scale(1, 2, 3)", /transform: scale\(\) takes 1 or 2 argument/u],
+  ["a matrix with five numbers", null, "transform: matrix(1, 0, 0, 1, 5)", /transform: matrix\(\) takes 6 argument/u],
+  ["a dashed outline", null, "outline: 2px dashed red", /outline: dashed has no WinUI meaning \(WinUI draws solid lines only/u],
   ["an outline without a style", null, "outline: 2px red", /outline: expected a style \(none, solid, auto\)/u],
   ["an unknown base style", null, "-winui-based-on: NopeStyle", /NopeStyle is not a style WinUI defines/u]
 ];
