@@ -10,14 +10,18 @@ import {
   InputScopeName,
   InputScopeNameValue,
   IReference_Boolean,
+  IReference_DateTime,
   IReference_Double,
+  IReference_Point,
+  IReference_Rect,
+  IReference_TimeSpan,
   IVector_Object,
   Path,
+  PathGeometry,
   PointCollection,
   projectAs,
   PropertyValue,
   RepeatBehaviorType,
-  PathGeometry,
   SolidColorBrush,
   SvgImageSource,
   Uri,
@@ -150,6 +154,21 @@ export type NullableBooleanInput = boolean | null;
 
 /** A nullable number property (an animation's `to`): a number, or null for unset. */
 export type NullableDoubleInput = number | null;
+
+/** A time span (see `TimeSpanInput`), or null for unset (Timeline.beginTime). */
+export type NullableTimeSpanInput = TimeSpanInput | null;
+
+/** A date (see `DateInput`), or null for none picked (DatePicker.selectedDate). */
+export type NullableDateInput = DateInput | null;
+
+/** A point, or null for unset. */
+export type NullablePointInput = PointInput | null;
+
+/** A rect, or null for unset. */
+export type NullableRectInput = RectInput | null;
+
+/** A color (see `ColorInput`), or null for unset. */
+export type NullableColorInput = ColorInput | null;
 
 /**
  * The items a control shows: a WinRT collection (or null) as it is, or an
@@ -512,6 +531,48 @@ export function dateTimeOf(input: DateInput) {
 /** A date prop read back as a `Date`. */
 export function dateInputOf(value: DateTimeValue) {
   return ticksDate(value.universalTime);
+}
+
+/** A nullable time span prop takes a boxed value. */
+export function nullableTimeSpanOf(input: NullableTimeSpanInput) {
+  const isUnset = input === null;
+  return isUnset ? null : IReference_TimeSpan.from(PropertyValue.createTimeSpan(timeSpanOf(input)));
+}
+
+/** A nullable time span prop read back as milliseconds, or null. */
+export function nullableTimeSpanInputOf(value: TimeSpanValue | null) {
+  const isUnset = value === null;
+  return isUnset ? null : timeSpanInputOf(value);
+}
+
+/** A nullable date prop takes a boxed value. */
+export function nullableDateTimeOf(input: NullableDateInput) {
+  const isUnset = input === null;
+  return isUnset ? null : IReference_DateTime.from(PropertyValue.createDateTime(dateTimeOf(input)));
+}
+
+/** A nullable date prop read back as a `Date`, or null. */
+export function nullableDateInputOf(value: DateTimeValue | null) {
+  const isUnset = value === null;
+  return isUnset ? null : dateInputOf(value);
+}
+
+/** A nullable point prop takes a boxed value. */
+export function nullablePointOf(input: NullablePointInput) {
+  const isUnset = input === null;
+  return isUnset ? null : IReference_Point.from(PropertyValue.createPoint(pointOf(input)));
+}
+
+/** A nullable rect prop takes a boxed value. */
+export function nullableRectOf(input: NullableRectInput) {
+  const isUnset = input === null;
+  return isUnset ? null : IReference_Rect.from(PropertyValue.createRect(rectOf(input)));
+}
+
+/** A nullable color prop: PropertyValue cannot box a color, so the color is handed on as it is. */
+export function nullableColorOf(input: NullableColorInput) {
+  const isUnset = input === null;
+  return isUnset ? null : colorOf(input);
 }
 
 /** A list of points prop as a `PointCollection`; a collection is used as it is. */

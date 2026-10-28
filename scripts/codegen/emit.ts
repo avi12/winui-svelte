@@ -32,20 +32,11 @@ const BINDINGS_FOLDER = "#winui";
 
 // What each kind of value is written through, and the type its prop takes.
 // `readBack` is what a bindable prop reads the control's value through, when
-// the bindings' type is not the one the app writes; `isNullable` makes the
-// prop take null as well, which the control gets as null.
+// the bindings' type is not the one the app writes.
 interface Converter {
   convert: string;
   inputType: string;
   readBack?: string;
-  isNullable?: boolean;
-}
-
-function nullable(converter: Converter) {
-  return {
-    ...converter,
-    isNullable: true
-  };
 }
 
 const DURATION: Converter = {
@@ -56,18 +47,6 @@ const TIME_SPAN: Converter = {
   convert: "timeSpanOf",
   inputType: "TimeSpanInput",
   readBack: "timeSpanInputOf"
-};
-const POINT: Converter = {
-  convert: "pointOf",
-  inputType: "PointInput"
-};
-const RECT: Converter = {
-  convert: "rectOf",
-  inputType: "RectInput"
-};
-const COLOR: Converter = {
-  convert: "colorOf",
-  inputType: "ColorInput"
 };
 const DATE_TIME: Converter = {
   convert: "dateTimeOf",
@@ -91,12 +70,18 @@ const converters = new Map<PropertyKind, Converter>([
     inputType: "FontWeightInput",
     readBack: "fontWeightInputOf"
   }],
-  [PropertyKind.POINT, POINT],
+  [PropertyKind.POINT, {
+    convert: "pointOf",
+    inputType: "PointInput"
+  }],
   [PropertyKind.SIZE, {
     convert: "sizeOf",
     inputType: "SizeInput"
   }],
-  [PropertyKind.RECT, RECT],
+  [PropertyKind.RECT, {
+    convert: "rectOf",
+    inputType: "RectInput"
+  }],
   [PropertyKind.MATRIX, {
     convert: "matrixOf",
     inputType: "MatrixInput"
@@ -122,11 +107,28 @@ const converters = new Map<PropertyKind, Converter>([
     convert: "geometryOf",
     inputType: "GeometryInput"
   }],
-  [PropertyKind.NULLABLE_TIME_SPAN, nullable(TIME_SPAN)],
-  [PropertyKind.NULLABLE_DATE_TIME, nullable(DATE_TIME)],
-  [PropertyKind.NULLABLE_POINT, nullable(POINT)],
-  [PropertyKind.NULLABLE_RECT, nullable(RECT)],
-  [PropertyKind.NULLABLE_COLOR, nullable(COLOR)],
+  [PropertyKind.NULLABLE_TIME_SPAN, {
+    convert: "nullableTimeSpanOf",
+    inputType: "NullableTimeSpanInput",
+    readBack: "nullableTimeSpanInputOf"
+  }],
+  [PropertyKind.NULLABLE_DATE_TIME, {
+    convert: "nullableDateTimeOf",
+    inputType: "NullableDateInput",
+    readBack: "nullableDateInputOf"
+  }],
+  [PropertyKind.NULLABLE_POINT, {
+    convert: "nullablePointOf",
+    inputType: "NullablePointInput"
+  }],
+  [PropertyKind.NULLABLE_RECT, {
+    convert: "nullableRectOf",
+    inputType: "NullableRectInput"
+  }],
+  [PropertyKind.NULLABLE_COLOR, {
+    convert: "nullableColorOf",
+    inputType: "NullableColorInput"
+  }],
   [PropertyKind.THICKNESS, {
     convert: "thicknessOf",
     inputType: "ThicknessInput"
@@ -143,7 +145,10 @@ const converters = new Map<PropertyKind, Converter>([
     convert: "brushOf",
     inputType: "BrushInput"
   }],
-  [PropertyKind.COLOR, COLOR],
+  [PropertyKind.COLOR, {
+    convert: "colorOf",
+    inputType: "ColorInput"
+  }],
   [PropertyKind.IMAGE_SOURCE, {
     convert: "imageSourceOf",
     inputType: "ImageSourceInput"
@@ -201,7 +206,9 @@ export function emitBindings(model: Model) {
   }
 
   for (const extra of extraBindings) {
-    lines.push(`export { ${extra.name} } from "${extra.module}";`);
+    const isAliased = extra.alias !== undefined;
+    const exported = isAliased ? `${extra.name} as ${extra.alias}` : extra.name;
+    lines.push(`export { ${exported} } from "${extra.module}";`);
   }
 
   const names = new Map<string, string>();
@@ -263,23 +270,6 @@ function inputTypeOf(property: {
   return converterOf(property)?.inputType;
 }
 
-// The type a converted prop is declared as: its input type, and null where
-// the control takes it.
-function declaredInputType({ kind, key }: {
-  kind: PropertyKind;
-  key: string;
-}) {
-  const inputType = inputTypeOf({
-    kind,
-    key
-  });
-  const isNullable = converterOf({
-    kind,
-    key
-  })?.isNullable === true;
-  return isNullable ? `${inputType} | null` : inputType;
-}
-
 function propertyType({ property, className }: {
   property: PropertyModel;
   className: string;
@@ -289,9 +279,10 @@ function propertyType({ property, className }: {
     return `EnumInput<typeof ${enumName(property)}>`;
   }
 
-  const hasInputType = inputTypeOf(property) !== undefined;
+  const inputType = inputTypeOf(property);
+  const hasInputType = inputType !== undefined;
   if (hasInputType) {
-    return declaredInputType(property);
+    return inputType;
   }
 
   return plainTypes.get(property.kind) ?? `${className}["${property.key}"]`;
@@ -337,8 +328,7 @@ function valueExpression({ kind, enumType, key }: {
     return "value";
   }
 
-  const call = `${converter.convert}(value)`;
-  return converter.isNullable === true ? `value === null ? null : ${call}` : call;
+  return `${converter.convert}(value)`;
 }
 
 function attachedType(attached: AttachedModel) {
@@ -347,9 +337,10 @@ function attachedType(attached: AttachedModel) {
     return `EnumInput<typeof ${enumName(attached)}>`;
   }
 
-  const hasInputType = inputTypeOf(attached) !== undefined;
+  const inputType = inputTypeOf(attached);
+  const hasInputType = inputType !== undefined;
   if (hasInputType) {
-    return declaredInputType(attached);
+    return inputType;
   }
 
   return plainTypes.get(attached.kind) ?? `Parameters<typeof ${attached.owner.name}.${attached.setter}>[1]`;
@@ -462,8 +453,7 @@ function readExpression({ converter, imports, access }: {
   }
 
   imports.convert.add(readBack);
-  const call = `${readBack}(${access})`;
-  return converter.isNullable === true ? `${access} === null ? null : ${call}` : call;
+  return `${readBack}(${access})`;
 }
 
 function emitBindable({ bindable, property, imports }: {

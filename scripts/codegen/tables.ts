@@ -510,8 +510,13 @@ export const itemsHosted = new Map<string, ItemsHost>([
 ]);
 
 // Exports of the bindings that are not metadata types: the generic
-// instantiations the conversions name.
-export const extraBindings = [
+// instantiations the conversions name, under the `alias` where the generated
+// name carries a hash.
+export const extraBindings: Array<{
+  name: string;
+  alias?: string;
+  module: string;
+}> = [
   {
     name: "IReference_Boolean",
     module: "#winui/windows/foundation/IReference_Boolean"
@@ -519,6 +524,26 @@ export const extraBindings = [
   {
     name: "IReference_Double",
     module: "#winui/windows/foundation/IReference_Double"
+  },
+  {
+    name: "IReference_WindowsFoundationTimeSpan_g75cd585a528e9bb3",
+    alias: "IReference_TimeSpan",
+    module: "#winui/windows/foundation/IReference_WindowsFoundationTimeSpan_g75cd585a528e9bb3"
+  },
+  {
+    name: "IReference_WindowsFoundationDateTime_g49e2fdd1bcf351db",
+    alias: "IReference_DateTime",
+    module: "#winui/windows/foundation/IReference_WindowsFoundationDateTime_g49e2fdd1bcf351db"
+  },
+  {
+    name: "IReference_WindowsFoundationPoint_g401c6a14650e6826",
+    alias: "IReference_Point",
+    module: "#winui/windows/foundation/IReference_WindowsFoundationPoint_g401c6a14650e6826"
+  },
+  {
+    name: "IReference_WindowsFoundationRect_g7d5f48bd5717ecb2",
+    alias: "IReference_Rect",
+    module: "#winui/windows/foundation/IReference_WindowsFoundationRect_g7d5f48bd5717ecb2"
   },
   // The list components hold their keys in a vector of boxed values, and
   // narrow the controls WinUI hands back (projectAs).

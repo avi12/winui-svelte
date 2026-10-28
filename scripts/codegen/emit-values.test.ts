@@ -70,11 +70,11 @@ test("a value prop is declared as its input type and written through its convert
   assert.match(text, /control\.duration = durationOf\(value\);/u);
 });
 
-test("a nullable value prop takes null and hands null on", () => {
+test("a nullable value prop is written through its own converter", () => {
   const text = emitLevel(level);
-  assert.match(text, /selectedDate\?: DateInput \| null;/u);
-  assert.match(text, /beginTime\?: TimeSpanInput \| null;/u);
-  assert.match(text, /control\.selectedDate = value === null \? null : dateTimeOf\(value\);/u);
+  assert.match(text, /selectedDate\?: NullableDateInput;/u);
+  assert.match(text, /beginTime\?: NullableTimeSpanInput;/u);
+  assert.match(text, /control\.selectedDate = nullableDateTimeOf\(value\);/u);
 });
 
 test("a bindable value prop reads the control back as the app writes it", () => {
