@@ -15,7 +15,6 @@ export { MicaBackdrop } from "#winui/microsoft/ui/xaml/media/MicaBackdrop";
 export { SystemBackdrop } from "#winui/microsoft/ui/xaml/media/SystemBackdrop";
 export { MicaKind } from "#winui/microsoft/ui/composition/system-backdrops/MicaKind";
 export { AppWindow } from "#winui/microsoft/ui/windowing/AppWindow";
-export { AppWindowTitleBar } from "#winui/microsoft/ui/windowing/AppWindowTitleBar";
 export { TitleBarHeightOption } from "#winui/microsoft/ui/windowing/TitleBarHeightOption";
 export { TitleBarTheme } from "#winui/microsoft/ui/windowing/TitleBarTheme";
 export { InputNonClientPointerSource } from "#winui/microsoft/ui/input/InputNonClientPointerSource";

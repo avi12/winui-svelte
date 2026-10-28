@@ -41,6 +41,10 @@ test("every class src/winui.ts imports is among the classes the bindings are gen
     "microsoft/ui/xaml/gridunittype",
     "microsoft/ui/xaml/windowactivationstate",
     "microsoft/ui/windowing/displayareafallback",
+    "microsoft/ui/windowing/titlebarheightoption",
+    "microsoft/ui/windowing/titlebartheme",
+    "microsoft/ui/input/nonclientregionkind",
+    "microsoft/ui/xaml/elementtheme",
     "microsoft/ui/composition/system-backdrops/micakind",
     "lifetime"
   ]);
