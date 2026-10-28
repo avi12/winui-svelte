@@ -82,6 +82,35 @@ test("a descendant selector Svelte keeps is reported at its rule", () => {
     error instanceof SheetError && error.message.startsWith("ui/card.svelte:3:3:") && error.message.includes("descendant"));
 });
 
+test("a sheet opts into the transform parser only when it has a transform", () => {
+  assert.doesNotMatch(moduleFor(SOURCE)?.code ?? "", /winui-svelte\/css\/transform/u);
+  const transformed = moduleFor(
+    `<border class="card"></border>
+<style>
+  .card { transform: rotate(5deg) }
+</style>
+`
+  );
+  assert.match(transformed?.code ?? "", /import \{ transformGroups as \w+ \} from "winui-svelte\/css\/transform"/u);
+  assert.doesNotMatch(transformed?.code ?? "", /css\/gradients/u);
+  assert.match(transformed?.code ?? "", /registerPropertyGroups as \w+/u);
+});
+
+test("a sheet opts into the other groups by the properties it uses", () => {
+  const code = moduleFor(
+    `<border class="card"></border>
+<style>
+  .card { outline: 2px solid red; -winui-elevation: 8px; --button-background: red }
+</style>
+`
+  )?.code ?? "";
+  assert.match(code, /from "winui-svelte\/css\/focus"/u);
+  assert.match(code, /from "winui-svelte\/css\/surface"/u);
+  assert.match(code, /from "winui-svelte\/css\/resources"/u);
+  assert.doesNotMatch(code, /css\/transform|css\/gradients/u);
+  assert.equal(code.match(/registerPropertyGroups as/gu)?.length, 1);
+});
+
 test("a sheet opts into the gradient parser only when it has a gradient", () => {
   const plain = moduleFor(SOURCE);
   assert.doesNotMatch(plain?.code ?? "", /winui-svelte\/css\/gradients/u);

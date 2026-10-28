@@ -10,7 +10,8 @@ import {
 } from "#src/css/translate/cascade.js";
 import type { LoweredStyle } from "#src/css/translate/properties.js";
 import { lowerDeclarations } from "#src/css/translate/properties.js";
-import type { PropertyGroup } from "#src/css/translate/property-kit.js";
+import type { PropertyGroup, WriteSeam } from "#src/css/translate/property-kit.js";
+import { RESOURCES_TARGET, XAML_SEPARATOR } from "#src/css/translate/property-kit.js";
 import type { Declaration, StyleSheetData } from "#src/css/translate/types.js";
 import { PseudoState } from "#src/css/translate/types.js";
 import type { NativeValue } from "#src/native-value.js";
@@ -20,22 +21,12 @@ import type { NativeValue } from "#src/native-value.js";
  * it reaches the controls through this seam (`native.ts` is the one
  * implementation), so the logic runs under `node --test`.
  */
-export interface CssNative {
-  /** XamlReader.load of a ResourceDictionary. */
-  loadDictionary(xaml: string): object;
+export interface CssNative extends WriteSeam {
   mergeIntoApplication(dictionary: object): void;
   lookupStyle(dictionary: object, key: string): object;
   /** Whether the application's resources (merged dictionaries included) hold `key`. */
   hasApplicationResource(key: string): boolean;
   setStyle(control: object, style: object | null): void;
-  /** A grid's columns or rows, from "Auto,*,2*,120" (empty clears them). */
-  setGridDefinitions(control: object, target: "columns" | "rows", lengths: string): void;
-  /** Calls `handler` on a WinUI event (PointerEntered...); null if the control has no such event. */
-  subscribe(control: object, event: string, handler: () => void): (() => void) | null;
-  read(input: {
-    control: object;
-    property: string;
-  }): NativeValue;
 }
 
 /**
@@ -257,14 +248,29 @@ function refreshAll() {
 
 /**
  * Opts into property groups the built-in ones leave out (a gradient
- * background, which costs a parser): a sheet that needs one registers it
- * before the sheet. The same group again changes nothing.
+ * background, a transform, an outline: each costs a parser): a sheet that needs
+ * one registers it before the sheet. The same group again changes nothing.
  */
 export function registerPropertyGroups(groups: readonly PropertyGroup[]) {
   for (const group of groups) {
     const [member = ""] = group.members;
     extraGroups.set(member, group);
   }
+}
+
+// The rules' custom properties are resources of the element, merged for the
+// lowest priority first: the last dictionary merged wins a key.
+function resourceWrites(matched: readonly RankedRule[]) {
+  const xamls = matched.flatMap(({ rule }) => rule.resourcesXaml ?? []);
+  return xamls.length === 0 ? [] : [{
+    target: RESOURCES_TARGET,
+    value: xamls.join(XAML_SEPARATOR)
+  }];
+}
+
+// What a group beyond the built-in ones registered to apply a write.
+function writeHandler(target: string) {
+  return [...extraGroups.values()].map(group => group.writes?.[target]).find(handler => handler !== undefined);
 }
 
 /**
@@ -434,6 +440,7 @@ class ElementStyle implements StyledElement {
   private appliedKey: string | null = null;
   private appliedStyle: object | null = null;
   private appliedWrites = "";
+  private writeUndos: Array<() => void> = [];
   private isDisposed = false;
 
   constructor(control: object, elementType: string) {
@@ -463,6 +470,9 @@ class ElementStyle implements StyledElement {
     }
 
     this.subscriptions.clear();
+    for (const undo of this.writeUndos) {
+      undo();
+    }
   }
 
   private inlineDeclarations() {
@@ -532,25 +542,44 @@ class ElementStyle implements StyledElement {
 
     this.applyWrites({
       currentNative,
-      built
+      writes: [...built.writes, ...resourceWrites(matched)]
     });
     this.appliedKey = isUnstyled ? null : key;
   }
 
-  private applyWrites({ currentNative, built }: {
+  // The writes the style calls for are applied again, after the last ones are
+  // undone, when any of them changes.
+  private applyWrites({ currentNative, writes }: {
     currentNative: CssNative;
-    built: BuiltStyle;
+    writes: Array<{
+      target: string;
+      value: string;
+    }>;
   }) {
-    const signature = built.writes.map(write => `${write.target}=${write.value}`).join(";");
+    const signature = writes.map(({ target, value }) => `${target}=${value}`).join(";");
     const isSignatureApplied = signature === this.appliedWrites;
     if (isSignatureApplied) {
       return;
     }
 
-    for (const write of built.writes) {
-      currentNative.setGridDefinitions(this.control, write.target, write.value);
+    for (const undo of this.writeUndos) {
+      undo();
     }
 
+    this.writeUndos = writes.flatMap(({ target, value }) => {
+      const isGrid = target === "columns" || target === "rows";
+      if (isGrid) {
+        currentNative.setGridDefinitions(this.control, target, value);
+        return [];
+      }
+
+      const undo = writeHandler(target)?.({
+        control: this.control,
+        value,
+        native: currentNative
+      });
+      return undo ? [undo] : [];
+    });
     this.appliedWrites = signature;
   }
 

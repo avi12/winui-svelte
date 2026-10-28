@@ -13,6 +13,8 @@ interface DictionaryLike {
 interface ListLike {
   append(item: object): void;
   clear(): void;
+  indexOf(item: object): number;
+  removeAt(index: number): void;
 }
 
 /* eslint-disable @typescript-eslint/naming-convention -- CssWinui mirrors WinUI's projected, PascalCase names. */
@@ -63,7 +65,7 @@ function isDictionary(value: NativeValue): value is DictionaryLike {
 }
 
 function isList(value: NativeValue): value is ListLike {
-  return isRecord(value) && typeof value["append"] === "function" && typeof value["clear"] === "function";
+  return isRecord(value) && ["append", "clear", "indexOf", "removeAt"].every(method => typeof value[method] === "function");
 }
 
 function isEventMethod(value: NativeValue): value is (handler: () => void) => NativeValue {
@@ -109,6 +111,27 @@ export function createCssNative(winui: CssWinui) {
       const merged = winui.Application.current.resources.mergedDictionaries;
       merged?.append(dictionary);
     },
+    mergeIntoControl(control, dictionary) {
+      const merged = readMember({
+        target: readMember({
+          target: control,
+          key: "resources"
+        }),
+        key: "mergedDictionaries"
+      });
+      if (!isList(merged)) {
+        throw new TypeError("not a FrameworkElement");
+      }
+
+      merged.append(dictionary);
+      return () => {
+        const index = merged.indexOf(dictionary);
+        const isMerged = index >= 0;
+        if (isMerged) {
+          merged.removeAt(index);
+        }
+      };
+    },
     lookupStyle(dictionary, key) {
       if (!isDictionary(dictionary)) {
         throw new TypeError("not a ResourceDictionary");
@@ -150,6 +173,9 @@ export function createCssNative(winui: CssWinui) {
         });
         definitions.append(definition);
       }
+    },
+    assign(control, values) {
+      Object.assign(control, values);
     },
     subscribe(control, event, handler) {
       const subscribe = readMember({

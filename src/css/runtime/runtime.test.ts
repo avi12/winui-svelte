@@ -1,7 +1,16 @@
 import { hasStyle } from "./resources.ts";
 import type { CssNative } from "./runtime.ts";
-import { installCssRuntime, registerStyleSheet, styledElement, unregisterStyleSheet } from "./runtime.ts";
+import {
+  installCssRuntime,
+  registerPropertyGroups,
+  registerStyleSheet,
+  styledElement,
+  unregisterStyleSheet
+} from "./runtime.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import { focusGroups } from "#src/css/translate/focus-properties.js";
+import { resourceGroups } from "#src/css/translate/resource-properties.js";
+import { transformGroups } from "#src/css/translate/transform-properties.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
 import type { NativeValue } from "#src/native-value.js";
 import { read } from "#src/renderer/host/reflect.js";
@@ -17,6 +26,8 @@ interface FakeControl {
   style: string | null;
   styleChanges: number;
   columns: string | null;
+  assigned: Record<string, unknown>;
+  resources: string[];
   handlers: Map<string, () => void>;
   properties: Record<string, NativeValue>;
 }
@@ -26,6 +37,8 @@ function control(properties: Record<string, NativeValue> = {}) {
     style: null,
     styleChanges: 0,
     columns: null,
+    assigned: {},
+    resources: [],
     handlers: new Map(),
     properties
   };
@@ -49,6 +62,12 @@ const fakeNative: CssNative = {
   mergeIntoApplication(dictionary) {
     mergedResources.push(String(read(dictionary, "xaml")));
   },
+  mergeIntoControl(target, dictionary) {
+    const { resources } = fake(target);
+    const xaml = String(read(dictionary, "xaml"));
+    resources.push(xaml);
+    return () => resources.splice(resources.indexOf(xaml), 1);
+  },
   lookupStyle: dictionary => dictionary,
   hasApplicationResource: key => hasStyle({
     catalogue: resources,
@@ -61,6 +80,9 @@ const fakeNative: CssNative = {
   },
   setGridDefinitions(target, kind, lengths) {
     fake(target).columns = `${kind}:${lengths}`;
+  },
+  assign(target, values) {
+    Object.assign(fake(target).assigned, values);
   },
   subscribe(target, event, handler) {
     const fakeControl = fake(target);
@@ -354,6 +376,116 @@ test("a grid's templates are written to its definitions", () => {
   element.setClasses("g");
   assert.equal(target.columns, "columns:Auto,*");
   assert.match(target.style ?? "", /RowSpacing/u);
+  element.dispose();
+});
+
+test("a scaled element pivots about its centre and follows its size", () => {
+  registerPropertyGroups(transformGroups());
+  registerStyleSheet(
+    sheet({
+      id: "pivot.svelte",
+      css: ".grow { scale: 1.1 }\n.corner { rotate: 5deg; transform-origin: 100% 10px }"
+    })
+  );
+  const target = control({
+    actualWidth: 100,
+    actualHeight: 40
+  });
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("grow");
+  assert.deepEqual(fake(target).assigned, {
+    centerPoint: {
+      x: 50,
+      y: 20,
+      z: 0
+    },
+    renderTransformOrigin: {
+      x: 0.5,
+      y: 0.5
+    }
+  });
+
+  target.properties["actualWidth"] = 200;
+  target.handlers.get("SizeChanged")?.();
+  assert.deepEqual(fake(target).assigned["centerPoint"], {
+    x: 100,
+    y: 20,
+    z: 0
+  });
+
+  element.setClasses("corner");
+  assert.deepEqual(fake(target).assigned, {
+    centerPoint: {
+      x: 200,
+      y: 10,
+      z: 0
+    },
+    renderTransformOrigin: {
+      x: 1,
+      y: 0.25
+    }
+  });
+
+  element.dispose();
+  assert.equal(target.handlers.has("SizeChanged"), false);
+});
+
+test("a custom property on a class is a resource of the elements that have it", () => {
+  registerPropertyGroups(resourceGroups());
+  registerStyleSheet(
+    sheet({
+      id: "danger.svelte",
+      css: ".danger { --button-background-pointer-over: #f00 }\n.quiet { --button-background-pointer-over: #0f0 }\n.danger.loud { --button-background-pointer-over: #00f }"
+    })
+  );
+  const danger = control();
+  const dangerElement = styledElement({
+    control: danger,
+    elementType: "button"
+  });
+  const other = control();
+  const otherElement = styledElement({
+    control: other,
+    elementType: "button"
+  });
+  dangerElement.setClasses("danger");
+  otherElement.setClasses("quiet");
+  assert.equal(danger.resources.length, 1);
+  assert.match(danger.resources[0] ?? "", /<SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#FF0000"\/>/u);
+  assert.match(other.resources[0] ?? "", /Color="#00FF00"/u);
+  assert.doesNotMatch(mergedResources.join("\n"), /ButtonBackgroundPointerOver/u);
+
+  dangerElement.setClasses("danger loud");
+  assert.equal(danger.resources.length, 2);
+  assert.match(danger.resources.at(-1) ?? "", /Color="#0000FF"/u);
+
+  dangerElement.setClasses("");
+  assert.deepEqual(danger.resources, []);
+  dangerElement.setClasses("danger");
+  dangerElement.dispose();
+  assert.deepEqual(danger.resources, []);
+  otherElement.dispose();
+});
+
+test("an outline turns on the control's system focus visuals", () => {
+  registerPropertyGroups(focusGroups());
+  registerStyleSheet(
+    sheet({
+      id: "focus.svelte",
+      css: ".ring { outline: 2px solid #0af }"
+    })
+  );
+  const target = control({ useSystemFocusVisuals: false });
+  const element = styledElement({
+    control: target,
+    elementType: "button"
+  });
+  element.setClasses("ring");
+  assert.equal(fake(target).assigned["useSystemFocusVisuals"], true);
+  assert.match(target.style ?? "", /<Setter Property="FocusVisualPrimaryBrush" Value="#00AAFF"\/>/u);
   element.dispose();
 });
 

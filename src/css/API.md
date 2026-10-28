@@ -72,6 +72,29 @@ formatDiagnostic(diagnostic): string   // "file:line:column: <property> has no W
 `winui-resources.g.json`, exported from WinUI's generic.xaml by
 `scripts/css/export-winui-resources.ts`.
 
+## Opt-in groups
+
+Some properties cost a parser, and the window's bundle has a budget. They are
+not built in: a compiled sheet that uses one imports its module and registers
+it (`registerPropertyGroups`), so an app that uses none carries none. A style
+attribute works with them only once some sheet of the app has registered them,
+and the `outline` shorthand does not work there: write `outline-width`,
+`outline-style` and `outline-color`.
+
+| Module | Properties | Section |
+|---|---|---|
+| `winui-svelte/css/gradients` | `background-image` | Gradients |
+| `winui-svelte/css/transform` | `transform`, `transform-origin`, and the pivot of `scale` and `rotate` | Transforms |
+| `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
+| `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
+| `winui-svelte/css/resources` | custom properties on a class | Custom properties |
+
+A group may also bring the shorthands it expands and the handlers of the
+`write` outputs it produces: a write is something set on the element itself
+(a grid's columns, the pivot, the focus visuals, the scoped resources), which a
+Style cannot say. The runtime applies a write when its value changes and undoes
+it when the style stops calling for it or the element goes.
+
 ## Gradients: `background-image`
 
 `background-image` (and `background` with a gradient as its only value) sets
@@ -79,11 +102,8 @@ the Background to a `LinearGradientBrush` or a `RadialGradientBrush`. The
 setter is `kind: "content"`: the brush is written as XAML inside the Style's
 `<Setter.Value>`, like the transitions.
 
-The gradient parser is not in the built-in property groups, to keep a window's
-bundle small: a compiled sheet that has a `background-image` imports it from
-`winui-svelte/css/gradients` and registers it (`registerPropertyGroups`). An app
-with no gradient carries none of it, and a gradient in a `style` attribute works
-only once some sheet of the app has registered it.
+The gradient parser is an opt-in group (see above): a compiled sheet that has a
+`background-image` imports it from `winui-svelte/css/gradients`.
 
 ```css
 .hero { background-image: linear-gradient(to right, #00e5ff, transparent) }
@@ -123,6 +143,152 @@ An error (with the declaration's line) for what a WinUI gradient cannot say:
 - `var()` as a stop color (a declaration holds one resolved resource, and a stop needs a Color)
 - several comma-separated images, `url()`, `image-set()`: an image cannot be a Background in a Style, use an Image element
 
+## Custom properties: app-wide and scoped
+
+A custom property is a WinUI resource, named like the CSS property in Pascal
+case (`--button-background-pointer-over` is `ButtonBackgroundPointerOver`).
+
+- On `:root` (and only there) it is an **app-wide** resource, merged into
+  `Application.Resources` with the others of the sheet.
+- On any other selector it is **scoped**: the sheet keeps it with the rule, and
+  every element that rule matches gets it in a ResourceDictionary of its own
+  (merged into the element's `Resources`), so the element's template and its
+  children read it and nothing else does. A sheet with such a rule imports
+  `winui-svelte/css/resources`, which does the merging.
+
+```css
+:root { --accent: #0af }                                   /* the whole app */
+.danger { --button-background-pointer-over: #c42b1c }      /* only buttons with class danger */
+@media (prefers-color-scheme: dark) { .danger { --button-background-pointer-over: #ff99a4 } }
+```
+
+### Color schemes and high contrast
+
+A custom property can be declared per scheme, on `:root` or on a class:
+
+```css
+:root { --card: #fff }                                              /* the default */
+@media (prefers-color-scheme: dark) { :root { --card: #202020 } }
+@media (forced-colors: active) { :root { --card: Canvas; --card-text: var(--system-color-window-text-color) } }
+```
+
+`forced-colors: active` is Windows' high contrast theme. Its values may be a
+CSS system color (`Canvas`, `CanvasText`, `ButtonFace`, `ButtonText`, `GrayText`,
+`Highlight`, `HighlightText`, `LinkText`) or `var(--system-color-...-color)`, any
+of WinUI's `SystemColor*Color` resources: they become a `{ThemeResource}`
+reference, which WinUI keeps current as the user changes the contrast theme.
+A style rule in these blocks is an error, as in a dark one.
+
+As soon as a sheet declares any scheme, the dictionaries are the explicit
+`Light`, `Dark` and `HighContrast` that Microsoft's theme resources guidance
+asks for (a `Default` beside a `HighContrast` lets the light and dark parts of
+an app change each other's brushes), each holding the default values with its
+own over them: a theme with no dictionary would fail the lookup. A sheet with
+one value per property keeps a single `Default`. Every property needs a value
+outside the blocks, or one for light and dark both.
+
+A scoped override is read when the control builds its template, and WinUI
+reads a theme resource again on a theme change; so it takes effect when the
+class is on the element as it is created, and a later class change may not show
+until the next theme change. A custom property on a pseudo-class rule
+(`.danger:hover`) is an error: the control's template drives the state, so
+override the resource it reads for it (`--button-background-pointer-over`).
+
+A key WinUI defines keeps WinUI's spelling and kind, so a known Brush gets a
+`SolidColorBrush` (never a bare `Color`, which a template reading a brush would
+not take), a `Thickness` or `CornerRadius` key takes one length, and a value of
+the wrong kind is a build error. Any other name is a `Color` with a `Brush` of
+the same name plus `Brush`, or a number (`x:Double`).
+
+## Transforms: `translate`, `scale`, `rotate`, `transform-origin`
+
+`translate`, `scale` and `rotate` set the element's `Translation`, `Scale` and
+`Rotation`. WinUI pivots the last two about `CenterPoint`, which is 0,0 (the
+top-left corner) until set, where CSS pivots at the centre. So an element that
+scales or rotates also gets a `CenterPoint` at `transform-origin`, 50% 50% by
+default. `CenterPoint` is absolute (device-independent pixels, a `Vector3`) and
+a Style cannot compute it from the size, so it is not a setter: the `origin`
+write sets it from the element's size and sets it again on `SizeChanged`. It is
+part of the transform module (`winui-svelte/css/transform`), which a sheet
+imports when it has `scale`, `rotate`, `transform` or `transform-origin`; with
+none of those in any sheet, a `scale` in a style attribute pivots at the
+top-left corner, as WinUI does.
+
+`transform-origin` takes one or two positions: `left`, `center`, `right`, `top`,
+`bottom` (either order), a percentage of the element's size, or a length in
+`px`. A third (z) value is an error.
+
+```css
+.card:hover { scale: 1.05 }                  /* grows from the centre, as CSS */
+.fan { rotate: 8deg; transform-origin: left bottom }
+```
+
+### `transform`
+
+`transform` takes a list of `translate()`, `translateX()`, `translateY()`,
+`scale()`, `scaleX()`, `scaleY()`, `rotate()`, `skew()`, `skewX()`, `skewY()` and
+`matrix()`, and sets the element's `RenderTransform` (a `TransformGroup` for a
+list, in the order CSS applies it: the last function acts on the element first).
+Lengths are `px` (a percentage needs the element's size and is an error), angles
+`deg`, `rad`, `turn` or `grad`. 3D functions are errors: a RenderTransform is 2D.
+
+The `origin` write above also sets `RenderTransformOrigin` (a fraction of the
+size, which is what WinUI wants here), so `scale`, `rotate` and `transform`
+share one `transform-origin`, as in CSS.
+
+`transition: transform` warns and is dropped: WinUI's implicit transitions
+animate `Translation`, `Scale` and `Rotation` and not a RenderTransform, so for
+motion use `translate`, `scale` and `rotate`.
+
+```css
+.badge { transform: translate(4px, -4px) rotate(8deg) }
+```
+
+## Focus ring: `outline`
+
+`outline` styles the control's focus visual:
+
+| CSS | WinUI |
+|---|---|
+| `outline-color` | `FocusVisualPrimaryBrush` |
+| `outline-width` | `FocusVisualPrimaryThickness` |
+| `outline-offset` | `FocusVisualMargin`, negated: a negative WinUI margin pushes the ring outward, as a positive CSS offset does |
+| `outline: none` | both thicknesses 0: no focus visual |
+| any visible outline | `FocusVisualSecondaryThickness` 0 (a WinUI focus visual is two rings; CSS has one), and `UseSystemFocusVisuals` on a Control |
+
+`solid` and `auto` are the styles; the others are errors. `UseSystemFocusVisuals`
+exists on a `Control` and not on other types, so a write sets it where the
+element has it. The module is `winui-svelte/css/focus`.
+
+```css
+button:focus-visible { outline: 2px solid #0af; outline-offset: 2px }
+.quiet { outline: none }
+```
+
+## Elevation and backdrop: `-winui-elevation`, `backdrop-filter`
+
+`-winui-elevation: <length>px` is a WinUI shadow: the element's `Shadow` is a
+`ThemeShadow` and the Z of its `Translation` is the depth (16 for a card, 32 for
+a flyout), which WinUI draws the shadow from. A `translate` on the element keeps
+its X and Y. A ThemeShadow has no blur, offset, spread or color, so
+`box-shadow` is an error that points here. Windows 11 casts the shadow with
+nothing more; earlier, or for an app that targets a Windows SDK older than
+22000, it draws only on the elements named in the shadow's `Receivers`, which a
+Style cannot set. Every use warns of that; it is not verified without a window.
+
+`backdrop-filter: blur(<length>px)` makes the Background an `AcrylicBrush`,
+which blurs what is behind the element. The brush has a blur of its own, so the
+radius is ignored (a warning says so); the tint is the element's literal
+`background-color`, its alpha the `TintOpacity`. Without a `background-color` the
+acrylic is untinted. Other filter functions are errors, and so is `filter`.
+
+```css
+.card { -winui-elevation: 16px }
+.sheet { background-color: rgba(32, 32, 32, 0.6); backdrop-filter: blur(20px) }
+```
+
+Both are in `winui-svelte/css/surface`.
+
 ## What stays unsupported, and why
 
 `unsupported-properties.ts` holds the reason shown for each property no group
@@ -131,8 +297,7 @@ handles. Declarations like these fail the build with it:
 | Property | Why |
 |---|---|
 | `position`, `top`, `left`, `right`, `bottom` | a Style does not know its parent: a Canvas places by `Canvas.Left` / `Canvas.Top` (no right or bottom), the others have no counterpart |
-| `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color |
-| `filter`, `backdrop-filter` | WinUI has no filters; use an acrylic brush or a Mica backdrop |
-| `transform`, `animation` | use `translate`, `scale`, `rotate` and `transition`, which WinUI animates implicitly |
-| `outline` | WinUI draws its own focus visuals |
+| `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color: use `-winui-elevation` |
+| `filter` | WinUI has no filters; use an acrylic brush or a Mica backdrop |
+| `animation` | use `transition` on opacity, translate, scale or rotate: WinUI has no keyframes |
 | `float`, `flex*`, `align-items`, `justify-*`, `place-items`, `content`, `list-style`, `text-transform`, `text-indent`, `word-break`, `user-select` | no WinUI equivalent in a Style; each message names the nearest WinUI way |

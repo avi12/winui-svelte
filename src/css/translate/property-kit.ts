@@ -1,10 +1,12 @@
 import type { Declaration } from "./types.ts";
 import type { LowerOptions, Reader } from "#src/css/parse/reader.js";
+import type { NativeValue } from "#src/native-value.js";
 
 /**
  * What lowering a group of declarations produces: a Style setter, a
- * collection a Style cannot set (written into the element's XAML), a grid
- * definition list, or the style this one builds on.
+ * collection a Style cannot set (written into the element's XAML), something
+ * written to the element itself (a grid's `columns` and `rows`, or what a
+ * group's `writes` handle), or the style this one builds on.
  */
 export type Output =
   | {
@@ -19,7 +21,7 @@ export type Output =
   }
   | {
     kind: "write";
-    target: "columns" | "rows";
+    target: string;
     value: string;
   }
   | {
@@ -36,10 +38,57 @@ export interface GroupInput {
   reading(member: string): Reader;
 }
 
+/** The write that merges the custom properties of the rules an element matches into its resources. */
+export const RESOURCES_TARGET = "resources";
+
+/** Separates the dictionaries of that write, since a write's value is one string. */
+export const XAML_SEPARATOR = "\u001F";
+
+/** What a write handler may do to WinUI: the CSS runtime's seam, so it runs under `node --test`. */
+export interface WriteSeam {
+  /** XamlReader.load of a ResourceDictionary. */
+  loadDictionary(xaml: string): object;
+  /** Merges a dictionary into the control's own Resources (its template reads them); returns what undoes it. */
+  mergeIntoControl(control: object, dictionary: object): () => void;
+  /** A grid's columns or rows, from "Auto,*,2*,120" (empty clears them). */
+  setGridDefinitions(control: object, target: "columns" | "rows", lengths: string): void;
+  /** Assigns properties of the control (`{ centerPoint: ... }`). */
+  assign(control: object, values: Readonly<Record<string, unknown>>): void;
+  /** Calls `handler` on a WinUI event (PointerEntered...); null if the control has no such event. */
+  subscribe(control: object, event: string, handler: () => void): (() => void) | null;
+  read(input: {
+    control: object;
+    property: string;
+  }): NativeValue;
+}
+
+/** What a write handler is given: the control, the value the group wrote, and the seam. */
+export interface WriteContext {
+  control: object;
+  value: string;
+  native: WriteSeam;
+}
+
+/** Applies a `write` to a control; returns what undoes it when the write changes or the element goes. */
+export type WriteHandler = (context: WriteContext) => (() => void) | null;
+
+/** What an expansion reads: the shorthand declaration and a reader over its value. */
+export interface ExpansionInput {
+  declaration: Declaration;
+  reader: Reader;
+}
+
+/** Turns a shorthand declaration into the longhands the property table lowers. */
+export type Expansion = (input: ExpansionInput) => Declaration[];
+
 /** The CSS properties that together set one WinUI property, and how they lower. */
 export interface PropertyGroup {
   members: readonly string[];
   lower(input: GroupInput): Output[];
+  /** Shorthands whose longhands are among the members. */
+  shorthands?: ReadonlyMap<string, Expansion>;
+  /** How the runtime applies the `write` outputs the group produces, by target. */
+  writes?: Readonly<Record<string, WriteHandler>>;
 }
 
 /** The element types a layout property means something on. */

@@ -1,4 +1,5 @@
 import type { ResourceCatalogue } from "./resources.ts";
+import { LAZY_GROUPS } from "#src/css/translate/lazy-groups.js";
 import { errorsOf, formatDiagnostic, translateStyleSheet } from "#src/css/translate/translate.js";
 import type { Diagnostic, StyleSheetData } from "#src/css/translate/types.js";
 import type { CompileOptions } from "svelte/compiler";
@@ -12,8 +13,7 @@ export const SHEET_SUFFIX = "-winui-css.js";
 
 const REGISTER_ALIAS = "registerWinuiSheet";
 const GROUPS_ALIAS = "registerWinuiGroups";
-const GRADIENTS_ALIAS = "winuiGradientGroups";
-const GRADIENTS_SUBPATH = "/gradients";
+const LAZY_ALIAS = "winuiLazyGroups";
 
 /**
  * A `.svelte` file's `<style>` as the JavaScript module that registers its
@@ -68,21 +68,40 @@ export class SheetError extends Error {
   }
 }
 
+// The imports and calls that register the opt-in groups the sheet's properties need.
+function groupRegistration({ sheet, runtimeModule }: {
+  sheet: StyleSheetData;
+  runtimeModule: string;
+}) {
+  const used = LAZY_GROUPS.filter(lazy => sheet.rules.some(lazy.isNeededBy));
+  const hasUsed = used.length > 0;
+  if (!hasUsed) {
+    return [];
+  }
+
+  const imports = used.map((lazy, index) => {
+    const from = JSON.stringify(runtimeModule + lazy.subpath);
+    return `import { ${lazy.exportName} as ${LAZY_ALIAS}${index} } from ${from};`;
+  });
+  return [
+    `import { registerPropertyGroups as ${GROUPS_ALIAS} } from ${JSON.stringify(runtimeModule)};`,
+    ...imports,
+    ...used.map((_, index) => `${GROUPS_ALIAS}(${LAZY_ALIAS}${index}());`)
+  ];
+}
+
 // The statements that register a sheet. They name nothing a component might
 // (the import is aliased), so they can be appended to a compiled component.
 function registrationCode({ sheet, runtimeModule }: {
   sheet: StyleSheetData;
   runtimeModule: string;
 }) {
-  const isGradientUsed = sheet.rules.some(rule => rule.declarations.some(declaration => declaration.property === "background-image"));
-  const gradients = isGradientUsed ? [
-    `import { registerPropertyGroups as ${GROUPS_ALIAS} } from ${JSON.stringify(runtimeModule)};`,
-    `import { gradientGroups as ${GRADIENTS_ALIAS} } from ${JSON.stringify(runtimeModule + GRADIENTS_SUBPATH)};`,
-    `${GROUPS_ALIAS}(${GRADIENTS_ALIAS}());`
-  ] : [];
   return [
     `import { registerStyleSheet as ${REGISTER_ALIAS} } from ${JSON.stringify(runtimeModule)};`,
-    ...gradients,
+    ...groupRegistration({
+      sheet,
+      runtimeModule
+    }),
     `${REGISTER_ALIAS}(${JSON.stringify(sheet)});`
   ].join("\n");
 }
