@@ -1,5 +1,6 @@
 import { setter } from "./property-kit.ts";
 import type { GroupInput, Output } from "./property-kit.ts";
+import { DEFAULT_ORIGIN, parseTransformOrigin } from "./transform-origin.ts";
 import type { Reader } from "#src/css/parse/reader.js";
 import {
   parseLength,
@@ -124,3 +125,36 @@ export function transition(input: GroupInput) {
 
   return outputs;
 }
+
+const ORIGIN_MEMBER = "transform-origin";
+const PIVOTING_MEMBERS = ["scale", "rotate"] as const;
+
+/**
+ * `transform-origin`, which WinUI's Scale and Rotation need as an absolute
+ * CenterPoint (default 0,0, the top-left corner, where CSS pivots at the
+ * centre). Written for any element that scales or rotates, at CSS's default
+ * 50% 50% unless it names another; the runtime resolves it against the
+ * element's size.
+ */
+export function transformOrigin(input: GroupInput) {
+  const isPivoting = PIVOTING_MEMBERS.some(member => input.computed.has(member));
+  const reader = input.readers.get(ORIGIN_MEMBER);
+  const isOriginDefault = reader === undefined;
+  if (isOriginDefault) {
+    return isPivoting ? [{
+      kind: "write",
+      target: "origin",
+      value: DEFAULT_ORIGIN
+    } as const] : [];
+  }
+
+  const value = parseTransformOrigin(reader);
+  return value === null ? [] : [{
+    kind: "write",
+    target: "origin",
+    value
+  } as const];
+}
+
+/** The members `transformOrigin` is lowered from. */
+export const TRANSFORM_ORIGIN_MEMBERS = [ORIGIN_MEMBER, ...PIVOTING_MEMBERS];

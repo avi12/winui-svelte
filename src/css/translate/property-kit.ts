@@ -2,6 +2,13 @@ import type { Declaration } from "./types.ts";
 import type { LowerOptions, Reader } from "#src/css/parse/reader.js";
 
 /**
+ * What a `write` output sets on the element itself: a grid's columns or rows
+ * (a list of lengths), or the origin its scale and rotation pivot about
+ * (`x,y`, as `parseTransformOrigin` writes it).
+ */
+export type WriteTarget = "columns" | "rows" | "origin";
+
+/**
  * What lowering a group of declarations produces: a Style setter, a
  * collection a Style cannot set (written into the element's XAML), a grid
  * definition list, or the style this one builds on.
@@ -19,7 +26,7 @@ export type Output =
   }
   | {
     kind: "write";
-    target: "columns" | "rows";
+    target: WriteTarget;
     value: string;
   }
   | {

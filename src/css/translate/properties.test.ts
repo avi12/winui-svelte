@@ -267,6 +267,39 @@ test("grid templates are written to the grid, not set by a Style", () => {
   );
 });
 
+const originRows: Array<[string, string, Array<[string, string]>]> = [
+  ["scale pivots at the centre by default, as CSS does", "scale: 1.1", [["origin", "50%,50%"]]],
+  ["rotate pivots at the centre by default", "rotate: 10deg", [["origin", "50%,50%"]]],
+  ["translate needs no pivot", "translate: 4px 0", []],
+  ["keywords", "scale: 2; transform-origin: left top", [["origin", "0%,0%"]]],
+  ["keywords in either order", "scale: 2; transform-origin: bottom right", [["origin", "100%,100%"]]],
+  ["one keyword leaves the other axis centred", "rotate: 5deg; transform-origin: top", [["origin", "50%,0%"]]],
+  ["one length is the horizontal one", "scale: 2; transform-origin: 12px", [["origin", "12px,50%"]]],
+  ["percentages and lengths mix", "scale: 2; transform-origin: 25% 8px", [["origin", "25%,8px"]]],
+  ["an origin with nothing to pivot is still written", "transform-origin: center", [["origin", "50%,50%"]]]
+];
+
+for (const [name, declarations, expected] of originRows) {
+  test(`transform-origin, ${name}: ${declarations}`, () => {
+    const result = lower({
+      elementType: null,
+      declarations
+    });
+    assert.deepEqual(result.errors, []);
+    assert.deepEqual(result.writes, expected);
+  });
+}
+
+test("a transform-origin that is not a pair of positions fails the build", () => {
+  for (const declarations of ["transform-origin: 1 2", "transform-origin: left right", "transform-origin: 1px 2px 3px", "transform-origin: sideways"]) {
+    const result = lower({
+      elementType: null,
+      declarations
+    });
+    assert.match(result.errors.join(" "), /transform-origin: expected/u, declarations);
+  }
+});
+
 test("-winui-based-on names a WinUI style", () => {
   assert.equal(
     lower({

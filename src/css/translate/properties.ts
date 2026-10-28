@@ -8,7 +8,14 @@ import {
   gridTemplate,
   overflow
 } from "./layout-properties.ts";
-import { rotation, scaling, transition, translation } from "./motion-properties.ts";
+import {
+  rotation,
+  scaling,
+  TRANSFORM_ORIGIN_MEMBERS,
+  transformOrigin,
+  transition,
+  translation
+} from "./motion-properties.ts";
 import {
   brushProperty,
   ignored,
@@ -264,6 +271,10 @@ const propertyGroups: readonly PropertyGroup[] = [
     member: "rotate",
     parse: rotation
   }),
+  {
+    members: TRANSFORM_ORIGIN_MEMBERS,
+    lower: transformOrigin
+  },
   {
     members: ["transition"],
     lower: transition

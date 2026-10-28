@@ -123,6 +123,26 @@ An error (with the declaration's line) for what a WinUI gradient cannot say:
 - `var()` as a stop color (a declaration holds one resolved resource, and a stop needs a Color)
 - several comma-separated images, `url()`, `image-set()`: an image cannot be a Background in a Style, use an Image element
 
+## Transforms: `translate`, `scale`, `rotate`, `transform-origin`
+
+`translate`, `scale` and `rotate` set the element's `Translation`, `Scale` and
+`Rotation`. WinUI pivots the last two about `CenterPoint`, which is 0,0 (the
+top-left corner) until set, where CSS pivots at the centre. So an element that
+scales or rotates also gets a `CenterPoint` at `transform-origin`, 50% 50% by
+default. `CenterPoint` is absolute (device-independent pixels, a `Vector3`) and
+a Style cannot compute it from the size, so it is not a setter: the runtime
+writes it (the `origin` write, like a grid's columns) and writes it again on
+`SizeChanged`.
+
+`transform-origin` takes one or two positions: `left`, `center`, `right`, `top`,
+`bottom` (either order), a percentage of the element's size, or a length in
+`px`. A third (z) value is an error.
+
+```css
+.card:hover { scale: 1.05 }                  /* grows from the centre, as CSS */
+.fan { rotate: 8deg; transform-origin: left bottom }
+```
+
 ## What stays unsupported, and why
 
 `unsupported-properties.ts` holds the reason shown for each property no group

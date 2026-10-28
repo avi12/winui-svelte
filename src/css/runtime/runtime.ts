@@ -11,6 +11,8 @@ import {
 import type { LoweredStyle } from "#src/css/translate/properties.js";
 import { lowerDeclarations } from "#src/css/translate/properties.js";
 import type { PropertyGroup } from "#src/css/translate/property-kit.js";
+import type { OriginPoint } from "#src/css/translate/transform-origin.js";
+import { resolveTransformOrigin } from "#src/css/translate/transform-origin.js";
 import type { Declaration, StyleSheetData } from "#src/css/translate/types.js";
 import { PseudoState } from "#src/css/translate/types.js";
 import type { NativeValue } from "#src/native-value.js";
@@ -30,6 +32,8 @@ export interface CssNative {
   setStyle(control: object, style: object | null): void;
   /** A grid's columns or rows, from "Auto,*,2*,120" (empty clears them). */
   setGridDefinitions(control: object, target: "columns" | "rows", lengths: string): void;
+  /** UIElement.CenterPoint: the point Scale and Rotation pivot about. */
+  setCenterPoint(control: object, point: OriginPoint): void;
   /** Calls `handler` on a WinUI event (PointerEntered...); null if the control has no such event. */
   subscribe(control: object, event: string, handler: () => void): (() => void) | null;
   read(input: {
@@ -434,6 +438,7 @@ class ElementStyle implements StyledElement {
   private appliedKey: string | null = null;
   private appliedStyle: object | null = null;
   private appliedWrites = "";
+  private stopFollowingSize: (() => void) | null = null;
   private isDisposed = false;
 
   constructor(control: object, elementType: string) {
@@ -463,6 +468,8 @@ class ElementStyle implements StyledElement {
     }
 
     this.subscriptions.clear();
+    this.stopFollowingSize?.();
+    this.stopFollowingSize = null;
   }
 
   private inlineDeclarations() {
@@ -547,11 +554,39 @@ class ElementStyle implements StyledElement {
       return;
     }
 
-    for (const write of built.writes) {
-      currentNative.setGridDefinitions(this.control, write.target, write.value);
+    for (const { target, value } of built.writes) {
+      const isOrigin = target === "origin";
+      if (isOrigin) {
+        this.pivotAbout({
+          currentNative,
+          origin: value
+        });
+      } else {
+        currentNative.setGridDefinitions(this.control, target, value);
+      }
     }
 
     this.appliedWrites = signature;
+  }
+
+  // CenterPoint is absolute, so it follows the element as it is laid out.
+  private pivotAbout({ currentNative, origin }: {
+    currentNative: CssNative;
+    origin: string;
+  }) {
+    this.stopFollowingSize?.();
+    const place = () => {
+      currentNative.setCenterPoint(
+        this.control,
+        resolveTransformOrigin({
+          value: origin,
+          width: Number(this.readProperty("actualWidth") ?? 0),
+          height: Number(this.readProperty("actualHeight") ?? 0)
+        })
+      );
+    };
+    place();
+    this.stopFollowingSize = currentNative.subscribe(this.control, "SizeChanged", place);
   }
 
   private readProperty: ReadProperty = property => (native === null ? undefined : native.read({

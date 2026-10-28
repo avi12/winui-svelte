@@ -2,6 +2,7 @@ import { hasStyle } from "./resources.ts";
 import type { CssNative } from "./runtime.ts";
 import { installCssRuntime, registerStyleSheet, styledElement, unregisterStyleSheet } from "./runtime.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import type { OriginPoint } from "#src/css/translate/transform-origin.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
 import type { NativeValue } from "#src/native-value.js";
 import { read } from "#src/renderer/host/reflect.js";
@@ -17,6 +18,7 @@ interface FakeControl {
   style: string | null;
   styleChanges: number;
   columns: string | null;
+  centerPoint: OriginPoint | null;
   handlers: Map<string, () => void>;
   properties: Record<string, NativeValue>;
 }
@@ -26,6 +28,7 @@ function control(properties: Record<string, NativeValue> = {}) {
     style: null,
     styleChanges: 0,
     columns: null,
+    centerPoint: null,
     handlers: new Map(),
     properties
   };
@@ -61,6 +64,9 @@ const fakeNative: CssNative = {
   },
   setGridDefinitions(target, kind, lengths) {
     fake(target).columns = `${kind}:${lengths}`;
+  },
+  setCenterPoint(target, point) {
+    fake(target).centerPoint = point;
   },
   subscribe(target, event, handler) {
     const fakeControl = fake(target);
@@ -355,6 +361,44 @@ test("a grid's templates are written to its definitions", () => {
   assert.equal(target.columns, "columns:Auto,*");
   assert.match(target.style ?? "", /RowSpacing/u);
   element.dispose();
+});
+
+test("a scaled element pivots about its centre and follows its size", () => {
+  registerStyleSheet(
+    sheet({
+      id: "pivot.svelte",
+      css: ".grow { scale: 1.1 }\n.corner { rotate: 5deg; transform-origin: 100% 10px }"
+    })
+  );
+  const target = control({
+    actualWidth: 100,
+    actualHeight: 40
+  });
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("grow");
+  assert.deepEqual(target.centerPoint, {
+    x: 50,
+    y: 20
+  });
+
+  target.properties["actualWidth"] = 200;
+  target.handlers.get("SizeChanged")?.();
+  assert.deepEqual(target.centerPoint, {
+    x: 100,
+    y: 20
+  });
+
+  element.setClasses("corner");
+  assert.deepEqual(target.centerPoint, {
+    x: 200,
+    y: 10
+  });
+
+  element.dispose();
+  assert.equal(target.handlers.has("SizeChanged"), false);
 });
 
 test("a declaration the element cannot take fails with where it came from", () => {

@@ -151,6 +151,15 @@ export function createCssNative(winui: CssWinui) {
         definitions.append(definition);
       }
     },
+    setCenterPoint(control, { x, y }) {
+      Object.assign(control, {
+        centerPoint: {
+          x,
+          y,
+          z: 0
+        }
+      });
+    },
     subscribe(control, event, handler) {
       const subscribe = readMember({
         target: control,
