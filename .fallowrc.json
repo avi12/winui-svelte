@@ -20,7 +20,6 @@
     "src/window/bootstrap.ts",
     "src/window/thread.ts",
     "src/window/index.ts",
-    "src/cli/main.ts",
     "**/*.test.ts",
     "src/state/test-support/echo-host.ts",
     "test/mount-all.svelte.ts",

@@ -1,26 +1,36 @@
 import { initWinappsdk } from "@microsoft/dynwinrt";
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 // The Windows App SDK (WinUI 3) comes first, before any WinRT object: its
 // bootstrapper finds the runtime packages installed for the user.
 
 const BOOTSTRAP_VARIABLE = "WINAPPSDK_BOOTSTRAP_DLL_PATH";
 const BOOTSTRAP_NAME = "Microsoft.WindowsAppRuntime.Bootstrap.dll";
+// The runtime the package is built against.
+const WINDOWS_APP_SDK_MAJOR = 2;
+const WINDOWS_APP_SDK_MINOR = 2;
+// Where the bootstrapper is: dist/bin/<arch> in the published package (copied
+// there by the build), .winapp/bin/<arch> in this repository (`winapp restore`).
+const bundledFolders = [
+  new URL(`../bin/${process.arch}`, import.meta.url),
+  new URL(`../../.winapp/bin/${process.arch}`, import.meta.url)
+].map(folder => fileURLToPath(folder));
 
 /** Which Windows App SDK runtime to start, and where its bootstrapper may be. */
 export interface WindowsAppSdkOptions {
-  /** The runtime's major version the app was built against. */
-  major: number;
+  /** The runtime's major version the app was built against; the package's own by default. */
+  major?: number;
 
-  /** The runtime's minor version the app was built against. */
-  minor: number;
+  /** The runtime's minor version the app was built against; the package's own by default. */
+  minor?: number;
 
   /**
-   * Where the bootstrapper may be, first match wins: beside a packaged app, or
-   * in the folder `winapp restore` puts it in.
+   * Where the bootstrapper may be, first match wins: beside a packaged app,
+   * say. The package ships one, which is tried last.
    */
-  folders: string[];
+  folders?: string[];
 }
 
 /**
@@ -39,15 +49,16 @@ function bootstrapPath(folders: string[]) {
  *
  * @throws {WindowsAppRuntimeMissing} when the runtime is not installed
  */
-export function initWindowsAppSdk(options: WindowsAppSdkOptions) {
-  const found = bootstrapPath(options.folders);
+export function initWindowsAppSdk(options: WindowsAppSdkOptions = {}) {
+  const { major = WINDOWS_APP_SDK_MAJOR, minor = WINDOWS_APP_SDK_MINOR, folders = [] } = options;
+  const found = bootstrapPath([...folders, ...bundledFolders]);
   const isFound = found !== undefined;
   if (isFound) {
     process.env[BOOTSTRAP_VARIABLE] ??= found;
   }
 
   try {
-    initWinappsdk(options.major, options.minor);
+    initWinappsdk(major, minor);
   } catch (error) {
     throw new WindowsAppRuntimeMissing(String(error), { cause: error });
   }

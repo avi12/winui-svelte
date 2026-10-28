@@ -342,12 +342,6 @@ class WindowHost {
   }
 }
 
-/** A window `attachWindow` opened: its handle, and how to take it down. */
-export interface AttachedWindow {
-  handle: WindowHandle;
-  dispose(): void;
-}
-
 /**
  * Opens the window around `content`; `titleBar` is read whenever it is needed
  * (it is state in the component, the element of its titleBar snippet).

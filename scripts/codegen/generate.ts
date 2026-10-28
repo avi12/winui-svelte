@@ -1,3 +1,4 @@
+import { packageJsonWithBindings } from "./binding-list.ts";
 import {
   bindingModule,
   emitBindings,
@@ -7,7 +8,6 @@ import {
   emitIndex,
   emitLevel,
   emitMetadata,
-  emitRequiredBindings,
   emitStrictness
 } from "./emit.ts";
 import type { Model } from "./model.ts";
@@ -15,7 +15,6 @@ import { bindingClasses, buildModel, requestedClasses } from "./model.ts";
 import { handWrittenComponents } from "./tables.ts";
 import type { TypeName } from "./winmd.ts";
 import { filesIn } from "#scripts/files-in.ts";
-import { packageJsonWithBindings } from "#src/cli/binding-list.js";
 import {
   existsSync,
   mkdirSync,
@@ -52,7 +51,10 @@ function updatedPackageJson({ packagePath, wanted }: {
 }) {
   return {
     file: packagePath,
-    text: packageJsonWithBindings({ original: readFileSync(packagePath, "utf8"), wanted })
+    text: packageJsonWithBindings({
+      original: readFileSync(packagePath, "utf8"),
+      wanted
+    })
   };
 }
 
@@ -137,10 +139,6 @@ function generatedFiles(project: string) {
     {
       file: path.join(GENERATED_FOLDER, "props-strictness.ts"),
       text: emitStrictness(model)
-    },
-    {
-      file: path.join(GENERATED_FOLDER, "required-bindings.json"),
-      text: emitRequiredBindings(model)
     }
   ];
   for (const level of model.classes) {

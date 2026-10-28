@@ -17,7 +17,8 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 
 const PACKAGE_FOLDER = path.resolve(import.meta.dirname, "../..");
-const skippedFolders = ["node_modules", "dist", ".winapp", "target"];
+// Other checkouts of the repository (git worktrees) hold other branches.
+const skippedFolders = ["node_modules", "dist", ".winapp", "target", ".worktrees", ".claude"];
 const anyTypePattern = /:\s*any\b/;
 
 // Walked by hand, not recursively by readdir: node_modules holds the package's

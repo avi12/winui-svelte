@@ -35,9 +35,6 @@
   "engines": {
     "node": ">=24"
   },
-  "bin": {
-    "winui-svelte": "./dist/cli/main.js"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -121,7 +118,10 @@
     "#src/*.json": "./src/*.json",
     "#scripts/*.ts": "./scripts/*.ts",
     "#examples/*.ts": "./examples/*.ts",
-    "#winui/*": "@winapp/bindings/*"
+    "#winui/*": {
+      "types": "./dist/bindings/*.d.ts",
+      "default": "./dist/bindings/*.js"
+    }
   },
   "files": [
     "dist",
@@ -151,19 +151,13 @@
     "test:windows": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 test/lists.test.ts test/window.test.ts"
   },
   "dependencies": {
+    "@microsoft/dynwinrt": "0.1.0-preview.23",
     "@sveltejs/vite-plugin-svelte": "7.3.1",
     "zod": "^4.6.7"
   },
   "peerDependencies": {
-    "@microsoft/dynwinrt": "0.1.0-preview.23",
-    "@winapp/bindings": "*",
     "svelte": "*",
     "vite": "8.x"
-  },
-  "peerDependenciesMeta": {
-    "vite": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
@@ -172,7 +166,6 @@
     "@microsoft/winappcli": "0.7.1",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "^24.10.0",
-    "@winapp/bindings": "link:.winapp/bindings",
     "esbuild": "~0.25.12",
     "eslint": "^10.12.0",
     "eslint-plugin-import-newlines": "^2.0.0",
@@ -268,6 +261,7 @@
             "ComboBox",
             "ComboBoxItem",
             "CommandBar",
+            "CommandBarFlyout",
             "CommandBarOverflowPresenter",
             "ContainerContentChangingEventArgs",
             "ContentControl",
@@ -275,10 +269,12 @@
             "ContentPresenter",
             "Control",
             "DatePicker",
+            "DatePickerFlyout",
             "DropDownButton",
             "Expander",
             "FlipView",
             "FlipViewItem",
+            "Flyout",
             "FlyoutPresenter",
             "FontIcon",
             "Frame",
@@ -306,6 +302,7 @@
             "ItemsWrapGrid",
             "ListBox",
             "ListBoxItem",
+            "ListPickerFlyout",
             "ListView",
             "ListViewBase",
             "ListViewBaseHeaderItem",
@@ -317,6 +314,8 @@
             "MediaTransportControls",
             "MenuBar",
             "MenuBarItem",
+            "MenuBarItemFlyout",
+            "MenuFlyout",
             "MenuFlyoutItem",
             "MenuFlyoutItemBase",
             "MenuFlyoutPresenter",
@@ -334,6 +333,7 @@
             "PasswordBox",
             "PathIcon",
             "PersonPicture",
+            "PickerFlyout",
             "PipsPager",
             "Pivot",
             "PivotItem",
@@ -370,7 +370,9 @@
             "TeachingTip",
             "TextBlock",
             "TextBox",
+            "TextCommandBarFlyout",
             "TimePicker",
+            "TimePickerFlyout",
             "TitleBar",
             "ToggleMenuFlyoutItem",
             "ToggleSplitButton",
@@ -399,12 +401,14 @@
             "ColorPickerSlider",
             "ColorSpectrum",
             "CommandBarFlyoutCommandBar",
+            "FlyoutBase",
             "GridViewItemPresenter",
             "InfoBarPanel",
             "ListViewItemPresenter",
             "MonochromaticOverlayPresenter",
             "NavigationViewItemPresenter",
             "OrientedVirtualizingPanel",
+            "PickerFlyoutBase",
             "PivotHeaderItem",
             "PivotHeaderPanel",
             "PivotPanel",

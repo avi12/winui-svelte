@@ -2,7 +2,9 @@ import { filesIn } from "#scripts/files-in.ts";
 import { spawnSync } from "node:child_process";
 import {
   copyFileSync,
+  cpSync,
   mkdirSync,
+  readdirSync,
   readFileSync,
   rmSync,
   writeFileSync
@@ -28,6 +30,16 @@ import path from "node:path";
 const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const SOURCE_FOLDER = path.join(PACKAGE_ROOT, "src");
 const OUTPUT_FOLDER = path.join(PACKAGE_ROOT, "dist");
+// What `pnpm bindings` (winapp) generates from WinUI's metadata, and where
+// package.json's `#winui/*` finds it once built. Shipped whole: they declare
+// `"sideEffects": false`, so an app's bundler keeps only the controls it uses.
+const GENERATED_BINDINGS = path.join(PACKAGE_ROOT, ".winapp", "bindings");
+const SHIPPED_BINDINGS = path.join(OUTPUT_FOLDER, "bindings");
+// The Windows App SDK bootstrapper `winapp restore` puts in .winapp/bin, per
+// architecture, and where initWindowsAppSdk finds it once built.
+const RESTORED_BOOTSTRAPPERS = path.join(PACKAGE_ROOT, ".winapp", "bin");
+const SHIPPED_BOOTSTRAPPERS = path.join(OUTPUT_FOLDER, "bin");
+const BOOTSTRAPPER = "Microsoft.WindowsAppRuntime.Bootstrap.dll";
 const copiedExtensions = [".svelte", ".json"];
 const DECLARATION_SUFFIX = ".d.svelte.ts";
 // `from "./x.ts"` and `import("./x.ts")` in a .svelte script.
@@ -83,6 +95,30 @@ function resolveSourceAliases() {
   }
 }
 
+// The bindings are CommonJS, which a package.json of their own keeps them
+// inside this ESM package. Only what applies to a nested package is written:
+// its `exports` would be ignored there, and `#winui/*` reaches the files.
+const bindingsManifest = {
+  type: "commonjs",
+  sideEffects: false
+};
+
+function copyBindings() {
+  cpSync(GENERATED_BINDINGS, SHIPPED_BINDINGS, { recursive: true });
+  writeFileSync(
+    path.join(SHIPPED_BINDINGS, "package.json"), `${JSON.stringify(bindingsManifest, null, 2)}
+`
+  );
+}
+
+function copyBootstrappers() {
+  for (const architecture of readdirSync(RESTORED_BOOTSTRAPPERS)) {
+    const target = path.join(SHIPPED_BOOTSTRAPPERS, architecture);
+    mkdirSync(target, { recursive: true });
+    copyFileSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, BOOTSTRAPPER), path.join(target, BOOTSTRAPPER));
+  }
+}
+
 function copyShipped() {
   for (const file of filesIn(SOURCE_FOLDER).filter(isShipped)) {
     const target = path.join(OUTPUT_FOLDER, path.relative(SOURCE_FOLDER, file));
@@ -120,5 +156,7 @@ rmSync(OUTPUT_FOLDER, {
 });
 compile();
 copyShipped();
+copyBindings();
+copyBootstrappers();
 resolveSourceAliases();
 process.stdout.write(`dist: ${filesIn(OUTPUT_FOLDER).length} files\n`);

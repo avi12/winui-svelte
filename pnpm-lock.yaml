@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@microsoft/dynwinrt':
+        specifier: 0.1.0-preview.23
+        version: 0.1.0-preview.23
       '@sveltejs/vite-plugin-svelte':
         specifier: 7.3.1
         version: 7.3.1(svelte@https://pkg.pr.new/svelte@18042(@typescript-eslint/types@8.72.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.25.12))
@@ -21,9 +24,6 @@ importers:
       '@arethetypeswrong/cli':
         specifier: ^0.18.5
         version: 0.18.5
-      '@microsoft/dynwinrt':
-        specifier: 0.1.0-preview.23
-        version: 0.1.0-preview.23
       '@microsoft/dynwinrt-codegen':
         specifier: 0.1.0-preview.23
         version: 0.1.0-preview.23
@@ -36,9 +36,6 @@ importers:
       '@types/node':
         specifier: ^24.10.0
         version: 24.19.2
-      '@winapp/bindings':
-        specifier: link:.winapp/bindings
-        version: link:.winapp/bindings
       esbuild:
         specifier: ~0.25.12
         version: 0.25.12

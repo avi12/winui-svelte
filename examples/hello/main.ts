@@ -7,16 +7,9 @@ import { startModuleServer } from "winui-svelte/vite";
 // Vite dev server (so a saved .svelte file updates the open window) and starts
 // the window, which runs on a worker because WinUI keeps its thread.
 //
-//   node main.ts        (from the folder `winui-svelte setup` was run in)
+//   node main.ts
 
-const WINDOWS_APP_SDK_MAJOR = 2;
-const WINDOWS_APP_SDK_MINOR = 2;
-
-initWindowsAppSdk({
-  major: WINDOWS_APP_SDK_MAJOR,
-  minor: WINDOWS_APP_SDK_MINOR,
-  folders: [path.join(process.cwd(), ".winapp", "bin", process.arch)]
-});
+initWindowsAppSdk();
 
 const modules = new MessageChannel();
 await startModuleServer({

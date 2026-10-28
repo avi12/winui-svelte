@@ -6,8 +6,9 @@ import path from "node:path";
 import { test } from "node:test";
 import { z } from "zod";
 
-// package.json's exports and bin are what a consumer resolves, so they point at
-// what `pnpm build` makes (dist), never at the TypeScript sources.
+// package.json's exports and the `#winui` bindings are what a consumer
+// resolves, so they point at what `pnpm build` makes (dist), never at the
+// TypeScript sources.
 
 const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 
@@ -15,7 +16,12 @@ const exportsSchema = z.record(z.string(), jsonSchema);
 
 const manifestSchema = z.object({
   exports: exportsSchema,
-  bin: z.record(z.string(), z.string()),
+  imports: z.object({
+    "#winui/*": z.object({
+      types: z.string(),
+      default: z.string()
+    })
+  }),
   files: z.array(z.string()),
   sideEffects: z.literal(false),
   license: z.literal("MIT")
@@ -43,11 +49,8 @@ function targetsOf(entry: Json) {
 const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8")));
 const IS_BUILT = existsSync(path.join(PACKAGE_ROOT, "dist"));
 
-test("no export or bin points at a TypeScript source", () => {
-  const targets = [
-    ...Object.values(manifest.exports).flatMap(targetsOf),
-    ...Object.values(manifest.bin)
-  ].filter(target => target !== "./package.json");
+test("no export points at a TypeScript source", () => {
+  const targets = Object.values(manifest.exports).flatMap(targetsOf).filter(target => target !== "./package.json");
   for (const target of targets) {
     assert.ok(target.startsWith("./dist/"), `${target} is not in dist`);
     assert.ok(!target.endsWith(".ts") || target.endsWith(".d.ts"), `${target} is a source file`);
@@ -67,14 +70,20 @@ test("every export has types, and a default that is JavaScript", () => {
   }
 });
 
-test("every export and the bin is a file of dist once it is built", { skip: !IS_BUILT }, () => {
-  const targets = [
-    ...Object.values(manifest.exports).flatMap(targetsOf),
-    ...Object.values(manifest.bin)
-  ];
-  for (const target of targets) {
+test("every export is a file of dist once it is built", { skip: !IS_BUILT }, () => {
+  for (const target of Object.values(manifest.exports).flatMap(targetsOf)) {
     assert.ok(existsSync(path.join(PACKAGE_ROOT, target)), `${target} is missing: pnpm build did not make it`);
   }
+});
+
+test("the bindings and the Windows App SDK bootstrapper ship in dist", { skip: !IS_BUILT }, () => {
+  const bindings = manifest.imports["#winui/*"];
+  for (const target of Object.values(bindings)) {
+    assert.ok(target.startsWith("./dist/bindings/"), `${target} is not in dist/bindings`);
+  }
+
+  const bootstrapper = path.join(PACKAGE_ROOT, "dist", "bin", process.arch, "Microsoft.WindowsAppRuntime.Bootstrap.dll");
+  assert.ok(existsSync(bootstrapper), `${bootstrapper} is missing: pnpm build did not copy it`);
 });
 
 test("the published files never include the contributor notes", () => {

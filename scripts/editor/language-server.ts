@@ -24,7 +24,7 @@ const diagnosticSchema = z.object({
   source: z.string().optional()
 });
 
-export type Diagnostic = z.infer<typeof diagnosticSchema>;
+type Diagnostic = z.infer<typeof diagnosticSchema>;
 
 const inlayHintSchema = z.object({
   position: positionSchema,

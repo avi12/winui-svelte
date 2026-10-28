@@ -24,7 +24,7 @@ export interface ClassName {
 }
 
 /** The entries of a parsed list; what is not an entry is left out. */
-export function bindingEntriesOf(list: Json[]) {
+function bindingEntriesOf(list: Json[]) {
   return list.flatMap(item => {
     const entry = bindingEntrySchema.safeParse(item);
     return entry.success ? [entry.data] : [];

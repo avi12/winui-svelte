@@ -117,9 +117,9 @@ try {
   const kilobytes = Math.round(statSync(tarball).size / BYTES_PER_KILOBYTE);
   console.log(`Tarball: ${files.length} files, ${kilobytes} kB packed`);
   run(["exec", "publint", "run", tarball, "--strict"]);
-  // The types import the WinUI bindings an app generates for itself
-  // (#winui/*, from the @winapp/bindings peer), which the checker's sandbox
-  // does not hold: those imports cannot resolve there, in every entry point.
+  // The types import the bindings (#winui/*, dist/bindings) and what they
+  // import (@microsoft/dynwinrt), which the checker's sandbox cannot resolve
+  // from inside the tarball: that is its only complaint.
   run([
     "exec",
     "attw",

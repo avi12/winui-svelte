@@ -98,7 +98,10 @@ function placeContent<Props extends object>({ window, options }: {
     return null;
   }
 
-  const mounted = mountControl(options.component, options.props);
+  const mounted = mountControl({
+    component: options.component,
+    props: options.props
+  });
   // The component's root sits in a grid of the window's, which puts a new root
   // (a hot update's) in the old one's place: a window's own content is not a
   // place a swap can find the old root's parent in.

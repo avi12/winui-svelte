@@ -25,25 +25,21 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()` |
 
-The `winui-svelte` command (`src/cli/main.ts`, `bin`) has one subcommand, `setup`, which prepares an app's bindings (README, "Install").
-
 The table is the source layout: `exports` point at `.ts` files so the monorepo
 needs no build. `pnpm build` compiles them to `dist/` and `publishConfig`
-(which pnpm applies when it packs) points `exports` and `bin` there, with a
+(which pnpm applies when it packs) points `exports` there, with a
 `types` and a `svelte` condition on each.
 
-### The bindings are the app's
+### The bindings are the package's
 
-The package imports `#winui/*`, which its `package.json` maps to the
-`@winapp/bindings` package that `winapp node generate-bindings` writes. The app
-depends on it (`"@winapp/bindings": "link:.winapp/bindings"`) and lists every
-class the window uses in `winapp.jsBindings`; the package itself needs
-`Application`, `Window`, `DispatcherQueue`, `Grid`, `ColumnDefinition`,
-`RowDefinition`, `PropertyValue`, `GridUnitType`, `DesktopAcrylicBackdrop`,
-`FrameworkElement`, `UIElement`. Both sides reach the same files, so a class is
-one class. `src/winui.ts` is the package's one import site; the vite server
-loads it through Node (the bindings are CommonJS), as it does the app's own
-import site (`isNative`).
+The package imports `#winui/*`, which its `package.json` maps to
+`dist/bindings`: the WinUI bindings `winapp node generate-bindings` writes,
+copied there by `pnpm build` and published whole. They declare
+`"sideEffects": false`, and the Vite plugin tells the bundler so, so an app
+bundles only the controls it uses. `src/winui.ts` is the package's one import
+site; the vite server loads it, and the bindings, through Node (they are
+CommonJS). The Windows App SDK bootstrapper ships in `dist/bin`, which
+`initWindowsAppSdk()` finds without arguments.
 
 ## Renderer (`winui-svelte`)
 
@@ -91,7 +87,7 @@ interface Mounted<Props> {
   onRootChange(listener: (root: FrameworkElement) => void): void;
   unmount(): void;                       // Svelte's unmount (cleanups run), then releases the controls it made
 }
-function mountControl<Props extends object>(component: Component<Props>, initial: Props): Mounted<Props>;
+function mountControl<Props extends object>(options: { component: Component<Props>; props: Props }): Mounted<Props>;
 
 // The classes (and enums) a tag, an enum-valued attribute or an attached
 // property may name, by WinUI name: `registerControls(winui)` where `winui` is
@@ -169,7 +165,7 @@ function startModuleServer(options: {
   root: string;
   port: MessagePort;                       // the runner's counterpart
   configFile?: string;                     // the app's vite.config; without one, winuiSvelte() defaults serve
-  isNative?: (file: string) => boolean;    // the app's import site of the bindings (the package's own is built in)
+  isNative?: (file: string) => boolean;    // an app's own native modules (the package's bindings are built in)
   renderer?: string;
 }): Promise<ViteDevServer>;
 
@@ -192,7 +188,7 @@ for tools; `compileSvelte()` throws an `Error` with that message.
 // bootstrap: finds Microsoft.WindowsAppRuntime.Bootstrap.dll in `folders` (first
 // match wins), sets WINAPPSDK_BOOTSTRAP_DLL_PATH and initialises the Windows
 // App SDK. Throws WindowsAppRuntimeMissing when the runtime is not installed.
-function initWindowsAppSdk(options: { major: number; minor: number; folders: string[] }): void;
+function initWindowsAppSdk(options?: { major?: number; minor?: number; folders?: string[] }): void;
 
 // thread (in the worker that owns the UI thread; WinUI's loop never gives its
 // thread back): enters the single-threaded apartment first, so everything
@@ -304,7 +300,7 @@ exactly those.
 </Window>
 ```
 
-Mount it as the app's root (`mountControl(App, ...)` inside `runWindow`'s
+Mount it as the app's root (`mountControl({ component: App, props })` inside `runWindow`'s
 `onStart`): the component is the window. `backdrop` is `"acrylic"`, `"mica"`,
 `"micaAlt"` or `"none"` (`Backdrop`, also taken by `createWindow`); it can
 change while the window is open. A `titleBar` snippet is shown above the content

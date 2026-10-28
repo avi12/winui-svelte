@@ -56,36 +56,11 @@ written with it.
 ## Install
 
 ```sh
-pnpm add winui-svelte svelte@https://pkg.pr.new/svelte@18042 @microsoft/dynwinrt
-pnpm add -D vite @microsoft/winappcli @microsoft/dynwinrt-codegen
-pnpm exec winui-svelte setup
-pnpm install
+pnpm add winui-svelte
 ```
 
-The controls are drawn from WinUI **bindings your app generates for itself**:
-the package imports them as `#winui/*`, which its `package.json` maps to your
-`@winapp/bindings` package, a folder `winapp` writes to `.winapp/bindings`.
-`winui-svelte setup` does everything that needs:
-
-1. writes `winapp.yaml` (the Windows App SDK 2.2 and the tools `winapp` needs to
-   generate bindings) if you have none;
-2. adds the classes the package uses to `package.json`'s
-   `winapp.jsBindings.additionalWinmds` (the ones you listed stay), and the
-   dependency `"@winapp/bindings": "link:.winapp/bindings"`;
-3. runs `winapp restore` (fetches the Windows App SDK, writes the Windows App
-   SDK bootstrapper to `.winapp/bin`) and `winapp node generate-bindings`
-   (writes `.winapp/bindings`).
-
-The first run downloads the SDK and generates thousands of binding files; it
-can take ten minutes or more. It is not repeated until the class list or the
-SDK version changes. The last `pnpm install` links `.winapp/bindings` into
-`node_modules`. Add `.winapp` to `.gitignore`.
-
-Options: `winui-svelte setup [directory] [--dry-run] [--winapp <command>]`.
-`--dry-run` writes the files and does not run `winapp`. A class of your own that
-the window uses (`Microsoft.UI.Windowing.DisplayArea`, say) goes in the same
-`additionalWinmds` list, and you import it from `#winui/...` as the package does
-(add `"imports": { "#winui/*": "@winapp/bindings/*" }` to your `package.json`).
+The WinUI bindings, the Windows App SDK bootstrapper and the Vite plugin come
+with it.
 
 ## Quick start
 
@@ -120,11 +95,29 @@ Svelte binding:
   let isOn = $state(true);
 </script>
 
-<StackPanel padding={24} spacing={12}>
-  <TextBlock fontSize={24} text="Hello from WinUI" />
+<StackPanel class="hello">
+  <TextBlock class="title">Hello from WinUI</TextBlock>
   <ToggleSwitch header="Lights" bind:isOn />
-  <TextBlock text={isOn ? "The lights are on" : "The lights are off"} />
+  <TextBlock>
+    {#if isOn}
+      The lights are on
+    {:else}
+      The lights are off
+    {/if}
+  </TextBlock>
 </StackPanel>
+
+<!-- Global: Svelte does not scope a class passed to a component. -->
+<style>
+  :global(.hello) {
+    gap: 12px;
+    padding: 24px;
+  }
+
+  :global(.title) {
+    font-size: 24px;
+  }
+</style>
 ```
 
 <!-- hello/App.svelte:end -->
@@ -148,7 +141,7 @@ import { z } from "zod";
 // The window: WinUI's thread. Its modules come from the host's dev server, and
 // a timer takes the server's hot updates in, since WinUI holds this thread.
 
-const receiveMilliseconds = 30;
+const RECEIVE_MILLISECONDS = 30;
 const windowSize = {
   width: 480,
   height: 320
@@ -166,15 +159,15 @@ await runOnUiThread(async () => {
   // share one renderer.
   const { runner, receive } = createWindowModuleRunner(parsedData.data.modules);
   const { createWindow, runWindow, startTimer } = await runner.import<typeof WindowModule>("winui-svelte/window");
-  const { default: App } = await runner.import("/App.svelte");
+  const { default: appComponent } = await runner.import("/App.svelte");
   await runWindow({
     onStart() {
       startTimer({
-        milliseconds: receiveMilliseconds,
+        milliseconds: RECEIVE_MILLISECONDS,
         onTick: receive
       });
       createWindow({
-        component: App,
+        component: appComponent,
         props: {},
         title: "Hello",
         size: windowSize,
@@ -203,16 +196,9 @@ import { startModuleServer } from "winui-svelte/vite";
 // Vite dev server (so a saved .svelte file updates the open window) and starts
 // the window, which runs on a worker because WinUI keeps its thread.
 //
-//   node main.ts        (from the folder `winui-svelte setup` was run in)
+//   node main.ts
 
-const windowsAppSdkMajor = 2;
-const windowsAppSdkMinor = 2;
-
-initWindowsAppSdk({
-  major: windowsAppSdkMajor,
-  minor: windowsAppSdkMinor,
-  folders: [path.join(process.cwd(), ".winapp", "bin", process.arch)]
-});
+initWindowsAppSdk();
 
 const modules = new MessageChannel();
 await startModuleServer({
@@ -236,8 +222,6 @@ worker.on("exit", code => {
 ```
 
 <!-- hello/main.ts:end -->
-
-Run it from the folder `setup` was run in:
 
 ```sh
 node main.ts
@@ -326,17 +310,20 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `ComboBox` | Controls | `description`, `header`, `headerTemplate`, `isDropDownOpen`, `isEditable`, `isTextSearchEnabled`, `lightDismissOverlayMode`, `maxDropDownHeight`, +5 more | `selectedIndex`, `selectedItem`, `selectedValue`, `isDropDownOpen` | yes |
 | `ComboBoxItem` | Controls |  |  | yes |
 | `CommandBar` | Controls | `commandBarOverflowPresenterStyle`, `defaultLabelPosition`, `isDynamicOverflowEnabled`, `overflowButtonVisibility` | `isOpen` | yes |
+| `CommandBarFlyout` | Controls | `alwaysExpanded` |  |  |
 | `CommandBarFlyoutCommandBar` | Controls.Primitives | `systemBackdrop` | `isOpen` | yes |
 | `CommandBarOverflowPresenter` | Controls |  |  | yes |
 | `ContentControl` | Controls | `content`, `contentTemplate`, `contentTemplateSelector`, `contentTransitions` |  | yes |
 | `ContentDialog` | Controls | `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonStyle`, `closeButtonText`, `defaultButton`, `fullSizeDesired`, `isPrimaryButtonEnabled`, `isSecondaryButtonEnabled`, +10 more |  | yes |
 | `ContentPresenter` | Controls | `background`, `backgroundSizing`, `backgroundTransition`, `borderBrush`, `borderThickness`, `characterSpacing`, `content`, `contentTemplate`, +19 more |  | yes |
 | `DatePicker` | Controls | `calendarIdentifier`, `date`, `dayFormat`, `dayVisible`, `header`, `headerTemplate`, `lightDismissOverlayMode`, `maxYear`, +7 more | `date`, `selectedDate` | yes |
+| `DatePickerFlyout` | Controls | `calendarIdentifier`, `date`, `dayFormat`, `dayVisible`, `maxYear`, `minYear`, `monthFormat`, `monthVisible`, +2 more |  |  |
 | `DropDownButton` | Controls |  |  | yes |
 | `Ellipse` | Shapes |  |  |  |
 | `Expander` | Controls | `expandDirection`, `header`, `headerTemplate`, `headerTemplateSelector`, `isExpanded` | `isExpanded` | yes |
 | `FlipView` | Controls | `useTouchAnimationsForAllNavigation` | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `FlipViewItem` | Controls |  |  | yes |
+| `Flyout` | Controls | `content`, `flyoutPresenterStyle` |  | yes |
 | `FlyoutPresenter` | Controls | `isDefaultShadowEnabled` |  | yes |
 | `FontIcon` | Controls | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `glyph`, `isTextScaleFactorEnabled`, `mirroredWhenRightToLeft` |  |  |
 | `Frame` | Controls | `cacheSize`, `isNavigationStackEnabled`, `sourcePageType` |  | yes |
@@ -371,6 +358,7 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `LineBreak` | Documents |  |  |  |
 | `ListBox` | Controls | `selectionMode`, `singleSelectionFollowsFocus` | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `ListBoxItem` | Controls |  |  | yes |
+| `ListPickerFlyout` | Controls | `displayMemberPath`, `itemsSource`, `itemTemplate`, `selectedIndex`, `selectedItem`, `selectedValue`, `selectedValuePath`, `selectionMode` |  |  |
 | `ListView` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `ListViewHeaderItem` | Controls |  |  | yes |
 | `ListViewItem` | Controls |  |  | yes |
@@ -381,6 +369,8 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `MediaTransportControls` | Controls | `fastPlayFallbackBehaviour`, `isCompact`, `isFastForwardButtonVisible`, `isFastForwardEnabled`, `isFastRewindButtonVisible`, `isFastRewindEnabled`, `isNextTrackButtonVisible`, `isPlaybackRateButtonVisible`, +17 more |  |  |
 | `MenuBar` | Controls |  |  |  |
 | `MenuBarItem` | Controls | `title` |  |  |
+| `MenuBarItemFlyout` | Controls |  |  | yes |
+| `MenuFlyout` | Controls | `menuFlyoutPresenterStyle` |  | yes |
 | `MenuFlyoutItem` | Controls | `command`, `commandParameter`, `icon`, `keyboardAcceleratorTextOverride`, `text` |  | yes |
 | `MenuFlyoutPresenter` | Controls | `isDefaultShadowEnabled`, `systemBackdrop` |  | yes |
 | `MenuFlyoutSeparator` | Controls |  |  |  |
@@ -399,6 +389,7 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `Path` | Shapes | `data` |  |  |
 | `PathIcon` | Controls | `data` |  |  |
 | `PersonPicture` | Controls | `badgeGlyph`, `badgeImageSource`, `badgeNumber`, `badgeText`, `contact`, `displayName`, `initials`, `isGroup`, +2 more |  |  |
+| `PickerFlyout` | Controls | `confirmationButtonsVisible`, `content` |  | yes |
 | `PipsPager` | Controls | `maxVisiblePips`, `nextButtonStyle`, `nextButtonVisibility`, `normalPipStyle`, `numberOfPages`, `orientation`, `previousButtonStyle`, `previousButtonVisibility`, +3 more |  |  |
 | `Pivot` | Controls | `headerFocusVisualPlacement`, `headerTemplate`, `isHeaderItemsCarouselEnabled`, `isLocked`, `leftHeader`, `leftHeaderTemplate`, `rightHeader`, `rightHeaderTemplate`, +4 more | `selectedIndex`, `selectedItem` | yes |
 | `PivotHeaderPanel` | Controls.Primitives |  |  | yes |
@@ -446,9 +437,11 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `TeachingTip` | Controls | `actionButtonCommand`, `actionButtonCommandParameter`, `actionButtonContent`, `actionButtonStyle`, `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonContent`, `closeButtonStyle`, +12 more | `isOpen` | yes |
 | `TextBlock` | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +17 more |  | yes |
 | `TextBox` | Controls | `acceptsReturn`, `characterCasing`, `description`, `desiredCandidateWindowAlignment`, `header`, `headerTemplate`, `horizontalTextAlignment`, `inputScope`, +18 more | `text` |  |
+| `TextCommandBarFlyout` | Controls |  |  |  |
 | `Thumb` | Controls.Primitives |  |  |  |
 | `TickBar` | Controls.Primitives | `fill` |  |  |
 | `TimePicker` | Controls | `clockIdentifier`, `header`, `headerTemplate`, `lightDismissOverlayMode`, `minuteIncrement`, `selectedTime`, `time` | `selectedTime`, `time` | yes |
+| `TimePickerFlyout` | Controls | `clockIdentifier`, `minuteIncrement`, `time` |  |  |
 | `TitleBar` | Controls | `autoRefreshDragRegions`, `content`, `iconSource`, `isBackButtonEnabled`, `isBackButtonVisible`, `isPaneToggleButtonVisible`, `leftHeader`, `rightHeader`, +2 more |  |  |
 | `ToggleButton` | Controls.Primitives | `isChecked`, `isThreeState` | `isChecked` | yes |
 | `ToggleMenuFlyoutItem` | Controls | `isChecked` |  | yes |
@@ -489,9 +482,10 @@ How a value is written:
 
 The raw elements the components are made of work too: `<stack-panel spacing={8}>`,
 `<text-block>`, `grid.column={1}` for an attached property; they need
-`registerControls(...)` (the components register the generated bindings by being
-imported). Components are the supported way; see [API.md](API.md) for the raw
-forms and the renderer's functions.
+`registerControls(...)` with the classes they name (a component registers only
+its own class, when it is made, so an app bundles only the bindings it uses).
+Components are the supported way; see [API.md](API.md) for the raw forms and
+the renderer's functions.
 
 ## Styling with CSS
 
@@ -583,8 +577,6 @@ Stated plainly, so nobody finds them by surprise:
   that holds the root somewhere else must listen with `mounted.onRootChange`
   (`createWindow` does).
 - **Electron is untested** here (the protocol is shared with Tauri's, which is).
-- **Bindings are yours to generate**, and take minutes the first time
-  (`winui-svelte setup`).
 
 ## Development
 
@@ -594,7 +586,7 @@ In this repository (a pnpm workspace; run these in `packages/winui-svelte`):
 | --- | --- |
 | `pnpm test` | the unit tests, the generator's tests, and the mount test: every component made and linked in a real WinUI window that opens off screen and never takes focus |
 | `pnpm lint` | every check: oxlint, ESLint (Google TypeScript style), `tsc`, `svelte-check`, the editor check, fallow, the check that the generated files are current and the tarball check; `pnpm lint:summary` counts the violations per rule and folder |
-| `pnpm gen:components` | regenerates the components, their metadata, the class list `setup` writes and the tables and quick start in this README from WinUI's metadata (`pnpm restore` first) |
+| `pnpm gen:components` | regenerates the components, their metadata, the class list the bindings are generated for and the tables and quick start in this README from WinUI's metadata (`pnpm restore` first) |
 | `pnpm build` | `dist/`: what is published (`pnpm pack` shows the tarball) |
 | `pwsh examples/hello/run.ps1` | the hello example in a background window, checked through UI Automation (`-Edit` also checks hot reload) |
 

@@ -19,11 +19,10 @@ list of WinUI classes) and writes `.winapp/`, which is not committed. The first
 run downloads the SDK and generates the bindings for every class in the list,
 and takes about ten minutes; it is a cache after that. The components import
 those bindings as `#winui/*`, which `package.json`'s `imports` map to
-`@winapp/bindings`, a link to `.winapp/bindings`.
-
-A consuming app does the same with one command, `winui-svelte setup`
-(`src/cli`), which writes its `winapp.yaml`, adds the classes the package needs
-to its `package.json` and runs `winapp`.
+`dist/bindings`: `pnpm build` copies `.winapp/bindings` there, along with the
+Windows App SDK bootstrapper (`dist/bin`), so the published package carries both
+and an app installs only `winui-svelte`. Build once before `pnpm check` or the
+examples.
 
 ## Everyday commands
 
