@@ -31,6 +31,18 @@ const BROWSER_CONDITIONS = ["browser"];
 // source, so Vite compiles them for the runner rather than leaving them to
 // Node.
 const compiledPackages = [/^svelte(?:\/|$)/u, "esm-env", "winui-svelte"];
+// The package's bindings (#winui/*, shipped in dist/bindings) declare
+// `"sideEffects": false`, but a bundler takes
+// an external module for one with side effects and keeps an empty import of
+// every binding a barrel re-exports. Said here, an app bundles only the
+// bindings of the controls it uses.
+const bindingModule = /^#winui\/|dist[\\/]bindings/u;
+
+// Rollup's own signature: the module, and whether it is external.
+// eslint-disable-next-line no-restricted-syntax -- Rollup's treeshake.moduleSideEffects calls it with two arguments
+function hasSideEffects(id: string, isExternal: boolean) {
+  return !isExternal || !bindingModule.test(id);
+}
 
 /** What the plugin passes on, without Vite: kept apart so it can be checked. */
 export function winuiPluginOptions(options: WinuiSvelteOptions = {}) {
@@ -67,6 +79,13 @@ export function windowConfig() {
     // Svelte's browser build is the one that mounts components.
     resolve: {
       conditions: BROWSER_CONDITIONS
+    },
+    build: {
+      rollupOptions: {
+        treeshake: {
+          moduleSideEffects: hasSideEffects
+        }
+      }
     },
     // Nothing runs in a browser, so there is nothing to pre-bundle for one.
     optimizeDeps: {

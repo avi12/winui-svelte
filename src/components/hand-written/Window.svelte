@@ -1,13 +1,15 @@
 <script lang="ts">
   import type { WindowComponentProps } from "./window-props.ts";
-  import type { FrameworkElement, Grid } from "#src/components/generated/bindings.js";
-  import { control } from "#src/components/runtime.js";
+  import type { FrameworkElement } from "#src/components/generated/bindings.js";
+  import { Grid } from "#src/components/generated/bindings.js";
+  import { control, registerControls } from "#src/components/runtime.js";
   import { attachWindow } from "#src/window/window-host.svelte.js";
   import { untrack } from "svelte";
 
   // A native window around its content. Mount it as the app's root (the
   // component itself is the window, nothing is placed in a page).
   let { handle = $bindable(), titleBar, children, ...rest }: WindowComponentProps = $props();
+  registerControls({ grid: Grid });
   let titleBarControl = $state.raw<FrameworkElement | null>(null);
   const layout = $derived.by(() => {
     const hasTitleBar = titleBar !== undefined;
@@ -18,7 +20,11 @@
   });
 
   function open(content: Grid) {
-    const attached = attachWindow(content, rest, () => titleBarControl);
+    const attached = attachWindow({
+      content,
+      props: rest,
+      titleBar: () => titleBarControl
+    });
     handle = attached.handle;
     return attached.dispose;
   }

@@ -25,9 +25,8 @@ export interface ModuleServerOptions extends WinuiSvelteOptions {
   /** The runner's end of this port is the window thread's. */
   port: MessagePort;
   /**
-   * Modules Node loads itself rather than Vite, besides the package's own
-   * import site of the bindings: the app's import site of generated native
-   * bindings.
+   * Modules Node loads itself rather than Vite, besides the package's bindings
+   * and its own import site of them: an app's own native modules.
    */
   isNative?: (file: string) => boolean;
   /**
@@ -44,6 +43,10 @@ const packageBindingsSites = [
   path.join(import.meta.dirname, "..", "winui"),
   path.join(import.meta.dirname, "..", "components", "generated", "bindings")
 ];
+// The bindings the package ships (copied there by the build), which are
+// CommonJS that Node loads itself. From source and from the published package
+// alike, dist/bindings sits two folders above this file.
+const BUNDLED_BINDINGS_FOLDER = path.join(import.meta.dirname, "..", "..", "dist", "bindings");
 const queryOrHash = /[?#].*$/u;
 const scriptExtension = /\.[cm]?[jt]s$/u;
 
@@ -52,6 +55,11 @@ function isSameFile({ file, other }: {
   other: string;
 }) {
   return path.relative(file, other) === "";
+}
+
+function isBundledBinding(file: string) {
+  const relative = path.relative(BUNDLED_BINDINGS_FOLDER, file);
+  return !relative.startsWith("..") && !path.isAbsolute(relative);
 }
 
 function isPackageBindingsSite(file: string) {
@@ -166,7 +174,7 @@ class WindowEnvironment extends DevEnvironment {
 /** Starts the dev server for a window's modules; the window thread's module runner loads from it. */
 export async function startModuleServer(options: ModuleServerOptions) {
   function isNative(file: string) {
-    return isPackageBindingsSite(file) || options.isNative?.(file) === true;
+    return isBundledBinding(file) || isPackageBindingsSite(file) || options.isNative?.(file) === true;
   }
 
   const hasConfigFile = options.configFile !== undefined;

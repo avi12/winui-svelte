@@ -19,12 +19,12 @@ const APP_FOLDER = path.join(import.meta.dirname, "treeshake-app");
 const IS_BUILT = existsSync(path.join(PACKAGE_ROOT, "dist"));
 const BUNDLE_TIMEOUT_MILLISECONDS = 120_000;
 const bindingImport = /#winui\/[\w./-]+/gu;
-const externalModule = new RegExp(String.raw`^#winui/|@winapp[\\/]bindings|\.winapp[\\/]bindings|@microsoft[\\/]dynwinrt`, "u");
+const externalModule = new RegExp(String.raw`^#winui/|dist[\\/]bindings|@microsoft[\\/]dynwinrt`, "u");
 
 // Measured with one <Button>: today's bundle. Lower it when the package gets
 // smaller; never raise it to make a change pass.
-const BUDGET_BYTES = 130_000;
-const BUDGET_BINDINGS = 340;
+const BUDGET_BYTES = 125_000;
+const BUDGET_BINDINGS = 46;
 // What the goal allows: the bindings of the controls and enums the app uses,
 // and the renderer's own handful.
 const GOAL_BINDINGS = 40;
@@ -68,7 +68,7 @@ test("an app with one Button stays within the bundle budget", {
 test("an app with one Button imports only the bindings it uses", {
   skip: !IS_BUILT,
   timeout: BUNDLE_TIMEOUT_MILLISECONDS,
-  todo: "every generated component imports the bindings of all controls through runtime.ts"
+  todo: "the owners of the attached properties every element takes (Canvas, RelativePanel, ScrollViewer, VariableSizedWrapGrid) and their enums load with every component"
 }, async () => {
   const bundle = await bundleOfOneButton();
   assert.ok(bundle.bindings <= GOAL_BINDINGS, `${bundle.bindings} binding imports for one Button, the goal is ${GOAL_BINDINGS}`);

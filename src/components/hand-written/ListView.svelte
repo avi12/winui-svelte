@@ -1,9 +1,9 @@
 <script generics="Item" lang="ts">
   import { attachItems } from "./items/items-host.svelte.ts";
   import type { ItemsComponentProps } from "./items/items-props.ts";
-  import type { ListView } from "#src/components/generated/bindings.js";
+  import { ListView } from "#src/components/generated/bindings.js";
   import { connectListView } from "#src/components/generated/controls/ListView.svelte.js";
-  import { attachmentsOf, control } from "#src/components/runtime.js";
+  import { attachmentsOf, control, registerControls } from "#src/components/runtime.js";
   import { untrack } from "svelte";
 
   // Written by hand (scripts/codegen/tables.ts: handWrittenComponents): the
@@ -37,6 +37,7 @@
       selectedValue = value;
     }
   };
+  registerControls({ "list-view": ListView });
 
   function connect(native: ListView) {
     const disconnectProperties = connectListView(native, rest, bound);
