@@ -45,7 +45,8 @@ export function keyText(boxedKey: BoxedValue) {
   return typeof value === "string" ? value : "";
 }
 
-const keyBox: KeyBox<BoxedValue> = {
+/** How a key is held in a control's items: as a boxed string. */
+export const keyBox: KeyBox<BoxedValue> = {
   box: key => PropertyValue.createString(key),
   unbox: keyText
 };
@@ -61,6 +62,7 @@ export class ItemRows<Item> {
   private nextContainerId = 0;
 
   private keyOrder: string[] = [];
+  private isChangingKeys = false;
 
   constructor({ props, onSynced }: {
     props: ItemRowsProps<Item>;
@@ -79,6 +81,11 @@ export class ItemRows<Item> {
     return this.keyOrder;
   }
 
+  /** The rows are changing the control's items: what it reports meanwhile (a selection lost) is not the user's. */
+  get isChanging() {
+    return this.isChangingKeys;
+  }
+
   /** The user left the control's items in `order` (a drag): it is the list's order now. */
   adoptOrder(order: string[]) {
     this.keyOrder = order;
@@ -89,8 +96,10 @@ export class ItemRows<Item> {
     key: string;
     target: number;
   }) {
-    this.keys.removeAt(this.keyOrder.indexOf(key));
-    this.keys.insertAt(target, keyBox.box(key));
+    this.changingKeys(() => {
+      this.keys.removeAt(this.keyOrder.indexOf(key));
+      this.keys.insertAt(target, keyBox.box(key));
+    });
     this.keyOrder = this.readOrder();
   }
 
@@ -160,12 +169,21 @@ export class ItemRows<Item> {
     // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
     this.itemsByKey = new Map(keyed);
     this.keyOrder = wanted;
-    syncKeyVector({
+    this.changingKeys(() => syncKeyVector({
       vector: this.keys,
       codec: keyBox,
       wanted
-    });
+    }));
     this.rows.refresh(key => this.itemsByKey.get(key));
+  }
+
+  private changingKeys(change: () => void) {
+    this.isChangingKeys = true;
+    try {
+      change();
+    } finally {
+      this.isChangingKeys = false;
+    }
   }
 
   // WinUI hands back a new wrapper for the same container, so a container is
