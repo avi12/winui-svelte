@@ -191,6 +191,12 @@ export function createCssNative(winui: CssWinui) {
         }
       });
     },
+    useSystemFocusVisuals(control) {
+      const isControl = "useSystemFocusVisuals" in control;
+      if (isControl) {
+        Object.assign(control, { useSystemFocusVisuals: true });
+      }
+    },
     subscribe(control, event, handler) {
       const subscribe = readMember({
         target: control,

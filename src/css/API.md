@@ -199,6 +199,27 @@ writes it (the `origin` write, like a grid's columns) and writes it again on
 .fan { rotate: 8deg; transform-origin: left bottom }
 ```
 
+## Focus ring: `outline`
+
+`outline` styles the control's focus visual:
+
+| CSS | WinUI |
+|---|---|
+| `outline-color` | `FocusVisualPrimaryBrush` |
+| `outline-width` | `FocusVisualPrimaryThickness` |
+| `outline-offset` | `FocusVisualMargin`, negated: a negative WinUI margin pushes the ring outward, as a positive CSS offset does |
+| `outline: none` | both thicknesses 0: no focus visual |
+| any visible outline | `FocusVisualSecondaryThickness` 0 (a WinUI focus visual is two rings; CSS has one), and `UseSystemFocusVisuals` on a Control |
+
+`solid` and `auto` are the styles; the others are errors. `UseSystemFocusVisuals`
+exists on a `Control` and not on other types, so the runtime sets it
+(a `useSystemFocusVisuals` write) where the element has it.
+
+```css
+button:focus-visible { outline: 2px solid #0af; outline-offset: 2px }
+.quiet { outline: none }
+```
+
 ## What stays unsupported, and why
 
 `unsupported-properties.ts` holds the reason shown for each property no group
@@ -210,5 +231,4 @@ handles. Declarations like these fail the build with it:
 | `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color |
 | `filter`, `backdrop-filter` | WinUI has no filters; use an acrylic brush or a Mica backdrop |
 | `transform`, `animation` | use `translate`, `scale`, `rotate` and `transition`, which WinUI animates implicitly |
-| `outline` | WinUI draws its own focus visuals |
 | `float`, `flex*`, `align-items`, `justify-*`, `place-items`, `content`, `list-style`, `text-transform`, `text-indent`, `word-break`, `user-select` | no WinUI equivalent in a Style; each message names the nearest WinUI way |

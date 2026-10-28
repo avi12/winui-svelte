@@ -1,4 +1,5 @@
 import { borderThickness, cornerRadius, thicknessGroup } from "./box-properties.ts";
+import { outline, OUTLINE_MEMBERS } from "./focus-properties.ts";
 import {
   alignmentProperty,
   display,
@@ -271,6 +272,10 @@ const propertyGroups: readonly PropertyGroup[] = [
     member: "rotate",
     parse: rotation
   }),
+  {
+    members: OUTLINE_MEMBERS,
+    lower: outline
+  },
   {
     members: TRANSFORM_ORIGIN_MEMBERS,
     lower: transformOrigin

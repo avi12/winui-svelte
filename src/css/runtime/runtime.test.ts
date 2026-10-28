@@ -20,6 +20,7 @@ interface FakeControl {
   columns: string | null;
   centerPoint: OriginPoint | null;
   resources: string[];
+  focusVisuals: boolean;
   handlers: Map<string, () => void>;
   properties: Record<string, NativeValue>;
 }
@@ -31,6 +32,7 @@ function control(properties: Record<string, NativeValue> = {}) {
     columns: null,
     centerPoint: null,
     resources: [],
+    focusVisuals: false,
     handlers: new Map(),
     properties
   };
@@ -75,6 +77,9 @@ const fakeNative: CssNative = {
   },
   setCenterPoint(target, point) {
     fake(target).centerPoint = point;
+  },
+  useSystemFocusVisuals(target) {
+    fake(target).focusVisuals = true;
   },
   subscribe(target, event, handler) {
     const fakeControl = fake(target);
@@ -443,6 +448,24 @@ test("a custom property on a class is a resource of the elements that have it", 
   dangerElement.dispose();
   assert.deepEqual(danger.resources, []);
   otherElement.dispose();
+});
+
+test("an outline turns on the control's system focus visuals", () => {
+  registerStyleSheet(
+    sheet({
+      id: "focus.svelte",
+      css: ".ring { outline: 2px solid #0af }"
+    })
+  );
+  const target = control();
+  const element = styledElement({
+    control: target,
+    elementType: "button"
+  });
+  element.setClasses("ring");
+  assert.equal(target.focusVisuals, true);
+  assert.match(target.style ?? "", /<Setter Property="FocusVisualPrimaryBrush" Value="#00AAFF"\/>/u);
+  element.dispose();
 });
 
 test("a declaration the element cannot take fails with where it came from", () => {

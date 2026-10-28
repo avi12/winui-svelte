@@ -3,10 +3,11 @@ import type { LowerOptions, Reader } from "#src/css/parse/reader.js";
 
 /**
  * What a `write` output sets on the element itself: a grid's columns or rows
- * (a list of lengths), or the origin its scale and rotation pivot about
- * (`x,y`, as `parseTransformOrigin` writes it).
+ * (a list of lengths), the origin its scale and rotation pivot about
+ * (`x,y`, as `parseTransformOrigin` writes it), or that it draws the system's
+ * focus visuals.
  */
-export type WriteTarget = "columns" | "rows" | "origin";
+export type WriteTarget = "columns" | "rows" | "origin" | "focusVisuals";
 
 /**
  * What lowering a group of declarations produces: a Style setter, a

@@ -21,7 +21,10 @@ const BORDER_WIDTH_KEYWORDS = new Map([
   ["medium", "3px"],
   ["thick", "5px"]
 ]);
+const DEFAULT_BORDER_WIDTH = "medium";
 const BORDER_STYLES = new Set(["none", "solid", "hidden"]);
+// An outline's `auto` is the browser's own focus ring: WinUI's own is the nearest.
+const OUTLINE_STYLES = new Set(["none", "solid", "auto"]);
 const UNSUPPORTED_BORDER_STYLES = new Set(["dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]);
 const FONT_STYLES = new Set(["normal", "italic", "oblique"]);
 const FONT_WEIGHT_WORDS = new Set(["normal", "bold", "bolder", "lighter"]);
@@ -76,56 +79,108 @@ function expandBox({ declaration, names, reader, template }: {
   }));
 }
 
-function expandBorder({ declaration, reader, sideNames }: {
-  declaration: Declaration;
+// The width, style and color of a border or outline, in any order; null after an error.
+function readLineWords({ reader, styles, noun }: {
   reader: Reader;
-  sideNames: readonly string[];
+  styles: ReadonlySet<string>;
+  /** What WinUI draws, for the message about a style it cannot. */
+  noun: string;
 }) {
-  let width = "medium";
+  let width = DEFAULT_BORDER_WIDTH;
   let style = "";
   let color: string | null = null;
   for (const word of reader.words) {
     const lower = word.toLowerCase();
     const isWidth = parseLength(word) !== null || BORDER_WIDTH_KEYWORDS.has(lower);
     if (UNSUPPORTED_BORDER_STYLES.has(lower)) {
-      reader.error(`${reader.declaration.property}: ${lower} has no WinUI meaning (a WinUI border is solid; use solid or none)`);
-      return [];
+      return reader.error(`${reader.declaration.property}: ${lower} has no WinUI meaning (a WinUI ${noun} is solid; use solid or none)`);
     }
 
-    if (BORDER_STYLES.has(lower)) {
+    if (styles.has(lower)) {
       style = lower;
     } else if (isWidth) {
-      width = BORDER_WIDTH_KEYWORDS.get(lower) ?? word;
+      width = lower;
     } else if (color === null) {
       color = word;
     } else {
-      reader.expected("[width] [style] [color]");
-      return [];
+      return reader.expected("[width] [style] [color]");
     }
   }
 
   const isStyleMissing = style === "";
   if (isStyleMissing) {
-    reader.expected("a style (solid or none)");
+    return reader.expected(`a style (${[...styles].join(", ")})`);
+  }
+
+  return {
+    width: BORDER_WIDTH_KEYWORDS.get(width) ?? width,
+    style,
+    color
+  };
+}
+
+function expandBorder({ declaration, reader, sideNames }: {
+  declaration: Declaration;
+  reader: Reader;
+  sideNames: readonly string[];
+}) {
+  const words = readLineWords({
+    reader,
+    styles: BORDER_STYLES,
+    noun: "border"
+  });
+  const isWordsMissing = words === null;
+  if (isWordsMissing) {
     return [];
   }
 
   const widths = sideNames.map(side => longhand({
     declaration,
     property: `border-${side}-width`,
-    value: width
+    value: words.width
   }));
   const rest = [longhand({
     declaration,
     property: "border-style",
-    value: style
+    value: words.style
   })];
-  const colors = color === null ? [] : [longhand({
+  const colors = words.color === null ? [] : [longhand({
     declaration,
     property: "border-color",
-    value: color
+    value: words.color
   })];
   return [...widths, ...rest, ...colors];
+}
+
+function expandOutline({ declaration, reader }: ExpansionInput) {
+  const words = readLineWords({
+    reader,
+    styles: OUTLINE_STYLES,
+    noun: "focus visual"
+  });
+  const isWordsMissing = words === null;
+  if (isWordsMissing) {
+    return [];
+  }
+
+  const colors = words.color === null ? [] : [longhand({
+    declaration,
+    property: "outline-color",
+    value: words.color
+  })];
+  return [
+    longhand({
+      declaration,
+      property: "outline-width",
+      value: words.width
+    }),
+    longhand({
+      declaration,
+      property: "outline-style",
+      value: words.style
+    }),
+    ...colors
+  ];
 }
 
 function expandBackground({ declaration, reader }: ExpansionInput) {
@@ -338,6 +393,7 @@ const expansions = new Map<string, Expansion>([
     sideNames: SIDES
   })],
   ...SIDES.map(sideExpansion),
+  ["outline", expandOutline],
   ["background", expandBackground],
   ["font", expandFont],
   ["gap", ({ declaration, reader }) => expandPair({

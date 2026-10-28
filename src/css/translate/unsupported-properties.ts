@@ -22,7 +22,6 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["transform", "use translate, scale and rotate, which WinUI animates"],
   ["animation", "use transition on opacity, translate, scale or rotate"],
   ["content", "WinUI has no generated content"],
-  ["outline", "WinUI draws its own focus visuals"],
   ["list-style", "WinUI has no lists to mark"],
   ["text-transform", "WinUI has no text-transform; change the text"],
   ["text-indent", "WinUI has no text indent"],

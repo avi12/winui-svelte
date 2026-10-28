@@ -195,6 +195,29 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ["translate", null, "translate: 0 4px", [["Translation", "0,4,0"]]],
   ["scale", null, "scale: 1.1", [["Scale", "1.1,1.1,1"]]],
   ["rotate", null, "rotate: 45deg", [["Rotation", "45"]]],
+  ["border without a width is CSS's medium", null, "border: solid red", [
+    ["BorderThickness", "3,3,3,3"],
+    ["BorderBrush", "#FF0000"]
+  ]],
+  ["outline is the focus visual", null, "outline: 2px solid #0af", [
+    ["FocusVisualPrimaryThickness", "2,2,2,2"],
+    ["FocusVisualPrimaryBrush", "#00AAFF"],
+    ["FocusVisualSecondaryThickness", "0,0,0,0"]
+  ]],
+  ["outline none removes the focus visual", null, "outline: none", [
+    ["FocusVisualPrimaryThickness", "0,0,0,0"],
+    ["FocusVisualSecondaryThickness", "0,0,0,0"]
+  ]],
+  ["outline-offset pushes the focus visual outward", null, "outline: 1px solid red; outline-offset: 3px", [
+    ["FocusVisualPrimaryThickness", "1,1,1,1"],
+    ["FocusVisualPrimaryBrush", "#FF0000"],
+    ["FocusVisualMargin", "-3,-3,-3,-3"],
+    ["FocusVisualSecondaryThickness", "0,0,0,0"]
+  ]],
+  ["outline-color alone", null, "outline-color: red", [
+    ["FocusVisualPrimaryBrush", "#FF0000"],
+    ["FocusVisualSecondaryThickness", "0,0,0,0"]
+  ]],
   ["grid-column with a span", "grid", "grid-column: 2 / span 2", [
     ["Grid.Column", "1"],
     ["Grid.ColumnSpan", "2"]
@@ -300,6 +323,21 @@ test("a transform-origin that is not a pair of positions fails the build", () =>
   }
 });
 
+test("an outline makes the control use the system's focus visuals", () => {
+  assert.deepEqual(
+    lower({
+      elementType: "button",
+      declarations: "outline: 2px solid red"
+    }).writes, [["focusVisuals", "true"]]
+  );
+  assert.deepEqual(
+    lower({
+      elementType: "button",
+      declarations: "outline: none"
+    }).writes, []
+  );
+});
+
 test("-winui-based-on names a WinUI style", () => {
   assert.equal(
     lower({
@@ -368,6 +406,8 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["minmax in a template", "grid", "grid-template-columns: minmax(10px, 1fr)", /minmax\(\) has no WinUI meaning/u],
   ["overflow on a border", "border", "overflow: hidden", /overflow-x: hidden has no WinUI meaning on <border>/u],
   ["letter spacing in px", null, "letter-spacing: 2px", /expected normal or a size in em/u],
+  ["a dashed outline", null, "outline: 2px dashed red", /outline: dashed has no WinUI meaning \(a WinUI focus visual is solid/u],
+  ["an outline without a style", null, "outline: 2px red", /outline: expected a style \(none, solid, auto\)/u],
   ["an unknown base style", null, "-winui-based-on: NopeStyle", /NopeStyle is not a style WinUI defines/u]
 ];
 

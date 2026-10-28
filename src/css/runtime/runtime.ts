@@ -37,6 +37,8 @@ export interface CssNative {
   setGridDefinitions(control: object, target: "columns" | "rows", lengths: string): void;
   /** UIElement.CenterPoint: the point Scale and Rotation pivot about. */
   setCenterPoint(control: object, point: OriginPoint): void;
+  /** Control.UseSystemFocusVisuals, so the focus visual draws; nothing where a type lacks it. */
+  useSystemFocusVisuals(control: object): void;
   /** Calls `handler` on a WinUI event (PointerEntered...); null if the control has no such event. */
   subscribe(control: object, event: string, handler: () => void): (() => void) | null;
   read(input: {
@@ -587,19 +589,37 @@ class ElementStyle implements StyledElement {
       return;
     }
 
-    for (const { target, value } of built.writes) {
-      const isOrigin = target === "origin";
-      if (isOrigin) {
-        this.pivotAbout({
-          currentNative,
-          origin: value
-        });
-      } else {
-        currentNative.setGridDefinitions(this.control, target, value);
-      }
+    for (const write of built.writes) {
+      this.applyWrite({
+        currentNative,
+        write
+      });
     }
 
     this.appliedWrites = signature;
+  }
+
+  private applyWrite({ currentNative, write }: {
+    currentNative: CssNative;
+    write: BuiltStyle["writes"][number];
+  }) {
+    const { target, value } = write;
+    const isOrigin = target === "origin";
+    if (isOrigin) {
+      this.pivotAbout({
+        currentNative,
+        origin: value
+      });
+      return;
+    }
+
+    const isFocusVisuals = target === "focusVisuals";
+    if (isFocusVisuals) {
+      currentNative.useSystemFocusVisuals(this.control);
+      return;
+    }
+
+    currentNative.setGridDefinitions(this.control, target, value);
   }
 
   // CenterPoint is absolute, so it follows the element as it is laid out.
