@@ -817,12 +817,18 @@ function overlayOf(name: string) {
   return kind === undefined ? undefined : overlayHosts.get(kind);
 }
 
+// What the component binds: the control's bindables, and `open` for an overlay.
+function componentBindableNames(level: ClassModel) {
+  const isOverlay = overlayOf(level.type.name) !== undefined;
+  return [...allBindableNames(level), ...isOverlay ? [OVERLAY_BINDABLE] : []];
+}
+
 function emitOverlayDeclaration({ level, overlay }: {
   level: ClassModel;
   overlay: NonNullable<ReturnType<typeof overlayOf>>;
 }) {
   const name = level.type.name;
-  const bindings = [...allBindableNames(level), OVERLAY_BINDABLE].map(key => `"${key}"`).join(" | ");
+  const bindings = componentBindableNames(level).map(key => `"${key}"`).join(" | ");
   return `${[
     GENERATED_HEADER,
     "",
@@ -902,7 +908,7 @@ export function emitComponent(level: ClassModel) {
   const overlay = overlayOf(name);
   const isOverlay = overlay !== undefined;
   const hasChildren = level.contentProperty !== null && !isHosted;
-  const bindables = [...allBindableNames(level), ...isOverlay ? [OVERLAY_BINDABLE] : []];
+  const bindables = componentBindableNames(level);
   const destructured = [
     ...bindables.map(key => `${key} = $bindable()`),
     ...hasHandle ? ["handle = $bindable()"] : [],
@@ -1007,7 +1013,7 @@ export function emitControlsTable(model: Model) {
     const props = hiddenCount > 0 ? `${shown}, +${hiddenCount} more` : shown;
     const category = level.type.namespace.replace(NAMESPACE_PREFIX, "");
     const content = level.contentProperty === null ? "" : "yes";
-    return `| \`${level.type.name}\` | ${category} | ${props} | ${codeList(allBindableNames(level))} | ${content} |`;
+    return `| \`${level.type.name}\` | ${category} | ${props} | ${codeList(componentBindableNames(level))} | ${content} |`;
   });
   return [
     "| Component | Namespace | Props it adds | Bindable | Children |",
