@@ -27,6 +27,6 @@
   }
 
   .id {
-    opacity: 0.6;
+    opacity: 60%;
   }
 </style>

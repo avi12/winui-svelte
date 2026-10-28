@@ -25,11 +25,6 @@ export const ExportTarget = {
 
 export type ExportTarget = typeof ExportTarget[keyof typeof ExportTarget];
 
-export interface Alias {
-  find: RegExp;
-  replacement: string;
-}
-
 // ./dist/renderer/host/host.js is built from ./src/renderer/host/host.ts.
 function targetFile({ builtFile, target }: {
   builtFile: string;

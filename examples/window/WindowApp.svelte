@@ -14,7 +14,7 @@
 
   // The material named, or acrylic.
   function backdropOf(name: Json | undefined) {
-    return Object.values(Backdrop).find(candidate => candidate === name) ?? Backdrop.Acrylic;
+    return Object.values(Backdrop).find(candidate => candidate === name) ?? Backdrop.acrylic;
   }
 
   // The host is the harness's, handed over once: it never changes.
@@ -50,7 +50,7 @@
   // reached it.
   function report(kind: string) {
     flush();
-    const appWindow = handle?.appWindow;
+    const appWindow = handle?.window.appWindow;
     host.report({
       kind,
       backdrop: backdropName(),
@@ -141,7 +141,7 @@
     flex-direction: row;
     gap: 10px;
     height: 40px;
-    padding: 0 0 0 14px;
+    padding-left: 14px;
   }
 
   .title {

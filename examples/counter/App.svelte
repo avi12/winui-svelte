@@ -15,7 +15,10 @@
   const props: Props = $props();
   // The channel is the window's for its whole life: read once, on purpose.
   const channel = untrack(() => props.channel);
-  const view = hostState<CounterView>(channel, VIEW_NAME);
+  const view = hostState<CounterView>({
+    channel,
+    name: VIEW_NAME
+  });
   const tallies = new Tallies();
   setContext(hostContextKey, {
     channel,

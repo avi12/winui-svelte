@@ -12,7 +12,11 @@
 </script>
 
 <stack-panel class="probe">
-  <text-block {@attach withControl(TextBlock, control => observe(() => control.text))}>count={probe.count}</text-block>
+  <text-block
+{@attach withControl({
+  type: TextBlock,
+  use: control => observe(() => control.text)
+})}>count={probe.count}</text-block>
   <button onclick={click}>Click via UIA</button>
 </stack-panel>
 

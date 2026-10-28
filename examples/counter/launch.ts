@@ -1,5 +1,5 @@
-import { startWindowsAppSdk } from "#examples/bootstrap.ts";
 import { VIEW_NAME } from "./app-types.ts";
+import { startWindowsAppSdk } from "#examples/bootstrap.ts";
 import { MessageChannel, Worker } from "node:worker_threads";
 import { defineMessaging } from "winui-svelte/messaging";
 import type { Json, StateProtocol } from "winui-svelte/state/host";
@@ -43,7 +43,10 @@ let state: Json = {
 function publish(next: Json) {
   void messaging.sendMessage(MessageType.patch, {
     name: VIEW_NAME,
-    ops: diff({ previous: state, next })
+    ops: diff({
+      previous: state,
+      next
+    })
   });
   state = next;
 }

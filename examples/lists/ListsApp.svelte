@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import type { ExampleItem } from "./example-item.ts";
   import { makeItems } from "./example-item.ts";
   import ExampleRow from "./ExampleRow.svelte";
   import { liveRows, rowStats } from "./row-stats.ts";
+  import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import { GridView, ListView, MoveDirection, Window } from "winui-svelte/components";
   import type { ListHandle } from "winui-svelte/components";
   import { exitApplication } from "winui-svelte/window";
@@ -47,8 +47,11 @@
   const commands = new Map<string, (command: ExampleCommand) => void>([
     ["stats", () => report("stats")],
     ["move", command => {
-      const direction = command["direction"] === "up" ? MoveDirection.Up : MoveDirection.Down;
-      handle?.move(String(command["key"]), direction);
+      const direction = command["direction"] === "up" ? MoveDirection.UP : MoveDirection.DOWN;
+      handle?.move({
+        key: String(command["key"]),
+        direction
+      });
       report("moved");
     }],
     ["scroll", command => {
