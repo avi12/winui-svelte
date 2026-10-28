@@ -277,3 +277,19 @@ function isEntry(input: AttachedInput): input is AttachedEntry {
 export function attachedList(input: AttachedInput) {
   return isEntry(input) ? [input] : input;
 }
+
+/** A color prop as the bindings' `Color`; throws a `TypeError` for text that is not a color. */
+export function colorOf(input: ColorInput) {
+  const isColor = typeof input === "object";
+  if (isColor) {
+    return input;
+  }
+
+  const color = parseColor(input);
+  const isParsed = color !== null;
+  if (!isParsed) {
+    throw new TypeError(`"${input}" is not a color (#rgb, #rrggbb or #aarrggbb)`);
+  }
+
+  return color;
+}

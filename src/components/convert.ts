@@ -11,13 +11,7 @@ import {
   Uri
 } from "./generated/bindings.ts";
 import type { ImageSource, UIElement } from "./generated/bindings.ts";
-import type {
-  AttachedInput,
-  ColorInput,
-  CornerRadiusInput,
-  ObjectInput,
-  ThicknessInput
-} from "./values.ts";
+import type { AttachedInput, CornerRadiusInput, ObjectInput, ThicknessInput } from "./values.ts";
 import {
   attachedList,
   cornerSides,
@@ -42,6 +36,7 @@ export type {
   ObjectReferenceInput,
   ThicknessInput
 } from "./values.ts";
+export { colorOf } from "./values.ts";
 
 /**
  * RelativePanel places an element by another element, or by that element's
@@ -178,22 +173,6 @@ export function gridLengthOf(input: GridLengthInput) {
     value: parts.value,
     gridUnitType
   };
-}
-
-/** A color prop as the bindings' `Color`; throws a `TypeError` for text that is not a color. */
-export function colorOf(input: ColorInput) {
-  const isColor = typeof input === "object";
-  if (isColor) {
-    return input;
-  }
-
-  const color = parseColor(input);
-  const isParsed = color !== null;
-  if (!isParsed) {
-    throw new TypeError(`"${input}" is not a color (#rgb, #rrggbb or #aarrggbb)`);
-  }
-
-  return color;
 }
 
 function isBrush(value: object): value is Brush {
