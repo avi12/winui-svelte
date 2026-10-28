@@ -287,6 +287,7 @@ export { Viewbox } from "#winui/microsoft/ui/xaml/controls/Viewbox";
 export { VirtualizingLayout } from "#winui/microsoft/ui/xaml/controls/VirtualizingLayout";
 export { VirtualizingPanel } from "#winui/microsoft/ui/xaml/controls/VirtualizingPanel";
 export { VirtualizingStackPanel } from "#winui/microsoft/ui/xaml/controls/VirtualizingStackPanel";
+export { WebView2 } from "#winui/microsoft/ui/xaml/controls/WebView2";
 export { WrapGrid } from "#winui/microsoft/ui/xaml/controls/WrapGrid";
 export { ZoomMode } from "#winui/microsoft/ui/xaml/controls/ZoomMode";
 export { DataTemplate } from "#winui/microsoft/ui/xaml/DataTemplate";

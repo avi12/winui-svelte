@@ -270,6 +270,17 @@ One written directly among the children of an element (a `Storyboard`) is made
 and kept by its component but placed nowhere; reach it with
 `{@attach control(storyboard => storyboard.begin())}`.
 
+### WebView2
+
+`<WebView2 source="https://..." onNavigationCompleted={...} />` is generated
+like the rest. Its bindings are made by `pnpm bindings` after winapp's run
+(`scripts/bindings/webview2.ts`), since winapp gives the code generator no
+WebView2 Core metadata, which adds about 3 MB of bindings. The control is bound
+and mounts, but starting its browser from a `node.exe` host is not working yet:
+it needs `Microsoft.Web.WebView2.Core.dll` and `WebView2Loader.dll` where the
+process finds them, and its initialization then fails with 0x8007139F
+(`test/web.test.ts` is a `todo` until it starts).
+
 ### ListView and GridView
 
 ```svelte

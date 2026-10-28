@@ -3780,6 +3780,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "virtualizing-stack-panel",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  WebView2: {
+    parent: "FrameworkElement",
+    properties: ["canGoBack", "canGoForward", "defaultBackgroundColor", "source"],
+    events: ["onCoreProcessFailed", "onCoreWebView2Initialized", "onNavigationCompleted", "onNavigationStarting", "onWebMessageReceived"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "web-view2",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   WrapGrid: {
     parent: "OrientedVirtualizingPanel",
     properties: ["horizontalChildrenAlignment", "itemHeight", "itemWidth", "maximumRowsOrColumns", "orientation", "verticalChildrenAlignment"],
@@ -3818,6 +3829,5 @@ export const levels: Record<string, LevelMetadata> = {
 export const excluded: Record<string, string> = {
   "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem": "constructing it fails with E_NOINTERFACE: it is activatable in the metadata but WinUI makes it only inside a Pivot",
   "Microsoft.UI.Xaml.Controls.SwapChainBackgroundPanel": "as SwapChainPanel",
-  "Microsoft.UI.Xaml.Controls.SwapChainPanel": "dynwinrt-codegen cannot emit it with the other controls: it reaches Microsoft.UI.Input.PointerEventArgs and Windows.UI.Core.PointerEventArgs in one pass, and the second pass names the latter differently from the first",
-  "Microsoft.UI.Xaml.Controls.WebView2": "its events name Microsoft.Web.WebView2.Core types, and winapp passes that winmd to dynwinrt-codegen neither to emit nor to resolve against (it is in .winapp/winmds.lock.json only), so the binding for the control cannot be emitted"
+  "Microsoft.UI.Xaml.Controls.SwapChainPanel": "dynwinrt-codegen cannot emit it with the other controls: it reaches Microsoft.UI.Input.PointerEventArgs and Windows.UI.Core.PointerEventArgs in one pass, and the second pass names the latter differently from the first"
 };

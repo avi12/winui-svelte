@@ -584,6 +584,8 @@ export { default as VirtualizingLayout } from "./VirtualizingLayout.svelte";
 export type { VirtualizingLayoutComponentProps } from "./VirtualizingLayout.d.svelte.ts";
 export { default as VirtualizingStackPanel } from "./VirtualizingStackPanel.svelte";
 export type { VirtualizingStackPanelComponentProps } from "./VirtualizingStackPanel.d.svelte.ts";
+export { default as WebView2 } from "./WebView2.svelte";
+export type { WebView2ComponentProps } from "./WebView2.d.svelte.ts";
 export { default as WrapGrid } from "./WrapGrid.svelte";
 export type { WrapGridComponentProps } from "./WrapGrid.d.svelte.ts";
 export { default as XamlUICommand } from "./XamlUICommand.svelte";

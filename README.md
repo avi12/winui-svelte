@@ -574,6 +574,7 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `Viewbox` | Controls | `child`, `stretch`, `stretchDirection` |  | yes |
 | `VirtualizingLayout` | Controls |  |  |  |
 | `VirtualizingStackPanel` | Controls | `areScrollSnapPointsRegular`, `orientation` |  | yes |
+| `WebView2` | Controls | `canGoBack`, `canGoForward`, `defaultBackgroundColor`, `source` |  |  |
 | `WrapGrid` | Controls | `horizontalChildrenAlignment`, `itemHeight`, `itemWidth`, `maximumRowsOrColumns`, `orientation`, `verticalChildrenAlignment` |  | yes |
 | `XamlUICommand` | Input | `accessKey`, `command`, `description`, `iconSource`, `label` |  |  |
 

@@ -38,7 +38,8 @@ const ATTACHED_PREFIX = "set";
 const renderTransformFamily = new Set(["renderTransform", "renderTransformOrigin", "projection", "transform3D"]);
 // What WinUI refuses to be set on a control, which the sweep therefore leaves
 // out: AnimatedVisualPlayer owns its visual, RichTextBlockOverflow takes its
-// tab behaviour from its RichTextBlock, a brush drawn by the compositor takes
+// tab behaviour from its RichTextBlock, a WebView2 fails fast on being given
+// its own manipulation mode, a brush drawn by the compositor takes
 // no transform, and the layout reads its own default of no columns as invalid.
 const compositeTransformFamily = ["centerPoint", "rotation", "rotationAxis", "scale", "transformMatrix"];
 // Controls made, mounted and set like the rest, but WinUI fails fast (a native
@@ -51,6 +52,7 @@ const needsOwnerToLayOut = new Set([
   "MapControl",
   "PivotPanel",
   "RevealListViewItemPresenter",
+  "WebView2",
   "WrapGrid"
 ]);
 const compositionBrushTransforms = ["relativeTransform", "transform"];
@@ -59,6 +61,7 @@ const refusedByWinui = new Map<string, string[]>([
   ["RadialGradientBrush", compositionBrushTransforms],
   ["ColumnMajorUniformToLargestGridLayout", ["maxColumns"]],
   ["SvgImageSource", ["rasterizePixelHeight", "rasterizePixelWidth"]],
+  ["WebView2", ["manipulationMode"]],
   ["AnimatedVisualPlayer", compositeTransformFamily],
   ["RichTextBlockOverflow", ["isTabStop", "tabIndex"]]
 ]);
@@ -337,6 +340,7 @@ class Exercise {
     step: string;
     action: () => void;
   }) {
+    trace(`${name}: ${step}`);
     try {
       action();
       return true;

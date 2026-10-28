@@ -1,6 +1,7 @@
 import {
   attachedOwners,
   bindableEvents,
+  bindingsAfterWinapp,
   COMPONENT_WINMD,
   coreClasses,
   kindOfType,
@@ -706,5 +707,5 @@ export function requestedClasses(model: Model) {
     classes.set(fullName(type), type);
   }
 
-  return [...classes.values()].filter(type => !enums.has(fullName(type)));
+  return [...classes.values()].filter(type => !enums.has(fullName(type)) && !bindingsAfterWinapp.has(fullName(type)));
 }

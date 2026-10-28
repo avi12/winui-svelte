@@ -236,13 +236,14 @@ export const nonConstructible = new Map<string, string>([
   [
     "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem",
     "constructing it fails with E_NOINTERFACE: it is activatable in the metadata but WinUI makes it only inside a Pivot"
-  ],
-  [
-    "Microsoft.UI.Xaml.Controls.WebView2",
-    "its events name Microsoft.Web.WebView2.Core types, and winapp passes that winmd to dynwinrt-codegen neither to "
-    + "emit nor to resolve against (it is in .winapp/winmds.lock.json only), so the binding for the control cannot be emitted"
   ]
 ]);
+
+// Classes whose bindings scripts/bindings/webview2.ts makes after winapp's run
+// (`pnpm bindings`), so they stay out of the list winapp is given: their
+// events name Microsoft.Web.WebView2.Core types, and winapp passes that winmd
+// to dynwinrt-codegen neither to emit nor to resolve against.
+export const bindingsAfterWinapp = new Set(["Microsoft.UI.Xaml.Controls.WebView2"]);
 
 // A property whose value changes by the user raises an event; the property
 // is then $bindable(). The rule `<Property>Changed` finds the regular ones;
