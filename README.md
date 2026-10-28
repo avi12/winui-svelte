@@ -666,6 +666,31 @@ build error with its file and line; nothing is silently ignored.
 | `var(--card-background-fill-color-default)` | `{ThemeResource CardBackgroundFillColorDefault}`: WinUI's own resources, so light and dark follow Windows |
 | `.class`, `type`, `:hover`, `:focus`, `:active`, `:root`, `:where()` | class and type matching, the control's events, custom properties |
 
+## Transitions
+
+Svelte's compiler refuses `transition:`, `in:`, `out:` and `animate:` on a
+custom renderer, so the same transition functions play through attachments
+from `winui-svelte/element-animation` (an app that does not import it does not
+bundle it):
+
+```svelte
+<script lang="ts">
+  import { transition } from "winui-svelte/element-animation";
+  import { fade } from "svelte/transition";
+</script>
+
+{#if isShown}
+  <Border {@attach transition({ use: fade, params: { duration: 200 } })}>
+    <TextBlock text="Hello" />
+  </Border>
+{/if}
+```
+
+Call `enableElementAnimation()` once before the first component is mounted. The
+leaving element stays in its panel until its outro has run, and the animation
+moves the control's `Opacity`, `Translation`, `Scale` and `Rotation`. See
+[API.md](API.md) for what is and is not animated.
+
 ## State
 
 Svelte's own state tools work unchanged (runes, context, `SvelteMap`, stores).
@@ -691,6 +716,7 @@ protocol and the tests.
 | `winui-svelte/bootstrap` | `initWindowsAppSdk`, for the host's main thread |
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
+| `winui-svelte/element-animation` | `enableElementAnimation`, and the `transition`, `intro` and `outro` attachments |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 
 The published package ships `dist/`: the TypeScript compiled with its
@@ -717,6 +743,9 @@ Stated plainly, so nobody finds them by surprise:
   setters while they are active, and a control that handles an event itself (a
   Button handles `PointerPressed`) never reports it, so `:active` does nothing
   there. Override the control's theme resources instead.
+- **`transition:`, `in:`, `out:` and `animate:` do not compile.** Svelte's
+  custom-renderer build refuses them. Use the `transition`, `intro` and `outro`
+  attachments (see "Transitions"); there is no `animate:flip`.
 - **Two controls are not components:** `SwapChainBackgroundPanel` (the UWP
   panel WinUI 3 keeps for compatibility, which refuses most element properties;
   `SwapChainPanel` replaces it) and `PivotHeaderItem` (WinUI makes it only
