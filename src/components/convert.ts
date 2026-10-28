@@ -17,6 +17,7 @@ import {
   projectAs,
   PropertyValue,
   RepeatBehaviorType,
+  PathGeometry,
   SolidColorBrush,
   SvgImageSource,
   Uri,
@@ -71,7 +72,7 @@ import {
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import { boxedObject } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
-import { read } from "#src/renderer/host/reflect.js";
+import { read, write } from "#src/renderer/host/reflect.js";
 
 // A prop's value as the bindings take it: the generated components call these
 // where a prop is not already the bindings' own type.
@@ -633,7 +634,11 @@ export function imageSourceOf(input: ImageSourceInput) {
   return image;
 }
 
-/** A geometry prop as a `Geometry`; a string is path data, which XAML's reader parses. */
+/**
+ * A geometry prop as a `Geometry`; a string is path data, which XAML's reader
+ * parses into the geometry of a Path. WinUI lets a geometry belong to one
+ * owner, so it is taken from that Path before it is handed on.
+ */
 export function geometryOf(input: GeometryInput) {
   const isGeometry = typeof input !== "string";
   if (isGeometry) {
@@ -641,7 +646,9 @@ export function geometryOf(input: GeometryInput) {
   }
 
   const path = projectAs(XamlReader.load(pathMarkup(input)), Path);
-  return path.data;
+  const geometry = projectAs(path.data, PathGeometry);
+  write(path, "data", null);
+  return geometry;
 }
 
 /**
