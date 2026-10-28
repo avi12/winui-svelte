@@ -243,6 +243,38 @@ these files: it is `src/state`'s, which uses `dispatch` to put host messages
 on the UI thread. `examples/counter` is the working example (its `launch.ts`
 is the host, its `window.ts` the UI-thread worker).
 
+## Value props (`winui-svelte/components`)
+
+A prop whose WinUI type is a value struct or a collection of them takes an
+input a person writes, and the component converts it
+(`src/components/convert.ts`, parsed by `src/components/values.ts`, which
+needs no WinUI). WinUI's own value is always accepted as well, so a value read
+from a control can be written back. Which converter a type gets is the table
+`kindOfType` in `scripts/codegen/tables.ts` (`nullableKindOfType` for
+`IReference<T>`); the emitter reads the converter, input type and read-back of
+each kind from one table in `scripts/codegen/emit.ts`.
+
+| WinUI type | Input type | Written as |
+|---|---|---|
+| `TimeSpan`, `KeyTime` | `TimeSpanInput`, `KeyTimeInput` | `300`, `"0.3s"`, `"0:00:05"` |
+| `Duration` | `DurationInput` | the same, `"auto"`, `"forever"` |
+| `RepeatBehavior` | `RepeatBehaviorInput` | `3`, `"3x"`, `"2s"`, `"forever"` |
+| `FontWeight` | `FontWeightInput` | `"bold"`, `650` |
+| `DateTime` | `DateInput` | a `Date`, milliseconds, an ISO string |
+| `Point`, `Size`, `Rect`, `Matrix`, `Vector3` | `PointInput`, ... | `[x, y]`, `{ x, y }` |
+| `PointCollection` | `PointCollectionInput` | `[[0, 0], [10, 10]]`, `"0,0 10,10"` |
+| `DoubleCollection` | `DoubleCollectionInput` | `[4, 2]`, `"4 2"` |
+| `InputScope` | `InputScopeInput` | `"Url"`, `["Url", "Search"]` |
+| `Geometry` | `GeometryInput` | `"M0,0 L10,10"` |
+| `ImageSource` | `ImageSourceInput` | a URI; `.svg` makes an `SvgImageSource` |
+| an `itemsSource` | `CollectionInput` | an array, made an `IVector` of boxed items |
+
+The nullable ones (`beginTime`, `selectedDate`, ...) take `null` as well. A
+bindable `date` or time reads back as a `Date` or as milliseconds. For an event
+argument, `ticksDate(ticks)` and `ticksMilliseconds(ticks)` from
+`winui-svelte/components` turn WinUI's ticks (`args.newDate.universalTime`,
+`args.newTime.duration`) into the same.
+
 ## Components that show items (`winui-svelte/components`)
 
 A control that shows its items from a data source is generated like the rest,

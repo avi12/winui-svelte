@@ -593,6 +593,25 @@ How a value is written:
   `"2*"` or pixels.
 - A brush takes a color string or a WinUI theme resource name, so light and dark
   stay WinUI's.
+- A time (`duration`, `beginTime`, a key frame's `keyTime`) takes milliseconds
+  (`300`) or text with its unit (`"0.3s"`, `"2m"`) or as a clock
+  (`"0:00:05"`); a `duration` also takes `"auto"` and `"forever"`, and a
+  `repeatBehavior` a count (`3`, `"3x"`), a length of time or `"forever"`.
+- A date (`DatePicker.date`, `CalendarDatePicker.minDate`) takes a `Date`,
+  milliseconds since 1970 or an ISO string, and `null` where WinUI allows none.
+  A bound date or time reads back as a `Date` or as milliseconds.
+- A `fontWeight` takes a name (`"bold"`, `"semiBold"`) or a number from 1 to
+  999.
+- A point, size, rect, matrix or vector takes an array (`[x, y]`,
+  `[width, height]`, `[x, y, width, height]`, `[x, y, z]`) or WinUI's own
+  object. A list of points (`points` of a `Polygon`) takes points or text
+  (`"0,0 10,0 10,10"`); a list of numbers (`strokeDashArray`) takes numbers or
+  text (`"4 2"`).
+- A geometry prop (`Path.data`, `PathIcon.data`) takes path data as XAML writes
+  it (`"M0,0 L10,10"`).
+- An image source takes a URI; one ending in `.svg` is drawn as an SVG.
+- An `itemsSource` takes an array, which becomes the collection WinUI reads; an
+  `inputScope` takes a name (`"Url"`) or a list of names.
 - A property that takes any object (`header`, `content`) takes a string, which is
   boxed for it, or a control.
 - Attached properties are plain props: `gridRow`, `gridColumn`, `gridRowSpan`,
