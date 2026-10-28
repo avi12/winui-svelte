@@ -378,7 +378,9 @@ then every move or resize (device pixels), so an app that reopens the window
 where it was has them before the user touches it. `onClosing` runs when the
 window is asked to close (the close button, Alt+F4, `handle.close()`): returning
 `true` keeps it open (ask the user, then close it again from code); `onClosed`
-follows a close that went through. `theme` is `"light"`, `"dark"` or `"system"` (the default): it sets the content's
+follows a close that went through. `onScaleChanged(scale)` hears a DPI change (the
+window moved to another display, or the user changed the display scale); the
+size limits and regions, which WinUI takes in device pixels, are set again for it. `theme` is `"light"`, `"dark"` or `"system"` (the default): it sets the content's
 requested theme and the caption buttons'. `titleBarHeight` is `"standard"` or
 `"tall"` (for a title bar that holds a search box or tabs; it applies when the
 content extends into the title bar). `captionButtons` sets the colors of the

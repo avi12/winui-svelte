@@ -52,6 +52,7 @@
   let activations = 0;
   let closes = 0;
   let closeRequests = 0;
+  let scaleChanges = 0;
   let isCloseBlocked = false;
 
   // The kind of material the window holds now, read back from WinUI.
@@ -117,6 +118,7 @@
       lastBounds,
       activations,
       closeRequests,
+      scaleChanges,
       closes
     });
   }
@@ -207,6 +209,9 @@
   onClosing={() => {
     closeRequests++;
     return isCloseBlocked;
+  }}
+  onScaleChanged={() => {
+    scaleChanges++;
   }}
   placement={{
     x: -8000,

@@ -4,6 +4,7 @@ import { applyBackdrop, Backdrop as BackdropKind } from "./backdrop.ts";
 import type { CaptionButtonColors, CaptionButtonProperty, TitleBarHeight, WindowRegion } from "./chrome.ts";
 import { TitleBarHeight as TitleBarHeightKind, WindowTheme } from "./chrome.ts";
 import { joinAppUserModel } from "./native.ts";
+import { createScaleTracker } from "./scale.ts";
 import { WindowHandle } from "./window-handle.ts";
 import type { FrameworkElement } from "#src/winui.js";
 import {
@@ -127,6 +128,13 @@ export interface WindowProps {
   onClosed?: () => void;
 
   /**
+   * The window's scale changed (it moved to a display with another DPI, or the
+   * user changed the display's scale): device pixels per device-independent
+   * pixel. The size limits and regions follow it.
+   */
+  onScaleChanged?: (scale: number) => void;
+
+  /**
    * The bounds the window opens with, then whenever it is moved or resized, by
    * the user or by code; in device pixels.
    */
@@ -188,6 +196,7 @@ class WindowHost {
     this.placeFirst();
     $effect(() => this.syncSize());
     this.listen();
+    this.watchScale();
     this.show();
   }
 
@@ -446,6 +455,23 @@ class WindowHost {
         if (isMoved) {
           this.reportBounds();
         }
+      })
+    );
+  }
+
+  // XamlRoot, which reports the scale, exists once the content is loaded.
+  private watchScale() {
+    const tracker = createScaleTracker({
+      readScale: () => this.handle.scale,
+      onChange: scale => {
+        this.syncLimits();
+        this.syncRegions();
+        this.props.onScaleChanged?.(scale);
+      }
+    });
+    this.unsubscribe.push(
+      this.content.onceLoaded(() => {
+        this.unsubscribe.push(this.content.xamlRoot.onChanged(() => tracker.check()));
       })
     );
   }
