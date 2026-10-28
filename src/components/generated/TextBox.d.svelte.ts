@@ -5,5 +5,5 @@ import type { Component } from "svelte";
 
 export type { TextBoxComponentProps };
 
-declare const TextBox: Component<TextBoxComponentProps, Record<string, never>, "text">;
+declare const TextBox: Component<TextBoxComponentProps, Record<string, never>, "selectionLength" | "selectionStart" | "text">;
 export default TextBox;

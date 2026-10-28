@@ -6,8 +6,20 @@
   import type { TextBoxComponentProps } from "./controls/TextBox.svelte.ts";
   import { connectTextBox } from "./controls/TextBox.svelte.ts";
 
-  let { text = $bindable(), class: className, style, ...rest }: TextBoxComponentProps = $props();
+  let { selectionLength = $bindable(), selectionStart = $bindable(), text = $bindable(), class: className, style, ...rest }: TextBoxComponentProps = $props();
   const bound = {
+    get selectionLength() {
+      return selectionLength;
+    },
+    set selectionLength(next) {
+      selectionLength = next;
+    },
+    get selectionStart() {
+      return selectionStart;
+    },
+    set selectionStart(next) {
+      selectionStart = next;
+    },
     get text() {
       return text;
     },

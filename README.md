@@ -379,7 +379,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `Glyphs` | Documents | `colorFontPaletteIndex`, `fill`, `fontRenderingEmSize`, `fontUri`, `indices`, `isColorFontEnabled`, `originX`, `originY`, +2 more |  |  |
 | `GradientStop` | Media | `color`, `offset` |  | yes |
 | `Grid` | Controls | `backgroundSizing`, `borderBrush`, `borderThickness`, `columnSpacing`, `cornerRadius`, `padding`, `rowSpacing` |  | yes |
-| `GridView` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
+| `GridView` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue`, `selectedKey`, `selectedKeys` | yes |
 | `GridViewHeaderItem` | Controls |  |  | yes |
 | `GridViewItem` | Controls |  |  | yes |
 | `GridViewItemPresenter` | Controls.Primitives | `checkBrush`, `checkHintBrush`, `checkSelectingBrush`, `contentMargin`, `disabledOpacity`, `dragBackground`, `dragForeground`, `dragOpacity`, +14 more |  | yes |
@@ -420,7 +420,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `ListBox` | Controls | `selectionMode`, `singleSelectionFollowsFocus` | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `ListBoxItem` | Controls |  |  | yes |
 | `ListPickerFlyout` | Controls | `displayMemberPath`, `itemsSource`, `itemTemplate`, `selectedIndex`, `selectedItem`, `selectedValue`, `selectedValuePath`, `selectionMode` | `open` |  |
-| `ListView` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
+| `ListView` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue`, `selectedKey`, `selectedKeys` | yes |
 | `ListViewHeaderItem` | Controls |  |  | yes |
 | `ListViewItem` | Controls |  |  | yes |
 | `ListViewItemPresenter` | Controls.Primitives | `checkBoxBorderBrush`, `checkBoxBrush`, `checkBoxCornerRadius`, `checkBoxDisabledBorderBrush`, `checkBoxDisabledBrush`, `checkBoxPointerOverBorderBrush`, `checkBoxPointerOverBrush`, `checkBoxPressedBorderBrush`, +51 more |  | yes |
@@ -551,7 +551,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `TabViewListView` | Controls.Primitives |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `TeachingTip` | Controls | `actionButtonCommand`, `actionButtonCommandParameter`, `actionButtonContent`, `actionButtonStyle`, `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonContent`, `closeButtonStyle`, +12 more | `isOpen` | yes |
 | `TextBlock` | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +17 more |  | yes |
-| `TextBox` | Controls | `acceptsReturn`, `characterCasing`, `description`, `desiredCandidateWindowAlignment`, `header`, `headerTemplate`, `horizontalTextAlignment`, `inputScope`, +18 more | `text` |  |
+| `TextBox` | Controls | `acceptsReturn`, `characterCasing`, `description`, `desiredCandidateWindowAlignment`, `header`, `headerTemplate`, `horizontalTextAlignment`, `inputScope`, +18 more | `selectionLength`, `selectionStart`, `text` |  |
 | `TextCommandBarFlyout` | Controls |  | `open` |  |
 | `ThemeShadow` | Media |  |  |  |
 | `Thumb` | Controls.Primitives |  |  |  |

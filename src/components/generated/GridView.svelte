@@ -8,7 +8,7 @@
   import type { GridViewComponentProps } from "./controls/GridView.svelte.ts";
   import { connectGridView } from "./controls/GridView.svelte.ts";
 
-  let { selectedIndex = $bindable(), selectedItem = $bindable(), selectedValue = $bindable(), handle = $bindable(), class: className, style, ...rest }: ListComponentProps<Item, GridViewComponentProps> = $props();
+  let { selectedIndex = $bindable(), selectedItem = $bindable(), selectedValue = $bindable(), selectedKey = $bindable(), selectedKeys = $bindable(), handle = $bindable(), class: className, style, ...rest }: ListComponentProps<Item, GridViewComponentProps> = $props();
   const bound = {
     get selectedIndex() {
       return selectedIndex;
@@ -27,13 +27,25 @@
     },
     set selectedValue(next) {
       selectedValue = next;
+    },
+    get selectedKey() {
+      return selectedKey;
+    },
+    set selectedKey(next) {
+      selectedKey = next;
+    },
+    get selectedKeys() {
+      return selectedKeys;
+    },
+    set selectedKeys(next) {
+      selectedKeys = next;
     }
   };
   registerControls({ "grid-view": GridView });
 
   function connect(native: GridView) {
     const disconnectProperties = connectGridView(native, rest, bound);
-    const items = attachItems({ view: native, props: rest });
+    const items = attachItems({ view: native, props: rest, selection: bound });
     handle = items.handle;
     return () => {
       items.dispose();

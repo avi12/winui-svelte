@@ -3347,7 +3347,7 @@ export const levels: Record<string, LevelMetadata> = {
     properties: ["acceptsReturn", "characterCasing", "description", "desiredCandidateWindowAlignment", "header", "headerTemplate", "horizontalTextAlignment", "inputScope", "isColorFontEnabled", "isReadOnly", "isSpellCheckEnabled", "isTextPredictionEnabled", "maxLength", "placeholderForeground", "placeholderText", "preventKeyboardDisplayOnProgrammaticFocus", "selectedText", "selectionFlyout", "selectionHighlightColor", "selectionHighlightColorWhenNotFocused", "selectionLength", "selectionStart", "text", "textAlignment", "textReadingOrder", "textWrapping"],
     events: ["onBeforeTextChanging", "onCandidateWindowBoundsChanged", "onContextMenuOpening", "onCopyingToClipboard", "onCuttingToClipboard", "onPaste", "onSelectionChanged", "onSelectionChanging", "onTextChanged", "onTextChanging", "onTextCompositionChanged", "onTextCompositionEnded", "onTextCompositionStarted"],
     attached: {},
-    bindables: ["text"],
+    bindables: ["selectionLength", "selectionStart", "text"],
     contentProperty: null,
     isComponent: true,
     tag: "text-box",

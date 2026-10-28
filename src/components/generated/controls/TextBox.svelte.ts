@@ -23,6 +23,8 @@ import type { Snippet } from "svelte";
 
 export interface TextBoxProps extends ControlProps {
   text?: string | undefined;
+  selectionStart?: number | undefined;
+  selectionLength?: number | undefined;
   acceptsReturn?: boolean;
   characterCasing?: EnumInput<typeof CharacterCasing>;
   description?: ObjectInput | Snippet;
@@ -43,8 +45,6 @@ export interface TextBoxProps extends ControlProps {
   selectionFlyout?: TextBox["selectionFlyout"] | Snippet;
   selectionHighlightColor?: TextBox["selectionHighlightColor"] | Snippet;
   selectionHighlightColorWhenNotFocused?: TextBox["selectionHighlightColorWhenNotFocused"] | Snippet;
-  selectionLength?: number;
-  selectionStart?: number;
   textAlignment?: EnumInput<typeof TextAlignment>;
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textWrapping?: EnumInput<typeof TextWrapping>;
@@ -63,7 +63,7 @@ export interface TextBoxProps extends ControlProps {
   onTextCompositionStarted?: Parameters<TextBox["onTextCompositionStarted"]>[0];
 }
 
-export type TextBoxBound = ControlBound & Pick<TextBoxProps, "text">;
+export type TextBoxBound = ControlBound & Pick<TextBoxProps, "selectionLength" | "selectionStart" | "text">;
 
 export type TextBoxComponentProps = TextBoxProps & ElementProps;
 
@@ -216,20 +216,6 @@ export function linkTextBox(
   });
   link.property({
     props,
-    key: "selectionLength",
-    apply(value) {
-      control.selectionLength = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectionStart",
-    apply(value) {
-      control.selectionStart = value;
-    }
-  });
-  link.property({
-    props,
     key: "textAlignment",
     apply(value) {
       control.textAlignment = enumValue({ table: TextAlignment, input: value });
@@ -248,6 +234,32 @@ export function linkTextBox(
     apply(value) {
       control.textWrapping = enumValue({ table: TextWrapping, input: value });
     }
+  });
+  link.bindable({
+    bound,
+    key: "selectionLength",
+    access: {
+      read: () => control.selectionLength,
+      write(value) {
+        control.selectionLength = value;
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
+  });
+  link.bindable({
+    bound,
+    key: "selectionStart",
+    access: {
+      read: () => control.selectionStart,
+      write(value) {
+        control.selectionStart = value;
+      }
+    },
+    subscribers: [
+      handler => control.onSelectionChanged(handler)
+    ]
   });
   link.bindable({
     bound,
