@@ -6,11 +6,12 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { SplitButton } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface SplitButtonProps extends ContentControlProps {
   command?: SplitButton["command"];
   commandParameter?: ObjectInput;
-  flyout?: SplitButton["flyout"];
+  flyout?: SplitButton["flyout"] | Snippet;
   onClick?: Parameters<SplitButton["onClick"]>[0];
 }
 

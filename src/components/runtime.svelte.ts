@@ -11,6 +11,21 @@ type Subscribe = (handler: () => void) => Unsubscribe;
 // A value a prop can hold once `undefined` (the prop was not given) is out:
 // what `value !== undefined` narrows to. (`NonNullable<unknown>` is `{}`.)
 type Given<Value> = Value & (NonNullable<unknown> | null);
+// What a prop's effect writes: a given value that is not a snippet.
+type Written<Value> = Given<Exclude<Value, Snippet>>;
+
+/**
+ * Whether a prop holds a snippet, which the component renders in a
+ * `<property>` element that fills the property, rather than a value.
+ */
+export function isSnippet(value: unknown): value is Snippet {
+  return typeof value === "function";
+}
+
+// A prop's value that is written to the control: not a snippet.
+function isValue<Value>(value: Value): value is Exclude<Value, Snippet> {
+  return !isSnippet(value);
+}
 
 /** How a bindable property is read from its control and written to it. */
 interface Access<Value> {
@@ -37,7 +52,7 @@ export class Linker {
   property<Props extends object, Key extends keyof Props>({ props, key, apply }: {
     props: Props;
     key: Key;
-    apply: (value: Given<Props[Key]>) => void;
+    apply: (value: Written<Props[Key]>) => void;
   }) {
     this.follow({
       props,
@@ -51,7 +66,7 @@ export class Linker {
   contentProperty<Props extends { children?: Snippet }, Key extends keyof Props>({ props, key, apply }: {
     props: Props;
     key: Key;
-    apply: (value: Given<Props[Key]>) => void;
+    apply: (value: Written<Props[Key]>) => void;
   }) {
     this.follow({
       props,
@@ -62,19 +77,20 @@ export class Linker {
   }
 
   // The effect both kinds of property share: the prop's value is written to
-  // the control unless it is unset or `isBlocked` (read inside the effect, so
-  // it is tracked) says something else holds the value.
+  // the control unless it is unset, a snippet (a <property> element fills the
+  // property) or `isBlocked` (read inside the effect, so it is tracked) says
+  // something else holds the value.
   private follow<Props extends object, Key extends keyof Props>({ props, key, apply, isBlocked }: {
     props: Props;
     key: Key;
-    apply: (value: Given<Props[Key]>) => void;
+    apply: (value: Written<Props[Key]>) => void;
     isBlocked: () => boolean;
   }) {
     const isGiven = key in props;
     if (isGiven) {
       $effect(() => {
         const value = props[key];
-        const isWritable = value !== undefined && !isBlocked();
+        const isWritable = isValue(value) && value !== undefined && !isBlocked();
         if (isWritable) {
           this.write(() => apply(value));
         }

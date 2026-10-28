@@ -7,8 +7,10 @@ import { TabViewCloseButtonOverlayMode, TabViewWidthMode } from "../bindings.ts"
 import type { TabView } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface TabViewProps extends ControlProps {
+  tabItems?: Snippet;
   selectedItem?: ObjectInput | undefined;
   selectedIndex?: number | undefined;
   addTabButtonCommand?: TabView["addTabButtonCommand"];
@@ -22,9 +24,9 @@ export interface TabViewProps extends ControlProps {
   tabItemsSource?: ObjectReferenceInput;
   tabItemTemplate?: TabView["tabItemTemplate"];
   tabItemTemplateSelector?: TabView["tabItemTemplateSelector"];
-  tabStripFooter?: ObjectInput;
+  tabStripFooter?: ObjectInput | Snippet;
   tabStripFooterTemplate?: TabView["tabStripFooterTemplate"];
-  tabStripHeader?: ObjectInput;
+  tabStripHeader?: ObjectInput | Snippet;
   tabStripHeaderTemplate?: TabView["tabStripHeaderTemplate"];
   tabWidthMode?: EnumInput<typeof TabViewWidthMode>;
   onAddTabButtonClick?: Parameters<TabView["onAddTabButtonClick"]>[0];

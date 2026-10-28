@@ -7,11 +7,12 @@ import { ExpandDirection } from "../bindings.ts";
 import type { Expander } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ExpanderProps extends ContentControlProps {
   isExpanded?: boolean | undefined;
   expandDirection?: EnumInput<typeof ExpandDirection>;
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: Expander["headerTemplate"];
   headerTemplateSelector?: Expander["headerTemplateSelector"];
   onCollapsed?: Parameters<Expander["onCollapsed"]>[0];

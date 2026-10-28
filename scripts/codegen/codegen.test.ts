@@ -1,5 +1,5 @@
 import { emitBindings, emitLevel } from "./emit.ts";
-import { buildModel, camelCase, kebabCase } from "./model.ts";
+import { buildModel } from "./model.ts";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -7,18 +7,6 @@ import { test } from "node:test";
 
 const LOCK_PATH = path.join(import.meta.dirname, "..", "..", ".winapp", "winmds.lock.json");
 const HAS_METADATA = existsSync(LOCK_PATH);
-
-test("a class name is a tag in kebab case", () => {
-  assert.equal(kebabCase("ToggleSwitch"), "toggle-switch");
-  assert.equal(kebabCase("WebView2"), "web-view2");
-  assert.equal(kebabCase("Border"), "border");
-  assert.equal(kebabCase("UIElement"), "ui-element");
-});
-
-test("a property name is camel case", () => {
-  assert.equal(camelCase("IsOn"), "isOn");
-  assert.equal(camelCase("XamlRoot"), "xamlRoot");
-});
 
 // The metadata is the one `pnpm restore` locked, so these need it.
 test("the model finds the components, their bindables and attached properties", { skip: !HAS_METADATA }, () => {

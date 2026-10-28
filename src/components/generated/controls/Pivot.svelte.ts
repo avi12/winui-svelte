@@ -7,6 +7,7 @@ import { PivotHeaderFocusVisualPlacement } from "../bindings.ts";
 import type { Pivot } from "../bindings.ts";
 import { linkItemsControl } from "./ItemsControl.svelte.ts";
 import type { ItemsControlBound, ItemsControlProps } from "./ItemsControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface PivotProps extends ItemsControlProps {
   selectedItem?: ObjectInput | undefined;
@@ -15,11 +16,11 @@ export interface PivotProps extends ItemsControlProps {
   headerTemplate?: Pivot["headerTemplate"];
   isHeaderItemsCarouselEnabled?: boolean;
   isLocked?: boolean;
-  leftHeader?: ObjectInput;
+  leftHeader?: ObjectInput | Snippet;
   leftHeaderTemplate?: Pivot["leftHeaderTemplate"];
-  rightHeader?: ObjectInput;
+  rightHeader?: ObjectInput | Snippet;
   rightHeaderTemplate?: Pivot["rightHeaderTemplate"];
-  title?: ObjectInput;
+  title?: ObjectInput | Snippet;
   titleTemplate?: Pivot["titleTemplate"];
   onPivotItemLoaded?: Parameters<Pivot["onPivotItemLoaded"]>[0];
   onPivotItemLoading?: Parameters<Pivot["onPivotItemLoading"]>[0];

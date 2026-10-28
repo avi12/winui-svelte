@@ -4,9 +4,10 @@ import type {
   ClassModel,
   EventModel,
   Model,
-  PropertyModel
+  PropertyModel,
+  SlotModel
 } from "./model.ts";
-import { bindingClasses, kebabCase, requestedClasses } from "./model.ts";
+import { bindingClasses, SlotKind } from "./model.ts";
 import {
   extendedClasses,
   extraBindings,
@@ -16,7 +17,7 @@ import {
 } from "./tables.ts";
 import type { TypeName } from "./winmd.ts";
 import { fullName } from "./winmd.ts";
-import { mergedEntries } from "#src/cli/binding-list.js";
+import { camelCase, kebabCase } from "#src/renderer/tree/markup.js";
 
 // The text of every generated file, from the model. Deterministic: the same
 // metadata gives the same bytes, so a stale file is found by comparing.
@@ -160,6 +161,27 @@ function propertyType({ property, className }: {
   return plainTypes.get(property.kind) ?? `${className}["${property.key}"]`;
 }
 
+// What a prop is declared as: its property's type, and a snippet too when a
+// <property> element can fill it.
+function memberType({ property, className, isSlot }: {
+  property: PropertyModel;
+  className: string;
+  isSlot: boolean;
+}) {
+  const type = propertyType({
+    property,
+    className
+  });
+  return isSlot ? `${type} | Snippet` : type;
+}
+
+function slotKeysOf({ level, kind }: {
+  level: ClassModel;
+  kind: SlotKind;
+}) {
+  return new Set(level.slots.filter(slot => slot.kind === kind).map(slot => slot.key));
+}
+
 function valueExpression({ kind, enumType }: {
   kind: PropertyKind;
   enumType: TypeName | null;
@@ -233,17 +255,19 @@ class LevelImports {
   }
 }
 
-function emitProperty({ property, className, imports }: {
+function emitProperty({ property, className, imports, isSlot }: {
   property: PropertyModel;
   className: string;
   imports: LevelImports;
+  isSlot: boolean;
 }) {
   imports.note(property);
   const method = property.isContent ? "contentProperty" : "property";
   return {
-    member: `  ${property.key}?: ${propertyType({
+    member: `  ${property.key}?: ${memberType({
       property,
-      className
+      className,
+      isSlot
     })};`,
     body: [
       `  link.${method}({`,
@@ -357,12 +381,59 @@ function allBindableNames(level: ClassModel) {
   return allBindables(level).map(bindable => bindable.key);
 }
 
+// The <property> element a snippet fills its property through, rendered
+// while the prop holds one.
+function propertyBlock({ key, snippet, isSnippetTested }: {
+  key: string;
+  snippet: string;
+  isSnippetTested: boolean;
+}) {
+  const condition = isSnippetTested ? `isSnippet(${snippet})` : snippet;
+  return [`{#if ${condition}}`, `  <property name="${key}">{@render ${snippet}()}</property>`, "{/if}"];
+}
+
+// What the component renders inside its element: its children in the
+// property they fill, and each slot prop that holds a snippet in its own.
+// The content property also takes a snippet prop when it is a value
+// (`content`), which the children win over.
+function slotMarkup({ level, bindables }: {
+  level: ClassModel;
+  bindables: string[];
+}) {
+  const contentKey = level.contentProperty === null ? null : camelCase(level.contentProperty);
+  const slots = chain(level).flatMap(entry => entry.slots);
+  function sourceOf(slot: SlotModel) {
+    return bindables.includes(slot.key) ? slot.key : `rest.${slot.key}`;
+  }
+
+  const contentSlot = slots.find(slot => slot.key === contentKey);
+  const content = contentKey === null ? [] : [
+    "{#if children}",
+    `  <property name="${contentKey}">{@render children()}</property>`,
+    ...contentSlot === undefined ? [] : [
+      `{:else if isSnippet(${sourceOf(contentSlot)})}`,
+      `  <property name="${contentKey}">{@render ${sourceOf(contentSlot)}()}</property>`
+    ],
+    "{/if}"
+  ];
+  const others = slots.filter(slot => slot.key !== contentKey).flatMap(slot => propertyBlock({
+    key: slot.key,
+    snippet: sourceOf(slot),
+    isSnippetTested: slot.kind === SlotKind.VALUE
+  }));
+  return [...content, ...others];
+}
+
 function emitPropertyBody({ level, imports }: {
   level: ClassModel;
   imports: LevelImports;
 }) {
   const className = level.type.name;
   const bindableKeys = new Set(level.bindables.map(bindable => bindable.key));
+  const slotKeys = slotKeysOf({
+    level,
+    kind: SlotKind.VALUE
+  });
   const emitted = [
     ...level.attached.map(attached => emitAttached({
       attached,
@@ -373,7 +444,8 @@ function emitPropertyBody({ level, imports }: {
       .map(property => emitProperty({
         property,
         className,
-        imports
+        imports,
+        isSlot: slotKeys.has(property.key)
       }))
   ];
   return {
@@ -387,6 +459,10 @@ function emitBindableBody({ level, imports }: {
   imports: LevelImports;
 }) {
   const className = level.type.name;
+  const slotKeys = slotKeysOf({
+    level,
+    kind: SlotKind.VALUE
+  });
   const members: string[] = [];
   const body: string[] = [];
   for (const bindable of level.bindables) {
@@ -399,9 +475,10 @@ function emitBindableBody({ level, imports }: {
     // A binding that was never set reads as undefined, and exactOptionalPropertyTypes
     // keeps an optional prop from holding it unless it says so.
     members.unshift(
-      `  ${property.key}?: ${propertyType({
+      `  ${property.key}?: ${memberType({
         property,
-        className
+        className,
+        isSlot: slotKeys.has(property.key)
       })} | undefined;`
     );
     body.push(
@@ -464,10 +541,15 @@ function emitLevelBody({ level, imports }: {
   const events = emitEventBody(level);
   const attached = isRoot ? [emitAttachedBody(level)] : [];
   const children = level.declaresContent ? ["  children?: Snippet;"] : [];
+  const collections = [...slotKeysOf({
+    level,
+    kind: SlotKind.COLLECTION
+  })].map(key => `  ${key}?: Snippet;`);
   return {
     // The bindables come first among the members, as they do in the component.
     members: [
       ...children,
+      ...collections,
       ...bindables.members,
       ...properties.members,
       ...events.members,
@@ -534,9 +616,10 @@ function emitLevelImports({ level, imports }: {
     );
   }
 
+  const hasSnippets = level.declaresContent || level.slots.length > 0;
   lines.push(
     ...importLine({
-      names: level.declaresContent ? ["Snippet"] : [],
+      names: hasSnippets ? ["Snippet"] : [],
       from: "svelte",
       isType: true
     })
@@ -672,22 +755,28 @@ export function emitComponent(level: ClassModel) {
   const bound = bindables.length === 0 ? "{}" : `{\n${bag.join(",\n")}\n  }`;
   const attachment = `{@attach control((native: ${name}) => untrack(() => connect${name}(native, rest, bound)))}`;
   const open = `<${level.tag} {...attachmentsOf(rest)} class={className} {style} ${attachment}`;
+  const inner = slotMarkup({
+    level,
+    bindables
+  });
+  const isSnippetUsed = inner.some(line => line.includes("isSnippet("));
   // Never self-closed: Svelte warns that `<tag />` is ambiguous for an element
   // that is not void, which every custom element is.
-  const markup = level.contentProperty === null
+  const markup = inner.length === 0
     ? `${open}></${level.tag}>`
-    : `${open}>\n  {@render children?.()}\n</${level.tag}>`;
+    : `${open}>\n${inner.map(line => `  ${line}`).join("\n")}\n</${level.tag}>`;
   return `${[
     SVELTE_HEADER,
     "<script lang=\"ts\">",
     "  import { untrack } from \"svelte\";",
-    `  import type { ${name} } from "./bindings.ts";`,
-    "  import { attachmentsOf, control } from \"../runtime.ts\";",
+    `  import { ${name} } from "./bindings.ts";`,
+    `  import { ${["attachmentsOf", "control", ...isSnippetUsed ? ["isSnippet"] : [], "registerControls"].join(", ")} } from "../runtime.ts";`,
     `  import type { ${name}ComponentProps } from "./controls/${name}.svelte.ts";`,
     `  import { connect${name} } from "./controls/${name}.svelte.ts";`,
     "",
     `  let { ${destructured.join(", ")} }: ${name}ComponentProps = $props();`,
     `  const bound = ${bound};`,
+    `  registerControls({ "${level.tag}": ${name} });`,
     "</script>",
     "",
     markup
@@ -719,13 +808,6 @@ export function emitControlsTable(model: Model) {
     "| --- | --- | --- | --- | --- |",
     ...rows
   ].join("\n");
-}
-
-// The classes an app generates bindings for to use the package (`winui-svelte
-// setup` reads it): the components' hierarchy, what the conversions build and
-// what the package itself reaches (the core classes).
-export function emitRequiredBindings(model: Model) {
-  return `${JSON.stringify(mergedEntries({ existing: [], wanted: requestedClasses(model) }), null, 2)}\n`;
 }
 
 export function emitIndex(model: Model) {

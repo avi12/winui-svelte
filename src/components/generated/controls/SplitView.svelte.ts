@@ -13,11 +13,11 @@ export interface SplitViewProps extends ControlProps {
   children?: Snippet;
   isPaneOpen?: boolean | undefined;
   compactPaneLength?: number;
-  content?: SplitView["content"];
+  content?: SplitView["content"] | Snippet;
   displayMode?: EnumInput<typeof SplitViewDisplayMode>;
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   openPaneLength?: number;
-  pane?: SplitView["pane"];
+  pane?: SplitView["pane"] | Snippet;
   paneBackground?: BrushInput;
   panePlacement?: EnumInput<typeof SplitViewPanePlacement>;
   onPaneClosed?: Parameters<SplitView["onPaneClosed"]>[0];

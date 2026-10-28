@@ -10,7 +10,7 @@ import type { Snippet } from "svelte";
 
 export interface ContentControlProps extends ControlProps {
   children?: Snippet;
-  content?: ObjectInput;
+  content?: ObjectInput | Snippet;
   contentTemplate?: ContentControl["contentTemplate"];
   contentTemplateSelector?: ContentControl["contentTemplateSelector"];
   contentTransitions?: ContentControl["contentTransitions"];

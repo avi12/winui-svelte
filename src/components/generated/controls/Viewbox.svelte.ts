@@ -11,7 +11,7 @@ import type { Snippet } from "svelte";
 
 export interface ViewboxProps extends FrameworkElementProps {
   children?: Snippet;
-  child?: Viewbox["child"];
+  child?: Viewbox["child"] | Snippet;
   stretch?: EnumInput<typeof Stretch>;
   stretchDirection?: EnumInput<typeof StretchDirection>;
 }

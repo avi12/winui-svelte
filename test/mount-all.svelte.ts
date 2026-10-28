@@ -1,11 +1,13 @@
 import type { Counts, Failure, Report } from "./mount-report.ts";
+import SlotsFixture from "./Slots.fixture.svelte";
+import { unboxObject } from "@microsoft/dynwinrt";
 import * as bindings from "#src/components/generated/bindings.js";
 import type { LevelMetadata } from "#src/components/generated/metadata.js";
 import { levels } from "#src/components/generated/metadata.js";
 import ToggleSwitch from "#src/components/generated/ToggleSwitch.svelte";
 import type { NativeValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
-import { read } from "#src/renderer/host/reflect.js";
+import { isRecord, read, vectorOf } from "#src/renderer/host/reflect.js";
 import { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
 import { Application } from "#winui/microsoft/ui/xaml/Application";
 import { Window } from "#winui/microsoft/ui/xaml/Window";
@@ -717,7 +719,7 @@ function statistics() {
 function launch({ connectors, report, throughRenderer }: {
   connectors: Map<string, Connect>;
   report: (result: Report) => void;
-  throughRenderer: (failures: Failure[]) => void;
+  throughRenderer: ReadonlyArray<(failures: Failure[]) => void>;
 }) {
   const panel = new bindings.StackPanel();
   const window = new Window();
@@ -737,8 +739,10 @@ function launch({ connectors, report, throughRenderer }: {
   const behaviours = checkBehaviours({
     connectors,
     failures: exercise.failures
-  }) + 1;
-  throughRenderer(exercise.failures);
+  }) + throughRenderer.length;
+  for (const check of throughRenderer) {
+    check(exercise.failures);
+  }
   trace("show");
   window.appWindow.moveAndResize(offScreen);
   window.appWindow.showWithActivation(false);
@@ -766,11 +770,14 @@ function launch({ connectors, report, throughRenderer }: {
 function checkComponentThroughRenderer(failures: Failure[]) {
   try {
     let toggles = 0;
-    const mounted = mountControl(ToggleSwitch, {
-      isOn: true,
-      header: "Hi",
-      onToggled() {
-        toggles++;
+    const mounted = mountControl({
+      component: ToggleSwitch,
+      props: {
+        isOn: true,
+        header: "Hi",
+        onToggled() {
+          toggles++;
+        }
       }
     });
     const isSwitchOn = read(mounted.root, "isOn") === true;
@@ -798,6 +805,164 @@ function checkComponentThroughRenderer(failures: Failure[]) {
   }
 }
 
+// What the slots fixture's control of one name holds when the check runs.
+interface SlotExpectation {
+  name: string;
+  what: string;
+  isMet: (control: object) => boolean;
+}
+
+function sizeOf({ control, property }: {
+  control: object;
+  property: string;
+}) {
+  return read(vectorOf(read(control, property)), "size");
+}
+
+function menuItemCountOf(button: object) {
+  const flyout = read(button, "flyout");
+  const menu = isRecord(flyout) ? bindings.projectAs(flyout, bindings.MenuFlyout) : null;
+  return menu?.items?.size ?? 0;
+}
+
+const slotsAtFirst: SlotExpectation[] = [
+  {
+    name: "splitView",
+    what: "the pane snippet fills Pane, the children Content",
+    isMet: control => isRecord(read(control, "pane")) && isRecord(read(control, "content"))
+  },
+  {
+    name: "commandBar",
+    what: "the children are the primary commands, an empty snippet adds no secondary one",
+    isMet: control => sizeOf({
+      control,
+      property: "primaryCommands"
+    }) === 1 && sizeOf({
+      control,
+      property: "secondaryCommands"
+    }) === 0
+  },
+  {
+    name: "navigationView",
+    what: "the menuItems snippet fills MenuItems",
+    isMet: control => sizeOf({
+      control,
+      property: "menuItems"
+    }) === 1
+  },
+  {
+    name: "textBlock",
+    what: "text and an inline element are the inlines, spaced as a browser shows them",
+    isMet: control => read(control, "text") === "Hello bold world"
+  },
+  {
+    name: "button",
+    what: "the flyout snippet fills Flyout, the flyout's children its items",
+    isMet: control => menuItemCountOf(control) === 2
+  },
+  {
+    name: "toggleSwitch",
+    what: "the children are the header",
+    isMet: control => unboxObject(read(control, "header")) === "Wi-Fi"
+  },
+  {
+    name: "richTextBlock",
+    what: "a paragraph is a block, a control in it an InlineUIContainer",
+    isMet: control => sizeOf({
+      control,
+      property: "blocks"
+    }) === 1
+  }
+];
+
+const slotsWhenShown: SlotExpectation[] = [
+  {
+    name: "commandBar",
+    what: "a command the snippet adds is a secondary command",
+    isMet: control => sizeOf({
+      control,
+      property: "secondaryCommands"
+    }) === 1
+  },
+  {
+    name: "navigationView",
+    what: "an item the snippet adds is a menu item",
+    isMet: control => sizeOf({
+      control,
+      property: "menuItems"
+    }) === 2
+  }
+];
+
+function unmetSlots({ controls, expectations }: {
+  controls: ReadonlyMap<string, object>;
+  expectations: SlotExpectation[];
+}) {
+  return expectations.filter(expectation => {
+    const control = controls.get(expectation.name);
+    return control === undefined || !expectation.isMet(control);
+  });
+}
+
+// Children and snippet props through the renderer: each fills the property
+// it stands for, and what a snippet stops rendering leaves it again.
+function checkSlotsThroughRenderer(failures: Failure[]) {
+  // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
+  const controls = new Map<string, object>();
+  const phases: Array<{
+    isShown: boolean;
+    expectations: SlotExpectation[];
+  }> = [
+    {
+      isShown: false,
+      expectations: slotsAtFirst
+    },
+    {
+      isShown: true,
+      expectations: slotsWhenShown
+    },
+    {
+      isShown: false,
+      expectations: slotsAtFirst
+    }
+  ];
+  try {
+    const mounted = mountControl({
+      component: SlotsFixture,
+      props: {
+        isShown: false,
+        onFound({ name, native }: {
+          name: string;
+          native: object;
+        }) {
+          controls.set(name, native);
+        }
+      }
+    });
+    for (const { isShown, expectations } of phases) {
+      mounted.set({ isShown });
+      for (const unmet of unmetSlots({
+        controls,
+        expectations
+      })) {
+        failures.push({
+          name: `behaviour: slots of ${unmet.name}`,
+          step: isShown ? "shown" : "hidden",
+          message: unmet.what
+        });
+      }
+    }
+
+    mounted.unmount();
+  } catch (error) {
+    failures.push({
+      name: "behaviour: slots through the renderer",
+      step: "mount",
+      message: error instanceof Error ? error.message : String(error)
+    });
+  }
+}
+
 export async function run(report: (result: Report) => void) {
   trace("loading");
   const connectors = await loadConnectors();
@@ -806,7 +971,7 @@ export async function run(report: (result: Report) => void) {
     Application.create(() => launch({
       connectors,
       report,
-      throughRenderer: checkComponentThroughRenderer
+      throughRenderer: [checkComponentThroughRenderer, checkSlotsThroughRenderer]
     }));
   });
 }

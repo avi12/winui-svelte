@@ -9,7 +9,7 @@ import type { Snippet } from "svelte";
 
 export interface MenuFlyoutSubItemProps extends MenuFlyoutItemBaseProps {
   children?: Snippet;
-  icon?: MenuFlyoutSubItem["icon"];
+  icon?: MenuFlyoutSubItem["icon"] | Snippet;
   text?: string;
 }
 

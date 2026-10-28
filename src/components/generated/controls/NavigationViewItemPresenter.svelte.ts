@@ -5,10 +5,11 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { NavigationViewItemPresenter } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface NavigationViewItemPresenterProps extends ContentControlProps {
-  icon?: NavigationViewItemPresenter["icon"];
-  infoBadge?: NavigationViewItemPresenter["infoBadge"];
+  icon?: NavigationViewItemPresenter["icon"] | Snippet;
+  infoBadge?: NavigationViewItemPresenter["infoBadge"] | Snippet;
 }
 
 export type NavigationViewItemPresenterBound = ContentControlBound;

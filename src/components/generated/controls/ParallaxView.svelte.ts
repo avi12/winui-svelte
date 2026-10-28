@@ -7,9 +7,10 @@ import { ParallaxSourceOffsetKind } from "../bindings.ts";
 import type { ParallaxView } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ParallaxViewProps extends FrameworkElementProps {
-  child?: ParallaxView["child"];
+  child?: ParallaxView["child"] | Snippet;
   horizontalShift?: number;
   horizontalSourceEndOffset?: number;
   horizontalSourceOffsetKind?: EnumInput<typeof ParallaxSourceOffsetKind>;

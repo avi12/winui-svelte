@@ -14,10 +14,11 @@ import {
 import type { ScrollPresenter } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ScrollPresenterProps extends FrameworkElementProps {
   background?: BrushInput;
-  content?: ScrollPresenter["content"];
+  content?: ScrollPresenter["content"] | Snippet;
   contentOrientation?: EnumInput<typeof ScrollingContentOrientation>;
   horizontalAnchorRatio?: number;
   horizontalScrollChainMode?: EnumInput<typeof ScrollingChainMode>;

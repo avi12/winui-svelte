@@ -11,6 +11,7 @@ import type { Snippet } from "svelte";
 
 export interface CommandBarProps extends AppBarProps {
   children?: Snippet;
+  secondaryCommands?: Snippet;
   commandBarOverflowPresenterStyle?: CommandBar["commandBarOverflowPresenterStyle"];
   defaultLabelPosition?: EnumInput<typeof CommandBarDefaultLabelPosition>;
   isDynamicOverflowEnabled?: boolean;

@@ -42,7 +42,7 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   borderBrush?: BrushInput;
   borderThickness?: ThicknessInput;
   characterSpacing?: number;
-  content?: ObjectInput;
+  content?: ObjectInput | Snippet;
   contentTemplate?: ContentPresenter["contentTemplate"];
   contentTemplateSelector?: ContentPresenter["contentTemplateSelector"];
   contentTransitions?: ContentPresenter["contentTransitions"];

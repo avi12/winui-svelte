@@ -16,7 +16,7 @@ export interface DatePickerProps extends ControlProps {
   calendarIdentifier?: string;
   dayFormat?: string;
   dayVisible?: boolean;
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: DatePicker["headerTemplate"];
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   maxYear?: DatePicker["maxYear"];

@@ -7,6 +7,7 @@ import { ContentDialogButton } from "../bindings.ts";
 import type { ContentDialog } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ContentDialogProps extends ContentControlProps {
   closeButtonCommand?: ContentDialog["closeButtonCommand"];
@@ -25,7 +26,7 @@ export interface ContentDialogProps extends ContentControlProps {
   secondaryButtonCommandParameter?: ObjectInput;
   secondaryButtonStyle?: ContentDialog["secondaryButtonStyle"];
   secondaryButtonText?: string;
-  title?: ObjectInput;
+  title?: ObjectInput | Snippet;
   titleTemplate?: ContentDialog["titleTemplate"];
   onCloseButtonClick?: Parameters<ContentDialog["onCloseButtonClick"]>[0];
   onClosed?: Parameters<ContentDialog["onClosed"]>[0];

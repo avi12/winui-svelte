@@ -13,6 +13,10 @@ export const rootClasses: TypeName[] = [
   {
     namespace: "Microsoft.UI.Xaml.Documents",
     name: "TextElement"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls.Primitives",
+    name: "FlyoutBase"
   }
 ];
 
@@ -79,6 +83,31 @@ export const narrowedObjectInputs = new Map<string, string>([
 // exports `<Name>Extras` (the props) and `link<Name>Extras(control, props,
 // link)`, which the generated level mixes in.
 export const extendedClasses = new Set(["Grid"]);
+
+// Properties markup does not fill with a snippet, though their type would let
+// it (the slot rule in model.ts takes every settable property typed as a
+// control or Object, and every collection of them, as one a <property>
+// element fills): what holds the app's data or the control's state rather
+// than something shown, and what points at a control placed elsewhere.
+export const unslottedProperties = new Set([
+  "Tag",
+  "DataContext",
+  "SelectedItem",
+  "SelectedValue",
+  "SelectedItems",
+  "SectionHeaders",
+  "SectionsInView",
+  "PlacementTarget",
+  "Target",
+  "SemanticZoomOwner",
+  "OverflowContentTarget",
+  "Source",
+  "ScrollOwner",
+  "SourceElement"
+]);
+// The same of a whole family, by the end of the name: a command's parameter,
+// an items source, a template.
+export const unslottedSuffixes = ["CommandParameter", "ItemsSource", "Template"];
 
 // A property that has its own props `children`, `class`, `style` or
 // `attached`, which every component takes.
@@ -302,6 +331,12 @@ export const coreClasses: TypeName[] = [
   {
     namespace: "Microsoft.UI.Xaml.Controls",
     name: "RowDefinition"
+  },
+  // The renderer shows the text between a text block's inline elements as
+  // Runs.
+  {
+    namespace: "Microsoft.UI.Xaml.Documents",
+    name: "Run"
   },
   {
     namespace: "Microsoft.UI.Xaml.Markup",

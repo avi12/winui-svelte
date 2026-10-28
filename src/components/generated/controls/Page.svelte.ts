@@ -7,11 +7,12 @@ import { NavigationCacheMode } from "../bindings.ts";
 import type { Page } from "../bindings.ts";
 import { linkUserControl } from "./UserControl.svelte.ts";
 import type { UserControlBound, UserControlProps } from "./UserControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface PageProps extends UserControlProps {
-  bottomAppBar?: Page["bottomAppBar"];
+  bottomAppBar?: Page["bottomAppBar"] | Snippet;
   navigationCacheMode?: EnumInput<typeof NavigationCacheMode>;
-  topAppBar?: Page["topAppBar"];
+  topAppBar?: Page["topAppBar"] | Snippet;
 }
 
 export type PageBound = UserControlBound;

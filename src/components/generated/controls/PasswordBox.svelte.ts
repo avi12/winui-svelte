@@ -7,11 +7,12 @@ import { PasswordRevealMode, TextReadingOrder } from "../bindings.ts";
 import type { PasswordBox } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface PasswordBoxProps extends ControlProps {
   password?: string | undefined;
-  description?: ObjectInput;
-  header?: ObjectInput;
+  description?: ObjectInput | Snippet;
+  header?: ObjectInput | Snippet;
   headerTemplate?: PasswordBox["headerTemplate"];
   inputScope?: PasswordBox["inputScope"];
   isPasswordRevealButtonEnabled?: boolean;
@@ -20,7 +21,7 @@ export interface PasswordBoxProps extends ControlProps {
   passwordRevealMode?: EnumInput<typeof PasswordRevealMode>;
   placeholderText?: string;
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
-  selectionFlyout?: PasswordBox["selectionFlyout"];
+  selectionFlyout?: PasswordBox["selectionFlyout"] | Snippet;
   selectionHighlightColor?: PasswordBox["selectionHighlightColor"];
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   onContextMenuOpening?: Parameters<PasswordBox["onContextMenuOpening"]>[0];

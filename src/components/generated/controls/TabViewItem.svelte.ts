@@ -6,9 +6,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { TabViewItem } from "../bindings.ts";
 import { linkListViewItem } from "./ListViewItem.svelte.ts";
 import type { ListViewItemBound, ListViewItemProps } from "./ListViewItem.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface TabViewItemProps extends ListViewItemProps {
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: TabViewItem["headerTemplate"];
   iconSource?: TabViewItem["iconSource"];
   isClosable?: boolean;

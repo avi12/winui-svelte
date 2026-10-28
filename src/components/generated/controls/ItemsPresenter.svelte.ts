@@ -6,12 +6,13 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { ItemsPresenter } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ItemsPresenterProps extends FrameworkElementProps {
-  footer?: ObjectInput;
+  footer?: ObjectInput | Snippet;
   footerTemplate?: ItemsPresenter["footerTemplate"];
   footerTransitions?: ItemsPresenter["footerTransitions"];
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: ItemsPresenter["headerTemplate"];
   headerTransitions?: ItemsPresenter["headerTransitions"];
   padding?: ThicknessInput;

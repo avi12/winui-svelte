@@ -7,17 +7,18 @@ import { LightDismissOverlayMode } from "../bindings.ts";
 import type { AutoSuggestBox } from "../bindings.ts";
 import { linkItemsControl } from "./ItemsControl.svelte.ts";
 import type { ItemsControlBound, ItemsControlProps } from "./ItemsControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface AutoSuggestBoxProps extends ItemsControlProps {
   text?: string | undefined;
   autoMaximizeSuggestionArea?: boolean;
-  description?: ObjectInput;
-  header?: ObjectInput;
+  description?: ObjectInput | Snippet;
+  header?: ObjectInput | Snippet;
   isSuggestionListOpen?: boolean;
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   maxSuggestionListHeight?: number;
   placeholderText?: string;
-  queryIcon?: AutoSuggestBox["queryIcon"];
+  queryIcon?: AutoSuggestBox["queryIcon"] | Snippet;
   textBoxStyle?: AutoSuggestBox["textBoxStyle"];
   textMemberPath?: string;
   updateTextOnSelect?: boolean;

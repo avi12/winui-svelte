@@ -44,7 +44,7 @@ export interface TextBlockProps extends FrameworkElementProps {
   maxLines?: number;
   opticalMarginAlignment?: EnumInput<typeof OpticalMarginAlignment>;
   padding?: ThicknessInput;
-  selectionFlyout?: TextBlock["selectionFlyout"];
+  selectionFlyout?: TextBlock["selectionFlyout"] | Snippet;
   selectionHighlightColor?: TextBlock["selectionHighlightColor"];
   text?: string;
   textAlignment?: EnumInput<typeof TextAlignment>;

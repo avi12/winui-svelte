@@ -5,9 +5,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { ItemContainer } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ItemContainerProps extends ControlProps {
-  child?: ItemContainer["child"];
+  child?: ItemContainer["child"] | Snippet;
   isSelected?: boolean;
 }
 

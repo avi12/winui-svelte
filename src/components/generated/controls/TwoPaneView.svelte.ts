@@ -11,13 +11,14 @@ import {
 import type { TwoPaneView } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface TwoPaneViewProps extends ControlProps {
   minTallModeHeight?: number;
   minWideModeWidth?: number;
-  pane1?: TwoPaneView["pane1"];
+  pane1?: TwoPaneView["pane1"] | Snippet;
   pane1Length?: GridLengthInput;
-  pane2?: TwoPaneView["pane2"];
+  pane2?: TwoPaneView["pane2"] | Snippet;
   pane2Length?: GridLengthInput;
   panePriority?: EnumInput<typeof TwoPaneViewPriority>;
   tallModeConfiguration?: EnumInput<typeof TwoPaneViewTallModeConfiguration>;

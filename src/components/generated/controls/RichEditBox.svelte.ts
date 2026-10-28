@@ -15,15 +15,16 @@ import {
 import type { RichEditBox } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface RichEditBoxProps extends ControlProps {
   acceptsReturn?: boolean;
   characterCasing?: EnumInput<typeof CharacterCasing>;
   clipboardCopyFormat?: EnumInput<typeof RichEditClipboardFormat>;
-  description?: ObjectInput;
+  description?: ObjectInput | Snippet;
   desiredCandidateWindowAlignment?: EnumInput<typeof CandidateWindowAlignment>;
   disabledFormattingAccelerators?: EnumInput<typeof DisabledFormattingAccelerators>;
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: RichEditBox["headerTemplate"];
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
   inputScope?: RichEditBox["inputScope"];
@@ -34,7 +35,7 @@ export interface RichEditBoxProps extends ControlProps {
   maxLength?: number;
   placeholderText?: string;
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
-  selectionFlyout?: RichEditBox["selectionFlyout"];
+  selectionFlyout?: RichEditBox["selectionFlyout"] | Snippet;
   selectionHighlightColor?: RichEditBox["selectionHighlightColor"];
   selectionHighlightColorWhenNotFocused?: RichEditBox["selectionHighlightColorWhenNotFocused"];
   textAlignment?: EnumInput<typeof TextAlignment>;

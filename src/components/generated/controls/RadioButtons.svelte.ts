@@ -6,11 +6,13 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { RadioButtons } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface RadioButtonsProps extends ControlProps {
+  items?: Snippet;
   selectedItem?: ObjectInput | undefined;
   selectedIndex?: number | undefined;
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: RadioButtons["headerTemplate"];
   itemsSource?: ObjectReferenceInput;
   itemTemplate?: ObjectReferenceInput;

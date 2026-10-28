@@ -22,7 +22,7 @@ export interface BorderProps extends FrameworkElementProps {
   backgroundTransition?: Border["backgroundTransition"];
   borderBrush?: BrushInput;
   borderThickness?: ThicknessInput;
-  child?: Border["child"];
+  child?: Border["child"] | Snippet;
   childTransitions?: Border["childTransitions"];
   cornerRadius?: CornerRadiusInput;
   padding?: ThicknessInput;

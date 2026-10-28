@@ -12,7 +12,7 @@ import type { Snippet } from "svelte";
 export interface HubProps extends ControlProps {
   children?: Snippet;
   defaultSectionIndex?: number;
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: Hub["headerTemplate"];
   isActiveView?: boolean;
   isZoomedInView?: boolean;

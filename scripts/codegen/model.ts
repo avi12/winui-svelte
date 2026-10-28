@@ -15,16 +15,20 @@ import {
   subclassInterfaceSuffixes,
   supportClasses,
   supportEnums,
-  unimplementedEvents
+  unimplementedEvents,
+  unslottedProperties,
+  unslottedSuffixes
 } from "./tables.ts";
 import type {
   AttributeInfo,
   AttributeValue,
+  PropertyInfo,
   TypeInfo,
   TypeName,
   TypeSignature
 } from "./winmd.ts";
 import { fullName, TypeAttribute, TypeIndex, WinMdFile } from "./winmd.ts";
+import { camelCase, kebabCase } from "#src/renderer/tree/markup.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
@@ -46,6 +50,9 @@ const FACTORY_PARAMETERS = 2;
 const targetTypes = new Set(["DependencyObject", "UIElement", "FrameworkElement"]);
 const ENUM_BASE = "Enum";
 const NULLABLE_NAME = "IReference`1";
+const OBJECT_NAME = "Object";
+// The collections whose items markup can fill.
+const vectorNames = new Set(["IVector`1", "IObservableVector`1"]);
 
 export interface PropertyModel {
   winName: string;
@@ -54,6 +61,23 @@ export interface PropertyModel {
   enumType: TypeName | null;
   // The property the markup's content stands for: a child writes it.
   isContent: boolean;
+}
+
+/** How a <property> element fills a property: with one value, or a collection's items. */
+export const SlotKind = {
+  VALUE: "value",
+  COLLECTION: "collection"
+} as const;
+
+export type SlotKind = (typeof SlotKind)[keyof typeof SlotKind];
+
+// A property markup fills with controls, through a <property> element the
+// component renders a snippet prop in: a value (Pane, Header, Flyout) or the
+// items of a collection the class holds (MenuItems, PrimaryCommands).
+export interface SlotModel {
+  key: string;
+  winName: string;
+  kind: SlotKind;
 }
 
 export interface EventModel {
@@ -89,6 +113,7 @@ export interface ClassModel {
   events: EventModel[];
   attached: AttachedModel[];
   bindables: BindableModel[];
+  slots: SlotModel[];
 }
 
 export interface Model {
@@ -139,17 +164,6 @@ function loadMetadata(lockPath: string) {
   };
 }
 
-export function kebabCase(name: string) {
-  return name
-    .replace(/([a-z0-9])([A-Z])/gu, "$1-$2")
-    .replace(/([A-Z]+)([A-Z][a-z])/gu, "$1-$2")
-    .toLowerCase();
-}
-
-export function camelCase(name: string) {
-  return `${name.charAt(0).toLowerCase()}${name.slice(1)}`;
-}
-
 function sameType({ left, right }: {
   left: TypeName;
   right: TypeName;
@@ -181,6 +195,11 @@ function nameOfString(full: AttributeValue | undefined) {
   };
 }
 
+interface SlotCandidate {
+  model: ClassModel;
+  member: PropertyInfo;
+}
+
 class Builder {
   private readonly index: TypeIndex;
   private readonly classes = new Map<string, ClassModel>();
@@ -188,6 +207,7 @@ class Builder {
   private readonly owners = new Map<string, TypeName>();
   private readonly attachedByTarget = new Map<string, AttachedModel[]>();
   readonly excluded: Model["excluded"] = [];
+  private readonly controlInterfaces = new Set<string>();
 
   constructor(index: TypeIndex) {
     this.index = index;
@@ -348,7 +368,8 @@ class Builder {
       properties: [],
       events: [],
       attached: this.attachedByTarget.get(type.name) ?? [],
-      bindables: []
+      bindables: [],
+      slots: []
     };
     this.classes.set(key, model);
     this.fillMembers({
@@ -505,6 +526,11 @@ class Builder {
     const classes = [...this.classes.values()].sort((left, right) => left.type.name.localeCompare(right.type.name));
     for (const model of classes) {
       this.deriveBindables(model);
+      this.noteInterfaces(model);
+    }
+
+    for (const model of classes) {
+      this.deriveSlots(model);
     }
 
     this.checkNames(classes);
@@ -514,6 +540,104 @@ class Builder {
       owners: [...this.owners.values()],
       excluded: this.excluded
     };
+  }
+
+  // The interfaces the classes of the hierarchy implement: a collection of
+  // ICommandBarElement takes the controls that implement it.
+  private noteInterfaces(model: ClassModel) {
+    const references = this.index.find(model.type)?.interfaces ?? [];
+    for (const name of references.flatMap(reference => reference.type === null ? [] : [fullName(reference.type)])) {
+      this.controlInterfaces.add(name);
+    }
+  }
+
+  // A type a control can be: Object, a class of the hierarchy, or an
+  // interface one implements.
+  private takesControl(signature: TypeSignature) {
+    const isObject = signature.kind === "primitive" && signature.name === OBJECT_NAME;
+    if (isObject) {
+      return true;
+    }
+
+    const isClassReference = signature.kind === "named" && !signature.isValueType;
+    if (!isClassReference) {
+      return false;
+    }
+
+    const type = this.index.find(signature.type);
+    const isInHierarchy = type !== undefined && this.ancestry(type).some(ancestor => this.isRoot(ancestor));
+    return isInHierarchy || this.controlInterfaces.has(fullName(signature.type));
+  }
+
+  // The item type of a collection: an IVector<T> property, or a class that
+  // implements one (a panel's UIElementCollection).
+  private itemTypeOf(signature: TypeSignature) {
+    const isNamed = signature.kind === "named";
+    const declared = isNamed ? this.index.find(signature.type) : undefined;
+    const implemented = isNamed ? declared?.interfaces.map(reference => reference.signature) : [signature];
+    const vector = implemented?.find(candidate => candidate?.kind === "generic" && vectorNames.has(candidate.type.name));
+    return vector?.kind === "generic" ? vector.args[0] ?? null : null;
+  }
+
+  private isSlotted(name: string) {
+    const isUnslotted = unslottedProperties.has(name) || unslottedSuffixes.some(suffix => name.endsWith(suffix));
+    return !isUnslotted && !reservedKeys.has(camelCase(name));
+  }
+
+  // A settable property typed as a control or Object.
+  private valueSlotOf({ model, member }: SlotCandidate) {
+    const property = model.properties.find(candidate => candidate.winName === member.name);
+    const isValueSlot = property !== undefined && this.takesControl(member.type);
+    if (!isValueSlot) {
+      return null;
+    }
+
+    return {
+      key: property.key,
+      winName: member.name,
+      kind: SlotKind.VALUE
+    };
+  }
+
+  // A collection of controls the class holds, but not the one its children
+  // fill.
+  private collectionSlotOf({ model, member }: SlotCandidate) {
+    // A settable property is a value; the content is the children.
+    const isFilledElsewhere = member.hasSetter || member.name === model.contentProperty;
+    if (isFilledElsewhere) {
+      return null;
+    }
+
+    const item = this.itemTypeOf(member.type);
+    const isCollectionSlot = item !== null && this.takesControl(item);
+    if (!isCollectionSlot) {
+      return null;
+    }
+
+    return {
+      key: camelCase(member.name),
+      winName: member.name,
+      kind: SlotKind.COLLECTION
+    };
+  }
+
+  // The properties of a level markup fills with controls.
+  private deriveSlots(model: ClassModel) {
+    const type = this.index.find(model.type);
+    const members = type === undefined ? [] : this.instanceInterfaces(type).flatMap(entry => entry.properties);
+    const seen = new Set<string>();
+    for (const member of members.filter(entry => this.isSlotted(entry.name))) {
+      const candidate = {
+        model,
+        member
+      };
+      const slot = this.valueSlotOf(candidate) ?? this.collectionSlotOf(candidate);
+      const isNew = slot !== null && !seen.has(slot.winName);
+      if (isNew) {
+        seen.add(slot.winName);
+        model.slots.push(slot);
+      }
+    }
   }
 
   // A class that is a component: not an interface or a static class, below a

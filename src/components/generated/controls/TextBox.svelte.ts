@@ -13,14 +13,15 @@ import {
 import type { TextBox } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface TextBoxProps extends ControlProps {
   text?: string | undefined;
   acceptsReturn?: boolean;
   characterCasing?: EnumInput<typeof CharacterCasing>;
-  description?: ObjectInput;
+  description?: ObjectInput | Snippet;
   desiredCandidateWindowAlignment?: EnumInput<typeof CandidateWindowAlignment>;
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: TextBox["headerTemplate"];
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
   inputScope?: TextBox["inputScope"];
@@ -33,7 +34,7 @@ export interface TextBoxProps extends ControlProps {
   placeholderText?: string;
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
   selectedText?: string;
-  selectionFlyout?: TextBox["selectionFlyout"];
+  selectionFlyout?: TextBox["selectionFlyout"] | Snippet;
   selectionHighlightColor?: TextBox["selectionHighlightColor"];
   selectionHighlightColorWhenNotFocused?: TextBox["selectionHighlightColorWhenNotFocused"];
   selectionLength?: number;

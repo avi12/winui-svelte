@@ -5,16 +5,17 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { TitleBar } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface TitleBarProps extends ControlProps {
   autoRefreshDragRegions?: boolean;
-  content?: TitleBar["content"];
+  content?: TitleBar["content"] | Snippet;
   iconSource?: TitleBar["iconSource"];
   isBackButtonEnabled?: boolean;
   isBackButtonVisible?: boolean;
   isPaneToggleButtonVisible?: boolean;
-  leftHeader?: TitleBar["leftHeader"];
-  rightHeader?: TitleBar["rightHeader"];
+  leftHeader?: TitleBar["leftHeader"] | Snippet;
+  rightHeader?: TitleBar["rightHeader"] | Snippet;
   subtitle?: string;
   title?: string;
   onBackRequested?: Parameters<TitleBar["onBackRequested"]>[0];

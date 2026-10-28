@@ -14,7 +14,7 @@ export interface TimePickerProps extends ControlProps {
   time?: TimePicker["time"] | undefined;
   selectedTime?: TimePicker["selectedTime"] | undefined;
   clockIdentifier?: string;
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: TimePicker["headerTemplate"];
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   minuteIncrement?: number;

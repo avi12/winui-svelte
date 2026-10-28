@@ -11,7 +11,7 @@ import type { Snippet } from "svelte";
 export interface HubSectionProps extends ControlProps {
   children?: Snippet;
   contentTemplate?: HubSection["contentTemplate"];
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: HubSection["headerTemplate"];
   isHeaderInteractive?: boolean;
 }

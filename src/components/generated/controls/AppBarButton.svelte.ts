@@ -7,10 +7,11 @@ import { CommandBarLabelPosition } from "../bindings.ts";
 import type { AppBarButton } from "../bindings.ts";
 import { linkButton } from "./Button.svelte.ts";
 import type { ButtonBound, ButtonProps } from "./Button.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface AppBarButtonProps extends ButtonProps {
   dynamicOverflowOrder?: number;
-  icon?: AppBarButton["icon"];
+  icon?: AppBarButton["icon"] | Snippet;
   isCompact?: boolean;
   keyboardAcceleratorTextOverride?: string;
   label?: string;

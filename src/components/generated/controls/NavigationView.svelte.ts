@@ -13,18 +13,21 @@ import {
 import type { NavigationView } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface NavigationViewProps extends ContentControlProps {
+  footerMenuItems?: Snippet;
+  menuItems?: Snippet;
   selectedItem?: ObjectInput | undefined;
   isPaneOpen?: boolean | undefined;
   alwaysShowHeader?: boolean;
-  autoSuggestBox?: NavigationView["autoSuggestBox"];
+  autoSuggestBox?: NavigationView["autoSuggestBox"] | Snippet;
   compactModeThresholdWidth?: number;
   compactPaneLength?: number;
-  contentOverlay?: NavigationView["contentOverlay"];
+  contentOverlay?: NavigationView["contentOverlay"] | Snippet;
   expandedModeThresholdWidth?: number;
   footerMenuItemsSource?: ObjectReferenceInput;
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: NavigationView["headerTemplate"];
   isBackButtonVisible?: EnumInput<typeof NavigationViewBackButtonVisible>;
   isBackEnabled?: boolean;
@@ -39,10 +42,10 @@ export interface NavigationViewProps extends ContentControlProps {
   menuItemTemplateSelector?: NavigationView["menuItemTemplateSelector"];
   openPaneLength?: number;
   overflowLabelMode?: EnumInput<typeof NavigationViewOverflowLabelMode>;
-  paneCustomContent?: NavigationView["paneCustomContent"];
+  paneCustomContent?: NavigationView["paneCustomContent"] | Snippet;
   paneDisplayMode?: EnumInput<typeof NavigationViewPaneDisplayMode>;
-  paneFooter?: NavigationView["paneFooter"];
-  paneHeader?: NavigationView["paneHeader"];
+  paneFooter?: NavigationView["paneFooter"] | Snippet;
+  paneHeader?: NavigationView["paneHeader"] | Snippet;
   paneTitle?: string;
   paneToggleButtonStyle?: NavigationView["paneToggleButtonStyle"];
   selectionFollowsFocus?: EnumInput<typeof NavigationViewSelectionFollowsFocus>;

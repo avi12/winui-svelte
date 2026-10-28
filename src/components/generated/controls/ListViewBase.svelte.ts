@@ -7,15 +7,16 @@ import { IncrementalLoadingTrigger, ListViewReorderMode, ListViewSelectionMode }
 import type { ListViewBase } from "../bindings.ts";
 import { linkSelector } from "./Selector.svelte.ts";
 import type { SelectorBound, SelectorProps } from "./Selector.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ListViewBaseProps extends SelectorProps {
   canDragItems?: boolean;
   canReorderItems?: boolean;
   dataFetchSize?: number;
-  footer?: ObjectInput;
+  footer?: ObjectInput | Snippet;
   footerTemplate?: ListViewBase["footerTemplate"];
   footerTransitions?: ListViewBase["footerTransitions"];
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: ListViewBase["headerTemplate"];
   headerTransitions?: ListViewBase["headerTransitions"];
   incrementalLoadingThreshold?: number;

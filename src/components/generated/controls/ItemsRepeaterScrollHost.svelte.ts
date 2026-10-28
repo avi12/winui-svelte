@@ -5,10 +5,11 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { ItemsRepeaterScrollHost } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ItemsRepeaterScrollHostProps extends FrameworkElementProps {
   horizontalAnchorRatio?: number;
-  scrollViewer?: ItemsRepeaterScrollHost["scrollViewer"];
+  scrollViewer?: ItemsRepeaterScrollHost["scrollViewer"] | Snippet;
   verticalAnchorRatio?: number;
 }
 

@@ -5,8 +5,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { MenuBarItem } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface MenuBarItemProps extends ControlProps {
+  items?: Snippet;
   title?: string;
 }
 

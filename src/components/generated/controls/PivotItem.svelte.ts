@@ -6,9 +6,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { PivotItem } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface PivotItemProps extends ContentControlProps {
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
 }
 
 export type PivotItemBound = ContentControlBound;

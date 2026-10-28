@@ -45,7 +45,7 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   opticalMarginAlignment?: EnumInput<typeof OpticalMarginAlignment>;
   overflowContentTarget?: RichTextBlock["overflowContentTarget"];
   padding?: ThicknessInput;
-  selectionFlyout?: RichTextBlock["selectionFlyout"];
+  selectionFlyout?: RichTextBlock["selectionFlyout"] | Snippet;
   selectionHighlightColor?: RichTextBlock["selectionHighlightColor"];
   textAlignment?: EnumInput<typeof TextAlignment>;
   textDecorations?: EnumInput<typeof TextDecorations>;

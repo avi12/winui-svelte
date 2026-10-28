@@ -7,6 +7,7 @@ import { CalendarViewDisplayMode, DayOfWeek, LightDismissOverlayMode } from "../
 import type { CalendarDatePicker } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface CalendarDatePickerProps extends ControlProps {
   date?: CalendarDatePicker["date"] | undefined;
@@ -14,10 +15,10 @@ export interface CalendarDatePickerProps extends ControlProps {
   calendarViewStyle?: CalendarDatePicker["calendarViewStyle"];
   dateFormat?: string;
   dayOfWeekFormat?: string;
-  description?: ObjectInput;
+  description?: ObjectInput | Snippet;
   displayMode?: EnumInput<typeof CalendarViewDisplayMode>;
   firstDayOfWeek?: EnumInput<typeof DayOfWeek>;
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: CalendarDatePicker["headerTemplate"];
   isCalendarOpen?: boolean;
   isGroupLabelVisible?: boolean;

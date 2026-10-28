@@ -34,6 +34,7 @@
     "examples/**/*.svelte",
     "test/**/*.ts",
     "test/**/*.svelte.ts",
+    "test/**/*.svelte",
     "scripts/**/*.ts",
     "scripts/pack/treeshake-app/**/*.svelte"
   ]

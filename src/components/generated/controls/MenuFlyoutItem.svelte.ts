@@ -12,7 +12,7 @@ export interface MenuFlyoutItemProps extends MenuFlyoutItemBaseProps {
   children?: Snippet;
   command?: MenuFlyoutItem["command"];
   commandParameter?: ObjectInput;
-  icon?: MenuFlyoutItem["icon"];
+  icon?: MenuFlyoutItem["icon"] | Snippet;
   keyboardAcceleratorTextOverride?: string;
   text?: string;
   onClick?: Parameters<MenuFlyoutItem["onClick"]>[0];

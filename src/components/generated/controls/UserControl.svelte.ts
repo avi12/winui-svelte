@@ -9,7 +9,7 @@ import type { Snippet } from "svelte";
 
 export interface UserControlProps extends ControlProps {
   children?: Snippet;
-  content?: UserControl["content"];
+  content?: UserControl["content"] | Snippet;
 }
 
 export type UserControlBound = ControlBound;

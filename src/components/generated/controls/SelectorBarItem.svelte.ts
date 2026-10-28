@@ -5,9 +5,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { SelectorBarItem } from "../bindings.ts";
 import { linkItemContainer } from "./ItemContainer.svelte.ts";
 import type { ItemContainerBound, ItemContainerProps } from "./ItemContainer.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface SelectorBarItemProps extends ItemContainerProps {
-  icon?: SelectorBarItem["icon"];
+  icon?: SelectorBarItem["icon"] | Snippet;
   text?: string;
 }
 

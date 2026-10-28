@@ -7,12 +7,13 @@ import { NumberBoxSpinButtonPlacementMode, NumberBoxValidationMode, TextReadingO
 import type { NumberBox } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface NumberBoxProps extends ControlProps {
   value?: number | undefined;
   acceptsExpression?: boolean;
-  description?: ObjectInput;
-  header?: ObjectInput;
+  description?: ObjectInput | Snippet;
+  header?: ObjectInput | Snippet;
   headerTemplate?: NumberBox["headerTemplate"];
   isWrapEnabled?: boolean;
   largeChange?: number;
@@ -21,7 +22,7 @@ export interface NumberBoxProps extends ControlProps {
   numberFormatter?: NumberBox["numberFormatter"];
   placeholderText?: string;
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
-  selectionFlyout?: NumberBox["selectionFlyout"];
+  selectionFlyout?: NumberBox["selectionFlyout"] | Snippet;
   selectionHighlightColor?: NumberBox["selectionHighlightColor"];
   smallChange?: number;
   spinButtonPlacementMode?: EnumInput<typeof NumberBoxSpinButtonPlacementMode>;

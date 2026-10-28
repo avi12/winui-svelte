@@ -9,7 +9,7 @@ import type { Snippet } from "svelte";
 
 export interface InlineUIContainerProps extends InlineProps {
   children?: Snippet;
-  child?: InlineUIContainer["child"];
+  child?: InlineUIContainer["child"] | Snippet;
 }
 
 export type InlineUIContainerBound = InlineBound;

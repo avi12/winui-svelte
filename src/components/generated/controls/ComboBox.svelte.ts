@@ -7,11 +7,12 @@ import { ComboBoxSelectionChangedTrigger, LightDismissOverlayMode } from "../bin
 import type { ComboBox } from "../bindings.ts";
 import { linkSelector } from "./Selector.svelte.ts";
 import type { SelectorBound, SelectorProps } from "./Selector.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ComboBoxProps extends SelectorProps {
   isDropDownOpen?: boolean | undefined;
-  description?: ObjectInput;
-  header?: ObjectInput;
+  description?: ObjectInput | Snippet;
+  header?: ObjectInput | Snippet;
   headerTemplate?: ComboBox["headerTemplate"];
   isEditable?: boolean;
   isTextSearchEnabled?: boolean;

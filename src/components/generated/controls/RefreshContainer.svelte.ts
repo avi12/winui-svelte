@@ -7,10 +7,11 @@ import { RefreshPullDirection } from "../bindings.ts";
 import type { RefreshContainer } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface RefreshContainerProps extends ContentControlProps {
   pullDirection?: EnumInput<typeof RefreshPullDirection>;
-  visualizer?: RefreshContainer["visualizer"];
+  visualizer?: RefreshContainer["visualizer"] | Snippet;
   onRefreshRequested?: Parameters<RefreshContainer["onRefreshRequested"]>[0];
 }
 

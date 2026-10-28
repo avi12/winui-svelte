@@ -345,6 +345,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "command-bar",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  CommandBarFlyout: {
+    parent: "FlyoutBase",
+    properties: ["alwaysExpanded"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "command-bar-flyout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   CommandBarFlyoutCommandBar: {
     parent: "CommandBar",
     properties: ["systemBackdrop"],
@@ -422,6 +433,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "date-picker",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  DatePickerFlyout: {
+    parent: "PickerFlyoutBase",
+    properties: ["calendarIdentifier", "date", "dayFormat", "dayVisible", "maxYear", "minYear", "monthFormat", "monthVisible", "yearFormat", "yearVisible"],
+    events: ["onDatePicked"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "date-picker-flyout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   DropDownButton: {
     parent: "Button",
     properties: [],
@@ -476,6 +498,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "flip-view-item",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  Flyout: {
+    parent: "FlyoutBase",
+    properties: ["content", "flyoutPresenterStyle"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Content",
+    isComponent: true,
+    tag: "flyout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  FlyoutBase: {
+    parent: null,
+    properties: ["allowFocusOnInteraction", "allowFocusWhenDisabled", "areOpenCloseAnimationsEnabled", "elementSoundMode", "lightDismissOverlayMode", "overlayInputPassThroughElement", "placement", "shouldConstrainToRootBounds", "showMode", "systemBackdrop", "xamlRoot"],
+    events: ["onClosed", "onClosing", "onOpened", "onOpening"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "flyout-base",
+    namespace: "Microsoft.UI.Xaml.Controls.Primitives"
   },
   FlyoutPresenter: {
     parent: "ContentControl",
@@ -889,6 +933,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "list-box-item",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  ListPickerFlyout: {
+    parent: "PickerFlyoutBase",
+    properties: ["displayMemberPath", "itemsSource", "itemTemplate", "selectedIndex", "selectedItem", "selectedValue", "selectedValuePath", "selectionMode"],
+    events: ["onItemsPicked"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "list-picker-flyout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   ListView: {
     parent: "ListViewBase",
     properties: [],
@@ -1019,6 +1074,28 @@ export const levels: Record<string, LevelMetadata> = {
     contentProperty: null,
     isComponent: true,
     tag: "menu-bar-item",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  MenuBarItemFlyout: {
+    parent: "MenuFlyout",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Items",
+    isComponent: true,
+    tag: "menu-bar-item-flyout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  MenuFlyout: {
+    parent: "FlyoutBase",
+    properties: ["menuFlyoutPresenterStyle"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Items",
+    isComponent: true,
+    tag: "menu-flyout",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
   MenuFlyoutItem: {
@@ -1262,6 +1339,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "person-picture",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  PickerFlyout: {
+    parent: "PickerFlyoutBase",
+    properties: ["confirmationButtonsVisible", "content"],
+    events: ["onConfirmed"],
+    attached: {},
+    bindables: [],
+    contentProperty: "Content",
+    isComponent: true,
+    tag: "picker-flyout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  PickerFlyoutBase: {
+    parent: "FlyoutBase",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "picker-flyout-base",
+    namespace: "Microsoft.UI.Xaml.Controls.Primitives"
   },
   PipsPager: {
     parent: "Control",
@@ -1824,6 +1923,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "text-box",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  TextCommandBarFlyout: {
+    parent: "CommandBarFlyout",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "text-command-bar-flyout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   TextElement: {
     parent: null,
     properties: ["accessKey", "accessKeyScopeOwner", "allowFocusOnInteraction", "characterSpacing", "exitDisplayModeOnAccessKeyInvoked", "fontFamily", "fontSize", "fontStretch", "fontStyle", "fontWeight", "foreground", "isAccessKeyScope", "isTextScaleFactorEnabled", "keyTipHorizontalOffset", "keyTipPlacementMode", "keyTipVerticalOffset", "language", "textDecorations", "xamlRoot"],
@@ -1866,6 +1976,17 @@ export const levels: Record<string, LevelMetadata> = {
     contentProperty: "Header",
     isComponent: true,
     tag: "time-picker",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  TimePickerFlyout: {
+    parent: "PickerFlyoutBase",
+    properties: ["clockIdentifier", "minuteIncrement", "time"],
+    events: ["onTimePicked"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "time-picker-flyout",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
   TitleBar: {

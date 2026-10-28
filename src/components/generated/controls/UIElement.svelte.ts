@@ -30,6 +30,7 @@ import {
   ZoomMode
 } from "../bindings.ts";
 import type { UIElement } from "../bindings.ts";
+import type { Snippet } from "svelte";
 
 export interface UIElementProps {
   canvasLeft?: number;
@@ -104,7 +105,7 @@ export interface UIElementProps {
   centerPoint?: UIElement["centerPoint"];
   clip?: UIElement["clip"];
   compositeMode?: EnumInput<typeof ElementCompositeMode>;
-  contextFlyout?: UIElement["contextFlyout"];
+  contextFlyout?: UIElement["contextFlyout"] | Snippet;
   exitDisplayModeOnAccessKeyInvoked?: boolean;
   highContrastAdjustment?: EnumInput<typeof ElementHighContrastAdjustment>;
   isAccessKeyScope?: boolean;

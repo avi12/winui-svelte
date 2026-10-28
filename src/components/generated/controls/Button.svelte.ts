@@ -5,9 +5,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { Button } from "../bindings.ts";
 import { linkButtonBase } from "./ButtonBase.svelte.ts";
 import type { ButtonBaseBound, ButtonBaseProps } from "./ButtonBase.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ButtonProps extends ButtonBaseProps {
-  flyout?: Button["flyout"];
+  flyout?: Button["flyout"] | Snippet;
 }
 
 export type ButtonBound = ButtonBaseBound;

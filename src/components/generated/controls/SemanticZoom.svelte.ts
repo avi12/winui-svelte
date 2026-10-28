@@ -12,8 +12,8 @@ export interface SemanticZoomProps extends ControlProps {
   canChangeViews?: boolean;
   isZoomedInViewActive?: boolean;
   isZoomOutButtonEnabled?: boolean;
-  zoomedInView?: SemanticZoom["zoomedInView"];
-  zoomedOutView?: SemanticZoom["zoomedOutView"];
+  zoomedInView?: SemanticZoom["zoomedInView"] | Snippet;
+  zoomedOutView?: SemanticZoom["zoomedOutView"] | Snippet;
   onViewChangeCompleted?: Parameters<SemanticZoom["onViewChangeCompleted"]>[0];
   onViewChangeStarted?: Parameters<SemanticZoom["onViewChangeStarted"]>[0];
 }

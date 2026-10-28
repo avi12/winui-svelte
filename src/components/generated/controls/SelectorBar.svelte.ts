@@ -5,8 +5,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { SelectorBar } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface SelectorBarProps extends ControlProps {
+  items?: Snippet;
   selectedItem?: SelectorBar["selectedItem"] | undefined;
   onSelectionChanged?: Parameters<SelectorBar["onSelectionChanged"]>[0];
 }

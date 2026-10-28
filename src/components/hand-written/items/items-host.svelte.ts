@@ -245,9 +245,12 @@ class ItemsHost<Item> implements ListHandle {
     }
 
     const source = new RowSource(item);
-    const mounted = mountControl<RowProps<Item>>(Row, {
-      snippet,
-      source
+    const mounted = mountControl<RowProps<Item>>({
+      component: Row,
+      props: {
+        snippet,
+        source
+      }
     });
     slot.content = mounted.root;
     const row: LiveRow<Item> = {

@@ -6,11 +6,13 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { NavigationViewItem } from "../bindings.ts";
 import { linkNavigationViewItemBase } from "./NavigationViewItemBase.svelte.ts";
 import type { NavigationViewItemBaseBound, NavigationViewItemBaseProps } from "./NavigationViewItemBase.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface NavigationViewItemProps extends NavigationViewItemBaseProps {
+  menuItems?: Snippet;
   hasUnrealizedChildren?: boolean;
-  icon?: NavigationViewItem["icon"];
-  infoBadge?: NavigationViewItem["infoBadge"];
+  icon?: NavigationViewItem["icon"] | Snippet;
+  infoBadge?: NavigationViewItem["infoBadge"] | Snippet;
   isChildSelected?: boolean;
   isExpanded?: boolean;
   menuItemsSource?: ObjectReferenceInput;

@@ -7,6 +7,7 @@ import { Stretch } from "../bindings.ts";
 import type { MediaPlayerElement } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface MediaPlayerElementProps extends ControlProps {
   areTransportControlsEnabled?: boolean;
@@ -15,7 +16,7 @@ export interface MediaPlayerElementProps extends ControlProps {
   posterSource?: ImageSourceInput;
   source?: MediaPlayerElement["source"];
   stretch?: EnumInput<typeof Stretch>;
-  transportControls?: MediaPlayerElement["transportControls"];
+  transportControls?: MediaPlayerElement["transportControls"] | Snippet;
 }
 
 export type MediaPlayerElementBound = ControlBound;

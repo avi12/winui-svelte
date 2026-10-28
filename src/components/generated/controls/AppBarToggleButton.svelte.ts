@@ -7,10 +7,11 @@ import { CommandBarLabelPosition } from "../bindings.ts";
 import type { AppBarToggleButton } from "../bindings.ts";
 import { linkToggleButton } from "./ToggleButton.svelte.ts";
 import type { ToggleButtonBound, ToggleButtonProps } from "./ToggleButton.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface AppBarToggleButtonProps extends ToggleButtonProps {
   dynamicOverflowOrder?: number;
-  icon?: AppBarToggleButton["icon"];
+  icon?: AppBarToggleButton["icon"] | Snippet;
   isCompact?: boolean;
   keyboardAcceleratorTextOverride?: string;
   label?: string;

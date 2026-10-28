@@ -11,18 +11,19 @@ import {
 import type { TeachingTip } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface TeachingTipProps extends ContentControlProps {
   isOpen?: boolean | undefined;
   actionButtonCommand?: TeachingTip["actionButtonCommand"];
   actionButtonCommandParameter?: ObjectInput;
-  actionButtonContent?: ObjectInput;
+  actionButtonContent?: ObjectInput | Snippet;
   actionButtonStyle?: TeachingTip["actionButtonStyle"];
   closeButtonCommand?: TeachingTip["closeButtonCommand"];
   closeButtonCommandParameter?: ObjectInput;
-  closeButtonContent?: ObjectInput;
+  closeButtonContent?: ObjectInput | Snippet;
   closeButtonStyle?: TeachingTip["closeButtonStyle"];
-  heroContent?: TeachingTip["heroContent"];
+  heroContent?: TeachingTip["heroContent"] | Snippet;
   heroContentPlacement?: EnumInput<typeof TeachingTipHeroContentPlacementMode>;
   iconSource?: TeachingTip["iconSource"];
   isLightDismissEnabled?: boolean;

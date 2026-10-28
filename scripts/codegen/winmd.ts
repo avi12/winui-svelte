@@ -370,7 +370,9 @@ export interface AttributeInfo {
 
 /** An interface a type implements, with the attributes on that implementation. */
 export interface InterfaceReference {
+  // Null for a generic instance (IVector<UIElement>), which `signature` spells.
   type: TypeName | null;
+  signature: TypeSignature | null;
   attributes: AttributeInfo[];
 }
 
@@ -775,6 +777,33 @@ export class WinMdFile {
     }
 
     return null;
+  }
+
+  /** The type a TypeDefOrRef coded index points at, a generic instance included. */
+  typeSignatureOf(coded: number) {
+    const { table, row } = this.decode({
+      coded: "TypeDefOrRef",
+      value: coded
+    });
+    const isSpecification = table === TABLE_ID.TYPE_SPEC && row !== 0;
+    if (isSpecification) {
+      return this.readType(
+        this.blob(
+          this.cell({
+            table: TABLE_ID.TYPE_SPEC,
+            row,
+            column: 0
+          })
+        )
+      );
+    }
+
+    const type = this.typeNameOf(coded);
+    return type === null ? null : {
+      kind: "named" as const,
+      type,
+      isValueType: false
+    };
   }
 
   // eslint-disable-next-line no-restricted-syntax -- recursive: TypeScript cannot infer its own return type
@@ -1239,14 +1268,14 @@ export class WinMdFile {
         column: 0
       });
       const list = interfaces.get(owner) ?? [];
+      const implemented = this.cell({
+        table: TABLE_ID.INTERFACE_IMPL,
+        row,
+        column: 1
+      });
       list.push({
-        type: this.typeNameOf(
-          this.cell({
-            table: TABLE_ID.INTERFACE_IMPL,
-            row,
-            column: 1
-          })
-        ),
+        type: this.typeNameOf(implemented),
+        signature: this.typeSignatureOf(implemented),
         attributes: this.attributesOf({
           table: TABLE_ID.INTERFACE_IMPL,
           row,

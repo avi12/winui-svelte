@@ -7,9 +7,10 @@ import { Orientation, SliderSnapsTo, TickPlacement } from "../bindings.ts";
 import type { Slider } from "../bindings.ts";
 import { linkRangeBase } from "./RangeBase.svelte.ts";
 import type { RangeBaseBound, RangeBaseProps } from "./RangeBase.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface SliderProps extends RangeBaseProps {
-  header?: ObjectInput;
+  header?: ObjectInput | Snippet;
   headerTemplate?: Slider["headerTemplate"];
   intermediateValue?: number;
   isDirectionReversed?: boolean;

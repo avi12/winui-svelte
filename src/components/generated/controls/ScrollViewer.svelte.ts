@@ -13,6 +13,7 @@ import {
 import type { ScrollViewer } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ScrollViewerProps extends ContentControlProps {
   bringIntoViewOnFocusChange?: boolean;
@@ -30,12 +31,12 @@ export interface ScrollViewerProps extends ContentControlProps {
   isVerticalScrollChainingEnabled?: boolean;
   isZoomChainingEnabled?: boolean;
   isZoomInertiaEnabled?: boolean;
-  leftHeader?: ScrollViewer["leftHeader"];
+  leftHeader?: ScrollViewer["leftHeader"] | Snippet;
   maxZoomFactor?: number;
   minZoomFactor?: number;
   reduceViewportForCoreInputViewOcclusions?: boolean;
-  topHeader?: ScrollViewer["topHeader"];
-  topLeftHeader?: ScrollViewer["topLeftHeader"];
+  topHeader?: ScrollViewer["topHeader"] | Snippet;
+  topLeftHeader?: ScrollViewer["topLeftHeader"] | Snippet;
   verticalAnchorRatio?: number;
   verticalScrollBarVisibility?: EnumInput<typeof ScrollBarVisibility>;
   verticalScrollMode?: EnumInput<typeof ScrollMode>;

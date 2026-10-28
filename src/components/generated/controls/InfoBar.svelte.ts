@@ -7,14 +7,15 @@ import { InfoBarSeverity } from "../bindings.ts";
 import type { InfoBar } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface InfoBarProps extends ControlProps {
   isOpen?: boolean | undefined;
-  actionButton?: InfoBar["actionButton"];
+  actionButton?: InfoBar["actionButton"] | Snippet;
   closeButtonCommand?: InfoBar["closeButtonCommand"];
   closeButtonCommandParameter?: ObjectInput;
   closeButtonStyle?: InfoBar["closeButtonStyle"];
-  content?: ObjectInput;
+  content?: ObjectInput | Snippet;
   contentTemplate?: InfoBar["contentTemplate"];
   iconSource?: InfoBar["iconSource"];
   isClosable?: boolean;

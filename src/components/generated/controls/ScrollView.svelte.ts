@@ -15,9 +15,10 @@ import {
 import type { ScrollView } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ScrollViewProps extends ControlProps {
-  content?: ScrollView["content"];
+  content?: ScrollView["content"] | Snippet;
   contentOrientation?: EnumInput<typeof ScrollingContentOrientation>;
   horizontalAnchorRatio?: number;
   horizontalScrollBarVisibility?: EnumInput<typeof ScrollingScrollBarVisibility>;

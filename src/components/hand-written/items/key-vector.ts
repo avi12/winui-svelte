@@ -42,15 +42,18 @@ export function syncKeyVector<Boxed>({ vector, codec, wanted }: {
   }
 
   syncKeyed({
-    items: {
-      get size() {
-        return vector.size;
+    list: {
+      items: {
+        get size() {
+          return vector.size;
+        },
+        getAt: index => codec.unbox(vector.getAt(index)),
+        removeAt: index => vector.removeAt(index),
+        insertAt: (index, key) => vector.insertAt(index, codec.box(key))
       },
-      getAt: index => codec.unbox(vector.getAt(index)),
-      removeAt: index => vector.removeAt(index),
-      insertAt: (index, key) => vector.insertAt(index, codec.box(key))
+      keyOf: key => key,
+      create: key => key
     },
-    keyOf: key => key,
-    create: key => key
-  }, wanted);
+    wantedKeys: wanted
+  });
 }

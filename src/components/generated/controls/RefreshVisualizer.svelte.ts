@@ -7,9 +7,10 @@ import { RefreshVisualizerOrientation } from "../bindings.ts";
 import type { RefreshVisualizer } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface RefreshVisualizerProps extends ControlProps {
-  content?: RefreshVisualizer["content"];
+  content?: RefreshVisualizer["content"] | Snippet;
   orientation?: EnumInput<typeof RefreshVisualizerOrientation>;
   onRefreshRequested?: Parameters<RefreshVisualizer["onRefreshRequested"]>[0];
   onRefreshStateChanged?: Parameters<RefreshVisualizer["onRefreshStateChanged"]>[0];
