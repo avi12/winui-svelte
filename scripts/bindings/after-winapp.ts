@@ -1,3 +1,4 @@
+import { bindingsAfterWinapp } from "#scripts/codegen/tables.ts";
 import { filesIn } from "#scripts/files-in.ts";
 import { WINAPP_BINARIES, WINAPP_BINDINGS, WINAPP_LOCK } from "#scripts/winapp-paths.ts";
 import { execFileSync } from "node:child_process";
@@ -14,12 +15,12 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { z } from "zod";
 
-// The bindings of WebView2, made after winapp's: winapp passes the code
-// generator the Microsoft.Web.WebView2.Core metadata neither to emit nor to
-// resolve against, so WebView2's own events cannot be bound in its run. This
-// runs the generator for the one class with that metadata among the winmds to
-// emit, and adds the files winapp's run did not make to .winapp/bindings. It
-// also puts the native library the control activates its Core types from
+// The bindings of the classes winapp's run cannot make (bindingsAfterWinapp in
+// scripts/codegen/tables.ts: WebView2, whose events name Microsoft.Web.WebView2.Core
+// types winapp passes to the code generator neither to emit nor to resolve
+// against, and the swap chain panels). This runs the generator for them with
+// that metadata among the winmds to emit, and adds the files winapp's run did
+// not make to .winapp/bindings. It also puts the native library the control activates its Core types from
 // (Microsoft.Web.WebView2.Core.dll, which winapp restores no more than it passes
 // the winmd) beside the other restored libraries, where the build ships it.
 
@@ -28,7 +29,7 @@ const GENERATOR = path.join(PACKAGE_ROOT, "node_modules", "@microsoft", "dynwinr
 const XAML_WINMD = /Microsoft\.UI\.Xaml\.winmd$/iu;
 const CORE_WINMD = /Microsoft\.Web\.WebView2\.Core\.winmd$/iu;
 const CONTROLS_NAMESPACE = "Microsoft.UI.Xaml.Controls";
-const CLASS_NAME = "WebView2";
+const CONTROLS_PREFIX = `${CONTROLS_NAMESPACE}.`;
 const NATIVE_LIBRARY = "Microsoft.Web.WebView2.Core.dll";
 // The architectures of .winapp/bin, by the runtime folder of the NuGet package.
 const runtimeFolders = new Map([
@@ -42,6 +43,18 @@ const ENTRY_FILE = /^(index|lifetime|package)\./u;
 const lockSchema = z.object({
   packages: z.array(z.object({ winmds: z.array(z.string()) }))
 });
+
+// The classes are all in the controls namespace, which the generator takes once.
+function classNames() {
+  return [...bindingsAfterWinapp].map(fullName => {
+    const isInControls = fullName.startsWith(CONTROLS_PREFIX);
+    if (!isInControls) {
+      throw new Error(`${fullName} is not in ${CONTROLS_NAMESPACE}: after-winapp.ts generates one namespace`);
+    }
+
+    return fullName.slice(CONTROLS_PREFIX.length);
+  });
+}
 
 function winmdsOfLock() {
   const lock = lockSchema.parse(JSON.parse(readFileSync(WINAPP_LOCK, "utf8")));
@@ -80,7 +93,7 @@ function generate({ workFolder, winmds, emitted }: {
     "--namespace",
     CONTROLS_NAMESPACE,
     "--class-name",
-    CLASS_NAME,
+    classNames().join(","),
     "--output",
     output
   ], { stdio: ["ignore", "ignore", "inherit"] });
@@ -139,7 +152,7 @@ function run() {
       })
     );
     const libraries = addNativeLibraries(emitted.core);
-    process.stdout.write(`WebView2: ${files} binding files added, ${NATIVE_LIBRARY} for ${libraries} architectures\n`);
+    process.stdout.write(`${files} binding files added, ${NATIVE_LIBRARY} for ${libraries} architectures\n`);
   } finally {
     rmSync(workFolder, {
       recursive: true,

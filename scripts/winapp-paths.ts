@@ -6,7 +6,7 @@ import path from "node:path";
 const PACKAGE_ROOT = path.join(import.meta.dirname, "..");
 const WINAPP_FOLDER = path.join(PACKAGE_ROOT, ".winapp");
 
-/** The bindings winapp generates (and scripts/bindings/webview2.ts adds to). */
+/** The bindings winapp generates (and scripts/bindings/after-winapp.ts adds to). */
 export const WINAPP_BINDINGS = path.join(WINAPP_FOLDER, "bindings");
 
 /** The native libraries winapp restores, one folder per architecture. */

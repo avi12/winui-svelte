@@ -296,7 +296,7 @@ brushes; see "Gradients" in `src/css/API.md`.
 
 `<WebView2 source="https://..." onNavigationCompleted={...} />` is generated
 like the rest. Its bindings are made by `pnpm bindings` after winapp's run
-(`scripts/bindings/webview2.ts`), since winapp gives the code generator no
+(`scripts/bindings/after-winapp.ts`), since winapp gives the code generator no
 WebView2 Core metadata (about 3 MB of bindings). That step also restores
 `Microsoft.Web.WebView2.Core.dll`, and the build ships it with
 `WebView2Loader.dll` in `dist/bin/<arch>`: `initWindowsAppSdk` puts that

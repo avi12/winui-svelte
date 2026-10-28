@@ -42,7 +42,7 @@ const SHIPPED_BINDINGS = path.join(OUTPUT_FOLDER, "bindings");
 const RESTORED_BOOTSTRAPPERS = WINAPP_BINARIES;
 const SHIPPED_BOOTSTRAPPERS = path.join(OUTPUT_FOLDER, "bin");
 // The native libraries the package carries per architecture: the Windows App
-// SDK's bootstrapper, and what a WebView2 loads (scripts/bindings/webview2.ts
+// SDK's bootstrapper, and what a WebView2 loads (scripts/bindings/after-winapp.ts
 // puts the second there; arm64ec has neither).
 const BOOTSTRAPPER = "Microsoft.WindowsAppRuntime.Bootstrap.dll";
 const WEBVIEW_LIBRARIES = ["WebView2Loader.dll", "Microsoft.Web.WebView2.Core.dll"];

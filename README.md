@@ -539,6 +539,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `Storyboard` | Media.Animation |  |  | yes |
 | `SuppressNavigationTransitionInfo` | Media.Animation |  |  |  |
 | `SvgImageSource` | Media.Imaging | `rasterizePixelHeight`, `rasterizePixelWidth`, `uriSource` |  |  |
+| `SwapChainPanel` | Controls |  |  | yes |
 | `SwipeBackThemeAnimation` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
 | `SwipeControl` | Controls | `bottomItems`, `leftItems`, `rightItems`, `topItems` |  | yes |
 | `SwipeHintThemeAnimation` | Media.Animation | `targetName`, `toHorizontalOffset`, `toVerticalOffset` |  |  |
@@ -716,9 +717,10 @@ Stated plainly, so nobody finds them by surprise:
   setters while they are active, and a control that handles an event itself (a
   Button handles `PointerPressed`) never reports it, so `:active` does nothing
   there. Override the control's theme resources instead.
-- **Three controls are not components:** `SwapChainPanel` and
-  `SwapChainBackgroundPanel` (the code generator cannot emit them with the
-  others) and `PivotHeaderItem` (WinUI makes it only inside a `Pivot`).
+- **Two controls are not components:** `SwapChainBackgroundPanel` (the UWP
+  panel WinUI 3 keeps for compatibility, which refuses most element properties;
+  `SwapChainPanel` replaces it) and `PivotHeaderItem` (WinUI makes it only
+  inside a `Pivot`).
 - **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
   service started cannot launch the browser (error 0x8007139F), and a `data:`
   URL cannot be the top frame.

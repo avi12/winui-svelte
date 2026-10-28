@@ -508,6 +508,8 @@ export { default as SuppressNavigationTransitionInfo } from "./SuppressNavigatio
 export type { SuppressNavigationTransitionInfoComponentProps } from "./SuppressNavigationTransitionInfo.d.svelte.ts";
 export { default as SvgImageSource } from "./SvgImageSource.svelte";
 export type { SvgImageSourceComponentProps } from "./SvgImageSource.d.svelte.ts";
+export { default as SwapChainPanel } from "./SwapChainPanel.svelte";
+export type { SwapChainPanelComponentProps } from "./SwapChainPanel.d.svelte.ts";
 export { default as SwipeBackThemeAnimation } from "./SwipeBackThemeAnimation.svelte";
 export type { SwipeBackThemeAnimationComponentProps } from "./SwipeBackThemeAnimation.d.svelte.ts";
 export { default as SwipeControl } from "./SwipeControl.svelte";

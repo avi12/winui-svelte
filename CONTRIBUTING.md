@@ -18,11 +18,12 @@ pnpm bindings     # generates the WinUI bindings, then WebView2's
 `pnpm restore` reads `winapp.yaml` and writes `.winapp/`, which is not
 committed. `pnpm bindings` reads `package.json`'s `winapp.jsBindings` (the list
 of WinUI classes) and writes `.winapp/bindings` in two steps: `winapp node
-generate-bindings`, then `scripts/bindings/webview2.ts`. The second exists
+generate-bindings`, then `scripts/bindings/after-winapp.ts`. The second exists
 because winapp gives the code generator no `Microsoft.Web.WebView2.Core`
-metadata, so WebView2's events cannot be bound in its run (the class is in
-`bindingsAfterWinapp` in `scripts/codegen/tables.ts`, which keeps it out of the
-list winapp is given); the step runs the generator for that class alone, adds
+metadata (so WebView2's events cannot be bound in its run) and trips over
+`SwapChainPanel`'s two `PointerEventArgs`. Those classes are in
+`bindingsAfterWinapp` in `scripts/codegen/tables.ts`, which keeps them out of the
+list winapp is given; the step runs the generator for them alone, adds
 the files winapp's run did not make, and restores `Microsoft.Web.WebView2.Core.dll`
 beside the bootstrappers. The first run downloads the SDK and takes about ten
 minutes; it is a cache after that. Run `pnpm bindings` again when the class

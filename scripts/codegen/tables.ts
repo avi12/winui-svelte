@@ -225,13 +225,9 @@ export const reservedKeys = new Set(["children", "class", "style", "attached"]);
 // the mount test: a control the test cannot construct on its own.
 export const nonConstructible = new Map<string, string>([
   [
-    "Microsoft.UI.Xaml.Controls.SwapChainPanel",
-    "dynwinrt-codegen cannot emit it with the other controls: it reaches Microsoft.UI.Input.PointerEventArgs and "
-    + "Windows.UI.Core.PointerEventArgs in one pass, and the second pass names the latter differently from the first"
-  ],
-  [
     "Microsoft.UI.Xaml.Controls.SwapChainBackgroundPanel",
-    "as SwapChainPanel"
+    "the UWP panel WinUI 3 keeps for compatibility: it refuses most FrameworkElement properties (Opacity, Height...), "
+    + "so a component for it would throw on being given them; SwapChainPanel is its replacement"
   ],
   [
     "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem",
@@ -239,11 +235,17 @@ export const nonConstructible = new Map<string, string>([
   ]
 ]);
 
-// Classes whose bindings scripts/bindings/webview2.ts makes after winapp's run
-// (`pnpm bindings`), so they stay out of the list winapp is given: their
-// events name Microsoft.Web.WebView2.Core types, and winapp passes that winmd
-// to dynwinrt-codegen neither to emit nor to resolve against.
-export const bindingsAfterWinapp = new Set(["Microsoft.UI.Xaml.Controls.WebView2"]);
+// Classes whose bindings scripts/bindings/after-winapp.ts makes after winapp's
+// run (`pnpm bindings`), so they stay out of the list winapp is given: WebView2's
+// events name Microsoft.Web.WebView2.Core types, and winapp passes that winmd to
+// dynwinrt-codegen neither to emit nor to resolve against; the swap chain panels
+// reach Microsoft.UI.Input.PointerEventArgs and Windows.UI.Core.PointerEventArgs
+// in one pass, where the second names the latter differently from the first, and
+// makes no trouble in a pass of its own. All in the controls namespace.
+export const bindingsAfterWinapp = new Set([
+  "Microsoft.UI.Xaml.Controls.SwapChainPanel",
+  "Microsoft.UI.Xaml.Controls.WebView2"
+]);
 
 // A property whose value changes by the user raises an event; the property
 // is then $bindable(). The rule `<Property>Changed` finds the regular ones;

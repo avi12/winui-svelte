@@ -245,6 +245,7 @@ export { SplitViewPanePlacement } from "#winui/microsoft/ui/xaml/controls/SplitV
 export { StackLayout } from "#winui/microsoft/ui/xaml/controls/StackLayout";
 export { StackPanel } from "#winui/microsoft/ui/xaml/controls/StackPanel";
 export { StretchDirection } from "#winui/microsoft/ui/xaml/controls/StretchDirection";
+export { SwapChainPanel } from "#winui/microsoft/ui/xaml/controls/SwapChainPanel";
 export { SwipeControl } from "#winui/microsoft/ui/xaml/controls/SwipeControl";
 export { Symbol } from "#winui/microsoft/ui/xaml/controls/Symbol";
 export { SymbolIcon } from "#winui/microsoft/ui/xaml/controls/SymbolIcon";

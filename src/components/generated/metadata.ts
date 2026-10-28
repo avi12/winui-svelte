@@ -3199,6 +3199,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "svg-image-source",
     namespace: "Microsoft.UI.Xaml.Media.Imaging"
   },
+  SwapChainPanel: {
+    parent: "Grid",
+    properties: [],
+    events: ["onCompositionScaleChanged"],
+    attached: {},
+    bindables: [],
+    contentProperty: "Children",
+    isComponent: true,
+    tag: "swap-chain-panel",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   SwipeBackThemeAnimation: {
     parent: "Timeline",
     properties: ["fromHorizontalOffset", "fromVerticalOffset", "targetName"],
@@ -3828,6 +3839,5 @@ export const levels: Record<string, LevelMetadata> = {
 
 export const excluded: Record<string, string> = {
   "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem": "constructing it fails with E_NOINTERFACE: it is activatable in the metadata but WinUI makes it only inside a Pivot",
-  "Microsoft.UI.Xaml.Controls.SwapChainBackgroundPanel": "as SwapChainPanel",
-  "Microsoft.UI.Xaml.Controls.SwapChainPanel": "dynwinrt-codegen cannot emit it with the other controls: it reaches Microsoft.UI.Input.PointerEventArgs and Windows.UI.Core.PointerEventArgs in one pass, and the second pass names the latter differently from the first"
+  "Microsoft.UI.Xaml.Controls.SwapChainBackgroundPanel": "the UWP panel WinUI 3 keeps for compatibility: it refuses most FrameworkElement properties (Opacity, Height...), so a component for it would throw on being given them; SwapChainPanel is its replacement"
 };
