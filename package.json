@@ -69,6 +69,11 @@
       "svelte": "./dist/renderer/list/keyed-list.js",
       "default": "./dist/renderer/list/keyed-list.js"
     },
+    "./element-animation": {
+      "types": "./dist/renderer/host/element-animation.d.ts",
+      "svelte": "./dist/renderer/host/element-animation.js",
+      "default": "./dist/renderer/host/element-animation.js"
+    },
     "./css": {
       "types": "./dist/css/index.d.ts",
       "default": "./dist/css/index.js"

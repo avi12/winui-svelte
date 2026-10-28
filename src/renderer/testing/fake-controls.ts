@@ -8,6 +8,12 @@
 class FakeCollection {
   readonly items: object[] = [];
 
+  private readonly owner: FakeMotionPanel | null;
+
+  constructor(owner: FakeMotionPanel | null = null) {
+    this.owner = owner;
+  }
+
   get size() {
     return this.items.length;
   }
@@ -20,6 +26,7 @@ class FakeCollection {
   // eslint-disable-next-line no-restricted-syntax -- mirrors WinUI's signature
   insertAt(index: number, item: object) {
     this.items.splice(index, 0, item);
+    this.adopt(item);
   }
 
   removeAt(index: number) {
@@ -28,6 +35,14 @@ class FakeCollection {
 
   append(item: object) {
     this.items.push(item);
+    this.adopt(item);
+  }
+
+  private adopt(item: object) {
+    const isPanel = item instanceof FakeMotionPanel;
+    if (isPanel) {
+      item.parent = this.owner;
+    }
   }
 
   clear() {
@@ -40,6 +55,73 @@ export class FakePanel {
   readonly children = new FakeCollection();
   // What the host last handed the class handler.
   className = "";
+}
+
+const FAKE_ROW_HEIGHT = 20;
+const FAKE_ROW_WIDTH = 100;
+
+// A panel WinUI would move and lay out: the members the transitions touch
+// (Opacity, Translation, Scale, Rotation, CenterPoint), a size, and a position
+// that follows its place among its parent's children, one row high each.
+export class FakeMotionPanel {
+  readonly margin = null;
+  readonly children = new FakeCollection(this);
+  readonly actualSize = {
+    x: FAKE_ROW_WIDTH,
+    y: FAKE_ROW_HEIGHT
+  };
+
+  parent: FakeMotionPanel | null = null;
+  translation = {
+    x: 0,
+    y: 0,
+    z: 0
+  };
+
+  scale = {
+    x: 1,
+    y: 1,
+    z: 1
+  };
+
+  centerPoint = {
+    x: 0,
+    y: 0,
+    z: 0
+  };
+
+  rotation = 0;
+  isHitTestVisible = true;
+  // Every value Opacity was set to, in order.
+  readonly opacities: number[] = [1];
+
+  get opacity() {
+    return this.opacities.at(-1) ?? 1;
+  }
+
+  set opacity(value: number) {
+    this.opacities.push(value);
+  }
+
+  get top() {
+    return (this.parent?.children.indexOf(this) ?? 0) * FAKE_ROW_HEIGHT;
+  }
+
+  updateLayout() {
+    return undefined;
+  }
+
+  transformToVisual(_visual: null) {
+    return {
+      transformPoint: (point: {
+        x: number;
+        y: number;
+      }) => ({
+        x: point.x,
+        y: this.top + point.y
+      })
+    };
+  }
 }
 
 export class FakeToggle {
@@ -90,7 +172,7 @@ export class FakeTextBlock {
 
 // By the class names a tag spells: <fake-panel> is FakePanel.
 export const fakeControls = Object.fromEntries(
-  [FakePanel, FakeToggle, FakeBorder, FakeTextBlock, FakeButton, FakeFlyout, FakeMenuItem].map(
+  [FakePanel, FakeMotionPanel, FakeToggle, FakeBorder, FakeTextBlock, FakeButton, FakeFlyout, FakeMenuItem].map(
     control => [control.name, control]
   )
 );
