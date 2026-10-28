@@ -318,7 +318,7 @@ desktop session (a sandboxed process cannot launch the browser, 0x8007139F).
 ```svelte
 <ListView items={rows} key={row => row.id} reorderable keyboardReorder
           onReorder={ids => save(ids)} itemName={row => row.name}
-          onControl={view => animate(view)} bind:handle>
+          onControl={view => animate(view)} bind:handle bind:selectedKey>
   {#snippet item(row)}
     <ThemeRow {row} />
   {/snippet}
@@ -335,11 +335,17 @@ desktop session (a sandboxed process cannot launch the browser, 0x8007139F).
 | `onReorder` | `(keys: string[]) => void`, after a drag or a keyboard move, the keys in the order the user left. The list keeps that order until `items` changes |
 | `itemName` | the accessible name of an item's container |
 | `onControl` | `(view) => void \| cleanup`: the `ListViewBase` itself, for what the component does not cover (item transitions) |
+| `bind:selectedKey` | `string \| undefined`: the key of the selected item (for the single selection modes). Set it to select an item, read it for the user's choice; it is cleared when the item goes and follows the item when the items reorder |
+| `bind:selectedKeys` | `string[]`: the keys of the selected items in list order, for `Multiple` and `Extended` (`selectedKey` is then the first of them) |
 | `bind:handle` | `ListHandle`: `move(key, direction)` (what Alt+Up/Down does), `scrollToKey(key)`, `focus(key)` |
 
 Every other property and event of the control is a prop as on the generated
 components (`selectionMode`, `itemContainerStyle`, `onDragItemsCompleted`, ...);
+`selectedIndex` is an index into `items` and is as good as a key, but the
+control's `selectedItem` and `selectedValue` hold the **boxed key**, not the item
+(read one with `unboxed`; setting them does not select, use `selectedKey`).
 `itemsSource`, `itemTemplate`, `items` and `children` are the component's.
+`ItemsView` has no `selectedKey` yet.
 
 How it works: the control's items are a vector of **boxed keys** (the
 control's drag reorder only commits a move to a list of plain values, not of
