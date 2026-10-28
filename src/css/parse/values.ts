@@ -131,6 +131,15 @@ export function parseMilliseconds(token: string) {
   return (match[2] ?? "").toLowerCase() === "s" ? amount * MILLISECONDS_PER_SECOND : amount;
 }
 
+const degreesPattern = /^(-?\d*\.?\d+)deg$/iu;
+
+/** An angle in degrees, from `deg`; null for anything else. */
+export function parseDegrees(token: string) {
+  const match = degreesPattern.exec(token);
+  const isMatchMissing = match === null;
+  return isMatchMissing ? null : Number(match[1]);
+}
+
 /**
  * Reads a `var(--name, fallback)` token into its name (with the leading
  * `--`) and fallback; null when the token is not one.
