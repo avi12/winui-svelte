@@ -1,3 +1,4 @@
+import { gradientGroups } from "./background-properties.ts";
 import { computeDeclarations, XAML_NAMESPACES } from "./cascade.ts";
 import { lowerDeclarations } from "./properties.ts";
 import { expandDeclaration } from "./shorthands.ts";
@@ -402,7 +403,8 @@ function validateRules({ translator, catalogue }: {
         matched: [rule],
         inline: []
       }),
-      options
+      options,
+      extraGroups: gradientGroups()
     });
   }
 }

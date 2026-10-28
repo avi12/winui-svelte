@@ -78,3 +78,18 @@ test("a descendant selector Svelte keeps is reported at its rule", () => {
   assert.throws(() => moduleFor(nested), (error: Error) =>
     error instanceof SheetError && error.message.startsWith("ui/card.svelte:3:3:") && error.message.includes("descendant"));
 });
+
+test("a sheet opts into the gradient parser only when it has a gradient", () => {
+  const plain = moduleFor(SOURCE);
+  assert.doesNotMatch(plain?.code ?? "", /winui-svelte\/css\/gradients/u);
+
+  const gradient = moduleFor(
+    `<border class="card"></border>
+<style>
+  .card { background-image: linear-gradient(to right, red, blue) }
+</style>
+`
+  );
+  assert.match(gradient?.code ?? "", /import \{ gradientGroups as \w+ \} from "winui-svelte\/css\/gradients"/u);
+  assert.match(gradient?.code ?? "", /registerPropertyGroups as \w+/u);
+});

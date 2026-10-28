@@ -1,3 +1,4 @@
+import { gradientGroups } from "./background-properties.ts";
 import { computeDeclarations, resolveBuiltVariable } from "./cascade.ts";
 import { loadWinuiCatalogue } from "./catalogue.ts";
 import { lowerDeclarations } from "./properties.ts";
@@ -52,7 +53,8 @@ function lower({ elementType, declarations }: {
       resolveVariable: resolveBuiltVariable,
       hasStyle: () => true,
       report() {}
-    }
+    },
+    extraGroups: gradientGroups()
   });
   messages.setters = lowered.setters.map(entry => [entry.property, entry.kind === "setter" ? entry.value : entry.xaml]);
   messages.writes = lowered.writes.map(entry => [entry.target, entry.value]);
@@ -124,6 +126,23 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ["background-color", null, "background-color: rgb(0 0 0 / 50%)", [["Background", "#80000000"]]],
   ["background to a brush", null, "background: transparent", [["Background", "#00FFFFFF"]]],
   ["background none", null, "background: none", [["Background", "#00FFFFFF"]]],
+  ["background-image linear gradient", null, "background-image: linear-gradient(to right, #0af, transparent)", [[
+    "Background",
+    "<LinearGradientBrush StartPoint=\"0,0.5\" EndPoint=\"1,0.5\"><GradientStop Color=\"#00AAFF\" Offset=\"0\"/><GradientStop Color=\"#0000AAFF\" Offset=\"1\"/></LinearGradientBrush>"
+  ]]],
+  ["background shorthand with a gradient", null, "background: linear-gradient(180deg, red 20%, blue)", [[
+    "Background",
+    "<LinearGradientBrush StartPoint=\"0.5,0\" EndPoint=\"0.5,1\"><GradientStop Color=\"#FF0000\" Offset=\"0.2\"/><GradientStop Color=\"#0000FF\" Offset=\"1\"/></LinearGradientBrush>"
+  ]]],
+  ["background-image radial gradient", null, "background-image: radial-gradient(closest-side at 30% 70%, red, blue)", [[
+    "Background",
+    "<RadialGradientBrush Center=\"0.3,0.7\" GradientOrigin=\"0.3,0.7\" RadiusX=\"0.3\" RadiusY=\"0.3\"><GradientStop Color=\"#FF0000\" Offset=\"0\"/><GradientStop Color=\"#0000FF\" Offset=\"1\"/></RadialGradientBrush>"
+  ]]],
+  ["background-image none sets nothing", null, "background-image: none; opacity: 1", [["Opacity", "1"]]],
+  ["a gradient replaces background-color", null, "background-color: red; background-image: linear-gradient(red, blue)", [[
+    "Background",
+    "<LinearGradientBrush StartPoint=\"0.5,0\" EndPoint=\"0.5,1\"><GradientStop Color=\"#FF0000\" Offset=\"0\"/><GradientStop Color=\"#0000FF\" Offset=\"1\"/></LinearGradientBrush>"
+  ]]],
   ["border shorthand", null, "border: 1px solid red", [
     ["BorderThickness", "1,1,1,1"],
     ["BorderBrush", "#FF0000"]
@@ -268,6 +287,18 @@ test("cursor is ignored with a warning, not an error", () => {
   assert.deepEqual(result.setters, [["Opacity", "1"]]);
 });
 
+test("a gradient warns where WinUI cannot keep it exact, and when it replaces a color", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "background-color: red; background-image: linear-gradient(45deg, red, blue)"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.warnings.length, 2);
+  assert.match(result.warnings[0] ?? "", /^t\.svelte:1:\d+: warning: background-image: 45deg is exact on a square element only/u);
+  assert.match(result.warnings[1] ?? "", /warning: background-color ignored \(a WinUI Background is one brush/u);
+  assert.deepEqual(result.setters.map(([property]) => property), ["Background"]);
+});
+
 test("a transition WinUI cannot animate warns and is dropped", () => {
   const result = lower({
     elementType: null,
@@ -286,7 +317,13 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["a length without a unit", null, "width: 12", /width: expected a length in px/u],
   ["a percentage length", null, "width: 50%", /width: expected a length in px/u],
   ["a bad color", null, "color: sparkly", /color: expected a color/u],
-  ["a gradient background", null, "background: linear-gradient(red, blue)", /images and gradients have no Style value in WinUI/u],
+  ["an image background", null, "background: url(a.png)", /^t\.svelte:1:6: background-image: expected linear-gradient\(\) or radial-gradient\(\), found "url\(a\.png\)" \(an image cannot be a Background in a Style; use an Image element\)/u],
+  ["a gradient with one stop", null, "background-image: linear-gradient(red)", /^t\.svelte:1:6: background-image: a gradient needs at least two color stops/u],
+  ["a gradient stop in px", null, "background: linear-gradient(red 10px, blue)", /background-image: "10px" is not a stop position/u],
+  ["a gradient stop from var()", null, "background-image: linear-gradient(var(--a), blue)", /background-image: var\(--a\) cannot be a gradient stop/u],
+  ["a conic gradient", null, "background: conic-gradient(red, blue)", /background-image: conic-gradient has no WinUI meaning/u],
+  ["a repeating gradient", null, "background-image: repeating-linear-gradient(red, blue 10%)", /background-image: repeating-linear-gradient has no WinUI meaning/u],
+  ["layered images", null, "background-image: linear-gradient(red, blue), linear-gradient(blue, red)", /background-image: several images have no WinUI meaning/u],
   ["a unitless line height", null, "line-height: 1.5", /a multiple of the font size has no WinUI meaning/u],
   ["opacity out of range", null, "opacity: 2", /opacity: expected a number or percentage from 0 to 1/u],
   ["a dashed border", null, "border: 1px dashed red", /border: dashed has no WinUI meaning \(a WinUI border is solid/u],

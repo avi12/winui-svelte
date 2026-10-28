@@ -73,6 +73,10 @@
       "types": "./dist/css/index.d.ts",
       "default": "./dist/css/index.js"
     },
+    "./css/gradients": {
+      "types": "./dist/css/gradients.d.ts",
+      "default": "./dist/css/gradients.js"
+    },
     "./css/vite": {
       "types": "./dist/css/vite.d.ts",
       "default": "./dist/css/vite.js"

@@ -274,10 +274,6 @@ const propertyGroups: readonly PropertyGroup[] = [
   })
 ];
 
-const memberToGroup = new Map<string, PropertyGroup>(
-  propertyGroups.flatMap(group => group.members.map(member => [member, group]))
-);
-
 function readerFor({ readers, member }: {
   readers: ReadonlyMap<string, Reader>;
   member: string;
@@ -294,14 +290,19 @@ function readerFor({ readers, member }: {
 /**
  * Lowers an element's final declarations (longhands only, see
  * `expandDeclaration`) to WinUI Style setters. A declaration no group handles
- * is reported as an error through `options`.
+ * is reported as an error through `options`. `extraGroups` are the groups an
+ * app opts into (a gradient background, which costs a parser): they come after
+ * the built-in ones, so they win where they set the same WinUI property.
  */
-export function lowerDeclarations({ computed, options }: {
+export function lowerDeclarations({ computed, options, extraGroups = [] }: {
   computed: ReadonlyMap<string, Declaration>;
   options: LowerOptions;
+  extraGroups?: readonly PropertyGroup[];
 }) {
+  const groups = [...propertyGroups, ...extraGroups];
+  const knownMembers = new Set(groups.flatMap(group => group.members));
   const outputs: Output[] = [];
-  for (const group of propertyGroups) {
+  for (const group of groups) {
     const readers = new Map<string, Reader>();
     for (const member of group.members) {
       const declaration = computed.get(member);
@@ -328,7 +329,7 @@ export function lowerDeclarations({ computed, options }: {
   }
 
   for (const declaration of computed.values()) {
-    const isUnknown = !memberToGroup.has(declaration.property) && !declaration.property.startsWith("--");
+    const isUnknown = !knownMembers.has(declaration.property) && !declaration.property.startsWith("--");
     if (isUnknown) {
       options.report({
         severity: "error",

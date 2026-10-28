@@ -11,6 +11,9 @@ import { compile } from "svelte/compiler";
 export const SHEET_SUFFIX = "-winui-css.js";
 
 const REGISTER_ALIAS = "registerWinuiSheet";
+const GROUPS_ALIAS = "registerWinuiGroups";
+const GRADIENTS_ALIAS = "winuiGradientGroups";
+const GRADIENTS_SUBPATH = "/gradients";
 
 /**
  * A `.svelte` file's `<style>` as the JavaScript module that registers its
@@ -71,8 +74,15 @@ function registrationCode({ sheet, runtimeModule }: {
   sheet: StyleSheetData;
   runtimeModule: string;
 }) {
+  const isGradientUsed = sheet.rules.some(rule => rule.declarations.some(declaration => declaration.property === "background-image"));
+  const gradients = isGradientUsed ? [
+    `import { registerPropertyGroups as ${GROUPS_ALIAS} } from ${JSON.stringify(runtimeModule)};`,
+    `import { gradientGroups as ${GRADIENTS_ALIAS} } from ${JSON.stringify(runtimeModule + GRADIENTS_SUBPATH)};`,
+    `${GROUPS_ALIAS}(${GRADIENTS_ALIAS}());`
+  ] : [];
   return [
     `import { registerStyleSheet as ${REGISTER_ALIAS} } from ${JSON.stringify(runtimeModule)};`,
+    ...gradients,
     `${REGISTER_ALIAS}(${JSON.stringify(sheet)});`
   ].join("\n");
 }

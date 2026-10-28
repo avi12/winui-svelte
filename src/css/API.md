@@ -71,3 +71,68 @@ formatDiagnostic(diagnostic): string   // "file:line:column: <property> has no W
 `resources` is `loadWinuiCatalogue()` (node): the resource names in
 `winui-resources.g.json`, exported from WinUI's generic.xaml by
 `scripts/css/export-winui-resources.ts`.
+
+## Gradients: `background-image`
+
+`background-image` (and `background` with a gradient as its only value) sets
+the Background to a `LinearGradientBrush` or a `RadialGradientBrush`. The
+setter is `kind: "content"`: the brush is written as XAML inside the Style's
+`<Setter.Value>`, like the transitions.
+
+The gradient parser is not in the built-in property groups, to keep a window's
+bundle small: a compiled sheet that has a `background-image` imports it from
+`winui-svelte/css/gradients` and registers it (`registerPropertyGroups`). An app
+with no gradient carries none of it, and a gradient in a `style` attribute works
+only once some sheet of the app has registered it.
+
+```css
+.hero { background-image: linear-gradient(to right, #00e5ff, transparent) }
+.glow { background: radial-gradient(closest-side at 30% 70%, #ff0 20%, #f00) }
+```
+
+```xml
+<Setter Property="Background"><Setter.Value>
+  <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+    <GradientStop Color="#00E5FF" Offset="0"/><GradientStop Color="#0000E5FF" Offset="1"/>
+  </LinearGradientBrush>
+</Setter.Value></Setter>
+```
+
+What maps, and how:
+
+| CSS | WinUI |
+|---|---|
+| `linear-gradient(to <side or corner>, ...)` | `StartPoint` / `EndPoint` on the unit square: exact at every size (`to bottom right` puts the 50% line through the other two corners, as CSS does) |
+| `linear-gradient(<angle>, ...)` in `deg`, `grad`, `rad`, `turn` | the same line for a square element; exact for 0, 90, 180, 270 degrees; any other angle warns (the brush maps to the element's bounding box, so it skews on a non-square element) |
+| no direction | `to bottom` |
+| `radial-gradient([ellipse] [size] [at position], ...)` | `Center`, `GradientOrigin` (= center), `RadiusX`, `RadiusY` as fractions of the bounding box: exact at every size. `size` is `closest-side`, `farthest-side`, `closest-corner`, `farthest-corner` (default) or two percentages. `position` is keywords or percentages |
+| `radial-gradient(circle ...)` | the radii of the circle in a square box; warns (an ellipse on any other box) |
+| stops `color`, `color 20%`, `color 20% 40%` | `GradientStop` (a two-position stop is two stops); missing positions are spread evenly, a stop never sits before the one ahead of it (CSS's fix-up) |
+| `transparent` (or any fully transparent color) as a stop | the neighbouring stop's color at no opacity, so the fade keeps its hue as it does in CSS |
+| `background-image: none` | nothing is set |
+
+A gradient replaces `background-color` where both are written (a WinUI
+Background is one brush), with a warning. The other stop colors are what
+`parseColor` takes: hex, `rgb()`, `hsl()`, a name. Interpolation between stops
+is WinUI's.
+
+An error (with the declaration's line) for what a WinUI gradient cannot say:
+
+- `repeating-linear-gradient()`, `repeating-radial-gradient()`, `conic-gradient()`
+- a stop position or radius in `px`/`rem` (the brush maps to the element's size, so a length has no fixed place), a color hint (a lone percentage between stops), a stop outside 0% to 100%
+- `var()` as a stop color (a declaration holds one resolved resource, and a stop needs a Color)
+- several comma-separated images, `url()`, `image-set()`: an image cannot be a Background in a Style, use an Image element
+
+## What stays unsupported, and why
+
+`unsupported-properties.ts` holds the reason shown for each property no group
+handles. Declarations like these fail the build with it:
+
+| Property | Why |
+|---|---|
+| `position`, `top`, `left`, `right`, `bottom` | a Style does not know its parent: a Canvas places by `Canvas.Left` / `Canvas.Top` (no right or bottom), the others have no counterpart |
+| `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color |
+| `filter`, `backdrop-filter` | WinUI has no filters; use an acrylic brush or a Mica backdrop |
+| `transform`, `animation` | use `translate`, `scale`, `rotate` and `transition`, which WinUI animates implicitly |
+| `outline` | WinUI draws its own focus visuals |
+| `float`, `flex*`, `align-items`, `justify-*`, `place-items`, `content`, `list-style`, `text-transform`, `text-indent`, `word-break`, `user-select` | no WinUI equivalent in a Style; each message names the nearest WinUI way |

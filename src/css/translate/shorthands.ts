@@ -137,8 +137,11 @@ function expandBackground({ declaration, reader }: ExpansionInput) {
 
   const isImageOrGradient = IMAGE_OR_GRADIENT.test(word);
   if (isImageOrGradient) {
-    reader.error(`${declaration.property} ${word}: images and gradients have no Style value in WinUI; declare a brush resource and use var(--its-name)`);
-    return [];
+    return [longhand({
+      declaration,
+      property: "background-image",
+      value: word
+    })];
   }
 
   const value = word.toLowerCase() === "none" ? "transparent" : word;

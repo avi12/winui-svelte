@@ -10,6 +10,7 @@ import {
 } from "#src/css/translate/cascade.js";
 import type { LoweredStyle } from "#src/css/translate/properties.js";
 import { lowerDeclarations } from "#src/css/translate/properties.js";
+import type { PropertyGroup } from "#src/css/translate/property-kit.js";
 import type { Declaration, StyleSheetData } from "#src/css/translate/types.js";
 import { PseudoState } from "#src/css/translate/types.js";
 import type { NativeValue } from "#src/native-value.js";
@@ -188,6 +189,8 @@ const warned = new Set<string>();
 const stylesByXaml = new Map<string, object>();
 // Each element type's Default<Type>Style, or null where WinUI has none.
 const defaultStyles = new Map<string, string | null>();
+// The groups beyond the built-in ones that sheets have opted into, by member.
+const extraGroups = new Map<string, PropertyGroup>();
 let native: CssNative | null = null;
 let rules: RankedRule[] = [];
 let nextSequence = 0;
@@ -249,6 +252,18 @@ function mergeResources(registered: RegisteredSheet) {
 function refreshAll() {
   for (const element of elements) {
     element.refresh();
+  }
+}
+
+/**
+ * Opts into property groups the built-in ones leave out (a gradient
+ * background, which costs a parser): a sheet that needs one registers it
+ * before the sheet. The same group again changes nothing.
+ */
+export function registerPropertyGroups(groups: readonly PropertyGroup[]) {
+  for (const group of groups) {
+    const [member = ""] = group.members;
+    extraGroups.set(member, group);
   }
 }
 
@@ -334,7 +349,8 @@ function buildStyle({ elementType, matched, inline }: {
     options: lowerOptions({
       elementType,
       problems
-    })
+    }),
+    extraGroups: [...extraGroups.values()]
   });
   const hasProblems = problems.length > 0;
   if (hasProblems) {
