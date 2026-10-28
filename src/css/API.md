@@ -72,6 +72,29 @@ formatDiagnostic(diagnostic): string   // "file:line:column: <property> has no W
 `winui-resources.g.json`, exported from WinUI's generic.xaml by
 `scripts/css/export-winui-resources.ts`.
 
+## Opt-in groups
+
+Some properties cost a parser, and the window's bundle has a budget. They are
+not built in: a compiled sheet that uses one imports its module and registers
+it (`registerPropertyGroups`), so an app that uses none carries none. A style
+attribute works with them only once some sheet of the app has registered them,
+and the `outline` shorthand does not work there: write `outline-width`,
+`outline-style` and `outline-color`.
+
+| Module | Properties | Section |
+|---|---|---|
+| `winui-svelte/css/gradients` | `background-image` | Gradients |
+| `winui-svelte/css/transform` | `transform`, `transform-origin`, and the pivot of `scale` and `rotate` | Transforms |
+| `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
+| `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
+| `winui-svelte/css/resources` | custom properties on a class | Custom properties |
+
+A group may also bring the shorthands it expands and the handlers of the
+`write` outputs it produces: a write is something set on the element itself
+(a grid's columns, the pivot, the focus visuals, the scoped resources), which a
+Style cannot say. The runtime applies a write when its value changes and undoes
+it when the style stops calling for it or the element goes.
+
 ## Gradients: `background-image`
 
 `background-image` (and `background` with a gradient as its only value) sets
@@ -79,11 +102,8 @@ the Background to a `LinearGradientBrush` or a `RadialGradientBrush`. The
 setter is `kind: "content"`: the brush is written as XAML inside the Style's
 `<Setter.Value>`, like the transitions.
 
-The gradient parser is not in the built-in property groups, to keep a window's
-bundle small: a compiled sheet that has a `background-image` imports it from
-`winui-svelte/css/gradients` and registers it (`registerPropertyGroups`). An app
-with no gradient carries none of it, and a gradient in a `style` attribute works
-only once some sheet of the app has registered it.
+The gradient parser is an opt-in group (see above): a compiled sheet that has a
+`background-image` imports it from `winui-svelte/css/gradients`.
 
 ```css
 .hero { background-image: linear-gradient(to right, #00e5ff, transparent) }
@@ -133,7 +153,8 @@ case (`--button-background-pointer-over` is `ButtonBackgroundPointerOver`).
 - On any other selector it is **scoped**: the sheet keeps it with the rule, and
   every element that rule matches gets it in a ResourceDictionary of its own
   (merged into the element's `Resources`), so the element's template and its
-  children read it and nothing else does.
+  children read it and nothing else does. A sheet with such a rule imports
+  `winui-svelte/css/resources`, which does the merging.
 
 ```css
 :root { --accent: #0af }                                   /* the whole app */
@@ -186,9 +207,12 @@ the same name plus `Brush`, or a number (`x:Double`).
 top-left corner) until set, where CSS pivots at the centre. So an element that
 scales or rotates also gets a `CenterPoint` at `transform-origin`, 50% 50% by
 default. `CenterPoint` is absolute (device-independent pixels, a `Vector3`) and
-a Style cannot compute it from the size, so it is not a setter: the runtime
-writes it (the `origin` write, like a grid's columns) and writes it again on
-`SizeChanged`.
+a Style cannot compute it from the size, so it is not a setter: the `origin`
+write sets it from the element's size and sets it again on `SizeChanged`. It is
+part of the transform module (`winui-svelte/css/transform`), which a sheet
+imports when it has `scale`, `rotate`, `transform` or `transform-origin`; with
+none of those in any sheet, a `scale` in a style attribute pivots at the
+top-left corner, as WinUI does.
 
 `transform-origin` takes one or two positions: `left`, `center`, `right`, `top`,
 `bottom` (either order), a percentage of the element's size, or a length in
@@ -197,6 +221,27 @@ writes it (the `origin` write, like a grid's columns) and writes it again on
 ```css
 .card:hover { scale: 1.05 }                  /* grows from the centre, as CSS */
 .fan { rotate: 8deg; transform-origin: left bottom }
+```
+
+### `transform`
+
+`transform` takes a list of `translate()`, `translateX()`, `translateY()`,
+`scale()`, `scaleX()`, `scaleY()`, `rotate()`, `skew()`, `skewX()`, `skewY()` and
+`matrix()`, and sets the element's `RenderTransform` (a `TransformGroup` for a
+list, in the order CSS applies it: the last function acts on the element first).
+Lengths are `px` (a percentage needs the element's size and is an error), angles
+`deg`, `rad`, `turn` or `grad`. 3D functions are errors: a RenderTransform is 2D.
+
+The `origin` write above also sets `RenderTransformOrigin` (a fraction of the
+size, which is what WinUI wants here), so `scale`, `rotate` and `transform`
+share one `transform-origin`, as in CSS.
+
+`transition: transform` warns and is dropped: WinUI's implicit transitions
+animate `Translation`, `Scale` and `Rotation` and not a RenderTransform, so for
+motion use `translate`, `scale` and `rotate`.
+
+```css
+.badge { transform: translate(4px, -4px) rotate(8deg) }
 ```
 
 ## Focus ring: `outline`
@@ -212,13 +257,37 @@ writes it (the `origin` write, like a grid's columns) and writes it again on
 | any visible outline | `FocusVisualSecondaryThickness` 0 (a WinUI focus visual is two rings; CSS has one), and `UseSystemFocusVisuals` on a Control |
 
 `solid` and `auto` are the styles; the others are errors. `UseSystemFocusVisuals`
-exists on a `Control` and not on other types, so the runtime sets it
-(a `useSystemFocusVisuals` write) where the element has it.
+exists on a `Control` and not on other types, so a write sets it where the
+element has it. The module is `winui-svelte/css/focus`.
 
 ```css
 button:focus-visible { outline: 2px solid #0af; outline-offset: 2px }
 .quiet { outline: none }
 ```
+
+## Elevation and backdrop: `-winui-elevation`, `backdrop-filter`
+
+`-winui-elevation: <length>px` is a WinUI shadow: the element's `Shadow` is a
+`ThemeShadow` and the Z of its `Translation` is the depth (16 for a card, 32 for
+a flyout), which WinUI draws the shadow from. A `translate` on the element keeps
+its X and Y. A ThemeShadow has no blur, offset, spread or color, so
+`box-shadow` is an error that points here. Windows 11 casts the shadow with
+nothing more; earlier, or for an app that targets a Windows SDK older than
+22000, it draws only on the elements named in the shadow's `Receivers`, which a
+Style cannot set. Every use warns of that; it is not verified without a window.
+
+`backdrop-filter: blur(<length>px)` makes the Background an `AcrylicBrush`,
+which blurs what is behind the element. The brush has a blur of its own, so the
+radius is ignored (a warning says so); the tint is the element's literal
+`background-color`, its alpha the `TintOpacity`. Without a `background-color` the
+acrylic is untinted. Other filter functions are errors, and so is `filter`.
+
+```css
+.card { -winui-elevation: 16px }
+.sheet { background-color: rgba(32, 32, 32, 0.6); backdrop-filter: blur(20px) }
+```
+
+Both are in `winui-svelte/css/surface`.
 
 ## What stays unsupported, and why
 
@@ -228,7 +297,7 @@ handles. Declarations like these fail the build with it:
 | Property | Why |
 |---|---|
 | `position`, `top`, `left`, `right`, `bottom` | a Style does not know its parent: a Canvas places by `Canvas.Left` / `Canvas.Top` (no right or bottom), the others have no counterpart |
-| `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color |
-| `filter`, `backdrop-filter` | WinUI has no filters; use an acrylic brush or a Mica backdrop |
-| `transform`, `animation` | use `translate`, `scale`, `rotate` and `transition`, which WinUI animates implicitly |
+| `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color: use `-winui-elevation` |
+| `filter` | WinUI has no filters; use an acrylic brush or a Mica backdrop |
+| `animation` | use `transition` on opacity, translate, scale or rotate: WinUI has no keyframes |
 | `float`, `flex*`, `align-items`, `justify-*`, `place-items`, `content`, `list-style`, `text-transform`, `text-indent`, `word-break`, `user-select` | no WinUI equivalent in a Style; each message names the nearest WinUI way |

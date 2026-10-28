@@ -663,7 +663,8 @@ build error with its file and line; nothing is silently ignored.
 | `grid-template-columns`, `grid-template-rows`, `grid-column`, `grid-row` | `ColumnDefinitions`, `RowDefinitions`, `Grid.Column`... |
 | `display: none`, `visibility`, `pointer-events`, `z-index`, `overflow` | `Visibility`, `IsHitTestVisible`, `Canvas.ZIndex`, the scroll bar visibilities |
 | `outline`, `outline-offset` | the focus visual: `FocusVisualPrimaryBrush`, `FocusVisualPrimaryThickness`, `FocusVisualMargin` |
-| `translate`, `scale`, `rotate`, `transform-origin`, `transition` | the UIElement transforms, their pivot (`CenterPoint`, 50% 50% as in CSS) and their implicit transitions |
+| `-winui-elevation`, `backdrop-filter: blur()` | a `ThemeShadow` lifted by its depth; an `AcrylicBrush` Background (the blur radius is ignored) |
+| `translate`, `scale`, `rotate`, `transform-origin`, `transition`; `transform` (translate, scale, rotate, skew, matrix) | the UIElement transforms, their pivot (`CenterPoint`, 50% 50% as in CSS) and their implicit transitions |
 | `var(--card-background-fill-color-default)` | `{ThemeResource CardBackgroundFillColorDefault}`: WinUI's own resources, so light and dark follow Windows |
 | `--name: value` on `:root`, or on a class | an app-wide resource, or one only the elements with that class (and their templates) see: `.danger { --button-background-pointer-over: red }` |
 | `.class`, `type`, `:hover`, `:focus`, `:active`, `:root`, `:where()` | class and type matching, the control's events, custom properties |
@@ -726,13 +727,19 @@ Stated plainly, so nobody finds them by surprise:
 - **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
   service started cannot launch the browser (error 0x8007139F), and a `data:`
   URL cannot be the top frame.
-- **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `box-shadow`,
-  `filter`, `transform`, `animation`, descendant, child or sibling selectors,
-  nesting or `@keyframes`: each is a build error that says what to use instead.
-  Gradients are `linear-gradient()` and `radial-gradient()` only (no repeating
-  or conic ones, no stop in `px`), and replace `background-color`.
-  `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can declare custom properties only (a Style
-  cannot depend on the scheme).
+- **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `box-shadow`
+  (use `-winui-elevation`), `filter`, `animation`, descendant, child or sibling
+  selectors, nesting or `@keyframes`: each is a build error that says what to
+  use instead. Gradients are `linear-gradient()` and `radial-gradient()` only (no
+  repeating or conic ones, no stop in `px`), and replace `background-color`.
+  `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can
+  declare custom properties only (a Style cannot depend on the scheme).
+- **Some CSS is opt-in, and approximate.** `transform` is a 2D RenderTransform
+  that no implicit transition animates; `backdrop-filter: blur()` is an acrylic
+  that ignores the radius; `-winui-elevation` is a `ThemeShadow`, which needs
+  Windows 11 (or receivers a Style cannot set); `outline` is the control's focus
+  visual. A custom property on a class applies when the class is on the element
+  as it is created: WinUI reads a theme resource again only on a theme change.
 - **A hot update to a component that is not self-contained** (a changed `.ts`
   module no component accepts) cannot be applied in place; the dev server says
   so and the window must be restarted. A hot update that cannot compile is
