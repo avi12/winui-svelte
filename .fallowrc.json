@@ -48,6 +48,7 @@
     "examples/harness/worker.ts",
     "examples/harness/run-example.ts",
     "examples/lists/main.ts",
+    "examples/items/main.ts",
     "examples/window/main.ts",
     "eslint.config.js"
   ],

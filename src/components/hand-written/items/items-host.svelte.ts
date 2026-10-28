@@ -1,17 +1,7 @@
-import type { KeyBox } from "./key-vector.ts";
-import { duplicateKey, syncKeyVector } from "./key-vector.ts";
-import type { LiveRow } from "./live-rows.ts";
-import { LiveRows } from "./live-rows.ts";
+import type { ItemRowsProps } from "./item-rows.svelte.ts";
+import { ItemRows, keyText, SLOT_ELEMENT, templateOf } from "./item-rows.svelte.ts";
 import { movedIndex, MoveDirection, sameOrder } from "./reorder.ts";
-import type { RowProps } from "./row-source.svelte.ts";
-import { RowSource } from "./row-source.svelte.ts";
-import Row from "./Row.svelte";
-import { DynWinRtType, DynWinRtValue, unboxObject } from "@microsoft/dynwinrt";
-import type {
-  ContainerContentChangingEventArgs,
-  FrameworkElement,
-  ListViewBase
-} from "#src/components/generated/bindings.js";
+import type { ContainerContentChangingEventArgs, ListViewBase } from "#src/components/generated/bindings.js";
 import {
   AutomationProperties,
   ContentControl,
@@ -19,18 +9,13 @@ import {
   DataTemplate,
   DependencyObject,
   FocusState,
-  IVector_Object,
   KeyRoutedEventArgs,
   projectAs,
-  PropertyValue,
   VirtualKey,
   VisualStateManager,
   VisualTreeHelper,
   XamlReader
 } from "#src/components/generated/bindings.js";
-import type { BoxedValue } from "#src/native-value.js";
-import { mountControl } from "#src/renderer/host/mount.svelte.js";
-import type { Snippet } from "svelte";
 
 // What ListView and GridView add to the control: a list of the app's items,
 // shown by a row the app writes as a snippet.
@@ -44,19 +29,9 @@ import type { Snippet } from "svelte";
 // list is.
 
 const NORMAL_STATE = "Normal";
-const SLOT_TEMPLATE = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">"
-  + "<ContentControl IsTabStop=\"False\" HorizontalContentAlignment=\"Stretch\" "
-  + "HorizontalAlignment=\"Stretch\"/></DataTemplate>";
 
 /** What a list component takes besides its control's properties: the items and how a row shows one. */
-export interface ItemsHostProps<Item> {
-  // The items, in the order they are shown.
-  items?: readonly Item[];
-  // An item's identity: unique in the list, and the same for the same thing
-  // when the list changes, so its row is kept and only what changed moves.
-  key: (item: Item) => string;
-  // The row of an item.
-  item?: Snippet<[Item]>;
+export interface ItemsHostProps<Item> extends ItemRowsProps<Item> {
   // The user drags an item to a new place (the control's own reorder).
   reorderable?: boolean;
   // Alt+Up / Alt+Down moves the focused item one place.
@@ -70,20 +45,6 @@ export interface ItemsHostProps<Item> {
   // The control, for what the control exposes and the component does not
   // (item transitions, scrolling, focus). The cleanup runs when it goes.
   onControl?: (view: ListViewBase) => void | (() => void);
-}
-
-function keyText(boxedKey: BoxedValue) {
-  const value = unboxObject(boxedKey);
-  return typeof value === "string" ? value : "";
-}
-
-const keyBox: KeyBox<BoxedValue> = {
-  box: key => PropertyValue.createString(key),
-  unbox: keyText
-};
-
-function createKeys() {
-  return IVector_Object.from(DynWinRtValue.createVector([], DynWinRtType.object()));
 }
 
 function directionOf(event: KeyRoutedEventArgs) {
@@ -117,19 +78,18 @@ export interface ListHandle {
 class ItemsHost<Item> implements ListHandle {
   private readonly view: ListViewBase;
   private readonly props: ItemsHostProps<Item>;
-  private readonly keys = createKeys();
-  private readonly rows = new LiveRows<Item, FrameworkElement>();
+  private readonly rows: ItemRows<Item>;
   private readonly unsubscribe: Array<() => void> = [];
-  private itemsByKey = new Map<string, Item>();
-  // The keys in the order the list shows them.
-  private order: string[] = [];
-  private nextContainerId = 0;
 
   constructor(view: ListViewBase, props: ItemsHostProps<Item>) {
     this.view = view;
     this.props = props;
-    view.itemTemplate = projectAs(XamlReader.load(SLOT_TEMPLATE), DataTemplate);
-    view.itemsSource = this.keys;
+    this.rows = new ItemRows({
+      props,
+      onSynced: () => this.resetRowStates()
+    });
+    view.itemTemplate = projectAs(XamlReader.load(templateOf(SLOT_ELEMENT)), DataTemplate);
+    view.itemsSource = this.rows.keys;
     this.unsubscribe.push(
       view.onContainerContentChanging((_sender, args) => this.fill(args)),
       view.onDragItemsCompleted(() => this.dragCompleted()),
@@ -137,9 +97,6 @@ class ItemsHost<Item> implements ListHandle {
       // bubbling KeyDown would see them.
       view.onPreviewKeyDown((_sender, args) => this.keyDown(projectAs(args, KeyRoutedEventArgs)))
     );
-    $effect(() => {
-      this.sync(props.items ?? []);
-    });
     $effect(() => {
       const isReorderable = props.reorderable;
       const isSpecified = isReorderable !== undefined;
@@ -159,137 +116,41 @@ class ItemsHost<Item> implements ListHandle {
     this.rows.clear();
   }
 
-  private sync(items: readonly Item[]) {
-    const keyed = items.map(item => [this.props.key(item), item] as const);
-    const wanted = keyed.map(([key]) => key);
-    const duplicate = duplicateKey(wanted);
-    const hasDuplicate = duplicate !== undefined;
-    if (hasDuplicate) {
-      throw new Error(`two items have the key "${duplicate}"; a list's keys must be unique`);
-    }
-
-    this.itemsByKey = new Map(keyed);
-    syncKeyVector({
-      vector: this.keys,
-      codec: keyBox,
-      wanted
-    });
-    this.order = wanted;
-    this.rows.refresh(key => this.itemsByKey.get(key));
-    this.resetRowStates();
-  }
-
   // A container reports the key it shows now. The row goes in the slot its
   // item template made: setting the container's own Content does not hold,
   // the list writes the item over it.
   private fill(args: ContainerContentChangingEventArgs) {
     const container = args.itemContainer;
-    const containerId = this.containerId(container);
     if (args.inRecycleQueue) {
-      this.rows.release(containerId);
+      this.rows.release(container);
       return;
     }
 
-    const key = keyText(args.item);
-    const item = this.itemsByKey.get(key);
-    const isKnown = item !== undefined;
-    if (!isKnown) {
-      return;
-    }
-
-    const slot = projectAs(container.contentTemplateRoot, ContentControl);
-    this.rows.fill({
-      containerId,
+    const item = this.rows.show({
       container,
-      key,
-      item,
-      create: () => this.mountRow({
-        slot,
-        item
-      })
+      slot: projectAs(container.contentTemplateRoot, ContentControl),
+      key: keyText(args.item)
     });
-    const name = this.props.itemName?.(item);
+    const name = item === undefined ? undefined : this.props.itemName?.(item);
     const hasName = name !== undefined;
     if (hasName) {
       AutomationProperties.setName(container, name);
     }
   }
 
-  // WinUI hands back a new wrapper for the same container, so a container is
-  // known by an id kept in its Tag.
-  private containerId(container: FrameworkElement) {
-    const known = container.tag === null ? null : unboxObject(container.tag);
-    const isKnown = typeof known === "string";
-    if (isKnown) {
-      return known;
-    }
-
-    const id = `row-${this.nextContainerId}`;
-    this.nextContainerId++;
-    container.tag = PropertyValue.createString(id);
-    return id;
-  }
-
-  private mountRow({ slot, item }: {
-    slot: ContentControl;
-    item: Item;
-  }) {
-    const snippet = this.props.item;
-    const hasSnippet = snippet !== undefined;
-    if (!hasSnippet) {
-      const emptyRow: LiveRow<Item> = {
-        update: () => undefined,
-        unmount: () => undefined
-      };
-      return emptyRow;
-    }
-
-    const source = new RowSource(item);
-    const mounted = mountControl<RowProps<Item>>({
-      component: Row,
-      props: {
-        snippet,
-        source
-      }
-    });
-    slot.content = mounted.root;
-    const row: LiveRow<Item> = {
-      update(next) {
-        const isChanged = source.current !== next;
-        if (isChanged) {
-          source.current = next;
-        }
-      },
-      unmount() {
-        slot.content = null;
-        mounted.unmount();
-      }
-    };
-    return row;
-  }
-
   private dragCompleted() {
     // WinUI can leave the dragged (or last pressed) row in its Pressed or
     // PointerOver look after a drop; every row goes back to Normal.
     this.resetRowStates();
-    const order = this.readOrder();
+    const order = this.rows.readOrder();
     const isMoved = !sameOrder({
       first: order,
-      second: this.order
+      second: this.rows.order
     });
     if (isMoved) {
-      this.order = order;
+      this.rows.adoptOrder(order);
       this.props.onReorder?.([...order]);
     }
-  }
-
-  private readOrder() {
-    const order: string[] = [];
-    for (let i = 0; i < this.keys.size; i++) {
-      order.push(keyText(this.keys.getAt(i)));
-    }
-
-    return order;
   }
 
   private keyDown(event: KeyRoutedEventArgs) {
@@ -300,7 +161,7 @@ class ItemsHost<Item> implements ListHandle {
     }
 
     const index = this.focusedIndex(event.originalSource);
-    const key = this.order[index];
+    const key = this.rows.order[index];
     const isItem = index >= 0 && key !== undefined;
     if (!isItem) {
       return;
@@ -316,10 +177,10 @@ class ItemsHost<Item> implements ListHandle {
   // The list finds the item by the very object it holds: a new box of the same
   // text is a different item to it.
   scrollToKey(key: string) {
-    const index = this.order.indexOf(key);
+    const index = this.rows.order.indexOf(key);
     const isListed = index >= 0;
     if (isListed) {
-      this.view.scrollIntoView(this.keys.getAt(index));
+      this.view.scrollIntoView(this.rows.keys.getAt(index));
     }
   }
 
@@ -330,7 +191,7 @@ class ItemsHost<Item> implements ListHandle {
     direction: MoveDirection;
   }) {
     const target = movedIndex({
-      order: this.order,
+      order: this.rows.order,
       key,
       direction
     });
@@ -339,18 +200,18 @@ class ItemsHost<Item> implements ListHandle {
       return;
     }
 
-    const boxedKey = PropertyValue.createString(key);
-    this.keys.removeAt(this.order.indexOf(key));
-    this.keys.insertAt(target, boxedKey);
-    this.order = this.readOrder();
-    this.props.onReorder?.([...this.order]);
+    this.rows.moveKey({
+      key,
+      target
+    });
+    this.props.onReorder?.([...this.rows.order]);
     this.focus(key);
   }
 
   // The container is made when the list lays out, so it is brought into view
   // and laid out first.
   focus(key: string) {
-    const index = this.order.indexOf(key);
+    const index = this.rows.order.indexOf(key);
     const isListed = index >= 0;
     if (!isListed) {
       return;

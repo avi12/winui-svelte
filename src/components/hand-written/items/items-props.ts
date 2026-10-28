@@ -1,23 +1,28 @@
+import type { ItemRowsProps } from "./item-rows.svelte.ts";
 import type { ItemsHostProps, ListHandle } from "./items-host.svelte.ts";
-import type { ElementProps } from "#src/components/convert.js";
-import type { ListViewBaseProps } from "#src/components/generated/controls/ListViewBase.svelte.js";
 import type { ComponentConstructorOptions, ComponentInternals, SvelteComponent } from "svelte";
 
-// What the list controls take besides the control's own properties: the items
-// replace the children, the item template and the items source, which the
-// component owns.
-type OwnedByComponent = "children" | "itemsSource" | "itemTemplate" | "itemTemplateSelector";
+// The props and the type of the components that show items by a snippet
+// (generated: scripts/codegen/tables.ts, itemsHosted), generic over the items.
+
+// What the components take besides the control's own properties: the items
+// replace the children and the items collection, the item template and the
+// items source, which the component owns.
+type OwnedByComponent = "children" | "items" | "itemsSource" | "itemTemplate" | "itemTemplateSelector";
 
 interface HandleProps {
   // The list's imperative side (`bind:handle`).
   handle?: ListHandle | undefined;
 }
 
-/** Every prop a list component takes: its items, its control's properties, its element props and `handle`. */
-export type ItemsComponentProps<Item> = ItemsHostProps<Item>
-  & Omit<ListViewBaseProps, OwnedByComponent>
-  & ElementProps
+/** Every prop a list component takes: its items, its control's properties (with their element props) and `handle`. */
+export type ListComponentProps<Item, ControlProps> = ItemsHostProps<Item>
+  & Omit<ControlProps, OwnedByComponent>
   & HandleProps;
+
+/** Every prop a component that shows its items in an ItemsRepeater takes. */
+export type RepeaterComponentProps<Item, ControlProps> = ItemRowsProps<Item>
+  & Omit<ControlProps, OwnedByComponent>;
 
 /**
  * A list component, generic over its items, typed as svelte2tsx types a
@@ -25,9 +30,17 @@ export type ItemsComponentProps<Item> = ItemsHostProps<Item>
  * construct signature, and of a plain function component infers its props once
  * with Item unknown, so `items={rows}` would not type the item snippet's row.
  */
-export interface ItemsComponent {
+export interface ListComponent<ControlProps> {
   new <Item>(
-    options: ComponentConstructorOptions<ItemsComponentProps<Item>>
-  ): SvelteComponent<ItemsComponentProps<Item>>;
-  <Item>(internals: ComponentInternals, props: ItemsComponentProps<Item>): Record<string, never>;
+    options: ComponentConstructorOptions<ListComponentProps<Item, ControlProps>>
+  ): SvelteComponent<ListComponentProps<Item, ControlProps>>;
+  <Item>(internals: ComponentInternals, props: ListComponentProps<Item, ControlProps>): Record<string, never>;
+}
+
+/** A component that shows its items in an ItemsRepeater, typed as `ListComponent` is. */
+export interface RepeaterComponent<ControlProps> {
+  new <Item>(
+    options: ComponentConstructorOptions<RepeaterComponentProps<Item, ControlProps>>
+  ): SvelteComponent<RepeaterComponentProps<Item, ControlProps>>;
+  <Item>(internals: ComponentInternals, props: RepeaterComponentProps<Item, ControlProps>): Record<string, never>;
 }
