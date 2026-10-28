@@ -34,14 +34,13 @@ export interface Mounted<Props> {
 /**
  * Mounts a Svelte component on WinUI.
  *
- * @param component - The component to mount.
- * @param initial - Its props.
+ * @param options - The component to mount, and its props.
  * @returns The component's root control, and `set`, `onRootChange` and `unmount` to drive it.
  */
-export function mountControl<Props extends object>(
-  component: Component<Props>,
-  initial: Props
-) {
+export function mountControl<Props extends object>({ component, props: initial }: {
+  component: Component<Props>;
+  props: Props;
+}) {
   const props = $state(initial);
   const fragment = renderer.createFragment();
   const instance = mount(component, {

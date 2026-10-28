@@ -3,11 +3,30 @@ import {
   gridLength,
   GridUnit,
   isNumeric,
+  kebabCase,
   pascalCase,
   thicknessSides
 } from "./markup.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
+
+test("a class name is a tag in kebab case, an acronym one word", () => {
+  assert.equal(kebabCase("ToggleSwitch"), "toggle-switch");
+  assert.equal(kebabCase("WebView2"), "web-view2");
+  assert.equal(kebabCase("Border"), "border");
+  assert.equal(kebabCase("UIElement"), "ui-element");
+  assert.equal(kebabCase("InlineUIContainer"), "inline-ui-container");
+});
+
+test("a tag, a class name and a property name meet in one kebab-case key", () => {
+  assert.equal(kebabCase("inline-ui-container"), "inline-ui-container");
+  assert.equal(kebabCase("horizontalAlignment"), kebabCase("HorizontalAlignment"));
+});
+
+test("a WinUI name is a property name in camel case", () => {
+  assert.equal(camelCase("IsOn"), "isOn");
+  assert.equal(camelCase("XamlRoot"), "xamlRoot");
+});
 
 test("kebab-case names read as WinUI's", () => {
   assert.equal(pascalCase("stack-panel"), "StackPanel");

@@ -63,6 +63,26 @@ export class FakeBorder {
   child: object | null = null;
 }
 
+export class FakeButton {
+  readonly margin = null;
+  // Set by the app, not by the button's <property> children.
+  content: object | string | null = "initial";
+  flyout: object | null = null;
+}
+
+export class FakeFlyout {
+  content: object | null = null;
+
+  showAt() {
+    return undefined;
+  }
+}
+
+export class FakeMenuItem {
+  readonly margin = null;
+  text = "";
+}
+
 export class FakeTextBlock {
   readonly margin = null;
   text = "";
@@ -70,5 +90,7 @@ export class FakeTextBlock {
 
 // By the class names a tag spells: <fake-panel> is FakePanel.
 export const fakeControls = Object.fromEntries(
-  [FakePanel, FakeToggle, FakeBorder, FakeTextBlock].map(control => [control.name, control])
+  [FakePanel, FakeToggle, FakeBorder, FakeTextBlock, FakeButton, FakeFlyout, FakeMenuItem].map(
+    control => [control.name, control]
+  )
 );

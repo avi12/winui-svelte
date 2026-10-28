@@ -8,6 +8,7 @@ export { Application } from "#winui/microsoft/ui/xaml/Application";
 export { ColumnDefinition } from "#winui/microsoft/ui/xaml/controls/ColumnDefinition";
 export { Grid } from "#winui/microsoft/ui/xaml/controls/Grid";
 export { RowDefinition } from "#winui/microsoft/ui/xaml/controls/RowDefinition";
+export { Run } from "#winui/microsoft/ui/xaml/documents/Run";
 export { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
 export { DesktopAcrylicBackdrop } from "#winui/microsoft/ui/xaml/media/DesktopAcrylicBackdrop";
 export { MicaBackdrop } from "#winui/microsoft/ui/xaml/media/MicaBackdrop";

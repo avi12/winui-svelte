@@ -1,4 +1,10 @@
-import { call, isRecord, read, write } from "./reflect.ts";
+import {
+  call,
+  isRecord,
+  read,
+  vectorOf,
+  write
+} from "./reflect.ts";
 import {
   autoLength,
   boxed,
@@ -26,7 +32,7 @@ import {
 import type { ElementNode, FragmentNode, NativeHost, TreeNode } from "#src/renderer/tree/tree.js";
 import { createTreeRenderer, NodeType, parentElement } from "#src/renderer/tree/tree.js";
 import type { FrameworkElement, UIElement } from "#src/winui.js";
-import { ColumnDefinition, Grid, RowDefinition } from "#src/winui.js";
+import { ColumnDefinition, Grid, RowDefinition, Run } from "#src/winui.js";
 
 // Svelte's custom renderer for WinUI: a .svelte component's elements are
 // WinUI's own controls, named in kebab case (<stack-panel>, <text-block>), so
@@ -58,10 +64,18 @@ interface WinuiNative {
   // Made when the element first gets a class or a style.
   styled: StyledElement | null;
   // What the native collection holds, in order, to change it in place.
-  placed: UIElement[];
+  // (Inline collections hold Runs, which are not UIElements.)
+  placed: object[];
+  // The <property> children, by the property each fills: one that goes gives
+  // its property back.
+  properties: Map<string, WinuiElement>;
+  // Whether the element had children of its own (not <property> elements) at
+  // the last sync, so taking the last of them out still empties the slot.
+  hasLooseChildren: boolean;
 }
 
 type WinuiElement = ElementNode<WinuiNative>;
+type PropertyElement = WinuiElement & { name: typeof PROPERTY_TAG };
 
 interface AttributeTarget {
   control: UIElement;
@@ -98,6 +112,14 @@ type ParentSlotHandler = (placement: Replacement & { parent: object }) => void;
 export type ClassHandler = (control: UIElement, value: string) => void;
 
 const HOST_TAG = "host";
+// <property name="pane">: its children fill the parent's Pane, as XAML's
+// <SplitView.Pane> does. A generated component renders its children and its
+// snippet props in these.
+const PROPERTY_TAG = "property";
+const PROPERTY_NAME_ATTRIBUTE = "name";
+// The one collection whose text children become Runs: a text block's, a
+// paragraph's and a span's.
+const INLINES_PROPERTY = "inlines";
 const HOST_ATTRIBUTE = "element";
 const CLASS_ATTRIBUTE = "class";
 const INLINE_STYLE_ATTRIBUTE = "style";
@@ -116,13 +138,15 @@ const gridLengths = new Map<GridUnit, (length: GridLength) => object>([
 /**
  * Tells the renderer which WinUI classes and enums markup may name. `winui` is
  * the app's one import site of the bindings: every export it has becomes a
- * class a tag can name. Later calls add to earlier ones.
+ * class a tag can name. A key is the class name or the tag
+ * (`{ "text-block": TextBlock }`, as a component registers its own class).
+ * Later calls add to earlier ones.
  *
- * @param winui - The bindings' exports, by name.
+ * @param winui - The bindings' exports, by class name or tag.
  */
 export function registerControls(winui: Record<string, NativeValue>) {
   for (const [name, value] of Object.entries(winui)) {
-    controls.set(name, value);
+    controls.set(kebabCase(name), value);
   }
 }
 
@@ -162,7 +186,7 @@ function enumMember({ property, name }: {
   name: string;
 }) {
   const typeName = pascalCase(property);
-  const member = read(controls.get(typeName), name);
+  const member = read(controls.get(kebabCase(property)), name);
   const isMemberMissing = member === undefined;
   if (isMemberMissing) {
     throw new Error(`${property}="${name}" names no ${typeName} (or registerControls was not given it)`);
@@ -228,7 +252,10 @@ function stylingOf({ element, control }: {
 }) {
   element.native.styled ??= styledElement({
     control,
-    elementType: elementType({ element, control })
+    elementType: elementType({
+      element,
+      control
+    })
   });
   return element.native.styled;
 }
@@ -286,7 +313,7 @@ function definitionsHandler({ type, collectionName, sizeName }: {
 function applyAttached({ control, name, value }: AttributeTarget) {
   const [owner = "", attached = ""] = name.split(ATTACHED_SEPARATOR);
   const isNumber = typeof value === "string" && isNumeric(value);
-  call(controls.get(pascalCase(owner)), `set${pascalCase(attached)}`, control, isNumber ? Number(value) : value);
+  call(controls.get(kebabCase(owner)), `set${pascalCase(attached)}`, control, isNumber ? Number(value) : value);
 }
 
 function applyProperty({ control, name, value }: AttributeTarget) {
@@ -353,6 +380,28 @@ function controlsOf(node: TreeNode<WinuiNative>) {
   return control === null ? [] : [control];
 }
 
+function isPropertyElement(node: TreeNode<WinuiNative>): node is PropertyElement {
+  return node.type === NodeType.ELEMENT && node.name === PROPERTY_TAG;
+}
+
+// What a <property> element fills: its name attribute.
+function propertyName(element: PropertyElement) {
+  const name = element.attributes.get(PROPERTY_NAME_ATTRIBUTE);
+  return typeof name === "string" ? camelCase(name) : null;
+}
+
+// A child of the element's own, which goes where the control's children go:
+// not a <property> element, nor the comment Svelte anchors a block on, nor the
+// whitespace between tags.
+function isLooseChild(node: TreeNode<WinuiNative>) {
+  const isText = node.type === NodeType.TEXT;
+  if (isText) {
+    return node.value.replaceAll(htmlWhitespaceRun, "") !== "";
+  }
+
+  return node.type === NodeType.ELEMENT && !isPropertyElement(node);
+}
+
 // HTML's white-space: normal. Svelte keeps a text node's line breaks and
 // indentation, which a browser collapses and WinUI would draw.
 const htmlWhitespaceRun = /[ \t\n\r\f]+/gu;
@@ -365,10 +414,10 @@ function textOf(element: WinuiElement) {
 }
 
 // Each control's key in the panels it is placed in.
-const controlKeys = new WeakMap<UIElement, string>();
+const controlKeys = new WeakMap<object, string>();
 let nextControlKey = 0;
 
-function keyOf(control: UIElement) {
+function keyOf(control: object) {
   const existing = controlKeys.get(control);
   const isKeyed = existing !== undefined;
   if (isKeyed) {
@@ -408,33 +457,35 @@ function placedItems({ element, collection }: {
       call(collection, "insertAt", index, control);
       placed.splice(index, 0, control);
     }
-  } satisfies KeyedItems<UIElement>;
+  } satisfies KeyedItems<object>;
 }
 
 // A panel's children, or a ComboBox's items, are changed in place, moving as
 // little as they can.
-function syncCollection({ element, control, collectionName }: {
+function syncCollection({ element, collection, wanted = element.children.flatMap(controlsOf) }: {
   element: WinuiElement;
-  control: UIElement;
-  collectionName: string;
+  collection: NativeValue;
+  wanted?: object[];
 }) {
-  const wanted = element.children.flatMap(controlsOf);
   const byKey = new Map(wanted.map(child => [keyOf(child), child]));
   syncKeyed({
-    items: placedItems({
-      element,
-      collection: read(control, collectionName)
-    }),
-    keyOf,
-    create(key) {
-      const child = byKey.get(key);
-      if (!child) {
-        throw new RangeError(`no control has key ${key}`);
-      }
+    list: {
+      items: placedItems({
+        element,
+        collection
+      }),
+      keyOf,
+      create(key) {
+        const child = byKey.get(key);
+        if (!child) {
+          throw new RangeError(`no control has key ${key}`);
+        }
 
-      return child;
-    }
-  }, [...byKey.keys()]);
+        return child;
+      }
+    },
+    wantedKeys: [...byKey.keys()]
+  });
 }
 
 function syncText({ element, control }: Omit<ElementAttributeTarget, "value">) {
@@ -447,11 +498,15 @@ function syncChild({ element, control }: Omit<ElementAttributeTarget, "value">) 
 }
 
 // A control, or else the element's text, boxed.
-function syncContent({ element, control }: Omit<ElementAttributeTarget, "value">) {
+function contentOf(element: WinuiElement) {
   const [first] = element.children.flatMap(controlsOf);
   const text = textOf(element);
   const textContent = text === "" ? null : boxed(text);
-  write(control, "content", first ?? textContent);
+  return first ?? textContent;
+}
+
+function syncContent({ element, control }: Omit<ElementAttributeTarget, "value">) {
+  write(control, "content", contentOf(element));
 }
 
 // The first of these properties a control has says where its children go.
@@ -459,28 +514,192 @@ function syncContent({ element, control }: Omit<ElementAttributeTarget, "value">
 const childSlots: Array<[string, ChildSlotHandler]> = [
   ["children", ({ element, control }) => syncCollection({
     element,
-    control,
-    collectionName: "children"
+    collection: read(control, "children")
   })],
   ["items", ({ element, control }) => syncCollection({
     element,
-    control,
-    collectionName: "items"
+    collection: read(control, "items")
   })],
   ["text", syncText],
   ["child", syncChild],
   ["content", syncContent]
 ];
 
-// Brings the native control's children in line with the tree.
+// The Run each text child of an inline collection is shown as.
+const textRuns = new WeakMap<TreeNode<WinuiNative>, Run>();
+
+function textRun({ node, text }: {
+  node: TreeNode<WinuiNative>;
+  text: string;
+}) {
+  const run = textRuns.get(node) ?? new Run();
+  textRuns.set(node, run);
+  const isChanged = run.text !== text;
+  if (isChanged) {
+    run.text = text;
+  }
+
+  return run;
+}
+
+interface InlinePart {
+  node: TreeNode<WinuiNative>;
+  text: string | null;
+  control: UIElement | null;
+}
+
+function inlinePartsOf(child: TreeNode<WinuiNative>) {
+  const isText = child.type === NodeType.TEXT;
+  const parts: InlinePart[] = isText ? [{
+    node: child,
+    text: child.value.replaceAll(htmlWhitespaceRun, " "),
+    control: null
+  }] : controlsOf(child).map(control => ({
+    node: child,
+    text: null,
+    control
+  }));
+  return parts;
+}
+
+// A text block's or a paragraph's inlines: its inline elements, and its text
+// as Runs between them, whitespace collapsed as a browser shows it (the ends
+// of the whole run trimmed, a space between a word and an element kept).
+function inlinesOf(element: WinuiElement) {
+  const parts = element.children.flatMap(inlinePartsOf);
+  const first = parts[0];
+  const last = parts.at(-1);
+  return parts.flatMap<object>(({ node, text, control }) => {
+    const isControl = text === null;
+    if (isControl) {
+      return control === null ? [] : [control];
+    }
+
+    const isFirst = node === first?.node;
+    const isLast = node === last?.node;
+    const trimmedStart = isFirst ? text.replace(/^ /u, "") : text;
+    const trimmed = isLast ? trimmedStart.replace(/ $/u, "") : trimmedStart;
+    return trimmed === "" ? [] : [textRun({
+      node,
+      text: trimmed
+    })];
+  });
+}
+
+// Fills the property a <property> element names on its parent's control: a
+// collection with its controls (an inline collection with its text as Runs
+// too), a string with its text, any other property with its first control,
+// or else its text, boxed.
+function syncProperty({ element, control, name }: {
+  element: WinuiElement;
+  control: UIElement;
+  name: string;
+}) {
+  const current = read(control, name);
+  const collection = vectorOf(current);
+  const isCollection = collection !== null;
+  if (isCollection) {
+    const isInlines = name === INLINES_PROPERTY;
+    syncCollection({
+      element,
+      collection,
+      wanted: isInlines ? inlinesOf(element) : element.children.flatMap(controlsOf)
+    });
+    return;
+  }
+
+  const isText = typeof current === "string";
+  if (isText) {
+    write(control, name, textOf(element));
+    return;
+  }
+
+  write(control, name, contentOf(element));
+}
+
+// Takes out what a <property> element that is gone put in: its controls from
+// a collection, or the value of any other property.
+function clearProperty({ element, control, name }: {
+  element: WinuiElement;
+  control: UIElement;
+  name: string;
+}) {
+  const current = read(control, name);
+  const collection = vectorOf(current);
+  const isValue = collection === null;
+  if (isValue) {
+    write(control, name, typeof current === "string" ? "" : null);
+    return;
+  }
+
+  for (const placed of element.native.placed) {
+    call(collection, "removeAt", Number(call(collection, "indexOf", placed)));
+  }
+
+  element.native.placed = [];
+}
+
+// The <property> children of an element, each filling its property; one
+// that is gone, or now names another, gives its property back.
+function syncProperties({ element, control }: Omit<ElementAttributeTarget, "value">) {
+  const current = new Map<string, WinuiElement>();
+  for (const child of element.children.filter(isPropertyElement)) {
+    const name = propertyName(child);
+    const isNamed = name !== null;
+    if (isNamed) {
+      current.set(name, child);
+    }
+  }
+
+  for (const [name, previous] of element.native.properties) {
+    const isGone = current.get(name) !== previous;
+    if (isGone) {
+      clearProperty({
+        element: previous,
+        control,
+        name
+      });
+    }
+  }
+
+  element.native.properties = current;
+  for (const [name, child] of current) {
+    syncProperty({
+      element: child,
+      control,
+      name
+    });
+  }
+}
+
+// Brings the native control's children in line with the tree. A <property>
+// element's children fill its parent's property; an element's own children go
+// in the first of childSlots its control has, when it has some or just had
+// (a generated component's element holds only <property> elements, so a
+// property the app set is never emptied for want of children).
 function sync(element: WinuiElement) {
+  if (isPropertyElement(element)) {
+    syncParent(element);
+    return;
+  }
+
   const control = element.native.control;
   if (!control) {
     return;
   }
 
-  const slot = childSlots.find(([property]) => property in control);
-  slot?.[1]({
+  const hasLooseChildren = element.children.some(isLooseChild);
+  const isSlotChanged = hasLooseChildren || element.native.hasLooseChildren;
+  element.native.hasLooseChildren = hasLooseChildren;
+
+  if (isSlotChanged) {
+    childSlots.find(([property]) => property in control)?.[1]({
+      element,
+      control
+    });
+  }
+
+  syncProperties({
     element,
     control
   });
@@ -654,16 +873,20 @@ function release(node: TreeNode<WinuiNative>) {
 }
 
 function createNative(name: string) {
-  const isHost = name === HOST_TAG;
-  if (isHost) {
+  // <host> holds a control made elsewhere, <property> fills its parent's: no
+  // control of their own.
+  const isControlless = name === HOST_TAG || name === PROPERTY_TAG;
+  if (isControlless) {
     return {
       control: null,
       styled: null,
-      placed: []
+      placed: [],
+      properties: new Map(),
+      hasLooseChildren: false
     };
   }
 
-  const type = controls.get(pascalCase(name));
+  const type = controls.get(kebabCase(name));
   if (!isControlClass(type)) {
     throw new Error(`<${name}> is not a WinUI control registerControls was given`);
   }
@@ -671,7 +894,9 @@ function createNative(name: string) {
   return {
     control: new type(),
     styled: null,
-    placed: []
+    placed: [],
+    properties: new Map(),
+    hasLooseChildren: false
   };
 }
 
@@ -684,6 +909,8 @@ const winuiHost: NativeHost<WinuiNative> = {
         element,
         control: value
       });
+    } else if (isPropertyElement(element)) {
+      syncParent(element);
     } else {
       applyAttribute({
         element,
@@ -699,6 +926,8 @@ const winuiHost: NativeHost<WinuiNative> = {
         element,
         control: null
       });
+    } else if (isPropertyElement(element)) {
+      syncParent(element);
     } else if (elementAttributes.has(name)) {
       applyAttribute({
         element,

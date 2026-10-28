@@ -51,38 +51,62 @@ test("a keyed list is synced touching only what changed", () => {
     }
   };
 
-  syncKeyed(list, ["a", "b"]);
+  syncKeyed({
+    list,
+    wantedKeys: ["a", "b"]
+  });
   assert.equal(keys(items), "a,b", "an empty list is filled in order");
   const [first, second] = items;
 
-  syncKeyed(list, ["a", "x", "b"]);
+  syncKeyed({
+    list,
+    wantedKeys: ["a", "x", "b"]
+  });
   assert.equal(keys(items), "a,x,b", "a new key is inserted where it belongs");
   assert.ok(items[0] === first && items[2] === second, "the items around it are kept");
 
-  syncKeyed(list, ["a", "b"]);
+  syncKeyed({
+    list,
+    wantedKeys: ["a", "b"]
+  });
   assert.equal(keys(items), "a,b", "a gone key is removed");
   assert.ok(items[0] === first && items[1] === second, "the rest kept");
 
-  syncKeyed(list, ["b", "a"]);
+  syncKeyed({
+    list,
+    wantedKeys: ["b", "a"]
+  });
   assert.equal(keys(items), "b,a", "a reorder moves items");
   assert.ok(items[0] === second && items[1] === first, "a moved item is the same item");
 
   const madeBefore = made;
-  syncKeyed(list, ["b", "a"]);
+  syncKeyed({
+    list,
+    wantedKeys: ["b", "a"]
+  });
   assert.equal(made, madeBefore, "an unchanged list makes nothing");
 
   list.move = (from, to) => {
     moves.push([from, to]);
     items.splice(to, 0, ...items.splice(from, 1));
   };
-  syncKeyed(list, ["a", "b"]);
+  syncKeyed({
+    list,
+    wantedKeys: ["a", "b"]
+  });
   assert.equal(keys(items), "a,b", "a move callback reorders too");
   assert.deepEqual(moves, [[1, 0]], "as one move, from 1 to 0");
 
-  syncKeyed(list, ["c", "a", "b"]);
+  syncKeyed({
+    list,
+    wantedKeys: ["c", "a", "b"]
+  });
   assert.equal(keys(items), "c,a,b", "a new key is still created, not moved");
   assert.equal(made, madeBefore + 1);
 
-  syncKeyed(list, []);
+  syncKeyed({
+    list,
+    wantedKeys: []
+  });
   assert.equal(items.length, 0, "everything gone empties the list");
 });

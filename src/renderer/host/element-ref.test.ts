@@ -19,7 +19,12 @@ interface Props {
 }
 
 test("a ref on a component holds its control while it is shown", () => {
-  const mounted = mountControl<Props>(Labeled, { isLabelShown: true });
+  const mounted = mountControl<Props>({
+    component: Labeled,
+    props: {
+      isLabelShown: true
+    }
+  });
   const root: object = mounted.root;
   assert.ok(root instanceof FakePanel);
   const [label, toggle] = root.children.items;

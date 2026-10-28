@@ -65,3 +65,37 @@ export function call(target: NativeValue, key: string, ...values: NativeValue[])
 export function write(target: object, key: string, value: NativeValue) {
   Object.assign(target, { [key]: value });
 }
+
+// What a collection the renderer changes in place takes, as IVector does.
+const VECTOR_METHODS = ["insertAt", "removeAt", "indexOf"] as const;
+// What an observable vector hands its IVector side over through.
+const OBSERVABLE_METHODS = ["asVector"] as const;
+
+// Whether a native value has every one of these methods.
+function hasMethods({ value, methods }: {
+  value: NativeValue;
+  methods: readonly string[];
+}) {
+  return isRecord(value) && methods.every(name => isMethod(value[name]));
+}
+
+/**
+ * The collection a property holds, as one that takes `insertAt` and
+ * `removeAt`: an observable vector (a command bar's commands) hands that
+ * side over through `asVector`.
+ *
+ * @param value - What the property holds.
+ * @returns The vector, or null when the value is no collection.
+ */
+export function vectorOf(value: NativeValue) {
+  const isObservable = hasMethods({
+    value,
+    methods: OBSERVABLE_METHODS
+  });
+  const vector = isObservable ? call(value, "asVector") : value;
+  const isVector = hasMethods({
+    value: vector,
+    methods: VECTOR_METHODS
+  });
+  return isVector ? vector : null;
+}

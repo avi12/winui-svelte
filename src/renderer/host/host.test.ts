@@ -2,7 +2,10 @@ import { registerControls, setClassHandler } from "./host.ts";
 import type { NativeValue } from "#src/native-value.js";
 import {
   FakeBorder,
+  FakeButton,
   fakeControls,
+  FakeFlyout,
+  FakeMenuItem,
   FakePanel,
   FakeTextBlock,
   FakeToggle
@@ -24,6 +27,7 @@ setClassHandler((control, value) => {
 registerHooks(svelteHooks(path.join(import.meta.dirname, "host.ts")));
 const { mountControl } = await import("./mount.svelte.ts");
 const { default: Fixture } = await import("#src/renderer/testing/Host.fixture.svelte");
+const { default: PropertyFixture } = await import("#src/renderer/testing/Property.fixture.svelte");
 const { default: TextFixture } = await import("#src/renderer/testing/Text.fixture.svelte");
 
 interface TextProps extends Record<string, NativeValue> {
@@ -43,13 +47,16 @@ interface Props extends Record<string, NativeValue> {
 function mountFixture(overrides: Partial<Props> = {}) {
   const lines: string[] = [];
   const hosted = new FakeBorder();
-  const mounted = mountControl<Props>(Fixture, {
-    isOn: false,
-    label: "On",
-    isShown: false,
-    log: line => lines.push(line),
-    hosted,
-    ...overrides
+  const mounted = mountControl<Props>({
+    component: Fixture,
+    props: {
+      isOn: false,
+      label: "On",
+      isShown: false,
+      log: line => lines.push(line),
+      hosted,
+      ...overrides
+    }
   });
   // Typed as the WinUI control it stands in for.
   const root: object = mounted.root;
@@ -133,10 +140,13 @@ function textsOf(panel: FakePanel) {
 const WRAPPED_SENTENCE = "A sentence long enough to wrap over lines, indented.";
 
 test("text written as children is a text block's text, and follows what it shows", () => {
-  const mounted = mountControl<TextProps>(TextFixture, {
-    version: "0.2.0",
-    status: "Saved",
-    count: 2
+  const mounted = mountControl<TextProps>({
+    component: TextFixture,
+    props: {
+      version: "0.2.0",
+      status: "Saved",
+      count: 2
+    }
   });
   const root: object = mounted.root;
   assert.ok(root instanceof FakePanel);
@@ -153,5 +163,52 @@ test("text written as children is a text block's text, and follows what it shows
     count: 3
   });
   assert.deepEqual(textsOf(root), ["My app 0.3.0 is ready", "", "Saved 3 themes", WRAPPED_SENTENCE]);
+  mounted.unmount();
+});
+
+// Read afresh each time: an earlier assertion narrows the property's type.
+function flyoutOf(button: FakeButton) {
+  return button.flyout;
+}
+
+test("a <property> element fills its parent's property and gives it back when it goes", () => {
+  const mounted = mountControl<{
+    isShown: boolean;
+    label: string;
+  }>({
+    component: PropertyFixture,
+    props: {
+      isShown: false,
+      label: "Open"
+    }
+  });
+  const root: object = mounted.root;
+  assert.ok(root instanceof FakePanel);
+  const [menuButton, conditionalButton, menuItem, panel] = root.children.items;
+  assert.ok(menuButton instanceof FakeButton);
+  assert.ok(conditionalButton instanceof FakeButton);
+  assert.ok(menuItem instanceof FakeMenuItem);
+  assert.ok(panel instanceof FakePanel);
+  assert.ok(menuButton.flyout instanceof FakeFlyout);
+  assert.ok(menuButton.flyout.content instanceof FakeTextBlock);
+  assert.equal(menuButton.content, "initial", "a parent of <property> elements only keeps its own content");
+  assert.equal(flyoutOf(conditionalButton), null);
+  assert.equal(menuItem.text, "Open");
+  assert.deepEqual(textsOf(panel), ["First"]);
+
+  mounted.set({
+    isShown: true,
+    label: "Close"
+  });
+  assert.ok(flyoutOf(conditionalButton) instanceof FakeFlyout);
+  assert.equal(menuItem.text, "Close");
+  assert.deepEqual(textsOf(panel), ["First", "Second"]);
+
+  mounted.set({
+    isShown: false,
+    label: "Close"
+  });
+  assert.equal(flyoutOf(conditionalButton), null);
+  assert.deepEqual(textsOf(panel), ["First"]);
   mounted.unmount();
 });

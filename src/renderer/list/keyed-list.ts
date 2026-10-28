@@ -24,10 +24,12 @@ export interface KeyedList<T> {
  * Brings a list to the wanted keys, in order, removing, inserting and moving
  * only the items that differ.
  *
- * @param list - The list to change.
- * @param wantedKeys - The keys the list should hold, in the order it should hold them.
+ * @param options - The list to change, and the keys it should hold, in the order it should hold them.
  */
-export function syncKeyed<T>(list: KeyedList<T>, wantedKeys: readonly string[]) {
+export function syncKeyed<T>({ list, wantedKeys }: {
+  list: KeyedList<T>;
+  wantedKeys: readonly string[];
+}) {
   removeUnwanted({
     list,
     wanted: new Set(wantedKeys)

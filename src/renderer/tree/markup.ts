@@ -46,13 +46,18 @@ export function camelCase(name: string) {
 }
 
 /**
- * A class name as its tag: `TextBlock` is `<text-block>`.
+ * A class name as its tag: `TextBlock` is `<text-block>`, and an acronym is
+ * one word (`InlineUIContainer` is `<inline-ui-container>`). A tag, or a
+ * camelCase property name, comes out as itself in kebab case.
  *
- * @param name - The PascalCase class name.
+ * @param name - The class name, property name or tag.
  * @returns The kebab-case tag.
  */
 export function kebabCase(name: string) {
-  return name.replace(/(?<=[a-z0-9])(?=[A-Z])/gu, WORD_SEPARATOR).toLowerCase();
+  return name
+    .replace(/(?<=[a-z0-9])(?=[A-Z])/gu, WORD_SEPARATOR)
+    .replace(/(?<=[A-Z])(?=[A-Z][a-z])/gu, WORD_SEPARATOR)
+    .toLowerCase();
 }
 
 /**
