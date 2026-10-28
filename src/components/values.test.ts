@@ -7,6 +7,7 @@ import {
   fontWeightNumber,
   gridLengthParts,
   GridUnit,
+  isSvgUri,
   matrixCells,
   numberList,
   parseColor,
@@ -272,6 +273,14 @@ test("a date is a Date, milliseconds or ISO text, in ticks since 1601", () => {
 test("ticks read back as the Date they came from", () => {
   const moment = new Date("2026-10-29T12:34:56.789Z");
   assert.equal(ticksDate(dateTicks(moment)).toISOString(), moment.toISOString());
+});
+
+test("an SVG is told by the extension of its path, or by its data URI", () => {
+  assert.equal(isSvgUri("ms-appx:///Assets/logo.svg"), true);
+  assert.equal(isSvgUri("https://example.com/logo.SVG?v=2#top"), true);
+  assert.equal(isSvgUri("data:image/svg+xml;base64,PHN2Zz48L3N2Zz4="), true);
+  assert.equal(isSvgUri("ms-appx:///Assets/logo.png"), false);
+  assert.equal(isSvgUri("https://example.com/svg/logo.png?file=a.svg"), false);
 });
 
 test("path data is wrapped as the XAML of a Path, with its characters escaped", () => {

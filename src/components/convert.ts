@@ -17,6 +17,7 @@ import {
   PropertyValue,
   RepeatBehaviorType,
   SolidColorBrush,
+  SvgImageSource,
   Uri,
   XamlReader
 } from "./generated/bindings.ts";
@@ -53,6 +54,7 @@ import {
   fontWeightNumber,
   gridLengthParts,
   GridUnit,
+  isSvgUri,
   matrixCells,
   numberList,
   parseColor,
@@ -133,7 +135,7 @@ export type GridLengthInput = number | string | GridLengthValue;
 /** A color string (see `ColorInput`), a theme resource name, or a brush. */
 export type BrushInput = string | Brush;
 
-/** A URI string or an image source. */
+/** A URI string (a `.svg` is an SVG image, any other a bitmap) or an image source. */
 export type ImageSourceInput = string | ImageSource;
 
 /** Path data as XAML writes it ("M0,0 L10,10 Z") or a geometry. */
@@ -560,11 +562,21 @@ export function fontFamilyOf(input: FontFamilyInput) {
   return isText ? new FontFamily(input) : input;
 }
 
-/** An image source prop as an `ImageSource`; a string is the URI of a bitmap. */
+/**
+ * An image source prop as an `ImageSource`; a string is the URI of an SVG image
+ * when it ends in `.svg`, else of a bitmap.
+ */
 export function imageSourceOf(input: ImageSourceInput) {
   const isSource = typeof input !== "string";
   if (isSource) {
     return input;
+  }
+
+  const isSvg = isSvgUri(input);
+  if (isSvg) {
+    const svg = new SvgImageSource();
+    svg.uriSource = new Uri(input);
+    return svg;
   }
 
   const image = new BitmapImage();

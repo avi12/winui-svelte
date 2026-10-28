@@ -256,6 +256,9 @@ const MATRIX_LENGTH = 6;
 const VECTOR3_LENGTH = 3;
 // WinRT's DateTime counts from 1601-01-01 UTC, JavaScript's Date from 1970.
 const EPOCH_OFFSET_MILLISECONDS = 11_644_473_600_000;
+const SVG_EXTENSION = ".svg";
+const SVG_DATA_PREFIX = "data:image/svg+xml";
+const URI_SUFFIX = /[?#].*$/u;
 const PRESENTATION_NAMESPACE = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
 const XML_ESCAPES = new Map([
   ["&", "&amp;"],
@@ -757,6 +760,13 @@ export function dateTicks(input: Date | number | string) {
 /** WinRT ticks since 1601-01-01 UTC as a `Date`, for a date WinUI hands to a handler. */
 export function ticksDate(ticks: bigint) {
   return new Date(Number(ticks / BigInt(TICKS_PER_MILLISECOND)) - EPOCH_OFFSET_MILLISECONDS);
+}
+
+/** Whether a URI names an SVG image: an SVG data URI, or a path ending in `.svg`. */
+export function isSvgUri(uri: string) {
+  const text = uri.trim().toLowerCase();
+  const isData = text.startsWith(SVG_DATA_PREFIX);
+  return isData || text.replace(URI_SUFFIX, "").endsWith(SVG_EXTENSION);
 }
 
 /** The XAML of a Path with this mini-language data ("M0,0 L10,10"), for the reader that parses it into a geometry. */
