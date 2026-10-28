@@ -2,9 +2,11 @@
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import type { Json } from "#src/messaging/json.js";
   import {
+    AppWindowPresenterKind,
     DesktopAcrylicBackdrop,
     ElementTheme,
     FrameworkElement,
+    Grid,
     InputNonClientPointerSource,
     MicaBackdrop,
     MicaKind,
@@ -15,8 +17,8 @@
   import { flush } from "winui-svelte";
   import { Window } from "winui-svelte/components";
   import type { CaptionButtonColors, WindowBounds, WindowHandle, WindowRegion } from "winui-svelte/components";
-  import { exitApplication } from "winui-svelte/window";
-  import { Backdrop, TitleBarHeight, WindowTheme } from "winui-svelte/window";
+  import { createWindow, exitApplication } from "winui-svelte/window";
+  import { Backdrop, TitleBarHeight, WindowPresentation, WindowTheme } from "winui-svelte/window";
 
   const WINDOW_WIDTH = 520;
   const WINDOW_HEIGHT = 360;
@@ -41,6 +43,7 @@
   // svelte-ignore state_referenced_locally
   let backdrop = $state(backdropOf(host.options["backdrop"]));
   let title = $state("Window example");
+  let presentation = $state<WindowPresentation | undefined>();
   let theme = $state<WindowTheme | undefined>();
   let titleBarHeight = $state<TitleBarHeight | undefined>();
   let captionButtons = $state<CaptionButtonColors | undefined>();
@@ -82,6 +85,10 @@
 
     const { titleBar } = appWindow;
     return {
+      presentation: nameOf({
+        table: AppWindowPresenterKind,
+        value: appWindow.presenter.kind
+      }),
       theme: nameOf({
         table: ElementTheme,
         value: projectAs(content, FrameworkElement).requestedTheme
@@ -94,6 +101,16 @@
       captionHoverBackground: titleBar.buttonHoverBackgroundColor,
       dragRegions: InputNonClientPointerSource.getForWindowId(appWindow.id).getRegionRects(NonClientRegionKind.Caption)
     };
+  }
+
+  // The windowed presentation's presenter; undefined while the window is in another.
+  function overlappedPresenter() {
+    const isWindowed = handle?.appWindow.presenter.kind === AppWindowPresenterKind.Overlapped;
+    if (!isWindowed) {
+      return undefined;
+    }
+
+    return handle?.presenter;
   }
 
   // Reports what the window shows after the props the command changed have
@@ -112,8 +129,8 @@
       height: appWindow?.size.height,
       x: appWindow?.position.x,
       y: appWindow?.position.y,
-      minimumWidth: handle?.presenter.preferredMinimumWidth,
-      isMaximizable: handle?.presenter.isMaximizable,
+      minimumWidth: overlappedPresenter()?.preferredMinimumWidth,
+      isMaximizable: overlappedPresenter()?.isMaximizable,
       boundsReports,
       lastBounds,
       activations,
@@ -132,6 +149,10 @@
     ["title", command => {
       title = String(command["value"]);
       report("title");
+    }],
+    ["presentation", command => {
+      presentation = Object.values(WindowPresentation).find(candidate => candidate === command["value"]);
+      report("presentation");
     }],
     ["theme", command => {
       theme = Object.values(WindowTheme).find(candidate => candidate === command["value"]);
@@ -173,6 +194,27 @@
     ["blockClose", command => {
       isCloseBlocked = command["value"] === true;
       report("blockClose");
+    }],
+    ["openOwned", () => {
+      const owner = handle;
+      const isOpen = owner !== undefined;
+      if (!isOpen) {
+        return;
+      }
+
+      const owned = createWindow({
+        control: new Grid(),
+        owner,
+        isModal: true,
+        isBackground: true
+      });
+      const ownedHandle = owned.window.appWindow;
+      host.report({
+        kind: "owned",
+        ownerId: String(ownedHandle.ownerWindowId.value),
+        expectedOwnerId: String(owner.appWindow.id.value)
+      });
+      owned.close();
     }],
     ["tryClose", () => {
       handle?.close();
@@ -217,6 +259,7 @@
     x: -8000,
     y: 0
   }}
+  {presentation}
   {theme}
   {title}
   {titleBarHeight}

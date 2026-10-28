@@ -393,6 +393,12 @@ system's. `dragRegions` and `passthroughRegions` are rectangles
 corner) that set InputNonClientPointerSource's caption and passthrough regions:
 where a press drags the window, and the parts of it (a search box) that take the
 pointer themselves. Without `dragRegions` the `titleBar` snippet is the drag area.
+`presentation` is `"windowed"` (the default), `"fullScreen"` or `"compactOverlay"`
+(a small always-on-top window); the size limits and `isAlwaysOnTop` are the
+windowed presentation's, and are set again when the window returns to it.
+`owner` (another window's `WindowHandle`) and `isModal` (blocks the owner until
+this window closes) are read once, before the window opens; `createWindow` takes
+them too. The `owner` link is a Win32 call (`SetWindowLongPtrW`) in `native.ts`.
 `bind:handle` gives a `WindowHandle`: `window`, `appWindow`,
 `presenter`, `scale`, `close()`, `restore()`, `minimize()`, `maximize()`,
 `bringToFront()`. `appUserModelId` names the process for the taskbar (it is

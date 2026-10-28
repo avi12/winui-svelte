@@ -1,8 +1,20 @@
 import type { CaptionButtonColors, CaptionButtonProperty } from "./chrome.ts";
-import { captionButtonChanges, scaledRegion, TitleBarHeight, WindowTheme } from "./chrome.ts";
+import {
+  captionButtonChanges,
+  scaledRegion,
+  TitleBarHeight,
+  WindowPresentation,
+  WindowTheme
+} from "./chrome.ts";
 import type { WindowRegion } from "./chrome.ts";
 import type { AppWindow, FrameworkElement, NonClientRegionKind } from "#src/winui.js";
-import { ElementTheme, InputNonClientPointerSource, TitleBarHeightOption, TitleBarTheme } from "#src/winui.js";
+import {
+  AppWindowPresenterKind,
+  ElementTheme,
+  InputNonClientPointerSource,
+  TitleBarHeightOption,
+  TitleBarTheme
+} from "#src/winui.js";
 
 // Tells WinUI a window's theme, title bar and non-client regions (chrome.ts
 // says what they are).
@@ -23,6 +35,23 @@ const TITLE_BAR_HEIGHTS = {
   [TitleBarHeight.standard]: TitleBarHeightOption.Standard,
   [TitleBarHeight.tall]: TitleBarHeightOption.Tall
 } as const satisfies Record<TitleBarHeight, TitleBarHeightOption>;
+
+const PRESENTER_KINDS = {
+  [WindowPresentation.windowed]: AppWindowPresenterKind.Overlapped,
+  [WindowPresentation.fullScreen]: AppWindowPresenterKind.FullScreen,
+  [WindowPresentation.compactOverlay]: AppWindowPresenterKind.CompactOverlay
+} as const satisfies Record<WindowPresentation, AppWindowPresenterKind>;
+
+/**
+ * Presents the window as `presentation`. Back to windowed it is a new
+ * overlapped presenter, with none of the limits set on the last one.
+ */
+export function applyPresentation({ appWindow, presentation }: {
+  appWindow: AppWindow;
+  presentation: WindowPresentation;
+}) {
+  appWindow.setPresenterByKind(PRESENTER_KINDS[presentation]);
+}
 
 /** Makes the content, and the caption buttons, light or dark, or the system's. */
 export function applyTheme({ appWindow, content, theme }: {

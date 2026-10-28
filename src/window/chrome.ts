@@ -31,6 +31,21 @@ export const TitleBarHeight = {
 export type TitleBarHeight = (typeof TitleBarHeight)[keyof typeof TitleBarHeight];
 
 /**
+ * How a window is presented: in its frame (windowed, the default), over the
+ * whole display (fullScreen), or as a small always-on-top window
+ * (compactOverlay, as a video player's picture in picture). The size limits
+ * and the minimize and maximize buttons are the windowed one's.
+ */
+export const WindowPresentation = {
+  windowed: "windowed",
+  fullScreen: "fullScreen",
+  compactOverlay: "compactOverlay"
+} as const;
+
+/** One of `WindowPresentation`'s values. */
+export type WindowPresentation = (typeof WindowPresentation)[keyof typeof WindowPresentation];
+
+/**
  * A rectangle in the window's client area, in device-independent pixels from
  * its top-left corner.
  */

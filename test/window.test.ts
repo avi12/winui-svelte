@@ -137,6 +137,29 @@ test("a window opens as its props say, follows them, and reports what happens to
       }
     ], "a drag region is the caption region, in device pixels");
 
+    const overlay = await example.ask({
+      command: {
+        cmd: "presentation",
+        value: "compactOverlay"
+      },
+      kind: "presentation"
+    });
+    assert.equal(overlay["presentation"], "CompactOverlay");
+    const windowed = await example.ask({
+      command: {
+        cmd: "presentation",
+        value: "windowed"
+      },
+      kind: "presentation"
+    });
+    assert.equal(windowed["presentation"], "Overlapped");
+    assert.equal(
+      numberOf({
+        report: windowed,
+        field: "minimumWidth"
+      }), Math.round(MINIMUM_WIDTH * scale), "back to windowed, the size limits are set again"
+    );
+
     const retitled = await example.ask({
       command: {
         cmd: "title",
@@ -185,6 +208,14 @@ test("a window opens as its props say, follows them, and reports what happens to
       width: Math.round(WIDENED_TO * scale),
       height: Math.round(OPENED_HEIGHT * scale)
     });
+
+    const owned = await example.ask({
+      command: {
+        cmd: "openOwned"
+      },
+      kind: "owned"
+    });
+    assert.equal(owned["ownerId"], owned["expectedOwnerId"], "createWindow's owner is the window's owner");
 
     await example.ask({
       command: {

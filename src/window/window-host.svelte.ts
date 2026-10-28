@@ -1,9 +1,15 @@
-import { applyCaptionButtonColors, applyRegions, applyTheme, applyTitleBarHeight } from "./apply-chrome.ts";
+import {
+  applyCaptionButtonColors,
+  applyPresentation,
+  applyRegions,
+  applyTheme,
+  applyTitleBarHeight
+} from "./apply-chrome.ts";
 import type { Backdrop } from "./backdrop.ts";
 import { applyBackdrop, Backdrop as BackdropKind } from "./backdrop.ts";
 import type { CaptionButtonColors, CaptionButtonProperty, TitleBarHeight, WindowRegion } from "./chrome.ts";
-import { TitleBarHeight as TitleBarHeightKind, WindowTheme } from "./chrome.ts";
-import { joinAppUserModel } from "./native.ts";
+import { TitleBarHeight as TitleBarHeightKind, WindowPresentation, WindowTheme } from "./chrome.ts";
+import { joinAppUserModel, ownWindow } from "./native.ts";
 import { createScaleTracker } from "./scale.ts";
 import { WindowHandle } from "./window-handle.ts";
 import type { FrameworkElement } from "#src/winui.js";
@@ -99,6 +105,16 @@ export interface WindowProps {
   /** The most the user can resize to, in device-independent pixels. */
   maxWidth?: number;
   maxHeight?: number;
+
+  /** The window stays above the other windows. Windowed presentation only. */
+  isAlwaysOnTop?: boolean | undefined;
+
+  /**
+   * In its frame (the default), full screen, or a small always-on-top overlay.
+   * The size limits and the buttons below are for the windowed one, and are set
+   * again when the window goes back to it.
+   */
+  presentation?: WindowPresentation | undefined;
   isResizable?: boolean;
   isMaximizable?: boolean;
   isMinimizable?: boolean;
@@ -109,6 +125,18 @@ export interface WindowProps {
    */
   placement?: WindowPlacement | null;
   isCentered?: boolean;
+
+  /**
+   * The window this one belongs to: it stays above it, and closes, minimizes
+   * and restores with it. Read once, before the window opens.
+   */
+  owner?: WindowHandle | undefined;
+
+  /**
+   * Blocks the `owner` until this window closes. Needs an `owner`. Read once,
+   * before the window opens.
+   */
+  isModal?: boolean | undefined;
 
   /**
    * false opens the window without taking focus from whatever the user is
@@ -177,6 +205,7 @@ class WindowHost {
   private readonly unsubscribe: Array<() => void> = [];
   private appliedBackdrop: Backdrop | null = null;
   private isThemeApplied = false;
+  private isPresentationApplied = false;
   private appliedHeight: TitleBarHeight | null = null;
   private appliedCaptionButtons: ReadonlySet<CaptionButtonProperty> = new Set();
   private readonly appliedRegions = new Set<NonClientRegionKind>();
@@ -210,9 +239,11 @@ class WindowHost {
     this.keepInLine(() => this.syncTitleBar());
     this.keepInLine(() => this.syncTitleBarLook());
     this.keepInLine(() => this.syncRegions());
+    this.keepInLine(() => this.syncPresentation());
     this.keepInLine(() => this.syncLimits());
     this.placeFirst();
     $effect(() => this.syncSize());
+    this.syncOwner();
     this.listen();
     this.watchScale();
     this.show();
@@ -339,9 +370,39 @@ class WindowHost {
     }
   }
 
+  private get isWindowed() {
+    const presentation = this.props.presentation ?? WindowPresentation.windowed;
+    return presentation === WindowPresentation.windowed;
+  }
+
+  // A window with no presentation prop keeps the one it has.
+  private syncPresentation() {
+    const { presentation } = this.props;
+    const isGiven = presentation !== undefined;
+    const isUntouched = !isGiven && !this.isPresentationApplied;
+    if (isUntouched) {
+      return;
+    }
+
+    this.isPresentationApplied = isGiven;
+    applyPresentation({
+      appWindow: this.handle.appWindow,
+      presentation: presentation ?? WindowPresentation.windowed
+    });
+  }
+
   private syncLimits() {
-    const { isResizable, isMaximizable, isMinimizable, minWidth, minHeight, maxWidth, maxHeight } = this.props;
+    if (!this.isWindowed) {
+      return;
+    }
+
+    const { isAlwaysOnTop, isResizable, isMaximizable, isMinimizable } = this.props;
+    const { minWidth, minHeight, maxWidth, maxHeight } = this.props;
     const { presenter, scale } = this.handle;
+    if (isGiven(isAlwaysOnTop)) {
+      presenter.isAlwaysOnTop = isAlwaysOnTop;
+    }
+
     if (isGiven(isResizable)) {
       presenter.isResizable = isResizable;
     }
@@ -380,6 +441,26 @@ class WindowHost {
         value: maxHeight,
         scale
       });
+    }
+  }
+
+  private syncOwner() {
+    const { owner, isModal } = this.props;
+    const hasOwner = owner !== undefined;
+    if (hasOwner) {
+      ownWindow({
+        hwnd: this.handle.appWindow.id.value,
+        owner: owner.appWindow.id.value
+      });
+    }
+
+    const isModalWithoutOwner = isModal === true && !hasOwner;
+    if (isModalWithoutOwner) {
+      throw new Error("a modal window needs an owner");
+    }
+
+    if (isGiven(isModal)) {
+      this.handle.presenter.isModal = isModal;
     }
   }
 
