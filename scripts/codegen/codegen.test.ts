@@ -30,7 +30,15 @@ test("the model finds the components, their bindables and attached properties", 
 test("a flag-less bindable pair comes from the <Property>Changed rule", { skip: !HAS_METADATA }, () => {
   const model = buildModel(LOCK_PATH);
   const textBox = model.classes.find(level => level.type.name === "TextBox");
-  assert.deepEqual(textBox?.bindables.map(bindable => bindable.key), ["text"]);
+  assert.ok(textBox?.bindables.some(bindable => bindable.key === "text"));
+});
+
+test("a TextBox's selection is bindable through its SelectionChanged event", { skip: !HAS_METADATA }, () => {
+  const model = buildModel(LOCK_PATH);
+  const textBox = model.classes.find(level => level.type.name === "TextBox");
+  const keys = textBox?.bindables.map(bindable => bindable.key) ?? [];
+  assert.ok(keys.includes("selectionStart") && keys.includes("selectionLength"));
+  assert.deepEqual(textBox?.bindables.find(bindable => bindable.key === "selectionStart")?.events, ["SelectionChanged"]);
 });
 
 test("generating twice gives the same text", { skip: !HAS_METADATA }, () => {

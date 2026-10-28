@@ -256,6 +256,8 @@ export const bindableEvents = new Map<string, string[]>([
   ["SelectedIndex", ["SelectionChanged"]],
   ["SelectedItem", ["SelectionChanged"]],
   ["SelectedValue", ["SelectionChanged"]],
+  ["SelectionStart", ["SelectionChanged"]],
+  ["SelectionLength", ["SelectionChanged"]],
   ["IsChecked", ["Checked", "Unchecked", "Indeterminate"]],
   ["IsDropDownOpen", ["DropDownOpened", "DropDownClosed"]],
   ["IsExpanded", ["Expanding", "Collapsed"]],
