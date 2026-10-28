@@ -1,5 +1,6 @@
 import type { LoweredStyle } from "./properties.ts";
-import type { Declaration, PseudoState, Rule } from "./types.ts";
+import { ColorScheme } from "./types.ts";
+import type { Declaration, PseudoState, ResourceEntry, Rule } from "./types.ts";
 
 /**
  * CSS's cascade for one element: which rules apply to it (its type, classes
@@ -158,4 +159,28 @@ export function styleDictionaryXaml({ key, elementType, lowered }: {
     elementType,
     lowered
   })}\n</ResourceDictionary>`;
+}
+
+/**
+ * The XAML of a ResourceDictionary holding `entries` in the theme dictionary of
+ * their scheme. A later entry of the same scheme and key replaces an earlier one.
+ */
+export function resourceDictionaryXaml(entries: readonly ResourceEntry[]) {
+  const byScheme = new Map<ColorScheme, Map<string, string>>();
+  for (const entry of entries) {
+    const forScheme = byScheme.get(entry.scheme) ?? new Map<string, string>();
+    forScheme.set(entry.key, entry.xaml);
+    byScheme.set(entry.scheme, forScheme);
+  }
+
+  const dictionaries = Object.values(ColorScheme).flatMap(scheme => {
+    const forScheme = byScheme.get(scheme);
+    const isSchemeMissing = forScheme === undefined;
+    if (isSchemeMissing) {
+      return [];
+    }
+
+    return [`<ResourceDictionary x:Key="${scheme}">\n${[...forScheme.values()].join("\n")}\n</ResourceDictionary>`];
+  });
+  return `<ResourceDictionary ${XAML_NAMESPACES}>\n<ResourceDictionary.ThemeDictionaries>\n${dictionaries.join("\n")}\n</ResourceDictionary.ThemeDictionaries>\n</ResourceDictionary>`;
 }

@@ -123,6 +123,37 @@ An error (with the declaration's line) for what a WinUI gradient cannot say:
 - `var()` as a stop color (a declaration holds one resolved resource, and a stop needs a Color)
 - several comma-separated images, `url()`, `image-set()`: an image cannot be a Background in a Style, use an Image element
 
+## Custom properties: app-wide and scoped
+
+A custom property is a WinUI resource, named like the CSS property in Pascal
+case (`--button-background-pointer-over` is `ButtonBackgroundPointerOver`).
+
+- On `:root` (and only there) it is an **app-wide** resource, merged into
+  `Application.Resources` with the others of the sheet.
+- On any other selector it is **scoped**: the sheet keeps it with the rule, and
+  every element that rule matches gets it in a ResourceDictionary of its own
+  (merged into the element's `Resources`), so the element's template and its
+  children read it and nothing else does.
+
+```css
+:root { --accent: #0af }                                   /* the whole app */
+.danger { --button-background-pointer-over: #c42b1c }      /* only buttons with class danger */
+@media (prefers-color-scheme: dark) { .danger { --button-background-pointer-over: #ff99a4 } }
+```
+
+A scoped override is read when the control builds its template, and WinUI
+reads a theme resource again on a theme change; so it takes effect when the
+class is on the element as it is created, and a later class change may not show
+until the next theme change. A custom property on a pseudo-class rule
+(`.danger:hover`) is an error: the control's template drives the state, so
+override the resource it reads for it (`--button-background-pointer-over`).
+
+A key WinUI defines keeps WinUI's spelling and kind, so a known Brush gets a
+`SolidColorBrush` (never a bare `Color`, which a template reading a brush would
+not take), a `Thickness` or `CornerRadius` key takes one length, and a value of
+the wrong kind is a build error. Any other name is a `Color` with a `Brush` of
+the same name plus `Brush`, or a number (`x:Double`).
+
 ## Transforms: `translate`, `scale`, `rotate`, `transform-origin`
 
 `translate`, `scale` and `rotate` set the element's `Translation`, `Scale` and

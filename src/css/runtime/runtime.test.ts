@@ -19,6 +19,7 @@ interface FakeControl {
   styleChanges: number;
   columns: string | null;
   centerPoint: OriginPoint | null;
+  resources: string[];
   handlers: Map<string, () => void>;
   properties: Record<string, NativeValue>;
 }
@@ -29,6 +30,7 @@ function control(properties: Record<string, NativeValue> = {}) {
     styleChanges: 0,
     columns: null,
     centerPoint: null,
+    resources: [],
     handlers: new Map(),
     properties
   };
@@ -51,6 +53,12 @@ const fakeNative: CssNative = {
   loadDictionary: xaml => ({ xaml }),
   mergeIntoApplication(dictionary) {
     mergedResources.push(String(read(dictionary, "xaml")));
+  },
+  mergeIntoControl(target, dictionary) {
+    const { resources } = fake(target);
+    const xaml = String(read(dictionary, "xaml"));
+    resources.push(xaml);
+    return () => resources.splice(resources.indexOf(xaml), 1);
   },
   lookupStyle: dictionary => dictionary,
   hasApplicationResource: key => hasStyle({
@@ -399,6 +407,42 @@ test("a scaled element pivots about its centre and follows its size", () => {
 
   element.dispose();
   assert.equal(target.handlers.has("SizeChanged"), false);
+});
+
+test("a custom property on a class is a resource of the elements that have it", () => {
+  registerStyleSheet(
+    sheet({
+      id: "danger.svelte",
+      css: ".danger { --button-background-pointer-over: #f00 }\n.quiet { --button-background-pointer-over: #0f0 }\n.danger.loud { --button-background-pointer-over: #00f }"
+    })
+  );
+  const danger = control();
+  const dangerElement = styledElement({
+    control: danger,
+    elementType: "button"
+  });
+  const other = control();
+  const otherElement = styledElement({
+    control: other,
+    elementType: "button"
+  });
+  dangerElement.setClasses("danger");
+  otherElement.setClasses("quiet");
+  assert.equal(danger.resources.length, 1);
+  assert.match(danger.resources[0] ?? "", /<SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#FF0000"\/>/u);
+  assert.match(other.resources[0] ?? "", /Color="#00FF00"/u);
+  assert.doesNotMatch(mergedResources.join("\n"), /ButtonBackgroundPointerOver/u);
+
+  dangerElement.setClasses("danger loud");
+  assert.equal(danger.resources.length, 1);
+  assert.match(danger.resources[0] ?? "", /Color="#0000FF"/u);
+
+  dangerElement.setClasses("");
+  assert.deepEqual(danger.resources, []);
+  dangerElement.setClasses("danger");
+  dangerElement.dispose();
+  assert.deepEqual(danger.resources, []);
+  otherElement.dispose();
 });
 
 test("a declaration the element cannot take fails with where it came from", () => {

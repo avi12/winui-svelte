@@ -15,6 +15,12 @@ interface ListLike {
   clear(): void;
 }
 
+interface IndexedListLike {
+  append(item: object): void;
+  indexOf(item: object): number;
+  removeAt(index: number): void;
+}
+
 /* eslint-disable @typescript-eslint/naming-convention -- CssWinui mirrors WinUI's projected, PascalCase names. */
 
 /**
@@ -66,6 +72,10 @@ function isList(value: NativeValue): value is ListLike {
   return isRecord(value) && typeof value["append"] === "function" && typeof value["clear"] === "function";
 }
 
+function isIndexedList(value: NativeValue): value is IndexedListLike {
+  return isRecord(value) && typeof value["append"] === "function" && typeof value["indexOf"] === "function" && typeof value["removeAt"] === "function";
+}
+
 function isEventMethod(value: NativeValue): value is (handler: () => void) => NativeValue {
   return typeof value === "function";
 }
@@ -108,6 +118,27 @@ export function createCssNative(winui: CssWinui) {
     mergeIntoApplication(dictionary) {
       const merged = winui.Application.current.resources.mergedDictionaries;
       merged?.append(dictionary);
+    },
+    mergeIntoControl(control, dictionary) {
+      const merged = readMember({
+        target: readMember({
+          target: control,
+          key: "resources"
+        }),
+        key: "mergedDictionaries"
+      });
+      if (!isIndexedList(merged)) {
+        throw new TypeError("not a FrameworkElement");
+      }
+
+      merged.append(dictionary);
+      return () => {
+        const index = merged.indexOf(dictionary);
+        const isMerged = index >= 0;
+        if (isMerged) {
+          merged.removeAt(index);
+        }
+      };
     },
     lookupStyle(dictionary, key) {
       if (!isDictionary(dictionary)) {

@@ -51,6 +51,27 @@ export const PseudoState = {
 export type PseudoState = (typeof PseudoState)[keyof typeof PseudoState];
 
 /**
+ * The color schemes a custom property can be declared for. Each is the key of a
+ * theme dictionary, which is where WinUI looks a ThemeResource up.
+ */
+export const ColorScheme = {
+  DEFAULT: "Default",
+  LIGHT: "Light",
+  DARK: "Dark"
+} as const;
+
+/** One of the schemes in `ColorScheme`. */
+export type ColorScheme = (typeof ColorScheme)[keyof typeof ColorScheme];
+
+/** One resource a custom property defines, as the XAML element that goes in a theme dictionary. */
+export interface ResourceEntry {
+  scheme: ColorScheme;
+  /** The resource key; a later entry of the same scheme and key replaces an earlier one. */
+  key: string;
+  xaml: string;
+}
+
+/**
  * One compound selector with its declarations. A selector list is several
  * rules; a rule is data, so a sheet is JSON.
  */
@@ -64,6 +85,12 @@ export interface Rule {
   /** Source order across the whole sheet. */
   order: number;
   declarations: Declaration[];
+  /**
+   * The custom properties declared in this rule: resources set on each element
+   * it matches (and so seen by the element's children), where `:root` sets
+   * them for the whole app.
+   */
+  resources: ResourceEntry[];
 }
 
 /** A component's stylesheet as data. */
@@ -71,7 +98,7 @@ export interface StyleSheetData {
   /** The component's file: registering the same id again replaces the sheet. */
   id: string;
   rules: Rule[];
-  /** A XAML ResourceDictionary of the sheet's custom properties, or null. */
+  /** A XAML ResourceDictionary of the sheet's `:root` custom properties, or null. */
   resourcesXaml: string | null;
 }
 

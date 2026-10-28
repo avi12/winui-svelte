@@ -1,17 +1,20 @@
 import { gradientGroups } from "./background-properties.ts";
-import { computeDeclarations, XAML_NAMESPACES } from "./cascade.ts";
+import { computeDeclarations, resourceDictionaryXaml } from "./cascade.ts";
 import { lowerDeclarations } from "./properties.ts";
 import { expandDeclaration } from "./shorthands.ts";
+import { ColorScheme } from "./types.ts";
 import type {
   Declaration,
   Diagnostic,
+  ResourceEntry,
   Rule,
   Severity,
   SourcePosition,
   StyleSheetData,
   Translation
 } from "./types.ts";
-import { parseColor } from "#src/css/parse/colors.js";
+import { variableEntries } from "./variables.ts";
+import type { Variable, VariableEntry } from "./variables.ts";
 import type { AtRuleBlock, Block, RuleBlock } from "#src/css/parse/parser.js";
 import { BlockKind, CssSyntaxError, parseCss } from "#src/css/parse/parser.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
@@ -19,9 +22,8 @@ import type { ParsedSelector } from "#src/css/parse/selectors.js";
 import { parseSelectorList } from "#src/css/parse/selectors.js";
 import type { PositionMapper, SourceMapV3 } from "#src/css/parse/source-map.js";
 import { createPositionMapper } from "#src/css/parse/source-map.js";
-import { parseLength, parseNumber } from "#src/css/parse/values.js";
-import type { ResourceCatalogue } from "#src/css/runtime/resources.js";
-import { hasStyle, resolveVariable, ResourceKind, resourceNameOf } from "#src/css/runtime/resources.js";
+import type { ResourceCatalogue, ResourceKind } from "#src/css/runtime/resources.js";
+import { hasStyle, resolveVariable } from "#src/css/runtime/resources.js";
 
 /**
  * What to translate: Svelte's compiled CSS for one component. Its rules
@@ -38,19 +40,9 @@ export interface TranslateInput {
   resources: ResourceCatalogue;
 }
 
-const ColorScheme = {
-  DEFAULT: "Default",
-  DARK: "Dark",
-  LIGHT: "Light"
-} as const;
-type ColorScheme = (typeof ColorScheme)[keyof typeof ColorScheme];
-
 const schemeQuery = /^\(\s*prefers-color-scheme\s*:\s*(dark|light)\s*\)$/iu;
 
-interface Variable {
-  name: string;
-  value: string;
-  scheme: ColorScheme;
+interface LocatedVariable extends Variable {
   at: SourcePosition;
 }
 
@@ -58,7 +50,9 @@ interface Translator {
   input: TranslateInput;
   mapPosition: PositionMapper;
   diagnostics: Diagnostic[];
-  variables: Variable[];
+  variables: LocatedVariable[];
+  /** The kinds of the resources custom properties define, anywhere in the sheet. */
+  kinds: Map<string, ResourceKind>;
   rules: Rule[];
   nextOrder: number;
 }
@@ -134,7 +128,55 @@ function reportDeclarations({ translator, declarations, message }: {
   }
 }
 
-// One selector of a rule: its custom properties become variables, and its
+function reportDeclarationProblem({ translator, at, message }: {
+  translator: Translator;
+  at: SourcePosition;
+  message: string;
+}) {
+  translator.diagnostics.push({
+    severity: "error",
+    message,
+    file: translator.input.file,
+    at
+  });
+}
+
+// The resources a rule's custom properties define on each element it matches.
+function scopedResources({ translator, customProperties, scheme }: {
+  translator: Translator;
+  customProperties: Declaration[];
+  scheme: ColorScheme;
+}) {
+  const entries = customProperties.flatMap(custom => variableEntries({
+    variable: {
+      name: custom.property,
+      value: custom.value,
+      scheme
+    },
+    catalogue: translator.input.resources,
+    reportProblem: message => reportDeclarationProblem({
+      translator,
+      at: custom.at,
+      message
+    })
+  }));
+  for (const entry of entries) {
+    translator.kinds.set(entry.key, entry.kind);
+  }
+
+  return entries.map(entryOf);
+}
+
+function entryOf({ scheme, key, xaml }: VariableEntry) {
+  return {
+    scheme,
+    key,
+    xaml
+  } satisfies ResourceEntry;
+}
+
+// One selector of a rule: `:root` custom properties become the app's
+// resources, a rule's own become resources of the elements it matches, and its
 // other declarations a rule, unless the selector or the @media cannot style.
 function addSelectorRule({ translator, block, selector, scheme }: {
   translator: Translator;
@@ -148,16 +190,16 @@ function addSelectorRule({ translator, block, selector, scheme }: {
   }));
   const customProperties = declarations.filter(declaration => declaration.property.startsWith("--"));
   const properties = declarations.filter(declaration => !declaration.property.startsWith("--"));
-  for (const custom of customProperties) {
-    translator.variables.push({
-      name: custom.property,
-      value: custom.value,
-      scheme,
-      at: custom.at
-    });
-  }
-
   if (selector.isRoot) {
+    for (const custom of customProperties) {
+      translator.variables.push({
+        name: custom.property,
+        value: custom.value,
+        scheme,
+        at: custom.at
+      });
+    }
+
     reportDeclarations({
       translator,
       declarations: properties,
@@ -166,13 +208,31 @@ function addSelectorRule({ translator, block, selector, scheme }: {
     return;
   }
 
+  const hasState = selector.state !== null;
+  if (hasState) {
+    reportDeclarations({
+      translator,
+      declarations: customProperties,
+      message: `has no WinUI meaning in a :${selector.state} rule (the control's own template drives that state: override the resource it reads for it, such as --button-background-pointer-over)`
+    });
+  }
+
+  const resources = hasState ? [] : scopedResources({
+    translator,
+    customProperties,
+    scheme
+  });
   const isSchemeConditional = scheme !== ColorScheme.DEFAULT;
   if (isSchemeConditional) {
     reportDeclarations({
       translator,
-      declarations: [...properties, ...customProperties],
+      declarations: properties,
       message: "has no WinUI meaning here (a Style cannot depend on the color scheme: set the color through var(--a-winui-brush) or declare a custom property on :root in the @media block)"
     });
+  }
+
+  const isUseless = isSchemeConditional && resources.length === 0;
+  if (isUseless) {
     return;
   }
 
@@ -182,7 +242,8 @@ function addSelectorRule({ translator, block, selector, scheme }: {
     state: selector.state,
     specificity: selector.specificity,
     order: translator.nextOrder,
-    declarations: properties
+    declarations: isSchemeConditional ? [] : properties,
+    resources
   });
   translator.nextOrder++;
 }
@@ -263,62 +324,18 @@ function addBlocks({ translator, blocks, scheme }: {
   }
 }
 
-function variableEntries({ variable, reportProblem }: {
-  variable: Variable;
-  reportProblem(message: string): void;
-}) {
-  const key = resourceNameOf(variable.name);
-  const color = parseColor(variable.value);
-  const hasColor = color !== null;
-  if (hasColor) {
-    return [
-      {
-        key,
-        xaml: `<Color x:Key="${key}">${color}</Color>`,
-        kind: ResourceKind.COLOR
-      },
-      {
-        key: `${key}Brush`,
-        xaml: `<SolidColorBrush x:Key="${key}Brush" Color="{StaticResource ${key}}"/>`,
-        kind: ResourceKind.BRUSH
-      }
-    ];
-  }
-
-  const length = parseLength(variable.value) ?? parseNumber(variable.value);
-  const hasLength = length !== null;
-  if (hasLength) {
-    return [{
-      key,
-      xaml: `<x:Double x:Key="${key}">${length}</x:Double>`,
-      kind: ResourceKind.DOUBLE
-    }];
-  }
-
-  reportProblem(`${variable.name}: expected a color or a length in px, found "${variable.value}"`);
-  return [];
-}
-
 function buildVariableResources(translator: Translator) {
-  const entriesByScheme = new Map<ColorScheme, Map<string, string>>();
-  const kinds = new Map<string, ResourceKind>();
-  for (const variable of translator.variables) {
-    const entries = variableEntries({
-      variable,
-      reportProblem: message => translator.diagnostics.push({
-        severity: "error",
-        message,
-        file: translator.input.file,
-        at: variable.at
-      })
-    });
-    const forScheme = entriesByScheme.get(variable.scheme) ?? new Map<string, string>();
-    for (const entry of entries) {
-      forScheme.set(entry.key, entry.xaml);
-      kinds.set(entry.key, entry.kind);
-    }
-
-    entriesByScheme.set(variable.scheme, forScheme);
+  const entries = translator.variables.flatMap(variable => variableEntries({
+    variable,
+    catalogue: translator.input.resources,
+    reportProblem: message => reportDeclarationProblem({
+      translator,
+      at: variable.at,
+      message
+    })
+  }));
+  for (const entry of entries) {
+    translator.kinds.set(entry.key, entry.kind);
   }
 
   const lightNames = new Set(
@@ -330,36 +347,20 @@ function buildVariableResources(translator: Translator) {
     const isDarkOnly = variable.scheme === ColorScheme.DARK && isUnseen;
     if (isDarkOnly) {
       reportedNames.add(variable.name);
-      translator.diagnostics.push({
-        severity: "error",
-        message: `${variable.name} is declared for dark only; declare it outside @media too (the light value)`,
-        file: translator.input.file,
-        at: variable.at
+      reportDeclarationProblem({
+        translator,
+        at: variable.at,
+        message: `${variable.name} is declared for dark only; declare it outside @media too (the light value)`
       });
     }
   }
 
-  const isSchemeMapEmpty = entriesByScheme.size === 0;
-  if (isSchemeMapEmpty) {
-    return {
-      xaml: null,
-      kinds
-    };
+  const isVariablesMissing = translator.variables.length === 0;
+  if (isVariablesMissing) {
+    return null;
   }
 
-  const dictionaries = [ColorScheme.DEFAULT, ColorScheme.LIGHT, ColorScheme.DARK].flatMap(scheme => {
-    const entries = entriesByScheme.get(scheme);
-    const isEntriesMissing = entries === undefined;
-    if (isEntriesMissing) {
-      return [];
-    }
-
-    return [`<ResourceDictionary x:Key="${scheme}">\n${[...entries.values()].join("\n")}\n</ResourceDictionary>`];
-  });
-  return {
-    xaml: `<ResourceDictionary ${XAML_NAMESPACES}>\n<ResourceDictionary.ThemeDictionaries>\n${dictionaries.join("\n")}\n</ResourceDictionary.ThemeDictionaries>\n</ResourceDictionary>`,
-    kinds
-  };
+  return resourceDictionaryXaml(entries.map(entryOf));
 }
 
 // Lowering every rule alone finds what has no WinUI meaning before the app runs.
@@ -419,6 +420,7 @@ export function translateStyleSheet(input: TranslateInput) {
     mapPosition: createPositionMapper(input.map),
     diagnostics: [],
     variables: [],
+    kinds: new Map(),
     rules: [],
     nextOrder: 0
   };
@@ -440,16 +442,16 @@ export function translateStyleSheet(input: TranslateInput) {
     });
   }
 
-  const variables = buildVariableResources(translator);
+  const resourcesXaml = buildVariableResources(translator);
   validateRules({
     translator,
-    catalogue: input.resources.extend(variables.kinds)
+    catalogue: input.resources.extend(translator.kinds)
   });
   return {
     sheet: {
       id: input.file,
       rules: translator.rules,
-      resourcesXaml: variables.xaml
+      resourcesXaml
     } satisfies StyleSheetData,
     diagnostics: translator.diagnostics
   };

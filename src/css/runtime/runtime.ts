@@ -5,6 +5,7 @@ import {
   computeDeclarations,
   matchingRanked,
   resolveBuiltVariable,
+  resourceDictionaryXaml,
   styleDictionaryXaml,
   xamlTypeName
 } from "#src/css/translate/cascade.js";
@@ -26,6 +27,8 @@ export interface CssNative {
   /** XamlReader.load of a ResourceDictionary. */
   loadDictionary(xaml: string): object;
   mergeIntoApplication(dictionary: object): void;
+  /** Merges a dictionary into the control's own Resources (its template reads them); returns what undoes it. */
+  mergeIntoControl(control: object, dictionary: object): () => void;
   lookupStyle(dictionary: object, key: string): object;
   /** Whether the application's resources (merged dictionaries included) hold `key`. */
   hasApplicationResource(key: string): boolean;
@@ -439,6 +442,8 @@ class ElementStyle implements StyledElement {
   private appliedStyle: object | null = null;
   private appliedWrites = "";
   private stopFollowingSize: (() => void) | null = null;
+  private appliedResources: string | null = null;
+  private removeResources: (() => void) | null = null;
   private isDisposed = false;
 
   constructor(control: object, elementType: string) {
@@ -470,6 +475,8 @@ class ElementStyle implements StyledElement {
     this.subscriptions.clear();
     this.stopFollowingSize?.();
     this.stopFollowingSize = null;
+    this.removeResources?.();
+    this.removeResources = null;
   }
 
   private inlineDeclarations() {
@@ -525,6 +532,10 @@ class ElementStyle implements StyledElement {
       return;
     }
 
+    this.applyResources({
+      currentNative,
+      matched
+    });
     const built = builtFor({
       key,
       elementType: this.elementType,
@@ -542,6 +553,28 @@ class ElementStyle implements StyledElement {
       built
     });
     this.appliedKey = isUnstyled ? null : key;
+  }
+
+  // The custom properties of the rules that match, as the element's own
+  // resources: a dictionary per element, since WinUI keeps one to a parent.
+  private applyResources({ currentNative, matched }: {
+    currentNative: CssNative;
+    matched: RankedRule[];
+  }) {
+    const entries = matched.flatMap(({ rule }) => rule.resources);
+    const hasEntries = entries.length > 0;
+    const xaml = hasEntries ? resourceDictionaryXaml(entries) : null;
+    const isResourcesApplied = xaml === this.appliedResources;
+    if (isResourcesApplied) {
+      return;
+    }
+
+    this.removeResources?.();
+    this.removeResources = xaml === null ? null : currentNative.mergeIntoControl(
+      this.control,
+      currentNative.loadDictionary(xaml)
+    );
+    this.appliedResources = xaml;
   }
 
   private applyWrites({ currentNative, built }: {

@@ -118,11 +118,48 @@ test("custom properties on :root become a dictionary with light and dark", () =>
   assert.match(xaml, /<x:Double x:Key="Gap">8<\/x:Double>/u);
 });
 
-test("a custom property declared on a class is hoisted to the resources", () => {
+test("a custom property declared on a class is a resource of that rule, not of the app", () => {
   const { sheet, diagnostics } = translate({ css: ".a { --tone: red; color: var(--tone) }" });
   assert.deepEqual(diagnostics, []);
-  assert.match(sheet.resourcesXaml ?? "", /<Color x:Key="Tone">#FF0000<\/Color>/u);
+  assert.equal(sheet.resourcesXaml, null);
   assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => declaration.property), ["color"]);
+  assert.deepEqual(sheet.rules[0]?.resources.map(({ scheme, key }) => [scheme, key]), [
+    ["Default", "Tone"],
+    ["Default", "ToneBrush"]
+  ]);
+});
+
+test("a custom property of a class can differ by color scheme, and :root stays the app's", () => {
+  const { sheet, diagnostics } = translate({
+    css: ":root { --accent: #0af }\n.a { --button-background: #111 }\n@media (prefers-color-scheme: dark) { .a { --button-background: #eee } }"
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.match(sheet.resourcesXaml ?? "", /Accent/u);
+  assert.doesNotMatch(sheet.resourcesXaml ?? "", /ButtonBackground/u);
+  const schemes = sheet.rules.flatMap(rule => rule.resources.map(resource => resource.scheme));
+  assert.deepEqual(schemes, ["Default", "Dark"]);
+});
+
+test("a custom property on a state rule is an error that names the resource to override", () => {
+  assert.match(errors(".a:hover { --x: red }").join(), /--x has no WinUI meaning in a :hover rule/u);
+});
+
+test("a custom property of a key WinUI defines keeps WinUI's kind", () => {
+  const { sheet, diagnostics } = translate({
+    css: ".a { --button-background-pointer-over: red; --control-corner-radius: 6px; --button-padding: 4px; --system-accent-color: #0af }"
+  });
+  assert.deepEqual(diagnostics, []);
+  const xaml = sheet.rules[0]?.resources.map(resource => resource.xaml).join("\n") ?? "";
+  assert.match(xaml, /<SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#FF0000"\/>/u);
+  assert.doesNotMatch(xaml, /<Color x:Key="ButtonBackgroundPointerOver"/u);
+  assert.match(xaml, /<CornerRadius x:Key="ControlCornerRadius">6<\/CornerRadius>/u);
+  assert.match(xaml, /<Thickness x:Key="ButtonPadding">4,4,4,4<\/Thickness>/u);
+  assert.match(xaml, /<Color x:Key="SystemAccentColor">#00AAFF<\/Color>/u);
+});
+
+test("a custom property whose value cannot be the kind WinUI gives the key is an error", () => {
+  assert.match(errors(".a { --button-background-pointer-over: 4px }").join(), /--button-background-pointer-over: ButtonBackgroundPointerOver is a WinUI Brush resource, and "4px" cannot be one/u);
+  assert.match(errors(".a { --control-corner-radius: red }").join(), /ControlCornerRadius is a WinUI CornerRadius resource/u);
 });
 
 test("a custom property declared for dark only is an error", () => {
