@@ -161,11 +161,10 @@ export function styleDictionaryXaml({ key, elementType, lowered }: {
   })}\n</ResourceDictionary>`;
 }
 
-/**
- * The XAML of a ResourceDictionary holding `entries` in the theme dictionary of
- * their scheme. A later entry of the same scheme and key replaces an earlier one.
- */
-export function resourceDictionaryXaml(entries: readonly ResourceEntry[]) {
+const THEMES = [ColorScheme.LIGHT, ColorScheme.DARK, ColorScheme.HIGH_CONTRAST];
+
+// A key's xaml per scheme: a later entry of the same scheme and key replaces an earlier one.
+function xamlByScheme(entries: readonly ResourceEntry[]) {
   const byScheme = new Map<ColorScheme, Map<string, string>>();
   for (const entry of entries) {
     const forScheme = byScheme.get(entry.scheme) ?? new Map<string, string>();
@@ -173,14 +172,31 @@ export function resourceDictionaryXaml(entries: readonly ResourceEntry[]) {
     byScheme.set(entry.scheme, forScheme);
   }
 
-  const dictionaries = Object.values(ColorScheme).flatMap(scheme => {
-    const forScheme = byScheme.get(scheme);
-    const isSchemeMissing = forScheme === undefined;
-    if (isSchemeMissing) {
+  return byScheme;
+}
+
+/**
+ * The XAML of a ResourceDictionary holding `entries` in the theme dictionaries
+ * of their schemes. Entries for the default scheme alone make a "Default"
+ * dictionary. Once any entry names a theme, WinUI's advice holds (a "Default"
+ * beside a "HighContrast" lets the light and dark parts of an app change each
+ * other's brushes): there are explicit "Light", "Dark" and "HighContrast"
+ * dictionaries, each the default entries with its own over them. A lookup that
+ * finds no dictionary for the theme in use (high contrast, say) would fail.
+ */
+export function resourceDictionaryXaml(entries: readonly ResourceEntry[]) {
+  const byScheme = xamlByScheme(entries);
+  const defaults = byScheme.get(ColorScheme.DEFAULT) ?? new Map<string, string>();
+  const isDefaultOnly = byScheme.size === 1 && byScheme.has(ColorScheme.DEFAULT);
+  const schemes = isDefaultOnly ? [ColorScheme.DEFAULT] : THEMES;
+  const dictionaries = schemes.flatMap(scheme => {
+    const merged = new Map([...defaults, ...byScheme.get(scheme) ?? []]);
+    const isEmpty = merged.size === 0;
+    if (isEmpty) {
       return [];
     }
 
-    return [`<ResourceDictionary x:Key="${scheme}">\n${[...forScheme.values()].join("\n")}\n</ResourceDictionary>`];
+    return [`<ResourceDictionary x:Key="${scheme}">\n${[...merged.values()].join("\n")}\n</ResourceDictionary>`];
   });
   return `<ResourceDictionary ${XAML_NAMESPACES}>\n<ResourceDictionary.ThemeDictionaries>\n${dictionaries.join("\n")}\n</ResourceDictionary.ThemeDictionaries>\n</ResourceDictionary>`;
 }

@@ -40,7 +40,13 @@ export interface TranslateInput {
   resources: ResourceCatalogue;
 }
 
-const schemeQuery = /^\(\s*prefers-color-scheme\s*:\s*(dark|light)\s*\)$/iu;
+// The @media queries that name a scheme: WinUI's theme dictionaries, and the
+// high contrast one (forced colors, in CSS's words).
+const SCHEME_QUERIES: ReadonlyArray<[RegExp, ColorScheme]> = [
+  [/^\(\s*prefers-color-scheme\s*:\s*dark\s*\)$/iu, ColorScheme.DARK],
+  [/^\(\s*prefers-color-scheme\s*:\s*light\s*\)$/iu, ColorScheme.LIGHT],
+  [/^\(\s*forced-colors\s*:\s*active\s*\)$/iu, ColorScheme.HIGH_CONTRAST]
+];
 
 interface LocatedVariable extends Variable {
   at: SourcePosition;
@@ -88,19 +94,19 @@ function schemeOf({ translator, block }: {
   translator: Translator;
   block: AtRuleBlock;
 }) {
-  const match = block.name === "media" ? schemeQuery.exec(block.prelude) : null;
-  const isMatchMissing = match === null;
-  if (isMatchMissing) {
+  const scheme = block.name === "media" ? SCHEME_QUERIES.find(([query]) => query.test(block.prelude))?.[1] : undefined;
+  const isSchemeMissing = scheme === undefined;
+  if (isSchemeMissing) {
     const what = block.name === "media" ? `@media ${block.prelude}` : `@${block.name}`;
     reportError({
       translator,
-      message: `${what} has no WinUI meaning (only @media (prefers-color-scheme: dark) and (light) do, for custom properties)`,
+      message: `${what} has no WinUI meaning (only @media (prefers-color-scheme: dark), (prefers-color-scheme: light) and (forced-colors: active) do, for custom properties)`,
       generatedAt: block.at
     });
     return null;
   }
 
-  return match[1]?.toLowerCase() === "dark" ? ColorScheme.DARK : ColorScheme.LIGHT;
+  return scheme;
 }
 
 function originalDeclaration({ translator, declaration }: {
@@ -324,6 +330,34 @@ function addBlocks({ translator, blocks, scheme }: {
   }
 }
 
+const SCHEME_WORDS = new Map<ColorScheme, string>([
+  [ColorScheme.LIGHT, "light"],
+  [ColorScheme.DARK, "dark"],
+  [ColorScheme.HIGH_CONTRAST, "forced-colors"]
+]);
+
+// A theme dictionary that lacks a key fails the lookup when that theme is in
+// use, so every name needs a value outside @media, or one for light and dark both.
+function reportIncompleteVariables(translator: Translator) {
+  const declarations = Map.groupBy(translator.variables, variable => variable.name);
+  for (const [name, variables] of declarations) {
+    const schemes = new Set(variables.map(variable => variable.scheme));
+    const hasDefault = schemes.has(ColorScheme.DEFAULT);
+    const hasBothThemes = schemes.has(ColorScheme.LIGHT) && schemes.has(ColorScheme.DARK);
+    const isComplete = hasDefault || hasBothThemes;
+    const [first] = variables;
+    const isReportable = !isComplete && first !== undefined;
+    if (isReportable) {
+      const words = [...schemes].map(scheme => SCHEME_WORDS.get(scheme));
+      reportDeclarationProblem({
+        translator,
+        at: first.at,
+        message: `${name} is declared for ${words.join(" and ")} only; declare it outside @media too (the default value)`
+      });
+    }
+  }
+}
+
 function buildVariableResources(translator: Translator) {
   const entries = translator.variables.flatMap(variable => variableEntries({
     variable,
@@ -338,22 +372,7 @@ function buildVariableResources(translator: Translator) {
     translator.kinds.set(entry.key, entry.kind);
   }
 
-  const lightNames = new Set(
-    translator.variables.filter(variable => variable.scheme !== ColorScheme.DARK).map(variable => variable.name)
-  );
-  const reportedNames = new Set<string>();
-  for (const variable of translator.variables) {
-    const isUnseen = !lightNames.has(variable.name) && !reportedNames.has(variable.name);
-    const isDarkOnly = variable.scheme === ColorScheme.DARK && isUnseen;
-    if (isDarkOnly) {
-      reportedNames.add(variable.name);
-      reportDeclarationProblem({
-        translator,
-        at: variable.at,
-        message: `${variable.name} is declared for dark only; declare it outside @media too (the light value)`
-      });
-    }
-  }
+  reportIncompleteVariables(translator);
 
   const isVariablesMissing = translator.variables.length === 0;
   if (isVariablesMissing) {

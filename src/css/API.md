@@ -141,6 +141,31 @@ case (`--button-background-pointer-over` is `ButtonBackgroundPointerOver`).
 @media (prefers-color-scheme: dark) { .danger { --button-background-pointer-over: #ff99a4 } }
 ```
 
+### Color schemes and high contrast
+
+A custom property can be declared per scheme, on `:root` or on a class:
+
+```css
+:root { --card: #fff }                                              /* the default */
+@media (prefers-color-scheme: dark) { :root { --card: #202020 } }
+@media (forced-colors: active) { :root { --card: Canvas; --card-text: var(--system-color-window-text-color) } }
+```
+
+`forced-colors: active` is Windows' high contrast theme. Its values may be a
+CSS system color (`Canvas`, `CanvasText`, `ButtonFace`, `ButtonText`, `GrayText`,
+`Highlight`, `HighlightText`, `LinkText`) or `var(--system-color-...-color)`, any
+of WinUI's `SystemColor*Color` resources: they become a `{ThemeResource}`
+reference, which WinUI keeps current as the user changes the contrast theme.
+A style rule in these blocks is an error, as in a dark one.
+
+As soon as a sheet declares any scheme, the dictionaries are the explicit
+`Light`, `Dark` and `HighContrast` that Microsoft's theme resources guidance
+asks for (a `Default` beside a `HighContrast` lets the light and dark parts of
+an app change each other's brushes), each holding the default values with its
+own over them: a theme with no dictionary would fail the lookup. A sheet with
+one value per property keeps a single `Default`. Every property needs a value
+outside the blocks, or one for light and dark both.
+
 A scoped override is read when the control builds its template, and WinUI
 reads a theme resource again on a theme change; so it takes effect when the
 class is on the element as it is created, and a later class change may not show

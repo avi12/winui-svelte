@@ -57,7 +57,8 @@ export type PseudoState = (typeof PseudoState)[keyof typeof PseudoState];
 export const ColorScheme = {
   DEFAULT: "Default",
   LIGHT: "Light",
-  DARK: "Dark"
+  DARK: "Dark",
+  HIGH_CONTRAST: "HighContrast"
 } as const;
 
 /** One of the schemes in `ColorScheme`. */

@@ -730,7 +730,7 @@ Stated plainly, so nobody finds them by surprise:
   nesting or `@keyframes`: each is a build error that says what to use instead.
   Gradients are `linear-gradient()` and `radial-gradient()` only (no repeating
   or conic ones, no stop in `px`), and replace `background-color`.
-  `@media (prefers-color-scheme)` can declare custom properties only (a Style
+  `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can declare custom properties only (a Style
   cannot depend on the scheme).
 - **A hot update to a component that is not self-contained** (a changed `.ts`
   module no component accepts) cannot be applied in place; the dev server says

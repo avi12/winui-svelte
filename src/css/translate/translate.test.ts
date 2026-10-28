@@ -98,7 +98,7 @@ test("a rule's shorthands are stored as longhands", () => {
   ]);
 });
 
-test("custom properties on :root become a dictionary with light and dark", () => {
+test("custom properties on :root become explicit light, dark and high contrast dictionaries", () => {
   const { sheet, diagnostics } = translate(
     {
       css: `
@@ -110,15 +110,51 @@ test("custom properties on :root become a dictionary with light and dark", () =>
   assert.deepEqual(diagnostics, []);
   assert.deepEqual(sheet.rules.length, 1);
   const xaml = sheet.resourcesXaml ?? "";
-  assert.match(xaml, /<ResourceDictionary x:Key="Default">/u);
+  assert.doesNotMatch(xaml, /x:Key="Default"/u);
+  assert.match(xaml, /<ResourceDictionary x:Key="Light">/u);
   assert.match(xaml, /<ResourceDictionary x:Key="Dark">/u);
+  assert.match(xaml, /<ResourceDictionary x:Key="HighContrast">/u);
   assert.match(xaml, /<Color x:Key="Accent">#00AAFF<\/Color>/u);
   assert.match(xaml, /<SolidColorBrush x:Key="AccentBrush" Color="\{StaticResource Accent\}"\/>/u);
   assert.match(xaml, /<Color x:Key="Accent">#FFAA00<\/Color>/u);
   assert.match(xaml, /<x:Double x:Key="Gap">8<\/x:Double>/u);
 });
 
-test("a custom property declared on a class is a resource of that rule, not of the app", () => {
+test("a sheet with one value per custom property keeps a single Default dictionary", () => {
+  const { sheet } = translate({ css: ":root { --accent: #0af }" });
+  assert.match(sheet.resourcesXaml ?? "", /<ResourceDictionary x:Key="Default">/u);
+  assert.doesNotMatch(sheet.resourcesXaml ?? "", /x:Key="(Light|Dark|HighContrast)"/u);
+});
+
+test("@media (forced-colors: active) declares the high contrast values, over the defaults", () => {
+  const { sheet, diagnostics } = translate({
+    css: ":root { --accent: #0af; --card-border: red; --button-background: #123 }\n@media (forced-colors: active) { :root { --accent: var(--system-color-highlight-color); --button-background: CanvasText } }"
+  });
+  assert.deepEqual(diagnostics, []);
+  const xaml = sheet.resourcesXaml ?? "";
+  const highContrast = /<ResourceDictionary x:Key="HighContrast">([\s\S]*?)<\/ResourceDictionary>/u.exec(xaml)?.[1] ?? "";
+  assert.match(highContrast, /<StaticResource x:Key="Accent" ResourceKey="SystemColorHighlightColor"\/>/u);
+  assert.match(highContrast, /<SolidColorBrush x:Key="AccentBrush" Color="\{ThemeResource SystemColorHighlightColor\}"\/>/u);
+  assert.match(highContrast, /<SolidColorBrush x:Key="ButtonBackground" Color="\{ThemeResource SystemColorWindowTextColor\}"\/>/u);
+  assert.match(highContrast, /<Color x:Key="CardBorder">#FF0000<\/Color>/u);
+  const light = /<ResourceDictionary x:Key="Light">([\s\S]*?)<\/ResourceDictionary>/u.exec(xaml)?.[1] ?? "";
+  assert.match(light, /<Color x:Key="Accent">#00AAFF<\/Color>/u);
+  assert.match(light, /<SolidColorBrush x:Key="ButtonBackground" Color="#112233"\/>/u);
+});
+
+test("a custom property only forced colors declare is an error, and so is a style rule there", () => {
+  assert.match(errors("@media (forced-colors: active) { :root { --x: red } }").join(), /--x is declared for forced-colors only/u);
+  assert.match(errors("@media (forced-colors: active) { .a { color: red } }").join(), /color has no WinUI meaning here/u);
+});
+
+test("a custom property declared for light and dark both needs no default", () => {
+  const { diagnostics } = translate({
+    css: "@media (prefers-color-scheme: light) { :root { --x: red } }\n@media (prefers-color-scheme: dark) { :root { --x: blue } }"
+  });
+  assert.deepEqual(diagnostics, []);
+});
+
+test("a custom property of a class is a resource of that rule, not of the app", () => {
   const { sheet, diagnostics } = translate({ css: ".a { --tone: red; color: var(--tone) }" });
   assert.deepEqual(diagnostics, []);
   assert.equal(sheet.resourcesXaml, null);

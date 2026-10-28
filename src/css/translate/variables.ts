@@ -1,6 +1,6 @@
 import type { ColorScheme, ResourceEntry } from "./types.ts";
 import { parseColor } from "#src/css/parse/colors.js";
-import { parseLength, parseNumber } from "#src/css/parse/values.js";
+import { parseLength, parseNumber, parseVariable } from "#src/css/parse/values.js";
 import type { ResourceCatalogue } from "#src/css/runtime/resources.js";
 import { ResourceKind, resourceNameOf } from "#src/css/runtime/resources.js";
 
@@ -30,13 +30,66 @@ function entryFor({ scheme, key, xaml, kind }: {
   } satisfies VariableEntry;
 }
 
+/**
+ * A color value: written out (`#FF0000`), or a system color WinUI keeps current
+ * as the user's contrast theme changes (`SystemColorWindowTextColor`).
+ */
+type ColorValue =
+  | {
+    kind: "literal";
+    color: string;
+  }
+  | {
+    kind: "system";
+    key: string;
+  };
+
+// CSS's system colors, as the contrast theme colors WinUI names them.
+const SYSTEM_COLOR_KEYWORDS = new Map([
+  ["canvas", "SystemColorWindowColor"],
+  ["canvastext", "SystemColorWindowTextColor"],
+  ["buttonface", "SystemColorButtonFaceColor"],
+  ["buttontext", "SystemColorButtonTextColor"],
+  ["graytext", "SystemColorGrayTextColor"],
+  ["highlight", "SystemColorHighlightColor"],
+  ["highlighttext", "SystemColorHighlightTextColor"],
+  ["linktext", "SystemColorHotlightColor"]
+]);
+const SYSTEM_COLOR_PREFIX = "SystemColor";
+
+// `var(--system-color-window-text-color)` or a CSS system color such as CanvasText.
+function systemColorKey({ value, catalogue }: {
+  value: string;
+  catalogue: ResourceCatalogue;
+}) {
+  const fromKeyword = SYSTEM_COLOR_KEYWORDS.get(value.toLowerCase());
+  const hasKeyword = fromKeyword !== undefined;
+  if (hasKeyword) {
+    return fromKeyword;
+  }
+
+  const reference = parseVariable(value);
+  const isReferenceMissing = reference === null;
+  if (isReferenceMissing) {
+    return null;
+  }
+
+  const key = catalogue.keyOf(resourceNameOf(reference.name));
+  const isSystemColor = key?.startsWith(SYSTEM_COLOR_PREFIX) === true && catalogue.kindOf(key) === ResourceKind.COLOR;
+  return isSystemColor ? key : null;
+}
+
+function brushColor(value: ColorValue) {
+  return value.kind === "system" ? `{ThemeResource ${value.key}}` : value.color;
+}
+
 // WinUI's templates read these as brushes, so a known brush (or an alias, which
 // stands for one in generic.xaml) takes a SolidColorBrush and no Color beside it.
-function colorEntries({ variable, key, known, color }: {
+function colorEntries({ variable, key, known, value }: {
   variable: Variable;
   key: string;
   known: ResourceKind | undefined;
-  color: string;
+  value: ColorValue;
 }) {
   const { scheme } = variable;
   const isBrush = known === ResourceKind.BRUSH || known === ResourceKind.ALIAS;
@@ -44,22 +97,24 @@ function colorEntries({ variable, key, known, color }: {
     return [entryFor({
       scheme,
       key,
-      xaml: `<SolidColorBrush x:Key="${key}" Color="${color}"/>`,
+      xaml: `<SolidColorBrush x:Key="${key}" Color="${brushColor(value)}"/>`,
       kind: ResourceKind.BRUSH
     })];
   }
 
+  const colorXaml = value.kind === "system" ? `<StaticResource x:Key="${key}" ResourceKey="${value.key}"/>` : `<Color x:Key="${key}">${value.color}</Color>`;
+  const brushSource = value.kind === "system" ? brushColor(value) : `{StaticResource ${key}}`;
   return [
     entryFor({
       scheme,
       key,
-      xaml: `<Color x:Key="${key}">${color}</Color>`,
+      xaml: colorXaml,
       kind: ResourceKind.COLOR
     }),
     entryFor({
       scheme,
       key: `${key}Brush`,
-      xaml: `<SolidColorBrush x:Key="${key}Brush" Color="{StaticResource ${key}}"/>`,
+      xaml: `<SolidColorBrush x:Key="${key}Brush" Color="${brushSource}"/>`,
       kind: ResourceKind.BRUSH
     })
   ];
@@ -110,6 +165,29 @@ const COLOR_KINDS: ReadonlySet<ResourceKind | undefined> = new Set([
   ResourceKind.COLOR
 ]);
 
+function colorValueOf({ text, catalogue }: {
+  text: string;
+  catalogue: ResourceCatalogue;
+}) {
+  const system = systemColorKey({
+    value: text,
+    catalogue
+  });
+  const isSystem = system !== null;
+  if (isSystem) {
+    return {
+      kind: "system",
+      key: system
+    } as const;
+  }
+
+  const color = parseColor(text);
+  return color === null ? null : {
+    kind: "literal",
+    color
+  } as const;
+}
+
 /**
  * The resources a custom property defines. A key WinUI defines keeps WinUI's
  * spelling and kind (`--button-background-pointer-over` is a Brush, so it gets
@@ -124,15 +202,18 @@ export function variableEntries({ variable, catalogue, reportProblem }: {
   const name = resourceNameOf(variable.name);
   const key = catalogue.keyOf(name) ?? name;
   const known = catalogue.kindOf(key);
-  const color = parseColor(variable.value);
-  const hasColor = color !== null;
+  const value = colorValueOf({
+    text: variable.value,
+    catalogue
+  });
+  const hasColor = value !== null;
   const isColorKind = hasColor && COLOR_KINDS.has(known);
   if (isColorKind) {
     return colorEntries({
       variable,
       key,
       known,
-      color
+      value
     });
   }
 
