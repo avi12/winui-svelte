@@ -732,7 +732,9 @@ export function emitLevel(level: ClassModel) {
 
 // What a component that shows items by a snippet is made of, by host: the
 // types of its props and of the component (items-props.ts), the call that
-// connects the host, and whether the app gets the list's handle.
+// connects the host, whether the app gets the list's handle, and the props the
+// host owns that the app can bind (the host reads and writes them through a
+// `selection` bag).
 const hosts = new Map<ItemsHost, {
   props: string;
   component: string;
@@ -740,6 +742,7 @@ const hosts = new Map<ItemsHost, {
   imports: string[];
   attach: string;
   hasHandle: boolean;
+  bindables: string[];
 }>([
   [
     ItemsHost.LIST,
@@ -748,8 +751,9 @@ const hosts = new Map<ItemsHost, {
       component: "ListComponent",
       module: "items-host.svelte.ts",
       imports: ["attachItems"],
-      attach: "attachItems({ view: native, props: rest })",
-      hasHandle: true
+      attach: "attachItems({ view: native, props: rest, selection })",
+      hasHandle: true,
+      bindables: ["selectedKey", "selectedKeys"]
     }
   ],
   [
@@ -760,7 +764,8 @@ const hosts = new Map<ItemsHost, {
       module: "repeater-host.svelte.ts",
       imports: ["attachRepeaterItems", "RepeaterElement"],
       attach: "attachRepeaterItems({ owner: native, props: rest, kind: RepeaterElement.SLOT })",
-      hasHandle: false
+      hasHandle: false,
+      bindables: []
     }
   ],
   [
@@ -771,7 +776,8 @@ const hosts = new Map<ItemsHost, {
       module: "repeater-host.svelte.ts",
       imports: ["attachRepeaterItems", "RepeaterElement"],
       attach: "attachRepeaterItems({ owner: native, props: rest, kind: RepeaterElement.ITEM_CONTAINER })",
-      hasHandle: false
+      hasHandle: false,
+      bindables: []
     }
   ]
 ]);
@@ -816,6 +822,15 @@ export function emitDeclaration(level: ClassModel) {
   ].join("\n")}\n`;
 }
 
+// An object whose members read and write the component's bindable props, to
+// hand to code that cannot reach the props themselves.
+function bagOf(keys: string[]) {
+  const members = keys.map(
+    key => `    get ${key}() {\n      return ${key};\n    },\n    set ${key}(next) {\n      ${key} = next;\n    }`
+  );
+  return keys.length === 0 ? "{}" : `{\n${members.join(",\n")}\n  }`;
+}
+
 export function emitComponent(level: ClassModel) {
   const name = level.type.name;
   const host = hostOf(name);
@@ -823,18 +838,17 @@ export function emitComponent(level: ClassModel) {
   const hasHandle = isHosted && host.hasHandle;
   const hasChildren = level.contentProperty !== null && !isHosted;
   const bindables = allBindableNames(level);
+  const hostBindables = isHosted ? host.bindables : [];
   const destructured = [
     ...bindables.map(key => `${key} = $bindable()`),
     ...hasHandle ? ["handle = $bindable()"] : [],
+    ...hostBindables.map(key => `${key} = $bindable()`),
     ...hasChildren ? ["children"] : [],
     "class: className",
     "style",
     "...rest"
   ];
-  const bag = bindables.map(
-    key => `    get ${key}() {\n      return ${key};\n    },\n    set ${key}(next) {\n      ${key} = next;\n    }`
-  );
-  const bound = bindables.length === 0 ? "{}" : `{\n${bag.join(",\n")}\n  }`;
+  const bound = bagOf(bindables);
   const connect = isHosted ? "connect(native)" : `connect${name}(native, rest, bound)`;
   const attachment = `{@attach control((native: ${name}) => untrack(() => ${connect}))}`;
   const open = `<${level.tag} {...attachmentsOf(rest)} class={className} {style} ${attachment}`;
@@ -877,6 +891,7 @@ export function emitComponent(level: ClassModel) {
     "",
     `  let { ${destructured.join(", ")} }: ${propsType} = $props();`,
     `  const bound = ${bound};`,
+    ...hostBindables.length === 0 ? [] : [`  const selection = ${bagOf(hostBindables)};`],
     `  registerControls({ "${level.tag}": ${name} });`,
     ...hosting,
     "</script>",
@@ -903,7 +918,8 @@ export function emitControlsTable(model: Model) {
     const props = hiddenCount > 0 ? `${shown}, +${hiddenCount} more` : shown;
     const category = level.type.namespace.replace(NAMESPACE_PREFIX, "");
     const content = level.contentProperty === null ? "" : "yes";
-    return `| \`${level.type.name}\` | ${category} | ${props} | ${codeList(allBindableNames(level))} | ${content} |`;
+    const bindables = [...allBindableNames(level), ...hostOf(level.type.name)?.bindables ?? []];
+    return `| \`${level.type.name}\` | ${category} | ${props} | ${codeList(bindables)} | ${content} |`;
   });
   return [
     "| Component | Namespace | Props it adds | Bindable | Children |",
