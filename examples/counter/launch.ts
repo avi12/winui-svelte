@@ -11,7 +11,7 @@ import { createMessagePortTransport, diff, isJsonObject, MessageType } from "win
 // a worker MessagePort; a Rust or Electron host would speak the same
 // messages over stdio (createStdioTransport) instead.
 //
-//   node --disable-warning=ExperimentalWarning examples/counter/launch.ts
+//   node --disable-warning=ExperimentalWarning --enable-source-maps examples/counter/launch.ts
 //
 // (from the package's folder: the Windows App SDK's bootstrapper is looked for
 // in its .winapp)

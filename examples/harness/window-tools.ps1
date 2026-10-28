@@ -56,7 +56,7 @@ function Start-Example {
   param([Parameter(Mandatory)][string]$Entry, [string[]]$Flags = @())
   $info = New-Object System.Diagnostics.ProcessStartInfo 'node'
   $info.WorkingDirectory = $packageRoot
-  $info.Arguments = (@('--disable-warning=ExperimentalWarning', 'examples/harness/launch.ts', $Entry) + $Flags) -join ' '
+  $info.Arguments = (@('--disable-warning=ExperimentalWarning', '--enable-source-maps', 'examples/harness/launch.ts', $Entry) + $Flags) -join ' '
   $info.UseShellExecute = $false
   $info.CreateNoWindow = $true
   $info.RedirectStandardInput = $true

@@ -33,7 +33,7 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 Remove-Item $Log -ErrorAction SilentlyContinue
 $env:SCHEDULING_LOG = $Log
 $package = Split-Path -Parent (Split-Path -Parent $here)
-$node = Start-Process node -WorkingDirectory $package -WindowStyle Hidden -PassThru -ArgumentList @('--disable-warning=ExperimentalWarning', 'examples/scheduling/launch.ts')
+$node = Start-Process node -WorkingDirectory $package -WindowStyle Hidden -PassThru -ArgumentList @('--disable-warning=ExperimentalWarning', '--enable-source-maps', 'examples/scheduling/launch.ts')
 try {
   $hwnd = [IntPtr]::Zero
   for ($i = 0; $i -lt 40 -and $hwnd -eq [IntPtr]::Zero; $i++) { Start-Sleep -Milliseconds 500; $hwnd = [Win]::Find([uint32]$node.Id) }

@@ -40,7 +40,7 @@ $source = Join-Path $here 'App.svelte'
 $original = [IO.File]::ReadAllText($source)
 $env:WINUI_SVELTE_BACKGROUND = '1'
 $log = Join-Path $env:TEMP 'winui-svelte-hello.log'
-$node = Start-Process node -WorkingDirectory $package -WindowStyle Hidden -PassThru -RedirectStandardError $log -ArgumentList @('--disable-warning=ExperimentalWarning', 'examples/hello/main.ts')
+$node = Start-Process node -WorkingDirectory $package -WindowStyle Hidden -PassThru -RedirectStandardError $log -ArgumentList @('--disable-warning=ExperimentalWarning', '--enable-source-maps', 'examples/hello/main.ts')
 $automation = [System.Windows.Automation.AutomationElement]
 $scope = [System.Windows.Automation.TreeScope]::Descendants
 function Texts($root) {

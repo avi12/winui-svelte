@@ -5,7 +5,7 @@ import { initWindowsAppSdk } from "winui-svelte/bootstrap";
 // bootstrapper `winapp restore` put in this folder's .winapp. The examples run
 // from the package's folder:
 //
-//   node --disable-warning=ExperimentalWarning examples/counter/launch.ts
+//   node --disable-warning=ExperimentalWarning --enable-source-maps examples/counter/launch.ts
 
 const WINDOWS_APP_SDK_MAJOR = 2;
 const WINDOWS_APP_SDK_MINOR = 2;

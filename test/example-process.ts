@@ -57,7 +57,7 @@ export class ExampleProcess {
     entry: string;
     flags?: string[];
   }) {
-    const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", LAUNCHER, entry, ...flags], {
+    const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "--enable-source-maps", LAUNCHER, entry, ...flags], {
       cwd: PACKAGE_ROOT,
       stdio: ["pipe", "pipe", "inherit"]
     });

@@ -19,7 +19,7 @@ test("every component mounts in a WinUI window", {
   skip: !existsSync(BOOTSTRAP),
   timeout: TIMEOUT_MILLISECONDS
 }, async () => {
-  const { stdout } = await run(process.execPath, ["--disable-warning=ExperimentalWarning", SCRIPT], {
+  const { stdout } = await run(process.execPath, ["--disable-warning=ExperimentalWarning", "--enable-source-maps", SCRIPT], {
     timeout: TIMEOUT_MILLISECONDS,
     maxBuffer: 64 * 1024 * 1024
   });

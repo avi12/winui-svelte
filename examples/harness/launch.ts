@@ -8,7 +8,8 @@ import { MessageChannel, Worker } from "node:worker_threads";
 // Runs an example in a real WinUI window, on a worker (WinUI's loop never
 // gives its thread back), its modules served by Vite.
 //
-//   node --disable-warning=ExperimentalWarning examples/harness/launch.ts <entry> [--name value ...]
+//   node --disable-warning=ExperimentalWarning --enable-source-maps \
+//     examples/harness/launch.ts <entry> [--name value ...]
 //
 // <entry> is a module of the package (examples/lists/main.ts) exporting
 // `start(host)`. The first line on stdout is `pid <n>`; then every message the
