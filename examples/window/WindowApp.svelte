@@ -1,12 +1,22 @@
 <script lang="ts">
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import type { Json } from "#src/messaging/json.js";
-  import { DesktopAcrylicBackdrop, MicaBackdrop, MicaKind, projectAs } from "#src/winui.js";
+  import {
+    DesktopAcrylicBackdrop,
+    ElementTheme,
+    FrameworkElement,
+    InputNonClientPointerSource,
+    MicaBackdrop,
+    MicaKind,
+    NonClientRegionKind,
+    projectAs,
+    TitleBarHeightOption
+  } from "#src/winui.js";
   import { flush } from "winui-svelte";
   import { Window } from "winui-svelte/components";
-  import type { WindowBounds, WindowHandle } from "winui-svelte/components";
+  import type { CaptionButtonColors, WindowBounds, WindowHandle, WindowRegion } from "winui-svelte/components";
   import { exitApplication } from "winui-svelte/window";
-  import { Backdrop } from "winui-svelte/window";
+  import { Backdrop, TitleBarHeight, WindowTheme } from "winui-svelte/window";
 
   const WINDOW_WIDTH = 520;
   const WINDOW_HEIGHT = 360;
@@ -17,12 +27,24 @@
     return Object.values(Backdrop).find(candidate => candidate === name) ?? Backdrop.acrylic;
   }
 
+  // The name of the member of a WinUI enum that holds `value`.
+  function nameOf({ table, value }: {
+    table: Record<string, number>;
+    value: number;
+  }) {
+    return Object.entries(table).find(([, member]) => member === value)?.[0];
+  }
+
   // The host is the harness's, handed over once: it never changes.
   const { host }: { host: ExampleHost } = $props();
 
   // svelte-ignore state_referenced_locally
   let backdrop = $state(backdropOf(host.options["backdrop"]));
   let title = $state("Window example");
+  let theme = $state<WindowTheme | undefined>();
+  let titleBarHeight = $state<TitleBarHeight | undefined>();
+  let captionButtons = $state<CaptionButtonColors | undefined>();
+  let dragRegions = $state<readonly WindowRegion[] | undefined>();
   let width = $state(WINDOW_WIDTH);
   let handle: WindowHandle | undefined = $state();
   let lastBounds: WindowBounds | null = null;
@@ -48,6 +70,31 @@
     }
   }
 
+  // What WinUI holds for the window's chrome, read back from the native objects.
+  function chromeReadback() {
+    const appWindow = handle?.appWindow;
+    const content = handle?.window.content;
+    const isOpen = appWindow !== undefined && content !== undefined;
+    if (!isOpen) {
+      return {};
+    }
+
+    const { titleBar } = appWindow;
+    return {
+      theme: nameOf({
+        table: ElementTheme,
+        value: projectAs(content, FrameworkElement).requestedTheme
+      }),
+      titleBarHeightOption: nameOf({
+        table: TitleBarHeightOption,
+        value: titleBar.preferredHeightOption
+      }),
+      captionForeground: titleBar.buttonForegroundColor,
+      captionHoverBackground: titleBar.buttonHoverBackgroundColor,
+      dragRegions: InputNonClientPointerSource.getForWindowId(appWindow.id).getRegionRects(NonClientRegionKind.Caption)
+    };
+  }
+
   // Reports what the window shows after the props the command changed have
   // reached it.
   function report(kind: string) {
@@ -56,6 +103,7 @@
     host.report({
       kind,
       backdrop: backdropName(),
+      ...chromeReadback(),
       title: handle?.window.title,
       scale: handle?.scale,
       extendsIntoTitleBar: handle?.window.extendsContentIntoTitleBar,
@@ -82,6 +130,32 @@
     ["title", command => {
       title = String(command["value"]);
       report("title");
+    }],
+    ["theme", command => {
+      theme = Object.values(WindowTheme).find(candidate => candidate === command["value"]);
+      report("theme");
+    }],
+    ["titleBarHeight", command => {
+      titleBarHeight = Object.values(TitleBarHeight).find(candidate => candidate === command["value"]);
+      report("titleBarHeight");
+    }],
+    ["captionButtons", command => {
+      captionButtons = command["value"] === null ? undefined : {
+        foreground: String(command["foreground"]),
+        hoverBackground: String(command["hoverBackground"])
+      };
+      report("captionButtons");
+    }],
+    ["dragRegions", command => {
+      dragRegions = command["value"] === null ? undefined : [
+        {
+          x: Number(command["x"]),
+          y: 0,
+          width: Number(command["width"]),
+          height: Number(command["height"])
+        }
+      ];
+      report("dragRegions");
     }],
     ["width", command => {
       width = Number(command["value"]);
@@ -112,6 +186,8 @@
   activate={false}
   appUserModelId="winui-svelte.examples.window"
   {backdrop}
+  {captionButtons}
+  {dragRegions}
   height={WINDOW_HEIGHT}
   isMaximizable={false}
   minWidth={WINDOW_MIN_WIDTH}
@@ -136,7 +212,9 @@
     x: -8000,
     y: 0
   }}
+  {theme}
   {title}
+  {titleBarHeight}
   {width}
   bind:handle
 >

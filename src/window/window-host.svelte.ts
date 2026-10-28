@@ -1,9 +1,18 @@
+import { applyCaptionButtonColors, applyRegions, applyTheme, applyTitleBarHeight } from "./apply-chrome.ts";
 import type { Backdrop } from "./backdrop.ts";
 import { applyBackdrop, Backdrop as BackdropKind } from "./backdrop.ts";
+import type { CaptionButtonColors, CaptionButtonProperty, TitleBarHeight, WindowRegion } from "./chrome.ts";
+import { TitleBarHeight as TitleBarHeightKind, WindowTheme } from "./chrome.ts";
 import { joinAppUserModel } from "./native.ts";
 import { WindowHandle } from "./window-handle.ts";
 import type { FrameworkElement } from "#src/winui.js";
-import { DisplayArea, DisplayAreaFallback, Window, WindowActivationState } from "#src/winui.js";
+import {
+  DisplayArea,
+  DisplayAreaFallback,
+  NonClientRegionKind,
+  Window,
+  WindowActivationState
+} from "#src/winui.js";
 
 // What <Window> (components/hand-written/Window.svelte) does: a native window
 // around the component's content, kept in line with its props.
@@ -34,8 +43,36 @@ export interface WindowProps {
   /** The material behind the content; none (the default) is the theme's color. */
   backdrop?: Backdrop;
 
+  /**
+   * Light, dark, or the system's (the default): the theme of the content and
+   * of the caption buttons.
+   */
+  theme?: WindowTheme | undefined;
+
   /** The content runs up into the title bar. On by default with a `titleBar`. */
   extendsIntoTitleBar?: boolean;
+
+  /**
+   * The title bar's height, and the caption buttons': tall fits a search box
+   * or tabs. It applies when the content extends into the title bar.
+   */
+  titleBarHeight?: TitleBarHeight | undefined;
+
+  /** The colors of the minimize, maximize and close buttons. */
+  captionButtons?: CaptionButtonColors | undefined;
+
+  /**
+   * Where a press drags the window, in device-independent pixels from the
+   * window's top-left corner: a custom title bar's own areas. Without it the
+   * `titleBar` snippet (or the system's title bar) is the drag area.
+   */
+  dragRegions?: readonly WindowRegion[] | undefined;
+
+  /**
+   * Parts of a drag area that take the pointer themselves (a search box in
+   * the title bar), in device-independent pixels.
+   */
+  passthroughRegions?: readonly WindowRegion[] | undefined;
 
   /** The path of an .ico file, for the title bar and the taskbar. */
   icon?: string;
@@ -112,8 +149,13 @@ class WindowHost {
   readonly handle: WindowHandle;
   private readonly props: WindowProps;
   private readonly titleBar: () => FrameworkElement | null;
+  private readonly content: FrameworkElement;
   private readonly unsubscribe: Array<() => void> = [];
   private appliedBackdrop: Backdrop | null = null;
+  private isThemeApplied = false;
+  private appliedHeight: TitleBarHeight | null = null;
+  private appliedCaptionButtons: ReadonlySet<CaptionButtonProperty> = new Set();
+  private readonly appliedRegions = new Set<NonClientRegionKind>();
   private appliedSize: {
     width: number | undefined;
     height: number | undefined;
@@ -121,6 +163,7 @@ class WindowHost {
 
   constructor(content: FrameworkElement, props: WindowProps, titleBar: () => FrameworkElement | null) {
     this.props = props;
+    this.content = content;
     this.titleBar = titleBar;
     this.appliedSize = {
       width: props.width,
@@ -137,7 +180,10 @@ class WindowHost {
     window.content = content;
     this.keepInLine(() => this.syncText());
     this.keepInLine(() => this.syncBackdrop());
+    this.keepInLine(() => this.syncTheme());
     this.keepInLine(() => this.syncTitleBar());
+    this.keepInLine(() => this.syncTitleBarLook());
+    this.keepInLine(() => this.syncRegions());
     this.keepInLine(() => this.syncLimits());
     this.placeFirst();
     $effect(() => this.syncSize());
@@ -189,6 +235,80 @@ class WindowHost {
     const isBarSet = isExtended && bar !== null;
     if (isBarSet) {
       window.setTitleBar(bar);
+    }
+  }
+
+  // A window with no theme prop keeps the system's, and is only written to
+  // once an app has set one.
+  private syncTheme() {
+    const { theme } = this.props;
+    const isGiven = theme !== undefined;
+    const isUntouched = !isGiven && !this.isThemeApplied;
+    if (isUntouched) {
+      return;
+    }
+
+    this.isThemeApplied = true;
+    applyTheme({
+      appWindow: this.handle.appWindow,
+      content: this.content,
+      theme: theme ?? WindowTheme.system
+    });
+  }
+
+  private syncTitleBarLook() {
+    const { appWindow } = this.handle;
+    const { titleBarHeight, captionButtons } = this.props;
+    const isHeightSet = titleBarHeight !== undefined || this.appliedHeight !== null;
+    if (isHeightSet) {
+      applyTitleBarHeight({
+        appWindow,
+        height: titleBarHeight ?? TitleBarHeightKind.standard
+      });
+      this.appliedHeight = titleBarHeight ?? null;
+    }
+
+    this.appliedCaptionButtons = applyCaptionButtonColors({
+      appWindow,
+      colors: captionButtons,
+      applied: this.appliedCaptionButtons
+    });
+  }
+
+  private syncRegions() {
+    const { dragRegions, passthroughRegions } = this.props;
+    this.syncRegion({
+      kind: NonClientRegionKind.Caption,
+      regions: dragRegions
+    });
+    this.syncRegion({
+      kind: NonClientRegionKind.Passthrough,
+      regions: passthroughRegions
+    });
+  }
+
+  private syncRegion({ kind, regions }: {
+    kind: NonClientRegionKind;
+    regions: readonly WindowRegion[] | undefined;
+  }) {
+    const isGiven = regions !== undefined;
+    const isApplied = this.appliedRegions.has(kind);
+    const isUntouched = !isGiven && !isApplied;
+    if (isUntouched) {
+      return;
+    }
+
+    applyRegions({
+      appWindow: this.handle.appWindow,
+      kind,
+      regions: regions ?? [],
+      scale: this.handle.scale
+    });
+
+    if (isGiven) {
+      this.appliedRegions.add(kind);
+    } else {
+      this.appliedRegions.delete(kind);
     }
   }
 

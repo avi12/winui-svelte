@@ -75,6 +75,68 @@ test("a window opens as its props say, follows them, and reports what happens to
       assert.equal(changed["backdrop"], backdrop, `WinUI holds ${String(changed["backdrop"])}, not ${backdrop}`);
     }
 
+    const dark = await example.ask({
+      command: {
+        cmd: "theme",
+        value: "dark"
+      },
+      kind: "theme"
+    });
+    assert.equal(dark["theme"], "Dark", "the theme prop sets the content's requested theme");
+    const tall = await example.ask({
+      command: {
+        cmd: "titleBarHeight",
+        value: "tall"
+      },
+      kind: "titleBarHeight"
+    });
+    assert.equal(tall["titleBarHeightOption"], "Tall");
+    const colored = await example.ask({
+      command: {
+        cmd: "captionButtons",
+        foreground: "#ff0000",
+        hoverBackground: "#80112233"
+      },
+      kind: "captionButtons"
+    });
+    assert.deepEqual(colored["captionForeground"], {
+      a: 255,
+      r: 255,
+      g: 0,
+      b: 0
+    });
+    assert.deepEqual(colored["captionHoverBackground"], {
+      a: 128,
+      r: 17,
+      g: 34,
+      b: 51
+    });
+    const uncolored = await example.ask({
+      command: {
+        cmd: "captionButtons",
+        value: null
+      },
+      kind: "captionButtons"
+    });
+    assert.equal(uncolored["captionForeground"], null, "dropping the prop puts the system's color back");
+    const dragged = await example.ask({
+      command: {
+        cmd: "dragRegions",
+        x: 10,
+        width: 200,
+        height: 30
+      },
+      kind: "dragRegions"
+    });
+    assert.deepEqual(dragged["dragRegions"], [
+      {
+        x: Math.round(10 * scale),
+        y: 0,
+        width: Math.round(200 * scale),
+        height: Math.round(30 * scale)
+      }
+    ], "a drag region is the caption region, in device pixels");
+
     const retitled = await example.ask({
       command: {
         cmd: "title",
