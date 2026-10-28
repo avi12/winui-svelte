@@ -47,6 +47,11 @@ const packageBindingsSites = [
 // CommonJS that Node loads itself. From source and from the published package
 // alike, dist/bindings sits two folders above this file.
 const BUNDLED_BINDINGS_FOLDER = path.join(import.meta.dirname, "..", "..", "dist", "bindings");
+// Folders under the root that hold no source the window loads (build output,
+// the restored Windows App SDK, git worktrees of other branches). The watcher
+// opens a handle per file it finds, and on a root with worktrees that is
+// minutes of the server thread, in which no module is served.
+const UNWATCHED_FOLDERS = ["dist", ".winapp", ".worktrees", ".verify", ".fallow", ".idea"];
 const queryOrHash = /[?#].*$/u;
 const scriptExtension = /\.[cm]?[jt]s$/u;
 
@@ -186,7 +191,10 @@ export async function startModuleServer(options: ModuleServerOptions) {
     logLevel: "warn",
     server: {
       middlewareMode: true,
-      ws: false
+      ws: false,
+      watch: {
+        ignored: UNWATCHED_FOLDERS.map(folder => `**/${folder}/**`)
+      }
     },
     plugins: hasConfigFile ? [] : winuiSvelte(options),
     environments: {
