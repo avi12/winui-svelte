@@ -122,4 +122,5 @@ the option, saying what to install.
 Releases go out only when the maintainer asks: bump `version`, `pnpm lint`,
 `pnpm test`, commit, tag `vX.Y.Z` and push; the publish workflow runs
 `pnpm publish --provenance`. `pnpm pack --dry-run` shows what will ship, which
-must never include `CLAUDE.md`, `src/` or the tests.
+must never include `CLAUDE.md`, the tests or the test support; it does include
+`dist` with its source maps and the `src` TypeScript they point at.

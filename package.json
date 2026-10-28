@@ -129,6 +129,11 @@
   },
   "files": [
     "dist",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "!src/state/test-support",
+    "!src/renderer/testing/fake-controls.ts",
+    "!src/renderer/testing/tree-probe.ts",
     "README.md",
     "LICENSE"
   ],

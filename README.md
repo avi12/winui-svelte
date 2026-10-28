@@ -697,6 +697,18 @@ The published package ships `dist/`: the TypeScript compiled with its
 declarations, and the Svelte files as source (with `types` and `svelte`
 conditions on `exports`), which your Vite compiles with the custom renderer.
 
+### Source maps
+
+Every compiled file ships with its source map, and the TypeScript they point at
+is in the package (`node_modules/winui-svelte/src`), so your IDE opens the
+implementation instead of the declaration: Go to Definition on a
+`.d.ts` lands in the `.ts` (declaration maps), and the debugger and your
+bundler's production source maps step through the original code. In a Node
+process that runs the compiled files, start Node with `--enable-source-maps` so
+stack traces name the TypeScript lines. The dev server maps the components it
+compiles for you; a component compiled through `compileSvelte` (tests,
+`winui-svelte/compile`) ends with an inline map of its own.
+
 ## Limitations
 
 Stated plainly, so nobody finds them by surprise:

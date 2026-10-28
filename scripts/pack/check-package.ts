@@ -18,13 +18,23 @@ const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const forbiddenInTarball = [
   /^package\/CLAUDE\.md$/u,
   /^package\/CONTRIBUTING\.md$/u,
-  /^package\/src\//u,
+  /^package\/src\/.*\.(test\.ts|fixture\.svelte)$/u,
+  /^package\/src\/state\/test-support\//u,
+  /^package\/src\/renderer\/testing\/(fake-controls|tree-probe)\.ts$/u,
   /^package\/scripts\//u,
   /^package\/test\//u,
   /^package\/examples\//u,
   /^package\/\.github\//u,
   /\.test\.(js|d\.ts)$/u,
   /\.fixture\.svelte$/u
+];
+
+// What the source maps need: the maps themselves, and the TypeScript they point
+// at, so an IDE opens the implementation, not only the declaration.
+const requiredInTarball = [
+  "package/dist/index.js.map",
+  "package/dist/index.d.ts.map",
+  "package/src/index.ts"
 ];
 
 // A tar archive is 512-byte blocks: a header (name at 0, size in octal at 124,
@@ -112,6 +122,12 @@ try {
   const hasForbidden = forbidden.length > 0;
   if (hasForbidden) {
     throw new Error(`The tarball holds files that must not ship:\n${forbidden.slice(0, FORBIDDEN_LISTED).join("\n")}`);
+  }
+
+  const missing = requiredInTarball.filter(file => !files.includes(file));
+  const isMissing = missing.length > 0;
+  if (isMissing) {
+    throw new Error(`The tarball lacks files the source maps need:\n${missing.join("\n")}`);
   }
 
   const kilobytes = Math.round(statSync(tarball).size / BYTES_PER_KILOBYTE);

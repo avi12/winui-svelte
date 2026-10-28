@@ -1,3 +1,4 @@
+import { filesIn } from "#scripts/files-in.ts";
 import { jsonSchema } from "#src/messaging/json.js";
 import type { Json } from "#src/messaging/json.js";
 import assert from "node:assert/strict";
@@ -100,4 +101,21 @@ test("the WebView2 libraries ship wherever they were restored", { skip: !IS_BUIL
 test("the published files never include the contributor notes", () => {
   assert.ok(!manifest.files.includes("CLAUDE.md"));
   assert.ok(manifest.files.includes("LICENSE"));
+});
+
+const sourceMapSchema = z.object({ sources: z.array(z.string()) });
+const SHIPPED_SOURCE_MAPS = [".js.map", ".d.ts.map"];
+const withheldSource = /\.test\.ts$|[/\\]test-support[/\\]|fake-controls\.ts$|tree-probe\.ts$/u;
+
+test("every source map points at TypeScript the package ships", { skip: !IS_BUILT }, () => {
+  const maps = filesIn(path.join(PACKAGE_ROOT, "dist")).filter(file => SHIPPED_SOURCE_MAPS.some(suffix => file.endsWith(suffix)));
+  assert.ok(maps.length > 0, "pnpm build made no source maps");
+  for (const map of maps) {
+    const { sources } = sourceMapSchema.parse(JSON.parse(readFileSync(map, "utf8")));
+    for (const source of sources) {
+      const resolved = path.resolve(path.dirname(map), source);
+      assert.ok(existsSync(resolved), `${map} points at ${source}, which does not exist`);
+      assert.ok(!withheldSource.test(resolved), `${map} points at ${source}, which the package does not ship`);
+    }
+  }
 });
