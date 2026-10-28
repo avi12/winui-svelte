@@ -86,6 +86,17 @@ test("the bindings and the Windows App SDK bootstrapper ship in dist", { skip: !
   assert.ok(existsSync(bootstrapper), `${bootstrapper} is missing: pnpm build did not copy it`);
 });
 
+test("the WebView2 libraries ship wherever they were restored", { skip: !IS_BUILT }, () => {
+  const restoredFolder = path.join(PACKAGE_ROOT, ".winapp", "bin", process.arch);
+  for (const library of ["WebView2Loader.dll", "Microsoft.Web.WebView2.Core.dll"]) {
+    const isRestored = existsSync(path.join(restoredFolder, library));
+    if (isRestored) {
+      const shipped = path.join(PACKAGE_ROOT, "dist", "bin", process.arch, library);
+      assert.ok(existsSync(shipped), `${shipped} is missing: pnpm build did not copy it`);
+    }
+  }
+});
+
 test("the published files never include the contributor notes", () => {
   assert.ok(!manifest.files.includes("CLAUDE.md"));
   assert.ok(manifest.files.includes("LICENSE"));

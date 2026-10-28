@@ -1,8 +1,10 @@
 import { filesIn } from "#scripts/files-in.ts";
+import { WINAPP_BINARIES, WINAPP_BINDINGS } from "#scripts/winapp-paths.ts";
 import { spawnSync } from "node:child_process";
 import {
   copyFileSync,
   cpSync,
+  existsSync,
   mkdirSync,
   readdirSync,
   readFileSync,
@@ -33,13 +35,17 @@ const OUTPUT_FOLDER = path.join(PACKAGE_ROOT, "dist");
 // What `pnpm bindings` (winapp) generates from WinUI's metadata, and where
 // package.json's `#winui/*` finds it once built. Shipped whole: they declare
 // `"sideEffects": false`, so an app's bundler keeps only the controls it uses.
-const GENERATED_BINDINGS = path.join(PACKAGE_ROOT, ".winapp", "bindings");
+const GENERATED_BINDINGS = WINAPP_BINDINGS;
 const SHIPPED_BINDINGS = path.join(OUTPUT_FOLDER, "bindings");
 // The Windows App SDK bootstrapper `winapp restore` puts in .winapp/bin, per
 // architecture, and where initWindowsAppSdk finds it once built.
-const RESTORED_BOOTSTRAPPERS = path.join(PACKAGE_ROOT, ".winapp", "bin");
+const RESTORED_BOOTSTRAPPERS = WINAPP_BINARIES;
 const SHIPPED_BOOTSTRAPPERS = path.join(OUTPUT_FOLDER, "bin");
+// The native libraries the package carries per architecture: the Windows App
+// SDK's bootstrapper, and what a WebView2 loads (scripts/bindings/webview2.ts
+// puts the second there; arm64ec has neither).
 const BOOTSTRAPPER = "Microsoft.WindowsAppRuntime.Bootstrap.dll";
+const WEBVIEW_LIBRARIES = ["WebView2Loader.dll", "Microsoft.Web.WebView2.Core.dll"];
 const copiedExtensions = [".svelte", ".json"];
 const DECLARATION_SUFFIX = ".d.svelte.ts";
 // `from "./x.ts"` and `import("./x.ts")` in a .svelte script.
@@ -116,6 +122,17 @@ function copyBootstrappers() {
     const target = path.join(SHIPPED_BOOTSTRAPPERS, architecture);
     mkdirSync(target, { recursive: true });
     copyFileSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, BOOTSTRAPPER), path.join(target, BOOTSTRAPPER));
+    const restoredLibraries = WEBVIEW_LIBRARIES.filter(
+      library => existsSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, library))
+    );
+    const isPartial = restoredLibraries.length > 0 && restoredLibraries.length < WEBVIEW_LIBRARIES.length;
+    if (isPartial) {
+      throw new Error(`${architecture} has only ${restoredLibraries.join(", ")} of ${WEBVIEW_LIBRARIES.join(", ")}: run pnpm bindings`);
+    }
+
+    for (const library of restoredLibraries) {
+      copyFileSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, library), path.join(target, library));
+    }
   }
 }
 

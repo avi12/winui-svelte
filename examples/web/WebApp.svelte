@@ -5,7 +5,8 @@
 
   const WINDOW_HEIGHT = 480;
   const WINDOW_WIDTH = 640;
-  const PAGE = "data:text/html,%3Ch1%3EHello%20from%20WebView2%3C%2Fh1%3E";
+  // A page WebView2 allows as the top frame (it blocks a data: URL there).
+  const PAGE = "about:blank";
 
   interface Props {
     // The harness's, handed over once: it never changes.

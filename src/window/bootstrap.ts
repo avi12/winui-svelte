@@ -1,13 +1,19 @@
 import { initWinappsdk } from "@microsoft/dynwinrt";
 import { existsSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 // The Windows App SDK (WinUI 3) comes first, before any WinRT object: its
-// bootstrapper finds the runtime packages installed for the user.
+// bootstrapper finds the runtime packages installed for the user. The folder the
+// bootstrapper is in goes on PATH too: it holds the native libraries a WebView2
+// loads by name (WebView2Loader.dll, Microsoft.Web.WebView2.Core.dll), which
+// would not be found beside node.exe.
 
 const BOOTSTRAP_VARIABLE = "WINAPPSDK_BOOTSTRAP_DLL_PATH";
 const BOOTSTRAP_NAME = "Microsoft.WindowsAppRuntime.Bootstrap.dll";
+const USER_DATA_VARIABLE = "WEBVIEW2_USER_DATA_FOLDER";
+const DEFAULT_APP_NAME = "app";
 // The runtime the package is built against.
 const WINDOWS_APP_SDK_MAJOR = 2;
 const WINDOWS_APP_SDK_MINOR = 2;
@@ -31,6 +37,16 @@ export interface WindowsAppSdkOptions {
    * say. The package ships one, which is tried last.
    */
   folders?: string[];
+
+  /**
+   * Where a WebView2 keeps its profile (cookies, cache). WebView2 defaults to
+   * a folder beside the executable, which for an app that runs under node.exe
+   * is Program Files, not writable, and the browser then never starts. This
+   * option wins, then the `WEBVIEW2_USER_DATA_FOLDER` variable, then
+   * `%LOCALAPPDATA%\winui-svelte\<the app's main script>\WebView2`, one folder
+   * per app, since two apps with different WebView2 settings cannot share one.
+   */
+  webViewUserDataFolder?: string;
 }
 
 /**
@@ -39,22 +55,47 @@ export interface WindowsAppSdkOptions {
  */
 export class WindowsAppRuntimeMissing extends Error {}
 
+function defaultUserDataFolder() {
+  const appName = path.parse(process.argv[1] ?? "").name || DEFAULT_APP_NAME;
+  return path.join(process.env["LOCALAPPDATA"] ?? tmpdir(), "winui-svelte", appName, "WebView2");
+}
+
+// The folder first on PATH, once: the native libraries a WebView2 loads by
+// name are found there, and ours must win over any other copy.
+function putOnPath(folder: string) {
+  const existing = (process.env["PATH"] ?? "").split(path.delimiter).filter(entry => entry !== "");
+  const isPresent = existing.includes(folder);
+  if (!isPresent) {
+    process.env["PATH"] = [folder, ...existing].join(path.delimiter);
+  }
+}
+
 function bootstrapPath(folders: string[]) {
   return folders.map(folder => path.join(folder, BOOTSTRAP_NAME)).find(candidate => existsSync(candidate));
 }
 
 /**
  * Starts the Windows App SDK on this thread, before any WinRT object exists.
- * Imports nothing of WinRT, so it is safe on a host's main thread.
+ * Imports nothing of WinRT, so it is safe on a host's main thread. Call it on
+ * the main thread: the environment it sets (the bootstrapper, PATH, the
+ * WebView2 profile folder) reaches the process only from there, and a worker
+ * started afterwards inherits it.
  *
  * @throws {WindowsAppRuntimeMissing} when the runtime is not installed
  */
 export function initWindowsAppSdk(options: WindowsAppSdkOptions = {}) {
-  const { major = WINDOWS_APP_SDK_MAJOR, minor = WINDOWS_APP_SDK_MINOR, folders = [] } = options;
+  const {
+    major = WINDOWS_APP_SDK_MAJOR,
+    minor = WINDOWS_APP_SDK_MINOR,
+    folders = [],
+    webViewUserDataFolder
+  } = options;
+  process.env[USER_DATA_VARIABLE] = webViewUserDataFolder ?? process.env[USER_DATA_VARIABLE] ?? defaultUserDataFolder();
   const found = bootstrapPath([...folders, ...bundledFolders]);
   const isFound = found !== undefined;
   if (isFound) {
     process.env[BOOTSTRAP_VARIABLE] ??= found;
+    putOnPath(path.dirname(found));
   }
 
   try {

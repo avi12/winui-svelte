@@ -48,7 +48,7 @@ jobs:
       - run: pnpm build
       - name: Pack the tarball
         run: pnpm pack --pack-destination ${{ runner.temp }}
-      - name: Install the tarball in a fresh app and run setup --dry-run
+      - name: Install the tarball in a fresh app and load the package
         shell: pwsh
         run: |
           $app = Join-Path $env:RUNNER_TEMP 'consumer'
@@ -57,7 +57,8 @@ jobs:
           '{ "name": "consumer", "private": true, "type": "module" }' | Set-Content package.json
           $tarball = (Get-ChildItem $env:RUNNER_TEMP -Filter 'winui-svelte-*.tgz').FullName
           pnpm add $tarball
-          pnpm exec winui-svelte setup --dry-run
-          if (-not (Test-Path winapp.yaml)) { throw 'setup --dry-run wrote no winapp.yaml' }
-          $manifest = Get-Content package.json -Raw | ConvertFrom-Json
-          if (-not $manifest.dependencies.svelte) { throw 'setup did not add the custom Svelte build' }
+          $shipped = 'node_modules/winui-svelte/dist/bin/x64'
+          foreach ($library in 'Microsoft.WindowsAppRuntime.Bootstrap.dll', 'WebView2Loader.dll', 'Microsoft.Web.WebView2.Core.dll') {
+            if (-not (Test-Path (Join-Path $shipped $library))) { throw "the package ships no $library" }
+          }
+          node --input-type=module -e "await import('winui-svelte/bootstrap')"

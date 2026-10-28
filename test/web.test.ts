@@ -1,15 +1,20 @@
 import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED } from "./example-process.ts";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { test } from "node:test";
 
 // The web example (examples/web) in a real WinUI window, off screen and never
 // activated: a WebView2 starts its browser, loads a page and says so through
-// its events. Skipped where the Windows App SDK was not restored or the
-// WebView2 Runtime is not installed.
+// its events. Skipped where the Windows App SDK or the WebView2 library was not
+// restored (pnpm restore), or the WebView2 Runtime is not installed. It needs an ordinary desktop session: in a
+// process that a sandbox or a service started, the browser cannot be launched
+// and WebView2 reports 0x8007139F.
 
 const TIMEOUT_MILLISECONDS = 300_000;
 const POLL_MILLISECONDS = 500;
+const NATIVE_LIBRARY = path.join(import.meta.dirname, "..", ".winapp", "bin", process.arch, "Microsoft.Web.WebView2.Core.dll");
 const RUNTIME_KEY = String.raw`HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}`;
 
 function isWebViewRuntimeInstalled() {
@@ -22,14 +27,8 @@ function isWebViewRuntimeInstalled() {
 }
 
 test("a WebView2 starts, loads its page and reports it", {
-  skip: !IS_WINDOWS_APP_SDK_RESTORED || !isWebViewRuntimeInstalled(),
-  timeout: TIMEOUT_MILLISECONDS,
-  // The control is bound and mounts (mount-all.test.ts), but under node.exe it
-  // never gets as far as a browser. It needs Microsoft.Web.WebView2.Core.dll
-  // and WebView2Loader.dll where the process finds them (0x8007007E without),
-  // and then reports 0x8007139F (ERROR_INVALID_STATE) from its initialization
-  // before any user data folder exists.
-  todo: "WebView2 does not start its browser in a node.exe host: initialization fails with 0x8007139F"
+  skip: !IS_WINDOWS_APP_SDK_RESTORED || !existsSync(NATIVE_LIBRARY) || !isWebViewRuntimeInstalled(),
+  timeout: TIMEOUT_MILLISECONDS
 }, async () => {
   const example = ExampleProcess.start({ entry: "examples/web/main.ts" });
   try {
