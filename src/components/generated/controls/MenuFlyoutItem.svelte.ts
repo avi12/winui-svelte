@@ -10,7 +10,7 @@ import type { Snippet } from "svelte";
 
 export interface MenuFlyoutItemProps extends MenuFlyoutItemBaseProps {
   children?: Snippet;
-  command?: MenuFlyoutItem["command"];
+  command?: MenuFlyoutItem["command"] | Snippet;
   commandParameter?: ObjectInput;
   icon?: MenuFlyoutItem["icon"] | Snippet;
   keyboardAcceleratorTextOverride?: string;

@@ -5,6 +5,7 @@ import type { AttachedInput, BrushInput, EnumInput, FontFamilyInput } from "../.
 import { Linker } from "../../runtime.svelte.ts";
 import { FontStretch, FontStyle, KeyTipPlacementMode, TextDecorations } from "../bindings.ts";
 import type { TextElement } from "../bindings.ts";
+import type { Snippet } from "svelte";
 
 export interface TextElementProps {
   accessKey?: string;
@@ -17,7 +18,7 @@ export interface TextElementProps {
   fontStretch?: EnumInput<typeof FontStretch>;
   fontStyle?: EnumInput<typeof FontStyle>;
   fontWeight?: TextElement["fontWeight"];
-  foreground?: BrushInput;
+  foreground?: BrushInput | Snippet;
   isAccessKeyScope?: boolean;
   isTextScaleFactorEnabled?: boolean;
   keyTipHorizontalOffset?: number;

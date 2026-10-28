@@ -11,7 +11,8 @@ import { bindingClasses, SlotKind } from "./model.ts";
 import {
   extendedClasses,
   extraBindings,
-  handWrittenComponents,
+  ItemsHost,
+  itemsHosted,
   narrowedObjectInputs,
   PropertyKind
 } from "./tables.ts";
@@ -69,6 +70,10 @@ const converters = new Map<PropertyKind, {
   [PropertyKind.NULLABLE_BOOLEAN, {
     convert: "nullableBooleanOf",
     inputType: "NullableBooleanInput"
+  }],
+  [PropertyKind.NULLABLE_DOUBLE, {
+    convert: "nullableDoubleOf",
+    inputType: "NullableDoubleInput"
   }],
   [PropertyKind.OBJECT, {
     convert: "objectOf",
@@ -396,9 +401,10 @@ function propertyBlock({ key, snippet, isSnippetTested }: {
 // property they fill, and each slot prop that holds a snippet in its own.
 // The content property also takes a snippet prop when it is a value
 // (`content`), which the children win over.
-function slotMarkup({ level, bindables }: {
+function slotMarkup({ level, bindables, isHosted }: {
   level: ClassModel;
   bindables: string[];
+  isHosted: boolean;
 }) {
   const contentKey = level.contentProperty === null ? null : camelCase(level.contentProperty);
   const slots = chain(level).flatMap(entry => entry.slots);
@@ -407,7 +413,8 @@ function slotMarkup({ level, bindables }: {
   }
 
   const contentSlot = slots.find(slot => slot.key === contentKey);
-  const content = contentKey === null ? [] : [
+  const hasContent = contentKey !== null && !isHosted;
+  const content = hasContent ? [
     "{#if children}",
     `  <property name="${contentKey}">{@render children()}</property>`,
     ...contentSlot === undefined ? [] : [
@@ -415,7 +422,7 @@ function slotMarkup({ level, bindables }: {
       `  <property name="${contentKey}">{@render ${sourceOf(contentSlot)}()}</property>`
     ],
     "{/if}"
-  ];
+  ] : [];
   const others = slots.filter(slot => slot.key !== contentKey).flatMap(slot => propertyBlock({
     key: slot.key,
     snippet: sourceOf(slot),
@@ -723,8 +730,78 @@ export function emitLevel(level: ClassModel) {
   return `${lines.join("\n")}\n`;
 }
 
+// What a component that shows items by a snippet is made of, by host: the
+// types of its props and of the component (items-props.ts), the call that
+// connects the host, and whether the app gets the list's handle.
+const hosts = new Map<ItemsHost, {
+  props: string;
+  component: string;
+  module: string;
+  imports: string[];
+  attach: string;
+  hasHandle: boolean;
+}>([
+  [
+    ItemsHost.LIST,
+    {
+      props: "ListComponentProps",
+      component: "ListComponent",
+      module: "items-host.svelte.ts",
+      imports: ["attachItems"],
+      attach: "attachItems({ view: native, props: rest })",
+      hasHandle: true
+    }
+  ],
+  [
+    ItemsHost.REPEATER,
+    {
+      props: "RepeaterComponentProps",
+      component: "RepeaterComponent",
+      module: "repeater-host.svelte.ts",
+      imports: ["attachRepeaterItems", "RepeaterElement"],
+      attach: "attachRepeaterItems({ owner: native, props: rest, kind: RepeaterElement.SLOT })",
+      hasHandle: false
+    }
+  ],
+  [
+    ItemsHost.ITEM_CONTAINER,
+    {
+      props: "RepeaterComponentProps",
+      component: "RepeaterComponent",
+      module: "repeater-host.svelte.ts",
+      imports: ["attachRepeaterItems", "RepeaterElement"],
+      attach: "attachRepeaterItems({ owner: native, props: rest, kind: RepeaterElement.ITEM_CONTAINER })",
+      hasHandle: false
+    }
+  ]
+]);
+
+const ITEMS_FOLDER = "../hand-written/items";
+
+function hostOf(name: string) {
+  const kind = itemsHosted.get(name);
+  return kind === undefined ? undefined : hosts.get(kind);
+}
+
 export function emitDeclaration(level: ClassModel) {
   const name = level.type.name;
+  const host = hostOf(name);
+  const isHosted = host !== undefined;
+  if (isHosted) {
+    return `${[
+      GENERATED_HEADER,
+      "",
+      `import type { ${name}ComponentProps as ${name}ControlProps } from "./controls/${name}.svelte.ts";`,
+      `import type { ${host.component}, ${host.props} } from "${ITEMS_FOLDER}/items-props.ts";`,
+      "",
+      `/** The props of \`${name}\`, generic over the items it shows. */`,
+      `export type ${name}ComponentProps<Item = object> = ${host.props}<Item, ${name}ControlProps>;`,
+      "",
+      `declare const ${name}: ${host.component}<${name}ControlProps>;`,
+      `export default ${name};`
+    ].join("\n")}\n`;
+  }
+
   const bindings = allBindableNames(level).map(key => `"${key}"`).join(" | ");
   return `${[
     GENERATED_HEADER,
@@ -741,10 +818,15 @@ export function emitDeclaration(level: ClassModel) {
 
 export function emitComponent(level: ClassModel) {
   const name = level.type.name;
+  const host = hostOf(name);
+  const isHosted = host !== undefined;
+  const hasHandle = isHosted && host.hasHandle;
+  const hasChildren = level.contentProperty !== null && !isHosted;
   const bindables = allBindableNames(level);
   const destructured = [
     ...bindables.map(key => `${key} = $bindable()`),
-    ...level.contentProperty === null ? [] : ["children"],
+    ...hasHandle ? ["handle = $bindable()"] : [],
+    ...hasChildren ? ["children"] : [],
     "class: className",
     "style",
     "...rest"
@@ -753,11 +835,13 @@ export function emitComponent(level: ClassModel) {
     key => `    get ${key}() {\n      return ${key};\n    },\n    set ${key}(next) {\n      ${key} = next;\n    }`
   );
   const bound = bindables.length === 0 ? "{}" : `{\n${bag.join(",\n")}\n  }`;
-  const attachment = `{@attach control((native: ${name}) => untrack(() => connect${name}(native, rest, bound)))}`;
+  const connect = isHosted ? "connect(native)" : `connect${name}(native, rest, bound)`;
+  const attachment = `{@attach control((native: ${name}) => untrack(() => ${connect}))}`;
   const open = `<${level.tag} {...attachmentsOf(rest)} class={className} {style} ${attachment}`;
   const inner = slotMarkup({
     level,
-    bindables
+    bindables,
+    isHosted
   });
   const isSnippetUsed = inner.some(line => line.includes("isSnippet("));
   // Never self-closed: Svelte warns that `<tag />` is ambiguous for an element
@@ -765,18 +849,36 @@ export function emitComponent(level: ClassModel) {
   const markup = inner.length === 0
     ? `${open}></${level.tag}>`
     : `${open}>\n${inner.map(line => `  ${line}`).join("\n")}\n</${level.tag}>`;
+  const hosting = isHosted ? [
+    "",
+    `  function connect(native: ${name}) {`,
+    `    const disconnectProperties = connect${name}(native, rest, bound);`,
+    `    const items = ${host.attach};`,
+    ...host.hasHandle ? ["    handle = items.handle;"] : [],
+    "    return () => {",
+    "      items.dispose();",
+    "      disconnectProperties();",
+    "    };",
+    "  }"
+  ] : [];
+  const propsType = isHosted ? `${host.props}<Item, ${name}ComponentProps>` : `${name}ComponentProps`;
   return `${[
     SVELTE_HEADER,
-    "<script lang=\"ts\">",
+    isHosted ? "<script generics=\"Item\" lang=\"ts\">" : "<script lang=\"ts\">",
     "  import { untrack } from \"svelte\";",
     `  import { ${name} } from "./bindings.ts";`,
+    ...isHosted ? [
+      `  import { ${host.imports.join(", ")} } from "${ITEMS_FOLDER}/${host.module}";`,
+      `  import type { ${host.props} } from "${ITEMS_FOLDER}/items-props.ts";`
+    ] : [],
     `  import { ${["attachmentsOf", "control", ...isSnippetUsed ? ["isSnippet"] : [], "registerControls"].join(", ")} } from "../runtime.ts";`,
     `  import type { ${name}ComponentProps } from "./controls/${name}.svelte.ts";`,
     `  import { connect${name} } from "./controls/${name}.svelte.ts";`,
     "",
-    `  let { ${destructured.join(", ")} }: ${name}ComponentProps = $props();`,
+    `  let { ${destructured.join(", ")} }: ${propsType} = $props();`,
     `  const bound = ${bound};`,
     `  registerControls({ "${level.tag}": ${name} });`,
+    ...hosting,
     "</script>",
     "",
     markup
@@ -815,9 +917,8 @@ export function emitIndex(model: Model) {
   const lines = [GENERATED_HEADER, ""];
   for (const component of components) {
     const name = component.type.name;
-    const module = handWrittenComponents.get(name) ?? `./${name}.svelte`;
-    lines.push(`export { default as ${name} } from "${module}";`);
-    lines.push(`export type { ${name}ComponentProps } from "${module.replace(/\.svelte$/u, ".d.svelte.ts")}";`);
+    lines.push(`export { default as ${name} } from "./${name}.svelte";`);
+    lines.push(`export type { ${name}ComponentProps } from "./${name}.d.svelte.ts";`);
   }
 
   return `${lines.join("\n")}\n`;

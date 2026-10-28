@@ -5,9 +5,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { Path } from "../bindings.ts";
 import { linkShape } from "./Shape.svelte.ts";
 import type { ShapeBound, ShapeProps } from "./Shape.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface PathProps extends ShapeProps {
-  data?: Path["data"];
+  data?: Path["data"] | Snippet;
 }
 
 export type PathBound = ShapeBound;

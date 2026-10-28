@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { Italic } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { ItalicComponentProps } from "./controls/Italic.svelte.ts";
   import { connectItalic } from "./controls/Italic.svelte.ts";
 
@@ -14,5 +14,8 @@
 <italic {...attachmentsOf(rest)} class={className} {style} {@attach control((native: Italic) => untrack(() => connectItalic(native, rest, bound)))}>
   {#if children}
     <property name="inlines">{@render children()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
   {/if}
 </italic>

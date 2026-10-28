@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { LineBreak } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { LineBreakComponentProps } from "./controls/LineBreak.svelte.ts";
   import { connectLineBreak } from "./controls/LineBreak.svelte.ts";
 
@@ -11,4 +11,8 @@
   registerControls({ "line-break": LineBreak });
 </script>
 
-<line-break {...attachmentsOf(rest)} class={className} {style} {@attach control((native: LineBreak) => untrack(() => connectLineBreak(native, rest, bound)))}></line-break>
+<line-break {...attachmentsOf(rest)} class={className} {style} {@attach control((native: LineBreak) => untrack(() => connectLineBreak(native, rest, bound)))}>
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
+  {/if}
+</line-break>

@@ -6,14 +6,15 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { ItemsRepeater } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ItemsRepeaterProps extends FrameworkElementProps {
-  background?: BrushInput;
+  background?: BrushInput | Snippet;
   horizontalCacheLength?: number;
   itemsSource?: ObjectReferenceInput;
   itemTemplate?: ObjectReferenceInput;
   itemTransitionProvider?: ItemsRepeater["itemTransitionProvider"];
-  layout?: ItemsRepeater["layout"];
+  layout?: ItemsRepeater["layout"] | Snippet;
   verticalCacheLength?: number;
   onElementClearing?: Parameters<ItemsRepeater["onElementClearing"]>[0];
   onElementIndexChanged?: Parameters<ItemsRepeater["onElementIndexChanged"]>[0];

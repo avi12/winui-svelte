@@ -5,6 +5,7 @@ import {
   FontFamily,
   GridUnitType,
   IReference_Boolean,
+  IReference_Double,
   PropertyValue,
   SolidColorBrush,
   Uri
@@ -88,6 +89,9 @@ export type UriInput = string | Uri;
 
 /** A nullable boolean property such as ToggleButton.IsChecked. */
 export type NullableBooleanInput = boolean | null;
+
+/** A nullable number property (an animation's `to`): a number, or null for unset. */
+export type NullableDoubleInput = number | null;
 
 const GRID_UNIT_TYPES = new Map<GridUnit, GridUnitType>([
   [GridUnit.AUTO, GridUnitType.Auto],
@@ -232,6 +236,12 @@ export function brushOf(input: BrushInput) {
 export function nullableBooleanOf(isOn: NullableBooleanInput) {
   const isUnset = isOn === null;
   return isUnset ? null : IReference_Boolean.from(PropertyValue.createBoolean(isOn));
+}
+
+/** A nullable number property (DoubleAnimation.To) takes a boxed value. */
+export function nullableDoubleOf(input: NullableDoubleInput) {
+  const isUnset = input === null;
+  return isUnset ? null : IReference_Double.from(PropertyValue.createDouble(input));
 }
 
 /** A URI prop as a `Uri`. */

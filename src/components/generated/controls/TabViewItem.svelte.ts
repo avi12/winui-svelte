@@ -11,7 +11,7 @@ import type { Snippet } from "svelte";
 export interface TabViewItemProps extends ListViewItemProps {
   header?: ObjectInput | Snippet;
   headerTemplate?: TabViewItem["headerTemplate"];
-  iconSource?: TabViewItem["iconSource"];
+  iconSource?: TabViewItem["iconSource"] | Snippet;
   isClosable?: boolean;
   onCloseRequested?: Parameters<TabViewItem["onCloseRequested"]>[0];
 }

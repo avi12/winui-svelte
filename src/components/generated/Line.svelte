@@ -12,7 +12,40 @@
 </script>
 
 <line {...attachmentsOf(rest)} class={className} {style} {@attach control((native: Line) => untrack(() => connectLine(native, rest, bound)))}>
+  {#if isSnippet(rest.cacheMode)}
+    <property name="cacheMode">{@render rest.cacheMode()}</property>
+  {/if}
+  {#if isSnippet(rest.clip)}
+    <property name="clip">{@render rest.clip()}</property>
+  {/if}
   {#if isSnippet(rest.contextFlyout)}
     <property name="contextFlyout">{@render rest.contextFlyout()}</property>
+  {/if}
+  {#if rest.keyboardAccelerators}
+    <property name="keyboardAccelerators">{@render rest.keyboardAccelerators()}</property>
+  {/if}
+  {#if isSnippet(rest.projection)}
+    <property name="projection">{@render rest.projection()}</property>
+  {/if}
+  {#if isSnippet(rest.renderTransform)}
+    <property name="renderTransform">{@render rest.renderTransform()}</property>
+  {/if}
+  {#if isSnippet(rest.shadow)}
+    <property name="shadow">{@render rest.shadow()}</property>
+  {/if}
+  {#if isSnippet(rest.transform3D)}
+    <property name="transform3D">{@render rest.transform3D()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualPrimaryBrush)}
+    <property name="focusVisualPrimaryBrush">{@render rest.focusVisualPrimaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualSecondaryBrush)}
+    <property name="focusVisualSecondaryBrush">{@render rest.focusVisualSecondaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.fill)}
+    <property name="fill">{@render rest.fill()}</property>
+  {/if}
+  {#if isSnippet(rest.stroke)}
+    <property name="stroke">{@render rest.stroke()}</property>
   {/if}
 </line>

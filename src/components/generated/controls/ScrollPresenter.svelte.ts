@@ -17,7 +17,7 @@ import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkEl
 import type { Snippet } from "svelte";
 
 export interface ScrollPresenterProps extends FrameworkElementProps {
-  background?: BrushInput;
+  background?: BrushInput | Snippet;
   content?: ScrollPresenter["content"] | Snippet;
   contentOrientation?: EnumInput<typeof ScrollingContentOrientation>;
   horizontalAnchorRatio?: number;

@@ -17,4 +17,7 @@
   {:else if isSnippet(rest.child)}
     <property name="child">{@render rest.child()}</property>
   {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
+  {/if}
 </inline-ui-container>

@@ -233,18 +233,42 @@ these files: it is `src/state`'s, which uses `dispatch` to put host messages
 on the UI thread. `examples/counter` is the working example (its `launch.ts`
 is the host, its `window.ts` the UI-thread worker).
 
-## Components written by hand (`winui-svelte/components`)
+## Components that show items (`winui-svelte/components`)
 
-Every control is a generated component, except the ones in
-`src/components/hand-written/`, which `scripts/codegen/tables.ts` names in
-`handWrittenComponents`. For those the generator still writes the level
-(`generated/controls/<Name>.svelte.ts`, which the hand-written component
-connects with) and the metadata, but not `<Name>.svelte` or `<Name>.d.svelte.ts`;
-the index exports the module named in the table instead. To hand-write another
-component, add `["Name", "../hand-written/Name.svelte"]` there and put
-`Name.svelte` and `Name.d.svelte.ts` in that folder; `pnpm gen:components`
-fails if either is missing and never touches them. `Window` is not a control
-(it is no UIElement), so it is only in `hand-written/` and `components/index.ts`.
+A control that shows its items from a data source is generated like the rest,
+with `items`, `key` and `item` in place of its children and items source: the
+table `itemsHosted` in `scripts/codegen/tables.ts` names them and the host each
+uses (`src/components/hand-written/items`). `ListView` and `GridView` report their
+containers; `ItemsRepeater`, `ItemsView` and `BreadcrumbBar` keep their items in an
+`ItemsRepeater`, whose elements the host fills. Every other property, event and
+snippet slot of the control is the generated component's. `Window` is not a
+control (it is no UIElement), so it is only in `hand-written/` and
+`components/index.ts`.
+
+A control whose items are controls (`ComboBox`, `FlipView`, `NavigationView`,
+`TabView`, `RadioButtons`, `ListBox`...) takes them as children, so Svelte's own
+blocks are its item template: `{#each rows as row (row.id)}<ComboBoxItem content={row.name} />{/each}`
+keeps, adds, moves and removes items as the array changes. `TreeView` takes
+`TreeViewNode` children the same way.
+
+Value objects (brushes, geometry, transforms, transitions, animations,
+layouts, icon and image sources, keyboard accelerators, commands, backdrops)
+are components too, and fill the property they are written in:
+
+```svelte
+<Border>
+  {#snippet background()}
+    <LinearGradientBrush>
+      <GradientStop color="#00e5ff" offset={0} />
+      <GradientStop color="#06182b" offset={1} />
+    </LinearGradientBrush>
+  {/snippet}
+</Border>
+```
+
+One written directly among the children of an element (a `Storyboard`) is made
+and kept by its component but placed nowhere; reach it with
+`{@attach control(storyboard => storyboard.begin())}`.
 
 ### ListView and GridView
 
@@ -272,7 +296,7 @@ fails if either is missing and never touches them. `Window` is not a control
 
 Every other property and event of the control is a prop as on the generated
 components (`selectionMode`, `itemContainerStyle`, `onDragItemsCompleted`, ...);
-`itemsSource`, `itemTemplate` and `children` are the component's.
+`itemsSource`, `itemTemplate`, `items` and `children` are the component's.
 
 How it works: the control's items are a vector of **boxed keys** (the
 control's drag reorder only commits a move to a list of plain values, not of

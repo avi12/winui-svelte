@@ -34,7 +34,7 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   fontStretch?: EnumInput<typeof FontStretch>;
   fontStyle?: EnumInput<typeof FontStyle>;
   fontWeight?: RichTextBlock["fontWeight"];
-  foreground?: BrushInput;
+  foreground?: BrushInput | Snippet;
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
   isColorFontEnabled?: boolean;
   isTextScaleFactorEnabled?: boolean;
@@ -46,7 +46,7 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   overflowContentTarget?: RichTextBlock["overflowContentTarget"];
   padding?: ThicknessInput;
   selectionFlyout?: RichTextBlock["selectionFlyout"] | Snippet;
-  selectionHighlightColor?: RichTextBlock["selectionHighlightColor"];
+  selectionHighlightColor?: RichTextBlock["selectionHighlightColor"] | Snippet;
   textAlignment?: EnumInput<typeof TextAlignment>;
   textDecorations?: EnumInput<typeof TextDecorations>;
   textIndent?: number;

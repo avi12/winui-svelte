@@ -17,10 +17,10 @@ import type { Snippet } from "svelte";
 
 export interface BorderProps extends FrameworkElementProps {
   children?: Snippet;
-  background?: BrushInput;
+  background?: BrushInput | Snippet;
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
   backgroundTransition?: Border["backgroundTransition"];
-  borderBrush?: BrushInput;
+  borderBrush?: BrushInput | Snippet;
   borderThickness?: ThicknessInput;
   child?: Border["child"] | Snippet;
   childTransitions?: Border["childTransitions"];

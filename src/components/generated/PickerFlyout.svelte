@@ -17,4 +17,7 @@
   {:else if isSnippet(rest.content)}
     <property name="content">{@render rest.content()}</property>
   {/if}
+  {#if isSnippet(rest.systemBackdrop)}
+    <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>
+  {/if}
 </picker-flyout>

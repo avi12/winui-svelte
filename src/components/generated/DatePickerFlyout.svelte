@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { DatePickerFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { DatePickerFlyoutComponentProps } from "./controls/DatePickerFlyout.svelte.ts";
   import { connectDatePickerFlyout } from "./controls/DatePickerFlyout.svelte.ts";
 
@@ -11,4 +11,8 @@
   registerControls({ "date-picker-flyout": DatePickerFlyout });
 </script>
 
-<date-picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: DatePickerFlyout) => untrack(() => connectDatePickerFlyout(native, rest, bound)))}></date-picker-flyout>
+<date-picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: DatePickerFlyout) => untrack(() => connectDatePickerFlyout(native, rest, bound)))}>
+  {#if isSnippet(rest.systemBackdrop)}
+    <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>
+  {/if}
+</date-picker-flyout>

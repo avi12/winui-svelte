@@ -17,7 +17,79 @@
   {:else if isSnippet(rest.content)}
     <property name="content">{@render rest.content()}</property>
   {/if}
+  {#if isSnippet(rest.cacheMode)}
+    <property name="cacheMode">{@render rest.cacheMode()}</property>
+  {/if}
+  {#if isSnippet(rest.clip)}
+    <property name="clip">{@render rest.clip()}</property>
+  {/if}
   {#if isSnippet(rest.contextFlyout)}
     <property name="contextFlyout">{@render rest.contextFlyout()}</property>
+  {/if}
+  {#if rest.keyboardAccelerators}
+    <property name="keyboardAccelerators">{@render rest.keyboardAccelerators()}</property>
+  {/if}
+  {#if isSnippet(rest.projection)}
+    <property name="projection">{@render rest.projection()}</property>
+  {/if}
+  {#if isSnippet(rest.renderTransform)}
+    <property name="renderTransform">{@render rest.renderTransform()}</property>
+  {/if}
+  {#if isSnippet(rest.shadow)}
+    <property name="shadow">{@render rest.shadow()}</property>
+  {/if}
+  {#if isSnippet(rest.transform3D)}
+    <property name="transform3D">{@render rest.transform3D()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualPrimaryBrush)}
+    <property name="focusVisualPrimaryBrush">{@render rest.focusVisualPrimaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualSecondaryBrush)}
+    <property name="focusVisualSecondaryBrush">{@render rest.focusVisualSecondaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.background)}
+    <property name="background">{@render rest.background()}</property>
+  {/if}
+  {#if isSnippet(rest.borderBrush)}
+    <property name="borderBrush">{@render rest.borderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBrush)}
+    <property name="checkBrush">{@render rest.checkBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkHintBrush)}
+    <property name="checkHintBrush">{@render rest.checkHintBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkSelectingBrush)}
+    <property name="checkSelectingBrush">{@render rest.checkSelectingBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.dragBackground)}
+    <property name="dragBackground">{@render rest.dragBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.dragForeground)}
+    <property name="dragForeground">{@render rest.dragForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.focusBorderBrush)}
+    <property name="focusBorderBrush">{@render rest.focusBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.placeholderBackground)}
+    <property name="placeholderBackground">{@render rest.placeholderBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.pointerOverBackground)}
+    <property name="pointerOverBackground">{@render rest.pointerOverBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedBackground)}
+    <property name="selectedBackground">{@render rest.selectedBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedForeground)}
+    <property name="selectedForeground">{@render rest.selectedForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedPointerOverBackground)}
+    <property name="selectedPointerOverBackground">{@render rest.selectedPointerOverBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedPointerOverBorderBrush)}
+    <property name="selectedPointerOverBorderBrush">{@render rest.selectedPointerOverBorderBrush()}</property>
   {/if}
 </grid-view-item-presenter>

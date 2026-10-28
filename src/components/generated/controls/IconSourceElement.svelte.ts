@@ -9,7 +9,7 @@ import type { Snippet } from "svelte";
 
 export interface IconSourceElementProps extends IconElementProps {
   children?: Snippet;
-  iconSource?: IconSourceElement["iconSource"];
+  iconSource?: IconSourceElement["iconSource"] | Snippet;
 }
 
 export type IconSourceElementBound = IconElementBound;

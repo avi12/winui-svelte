@@ -7,13 +7,14 @@ import { ItemsViewSelectionMode } from "../bindings.ts";
 import type { ItemsView } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ItemsViewProps extends ControlProps {
   isItemInvokedEnabled?: boolean;
   itemsSource?: ObjectReferenceInput;
   itemTemplate?: ItemsView["itemTemplate"];
   itemTransitionProvider?: ItemsView["itemTransitionProvider"];
-  layout?: ItemsView["layout"];
+  layout?: ItemsView["layout"] | Snippet;
   selectionMode?: EnumInput<typeof ItemsViewSelectionMode>;
   verticalScrollController?: ItemsView["verticalScrollController"];
   onItemInvoked?: Parameters<ItemsView["onItemInvoked"]>[0];

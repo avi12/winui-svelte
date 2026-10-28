@@ -15,17 +15,17 @@ import type { Snippet } from "svelte";
 
 export interface TeachingTipProps extends ContentControlProps {
   isOpen?: boolean | undefined;
-  actionButtonCommand?: TeachingTip["actionButtonCommand"];
+  actionButtonCommand?: TeachingTip["actionButtonCommand"] | Snippet;
   actionButtonCommandParameter?: ObjectInput;
   actionButtonContent?: ObjectInput | Snippet;
   actionButtonStyle?: TeachingTip["actionButtonStyle"];
-  closeButtonCommand?: TeachingTip["closeButtonCommand"];
+  closeButtonCommand?: TeachingTip["closeButtonCommand"] | Snippet;
   closeButtonCommandParameter?: ObjectInput;
   closeButtonContent?: ObjectInput | Snippet;
   closeButtonStyle?: TeachingTip["closeButtonStyle"];
   heroContent?: TeachingTip["heroContent"] | Snippet;
   heroContentPlacement?: EnumInput<typeof TeachingTipHeroContentPlacementMode>;
-  iconSource?: TeachingTip["iconSource"];
+  iconSource?: TeachingTip["iconSource"] | Snippet;
   isLightDismissEnabled?: boolean;
   placementMargin?: ThicknessInput;
   preferredPlacement?: EnumInput<typeof TeachingTipPlacementMode>;

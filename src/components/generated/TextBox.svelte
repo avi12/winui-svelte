@@ -19,8 +19,44 @@
 </script>
 
 <text-box {...attachmentsOf(rest)} class={className} {style} {@attach control((native: TextBox) => untrack(() => connectTextBox(native, rest, bound)))}>
+  {#if isSnippet(rest.cacheMode)}
+    <property name="cacheMode">{@render rest.cacheMode()}</property>
+  {/if}
+  {#if isSnippet(rest.clip)}
+    <property name="clip">{@render rest.clip()}</property>
+  {/if}
   {#if isSnippet(rest.contextFlyout)}
     <property name="contextFlyout">{@render rest.contextFlyout()}</property>
+  {/if}
+  {#if rest.keyboardAccelerators}
+    <property name="keyboardAccelerators">{@render rest.keyboardAccelerators()}</property>
+  {/if}
+  {#if isSnippet(rest.projection)}
+    <property name="projection">{@render rest.projection()}</property>
+  {/if}
+  {#if isSnippet(rest.renderTransform)}
+    <property name="renderTransform">{@render rest.renderTransform()}</property>
+  {/if}
+  {#if isSnippet(rest.shadow)}
+    <property name="shadow">{@render rest.shadow()}</property>
+  {/if}
+  {#if isSnippet(rest.transform3D)}
+    <property name="transform3D">{@render rest.transform3D()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualPrimaryBrush)}
+    <property name="focusVisualPrimaryBrush">{@render rest.focusVisualPrimaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualSecondaryBrush)}
+    <property name="focusVisualSecondaryBrush">{@render rest.focusVisualSecondaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.background)}
+    <property name="background">{@render rest.background()}</property>
+  {/if}
+  {#if isSnippet(rest.borderBrush)}
+    <property name="borderBrush">{@render rest.borderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
   {/if}
   {#if isSnippet(rest.description)}
     <property name="description">{@render rest.description()}</property>
@@ -28,7 +64,16 @@
   {#if isSnippet(rest.header)}
     <property name="header">{@render rest.header()}</property>
   {/if}
+  {#if isSnippet(rest.placeholderForeground)}
+    <property name="placeholderForeground">{@render rest.placeholderForeground()}</property>
+  {/if}
   {#if isSnippet(rest.selectionFlyout)}
     <property name="selectionFlyout">{@render rest.selectionFlyout()}</property>
+  {/if}
+  {#if isSnippet(rest.selectionHighlightColor)}
+    <property name="selectionHighlightColor">{@render rest.selectionHighlightColor()}</property>
+  {/if}
+  {#if isSnippet(rest.selectionHighlightColorWhenNotFocused)}
+    <property name="selectionHighlightColorWhenNotFocused">{@render rest.selectionHighlightColorWhenNotFocused()}</property>
   {/if}
 </text-box>

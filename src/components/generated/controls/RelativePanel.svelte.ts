@@ -13,10 +13,11 @@ import { BackgroundSizing } from "../bindings.ts";
 import type { RelativePanel } from "../bindings.ts";
 import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface RelativePanelProps extends PanelProps {
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
-  borderBrush?: BrushInput;
+  borderBrush?: BrushInput | Snippet;
   borderThickness?: ThicknessInput;
   cornerRadius?: CornerRadiusInput;
   padding?: ThicknessInput;

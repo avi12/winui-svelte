@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { TimePickerFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { TimePickerFlyoutComponentProps } from "./controls/TimePickerFlyout.svelte.ts";
   import { connectTimePickerFlyout } from "./controls/TimePickerFlyout.svelte.ts";
 
@@ -11,4 +11,8 @@
   registerControls({ "time-picker-flyout": TimePickerFlyout });
 </script>
 
-<time-picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: TimePickerFlyout) => untrack(() => connectTimePickerFlyout(native, rest, bound)))}></time-picker-flyout>
+<time-picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: TimePickerFlyout) => untrack(() => connectTimePickerFlyout(native, rest, bound)))}>
+  {#if isSnippet(rest.systemBackdrop)}
+    <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>
+  {/if}
+</time-picker-flyout>

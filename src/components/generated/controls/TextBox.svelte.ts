@@ -30,13 +30,13 @@ export interface TextBoxProps extends ControlProps {
   isSpellCheckEnabled?: boolean;
   isTextPredictionEnabled?: boolean;
   maxLength?: number;
-  placeholderForeground?: BrushInput;
+  placeholderForeground?: BrushInput | Snippet;
   placeholderText?: string;
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
   selectedText?: string;
   selectionFlyout?: TextBox["selectionFlyout"] | Snippet;
-  selectionHighlightColor?: TextBox["selectionHighlightColor"];
-  selectionHighlightColorWhenNotFocused?: TextBox["selectionHighlightColorWhenNotFocused"];
+  selectionHighlightColor?: TextBox["selectionHighlightColor"] | Snippet;
+  selectionHighlightColorWhenNotFocused?: TextBox["selectionHighlightColorWhenNotFocused"] | Snippet;
   selectionLength?: number;
   selectionStart?: number;
   textAlignment?: EnumInput<typeof TextAlignment>;

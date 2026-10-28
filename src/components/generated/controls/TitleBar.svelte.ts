@@ -10,7 +10,7 @@ import type { Snippet } from "svelte";
 export interface TitleBarProps extends ControlProps {
   autoRefreshDragRegions?: boolean;
   content?: TitleBar["content"] | Snippet;
-  iconSource?: TitleBar["iconSource"];
+  iconSource?: TitleBar["iconSource"] | Snippet;
   isBackButtonEnabled?: boolean;
   isBackButtonVisible?: boolean;
   isPaneToggleButtonVisible?: boolean;

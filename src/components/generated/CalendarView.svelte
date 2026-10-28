@@ -12,7 +12,145 @@
 </script>
 
 <calendar-view {...attachmentsOf(rest)} class={className} {style} {@attach control((native: CalendarView) => untrack(() => connectCalendarView(native, rest, bound)))}>
+  {#if isSnippet(rest.cacheMode)}
+    <property name="cacheMode">{@render rest.cacheMode()}</property>
+  {/if}
+  {#if isSnippet(rest.clip)}
+    <property name="clip">{@render rest.clip()}</property>
+  {/if}
   {#if isSnippet(rest.contextFlyout)}
     <property name="contextFlyout">{@render rest.contextFlyout()}</property>
+  {/if}
+  {#if rest.keyboardAccelerators}
+    <property name="keyboardAccelerators">{@render rest.keyboardAccelerators()}</property>
+  {/if}
+  {#if isSnippet(rest.projection)}
+    <property name="projection">{@render rest.projection()}</property>
+  {/if}
+  {#if isSnippet(rest.renderTransform)}
+    <property name="renderTransform">{@render rest.renderTransform()}</property>
+  {/if}
+  {#if isSnippet(rest.shadow)}
+    <property name="shadow">{@render rest.shadow()}</property>
+  {/if}
+  {#if isSnippet(rest.transform3D)}
+    <property name="transform3D">{@render rest.transform3D()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualPrimaryBrush)}
+    <property name="focusVisualPrimaryBrush">{@render rest.focusVisualPrimaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualSecondaryBrush)}
+    <property name="focusVisualSecondaryBrush">{@render rest.focusVisualSecondaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.background)}
+    <property name="background">{@render rest.background()}</property>
+  {/if}
+  {#if isSnippet(rest.borderBrush)}
+    <property name="borderBrush">{@render rest.borderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
+  {/if}
+  {#if isSnippet(rest.blackoutBackground)}
+    <property name="blackoutBackground">{@render rest.blackoutBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.blackoutForeground)}
+    <property name="blackoutForeground">{@render rest.blackoutForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.blackoutStrikethroughBrush)}
+    <property name="blackoutStrikethroughBrush">{@render rest.blackoutStrikethroughBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.calendarItemBackground)}
+    <property name="calendarItemBackground">{@render rest.calendarItemBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.calendarItemBorderBrush)}
+    <property name="calendarItemBorderBrush">{@render rest.calendarItemBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.calendarItemDisabledBackground)}
+    <property name="calendarItemDisabledBackground">{@render rest.calendarItemDisabledBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.calendarItemForeground)}
+    <property name="calendarItemForeground">{@render rest.calendarItemForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.calendarItemHoverBackground)}
+    <property name="calendarItemHoverBackground">{@render rest.calendarItemHoverBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.calendarItemPressedBackground)}
+    <property name="calendarItemPressedBackground">{@render rest.calendarItemPressedBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.disabledForeground)}
+    <property name="disabledForeground">{@render rest.disabledForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.focusBorderBrush)}
+    <property name="focusBorderBrush">{@render rest.focusBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.hoverBorderBrush)}
+    <property name="hoverBorderBrush">{@render rest.hoverBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.outOfScopeBackground)}
+    <property name="outOfScopeBackground">{@render rest.outOfScopeBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.outOfScopeForeground)}
+    <property name="outOfScopeForeground">{@render rest.outOfScopeForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.outOfScopeHoverForeground)}
+    <property name="outOfScopeHoverForeground">{@render rest.outOfScopeHoverForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.outOfScopePressedForeground)}
+    <property name="outOfScopePressedForeground">{@render rest.outOfScopePressedForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.pressedBorderBrush)}
+    <property name="pressedBorderBrush">{@render rest.pressedBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.pressedForeground)}
+    <property name="pressedForeground">{@render rest.pressedForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedBorderBrush)}
+    <property name="selectedBorderBrush">{@render rest.selectedBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedDisabledBorderBrush)}
+    <property name="selectedDisabledBorderBrush">{@render rest.selectedDisabledBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedDisabledForeground)}
+    <property name="selectedDisabledForeground">{@render rest.selectedDisabledForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedForeground)}
+    <property name="selectedForeground">{@render rest.selectedForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedHoverBorderBrush)}
+    <property name="selectedHoverBorderBrush">{@render rest.selectedHoverBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedHoverForeground)}
+    <property name="selectedHoverForeground">{@render rest.selectedHoverForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedPressedBorderBrush)}
+    <property name="selectedPressedBorderBrush">{@render rest.selectedPressedBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedPressedForeground)}
+    <property name="selectedPressedForeground">{@render rest.selectedPressedForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.todayBackground)}
+    <property name="todayBackground">{@render rest.todayBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.todayBlackoutBackground)}
+    <property name="todayBlackoutBackground">{@render rest.todayBlackoutBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.todayBlackoutForeground)}
+    <property name="todayBlackoutForeground">{@render rest.todayBlackoutForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.todayDisabledBackground)}
+    <property name="todayDisabledBackground">{@render rest.todayDisabledBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.todayForeground)}
+    <property name="todayForeground">{@render rest.todayForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.todayHoverBackground)}
+    <property name="todayHoverBackground">{@render rest.todayHoverBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.todayPressedBackground)}
+    <property name="todayPressedBackground">{@render rest.todayPressedBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.todaySelectedInnerBorderBrush)}
+    <property name="todaySelectedInnerBorderBrush">{@render rest.todaySelectedInnerBorderBrush()}</property>
   {/if}
 </calendar-view>

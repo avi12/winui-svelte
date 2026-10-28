@@ -7,8 +7,11 @@ import { TreeViewSelectionMode } from "../bindings.ts";
 import type { TreeView } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface TreeViewProps extends ControlProps {
+  rootNodes?: Snippet;
+  selectedNodes?: Snippet;
   selectedItem?: ObjectInput | undefined;
   canDragItems?: boolean;
   canReorderItems?: boolean;
@@ -18,7 +21,7 @@ export interface TreeViewProps extends ControlProps {
   itemsSource?: ObjectReferenceInput;
   itemTemplate?: TreeView["itemTemplate"];
   itemTemplateSelector?: TreeView["itemTemplateSelector"];
-  selectedNode?: TreeView["selectedNode"];
+  selectedNode?: TreeView["selectedNode"] | Snippet;
   selectionMode?: EnumInput<typeof TreeViewSelectionMode>;
   onCollapsed?: Parameters<TreeView["onCollapsed"]>[0];
   onDragItemsCompleted?: Parameters<TreeView["onDragItemsCompleted"]>[0];

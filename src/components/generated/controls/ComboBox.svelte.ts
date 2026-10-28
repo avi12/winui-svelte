@@ -18,7 +18,7 @@ export interface ComboBoxProps extends SelectorProps {
   isTextSearchEnabled?: boolean;
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   maxDropDownHeight?: number;
-  placeholderForeground?: BrushInput;
+  placeholderForeground?: BrushInput | Snippet;
   placeholderText?: string;
   selectionChangedTrigger?: EnumInput<typeof ComboBoxSelectionChangedTrigger>;
   text?: string;

@@ -36,8 +36,8 @@ export interface RichEditBoxProps extends ControlProps {
   placeholderText?: string;
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
   selectionFlyout?: RichEditBox["selectionFlyout"] | Snippet;
-  selectionHighlightColor?: RichEditBox["selectionHighlightColor"];
-  selectionHighlightColorWhenNotFocused?: RichEditBox["selectionHighlightColorWhenNotFocused"];
+  selectionHighlightColor?: RichEditBox["selectionHighlightColor"] | Snippet;
+  selectionHighlightColorWhenNotFocused?: RichEditBox["selectionHighlightColorWhenNotFocused"] | Snippet;
   textAlignment?: EnumInput<typeof TextAlignment>;
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textWrapping?: EnumInput<typeof TextWrapping>;

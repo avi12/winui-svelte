@@ -30,11 +30,12 @@ import {
 import type { Control } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ControlProps extends FrameworkElementProps {
-  background?: BrushInput;
+  background?: BrushInput | Snippet;
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
-  borderBrush?: BrushInput;
+  borderBrush?: BrushInput | Snippet;
   borderThickness?: ThicknessInput;
   characterSpacing?: number;
   cornerRadius?: CornerRadiusInput;
@@ -45,7 +46,7 @@ export interface ControlProps extends FrameworkElementProps {
   fontStretch?: EnumInput<typeof FontStretch>;
   fontStyle?: EnumInput<typeof FontStyle>;
   fontWeight?: Control["fontWeight"];
-  foreground?: BrushInput;
+  foreground?: BrushInput | Snippet;
   horizontalContentAlignment?: EnumInput<typeof HorizontalAlignment>;
   isEnabled?: boolean;
   isFocusEngaged?: boolean;

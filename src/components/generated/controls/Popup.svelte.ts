@@ -20,7 +20,7 @@ export interface PopupProps extends FrameworkElementProps {
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   placementTarget?: Popup["placementTarget"];
   shouldConstrainToRootBounds?: boolean;
-  systemBackdrop?: Popup["systemBackdrop"];
+  systemBackdrop?: Popup["systemBackdrop"] | Snippet;
   verticalOffset?: number;
   onActualPlacementChanged?: Parameters<Popup["onActualPlacementChanged"]>[0];
   onClosed?: Parameters<Popup["onClosed"]>[0];

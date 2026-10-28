@@ -6,10 +6,11 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { PersonPicture } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface PersonPictureProps extends ControlProps {
   badgeGlyph?: string;
-  badgeImageSource?: ImageSourceInput;
+  badgeImageSource?: ImageSourceInput | Snippet;
   badgeNumber?: number;
   badgeText?: string;
   contact?: PersonPicture["contact"];
@@ -17,7 +18,7 @@ export interface PersonPictureProps extends ControlProps {
   initials?: string;
   isGroup?: boolean;
   preferSmallImage?: boolean;
-  profilePicture?: ImageSourceInput;
+  profilePicture?: ImageSourceInput | Snippet;
 }
 
 export type PersonPictureBound = ControlBound;

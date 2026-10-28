@@ -5,6 +5,7 @@ import type { AttachedInput, EnumInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import { ElementSoundMode, FlyoutPlacementMode, FlyoutShowMode, LightDismissOverlayMode } from "../bindings.ts";
 import type { FlyoutBase } from "../bindings.ts";
+import type { Snippet } from "svelte";
 
 export interface FlyoutBaseProps {
   allowFocusOnInteraction?: boolean;
@@ -16,7 +17,7 @@ export interface FlyoutBaseProps {
   placement?: EnumInput<typeof FlyoutPlacementMode>;
   shouldConstrainToRootBounds?: boolean;
   showMode?: EnumInput<typeof FlyoutShowMode>;
-  systemBackdrop?: FlyoutBase["systemBackdrop"];
+  systemBackdrop?: FlyoutBase["systemBackdrop"] | Snippet;
   xamlRoot?: FlyoutBase["xamlRoot"];
   onClosed?: Parameters<FlyoutBase["onClosed"]>[0];
   onClosing?: Parameters<FlyoutBase["onClosing"]>[0];

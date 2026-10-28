@@ -22,7 +22,7 @@ export interface PasswordBoxProps extends ControlProps {
   placeholderText?: string;
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
   selectionFlyout?: PasswordBox["selectionFlyout"] | Snippet;
-  selectionHighlightColor?: PasswordBox["selectionHighlightColor"];
+  selectionHighlightColor?: PasswordBox["selectionHighlightColor"] | Snippet;
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   onContextMenuOpening?: Parameters<PasswordBox["onContextMenuOpening"]>[0];
   onPasswordChanged?: Parameters<PasswordBox["onPasswordChanged"]>[0];

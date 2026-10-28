@@ -7,11 +7,12 @@ import { PenLineCap, PenLineJoin, Stretch } from "../bindings.ts";
 import type { Shape } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ShapeProps extends FrameworkElementProps {
-  fill?: BrushInput;
+  fill?: BrushInput | Snippet;
   stretch?: EnumInput<typeof Stretch>;
-  stroke?: BrushInput;
+  stroke?: BrushInput | Snippet;
   strokeDashArray?: Shape["strokeDashArray"];
   strokeDashCap?: EnumInput<typeof PenLineCap>;
   strokeDashOffset?: number;

@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { ListPickerFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { ListPickerFlyoutComponentProps } from "./controls/ListPickerFlyout.svelte.ts";
   import { connectListPickerFlyout } from "./controls/ListPickerFlyout.svelte.ts";
 
@@ -11,4 +11,8 @@
   registerControls({ "list-picker-flyout": ListPickerFlyout });
 </script>
 
-<list-picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: ListPickerFlyout) => untrack(() => connectListPickerFlyout(native, rest, bound)))}></list-picker-flyout>
+<list-picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: ListPickerFlyout) => untrack(() => connectListPickerFlyout(native, rest, bound)))}>
+  {#if isSnippet(rest.systemBackdrop)}
+    <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>
+  {/if}
+</list-picker-flyout>

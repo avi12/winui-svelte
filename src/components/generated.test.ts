@@ -1,7 +1,6 @@
 import { levels } from "./generated/metadata.ts";
-import { handWrittenComponents } from "#scripts/codegen/tables.ts";
 import assert from "node:assert/strict";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { stripTypeScriptTypes } from "node:module";
 import path from "node:path";
 import { test } from "node:test";
@@ -57,17 +56,13 @@ test("every level's module compiles", () => {
   }
 });
 
-test("each component has a declaration and a level, or is written by hand", () => {
+test("each component has a declaration and a level", () => {
   const components = Object.entries(levels).filter(([, level]) => level.isComponent);
   const generatedNames = filesIn({
     folder: GENERATED_FOLDER,
     suffix: ".svelte"
   }).map(file => path.basename(file, ".svelte"));
-  const handWritten = [...handWrittenComponents.keys()];
-  assert.deepEqual([...generatedNames, ...handWritten].sort(), components.map(([name]) => name).sort());
-  for (const [name, module] of handWrittenComponents) {
-    assert.ok(existsSync(path.join(GENERATED_FOLDER, module)), `${name}: ${module} is missing`);
-  }
+  assert.deepEqual(generatedNames.sort(), components.map(([name]) => name).sort());
 });
 
 test("a hand-written component compiles without a warning", () => {

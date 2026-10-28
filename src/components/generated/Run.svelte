@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { Run } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { RunComponentProps } from "./controls/Run.svelte.ts";
   import { connectRun } from "./controls/Run.svelte.ts";
 
@@ -14,5 +14,8 @@
 <run {...attachmentsOf(rest)} class={className} {style} {@attach control((native: Run) => untrack(() => connectRun(native, rest, bound)))}>
   {#if children}
     <property name="text">{@render children()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
   {/if}
 </run>

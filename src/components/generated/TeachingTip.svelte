@@ -24,16 +24,61 @@
   {:else if isSnippet(rest.content)}
     <property name="content">{@render rest.content()}</property>
   {/if}
+  {#if isSnippet(rest.cacheMode)}
+    <property name="cacheMode">{@render rest.cacheMode()}</property>
+  {/if}
+  {#if isSnippet(rest.clip)}
+    <property name="clip">{@render rest.clip()}</property>
+  {/if}
   {#if isSnippet(rest.contextFlyout)}
     <property name="contextFlyout">{@render rest.contextFlyout()}</property>
   {/if}
+  {#if rest.keyboardAccelerators}
+    <property name="keyboardAccelerators">{@render rest.keyboardAccelerators()}</property>
+  {/if}
+  {#if isSnippet(rest.projection)}
+    <property name="projection">{@render rest.projection()}</property>
+  {/if}
+  {#if isSnippet(rest.renderTransform)}
+    <property name="renderTransform">{@render rest.renderTransform()}</property>
+  {/if}
+  {#if isSnippet(rest.shadow)}
+    <property name="shadow">{@render rest.shadow()}</property>
+  {/if}
+  {#if isSnippet(rest.transform3D)}
+    <property name="transform3D">{@render rest.transform3D()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualPrimaryBrush)}
+    <property name="focusVisualPrimaryBrush">{@render rest.focusVisualPrimaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualSecondaryBrush)}
+    <property name="focusVisualSecondaryBrush">{@render rest.focusVisualSecondaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.background)}
+    <property name="background">{@render rest.background()}</property>
+  {/if}
+  {#if isSnippet(rest.borderBrush)}
+    <property name="borderBrush">{@render rest.borderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
+  {/if}
+  {#if isSnippet(rest.actionButtonCommand)}
+    <property name="actionButtonCommand">{@render rest.actionButtonCommand()}</property>
+  {/if}
   {#if isSnippet(rest.actionButtonContent)}
     <property name="actionButtonContent">{@render rest.actionButtonContent()}</property>
+  {/if}
+  {#if isSnippet(rest.closeButtonCommand)}
+    <property name="closeButtonCommand">{@render rest.closeButtonCommand()}</property>
   {/if}
   {#if isSnippet(rest.closeButtonContent)}
     <property name="closeButtonContent">{@render rest.closeButtonContent()}</property>
   {/if}
   {#if isSnippet(rest.heroContent)}
     <property name="heroContent">{@render rest.heroContent()}</property>
+  {/if}
+  {#if isSnippet(rest.iconSource)}
+    <property name="iconSource">{@render rest.iconSource()}</property>
   {/if}
 </teaching-tip>

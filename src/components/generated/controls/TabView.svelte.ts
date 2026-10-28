@@ -13,7 +13,7 @@ export interface TabViewProps extends ControlProps {
   tabItems?: Snippet;
   selectedItem?: ObjectInput | undefined;
   selectedIndex?: number | undefined;
-  addTabButtonCommand?: TabView["addTabButtonCommand"];
+  addTabButtonCommand?: TabView["addTabButtonCommand"] | Snippet;
   addTabButtonCommandParameter?: ObjectInput;
   allowDropTabs?: boolean;
   canDragTabs?: boolean;

@@ -36,10 +36,10 @@ import type { Snippet } from "svelte";
 
 export interface ContentPresenterProps extends FrameworkElementProps {
   children?: Snippet;
-  background?: BrushInput;
+  background?: BrushInput | Snippet;
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
   backgroundTransition?: ContentPresenter["backgroundTransition"];
-  borderBrush?: BrushInput;
+  borderBrush?: BrushInput | Snippet;
   borderThickness?: ThicknessInput;
   characterSpacing?: number;
   content?: ObjectInput | Snippet;
@@ -52,7 +52,7 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   fontStretch?: EnumInput<typeof FontStretch>;
   fontStyle?: EnumInput<typeof FontStyle>;
   fontWeight?: ContentPresenter["fontWeight"];
-  foreground?: BrushInput;
+  foreground?: BrushInput | Snippet;
   horizontalContentAlignment?: EnumInput<typeof HorizontalAlignment>;
   isTextScaleFactorEnabled?: boolean;
   lineHeight?: number;

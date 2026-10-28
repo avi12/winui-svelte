@@ -5,10 +5,11 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { MenuFlyoutPresenter } from "../bindings.ts";
 import { linkItemsControl } from "./ItemsControl.svelte.ts";
 import type { ItemsControlBound, ItemsControlProps } from "./ItemsControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface MenuFlyoutPresenterProps extends ItemsControlProps {
   isDefaultShadowEnabled?: boolean;
-  systemBackdrop?: MenuFlyoutPresenter["systemBackdrop"];
+  systemBackdrop?: MenuFlyoutPresenter["systemBackdrop"] | Snippet;
 }
 
 export type MenuFlyoutPresenterBound = ItemsControlBound;

@@ -13,7 +13,7 @@ export interface MediaPlayerElementProps extends ControlProps {
   areTransportControlsEnabled?: boolean;
   autoPlay?: boolean;
   isFullWindow?: boolean;
-  posterSource?: ImageSourceInput;
+  posterSource?: ImageSourceInput | Snippet;
   source?: MediaPlayerElement["source"];
   stretch?: EnumInput<typeof Stretch>;
   transportControls?: MediaPlayerElement["transportControls"] | Snippet;

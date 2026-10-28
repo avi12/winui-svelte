@@ -18,7 +18,7 @@ export interface SplitViewProps extends ControlProps {
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   openPaneLength?: number;
   pane?: SplitView["pane"] | Snippet;
-  paneBackground?: BrushInput;
+  paneBackground?: BrushInput | Snippet;
   panePlacement?: EnumInput<typeof SplitViewPanePlacement>;
   onPaneClosed?: Parameters<SplitView["onPaneClosed"]>[0];
   onPaneClosing?: Parameters<SplitView["onPaneClosing"]>[0];

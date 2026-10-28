@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { Bold } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { BoldComponentProps } from "./controls/Bold.svelte.ts";
   import { connectBold } from "./controls/Bold.svelte.ts";
 
@@ -14,5 +14,8 @@
 <bold {...attachmentsOf(rest)} class={className} {style} {@attach control((native: Bold) => untrack(() => connectBold(native, rest, bound)))}>
   {#if children}
     <property name="inlines">{@render children()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
   {/if}
 </bold>

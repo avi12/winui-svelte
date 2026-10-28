@@ -12,12 +12,12 @@ import type { Snippet } from "svelte";
 export interface InfoBarProps extends ControlProps {
   isOpen?: boolean | undefined;
   actionButton?: InfoBar["actionButton"] | Snippet;
-  closeButtonCommand?: InfoBar["closeButtonCommand"];
+  closeButtonCommand?: InfoBar["closeButtonCommand"] | Snippet;
   closeButtonCommandParameter?: ObjectInput;
   closeButtonStyle?: InfoBar["closeButtonStyle"];
   content?: ObjectInput | Snippet;
   contentTemplate?: InfoBar["contentTemplate"];
-  iconSource?: InfoBar["iconSource"];
+  iconSource?: InfoBar["iconSource"] | Snippet;
   isClosable?: boolean;
   isIconVisible?: boolean;
   message?: string;

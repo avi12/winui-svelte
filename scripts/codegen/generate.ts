@@ -10,9 +10,7 @@ import {
   emitMetadata,
   emitStrictness
 } from "./emit.ts";
-import type { Model } from "./model.ts";
 import { bindingClasses, buildModel, requestedClasses } from "./model.ts";
-import { handWrittenComponents } from "./tables.ts";
 import type { TypeName } from "./winmd.ts";
 import { filesIn } from "#scripts/files-in.ts";
 import {
@@ -102,27 +100,8 @@ function updatedReadme(blocks: ReadmeBlock[]) {
   };
 }
 
-// A table entry that names no component, or whose module is missing, would
-// leave the index exporting nothing: fail here, with the entry.
-function checkHandWritten(model: Model) {
-  const components = new Set(model.classes.filter(level => level.isComponent).map(level => level.type.name));
-  for (const [name, module] of handWrittenComponents) {
-    const isComponent = components.has(name);
-    if (!isComponent) {
-      throw new Error(`handWrittenComponents names ${name}, which is not a generated component`);
-    }
-
-    const file = path.join(GENERATED_FOLDER, module);
-    const isPresent = existsSync(file) && existsSync(file.replace(/\.svelte$/u, ".d.svelte.ts"));
-    if (!isPresent) {
-      throw new Error(`handWrittenComponents: ${file} and its .d.svelte.ts must exist`);
-    }
-  }
-}
-
 function generatedFiles(project: string) {
   const model = buildModel(path.join(project, ...LOCK_PATH));
-  checkHandWritten(model);
   const output: OutputFile[] = [
     {
       file: path.join(GENERATED_FOLDER, "bindings.ts"),
@@ -148,8 +127,7 @@ function generatedFiles(project: string) {
       text: emitLevel(level)
     });
 
-    const isGenerated = level.isComponent && !handWrittenComponents.has(name);
-    if (isGenerated) {
+    if (level.isComponent) {
       output.push(
         {
           file: path.join(GENERATED_FOLDER, `${name}.svelte`),

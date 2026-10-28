@@ -10,7 +10,7 @@ import type { ContentControlBound, ContentControlProps } from "./ContentControl.
 import type { Snippet } from "svelte";
 
 export interface ContentDialogProps extends ContentControlProps {
-  closeButtonCommand?: ContentDialog["closeButtonCommand"];
+  closeButtonCommand?: ContentDialog["closeButtonCommand"] | Snippet;
   closeButtonCommandParameter?: ObjectInput;
   closeButtonStyle?: ContentDialog["closeButtonStyle"];
   closeButtonText?: string;
@@ -18,11 +18,11 @@ export interface ContentDialogProps extends ContentControlProps {
   fullSizeDesired?: boolean;
   isPrimaryButtonEnabled?: boolean;
   isSecondaryButtonEnabled?: boolean;
-  primaryButtonCommand?: ContentDialog["primaryButtonCommand"];
+  primaryButtonCommand?: ContentDialog["primaryButtonCommand"] | Snippet;
   primaryButtonCommandParameter?: ObjectInput;
   primaryButtonStyle?: ContentDialog["primaryButtonStyle"];
   primaryButtonText?: string;
-  secondaryButtonCommand?: ContentDialog["secondaryButtonCommand"];
+  secondaryButtonCommand?: ContentDialog["secondaryButtonCommand"] | Snippet;
   secondaryButtonCommandParameter?: ObjectInput;
   secondaryButtonStyle?: ContentDialog["secondaryButtonStyle"];
   secondaryButtonText?: string;

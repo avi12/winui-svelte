@@ -5,9 +5,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { AnimatedIcon } from "../bindings.ts";
 import { linkIconElement } from "./IconElement.svelte.ts";
 import type { IconElementBound, IconElementProps } from "./IconElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface AnimatedIconProps extends IconElementProps {
-  fallbackIconSource?: AnimatedIcon["fallbackIconSource"];
+  fallbackIconSource?: AnimatedIcon["fallbackIconSource"] | Snippet;
   mirroredWhenRightToLeft?: boolean;
   source?: AnimatedIcon["source"];
 }

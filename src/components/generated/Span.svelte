@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { Span } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { SpanComponentProps } from "./controls/Span.svelte.ts";
   import { connectSpan } from "./controls/Span.svelte.ts";
 
@@ -14,5 +14,8 @@
 <span {...attachmentsOf(rest)} class={className} {style} {@attach control((native: Span) => untrack(() => connectSpan(native, rest, bound)))}>
   {#if children}
     <property name="inlines">{@render children()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
   {/if}
 </span>

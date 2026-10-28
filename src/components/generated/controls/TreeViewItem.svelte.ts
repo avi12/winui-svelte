@@ -6,11 +6,12 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { TreeViewItem } from "../bindings.ts";
 import { linkListViewItem } from "./ListViewItem.svelte.ts";
 import type { ListViewItemBound, ListViewItemProps } from "./ListViewItem.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface TreeViewItemProps extends ListViewItemProps {
   collapsedGlyph?: string;
   expandedGlyph?: string;
-  glyphBrush?: BrushInput;
+  glyphBrush?: BrushInput | Snippet;
   glyphOpacity?: number;
   glyphSize?: number;
   hasUnrealizedChildren?: boolean;

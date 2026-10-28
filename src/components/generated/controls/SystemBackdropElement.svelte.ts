@@ -6,10 +6,11 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { SystemBackdropElement } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface SystemBackdropElementProps extends FrameworkElementProps {
   cornerRadius?: CornerRadiusInput;
-  systemBackdrop?: SystemBackdropElement["systemBackdrop"];
+  systemBackdrop?: SystemBackdropElement["systemBackdrop"] | Snippet;
 }
 
 export type SystemBackdropElementBound = FrameworkElementBound;

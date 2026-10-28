@@ -34,7 +34,7 @@ export interface TextBlockProps extends FrameworkElementProps {
   fontStretch?: EnumInput<typeof FontStretch>;
   fontStyle?: EnumInput<typeof FontStyle>;
   fontWeight?: TextBlock["fontWeight"];
-  foreground?: BrushInput;
+  foreground?: BrushInput | Snippet;
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
   isColorFontEnabled?: boolean;
   isTextScaleFactorEnabled?: boolean;
@@ -45,7 +45,7 @@ export interface TextBlockProps extends FrameworkElementProps {
   opticalMarginAlignment?: EnumInput<typeof OpticalMarginAlignment>;
   padding?: ThicknessInput;
   selectionFlyout?: TextBlock["selectionFlyout"] | Snippet;
-  selectionHighlightColor?: TextBlock["selectionHighlightColor"];
+  selectionHighlightColor?: TextBlock["selectionHighlightColor"] | Snippet;
   text?: string;
   textAlignment?: EnumInput<typeof TextAlignment>;
   textDecorations?: EnumInput<typeof TextDecorations>;

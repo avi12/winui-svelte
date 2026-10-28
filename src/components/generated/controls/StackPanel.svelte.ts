@@ -13,11 +13,12 @@ import { BackgroundSizing, Orientation } from "../bindings.ts";
 import type { StackPanel } from "../bindings.ts";
 import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface StackPanelProps extends PanelProps {
   areScrollSnapPointsRegular?: boolean;
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
-  borderBrush?: BrushInput;
+  borderBrush?: BrushInput | Snippet;
   borderThickness?: ThicknessInput;
   cornerRadius?: CornerRadiusInput;
   orientation?: EnumInput<typeof Orientation>;

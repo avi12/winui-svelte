@@ -5,9 +5,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { CommandBarFlyoutCommandBar } from "../bindings.ts";
 import { linkCommandBar } from "./CommandBar.svelte.ts";
 import type { CommandBarBound, CommandBarProps } from "./CommandBar.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface CommandBarFlyoutCommandBarProps extends CommandBarProps {
-  systemBackdrop?: CommandBarFlyoutCommandBar["systemBackdrop"];
+  systemBackdrop?: CommandBarFlyoutCommandBar["systemBackdrop"] | Snippet;
 }
 
 export type CommandBarFlyoutCommandBarBound = CommandBarBound;

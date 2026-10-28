@@ -13,6 +13,7 @@ import {
 import type { FrameworkElement } from "../bindings.ts";
 import { linkUIElement } from "./UIElement.svelte.ts";
 import type { UIElementBound, UIElementProps } from "./UIElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface FrameworkElementProps extends UIElementProps {
   gridRow?: number;
@@ -24,9 +25,9 @@ export interface FrameworkElementProps extends UIElementProps {
   dataContext?: ObjectInput;
   flowDirection?: EnumInput<typeof FlowDirection>;
   focusVisualMargin?: ThicknessInput;
-  focusVisualPrimaryBrush?: BrushInput;
+  focusVisualPrimaryBrush?: BrushInput | Snippet;
   focusVisualPrimaryThickness?: ThicknessInput;
-  focusVisualSecondaryBrush?: BrushInput;
+  focusVisualSecondaryBrush?: BrushInput | Snippet;
   focusVisualSecondaryThickness?: ThicknessInput;
   height?: number;
   horizontalAlignment?: EnumInput<typeof HorizontalAlignment>;

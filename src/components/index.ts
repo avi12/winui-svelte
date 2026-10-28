@@ -1,5 +1,5 @@
-// The components: every WinUI control, generated from its metadata (the list
-// controls written by hand, see scripts/codegen/tables.ts), and the window.
+// The components: every WinUI control and value object, generated from its
+// metadata, and the window.
 
 export * from "./generated/index.ts";
 export { default as Window } from "./hand-written/Window.svelte";

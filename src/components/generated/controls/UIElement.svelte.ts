@@ -33,6 +33,7 @@ import type { UIElement } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
 export interface UIElementProps {
+  keyboardAccelerators?: Snippet;
   canvasLeft?: number;
   canvasTop?: number;
   canvasZIndex?: number;
@@ -99,11 +100,11 @@ export interface UIElementProps {
   accessKey?: string;
   accessKeyScopeOwner?: UIElement["accessKeyScopeOwner"];
   allowDrop?: boolean;
-  cacheMode?: UIElement["cacheMode"];
+  cacheMode?: UIElement["cacheMode"] | Snippet;
   canBeScrollAnchor?: boolean;
   canDrag?: boolean;
   centerPoint?: UIElement["centerPoint"];
-  clip?: UIElement["clip"];
+  clip?: UIElement["clip"] | Snippet;
   compositeMode?: EnumInput<typeof ElementCompositeMode>;
   contextFlyout?: UIElement["contextFlyout"] | Snippet;
   exitDisplayModeOnAccessKeyInvoked?: boolean;
@@ -124,19 +125,19 @@ export interface UIElementProps {
   manipulationMode?: EnumInput<typeof ManipulationModes>;
   opacity?: number;
   opacityTransition?: UIElement["opacityTransition"];
-  projection?: UIElement["projection"];
+  projection?: UIElement["projection"] | Snippet;
   rasterizationScale?: number;
-  renderTransform?: UIElement["renderTransform"];
+  renderTransform?: UIElement["renderTransform"] | Snippet;
   renderTransformOrigin?: UIElement["renderTransformOrigin"];
   rotation?: number;
   rotationAxis?: UIElement["rotationAxis"];
   rotationTransition?: UIElement["rotationTransition"];
   scale?: UIElement["scale"];
   scaleTransition?: UIElement["scaleTransition"];
-  shadow?: UIElement["shadow"];
+  shadow?: UIElement["shadow"] | Snippet;
   tabFocusNavigation?: EnumInput<typeof KeyboardNavigationMode>;
   tabIndex?: number;
-  transform3D?: UIElement["transform3D"];
+  transform3D?: UIElement["transform3D"] | Snippet;
   transformMatrix?: UIElement["transformMatrix"];
   transitions?: UIElement["transitions"];
   translation?: UIElement["translation"];

@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { MenuBarItemFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { MenuBarItemFlyoutComponentProps } from "./controls/MenuBarItemFlyout.svelte.ts";
   import { connectMenuBarItemFlyout } from "./controls/MenuBarItemFlyout.svelte.ts";
 
@@ -14,5 +14,8 @@
 <menu-bar-item-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: MenuBarItemFlyout) => untrack(() => connectMenuBarItemFlyout(native, rest, bound)))}>
   {#if children}
     <property name="items">{@render children()}</property>
+  {/if}
+  {#if isSnippet(rest.systemBackdrop)}
+    <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>
   {/if}
 </menu-bar-item-flyout>

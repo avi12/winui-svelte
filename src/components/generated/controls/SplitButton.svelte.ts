@@ -9,7 +9,7 @@ import type { ContentControlBound, ContentControlProps } from "./ContentControl.
 import type { Snippet } from "svelte";
 
 export interface SplitButtonProps extends ContentControlProps {
-  command?: SplitButton["command"];
+  command?: SplitButton["command"] | Snippet;
   commandParameter?: ObjectInput;
   flyout?: SplitButton["flyout"] | Snippet;
   onClick?: Parameters<SplitButton["onClick"]>[0];

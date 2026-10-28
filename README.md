@@ -282,7 +282,10 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 
 | Component | Namespace | Props it adds | Bindable | Children |
 | --- | --- | --- | --- | --- |
+| `AcrylicBrush` | Media | `alwaysUseFallback`, `tintColor`, `tintLuminosityOpacity`, `tintOpacity`, `tintTransitionDuration` |  |  |
+| `AddDeleteThemeTransition` | Media.Animation |  |  |  |
 | `AnimatedIcon` | Controls | `fallbackIconSource`, `mirroredWhenRightToLeft`, `source` |  |  |
+| `AnimatedIconSource` | Controls | `fallbackIconSource`, `mirroredWhenRightToLeft`, `source` |  |  |
 | `AnimatedVisualPlayer` | Controls | `animationOptimization`, `autoPlay`, `fallbackContent`, `playbackRate`, `source`, `stretch` |  |  |
 | `AnnotatedScrollBar` | Controls | `detailLabelTemplate`, `labels`, `labelTemplate`, `smallChange` |  |  |
 | `AppBar` | Controls | `closedDisplayMode`, `isOpen`, `isSticky`, `lightDismissOverlayMode` | `isOpen` | yes |
@@ -290,10 +293,17 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `AppBarElementContainer` | Controls | `dynamicOverflowOrder`, `isCompact` |  | yes |
 | `AppBarSeparator` | Controls | `dynamicOverflowOrder`, `isCompact` |  |  |
 | `AppBarToggleButton` | Controls | `dynamicOverflowOrder`, `icon`, `isCompact`, `keyboardAcceleratorTextOverride`, `label`, `labelPosition` | `isChecked` | yes |
+| `ArcSegment` | Media | `isLargeArc`, `point`, `rotationAngle`, `size`, `sweepDirection` |  |  |
 | `AutoSuggestBox` | Controls | `autoMaximizeSuggestionArea`, `description`, `header`, `isSuggestionListOpen`, `lightDismissOverlayMode`, `maxSuggestionListHeight`, `placeholderText`, `queryIcon`, +4 more | `text` | yes |
+| `BackEase` | Media.Animation | `amplitude` |  |  |
+| `BezierSegment` | Media | `point1`, `point2`, `point3` |  |  |
+| `BitmapCache` | Media |  |  |  |
 | `BitmapIcon` | Controls | `showAsMonochrome`, `uriSource` |  |  |
+| `BitmapIconSource` | Controls | `showAsMonochrome`, `uriSource` |  |  |
+| `BitmapImage` | Media.Imaging | `autoPlay`, `createOptions`, `decodePixelHeight`, `decodePixelType`, `decodePixelWidth`, `uriSource` |  |  |
 | `Bold` | Documents |  |  | yes |
 | `Border` | Controls | `background`, `backgroundSizing`, `backgroundTransition`, `borderBrush`, `borderThickness`, `child`, `childTransitions`, `cornerRadius`, +1 more |  | yes |
+| `BounceEase` | Media.Animation | `bounces`, `bounciness` |  |  |
 | `BreadcrumbBar` | Controls | `itemsSource`, `itemTemplate` |  |  |
 | `BreadcrumbBarItem` | Controls |  |  | yes |
 | `Button` | Controls | `flyout` |  | yes |
@@ -304,30 +314,67 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `Canvas` | Controls |  |  | yes |
 | `CarouselPanel` | Controls.Primitives | `canHorizontallyScroll`, `canVerticallyScroll`, `scrollOwner` |  | yes |
 | `CheckBox` | Controls |  | `isChecked` | yes |
+| `CircleEase` | Media.Animation |  |  |  |
+| `ColorAnimation` | Media.Animation | `by`, `easingFunction`, `enableDependentAnimation`, `from`, `to` |  |  |
+| `ColorAnimationUsingKeyFrames` | Media.Animation | `enableDependentAnimation` |  | yes |
 | `ColorPicker` | Controls | `color`, `colorSpectrumComponents`, `colorSpectrumShape`, `isAlphaEnabled`, `isAlphaSliderVisible`, `isAlphaTextInputVisible`, `isColorChannelTextInputVisible`, `isColorPreviewVisible`, +12 more | `color` |  |
 | `ColorPickerSlider` | Controls.Primitives | `colorChannel` | `value` |  |
 | `ColorSpectrum` | Controls.Primitives | `color`, `components`, `hsvColor`, `maxHue`, `maxSaturation`, `maxValue`, `minHue`, `minSaturation`, +2 more | `color` |  |
+| `ColumnMajorUniformToLargestGridLayout` | Controls.Primitives | `columnSpacing`, `maxColumns`, `rowSpacing` |  |  |
 | `ComboBox` | Controls | `description`, `header`, `headerTemplate`, `isDropDownOpen`, `isEditable`, `isTextSearchEnabled`, `lightDismissOverlayMode`, `maxDropDownHeight`, +5 more | `selectedIndex`, `selectedItem`, `selectedValue`, `isDropDownOpen` | yes |
 | `ComboBoxItem` | Controls |  |  | yes |
 | `CommandBar` | Controls | `commandBarOverflowPresenterStyle`, `defaultLabelPosition`, `isDynamicOverflowEnabled`, `overflowButtonVisibility` | `isOpen` | yes |
 | `CommandBarFlyout` | Controls | `alwaysExpanded` |  |  |
 | `CommandBarFlyoutCommandBar` | Controls.Primitives | `systemBackdrop` | `isOpen` | yes |
 | `CommandBarOverflowPresenter` | Controls |  |  | yes |
+| `CommonNavigationTransitionInfo` | Media.Animation | `isStaggeringEnabled` |  |  |
+| `CompositeTransform` | Media | `centerX`, `centerY`, `rotation`, `scaleX`, `scaleY`, `skewX`, `skewY`, `translateX`, +1 more |  |  |
+| `CompositeTransform3D` | Media.Media3D | `centerX`, `centerY`, `centerZ`, `rotationX`, `rotationY`, `rotationZ`, `scaleX`, `scaleY`, +4 more |  |  |
 | `ContentControl` | Controls | `content`, `contentTemplate`, `contentTemplateSelector`, `contentTransitions` |  | yes |
 | `ContentDialog` | Controls | `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonStyle`, `closeButtonText`, `defaultButton`, `fullSizeDesired`, `isPrimaryButtonEnabled`, `isSecondaryButtonEnabled`, +10 more |  | yes |
 | `ContentPresenter` | Controls | `background`, `backgroundSizing`, `backgroundTransition`, `borderBrush`, `borderThickness`, `characterSpacing`, `content`, `contentTemplate`, +19 more |  | yes |
+| `ContentThemeTransition` | Media.Animation | `horizontalOffset`, `verticalOffset` |  |  |
+| `ContinuumNavigationTransitionInfo` | Media.Animation | `exitElement` |  |  |
+| `CubicEase` | Media.Animation |  |  |  |
 | `DatePicker` | Controls | `calendarIdentifier`, `date`, `dayFormat`, `dayVisible`, `header`, `headerTemplate`, `lightDismissOverlayMode`, `maxYear`, +7 more | `date`, `selectedDate` | yes |
 | `DatePickerFlyout` | Controls | `calendarIdentifier`, `date`, `dayFormat`, `dayVisible`, `maxYear`, `minYear`, `monthFormat`, `monthVisible`, +2 more |  |  |
+| `DesktopAcrylicBackdrop` | Media |  |  |  |
+| `DiscreteColorKeyFrame` | Media.Animation |  |  |  |
+| `DiscreteDoubleKeyFrame` | Media.Animation |  |  |  |
+| `DiscreteObjectKeyFrame` | Media.Animation |  |  |  |
+| `DiscretePointKeyFrame` | Media.Animation |  |  |  |
+| `DoubleAnimation` | Media.Animation | `by`, `easingFunction`, `enableDependentAnimation`, `from`, `to` |  |  |
+| `DoubleAnimationUsingKeyFrames` | Media.Animation | `enableDependentAnimation` |  | yes |
+| `DragItemThemeAnimation` | Media.Animation | `targetName` |  |  |
+| `DragOverThemeAnimation` | Media.Animation | `direction`, `targetName`, `toOffset` |  |  |
+| `DrillInNavigationTransitionInfo` | Media.Animation |  |  |  |
+| `DrillInThemeAnimation` | Media.Animation | `entranceTarget`, `entranceTargetName`, `exitTarget`, `exitTargetName` |  |  |
+| `DrillOutThemeAnimation` | Media.Animation | `entranceTarget`, `entranceTargetName`, `exitTarget`, `exitTargetName` |  |  |
 | `DropDownButton` | Controls |  |  | yes |
+| `DropTargetItemThemeAnimation` | Media.Animation | `targetName` |  |  |
+| `EasingColorKeyFrame` | Media.Animation | `easingFunction` |  |  |
+| `EasingDoubleKeyFrame` | Media.Animation | `easingFunction` |  |  |
+| `EasingPointKeyFrame` | Media.Animation | `easingFunction` |  |  |
+| `EdgeUIThemeTransition` | Media.Animation | `edge` |  |  |
+| `ElasticEase` | Media.Animation | `oscillations`, `springiness` |  |  |
 | `Ellipse` | Shapes |  |  |  |
+| `EllipseGeometry` | Media | `center`, `radiusX`, `radiusY` |  |  |
+| `EntranceNavigationTransitionInfo` | Media.Animation |  |  |  |
+| `EntranceThemeTransition` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `isStaggeringEnabled` |  |  |
 | `Expander` | Controls | `expandDirection`, `header`, `headerTemplate`, `headerTemplateSelector`, `isExpanded` | `isExpanded` | yes |
+| `ExponentialEase` | Media.Animation | `exponent` |  |  |
+| `FadeInThemeAnimation` | Media.Animation | `targetName` |  |  |
+| `FadeOutThemeAnimation` | Media.Animation | `targetName` |  |  |
 | `FlipView` | Controls | `useTouchAnimationsForAllNavigation` | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `FlipViewItem` | Controls |  |  | yes |
 | `Flyout` | Controls | `content`, `flyoutPresenterStyle` |  | yes |
 | `FlyoutPresenter` | Controls | `isDefaultShadowEnabled` |  | yes |
 | `FontIcon` | Controls | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `glyph`, `isTextScaleFactorEnabled`, `mirroredWhenRightToLeft` |  |  |
+| `FontIconSource` | Controls | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `glyph`, `isTextScaleFactorEnabled`, `mirroredWhenRightToLeft` |  |  |
 | `Frame` | Controls | `cacheSize`, `isNavigationStackEnabled`, `sourcePageType` |  | yes |
+| `GeometryGroup` | Media | `fillRule` |  | yes |
 | `Glyphs` | Documents | `colorFontPaletteIndex`, `fill`, `fontRenderingEmSize`, `fontUri`, `indices`, `isColorFontEnabled`, `originX`, `originY`, +2 more |  |  |
+| `GradientStop` | Media | `color`, `offset` |  | yes |
 | `Grid` | Controls | `backgroundSizing`, `borderBrush`, `borderThickness`, `columnSpacing`, `cornerRadius`, `padding`, `rowSpacing` |  | yes |
 | `GridView` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `GridViewHeaderItem` | Controls |  |  | yes |
@@ -340,7 +387,9 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `HyperlinkButton` | Controls | `navigateUri` |  | yes |
 | `IconSourceElement` | Controls | `iconSource` |  | yes |
 | `Image` | Controls | `nineGrid`, `source`, `stretch` |  |  |
+| `ImageBrush` | Media | `imageSource` |  |  |
 | `ImageIcon` | Controls | `source` |  |  |
+| `ImageIconSource` | Controls | `imageSource` |  |  |
 | `InfoBadge` | Controls | `iconSource`, `value` |  |  |
 | `InfoBar` | Controls | `actionButton`, `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonStyle`, `content`, `contentTemplate`, `iconSource`, `isClosable`, +5 more | `isOpen` |  |
 | `InfoBarPanel` | Controls.Primitives | `horizontalOrientationPadding`, `verticalOrientationPadding` |  | yes |
@@ -354,8 +403,17 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `ItemsStackPanel` | Controls | `areStickyGroupHeadersEnabled`, `cacheLength`, `groupHeaderPlacement`, `groupPadding`, `itemsUpdatingScrollMode`, `orientation` |  | yes |
 | `ItemsView` | Controls | `isItemInvokedEnabled`, `itemsSource`, `itemTemplate`, `itemTransitionProvider`, `layout`, `selectionMode`, `verticalScrollController` |  |  |
 | `ItemsWrapGrid` | Controls | `areStickyGroupHeadersEnabled`, `cacheLength`, `groupHeaderPlacement`, `groupPadding`, `itemHeight`, `itemWidth`, `maximumRowsOrColumns`, `orientation` |  | yes |
+| `KeyboardAccelerator` | Input | `isEnabled`, `key`, `modifiers`, `scopeOwner` |  |  |
+| `KeySpline` | Media.Animation | `controlPoint1`, `controlPoint2` |  |  |
 | `Line` | Shapes | `x1`, `x2`, `y1`, `y2` |  |  |
+| `LinearColorKeyFrame` | Media.Animation |  |  |  |
+| `LinearDoubleKeyFrame` | Media.Animation |  |  |  |
+| `LinearGradientBrush` | Media | `endPoint`, `startPoint` |  | yes |
+| `LinearPointKeyFrame` | Media.Animation |  |  |  |
 | `LineBreak` | Documents |  |  |  |
+| `LinedFlowLayout` | Controls | `itemsJustification`, `itemsStretch`, `lineHeight`, `lineSpacing`, `minItemSpacing` |  |  |
+| `LineGeometry` | Media | `endPoint`, `startPoint` |  |  |
+| `LineSegment` | Media | `point` |  |  |
 | `ListBox` | Controls | `selectionMode`, `singleSelectionFollowsFocus` | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `ListBoxItem` | Controls |  |  | yes |
 | `ListPickerFlyout` | Controls | `displayMemberPath`, `itemsSource`, `itemTemplate`, `selectedIndex`, `selectedItem`, `selectedValue`, `selectedValuePath`, `selectionMode` |  |  |
@@ -364,6 +422,8 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `ListViewItem` | Controls |  |  | yes |
 | `ListViewItemPresenter` | Controls.Primitives | `checkBoxBorderBrush`, `checkBoxBrush`, `checkBoxCornerRadius`, `checkBoxDisabledBorderBrush`, `checkBoxDisabledBrush`, `checkBoxPointerOverBorderBrush`, `checkBoxPointerOverBrush`, `checkBoxPressedBorderBrush`, +51 more |  | yes |
 | `MapControl` | Controls | `center`, `interactiveControlsVisible`, `layers`, `mapServiceToken`, `zoomLevel` |  |  |
+| `Matrix3DProjection` | Media | `projectionMatrix` |  | yes |
+| `MatrixTransform` | Media | `matrix` |  |  |
 | `MediaPlayerElement` | Controls | `areTransportControlsEnabled`, `autoPlay`, `isFullWindow`, `posterSource`, `source`, `stretch`, `transportControls` |  |  |
 | `MediaPlayerPresenter` | Controls | `isFullWindow`, `mediaPlayer`, `stretch` |  |  |
 | `MediaTransportControls` | Controls | `fastPlayFallbackBehaviour`, `isCompact`, `isFastForwardButtonVisible`, `isFastForwardEnabled`, `isFastRewindButtonVisible`, `isFastRewindEnabled`, `isNextTrackButtonVisible`, `isPlaybackRateButtonVisible`, +17 more |  |  |
@@ -375,45 +435,78 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `MenuFlyoutPresenter` | Controls | `isDefaultShadowEnabled`, `systemBackdrop` |  | yes |
 | `MenuFlyoutSeparator` | Controls |  |  |  |
 | `MenuFlyoutSubItem` | Controls | `icon`, `text` |  | yes |
+| `MicaBackdrop` | Media | `kind` |  |  |
 | `MonochromaticOverlayPresenter` | Controls.Primitives | `replacementColor`, `sourceElement` |  | yes |
+| `NavigationThemeTransition` | Media.Animation | `defaultNavigationTransitionInfo` |  | yes |
 | `NavigationView` | Controls | `alwaysShowHeader`, `autoSuggestBox`, `compactModeThresholdWidth`, `compactPaneLength`, `contentOverlay`, `expandedModeThresholdWidth`, `footerMenuItemsSource`, `header`, +24 more | `isPaneOpen`, `selectedItem` | yes |
 | `NavigationViewItem` | Controls | `hasUnrealizedChildren`, `icon`, `infoBadge`, `isChildSelected`, `isExpanded`, `menuItemsSource`, `selectsOnInvoked` |  | yes |
 | `NavigationViewItemHeader` | Controls |  |  | yes |
 | `NavigationViewItemPresenter` | Controls.Primitives | `icon`, `infoBadge` |  | yes |
 | `NavigationViewItemSeparator` | Controls |  |  | yes |
+| `NonVirtualizingLayout` | Controls |  |  |  |
 | `NumberBox` | Controls | `acceptsExpression`, `description`, `header`, `headerTemplate`, `isWrapEnabled`, `largeChange`, `maximum`, `minimum`, +11 more | `value` |  |
+| `ObjectAnimationUsingKeyFrames` | Media.Animation | `enableDependentAnimation` |  | yes |
 | `Page` | Controls | `bottomAppBar`, `navigationCacheMode`, `topAppBar` |  | yes |
+| `PaneThemeTransition` | Media.Animation | `edge` |  |  |
 | `Paragraph` | Documents | `textIndent` |  | yes |
 | `ParallaxView` | Controls | `child`, `horizontalShift`, `horizontalSourceEndOffset`, `horizontalSourceOffsetKind`, `horizontalSourceStartOffset`, `isHorizontalShiftClamped`, `isVerticalShiftClamped`, `maxHorizontalShiftRatio`, +6 more |  |  |
 | `PasswordBox` | Controls | `description`, `header`, `headerTemplate`, `inputScope`, `isPasswordRevealButtonEnabled`, `maxLength`, `password`, `passwordChar`, +6 more | `password` |  |
 | `Path` | Shapes | `data` |  |  |
+| `PathFigure` | Media | `isClosed`, `isFilled`, `segments`, `startPoint` |  | yes |
+| `PathGeometry` | Media | `figures`, `fillRule` |  | yes |
 | `PathIcon` | Controls | `data` |  |  |
+| `PathIconSource` | Controls | `data` |  |  |
 | `PersonPicture` | Controls | `badgeGlyph`, `badgeImageSource`, `badgeNumber`, `badgeText`, `contact`, `displayName`, `initials`, `isGroup`, +2 more |  |  |
+| `PerspectiveTransform3D` | Media.Media3D | `depth`, `offsetX`, `offsetY` |  |  |
 | `PickerFlyout` | Controls | `confirmationButtonsVisible`, `content` |  | yes |
 | `PipsPager` | Controls | `maxVisiblePips`, `nextButtonStyle`, `nextButtonVisibility`, `normalPipStyle`, `numberOfPages`, `orientation`, `previousButtonStyle`, `previousButtonVisibility`, +3 more |  |  |
 | `Pivot` | Controls | `headerFocusVisualPlacement`, `headerTemplate`, `isHeaderItemsCarouselEnabled`, `isLocked`, `leftHeader`, `leftHeaderTemplate`, `rightHeader`, `rightHeaderTemplate`, +4 more | `selectedIndex`, `selectedItem` | yes |
 | `PivotHeaderPanel` | Controls.Primitives |  |  | yes |
 | `PivotItem` | Controls | `header` |  | yes |
 | `PivotPanel` | Controls.Primitives |  |  | yes |
+| `PlaneProjection` | Media | `centerOfRotationX`, `centerOfRotationY`, `centerOfRotationZ`, `globalOffsetX`, `globalOffsetY`, `globalOffsetZ`, `localOffsetX`, `localOffsetY`, +4 more |  |  |
+| `PointAnimation` | Media.Animation | `by`, `easingFunction`, `enableDependentAnimation`, `from`, `to` |  |  |
+| `PointAnimationUsingKeyFrames` | Media.Animation | `enableDependentAnimation` |  | yes |
+| `PointerDownThemeAnimation` | Media.Animation | `targetName` |  |  |
+| `PointerUpThemeAnimation` | Media.Animation | `targetName` |  |  |
+| `PolyBezierSegment` | Media | `points` |  | yes |
 | `Polygon` | Shapes | `fillRule`, `points` |  |  |
 | `Polyline` | Shapes | `fillRule`, `points` |  |  |
+| `PolyLineSegment` | Media | `points` |  | yes |
+| `PolyQuadraticBezierSegment` | Media | `points` |  | yes |
+| `PopInThemeAnimation` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
+| `PopOutThemeAnimation` | Media.Animation | `targetName` |  |  |
 | `Popup` | Controls.Primitives | `child`, `childTransitions`, `desiredPlacement`, `horizontalOffset`, `isLightDismissEnabled`, `isOpen`, `lightDismissOverlayMode`, `placementTarget`, +3 more | `isOpen` | yes |
+| `PopupThemeTransition` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset` |  |  |
+| `PowerEase` | Media.Animation | `power` |  |  |
 | `ProgressBar` | Controls | `isIndeterminate`, `showError`, `showPaused` | `value` |  |
 | `ProgressRing` | Controls | `isActive`, `isIndeterminate`, `maximum`, `minimum`, `value` |  |  |
+| `QuadraticBezierSegment` | Media | `point1`, `point2` |  |  |
+| `QuadraticEase` | Media.Animation |  |  |  |
+| `QuarticEase` | Media.Animation |  |  |  |
+| `QuinticEase` | Media.Animation |  |  |  |
+| `RadialGradientBrush` | Media | `center`, `gradientOrigin`, `interpolationSpace`, `mappingMode`, `radiusX`, `radiusY`, `spreadMethod` |  |  |
 | `RadioButton` | Controls | `groupName` | `isChecked` | yes |
 | `RadioButtons` | Controls | `header`, `headerTemplate`, `itemsSource`, `itemTemplate`, `maxColumns`, `selectedIndex`, `selectedItem` | `selectedIndex`, `selectedItem` |  |
 | `RadioMenuFlyoutItem` | Controls | `groupName`, `isChecked` |  | yes |
 | `RatingControl` | Controls | `caption`, `initialSetValue`, `isClearEnabled`, `isReadOnly`, `itemInfo`, `maxRating`, `placeholderValue`, `value` | `value` |  |
 | `Rectangle` | Shapes | `radiusX`, `radiusY` |  |  |
+| `RectangleGeometry` | Media | `rect` |  |  |
 | `RefreshContainer` | Controls | `pullDirection`, `visualizer` |  | yes |
 | `RefreshVisualizer` | Controls | `content`, `orientation` |  |  |
 | `RelativePanel` | Controls | `backgroundSizing`, `borderBrush`, `borderThickness`, `cornerRadius`, `padding` |  | yes |
+| `RenderTargetBitmap` | Media.Imaging |  |  |  |
+| `ReorderThemeTransition` | Media.Animation |  |  |  |
 | `RepeatButton` | Controls.Primitives | `delay`, `interval` |  | yes |
+| `RepositionThemeAnimation` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
+| `RepositionThemeTransition` | Media.Animation | `isStaggeringEnabled` |  |  |
 | `RevealListViewItemPresenter` | Controls |  |  | yes |
 | `RichEditBox` | Controls | `acceptsReturn`, `characterCasing`, `clipboardCopyFormat`, `description`, `desiredCandidateWindowAlignment`, `disabledFormattingAccelerators`, `header`, `headerTemplate`, +15 more |  |  |
 | `RichTextBlock` | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +18 more |  | yes |
 | `RichTextBlockOverflow` | Controls | `maxLines`, `overflowContentTarget`, `padding` |  |  |
+| `RotateTransform` | Media | `angle`, `centerX`, `centerY` |  |  |
 | `Run` | Documents | `flowDirection`, `text` |  | yes |
+| `ScaleTransform` | Media | `centerX`, `centerY`, `scaleX`, `scaleY` |  |  |
 | `ScrollBar` | Controls.Primitives | `indicatorMode`, `orientation`, `viewportSize` | `value` |  |
 | `ScrollContentPresenter` | Controls | `canContentRenderOutsideBounds`, `canHorizontallyScroll`, `canVerticallyScroll`, `scrollOwner`, `sizesContentToTemplatedParent` |  | yes |
 | `ScrollPresenter` | Controls.Primitives | `background`, `content`, `contentOrientation`, `horizontalAnchorRatio`, `horizontalScrollChainMode`, `horizontalScrollController`, `horizontalScrollMode`, `horizontalScrollRailMode`, +10 more |  |  |
@@ -422,14 +515,32 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `SelectorBar` | Controls | `selectedItem` | `selectedItem` |  |
 | `SelectorBarItem` | Controls | `icon`, `text` |  |  |
 | `SemanticZoom` | Controls | `canChangeViews`, `isZoomedInViewActive`, `isZoomOutButtonEnabled`, `zoomedInView`, `zoomedOutView` |  | yes |
+| `SineEase` | Media.Animation |  |  |  |
+| `SkewTransform` | Media | `angleX`, `angleY`, `centerX`, `centerY` |  |  |
+| `SlideNavigationTransitionInfo` | Media.Animation | `effect` |  |  |
 | `Slider` | Controls | `header`, `headerTemplate`, `intermediateValue`, `isDirectionReversed`, `isThumbToolTipEnabled`, `orientation`, `snapsTo`, `stepFrequency`, +3 more | `value` |  |
+| `SoftwareBitmapSource` | Media.Imaging |  |  |  |
+| `SolidColorBrush` | Media | `color` |  | yes |
 | `Span` | Documents | `inlines` |  | yes |
+| `SplineColorKeyFrame` | Media.Animation | `keySpline` |  |  |
+| `SplineDoubleKeyFrame` | Media.Animation | `keySpline` |  |  |
+| `SplinePointKeyFrame` | Media.Animation | `keySpline` |  |  |
 | `SplitButton` | Controls | `command`, `commandParameter`, `flyout` |  | yes |
+| `SplitCloseThemeAnimation` | Media.Animation | `closedLength`, `closedTarget`, `closedTargetName`, `contentTarget`, `contentTargetName`, `contentTranslationDirection`, `contentTranslationOffset`, `offsetFromCenter`, +3 more |  |  |
 | `SplitMenuFlyoutItem` | Controls | `subMenuItemStyle`, `subMenuPresenterStyle` |  | yes |
+| `SplitOpenThemeAnimation` | Media.Animation | `closedLength`, `closedTarget`, `closedTargetName`, `contentTarget`, `contentTargetName`, `contentTranslationDirection`, `contentTranslationOffset`, `offsetFromCenter`, +3 more |  |  |
 | `SplitView` | Controls | `compactPaneLength`, `content`, `displayMode`, `isPaneOpen`, `lightDismissOverlayMode`, `openPaneLength`, `pane`, `paneBackground`, +1 more | `isPaneOpen` | yes |
+| `StackLayout` | Controls | `orientation`, `spacing` |  |  |
 | `StackPanel` | Controls | `areScrollSnapPointsRegular`, `backgroundSizing`, `borderBrush`, `borderThickness`, `cornerRadius`, `orientation`, `padding`, `spacing` |  | yes |
+| `StandardUICommand` | Input | `kind` |  |  |
+| `Storyboard` | Media.Animation |  |  | yes |
+| `SuppressNavigationTransitionInfo` | Media.Animation |  |  |  |
+| `SvgImageSource` | Media.Imaging | `rasterizePixelHeight`, `rasterizePixelWidth`, `uriSource` |  |  |
+| `SwipeBackThemeAnimation` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
 | `SwipeControl` | Controls | `bottomItems`, `leftItems`, `rightItems`, `topItems` |  | yes |
+| `SwipeHintThemeAnimation` | Media.Animation | `targetName`, `toHorizontalOffset`, `toVerticalOffset` |  |  |
 | `SymbolIcon` | Controls | `symbol` |  |  |
+| `SymbolIconSource` | Controls | `symbol` |  |  |
 | `SystemBackdropElement` | Controls | `cornerRadius`, `systemBackdrop` |  |  |
 | `TabView` | Controls | `addTabButtonCommand`, `addTabButtonCommandParameter`, `allowDropTabs`, `canDragTabs`, `canReorderTabs`, `canTearOutTabs`, `closeButtonOverlayMode`, `isAddTabButtonVisible`, +10 more | `selectedIndex`, `selectedItem` |  |
 | `TabViewItem` | Controls | `header`, `headerTemplate`, `iconSource`, `isClosable` |  | yes |
@@ -438,6 +549,7 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `TextBlock` | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +17 more |  | yes |
 | `TextBox` | Controls | `acceptsReturn`, `characterCasing`, `description`, `desiredCandidateWindowAlignment`, `header`, `headerTemplate`, `horizontalTextAlignment`, `inputScope`, +18 more | `text` |  |
 | `TextCommandBarFlyout` | Controls |  |  |  |
+| `ThemeShadow` | Media |  |  |  |
 | `Thumb` | Controls.Primitives |  |  |  |
 | `TickBar` | Controls.Primitives | `fill` |  |  |
 | `TimePicker` | Controls | `clockIdentifier`, `header`, `headerTemplate`, `lightDismissOverlayMode`, `minuteIncrement`, `selectedTime`, `time` | `selectedTime`, `time` | yes |
@@ -448,16 +560,22 @@ property: `Content`, `Child`, `Children`, `Items`...) as children.
 | `ToggleSplitButton` | Controls | `isChecked` | `isChecked` | yes |
 | `ToggleSwitch` | Controls | `header`, `headerTemplate`, `isOn`, `offContent`, `offContentTemplate`, `onContent`, `onContentTemplate` | `isOn` | yes |
 | `ToolTip` | Controls | `horizontalOffset`, `isOpen`, `placement`, `placementRect`, `placementTarget`, `verticalOffset` | `isOpen` | yes |
+| `TransformGroup` | Media |  |  | yes |
+| `TranslateTransform` | Media | `x`, `y` |  |  |
 | `TreeView` | Controls | `canDragItems`, `canReorderItems`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemContainerTransitions`, `itemsSource`, `itemTemplate`, `itemTemplateSelector`, +3 more | `selectedItem` |  |
 | `TreeViewItem` | Controls | `collapsedGlyph`, `expandedGlyph`, `glyphBrush`, `glyphOpacity`, `glyphSize`, `hasUnrealizedChildren`, `isExpanded`, `itemsSource` |  | yes |
 | `TreeViewList` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
+| `TreeViewNode` | Controls | `content`, `hasUnrealizedChildren`, `isExpanded` |  |  |
 | `TwoPaneView` | Controls | `minTallModeHeight`, `minWideModeWidth`, `pane1`, `pane1Length`, `pane2`, `pane2Length`, `panePriority`, `tallModeConfiguration`, +1 more |  |  |
 | `Underline` | Documents |  |  | yes |
+| `UniformGridLayout` | Controls | `itemsJustification`, `itemsStretch`, `maximumRowsOrColumns`, `minColumnSpacing`, `minItemHeight`, `minItemWidth`, `minRowSpacing`, `orientation` |  |  |
 | `UserControl` | Controls | `content` |  | yes |
 | `VariableSizedWrapGrid` | Controls | `horizontalChildrenAlignment`, `itemHeight`, `itemWidth`, `maximumRowsOrColumns`, `orientation`, `verticalChildrenAlignment` |  | yes |
 | `Viewbox` | Controls | `child`, `stretch`, `stretchDirection` |  | yes |
+| `VirtualizingLayout` | Controls |  |  |  |
 | `VirtualizingStackPanel` | Controls | `areScrollSnapPointsRegular`, `orientation` |  | yes |
 | `WrapGrid` | Controls | `horizontalChildrenAlignment`, `itemHeight`, `itemWidth`, `maximumRowsOrColumns`, `orientation`, `verticalChildrenAlignment` |  | yes |
+| `XamlUICommand` | Input | `accessKey`, `command`, `description`, `iconSource`, `label` |  |  |
 
 <!-- controls:end -->
 

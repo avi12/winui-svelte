@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { Hyperlink } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { HyperlinkComponentProps } from "./controls/Hyperlink.svelte.ts";
   import { connectHyperlink } from "./controls/Hyperlink.svelte.ts";
 
@@ -14,5 +14,8 @@
 <hyperlink {...attachmentsOf(rest)} class={className} {style} {@attach control((native: Hyperlink) => untrack(() => connectHyperlink(native, rest, bound)))}>
   {#if children}
     <property name="inlines">{@render children()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
   {/if}
 </hyperlink>

@@ -2,22 +2,31 @@
   // Children and snippet props in the properties they fill, for the mount
   // test (mount-all.svelte.ts): each control written the way a XAML app
   // writes it, a pane, commands, menu items, inlines, a flyout, a header and
-  // a paragraph holding a control.
+  // a paragraph holding a control, items written with {#each}, and value
+  // objects (a brush with stops, a transform, a storyboard) in their properties.
   // Each control is handed to the test by name.
   import {
     AppBarButton,
     Bold,
+    Border,
     Button,
+    ComboBox,
+    ComboBoxItem,
     CommandBar,
+    DoubleAnimation,
+    GradientStop,
     InlineUIContainer,
+    LinearGradientBrush,
     MenuFlyout,
     MenuFlyoutItem,
     NavigationView,
     NavigationViewItem,
     Paragraph,
     RichTextBlock,
+    RotateTransform,
     SplitView,
     StackPanel,
+    Storyboard,
     TextBlock,
     ToggleSwitch
   } from "#src/components/index.js";
@@ -42,6 +51,30 @@
 </script>
 
 <StackPanel>
+  <ComboBox {@attach found("comboBox")}>
+    {#each ["One", "Two"] as label (label)}
+      <ComboBoxItem content={label} />
+    {/each}
+    {#if props.isShown}
+      <ComboBoxItem content="Three" />
+    {/if}
+  </ComboBox>
+  <Border {@attach found("gradientBorder")}>
+    {#snippet background()}
+      <LinearGradientBrush>
+        <GradientStop color="#000000" offset={0} />
+        <GradientStop color="#ffffff" offset={1} />
+      </LinearGradientBrush>
+    {/snippet}
+  </Border>
+  <Border {@attach found("rotatedBorder")}>
+    {#snippet renderTransform()}
+      <RotateTransform angle={45} />
+    {/snippet}
+  </Border>
+  <Storyboard {@attach found("storyboard")}>
+    <DoubleAnimation to={1.5} />
+  </Storyboard>
   <SplitView {@attach found("splitView")}>
     {#snippet pane()}
       <StackPanel />

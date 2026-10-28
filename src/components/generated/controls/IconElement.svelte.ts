@@ -6,9 +6,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { IconElement } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface IconElementProps extends FrameworkElementProps {
-  foreground?: BrushInput;
+  foreground?: BrushInput | Snippet;
 }
 
 export type IconElementBound = FrameworkElementBound;

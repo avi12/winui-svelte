@@ -10,7 +10,7 @@ import type { Snippet } from "svelte";
 
 export interface PanelProps extends FrameworkElementProps {
   children?: Snippet;
-  background?: BrushInput;
+  background?: BrushInput | Snippet;
   backgroundTransition?: Panel["backgroundTransition"];
   childrenTransitions?: Panel["childrenTransitions"];
 }

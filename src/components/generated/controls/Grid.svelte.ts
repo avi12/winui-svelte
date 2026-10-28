@@ -15,10 +15,11 @@ import { BackgroundSizing } from "../bindings.ts";
 import type { Grid } from "../bindings.ts";
 import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface GridProps extends PanelProps, GridExtras {
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
-  borderBrush?: BrushInput;
+  borderBrush?: BrushInput | Snippet;
   borderThickness?: ThicknessInput;
   columnSpacing?: number;
   cornerRadius?: CornerRadiusInput;

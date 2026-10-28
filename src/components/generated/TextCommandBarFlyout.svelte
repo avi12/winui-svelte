@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { TextCommandBarFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { TextCommandBarFlyoutComponentProps } from "./controls/TextCommandBarFlyout.svelte.ts";
   import { connectTextCommandBarFlyout } from "./controls/TextCommandBarFlyout.svelte.ts";
 
@@ -12,6 +12,9 @@
 </script>
 
 <text-command-bar-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: TextCommandBarFlyout) => untrack(() => connectTextCommandBarFlyout(native, rest, bound)))}>
+  {#if isSnippet(rest.systemBackdrop)}
+    <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>
+  {/if}
   {#if rest.primaryCommands}
     <property name="primaryCommands">{@render rest.primaryCommands()}</property>
   {/if}

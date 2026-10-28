@@ -7,10 +7,11 @@ import { StyleSimulations } from "../bindings.ts";
 import type { Glyphs } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface GlyphsProps extends FrameworkElementProps {
   colorFontPaletteIndex?: number;
-  fill?: BrushInput;
+  fill?: BrushInput | Snippet;
   fontRenderingEmSize?: number;
   fontUri?: UriInput;
   indices?: string;

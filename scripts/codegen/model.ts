@@ -50,6 +50,17 @@ const FACTORY_PARAMETERS = 2;
 const targetTypes = new Set(["DependencyObject", "UIElement", "FrameworkElement"]);
 const ENUM_BASE = "Enum";
 const NULLABLE_NAME = "IReference`1";
+const nullablePrimitiveKinds = new Map<string, PropertyKind>([
+  ["Boolean", PropertyKind.NULLABLE_BOOLEAN],
+  ["Double", PropertyKind.NULLABLE_DOUBLE]
+]);
+
+// The kind of an IReference<primitive> the bindings box badly, or undefined.
+function nullableKindOf(signature: TypeSignature) {
+  const isNullable = signature.kind === "generic" && signature.type.name === NULLABLE_NAME;
+  const argument = isNullable ? signature.args[0] : undefined;
+  return argument?.kind === "primitive" ? nullablePrimitiveKinds.get(argument.name) : undefined;
+}
 const OBJECT_NAME = "Object";
 // The collections whose items markup can fill.
 const vectorNames = new Set(["IVector`1", "IObservableVector`1"]);
@@ -243,15 +254,13 @@ class Builder {
       }
     }
 
-    // dynwinrt boxes a JavaScript boolean for IReference<bool> badly: the
-    // call fails, so the value is boxed here.
-    const isNullableBoolean = signature.kind === "generic"
-      && signature.type.name === NULLABLE_NAME
-      && signature.args[0]?.kind === "primitive"
-      && signature.args[0].name === "Boolean";
-    if (isNullableBoolean) {
+    // dynwinrt boxes a JavaScript boolean or number for IReference<bool> and
+    // IReference<double> badly: the call fails, so the value is boxed here.
+    const nullableKind = nullableKindOf(signature);
+    const isNullablePrimitive = nullableKind !== undefined;
+    if (isNullablePrimitive) {
       return {
-        kind: PropertyKind.NULLABLE_BOOLEAN,
+        kind: nullableKind,
         enumType: null
       };
     }
@@ -647,8 +656,8 @@ class Builder {
     const isStaticClass = (type.flags & TypeAttribute.ABSTRACT) !== 0 && (type.flags & TypeAttribute.SEALED) !== 0;
     const isClass = !isInterface && !isStaticClass && type.base !== null && !isEnumType(type);
     const hasValueBase = type.base?.name === "ValueType" || type.base?.name === "MulticastDelegate";
-    const isBelowRoot = this.ancestry(type).some(ancestor => this.isRoot(ancestor) && ancestor !== type);
-    return isClass && !hasValueBase && isBelowRoot && this.isActivatable(type);
+    const isInHierarchy = this.ancestry(type).some(ancestor => this.isRoot(ancestor));
+    return isClass && !hasValueBase && isInHierarchy && this.isActivatable(type);
   }
 
   // Two classes of one name in different namespaces cannot share the one

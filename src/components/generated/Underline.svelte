@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { Underline } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { UnderlineComponentProps } from "./controls/Underline.svelte.ts";
   import { connectUnderline } from "./controls/Underline.svelte.ts";
 
@@ -14,5 +14,8 @@
 <underline {...attachmentsOf(rest)} class={className} {style} {@attach control((native: Underline) => untrack(() => connectUnderline(native, rest, bound)))}>
   {#if children}
     <property name="inlines">{@render children()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
   {/if}
 </underline>

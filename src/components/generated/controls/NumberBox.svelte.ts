@@ -23,7 +23,7 @@ export interface NumberBoxProps extends ControlProps {
   placeholderText?: string;
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
   selectionFlyout?: NumberBox["selectionFlyout"] | Snippet;
-  selectionHighlightColor?: NumberBox["selectionHighlightColor"];
+  selectionHighlightColor?: NumberBox["selectionHighlightColor"] | Snippet;
   smallChange?: number;
   spinButtonPlacementMode?: EnumInput<typeof NumberBoxSpinButtonPlacementMode>;
   text?: string;

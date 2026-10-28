@@ -5,9 +5,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { InfoBadge } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface InfoBadgeProps extends ControlProps {
-  iconSource?: InfoBadge["iconSource"];
+  iconSource?: InfoBadge["iconSource"] | Snippet;
   value?: number;
 }
 

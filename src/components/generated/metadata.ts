@@ -15,6 +15,28 @@ export interface LevelMetadata {
 }
 
 export const levels: Record<string, LevelMetadata> = {
+  AcrylicBrush: {
+    parent: "XamlCompositionBrushBase",
+    properties: ["alwaysUseFallback", "tintColor", "tintLuminosityOpacity", "tintOpacity", "tintTransitionDuration"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "acrylic-brush",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  AddDeleteThemeTransition: {
+    parent: "Transition",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "add-delete-theme-transition",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   AnimatedIcon: {
     parent: "IconElement",
     properties: ["fallbackIconSource", "mirroredWhenRightToLeft", "source"],
@@ -24,6 +46,17 @@ export const levels: Record<string, LevelMetadata> = {
     contentProperty: null,
     isComponent: true,
     tag: "animated-icon",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  AnimatedIconSource: {
+    parent: "IconSource",
+    properties: ["fallbackIconSource", "mirroredWhenRightToLeft", "source"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "animated-icon-source",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
   AnimatedVisualPlayer: {
@@ -103,6 +136,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "app-bar-toggle-button",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  ArcSegment: {
+    parent: "PathSegment",
+    properties: ["isLargeArc", "point", "rotationAngle", "size", "sweepDirection"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "arc-segment",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   AutoSuggestBox: {
     parent: "ItemsControl",
     properties: ["autoMaximizeSuggestionArea", "description", "header", "isSuggestionListOpen", "lightDismissOverlayMode", "maxSuggestionListHeight", "placeholderText", "queryIcon", "text", "textBoxStyle", "textMemberPath", "updateTextOnSelect"],
@@ -114,6 +158,39 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "auto-suggest-box",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  BackEase: {
+    parent: "EasingFunctionBase",
+    properties: ["amplitude"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "back-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  BezierSegment: {
+    parent: "PathSegment",
+    properties: ["point1", "point2", "point3"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "bezier-segment",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  BitmapCache: {
+    parent: "CacheMode",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "bitmap-cache",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   BitmapIcon: {
     parent: "IconElement",
     properties: ["showAsMonochrome", "uriSource"],
@@ -124,6 +201,39 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "bitmap-icon",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  BitmapIconSource: {
+    parent: "IconSource",
+    properties: ["showAsMonochrome", "uriSource"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "bitmap-icon-source",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  BitmapImage: {
+    parent: "BitmapSource",
+    properties: ["autoPlay", "createOptions", "decodePixelHeight", "decodePixelType", "decodePixelWidth", "uriSource"],
+    events: ["onDownloadProgress", "onImageFailed", "onImageOpened"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "bitmap-image",
+    namespace: "Microsoft.UI.Xaml.Media.Imaging"
+  },
+  BitmapSource: {
+    parent: "ImageSource",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "bitmap-source",
+    namespace: "Microsoft.UI.Xaml.Media.Imaging"
   },
   Block: {
     parent: "TextElement",
@@ -158,6 +268,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "border",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  BounceEase: {
+    parent: "EasingFunctionBase",
+    properties: ["bounces", "bounciness"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "bounce-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   BreadcrumbBar: {
     parent: "Control",
     properties: ["itemsSource", "itemTemplate"],
@@ -180,6 +301,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "breadcrumb-bar-item",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  Brush: {
+    parent: null,
+    properties: ["opacity", "relativeTransform", "transform"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "brush",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   Button: {
     parent: "ButtonBase",
     properties: ["flyout"],
@@ -201,6 +333,17 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: false,
     tag: "button-base",
     namespace: "Microsoft.UI.Xaml.Controls.Primitives"
+  },
+  CacheMode: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "cache-mode",
+    namespace: "Microsoft.UI.Xaml.Media"
   },
   CalendarDatePicker: {
     parent: "Control",
@@ -279,6 +422,50 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "check-box",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  CircleEase: {
+    parent: "EasingFunctionBase",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "circle-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  ColorAnimation: {
+    parent: "Timeline",
+    properties: ["by", "easingFunction", "enableDependentAnimation", "from", "to"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "color-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  ColorAnimationUsingKeyFrames: {
+    parent: "Timeline",
+    properties: ["enableDependentAnimation"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "KeyFrames",
+    isComponent: true,
+    tag: "color-animation-using-key-frames",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  ColorKeyFrame: {
+    parent: null,
+    properties: ["keyTime", "value"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "color-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   ColorPicker: {
     parent: "Control",
     properties: ["color", "colorSpectrumComponents", "colorSpectrumShape", "isAlphaEnabled", "isAlphaSliderVisible", "isAlphaTextInputVisible", "isColorChannelTextInputVisible", "isColorPreviewVisible", "isColorSliderVisible", "isColorSpectrumVisible", "isHexInputVisible", "isMoreButtonVisible", "maxHue", "maxSaturation", "maxValue", "minHue", "minSaturation", "minValue", "orientation", "previousColor"],
@@ -310,6 +497,17 @@ export const levels: Record<string, LevelMetadata> = {
     contentProperty: null,
     isComponent: true,
     tag: "color-spectrum",
+    namespace: "Microsoft.UI.Xaml.Controls.Primitives"
+  },
+  ColumnMajorUniformToLargestGridLayout: {
+    parent: "NonVirtualizingLayout",
+    properties: ["columnSpacing", "maxColumns", "rowSpacing"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "column-major-uniform-to-largest-grid-layout",
     namespace: "Microsoft.UI.Xaml.Controls.Primitives"
   },
   ComboBox: {
@@ -378,6 +576,39 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "command-bar-overflow-presenter",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  CommonNavigationTransitionInfo: {
+    parent: "NavigationTransitionInfo",
+    properties: ["isStaggeringEnabled"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "common-navigation-transition-info",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  CompositeTransform: {
+    parent: "Transform",
+    properties: ["centerX", "centerY", "rotation", "scaleX", "scaleY", "skewX", "skewY", "translateX", "translateY"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "composite-transform",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  CompositeTransform3D: {
+    parent: "Transform3D",
+    properties: ["centerX", "centerY", "centerZ", "rotationX", "rotationY", "rotationZ", "scaleX", "scaleY", "scaleZ", "translateX", "translateY", "translateZ"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "composite-transform3-d",
+    namespace: "Microsoft.UI.Xaml.Media.Media3D"
+  },
   ContentControl: {
     parent: "Control",
     properties: ["content", "contentTemplate", "contentTemplateSelector", "contentTransitions"],
@@ -411,6 +642,28 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "content-presenter",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  ContentThemeTransition: {
+    parent: "Transition",
+    properties: ["horizontalOffset", "verticalOffset"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "content-theme-transition",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  ContinuumNavigationTransitionInfo: {
+    parent: "NavigationTransitionInfo",
+    properties: ["exitElement"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "continuum-navigation-transition-info",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   Control: {
     parent: "FrameworkElement",
     properties: ["background", "backgroundSizing", "borderBrush", "borderThickness", "characterSpacing", "cornerRadius", "defaultStyleResourceUri", "elementSoundMode", "fontFamily", "fontSize", "fontStretch", "fontStyle", "fontWeight", "foreground", "horizontalContentAlignment", "isEnabled", "isFocusEngaged", "isFocusEngagementEnabled", "isTextScaleFactorEnabled", "padding", "requiresPointer", "tabNavigation", "template", "verticalContentAlignment"],
@@ -421,6 +674,17 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: false,
     tag: "control",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  CubicEase: {
+    parent: "EasingFunctionBase",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "cubic-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   DatePicker: {
     parent: "Control",
@@ -444,6 +708,149 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "date-picker-flyout",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  DesktopAcrylicBackdrop: {
+    parent: "SystemBackdrop",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "desktop-acrylic-backdrop",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  DiscreteColorKeyFrame: {
+    parent: "ColorKeyFrame",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "discrete-color-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DiscreteDoubleKeyFrame: {
+    parent: "DoubleKeyFrame",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "discrete-double-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DiscreteObjectKeyFrame: {
+    parent: "ObjectKeyFrame",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "discrete-object-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DiscretePointKeyFrame: {
+    parent: "PointKeyFrame",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "discrete-point-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DoubleAnimation: {
+    parent: "Timeline",
+    properties: ["by", "easingFunction", "enableDependentAnimation", "from", "to"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "double-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DoubleAnimationUsingKeyFrames: {
+    parent: "Timeline",
+    properties: ["enableDependentAnimation"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "KeyFrames",
+    isComponent: true,
+    tag: "double-animation-using-key-frames",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DoubleKeyFrame: {
+    parent: null,
+    properties: ["keyTime", "value"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "double-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DragItemThemeAnimation: {
+    parent: "Timeline",
+    properties: ["targetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "drag-item-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DragOverThemeAnimation: {
+    parent: "Timeline",
+    properties: ["direction", "targetName", "toOffset"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "drag-over-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DrillInNavigationTransitionInfo: {
+    parent: "NavigationTransitionInfo",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "drill-in-navigation-transition-info",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DrillInThemeAnimation: {
+    parent: "Timeline",
+    properties: ["entranceTarget", "entranceTargetName", "exitTarget", "exitTargetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "drill-in-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  DrillOutThemeAnimation: {
+    parent: "Timeline",
+    properties: ["entranceTarget", "entranceTargetName", "exitTarget", "exitTargetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "drill-out-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   DropDownButton: {
     parent: "Button",
     properties: [],
@@ -454,6 +861,83 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "drop-down-button",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  DropTargetItemThemeAnimation: {
+    parent: "Timeline",
+    properties: ["targetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "drop-target-item-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  EasingColorKeyFrame: {
+    parent: "ColorKeyFrame",
+    properties: ["easingFunction"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "easing-color-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  EasingDoubleKeyFrame: {
+    parent: "DoubleKeyFrame",
+    properties: ["easingFunction"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "easing-double-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  EasingFunctionBase: {
+    parent: null,
+    properties: ["easingMode"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "easing-function-base",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  EasingPointKeyFrame: {
+    parent: "PointKeyFrame",
+    properties: ["easingFunction"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "easing-point-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  EdgeUIThemeTransition: {
+    parent: "Transition",
+    properties: ["edge"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "edge-ui-theme-transition",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  ElasticEase: {
+    parent: "EasingFunctionBase",
+    properties: ["oscillations", "springiness"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "elastic-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   Ellipse: {
     parent: "Shape",
@@ -466,6 +950,39 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "ellipse",
     namespace: "Microsoft.UI.Xaml.Shapes"
   },
+  EllipseGeometry: {
+    parent: "Geometry",
+    properties: ["center", "radiusX", "radiusY"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "ellipse-geometry",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  EntranceNavigationTransitionInfo: {
+    parent: "NavigationTransitionInfo",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "entrance-navigation-transition-info",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  EntranceThemeTransition: {
+    parent: "Transition",
+    properties: ["fromHorizontalOffset", "fromVerticalOffset", "isStaggeringEnabled"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "entrance-theme-transition",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   Expander: {
     parent: "ContentControl",
     properties: ["expandDirection", "header", "headerTemplate", "headerTemplateSelector", "isExpanded"],
@@ -476,6 +993,39 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "expander",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  ExponentialEase: {
+    parent: "EasingFunctionBase",
+    properties: ["exponent"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "exponential-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  FadeInThemeAnimation: {
+    parent: "Timeline",
+    properties: ["targetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "fade-in-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  FadeOutThemeAnimation: {
+    parent: "Timeline",
+    properties: ["targetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "fade-out-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   FlipView: {
     parent: "Selector",
@@ -543,6 +1093,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "font-icon",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  FontIconSource: {
+    parent: "IconSource",
+    properties: ["fontFamily", "fontSize", "fontStyle", "fontWeight", "glyph", "isTextScaleFactorEnabled", "mirroredWhenRightToLeft"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "font-icon-source",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   Frame: {
     parent: "ContentControl",
     properties: ["cacheSize", "isNavigationStackEnabled", "sourcePageType"],
@@ -570,6 +1131,28 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "framework-element",
     namespace: "Microsoft.UI.Xaml"
   },
+  Geometry: {
+    parent: null,
+    properties: ["transform"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "geometry",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  GeometryGroup: {
+    parent: "Geometry",
+    properties: ["fillRule"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Children",
+    isComponent: true,
+    tag: "geometry-group",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   Glyphs: {
     parent: "FrameworkElement",
     properties: ["colorFontPaletteIndex", "fill", "fontRenderingEmSize", "fontUri", "indices", "isColorFontEnabled", "originX", "originY", "styleSimulations", "unicodeString"],
@@ -580,6 +1163,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "glyphs",
     namespace: "Microsoft.UI.Xaml.Documents"
+  },
+  GradientBrush: {
+    parent: "Brush",
+    properties: ["colorInterpolationMode", "gradientStops", "mappingMode", "spreadMethod"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "GradientStops",
+    isComponent: false,
+    tag: "gradient-brush",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  GradientStop: {
+    parent: null,
+    properties: ["color", "offset"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Color",
+    isComponent: true,
+    tag: "gradient-stop",
+    namespace: "Microsoft.UI.Xaml.Media"
   },
   Grid: {
     parent: "Panel",
@@ -702,6 +1307,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "icon-element",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  IconSource: {
+    parent: null,
+    properties: ["foreground"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "icon-source",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   IconSourceElement: {
     parent: "IconElement",
     properties: ["iconSource"],
@@ -724,6 +1340,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "image",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  ImageBrush: {
+    parent: "TileBrush",
+    properties: ["imageSource"],
+    events: ["onImageFailed", "onImageOpened"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "image-brush",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   ImageIcon: {
     parent: "IconElement",
     properties: ["source"],
@@ -734,6 +1361,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "image-icon",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  ImageIconSource: {
+    parent: "IconSource",
+    properties: ["imageSource"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "image-icon-source",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  ImageSource: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "image-source",
+    namespace: "Microsoft.UI.Xaml.Media"
   },
   InfoBadge: {
     parent: "Control",
@@ -889,6 +1538,39 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "items-wrap-grid",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  KeyboardAccelerator: {
+    parent: null,
+    properties: ["isEnabled", "key", "modifiers", "scopeOwner"],
+    events: ["onInvoked"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "keyboard-accelerator",
+    namespace: "Microsoft.UI.Xaml.Input"
+  },
+  KeySpline: {
+    parent: null,
+    properties: ["controlPoint1", "controlPoint2"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "key-spline",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  Layout: {
+    parent: null,
+    properties: [],
+    events: ["onArrangeInvalidated", "onMeasureInvalidated"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "layout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   Line: {
     parent: "Shape",
     properties: ["x1", "x2", "y1", "y2"],
@@ -900,6 +1582,50 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "line",
     namespace: "Microsoft.UI.Xaml.Shapes"
   },
+  LinearColorKeyFrame: {
+    parent: "ColorKeyFrame",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "linear-color-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  LinearDoubleKeyFrame: {
+    parent: "DoubleKeyFrame",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "linear-double-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  LinearGradientBrush: {
+    parent: "GradientBrush",
+    properties: ["endPoint", "startPoint"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "GradientStops",
+    isComponent: true,
+    tag: "linear-gradient-brush",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  LinearPointKeyFrame: {
+    parent: "PointKeyFrame",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "linear-point-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   LineBreak: {
     parent: "Inline",
     properties: [],
@@ -910,6 +1636,39 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "line-break",
     namespace: "Microsoft.UI.Xaml.Documents"
+  },
+  LinedFlowLayout: {
+    parent: "VirtualizingLayout",
+    properties: ["itemsJustification", "itemsStretch", "lineHeight", "lineSpacing", "minItemSpacing"],
+    events: ["onItemsInfoRequested", "onItemsUnlocked"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "lined-flow-layout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  LineGeometry: {
+    parent: "Geometry",
+    properties: ["endPoint", "startPoint"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "line-geometry",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  LineSegment: {
+    parent: "PathSegment",
+    properties: ["point"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "line-segment",
+    namespace: "Microsoft.UI.Xaml.Media"
   },
   ListBox: {
     parent: "Selector",
@@ -1020,6 +1779,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "map-control",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  Matrix3DProjection: {
+    parent: "Projection",
+    properties: ["projectionMatrix"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "ProjectionMatrix",
+    isComponent: true,
+    tag: "matrix3-d-projection",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  MatrixTransform: {
+    parent: "Transform",
+    properties: ["matrix"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "matrix-transform",
+    namespace: "Microsoft.UI.Xaml.Media"
   },
   MediaPlayerElement: {
     parent: "Control",
@@ -1153,6 +1934,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "menu-flyout-sub-item",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  MicaBackdrop: {
+    parent: "SystemBackdrop",
+    properties: ["kind"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "mica-backdrop",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   MonochromaticOverlayPresenter: {
     parent: "Grid",
     properties: ["replacementColor", "sourceElement"],
@@ -1163,6 +1955,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "monochromatic-overlay-presenter",
     namespace: "Microsoft.UI.Xaml.Controls.Primitives"
+  },
+  NavigationThemeTransition: {
+    parent: "Transition",
+    properties: ["defaultNavigationTransitionInfo"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "DefaultNavigationTransitionInfo",
+    isComponent: true,
+    tag: "navigation-theme-transition",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  NavigationTransitionInfo: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "navigation-transition-info",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   NavigationView: {
     parent: "ContentControl",
@@ -1230,6 +2044,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "navigation-view-item-separator",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  NonVirtualizingLayout: {
+    parent: "Layout",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "non-virtualizing-layout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   NumberBox: {
     parent: "Control",
     properties: ["acceptsExpression", "description", "header", "headerTemplate", "isWrapEnabled", "largeChange", "maximum", "minimum", "numberFormatter", "placeholderText", "preventKeyboardDisplayOnProgrammaticFocus", "selectionFlyout", "selectionHighlightColor", "smallChange", "spinButtonPlacementMode", "text", "textReadingOrder", "validationMode", "value"],
@@ -1240,6 +2065,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "number-box",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  ObjectAnimationUsingKeyFrames: {
+    parent: "Timeline",
+    properties: ["enableDependentAnimation"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "KeyFrames",
+    isComponent: true,
+    tag: "object-animation-using-key-frames",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  ObjectKeyFrame: {
+    parent: null,
+    properties: ["keyTime", "value"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "object-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   OrientedVirtualizingPanel: {
     parent: "VirtualizingPanel",
@@ -1273,6 +2120,17 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: false,
     tag: "panel",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  PaneThemeTransition: {
+    parent: "Transition",
+    properties: ["edge"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "pane-theme-transition",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   Paragraph: {
     parent: "Block",
@@ -1318,6 +2176,28 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "path",
     namespace: "Microsoft.UI.Xaml.Shapes"
   },
+  PathFigure: {
+    parent: null,
+    properties: ["isClosed", "isFilled", "segments", "startPoint"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Segments",
+    isComponent: true,
+    tag: "path-figure",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  PathGeometry: {
+    parent: "Geometry",
+    properties: ["figures", "fillRule"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Figures",
+    isComponent: true,
+    tag: "path-geometry",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   PathIcon: {
     parent: "IconElement",
     properties: ["data"],
@@ -1329,6 +2209,28 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "path-icon",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  PathIconSource: {
+    parent: "IconSource",
+    properties: ["data"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "path-icon-source",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  PathSegment: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "path-segment",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   PersonPicture: {
     parent: "Control",
     properties: ["badgeGlyph", "badgeImageSource", "badgeNumber", "badgeText", "contact", "displayName", "initials", "isGroup", "preferSmallImage", "profilePicture"],
@@ -1339,6 +2241,17 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "person-picture",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  PerspectiveTransform3D: {
+    parent: "Transform3D",
+    properties: ["depth", "offsetX", "offsetY"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "perspective-transform3-d",
+    namespace: "Microsoft.UI.Xaml.Media.Media3D"
   },
   PickerFlyout: {
     parent: "PickerFlyoutBase",
@@ -1417,6 +2330,83 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "pivot-panel",
     namespace: "Microsoft.UI.Xaml.Controls.Primitives"
   },
+  PlaneProjection: {
+    parent: "Projection",
+    properties: ["centerOfRotationX", "centerOfRotationY", "centerOfRotationZ", "globalOffsetX", "globalOffsetY", "globalOffsetZ", "localOffsetX", "localOffsetY", "localOffsetZ", "rotationX", "rotationY", "rotationZ"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "plane-projection",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  PointAnimation: {
+    parent: "Timeline",
+    properties: ["by", "easingFunction", "enableDependentAnimation", "from", "to"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "point-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  PointAnimationUsingKeyFrames: {
+    parent: "Timeline",
+    properties: ["enableDependentAnimation"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "KeyFrames",
+    isComponent: true,
+    tag: "point-animation-using-key-frames",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  PointerDownThemeAnimation: {
+    parent: "Timeline",
+    properties: ["targetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "pointer-down-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  PointerUpThemeAnimation: {
+    parent: "Timeline",
+    properties: ["targetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "pointer-up-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  PointKeyFrame: {
+    parent: null,
+    properties: ["keyTime", "value"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "point-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  PolyBezierSegment: {
+    parent: "PathSegment",
+    properties: ["points"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Points",
+    isComponent: true,
+    tag: "poly-bezier-segment",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   Polygon: {
     parent: "Shape",
     properties: ["fillRule", "points"],
@@ -1439,6 +2429,50 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "polyline",
     namespace: "Microsoft.UI.Xaml.Shapes"
   },
+  PolyLineSegment: {
+    parent: "PathSegment",
+    properties: ["points"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Points",
+    isComponent: true,
+    tag: "poly-line-segment",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  PolyQuadraticBezierSegment: {
+    parent: "PathSegment",
+    properties: ["points"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Points",
+    isComponent: true,
+    tag: "poly-quadratic-bezier-segment",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  PopInThemeAnimation: {
+    parent: "Timeline",
+    properties: ["fromHorizontalOffset", "fromVerticalOffset", "targetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "pop-in-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  PopOutThemeAnimation: {
+    parent: "Timeline",
+    properties: ["targetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "pop-out-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   Popup: {
     parent: "FrameworkElement",
     properties: ["child", "childTransitions", "desiredPlacement", "horizontalOffset", "isLightDismissEnabled", "isOpen", "lightDismissOverlayMode", "placementTarget", "shouldConstrainToRootBounds", "systemBackdrop", "verticalOffset"],
@@ -1449,6 +2483,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "popup",
     namespace: "Microsoft.UI.Xaml.Controls.Primitives"
+  },
+  PopupThemeTransition: {
+    parent: "Transition",
+    properties: ["fromHorizontalOffset", "fromVerticalOffset"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "popup-theme-transition",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  PowerEase: {
+    parent: "EasingFunctionBase",
+    properties: ["power"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "power-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   ProgressBar: {
     parent: "RangeBase",
@@ -1471,6 +2527,72 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "progress-ring",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  Projection: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "projection",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  QuadraticBezierSegment: {
+    parent: "PathSegment",
+    properties: ["point1", "point2"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "quadratic-bezier-segment",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  QuadraticEase: {
+    parent: "EasingFunctionBase",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "quadratic-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  QuarticEase: {
+    parent: "EasingFunctionBase",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "quartic-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  QuinticEase: {
+    parent: "EasingFunctionBase",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "quintic-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  RadialGradientBrush: {
+    parent: "XamlCompositionBrushBase",
+    properties: ["center", "gradientOrigin", "interpolationSpace", "mappingMode", "radiusX", "radiusY", "spreadMethod"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "radial-gradient-brush",
+    namespace: "Microsoft.UI.Xaml.Media"
   },
   RadioButton: {
     parent: "ToggleButton",
@@ -1538,6 +2660,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "rectangle",
     namespace: "Microsoft.UI.Xaml.Shapes"
   },
+  RectangleGeometry: {
+    parent: "Geometry",
+    properties: ["rect"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "rectangle-geometry",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   RefreshContainer: {
     parent: "ContentControl",
     properties: ["pullDirection", "visualizer"],
@@ -1571,6 +2704,28 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "relative-panel",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  RenderTargetBitmap: {
+    parent: "ImageSource",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "render-target-bitmap",
+    namespace: "Microsoft.UI.Xaml.Media.Imaging"
+  },
+  ReorderThemeTransition: {
+    parent: "Transition",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "reorder-theme-transition",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   RepeatButton: {
     parent: "ButtonBase",
     properties: ["delay", "interval"],
@@ -1581,6 +2736,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "repeat-button",
     namespace: "Microsoft.UI.Xaml.Controls.Primitives"
+  },
+  RepositionThemeAnimation: {
+    parent: "Timeline",
+    properties: ["fromHorizontalOffset", "fromVerticalOffset", "targetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "reposition-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  RepositionThemeTransition: {
+    parent: "Transition",
+    properties: ["isStaggeringEnabled"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "reposition-theme-transition",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   RevealListViewItemPresenter: {
     parent: "ListViewItemPresenter",
@@ -1626,6 +2803,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "rich-text-block-overflow",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  RotateTransform: {
+    parent: "Transform",
+    properties: ["angle", "centerX", "centerY"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "rotate-transform",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   Run: {
     parent: "Inline",
     properties: ["flowDirection", "text"],
@@ -1636,6 +2824,17 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "run",
     namespace: "Microsoft.UI.Xaml.Documents"
+  },
+  ScaleTransform: {
+    parent: "Transform",
+    properties: ["centerX", "centerY", "scaleX", "scaleY"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "scale-transform",
+    namespace: "Microsoft.UI.Xaml.Media"
   },
   ScrollBar: {
     parent: "RangeBase",
@@ -1747,6 +2946,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "semantic-zoom",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  Shadow: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "shadow",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   Shape: {
     parent: "FrameworkElement",
     properties: ["fill", "stretch", "stroke", "strokeDashArray", "strokeDashCap", "strokeDashOffset", "strokeEndLineCap", "strokeLineJoin", "strokeMiterLimit", "strokeStartLineCap", "strokeThickness"],
@@ -1757,6 +2967,39 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: false,
     tag: "shape",
     namespace: "Microsoft.UI.Xaml.Shapes"
+  },
+  SineEase: {
+    parent: "EasingFunctionBase",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "sine-ease",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  SkewTransform: {
+    parent: "Transform",
+    properties: ["angleX", "angleY", "centerX", "centerY"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "skew-transform",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  SlideNavigationTransitionInfo: {
+    parent: "NavigationTransitionInfo",
+    properties: ["effect"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "slide-navigation-transition-info",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   Slider: {
     parent: "RangeBase",
@@ -1769,6 +3012,28 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "slider",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  SoftwareBitmapSource: {
+    parent: "ImageSource",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "software-bitmap-source",
+    namespace: "Microsoft.UI.Xaml.Media.Imaging"
+  },
+  SolidColorBrush: {
+    parent: "Brush",
+    properties: ["color"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Color",
+    isComponent: true,
+    tag: "solid-color-brush",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   Span: {
     parent: "Inline",
     properties: ["inlines"],
@@ -1779,6 +3044,39 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "span",
     namespace: "Microsoft.UI.Xaml.Documents"
+  },
+  SplineColorKeyFrame: {
+    parent: "ColorKeyFrame",
+    properties: ["keySpline"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "spline-color-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  SplineDoubleKeyFrame: {
+    parent: "DoubleKeyFrame",
+    properties: ["keySpline"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "spline-double-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  SplinePointKeyFrame: {
+    parent: "PointKeyFrame",
+    properties: ["keySpline"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "spline-point-key-frame",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   SplitButton: {
     parent: "ContentControl",
@@ -1791,6 +3089,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "split-button",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  SplitCloseThemeAnimation: {
+    parent: "Timeline",
+    properties: ["closedLength", "closedTarget", "closedTargetName", "contentTarget", "contentTargetName", "contentTranslationDirection", "contentTranslationOffset", "offsetFromCenter", "openedLength", "openedTarget", "openedTargetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "split-close-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   SplitMenuFlyoutItem: {
     parent: "MenuFlyoutItem",
     properties: ["subMenuItemStyle", "subMenuPresenterStyle"],
@@ -1802,6 +3111,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "split-menu-flyout-item",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  SplitOpenThemeAnimation: {
+    parent: "Timeline",
+    properties: ["closedLength", "closedTarget", "closedTargetName", "contentTarget", "contentTargetName", "contentTranslationDirection", "contentTranslationOffset", "offsetFromCenter", "openedLength", "openedTarget", "openedTargetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "split-open-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   SplitView: {
     parent: "Control",
     properties: ["compactPaneLength", "content", "displayMode", "isPaneOpen", "lightDismissOverlayMode", "openPaneLength", "pane", "paneBackground", "panePlacement"],
@@ -1811,6 +3131,17 @@ export const levels: Record<string, LevelMetadata> = {
     contentProperty: "Content",
     isComponent: true,
     tag: "split-view",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  StackLayout: {
+    parent: "VirtualizingLayout",
+    properties: ["orientation", "spacing"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "stack-layout",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
   StackPanel: {
@@ -1824,6 +3155,61 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "stack-panel",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  StandardUICommand: {
+    parent: "XamlUICommand",
+    properties: ["kind"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "standard-ui-command",
+    namespace: "Microsoft.UI.Xaml.Input"
+  },
+  Storyboard: {
+    parent: "Timeline",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Children",
+    isComponent: true,
+    tag: "storyboard",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  SuppressNavigationTransitionInfo: {
+    parent: "NavigationTransitionInfo",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "suppress-navigation-transition-info",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  SvgImageSource: {
+    parent: "ImageSource",
+    properties: ["rasterizePixelHeight", "rasterizePixelWidth", "uriSource"],
+    events: ["onOpened", "onOpenFailed"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "svg-image-source",
+    namespace: "Microsoft.UI.Xaml.Media.Imaging"
+  },
+  SwipeBackThemeAnimation: {
+    parent: "Timeline",
+    properties: ["fromHorizontalOffset", "fromVerticalOffset", "targetName"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "swipe-back-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   SwipeControl: {
     parent: "ContentControl",
     properties: ["bottomItems", "leftItems", "rightItems", "topItems"],
@@ -1835,6 +3221,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "swipe-control",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  SwipeHintThemeAnimation: {
+    parent: "Timeline",
+    properties: ["targetName", "toHorizontalOffset", "toVerticalOffset"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "swipe-hint-theme-animation",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
   SymbolIcon: {
     parent: "IconElement",
     properties: ["symbol"],
@@ -1845,6 +3242,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "symbol-icon",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  SymbolIconSource: {
+    parent: "IconSource",
+    properties: ["symbol"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "symbol-icon-source",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  SystemBackdrop: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "system-backdrop",
+    namespace: "Microsoft.UI.Xaml.Media"
   },
   SystemBackdropElement: {
     parent: "FrameworkElement",
@@ -1945,6 +3364,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "text-element",
     namespace: "Microsoft.UI.Xaml.Documents"
   },
+  ThemeShadow: {
+    parent: "Shadow",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "theme-shadow",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   Thumb: {
     parent: "Control",
     properties: [],
@@ -1966,6 +3396,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "tick-bar",
     namespace: "Microsoft.UI.Xaml.Controls.Primitives"
+  },
+  TileBrush: {
+    parent: "Brush",
+    properties: ["alignmentX", "alignmentY", "stretch"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "tile-brush",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  Timeline: {
+    parent: null,
+    properties: ["autoReverse", "beginTime", "duration", "fillBehavior", "repeatBehavior", "speedRatio"],
+    events: ["onCompleted"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "timeline",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
   },
   TimePicker: {
     parent: "Control",
@@ -2055,6 +3507,61 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "tool-tip",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  Transform: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "transform",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  Transform3D: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "transform3-d",
+    namespace: "Microsoft.UI.Xaml.Media.Media3D"
+  },
+  TransformGroup: {
+    parent: "Transform",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: "Children",
+    isComponent: true,
+    tag: "transform-group",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  Transition: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "transition",
+    namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  TranslateTransform: {
+    parent: "Transform",
+    properties: ["x", "y"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "translate-transform",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
   TreeView: {
     parent: "Control",
     properties: ["canDragItems", "canReorderItems", "itemContainerStyle", "itemContainerStyleSelector", "itemContainerTransitions", "itemsSource", "itemTemplate", "itemTemplateSelector", "selectedItem", "selectedNode", "selectionMode"],
@@ -2086,6 +3593,17 @@ export const levels: Record<string, LevelMetadata> = {
     contentProperty: "Items",
     isComponent: true,
     tag: "tree-view-list",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  TreeViewNode: {
+    parent: null,
+    properties: ["content", "hasUnrealizedChildren", "isExpanded"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "tree-view-node",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
   TwoPaneView: {
@@ -2185,6 +3703,17 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "underline",
     namespace: "Microsoft.UI.Xaml.Documents"
   },
+  UniformGridLayout: {
+    parent: "VirtualizingLayout",
+    properties: ["itemsJustification", "itemsStretch", "maximumRowsOrColumns", "minColumnSpacing", "minItemHeight", "minItemWidth", "minRowSpacing", "orientation"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "uniform-grid-layout",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
   UserControl: {
     parent: "Control",
     properties: ["content"],
@@ -2216,6 +3745,17 @@ export const levels: Record<string, LevelMetadata> = {
     contentProperty: "Child",
     isComponent: true,
     tag: "viewbox",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  VirtualizingLayout: {
+    parent: "Layout",
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "virtualizing-layout",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
   VirtualizingPanel: {
@@ -2250,6 +3790,28 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "wrap-grid",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  XamlCompositionBrushBase: {
+    parent: "Brush",
+    properties: ["fallbackColor"],
+    events: [],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "xaml-composition-brush-base",
+    namespace: "Microsoft.UI.Xaml.Media"
+  },
+  XamlUICommand: {
+    parent: null,
+    properties: ["accessKey", "command", "description", "iconSource", "label"],
+    events: ["onCanExecuteChanged", "onCanExecuteRequested", "onExecuteRequested"],
+    attached: {},
+    bindables: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "xaml-ui-command",
+    namespace: "Microsoft.UI.Xaml.Input"
   }
 };
 
@@ -2257,5 +3819,5 @@ export const excluded: Record<string, string> = {
   "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem": "constructing it fails with E_NOINTERFACE: it is activatable in the metadata but WinUI makes it only inside a Pivot",
   "Microsoft.UI.Xaml.Controls.SwapChainBackgroundPanel": "as SwapChainPanel",
   "Microsoft.UI.Xaml.Controls.SwapChainPanel": "dynwinrt-codegen cannot emit it with the other controls: it reaches Microsoft.UI.Input.PointerEventArgs and Windows.UI.Core.PointerEventArgs in one pass, and the second pass names the latter differently from the first",
-  "Microsoft.UI.Xaml.Controls.WebView2": "its events name Microsoft.Web.WebView2.Core types, which winapp does not give dynwinrt-codegen, so the binding for the control cannot be emitted"
+  "Microsoft.UI.Xaml.Controls.WebView2": "its events name Microsoft.Web.WebView2.Core types, and winapp passes that winmd to dynwinrt-codegen neither to emit nor to resolve against (it is in .winapp/winmds.lock.json only), so the binding for the control cannot be emitted"
 };

@@ -7,29 +7,30 @@ import { HorizontalAlignment, VerticalAlignment } from "../bindings.ts";
 import type { GridViewItemPresenter } from "../bindings.ts";
 import { linkContentPresenter } from "./ContentPresenter.svelte.ts";
 import type { ContentPresenterBound, ContentPresenterProps } from "./ContentPresenter.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface GridViewItemPresenterProps extends ContentPresenterProps {
-  checkBrush?: BrushInput;
-  checkHintBrush?: BrushInput;
-  checkSelectingBrush?: BrushInput;
+  checkBrush?: BrushInput | Snippet;
+  checkHintBrush?: BrushInput | Snippet;
+  checkSelectingBrush?: BrushInput | Snippet;
   contentMargin?: ThicknessInput;
   disabledOpacity?: number;
-  dragBackground?: BrushInput;
-  dragForeground?: BrushInput;
+  dragBackground?: BrushInput | Snippet;
+  dragForeground?: BrushInput | Snippet;
   dragOpacity?: number;
-  focusBorderBrush?: BrushInput;
+  focusBorderBrush?: BrushInput | Snippet;
   gridViewItemPresenterHorizontalContentAlignment?: EnumInput<typeof HorizontalAlignment>;
   gridViewItemPresenterPadding?: ThicknessInput;
   gridViewItemPresenterVerticalContentAlignment?: EnumInput<typeof VerticalAlignment>;
-  placeholderBackground?: BrushInput;
-  pointerOverBackground?: BrushInput;
+  placeholderBackground?: BrushInput | Snippet;
+  pointerOverBackground?: BrushInput | Snippet;
   pointerOverBackgroundMargin?: ThicknessInput;
   reorderHintOffset?: number;
-  selectedBackground?: BrushInput;
+  selectedBackground?: BrushInput | Snippet;
   selectedBorderThickness?: ThicknessInput;
-  selectedForeground?: BrushInput;
-  selectedPointerOverBackground?: BrushInput;
-  selectedPointerOverBorderBrush?: BrushInput;
+  selectedForeground?: BrushInput | Snippet;
+  selectedPointerOverBackground?: BrushInput | Snippet;
+  selectedPointerOverBorderBrush?: BrushInput | Snippet;
   selectionCheckMarkVisualEnabled?: boolean;
 }
 

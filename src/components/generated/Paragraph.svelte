@@ -2,7 +2,7 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { Paragraph } from "./bindings.ts";
-  import { attachmentsOf, control, registerControls } from "../runtime.ts";
+  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
   import type { ParagraphComponentProps } from "./controls/Paragraph.svelte.ts";
   import { connectParagraph } from "./controls/Paragraph.svelte.ts";
 
@@ -14,5 +14,8 @@
 <paragraph {...attachmentsOf(rest)} class={className} {style} {@attach control((native: Paragraph) => untrack(() => connectParagraph(native, rest, bound)))}>
   {#if children}
     <property name="inlines">{@render children()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
   {/if}
 </paragraph>

@@ -17,6 +17,114 @@ export const rootClasses: TypeName[] = [
   {
     namespace: "Microsoft.UI.Xaml.Controls.Primitives",
     name: "FlyoutBase"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "Brush"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "Geometry"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "Transform"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "PathSegment"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "PathFigure"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "GradientStop"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "Transition"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "Timeline"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "Layout"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Input",
+    name: "KeyboardAccelerator"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Input",
+    name: "XamlUICommand"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "SystemBackdrop"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "Shadow"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "TreeViewNode"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "ImageSource"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "IconSource"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "EasingFunctionBase"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "DoubleKeyFrame"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "ColorKeyFrame"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "ObjectKeyFrame"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "PointKeyFrame"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "KeySpline"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "NavigationTransitionInfo"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Media3D",
+    name: "Transform3D"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "Projection"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "CacheMode"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Documents",
+    name: "ContentLinkProvider"
   }
 ];
 
@@ -131,8 +239,8 @@ export const nonConstructible = new Map<string, string>([
   ],
   [
     "Microsoft.UI.Xaml.Controls.WebView2",
-    "its events name Microsoft.Web.WebView2.Core types, which winapp does not give dynwinrt-codegen, so the "
-    + "binding for the control cannot be emitted"
+    "its events name Microsoft.Web.WebView2.Core types, and winapp passes that winmd to dynwinrt-codegen neither to "
+    + "emit nor to resolve against (it is in .winapp/winmds.lock.json only), so the binding for the control cannot be emitted"
   ]
 ]);
 
@@ -358,16 +466,27 @@ export const coreClasses: TypeName[] = [
   }
 ];
 
-// Components written by hand, because what they do is more than a control's
-// properties and events (the list controls fill containers from a data
-// source). The generator still writes their level (controls/<Name>.svelte.ts,
-// which the hand-written component connects with) and their metadata, but not
-// <Name>.svelte or <Name>.d.svelte.ts; the index exports the module named
-// here instead, relative to the generated folder. Nothing in the generated
-// folder is edited by hand, so `pnpm gen:components` never clobbers these.
-export const handWrittenComponents = new Map<string, string>([
-  ["ListView", "../hand-written/ListView.svelte"],
-  ["GridView", "../hand-written/GridView.svelte"]
+// How a control shows the app's items by a snippet (src/components/hand-written/
+// items): the component takes `items`, `key` and `item` in place of the control's
+// children and items source, and a host connects them to the control. LIST
+// is a ListViewBase, which reports its containers; REPEATER keeps its items
+// in an ItemsRepeater (itself, or one in its template) whose elements are
+// a ContentControl the row goes in (the template's root, or the element
+// itself); ITEM_CONTAINER is that with an ItemContainer as root.
+export const ItemsHost = {
+  LIST: "list",
+  REPEATER: "repeater",
+  ITEM_CONTAINER: "itemContainer"
+} as const;
+
+export type ItemsHost = typeof ItemsHost[keyof typeof ItemsHost];
+
+export const itemsHosted = new Map<string, ItemsHost>([
+  ["ListView", ItemsHost.LIST],
+  ["GridView", ItemsHost.LIST],
+  ["ItemsRepeater", ItemsHost.REPEATER],
+  ["BreadcrumbBar", ItemsHost.REPEATER],
+  ["ItemsView", ItemsHost.ITEM_CONTAINER]
 ]);
 
 // Exports of the bindings that are not metadata types: the generic
@@ -376,6 +495,10 @@ export const extraBindings = [
   {
     name: "IReference_Boolean",
     module: "#winui/windows/foundation/IReference_Boolean"
+  },
+  {
+    name: "IReference_Double",
+    module: "#winui/windows/foundation/IReference_Double"
   },
   // The list components hold their keys in a vector of boxed values, and
   // narrow the controls WinUI hands back (projectAs).
@@ -434,6 +557,7 @@ export const PropertyKind = {
   FONT_FAMILY: "fontFamily",
   URI: "uri",
   NULLABLE_BOOLEAN: "nullableBoolean",
+  NULLABLE_DOUBLE: "nullableDouble",
   OBJECT: "object",
   PASSTHROUGH: "passthrough"
 } as const;

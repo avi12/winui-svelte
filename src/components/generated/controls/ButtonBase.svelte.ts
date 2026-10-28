@@ -7,10 +7,11 @@ import { ClickMode } from "../bindings.ts";
 import type { ButtonBase } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ButtonBaseProps extends ContentControlProps {
   clickMode?: EnumInput<typeof ClickMode>;
-  command?: ButtonBase["command"];
+  command?: ButtonBase["command"] | Snippet;
   commandParameter?: ObjectInput;
   onClick?: Parameters<ButtonBase["onClick"]>[0];
 }

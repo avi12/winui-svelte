@@ -38,7 +38,8 @@ const ATTACHED_PREFIX = "set";
 const renderTransformFamily = new Set(["renderTransform", "renderTransformOrigin", "projection", "transform3D"]);
 // What WinUI refuses to be set on a control, which the sweep therefore leaves
 // out: AnimatedVisualPlayer owns its visual, RichTextBlockOverflow takes its
-// tab behaviour from its RichTextBlock.
+// tab behaviour from its RichTextBlock, a brush drawn by the compositor takes
+// no transform, and the layout reads its own default of no columns as invalid.
 const compositeTransformFamily = ["centerPoint", "rotation", "rotationAxis", "scale", "transformMatrix"];
 // Controls made, mounted and set like the rest, but WinUI fails fast (a native
 // crash, no exception) when one is laid out in a plain panel: each draws
@@ -52,7 +53,12 @@ const needsOwnerToLayOut = new Set([
   "RevealListViewItemPresenter",
   "WrapGrid"
 ]);
+const compositionBrushTransforms = ["relativeTransform", "transform"];
 const refusedByWinui = new Map<string, string[]>([
+  ["AcrylicBrush", compositionBrushTransforms],
+  ["RadialGradientBrush", compositionBrushTransforms],
+  ["ColumnMajorUniformToLargestGridLayout", ["maxColumns"]],
+  ["SvgImageSource", ["rasterizePixelHeight", "rasterizePixelWidth"]],
   ["AnimatedVisualPlayer", compositeTransformFamily],
   ["RichTextBlockOverflow", ["isTabStop", "tabIndex"]]
 ]);
@@ -96,7 +102,7 @@ function isConstructor(value: NativeValue): value is new () => object {
 }
 
 function isElement(value: object): value is bindings.UIElement {
-  return "opacity" in value;
+  return "opacity" in value && "margin" in value;
 }
 
 function isConnect(value: NativeValue): value is Connect {
@@ -825,7 +831,38 @@ function menuItemCountOf(button: object) {
   return menu?.items?.size ?? 0;
 }
 
+function stopCountOf(border: object) {
+  const brush = bindings.projectAs(read(border, "background"), bindings.LinearGradientBrush);
+  return brush.gradientStops.size;
+}
+
 const slotsAtFirst: SlotExpectation[] = [
+  {
+    name: "comboBox",
+    what: "the items written with {#each} are the combo box's items",
+    isMet: control => sizeOf({
+      control,
+      property: "items"
+    }) === 2
+  },
+  {
+    name: "gradientBorder",
+    what: "a brush in the background snippet holds its stops",
+    isMet: control => stopCountOf(control) === 2
+  },
+  {
+    name: "rotatedBorder",
+    what: "a transform in the renderTransform snippet is the render transform",
+    isMet: control => bindings.projectAs(read(control, "renderTransform"), bindings.RotateTransform).angle === 45
+  },
+  {
+    name: "storyboard",
+    what: "the animation is a child of the storyboard, which no panel holds",
+    isMet: control => sizeOf({
+      control,
+      property: "children"
+    }) === 1
+  },
   {
     name: "splitView",
     what: "the pane snippet fills Pane, the children Content",
@@ -876,6 +913,14 @@ const slotsAtFirst: SlotExpectation[] = [
 ];
 
 const slotsWhenShown: SlotExpectation[] = [
+  {
+    name: "comboBox",
+    what: "an item added by a block is an item",
+    isMet: control => sizeOf({
+      control,
+      property: "items"
+    }) === 3
+  },
   {
     name: "commandBar",
     what: "a command the snippet adds is a secondary command",
@@ -958,7 +1003,7 @@ function checkSlotsThroughRenderer(failures: Failure[]) {
     failures.push({
       name: "behaviour: slots through the renderer",
       step: "mount",
-      message: error instanceof Error ? error.message : String(error)
+      message: error instanceof Error ? String(error.stack) : String(error)
     });
   }
 }

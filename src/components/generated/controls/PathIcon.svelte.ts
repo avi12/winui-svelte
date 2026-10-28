@@ -5,9 +5,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { PathIcon } from "../bindings.ts";
 import { linkIconElement } from "./IconElement.svelte.ts";
 import type { IconElementBound, IconElementProps } from "./IconElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface PathIconProps extends IconElementProps {
-  data?: PathIcon["data"];
+  data?: PathIcon["data"] | Snippet;
 }
 
 export type PathIconBound = IconElementBound;

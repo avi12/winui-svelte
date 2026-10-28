@@ -17,7 +17,169 @@
   {:else if isSnippet(rest.content)}
     <property name="content">{@render rest.content()}</property>
   {/if}
+  {#if isSnippet(rest.cacheMode)}
+    <property name="cacheMode">{@render rest.cacheMode()}</property>
+  {/if}
+  {#if isSnippet(rest.clip)}
+    <property name="clip">{@render rest.clip()}</property>
+  {/if}
   {#if isSnippet(rest.contextFlyout)}
     <property name="contextFlyout">{@render rest.contextFlyout()}</property>
+  {/if}
+  {#if rest.keyboardAccelerators}
+    <property name="keyboardAccelerators">{@render rest.keyboardAccelerators()}</property>
+  {/if}
+  {#if isSnippet(rest.projection)}
+    <property name="projection">{@render rest.projection()}</property>
+  {/if}
+  {#if isSnippet(rest.renderTransform)}
+    <property name="renderTransform">{@render rest.renderTransform()}</property>
+  {/if}
+  {#if isSnippet(rest.shadow)}
+    <property name="shadow">{@render rest.shadow()}</property>
+  {/if}
+  {#if isSnippet(rest.transform3D)}
+    <property name="transform3D">{@render rest.transform3D()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualPrimaryBrush)}
+    <property name="focusVisualPrimaryBrush">{@render rest.focusVisualPrimaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.focusVisualSecondaryBrush)}
+    <property name="focusVisualSecondaryBrush">{@render rest.focusVisualSecondaryBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.background)}
+    <property name="background">{@render rest.background()}</property>
+  {/if}
+  {#if isSnippet(rest.borderBrush)}
+    <property name="borderBrush">{@render rest.borderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.foreground)}
+    <property name="foreground">{@render rest.foreground()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxBorderBrush)}
+    <property name="checkBoxBorderBrush">{@render rest.checkBoxBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxBrush)}
+    <property name="checkBoxBrush">{@render rest.checkBoxBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxDisabledBorderBrush)}
+    <property name="checkBoxDisabledBorderBrush">{@render rest.checkBoxDisabledBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxDisabledBrush)}
+    <property name="checkBoxDisabledBrush">{@render rest.checkBoxDisabledBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxPointerOverBorderBrush)}
+    <property name="checkBoxPointerOverBorderBrush">{@render rest.checkBoxPointerOverBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxPointerOverBrush)}
+    <property name="checkBoxPointerOverBrush">{@render rest.checkBoxPointerOverBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxPressedBorderBrush)}
+    <property name="checkBoxPressedBorderBrush">{@render rest.checkBoxPressedBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxPressedBrush)}
+    <property name="checkBoxPressedBrush">{@render rest.checkBoxPressedBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxSelectedBrush)}
+    <property name="checkBoxSelectedBrush">{@render rest.checkBoxSelectedBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxSelectedDisabledBrush)}
+    <property name="checkBoxSelectedDisabledBrush">{@render rest.checkBoxSelectedDisabledBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxSelectedPointerOverBrush)}
+    <property name="checkBoxSelectedPointerOverBrush">{@render rest.checkBoxSelectedPointerOverBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBoxSelectedPressedBrush)}
+    <property name="checkBoxSelectedPressedBrush">{@render rest.checkBoxSelectedPressedBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkBrush)}
+    <property name="checkBrush">{@render rest.checkBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkDisabledBrush)}
+    <property name="checkDisabledBrush">{@render rest.checkDisabledBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkHintBrush)}
+    <property name="checkHintBrush">{@render rest.checkHintBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkPressedBrush)}
+    <property name="checkPressedBrush">{@render rest.checkPressedBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.checkSelectingBrush)}
+    <property name="checkSelectingBrush">{@render rest.checkSelectingBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.dragBackground)}
+    <property name="dragBackground">{@render rest.dragBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.dragForeground)}
+    <property name="dragForeground">{@render rest.dragForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.focusBorderBrush)}
+    <property name="focusBorderBrush">{@render rest.focusBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.focusSecondaryBorderBrush)}
+    <property name="focusSecondaryBorderBrush">{@render rest.focusSecondaryBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.placeholderBackground)}
+    <property name="placeholderBackground">{@render rest.placeholderBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.pointerOverBackground)}
+    <property name="pointerOverBackground">{@render rest.pointerOverBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.pointerOverBorderBrush)}
+    <property name="pointerOverBorderBrush">{@render rest.pointerOverBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.pointerOverForeground)}
+    <property name="pointerOverForeground">{@render rest.pointerOverForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.pressedBackground)}
+    <property name="pressedBackground">{@render rest.pressedBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.revealBackground)}
+    <property name="revealBackground">{@render rest.revealBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.revealBorderBrush)}
+    <property name="revealBorderBrush">{@render rest.revealBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedBackground)}
+    <property name="selectedBackground">{@render rest.selectedBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedBorderBrush)}
+    <property name="selectedBorderBrush">{@render rest.selectedBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedDisabledBackground)}
+    <property name="selectedDisabledBackground">{@render rest.selectedDisabledBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedDisabledBorderBrush)}
+    <property name="selectedDisabledBorderBrush">{@render rest.selectedDisabledBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedForeground)}
+    <property name="selectedForeground">{@render rest.selectedForeground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedInnerBorderBrush)}
+    <property name="selectedInnerBorderBrush">{@render rest.selectedInnerBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedPointerOverBackground)}
+    <property name="selectedPointerOverBackground">{@render rest.selectedPointerOverBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedPointerOverBorderBrush)}
+    <property name="selectedPointerOverBorderBrush">{@render rest.selectedPointerOverBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedPressedBackground)}
+    <property name="selectedPressedBackground">{@render rest.selectedPressedBackground()}</property>
+  {/if}
+  {#if isSnippet(rest.selectedPressedBorderBrush)}
+    <property name="selectedPressedBorderBrush">{@render rest.selectedPressedBorderBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectionIndicatorBrush)}
+    <property name="selectionIndicatorBrush">{@render rest.selectionIndicatorBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectionIndicatorDisabledBrush)}
+    <property name="selectionIndicatorDisabledBrush">{@render rest.selectionIndicatorDisabledBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectionIndicatorPointerOverBrush)}
+    <property name="selectionIndicatorPointerOverBrush">{@render rest.selectionIndicatorPointerOverBrush()}</property>
+  {/if}
+  {#if isSnippet(rest.selectionIndicatorPressedBrush)}
+    <property name="selectionIndicatorPressedBrush">{@render rest.selectionIndicatorPressedBrush()}</property>
   {/if}
 </reveal-list-view-item-presenter>
