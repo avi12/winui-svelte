@@ -14,7 +14,7 @@ allowlist, and `pnpm pack --dry-run` must not list it).
 - Licence: MIT
 
 # Which rules win
-1. **Google TypeScript Style Guide** (https://google.github.io/styleguide/tsguide.html): followed strictly wherever it speaks.
+1. **Google's style guide for the language** (https://google.github.io/styleguide/), followed strictly wherever it speaks, in every language the repository holds, not only TypeScript: TypeScript (https://google.github.io/styleguide/tsguide.html), JavaScript, HTML and CSS (the markup and `<style>` of `.svelte` files), JSON, Markdown and XML. The table under "Other languages" says which guide covers which files and where a tool dictates otherwise.
 2. **Avi's house rules** (below, adapted from `avi/youtube-time-manager`): they add to it, and win only where Google is silent.
 3. A conflict is settled in the table here, not ad hoc. Add the row when you meet a new one.
 
@@ -28,6 +28,23 @@ allowlist, and `pnpm pack --dry-run` must not list it).
 | Enums | `enum` allowed, no `const enum` | Strings are enums | A closed set of values is an `as const` object plus its union type (`export const X = { A: "a" } as const; export type X = typeof X[keyof typeof X]`): the package runs under Node's type stripping with `erasableSyntaxOnly`, which forbids `enum`. Never `const enum` |
 | Imports | Relative within the project, no deep `../../../` | `@` alias over `../` | Relative imports (`./x`, `../x`): the build compiles each file in place, and a path alias would need a second map for `dist`. The one subpath import is `#winui/*`, the bindings an app generates for itself. Keep `../` chains short by keeping folders shallow |
 | Parameters | n/a | 2+ parameters take one destructured object | Adopt it, public API included. Exempt: key/value accessors and callbacks whose signature WinUI or Svelte dictates |
+
+# Other languages
+Every file follows Google's guide for its language. Read the guide before writing in a language you have not touched in this repository; where a tool's own format is fixed (npm's `package.json` keys, GitHub Actions' YAML schema, pnpm's lockfile) the tool wins for that file and nowhere else.
+
+| Files | Guide | Applied here |
+|---|---|---|
+| `.ts`, the `<script>` of `.svelte` | [TypeScript](https://google.github.io/styleguide/tsguide.html) | The sections above and below; ESLint and oxlint enforce it |
+| `.js`, `.cjs`, `.mjs` (config, lint rules) | [JavaScript](https://google.github.io/styleguide/jsguide.html) | The same rules as TypeScript, minus the types: ES modules, `const`/`let`, named exports, `===`, braces, `for...of`, JSDoc on exports |
+| Markup of `.svelte`, `.html` | [HTML/CSS](https://google.github.io/styleguide/htmlcssguide.html) | Lowercase element and attribute names, double-quoted attribute values, 2-space indent, no trailing whitespace, no `type` on `<script>`/`<style>`, semantic elements; WinUI element names in a `.svelte` file are the library's own (`<text-block>`) |
+| `<style>` of `.svelte`, `.css` | [HTML/CSS](https://google.github.io/styleguide/htmlcssguide.html) | Lowercase, short hex, no unit on zero, hyphenated class names, one declaration per line, `;` after the last, a space after `:`, no `!important`, no ID selectors for style; stylelint enforces it, and the translator accepts only what WinUI can say |
+| `.json` | [JSON](https://google.github.io/styleguide/jsoncstyleguide.html) | Double quotes, no comments, no trailing commas, 2-space indent, `camelCase` property names that this repository names; a file another tool defines (`package.json`, `tsconfig.json`) keeps that tool's keys |
+| `.md` | [Markdown](https://google.github.io/styleguide/docguide/style.html) | ATX headings (`#`), one H1, a blank line around headings, lists and fences, fenced code blocks with a language, lines wrapped near 80, no trailing whitespace, descriptive link text, hyphens for bullets |
+| `.xml` | [XML](https://google.github.io/styleguide/xmlstyle.html) | Well-formed, 2-space indent, lowercase-hyphenated or the schema's own names, no mixed content where avoidable |
+| `.ps1` | none from Google; its [shell guide](https://google.github.io/styleguide/shellguide.html) for the principles | 2-space indent, lines near 80, quote every expansion, `Set-StrictMode`, fail fast (`$ErrorActionPreference = 'Stop'`), a comment for what is not obvious; PowerShell's own conventions win where they differ (`Verb-Noun` functions, `PascalCase` parameters, approved verbs) |
+| `.yml`, `.yaml` | none | 2-space indent, no tabs, no trailing whitespace, quoted strings only where YAML needs them; keys in the order the tool documents |
+
+A conflict between the guide and a house rule is settled by the first table in this file, and a new one gets its row there. Never write against a guide "because the file is small": the style is the same everywhere in the repository.
 
 # Google style, in short (the guide has the rest)
 - Named exports only; no `export default`, no namespaces, no `require`, no side-effectful modules
@@ -86,6 +103,7 @@ After each change run `pnpm lint` and `pnpm test`. Fix what they flag; never sil
 - **Generated components** (`src/components/generated`) are excluded from the style rules because the generator is where they are fixed; tsc, `svelte-check`, `props-strictness.ts`, the editor check and `gen:components:check` cover them
 
 ## What no tool enforces (review catches it)
+- The Google guides for Markdown, JSON, XML, PowerShell and YAML (see "Other languages"): no linter runs over them yet, so review is the gate. Check every new or edited file of those kinds against its row before committing; if a violation can be found by a script, add the check to `pnpm lint` instead of relying on review
 - A type assertion with a one-line reason: oxlint's rule is stricter and allows none, so a genuinely needed assertion takes a `// oxlint-disable-next-line` with the reason
 - An `if` whose condition is a call with an unclear intent: only compound conditions and comparisons are flagged
 - A function with 2+ parameters that is an exempt shape (a key/value accessor, a callback whose signature WinUI or Svelte dictates): the rule flags it, and the disable comment carries the reason
