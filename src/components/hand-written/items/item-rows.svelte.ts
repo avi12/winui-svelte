@@ -5,11 +5,12 @@ import { LiveRows } from "./live-rows.ts";
 import type { RowProps } from "./row-source.svelte.ts";
 import { RowSource } from "./row-source.svelte.ts";
 import Row from "./Row.svelte";
-import { DynWinRtType, DynWinRtValue, unboxObject } from "@microsoft/dynwinrt";
+import { DynWinRtType, DynWinRtValue } from "@microsoft/dynwinrt";
 import type { ContentControl, FrameworkElement } from "#src/components/generated/bindings.js";
 import { IVector_Object, PropertyValue } from "#src/components/generated/bindings.js";
 import type { BoxedValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
+import { unboxed } from "#src/renderer/host/values.js";
 import type { Snippet } from "svelte";
 
 // What every control that shows the app's items by a snippet shares: the keys
@@ -40,7 +41,7 @@ export interface ItemRowsProps<Item> {
 
 /** The text of a boxed key; a value that is not a key reads as the empty text. */
 export function keyText(boxedKey: BoxedValue) {
-  const value = unboxObject(boxedKey);
+  const value = unboxed(boxedKey);
   return typeof value === "string" ? value : "";
 }
 
@@ -170,7 +171,7 @@ export class ItemRows<Item> {
   // WinUI hands back a new wrapper for the same container, so a container is
   // known by an id kept in its Tag.
   private containerId(container: FrameworkElement) {
-    const known = container.tag === null ? null : unboxObject(container.tag);
+    const known = unboxed(container.tag);
     const isKnown = typeof known === "string";
     if (isKnown) {
       return known;

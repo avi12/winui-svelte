@@ -27,9 +27,9 @@ import {
   thicknessSides
 } from "./values.ts";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
-import { boxedObject } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
 import { read } from "#src/renderer/host/reflect.js";
+import { boxed } from "#src/renderer/host/values.js";
 
 // A prop's value as the bindings take it: the generated components call these
 // where a prop is not already the bindings' own type.
@@ -98,8 +98,6 @@ const GRID_UNIT_TYPES = new Map<GridUnit, GridUnitType>([
   [GridUnit.PIXEL, GridUnitType.Pixel],
   [GridUnit.STAR, GridUnitType.Star]
 ]);
-const INT32_BITS = 32;
-const MAX_INT32 = 2 ** (INT32_BITS - 1) - 1;
 
 function isFlagMask(members: readonly number[]) {
   const flags = members.filter(member => member !== 0);
@@ -273,23 +271,8 @@ export function imageSourceOf(input: ImageSourceInput) {
  * boolean is boxed, anything else is the WinRT object it already is.
  */
 export function objectOf(input: ObjectInput) {
-  const isText = typeof input === "string";
-  if (isText) {
-    return boxedObject(PropertyValue.createString(input));
-  }
-
-  const isFlag = typeof input === "boolean";
-  if (isFlag) {
-    return boxedObject(PropertyValue.createBoolean(input));
-  }
-
-  const isNumber = typeof input === "number";
-  if (isNumber) {
-    const isInteger = Number.isInteger(input) && Math.abs(input) <= MAX_INT32;
-    return isInteger ? boxedObject(PropertyValue.createInt32(input)) : boxedObject(PropertyValue.createDouble(input));
-  }
-
-  return input;
+  const isBoxable = typeof input === "string" || typeof input === "boolean" || typeof input === "number";
+  return isBoxable ? boxed(input) : input;
 }
 
 /**

@@ -6,12 +6,14 @@ export type { ClassHandler } from "./renderer/host/host.ts";
 export { registerControls, setClassHandler } from "./renderer/host/host.ts";
 export type { Mounted } from "./renderer/host/mount.svelte.ts";
 export { mountControl } from "./renderer/host/mount.svelte.ts";
+export type { Boxable } from "./renderer/host/values.ts";
 export {
   autoLength,
   boxed,
   pixelLength,
   starLength,
-  thickness
+  thickness,
+  unboxed
 } from "./renderer/host/values.ts";
 export { dispatch, flush, onFlush } from "./scheduling.ts";
 export * from "./components/generated/index.ts";

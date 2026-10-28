@@ -104,7 +104,11 @@ type ClassHandler = (control: UIElement, value: string) => void;
 function setClassHandler(handler: ClassHandler | null): void;
 
 // Value helpers the app needs as well (WinRT values the way bindings take them).
-function boxed(text: string): unknown;
+function boxed(value: string | number | boolean): unknown;
+// The inverse of boxed, for what an event reports as an object (Tag,
+// InvokedItem, SelectedValue): the string, number, boolean or bigint inside a
+// box; null for null; any other object as it is.
+function unboxed(value: unknown): string | number | boolean | bigint | object | null;
 function thickness(left: number, top: number, right: number, bottom: number): Thickness;
 function starLength(value?: number): GridLength;
 function autoLength(): GridLength;
