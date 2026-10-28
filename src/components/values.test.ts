@@ -10,6 +10,7 @@ import {
   matrixCells,
   numberList,
   parseColor,
+  pathMarkup,
   pointCoordinates,
   pointList,
   rectBounds,
@@ -271,4 +272,12 @@ test("a date is a Date, milliseconds or ISO text, in ticks since 1601", () => {
 test("ticks read back as the Date they came from", () => {
   const moment = new Date("2026-10-29T12:34:56.789Z");
   assert.equal(ticksDate(dateTicks(moment)).toISOString(), moment.toISOString());
+});
+
+test("path data is wrapped as the XAML of a Path, with its characters escaped", () => {
+  assert.equal(
+    pathMarkup("M0,0 L10,10"),
+    "<Path xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Data=\"M0,0 L10,10\"/>"
+  );
+  assert.match(pathMarkup("M0,0\"/><Button/>"), /Data="M0,0&quot;\/&gt;&lt;Button\/&gt;"/u);
 });

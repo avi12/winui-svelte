@@ -11,13 +11,16 @@ import {
   InputScopeNameValue,
   IReference_Boolean,
   IReference_Double,
+  Path,
   PointCollection,
+  projectAs,
   PropertyValue,
   RepeatBehaviorType,
   SolidColorBrush,
-  Uri
+  Uri,
+  XamlReader
 } from "./generated/bindings.ts";
-import type { ImageSource, UIElement } from "./generated/bindings.ts";
+import type { Geometry, ImageSource, UIElement } from "./generated/bindings.ts";
 import type {
   AttachedInput,
   ColorInput,
@@ -53,6 +56,7 @@ import {
   matrixCells,
   numberList,
   parseColor,
+  pathMarkup,
   pointCoordinates,
   pointList,
   rectBounds,
@@ -131,6 +135,9 @@ export type BrushInput = string | Brush;
 
 /** A URI string or an image source. */
 export type ImageSourceInput = string | ImageSource;
+
+/** Path data as XAML writes it ("M0,0 L10,10 Z") or a geometry. */
+export type GeometryInput = string | Geometry;
 
 /** A font family name or a font family. */
 export type FontFamilyInput = string | FontFamily;
@@ -563,6 +570,17 @@ export function imageSourceOf(input: ImageSourceInput) {
   const image = new BitmapImage();
   image.uriSource = new Uri(input);
   return image;
+}
+
+/** A geometry prop as a `Geometry`; a string is path data, which XAML's reader parses. */
+export function geometryOf(input: GeometryInput) {
+  const isGeometry = typeof input !== "string";
+  if (isGeometry) {
+    return input;
+  }
+
+  const path = projectAs(XamlReader.load(pathMarkup(input)), Path);
+  return path.data;
 }
 
 /**

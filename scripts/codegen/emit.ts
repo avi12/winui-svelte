@@ -118,6 +118,10 @@ const converters = new Map<PropertyKind, Converter>([
     convert: "inputScopeOf",
     inputType: "InputScopeInput"
   }],
+  [PropertyKind.GEOMETRY, {
+    convert: "geometryOf",
+    inputType: "GeometryInput"
+  }],
   [PropertyKind.NULLABLE_TIME_SPAN, nullable(TIME_SPAN)],
   [PropertyKind.NULLABLE_DATE_TIME, nullable(DATE_TIME)],
   [PropertyKind.NULLABLE_POINT, nullable(POINT)],

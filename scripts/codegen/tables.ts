@@ -601,6 +601,7 @@ export const PropertyKind = {
   POINT_COLLECTION: "pointCollection",
   DOUBLE_COLLECTION: "doubleCollection",
   INPUT_SCOPE: "inputScope",
+  GEOMETRY: "geometry",
   NULLABLE_BOOLEAN: "nullableBoolean",
   NULLABLE_DOUBLE: "nullableDouble",
   NULLABLE_TIME_SPAN: "nullableTimeSpan",
@@ -638,7 +639,8 @@ export const kindOfType = new Map<string, PropertyKind>([
   ["Windows.Foundation.DateTime", PropertyKind.DATE_TIME],
   ["Microsoft.UI.Xaml.Media.PointCollection", PropertyKind.POINT_COLLECTION],
   ["Microsoft.UI.Xaml.Media.DoubleCollection", PropertyKind.DOUBLE_COLLECTION],
-  ["Microsoft.UI.Xaml.Input.InputScope", PropertyKind.INPUT_SCOPE]
+  ["Microsoft.UI.Xaml.Input.InputScope", PropertyKind.INPUT_SCOPE],
+  ["Microsoft.UI.Xaml.Media.Geometry", PropertyKind.GEOMETRY]
 ]);
 
 // The same for a value the metadata types IReference<T> (null when unset), by
