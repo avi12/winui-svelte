@@ -364,6 +364,22 @@ export const supportClasses: TypeName[] = [
     name: "BitmapImage"
   },
   {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "PointCollection"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media",
+    name: "DoubleCollection"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Input",
+    name: "InputScope"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Input",
+    name: "InputScopeName"
+  },
+  {
     namespace: "Windows.Foundation",
     name: "PropertyValue"
   },
@@ -525,6 +541,18 @@ export const supportEnums: TypeName[] = [
   },
   {
     namespace: "Microsoft.UI.Xaml",
+    name: "DurationType"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "RepeatBehaviorType"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Input",
+    name: "InputScopeNameValue"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
     name: "FocusState"
   },
   {
@@ -559,8 +587,27 @@ export const PropertyKind = {
   IMAGE_SOURCE: "imageSource",
   FONT_FAMILY: "fontFamily",
   URI: "uri",
+  DURATION: "duration",
+  TIME_SPAN: "timeSpan",
+  KEY_TIME: "keyTime",
+  REPEAT_BEHAVIOR: "repeatBehavior",
+  FONT_WEIGHT: "fontWeight",
+  POINT: "point",
+  SIZE: "size",
+  RECT: "rect",
+  MATRIX: "matrix",
+  VECTOR3: "vector3",
+  DATE_TIME: "dateTime",
+  POINT_COLLECTION: "pointCollection",
+  DOUBLE_COLLECTION: "doubleCollection",
+  INPUT_SCOPE: "inputScope",
   NULLABLE_BOOLEAN: "nullableBoolean",
   NULLABLE_DOUBLE: "nullableDouble",
+  NULLABLE_TIME_SPAN: "nullableTimeSpan",
+  NULLABLE_DATE_TIME: "nullableDateTime",
+  NULLABLE_POINT: "nullablePoint",
+  NULLABLE_RECT: "nullableRect",
+  NULLABLE_COLOR: "nullableColor",
   OBJECT: "object",
   PASSTHROUGH: "passthrough"
 } as const;
@@ -577,7 +624,31 @@ export const kindOfType = new Map<string, PropertyKind>([
   ["Windows.UI.Color", PropertyKind.COLOR],
   ["Microsoft.UI.Xaml.Media.ImageSource", PropertyKind.IMAGE_SOURCE],
   ["Microsoft.UI.Xaml.Media.FontFamily", PropertyKind.FONT_FAMILY],
-  ["Windows.Foundation.Uri", PropertyKind.URI]
+  ["Windows.Foundation.Uri", PropertyKind.URI],
+  ["Microsoft.UI.Xaml.Duration", PropertyKind.DURATION],
+  ["Windows.Foundation.TimeSpan", PropertyKind.TIME_SPAN],
+  ["Microsoft.UI.Xaml.Media.Animation.KeyTime", PropertyKind.KEY_TIME],
+  ["Microsoft.UI.Xaml.Media.Animation.RepeatBehavior", PropertyKind.REPEAT_BEHAVIOR],
+  ["Windows.UI.Text.FontWeight", PropertyKind.FONT_WEIGHT],
+  ["Windows.Foundation.Point", PropertyKind.POINT],
+  ["Windows.Foundation.Size", PropertyKind.SIZE],
+  ["Windows.Foundation.Rect", PropertyKind.RECT],
+  ["Microsoft.UI.Xaml.Media.Matrix", PropertyKind.MATRIX],
+  ["Windows.Foundation.Numerics.Vector3", PropertyKind.VECTOR3],
+  ["Windows.Foundation.DateTime", PropertyKind.DATE_TIME],
+  ["Microsoft.UI.Xaml.Media.PointCollection", PropertyKind.POINT_COLLECTION],
+  ["Microsoft.UI.Xaml.Media.DoubleCollection", PropertyKind.DOUBLE_COLLECTION],
+  ["Microsoft.UI.Xaml.Input.InputScope", PropertyKind.INPUT_SCOPE]
+]);
+
+// The same for a value the metadata types IReference<T> (null when unset), by
+// the full name of T.
+export const nullableKindOfType = new Map<string, PropertyKind>([
+  ["Windows.Foundation.TimeSpan", PropertyKind.NULLABLE_TIME_SPAN],
+  ["Windows.Foundation.DateTime", PropertyKind.NULLABLE_DATE_TIME],
+  ["Windows.Foundation.Point", PropertyKind.NULLABLE_POINT],
+  ["Windows.Foundation.Rect", PropertyKind.NULLABLE_RECT],
+  ["Windows.UI.Color", PropertyKind.NULLABLE_COLOR]
 ]);
 
 export const numericPrimitives = new Set(["SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Single", "Double"]);

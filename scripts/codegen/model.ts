@@ -7,6 +7,7 @@ import {
   kindOfType,
   neverBindable,
   nonConstructible,
+  nullableKindOfType,
   numericPrimitives,
   PropertyKind,
   referenceWinmds,
@@ -56,11 +57,18 @@ const nullablePrimitiveKinds = new Map<string, PropertyKind>([
   ["Double", PropertyKind.NULLABLE_DOUBLE]
 ]);
 
-// The kind of an IReference<primitive> the bindings box badly, or undefined.
+// The kind of an IReference<T>: a primitive the bindings box badly, or a value
+// type with a converter of its own. Undefined for any other.
 function nullableKindOf(signature: TypeSignature) {
   const isNullable = signature.kind === "generic" && signature.type.name === NULLABLE_NAME;
   const argument = isNullable ? signature.args[0] : undefined;
-  return argument?.kind === "primitive" ? nullablePrimitiveKinds.get(argument.name) : undefined;
+  const isPrimitive = argument?.kind === "primitive";
+  if (isPrimitive) {
+    return nullablePrimitiveKinds.get(argument.name);
+  }
+
+  const isNamed = argument?.kind === "named";
+  return isNamed ? nullableKindOfType.get(fullName(argument.type)) : undefined;
 }
 const OBJECT_NAME = "Object";
 // The collections whose items markup can fill.
