@@ -64,6 +64,20 @@ function withControl<Control>(
   use: (control: Control) => void
 ): NodeAttachment;
 
+// {@attach placedControl(placed => ...)}: the same, and where the element is
+// written. A flyout is no element, so WinUI never places it and the tree is
+// the only place that says what it belongs to. `parent()` is read when
+// called: the control of the nearest element above this one (through
+// <property> elements), or null when it is placed in the window itself.
+function placedControl<Control extends object>(
+  handler: (placed: PlacedControl<Control>) => void | (() => void)
+): NodeAttachment;
+
+interface PlacedControl<Control extends object> {
+  readonly control: Control;
+  parent(): object | null;
+}
+
 type NodeAttachment = (node: unknown) => void | (() => void);
 
 // One element's control, held for another element to point at: what an id is
@@ -378,3 +392,58 @@ where it was has them before the user touches it. `bind:handle` gives a `WindowH
 `presenter`, `scale`, `close()`, `restore()`, `minimize()`, `maximize()`,
 `bringToFront()`. `appUserModelId` names the process for the taskbar (it is
 process-wide: read once, before the window opens).
+
+## Overlays (`winui-svelte/components`)
+
+A control that opens over the window takes `open` and `target` (and a dialog
+`onResult`) besides its own props; the table `overlayHosted` in
+`scripts/codegen/tables.ts` names them and the host each uses
+(`src/components/hand-written/overlay`). They are `ContentDialog`, and the
+flyouts: `Flyout`, `MenuFlyout`, `MenuBarItemFlyout`, `CommandBarFlyout`,
+`TextCommandBarFlyout`, `DatePickerFlyout`, `TimePickerFlyout`,
+`PickerFlyout` and `ListPickerFlyout`.
+
+```svelte
+<Button>
+  Options
+  {#snippet flyout()}
+    <MenuFlyout bind:open={isMenuOpen}>...</MenuFlyout>
+  {/snippet}
+</Button>
+
+<StackPanel>
+  <Flyout bind:open={isTipOpen}>
+    <TextBlock>Next to the panel</TextBlock>
+  </Flyout>
+  <ContentDialog
+    bind:open={isDeleteOpen}
+    title="Delete?"
+    primaryButtonText="Delete"
+    closeButtonText="Cancel"
+    onResult={result => result === ContentDialogResult.Primary && remove()}
+  >This cannot be undone.</ContentDialog>
+</StackPanel>
+```
+
+- `open` (`bind:open`) is `true` while the control is open. Setting it opens
+  or closes the control; the user closing it (light dismiss, Escape, a choice,
+  the dialog's buttons) sets it back to `false`. Left unset, nothing opens.
+- `target` is the element the control opens next to: a flyout through
+  `ShowAt`, a dialog in that element's window (its `XamlRoot`). It defaults to
+  the element the control is written in (`placedControl`): the `Button` whose
+  `flyout` snippet holds it, or the panel it is a child of. A control written
+  directly in the window's content has no element above it, so give it
+  `target`. A flyout is no element, so a panel leaves it out of its children.
+- An overlay asked to open before its element is on screen opens when the
+  element loads, and not at all when closed first. One still open when its
+  component goes is closed.
+- `onResult(result)` of a `ContentDialog` gets the button the user chose
+  (`ContentDialogResult.Primary`, `Secondary`) and `None` for the close
+  button, Escape and `open = false`. `onClosed` and the control's other events
+  are the generated ones.
+- WinUI shows one `ContentDialog` at a time (a second `ShowAsync` fails with
+  0x80000019). Dialogs asked for together open in the order asked, each when
+  the one before has closed; `open` stays `true` while one waits, and setting it
+  to `false` first removes it from the line. The line is one for the thread, so
+  a dialog of a second window also waits.
+- `Flyout`'s content is a control: write `<TextBlock>` in it, not bare text.
