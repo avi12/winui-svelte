@@ -467,6 +467,8 @@
         {
           "namespace": "Microsoft.UI.Xaml.Input",
           "classes": [
+            "InputScope",
+            "InputScopeName",
             "KeyboardAccelerator",
             "KeyRoutedEventArgs",
             "StandardUICommand",
@@ -509,6 +511,7 @@
             "PathGeometry",
             "PathSegment",
             "PlaneProjection",
+            "PointCollection",
             "PolyBezierSegment",
             "PolyLineSegment",
             "PolyQuadraticBezierSegment",
