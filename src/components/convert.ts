@@ -36,7 +36,6 @@ import type {
   DateTimeValue,
   DurationInput,
   FontWeightInput,
-  FontWeightValue,
   KeyTimeInput,
   MatrixInput,
   NumbersInput,
@@ -434,11 +433,6 @@ export function fontWeightOf(input: FontWeightInput) {
   }
 
   return { weight: fontWeightNumber(input) };
-}
-
-/** A font weight prop read back as its number. */
-export function fontWeightInputOf(value: FontWeightValue) {
-  return value.weight;
 }
 
 /** A point prop as the bindings' `Point`. */

@@ -241,6 +241,7 @@ const SVG_EXTENSION = ".svg";
 const SVG_DATA_PREFIX = "data:image/svg+xml";
 const URI_SUFFIX = /[?#].*$/u;
 const PRESENTATION_NAMESPACE = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+const XML_SPECIALS = /[&<>"]/gu;
 const XML_ESCAPES = new Map([
   ["&", "&amp;"],
   ["<", "&lt;"],
@@ -651,6 +652,6 @@ export function isSvgUri(uri: string) {
 
 /** The XAML of a Path with this mini-language data ("M0,0 L10,10"), for the reader that parses it into a geometry. */
 export function pathMarkup(data: string) {
-  const escaped = [...data].map(character => XML_ESCAPES.get(character) ?? character).join("");
+  const escaped = data.replace(XML_SPECIALS, character => XML_ESCAPES.get(character) ?? character);
   return `<Path xmlns="${PRESENTATION_NAMESPACE}" Data="${escaped}"/>`;
 }

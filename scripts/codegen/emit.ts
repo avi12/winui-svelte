@@ -67,8 +67,7 @@ const converters = new Map<PropertyKind, Converter>([
   }],
   [PropertyKind.FONT_WEIGHT, {
     convert: "fontWeightOf",
-    inputType: "FontWeightInput",
-    readBack: "fontWeightInputOf"
+    inputType: "FontWeightInput"
   }],
   [PropertyKind.POINT, {
     convert: "pointOf",
