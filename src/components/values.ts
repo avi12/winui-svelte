@@ -655,3 +655,19 @@ export function pathMarkup(data: string) {
   const escaped = data.replace(XML_SPECIALS, character => XML_ESCAPES.get(character) ?? character);
   return `<Path xmlns="${PRESENTATION_NAMESPACE}" Data="${escaped}"/>`;
 }
+
+/** A color prop as the bindings' `Color`; throws a `TypeError` for text that is not a color. */
+export function colorOf(input: ColorInput) {
+  const isColor = typeof input === "object";
+  if (isColor) {
+    return input;
+  }
+
+  const color = parseColor(input);
+  const isParsed = color !== null;
+  if (!isParsed) {
+    throw new TypeError(`"${input}" is not a color (#rgb, #rrggbb or #aarrggbb)`);
+  }
+
+  return color;
+}

@@ -53,6 +53,7 @@ import type {
 } from "./values.ts";
 import {
   attachedList,
+  colorOf,
   cornerSides,
   dateTicks,
   DurationKind,
@@ -100,6 +101,7 @@ export type {
   TimeSpanInput,
   Vector3Input
 } from "./values.ts";
+export { colorOf } from "./values.ts";
 
 /**
  * RelativePanel places an element by another element, or by that element's
@@ -303,22 +305,6 @@ export function gridLengthOf(input: GridLengthInput) {
       key: parts.unit
     })
   };
-}
-
-/** A color prop as the bindings' `Color`; throws a `TypeError` for text that is not a color. */
-export function colorOf(input: ColorInput) {
-  const isColor = typeof input === "object";
-  if (isColor) {
-    return input;
-  }
-
-  const color = parseColor(input);
-  const isParsed = color !== null;
-  if (!isParsed) {
-    throw new TypeError(`"${input}" is not a color (#rgb, #rrggbb or #aarrggbb)`);
-  }
-
-  return color;
 }
 
 function isBrush(value: object): value is Brush {

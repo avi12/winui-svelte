@@ -1,20 +1,14 @@
-import { applyBackdrop, Backdrop } from "./backdrop.ts";
+import type { WindowProps, WindowSize } from "./window-host.svelte.ts";
+import { attachStandaloneWindow } from "./window-host.svelte.ts";
 import type { Mounted } from "#src/renderer/host/mount.svelte.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
-import { Grid, Window } from "#src/winui.js";
-import type { FrameworkElement } from "#src/winui.js";
+import { Grid } from "#src/winui.js";
+import type { FrameworkElement, Window } from "#src/winui.js";
 import type { Component } from "svelte";
 
-interface WindowChrome {
-  title?: string;
-
+interface WindowChrome extends Pick<WindowProps, "backdrop" | "extendsIntoTitleBar" | "isModal" | "owner" | "title"> {
   /** In device pixels. */
-  size?: {
-    width: number;
-    height: number;
-  };
-  backdrop?: Backdrop;
-  extendsIntoTitleBar?: boolean;
+  size?: WindowSize;
 
   /**
    * Shown without taking focus from whatever the user is doing: for tests and
@@ -60,42 +54,14 @@ function isComponentContent<Props extends object>(
   return "component" in options;
 }
 
-const CHROME_DEFAULTS = {
-  backdrop: Backdrop.none,
-  extendsIntoTitleBar: false,
-  title: ""
-};
-
-function applyChrome({ window, chrome }: {
-  window: Window;
-  chrome: WindowChrome;
-}) {
-  const { backdrop, extendsIntoTitleBar: isExtended, title } = {
-    ...CHROME_DEFAULTS,
-    ...chrome
-  };
-  applyBackdrop({
-    window,
-    backdrop
-  });
-  window.extendsContentIntoTitleBar = isExtended;
-  window.title = title;
-
-  const { size } = chrome;
-  const hasSize = size !== undefined;
-  if (hasSize) {
-    window.appWindow.resize(size);
-  }
-}
-
-// Puts the content in the window; the mounted component, if it is one.
-function placeContent<Props extends object>({ window, options }: {
-  window: Window;
-  options: WindowOptions<Props>;
-}) {
+// The element the window is made around, and the mounted component, if the
+// content is one.
+function contentOf<Props extends object>(options: WindowOptions<Props>) {
   if (!isComponentContent(options)) {
-    window.content = options.control;
-    return null;
+    return {
+      content: options.control,
+      mounted: null
+    };
   }
 
   const mounted = mountControl({
@@ -107,12 +73,14 @@ function placeContent<Props extends object>({ window, options }: {
   // place a swap can find the old root's parent in.
   const holder = new Grid();
   holder.children.append(mounted.root);
-  window.content = holder;
   mounted.onRootChange(root => {
     holder.children.clear();
     holder.children.append(root);
   });
-  return mounted;
+  return {
+    content: holder,
+    mounted
+  };
 }
 
 /**
@@ -120,27 +88,27 @@ function placeContent<Props extends object>({ window, options }: {
  * from `onStart` (application.ts) or later.
  */
 export function createWindow<Props extends object>(options: WindowOptions<Props>) {
-  const window = new Window();
-  applyChrome({
-    window,
-    chrome: options
+  const { content, mounted } = contentOf(options);
+  const { handle } = attachStandaloneWindow({
+    content,
+    props: {
+      title: options.title,
+      backdrop: options.backdrop,
+      extendsIntoTitleBar: options.extendsIntoTitleBar,
+      activate: options.isBackground !== true,
+      isCentered: false,
+      owner: options.owner,
+      isModal: options.isModal
+    },
+    titleBar: () => null,
+    size: options.size
   });
-  const mounted = placeContent({
-    window,
-    options
-  });
-  const isBackground = options.isBackground === true;
-  if (isBackground) {
-    window.appWindow.showWithActivation(false);
-  } else {
-    window.activate();
-  }
-
+  const { window } = handle;
   const appWindow: AppWindow<Props> = {
     window,
     mounted,
     close() {
-      window.close();
+      handle.close();
     },
     onClosed(listener) {
       window.onClosed(listener);

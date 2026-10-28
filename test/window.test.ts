@@ -75,6 +75,91 @@ test("a window opens as its props say, follows them, and reports what happens to
       assert.equal(changed["backdrop"], backdrop, `WinUI holds ${String(changed["backdrop"])}, not ${backdrop}`);
     }
 
+    const dark = await example.ask({
+      command: {
+        cmd: "theme",
+        value: "dark"
+      },
+      kind: "theme"
+    });
+    assert.equal(dark["theme"], "Dark", "the theme prop sets the content's requested theme");
+    const tall = await example.ask({
+      command: {
+        cmd: "titleBarHeight",
+        value: "tall"
+      },
+      kind: "titleBarHeight"
+    });
+    assert.equal(tall["titleBarHeightOption"], "Tall");
+    const colored = await example.ask({
+      command: {
+        cmd: "captionButtons",
+        foreground: "#ff0000",
+        hoverBackground: "#80112233"
+      },
+      kind: "captionButtons"
+    });
+    assert.deepEqual(colored["captionForeground"], {
+      a: 255,
+      r: 255,
+      g: 0,
+      b: 0
+    });
+    assert.deepEqual(colored["captionHoverBackground"], {
+      a: 128,
+      r: 17,
+      g: 34,
+      b: 51
+    });
+    const uncolored = await example.ask({
+      command: {
+        cmd: "captionButtons",
+        value: null
+      },
+      kind: "captionButtons"
+    });
+    assert.equal(uncolored["captionForeground"], null, "dropping the prop puts the system's color back");
+    const dragged = await example.ask({
+      command: {
+        cmd: "dragRegions",
+        x: 10,
+        width: 200,
+        height: 30
+      },
+      kind: "dragRegions"
+    });
+    assert.deepEqual(dragged["dragRegions"], [
+      {
+        x: Math.round(10 * scale),
+        y: 0,
+        width: Math.round(200 * scale),
+        height: Math.round(30 * scale)
+      }
+    ], "a drag region is the caption region, in device pixels");
+
+    const overlay = await example.ask({
+      command: {
+        cmd: "presentation",
+        value: "compactOverlay"
+      },
+      kind: "presentation"
+    });
+    assert.equal(overlay["presentation"], "CompactOverlay");
+    const windowed = await example.ask({
+      command: {
+        cmd: "presentation",
+        value: "windowed"
+      },
+      kind: "presentation"
+    });
+    assert.equal(windowed["presentation"], "Overlapped");
+    assert.equal(
+      numberOf({
+        report: windowed,
+        field: "minimumWidth"
+      }), Math.round(MINIMUM_WIDTH * scale), "back to windowed, the size limits are set again"
+    );
+
     const retitled = await example.ask({
       command: {
         cmd: "title",
@@ -122,6 +207,47 @@ test("a window opens as its props say, follows them, and reports what happens to
       y: 50,
       width: Math.round(WIDENED_TO * scale),
       height: Math.round(OPENED_HEIGHT * scale)
+    });
+
+    const owned = await example.ask({
+      command: {
+        cmd: "openOwned"
+      },
+      kind: "owned"
+    });
+    assert.equal(owned["ownerId"], owned["expectedOwnerId"], "createWindow's owner is the window's owner");
+
+    await example.ask({
+      command: {
+        cmd: "blockClose",
+        value: true
+      },
+      kind: "blockClose"
+    });
+    const refused = await example.ask({
+      command: {
+        cmd: "tryClose"
+      },
+      kind: "closeTried"
+    });
+    assert.equal(
+      numberOf({
+        report: refused,
+        field: "closeRequests"
+      }), 1, "onClosing is asked when the window is closed"
+    );
+    assert.equal(
+      numberOf({
+        report: refused,
+        field: "closes"
+      }), 0, "onClosing returning true keeps the window open"
+    );
+    await example.ask({
+      command: {
+        cmd: "blockClose",
+        value: false
+      },
+      kind: "blockClose"
     });
 
     example.send({ cmd: "close" });
