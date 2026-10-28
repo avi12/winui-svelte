@@ -88,8 +88,8 @@ const CAPTION_BUTTON_ENTRIES = [
 /** The AppWindowTitleBar property that holds one caption button color. */
 export type CaptionButtonProperty = (typeof CAPTION_BUTTON_ENTRIES)[number][1];
 
-/** One title bar property and the color it is to hold; null puts the system's back. */
-export interface CaptionButtonChange {
+// One title bar property and the color it is to hold; null puts the system's back.
+interface CaptionButtonChange {
   property: CaptionButtonProperty;
   color: ReturnType<typeof colorOf> | null;
 }

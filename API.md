@@ -358,7 +358,8 @@ exactly those.
         isMaximizable={false} placement={saved} activate={!isBackground}
         onActiveChanged={refresh} onBoundsChanged={report}
         onClosing={hasUnsavedWork} onClosed={exitApplication} theme="dark"
-        titleBarHeight="tall" captionButtons={{ foreground: "#fff" }} bind:handle>
+        titleBarHeight="tall" captionButtons={{ foreground: "#fff" }}
+        bind:handle>
   {#snippet titleBar()}...{/snippet}
   ...the page...
 </Window>
@@ -375,30 +376,38 @@ given. Sizes are in device-independent pixels (the window's DPI applied);
 centering, which is the default. `activate={false}` shows the window without
 taking focus. `onBoundsChanged` hears the bounds the window opened with and
 then every move or resize (device pixels), so an app that reopens the window
-where it was has them before the user touches it. `onClosing` runs when the
-window is asked to close (the close button, Alt+F4, `handle.close()`): returning
-`true` keeps it open (ask the user, then close it again from code); `onClosed`
-follows a close that went through. `onScaleChanged(scale)` hears a DPI change (the
-window moved to another display, or the user changed the display scale); the
-size limits and regions, which WinUI takes in device pixels, are set again for it. `theme` is `"light"`, `"dark"` or `"system"` (the default): it sets the content's
-requested theme and the caption buttons'. `titleBarHeight` is `"standard"` or
-`"tall"` (for a title bar that holds a search box or tabs; it applies when the
-content extends into the title bar). `captionButtons` sets the colors of the
-minimize, maximize and close buttons: `foreground`, `background`, `hover*`,
-`pressed*` and `inactive*` (each `Foreground` / `Background`), as `"#rgb"`,
-`"#rrggbb"`, `"#aarrggbb"` or `"transparent"` (the parser a color prop uses; other
-text throws a `TypeError`); a color left out, or dropped later, is the
-system's. `dragRegions` and `passthroughRegions` are rectangles
-(`{ x, y, width, height }` in device-independent pixels from the window's top-left
-corner) that set InputNonClientPointerSource's caption and passthrough regions:
-where a press drags the window, and the parts of it (a search box) that take the
-pointer themselves. Without `dragRegions` the `titleBar` snippet is the drag area.
-`presentation` is `"windowed"` (the default), `"fullScreen"` or `"compactOverlay"`
-(a small always-on-top window); the size limits and `isAlwaysOnTop` are the
-windowed presentation's, and are set again when the window returns to it.
-`owner` (another window's `WindowHandle`) and `isModal` (blocks the owner until
-this window closes) are read once, before the window opens; `createWindow` takes
-them too. The `owner` link is a Win32 call (`SetWindowLongPtrW`) in `native.ts`.
+where it was has them before the user touches it.
+`onClosing` runs when the window is asked to close (the close button, Alt+F4,
+`handle.close()`): returning `true` keeps it open (ask the user, then close it
+again from code); `onClosed` follows a close that went through.
+`onScaleChanged(scale)` hears a DPI change (the window moved to another
+display, or the user changed the display scale); the size limits and regions,
+which WinUI takes in device pixels, are set again for it.
+
+`theme` is `"light"`, `"dark"` or `"system"` (the default): it sets the
+content's requested theme and the caption buttons'. `titleBarHeight` is
+`"standard"` or `"tall"` (for a title bar that holds a search box or tabs; it
+applies when the content extends into the title bar). `captionButtons` sets
+the colors of the minimize, maximize and close buttons: `foreground`,
+`background`, `hover*`, `pressed*` and `inactive*` (each `Foreground` or
+`Background`), as `"#rgb"`, `"#rrggbb"`, `"#aarrggbb"` or `"transparent"` (the
+parser a color prop uses; other text throws a `TypeError`). A color left out,
+or dropped later, is the system's.
+
+`dragRegions` and `passthroughRegions` are rectangles (`{ x, y, width, height }`
+in device-independent pixels from the window's top-left corner) that set
+InputNonClientPointerSource's caption and passthrough regions: where a press
+drags the window, and the parts of it (a search box) that take the pointer
+themselves. Without `dragRegions` the `titleBar` snippet is the drag area.
+
+`presentation` is `"windowed"` (the default), `"fullScreen"` or
+`"compactOverlay"` (a small always-on-top window). The size limits and
+`isAlwaysOnTop` are the windowed presentation's, and are set again when the
+window returns to it. `owner` (another window's `WindowHandle`) and `isModal`
+(blocks the owner until this window closes) are read once, before the window
+opens; `createWindow` takes them too. The `owner` link is a Win32 call
+(`SetWindowLongPtrW`) in `native.ts`.
+
 `bind:handle` gives a `WindowHandle`: `window`, `appWindow`,
 `presenter`, `scale`, `close()`, `restore()`, `minimize()`, `maximize()`,
 `bringToFront()`. `appUserModelId` names the process for the taskbar (it is
