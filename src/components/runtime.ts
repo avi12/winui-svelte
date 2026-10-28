@@ -4,6 +4,7 @@
 // renders is made as a ToggleSwitch and an app bundles only the bindings of
 // the components it uses.
 
-export { attachmentsOf, control } from "#src/renderer/host/control.js";
+export type { PlacedControl } from "#src/renderer/host/control.js";
+export { attachmentsOf, control, placedControl } from "#src/renderer/host/control.js";
 export { registerControls } from "#src/renderer/host/host.js";
 export { isSnippet } from "./runtime.svelte.ts";

@@ -2,16 +2,35 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { CommandBarFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
+  import { attachFlyout } from "../hand-written/overlay/overlay-host.svelte.ts";
+  import type { FlyoutOverlayComponentProps } from "../hand-written/overlay/overlay-props.ts";
+  import type { PlacedControl } from "../runtime.ts";
+  import { attachmentsOf, placedControl, isSnippet, registerControls } from "../runtime.ts";
   import type { CommandBarFlyoutComponentProps } from "./controls/CommandBarFlyout.svelte.ts";
   import { connectCommandBarFlyout } from "./controls/CommandBarFlyout.svelte.ts";
 
-  let { class: className, style, ...rest }: CommandBarFlyoutComponentProps = $props();
-  const bound = {};
+  let { open = $bindable(), class: className, style, ...rest }: FlyoutOverlayComponentProps<CommandBarFlyoutComponentProps> = $props();
+  const bound = {
+    get open() {
+      return open;
+    },
+    set open(next) {
+      open = next;
+    }
+  };
   registerControls({ "command-bar-flyout": CommandBarFlyout });
+
+  function connect(placed: PlacedControl<CommandBarFlyout>) {
+    const disconnectProperties = connectCommandBarFlyout(placed.control, rest, bound);
+    const overlay = attachFlyout({ placed, props: rest, bound });
+    return () => {
+      overlay.dispose();
+      disconnectProperties();
+    };
+  }
 </script>
 
-<command-bar-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: CommandBarFlyout) => untrack(() => connectCommandBarFlyout(native, rest, bound)))}>
+<command-bar-flyout {...attachmentsOf(rest)} class={className} {style} {@attach placedControl((placed: PlacedControl<CommandBarFlyout>) => untrack(() => connect(placed)))}>
   {#if isSnippet(rest.systemBackdrop)}
     <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>
   {/if}

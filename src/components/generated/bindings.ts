@@ -56,6 +56,7 @@ export { ContainerContentChangingEventArgs } from "#winui/microsoft/ui/xaml/cont
 export { ContentControl } from "#winui/microsoft/ui/xaml/controls/ContentControl";
 export { ContentDialog } from "#winui/microsoft/ui/xaml/controls/ContentDialog";
 export { ContentDialogButton } from "#winui/microsoft/ui/xaml/controls/ContentDialogButton";
+export { ContentDialogResult } from "#winui/microsoft/ui/xaml/controls/ContentDialogResult";
 export { ContentPresenter } from "#winui/microsoft/ui/xaml/controls/ContentPresenter";
 export { Control } from "#winui/microsoft/ui/xaml/controls/Control";
 export { DatePicker } from "#winui/microsoft/ui/xaml/controls/DatePicker";

@@ -13,7 +13,9 @@
     ComboBox,
     ComboBoxItem,
     CommandBar,
+    ContentDialog,
     DoubleAnimation,
+    Flyout,
     GradientStop,
     InlineUIContainer,
     LinearGradientBrush,
@@ -107,6 +109,10 @@
       </MenuFlyout>
     {/snippet}
   </Button>
+  <Flyout {@attach found("flyout")} open={props.isShown}>
+    <TextBlock>Details</TextBlock>
+  </Flyout>
+  <ContentDialog {@attach found("dialog")} closeButtonText="Close" open={props.isShown}>Sure?</ContentDialog>
   <ToggleSwitch {@attach found("toggleSwitch")}>Wi-Fi</ToggleSwitch>
   <RichTextBlock {@attach found("richTextBlock")}>
     <Paragraph>

@@ -1,5 +1,5 @@
-export type { NodeAttachment } from "./renderer/host/control.ts";
-export { control, withControl } from "./renderer/host/control.ts";
+export type { NodeAttachment, PlacedControl } from "./renderer/host/control.ts";
+export { control, placedControl, withControl } from "./renderer/host/control.ts";
 export type { ElementRef } from "./renderer/host/element-ref.svelte.ts";
 export { elementRef } from "./renderer/host/element-ref.svelte.ts";
 export type { ClassHandler } from "./renderer/host/host.ts";

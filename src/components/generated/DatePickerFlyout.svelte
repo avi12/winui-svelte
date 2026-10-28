@@ -2,16 +2,35 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { DatePickerFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
+  import { attachFlyout } from "../hand-written/overlay/overlay-host.svelte.ts";
+  import type { FlyoutOverlayComponentProps } from "../hand-written/overlay/overlay-props.ts";
+  import type { PlacedControl } from "../runtime.ts";
+  import { attachmentsOf, placedControl, isSnippet, registerControls } from "../runtime.ts";
   import type { DatePickerFlyoutComponentProps } from "./controls/DatePickerFlyout.svelte.ts";
   import { connectDatePickerFlyout } from "./controls/DatePickerFlyout.svelte.ts";
 
-  let { class: className, style, ...rest }: DatePickerFlyoutComponentProps = $props();
-  const bound = {};
+  let { open = $bindable(), class: className, style, ...rest }: FlyoutOverlayComponentProps<DatePickerFlyoutComponentProps> = $props();
+  const bound = {
+    get open() {
+      return open;
+    },
+    set open(next) {
+      open = next;
+    }
+  };
   registerControls({ "date-picker-flyout": DatePickerFlyout });
+
+  function connect(placed: PlacedControl<DatePickerFlyout>) {
+    const disconnectProperties = connectDatePickerFlyout(placed.control, rest, bound);
+    const overlay = attachFlyout({ placed, props: rest, bound });
+    return () => {
+      overlay.dispose();
+      disconnectProperties();
+    };
+  }
 </script>
 
-<date-picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: DatePickerFlyout) => untrack(() => connectDatePickerFlyout(native, rest, bound)))}>
+<date-picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach placedControl((placed: PlacedControl<DatePickerFlyout>) => untrack(() => connect(placed)))}>
   {#if isSnippet(rest.systemBackdrop)}
     <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>
   {/if}

@@ -2,16 +2,35 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { ListPickerFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
+  import { attachFlyout } from "../hand-written/overlay/overlay-host.svelte.ts";
+  import type { FlyoutOverlayComponentProps } from "../hand-written/overlay/overlay-props.ts";
+  import type { PlacedControl } from "../runtime.ts";
+  import { attachmentsOf, placedControl, isSnippet, registerControls } from "../runtime.ts";
   import type { ListPickerFlyoutComponentProps } from "./controls/ListPickerFlyout.svelte.ts";
   import { connectListPickerFlyout } from "./controls/ListPickerFlyout.svelte.ts";
 
-  let { class: className, style, ...rest }: ListPickerFlyoutComponentProps = $props();
-  const bound = {};
+  let { open = $bindable(), class: className, style, ...rest }: FlyoutOverlayComponentProps<ListPickerFlyoutComponentProps> = $props();
+  const bound = {
+    get open() {
+      return open;
+    },
+    set open(next) {
+      open = next;
+    }
+  };
   registerControls({ "list-picker-flyout": ListPickerFlyout });
+
+  function connect(placed: PlacedControl<ListPickerFlyout>) {
+    const disconnectProperties = connectListPickerFlyout(placed.control, rest, bound);
+    const overlay = attachFlyout({ placed, props: rest, bound });
+    return () => {
+      overlay.dispose();
+      disconnectProperties();
+    };
+  }
 </script>
 
-<list-picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: ListPickerFlyout) => untrack(() => connectListPickerFlyout(native, rest, bound)))}>
+<list-picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach placedControl((placed: PlacedControl<ListPickerFlyout>) => untrack(() => connect(placed)))}>
   {#if isSnippet(rest.systemBackdrop)}
     <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>
   {/if}

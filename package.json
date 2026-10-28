@@ -159,7 +159,7 @@
     "lint:stylelint": "stylelint \"**/*.svelte\" --ignore-pattern src/components/generated",
     "lint:summary": "node --disable-warning=ExperimentalWarning scripts/lint/summary.ts",
     "test": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" test/mount-all.test.ts",
-    "test:windows": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 test/lists.test.ts test/items.test.ts test/web.test.ts test/window.test.ts"
+    "test:windows": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 test/lists.test.ts test/items.test.ts test/overlays.test.ts test/web.test.ts test/window.test.ts"
   },
   "dependencies": {
     "@microsoft/dynwinrt": "0.1.0-preview.23",

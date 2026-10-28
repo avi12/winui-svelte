@@ -1,4 +1,4 @@
-import { read } from "./reflect.ts";
+import { isRecord, read } from "./reflect.ts";
 import type { NativeValue } from "#src/native-value.js";
 
 // The element's native control, handed to code. Svelte runs an attachment in
@@ -45,6 +45,54 @@ export function control<Control extends object>(handler: (control: Control) => v
     const isControlMade = isObject(native) && isTypedControl<Control>(native);
     if (isControlMade) {
       return handler(native);
+    }
+  };
+}
+
+// The control of the nearest element above this one that has one: a
+// <property> element holds none, nor does the mount target.
+function parentControlOf(node: object) {
+  for (let ancestor = read(node, "parent"); isRecord(ancestor); ancestor = read(ancestor, "parent")) {
+    const found = nativeControl(ancestor);
+    if (isObject(found)) {
+      return found;
+    }
+  }
+
+  return null;
+}
+
+/** An element's control, and where to find the control the element is placed in. */
+export interface PlacedControl<Control extends object> {
+  readonly control: Control;
+  /**
+   * The control the element sits in (a flyout's button, a dialog's panel), or
+   * `null` when it is placed in the window itself. Read when needed: it
+   * follows the tree as it is then.
+   */
+  parent(): object | null;
+}
+
+/**
+ * Hands an element's control to code like `control` does, with where the
+ * element is placed. A control WinUI leaves out of the layout (a flyout is no
+ * element) has no parent of its own, so the tree is the only place that says
+ * what it belongs to.
+ *
+ * @param handler - Runs once the element has a control of the class named by `Control`.
+ * @returns The attachment to put after `@attach`.
+ */
+export function placedControl<Control extends object>(
+  handler: (placed: PlacedControl<Control>) => void | Cleanup
+) {
+  return (node: object) => {
+    const native = nativeControl(node);
+    const isControlMade = isObject(native) && isTypedControl<Control>(native);
+    if (isControlMade) {
+      return handler({
+        control: native,
+        parent: () => parentControlOf(node)
+      });
     }
   };
 }
