@@ -165,12 +165,13 @@ export const skippedProperties = new Map<string, string>([
 // boolean, or an object): content, headers, tool tips, command parameters,
 // selected items, data contexts and tags hold whatever the app puts there.
 export const narrowedObjectInputs = new Map<string, string>([
-  // A collection or a template (DataTemplate, selector or element factory): a
+  // A collection (or an array, which is made one) of the items a control shows.
+  ["itemsSource", "CollectionInput"],
+  ["menuItemsSource", "CollectionInput"],
+  ["footerMenuItemsSource", "CollectionInput"],
+  ["tabItemsSource", "CollectionInput"],
+  // A template (DataTemplate, selector or element factory) or a scroll host: a
   // boxed primitive is never one.
-  ["itemsSource", "ObjectReferenceInput"],
-  ["menuItemsSource", "ObjectReferenceInput"],
-  ["footerMenuItemsSource", "ObjectReferenceInput"],
-  ["tabItemsSource", "ObjectReferenceInput"],
   ["itemTemplate", "ObjectReferenceInput"],
   ["scrollOwner", "ObjectReferenceInput"],
   // RelativePanel places an element by another element, or by its name.

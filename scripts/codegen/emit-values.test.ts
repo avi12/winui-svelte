@@ -87,3 +87,26 @@ test("the converters and their types are imported from convert", () => {
   assert.match(text, /import \{[^}]*dateTimeOf[^}]*dateInputOf|import \{[^}]*dateInputOf[^}]*dateTimeOf/u);
   assert.match(text, /import type \{[^}]*DateInput[^}]*TimeSpanInput[^}]*\} from "\.\.\/\.\.\/convert\.ts"/u);
 });
+
+test("an items source takes an array and makes it a collection", () => {
+  const text = emitLevel(
+    pickerWith([
+      property({
+        key: "date",
+        kind: PropertyKind.DATE_TIME
+      }),
+      property({
+        key: "itemsSource",
+        kind: PropertyKind.OBJECT
+      }),
+      property({
+        key: "content",
+        kind: PropertyKind.OBJECT
+      })
+    ])
+  );
+  assert.match(text, /itemsSource\?: CollectionInput;/u);
+  assert.match(text, /control\.itemsSource = collectionOf\(value\);/u);
+  assert.match(text, /content\?: ObjectInput;/u);
+  assert.match(text, /control\.content = objectOf\(value\);/u);
+});

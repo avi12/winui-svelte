@@ -11,6 +11,7 @@ import {
   InputScopeNameValue,
   IReference_Boolean,
   IReference_Double,
+  IVector_Object,
   Path,
   PointCollection,
   projectAs,
@@ -35,6 +36,7 @@ import type {
   MatrixInput,
   NumbersInput,
   ObjectInput,
+  ObjectReferenceInput,
   PointInput,
   PointListInput,
   RectInput,
@@ -152,6 +154,12 @@ export type NullableBooleanInput = boolean | null;
 
 /** A nullable number property (an animation's `to`): a number, or null for unset. */
 export type NullableDoubleInput = number | null;
+
+/**
+ * The items a control shows: a WinRT collection (or null) as it is, or an
+ * array, which is made a collection of boxed items.
+ */
+export type CollectionInput = ObjectReferenceInput | readonly ObjectInput[];
 
 /** A list of points: points or text of coordinate pairs, or a `PointCollection`. */
 export type PointCollectionInput = PointListInput | PointCollection;
@@ -506,6 +514,20 @@ export function doubleCollectionOf(input: DoubleCollectionInput) {
   }
 
   return numbers;
+}
+
+function isItemList(input: CollectionInput): input is readonly ObjectInput[] {
+  return Array.isArray(input);
+}
+
+/** An items source prop as a collection: an array is made one, each item boxed as `objectOf` boxes it. */
+export function collectionOf(input: CollectionInput) {
+  const isList = isItemList(input);
+  if (!isList) {
+    return input;
+  }
+
+  return IVector_Object.create(input.map(item => objectOf(item)));
 }
 
 /** An input scope prop as an `InputScope` holding a name for each member. */

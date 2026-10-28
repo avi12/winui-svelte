@@ -227,15 +227,40 @@ function enumName({ enumType }: { enumType: TypeName | null }) {
   return enumType.name;
 }
 
-// The input type a converted prop takes: its kind's, or for an Object prop
-// the narrower one narrowedObjectInputs gives it.
-function inputTypeOf({ kind, key }: {
+// The conversion an Object prop gets for the narrower input type
+// narrowedObjectInputs gives it, when objectOf is not the one.
+const narrowedConverters = new Map<string, string>([
+  ["CollectionInput", "collectionOf"]
+]);
+
+// What a prop is written through: its kind's converter, or for an Object prop
+// the narrower input type narrowedObjectInputs gives it and that type's
+// conversion.
+function converterOf({ kind, key }: {
   kind: PropertyKind;
   key: string;
 }) {
+  const converter = converters.get(kind);
   const isObject = kind === PropertyKind.OBJECT;
   const narrowed = isObject ? narrowedObjectInputs.get(key) : undefined;
-  return narrowed ?? converters.get(kind)?.inputType;
+  const isNarrowed = converter !== undefined && narrowed !== undefined;
+  if (!isNarrowed) {
+    return converter;
+  }
+
+  return {
+    ...converter,
+    inputType: narrowed,
+    convert: narrowedConverters.get(narrowed) ?? converter.convert
+  };
+}
+
+// The input type a converted prop takes.
+function inputTypeOf(property: {
+  kind: PropertyKind;
+  key: string;
+}) {
+  return converterOf(property)?.inputType;
 }
 
 // The type a converted prop is declared as: its input type, and null where
@@ -248,7 +273,10 @@ function declaredInputType({ kind, key }: {
     kind,
     key
   });
-  const isNullable = converters.get(kind)?.isNullable === true;
+  const isNullable = converterOf({
+    kind,
+    key
+  })?.isNullable === true;
   return isNullable ? `${inputType} | null` : inputType;
 }
 
@@ -290,16 +318,20 @@ function slotKeysOf({ level, kind }: {
   return new Set(level.slots.filter(slot => slot.kind === kind).map(slot => slot.key));
 }
 
-function valueExpression({ kind, enumType }: {
+function valueExpression({ kind, enumType, key }: {
   kind: PropertyKind;
   enumType: TypeName | null;
+  key: string;
 }) {
   const isEnum = kind === PropertyKind.ENUM;
   if (isEnum) {
     return `enumValue({ table: ${enumName({ enumType })}, input: value })`;
   }
 
-  const converter = converters.get(kind);
+  const converter = converterOf({
+    kind,
+    key
+  });
   const hasConverter = converter !== undefined;
   if (!hasConverter) {
     return "value";
@@ -351,19 +383,17 @@ class LevelImports {
       return;
     }
 
-    const converter = converters.get(kind);
+    const converter = converterOf({
+      kind,
+      key
+    });
     const hasConverter = converter !== undefined;
     if (!hasConverter) {
       return;
     }
 
     this.convert.add(converter.convert);
-    this.convertTypes.add(
-      inputTypeOf({
-        kind,
-        key
-      }) ?? converter.inputType
-    );
+    this.convertTypes.add(converter.inputType);
   }
 }
 
@@ -444,7 +474,7 @@ function emitBindable({ bindable, property, imports }: {
   imports.note(property);
   const subscribers = bindable.events.map(name => `      handler => control.on${name}(handler)`);
   const read = readExpression({
-    converter: converters.get(property.kind),
+    converter: converterOf(property),
     imports,
     access: `control.${bindable.key}`
   });
