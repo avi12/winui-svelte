@@ -38,8 +38,10 @@ copied there by `pnpm build` and published whole. They declare
 `"sideEffects": false`, and the Vite plugin tells the bundler so, so an app
 bundles only the controls it uses. `src/winui.ts` is the package's one import
 site; the vite server loads it, and the bindings, through Node (they are
-CommonJS). The Windows App SDK bootstrapper ships in `dist/bin`, which
-`initWindowsAppSdk()` finds without arguments.
+CommonJS). The Windows App SDK bootstrapper ships in `dist/bin/<arch>` (with
+WebView2's native libraries), which `initWindowsAppSdk()` finds without
+arguments. `pnpm bindings` makes the bindings: winapp's run, then WebView2's
+(see below).
 
 ## Renderer (`winui-svelte`)
 
@@ -186,9 +188,17 @@ for tools; `compileSvelte()` throws an `Error` with that message.
 
 ```ts
 // bootstrap: finds Microsoft.WindowsAppRuntime.Bootstrap.dll in `folders` (first
-// match wins), sets WINAPPSDK_BOOTSTRAP_DLL_PATH and initialises the Windows
-// App SDK. Throws WindowsAppRuntimeMissing when the runtime is not installed.
-function initWindowsAppSdk(options?: { major?: number; minor?: number; folders?: string[] }): void;
+// match wins), sets WINAPPSDK_BOOTSTRAP_DLL_PATH, puts the folder it was found
+// in on PATH (WebView2's native libraries are there) and initialises the
+// Windows App SDK. Sets WEBVIEW2_USER_DATA_FOLDER to `webViewUserDataFolder`
+// unless it is already set. Throws WindowsAppRuntimeMissing when the runtime is
+// not installed.
+function initWindowsAppSdk(options?: {
+  major?: number;
+  minor?: number;
+  folders?: string[];
+  webViewUserDataFolder?: string;
+}): void;
 
 // thread (in the worker that owns the UI thread; WinUI's loop never gives its
 // thread back): enters the single-threaded apartment first, so everything
@@ -238,22 +248,30 @@ is the host, its `window.ts` the UI-thread worker).
 A control that shows its items from a data source is generated like the rest,
 with `items`, `key` and `item` in place of its children and items source: the
 table `itemsHosted` in `scripts/codegen/tables.ts` names them and the host each
-uses (`src/components/hand-written/items`). `ListView` and `GridView` report their
-containers; `ItemsRepeater`, `ItemsView` and `BreadcrumbBar` keep their items in an
-`ItemsRepeater`, whose elements the host fills. Every other property, event and
-snippet slot of the control is the generated component's. `Window` is not a
-control (it is no UIElement), so it is only in `hand-written/` and
+uses (`src/components/hand-written/items`). They are `ListView`, `GridView`,
+`ItemsRepeater`, `ItemsView` and `BreadcrumbBar`. `ListView` and `GridView`
+report their containers (and take the list props below); the other three keep
+their items in an `ItemsRepeater`, whose elements the host fills, and take
+`items`, `key` and `item` only. Every other property, event and snippet slot
+of the control is the generated component's. `Window` is not a control (it is
+no UIElement), so it is the one component only in `hand-written/` and
 `components/index.ts`.
 
-A control whose items are controls (`ComboBox`, `FlipView`, `NavigationView`,
-`TabView`, `RadioButtons`, `ListBox`...) takes them as children, so Svelte's own
-blocks are its item template: `{#each rows as row (row.id)}<ComboBoxItem content={row.name} />{/each}`
-keeps, adds, moves and removes items as the array changes. `TreeView` takes
-`TreeViewNode` children the same way.
+A control whose items are controls takes them as Svelte's own blocks, which are
+its item template: `{#each rows as row (row.id)}<ComboBoxItem content={row.name} />{/each}`
+keeps, adds, moves and removes items as the array changes. They are the
+children of `ComboBox`, `FlipView` and `ListBox`, and the snippet that names
+the property in `NavigationView` (`menuItems`, `footerMenuItems`), `TabView`
+(`tabItems`), `RadioButtons` (`items`) and `TreeView` (`rootNodes`, of
+`TreeViewNode`).
 
-Value objects (brushes, geometry, transforms, transitions, animations,
-layouts, icon and image sources, keyboard accelerators, commands, backdrops)
-are components too, and fill the property they are written in:
+Value objects are components too, and fill the property they are written in.
+They are the brushes, geometry, transforms, transitions, animations (with key
+frames and easing), layouts, commands, keyboard accelerators, backdrops, icon
+and image sources, shadows, projections and tree nodes: the roots in
+`rootClasses` in `scripts/codegen/tables.ts`, each with every class below it. A
+root that can be made is a component itself (`GradientStop`). A snippet takes
+the property's name:
 
 ```svelte
 <Border>
@@ -270,16 +288,26 @@ One written directly among the children of an element (a `Storyboard`) is made
 and kept by its component but placed nowhere; reach it with
 `{@attach control(storyboard => storyboard.begin())}`.
 
+A gradient background can also be written in CSS (`background-image:
+linear-gradient(...)` in a `<style>`), which the build turns into the same
+brushes; see "Gradients" in `src/css/API.md`.
+
 ### WebView2
 
 `<WebView2 source="https://..." onNavigationCompleted={...} />` is generated
 like the rest. Its bindings are made by `pnpm bindings` after winapp's run
 (`scripts/bindings/webview2.ts`), since winapp gives the code generator no
-WebView2 Core metadata, which adds about 3 MB of bindings. The control is bound
-and mounts, but starting its browser from a `node.exe` host is not working yet:
-it needs `Microsoft.Web.WebView2.Core.dll` and `WebView2Loader.dll` where the
-process finds them, and its initialization then fails with 0x8007139F
-(`test/web.test.ts` is a `todo` until it starts).
+WebView2 Core metadata (about 3 MB of bindings). That step also restores
+`Microsoft.Web.WebView2.Core.dll`, and the build ships it with
+`WebView2Loader.dll` in `dist/bin/<arch>`: `initWindowsAppSdk` puts that
+folder on `PATH`, since the control loads both by name and node.exe's own folder
+has neither. It also points `WEBVIEW2_USER_DATA_FOLDER` at
+`%LOCALAPPDATA%\winui-svelte\<main script>\WebView2` (the `webViewUserDataFolder` option; a
+variable already set wins), because the default folder is beside node.exe in Program Files,
+which is not writable, and the browser would not start. A page loads as it
+does in any WinUI app, except that WebView2 blocks a `data:` URL as the top
+frame. `test/web.test.ts` loads one in a real window; it needs an ordinary
+desktop session (a sandboxed process cannot launch the browser, 0x8007139F).
 
 ### ListView and GridView
 

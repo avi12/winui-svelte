@@ -9,6 +9,8 @@ allowlist, and `pnpm pack --dry-run` must not list it).
 - pnpm only: `packageManager` is pinned, `pnpm-lock.yaml` is committed, every script, CI step and doc uses `pnpm`. Never `npm` or `yarn`, and never a second lockfile
 - TypeScript, ESM only, `strict` plus `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride` and `verbatimModuleSyntax`
 - Svelte 5 (runes) on the custom renderer the package ships; the generated components come from WinUI's metadata through `scripts/codegen` (never hand-edit `src/components/generated`)
+- What the generator decides by hand is a table in `scripts/codegen/tables.ts` (`rootClasses` for the families that become components, `itemsHosted` for the controls that take `items`/`key`/`item`, `nonConstructible`, `bindingsAfterWinapp`). Change the table and run `pnpm gen:components`, never the output. Only `Window` and the item hosts (`src/components/hand-written/items`) are hand-written. The WinUI bindings come from `pnpm bindings` (winapp, then `scripts/bindings/webview2.ts`); the API is in `API.md`, the contributor steps in `CONTRIBUTING.md`
+- `pnpm test:windows` needs an ordinary desktop session (WebView2 cannot launch its browser in a sandboxed process)
 - Licence: MIT
 
 # Which rules win

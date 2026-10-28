@@ -11,18 +11,29 @@ plus the house rules that sit on top of it. Read it before sending code.
 
 ```powershell
 pnpm install
-pnpm restore      # downloads the Windows App SDK and generates the WinUI bindings
+pnpm restore      # downloads the Windows App SDK and its metadata
+pnpm bindings     # generates the WinUI bindings, then WebView2's
 ```
 
-`pnpm restore` reads `winapp.yaml` and `package.json`'s `winapp.jsBindings` (the
-list of WinUI classes) and writes `.winapp/`, which is not committed. The first
-run downloads the SDK and generates the bindings for every class in the list,
-and takes about ten minutes; it is a cache after that. The components import
-those bindings as `#winui/*`, which `package.json`'s `imports` map to
-`dist/bindings`: `pnpm build` copies `.winapp/bindings` there, along with the
-Windows App SDK bootstrapper (`dist/bin`), so the published package carries both
-and an app installs only `winui-svelte`. Build once before `pnpm check` or the
-examples.
+`pnpm restore` reads `winapp.yaml` and writes `.winapp/`, which is not
+committed. `pnpm bindings` reads `package.json`'s `winapp.jsBindings` (the list
+of WinUI classes) and writes `.winapp/bindings` in two steps: `winapp node
+generate-bindings`, then `scripts/bindings/webview2.ts`. The second exists
+because winapp gives the code generator no `Microsoft.Web.WebView2.Core`
+metadata, so WebView2's events cannot be bound in its run (the class is in
+`bindingsAfterWinapp` in `scripts/codegen/tables.ts`, which keeps it out of the
+list winapp is given); the step runs the generator for that class alone, adds
+the files winapp's run did not make, and restores `Microsoft.Web.WebView2.Core.dll`
+beside the bootstrappers. The first run downloads the SDK and takes about ten
+minutes; it is a cache after that. Run `pnpm bindings` again when the class
+list changes (`pnpm gen:components` rewrites it).
+
+The components import the bindings as `#winui/*`, which `package.json`'s
+`imports` map to `dist/bindings`: `pnpm build` copies `.winapp/bindings` there,
+along with the native libraries in `dist/bin/<architecture>` (the Windows App
+SDK bootstrapper, `WebView2Loader.dll` and `Microsoft.Web.WebView2.Core.dll`),
+so the published package carries them all and an app installs only
+`winui-svelte`. Build once before `pnpm check` or the examples.
 
 ## Everyday commands
 
@@ -32,13 +43,45 @@ examples.
 | `pnpm lint` | every check, one after another even when one fails: build, oxlint, ESLint (Google TypeScript style and the house rules in `CLAUDE.md`), stylelint, `tsc`, `svelte-check`, the editor check, fallow, the generated-files check and the tarball check |
 | `pnpm lint:summary` | counts the violations per rule and per folder (`--folder src/css` lists one folder's files) |
 | `pnpm test` | build, then every unit test and the mount test (every component made in a real WinUI window that opens off screen and never takes focus) |
-| `pnpm test:windows` | the example windows, checked through UI Automation |
-| `pnpm gen:components` | regenerates `src/components/generated` from WinUI's metadata. Never edit those files by hand |
+| `pnpm bindings` | the WinUI bindings in `.winapp/bindings`: winapp's run, then WebView2's (`scripts/bindings/`) |
+| `pnpm test:windows` | the examples in real windows: `test/lists.test.ts`, `test/items.test.ts`, `test/web.test.ts` and `test/window.test.ts`. Needs an ordinary desktop session (see below) |
+| `pnpm gen:components` | regenerates `src/components/generated`, the class list in `package.json` and the tables in the README from WinUI's metadata. Never edit those files by hand |
 | `pnpm check:package` | packs the tarball and runs publint and Are The Types Wrong on it |
 
 Examples and tests resolve `winui-svelte` the way a consumer does, through
 `package.json`'s `exports`, which point at `dist/`: run `pnpm build` after
 changing `src/` and before running an example.
+
+## Tests that need a desktop session
+
+The mount test opens its window off screen, but WebView2 starts a real browser
+process, and the window tests drive real windows. Run `pnpm test:windows` from
+an ordinary desktop session: a process a sandbox or a service started cannot
+launch the browser (WebView2 reports 0x8007139F), and the tests skip where the
+Windows App SDK was not restored or the WebView2 Runtime is not installed.
+
+## Changing what is generated
+
+Everything the generator decides by hand is a table in
+`scripts/codegen/tables.ts`; nothing else decides it.
+
+- **A new family of value objects or controls:** add its abstract base to
+  `rootClasses`. Every concrete class below a root becomes a component, and a
+  property typed as one becomes a snippet prop. A class WinUI activates but the
+  generator must leave out goes in `nonConstructible` with the reason (the mount
+  test finds them).
+- **A control that shows its items by snippet:** add it to `itemsHosted` with
+  the host that fits (`list` for a `ListViewBase`, `repeater` for an
+  `ItemsRepeater`, `itemContainer` for an `ItemContainer` root). The hosts are
+  in `src/components/hand-written/items`; the component then takes `items`,
+  `key` and `item` in place of its children and items source.
+- Then run `pnpm gen:components` (it rewrites the components, the class list in
+  `package.json` and the README tables), `pnpm bindings` (the new classes need
+  bindings) and `pnpm test`. Put what the new components must do in
+  `test/Slots.fixture.svelte` and its expectations in `test/mount-all.svelte.ts`
+  (a value object in a property, items written with `{#each}`), and an emission
+  test beside the generator when the output's shape changes
+  (`scripts/codegen/emit-hosted.test.ts`).
 
 ## The Svelte build
 

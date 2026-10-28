@@ -19,9 +19,11 @@ backdrop. No browser engine is involved; there is no DOM.
 </StackPanel>
 ```
 
-- **Every WinUI 3 control** (167 of them, in the table below) is generated from
-  WinUI's own metadata, with typed props, typed events and `bind:`-able
-  properties. The package follows WinUI instead of a hand-picked subset.
+- **Every WinUI 3 control, and the value objects they take** (brushes,
+  transforms, animations, layouts...: 295 components in the table below) are
+  generated from WinUI's own metadata, with typed props, typed events and
+  `bind:`-able properties. The package follows WinUI instead of a hand-picked
+  subset; lists (`ListView`, `GridView`...) are generated too.
 - **Svelte's own compiler and runtime**, through its custom-renderer API.
   Runes, context, `{#if}`, `{#each}`, snippets, `svelte/reactivity` and stores
   work as they do on the web.
@@ -270,13 +272,14 @@ with `diff()`, and answers the window's actions over a `MessagePort`
 
 ## Controls
 
-Every concrete WinUI 3 control is a component in `winui-svelte/components`. A
-component has the properties of its WinUI class and of every class it inherits
-from, as camelCase props (`isOn`, `horizontalAlignment`), its events as `on...`
-props (`onToggled`), and `bind:` on a property that has a matching change event.
-The table shows what each class adds; `Bindable` includes the inherited
-bindables. `Children` says the component takes content (its WinUI content
-property: `Content`, `Child`, `Children`, `Items`...) as children.
+Every concrete WinUI 3 control, and every value object a property can take, is
+a component in `winui-svelte/components`. A component has the properties of its
+WinUI class and of every class it inherits from, as camelCase props (`isOn`,
+`horizontalAlignment`), its events as `on...` props (`onToggled`), and `bind:`
+on a property that has a matching change event. The table shows what each class
+adds; `Bindable` includes the inherited bindables. `Children` says the
+component takes content (its WinUI content property: `Content`, `Child`,
+`Children`, `Items`...) as children.
 
 <!-- controls:start -->
 
@@ -599,6 +602,39 @@ How a value is written:
   `winui-svelte` hands your code the WinUI object (typed from your bindings);
   `withControl(StackPanel, panel => ...)` checks its class first.
 
+A property that holds a control or a value object is a snippet prop, so markup
+fills it the way XAML does. A brush, geometry, transform, transition,
+animation, layout, command, keyboard accelerator, backdrop, icon or image
+source, shadow or projection is a component, and the snippet it is written in
+names the property:
+
+```svelte
+<Border>
+  {#snippet background()}
+    <LinearGradientBrush>
+      <GradientStop color="#00e5ff" offset={0} />
+      <GradientStop color="#06182b" offset={1} />
+    </LinearGradientBrush>
+  {/snippet}
+</Border>
+```
+
+One written directly among an element's children (a `Storyboard`) is made but
+placed nowhere; reach it with `{@attach control(storyboard => storyboard.begin())}`.
+
+Items come in two forms. `ListView`, `GridView`, `ItemsRepeater`, `ItemsView`
+and `BreadcrumbBar` take `items`, `key` and an `item` snippet, and keep a row
+only for each item the control has realized. A control whose items are
+controls takes them as Svelte's own blocks: `{#each}` in the children of
+`ComboBox`, `FlipView` and `ListBox`, or in the snippet of `NavigationView`
+(`menuItems`), `TabView` (`tabItems`), `RadioButtons` (`items`) and `TreeView`
+(`rootNodes`, of `TreeViewNode`). [API.md](API.md) has the details.
+
+`WebView2` is a component like the rest. Its native libraries ship with the
+package and `initWindowsAppSdk` makes them findable; the browser starts in an
+ordinary desktop session, not in a sandboxed process. A `data:` URL is blocked
+as the top frame, as WebView2 does.
+
 The raw elements the components are made of work too: `<stack-panel spacing={8}>`,
 `<text-block>`, `grid.column={1}` for an attached property; they need
 `registerControls(...)` with the classes they name (a component registers only
@@ -618,6 +654,7 @@ build error with its file and line; nothing is silently ignored.
 | --- | --- |
 | `margin`, `padding`, `border-width`, `border-color`, `border-radius` | `Margin`, `Padding`, `BorderThickness`, `BorderBrush`, `CornerRadius` |
 | `color`, `background-color`, `opacity` | `Foreground`, `Background`, `Opacity` |
+| `background-image` or `background` with `linear-gradient()` or `radial-gradient()` | a `LinearGradientBrush` or `RadialGradientBrush` Background (a sheet that uses one carries the parser; one that does not, does not) |
 | `width`, `height`, `min-*`, `max-*` | `Width`, `Height`, `MinWidth`... |
 | `font-size`, `font-weight`, `font-family`, `font-style`, `line-height`, `letter-spacing`, `text-align`, `text-wrap`, `text-overflow`, `text-decoration` | the `TextBlock` and `Control` font and text properties |
 | `gap`, `row-gap`, `column-gap` | `Spacing` (a stack), `RowSpacing` and `ColumnSpacing` (a grid) |
@@ -653,7 +690,7 @@ protocol and the tests.
 | `winui-svelte/bootstrap` | `initWindowsAppSdk`, for the host's main thread |
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
-| `winui-svelte/css`, `/css/vite`, `/css/sheet-module` | the CSS runtime, its Vite plugin and the sheet module compiler ([`src/css/API.md`](src/css/API.md)) |
+| `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 
 The published package ships `dist/`: the TypeScript compiled with its
 declarations, and the Svelte files as source (with `types` and `svelte`
@@ -679,12 +716,17 @@ Stated plainly, so nobody finds them by surprise:
   setters while they are active, and a control that handles an event itself (a
   Button handles `PointerPressed`) never reports it, so `:active` does nothing
   there. Override the control's theme resources instead.
-- **Mica is not available yet.** `createWindow({ backdrop })` takes `"acrylic"`
-  and `"none"`; Mica needs `MicaBackdrop` in the app's bindings and the option
-  to name it, which is not done.
+- **Three controls are not components:** `SwapChainPanel` and
+  `SwapChainBackgroundPanel` (the code generator cannot emit them with the
+  others) and `PivotHeaderItem` (WinUI makes it only inside a `Pivot`).
+- **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
+  service started cannot launch the browser (error 0x8007139F), and a `data:`
+  URL cannot be the top frame.
 - **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `box-shadow`,
   `filter`, `transform`, `animation`, descendant, child or sibling selectors,
   nesting or `@keyframes`: each is a build error that says what to use instead.
+  Gradients are `linear-gradient()` and `radial-gradient()` only (no repeating
+  or conic ones, no stop in `px`), and replace `background-color`.
   `@media (prefers-color-scheme)` can declare custom properties only (a Style
   cannot depend on the scheme).
 - **A hot update to a component that is not self-contained** (a changed `.ts`
@@ -706,6 +748,7 @@ In this repository (a pnpm workspace; run these in `packages/winui-svelte`):
 | `pnpm test` | the unit tests, the generator's tests, and the mount test: every component made and linked in a real WinUI window that opens off screen and never takes focus |
 | `pnpm lint` | every check: oxlint, ESLint (Google TypeScript style), `tsc`, `svelte-check`, the editor check, fallow, the check that the generated files are current and the tarball check; `pnpm lint:summary` counts the violations per rule and folder |
 | `pnpm gen:components` | regenerates the components, their metadata, the class list the bindings are generated for and the tables and quick start in this README from WinUI's metadata (`pnpm restore` first) |
+| `pnpm bindings` | the WinUI bindings (winapp's run, then the WebView2 step); [CONTRIBUTING.md](CONTRIBUTING.md) says when |
 | `pnpm build` | `dist/`: what is published (`pnpm pack` shows the tarball) |
 | `pwsh examples/hello/run.ps1` | the hello example in a background window, checked through UI Automation (`-Edit` also checks hot reload) |
 
