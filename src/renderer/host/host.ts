@@ -492,8 +492,17 @@ function syncText({ element, control }: Omit<ElementAttributeTarget, "value">) {
   write(control, "text", textOf(element));
 }
 
+// What a panel or a decorator shows: a value object among its children (a
+// storyboard, a brush) is no element, and stays with the component that made it.
+function elementsOf(element: WinuiElement) {
+  return element.children.flatMap(controlsOf).filter(isFrameworkElement);
+}
+
+// The properties of an element that hold elements and nothing else.
+const elementProperties = new Set(["child", "children"]);
+
 function syncChild({ element, control }: Omit<ElementAttributeTarget, "value">) {
-  const [first = null] = element.children.flatMap(controlsOf);
+  const [first = null] = elementsOf(element);
   write(control, "child", first);
 }
 
@@ -514,7 +523,8 @@ function syncContent({ element, control }: Omit<ElementAttributeTarget, "value">
 const childSlots: Array<[string, ChildSlotHandler]> = [
   ["children", ({ element, control }) => syncCollection({
     element,
-    collection: read(control, "children")
+    collection: read(control, "children"),
+    wanted: elementsOf(element)
   })],
   ["items", ({ element, control }) => syncCollection({
     element,
@@ -597,13 +607,15 @@ function syncProperty({ element, control, name }: {
 }) {
   const current = read(control, name);
   const collection = vectorOf(current);
+  const isElementSlot = isFrameworkElement(control) && elementProperties.has(name);
   const isCollection = collection !== null;
   if (isCollection) {
     const isInlines = name === INLINES_PROPERTY;
+    const children = isElementSlot ? elementsOf(element) : element.children.flatMap(controlsOf);
     syncCollection({
       element,
       collection,
-      wanted: isInlines ? inlinesOf(element) : element.children.flatMap(controlsOf)
+      wanted: isInlines ? inlinesOf(element) : children
     });
     return;
   }
@@ -614,7 +626,7 @@ function syncProperty({ element, control, name }: {
     return;
   }
 
-  write(control, name, contentOf(element));
+  write(control, name, isElementSlot ? elementsOf(element)[0] ?? null : contentOf(element));
 }
 
 // Takes out what a <property> element that is gone put in: its controls from
