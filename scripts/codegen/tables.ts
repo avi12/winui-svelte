@@ -492,6 +492,33 @@ export const itemsHosted = new Map<string, ItemsHost>([
   ["ItemsView", ItemsHost.ITEM_CONTAINER]
 ]);
 
+// How a control that opens over the window is opened from state
+// (src/components/hand-written/overlay): the component takes `open` (bindable,
+// kept in step with the control's Opened and Closed events), `target` (the
+// element it opens next to; by default the one it is written in) and, for a
+// dialog, `onResult`. DIALOG shows through ShowAsync, one at a time, in the
+// window of its element; FLYOUT through ShowAt that element. Both close
+// through Hide.
+export const OverlayHost = {
+  DIALOG: "dialog",
+  FLYOUT: "flyout"
+} as const;
+
+export type OverlayHost = typeof OverlayHost[keyof typeof OverlayHost];
+
+export const overlayHosted = new Map<string, OverlayHost>([
+  ["ContentDialog", OverlayHost.DIALOG],
+  ["Flyout", OverlayHost.FLYOUT],
+  ["MenuFlyout", OverlayHost.FLYOUT],
+  ["MenuBarItemFlyout", OverlayHost.FLYOUT],
+  ["CommandBarFlyout", OverlayHost.FLYOUT],
+  ["TextCommandBarFlyout", OverlayHost.FLYOUT],
+  ["DatePickerFlyout", OverlayHost.FLYOUT],
+  ["TimePickerFlyout", OverlayHost.FLYOUT],
+  ["PickerFlyout", OverlayHost.FLYOUT],
+  ["ListPickerFlyout", OverlayHost.FLYOUT]
+]);
+
 // Exports of the bindings that are not metadata types: the generic
 // instantiations the conversions name.
 export const extraBindings = [
@@ -542,6 +569,11 @@ export const supportEnums: TypeName[] = [
   {
     namespace: "Windows.System",
     name: "VirtualKey"
+  },
+  // What a ContentDialog answers (src/components/hand-written/overlay).
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "ContentDialogResult"
   }
 ];
 

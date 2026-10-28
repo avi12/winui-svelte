@@ -14,6 +14,8 @@ import {
   ItemsHost,
   itemsHosted,
   narrowedObjectInputs,
+  OverlayHost,
+  overlayHosted,
   PropertyKind
 } from "./tables.ts";
 import type { TypeName } from "./winmd.ts";
@@ -783,8 +785,70 @@ function hostOf(name: string) {
   return kind === undefined ? undefined : hosts.get(kind);
 }
 
+// What a component that opens over the window from state is made of, by
+// host: the type of its props (overlay-props.ts) and the call that connects
+// the host (overlay-host.svelte.ts).
+const overlayHosts = new Map<OverlayHost, {
+  props: string;
+  attach: string;
+}>([
+  [
+    OverlayHost.DIALOG,
+    {
+      props: "DialogOverlayComponentProps",
+      attach: "attachDialog"
+    }
+  ],
+  [
+    OverlayHost.FLYOUT,
+    {
+      props: "FlyoutOverlayComponentProps",
+      attach: "attachFlyout"
+    }
+  ]
+]);
+
+const OVERLAY_FOLDER = "../hand-written/overlay";
+// What every overlay component binds besides its control's own bindables.
+const OVERLAY_BINDABLE = "open";
+
+function overlayOf(name: string) {
+  const kind = overlayHosted.get(name);
+  return kind === undefined ? undefined : overlayHosts.get(kind);
+}
+
+function emitOverlayDeclaration({ level, overlay }: {
+  level: ClassModel;
+  overlay: NonNullable<ReturnType<typeof overlayOf>>;
+}) {
+  const name = level.type.name;
+  const bindings = [...allBindableNames(level), OVERLAY_BINDABLE].map(key => `"${key}"`).join(" | ");
+  return `${[
+    GENERATED_HEADER,
+    "",
+    `import type { ${name}ComponentProps as ${name}ControlProps } from "./controls/${name}.svelte.ts";`,
+    `import type { ${overlay.props} } from "${OVERLAY_FOLDER}/overlay-props.ts";`,
+    "import type { Component } from \"svelte\";",
+    "",
+    `/** The props of \`${name}\`: the control's, \`open\` and \`target\`. */`,
+    `export type ${name}ComponentProps = ${overlay.props}<${name}ControlProps>;`,
+    "",
+    `declare const ${name}: Component<${name}ComponentProps, Record<string, never>, ${bindings}>;`,
+    `export default ${name};`
+  ].join("\n")}\n`;
+}
+
 export function emitDeclaration(level: ClassModel) {
   const name = level.type.name;
+  const overlay = overlayOf(name);
+  const isOverlay = overlay !== undefined;
+  if (isOverlay) {
+    return emitOverlayDeclaration({
+      level,
+      overlay
+    });
+  }
+
   const host = hostOf(name);
   const isHosted = host !== undefined;
   if (isHosted) {
@@ -816,13 +880,29 @@ export function emitDeclaration(level: ClassModel) {
   ].join("\n")}\n`;
 }
 
+function hostedPropsType({ name, host, overlay }: {
+  name: string;
+  host: ReturnType<typeof hostOf>;
+  overlay: ReturnType<typeof overlayOf>;
+}) {
+  const isItemsHosted = host !== undefined;
+  if (isItemsHosted) {
+    return `${host.props}<Item, ${name}ComponentProps>`;
+  }
+
+  const isOverlay = overlay !== undefined;
+  return isOverlay ? `${overlay.props}<${name}ComponentProps>` : `${name}ComponentProps`;
+}
+
 export function emitComponent(level: ClassModel) {
   const name = level.type.name;
   const host = hostOf(name);
   const isHosted = host !== undefined;
   const hasHandle = isHosted && host.hasHandle;
+  const overlay = overlayOf(name);
+  const isOverlay = overlay !== undefined;
   const hasChildren = level.contentProperty !== null && !isHosted;
-  const bindables = allBindableNames(level);
+  const bindables = [...allBindableNames(level), ...isOverlay ? [OVERLAY_BINDABLE] : []];
   const destructured = [
     ...bindables.map(key => `${key} = $bindable()`),
     ...hasHandle ? ["handle = $bindable()"] : [],
@@ -836,7 +916,9 @@ export function emitComponent(level: ClassModel) {
   );
   const bound = bindables.length === 0 ? "{}" : `{\n${bag.join(",\n")}\n  }`;
   const connect = isHosted ? "connect(native)" : `connect${name}(native, rest, bound)`;
-  const attachment = `{@attach control((native: ${name}) => untrack(() => ${connect}))}`;
+  const attachment = isOverlay
+    ? `{@attach placedControl((placed: PlacedControl<${name}>) => untrack(() => connect(placed)))}`
+    : `{@attach control((native: ${name}) => untrack(() => ${connect}))}`;
   const open = `<${level.tag} {...attachmentsOf(rest)} class={className} {style} ${attachment}`;
   const inner = slotMarkup({
     level,
@@ -861,7 +943,23 @@ export function emitComponent(level: ClassModel) {
     "    };",
     "  }"
   ] : [];
-  const propsType = isHosted ? `${host.props}<Item, ${name}ComponentProps>` : `${name}ComponentProps`;
+  const overlaying = isOverlay ? [
+    "",
+    `  function connect(placed: PlacedControl<${name}>) {`,
+    `    const disconnectProperties = connect${name}(placed.control, rest, bound);`,
+    `    const overlay = ${overlay.attach}({ placed, props: rest, bound });`,
+    "    return () => {",
+    "      overlay.dispose();",
+    "      disconnectProperties();",
+    "    };",
+    "  }"
+  ] : [];
+  const propsType = hostedPropsType({
+    name,
+    host,
+    overlay
+  });
+  const runtimeNames = ["attachmentsOf", isOverlay ? "placedControl" : "control", ...isSnippetUsed ? ["isSnippet"] : [], "registerControls"];
   return `${[
     SVELTE_HEADER,
     isHosted ? "<script generics=\"Item\" lang=\"ts\">" : "<script lang=\"ts\">",
@@ -871,7 +969,12 @@ export function emitComponent(level: ClassModel) {
       `  import { ${host.imports.join(", ")} } from "${ITEMS_FOLDER}/${host.module}";`,
       `  import type { ${host.props} } from "${ITEMS_FOLDER}/items-props.ts";`
     ] : [],
-    `  import { ${["attachmentsOf", "control", ...isSnippetUsed ? ["isSnippet"] : [], "registerControls"].join(", ")} } from "../runtime.ts";`,
+    ...isOverlay ? [
+      `  import { ${overlay.attach} } from "${OVERLAY_FOLDER}/overlay-host.svelte.ts";`,
+      `  import type { ${overlay.props} } from "${OVERLAY_FOLDER}/overlay-props.ts";`,
+      "  import type { PlacedControl } from \"../runtime.ts\";"
+    ] : [],
+    `  import { ${runtimeNames.join(", ")} } from "../runtime.ts";`,
     `  import type { ${name}ComponentProps } from "./controls/${name}.svelte.ts";`,
     `  import { connect${name} } from "./controls/${name}.svelte.ts";`,
     "",
@@ -879,6 +982,7 @@ export function emitComponent(level: ClassModel) {
     `  const bound = ${bound};`,
     `  registerControls({ "${level.tag}": ${name} });`,
     ...hosting,
+    ...overlaying,
     "</script>",
     "",
     markup
