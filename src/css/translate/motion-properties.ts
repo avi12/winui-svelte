@@ -2,6 +2,7 @@ import { setter } from "./property-kit.ts";
 import type { GroupInput, Output } from "./property-kit.ts";
 import type { Reader } from "#src/css/parse/reader.js";
 import {
+  parseDegrees,
   parseLength,
   parseMilliseconds,
   parseNumber,
@@ -64,9 +65,9 @@ export function scaling(reader: Reader) {
 /** `rotate`: an angle in deg, as WinUI's Rotation. */
 export function rotation(reader: Reader) {
   const word = reader.single() ?? "";
-  const match = /^(-?\d*\.?\d+)deg$/iu.exec(word);
-  const isMatchMissing = match === null;
-  if (isMatchMissing) {
+  const degrees = parseDegrees(word);
+  const isDegreesMissing = degrees === null;
+  if (isDegreesMissing) {
     reader.expectedToken({
       what: "an angle in deg",
       token: word
@@ -76,7 +77,7 @@ export function rotation(reader: Reader) {
 
   return [setter({
     property: "Rotation",
-    value: String(Number(match[1]))
+    value: String(degrees)
   })];
 }
 

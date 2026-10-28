@@ -14,6 +14,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/components` | `src/components/generated/index.ts` | every WinUI 3 control as a component (`StackPanel`, `ToggleSwitch`, ...) and its props type (`ToggleSwitchComponentProps`); importing it registers the generated bindings with the renderer |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()` (its `messaging` is the typed link), `hostState()`, `StateProtocol`, the transports (stdio, MessagePort, in-memory), `diff` / `applyOps` (see `src/state/README.md`) |
 | `winui-svelte/host` | `src/renderer/host/host.ts` | the custom renderer a compiled component imports (default export); not for app code |
+| `winui-svelte/element-animation` | `src/renderer/host/element-animation.ts` | `enableElementAnimation()`, and the attachments `transition()`, `intro()`, `outro()`: Svelte's transition functions on WinUI elements (opt-in; an app that does not import it does not bundle it) |
 | `winui-svelte/keyed-list` | `src/renderer/list/keyed-list.ts` | `syncKeyed()`: sync a native collection to wanted keys, touching only what changed |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()`, `hostState()`, the transports (see `src/state/README.md`) |
 | `winui-svelte/messaging` | `src/messaging/index.ts` | `defineMessaging(transport)`: typed `sendMessage` / `onMessage` over a ProtocolMap, as @webext-core/messaging; the state channel is built on it |
@@ -146,6 +147,70 @@ wrapper that cannot be read). Two forms work: `On-content="On"` (a capital O is
 not Svelte's event rule), and `on-content={() => "On"}` (an inline function is
 handed over as it is and read once, when the element is made). A property that
 changes is set through `{@attach control(...)}`, as components do.
+
+## Transitions (`winui-svelte/element-animation`)
+
+Svelte's compiler refuses `transition:`, `in:`, `out:` and `animate:` when
+it draws through a custom renderer (`incompatible_with_custom_renderer`: they
+drive the DOM's `Element.animate()`). The same transition functions
+(`svelte/transition`'s `fade`, `fly`, `scale`, `blur`, or your own) are
+played by attachments instead:
+
+```svelte
+<script lang="ts">
+  import { transition } from "winui-svelte/element-animation";
+  import { fly } from "svelte/transition";
+</script>
+
+{#if isShown}
+  <Border {@attach transition({ use: fly, params: { y: 40, duration: 300 } })}>
+    ...
+  </Border>
+{/if}
+```
+
+```ts
+// Once, before the first component is mounted (in start(), before
+// mountControl). Returns what turns it off again.
+function enableElementAnimation(options?: {
+  clock?: AnimationClock; // default: the UI thread's dispatcher timer, ~16 ms
+  onFrame?: () => void; // default: flush()
+  warn?: (message: string) => void; // default: console.warn
+}): () => void;
+
+// `use` is a transition function; `params` is what it is given.
+function transition(options: { use: TransitionFunction<P>; params?: P }): Attachment; // transition:
+function intro(options: { use: TransitionFunction<P>; params?: P }): Attachment; // in:
+function outro(options: { use: TransitionFunction<P>; params?: P }): Attachment; // out:
+```
+
+What it does:
+
+- A transition's `css(t, u)` is read with the CSS value parsers into the
+  control's `Opacity`, `Translation`, `Scale` and `Rotation` (`opacity`,
+  `translate`, `scale`, `rotate`, and `transform` with `translate`, `scale`
+  and `rotate` functions), stepped about every 16 ms; `tick(t, u)` runs on each
+  frame. Scale and rotation turn about the middle of the control, and the
+  control's own values come back when the transition ends.
+- An element Svelte removes with an outro stays in its parent, out of reach
+  (`IsHitTestVisible` false), until the outro has run: `enableElementAnimation`
+  makes the renderer's `remove` wait. Only an element Svelte removes itself
+  leaves this way (the root of its `{#if}` or `{#each}` block, not one inside a
+  block that goes). Showing it again makes a new element; the old one still
+  leaves.
+- An intro plays when the element is made, also with its component (Svelte's
+  `transition:` skips the first render). Gate what you do not want animated
+  at start with an `{#if}`.
+- A property WinUI cannot animate (`height`, `padding`, `filter`, ...) is
+  named once through `warn` and left out, so `slide` fades but does not
+  collapse. A transition that returns a function (`crossfade`) is called at once.
+- The attachment also works on a component (`<Border {@attach ...}>`): a
+  component spreads the attachments written on it onto its element.
+- `getComputedStyle` is defined as a global for WinUI's elements (the
+  functions of `svelte/transition` call it); any other argument goes to the
+  one that was there, if any.
+- `animate:flip` has no equivalent. WinUI's own `RepositionThemeTransition`
+  is the native tool for a moved element (not tried here).
 
 ## Scheduling (`winui-svelte`)
 
