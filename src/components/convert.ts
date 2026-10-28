@@ -178,16 +178,24 @@ const GRID_UNIT_TYPES = new Map<GridUnit, GridUnitType>([
   [GridUnit.PIXEL, GridUnitType.Pixel],
   [GridUnit.STAR, GridUnitType.Star]
 ]);
-const DURATION_TYPES = new Map<DurationKind, DurationType>([
-  [DurationKind.AUTOMATIC, DurationType.Automatic],
-  [DurationKind.TIME_SPAN, DurationType.TimeSpan],
-  [DurationKind.FOREVER, DurationType.Forever]
-]);
-const REPEAT_BEHAVIOR_TYPES = new Map<RepeatKind, RepeatBehaviorType>([
-  [RepeatKind.COUNT, RepeatBehaviorType.Count],
-  [RepeatKind.DURATION, RepeatBehaviorType.Duration],
-  [RepeatKind.FOREVER, RepeatBehaviorType.Forever]
-]);
+
+// Built when used, not at import: a table that names a binding at the top
+// level keeps that binding in the bundle of every app that imports this module.
+function durationTypes() {
+  return new Map<DurationKind, DurationType>([
+    [DurationKind.AUTOMATIC, DurationType.Automatic],
+    [DurationKind.TIME_SPAN, DurationType.TimeSpan],
+    [DurationKind.FOREVER, DurationType.Forever]
+  ]);
+}
+
+function repeatBehaviorTypes() {
+  return new Map<RepeatKind, RepeatBehaviorType>([
+    [RepeatKind.COUNT, RepeatBehaviorType.Count],
+    [RepeatKind.DURATION, RepeatBehaviorType.Duration],
+    [RepeatKind.FOREVER, RepeatBehaviorType.Forever]
+  ]);
+}
 const INT32_BITS = 32;
 const MAX_INT32 = 2 ** (INT32_BITS - 1) - 1;
 
@@ -361,7 +369,7 @@ export function durationOf(input: DurationInput) {
       duration: ticks
     },
     type: nativeMember({
-      table: DURATION_TYPES,
+      table: durationTypes(),
       key: kind
     })
   };
@@ -395,7 +403,7 @@ export function repeatBehaviorOf(input: RepeatBehaviorInput) {
       duration: ticks
     },
     type: nativeMember({
-      table: REPEAT_BEHAVIOR_TYPES,
+      table: repeatBehaviorTypes(),
       key: kind
     })
   };
