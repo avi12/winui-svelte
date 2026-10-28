@@ -902,6 +902,16 @@ const slotsAtFirst: SlotExpectation[] = [
     isMet: control => menuItemCountOf(control) === 2
   },
   {
+    name: "flyout",
+    what: "a flyout among a panel's children is closed while open is false",
+    isMet: control => read(control, "isOpen") === false
+  },
+  {
+    name: "dialog",
+    what: "a dialog among a panel's children holds its text as content",
+    isMet: control => unboxObject(read(control, "content")) === "Sure?"
+  },
+  {
     name: "toggleSwitch",
     what: "the children are the header",
     isMet: control => unboxObject(read(control, "header")) === "Wi-Fi"
@@ -917,6 +927,11 @@ const slotsAtFirst: SlotExpectation[] = [
 ];
 
 const slotsWhenShown: SlotExpectation[] = [
+  {
+    name: "flyout",
+    what: "a flyout asked to open before its element is on screen waits for it instead of failing",
+    isMet: control => read(control, "isOpen") === false
+  },
   {
     name: "comboBox",
     what: "an item added by a block is an item",
