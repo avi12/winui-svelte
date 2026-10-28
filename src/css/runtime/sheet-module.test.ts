@@ -9,6 +9,9 @@ import { compile } from "svelte/compiler";
 const resources = loadWinuiCatalogue();
 const FILENAME = "C:/app/ui/card.svelte";
 
+// WebStorm reads this template as a Svelte file and parses the custom
+// property `--accent` in its <style> as a decrement of `accent`.
+// noinspection JSUnresolvedReference
 const SOURCE = `<border class="card" class:big={true}>
   <text-block class="title">hi</text-block>
 </border>
