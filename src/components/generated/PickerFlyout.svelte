@@ -2,16 +2,35 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { PickerFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
+  import { attachFlyout } from "../hand-written/overlay/overlay-host.svelte.ts";
+  import type { FlyoutOverlayComponentProps } from "../hand-written/overlay/overlay-props.ts";
+  import type { PlacedControl } from "../runtime.ts";
+  import { attachmentsOf, placedControl, isSnippet, registerControls } from "../runtime.ts";
   import type { PickerFlyoutComponentProps } from "./controls/PickerFlyout.svelte.ts";
   import { connectPickerFlyout } from "./controls/PickerFlyout.svelte.ts";
 
-  let { children, class: className, style, ...rest }: PickerFlyoutComponentProps = $props();
-  const bound = {};
+  let { open = $bindable(), children, class: className, style, ...rest }: FlyoutOverlayComponentProps<PickerFlyoutComponentProps> = $props();
+  const bound = {
+    get open() {
+      return open;
+    },
+    set open(next) {
+      open = next;
+    }
+  };
   registerControls({ "picker-flyout": PickerFlyout });
+
+  function connect(placed: PlacedControl<PickerFlyout>) {
+    const disconnectProperties = connectPickerFlyout(placed.control, rest, bound);
+    const overlay = attachFlyout({ placed, props: rest, bound });
+    return () => {
+      overlay.dispose();
+      disconnectProperties();
+    };
+  }
 </script>
 
-<picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: PickerFlyout) => untrack(() => connectPickerFlyout(native, rest, bound)))}>
+<picker-flyout {...attachmentsOf(rest)} class={className} {style} {@attach placedControl((placed: PlacedControl<PickerFlyout>) => untrack(() => connect(placed)))}>
   {#if children}
     <property name="content">{@render children()}</property>
   {:else if isSnippet(rest.content)}

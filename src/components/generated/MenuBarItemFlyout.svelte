@@ -2,16 +2,35 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { MenuBarItemFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
+  import { attachFlyout } from "../hand-written/overlay/overlay-host.svelte.ts";
+  import type { FlyoutOverlayComponentProps } from "../hand-written/overlay/overlay-props.ts";
+  import type { PlacedControl } from "../runtime.ts";
+  import { attachmentsOf, placedControl, isSnippet, registerControls } from "../runtime.ts";
   import type { MenuBarItemFlyoutComponentProps } from "./controls/MenuBarItemFlyout.svelte.ts";
   import { connectMenuBarItemFlyout } from "./controls/MenuBarItemFlyout.svelte.ts";
 
-  let { children, class: className, style, ...rest }: MenuBarItemFlyoutComponentProps = $props();
-  const bound = {};
+  let { open = $bindable(), children, class: className, style, ...rest }: FlyoutOverlayComponentProps<MenuBarItemFlyoutComponentProps> = $props();
+  const bound = {
+    get open() {
+      return open;
+    },
+    set open(next) {
+      open = next;
+    }
+  };
   registerControls({ "menu-bar-item-flyout": MenuBarItemFlyout });
+
+  function connect(placed: PlacedControl<MenuBarItemFlyout>) {
+    const disconnectProperties = connectMenuBarItemFlyout(placed.control, rest, bound);
+    const overlay = attachFlyout({ placed, props: rest, bound });
+    return () => {
+      overlay.dispose();
+      disconnectProperties();
+    };
+  }
 </script>
 
-<menu-bar-item-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: MenuBarItemFlyout) => untrack(() => connectMenuBarItemFlyout(native, rest, bound)))}>
+<menu-bar-item-flyout {...attachmentsOf(rest)} class={className} {style} {@attach placedControl((placed: PlacedControl<MenuBarItemFlyout>) => untrack(() => connect(placed)))}>
   {#if children}
     <property name="items">{@render children()}</property>
   {/if}

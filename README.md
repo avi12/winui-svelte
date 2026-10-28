@@ -327,20 +327,20 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `ComboBox` | Controls | `description`, `header`, `headerTemplate`, `isDropDownOpen`, `isEditable`, `isTextSearchEnabled`, `lightDismissOverlayMode`, `maxDropDownHeight`, +5 more | `selectedIndex`, `selectedItem`, `selectedValue`, `isDropDownOpen` | yes |
 | `ComboBoxItem` | Controls |  |  | yes |
 | `CommandBar` | Controls | `commandBarOverflowPresenterStyle`, `defaultLabelPosition`, `isDynamicOverflowEnabled`, `overflowButtonVisibility` | `isOpen` | yes |
-| `CommandBarFlyout` | Controls | `alwaysExpanded` |  |  |
+| `CommandBarFlyout` | Controls | `alwaysExpanded` | `open` |  |
 | `CommandBarFlyoutCommandBar` | Controls.Primitives | `systemBackdrop` | `isOpen` | yes |
 | `CommandBarOverflowPresenter` | Controls |  |  | yes |
 | `CommonNavigationTransitionInfo` | Media.Animation | `isStaggeringEnabled` |  |  |
 | `CompositeTransform` | Media | `centerX`, `centerY`, `rotation`, `scaleX`, `scaleY`, `skewX`, `skewY`, `translateX`, +1 more |  |  |
 | `CompositeTransform3D` | Media.Media3D | `centerX`, `centerY`, `centerZ`, `rotationX`, `rotationY`, `rotationZ`, `scaleX`, `scaleY`, +4 more |  |  |
 | `ContentControl` | Controls | `content`, `contentTemplate`, `contentTemplateSelector`, `contentTransitions` |  | yes |
-| `ContentDialog` | Controls | `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonStyle`, `closeButtonText`, `defaultButton`, `fullSizeDesired`, `isPrimaryButtonEnabled`, `isSecondaryButtonEnabled`, +10 more |  | yes |
+| `ContentDialog` | Controls | `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonStyle`, `closeButtonText`, `defaultButton`, `fullSizeDesired`, `isPrimaryButtonEnabled`, `isSecondaryButtonEnabled`, +10 more | `open` | yes |
 | `ContentPresenter` | Controls | `background`, `backgroundSizing`, `backgroundTransition`, `borderBrush`, `borderThickness`, `characterSpacing`, `content`, `contentTemplate`, +19 more |  | yes |
 | `ContentThemeTransition` | Media.Animation | `horizontalOffset`, `verticalOffset` |  |  |
 | `ContinuumNavigationTransitionInfo` | Media.Animation | `exitElement` |  |  |
 | `CubicEase` | Media.Animation |  |  |  |
 | `DatePicker` | Controls | `calendarIdentifier`, `date`, `dayFormat`, `dayVisible`, `header`, `headerTemplate`, `lightDismissOverlayMode`, `maxYear`, +7 more | `date`, `selectedDate` | yes |
-| `DatePickerFlyout` | Controls | `calendarIdentifier`, `date`, `dayFormat`, `dayVisible`, `maxYear`, `minYear`, `monthFormat`, `monthVisible`, +2 more |  |  |
+| `DatePickerFlyout` | Controls | `calendarIdentifier`, `date`, `dayFormat`, `dayVisible`, `maxYear`, `minYear`, `monthFormat`, `monthVisible`, +2 more | `open` |  |
 | `DesktopAcrylicBackdrop` | Media |  |  |  |
 | `DiscreteColorKeyFrame` | Media.Animation |  |  |  |
 | `DiscreteDoubleKeyFrame` | Media.Animation |  |  |  |
@@ -370,7 +370,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `FadeOutThemeAnimation` | Media.Animation | `targetName` |  |  |
 | `FlipView` | Controls | `useTouchAnimationsForAllNavigation` | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `FlipViewItem` | Controls |  |  | yes |
-| `Flyout` | Controls | `content`, `flyoutPresenterStyle` |  | yes |
+| `Flyout` | Controls | `content`, `flyoutPresenterStyle` | `open` | yes |
 | `FlyoutPresenter` | Controls | `isDefaultShadowEnabled` |  | yes |
 | `FontIcon` | Controls | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `glyph`, `isTextScaleFactorEnabled`, `mirroredWhenRightToLeft` |  |  |
 | `FontIconSource` | Controls | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `glyph`, `isTextScaleFactorEnabled`, `mirroredWhenRightToLeft` |  |  |
@@ -419,7 +419,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `LineSegment` | Media | `point` |  |  |
 | `ListBox` | Controls | `selectionMode`, `singleSelectionFollowsFocus` | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `ListBoxItem` | Controls |  |  | yes |
-| `ListPickerFlyout` | Controls | `displayMemberPath`, `itemsSource`, `itemTemplate`, `selectedIndex`, `selectedItem`, `selectedValue`, `selectedValuePath`, `selectionMode` |  |  |
+| `ListPickerFlyout` | Controls | `displayMemberPath`, `itemsSource`, `itemTemplate`, `selectedIndex`, `selectedItem`, `selectedValue`, `selectedValuePath`, `selectionMode` | `open` |  |
 | `ListView` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `ListViewHeaderItem` | Controls |  |  | yes |
 | `ListViewItem` | Controls |  |  | yes |
@@ -432,8 +432,8 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `MediaTransportControls` | Controls | `fastPlayFallbackBehaviour`, `isCompact`, `isFastForwardButtonVisible`, `isFastForwardEnabled`, `isFastRewindButtonVisible`, `isFastRewindEnabled`, `isNextTrackButtonVisible`, `isPlaybackRateButtonVisible`, +17 more |  |  |
 | `MenuBar` | Controls |  |  |  |
 | `MenuBarItem` | Controls | `title` |  |  |
-| `MenuBarItemFlyout` | Controls |  |  | yes |
-| `MenuFlyout` | Controls | `menuFlyoutPresenterStyle` |  | yes |
+| `MenuBarItemFlyout` | Controls |  | `open` | yes |
+| `MenuFlyout` | Controls | `menuFlyoutPresenterStyle` | `open` | yes |
 | `MenuFlyoutItem` | Controls | `command`, `commandParameter`, `icon`, `keyboardAcceleratorTextOverride`, `text` |  | yes |
 | `MenuFlyoutPresenter` | Controls | `isDefaultShadowEnabled`, `systemBackdrop` |  | yes |
 | `MenuFlyoutSeparator` | Controls |  |  |  |
@@ -461,7 +461,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `PathIconSource` | Controls | `data` |  |  |
 | `PersonPicture` | Controls | `badgeGlyph`, `badgeImageSource`, `badgeNumber`, `badgeText`, `contact`, `displayName`, `initials`, `isGroup`, +2 more |  |  |
 | `PerspectiveTransform3D` | Media.Media3D | `depth`, `offsetX`, `offsetY` |  |  |
-| `PickerFlyout` | Controls | `confirmationButtonsVisible`, `content` |  | yes |
+| `PickerFlyout` | Controls | `confirmationButtonsVisible`, `content` | `open` | yes |
 | `PipsPager` | Controls | `maxVisiblePips`, `nextButtonStyle`, `nextButtonVisibility`, `normalPipStyle`, `numberOfPages`, `orientation`, `previousButtonStyle`, `previousButtonVisibility`, +3 more |  |  |
 | `Pivot` | Controls | `headerFocusVisualPlacement`, `headerTemplate`, `isHeaderItemsCarouselEnabled`, `isLocked`, `leftHeader`, `leftHeaderTemplate`, `rightHeader`, `rightHeaderTemplate`, +4 more | `selectedIndex`, `selectedItem` | yes |
 | `PivotHeaderPanel` | Controls.Primitives |  |  | yes |
@@ -552,12 +552,12 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `TeachingTip` | Controls | `actionButtonCommand`, `actionButtonCommandParameter`, `actionButtonContent`, `actionButtonStyle`, `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonContent`, `closeButtonStyle`, +12 more | `isOpen` | yes |
 | `TextBlock` | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +17 more |  | yes |
 | `TextBox` | Controls | `acceptsReturn`, `characterCasing`, `description`, `desiredCandidateWindowAlignment`, `header`, `headerTemplate`, `horizontalTextAlignment`, `inputScope`, +18 more | `text` |  |
-| `TextCommandBarFlyout` | Controls |  |  |  |
+| `TextCommandBarFlyout` | Controls |  | `open` |  |
 | `ThemeShadow` | Media |  |  |  |
 | `Thumb` | Controls.Primitives |  |  |  |
 | `TickBar` | Controls.Primitives | `fill` |  |  |
 | `TimePicker` | Controls | `clockIdentifier`, `header`, `headerTemplate`, `lightDismissOverlayMode`, `minuteIncrement`, `selectedTime`, `time` | `selectedTime`, `time` | yes |
-| `TimePickerFlyout` | Controls | `clockIdentifier`, `minuteIncrement`, `time` |  |  |
+| `TimePickerFlyout` | Controls | `clockIdentifier`, `minuteIncrement`, `time` | `open` |  |
 | `TitleBar` | Controls | `autoRefreshDragRegions`, `content`, `iconSource`, `isBackButtonEnabled`, `isBackButtonVisible`, `isPaneToggleButtonVisible`, `leftHeader`, `rightHeader`, +2 more |  |  |
 | `ToggleButton` | Controls.Primitives | `isChecked`, `isThreeState` | `isChecked` | yes |
 | `ToggleMenuFlyoutItem` | Controls | `isChecked` |  | yes |

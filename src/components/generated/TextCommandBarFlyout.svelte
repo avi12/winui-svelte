@@ -2,16 +2,35 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { TextCommandBarFlyout } from "./bindings.ts";
-  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
+  import { attachFlyout } from "../hand-written/overlay/overlay-host.svelte.ts";
+  import type { FlyoutOverlayComponentProps } from "../hand-written/overlay/overlay-props.ts";
+  import type { PlacedControl } from "../runtime.ts";
+  import { attachmentsOf, placedControl, isSnippet, registerControls } from "../runtime.ts";
   import type { TextCommandBarFlyoutComponentProps } from "./controls/TextCommandBarFlyout.svelte.ts";
   import { connectTextCommandBarFlyout } from "./controls/TextCommandBarFlyout.svelte.ts";
 
-  let { class: className, style, ...rest }: TextCommandBarFlyoutComponentProps = $props();
-  const bound = {};
+  let { open = $bindable(), class: className, style, ...rest }: FlyoutOverlayComponentProps<TextCommandBarFlyoutComponentProps> = $props();
+  const bound = {
+    get open() {
+      return open;
+    },
+    set open(next) {
+      open = next;
+    }
+  };
   registerControls({ "text-command-bar-flyout": TextCommandBarFlyout });
+
+  function connect(placed: PlacedControl<TextCommandBarFlyout>) {
+    const disconnectProperties = connectTextCommandBarFlyout(placed.control, rest, bound);
+    const overlay = attachFlyout({ placed, props: rest, bound });
+    return () => {
+      overlay.dispose();
+      disconnectProperties();
+    };
+  }
 </script>
 
-<text-command-bar-flyout {...attachmentsOf(rest)} class={className} {style} {@attach control((native: TextCommandBarFlyout) => untrack(() => connectTextCommandBarFlyout(native, rest, bound)))}>
+<text-command-bar-flyout {...attachmentsOf(rest)} class={className} {style} {@attach placedControl((placed: PlacedControl<TextCommandBarFlyout>) => untrack(() => connect(placed)))}>
   {#if isSnippet(rest.systemBackdrop)}
     <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>
   {/if}

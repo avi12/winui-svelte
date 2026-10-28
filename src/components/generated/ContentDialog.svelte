@@ -2,16 +2,35 @@
 <script lang="ts">
   import { untrack } from "svelte";
   import { ContentDialog } from "./bindings.ts";
-  import { attachmentsOf, control, isSnippet, registerControls } from "../runtime.ts";
+  import { attachDialog } from "../hand-written/overlay/overlay-host.svelte.ts";
+  import type { DialogOverlayComponentProps } from "../hand-written/overlay/overlay-props.ts";
+  import type { PlacedControl } from "../runtime.ts";
+  import { attachmentsOf, placedControl, isSnippet, registerControls } from "../runtime.ts";
   import type { ContentDialogComponentProps } from "./controls/ContentDialog.svelte.ts";
   import { connectContentDialog } from "./controls/ContentDialog.svelte.ts";
 
-  let { children, class: className, style, ...rest }: ContentDialogComponentProps = $props();
-  const bound = {};
+  let { open = $bindable(), children, class: className, style, ...rest }: DialogOverlayComponentProps<ContentDialogComponentProps> = $props();
+  const bound = {
+    get open() {
+      return open;
+    },
+    set open(next) {
+      open = next;
+    }
+  };
   registerControls({ "content-dialog": ContentDialog });
+
+  function connect(placed: PlacedControl<ContentDialog>) {
+    const disconnectProperties = connectContentDialog(placed.control, rest, bound);
+    const overlay = attachDialog({ placed, props: rest, bound });
+    return () => {
+      overlay.dispose();
+      disconnectProperties();
+    };
+  }
 </script>
 
-<content-dialog {...attachmentsOf(rest)} class={className} {style} {@attach control((native: ContentDialog) => untrack(() => connectContentDialog(native, rest, bound)))}>
+<content-dialog {...attachmentsOf(rest)} class={className} {style} {@attach placedControl((placed: PlacedControl<ContentDialog>) => untrack(() => connect(placed)))}>
   {#if children}
     <property name="content">{@render children()}</property>
   {:else if isSnippet(rest.content)}
