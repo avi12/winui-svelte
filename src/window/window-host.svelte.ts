@@ -39,10 +39,10 @@ export interface WindowPlacement {
 
 /** What a `<Window>` is told: its chrome, its size and limits, and what it reports back. */
 export interface WindowProps {
-  title?: string;
+  title?: string | undefined;
 
   /** The material behind the content; none (the default) is the theme's color. */
-  backdrop?: Backdrop;
+  backdrop?: Backdrop | undefined;
 
   /**
    * Light, dark, or the system's (the default): the theme of the content and
@@ -51,7 +51,7 @@ export interface WindowProps {
   theme?: WindowTheme | undefined;
 
   /** The content runs up into the title bar. On by default with a `titleBar`. */
-  extendsIntoTitleBar?: boolean;
+  extendsIntoTitleBar?: boolean | undefined;
 
   /**
    * The title bar's height, and the caption buttons': tall fits a search box
@@ -141,6 +141,22 @@ export interface WindowProps {
   onBoundsChanged?: (bounds: WindowBounds) => void;
 }
 
+/** A size in device pixels. */
+export interface WindowSize {
+  width: number;
+  height: number;
+}
+
+/** What `attachWindow` opens a window around, and how. */
+export interface AttachOptions {
+  content: FrameworkElement;
+  props: WindowProps;
+  titleBar: () => FrameworkElement | null;
+
+  /** The size it opens at, in device pixels, where the width and height props do not say. */
+  size?: WindowSize | undefined;
+}
+
 function round({ value, scale }: {
   value: number;
   scale: number;
@@ -164,13 +180,15 @@ class WindowHost {
   private appliedHeight: TitleBarHeight | null = null;
   private appliedCaptionButtons: ReadonlySet<CaptionButtonProperty> = new Set();
   private readonly appliedRegions = new Set<NonClientRegionKind>();
+  private readonly openSize: WindowSize | undefined;
   private appliedSize: {
     width: number | undefined;
     height: number | undefined;
   };
 
-  constructor(content: FrameworkElement, props: WindowProps, titleBar: () => FrameworkElement | null) {
+  constructor({ content, props, titleBar, size }: AttachOptions) {
     this.props = props;
+    this.openSize = size;
     this.content = content;
     this.titleBar = titleBar;
     this.appliedSize = {
@@ -371,12 +389,13 @@ class WindowHost {
     const { props } = this;
     const { appWindow } = this.handle.window;
     const { scale } = this.handle;
+    const current = this.openSize ?? appWindow.size;
     const size = {
-      width: props.width === undefined ? appWindow.size.width : round({
+      width: props.width === undefined ? current.width : round({
         value: props.width,
         scale
       }),
-      height: props.height === undefined ? appWindow.size.height : round({
+      height: props.height === undefined ? current.height : round({
         value: props.height,
         scale
       })
@@ -503,16 +522,33 @@ class WindowHost {
 
 /**
  * Opens the window around `content`; `titleBar` is read whenever it is needed
- * (it is state in the component, the element of its titleBar snippet).
+ * (it is state in the component, the element of its titleBar snippet). Call it
+ * where an effect can be created (a component, or an effect root).
  */
-export function attachWindow({ content, props, titleBar }: {
-  content: FrameworkElement;
-  props: WindowProps;
-  titleBar: () => FrameworkElement | null;
-}) {
-  const host = new WindowHost(content, props, titleBar);
+export function attachWindow(options: AttachOptions) {
+  const host = new WindowHost(options);
   return {
     handle: host.handle,
     dispose: () => host.dispose()
   };
+}
+
+/**
+ * `attachWindow` for code that is not a component (`createWindow`): the
+ * window's effects live in a root of their own, which ends with the window.
+ */
+export function attachStandaloneWindow(options: AttachOptions) {
+  const attached: Array<ReturnType<typeof attachWindow>> = [];
+  const stop = $effect.root(() => {
+    attached.push(attachWindow(options));
+  });
+  const [opened] = attached;
+  const isOpen = opened !== undefined;
+  if (!isOpen) {
+    stop();
+    throw new Error("the window did not open");
+  }
+
+  opened.handle.window.onClosed(stop);
+  return opened;
 }
