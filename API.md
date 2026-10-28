@@ -108,7 +108,9 @@ function boxed(value: string | number | boolean): unknown;
 // The inverse of boxed, for what an event reports as an object (Tag,
 // InvokedItem, SelectedValue): the string, number, boolean or bigint inside a
 // box; null for null; any other object as it is.
-function unboxed(value: unknown): string | number | boolean | bigint | object | null;
+function unboxed(
+  value: unknown
+): string | number | boolean | bigint | object | null;
 function thickness(left: number, top: number, right: number, bottom: number): Thickness;
 function starLength(value?: number): GridLength;
 function autoLength(): GridLength;
@@ -342,8 +344,9 @@ desktop session (a sandboxed process cannot launch the browser, 0x8007139F).
 Every other property and event of the control is a prop as on the generated
 components (`selectionMode`, `itemContainerStyle`, `onDragItemsCompleted`, ...);
 `selectedIndex` is an index into `items` and is as good as a key, but the
-control's `selectedItem` and `selectedValue` hold the **boxed key**, not the item
-(read one with `unboxed`; setting them does not select, use `selectedKey`).
+control's `selectedItem` and `selectedValue` hold the **boxed key**, not the
+item (read one with `unboxed`; setting them does not select, use
+`selectedKey`).
 `itemsSource`, `itemTemplate`, `items` and `children` are the component's.
 `ItemsView` has no `selectedKey` yet.
 
