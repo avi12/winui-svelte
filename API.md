@@ -356,8 +356,8 @@ exactly those.
 <Window title="My app" backdrop="acrylic" icon={iconPath} appUserModelId={id}
         width={560} minWidth={560} maxWidth={560} minHeight={420} height={640}
         isMaximizable={false} placement={saved} activate={!isBackground}
-        onActiveChanged={refresh} onBoundsChanged={report} onClosed={exitApplication}
-        bind:handle>
+        onActiveChanged={refresh} onBoundsChanged={report}
+        onClosing={hasUnsavedWork} onClosed={exitApplication} bind:handle>
   {#snippet titleBar()}...{/snippet}
   ...the page...
 </Window>
@@ -374,7 +374,10 @@ given. Sizes are in device-independent pixels (the window's DPI applied);
 centering, which is the default. `activate={false}` shows the window without
 taking focus. `onBoundsChanged` hears the bounds the window opened with and
 then every move or resize (device pixels), so an app that reopens the window
-where it was has them before the user touches it. `bind:handle` gives a `WindowHandle`: `window`, `appWindow`,
+where it was has them before the user touches it. `onClosing` runs when the
+window is asked to close (the close button, Alt+F4, `handle.close()`): returning
+`true` keeps it open (ask the user, then close it again from code); `onClosed`
+follows a close that went through. `bind:handle` gives a `WindowHandle`: `window`, `appWindow`,
 `presenter`, `scale`, `close()`, `restore()`, `minimize()`, `maximize()`,
 `bringToFront()`. `appUserModelId` names the process for the taskbar (it is
 process-wide: read once, before the window opens).

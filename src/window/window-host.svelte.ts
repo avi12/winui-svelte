@@ -80,6 +80,13 @@ export interface WindowProps {
 
   /** The window became the active one (true) or lost that to another (false). */
   onActiveChanged?: (isActive: boolean) => void;
+
+  /**
+   * The window is about to close (the user's close button, Alt+F4, or
+   * `handle.close()`). Returning true keeps it open: ask the user, then close
+   * it again from code. Anything else lets it close.
+   */
+  onClosing?: () => boolean | void;
   onClosed?: () => void;
 
   /**
@@ -306,6 +313,12 @@ class WindowHost {
     this.unsubscribe.push(
       window.onActivated((_sender, event) => {
         this.props.onActiveChanged?.(event.windowActivationState !== WindowActivationState.Deactivated);
+      }),
+      window.appWindow.onClosing((_sender, event) => {
+        const isCancelled = this.props.onClosing?.() === true;
+        if (isCancelled) {
+          event.cancel = true;
+        }
       }),
       window.onClosed(() => this.props.onClosed?.()),
       window.appWindow.onChanged((_sender, event) => {

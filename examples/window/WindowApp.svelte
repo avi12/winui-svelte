@@ -29,6 +29,8 @@
   let boundsReports = 0;
   let activations = 0;
   let closes = 0;
+  let closeRequests = 0;
+  let isCloseBlocked = false;
 
   // The kind of material the window holds now, read back from WinUI.
   function backdropName() {
@@ -66,6 +68,7 @@
       boundsReports,
       lastBounds,
       activations,
+      closeRequests,
       closes
     });
   }
@@ -90,6 +93,14 @@
         y: Number(command["y"])
       });
       report("moved");
+    }],
+    ["blockClose", command => {
+      isCloseBlocked = command["value"] === true;
+      report("blockClose");
+    }],
+    ["tryClose", () => {
+      handle?.close();
+      report("closeTried");
     }],
     ["close", () => handle?.close()]
   ]);
@@ -116,6 +127,10 @@
   onClosed={() => {
     closes++;
     exitApplication();
+  }}
+  onClosing={() => {
+    closeRequests++;
+    return isCloseBlocked;
   }}
   placement={{
     x: -8000,

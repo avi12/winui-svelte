@@ -124,6 +124,39 @@ test("a window opens as its props say, follows them, and reports what happens to
       height: Math.round(OPENED_HEIGHT * scale)
     });
 
+    await example.ask({
+      command: {
+        cmd: "blockClose",
+        value: true
+      },
+      kind: "blockClose"
+    });
+    const refused = await example.ask({
+      command: {
+        cmd: "tryClose"
+      },
+      kind: "closeTried"
+    });
+    assert.equal(
+      numberOf({
+        report: refused,
+        field: "closeRequests"
+      }), 1, "onClosing is asked when the window is closed"
+    );
+    assert.equal(
+      numberOf({
+        report: refused,
+        field: "closes"
+      }), 0, "onClosing returning true keeps the window open"
+    );
+    await example.ask({
+      command: {
+        cmd: "blockClose",
+        value: false
+      },
+      kind: "blockClose"
+    });
+
     example.send({ cmd: "close" });
     assert.equal(await example.exited, 0, "closing the window ends the example");
   } finally {
