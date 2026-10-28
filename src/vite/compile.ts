@@ -56,20 +56,36 @@ export function isSvelteFile(filename: string) {
   return filename.endsWith(COMPONENT_EXTENSION) || filename.endsWith(RUNES_EXTENSION);
 }
 
+const SOURCE_MAP_PREFIX = "//# sourceMappingURL=data:application/json;base64,";
+
+// Last, after anything appended to the component, so Node (--enable-source-maps),
+// a bundler and the IDE's debugger read the component's own lines.
+function withInlineSourceMap({ code, map }: {
+  code: string;
+  map: object;
+}) {
+  const encoded = Buffer.from(JSON.stringify(map)).toString("base64");
+  return `${code}\n${SOURCE_MAP_PREFIX}${encoded}\n`;
+}
+
 function compileSource({ filename, source, options }: {
   filename: string;
   source: string;
   options: CompileOptions;
 }) {
   if (filename.endsWith(RUNES_EXTENSION)) {
-    return compileModule(stripTypeScriptTypes(source), {
+    const { js } = compileModule(stripTypeScriptTypes(source), {
       filename,
       generate: "client"
-    }).js.code;
+    });
+    return withInlineSourceMap({
+      code: js.code,
+      map: js.map
+    });
   }
 
   const renderer = options.renderer ?? WINUI_RENDERER;
-  const component = compile(source, {
+  const { js } = compile(source, {
     filename,
     generate: "client",
     runes: true,
@@ -80,7 +96,7 @@ function compileSource({ filename, source, options }: {
         renderer
       })
     }
-  }).js.code;
+  });
   // The dev server registers the sheet through the Vite plugin (css/vite.ts);
   // here its statements are appended to the component.
   const sheet = compileSheetModule({
@@ -90,7 +106,10 @@ function compileSource({ filename, source, options }: {
     resources,
     runtimeModule: options.cssRuntime ?? WINUI_CSS_RUNTIME
   });
-  return sheet === null ? component : `${component}\n${sheet.code}`;
+  return withInlineSourceMap({
+    code: sheet === null ? js.code : `${js.code}\n${sheet.code}`,
+    map: js.map
+  });
 }
 
 /**

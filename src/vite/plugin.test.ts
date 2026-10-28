@@ -4,6 +4,7 @@ import { cssHash } from "#src/css/runtime/sheet-module.js";
 import assert from "node:assert/strict";
 import path from "node:path";
 import { test } from "node:test";
+import { z } from "zod";
 
 // What the Vite plugin tells Svelte's own plugin, and the environment it sets
 // up, without starting Vite.
@@ -92,4 +93,16 @@ test("a renderer given as a file is imported by relative path, a specifier as it
       source: "<div></div>"
     }), /from 'winui-svelte\/host'/u
   );
+});
+
+test("a compiled component ends with a source map that names its file", () => {
+  const component = path.join(import.meta.dirname, "mapped.svelte");
+  const code = compileSvelte({
+    filename: component,
+    source: "<border class=\"a\"></border>\n<style>\n  .a { padding: 4px }\n</style>\n"
+  });
+  const lines = code.trimEnd().split("\n");
+  const encoded = lines.at(-1)?.replace("//# sourceMappingURL=data:application/json;base64,", "") ?? "";
+  const map = z.object({ sources: z.array(z.string()) }).parse(JSON.parse(Buffer.from(encoded, "base64").toString("utf8")));
+  assert.deepEqual(map.sources.map(source => path.basename(source)), ["mapped.svelte"]);
 });
