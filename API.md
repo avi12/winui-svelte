@@ -706,7 +706,9 @@ the control's own nodes, and binding it undoes the key selection.
 Mount it as the app's root (`mountControl({ component: App, props })` inside `runWindow`'s
 `onStart`): the component is the window. `backdrop` is `"acrylic"`, `"mica"`,
 `"micaAlt"` or `"none"` (`Backdrop`, also taken by `createWindow`); it can
-change while the window is open. A `titleBar` snippet is shown above the content
+change while the window is open. WinUI itself shows the theme's solid color
+in place of the material while the window is inactive, and restores it on
+activation; nothing needs wiring. A `titleBar` snippet is shown above the content
 and set as the window's title bar (`setTitleBar`, so it is the drag region and
 the controls in it still click); it makes `extendsIntoTitleBar` true unless
 given. Sizes are in device-independent pixels (the window's DPI applied);
