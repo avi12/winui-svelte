@@ -121,6 +121,7 @@ test("an attached slot is a prop that takes a snippet, filled through its owner"
 
 test("the metadata lists what a level observes", () => {
   const text = emitMetadata({
+    folder: "",
     classes: [levelOf({
       name: "ScrollViewer",
       observed: [{

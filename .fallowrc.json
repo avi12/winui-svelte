@@ -18,6 +18,7 @@
     "src/vite/runner.ts",
     "src/vite/compile.ts",
     "src/vite/loader.ts",
+    "src/win2d/index.ts",
     "src/window/bootstrap.ts",
     "src/window/thread.ts",
     "src/window/index.ts",
