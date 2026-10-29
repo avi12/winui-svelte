@@ -13,8 +13,6 @@ export const Coverage = {
   UNCLASSIFIED: "unclassified"
 } as const;
 
-export type Coverage = (typeof Coverage)[keyof typeof Coverage];
-
 const VALUE_BASES = new Set(["ValueType", "MulticastDelegate", "Enum"]);
 
 /** Whether a pattern of the not-a-component table covers a class. */
