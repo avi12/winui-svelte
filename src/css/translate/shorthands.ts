@@ -332,6 +332,14 @@ function expandRadius({ declaration, reader }: ExpansionInput) {
   });
 }
 
+function expandGap({ declaration, reader }: ExpansionInput) {
+  return expandPair({
+    declaration,
+    reader,
+    names: ["row-gap", "column-gap"]
+  });
+}
+
 function expandFlow({ declaration, reader }: ExpansionInput) {
   const [direction = ""] = reader.words;
   return [longhand({
@@ -384,11 +392,7 @@ const expansions = new Map<string, Expansion>([
   ...SIDES.map(sideExpansion),
   ["background", expandBackground],
   ["font", expandFont],
-  ["gap", ({ declaration, reader }) => expandPair({
-    declaration,
-    reader,
-    names: ["row-gap", "column-gap"]
-  })],
+  ["gap", expandGap],
   ["overflow", ({ declaration, reader }) => expandPair({
     declaration,
     reader,
@@ -410,11 +414,7 @@ const expansions = new Map<string, Expansion>([
     axis: "row"
   })],
   ["grid-area", expandArea],
-  ["grid-gap", ({ declaration, reader }) => expandPair({
-    declaration,
-    reader,
-    names: ["row-gap", "column-gap"]
-  })],
+  ["grid-gap", expandGap],
   ["grid-row-gap", ({ declaration }) => [longhand({
     declaration,
     property: "row-gap",
