@@ -39,11 +39,14 @@ backdrop. No browser engine is involved; there is no DOM.
 Built for [Edge+](https://github.com/avi12/edge-plus), whose settings panel is
 written with it.
 
-> **Status: not published yet.** The package name is a working name, the
-> custom-renderer API it needs is a Svelte pull request that has not shipped
+> **Status: pre-release.** The custom-renderer API the package needs is a
+> Svelte pull request that has not shipped
 > ([sveltejs/svelte#18042](https://github.com/sveltejs/svelte/pull/18042)), and
-> `package.json` still says `"private": true`. What is described here is what
-> the repository's tests and the [hello example](examples/hello) run.
+> `svelte` is installed from a pkg.pr.new build until it does. **No stable
+> release can go out before Svelte ships that API and `svelte` is pinned to a
+> published version** (see [CONTRIBUTING.md](CONTRIBUTING.md#the-svelte-build)).
+> What is described here is what the repository's tests and the
+> [hello example](examples/hello) run. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Requirements
 
@@ -826,6 +829,7 @@ protocol and the tests.
 | `winui-svelte/components` | every control as a component, and its props type; `xamlOf`, `goToState`, `installXaml` |
 | `winui-svelte/state` | the window's side of host state |
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
+| `winui-svelte/messaging` | `defineMessaging`: typed request and response messages over a transport, loadable in plain Node |
 | `winui-svelte/vite` | `winuiSvelte()` for `vite.config.ts`; `startModuleServer()` for hot reload |
 | `winui-svelte/runner` | `createWindowModuleRunner()`, the window thread's side of the module server |
 | `winui-svelte/window` | `runWindow`, `createWindow`, `startTimer`, `exitApplication`, `systemSettings` |
@@ -834,7 +838,9 @@ protocol and the tests.
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation`, and the `transition`, `intro` and `outro` attachments |
+| `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
+| `winui-svelte/css/transform`, `/css/focus`, `/css/surface`, `/css/resources` | the opt-in CSS groups: 2D transform, focus visuals, surfaces, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 
 The published package ships `dist/`: the TypeScript compiled with its
