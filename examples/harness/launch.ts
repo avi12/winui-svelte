@@ -31,6 +31,9 @@ const { values, positionals } = parseArgs({
     },
     view: {
       type: "string"
+    },
+    selection: {
+      type: "string"
     }
   }
 });
