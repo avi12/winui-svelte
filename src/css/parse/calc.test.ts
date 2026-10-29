@@ -16,3 +16,19 @@ test("calc with a percentage, a variable, mixed dimensions or bad syntax is null
     assert.equal(evaluateCalc(token), null, token);
   }
 });
+
+test("min, max and clamp fold lengths, and nest with calc", () => {
+  assert.equal(evaluateCalc("min(10px, 2rem)"), 10);
+  assert.equal(evaluateCalc("max(10px, 2rem, calc(1px + 40px))"), 41);
+  assert.equal(evaluateCalc("clamp(10px, 5px, 20px)"), 10);
+  assert.equal(evaluateCalc("clamp(10px, 50px, 20px)"), 20);
+  assert.equal(evaluateCalc("clamp(10px, calc(8px + 4px), 20px)"), 12);
+  assert.equal(evaluateCalc("min(10px, max(2px, 4px))"), 4);
+  assert.equal(evaluateCalc("calc(1px + min(2px, 3px))"), 3);
+});
+
+test("min, max and clamp with a percentage or the wrong arity are null", () => {
+  for (const token of ["min(10px, 50%)", "clamp(1px, 2px)", "max()", "min(1px, 2vw)"]) {
+    assert.equal(evaluateCalc(token), null, token);
+  }
+});
