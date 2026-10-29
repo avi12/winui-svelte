@@ -12,10 +12,10 @@ import type { Snippet } from "svelte";
 
 export interface PopupProps extends FrameworkElementProps {
   children?: Snippet;
+  childTransitions?: Snippet;
   isOpen?: boolean | undefined;
   actualPlacement?: EnumInput<typeof PopupPlacementMode> | undefined;
   child?: Popup["child"] | Snippet;
-  childTransitions?: Popup["childTransitions"];
   desiredPlacement?: EnumInput<typeof PopupPlacementMode>;
   horizontalOffset?: number;
   isLightDismissEnabled?: boolean;
@@ -45,13 +45,6 @@ export function linkPopup(
     key: "child",
     apply(value) {
       control.child = value;
-    }
-  });
-  link.property({
-    props,
-    key: "childTransitions",
-    apply(value) {
-      control.childTransitions = value;
     }
   });
   link.property({

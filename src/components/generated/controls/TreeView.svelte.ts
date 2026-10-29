@@ -26,12 +26,12 @@ import type { Snippet } from "svelte";
 export interface TreeViewProps extends ControlProps {
   rootNodes?: Snippet;
   selectedNodes?: Snippet;
+  itemContainerTransitions?: Snippet;
   selectedItem?: ObjectInput | undefined;
   canDragItems?: boolean;
   canReorderItems?: boolean;
   itemContainerStyle?: StyleInput;
   itemContainerStyleSelector?: TreeView["itemContainerStyleSelector"];
-  itemContainerTransitions?: TreeView["itemContainerTransitions"];
   itemsSource?: CollectionInput;
   itemTemplate?: DataTemplateInput;
   itemTemplateSelector?: TreeView["itemTemplateSelector"];
@@ -82,13 +82,6 @@ export function linkTreeView(
     key: "itemContainerStyleSelector",
     apply(value) {
       control.itemContainerStyleSelector = value;
-    }
-  });
-  link.property({
-    props,
-    key: "itemContainerTransitions",
-    apply(value) {
-      control.itemContainerTransitions = value;
     }
   });
   link.property({

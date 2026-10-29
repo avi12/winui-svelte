@@ -22,7 +22,8 @@ function classNamed({ name, contentProperty }: {
     bindables: [],
     observed: [],
     slots: [],
-    holdsItems: false
+    holdsItems: false,
+    registers: []
   };
 }
 

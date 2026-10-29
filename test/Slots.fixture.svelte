@@ -4,9 +4,12 @@
   // writes it, a pane, commands, menu items, inlines, a flyout, a header and
   // a paragraph holding a control, items written with {#each}, and value
   // objects (a brush with stops, a transform, a storyboard) in their properties,
-  // and the value objects that are no element: swipe items, a map's layers, a
-  // text block's highlights, a rating control's glyph and a tool tip.
+  // transitions in the collections WinUI leaves null, a navigator that
+  // shows the page its history is at, and the value objects that are no
+  // element: swipe items, a map's layers, a text block's highlights, a rating
+  // control's glyph and a tool tip.
   // Each control is handed to the test by name.
+  import NavigationPage from "./NavigationPage.fixture.svelte";
   import {
     AppBarButton,
     Bold,
@@ -17,6 +20,7 @@
     CommandBar,
     ContentDialog,
     DoubleAnimation,
+    EntranceThemeTransition,
     Flyout,
     GradientStop,
     InlineUIContainer,
@@ -28,9 +32,12 @@
     MenuFlyoutItem,
     NavigationView,
     NavigationViewItem,
+    Navigator,
     Paragraph,
     RatingControl,
     RatingItemFontInfo,
+    PopupThemeTransition,
+    RepositionThemeTransition,
     RichTextBlock,
     RotateTransform,
     SplitView,
@@ -43,7 +50,9 @@
     TextHighlighter,
     ToggleSwitch
   } from "#src/components/index.js";
+  import type { NavigatorHandle } from "#src/components/index.js";
   import { control } from "#src/index.js";
+  import { untrack } from "svelte";
 
   interface Props {
     isShown: boolean;
@@ -54,6 +63,17 @@
   }
 
   const props: Props = $props();
+  let navigator = $state<NavigatorHandle | undefined>();
+
+  $effect(() => {
+    const label = props.isShown ? "Second" : "First";
+    untrack(() => navigator?.navigate({
+      page: NavigationPage,
+      params: {
+        label
+      }
+    }));
+  });
 
   function found(name: string) {
     return control((native: object) => props.onFound({
@@ -85,6 +105,25 @@
       <RotateTransform angle={45} />
     {/snippet}
   </Border>
+  <StackPanel {@attach found("transitionPanel")}>
+    {#snippet childrenTransitions()}
+      <EntranceThemeTransition />
+      <RepositionThemeTransition />
+    {/snippet}
+    {#snippet transitions()}
+      <PopupThemeTransition />
+    {/snippet}
+  </StackPanel>
+  <Navigator {@attach found("navigator")} bind:handle={navigator} />
+  <Navigator
+    {@attach found("readyNavigator")}
+    onReady={ready => ready.navigate({
+      page: NavigationPage,
+      params: {
+        label: "Ready"
+      }
+    })}
+  />
   <Storyboard {@attach found("storyboard")}>
     <DoubleAnimation to={1.5} />
   </Storyboard>

@@ -283,7 +283,7 @@ export const levels: Record<string, LevelMetadata> = {
   },
   Border: {
     parent: "FrameworkElement",
-    properties: ["background", "backgroundSizing", "backgroundTransition", "borderBrush", "borderThickness", "child", "childTransitions", "cornerRadius", "padding"],
+    properties: ["background", "backgroundSizing", "backgroundTransition", "borderBrush", "borderThickness", "child", "cornerRadius", "padding"],
     events: [],
     attached: {},
     bindables: [],
@@ -667,7 +667,7 @@ export const levels: Record<string, LevelMetadata> = {
   },
   ContentControl: {
     parent: "Control",
-    properties: ["content", "contentTemplate", "contentTemplateSelector", "contentTransitions"],
+    properties: ["content", "contentTemplate", "contentTemplateSelector"],
     events: [],
     attached: {},
     bindables: [],
@@ -691,7 +691,7 @@ export const levels: Record<string, LevelMetadata> = {
   },
   ContentPresenter: {
     parent: "FrameworkElement",
-    properties: ["background", "backgroundSizing", "backgroundTransition", "borderBrush", "borderThickness", "characterSpacing", "content", "contentTemplate", "contentTemplateSelector", "contentTransitions", "cornerRadius", "fontFamily", "fontSize", "fontStretch", "fontStyle", "fontWeight", "foreground", "horizontalContentAlignment", "isTextScaleFactorEnabled", "lineHeight", "lineStackingStrategy", "maxLines", "opticalMarginAlignment", "padding", "textLineBounds", "textWrapping", "verticalContentAlignment"],
+    properties: ["background", "backgroundSizing", "backgroundTransition", "borderBrush", "borderThickness", "characterSpacing", "content", "contentTemplate", "contentTemplateSelector", "cornerRadius", "fontFamily", "fontSize", "fontStretch", "fontStyle", "fontWeight", "foreground", "horizontalContentAlignment", "isTextScaleFactorEnabled", "lineHeight", "lineStackingStrategy", "maxLines", "opticalMarginAlignment", "padding", "textLineBounds", "textWrapping", "verticalContentAlignment"],
     events: [],
     attached: {},
     bindables: [],
@@ -1596,7 +1596,7 @@ export const levels: Record<string, LevelMetadata> = {
   },
   ItemsControl: {
     parent: "Control",
-    properties: ["displayMemberPath", "groupStyleSelector", "itemContainerStyle", "itemContainerStyleSelector", "itemContainerTransitions", "itemsPanel", "itemsSource", "itemTemplate", "itemTemplateSelector"],
+    properties: ["displayMemberPath", "groupStyleSelector", "itemContainerStyle", "itemContainerStyleSelector", "itemsPanel", "itemsSource", "itemTemplate", "itemTemplateSelector"],
     events: [],
     attached: {},
     bindables: [],
@@ -1608,7 +1608,7 @@ export const levels: Record<string, LevelMetadata> = {
   },
   ItemsPresenter: {
     parent: "FrameworkElement",
-    properties: ["footer", "footerTemplate", "footerTransitions", "header", "headerTemplate", "headerTransitions", "padding"],
+    properties: ["footer", "footerTemplate", "header", "headerTemplate", "padding"],
     events: ["onHorizontalSnapPointsChanged", "onVerticalSnapPointsChanged"],
     attached: {},
     bindables: [],
@@ -1872,7 +1872,7 @@ export const levels: Record<string, LevelMetadata> = {
   },
   ListViewBase: {
     parent: "Selector",
-    properties: ["canDragItems", "canReorderItems", "dataFetchSize", "footer", "footerTemplate", "footerTransitions", "header", "headerTemplate", "headerTransitions", "incrementalLoadingThreshold", "incrementalLoadingTrigger", "isActiveView", "isItemClickEnabled", "isMultiSelectCheckBoxEnabled", "isSwipeEnabled", "isZoomedInView", "reorderMode", "selectionMode", "semanticZoomOwner", "showsScrollingPlaceholders", "singleSelectionFollowsFocus"],
+    properties: ["canDragItems", "canReorderItems", "dataFetchSize", "footer", "footerTemplate", "header", "headerTemplate", "incrementalLoadingThreshold", "incrementalLoadingTrigger", "isActiveView", "isItemClickEnabled", "isMultiSelectCheckBoxEnabled", "isSwipeEnabled", "isZoomedInView", "reorderMode", "selectionMode", "semanticZoomOwner", "showsScrollingPlaceholders", "singleSelectionFollowsFocus"],
     events: ["onChoosingGroupHeaderContainer", "onChoosingItemContainer", "onContainerContentChanging", "onDragItemsCompleted", "onDragItemsStarting", "onItemClick"],
     attached: {},
     bindables: [],
@@ -2352,7 +2352,7 @@ export const levels: Record<string, LevelMetadata> = {
   },
   Panel: {
     parent: "FrameworkElement",
-    properties: ["background", "backgroundTransition", "childrenTransitions"],
+    properties: ["background", "backgroundTransition"],
     events: [],
     attached: {},
     bindables: [],
@@ -2748,7 +2748,7 @@ export const levels: Record<string, LevelMetadata> = {
   },
   Popup: {
     parent: "FrameworkElement",
-    properties: ["child", "childTransitions", "desiredPlacement", "horizontalOffset", "isLightDismissEnabled", "isOpen", "lightDismissOverlayMode", "placementTarget", "shouldConstrainToRootBounds", "systemBackdrop", "verticalOffset"],
+    properties: ["child", "desiredPlacement", "horizontalOffset", "isLightDismissEnabled", "isOpen", "lightDismissOverlayMode", "placementTarget", "shouldConstrainToRootBounds", "systemBackdrop", "verticalOffset"],
     events: ["onActualPlacementChanged", "onClosed", "onOpened"],
     attached: {},
     bindables: ["isOpen"],
@@ -4024,7 +4024,7 @@ export const levels: Record<string, LevelMetadata> = {
   },
   TreeView: {
     parent: "Control",
-    properties: ["canDragItems", "canReorderItems", "itemContainerStyle", "itemContainerStyleSelector", "itemContainerTransitions", "itemsSource", "itemTemplate", "itemTemplateSelector", "selectedItem", "selectedNode", "selectionMode"],
+    properties: ["canDragItems", "canReorderItems", "itemContainerStyle", "itemContainerStyleSelector", "itemsSource", "itemTemplate", "itemTemplateSelector", "selectedItem", "selectedNode", "selectionMode"],
     events: ["onCollapsed", "onDragItemsCompleted", "onDragItemsStarting", "onExpanding", "onItemInvoked", "onSelectionChanged"],
     attached: {},
     bindables: ["selectedItem"],
@@ -4084,7 +4084,7 @@ export const levels: Record<string, LevelMetadata> = {
   },
   UIElement: {
     parent: null,
-    properties: ["accessKey", "accessKeyScopeOwner", "allowDrop", "cacheMode", "canBeScrollAnchor", "canDrag", "centerPoint", "clip", "compositeMode", "contextFlyout", "exitDisplayModeOnAccessKeyInvoked", "highContrastAdjustment", "isAccessKeyScope", "isDoubleTapEnabled", "isHitTestVisible", "isHoldingEnabled", "isRightTapEnabled", "isTabStop", "isTapEnabled", "keyboardAcceleratorPlacementMode", "keyboardAcceleratorPlacementTarget", "keyTipHorizontalOffset", "keyTipPlacementMode", "keyTipTarget", "keyTipVerticalOffset", "manipulationMode", "opacity", "opacityTransition", "projection", "rasterizationScale", "renderTransform", "renderTransformOrigin", "rotation", "rotationAxis", "rotationTransition", "scale", "scaleTransition", "shadow", "tabFocusNavigation", "tabIndex", "transform3D", "transformMatrix", "transitions", "translation", "translationTransition", "useLayoutRounding", "useSystemFocusVisuals", "visibility", "xamlRoot", "xYFocusDown", "xYFocusDownNavigationStrategy", "xYFocusKeyboardNavigation", "xYFocusLeft", "xYFocusLeftNavigationStrategy", "xYFocusRight", "xYFocusRightNavigationStrategy", "xYFocusUp", "xYFocusUpNavigationStrategy"],
+    properties: ["accessKey", "accessKeyScopeOwner", "allowDrop", "cacheMode", "canBeScrollAnchor", "canDrag", "centerPoint", "clip", "compositeMode", "contextFlyout", "exitDisplayModeOnAccessKeyInvoked", "highContrastAdjustment", "isAccessKeyScope", "isDoubleTapEnabled", "isHitTestVisible", "isHoldingEnabled", "isRightTapEnabled", "isTabStop", "isTapEnabled", "keyboardAcceleratorPlacementMode", "keyboardAcceleratorPlacementTarget", "keyTipHorizontalOffset", "keyTipPlacementMode", "keyTipTarget", "keyTipVerticalOffset", "manipulationMode", "opacity", "opacityTransition", "projection", "rasterizationScale", "renderTransform", "renderTransformOrigin", "rotation", "rotationAxis", "rotationTransition", "scale", "scaleTransition", "shadow", "tabFocusNavigation", "tabIndex", "transform3D", "transformMatrix", "translation", "translationTransition", "useLayoutRounding", "useSystemFocusVisuals", "visibility", "xamlRoot", "xYFocusDown", "xYFocusDownNavigationStrategy", "xYFocusKeyboardNavigation", "xYFocusLeft", "xYFocusLeftNavigationStrategy", "xYFocusRight", "xYFocusRightNavigationStrategy", "xYFocusUp", "xYFocusUpNavigationStrategy"],
     events: ["onAccessKeyDisplayDismissed", "onAccessKeyDisplayRequested", "onAccessKeyInvoked", "onBringIntoViewRequested", "onCharacterReceived", "onContextCanceled", "onContextRequested", "onDoubleTapped", "onDragEnter", "onDragLeave", "onDragOver", "onDragStarting", "onDrop", "onDropCompleted", "onGettingFocus", "onGotFocus", "onHolding", "onKeyDown", "onKeyUp", "onLosingFocus", "onLostFocus", "onManipulationCompleted", "onManipulationDelta", "onManipulationInertiaStarting", "onManipulationStarted", "onManipulationStarting", "onNoFocusCandidateFound", "onPointerCanceled", "onPointerCaptureLost", "onPointerEntered", "onPointerExited", "onPointerMoved", "onPointerPressed", "onPointerReleased", "onPointerWheelChanged", "onPreviewKeyDown", "onPreviewKeyUp", "onProcessKeyboardAccelerators", "onRightTapped", "onTapped"],
     attached: {
       canvasLeft: ["Canvas", "setLeft"],

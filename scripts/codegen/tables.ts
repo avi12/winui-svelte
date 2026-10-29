@@ -246,6 +246,28 @@ export const unslottedProperties = new Set([
 // an items source, a template.
 export const unslottedSuffixes = ["CommandParameter", "ItemsSource", "Template"];
 
+// Settable collection properties that WinUI leaves null until the app gives
+// them one (a panel's ChildrenTransitions), by the name of the property, with
+// the class that is made for it. The component takes a snippet prop in place
+// of the property, and renders it in a <property> element that names that
+// class's tag: the renderer makes the collection when the property holds none,
+// and the components that fit its items (the transitions) register the class,
+// so an app bundles it only when it uses one.
+const TRANSITION_COLLECTION: TypeName = {
+  namespace: "Microsoft.UI.Xaml.Media.Animation",
+  name: "TransitionCollection"
+};
+
+export const createdCollections = new Map<string, TypeName>([
+  ["Transitions", TRANSITION_COLLECTION],
+  ["ChildTransitions", TRANSITION_COLLECTION],
+  ["ChildrenTransitions", TRANSITION_COLLECTION],
+  ["ContentTransitions", TRANSITION_COLLECTION],
+  ["ItemContainerTransitions", TRANSITION_COLLECTION],
+  ["HeaderTransitions", TRANSITION_COLLECTION],
+  ["FooterTransitions", TRANSITION_COLLECTION]
+]);
+
 // A property that has its own props `children`, `class`, `style` or
 // `attached`, which every component takes.
 export const reservedKeys = new Set(["children", "class", "style", "attached"]);

@@ -117,6 +117,10 @@ const HOST_TAG = "host";
 // snippet props in these.
 const PROPERTY_TAG = "property";
 const PROPERTY_NAME_ATTRIBUTE = "name";
+// <property name="transitions" collection="transition-collection">: the tag of
+// the class to make the property's collection from when it holds none, as
+// WinUI leaves a panel's ChildrenTransitions null.
+const PROPERTY_COLLECTION_ATTRIBUTE = "collection";
 // The one collection whose text children become Runs: a text block's, a
 // paragraph's and a span's.
 const INLINES_PROPERTY = "inlines";
@@ -635,6 +639,29 @@ function inlinesOf(element: WinuiElement) {
   });
 }
 
+// A property WinUI leaves null gets the collection its <property> element
+// names (collection="transition-collection"), once there is something to put
+// in it.
+function makeCollection({ element, control, name }: {
+  element: WinuiElement;
+  control: UIElement;
+  name: string;
+}) {
+  const tag = element.attributes.get(PROPERTY_COLLECTION_ATTRIBUTE);
+  const hasItems = element.children.some(child => controlsOf(child).length > 0);
+  const isMissing = typeof tag === "string" && hasItems && read(control, name) === null;
+  if (!isMissing) {
+    return;
+  }
+
+  const type = controls.get(tag);
+  if (!isControlClass(type)) {
+    throw new Error(`${tag} was not registered`);
+  }
+
+  write(control, name, new type());
+}
+
 // Fills the property a <property> element names on its parent's control: a
 // collection with its controls (an inline collection with its text as Runs
 // too), a string with its text, any other property with its first control,
@@ -653,6 +680,11 @@ function syncProperty({ element, control, name }: {
     return;
   }
 
+  makeCollection({
+    element,
+    control,
+    name
+  });
   const current = read(control, name);
   const collection = vectorOf(current);
   const isElementSlot = isFrameworkElement(control) && elementProperties.has(name);

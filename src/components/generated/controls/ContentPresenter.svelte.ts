@@ -40,6 +40,7 @@ import type { Snippet } from "svelte";
 
 export interface ContentPresenterProps extends FrameworkElementProps {
   children?: Snippet;
+  contentTransitions?: Snippet;
   background?: BrushInput | Snippet;
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
   backgroundTransition?: ContentPresenter["backgroundTransition"];
@@ -49,7 +50,6 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   content?: ObjectInput | Snippet;
   contentTemplate?: DataTemplateInput;
   contentTemplateSelector?: ContentPresenter["contentTemplateSelector"];
-  contentTransitions?: ContentPresenter["contentTransitions"];
   cornerRadius?: CornerRadiusInput;
   fontFamily?: FontFamilyInput;
   fontSize?: number;
@@ -141,13 +141,6 @@ export function linkContentPresenter(
     key: "contentTemplateSelector",
     apply(value) {
       control.contentTemplateSelector = value;
-    }
-  });
-  link.property({
-    props,
-    key: "contentTransitions",
-    apply(value) {
-      control.contentTransitions = value;
     }
   });
   link.property({

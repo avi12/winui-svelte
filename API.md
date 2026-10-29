@@ -140,6 +140,17 @@ Raw kebab elements: tag = WinUI class, kebab attribute = camelCase property,
 `<host element={control} />` places a control made elsewhere,
 `ontoggled={handler}` = the event `Toggled`.
 
+`<property name="childrenTransitions" collection="transition-collection">`
+fills a property WinUI leaves null with a collection: when the property holds
+none and the element has a control in it, the renderer makes the class the
+`collection` tag names (registered through `registerControls`, as the
+transition components do) and sets it, then fills it as any collection. The
+generated components write this for `transitions`, `childrenTransitions`,
+`childTransitions`, `contentTransitions`, `itemContainerTransitions`,
+`headerTransitions` and `footerTransitions` (`createdCollections` in
+`scripts/codegen/tables.ts`), which are snippet props in place of the
+properties, and each transition component registers `TransitionCollection`.
+
 A property whose name starts with "on" (ToggleSwitch.OnContent) on a raw
 element: Svelte takes any attribute starting with lower-case "on" for an event
 (`on-content="x"` is a compile error; `on-content={value}` hands the host a
@@ -636,6 +647,73 @@ opens; `createWindow` takes them too. The `owner` link is a Win32 call
 `presenter`, `scale`, `close()`, `restore()`, `minimize()`, `maximize()`,
 `bringToFront()`. `appUserModelId` names the process for the taskbar (it is
 process-wide: read once, before the window opens).
+
+## Page navigation (`winui-svelte/components`)
+
+`Frame.SourcePageType` takes a page type XAML registered, which a Node host
+cannot give it. `Navigator` (`src/components/hand-written/navigation`) does
+what a `Frame` does with Svelte components as the pages: it mounts the page
+into a `ContentControl`, keeps the back and forward history, and lets the
+control's navigation transition play when the page changes.
+
+```svelte
+<script lang="ts">
+  import { NavigationCacheMode } from "winui-svelte/components";
+
+  let navigator = $state<NavigatorHandle>();
+</script>
+
+<Navigator bind:handle={navigator} onReady={ready => ready.navigate({ page: HomePage })}>
+  {#snippet transition()}
+    <DrillInNavigationTransitionInfo />
+  {/snippet}
+</Navigator>
+
+<Button onClick={() => navigator?.navigate({
+  page: { component: SettingsPage, cacheMode: NavigationCacheMode.REQUIRED },
+  params: { section: "display" }
+})}>Settings</Button>
+<Button disabled={!navigator?.canGoBack} onClick={() => navigator?.goBack()}>Back</Button>
+```
+
+```ts
+interface NavigatorHandle {
+  // `page` is a Svelte component, or { component, cacheMode }. `params` are
+  // its props; they are required when the page has props that need them.
+  navigate<Params extends object>(options: NavigateOptions<Params>): void;
+  goBack(): void; // does nothing without a page behind
+  goForward(): void; // does nothing without a page ahead
+  readonly canGoBack: boolean; // reactive, like the two below
+  readonly canGoForward: boolean;
+  readonly current: NavigationEntry | null; // { page, params, cacheMode }
+}
+```
+
+- Props of the component: `bind:handle`; `onReady(handle)`, called once the
+  control is in place, where the first page is navigated to;
+  `onNavigated({ entry, mode })`, with `mode` a `NavigationMode` (`new`,
+  `back`, `forward`); `cacheSize` (default 10); `transition`, a snippet with
+  one of the `...NavigationTransitionInfo` components (it is the
+  `DefaultNavigationTransitionInfo` of the control's `NavigationThemeTransition`;
+  `SuppressNavigationTransitionInfo` plays none); and the props of
+  `ContentControl`, except those the navigator owns (`content`,
+  `contentTransitions`, `contentTemplate`).
+- A page is a plain component; its props are the `params`. It is made when
+  the user goes to it and ends (its effects and controls) when the cache lets
+  it go, as an items row does.
+- `NavigationCacheMode` is WinUI's: `DISABLED` (the default) ends the page
+  when the user leaves it, so going back makes a new one; `ENABLED` keeps it
+  mounted, with its state, while it is among the `cacheSize` most recently
+  shown enabled pages; `REQUIRED` keeps it for as long as the history holds
+  it. A page keeps its place in the history by entry, not by component:
+  navigating to the same component twice makes two entries, each with its own
+  page.
+- A new `navigate` after `goBack` drops the pages that were forward, and ends
+  the ones of them that were kept.
+- With a `NavigationView`, put the navigator in the view's content, go to the
+  page of the chosen item in `onSelectionChanged`, go back in
+  `onBackRequested`, and select the item of `handle.current` when the history
+  moves; `examples/navigation` does this.
 
 ## Overlays (`winui-svelte/components`)
 

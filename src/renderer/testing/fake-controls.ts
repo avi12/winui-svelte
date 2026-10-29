@@ -63,9 +63,18 @@ class FakeCollection {
   }
 }
 
+// The collection WinUI makes for a null property (a panel's ChildrenTransitions).
+export class FakeTransitionCollection extends FakeCollection {}
+
+export class FakeTransition {
+  readonly margin = null;
+}
+
 export class FakePanel {
   readonly margin = null;
   readonly children = new FakeCollection();
+  // Null until the renderer makes a collection for it, as WinUI leaves it.
+  childrenTransitions: FakeTransitionCollection | null = null;
   // What the host last handed the class handler.
   className = "";
 }
@@ -224,6 +233,8 @@ export const fakeControls = Object.fromEntries(
     FakeFlyout,
     FakeMenuItem,
     FakeBag,
-    FakeService
+    FakeService,
+    FakeTransition,
+    FakeTransitionCollection
   ].map(control => [control.name, control])
 );

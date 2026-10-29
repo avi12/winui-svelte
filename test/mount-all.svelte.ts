@@ -1070,6 +1070,11 @@ function highlightRangeCountOf(textBlock: object) {
   return isOne ? read(read(call(highlighters, "getAt", 0), "ranges"), "size") : 0;
 }
 
+function pageLabelOf(navigator: object) {
+  const page = bindings.projectAs(read(navigator, "content"), bindings.TextBlock);
+  return page.text;
+}
+
 function stopCountOf(border: object) {
   const brush = bindings.projectAs(read(border, "background"), bindings.LinearGradientBrush);
   return brush.gradientStops.size;
@@ -1093,6 +1098,27 @@ const slotsAtFirst: SlotExpectation[] = [
     name: "rotatedBorder",
     what: "a transform in the renderTransform snippet is the render transform",
     isMet: control => bindings.projectAs(read(control, "renderTransform"), bindings.RotateTransform).angle === 45
+  },
+  {
+    name: "transitionPanel",
+    what: "transitions in the childrenTransitions and transitions snippets fill collections made for the null properties",
+    isMet: control => sizeOf({
+      control,
+      property: "childrenTransitions"
+    }) === 2 && sizeOf({
+      control,
+      property: "transitions"
+    }) === 1
+  },
+  {
+    name: "navigator",
+    what: "the navigator shows the page it was navigated to",
+    isMet: control => pageLabelOf(control) === "First"
+  },
+  {
+    name: "readyNavigator",
+    what: "a page navigated to from onReady, while the control is being attached, is shown",
+    isMet: control => pageLabelOf(control) === "Ready"
   },
   {
     name: "storyboard",
@@ -1199,6 +1225,11 @@ const slotsAtFirst: SlotExpectation[] = [
 ];
 
 const slotsWhenShown: SlotExpectation[] = [
+  {
+    name: "navigator",
+    what: "a second navigation replaces the page in the control",
+    isMet: control => pageLabelOf(control) === "Second"
+  },
   {
     name: "flyout",
     what: "a flyout asked to open before its element is on screen waits for it instead of failing",

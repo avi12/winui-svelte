@@ -5,6 +5,7 @@ import {
   COMPONENT_WINMD,
   coreClasses,
   featureClasses,
+  createdCollections,
   kindOfType,
   neverBindable,
   nonConstructible,
@@ -106,6 +107,9 @@ export interface SlotModel {
   // own, or for an attached property `owner.property` in kebab case, which
   // the renderer sets through the owner.
   elementName: string;
+  // The class of the collection the renderer makes when the property holds
+  // none (createdCollections in tables.ts), or null.
+  collection: TypeName | null;
 }
 
 export interface EventModel {
@@ -160,6 +164,9 @@ export interface ClassModel {
   // The class is itself a collection of controls (SwipeItems): its children
   // are its items.
   holdsItems: boolean;
+  // The collection classes the component registers beside its own: those
+  // whose items it can be.
+  registers: TypeName[];
 }
 
 export interface Model {
@@ -415,7 +422,8 @@ class Builder {
       bindables: [],
       observed: [],
       slots: [],
-      holdsItems: false
+      holdsItems: false,
+      registers: []
     };
     this.classes.set(key, model);
     this.fillMembers({
@@ -433,7 +441,8 @@ class Builder {
     const seenProperties = new Set<string>();
     for (const member of interfaces.flatMap(entry => entry.properties)) {
       const key = camelCase(member.name);
-      const isSkipped = skippedProperties.has(member.name) || reservedKeys.has(key);
+      const isFilled = createdCollections.has(member.name);
+      const isSkipped = skippedProperties.has(member.name) || reservedKeys.has(key) || isFilled;
       const isNew = !seenProperties.has(member.name);
       const isWritableProperty = member.hasSetter && !isSkipped && isNew;
       if (isWritableProperty) {
@@ -615,6 +624,7 @@ class Builder {
     for (const model of classes) {
       this.deriveSlots(model);
       this.deriveHoldsItems(model);
+      this.deriveRegisters(model);
     }
 
     this.checkNames(classes);
@@ -684,15 +694,43 @@ class Builder {
       key: property.key,
       winName: member.name,
       kind: SlotKind.VALUE,
-      elementName: property.key
+      elementName: property.key,
+      collection: null
     };
+  }
+
+  // The collection classes a component registers: the renderer makes them
+  // from the registry, and only a component that can be one of their items
+  // needs them there.
+  private deriveRegisters(model: ClassModel) {
+    const levels: string[] = [];
+    for (let level: ClassModel | null = model; level !== null; level = level.parent) {
+      levels.push(fullName(level.type));
+    }
+
+    const collections = new Map([...createdCollections.values()].map(type => [fullName(type), type]));
+    for (const collection of collections.values()) {
+      const item = this.itemTypeOf({
+        kind: "named",
+        type: collection,
+        isValueType: false
+      });
+      const isItem = item?.kind === "named" && levels.includes(fullName(item.type));
+      const isRegistered = isItem && model.isComponent;
+      if (isRegistered) {
+        model.registers.push(collection);
+      }
+    }
   }
 
   // A collection of controls the class holds, but not the one its children
   // fill.
   private collectionSlotOf({ model, member }: SlotCandidate) {
-    // A settable property is a value; the content is the children.
-    const isFilledElsewhere = member.hasSetter || member.name === model.contentProperty;
+    // A settable property is a value, unless the renderer makes its collection;
+    // the content is the children.
+    const collection = createdCollections.get(member.name) ?? null;
+    const isValue = member.hasSetter && collection === null;
+    const isFilledElsewhere = isValue || member.name === model.contentProperty;
     if (isFilledElsewhere) {
       return null;
     }
@@ -707,7 +745,8 @@ class Builder {
       key: camelCase(member.name),
       winName: member.name,
       kind: SlotKind.COLLECTION,
-      elementName: camelCase(member.name)
+      elementName: camelCase(member.name),
+      collection
     };
   }
 
@@ -734,7 +773,8 @@ class Builder {
         key: attached.key,
         winName: attached.name,
         kind: SlotKind.VALUE,
-        elementName: `${kebabCase(attached.owner.name)}${ATTACHED_SEPARATOR}${kebabCase(attached.name)}`
+        elementName: `${kebabCase(attached.owner.name)}${ATTACHED_SEPARATOR}${kebabCase(attached.name)}`,
+        collection: null
       });
     }
   }
@@ -790,7 +830,8 @@ export function bindingClasses(model: Model) {
     all.set(fullName(level.type), level.type);
   }
 
-  for (const type of [...model.enums, ...model.owners, ...supportClasses, ...supportEnums]) {
+  const created = createdCollections.values();
+  for (const type of [...model.enums, ...model.owners, ...supportClasses, ...supportEnums, ...created]) {
     all.set(fullName(type), type);
   }
 

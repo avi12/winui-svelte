@@ -10,9 +10,9 @@ import type { Snippet } from "svelte";
 
 export interface PanelProps extends FrameworkElementProps {
   children?: Snippet;
+  childrenTransitions?: Snippet;
   background?: BrushInput | Snippet;
   backgroundTransition?: Panel["backgroundTransition"];
-  childrenTransitions?: Panel["childrenTransitions"];
 }
 
 export type PanelBound = FrameworkElementBound;
@@ -36,13 +36,6 @@ export function linkPanel(
     key: "backgroundTransition",
     apply(value) {
       control.backgroundTransition = value;
-    }
-  });
-  link.property({
-    props,
-    key: "childrenTransitions",
-    apply(value) {
-      control.childrenTransitions = value;
     }
   });
 }
