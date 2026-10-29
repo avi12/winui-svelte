@@ -1,3 +1,4 @@
+import { PRESENTATION_NAMESPACE } from "#src/css/translate/cascade.js";
 import { FONT_WEIGHTS } from "#src/css/translate/text-properties.js";
 import type { NativeValue } from "#src/native-value.js";
 
@@ -240,7 +241,6 @@ const EPOCH_OFFSET_MILLISECONDS = 11_644_473_600_000;
 const SVG_EXTENSION = ".svg";
 const SVG_DATA_PREFIX = "data:image/svg+xml";
 const URI_SUFFIX = /[?#].*$/u;
-const PRESENTATION_NAMESPACE = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
 const XML_SPECIALS = /[&<>"]/gu;
 const XML_ESCAPES = new Map([
   ["&", "&amp;"],

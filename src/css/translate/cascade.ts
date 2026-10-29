@@ -21,8 +21,14 @@ export interface ElementFacts {
   states: ReadonlySet<PseudoState>;
 }
 
+/** The namespace XAML's controls, templates and styles are written in. */
+export const PRESENTATION_NAMESPACE = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+
+/** The namespace of XAML's own keywords (`x:Key`, `x:Name`). */
+export const XAML_NAMESPACE = "http://schemas.microsoft.com/winfx/2006/xaml";
+
 /** The XML namespaces every XAML document the runtime hands to XamlReader declares. */
-export const XAML_NAMESPACES = "xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"";
+export const XAML_NAMESPACES = `xmlns="${PRESENTATION_NAMESPACE}" xmlns:x="${XAML_NAMESPACE}"`;
 
 const XML_ESCAPES = new Map([
   ["&", "&amp;"],
