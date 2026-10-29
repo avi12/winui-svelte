@@ -86,7 +86,30 @@ const FAKE_ROW_WIDTH = 100;
 // (Opacity, Translation, Scale, Rotation, CenterPoint), a size, and a position
 // that follows its place among its parent's children, one row high each.
 export class FakeMotionPanel {
-  readonly margin = null;
+  margin = {
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0
+  };
+
+  padding = {
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0
+  };
+
+  borderThickness = {
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0
+  };
+
+  // NaN is WinUI's "as large as the content".
+  width = Number.NaN;
+  height = Number.NaN;
   readonly children = new FakeCollection(this);
   readonly actualSize = {
     x: FAKE_ROW_WIDTH,
@@ -144,6 +167,28 @@ export class FakeMotionPanel {
       })
     };
   }
+}
+
+// A line, a shape whose outline is drawn with dashes, as a Line: ends, a thickness and the dashes
+// the renderer's attribute handler last set.
+export class Line extends FakeMotionPanel {
+  // WinUI's own names, which the length of a line reads.
+
+  // oxlint-disable-next-line id-length
+  x1 = 0;
+
+  // oxlint-disable-next-line id-length
+  y1 = 0;
+
+  // oxlint-disable-next-line id-length
+  x2 = 30;
+
+  // oxlint-disable-next-line id-length
+  y2 = 40;
+
+  strokeThickness = 2;
+  strokeDashOffset = 0;
+  strokeDashArray: number[] | null = null;
 }
 
 export class FakeToggle {
@@ -281,6 +326,7 @@ export const fakeControls = Object.fromEntries(
   [
     FakePanel,
     FakeMotionPanel,
+    Line,
     FakeToggle,
     FakeElement,
     FakeBorder,

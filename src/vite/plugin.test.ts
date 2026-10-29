@@ -96,13 +96,34 @@ test("a compiled component ends with a source map that names its file", () => {
   assert.deepEqual(map.sources.map(source => path.basename(source)), ["mapped.svelte"]);
 });
 
-test("transition:, in:, out: and animate: fail with the attachments to use instead", () => {
-  const component = path.join(import.meta.dirname, "fading.svelte");
-  assert.throws(
-    () => compileSvelte({
-      filename: component,
-      source: "<script>\n  import { fade } from \"svelte/transition\";\n</script>\n<border transition:fade></border>\n"
-    }),
-    /fading\.svelte:4: transition:, in:, out: and animate: need the browser's Element\.animate\(\); use the transition, intro and outro attachments/u
-  );
+const REGISTRATION = /import \{ enableElementAnimation as winuiEnableElementAnimation \} from "winui-svelte\/element-animation";\nwinuiEnableElementAnimation\(\);/u;
+
+function compiled(source: string) {
+  return compileSvelte({
+    filename: path.join(import.meta.dirname, "motion.svelte"),
+    source
+  });
+}
+
+test("a component with a transition, in, out or animate directive turns the element animation on", () => {
+  for (const directive of ["transition:fade", "in:fade", "out:fade"]) {
+    const code = compiled(`<script>\n  import { fade } from "svelte/transition";\n</script>\n<border ${directive}></border>\n`);
+    assert.match(code, REGISTRATION, directive);
+  }
+
+  const keyed = "<script>\n  import { flip } from \"svelte/animate\";\n  let { ids } = $props();\n</script>\n{#each ids as id (id)}<border animate:flip></border>{/each}\n";
+  assert.match(compiled(keyed), REGISTRATION);
+});
+
+test("a component that imports svelte/motion turns it on, and one that uses neither does not", () => {
+  assert.match(compiled("<script>\n  import { Tween } from \"svelte/motion\";\n  const tween = new Tween(0);\n</script>\n<border></border>\n"), REGISTRATION);
+  assert.doesNotMatch(compiled("<border></border>\n"), /ElementAnimation/u);
+});
+
+test("svelte/motion's media query is read so that it loads before the DOM exists", () => {
+  const patched = patchSvelteRuntime({
+    filename: "/app/node_modules/svelte/src/reactivity/media-query.js",
+    source: "const q = window.matchMedia(final_query);"
+  });
+  assert.match(patched, /globalThis[.]window[?][.]matchMedia/u);
 });

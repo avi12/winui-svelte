@@ -92,7 +92,7 @@ import { styleOfClasses } from "#src/css/index.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
 import { classNameOf, read, write } from "#src/renderer/host/reflect.js";
-import { boxed } from "#src/renderer/host/values.js";
+import { boxed, doubleCollection } from "#src/renderer/host/values.js";
 import type { IMediaPlaybackSource } from "#winui/windows/media/playback/IMediaPlaybackSource";
 
 // A prop's value as the bindings take it: the generated components call these
@@ -616,12 +616,7 @@ export function doubleCollectionOf(input: DoubleCollectionInput) {
     return input;
   }
 
-  const numbers = new DoubleCollection();
-  for (const value of numberList(input)) {
-    numbers.append(value);
-  }
-
-  return numbers;
+  return doubleCollection([...numberList(input)]);
 }
 
 function isItemList(input: CollectionInput): input is readonly ObjectInput[] {

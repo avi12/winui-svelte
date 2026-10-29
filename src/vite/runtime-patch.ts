@@ -5,6 +5,8 @@ import path from "node:path";
 // event is listened to on its control). WinUI raises
 // (sender, args) on the control itself, so the runtime is read with these
 // edits, in memory, wherever it is loaded (the Vite plugin, the Node loader).
+// A media query has no WinUI to ask, and svelte/motion makes one as it loads,
+// before the DOM is installed: it matches nothing, and nothing changes.
 // An edit whose anchor is gone fails loudly: it means a Svelte release the
 // package has not been checked against.
 
@@ -20,7 +22,16 @@ interface FilePatch {
 
 const patches: readonly FilePatch[] = [
   {
-    file: "dom/elements/events.js",
+    file: "reactivity/media-query.js",
+    edits: [
+      {
+        from: "const q = window.matchMedia(final_query);",
+        to: "const q = globalThis.window?.matchMedia?.(final_query) ?? { matches: false, addEventListener() {}, removeEventListener() {} };"
+      }
+    ]
+  },
+  {
+    file: "internal/client/dom/elements/events.js",
     edits: [
       {
         from: "function target_handler(/** @type {Event} */ event) {",
@@ -53,7 +64,7 @@ const patches: readonly FilePatch[] = [
     ]
   },
   {
-    file: "render.js",
+    file: "internal/client/render.js",
     edits: [
       {
         from: "var event_handle = (events) => {",
@@ -66,7 +77,7 @@ const patches: readonly FilePatch[] = [
     ]
   },
   {
-    file: "dom/elements/attributes.js",
+    file: "internal/client/dom/elements/attributes.js",
     edits: [
       {
         from: "function handle(evt) {\n\t\t\t\t\tcurrent[key].call(this, evt);",
@@ -76,7 +87,7 @@ const patches: readonly FilePatch[] = [
   }
 ];
 
-const RUNTIME_FOLDER = ["svelte", "src", "internal", "client"].join("/");
+const RUNTIME_FOLDER = ["svelte", "src"].join("/");
 
 function patchOf(filename: string) {
   const normalized = filename.replaceAll(path.sep, "/").replace(/[?#].*$/u, "");

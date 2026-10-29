@@ -37,16 +37,16 @@ export interface CompileOptions {
   root?: string;
   /** The module that exports registerStyleSheet, as the compiled component imports it. */
   cssRuntime?: string;
+  /** The module that exports enableElementAnimation, as a component that uses a transition imports it. */
+  animationRuntime?: string;
 }
 
-const WEB_ANIMATION_DIRECTIVES = new Set(["TransitionDirective", "AnimateDirective"]);
+const ELEMENT_ANIMATION_DIRECTIVES = new Set(["TransitionDirective", "AnimateDirective"]);
+const ELEMENT_ANIMATION_IMPORT = /\bfrom\s*["']svelte\/(?:transition|animate|motion)["']/u;
+const ELEMENT_ANIMATION_RUNTIME = "winui-svelte/element-animation";
+const ELEMENT_ANIMATION_BINDING = "winuiEnableElementAnimation";
 
-interface DirectiveFound {
-  readonly name: string;
-  readonly start: number;
-}
-
-function directiveIn(root: unknown) {
+function hasDirective(root: unknown) {
   const pending: unknown[] = [root];
   for (const node of pending) {
     const isObject = typeof node === "object" && node !== null;
@@ -54,40 +54,47 @@ function directiveIn(root: unknown) {
       continue;
     }
 
-    const isDirective = "type" in node && typeof node.type === "string" && WEB_ANIMATION_DIRECTIVES.has(node.type);
-    const isNamed = "name" in node && typeof node.name === "string" && "start" in node && typeof node.start === "number";
-    const isFound = isDirective && isNamed;
-    if (isFound) {
-      return {
-        name: String(node.name),
-        start: Number(node.start)
-      } satisfies DirectiveFound;
+    const isDirective = "type" in node && typeof node.type === "string" && ELEMENT_ANIMATION_DIRECTIVES.has(node.type);
+    if (isDirective) {
+      return true;
     }
 
     pending.push(...Object.values(node));
   }
 
-  return null;
+  return false;
 }
 
 /**
- * Throws, naming the line, when a component uses `transition:`, `in:`,
- * `out:` or `animate:`: they drive the browser's `Element.animate()`, which a
- * WinUI window has no equivalent of. The `transition`, `intro` and `outro`
- * attachments of `winui-svelte/element-animation` play the same functions.
+ * Adds to a compiled module the statements that turn on the element
+ * animation of `winui-svelte/element-animation`, when its source uses
+ * `transition:`, `in:`, `out:` or `animate:`, or imports
+ * `svelte/transition`, `svelte/animate` or `svelte/motion`: Svelte's
+ * transitions then run on WinUI controls, and an app that uses none never
+ * bundles any of it. The call is idempotent, so every such module may make it.
  *
- * @param options - The component's path and source.
- * @throws {Error} When the component uses one of the directives.
+ * @param options - The module's source and what it compiled to, whether it is a component,
+ *   and the module that exports `enableElementAnimation`.
+ * @returns The compiled module, with the registration appended when it needs one.
  */
-export function assertNoWebAnimations({ filename, source }: {
-  filename: string;
+export function withElementAnimation({ source, code, isComponent, runtime = ELEMENT_ANIMATION_RUNTIME }: {
   source: string;
+  code: string;
+  isComponent: boolean;
+  runtime?: string;
 }) {
-  const found = directiveIn(parse(source, { modern: true }));
-  if (found) {
-    const line = source.slice(0, found.start).split("\n").length;
-    throw new Error(`${path.basename(filename)}:${line}: transition:, in:, out: and animate: need the browser's Element.animate(); use the transition, intro and outro attachments of winui-svelte/element-animation instead (${found.name})`);
+  const isImported = ELEMENT_ANIMATION_IMPORT.test(source);
+  const isNeeded = isImported || isComponent && hasDirective(
+    parse(source, {
+      modern: true
+    })
+  );
+  if (!isNeeded) {
+    return code;
   }
+
+  const registration = `import { enableElementAnimation as ${ELEMENT_ANIMATION_BINDING} } from ${JSON.stringify(runtime)};\n${ELEMENT_ANIMATION_BINDING}();`;
+  return `${code}\n${registration}\n`;
 }
 
 /** Whether a file is a component or a runes module. */
@@ -118,7 +125,14 @@ function compileSource({ filename, source, options }: {
       generate: "client"
     });
     return withInlineSourceMap({
-      code: js.code,
+      code: withElementAnimation({
+        source,
+        code: js.code,
+        isComponent: false,
+        ...options.animationRuntime && {
+          runtime: options.animationRuntime
+        }
+      }),
       map: js.map
     });
   }
@@ -127,10 +141,6 @@ function compileSource({ filename, source, options }: {
     ...WINUI_COMPILE_OPTIONS,
     filename,
     runes: true
-  });
-  assertNoWebAnimations({
-    filename,
-    source
   });
   // The dev server registers the sheet through the Vite plugin (css/vite.ts);
   // here its statements are appended to the component.
@@ -142,7 +152,14 @@ function compileSource({ filename, source, options }: {
     runtimeModule: options.cssRuntime ?? WINUI_CSS_RUNTIME
   });
   return withInlineSourceMap({
-    code: sheet === null ? js.code : `${js.code}\n${sheet.code}`,
+    code: withElementAnimation({
+      source,
+      code: sheet === null ? js.code : `${js.code}\n${sheet.code}`,
+      isComponent: true,
+      ...options.animationRuntime && {
+        runtime: options.animationRuntime
+      }
+    }),
     map: js.map
   });
 }

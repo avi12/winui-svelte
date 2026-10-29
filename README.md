@@ -797,29 +797,29 @@ what is not covered.
 
 ## Transitions
 
-The package refuses `transition:`, `in:`, `out:` and `animate:` at compile
-time (they need the browser's `Element.animate()`), so the same transition
-functions play through attachments
-from `winui-svelte/element-animation` (an app that does not import it does not
-bundle it):
+Svelte's own `transition:`, `in:`, `out:` and `animate:` work on the raw
+elements of a component (`<border>`, `<text-block>`), with the functions of
+`svelte/transition` (`fade`, `fly`, `slide`, `scale`, `draw`, `crossfade`;
+`blur` fades without blurring), `svelte/animate` (`flip`) and `svelte/motion`
+(`Tween`, `Spring`):
 
 ```svelte
 <script lang="ts">
-  import { transition } from "winui-svelte/element-animation";
-  import { fade } from "svelte/transition";
+  import { fly } from "svelte/transition";
 </script>
 
 {#if isShown}
-  <Border {@attach transition({ use: fade, params: { duration: 200 } })}>
-    <TextBlock text="Hello" />
-  </Border>
+  <border padding="16" transition:fly={{ y: 40, duration: 300 }}>
+    <text-block text="Hello"></text-block>
+  </border>
 {/if}
 ```
 
-Call `enableElementAnimation()` once before the first component is mounted. The
-leaving element stays in its panel until its outro has run, and the animation
-moves the control's `Opacity`, `Translation`, `Scale` and `Rotation`. See
-[API.md](API.md) for what is and is not animated.
+The Vite plugin turns the support on in each component that uses a directive or
+imports one of those modules; an app that uses none does not bundle any of it.
+The animation moves the control's `Opacity`, `Translation`, `Scale`,
+`Rotation`, size, margin, padding, border and a shape's stroke dashes. See
+[API.md](API.md) for the details and what WinUI cannot do.
 
 ## State
 
@@ -847,7 +847,7 @@ protocol and the tests.
 | `winui-svelte/bootstrap` | `initWindowsAppSdk`, for the host's main thread |
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
-| `winui-svelte/element-animation` | `enableElementAnimation`, and the `transition`, `intro` and `outro` attachments |
+| `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
 | `winui-svelte/css/transform`, `/css/focus`, `/css/surface`, `/css/resources` | the opt-in CSS groups: 2D transform, focus visuals, surfaces, theme resources ([`src/css/API.md`](src/css/API.md)) |
@@ -907,9 +907,10 @@ Stated plainly, so nobody finds them by surprise:
   setters while they are active, and a control that handles an event itself (a
   Button handles `PointerPressed`) never reports it, so `:active` does nothing
   there. Override the control's theme resources instead.
-- **`transition:`, `in:`, `out:` and `animate:` do not compile.** The package
-  refuses them. Use the `transition`, `intro` and `outro`
-  attachments (see "Transitions"); there is no `animate:flip`.
+- **Transitions that WinUI cannot draw.** `blur` fades without blurring (no
+  element blur in WinUI without Composition effects), `draw` cannot measure a
+  `path` (a geometry has no length), a directive goes on a raw element, and a
+  leaving element in a keyed `{#each}` stays in the layout until it is gone.
 - **Two controls are not components:** `SwapChainBackgroundPanel` (the UWP
   panel WinUI 3 keeps for compatibility, which refuses most element properties;
   `SwapChainPanel` replaces it) and `PivotHeaderItem` (WinUI makes it only

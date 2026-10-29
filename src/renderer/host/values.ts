@@ -1,6 +1,6 @@
 import { unboxObject } from "@microsoft/dynwinrt";
 import { boxedObject } from "#src/native-value.js";
-import { GridUnitType, PropertyValue } from "#src/winui.js";
+import { DoubleCollection, GridUnitType, PropertyValue } from "#src/winui.js";
 
 // WinRT's plain values, built the way the bindings take them.
 
@@ -105,4 +105,19 @@ export function pixelLength(value: number) {
     value,
     gridUnitType: GridUnitType.Pixel
   };
+}
+
+/**
+ * A `DoubleCollection` of numbers: a shape's dash pattern.
+ *
+ * @param lengths - The lengths, in multiples of the stroke's thickness.
+ * @returns The value to set on a shape's `strokeDashArray`.
+ */
+export function doubleCollection(lengths: readonly number[]) {
+  const numbers = new DoubleCollection();
+  for (const length of lengths) {
+    numbers.append(length);
+  }
+
+  return numbers;
 }
