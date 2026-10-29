@@ -28,6 +28,7 @@ function levelOf({ name, ...overrides }: Partial<ClassModel> & { name: string })
     observed: [],
     slots: [],
     holdsItems: false,
+    registers: [],
     ...overrides
   };
 }
@@ -106,7 +107,8 @@ test("an attached slot is a prop that takes a snippet, filled through its owner"
       key: "toolTip",
       winName: "ToolTip",
       kind: SlotKind.VALUE,
-      elementName: "tool-tip-service.tool-tip"
+      elementName: "tool-tip-service.tool-tip",
+      collection: null
     }]
   });
   assert.match(emitLevel(level), /toolTip\?: ObjectInput \| Snippet;/u);

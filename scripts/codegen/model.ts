@@ -4,8 +4,8 @@ import {
   bindingsAfterWinapp,
   COMPONENT_WINMD,
   coreClasses,
-  featureClasses,
   createdCollections,
+  featureClasses,
   hostOwnedBindables,
   kindOfType,
   neverBindable,
@@ -464,21 +464,11 @@ class Builder {
       }
     }
 
-    for (const member of interfaces.flatMap(entry => entry.properties)) {
-      const events = observedProperties.get(`${type.name}.${member.name}`);
-      const isObserved = !member.hasSetter && events !== undefined && !seenProperties.has(member.name);
-      if (isObserved) {
-        seenProperties.add(member.name);
-        const { kind, enumType } = this.classify(member.type);
-        model.observed.push({
-          winName: member.name,
-          key: camelCase(member.name),
-          kind,
-          enumType,
-          events
-        });
-      }
-    }
+    this.fillObserved({
+      model,
+      type,
+      seenProperties
+    });
 
     const seenEvents = new Set<string>(unimplementedEvents.get(fullName(model.type)));
     for (const member of interfaces.flatMap(entry => entry.events)) {
@@ -493,6 +483,30 @@ class Builder {
 
     model.properties.sort((left, right) => left.key.localeCompare(right.key));
     model.events.sort((left, right) => left.key.localeCompare(right.key));
+  }
+
+  // The read-only properties the control reports changes of
+  // (observedProperties in tables.ts).
+  private fillObserved({ model, type, seenProperties }: {
+    model: ClassModel;
+    type: TypeInfo;
+    seenProperties: Set<string>;
+  }) {
+    for (const member of this.instanceInterfaces(type).flatMap(entry => entry.properties)) {
+      const events = observedProperties.get(`${type.name}.${member.name}`);
+      const isObserved = !member.hasSetter && events !== undefined && !seenProperties.has(member.name);
+      if (isObserved) {
+        seenProperties.add(member.name);
+        const { kind, enumType } = this.classify(member.type);
+        model.observed.push({
+          winName: member.name,
+          key: camelCase(member.name),
+          kind,
+          enumType,
+          events
+        });
+      }
+    }
   }
 
   private eventsAvailable(model: ClassModel) {

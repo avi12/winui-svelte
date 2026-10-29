@@ -29,7 +29,9 @@ function classNamed(overrides: Partial<ClassModel>) {
     events: [],
     attached: [],
     bindables: [],
+    observed: [],
     slots: [],
+    holdsItems: false,
     registers: [],
     ...overrides
   };
@@ -44,6 +46,7 @@ test("a slot with a created collection names its class's tag on the <property> e
           key: "childrenTransitions",
           winName: "ChildrenTransitions",
           kind: SlotKind.COLLECTION,
+          elementName: "childrenTransitions",
           collection: TRANSITION_COLLECTION
         }
       ]

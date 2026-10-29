@@ -91,22 +91,30 @@ test("TreeView renders none of the slots its host owns, and the others it keeps"
       {
         key: "rootNodes",
         winName: "RootNodes",
-        kind: SlotKind.COLLECTION
+        kind: SlotKind.COLLECTION,
+        elementName: "rootNodes",
+        collection: null
       },
       {
         key: "selectedNode",
         winName: "SelectedNode",
-        kind: SlotKind.VALUE
+        kind: SlotKind.VALUE,
+        elementName: "selectedNode",
+        collection: null
       },
       {
         key: "selectedNodes",
         winName: "SelectedNodes",
-        kind: SlotKind.COLLECTION
+        kind: SlotKind.COLLECTION,
+        elementName: "selectedNodes",
+        collection: null
       },
       {
         key: "contextFlyout",
         winName: "ContextFlyout",
-        kind: SlotKind.VALUE
+        kind: SlotKind.VALUE,
+        elementName: "contextFlyout",
+        collection: null
       }
     ]
   };
