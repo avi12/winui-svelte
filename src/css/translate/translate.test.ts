@@ -31,6 +31,7 @@ test("selectors: classes, a type, a state and Svelte's scope", () => {
     selector: {
       elementType: "text-block",
       classes: ["title", "svelte-abc"],
+      notClasses: [],
       state: "hover",
       specificity: 4,
       isRoot: false
@@ -471,4 +472,47 @@ test("rules under a width @media keep the bounds, and a custom property under on
     }
   ]);
   assert.match(diagnostics.map(formatDiagnostic).join(), /custom property of :root cannot depend on the window's size/u);
+});
+
+test(":not(.class) excludes elements that have the class", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a:not(.busy, .off) { opacity: 1 }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  const [rule] = sheet.rules;
+  assert.deepEqual(rule?.notClasses, ["busy", "off"]);
+  const facts = (classes: string[]) => ({
+    elementType: "border",
+    classes: new Set(classes),
+    states: new Set<never>()
+  });
+  assert.ok(rule);
+  const ranked = [{
+    rule,
+    id: "t#0",
+    rank: 0
+  }];
+  assert.equal(
+    matchingRules({
+      rules: ranked,
+      facts: facts(["a"])
+    }).length, 1
+  );
+  assert.equal(
+    matchingRules({
+      rules: ranked,
+      facts: facts(["a", "off"])
+    }).length, 0
+  );
+});
+
+test("structural pseudo-classes say a Style cannot see the siblings", () => {
+  assert.match(errors(".a:first-child { opacity: 1 }").join(), /:first-child has no WinUI meaning \(a Style cannot see/u);
+});
+
+test(":not() takes classes only", () => {
+  assert.match(errors(".a:not(border) { opacity: 1 }").join(), /:not\(\) takes classes/u);
+  assert.match(errors(".a:not(:hover) { opacity: 1 }").join(), /:not\(\) takes classes/u);
 });

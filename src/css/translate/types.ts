@@ -82,6 +82,8 @@ export interface Rule {
   /** "text-block", or null when the selector names no element type. */
   elementType: string | null;
   classes: string[];
+  /** Classes the element must not have (`:not(.busy)`); absent for none. */
+  notClasses?: string[];
   state: PseudoState | null;
   /** Classes plus pseudo-class plus one for a type, as in CSS (`:where()` is 0). */
   specificity: number;

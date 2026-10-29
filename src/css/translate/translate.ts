@@ -258,6 +258,7 @@ function addSelectorRule({ translator, block, selector, scheme, media }: {
   translator.rules.push({
     elementType: selector.elementType,
     classes: selector.classes,
+    ...selector.notClasses.length === 0 ? {} : { notClasses: selector.notClasses },
     state: selector.state,
     specificity: selector.specificity,
     order: translator.nextOrder,

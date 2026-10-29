@@ -390,6 +390,17 @@ rules), and a nested selector without `&` is a descendant, which stays an error
 (a Style has no "inside"). An at-rule inside a rule (`@media`) is an error:
 write it around the rule.
 
+## Selectors
+
+A selector is one compound of a type, classes and one state (`:hover`,
+`:active`, `:focus`, `:focus-visible`, `:disabled`, `:checked`), plus `:where()`
+and `:not(.a, .b)`, which excludes the classes (it counts as a class in the
+specificity). A Style is set on one element, so what needs the element's
+surroundings is an error that says to give the element a class: descendant,
+child and sibling combinators, `:first-child`, `:last-child`, `:nth-child`,
+`:only-child`, `:empty`, `:has()`, `:focus-within` and `:not()` of a type or
+state.
+
 ## What stays unsupported, and why
 
 `unsupported-properties.ts` holds the reason shown for each property no group

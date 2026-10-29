@@ -49,12 +49,13 @@ function ruleApplies({ rule, facts, isStateIgnored, isMediaIgnored }: {
 }) {
   const isTypeMatch = rule.elementType === null || rule.elementType === facts.elementType;
   const hasClasses = rule.classes.every(name => facts.classes.has(name));
+  const hasNoExcluded = (rule.notClasses ?? []).every(name => !facts.classes.has(name));
   const isStateActive = rule.state === null || isStateIgnored || facts.states.has(rule.state);
   const isMediaActive = rule.media === undefined || isMediaIgnored || mediaMatches({
     media: rule.media,
     viewport: facts.viewport ?? null
   });
-  return isTypeMatch && hasClasses && isStateActive && isMediaActive;
+  return isTypeMatch && hasClasses && hasNoExcluded && isStateActive && isMediaActive;
 }
 
 /**

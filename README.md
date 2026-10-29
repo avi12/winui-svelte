@@ -917,10 +917,19 @@ Stated plainly, so nobody finds them by surprise:
 - **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
   service started cannot launch the browser (error 0x8007139F), and a `data:`
   URL cannot be the top frame.
-- **CSS is WinUI's subset.** No `float`, `position: sticky`, `flex-grow`, `box-shadow`
-  (use `-winui-elevation`), `filter`, `animation`, descendant, child or sibling
-  selectors or `@keyframes`: each is a build error that says what to
-  use instead. Gradients are `linear-gradient()` and `radial-gradient()` only
+- **CSS is WinUI's subset.** Layout follows the element's type (`src/css/API.md`
+  has the table): `display: flex` is a `<stack-panel>`, `display: grid` a
+  `<grid>` (tracks in `fr`, `px`, `auto`, `minmax()`), `position: absolute` a
+  `<canvas>` child, and `@media (min-width...)` restyles as the window resizes.
+  A Style cannot reach an element's parent, children or siblings, so these are
+  build errors that say what to write instead: `float`, `position: sticky`,
+  `right` and `bottom`, `flex-grow` and `flex-wrap` (use `fr` tracks; WinUI has
+  no wrapping panel), `align-items` and `justify-content` on a container (set
+  `place-self` on the child), `order`, `aspect-ratio`, a % size other than
+  100%, `calc()` with a % or a variable, `@container`, descendant, child and
+  sibling selectors, `:first-child`, `:nth-child`, `:focus-within`,
+  `box-shadow` (use `-winui-elevation`), `filter`, `animation` and
+  `@keyframes`. Gradients are `linear-gradient()` and `radial-gradient()` only
   (no repeating or conic ones, no stop in `px`), and replace `background-color`.
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can
   declare custom properties only (a Style cannot depend on the scheme).
