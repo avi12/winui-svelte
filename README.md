@@ -862,6 +862,7 @@ protocol and the tests.
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/app` | single-instance handling and app notifications |
+| `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
 | `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
@@ -898,6 +899,15 @@ Stated plainly, so nobody finds them by surprise:
   native binding" error, and `initWindowsAppSdk` throws a plain error naming
   the supported platforms; no entry point does work when imported. The
   Windows App SDK runtime must be installed; the package does not install it.
+- **The tray icon hears the mouse by polling.** WinUI has no tray API, and
+  dynwinrt cannot make a JavaScript function a native window procedure, so
+  `winui-svelte/tray` reads the pointer and the buttons every 30 ms instead of
+  receiving the shell's callback. Clicks, double clicks, middle clicks and
+  right clicks (with their position) work; keyboard activation, touch, and a
+  click on a balloon cannot be heard (nothing says which icon has keyboard
+  focus, so Enter and Space on it are lost too). The `menu` snippet opens its
+  flyout from a one-pixel window made on the right click. A Tauri or Electron
+  host that already has a tray should keep using it.
 - **Base and thin acrylic are controller backdrops.** `acrylicBase` and
   `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
   `window.systemBackdrop` reads null for them (the controller holds the

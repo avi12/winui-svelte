@@ -1,0 +1,12 @@
+export type { TrayPointerEvent } from "./click-detector.ts";
+export { TrayGesture } from "./click-detector.ts";
+export type { BalloonOptions, TrayIconChanges, TrayIconHandle, TrayIconImage, TrayIconOptions } from "./tray-core.ts";
+export { removeAllTrayIcons } from "./tray-core.ts";
+export type { TrayIconSeams } from "./tray-icon.ts";
+export { createTrayIcon } from "./tray-icon.ts";
+export type { MenuPlacement, ScreenPoint, TrayMenuContext } from "./tray-menu.ts";
+export { placeMenuWindow } from "./tray-menu.ts";
+export type { TrayWindow } from "./window-tray.ts";
+export { hideToTray, restoreFromTray, toggleInTray } from "./window-tray.ts";
+export { default as TrayIcon } from "./TrayIcon.svelte";
+export type { TrayIconComponentProps } from "./TrayIcon.d.svelte.ts";

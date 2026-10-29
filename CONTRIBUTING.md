@@ -64,6 +64,13 @@ an ordinary desktop session: a process a sandbox or a service started cannot
 launch the browser (WebView2 reports 0x8007139F), and the tests skip where the
 Windows App SDK was not restored or the WebView2 Runtime is not installed.
 
+Tests must never inject real input into the desktop of whoever runs them: no
+`SetCursorPos`, `mouse_event`, `SendInput`, `keybd_event`, no clicks on the
+taskbar or the notification area, and no messages posted to windows the test
+did not create. Check what a window shows by asking WinUI or the shell
+(`Shell_NotifyIconGetRect` for a tray icon), and drive the code under test
+through its own commands or a fake of the Win32 layer.
+
 ## Changing what is generated
 
 Everything the generator decides by hand is a table in

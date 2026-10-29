@@ -220,8 +220,9 @@ const tsStyleRules = {
   "local/expand-nested-type-literal": "error",
   "local/multiline-arg-paren-newline": "error",
   "local/no-padded-tag": "error",
-  // Flat Win32 calls are bound in one file only (src/window/native.ts, exempt
-  // below), as a WinUI app keeps every [DllImport] in one Native folder.
+  // Flat Win32 calls are bound in the native.ts files only (src/window/native.ts
+  // and src/tray/native.ts, exempt below), as a WinUI app keeps every
+  // [DllImport] in its Native folder.
   "no-restricted-imports": [
     "error",
     {
@@ -236,11 +237,11 @@ const tsStyleRules = {
       paths: [
         {
           name: "@microsoft/dynwinrt/win32/unsafe",
-          message: "Flat Win32 calls are bound in src/window/native.ts only."
+          message: "Flat Win32 calls are bound in src/window/native.ts and src/tray/native.ts only."
         },
         {
           name: "@microsoft/dynwinrt/win32",
-          message: "Flat Win32 calls are bound in src/window/native.ts only."
+          message: "Flat Win32 calls are bound in src/window/native.ts and src/tray/native.ts only."
         }
       ]
     }
@@ -366,8 +367,8 @@ export default [
     }
   },
   {
-    // The one file that binds Win32 exports.
-    files: ["src/window/native.ts"],
+    // The files that bind Win32 exports.
+    files: ["src/window/native.ts", "src/tray/native.ts"],
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [

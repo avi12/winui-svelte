@@ -17,6 +17,11 @@ project adheres to [Semantic Versioning](https://semver.org/).
 - Window: `runWindow`, `createWindow`, window chrome, backdrops, pickers,
   timers and live system settings.
 - App: single-instance handling and app notifications (`winui-svelte/app`).
+- Tray: a notification-area icon (`winui-svelte/tray`): `TrayIcon`,
+  `createTrayIcon`, click, double click, middle click and right click with the
+  pointer's position, balloons, a light and dark taskbar icon, `guid`, and
+  `hideToTray` / `restoreFromTray` for a window, and a `menu` snippet whose
+  flyout opens at the pointer from a one-pixel window.
 - Styling: CSS in `<style>` blocks compiled to WinUI Styles, with opt-in
   `transform`, `focus`, `surface` and `resources` groups.
 - Motion: element animation and connected animation.
