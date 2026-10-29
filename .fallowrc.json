@@ -22,6 +22,7 @@
     "src/window/thread.ts",
     "src/window/index.ts",
     "src/app/index.ts",
+    "src/tray/index.ts",
     "**/*.test.ts",
     "src/state/test-support/echo-host.ts",
     "test/mount-all.svelte.ts",
@@ -61,6 +62,7 @@
     "examples/app/main.ts",
     "examples/web/main.ts",
     "examples/window/main.ts",
+    "examples/tray/main.ts",
     "eslint.config.js"
   ],
   // The bindings are reached through the #winui/* import map, the linters run
@@ -128,6 +130,10 @@
     // The hand-written components' declarations are what an app's types read.
     {
       "file": "src/components/hand-written/*.d.svelte.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/tray/*.d.svelte.ts",
       "exports": ["*"]
     }
   ],
