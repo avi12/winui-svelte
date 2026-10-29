@@ -34,3 +34,4 @@ export { GridUnitType } from "#winui/microsoft/ui/xaml/GridUnitType";
 export { PropertyValue } from "#winui/windows/foundation/PropertyValue";
 export { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
 export { Window } from "#winui/microsoft/ui/xaml/Window";
+export { FocusState } from "#winui/microsoft/ui/xaml/FocusState";

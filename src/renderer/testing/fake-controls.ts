@@ -153,6 +153,61 @@ export class FakeToggle {
   }
 }
 
+// An element WinUI would lay out and theme: ActualWidth, ActualHeight and
+// ActualTheme, their changed events, and Focus. The test raises the events.
+export class FakeElement {
+  readonly margin = null;
+  actualWidth = 0;
+  actualHeight = 0;
+  actualTheme = 1;
+  // The FocusState each Focus call was given, in order.
+  readonly focusCalls: number[] = [];
+  isFocusable = true;
+  private readonly sizeListeners = new Set<() => void>();
+  private readonly themeListeners = new Set<() => void>();
+
+  get listenerCount() {
+    return this.sizeListeners.size + this.themeListeners.size;
+  }
+
+  onSizeChanged(listener: () => void) {
+    this.sizeListeners.add(listener);
+    return () => {
+      this.sizeListeners.delete(listener);
+    };
+  }
+
+  onActualThemeChanged(listener: () => void) {
+    this.themeListeners.add(listener);
+    return () => {
+      this.themeListeners.delete(listener);
+    };
+  }
+
+  resize({ width, height }: {
+    width: number;
+    height: number;
+  }) {
+    this.actualWidth = width;
+    this.actualHeight = height;
+    for (const listener of this.sizeListeners) {
+      listener();
+    }
+  }
+
+  retheme(theme: number) {
+    this.actualTheme = theme;
+    for (const listener of this.themeListeners) {
+      listener();
+    }
+  }
+
+  focus(state: number) {
+    this.focusCalls.push(state);
+    return this.isFocusable;
+  }
+}
+
 export class FakeBorder {
   readonly margin = null;
   child: object | null = null;
@@ -185,7 +240,15 @@ export class FakeTextBlock {
 
 // By the class names a tag spells: <fake-panel> is FakePanel.
 export const fakeControls = Object.fromEntries(
-  [FakePanel, FakeMotionPanel, FakeToggle, FakeBorder, FakeTextBlock, FakeButton, FakeFlyout, FakeMenuItem].map(
-    control => [control.name, control]
-  )
+  [
+    FakePanel,
+    FakeMotionPanel,
+    FakeToggle,
+    FakeElement,
+    FakeBorder,
+    FakeTextBlock,
+    FakeButton,
+    FakeFlyout,
+    FakeMenuItem
+  ].map(control => [control.name, control])
 );
