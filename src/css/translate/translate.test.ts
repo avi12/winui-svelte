@@ -253,7 +253,7 @@ test("positions are mapped back to the .svelte file", () => {
 test("descendant selectors, nesting, @keyframes and other @media are errors", () => {
   assert.match(errors(".a .b { color: red }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
   assert.match(errors(".a { color: red; .b { color: blue } }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
-  assert.match(errors(".a { @media (min-width: 1px) { color: blue } }").join(), /an at-rule nested in a rule has no WinUI meaning/u);
+  assert.match(errors(".a { @container (min-width: 1px) { color: blue } }").join(), /@container has no WinUI meaning/u);
   assert.match(errors("@keyframes spin { to { opacity: 0 } }").join(), /@keyframes has no WinUI meaning/u);
   assert.match(errors("@media (orientation: landscape) { .a { color: red } }").join(), /@media \(orientation: landscape\) has no WinUI meaning/u);
   assert.match(errors("@import 'a.css';").join(), /@import has no WinUI meaning/u);
@@ -517,4 +517,18 @@ test("structural pseudo-classes say a Style cannot see the siblings", () => {
 test(":not() takes classes only", () => {
   assert.match(errors(".a:not(border) { opacity: 1 }").join(), /:not\(\) takes classes/u);
   assert.match(errors(".a:not(:hover) { opacity: 1 }").join(), /:not\(\) takes classes/u);
+});
+
+test("an at-rule inside a rule styles that rule's selector", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { opacity: 1; @media (min-width: 600px) { opacity: 0.5; &:hover { opacity: 0.2 } } }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules.map(rule => [rule.classes.join(), rule.state, rule.media?.minWidth ?? null]), [
+    ["a", null, null],
+    ["a", null, 600],
+    ["a", "hover", 600]
+  ]);
 });

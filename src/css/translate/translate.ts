@@ -269,20 +269,26 @@ function addSelectorRule({ translator, block, selector, scheme, media }: {
   translator.nextOrder++;
 }
 
+// A rule inside a nested at-rule, its `&` the selector of the rule around the at-rule.
+function withParent({ child, parent }: {
+  child: RuleBlock;
+  parent: string;
+}) {
+  return {
+    ...child,
+    selector: flattenNestedSelector({
+      parent,
+      child: child.selector
+    })
+  };
+}
+
 function addRuleBlock({ translator, block, scheme, media }: {
   translator: Translator;
   block: RuleBlock;
   scheme: ColorScheme;
   media: MediaCondition | null;
 }) {
-  for (const nestedAt of block.nestedAtRules) {
-    reportError({
-      translator,
-      message: "an at-rule nested in a rule has no WinUI meaning (write the @media block around the rule)",
-      generatedAt: nestedAt
-    });
-  }
-
   for (const result of parseSelectorList(block.selector)) {
     if (result.isValid) {
       addSelectorRule({
@@ -304,12 +310,24 @@ function addRuleBlock({ translator, block, scheme, media }: {
   for (const child of block.nested) {
     addRuleBlock({
       translator,
+      block: withParent({
+        child,
+        parent: block.selector
+      }),
+      scheme,
+      media
+    });
+  }
+
+  for (const nestedAt of block.nestedAtRules) {
+    addAtRule({
+      translator,
       block: {
-        ...child,
-        selector: flattenNestedSelector({
-          parent: block.selector,
-          child: child.selector
-        })
+        ...nestedAt,
+        children: (nestedAt.children ?? []).map(child => (child.kind === BlockKind.RULE ? withParent({
+          child,
+          parent: block.selector
+        }) : child))
       },
       scheme,
       media

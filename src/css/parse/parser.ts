@@ -14,8 +14,8 @@ export interface RuleBlock {
   declarations: Declaration[];
   /** The style rules nested in this one; the translator flattens them with `&`. */
   nested: RuleBlock[];
-  /** Where an at-rule nested in this one began: it has no WinUI meaning there. */
-  nestedAtRules: SourcePosition[];
+  /** The at-rules nested in this one; their body styles this rule's own selector (`&`). */
+  nestedAtRules: AtRuleBlock[];
 }
 
 /** An at-rule (@media, @import...), with its blocks when it has a body. */
@@ -41,6 +41,7 @@ export class CssSyntaxError extends Error {
   }
 }
 
+const NESTING_SELECTOR = "&";
 const quoteCharacters = new Set(["\"", "'"]);
 const NEWLINE = "\n";
 
@@ -204,6 +205,20 @@ function toDeclaration(prelude: Prelude) {
   };
 }
 
+function atRule({ prelude, children }: {
+  prelude: Prelude;
+  children: Block[] | null;
+}) {
+  const [name = "", ...rest] = prelude.text.slice(1).split(/\s+/u);
+  return {
+    kind: BlockKind.AT_RULE,
+    name: name.toLowerCase(),
+    prelude: rest.join(" "),
+    at: prelude.at,
+    children
+  } satisfies AtRuleBlock;
+}
+
 function ruleBlock(prelude: Prelude) {
   return {
     kind: BlockKind.RULE,
@@ -227,8 +242,20 @@ function readRuleBody({ cursor, block }: {
     const isNestedRule = prelude.terminator === Terminator.OPEN_BRACE;
     const isNestedAtRule = isNestedRule && prelude.text.startsWith("@");
     if (isNestedAtRule) {
-      block.nestedAtRules.push(prelude.at);
-      skipBody(cursor);
+      const body = ruleBlock({
+        ...prelude,
+        text: NESTING_SELECTOR
+      });
+      readRuleBody({
+        cursor,
+        block: body
+      });
+      block.nestedAtRules.push(
+        atRule({
+          prelude,
+          children: [body]
+        })
+      );
       continue;
     }
 
@@ -254,31 +281,6 @@ function readRuleBody({ cursor, block }: {
   }
 }
 
-function skipBody(cursor: Cursor) {
-  let depth = 1;
-  while (!cursor.isAtEnd && depth > 0) {
-    const character = cursor.text[cursor.index] ?? "";
-    if (cursor.text.startsWith("/*", cursor.index)) {
-      cursor.skipComment();
-      continue;
-    }
-
-    if (quoteCharacters.has(character)) {
-      cursor.skipString();
-      continue;
-    }
-
-    const isOpeningBrace = character === Terminator.OPEN_BRACE;
-    if (isOpeningBrace) {
-      depth++;
-    } else if (character === Terminator.CLOSE_BRACE) {
-      depth--;
-    }
-
-    cursor.index++;
-  }
-}
-
 function readBlocks({ cursor, isNested }: {
   cursor: Cursor;
   isNested: boolean;
@@ -301,17 +303,15 @@ function readBlocks({ cursor, isNested }: {
     cursor.index++;
 
     if (isAtRule) {
-      const [name = "", ...rest] = prelude.text.slice(1).split(/\s+/u);
-      blocks.push({
-        kind: BlockKind.AT_RULE,
-        name: name.toLowerCase(),
-        prelude: rest.join(" "),
-        at: prelude.at,
-        children: isBlock ? readBlocks({
-          cursor,
-          isNested: true
-        }) : null
-      });
+      blocks.push(
+        atRule({
+          prelude,
+          children: isBlock ? readBlocks({
+            cursor,
+            isNested: true
+          }) : null
+        })
+      );
     } else if (isBlock) {
       const block = ruleBlock(prelude);
       readRuleBody({

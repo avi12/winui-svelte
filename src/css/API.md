@@ -387,8 +387,10 @@ a size query, and a query inside another `@media`. `CssNative` gains
 A rule nested in another is flattened at build time (CSS Nesting): `&` is each
 selector of the parent (`.a, .b { &:hover { ... } &.on { ... } }` is four
 rules), and a nested selector without `&` is a descendant, which stays an error
-(a Style has no "inside"). An at-rule inside a rule (`@media`) is an error:
-write it around the rule.
+(a Style has no "inside"). `&` may stand anywhere in a nested selector. An
+at-rule inside a rule (`.a { @media (min-width: 600px) { ... } }`) styles the
+rule's own selector under that at-rule; `@supports`, `@layer` and `@container`
+still have no WinUI meaning and say so.
 
 ## Selectors
 
