@@ -4,15 +4,19 @@
   import ExampleRow from "./ExampleRow.svelte";
   import { liveRows, rowStats } from "./row-stats.ts";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
+  import { projectAs } from "#winui/lifetime";
+  import { Control } from "#winui/microsoft/ui/xaml/controls/Control";
+  import type { DependencyObject } from "#winui/microsoft/ui/xaml/DependencyObject";
   import { unboxed } from "winui-svelte";
   import { GridView, ListView, MoveDirection, Window } from "winui-svelte/components";
-  import type { ListHandle } from "winui-svelte/components";
+  import type { Group, ListHandle } from "winui-svelte/components";
   import { exitApplication } from "winui-svelte/window";
 
   const DEFAULT_ROWS = 1000;
   const FIRST_ROWS_REPORTED = 5;
   const WINDOW_HEIGHT = 640;
   const WINDOW_WIDTH = 420;
+  const ROWS_PER_GROUP = 10;
 
   interface Props {
     // The harness's, handed over once: it never changes.
@@ -27,6 +31,8 @@
   let selectedKey: string | undefined = $state();
   // The list's own control, to read what it holds and to select as a user does.
   let view: {
+    readonly items: { readonly size: number };
+    containerFromIndex(index: number): DependencyObject | null;
     selectedIndex: number;
     selectedItems: {
       size: number;
@@ -55,8 +61,24 @@
       reorders,
       selectedKey: selectedKey ?? null,
       controlSelected: controlSelected(),
+      controlItems: view?.items.size ?? 0,
+      enabled: enabledPattern(),
       first: rows.slice(0, FIRST_ROWS_REPORTED).map(row => row.id)
     });
+  }
+
+  // Which of the list's first rows (a group's header among them) the control lets the user pick.
+  function enabledPattern() {
+    const size = view?.items.size ?? 0;
+    return Array.from({ length: Math.min(size, ROWS_PER_GROUP + 2) }, (_unused, index) => {
+      const container = view?.containerFromIndex(index);
+      const isDisabled = container !== null && container !== undefined && !projectAs(container, Control).isEnabled;
+      return isDisabled ? "0" : "1";
+    }).join("");
+  }
+
+  function groupOf(row: ExampleItem) {
+    return `Group ${Math.floor(Number(row.id.slice("row-".length)) / ROWS_PER_GROUP)}`;
   }
 
   function reorder(order: string[]) {
@@ -122,6 +144,10 @@
   <ExampleRow {row} />
 {/snippet}
 
+{#snippet headerOf(group: Group<ExampleItem>)}
+  <text-block>{group.key} ({group.items.length})</text-block>
+{/snippet}
+
 <Window
   activate={false}
   height={WINDOW_HEIGHT}
@@ -141,6 +167,21 @@
       key={row => row.id}
       onReorder={reorder}
       bind:handle
+    />
+  {:else if host.options["view"] === "groups"}
+    <ListView
+      groupBy={groupOf}
+      groupHeader={headerOf}
+      item={rowOf}
+      itemName={row => row.name}
+      items={rows}
+      key={row => row.id}
+      onControl={control => {
+        view = control;
+      }}
+      reorderable
+      selectionMode="Single"
+      bind:selectedKey
     />
   {:else}
     <ListView

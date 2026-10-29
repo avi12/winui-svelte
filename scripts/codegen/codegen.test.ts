@@ -33,6 +33,12 @@ test("a flag-less bindable pair comes from the <Property>Changed rule", { skip: 
   assert.ok(textBox?.bindables.some(bindable => bindable.key === "text"));
 });
 
+test("TreeView's SelectedItem is not bindable, its host keeps the selection by key", { skip: !HAS_METADATA }, () => {
+  const model = buildModel(LOCK_PATH);
+  const tree = model.classes.find(level => level.type.name === "TreeView");
+  assert.deepEqual(tree?.bindables.map(bindable => bindable.key), []);
+});
+
 test("a TextBox's selection is bindable through its SelectionChanged event", { skip: !HAS_METADATA }, () => {
   const model = buildModel(LOCK_PATH);
   const textBox = model.classes.find(level => level.type.name === "TextBox");

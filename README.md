@@ -667,13 +667,15 @@ snippet has a transition in it.
 One written directly among an element's children (a `Storyboard`) is made but
 placed nowhere; reach it with `{@attach control(storyboard => storyboard.begin())}`.
 
-Items come in two forms. `ListView`, `GridView`, `ItemsRepeater`, `ItemsView`
-and `BreadcrumbBar` take `items`, `key` and an `item` snippet, and keep a row
-only for each item the control has realized. A control whose items are
-controls takes them as Svelte's own blocks: `{#each}` in the children of
-`ComboBox`, `FlipView` and `ListBox`, or in the snippet of `NavigationView`
-(`menuItems`), `TabView` (`tabItems`), `RadioButtons` (`items`) and `TreeView`
-(`rootNodes`, of `TreeViewNode`). [API.md](API.md) has the details.
+Items come in two forms. `ListView`, `GridView`, `ItemsRepeater`, `ItemsView`,
+`BreadcrumbBar` and `TreeView` take `items`, `key` and an `item` snippet, and
+keep a row only for each item the control has realized; a `TreeView` also takes
+`children` (the items under an item) and `bind:expandedKeys`, and a `ListView`
+or `GridView` can show its items in groups (`groupBy`, `groupHeader`). A
+control whose items are controls takes them as Svelte's own blocks: `{#each}`
+in the children of `ComboBox`, `FlipView` and `ListBox`, or in the snippet of
+`NavigationView` (`menuItems`), `TabView` (`tabItems`) and `RadioButtons`
+(`items`). [API.md](API.md) has the details.
 
 Pages are Svelte components: `Navigator` shows one in a content control and
 keeps the back and forward history (`Frame` needs a page type XAML

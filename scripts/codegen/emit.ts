@@ -641,13 +641,14 @@ function propertyBlock({ key, snippet, isSnippetTested, collection }: {
 // property they fill, and each slot prop that holds a snippet in its own.
 // The content property also takes a snippet prop when it is a value
 // (`content`), which the children win over.
-function slotMarkup({ level, bindables, isHosted }: {
+function slotMarkup({ level, bindables, isHosted, owned }: {
   level: ClassModel;
   bindables: string[];
   isHosted: boolean;
+  owned: string[];
 }) {
   const contentKey = level.contentProperty === null ? null : camelCase(level.contentProperty);
-  const slots = chain(level).flatMap(entry => entry.slots);
+  const slots = chain(level).flatMap(entry => entry.slots).filter(slot => !owned.includes(slot.key));
   function sourceOf(slot: SlotModel) {
     return bindables.includes(slot.key) ? slot.key : `rest.${slot.key}`;
   }
@@ -990,9 +991,11 @@ export function emitLevel(level: ClassModel) {
 
 // What a component that shows items by a snippet is made of, by host: the
 // types of its props and of the component (items-props.ts), the call that
-// connects the host, whether the app gets the list's handle, and the props the
+// connects the host, whether the app gets the list's handle, the props the
 // host owns that the app can bind (the host reads and writes them through the
-// component's `bound` bag).
+// component's `bound` bag), and the control's own snippet slots it owns besides
+// (the component renders none of them; items-props.ts leaves them out of its
+// props too).
 const hosts = new Map<ItemsHost, {
   props: string;
   component: string;
@@ -1001,6 +1004,7 @@ const hosts = new Map<ItemsHost, {
   attach: string;
   hasHandle: boolean;
   bindables: string[];
+  owned: string[];
 }>([
   [
     ItemsHost.LIST,
@@ -1011,7 +1015,8 @@ const hosts = new Map<ItemsHost, {
       imports: ["attachItems"],
       attach: "attachItems({ view: native, props: rest, selection: bound })",
       hasHandle: true,
-      bindables: ["selectedKey", "selectedKeys"]
+      bindables: ["selectedKey", "selectedKeys"],
+      owned: []
     }
   ],
   [
@@ -1023,7 +1028,8 @@ const hosts = new Map<ItemsHost, {
       imports: ["attachRepeaterItems", "RepeaterElement"],
       attach: "attachRepeaterItems({ owner: native, props: rest, kind: RepeaterElement.SLOT })",
       hasHandle: false,
-      bindables: []
+      bindables: [],
+      owned: []
     }
   ],
   [
@@ -1035,7 +1041,21 @@ const hosts = new Map<ItemsHost, {
       imports: ["attachRepeaterItems", "RepeaterElement"],
       attach: "attachRepeaterItems({ owner: native, props: rest, kind: RepeaterElement.ITEM_CONTAINER })",
       hasHandle: false,
-      bindables: []
+      bindables: [],
+      owned: []
+    }
+  ],
+  [
+    ItemsHost.TREE,
+    {
+      props: "TreeComponentProps",
+      component: "TreeComponent",
+      module: "tree-host.svelte.ts",
+      imports: ["attachTree"],
+      attach: "attachTree({ view: native, props: rest, bound })",
+      hasHandle: false,
+      bindables: ["selectedKey", "selectedKeys", "expandedKeys"],
+      owned: ["rootNodes", "selectedNode", "selectedNodes"]
     }
   ]
 ]);
@@ -1250,7 +1270,8 @@ export function emitComponent(level: ClassModel) {
   const inner = slotMarkup({
     level,
     bindables,
-    isHosted
+    isHosted,
+    owned: host?.owned ?? []
   });
   const isSnippetUsed = inner.some(line => line.includes("isSnippet("));
   // Never self-closed: Svelte warns that `<tag />` is ambiguous for an element

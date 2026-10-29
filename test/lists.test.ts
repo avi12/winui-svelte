@@ -304,3 +304,85 @@ test("a list's selected key and its selection follow each other, through moves a
     example.kill();
   }
 });
+
+test("a grouped list shows a header row before each group, which the user cannot pick", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const example = ExampleProcess.start({
+    entry: "examples/lists/main.ts",
+    flags: ["--view", "groups", "--rows", "25"]
+  });
+  try {
+    // 25 items in groups of 10: three headers among the control's 28 items,
+    // which only the first twelve show (a header disabled, an item enabled).
+    const opened = await example.settled({
+      command: {
+        cmd: "stats"
+      },
+      kind: "stats"
+    });
+    assert.equal(
+      numberOf({
+        report: opened,
+        field: "rows"
+      }), 25
+    );
+    assert.equal(
+      numberOf({
+        report: opened,
+        field: "controlItems"
+      }), 28
+    );
+    assert.equal(opened["enabled"], "011111111110");
+    assert.equal(
+      numberOf({
+        report: opened,
+        field: "live"
+      }), 25
+    );
+
+    // An item that goes changes its group's header and nothing else.
+    const removed = await example.settled({
+      command: {
+        cmd: "remove",
+        key: "row-11"
+      },
+      kind: "removed"
+    });
+    assert.equal(
+      numberOf({
+        report: removed,
+        field: "controlItems"
+      }), 27
+    );
+    assert.equal(
+      numberOf({
+        report: removed,
+        field: "created"
+      }), 25
+    );
+    assert.equal(
+      numberOf({
+        report: removed,
+        field: "destroyed"
+      }), 1
+    );
+
+    // The app selects an item by its key: the header rows are no part of it.
+    const selected = await example.settled({
+      command: {
+        cmd: "select",
+        key: "row-12"
+      },
+      kind: "selected"
+    });
+    assert.deepEqual(selected["controlSelected"], ["row-12"]);
+    assert.equal(selected["selectedKey"], "row-12");
+
+    example.send({ cmd: "close" });
+    assert.equal(await example.exited, 0);
+  } finally {
+    example.kill();
+  }
+});

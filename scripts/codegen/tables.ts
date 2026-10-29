@@ -349,6 +349,13 @@ export const observedProperties = new Map<string, string[]>([
   ["RichTextBlockOverflow.IsTextTrimmed", ["IsTextTrimmedChanged"]]
 ]);
 
+// A property the rule would make bindable but whose items host keeps in step
+// with the app's keys itself (`selectedKey`): TreeView.SelectedItem holds the
+// control's own nodes, and two-way binding it undoes the host's selection.
+export const hostOwnedBindables = new Map<string, string[]>([
+  ["TreeView", ["SelectedItem"]]
+]);
+
 // Classes whose static Set<Name>(element, value) methods are attached
 // properties, each as a prop named by the prefix and the property: gridRow,
 // automationName, toolTip. A property that starts with the prefix already
@@ -686,11 +693,15 @@ export const featureClasses: TypeName[] = [
 // is a ListViewBase, which reports its containers; REPEATER keeps its items
 // in an ItemsRepeater (itself, or one in its template) whose elements are
 // a ContentControl the row goes in (the template's root, or the element
-// itself); ITEM_CONTAINER is that with an ItemContainer as root.
+// itself); ITEM_CONTAINER is that with an ItemContainer as root. TREE is a
+// TreeView, whose items form a tree: the component also takes `children` (the
+// items under an item) and `expandedKeys`, and the control's nodes are made
+// from the items as they are opened.
 export const ItemsHost = {
   LIST: "list",
   REPEATER: "repeater",
-  ITEM_CONTAINER: "itemContainer"
+  ITEM_CONTAINER: "itemContainer",
+  TREE: "tree"
 } as const;
 
 export type ItemsHost = typeof ItemsHost[keyof typeof ItemsHost];
@@ -700,7 +711,8 @@ export const itemsHosted = new Map<string, ItemsHost>([
   ["GridView", ItemsHost.LIST],
   ["ItemsRepeater", ItemsHost.REPEATER],
   ["BreadcrumbBar", ItemsHost.REPEATER],
-  ["ItemsView", ItemsHost.ITEM_CONTAINER]
+  ["ItemsView", ItemsHost.ITEM_CONTAINER],
+  ["TreeView", ItemsHost.TREE]
 ]);
 
 // How a control that opens over the window is opened from state

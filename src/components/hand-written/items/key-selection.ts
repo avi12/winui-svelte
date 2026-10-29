@@ -84,8 +84,8 @@ export class KeySelection<Boxed> {
 
   /**
    * The app's keys become the control's selection. A key that has no item
-   * any more is dropped from what the app holds. Reads the bound props, so
-   * an effect that calls it follows them.
+   * any more, or that the control does not select, is dropped from what the
+   * app holds. Reads the bound props, so an effect that calls it follows them.
    */
   apply() {
     const isSelectable = this.view.kind !== SelectionKind.NONE;
@@ -106,9 +106,15 @@ export class KeySelection<Boxed> {
       this.select(known);
     }
 
-    const isStale = known.length !== wanted.length;
+    // What the control holds is the truth: a tree selects an item's children
+    // with it, a single selection keeps one of two keys.
+    const held = this.read();
+    const isStale = !sameKeys({
+      first: held,
+      second: wanted
+    });
     if (isStale) {
-      this.report(known);
+      this.report(held);
     }
   }
 

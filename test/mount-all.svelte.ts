@@ -1080,6 +1080,11 @@ function stopCountOf(border: object) {
   return brush.gradientStops.size;
 }
 
+function firstRootChildCountOf(tree: object) {
+  const first = bindings.projectAs(call(read(tree, "rootNodes"), "getAt", 0), bindings.TreeViewNode);
+  return first.children?.size ?? 0;
+}
+
 const slotsAtFirst: SlotExpectation[] = [
   {
     name: "comboBox",
@@ -1221,6 +1226,14 @@ const slotsAtFirst: SlotExpectation[] = [
       control,
       property: "layers"
     }) === 1
+  },
+  {
+    name: "treeView",
+    what: "the items are the root nodes, and an expanded key has its children made",
+    isMet: control => sizeOf({
+      control,
+      property: "rootNodes"
+    }) === 1 && firstRootChildCountOf(control) === 1
   }
 ];
 
@@ -1258,6 +1271,14 @@ const slotsWhenShown: SlotExpectation[] = [
       control,
       property: "menuItems"
     }) === 2
+  },
+  {
+    name: "treeView",
+    what: "an item added to the items is a root node, the others stay",
+    isMet: control => sizeOf({
+      control,
+      property: "rootNodes"
+    }) === 2 && firstRootChildCountOf(control) === 1
   }
 ];
 
