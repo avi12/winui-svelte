@@ -189,7 +189,7 @@ const lockFileSchema = z.object({
 
 // The index of the metadata `winapp restore` locked, and the file the
 // components are in.
-function loadMetadata(lockPath: string) {
+export function loadMetadata(lockPath: string) {
   const parsedLock = lockFileSchema.safeParse(JSON.parse(readFileSync(lockPath, "utf8")));
   if (!parsedLock.success) {
     throw new Error(`${lockPath} is not a winapp lock file`);
