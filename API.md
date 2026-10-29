@@ -335,7 +335,7 @@ function createWindow<Props extends object>(options: WindowOptions<Props>): AppW
 type WindowOptions<Props> = {
   title?: string;
   size?: { width: number; height: number };   // device pixels
-  backdrop?: Backdrop;                        // "acrylic" | "mica" | "micaAlt" | "none"
+  backdrop?: Backdrop;                        // "acrylic" | "acrylicBase" | "acrylicThin" | "mica" | "micaAlt" | "none"
   extendsIntoTitleBar?: boolean;
   isBackground?: boolean;                     // shown without activating (tests, captures)
 } & ({ component: Component<Props>; props: Props } | { control: FrameworkElement });
@@ -704,14 +704,15 @@ the control's own nodes, and binding it undoes the key selection.
 ```
 
 Mount it as the app's root (`mountControl({ component: App, props })` inside `runWindow`'s
-`onStart`): the component is the window. `backdrop` is `"acrylic"`, `"mica"`,
-`"micaAlt"` or `"none"` (`Backdrop`, also taken by `createWindow`); it can
+`onStart`): the component is the window. `backdrop` is `"acrylic"`, `"acrylicBase"`,
+`"acrylicThin"`, `"mica"`, `"micaAlt"` or `"none"` (`Backdrop`, also taken by `createWindow`); it can
 change while the window is open. WinUI itself shows the theme's solid color
 in place of the material while the window is inactive, and restores it on
-activation; nothing needs wiring. The base and thin acrylic variants are not offered:
-they need a custom `SystemBackdrop` subclass overriding `OnTargetConnected`,
-and the generated bindings expose neither `ISystemBackdropOverrides` nor a way
-to implement one from JavaScript. A `titleBar` snippet is shown above the content
+activation; nothing needs wiring. `"acrylicBase"` and `"acrylicThin"` are
+the other two acrylic variants: XAML's `DesktopAcrylicBackdrop` has no kind, so
+the window takes `DesktopAcrylicController` as a target instead
+(`window.systemBackdrop` reads null; the controller is closed when the backdrop
+changes or the window closes). A `titleBar` snippet is shown above the content
 and set as the window's title bar (`setTitleBar`, so it is the drag region and
 the controls in it still click); it makes `extendsIntoTitleBar` true unless
 given. Sizes are in device-independent pixels (the window's DPI applied);

@@ -859,10 +859,10 @@ Stated plainly, so nobody finds them by surprise:
 
 - **Windows only**, and only Windows 10 1809 and newer. The Windows App SDK
   runtime must be installed; the package does not install it.
-- **No base or thin acrylic backdrop.** They need a `SystemBackdrop` subclass
-  overriding `OnTargetConnected` (`ISystemBackdropOverrides`), which the
-  generated bindings do not expose; `acrylic`, `mica`, `micaAlt` and `none`
-  are offered.
+- **Base and thin acrylic are controller backdrops.** `acrylicBase` and
+  `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
+  `window.systemBackdrop` reads null for them (the controller holds the
+  material).
 - **Needs an unreleased Svelte.** The custom-renderer API is a pull request;
   until it ships, the package works with the pkg.pr.new build named above.
 - **`bind:` works on components, not on raw elements.** `<ToggleSwitch bind:isOn>`
