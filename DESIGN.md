@@ -1,4 +1,4 @@
-# winui-svelte — design
+# winui-svelte - design
 
 Svelte for native Windows apps, the way React Native is React for native
 mobile apps: an app imports WinUI 3's controls as ordinary Svelte components,

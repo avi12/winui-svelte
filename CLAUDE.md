@@ -113,7 +113,12 @@ After each change run `pnpm lint` and `pnpm test`. Fix what they flag; never sil
 - A top-level initializer that does work (`const registry = register()`): only statements are flagged; the bundle-size test is the backstop
 - Hungarian-style and abbreviated names that happen to be 3+ characters
 
+# Tidiness
+- After each feature, remove what it orphaned (exports, helpers, scripts, files, docs), then run `pnpm fallow`; it must finish clean
+- No dead code, no commented-out code, no TODO without an owner, no stale docs: a README, CONTRIBUTING or DESIGN passage that describes something removed is fixed in the same change
+
 # Commits and releases
 - Digestible commits: one self-contained logical change each, with a message saying what and why; large work lands as a sequence
 - `main` is the default branch
 - Releases go out only when asked: bump the version, `pnpm build`, `pnpm pack --dry-run` (check the file list and size), then `pnpm publish`
+- Release gate: no release until every WinUI 3 component is fully operational from Svelte (the coverage guard in `scripts/codegen/coverage.ts` shows 0 gaps and each remaining exclusion is justified) and the user explicitly asks
