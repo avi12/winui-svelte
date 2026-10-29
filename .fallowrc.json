@@ -80,7 +80,8 @@
   // property lists, and an app renders them, not the package.
   // Called on the in-memory link by the state tests, through a type fallow
   // does not follow. The WindowHandle methods are public API that an app calls
-  // and the package itself does not.
+  // and the package itself does not; the DOM members are what Svelte's client
+  // runtime reads off the tree's nodes (renderer/tree/dom.ts).
   "usedClassMembers": [
     "sendMalformed",
     "close",
@@ -90,7 +91,34 @@
     "pickFile",
     "pickFiles",
     "pickFolder",
-    "saveFile"
+    "saveFile",
+    "nodeType",
+    "parentNode",
+    "firstChild",
+    "lastChild",
+    "nextSibling",
+    "cloneNode",
+    "remove",
+    "before",
+    "append",
+    "appendChild",
+    "insertBefore",
+    "removeChild",
+    "textContent",
+    "data",
+    "nodeValue",
+    "namespaceURI",
+    "nodeName",
+    "className",
+    "classList",
+    "style",
+    "getAttribute",
+    "hasAttribute",
+    "removeAttribute",
+    "addEventListener",
+    "removeEventListener",
+    "focus",
+    "value"
   ],
   "ignoreExports": [
     {

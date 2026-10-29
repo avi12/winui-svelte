@@ -5,14 +5,13 @@ import { fakeControls, FakePanel, FakeTextBlock } from "#src/renderer/testing/fa
 import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
-import path from "node:path";
 import { test } from "node:test";
 
 // The navigator host (navigator-host.svelte.ts) run on stand-in controls: real
 // page components mounted into a slot, ended when the cache lets them go.
 
 registerControls(fakeControls);
-registerHooks(svelteHooks(path.join(import.meta.dirname, "..", "..", "..", "renderer", "host", "host.ts")));
+registerHooks(svelteHooks());
 const { attachNavigator } = await import("./navigator-host.svelte.ts");
 const { default: Page } = await import("#src/renderer/testing/Page.fixture.svelte");
 

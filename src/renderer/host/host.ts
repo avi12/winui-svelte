@@ -34,7 +34,7 @@ import { createTreeRenderer, NodeType, parentElement } from "#src/renderer/tree/
 import type { FrameworkElement, UIElement } from "#src/winui.js";
 import { ColumnDefinition, Grid, RowDefinition, Run } from "#src/winui.js";
 
-// Svelte's custom renderer for WinUI: a .svelte component's elements are
+// The renderer for WinUI: a .svelte component's elements are
 // WinUI's own controls, named in kebab case (<stack-panel>, <text-block>), so
 // the window keeps native controls, Windows' light and dark and the acrylic
 // backdrop. The tree itself is tree.ts; here each element's native children
@@ -1082,7 +1082,8 @@ function subscribe({ control, type, handler }: {
   return typeof unsubscribe === "function" ? () => unsubscribe() : null;
 }
 
-const renderer = createTreeRenderer(winuiHost);
+/** The renderer WinUI controls are built through, which `mountControl` makes active. */
+export const renderer = createTreeRenderer(winuiHost);
 
 /**
  * Lets go of what a mounted component's nodes hold, after Svelte's unmount,
@@ -1207,8 +1208,3 @@ export function swapControl({ previous, next }: Replacement) {
     });
   }
 }
-
-// Svelte's compiled components import the renderer module's default export:
-// the one place a default export is not ours to choose.
-// eslint-disable-next-line no-restricted-exports -- Svelte's customRenderer option imports the default export
-export default renderer;

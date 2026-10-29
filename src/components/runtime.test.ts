@@ -1,12 +1,11 @@
 import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
-import path from "node:path";
 import { test } from "node:test";
 
 // observe: state the control gives back and the app only reads.
 
-registerHooks(svelteHooks(path.join(import.meta.dirname, "runtime.svelte.ts")));
+registerHooks(svelteHooks());
 const { Linker } = await import("./runtime.svelte.ts");
 const { observe } = await import("./observed.ts");
 

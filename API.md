@@ -13,7 +13,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte` | `src/index.ts` | `control`, `withControl`, `elementRef`, `elementSize`, `elementTheme`, `focusElement`, `mountControl`, `registerControls`, `setClassHandler`, `dispatch` / `flush` / `onFlush`, the value helpers |
 | `winui-svelte/components` | `src/components/generated/index.ts` | every WinUI 3 control as a component (`StackPanel`, `ToggleSwitch`, ...) and its props type (`ToggleSwitchComponentProps`); `xamlOf`, `goToState`, `installXaml`, `resourceDictionaryOf`; importing it registers the generated bindings with the renderer |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()` (its `messaging` is the typed link), `hostState()`, `StateProtocol`, the transports (stdio, MessagePort, in-memory), `diff` / `applyOps` (see `src/state/README.md`) |
-| `winui-svelte/host` | `src/renderer/host/host.ts` | the custom renderer a compiled component imports (default export); not for app code |
+| `winui-svelte/host` | `src/renderer/host/host.ts` | `renderer`, the renderer WinUI controls are built through (`mountControl` makes it the active one), and the mount-target plumbing below; not for app code |
 | `winui-svelte/element-animation` | `src/renderer/host/element-animation.ts` | `enableElementAnimation()`, and the attachments `transition()`, `intro()`, `outro()`: Svelte's transition functions on WinUI elements (opt-in; an app that does not import it does not bundle it) |
 | `winui-svelte/connected-animation` | `src/renderer/host/connected-animation.ts` | `connectElement({ key, element })`, `startConnected({ key, element })`: WinUI's connected animation between two pages (opt-in) |
 | `winui-svelte/keyed-list` | `src/renderer/list/keyed-list.ts` | `syncKeyed()`: sync a native collection to wanted keys, touching only what changed |
@@ -21,8 +21,8 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/messaging` | `src/messaging/index.ts` | `defineMessaging(transport)`: typed `sendMessage` / `onMessage` over a ProtocolMap, as @webext-core/messaging; the state channel is built on it |
 | `winui-svelte/vite` | `src/vite/index.ts` | `winuiSvelte()` Vite plugin, `startModuleServer()`, compile-error formatting |
 | `winui-svelte/runner` | `src/vite/runner.ts` | `createWindowModuleRunner()`, the window thread's side of the module server |
-| `winui-svelte/compile` | `src/vite/compile.ts` | `compileSvelte()` for bundlers (esbuild) and tests |
-| `winui-svelte/testing` | `src/vite/loader.ts` | `svelteHooks()`: Node module hooks that run `.svelte` files with a chosen renderer (pure tests) |
+| `winui-svelte/compile` | `src/vite/compile.ts` | `compileSvelte()` for bundlers (esbuild) and tests, `WINUI_COMPILE_OPTIONS`, `assertNoWebAnimations()` |
+| `winui-svelte/testing` | `src/vite/loader.ts` | `svelteHooks()`: Node module hooks that run `.svelte` files, with Svelte's runtime read through the package's edits (pure tests) |
 | `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`; imports nothing of WinRT, safe on the host's main thread |
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
@@ -163,9 +163,9 @@ changes is set through `{@attach control(...)}`, as components do.
 
 ## Transitions (`winui-svelte/element-animation`)
 
-Svelte's compiler refuses `transition:`, `in:`, `out:` and `animate:` when
-it draws through a custom renderer (`incompatible_with_custom_renderer`: they
-drive the DOM's `Element.animate()`). The same transition functions
+The package refuses `transition:`, `in:`, `out:` and `animate:` at compile time
+(`assertNoWebAnimations`: they drive the DOM's `Element.animate()`, which a
+WinUI window has no equivalent of). The same transition functions
 (`svelte/transition`'s `fade`, `fly`, `scale`, `blur`, or your own) are
 played by attachments instead:
 
@@ -260,18 +260,16 @@ function onFlush(listener: () => void): () => void;
 ## Vite (`winui-svelte/vite`)
 
 ```ts
-// The one line in an app's vite.config.ts: wraps @sveltejs/vite-plugin-svelte
-// with the custom renderer, client generation, css "external" (the CSS part
-// takes the <style> blocks over), the "browser" resolve condition and the
-// window module environment (named "winui").
-function winuiSvelte(options?: WinuiSvelteOptions): Plugin[];
-
-interface WinuiSvelteOptions {
-  renderer?: string;   // the module a component imports its renderer from; default "winui-svelte/host"
-}
+// The one line in an app's vite.config.ts: compiles .svelte files and
+// .svelte.ts runes modules with Svelte's own compiler (client generation, css
+// "external": the CSS part takes the <style> blocks over; Svelte's hot module
+// replacement in serve), reads Svelte's runtime with the package's event edits,
+// and sets the "browser" and "svelte" resolve conditions and the window module
+// environment (named "winui"). No other Svelte plugin is needed or wanted.
+function winuiSvelte(): Plugin[];
 
 // The pure parts, for tests.
-function winuiPluginOptions(options?: WinuiSvelteOptions): { svelte: Options; compile: CompileOptions };
+function winuiPluginOptions(): { compile: CompileOptions };
 function windowConfig(): UserConfig;
 
 // Hot reload inside the window process: a Vite dev server with no HTTP
@@ -281,7 +279,6 @@ function startModuleServer(options: {
   port: MessagePort;                       // the runner's counterpart
   configFile?: string;                     // the app's vite.config; without one, winuiSvelte() defaults serve
   isNative?: (file: string) => boolean;    // an app's own native modules (the package's bindings are built in)
-  renderer?: string;
 }): Promise<ViteDevServer>;
 
 // winui-svelte/runner: the window thread's side. `receive()` is called from a
@@ -289,6 +286,18 @@ function startModuleServer(options: {
 // the window goes on.
 function createWindowModuleRunner(port: MessagePort): { runner: ModuleRunner; receive(): void };
 ```
+
+Svelte is a published release (peer range `~5.56.7`), compiled with its own
+compiler and run on its own client runtime. The package owns the rest: the
+tree's nodes are shaped like DOM nodes (`src/renderer/tree/dom.ts`), and
+`installDom()` (`document.ts`, called by `mountControl`) defines the `document`,
+`Node`, `Element`, `Text`, `Comment` and `DocumentFragment` the runtime reads.
+A component's static markup is parsed once into inert nodes and cloned into
+the tree. Three spots of the runtime are read with edits (`runtime-patch.ts`,
+applied by the plugin and by `svelteHooks()`): a handler gets all of WinUI's
+arguments (sender and args), delegated events listen on their own control, and
+the root listener is off. An edit whose anchor is missing throws, naming the
+file: it means a Svelte release outside the peer range.
 
 Compile errors: a `.svelte` file that does not compile is printed on the host
 process's stderr as `file:line:column: message [code]` and its code frame (at
@@ -1217,5 +1226,5 @@ entry point is named nowhere in the docs.
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
 | `WINDOW_ENVIRONMENT` | `winui-svelte/vite` | the Vite environment the window's modules load in |
 | `LOG_EVENT` | `winui-svelte/runner` | the event the window thread's log lines are sent under |
-| `WINUI_RENDERER`, `rendererImport`, `isSvelteFile` | `winui-svelte/compile` | the renderer module a component imports, how a file imports it, whether a file is a component |
+| `WINUI_COMPILE_OPTIONS`, `isSvelteFile`, `assertNoWebAnimations` | `winui-svelte/compile` | what every component is compiled with, whether a file is a component, and the check that refuses `transition:`, `in:`, `out:` and `animate:` |
 | `TitleBarHeight`, `WindowPresentation`, `WindowTheme` | `winui-svelte/window` | the title bar height, presentation and theme choices of a window |

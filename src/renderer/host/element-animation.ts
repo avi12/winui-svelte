@@ -1,4 +1,4 @@
-import renderer from "./host.ts";
+import { renderer } from "./host.ts";
 import type { Keyframe, Pose, Vector } from "./keyframes.ts";
 import {
   poseAt,

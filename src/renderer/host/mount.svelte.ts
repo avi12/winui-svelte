@@ -1,14 +1,16 @@
-import renderer, {
+import {
   releaseFragment,
+  renderer,
   rootControl,
   swapControl,
   unwatchRoot,
   watchRoot
 } from "./host.ts";
+import { mountOnTree } from "#src/renderer/tree/document.js";
 import { flush } from "#src/scheduling.js";
 import type { FrameworkElement } from "#src/winui.js";
 import type { Component } from "svelte";
-import { mount, unmount } from "svelte";
+import { unmount } from "svelte";
 
 // A .svelte component mounted on WinUI: its root control, to put in the page,
 // and set(), which changes some of its props; Svelte then updates only what
@@ -43,7 +45,8 @@ export function mountControl<Props extends object>({ component, props: initial }
 }) {
   const props = $state(initial);
   const fragment = renderer.createFragment();
-  const instance = mount(component, {
+  const instance = mountOnTree({
+    component,
     renderer,
     target: fragment,
     props

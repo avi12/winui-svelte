@@ -3,14 +3,13 @@ import { fakeControls, FakePanel } from "#src/renderer/testing/fake-controls.js"
 import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
-import path from "node:path";
 import { test } from "node:test";
 
 // Showing and hiding a block many times leaves nothing behind: the control
 // tree returns to its size.
 
 registerControls(fakeControls);
-registerHooks(svelteHooks(path.join(import.meta.dirname, "host.ts")));
+registerHooks(svelteHooks());
 const { mountControl } = await import("./mount.svelte.ts");
 const { default: Labeled } = await import("#src/renderer/testing/Labeled.fixture.svelte");
 

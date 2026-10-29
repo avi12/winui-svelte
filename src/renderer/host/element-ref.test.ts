@@ -3,14 +3,13 @@ import { fakeControls, FakePanel, FakeTextBlock, FakeToggle } from "#src/rendere
 import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
-import path from "node:path";
 import { test } from "node:test";
 
 // elementRef through a component: the attachment written on the component
 // reaches its element's control, and the ref follows the element's life.
 
 registerControls(fakeControls);
-registerHooks(svelteHooks(path.join(import.meta.dirname, "host.ts")));
+registerHooks(svelteHooks());
 const { mountControl } = await import("./mount.svelte.ts");
 const { default: Labeled } = await import("#src/renderer/testing/Labeled.fixture.svelte");
 

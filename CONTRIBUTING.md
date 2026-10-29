@@ -122,16 +122,17 @@ To make your editor show what the checks see:
 
 ## The Svelte build
 
-winui-svelte needs the Svelte build that adds the custom-renderer option
-(sveltejs/svelte#18042). `package.json`'s `svelte` devDependency installs it
-from pkg.pr.new, and the Vite plugin refuses to start with a Svelte that lacks
-the option, saying what to install.
+winui-svelte runs on a published Svelte (the `svelte` devDependency is pinned
+to the version its peer range `~5.56.7` starts at). It adds no compiler
+option: components compile with Svelte's own compiler, and the tree draws as a
+DOM (`src/renderer/tree/dom.ts`, `document.ts`). Three spots of Svelte's
+client runtime are read with edits (`src/vite/runtime-patch.ts`); each edit is
+an exact anchor, and a Svelte release that moves one makes the plugin and
+`svelteHooks()` throw, naming the file.
 
-Before a stable release: wait for the Svelte release that ships the
-custom-renderer API, replace the pkg.pr.new `svelte` devDependency with that
-version, and set the `svelte` peer range to it (the `*` peer is only honest
-while the build is unreleased). `CUSTOM_SVELTE_SOURCE` in
-`src/vite/custom-svelte.ts` then names the release instead.
+To support a newer Svelte: install it, run `pnpm test`, fix the anchors in
+`runtime-patch.ts` if they moved (and the bundle test, which reads the one-Button
+size), and then widen the peer range and the devDependency together.
 
 ## Patches
 

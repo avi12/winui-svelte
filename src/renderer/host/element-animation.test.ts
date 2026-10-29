@@ -4,7 +4,6 @@ import { fakeControls, FakeMotionPanel } from "#src/renderer/testing/fake-contro
 import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
-import path from "node:path";
 import { test } from "node:test";
 
 // Transition attachments on the WinUI renderer, run on stand-in controls and
@@ -13,7 +12,7 @@ import { test } from "node:test";
 // keyframes and go back, and what WinUI cannot animate is said once.
 
 registerControls(fakeControls);
-registerHooks(svelteHooks(path.join(import.meta.dirname, "host.ts")));
+registerHooks(svelteHooks());
 const { enableElementAnimation } = await import("./element-animation.ts");
 const { mountControl } = await import("./mount.svelte.ts");
 const { default: Fixture } = await import("#src/renderer/testing/Transitions.fixture.svelte");
