@@ -19,7 +19,8 @@
 
   function focusField() {
     const control = field.current;
-    if (control !== undefined) {
+    const isReady = control !== undefined;
+    if (isReady) {
       focusElement({
         control,
         state: FocusKind.keyboard

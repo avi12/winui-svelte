@@ -3,15 +3,19 @@
   import type { Tally, TallyAction } from "#examples/gallery/tally-host.ts";
   import { startTallyHost, TALLY_NAME } from "#examples/gallery/tally-host.ts";
   import { keyControl } from "#examples/harness/smoke.ts";
+  import { untrack } from "svelte";
   import { Button, StackPanel, TextBlock } from "winui-svelte/components";
   import { createHostChannel, hostState } from "winui-svelte/state";
 
   let count = $state(0);
-  const doubled = $derived(count * 2);
-  let parity = $state("even");
+  function doubled() {
+    return count * 2;
+  }
+  const seen = $state<number[]>([]);
 
   $effect(() => {
-    parity = count % 2 === 0 ? "even" : "odd";
+    const current = count;
+    untrack(() => seen.push(current));
   });
 
   const channel = createHostChannel<TallyAction>({ transport: startTallyHost() });
@@ -40,7 +44,7 @@
   <StackPanel class="state-block">
     <TextBlock text="$state, $derived and $effect" />
     <Button {@attach keyControl("state")} onClick={() => count++}>Count {count}</Button>
-    <TextBlock text="doubled {doubled}, {parity} (set by an $effect)" />
+    <TextBlock text="doubled {doubled()}; an $effect saw {seen.join(", ")}" />
   </StackPanel>
   <StackPanel class="state-block">
     <TextBlock text="Host state: {tally.current?.clicks ?? "waiting"} clicks" />

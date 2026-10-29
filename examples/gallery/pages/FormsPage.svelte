@@ -27,6 +27,7 @@
   const MAXIMUM_AGE = 120;
   const DEFAULT_AGE = 30;
   const DEFAULT_VOLUME = 40;
+  const DEFAULT_RATING = 3;
   const PLANS = ["Free", "Pro", "Team"];
   const CITIES = ["Haifa", "Tel Aviv", "Jerusalem"];
 
@@ -45,7 +46,7 @@
   let volume = $state(DEFAULT_VOLUME);
   let plan = $state(0);
   let city = $state(0);
-  let rating = $state(3);
+  let rating = $state(DEFAULT_RATING);
   let search = $state("");
   let birthday = $state<Date | undefined>();
   let appointment = $state<Date | undefined>();

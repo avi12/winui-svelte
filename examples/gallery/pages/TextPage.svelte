@@ -14,15 +14,21 @@
     TextHighlighter
   } from "winui-svelte/components";
 
+  const EDITOR_HEIGHT = 120;
   const SENTENCE = "Find the needle in the haystack";
   let query = $state("needle");
-  const start = $derived(SENTENCE.indexOf(query));
-  const ranges = $derived(
-    start < 0 || query.length === 0 ? [] : [{
-      startIndex: start,
+  function highlightRanges() {
+    const match = SENTENCE.indexOf(query);
+    const isMatchMissing = match < 0 || query.length === 0;
+    if (isMatchMissing) {
+      return [];
+    }
+
+    return [{
+      startIndex: match,
       length: query.length
-    }]
-  );
+    }];
+  }
 </script>
 
 <PageFrame
@@ -38,10 +44,10 @@
     <TextBox header="Highlight" bind:text={query} />
     <TextBlock text={SENTENCE}>
       {#snippet textHighlighters()}
-        <TextHighlighter background="#ffee00" {ranges} />
+        <TextHighlighter background="#ffee00" ranges={highlightRanges()} />
       {/snippet}
     </TextBlock>
-    <RichEditBox header="Document" height={120} />
+    <RichEditBox header="Document" height={EDITOR_HEIGHT} />
   </StackPanel>
 </PageFrame>
 

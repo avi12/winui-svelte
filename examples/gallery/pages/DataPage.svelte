@@ -2,43 +2,39 @@
   import PageFrame from "#examples/gallery/PageFrame.svelte";
   import { keyControl } from "#examples/harness/smoke.ts";
   import {
-    Button,
+    CalendarDatePicker,
     Canvas,
+    Path,
     Polygon,
-    ProgressBar,
     StackPanel,
-    TextBlock,
-    ToggleSwitch
+    TextBlock
   } from "winui-svelte/components";
 
-  const PROGRESS_STEP = 10;
-  const MAXIMUM_PROGRESS = 100;
-  let progress = $state(30);
+  const CANVAS_HEIGHT = 90;
+  const DIAMOND = "20,40 60,0 100,40 60,80";
+  const TRIANGLE_LEFT = 120;
+  const PATH_LEFT = 240;
+  const MILLENNIUM = "2000-01-01";
 </script>
 
 <PageFrame
-  caption="Props that WinUI types as a struct take what you would write: a number or text for a duration, a Date, an array for a point, text for a list of points."
+  caption="A prop that WinUI types as a struct takes what you would write: text for a weight, text for points, path data for a geometry, an ISO string for a date."
   title="Data"
 >
   <StackPanel class="data-block">
-    <ProgressBar {@attach keyControl("data")} value={progress} />
-    <Button onClick={() => (progress = (progress + PROGRESS_STEP) % (MAXIMUM_PROGRESS + PROGRESS_STEP))}>
-      Step ({progress}%)
-    </Button>
-    <ToggleSwitch header="Toggle (0.3s transition, set as text)" />
-    <Canvas class="data-canvas">
-      <Polygon canvasLeft={20} fill="#00e5ff" points="0,40 40,0 80,40 40,80" />
+    <TextBlock {@attach keyControl("data")} fontWeight="bold" text="fontWeight is the text 'bold'" />
+    <Canvas class="data-canvas" height={CANVAS_HEIGHT}>
+      <Polygon fill="#00e5ff" points={DIAMOND} />
+      <Polygon canvasLeft={TRIANGLE_LEFT} fill="#c42b1c" points="0,40 40,0 80,40" />
+      <Path canvasLeft={PATH_LEFT} data="M0,0 L60,0 L30,50 Z" fill="#6b2fa0" />
     </Canvas>
-    <TextBlock text="Points: '0,40 40,0 80,40 40,80'. Dates: {new Date(0).toISOString()}" />
+    <TextBlock text="Points as text, and a Path's geometry as path data" />
+    <CalendarDatePicker date={MILLENNIUM} header="A date from an ISO string" />
   </StackPanel>
 </PageFrame>
 
 <style>
   :global(.data-block) {
     gap: 8px;
-  }
-
-  :global(.data-canvas) {
-    height: 90px;
   }
 </style>

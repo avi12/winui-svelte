@@ -31,11 +31,13 @@ export function startTallyHost() {
     },
     reduce({ state, action }) {
       const parsed = actionSchema.parse(action);
-      if (parsed.kind === "refuse") {
+      const isRefused = parsed.kind === "refuse";
+      if (isRefused) {
         throw new Error("the host refuses this one");
       }
 
-      if (parsed.kind === "reset") {
+      const isReset = parsed.kind === "reset";
+      if (isReset) {
         return {
           clicks: 0,
           log: []

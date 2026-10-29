@@ -20,6 +20,7 @@
       <circle cx="48" cy="48" r="24" fill="#06182b"/>
     </svg>`
   );
+  const PLAYER_HEIGHT = 160;
   const CONNECTED_KEY = "badge";
 
   const thumbnail = elementRef<UIElement>();
@@ -29,7 +30,8 @@
 
   function showDetail() {
     const element = thumbnail.current;
-    if (element !== undefined) {
+    const isReady = element !== undefined;
+    if (isReady) {
       connectElement({
         key: CONNECTED_KEY,
         element
@@ -41,7 +43,8 @@
 
   $effect(() => {
     const element = hero.current;
-    if (element !== undefined) {
+    const isReady = element !== undefined;
+    if (isReady) {
       outcome = startConnected({
         key: CONNECTED_KEY,
         element
@@ -63,7 +66,7 @@
       <Button onClick={showDetail}>Open it large</Button>
     {/if}
     <TextBlock text="Connected animation: {outcome}" />
-    <MediaPlayerElement areTransportControlsEnabled height={160} />
+    <MediaPlayerElement areTransportControlsEnabled height={PLAYER_HEIGHT} />
   </StackPanel>
 </PageFrame>
 

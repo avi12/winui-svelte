@@ -8,14 +8,14 @@
     children: Snippet;
   }
 
-  const { title, caption, children }: Props = $props();
+  const props: Props = $props();
 </script>
 
 <ScrollViewer>
   <StackPanel class="gallery-page">
-    <TextBlock class="gallery-title" text={title} />
-    <TextBlock class="gallery-caption" text={caption} />
-    {@render children()}
+    <TextBlock class="gallery-title" text={props.title} />
+    <TextBlock class="gallery-caption" text={props.caption} />
+    {@render props.children()}
   </StackPanel>
 </ScrollViewer>
 

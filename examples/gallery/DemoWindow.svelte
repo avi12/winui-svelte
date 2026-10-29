@@ -5,11 +5,11 @@
     message: string;
   }
 
-  const { message }: Props = $props();
+  const props: Props = $props();
 </script>
 
 <StackPanel class="demo-window">
-  <TextBlock text={message} />
+  <TextBlock text={props.message} />
   <TextBlock text="A second window made with createWindow." />
 </StackPanel>
 
