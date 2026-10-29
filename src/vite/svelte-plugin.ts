@@ -1,4 +1,4 @@
-import { assertNoWebAnimations } from "./compile.ts";
+import { withElementAnimation } from "./compile.ts";
 import { isPatchedRuntime, patchSvelteRuntime } from "./runtime-patch.ts";
 import type { CompileOptions, ModuleCompileOptions } from "svelte/compiler";
 import { compile, compileModule } from "svelte/compiler";
@@ -135,17 +135,17 @@ export function svelteCompiler(options: CompileOptions) {
           css: "external",
           filename
         });
-        assertNoWebAnimations({
-          filename,
-          source: code
-        });
         reportWarnings({
           context: this,
           warnings,
           filename
         });
         return {
-          code: js.code,
+          code: withElementAnimation({
+            source: code,
+            code: js.code,
+            isComponent: true
+          }),
           map: js.map
         };
       } catch (error) {
@@ -178,7 +178,11 @@ export function svelteCompiler(options: CompileOptions) {
           filename
         });
         return {
-          code: js.code,
+          code: withElementAnimation({
+            source: code,
+            code: js.code,
+            isComponent: false
+          }),
           map: js.map
         };
       } catch (error) {
