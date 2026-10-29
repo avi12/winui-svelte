@@ -117,6 +117,22 @@ test("position's reasons are build errors", () => {
   }
 });
 
+test("sizes WinUI cannot say are build errors", () => {
+  const cases: Array<[string, RegExp]> = [
+    ["box-sizing: content-box", /content-box has no WinUI meaning/u],
+    ["width: 50%", /width: expected a length in px/u],
+    ["width: calc(100% - 8px)", /width: expected a length in px/u]
+  ];
+  for (const [declarations, pattern] of cases) {
+    assert.match(
+      lower({
+        elementType: null,
+        declarations
+      }).errors.join(), pattern, declarations
+    );
+  }
+});
+
 test("offsets without a position warn", () => {
   assert.match(
     lower({
@@ -161,6 +177,15 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["Height", "32"]
   ]],
   ["auto is NaN", null, "width: auto", [["Width", "NaN"]]],
+  ["100% fills as the parent allows", null, "width: 100%; height: 100%", [
+    ["Width", "NaN"],
+    ["Height", "NaN"]
+  ]],
+  ["calc of lengths", null, "width: calc(100px - 2 * 8px); min-height: calc(1rem + 4px)", [
+    ["Width", "84"],
+    ["MinHeight", "20"]
+  ]],
+  ["border-box is what WinUI does", null, "box-sizing: border-box", []],
   ["min and max", null, "min-width: 0; min-height: 68px; max-width: none; max-height: 300px", [
     ["MinWidth", "0"],
     ["MinHeight", "68"],

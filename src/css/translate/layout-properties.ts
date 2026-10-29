@@ -404,3 +404,15 @@ export function overflow(input: GroupInput) {
 
   return outputs;
 }
+
+/** `box-sizing`: a WinUI Width and Height include padding and border, so border-box is the only kind. */
+export function boxSizing(input: GroupInput) {
+  const reader = input.reading("box-sizing");
+  const word = reader.single()?.toLowerCase();
+  const isContentBox = word === "content-box";
+  if (isContentBox) {
+    reader.error("box-sizing: content-box has no WinUI meaning (a WinUI Width and Height include the padding and border, as border-box does; add the padding to the width)");
+  }
+
+  return [];
+}

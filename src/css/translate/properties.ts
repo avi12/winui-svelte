@@ -1,6 +1,7 @@
 import { borderThickness, cornerRadius, thicknessGroup } from "./box-properties.ts";
 import {
   alignmentProperty,
+  boxSizing,
   display,
   flexDirections,
   gap,
@@ -36,6 +37,11 @@ import { hitTesting, opacity, visibilities, zIndex } from "./visual-properties.t
 import { NOT_A_NUMBER, Reader, UNBOUNDED } from "#src/css/parse/reader.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 
+// Width and Height NaN is "as the parent allows", which a stretching element fills.
+const FILL_SIZES = new Map([
+  ["auto", NOT_A_NUMBER],
+  ["100%", NOT_A_NUMBER]
+]);
 const BASED_ON_PROPERTY = "-winui-based-on";
 
 /** The Style a declaration set lowers to. */
@@ -113,13 +119,17 @@ const propertyGroups: readonly PropertyGroup[] = [
   lengthProperty({
     member: "width",
     property: "Width",
-    extra: new Map([["auto", NOT_A_NUMBER]])
+    extra: FILL_SIZES
   }),
   lengthProperty({
     member: "height",
     property: "Height",
-    extra: new Map([["auto", NOT_A_NUMBER]])
+    extra: FILL_SIZES
   }),
+  {
+    members: ["box-sizing"],
+    lower: boxSizing
+  },
   lengthProperty({
     member: "min-width",
     property: "MinWidth",
