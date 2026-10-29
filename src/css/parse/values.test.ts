@@ -1,6 +1,5 @@
 import { parseColor } from "./colors.ts";
 import {
-  parseDegrees,
   parseLength,
   parseMilliseconds,
   parseNumber,
@@ -47,8 +46,6 @@ test("numbers, percentages and times", () => {
   assert.equal(parseMilliseconds("200ms"), 200);
   assert.equal(parseMilliseconds("0.2s"), 200);
   assert.equal(parseMilliseconds("200"), null);
-  assert.equal(parseDegrees("-45deg"), -45);
-  assert.equal(parseDegrees("45"), null);
 });
 
 test("var() reads its name and fallback", () => {

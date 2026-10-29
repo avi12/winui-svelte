@@ -1,5 +1,5 @@
+import { parseDegrees } from "#src/css/parse/angles.js";
 import {
-  parseDegrees,
   parseLength,
   parseNumber,
   parsePercent,

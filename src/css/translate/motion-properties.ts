@@ -1,8 +1,8 @@
 import { setter } from "./property-kit.ts";
 import type { GroupInput, Output } from "./property-kit.ts";
 import type { Reader } from "#src/css/parse/reader.js";
+import { parseDegrees } from "#src/css/parse/angles.js";
 import {
-  parseDegrees,
   parseLength,
   parseMilliseconds,
   parseNumber,
