@@ -4,6 +4,8 @@ export type { BalloonOptions, TrayIconChanges, TrayIconHandle, TrayIconImage, Tr
 export { removeAllTrayIcons } from "./tray-core.ts";
 export type { TrayIconSeams } from "./tray-icon.ts";
 export { createTrayIcon } from "./tray-icon.ts";
+export type { MenuPlacement, ScreenPoint, TrayMenuContext } from "./tray-menu.ts";
+export { placeMenuWindow } from "./tray-menu.ts";
 export type { TrayWindow } from "./window-tray.ts";
 export { hideToTray, restoreFromTray, toggleInTray } from "./window-tray.ts";
 export { default as TrayIcon } from "./TrayIcon.svelte";

@@ -27,7 +27,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
-| `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon`, `createTrayIcon()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
+| `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
 needs no build. `pnpm build` compiles them to `dist/` and `publishConfig`
@@ -1240,14 +1240,38 @@ or the overflow flyout. It reads input; it never sends any. What this means:
 
 | Works | Cannot be heard |
 |---|---|
-| click, double click, middle click, right click with its position | keyboard activation (Enter or the context-menu key on a focused icon), touch and pen taps, `NIN_BALLOONUSERCLICK` / `NIN_BALLOONTIMEOUT` (so `notify` has no click event), `NIN_POPUPOPEN` hover cards |
+| click, double click, middle click, right click with its position (the menu opens there) | keyboard activation (Enter or the context-menu key on a focused icon), touch and pen taps, `NIN_BALLOONUSERCLICK` / `NIN_BALLOONTIMEOUT` (so `notify` has no click event), `NIN_POPUPOPEN` hover cards |
 | icon swap on theme and DPI, restart of explorer, update, hide | clicks on an icon the user has moved into the hidden overflow flyout while it is closed |
 
-Menus: there is no `menu` snippet. WinUI shows a flyout only from an element in
-a live window, which a tray-only app does not have. On `oncontextmenu`, restore
-a window (or open a small one with `createWindow`) and open your own
-`MenuFlyout` or `CommandBarFlyout` at `{ x, y }`; bring the window forward first
-(`handle.activate()`), or the flyout will not close when the user clicks away.
+Menus: write the flyout in the `menu` snippet and a right click opens it at
+the pointer.
+
+```svelte
+<TrayIcon icon="app.ico" bind:menuAt>
+  {#snippet menu({ close })}
+    <MenuFlyout open onClosed={close}>
+      <MenuFlyoutItem onclick={showWindow}>Show</MenuFlyoutItem>
+      <MenuFlyoutItem onclick={quit}>Quit</MenuFlyoutItem>
+    </MenuFlyout>
+  {/snippet}
+</TrayIcon>
+```
+
+A flyout needs an element in a live window, and a tray-only app has none, so
+the component opens a one-pixel window for it: borderless, no taskbar button,
+always on top, at the pointer moved inside the work area of the monitor under
+it (a point on the taskbar lands on the work area's edge, and the flyout opens
+away from it). It is made on the first right click and closed with the menu: by
+`close()`, by a choice, or by the user clicking away (the window losing the
+foreground). The window takes the foreground when it opens, which a plain
+`SetForegroundWindow` is refused for a click the process only polled; the tray
+joins the foreground thread's input state for the call (`AttachThreadInput`).
+That sends no input. The menu follows the system's light or dark theme like any
+window, and `menuAt` (`bind:menuAt`, a screen point or null) opens or closes
+it from code. `shouldActivateMenu={false}` opens it without taking focus, for
+tests. Any flyout or `CommandBarFlyout` works; the snippet's content is a
+window's content.
+
 A Tauri or Electron host that already has a tray should keep it: two icons
 would show, and this one lives and dies with the WinUI window's process.
 

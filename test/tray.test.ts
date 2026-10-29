@@ -12,6 +12,31 @@ import { test } from "node:test";
 
 const TIMEOUT_MILLISECONDS = 300_000;
 const ICON_WIDTH_MINIMUM = 8;
+const WAIT_MILLISECONDS = 20_000;
+const POLL_MILLISECONDS = 300;
+
+async function untilFlyout({ example, isOpen }: {
+  example: ExampleProcess;
+  isOpen: boolean;
+}) {
+  const deadline = Date.now() + WAIT_MILLISECONDS;
+  for (;;) {
+    const report = await example.ask({
+      command: {
+        cmd: "info"
+      },
+      kind: "info"
+    });
+    const isMet = report["isFlyoutOpen"] === isOpen;
+    const isLate = Date.now() > deadline;
+    const isDone = isMet || isLate;
+    if (isDone) {
+      return report;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, POLL_MILLISECONDS));
+  }
+}
 
 test("a tray icon is added, follows its props, and leaves nothing behind", {
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
@@ -80,6 +105,35 @@ test("a tray icon is added, follows its props, and leaves nothing behind", {
     });
     assert.equal(restored["isWindowVisible"], true);
     assert.equal(restored["isShownInSwitchers"], true);
+    const menuPoint = {
+      x: 400,
+      y: 300
+    };
+    const menuOpened = await example.ask({
+      command: {
+        cmd: "menuOpen",
+        ...menuPoint
+      },
+      kind: "menuOpen"
+    });
+    assert.equal(menuOpened["isMenuOpen"], true);
+    const menuShown = await untilFlyout({
+      example,
+      isOpen: true
+    });
+    assert.equal(menuShown["isFlyoutOpen"], true, "the menu's flyout opened from the one-pixel window");
+    const menuClosed = await example.ask({
+      command: {
+        cmd: "menuClose"
+      },
+      kind: "menuClose"
+    });
+    assert.equal(menuClosed["isMenuOpen"], false);
+    const flyoutGone = await untilFlyout({
+      example,
+      isOpen: false
+    });
+    assert.equal(flyoutGone["isFlyoutOpen"], false, "closing the menu closes its flyout and window");
     const removed = await example.ask({
       command: {
         cmd: "remove"

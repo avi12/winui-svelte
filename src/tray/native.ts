@@ -102,6 +102,20 @@ export interface TrayNative {
   iconRect(identity: TrayIdentity): ScreenRect | null;
   readPointer(): PointerSample;
   isTaskbarLight(): boolean;
+
+  /** The work area (the display less the taskbar) of the monitor nearest the point. */
+  workAreaAt(point: {
+    x: number;
+    y: number;
+  }): ScreenRect;
+
+  /**
+   * Makes `hwnd` the foreground window. A process that was not just given the
+   * foreground (a tray click it polled for rather than received) is refused by
+   * a plain SetForegroundWindow, so this joins the foreground thread's input
+   * state for the call. It sends no input.
+   */
+  focusWindow(hwnd: bigint): void;
 }
 
 const NOTIFY_ICON_DATA_SIZE = 976;
@@ -157,6 +171,11 @@ const CLASS_NAME_CHARS = 128;
 const POINT_SHIFT = 32n;
 const POINT_MASK = 0xFFFFFFFFn;
 const DWORD_BYTES = 4;
+const MONITOR_INFO_SIZE = 40;
+const MONITOR_WORK_OFFSET = 20;
+const MONITOR_WORK_RIGHT = 8;
+const MONITOR_WORK_BOTTOM = 12;
+const MONITOR_DEFAULT_TO_NEAREST = 2;
 const TRAY_WINDOW_CLASSES: ReadonlySet<string> = new Set([
   "Shell_TrayWnd",
   "Shell_SecondaryTrayWnd",
@@ -381,6 +400,48 @@ export function createTrayNative() {
     parameters: ["pointer", "pointer", "pointer", "u32", "pointer", "pointer", "pointer"],
     returnType: "i32"
   });
+  const monitorFromPoint = bind({
+    dll: "user32.dll",
+    entryPoint: "MonitorFromPoint",
+    parameters: ["i64", "u32"],
+    returnType: "pointer"
+  });
+  const monitorInfo = bind({
+    dll: "user32.dll",
+    entryPoint: "GetMonitorInfoW",
+    parameters: ["pointer", "pointer"],
+    returnType: "i32"
+  });
+  const foregroundWindow = bind({
+    dll: "user32.dll",
+    entryPoint: "GetForegroundWindow",
+    parameters: [],
+    returnType: "pointer"
+  });
+  const windowThread = bind({
+    dll: "user32.dll",
+    entryPoint: "GetWindowThreadProcessId",
+    parameters: ["pointer", "pointer"],
+    returnType: "u32"
+  });
+  const currentThread = bind({
+    dll: "kernel32.dll",
+    entryPoint: "GetCurrentThreadId",
+    parameters: [],
+    returnType: "u32"
+  });
+  const attachInput = bind({
+    dll: "user32.dll",
+    entryPoint: "AttachThreadInput",
+    parameters: ["u32", "u32", "i32"],
+    returnType: "i32"
+  });
+  const setForeground = bind({
+    dll: "user32.dll",
+    entryPoint: "SetForegroundWindow",
+    parameters: ["pointer"],
+    returnType: "i32"
+  });
   const pointBuffer = DynComRawMemory.allocate(POINT_BYTES, DWORD_BYTES);
   const classBuffer = DynComRawMemory.allocate(CLASS_NAME_CHARS * WIDE_CHAR_BYTES, WIDE_CHAR_BYTES);
 
@@ -396,7 +457,10 @@ export function createTrayNative() {
     x: number;
     y: number;
   }) {
-    const packed = (BigInt(y) << POINT_SHIFT) | (BigInt(x) & POINT_MASK);
+    const packed = packPoint({
+      x,
+      y
+    });
     const window = addressOf(windowFromPoint.invoke([DynWin32.i64(packed)]).returnValue);
     const root = addressOf(ancestor.invoke([DynWin32Unsafe.pointer(window), DynWin32.u32(GA_ROOT)]).returnValue);
     className.invoke([DynWin32Unsafe.pointer(root), pointerOf(classBuffer), DynWin32.i32(CLASS_NAME_CHARS)]);
@@ -438,6 +502,45 @@ export function createTrayNative() {
         });
       }
     });
+  }
+
+  function packPoint({ x, y }: {
+    x: number;
+    y: number;
+  }) {
+    return (BigInt(y) << POINT_SHIFT) | (BigInt(x) & POINT_MASK);
+  }
+
+  function readWorkArea(point: {
+    x: number;
+    y: number;
+  }) {
+    const found = monitorFromPoint.invoke([DynWin32.i64(packPoint(point)), DynWin32.u32(MONITOR_DEFAULT_TO_NEAREST)]);
+    const monitor = addressOf(found.returnValue);
+    return withMemory({
+      size: MONITOR_INFO_SIZE,
+      alignment: DWORD_BYTES,
+      use(info) {
+        info.writeU32(OFFSET_SIZE, MONITOR_INFO_SIZE);
+        monitorInfo.invoke([DynWin32Unsafe.pointer(monitor), pointerOf(info)]);
+        return {
+          left: info.readI32(MONITOR_WORK_OFFSET),
+          top: info.readI32(MONITOR_WORK_OFFSET + DWORD_BYTES),
+          right: info.readI32(MONITOR_WORK_OFFSET + MONITOR_WORK_RIGHT),
+          bottom: info.readI32(MONITOR_WORK_OFFSET + MONITOR_WORK_BOTTOM)
+        };
+      }
+    });
+  }
+
+  function takeForeground(hwnd: bigint) {
+    const foreground = addressOf(foregroundWindow.invoke([]).returnValue);
+    const threadOfForeground = windowThread.invoke([DynWin32Unsafe.pointer(foreground), pointerOf(null)]);
+    const foregroundThread = numberOf(threadOfForeground.returnValue);
+    const ownThread = numberOf(currentThread.invoke([]).returnValue);
+    attachInput.invoke([DynWin32.u32(ownThread), DynWin32.u32(foregroundThread), DynWin32.i32(1)]);
+    setForeground.invoke([DynWin32Unsafe.pointer(hwnd)]);
+    attachInput.invoke([DynWin32.u32(ownThread), DynWin32.u32(foregroundThread), DynWin32.i32(0)]);
   }
 
   function readLightTheme() {
@@ -524,7 +627,9 @@ export function createTrayNative() {
         isOnTray: isTrayWindowAt(point)
       };
     },
-    isTaskbarLight: readLightTheme
+    isTaskbarLight: readLightTheme,
+    workAreaAt: readWorkArea,
+    focusWindow: takeForeground
   };
   return native;
 }

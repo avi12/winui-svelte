@@ -2,10 +2,10 @@
   import { writeIconFile } from "./icon-file.ts";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import { flush } from "winui-svelte";
-  import { Window } from "winui-svelte/components";
+  import { MenuFlyout, MenuFlyoutItem, Window } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
   import { hideToTray, restoreFromTray, TrayIcon } from "winui-svelte/tray";
-  import type { TrayIconHandle } from "winui-svelte/tray";
+  import type { ScreenPoint, TrayIconHandle } from "winui-svelte/tray";
   import { exitApplication } from "winui-svelte/window";
 
   const LIGHT_GLYPH = 240;
@@ -31,6 +31,9 @@
   let isVisible = $state(true);
   let tray: TrayIconHandle | undefined = $state();
   let handle: WindowHandle | undefined = $state();
+  let menuAt = $state<ScreenPoint | null>(null);
+  let isFlyoutOpen = $state(false);
+  let chosen = 0;
   let clicks = 0;
   let contextMenus = 0;
 
@@ -57,7 +60,10 @@
       isWindowVisible: handle?.appWindow.isVisible,
       isShownInSwitchers: handle?.appWindow.isShownInSwitchers,
       clicks,
-      contextMenus
+      contextMenus,
+      isMenuOpen: menuAt !== null,
+      isFlyoutOpen,
+      chosen
     });
   }
 
@@ -88,6 +94,17 @@
       restoreFromTray(requireWindow());
 
       report("restore");
+    }],
+    ["menuOpen", command => {
+      menuAt = {
+        x: Number(command["x"]),
+        y: Number(command["y"])
+      };
+      report("menuOpen");
+    }],
+    ["menuClose", () => {
+      menuAt = null;
+      report("menuClose");
     }],
     ["remove", () => {
       tray?.remove();
@@ -130,9 +147,33 @@
   oncontextmenu={() => {
     contextMenus++;
   }}
+  shouldActivateMenu={false}
   {tooltip}
   bind:handle={tray}
-/>
+  bind:menuAt
+>
+  {#snippet menu({ close })}
+    <MenuFlyout
+      {@attach () => () => {
+        isFlyoutOpen = false;
+      }}
+      onClosed={() => {
+        isFlyoutOpen = false;
+        close();
+      }}
+      onOpened={() => {
+        isFlyoutOpen = true;
+      }}
+      open
+    >
+      <MenuFlyoutItem
+        onclick={() => {
+          chosen++;
+        }}>Show</MenuFlyoutItem>
+      <MenuFlyoutItem>Quit</MenuFlyoutItem>
+    </MenuFlyout>
+  {/snippet}
+</TrayIcon>
 
 <style>
   .content {

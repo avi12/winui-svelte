@@ -891,9 +891,10 @@ Stated plainly, so nobody finds them by surprise:
   `winui-svelte/tray` reads the pointer and the buttons every 30 ms instead of
   receiving the shell's callback. Clicks, double clicks, middle clicks and
   right clicks (with their position) work; keyboard activation, touch, and a
-  click on a balloon cannot be heard, and there is no `menu` snippet (a flyout
-  needs a live window; open one yourself on `oncontextmenu`). A Tauri or
-  Electron host that already has a tray should keep using it.
+  click on a balloon cannot be heard (nothing says which icon has keyboard
+  focus, so Enter and Space on it are lost too). The `menu` snippet opens its
+  flyout from a one-pixel window made on the right click. A Tauri or Electron
+  host that already has a tray should keep using it.
 - **Base and thin acrylic are controller backdrops.** `acrylicBase` and
   `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
   `window.systemBackdrop` reads null for them (the controller holds the
