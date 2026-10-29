@@ -18,8 +18,8 @@
   let drawCount = 0;
 
   $effect(() => {
-    const isReady = native !== undefined;
-    if (!isReady) {
+    const control = native;
+    if (!control) {
       return;
     }
 
@@ -28,10 +28,10 @@
       painter: recording.painter,
       width: size.width,
       height: size.height,
-      dpi: native.dpi,
-      device: native.device
+      dpi: control.dpi,
+      device: control.device
     });
-    native.invalidate();
+    control.invalidate();
   });
 </script>
 
@@ -52,11 +52,11 @@
     onDrawn?.(drawCount);
   }}
   onSizeChanged={(...args) => {
-    const hasNative = native !== undefined;
-    if (hasNative) {
+    const control = native;
+    if (control) {
       size = {
-        width: native.actualWidth,
-        height: native.actualHeight
+        width: control.actualWidth,
+        height: control.actualHeight
       };
     }
 
