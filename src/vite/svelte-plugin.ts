@@ -18,6 +18,28 @@ const COMPONENT_PATTERN = /\.svelte$/u;
 const MODULE_PATTERN = /\.svelte\.[jt]s$/u;
 const SERVE_COMMAND = "serve";
 
+interface CompiledSourceMap {
+  version: number;
+  file?: string;
+  sources: string[];
+  sourcesContent?: Array<string | null>;
+  names: string[];
+  mappings: string;
+}
+
+// Svelte types its map with magic-string's class, which the emitted .d.ts
+// could not name; the plain fields are all Vite reads.
+function plainSourceMap({ version, file, sources, sourcesContent, names, mappings }: CompiledSourceMap) {
+  return {
+    version,
+    ...file === undefined ? {} : { file },
+    sources,
+    ...sourcesContent === undefined ? {} : { sourcesContent },
+    names,
+    mappings
+  };
+}
+
 interface SvelteDiagnostic {
   code?: string;
   filename?: string;
@@ -146,7 +168,7 @@ export function svelteCompiler(options: CompileOptions) {
         });
         return {
           code: js.code,
-          map: js.map
+          map: plainSourceMap(js.map)
         };
       } catch (error) {
         throw failureOf({
@@ -179,7 +201,7 @@ export function svelteCompiler(options: CompileOptions) {
         });
         return {
           code: js.code,
-          map: js.map
+          map: plainSourceMap(js.map)
         };
       } catch (error) {
         throw failureOf({
