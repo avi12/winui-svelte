@@ -157,6 +157,21 @@ test("grid-gap is an unknown property, as every legacy name is", () => {
   assert.match(result.errors.join(), /grid-gap has no WinUI meaning/u);
 });
 
+test("logical properties are the left-to-right, top-to-bottom physical ones", () => {
+  assert.deepEqual(
+    setters({
+      elementType: null,
+      declarations: "margin-inline: 4px 8px; padding-block-start: 2px; inline-size: 100px; min-block-size: 20px; max-inline-size: 300px"
+    }), [
+      ["Margin", "4,0,8,0"],
+      ["Padding", "0,2,0,0"],
+      ["Width", "100"],
+      ["MinHeight", "20"],
+      ["MaxWidth", "300"]
+    ]
+  );
+});
+
 test("sizes WinUI cannot say are build errors", () => {
   const cases: Array<[string, RegExp]> = [
     ["box-sizing: content-box", /content-box has no WinUI meaning/u],

@@ -353,7 +353,45 @@ function sideExpansion(side: (typeof SIDES)[number]) {
   return [`border-${side}`, expandSide] as const;
 }
 
+// Logical properties, for the left-to-right, top-to-bottom writing mode WinUI
+// lays out in: the inline axis is horizontal and the block axis vertical.
+const LOGICAL_SIDES: ReadonlyArray<readonly [string, string]> = [
+  ["inline-start", "left"],
+  ["inline-end", "right"],
+  ["block-start", "top"],
+  ["block-end", "bottom"]
+];
+const LOGICAL_PAIRS: ReadonlyArray<readonly [string, readonly [string, string]]> = [
+  ["inline", ["left", "right"]],
+  ["block", ["top", "bottom"]]
+];
+const LOGICAL_SIZES: ReadonlyArray<readonly [string, string]> = [
+  ["inline-size", "width"],
+  ["block-size", "height"]
+];
+const BOX_PROPERTIES = ["margin", "padding"];
+const SIZE_PREFIXES = ["", "min-", "max-"];
+
+function renamed(property: string) {
+  return ({ declaration }: ExpansionInput) => [longhand({
+    declaration,
+    property,
+    value: declaration.value
+  })];
+}
+
+const logicalExpansions: ReadonlyArray<readonly [string, Expansion]> = [
+  ...BOX_PROPERTIES.flatMap(box => LOGICAL_SIDES.map(([logical, physical]) => [`${box}-${logical}`, renamed(`${box}-${physical}`)] as const)),
+  ...BOX_PROPERTIES.flatMap(box => LOGICAL_PAIRS.map(([logical, [first, second]]) => [`${box}-${logical}`, ({ declaration, reader }: ExpansionInput) => expandPair({
+    declaration,
+    reader,
+    names: [`${box}-${first}`, `${box}-${second}`]
+  })] as const)),
+  ...SIZE_PREFIXES.flatMap(prefix => LOGICAL_SIZES.map(([logical, physical]) => [`${prefix}${logical}`, renamed(`${prefix}${physical}`)] as const))
+];
+
 const expansions = new Map<string, Expansion>([
+  ...logicalExpansions,
   ["margin", ({ declaration, reader }) => expandBox({
     declaration,
     names: SIDES,

@@ -392,6 +392,14 @@ at-rule inside a rule (`.a { @media (min-width: 600px) { ... } }`) styles the
 rule's own selector under that at-rule; `@supports`, `@layer` and `@container`
 still have no WinUI meaning and say so.
 
+## Logical properties
+
+WinUI lays out left to right, top to bottom, so the inline axis is horizontal and
+the block axis vertical: `margin-inline`, `margin-block`, `padding-inline`,
+`padding-block` and their `-start` / `-end` forms are the left, right, top and
+bottom longhands, and `inline-size` and `block-size` (with `min-` and `max-`) are
+the width and height. `text-align: start` and `end` are Left and Right.
+
 ## Selectors
 
 A selector is one compound of a type, classes and one state (`:hover`,
