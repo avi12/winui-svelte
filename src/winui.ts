@@ -35,3 +35,5 @@ export { PropertyValue } from "#winui/windows/foundation/PropertyValue";
 export { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
 export { Window } from "#winui/microsoft/ui/xaml/Window";
 export { FocusState } from "#winui/microsoft/ui/xaml/FocusState";
+export { UISettings } from "#winui/windows/ui/view-management/UISettings";
+export { UIColorType } from "#winui/windows/ui/view-management/UIColorType";
