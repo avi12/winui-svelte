@@ -1,3 +1,4 @@
+import { extraPackages } from "#scripts/codegen/tables.ts";
 import { filesIn } from "#scripts/files-in.ts";
 import { WINAPP_BINARIES, WINAPP_BINDINGS } from "#scripts/winapp-paths.ts";
 import { spawnSync } from "node:child_process";
@@ -42,10 +43,11 @@ const SHIPPED_BINDINGS = path.join(OUTPUT_FOLDER, "bindings");
 const RESTORED_BOOTSTRAPPERS = WINAPP_BINARIES;
 const SHIPPED_BOOTSTRAPPERS = path.join(OUTPUT_FOLDER, "bin");
 // The native libraries the package carries per architecture: the Windows App
-// SDK's bootstrapper, and what a WebView2 loads (scripts/bindings/after-winapp.ts
-// puts the second there; arm64ec has neither).
+// SDK's bootstrapper, and what each extra package ships (extraPackages in
+// scripts/codegen/tables.ts: the WebView2 and Win2D libraries, which
+// scripts/bindings/after-winapp.ts and winapp put in .winapp/bin; arm64ec has
+// none of them).
 const BOOTSTRAPPER = "Microsoft.WindowsAppRuntime.Bootstrap.dll";
-const WEBVIEW_LIBRARIES = ["WebView2Loader.dll", "Microsoft.Web.WebView2.Core.dll"];
 const copiedExtensions = [".svelte", ".json"];
 const DECLARATION_SUFFIX = ".d.svelte.ts";
 // `from "./x.ts"` and `import("./x.ts")` in a .svelte script.
@@ -117,21 +119,33 @@ function copyBindings() {
   );
 }
 
+function copyExtraLibraries({ extra, architecture }: {
+  extra: (typeof extraPackages)[number];
+  architecture: string;
+}) {
+  const restoredLibraries = extra.libraries.filter(
+    library => existsSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, library))
+  );
+  const isPartial = restoredLibraries.length > 0 && restoredLibraries.length < extra.libraries.length;
+  if (isPartial) {
+    throw new Error(`${architecture} has only ${restoredLibraries.join(", ")} of ${extra.libraries.join(", ")} (${extra.name}): run pnpm bindings`);
+  }
+
+  for (const library of restoredLibraries) {
+    copyFileSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, library), path.join(SHIPPED_BOOTSTRAPPERS, architecture, library));
+  }
+}
+
 function copyBootstrappers() {
   for (const architecture of readdirSync(RESTORED_BOOTSTRAPPERS)) {
     const target = path.join(SHIPPED_BOOTSTRAPPERS, architecture);
     mkdirSync(target, { recursive: true });
     copyFileSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, BOOTSTRAPPER), path.join(target, BOOTSTRAPPER));
-    const restoredLibraries = WEBVIEW_LIBRARIES.filter(
-      library => existsSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, library))
-    );
-    const isPartial = restoredLibraries.length > 0 && restoredLibraries.length < WEBVIEW_LIBRARIES.length;
-    if (isPartial) {
-      throw new Error(`${architecture} has only ${restoredLibraries.join(", ")} of ${WEBVIEW_LIBRARIES.join(", ")}: run pnpm bindings`);
-    }
-
-    for (const library of restoredLibraries) {
-      copyFileSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, library), path.join(target, library));
+    for (const extra of extraPackages) {
+      copyExtraLibraries({
+        extra,
+        architecture
+      });
     }
   }
 }

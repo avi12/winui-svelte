@@ -336,6 +336,51 @@ export const bindingsAfterWinapp = new Set([
   "Microsoft.UI.Xaml.Controls.WebView2"
 ]);
 
+/** How an extra package's classes reach the bindings. */
+export const BindingScope = {
+  // The classes of bindingsAfterWinapp, emitted with the Microsoft.UI.Xaml metadata.
+  LISTED: "listed",
+  // Every namespace of the package's own winmd.
+  WHOLE_PACKAGE: "whole-package"
+} as const;
+export type BindingScope = typeof BindingScope[keyof typeof BindingScope];
+
+/**
+ * The NuGet packages beyond the Windows App SDK that winapp.yaml restores and
+ * scripts/bindings/after-winapp.ts makes bindings for (winapp's own run cannot
+ * pass their metadata): the one table that script and the build both read.
+ * `libraries` are the native files the package ships per architecture;
+ * `restoredLibrary` is set when winapp does not copy the library to .winapp/bin
+ * itself, and says where in the package it is.
+ */
+export const extraPackages: Array<{
+  name: string;
+  winmd: string;
+  scope: BindingScope;
+  libraries: string[];
+  restoredLibrary?: {
+    file: string;
+    runtimeFolder: string;
+  };
+}> = [
+  {
+    name: "WebView2",
+    winmd: "Microsoft.Web.WebView2.Core.winmd",
+    scope: BindingScope.LISTED,
+    libraries: ["WebView2Loader.dll", "Microsoft.Web.WebView2.Core.dll"],
+    restoredLibrary: {
+      file: "Microsoft.Web.WebView2.Core.dll",
+      runtimeFolder: "native_uap"
+    }
+  },
+  {
+    name: "Win2D",
+    winmd: "Microsoft.Graphics.Canvas.winmd",
+    scope: BindingScope.WHOLE_PACKAGE,
+    libraries: ["Microsoft.Graphics.Canvas.dll"]
+  }
+];
+
 // A property whose value changes by the user raises an event; the property
 // is then $bindable(). The rule `<Property>Changed` finds the regular ones;
 // these are the irregular, each listing the events that say the value

@@ -1,4 +1,4 @@
-import { bindingsAfterWinapp } from "#scripts/codegen/tables.ts";
+import { BindingScope, bindingsAfterWinapp, COMPONENT_WINMD, extraPackages } from "#scripts/codegen/tables.ts";
 import { filesIn } from "#scripts/files-in.ts";
 import { WINAPP_BINARIES, WINAPP_BINDINGS, WINAPP_LOCK } from "#scripts/winapp-paths.ts";
 import { execFileSync } from "node:child_process";
@@ -15,22 +15,21 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { z } from "zod";
 
-// The bindings of the classes winapp's run cannot make (bindingsAfterWinapp in
-// scripts/codegen/tables.ts: WebView2, whose events name Microsoft.Web.WebView2.Core
-// types winapp passes to the code generator neither to emit nor to resolve
-// against, and the swap chain panels). This runs the generator for them with
-// that metadata among the winmds to emit, and adds the files winapp's run did
-// not make to .winapp/bindings. It also puts the native library the control activates its Core types from
-// (Microsoft.Web.WebView2.Core.dll, which winapp restores no more than it passes
-// the winmd) beside the other restored libraries, where the build ships it.
+// The bindings of the classes winapp's run cannot make, from the packages of
+// extraPackages in scripts/codegen/tables.ts: WebView2 (its events name
+// Microsoft.Web.WebView2.Core types winapp passes to the code generator neither
+// to emit nor to resolve against; the listed classes are bindingsAfterWinapp,
+// the swap chain panels among them) and Win2D (every namespace of its winmd).
+// This runs the generator for each package with its metadata among the winmds
+// to emit, and adds the files winapp's run did not make to .winapp/bindings.
+// It also puts a native library winapp restores no more than it passes the
+// winmd (Microsoft.Web.WebView2.Core.dll) beside the other restored libraries,
+// where the build ships it.
 
 const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const GENERATOR = path.join(PACKAGE_ROOT, "node_modules", "@microsoft", "dynwinrt-codegen", "bin", process.arch, "dynwinrt-codegen.exe");
-const XAML_WINMD = /Microsoft\.UI\.Xaml\.winmd$/iu;
-const CORE_WINMD = /Microsoft\.Web\.WebView2\.Core\.winmd$/iu;
 const CONTROLS_NAMESPACE = "Microsoft.UI.Xaml.Controls";
 const CONTROLS_PREFIX = `${CONTROLS_NAMESPACE}.`;
-const NATIVE_LIBRARY = "Microsoft.Web.WebView2.Core.dll";
 // The architectures of .winapp/bin, by the runtime folder of the NuGet package.
 const runtimeFolders = new Map([
   ["x64", "win-x64"],
@@ -44,8 +43,10 @@ const lockSchema = z.object({
   packages: z.array(z.object({ winmds: z.array(z.string()) }))
 });
 
-// The classes are all in the controls namespace, which the generator takes once.
-function classNames() {
+type ExtraPackage = (typeof extraPackages)[number];
+
+// The listed classes are all in the controls namespace, which the generator takes once.
+function listedClassNames() {
   return [...bindingsAfterWinapp].map(fullName => {
     const isInControls = fullName.startsWith(CONTROLS_PREFIX);
     if (!isInControls) {
@@ -61,39 +62,46 @@ function winmdsOfLock() {
   return lock.packages.flatMap(entry => entry.winmds);
 }
 
-function emittedWinmds(winmds: string[]) {
-  const xaml = winmds.find(winmd => XAML_WINMD.test(winmd));
-  const core = winmds.find(winmd => CORE_WINMD.test(winmd));
-  const isComplete = xaml !== undefined && core !== undefined;
-  if (!isComplete) {
-    throw new Error(`${WINAPP_LOCK} must name Microsoft.UI.Xaml.winmd and Microsoft.Web.WebView2.Core.winmd: run winapp restore`);
+function winmdNamed({ winmds, name }: {
+  winmds: string[];
+  name: string;
+}) {
+  const found = winmds.find(winmd => path.basename(winmd).toLowerCase() === name.toLowerCase());
+  if (found === undefined) {
+    throw new Error(`${WINAPP_LOCK} must name ${name}: run winapp restore`);
   }
 
-  return {
-    xaml,
-    core
-  };
+  return found;
 }
 
-function generate({ workFolder, winmds, emitted }: {
+function generate({ workFolder, winmds, extra }: {
   workFolder: string;
   winmds: string[];
-  emitted: ReturnType<typeof emittedWinmds>;
+  extra: ExtraPackage;
 }) {
-  const emittedList = [emitted.xaml, emitted.core];
-  const referenceList = path.join(workFolder, "references.txt");
+  const isListed = extra.scope === BindingScope.LISTED;
+  const emittedList = [winmdNamed({
+    winmds,
+    name: extra.winmd
+  })];
+  if (isListed) {
+    emittedList.unshift(winmdNamed({
+      winmds,
+      name: COMPONENT_WINMD
+    }));
+  }
+
+  const referenceList = path.join(workFolder, `${extra.name}-references.txt`);
   writeFileSync(referenceList, winmds.filter(winmd => !emittedList.includes(winmd)).join("\n"));
-  const output = path.join(workFolder, "out");
+  const output = path.join(workFolder, extra.name);
+  const scopeArguments = isListed ? ["--namespace", CONTROLS_NAMESPACE, "--class-name", listedClassNames().join(",")] : [];
   execFileSync(GENERATOR, [
     "generate",
     "--winmd",
     emittedList.join(";"),
     "--ref-list",
     referenceList,
-    "--namespace",
-    CONTROLS_NAMESPACE,
-    "--class-name",
-    classNames().join(","),
+    ...scopeArguments,
     "--output",
     output
   ], { stdio: ["ignore", "ignore", "inherit"] });
@@ -118,41 +126,65 @@ function addMissingFiles(output: string) {
 }
 
 // The winmd is in the package's lib folder, the native libraries in its runtimes.
-function addNativeLibraries(coreWinmd: string) {
-  const packageFolder = path.dirname(path.dirname(coreWinmd));
+function addNativeLibraries({ winmd, restoredLibrary }: {
+  winmd: string;
+  restoredLibrary: NonNullable<ExtraPackage["restoredLibrary"]>;
+}) {
+  const packageFolder = path.dirname(path.dirname(winmd));
   let added = 0;
   for (const [architecture, runtimeFolder] of runtimeFolders) {
-    const source = path.join(packageFolder, "runtimes", runtimeFolder, "native_uap", NATIVE_LIBRARY);
+    const source = path.join(packageFolder, "runtimes", runtimeFolder, restoredLibrary.runtimeFolder, restoredLibrary.file);
     const targetFolder = path.join(WINAPP_BINARIES, architecture);
     const isCopyable = existsSync(source) && existsSync(targetFolder);
     if (isCopyable) {
-      copyFileSync(source, path.join(targetFolder, NATIVE_LIBRARY));
+      copyFileSync(source, path.join(targetFolder, restoredLibrary.file));
       added++;
     }
   }
 
   const hasNone = added === 0;
   if (hasNone) {
-    throw new Error(`${NATIVE_LIBRARY} was not found under ${packageFolder} for any architecture in ${WINAPP_BINARIES}: run winapp restore`);
+    throw new Error(`${restoredLibrary.file} was not found under ${packageFolder} for any architecture in ${WINAPP_BINARIES}: run winapp restore`);
   }
 
   return added;
 }
 
+function bindPackage({ workFolder, winmds, extra }: {
+  workFolder: string;
+  winmds: string[];
+  extra: ExtraPackage;
+}) {
+  const files = addMissingFiles(
+    generate({
+      workFolder,
+      winmds,
+      extra
+    })
+  );
+  const { restoredLibrary } = extra;
+  const libraries = restoredLibrary === undefined ? 0 : addNativeLibraries({
+    winmd: winmdNamed({
+      winmds,
+      name: extra.winmd
+    }),
+    restoredLibrary
+  });
+  process.stdout.write(`${extra.name}: ${files} binding files added, ${libraries} native libraries copied
+`);
+}
+
 function run() {
-  const workFolder = mkdtempSync(path.join(tmpdir(), "winui-svelte-webview2-"));
+  const workFolder = mkdtempSync(path.join(tmpdir(), "winui-svelte-extra-"));
   try {
     const winmds = winmdsOfLock();
-    const emitted = emittedWinmds(winmds);
-    const files = addMissingFiles(
-      generate({
+    for (const extra of extraPackages) {
+      bindPackage({
         workFolder,
         winmds,
-        emitted
-      })
-    );
-    const libraries = addNativeLibraries(emitted.core);
-    process.stdout.write(`${files} binding files added, ${NATIVE_LIBRARY} for ${libraries} architectures\n`);
+        extra
+      });
+    }
   } finally {
     rmSync(workFolder, {
       recursive: true,
