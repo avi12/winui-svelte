@@ -290,6 +290,24 @@ acrylic is untinted. Other filter functions are errors, and so is `filter`.
 
 Both are in `winui-svelte/css/surface`.
 
+## Styles for props: `styleOfClasses`
+
+A prop that takes a Style (`itemContainerStyle`, `closeButtonStyle`, ...) is
+not an element to style. A component given class names for it calls
+
+```ts
+styleOfClasses({ elementType: "list-view-item", classNames: "row picked" }): object | null
+```
+
+which picks the rules an element of that type and those classes would match
+(type selectors included; `:hover` and the other state rules are ignored), builds
+the Style through the cache elements use, and returns it, or null when no rule
+applies. A Style with no base builds on the element's `Default<Type>Style`, as an
+element's does. What only an element holds (a grid's columns, the focus ring,
+the custom properties of a class) throws, naming the class. The Style is built
+when called: a sheet registered later (hot reload) does not change it. Which
+`elementType` a prop styles is `src/components/style-targets.ts`.
+
 ## What stays unsupported, and why
 
 `unsupported-properties.ts` holds the reason shown for each property no group
