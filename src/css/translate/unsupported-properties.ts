@@ -22,7 +22,7 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["justify-content", `${ALIGNED_BY_CHILD} alignment: set justify-self on the child`],
   ["align-content", `${ALIGNED_BY_CHILD} alignment: set align-self on the child`],
   ["background-image", `a gradient ${OPT_IN}`],
-  ["box-shadow", "a WinUI shadow is a ThemeShadow, which takes no blur, offset, spread or color: use -winui-elevation, its depth in px"],
+  ["box-shadow", `a shadow ${OPT_IN}`],
   ["filter", "WinUI has no filters; use an acrylic or Mica backdrop"],
   ["backdrop-filter", `blur() ${OPT_IN}`],
   ["transform", `a transform ${OPT_IN}`],

@@ -210,6 +210,19 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["Shadow", "<ThemeShadow/>"],
     ["Translation", "0,0,16"]
   ]],
+  ["box-shadow depth is its blur", null, "box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3)", [
+    ["Shadow", "<ThemeShadow/>"],
+    ["Translation", "0,0,8"]
+  ]],
+  ["box-shadow without blur uses its larger offset", null, "box-shadow: 3px -6px red", [
+    ["Shadow", "<ThemeShadow/>"],
+    ["Translation", "0,0,6"]
+  ]],
+  ["box-shadow none casts nothing", null, "box-shadow: none", []],
+  ["elevation wins over box-shadow", null, "box-shadow: 0 0 4px red; -winui-elevation: 16px", [
+    ["Shadow", "<ThemeShadow/>"],
+    ["Translation", "0,0,16"]
+  ]],
   ["elevation keeps the x and y of translate", null, "translate: 4px 8px; -winui-elevation: 32px", [
     ["Shadow", "<ThemeShadow/>"],
     ["Translation", "4,8,32"]
@@ -478,7 +491,9 @@ test("a transition WinUI cannot animate warns and is dropped", () => {
 });
 
 const failures: Array<[string, string | null, string, RegExp]> = [
-  ["a property WinUI has no counterpart for", null, "box-shadow: 0 0 4px red", /^t\.svelte:1:6: box-shadow has no WinUI meaning \(a WinUI shadow is a ThemeShadow/u],
+  ["a property WinUI has no counterpart for", null, "float: left", /^t\.svelte:1:6: float has no WinUI meaning \(WinUI has no float/u],
+  ["an inset shadow", null, "box-shadow: inset 0 0 4px red", /box-shadow: inset has no WinUI meaning/u],
+  ["a box-shadow without an offset", null, "box-shadow: red", /box-shadow: expected offset-x offset-y/u],
   ["an unknown property", null, "frobnicate: 1", /frobnicate has no WinUI meaning \(WinUI has no property that corresponds to it\)/u],
   ["flex sizing of a child", null, "flex: 1", /flex has no WinUI meaning \(a child cannot size itself in its parent: give the parent grid-template-columns with fr tracks\)/u],
   ["align-items on a container", null, "align-items: center", /align-items has no WinUI meaning \(WinUI aligns a child by its own VerticalAlignment: set align-self on the child\)/u],
