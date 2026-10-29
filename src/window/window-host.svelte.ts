@@ -253,6 +253,7 @@ class WindowHost {
 
   dispose() {
     this.releaseBackdrop?.();
+    this.releaseBackdrop = null;
     for (const unsubscribe of this.unsubscribe.splice(0)) {
       unsubscribe();
     }
@@ -554,7 +555,13 @@ class WindowHost {
       window.appWindow.onClosing((_sender, event) => {
         event.cancel = this.isCloseRefused();
       }),
-      window.onClosed(() => this.props.onClosed?.()),
+      window.onClosed(() => {
+        // A DesktopAcrylicController left attached crashes the process when the
+        // window goes (access violation at exit).
+        this.releaseBackdrop?.();
+        this.releaseBackdrop = null;
+        this.props.onClosed?.();
+      }),
       window.appWindow.onChanged((_sender, event) => {
         const isMoved = event.didPositionChange || event.didSizeChange;
         if (isMoved) {
