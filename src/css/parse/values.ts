@@ -1,3 +1,5 @@
+import { evaluateCalc } from "./calc.ts";
+
 // The values a declaration holds, read one token at a time. Each parser
 // returns null when the token is not that kind of value, so a property can
 // try the kinds it accepts and name the one it expected.
@@ -85,8 +87,17 @@ export function splitSlash(text: string) {
 
 const lengthPattern = /^(-?(?:\d+\.?\d*|\.\d+))(px|rem)?$/iu;
 
-/** A length in device-independent pixels: `px`, `rem` (1rem is 16px) or a bare 0; null for anything else. */
+/**
+ * A length in device-independent pixels: `px`, `rem` (1rem is 16px), a bare 0
+ * or a `calc()` of them; null for anything else.
+ */
 export function parseLength(token: string) {
+  const folded = evaluateCalc(token);
+  const isCalc = folded !== null;
+  if (isCalc) {
+    return folded;
+  }
+
   const match = lengthPattern.exec(token);
   const isMatchMissing = match === null;
   if (isMatchMissing) {

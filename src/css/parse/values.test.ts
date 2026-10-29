@@ -20,7 +20,8 @@ test("lengths are px, rem (16px) or a bare zero", () => {
   assert.equal(parseLength("12"), null);
   assert.equal(parseLength("50%"), null);
   assert.equal(parseLength("2em"), null);
-  assert.equal(parseLength("calc(1px + 2px)"), null);
+  assert.equal(parseLength("calc(1px + 2px)"), 3);
+  assert.equal(parseLength("calc(100% - 2px)"), null);
 });
 
 test("colors are spelled the way XAML takes them", () => {
