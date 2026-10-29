@@ -1,3 +1,5 @@
+import type { GroupingProps } from "./grouping.ts";
+import { isGroupRowKey } from "./grouping.ts";
 import type { ItemNameProps, ItemRowsProps } from "./item-rows.svelte.ts";
 import {
   ItemRows,
@@ -49,10 +51,11 @@ const selectionKinds = new Map<ListViewSelectionMode, SelectionKind>([
 ]);
 
 /** What a list component takes besides its control's properties: the items and how a row shows one. */
-export interface ItemsHostProps<Item> extends ItemRowsProps<Item>, ItemNameProps<Item> {
-  // The user drags an item to a new place (the control's own reorder).
+export interface ItemsHostProps<Item> extends ItemRowsProps<Item>, ItemNameProps<Item>, Partial<GroupingProps<Item>> {
+  // The user drags an item to a new place (the control's own reorder). Not in
+  // a grouped list (`groupBy`), where an item's place is its group's.
   reorderable?: boolean;
-  // Alt+Up / Alt+Down moves the focused item one place.
+  // Alt+Up / Alt+Down moves the focused item one place. Not in a grouped list.
   keyboardReorder?: boolean;
   // The key of the selected item, in the single selection modes: bind it to
   // read the user's choice or to select an item. It follows the item when the
@@ -124,7 +127,7 @@ class ItemsHost<Item> implements ListHandle {
       view: this.selectionView(),
       codec: keyBox,
       bound: selection,
-      order: () => this.rows.order,
+      order: () => this.rows.itemOrder,
       isPaused: () => this.rows.isChanging || this.isDragging
     });
     view.itemTemplate = projectAs(XamlReader.load(templateOf(SLOT_ELEMENT)), DataTemplate);
@@ -145,9 +148,10 @@ class ItemsHost<Item> implements ListHandle {
       const isReorderable = props.reorderable;
       const isSpecified = isReorderable !== undefined;
       if (isSpecified) {
-        view.canReorderItems = isReorderable;
-        view.canDragItems = isReorderable;
-        view.allowDrop = isReorderable;
+        const canReorder = isReorderable && !this.isGrouped;
+        view.canReorderItems = canReorder;
+        view.canDragItems = canReorder;
+        view.allowDrop = canReorder;
       }
     });
   }
@@ -219,6 +223,15 @@ class ItemsHost<Item> implements ListHandle {
       item,
       props: this.props
     });
+
+    if (this.isGrouped) {
+      // A group's header is a row, not an item: it is not selected or focused.
+      container.isEnabled = !isGroupRowKey(key);
+    }
+  }
+
+  private get isGrouped() {
+    return this.props.groupBy !== undefined;
   }
 
   private dragCompleted() {
@@ -240,7 +253,8 @@ class ItemsHost<Item> implements ListHandle {
   }
 
   private keyDown(event: KeyRoutedEventArgs) {
-    const direction = this.props.keyboardReorder === true ? directionOf(event) : null;
+    const isKeyboardReorder = this.props.keyboardReorder === true && !this.isGrouped;
+    const direction = isKeyboardReorder ? directionOf(event) : null;
     const hasDirection = direction !== null;
     if (!hasDirection) {
       return;
