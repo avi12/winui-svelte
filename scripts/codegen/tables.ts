@@ -832,11 +832,16 @@ export const extraBindings: Array<{
     alias: "IReference_Rect",
     module: "#winui/windows/foundation/IReference_WindowsFoundationRect_g7d5f48bd5717ecb2"
   },
-  // The list components hold their keys in a vector of boxed values, and
+  // The list components hold their keys in a vector of boxed values (in a
+  // vector of groups, a grouped list's), and
   // narrow the controls WinUI hands back (projectAs).
   {
     name: "IVector_Object",
     module: "#winui/windows/foundation/collections/IVector_Object"
+  },
+  {
+    name: "IObservableVector_Object",
+    module: "#winui/windows/foundation/collections/IObservableVector_Object"
   },
   {
     name: "projectAs",

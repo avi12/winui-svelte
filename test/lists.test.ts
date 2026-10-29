@@ -1,4 +1,5 @@
 import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED, numberOf } from "./example-process.ts";
+import type { Report } from "./example-process.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -305,7 +306,7 @@ test("a list's selected key and its selection follow each other, through moves a
   }
 });
 
-test("a grouped list shows a header row before each group, which the user cannot pick", {
+test("a grouped list uses WinUI's own groups: headers that stick, no header among the items", {
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
   timeout: TIMEOUT_MILLISECONDS
 }, async () => {
@@ -314,8 +315,8 @@ test("a grouped list shows a header row before each group, which the user cannot
     flags: ["--view", "groups", "--rows", "25"]
   });
   try {
-    // 25 items in groups of 10: three headers among the control's 28 items,
-    // which only the first twelve show (a header disabled, an item enabled).
+    // 25 items in groups of 10: the control holds the 25 items, and the
+    // headers are the groups' own (each at its place in the list).
     const opened = await example.settled({
       command: {
         cmd: "stats"
@@ -325,60 +326,100 @@ test("a grouped list shows a header row before each group, which the user cannot
     assert.equal(
       numberOf({
         report: opened,
-        field: "rows"
-      }), 25
-    );
-    assert.equal(
-      numberOf({
-        report: opened,
         field: "controlItems"
-      }), 28
-    );
-    assert.equal(opened["enabled"], "011111111110");
-    assert.equal(
-      numberOf({
-        report: opened,
-        field: "live"
       }), 25
+    );
+    assert.equal(
+      topOf({
+        report: opened,
+        header: "Group 0 (10)"
+      }), 0
+    );
+    assert.ok(
+      topOf({
+        report: opened,
+        header: "Group 1 (10)"
+      }) > 0, `headers ${headersOf(opened)}`
     );
 
-    // An item that goes changes its group's header and nothing else.
-    const removed = await example.settled({
+    // The list scrolled to its end: the panel pins the header of the group in
+    // view to the top.
+    const scrolled = await example.settled({
       command: {
-        cmd: "remove",
-        key: "row-11"
+        cmd: "scroll",
+        key: "row-24"
       },
-      kind: "removed"
+      kind: "scrolled"
+    });
+    assert.equal(scrolled["isSticky"], true);
+    assert.ok(headersOf(scrolled).includes("Group 1 (10)@0"), `headers ${headersOf(scrolled)}`);
+
+    // A group that comes shifts the others' headers and keeps them right.
+    const prepended = await example.settled({
+      command: {
+        cmd: "prepend"
+      },
+      kind: "prepended"
     });
     assert.equal(
       numberOf({
-        report: removed,
+        report: prepended,
         field: "controlItems"
-      }), 27
+      }), 26
     );
+    const atTop = await example.settled({
+      command: {
+        cmd: "scroll",
+        key: "row-extra"
+      },
+      kind: "scrolled"
+    });
     assert.equal(
-      numberOf({
-        report: removed,
-        field: "created"
-      }), 25
+      topOf({
+        report: atTop,
+        header: "Extra (1)"
+      }), 0
     );
-    assert.equal(
-      numberOf({
-        report: removed,
-        field: "destroyed"
-      }), 1
+    assert.ok(
+      topOf({
+        report: atTop,
+        header: "Group 0 (10)"
+      }) > 0, `headers ${headersOf(atTop)}`
     );
 
-    // The app selects an item by its key: the header rows are no part of it.
+    // A group that goes takes its header with it; the others stay right.
+    const dropped = await example.settled({
+      command: {
+        cmd: "drop-group",
+        group: "Group 1"
+      },
+      kind: "dropped"
+    });
+    assert.equal(
+      numberOf({
+        report: dropped,
+        field: "controlItems"
+      }), 16
+    );
+    const droppedHeaders = headersOf(dropped);
+    assert.ok(!droppedHeaders.some(header => header.startsWith("Group 1")), `headers ${droppedHeaders}`);
+    assert.ok(
+      topOf({
+        report: dropped,
+        header: "Group 2 (5)"
+      }) > 0, `headers ${droppedHeaders}`
+    );
+
+    // The app selects an item by its key: the headers are no part of it.
     const selected = await example.settled({
       command: {
         cmd: "select",
-        key: "row-12"
+        key: "row-22"
       },
       kind: "selected"
     });
-    assert.deepEqual(selected["controlSelected"], ["row-12"]);
-    assert.equal(selected["selectedKey"], "row-12");
+    assert.deepEqual(selected["controlSelected"], ["row-22"]);
+    assert.equal(selected["selectedKey"], "row-22");
 
     example.send({ cmd: "close" });
     assert.equal(await example.exited, 0);
@@ -386,3 +427,22 @@ test("a grouped list shows a header row before each group, which the user cannot
     example.kill();
   }
 });
+
+function headersOf(report: Report) {
+  const headers = report["headers"];
+  const isList = Array.isArray(headers);
+  if (!isList) {
+    throw new Error(`the report has no headers: ${JSON.stringify(report)}`);
+  }
+
+  return headers.map(header => String(header));
+}
+
+// Where the header with this text is in the list (its top, in pixels), or NaN when it is not shown.
+function topOf({ report, header }: {
+  report: Report;
+  header: string;
+}) {
+  const found = headersOf(report).find(candidate => candidate.startsWith(`${header}@`));
+  return found === undefined ? Number.NaN : Number(found.slice(header.length + 1));
+}

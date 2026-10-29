@@ -1,9 +1,10 @@
 import type { Group, GroupingProps } from "./grouping.ts";
-import { groupItems, groupRowKey, isGroupRowKey } from "./grouping.ts";
+import { groupItems, groupRowKey } from "./grouping.ts";
 import { duplicateKey, syncKeyVector } from "./key-vector.ts";
 import type { KeyBox } from "./key-vector.ts";
 import { KeyedRows, mountSnippetRow } from "./keyed-rows.svelte.ts";
 import type { LiveRow } from "./live-rows.ts";
+import { NativeGroups } from "./native-groups.ts";
 import { DynWinRtType, DynWinRtValue } from "@microsoft/dynwinrt";
 import type { ContentControl, FrameworkElement } from "#src/components/generated/bindings.js";
 import { AutomationProperties, IVector_Object, PropertyValue } from "#src/components/generated/bindings.js";
@@ -90,11 +91,12 @@ export type FlatRowsProps<Item> = ItemRowsProps<Item> & Partial<GroupingProps<It
 export class ItemRows<Item> {
   /** The control's items: the keys, boxed. */
   readonly keys = IVector_Object.from(DynWinRtValue.createVector([], DynWinRtType.object()));
+  /** The groups of a grouped list (`groupBy`), which hold the items instead of `keys`. */
+  readonly groups: NativeGroups | undefined;
   private readonly props: FlatRowsProps<Item>;
   private readonly rows: KeyedRows<Entry<Item>>;
 
   private keyOrder: string[] = [];
-  private itemKeys: string[] = [];
   private isChangingKeys = false;
 
   constructor({ props, onSynced }: {
@@ -103,6 +105,7 @@ export class ItemRows<Item> {
     onSynced?: () => void;
   }) {
     this.props = props;
+    this.groups = props.groupBy === undefined ? undefined : new NativeGroups(keyBox);
     this.rows = new KeyedRows(args => this.mountEntry(args));
     $effect(() => {
       this.sync(props.items ?? []);
@@ -110,14 +113,29 @@ export class ItemRows<Item> {
     });
   }
 
-  /** The keys in the order the list shows them, a group's header among them. */
-  get order() {
-    return this.keyOrder;
+  /** What the control's `itemsSource` is: the groups' view, or the keys. */
+  get source() {
+    return this.groups?.view ?? this.keys;
   }
 
-  /** The keys of the items in the order the list shows them: what can be selected. */
-  get itemOrder() {
-    return this.itemKeys;
+  /** The key of the group at this place in a grouped list. */
+  groupKeyAt(index: number) {
+    if (!this.groups) {
+      throw new Error("the list is not grouped");
+    }
+
+    return this.groups.keyAt(index);
+  }
+
+  /** The box the control holds for the item with this key, by which it finds the item. */
+  boxOf(key: string) {
+    const grouped = this.groups?.boxOf(key);
+    return grouped ?? this.keys.getAt(this.keyOrder.indexOf(key));
+  }
+
+  /** The keys of the items in the order the list shows them. */
+  get order() {
+    return this.keyOrder;
   }
 
   /** The rows are changing the control's items: what it reports meanwhile (a selection lost) is not the user's. */
@@ -128,7 +146,6 @@ export class ItemRows<Item> {
   /** The user left the control's items in `order` (a drag): it is the list's order now. */
   adoptOrder(order: string[]) {
     this.keyOrder = order;
-    this.itemKeys = order;
   }
 
   /** Moves a key to `target` in the control's own items, as a keyboard move does. */
@@ -160,8 +177,8 @@ export class ItemRows<Item> {
 
   /**
    * The container shows `key` in `slot`. Its row stays when the key is the
-   * same, else a new one replaces it. The item shown, or undefined for a key
-   * the app has no item for, and for a group's header.
+   * same, else a new one replaces it. The entry shown: an item, or a group's
+   * header (its key is `groupRowKey`); undefined for a key the app has none for.
    */
   show({ container, slot, key }: {
     container: FrameworkElement;
@@ -177,6 +194,24 @@ export class ItemRows<Item> {
     return isItem ? entry : undefined;
   }
 
+  /** Shows the header of the group with this key in the container's slot. */
+  showHeader({ container, slot, groupKey }: {
+    container: FrameworkElement;
+    slot: ContentControl;
+    groupKey: string;
+  }) {
+    this.rows.show({
+      container,
+      slot,
+      key: groupRowKey(groupKey)
+    });
+  }
+
+  /** The id of a container (the same for the same container, whichever wrapper WinUI hands over). */
+  idOf(container: FrameworkElement) {
+    return this.rows.idOf(container);
+  }
+
   /** The container went to the recycle queue: its row ends. */
   release(container: FrameworkElement) {
     this.rows.release(container);
@@ -188,8 +223,13 @@ export class ItemRows<Item> {
   }
 
   private sync(items: readonly Item[]) {
-    const rows = this.arrange(items);
-    const wanted = rows.map(([key]) => key);
+    const { key, groupBy } = this.props;
+    const groups = groupBy === undefined ? [] : groupItems({
+      items,
+      groupBy
+    });
+    const shown = groupBy === undefined ? items : groups.flatMap(group => group.items);
+    const wanted = shown.map(item => key(item));
     const duplicate = duplicateKey(wanted);
     const hasDuplicate = duplicate !== undefined;
     if (hasDuplicate) {
@@ -197,41 +237,38 @@ export class ItemRows<Item> {
     }
 
     this.keyOrder = wanted;
-    this.itemKeys = wanted.filter(key => !isGroupRowKey(key));
-    this.changingKeys(() => syncKeyVector({
-      vector: this.keys,
-      codec: keyBox,
-      wanted
+    this.changingKeys(() => this.syncControl({
+      wanted,
+      groups
     }));
     // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
-    this.rows.setEntries(new Map(rows));
+    const entries = new Map<string, Entry<Item>>(shown.map(item => [key(item), item]));
+    for (const group of groups) {
+      entries.set(groupRowKey(group.key), new GroupHeader(group));
+    }
+
+    this.rows.setEntries(entries);
   }
 
-  // The rows in the order the list shows them, by key: the items, or each
-  // group's header followed by its items.
-  private arrange(items: readonly Item[]) {
-    const { key, groupBy } = this.props;
-    const rows: Array<readonly [string, Entry<Item>]> = [];
-    const isGrouped = groupBy !== undefined;
-    if (!isGrouped) {
-      for (const item of items) {
-        rows.push([key(item), item]);
-      }
-
-      return rows;
+  private syncControl({ wanted, groups }: {
+    wanted: readonly string[];
+    groups: ReadonlyArray<Group<Item>>;
+  }) {
+    if (!this.groups) {
+      syncKeyVector({
+        vector: this.keys,
+        codec: keyBox,
+        wanted
+      });
+      return;
     }
 
-    for (const group of groupItems({
-      items,
-      groupBy
-    })) {
-      rows.push([groupRowKey(group.key), new GroupHeader(group)]);
-      for (const item of group.items) {
-        rows.push([key(item), item]);
-      }
-    }
-
-    return rows;
+    this.groups.sync(
+      groups.map(group => ({
+        key: group.key,
+        itemKeys: group.items.map(item => this.props.key(item))
+      }))
+    );
   }
 
   private changingKeys(change: () => void) {

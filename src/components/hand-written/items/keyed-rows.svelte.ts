@@ -102,7 +102,7 @@ export class KeyedRows<Entry> {
     }
 
     this.rows.fill({
-      containerId: this.containerId(container),
+      containerId: this.idOf(container),
       container,
       key,
       item: entry,
@@ -116,7 +116,7 @@ export class KeyedRows<Entry> {
 
   /** The container went to the recycle queue: its row ends. */
   release(container: FrameworkElement) {
-    this.rows.release(this.containerId(container));
+    this.rows.release(this.idOf(container));
   }
 
   /** The containers that show a row now. */
@@ -129,9 +129,11 @@ export class KeyedRows<Entry> {
     this.rows.clear();
   }
 
-  // WinUI hands back a new wrapper for the same container, so a container is
-  // known by an id kept in its Tag.
-  private containerId(container: FrameworkElement) {
+  /**
+   * The id of a container. WinUI hands back a new wrapper for the same
+   * container, so a container is known by an id kept in its Tag.
+   */
+  idOf(container: FrameworkElement) {
     const known = unboxed(container.tag);
     const isKnown = typeof known === "string";
     if (isKnown) {

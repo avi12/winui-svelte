@@ -667,24 +667,19 @@ exactly those.
 
 `groupBy` arranges the items by a group key: groups follow each other in the
 order their first item appears, each group's items in the order of `items`.
-Each group's header is a row of its own before its items (the control's items
-are the keys of both, so a group's header is one of them), shown with the
-`groupHeader` snippet. A header cannot be selected or focused (its container is
-disabled, so the theme's disabled foreground applies unless the snippet sets
-its own), and `reorderable` and `keyboardReorder` are ignored in a grouped
-list. `selectedKey`, `onReorder`'s keys and `itemName` only ever hold items. It
-is not WinUI's own grouping (`CollectionViewSource.IsSourceGrouped` with a
-`GroupStyle`), which gives a header that sticks to the top of the list and
-which a header row does not. `CollectionViewSource` and `GroupStyle` are
-components now, and `groupStyle` is a snippet of every items control, so a
-source of groups that are native objects (an `ICollectionViewGroup`, or
-objects the view reads an `itemsPath` from) groups natively in a list that
-takes an items source. The hosted `ListView` and `GridView` keep header rows:
-a probe in a real window (a JavaScript object made to implement
-`ICollectionViewGroup` through dynwinrt's `DynWinRtImplementation`) was accepted
-as a grouped source, but the view stayed empty and WinUI never asked the group
-for its items, and the hosts would also need the headers' templates to be
-rendered through the renderer. Header rows are the supported way.
+The list uses WinUI's own grouping: a `CollectionViewSource` with
+`IsSourceGrouped` over groups that hold the items, so each header sticks to the
+top of the list while its group is in view, and the control's items are the
+items only (no header among them). The `groupHeader` snippet is the row of a
+header. A header is not an item: it cannot be selected, and `reorderable` and
+`keyboardReorder` are ignored in a grouped list. `selectedKey`, `onReorder`'s
+keys and `itemName` only ever hold items. Groups and items that come or go
+change the live view in place.
+
+WinUI never asks a JavaScript object for `ICollectionViewGroup`, so the group
+objects are `ItemsControl`s (WinUI reads their `Items` through `ItemsPath`) and
+the header containers are made on `ChoosingGroupHeaderContainer`, where the
+group's place in the list gives its key.
 
 ### TreeView
 

@@ -1,4 +1,4 @@
-import { groupItems, groupRowKey, isGroupRowKey } from "./grouping.ts";
+import { groupItems, groupRowKey } from "./grouping.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -48,8 +48,7 @@ test("no items make no groups", () => {
 });
 
 test("a group's header key is not an item's key", () => {
-  assert.equal(isGroupRowKey(groupRowKey("red")), true);
-  assert.equal(isGroupRowKey("red"), false);
-  assert.equal(isGroupRowKey("group:red"), false);
+  assert.notEqual(groupRowKey("red"), "red");
+  assert.notEqual(groupRowKey("red"), "group:red");
   assert.notEqual(groupRowKey("a"), groupRowKey("b"));
 });

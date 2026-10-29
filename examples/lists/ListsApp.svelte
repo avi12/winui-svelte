@@ -5,8 +5,13 @@
   import { liveRows, rowStats } from "./row-stats.ts";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import { projectAs } from "#winui/lifetime";
-  import { Control } from "#winui/microsoft/ui/xaml/controls/Control";
+  import { ContentControl } from "#winui/microsoft/ui/xaml/controls/ContentControl";
+  import { ItemsStackPanel } from "#winui/microsoft/ui/xaml/controls/ItemsStackPanel";
+  import type { ListViewBase } from "#winui/microsoft/ui/xaml/controls/ListViewBase";
+  import { ListViewHeaderItem } from "#winui/microsoft/ui/xaml/controls/ListViewHeaderItem";
+  import { TextBlock } from "#winui/microsoft/ui/xaml/controls/TextBlock";
   import type { DependencyObject } from "#winui/microsoft/ui/xaml/DependencyObject";
+  import { VisualTreeHelper } from "#winui/microsoft/ui/xaml/media/VisualTreeHelper";
   import { unboxed } from "winui-svelte";
   import { GridView, ListView, MoveDirection, Window } from "winui-svelte/components";
   import type { Group, ListHandle } from "winui-svelte/components";
@@ -17,6 +22,8 @@
   const WINDOW_HEIGHT = 640;
   const WINDOW_WIDTH = 420;
   const ROWS_PER_GROUP = 10;
+  // Where WinUI parks a container it recycles (a pixel measure, in the thousands).
+  const PARKED_TOP = 1000;
 
   interface Props {
     // The harness's, handed over once: it never changes.
@@ -30,15 +37,7 @@
   let handle: ListHandle | undefined = $state();
   let selectedKey: string | undefined = $state();
   // The list's own control, to read what it holds and to select as a user does.
-  let view: {
-    readonly items: { readonly size: number };
-    containerFromIndex(index: number): DependencyObject | null;
-    selectedIndex: number;
-    selectedItems: {
-      size: number;
-      getAt(index: number): unknown;
-    } | null;
-  } | undefined;
+  let view: ListViewBase | undefined;
   let reorders = 0;
 
   function controlSelected() {
@@ -62,23 +61,71 @@
       selectedKey: selectedKey ?? null,
       controlSelected: controlSelected(),
       controlItems: view?.items.size ?? 0,
-      enabled: enabledPattern(),
+      headers: headers(),
+      isSticky: isSticky(),
       first: rows.slice(0, FIRST_ROWS_REPORTED).map(row => row.id)
     });
   }
 
-  // Which of the list's first rows (a group's header among them) the control lets the user pick.
-  function enabledPattern() {
-    const size = view?.items.size ?? 0;
-    return Array.from({ length: Math.min(size, ROWS_PER_GROUP + 2) }, (_unused, index) => {
-      const container = view?.containerFromIndex(index);
-      const isDisabled = container !== null && container !== undefined && !projectAs(container, Control).isEnabled;
-      return isDisabled ? "0" : "1";
-    }).join("");
+  // The group headers the list shows, as "text@top". WinUI parks the containers it recycles far above the list:
+  // only the ones in or near it count.
+  function headers() {
+    const found: string[] = [];
+    const pending: DependencyObject[] = view === undefined ? [] : [view];
+    for (let parent = pending.pop(); parent !== undefined; parent = pending.pop()) {
+      const count = VisualTreeHelper.getChildrenCount(parent);
+      for (let i = 0; i < count; i++) {
+        const child = VisualTreeHelper.getChild(parent, i);
+        const text = headerText(child);
+        const isHeader = text !== undefined;
+        if (isHeader) {
+          found.push(text);
+        }
+
+        pending.push(child);
+      }
+    }
+
+    return found;
+  }
+
+  // WinUI pins the header of the group in view to the top of the list from its composition layer, which
+  // layout coordinates do not show: the panel's switch is what can be read.
+  function isSticky() {
+    const panel = view?.itemsPanelRoot;
+    return panel !== null && panel !== undefined && projectAs(panel, ItemsStackPanel).areStickyGroupHeadersEnabled;
+  }
+
+  function headerText(element: DependencyObject) {
+    try {
+      const header = projectAs(element, ListViewHeaderItem);
+      const root = header.contentTemplateRoot;
+      const y = view === undefined ? 0 : Math.round(
+        header.transformToVisual(view).transformPoint({
+          x: 0,
+          y: 0
+        }).y
+      );
+      const isParked = y < -PARKED_TOP;
+      if (isParked) {
+        return undefined;
+      }
+
+      if (!root) {
+        return undefined;
+      }
+
+      const content = projectAs(root, ContentControl).content;
+      const hasContent = content !== null;
+      return hasContent ? `${projectAs(content, TextBlock).text}@${y}` : undefined;
+    } catch {
+      return undefined;
+    }
   }
 
   function groupOf(row: ExampleItem) {
-    return `Group ${Math.floor(Number(row.id.slice("row-".length)) / ROWS_PER_GROUP)}`;
+    const number = Number(row.id.slice("row-".length));
+    return Number.isNaN(number) ? "Extra" : `Group ${Math.floor(number / ROWS_PER_GROUP)}`;
   }
 
   function reorder(order: string[]) {
@@ -129,6 +176,17 @@
     ["remove", command => {
       rows = rows.filter(row => row.id !== command["key"]);
       report("removed");
+    }],
+    ["prepend", () => {
+      rows = [{
+        id: "row-extra",
+        name: "Extra item"
+      }, ...rows];
+      report("prepended");
+    }],
+    ["drop-group", command => {
+      rows = rows.filter(row => groupOf(row) !== command["group"]);
+      report("dropped");
     }],
     ["clear", () => {
       rows = [];
@@ -181,6 +239,7 @@
       }}
       reorderable
       selectionMode="Single"
+      bind:handle
       bind:selectedKey
     />
   {:else}

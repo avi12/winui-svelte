@@ -1,5 +1,5 @@
+import { GroupHeaders } from "./group-headers.ts";
 import type { GroupingProps } from "./grouping.ts";
-import { isGroupRowKey } from "./grouping.ts";
 import type { ItemNameProps, ItemRowsProps } from "./item-rows.svelte.ts";
 import {
   ItemRows,
@@ -107,6 +107,7 @@ class ItemsHost<Item> implements ListHandle {
   private readonly rows: ItemRows<Item>;
   private readonly selection: KeySelection<BoxedValue>;
   private readonly unsubscribe: Array<() => void> = [];
+  private readonly groupHeaders: GroupHeaders<Item> | undefined;
   private isDragging = false;
 
   constructor({ view, props, selection }: {
@@ -127,11 +128,19 @@ class ItemsHost<Item> implements ListHandle {
       view: this.selectionView(),
       codec: keyBox,
       bound: selection,
-      order: () => this.rows.itemOrder,
+      order: () => this.rows.order,
       isPaused: () => this.rows.isChanging || this.isDragging
     });
     view.itemTemplate = projectAs(XamlReader.load(templateOf(SLOT_ELEMENT)), DataTemplate);
-    view.itemsSource = this.rows.keys;
+    view.itemsSource = this.rows.source;
+
+    if (this.isGrouped) {
+      this.groupHeaders = new GroupHeaders({
+        view,
+        rows: this.rows
+      });
+    }
+
     this.unsubscribe.push(
       view.onContainerContentChanging((_sender, args) => this.fill(args)),
       view.onDragItemsStarting(() => {
@@ -190,7 +199,7 @@ class ItemsHost<Item> implements ListHandle {
           }
         } satisfies SelectedVector<BoxedValue>;
       },
-      boxOf: key => rows.keys.getAt(rows.order.indexOf(key))
+      boxOf: key => rows.boxOf(key)
     } satisfies SelectionView<BoxedValue>;
   }
 
@@ -199,6 +208,7 @@ class ItemsHost<Item> implements ListHandle {
       unsubscribe();
     }
 
+    this.groupHeaders?.dispose();
     this.rows.clear();
   }
 
@@ -223,11 +233,6 @@ class ItemsHost<Item> implements ListHandle {
       item,
       props: this.props
     });
-
-    if (this.isGrouped) {
-      // A group's header is a row, not an item: it is not selected or focused.
-      container.isEnabled = !isGroupRowKey(key);
-    }
   }
 
   private get isGrouped() {
@@ -280,7 +285,7 @@ class ItemsHost<Item> implements ListHandle {
     const index = this.rows.order.indexOf(key);
     const isListed = index >= 0;
     if (isListed) {
-      this.view.scrollIntoView(this.rows.keys.getAt(index));
+      this.view.scrollIntoView(this.rows.boxOf(key));
     }
   }
 
