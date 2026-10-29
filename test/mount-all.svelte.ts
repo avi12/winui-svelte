@@ -8,7 +8,7 @@ import ToggleSwitch from "#src/components/generated/ToggleSwitch.svelte";
 import { ticksDate } from "#src/components/values.js";
 import type { NativeValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
-import { isRecord, read, vectorOf } from "#src/renderer/host/reflect.js";
+import { call, isRecord, read, vectorOf } from "#src/renderer/host/reflect.js";
 import { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
 import { Application } from "#winui/microsoft/ui/xaml/Application";
 import { Window } from "#winui/microsoft/ui/xaml/Window";
@@ -1027,6 +1027,11 @@ function stopCountOf(border: object) {
   return brush.gradientStops.size;
 }
 
+function firstRootChildCountOf(tree: object) {
+  const first = bindings.projectAs(call(read(tree, "rootNodes"), "getAt", 0), bindings.TreeViewNode);
+  return first.children?.size ?? 0;
+}
+
 const slotsAtFirst: SlotExpectation[] = [
   {
     name: "comboBox",
@@ -1110,6 +1115,14 @@ const slotsAtFirst: SlotExpectation[] = [
       control,
       property: "blocks"
     }) === 1
+  },
+  {
+    name: "treeView",
+    what: "the items are the root nodes, and an expanded key has its children made",
+    isMet: control => sizeOf({
+      control,
+      property: "rootNodes"
+    }) === 1 && firstRootChildCountOf(control) === 1
   }
 ];
 
@@ -1142,6 +1155,14 @@ const slotsWhenShown: SlotExpectation[] = [
       control,
       property: "menuItems"
     }) === 2
+  },
+  {
+    name: "treeView",
+    what: "an item added to the items is a root node, the others stay",
+    isMet: control => sizeOf({
+      control,
+      property: "rootNodes"
+    }) === 2 && firstRootChildCountOf(control) === 1
   }
 ];
 

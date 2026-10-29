@@ -2,7 +2,7 @@
   // Children and snippet props in the properties they fill, for the mount
   // test (mount-all.svelte.ts): each control written the way a XAML app
   // writes it, a pane, commands, menu items, inlines, a flyout, a header and
-  // a paragraph holding a control, items written with {#each}, and value
+  // a paragraph holding a control, items written with {#each}, a tree of items, and value
   // objects (a brush with stops, a transform, a storyboard) in their properties.
   // Each control is handed to the test by name.
   import {
@@ -30,7 +30,8 @@
     StackPanel,
     Storyboard,
     TextBlock,
-    ToggleSwitch
+    ToggleSwitch,
+    TreeView
   } from "#src/components/index.js";
   import { control } from "#src/index.js";
 
@@ -43,6 +44,23 @@
   }
 
   const props: Props = $props();
+
+  interface Folder {
+    name: string;
+    children: Folder[];
+  }
+
+  const src: Folder = {
+    name: "src",
+    children: [{
+      name: "app",
+      children: []
+    }]
+  };
+  const docs: Folder = {
+    name: "docs",
+    children: []
+  };
 
   function found(name: string) {
     return control((native: object) => props.onFound({
@@ -114,6 +132,17 @@
   </Flyout>
   <ContentDialog {@attach found("dialog")} closeButtonText="Close" open={props.isShown}>Sure?</ContentDialog>
   <ToggleSwitch {@attach found("toggleSwitch")}>Wi-Fi</ToggleSwitch>
+  <TreeView
+    {@attach found("treeView")}
+    children={folder => folder.children}
+    expandedKeys={["src"]}
+    items={props.isShown ? [src, docs] : [src]}
+    key={folder => folder.name}
+  >
+    {#snippet item(folder)}
+      <TextBlock>{folder.name}</TextBlock>
+    {/snippet}
+  </TreeView>
   <RichTextBlock {@attach found("richTextBlock")}>
     <Paragraph>
       Press <InlineUIContainer><Button>here</Button></InlineUIContainer>
