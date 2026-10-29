@@ -23,7 +23,7 @@ const externalModule = new RegExp(String.raw`^#winui/|dist[\\/]bindings|@microso
 
 // Measured with one <Button>: today's bundle. Lower it when the package gets
 // smaller; never raise it to make a change pass.
-const BUDGET_BYTES = 125_000;
+const BUDGET_BYTES = 123_000;
 const BUDGET_BINDINGS = 46;
 // What the goal allows: the bindings of the controls and enums the app uses,
 // and the renderer's own handful.
