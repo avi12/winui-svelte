@@ -20,12 +20,18 @@ const packageSchema = z.object({
   })
 });
 
+// A namespace is a folder in the bindings: dotted, and kebab-case where a part
+// has two words (Windows.UI.ViewManagement is windows/ui/view-management).
+function folderOf(namespace: string) {
+  return namespace.split(".").map(part => part.replace(/([a-z\d])([A-Z])/gu, "$1-$2").toLowerCase()).join("/");
+}
+
 function listedModules() {
   const manifest = packageSchema.parse(JSON.parse(readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8")));
   const names = manifest.winapp.jsBindings.additionalWinmds.flatMap(
-    entry => (entry.classes ?? []).map(name => `${entry.namespace}.${name}`)
+    entry => (entry.classes ?? []).map(name => `${folderOf(entry.namespace)}/${name.toLowerCase()}`)
   );
-  return new Set(names.map(name => name.replaceAll(".", "/").toLowerCase()));
+  return new Set(names);
 }
 
 // src/winui.ts is the package's one import site of the bindings, which are
@@ -46,6 +52,9 @@ test("every class src/winui.ts imports is among the classes the bindings are gen
     "microsoft/ui/windowing/titlebartheme",
     "microsoft/ui/input/nonclientregionkind",
     "microsoft/ui/xaml/elementtheme",
+    "microsoft/ui/xaml/focusstate",
+    "windows/ui/view-management/uicolortype",
+    "microsoft/windows/storage/pickers/pickerlocationid",
     "microsoft/ui/composition/system-backdrops/micakind",
     "lifetime"
   ]);
