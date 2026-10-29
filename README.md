@@ -957,6 +957,6 @@ In this repository (run these at its root):
 
 ## License
 
-[Apache-2.0](LICENSE). Copies and forks must keep the `LICENSE` and `NOTICE`
-files and the copyright notice (Apache-2.0, section 4), so credit to the
-original author travels with the code.
+[Apache-2.0](LICENSE). Copyright 2026 [Avi](https://avi12.com). Copies and forks
+must keep the `LICENSE` and the `NOTICE` file, which carries this credit
+(Apache-2.0, section 4), so it travels with the code.

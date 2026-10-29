@@ -26,7 +26,10 @@
     "url": "git+https://github.com/avi12/winui-svelte.git"
   },
   "license": "Apache-2.0",
-  "author": "Avi Hanan",
+  "author": {
+    "name": "Avi",
+    "url": "https://avi12.com"
+  },
   "type": "module",
   "packageManager": "pnpm@11.13.1",
   "os": [
