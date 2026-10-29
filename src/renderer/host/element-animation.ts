@@ -1,38 +1,33 @@
-import { renderer } from "./host.ts";
-import type { Keyframe, Pose, Vector } from "./keyframes.ts";
-import {
-  poseAt,
-  PoseField,
-  readDeclarations,
-  readKeyframe,
-  touchedFields
-} from "./keyframes.ts";
+import type { Keyframe, Pose, PoseValue, Vector } from "./keyframes.ts";
+import { poseAt, PoseField, readKeyframe, touchedFields } from "./keyframes.ts";
 import { isRecord, read, write } from "./reflect.ts";
+import { shapeLength } from "./shape-length.ts";
+import { doubleCollection } from "./values.ts";
 import type { NativeValue } from "#src/native-value.js";
-import { parentElement } from "#src/renderer/tree/tree.js";
+import { ElementNode } from "#src/renderer/tree/dom.js";
 import { flush } from "#src/scheduling.js";
 import { startTimer } from "#src/window/timers.js";
-import type { TransitionConfig } from "svelte/transition";
 
-// Transitions for WinUI's controls. Svelte's own `transition:`, `in:`, `out:`
-// and `animate:` do not compile on a custom renderer (the compiler refuses
-// them: they drive the DOM's Element.animate()), so the same transition
-// functions (svelte/transition's fade, fly, scale, or one of your own) are
-// played by attachments instead: `{@attach transition(fade, { duration: 200 })}`.
-// What a transition's `css(t, u)` says is read into the control's Opacity,
-// Translation, Scale and Rotation, stepped on a clock (a dispatcher timer in
-// a window). Svelte removes an element the moment its block goes, so a leaving
-// element is kept in its parent until its outro has run: the renderer's
-// `remove` waits for it.
+// The Web Animations a stock Svelte asks its elements for, on WinUI's
+// controls. Svelte's `transition:`, `in:`, `out:` and `animate:` call
+// `element.animate(keyframes, options)` and read `getComputedStyle`,
+// `getBoundingClientRect` and `inert`; its `tweened`, `spring` and
+// `tick` loops ask for `requestAnimationFrame`. `enableElementAnimation`
+// gives the tree's elements and the global scope those, over the control's
+// Opacity, Translation, Scale, Rotation, size, margin, padding, border and
+// stroke dashes, stepped on a clock (a dispatcher timer in a window). The
+// transition functions (fade, fly, slide, scale, draw, crossfade, flip or
+// your own) and their timing are Svelte's own: this is only what they draw
+// on. The Vite plugin calls it from a component that uses them, so an app
+// that does not never bundles any of it.
 
 const FRAME_MILLISECONDS = 16;
-const FRAMES_PER_SECOND = 60;
-const MILLISECONDS_PER_SECOND = 1000;
 const NO_TRANSFORM = "none";
-const NO_LENGTH = "0px";
 const GET_COMPUTED_STYLE = "getComputedStyle";
-const DIRECTION_IN = "in";
-const DIRECTION_OUT = "out";
+const REQUEST_FRAME = "requestAnimationFrame";
+const CANCEL_FRAME = "cancelAnimationFrame";
+const DASH_ARRAY_PROPERTY = "strokeDashArray";
+const DEFAULT_ORIGIN = 0.5;
 
 const Fill = {
   FORWARDS: "forwards",
@@ -68,36 +63,16 @@ export interface ElementAnimationOptions {
 
   /** Hears of the keyframe properties WinUI cannot animate, once for each; default: console.warn. */
   warn?: (message: string) => void;
+
+  /** Makes the value a shape's `strokeDashArray` takes from lengths; default: a `DoubleCollection`. */
+  createDashes?: (lengths: number[]) => object;
 }
-
-/** What a transition function is given besides the element and its parameters. */
-export interface TransitionOptions {
-  direction: "in" | "out" | "both";
-}
-
-/**
- * A transition function, as Svelte's are: svelte/transition's `fade`, `fly`,
- * `scale` and `blur`, `slide` (its opacity only), or your own, returning what
- * `css(t, u)` and `tick(t, u)` say at each point from 0 to 1.
- */
-export type TransitionFunction<Params> = (
-  node: never,
-  params: Params,
-  options: TransitionOptions
-) => TransitionConfig | ((options: TransitionOptions) => TransitionConfig);
-
-type LeavingNode = Parameters<typeof renderer.remove>[0];
 
 interface Handle {
   onfinish: (() => void) | null;
   readonly playState: PlayState;
   readonly currentTime: number | null;
   cancel(): void;
-}
-
-interface Run {
-  progress(): number;
-  abort(): void;
 }
 
 interface AnimateOptions {
@@ -112,16 +87,28 @@ interface Point {
 
 interface MotionControl {
   opacity: number;
-  translation: Vector;
-  scale: Vector;
-  rotation: number;
   centerPoint: Vector;
   isHitTestVisible: boolean;
   readonly actualSize: Point;
 }
 
 interface MotionNode {
+  readonly name: string;
   readonly native: { readonly control: object | null };
+}
+
+interface Target {
+  readonly control: MotionControl;
+  readonly createDashes: (lengths: number[]) => object;
+}
+
+// How a field is read from a control, and written back to it.
+interface FieldAccess {
+  read(control: MotionControl): PoseValue | undefined;
+  write(options: {
+    target: Target;
+    value: PoseValue;
+  }): void;
 }
 
 interface Layer {
@@ -130,26 +117,16 @@ interface Layer {
   pose: Pose;
 }
 
-type Callable = (...values: NativeValue[]) => NativeValue;
-
 interface MotionState {
   readonly node: MotionNode;
+  readonly createDashes: (lengths: number[]) => object;
   // In the order the animations were made: a later one wins a field.
   readonly layers: Layer[];
   // What the control held before the first animation of each field began.
   base: Pose;
   baseCenter: Vector | null;
-  // The intro or outro playing, which an outro takes over from.
-  running: Run | null;
   isInert: boolean;
   isHitTestVisibleBefore: boolean;
-}
-
-interface Motion<Params> {
-  fn: TransitionFunction<Params | undefined>;
-  params: Params | undefined;
-  isIntro: boolean;
-  isOutro: boolean;
 }
 
 function isMotionControl(value: NativeValue): value is MotionControl {
@@ -160,32 +137,17 @@ function isMotionNode(value: NativeValue): value is MotionNode {
   return isRecord(value) && isRecord(read(value, "native"));
 }
 
-function isCallable(value: NativeValue): value is Callable {
+function isCallable(value: NativeValue): value is (...values: NativeValue[]) => NativeValue {
   return typeof value === "function";
+}
+
+function isVector(value: NativeValue): value is Vector {
+  return isRecord(value) && typeof value["x"] === "number" && typeof value["y"] === "number" && typeof value["z"] === "number";
 }
 
 // Entries of a pose filtered by field are a pose; fromEntries loses that.
 function isPose(_value: object): _value is Pose {
   return true;
-}
-
-type TransitionResult = ReturnType<TransitionFunction<never>>;
-
-function isConfigFunction(config: TransitionResult): config is (options: TransitionOptions) => TransitionConfig {
-  return typeof config === "function";
-}
-
-function directionOf<Params>(motion: Motion<Params>) {
-  const isBoth = motion.isIntro && motion.isOutro;
-  if (isBoth) {
-    return "both";
-  }
-
-  return motion.isIntro ? DIRECTION_IN : DIRECTION_OUT;
-}
-
-function linear(progress: number) {
-  return progress;
 }
 
 function copyVector(vector: Vector) {
@@ -196,16 +158,146 @@ function copyVector(vector: Vector) {
   };
 }
 
+function numberOf(value: NativeValue) {
+  return typeof value === "number" ? value : undefined;
+}
+
+function numberAccess(property: string) {
+  return {
+    read: control => numberOf(read(control, property)),
+    write({ target, value }) {
+      const isNumber = typeof value === "number";
+      if (isNumber) {
+        write(target.control, property, value);
+      }
+    }
+  } satisfies FieldAccess;
+}
+
+function vectorAccess(property: string) {
+  return {
+    read(control) {
+      const value = read(control, property);
+      return isVector(value) ? copyVector(value) : undefined;
+    },
+    write({ target, value }) {
+      const isVectorValue = typeof value === "object";
+      if (isVectorValue) {
+        write(target.control, property, copyVector(value));
+      }
+    }
+  } satisfies FieldAccess;
+}
+
+const SIDES = ["left", "top", "right", "bottom"] as const;
+
+type Side = typeof SIDES[number];
+
+// A Thickness (Margin, Padding, BorderThickness) holds the four sides; a field is one of them.
+function sideAccess({ property, side }: {
+  property: string;
+  side: Side;
+}) {
+  return {
+    read: control => numberOf(read(read(control, property), side)),
+    write({ target, value }) {
+      const current = read(target.control, property);
+      const isWritable = isRecord(current) && typeof value === "number";
+      if (!isWritable) {
+        return;
+      }
+
+      write(target.control, property, Object.fromEntries(SIDES.map(key => [key, key === side ? value : current[key]])));
+    }
+  } satisfies FieldAccess;
+}
+
+// A stroke's dashes are in multiples of its thickness in WinUI, pixels in CSS.
+function strokeThicknessOf(control: MotionControl) {
+  const thickness = numberOf(read(control, "strokeThickness"));
+  const isMeasurable = thickness !== undefined && thickness > 0;
+  return isMeasurable ? thickness : undefined;
+}
+
+const NO_DASH = {
+  x: 0,
+  y: 0,
+  z: 0
+};
+
+const dashAccess = {
+  read: control => strokeThicknessOf(control) === undefined ? undefined : NO_DASH,
+  write({ target, value }) {
+    const thickness = strokeThicknessOf(target.control);
+    const isDash = typeof value === "object" && thickness !== undefined;
+    if (!isDash) {
+      return;
+    }
+
+    const isSolid = value.x === 0 && value.y === 0;
+    const dashes = isSolid ? null : target.createDashes([value.x / thickness, value.y / thickness]);
+    write(target.control, DASH_ARRAY_PROPERTY, dashes);
+  }
+} satisfies FieldAccess;
+
+const dashOffsetAccess = {
+  read(control) {
+    const thickness = strokeThicknessOf(control);
+    const offset = numberOf(read(control, "strokeDashOffset"));
+    const isMeasurable = thickness !== undefined && offset !== undefined;
+    return isMeasurable ? offset * thickness : undefined;
+  },
+  write({ target, value }) {
+    const thickness = strokeThicknessOf(target.control);
+    const isOffset = typeof value === "number" && thickness !== undefined;
+    if (isOffset) {
+      write(target.control, "strokeDashOffset", value / thickness);
+    }
+  }
+} satisfies FieldAccess;
+
+function capitalized(word: string) {
+  return `${word.slice(0, 1).toUpperCase()}${word.slice(1)}`;
+}
+
+// The pose fields of a Thickness, by the CSS prefix of their names.
+function sideAccesses({ property, prefix }: {
+  property: string;
+  prefix: string;
+}) {
+  return SIDES.map(side => [`${prefix}${capitalized(side)}`, sideAccess({
+    property,
+    side
+  })] satisfies [string, FieldAccess]);
+}
+
+// A field with no entry (the origin) is not written to the control itself.
+const fieldAccesses = new Map<string, FieldAccess>([
+  [PoseField.OPACITY, numberAccess("opacity")],
+  [PoseField.TRANSLATION, vectorAccess("translation")],
+  [PoseField.SCALE, vectorAccess("scale")],
+  [PoseField.ROTATION, numberAccess("rotation")],
+  [PoseField.WIDTH, numberAccess("width")],
+  [PoseField.HEIGHT, numberAccess("height")],
+  [PoseField.STROKE_DASH, dashAccess],
+  [PoseField.STROKE_DASH_OFFSET, dashOffsetAccess],
+  ...sideAccesses({
+    property: "margin",
+    prefix: "margin"
+  }),
+  ...sideAccesses({
+    property: "padding",
+    prefix: "padding"
+  }),
+  ...sideAccesses({
+    property: "borderThickness",
+    prefix: "border"
+  })
+]);
+
 function controlOf(state: MotionState) {
   const control = state.node.native.control;
   return isMotionControl(control) ? control : null;
-}
-
-function sizeOf(state: MotionState) {
-  return controlOf(state)?.actualSize ?? {
-    x: 0,
-    y: 0
-  };
 }
 
 function filterPose({ pose, isKept }: {
@@ -216,38 +308,31 @@ function filterPose({ pose, isKept }: {
   return isPose(kept) ? kept : {};
 }
 
-function poseOf(control: MotionControl) {
-  return {
-    opacity: control.opacity,
-    translation: copyVector(control.translation),
-    scale: copyVector(control.scale),
-    rotation: control.rotation
-  } satisfies Pose;
+// What the control holds now of these fields (those it has).
+function poseOf({ control, fields }: {
+  control: MotionControl;
+  fields: ReadonlySet<string>;
+}) {
+  const entries = [...fields].flatMap(field => {
+    const value = fieldAccesses.get(field)?.read(control);
+    return value === undefined ? [] : [[field, value]];
+  });
+  const pose = Object.fromEntries(entries);
+  return isPose(pose) ? pose : {};
 }
 
-function writePose({ control, pose }: {
-  control: MotionControl;
+function writePose({ target, pose }: {
+  target: Target;
   pose: Pose;
 }) {
-  const { opacity, translation, scale, rotation } = pose;
-  const isOpacitySet = opacity !== undefined;
-  if (isOpacitySet) {
-    control.opacity = opacity;
-  }
-
-  const isTranslationSet = translation !== undefined;
-  if (isTranslationSet) {
-    control.translation = copyVector(translation);
-  }
-
-  const isScaleSet = scale !== undefined;
-  if (isScaleSet) {
-    control.scale = copyVector(scale);
-  }
-
-  const isRotationSet = rotation !== undefined;
-  if (isRotationSet) {
-    control.rotation = rotation;
+  for (const [field, value] of Object.entries(pose)) {
+    const isSet = value !== undefined;
+    if (isSet) {
+      fieldAccesses.get(field)?.write({
+        target,
+        value
+      });
+    }
   }
 }
 
@@ -267,11 +352,18 @@ function isCentering(fields: ReadonlySet<string>) {
 }
 
 // WinUI scales and rotates about the CenterPoint (the corner, by default),
-// CSS about the middle.
-function middleOf(control: MotionControl) {
+// CSS about the transform origin (the middle, by default).
+function centerOf({ control, origin }: {
+  control: MotionControl;
+  origin: PoseValue | undefined;
+}) {
+  const fraction = typeof origin === "object" ? origin : {
+    x: DEFAULT_ORIGIN,
+    y: DEFAULT_ORIGIN
+  };
   return {
-    x: control.actualSize.x / 2,
-    y: control.actualSize.y / 2,
+    x: control.actualSize.x * fraction.x,
+    y: control.actualSize.y * fraction.y,
     z: 0
   };
 }
@@ -285,9 +377,9 @@ function addLayer({ state, layer }: {
   if (isControlMade) {
     const held = touchedBy(state.layers);
     Object.assign(
-      state.base, filterPose({
-        pose: poseOf(control),
-        isKept: field => layer.fields.has(field) && !held.has(field)
+      state.base, poseOf({
+        control,
+        fields: new Set([...layer.fields].filter(field => !held.has(field) && !(field in state.base)))
       })
     );
     const isCenterFree = state.baseCenter === null && isCentering(layer.fields);
@@ -314,7 +406,10 @@ function render(state: MotionState) {
   }
 
   writePose({
-    control,
+    target: {
+      control,
+      createDashes: state.createDashes
+    },
     pose: shown
   });
   const touched = touchedBy(state.layers);
@@ -324,7 +419,10 @@ function render(state: MotionState) {
   });
 
   if (isCentering(touched)) {
-    control.centerPoint = middleOf(control);
+    control.centerPoint = centerOf({
+      control,
+      origin: shown.origin
+    });
     return;
   }
 
@@ -336,45 +434,57 @@ function render(state: MotionState) {
   }
 }
 
-function removeLayer({ state, layer }: {
+// Svelte cancels an animation just before it makes the next one: with none
+// left, the control gets what it held only at the end of the frame, if no
+// animation has come by then, so it never flashes its own values in between.
+function removeLayer({ state, layer, restoreLater }: {
   state: MotionState;
   layer: Layer;
+  restoreLater: (state: MotionState) => void;
 }) {
   const iLayer = state.layers.indexOf(layer);
   const isLayered = iLayer >= 0;
-  if (isLayered) {
-    state.layers.splice(iLayer, 1);
-    render(state);
-  }
-}
-
-// A leaving element takes no input, as an inert one in the browser.
-function makeInert(state: MotionState) {
-  const control = controlOf(state);
-  const isUnableToBeInert = state.isInert || control === null;
-  if (isUnableToBeInert) {
+  if (!isLayered) {
     return;
   }
 
-  state.isInert = true;
-  state.isHitTestVisibleBefore = control.isHitTestVisible;
-  control.isHitTestVisible = false;
+  state.layers.splice(iLayer, 1);
+
+  const isEmptied = state.layers.length === 0;
+  if (isEmptied) {
+    restoreLater(state);
+    return;
+  }
+
+  render(state);
+}
+
+// The CSS property of each side of a box, and the Thickness and side that hold it.
+const BOX_STYLES = SIDES.flatMap(side => [
+  [`margin${capitalized(side)}`, "margin", side],
+  [`padding${capitalized(side)}`, "padding", side],
+  [`border${capitalized(side)}Width`, "borderThickness", side]
+] satisfies Array<[string, string, Side]>);
+
+// What the page reads of a control's box, in pixels, as the CSS property says it.
+function boxStyleOf(control: MotionControl) {
+  return Object.fromEntries(BOX_STYLES.map(([name, property, side]) => [name, `${numberOf(read(read(control, property), side)) ?? 0}px`]));
 }
 
 // The keyframes' own time runs on the engine's clock; the engine steps what
 // is running on each frame, and stops the clock when nothing is.
-function createEngine({ clock, onFrame, warn }: Required<ElementAnimationOptions>) {
+function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAnimationOptions>) {
   const states = new WeakMap<object, MotionState>();
   const steps = new Set<(now: number) => void>();
-  const frameCallbacks = new Set<(time: number) => void>();
-  const outros = new WeakMap<object, (onFinish: () => void) => void>();
-  const introduced = new WeakSet<object>();
+  const frameCallbacks = new Map<number, (time: number) => void>();
   const warned = new Set<string>();
+  const pendingRestores = new Set<MotionState>();
   let stopClock: (() => void) | null = null;
+  let lastFrameId = 0;
 
   function frame() {
     const now = clock.now();
-    const callbacks = [...frameCallbacks];
+    const callbacks = [...frameCallbacks.values()];
     frameCallbacks.clear();
     for (const callback of callbacks) {
       callback(now);
@@ -384,8 +494,13 @@ function createEngine({ clock, onFrame, warn }: Required<ElementAnimationOptions
       step(now);
     }
 
+    for (const state of pendingRestores) {
+      render(state);
+    }
+
+    pendingRestores.clear();
     onFrame();
-    const isIdle = steps.size === 0 && frameCallbacks.size === 0;
+    const isIdle = steps.size === 0 && frameCallbacks.size === 0 && pendingRestores.size === 0;
     if (isIdle) {
       stopClock?.();
       stopClock = null;
@@ -396,9 +511,16 @@ function createEngine({ clock, onFrame, warn }: Required<ElementAnimationOptions
     stopClock ??= clock.every(frame);
   }
 
-  function requestFrame(callback: (time: number) => void) {
-    frameCallbacks.add(callback);
+  function restoreLater(state: MotionState) {
+    pendingRestores.add(state);
     ensureClock();
+  }
+
+  function requestFrame(callback: (time: number) => void) {
+    lastFrameId++;
+    frameCallbacks.set(lastFrameId, callback);
+    ensureClock();
+    return lastFrameId;
   }
 
   function stateFor(node: MotionNode) {
@@ -410,10 +532,10 @@ function createEngine({ clock, onFrame, warn }: Required<ElementAnimationOptions
 
     const created: MotionState = {
       node,
+      createDashes,
       layers: [],
       base: {},
       baseCenter: null,
-      running: null,
       isInert: false,
       isHitTestVisibleBefore: true
     };
@@ -432,14 +554,15 @@ function createEngine({ clock, onFrame, warn }: Required<ElementAnimationOptions
       warned.add(property);
     }
 
-    warn(`${fresh.join(", ")} cannot be animated on a WinUI control (opacity, translate, scale, rotate and transform with translate, scale and rotate can); ignored`);
+    warn(`${fresh.join(", ")} cannot be animated on a WinUI control (opacity, translate, scale, rotate, transform with translate, scale and rotate, the size, margin, padding and border of a side, and a shape's dashes can); ignored`);
   }
 
-  function animate({ state, keyframes, options }: {
-    state: MotionState;
+  function animate({ node, keyframes, options }: {
+    node: MotionNode;
     keyframes: Keyframe[];
     options: AnimateOptions;
   }) {
+    const state = stateFor(node);
     const readings = keyframes.map(readKeyframe);
     warnOnce(readings.flatMap(reading => reading.unsupported));
     const poses = readings.map(reading => reading.pose);
@@ -466,7 +589,8 @@ function createEngine({ clock, onFrame, warn }: Required<ElementAnimationOptions
         steps.delete(step);
         removeLayer({
           state,
-          layer
+          layer,
+          restoreLater
         });
       }
     };
@@ -500,7 +624,8 @@ function createEngine({ clock, onFrame, warn }: Required<ElementAnimationOptions
       } else {
         removeLayer({
           state,
-          layer
+          layer,
+          restoreLater
         });
       }
 
@@ -519,198 +644,119 @@ function createEngine({ clock, onFrame, warn }: Required<ElementAnimationOptions
     return animation;
   }
 
-  // Svelte's own algorithm for a transition (dom/elements/transitions.js): wait
-  // for the delay holding the first keyframe, then sample css(t, u) once a
-  // frame along the eased path from where the counterpart stands to `target`
-  // (1 for an intro, 0 for an outro), and call tick on each frame.
-  function play({ state, config, target, onFinish }: {
-    state: MotionState;
-    config: TransitionConfig;
-    target: number;
-    onFinish: () => void;
-  }) {
-    const counterpart = state.running;
-    const { delay = 0, duration = 0, css, tick, easing = linear } = config;
-    const hasNothingToPlay = duration === 0 && delay === 0;
-    if (hasNothingToPlay) {
-      onFinish();
-      return null;
-    }
-
-    const isIntro = target === 1;
-    const heldStyles = css === undefined ? {} : readDeclarations(css(0, 1));
-    const isHolding = isIntro && counterpart === null && css !== undefined;
-    const held = isHolding ? [heldStyles, heldStyles] : [];
-    let current = animate({
-      state,
-      keyframes: held,
-      options: {
-        duration: delay,
-        fill: Fill.FORWARDS
-      }
-    });
-    let origin = 1 - target;
-    let total = 0;
-    let isFinished = false;
-    const run: Run = {
-      progress() {
-        if (isFinished) {
-          return target;
-        }
-
-        const elapsed = current.currentTime ?? 0;
-        return total > 0 ? origin + (target - origin) * easing(elapsed / total) : origin;
-      },
-      abort() {
-        current.cancel();
-        current.onfinish = null;
-      }
-    };
-
-    function tickFrame() {
-      const isRunning = current.playState === PlayState.RUNNING;
-      if (isRunning) {
-        const progress = run.progress();
-        tick?.(progress, 1 - progress);
-        requestFrame(tickFrame);
-      }
-    }
-
-    current.onfinish = () => {
-      const hold = current;
-      origin = counterpart?.progress() ?? 1 - target;
-      const delta = target - origin;
-      total = duration * Math.abs(delta);
-      const keyframes: Keyframe[] = [];
-      const isSampled = total > 0 && css !== undefined;
-      if (isSampled) {
-        const samples = Math.ceil(total / (MILLISECONDS_PER_SECOND / FRAMES_PER_SECOND));
-        for (let iSample = 0; iSample <= samples; iSample++) {
-          const progress = origin + delta * easing(iSample / samples);
-          keyframes.push(readDeclarations(css(progress, 1 - progress)));
-        }
-      }
-
-      // The new animation is made before the old ones end, so the control
-      // never shows what it held before any of them.
-      current = animate({
-        state,
-        keyframes,
-        options: {
-          duration: total,
-          fill: Fill.FORWARDS
-        }
-      });
-      hold.cancel();
-      counterpart?.abort();
-
-      const isTicking = tick !== undefined && total > 0;
-      if (isTicking) {
-        requestFrame(tickFrame);
-      }
-
-      current.onfinish = () => {
-        isFinished = true;
-        tick?.(target, 1 - target);
-        onFinish();
-      };
-    };
-    return run;
+  function animations(node: MotionNode) {
+    return stateFor(node).layers.map(layer => layer.animation);
   }
 
-  // The attachment: an intro now, and an outro the renderer waits for when
-  // Svelte removes the element.
-  function attach<Params>({ motion, node }: {
-    motion: Motion<Params>;
-    node: object;
+  // A leaving element takes no input, as an inert one in the browser.
+  function setInert({ node, isInert }: {
+    node: MotionNode;
+    isInert: boolean;
   }) {
-    if (!isMotionNode(node)) {
-      return undefined;
-    }
-
     const state = stateFor(node);
-    const direction = directionOf(motion);
-    let config: TransitionConfig | undefined = undefined;
-
-    // Kept from the intro to the outro, as Svelte does, so an outro that
-    // reverses an intro half way goes by the same values.
-    function getConfig() {
-      // oxlint-disable-next-line typescript/consistent-type-assertions -- read only through getComputedStyle
-      const made = motion.fn(node as never, motion.params, { direction });
-      config ??= isConfigFunction(made) ? made({ direction }) : made;
-      return config;
-    }
-
-    if (motion.isOutro) {
-      outros.set(node, onFinish => {
-        makeInert(state);
-        state.running = play({
-          state,
-          config: getConfig(),
-          target: 0,
-          onFinish
-        });
-      });
-    }
-
-    const isFirstIntro = motion.isIntro && !introduced.has(node);
-    if (isFirstIntro) {
-      introduced.add(node);
-      state.running = play({
-        state,
-        config: getConfig(),
-        target: 1,
-        onFinish() {
-          state.running?.abort();
-          state.running = null;
-          config = undefined;
-        }
-      });
-    }
-
-    return () => {
-      outros.delete(node);
-    };
-  }
-
-  function computedStyle(node: MotionNode) {
-    const state = stateFor(node);
-    const size = sizeOf(state);
-    return {
-      opacity: String(controlOf(state)?.opacity ?? 1),
-      transform: NO_TRANSFORM,
-      filter: NO_TRANSFORM,
-      display: "block",
-      width: `${size.x}px`,
-      height: `${size.y}px`,
-      paddingTop: NO_LENGTH,
-      paddingBottom: NO_LENGTH,
-      marginTop: NO_LENGTH,
-      marginBottom: NO_LENGTH,
-      borderTopWidth: NO_LENGTH,
-      borderBottomWidth: NO_LENGTH
-    };
-  }
-
-  function remove({ node, remove: removeNow }: {
-    node: LeavingNode;
-    remove: (node: LeavingNode) => void;
-  }) {
-    const outro = outros.get(node);
-    const isLeaving = outro !== undefined && parentElement(node) !== null;
-    if (!isLeaving) {
-      removeNow(node);
+    const control = controlOf(state);
+    const isChange = control !== null && state.isInert !== isInert;
+    if (!isChange) {
       return;
     }
 
-    outros.delete(node);
-    outro(() => removeNow(node));
+    state.isInert = isInert;
+
+    if (isInert) {
+      state.isHitTestVisibleBefore = control.isHitTestVisible;
+      control.isHitTestVisible = false;
+      return;
+    }
+
+    control.isHitTestVisible = state.isHitTestVisibleBefore;
+  }
+
+  function isInert(node: MotionNode) {
+    return stateFor(node).isInert;
+  }
+
+  function computedStyle(node: MotionNode) {
+    const control = controlOf(stateFor(node));
+    const size = control?.actualSize ?? {
+      x: 0,
+      y: 0
+    };
+    const thickness = control === null ? undefined : strokeThicknessOf(control);
+    return {
+      opacity: String(control?.opacity ?? 1),
+      transform: NO_TRANSFORM,
+      transformOrigin: `${size.x / 2}px ${size.y / 2}px`,
+      filter: NO_TRANSFORM,
+      display: "block",
+      // WinUI cannot take an element out of the layout, so Svelte's `animate:`
+      // is told it already is (it would otherwise try to).
+      position: "absolute",
+      width: `${size.x}px`,
+      height: `${size.y}px`,
+      strokeWidth: `${thickness ?? 0}px`,
+      strokeLinecap: "butt",
+      ...control === null ? {} : boxStyleOf(control)
+    };
+  }
+
+  // Where the control is in the window, as the page's getBoundingClientRect says it.
+  function boundingRect(node: MotionNode) {
+    const control = controlOf(stateFor(node));
+    const hasLayout = control !== null && isCallable(read(control, "transformToVisual"));
+    const origin = hasLayout ? layoutOrigin(control) : {
+      x: 0,
+      y: 0
+    };
+    const width = control?.actualSize.x ?? 0;
+    const height = control?.actualSize.y ?? 0;
+    return {
+      x: origin.x,
+      y: origin.y,
+      left: origin.x,
+      top: origin.y,
+      right: origin.x + width,
+      bottom: origin.y + height,
+      width,
+      height
+    };
+  }
+
+  function layoutOrigin(control: MotionControl) {
+    const updateLayout = read(control, "updateLayout");
+    if (isCallable(updateLayout)) {
+      updateLayout.call(control);
+    }
+
+    const transform = read(control, "transformToVisual");
+    const toWindow = isCallable(transform) ? transform.call(control, null) : null;
+    const transformPoint = read(toWindow, "transformPoint");
+    const point = isCallable(transformPoint) ? transformPoint.call(toWindow, {
+      x: 0,
+      y: 0
+    }) : null;
+    return {
+      x: numberOf(read(point, "x")) ?? 0,
+      y: numberOf(read(point, "y")) ?? 0
+    };
+  }
+
+  function totalLength(node: MotionNode) {
+    return shapeLength({
+      name: node.name,
+      control: node.native.control
+    });
   }
 
   return {
-    attach,
+    animate,
+    animations,
+    isInert,
+    setInert,
     computedStyle,
-    remove
+    boundingRect,
+    totalLength,
+    requestFrame,
+    cancelFrame: (id: number) => frameCallbacks.delete(id)
   };
 }
 
@@ -722,165 +768,185 @@ const dispatcherClock = {
   })
 } satisfies AnimationClock;
 
-let engine: ReturnType<typeof createEngine> | null = null;
 let disableCurrent: (() => void) | null = null;
 
-function currentEngine() {
-  const current = engine;
-  const isEnabled = current !== null;
-  if (!isEnabled) {
-    throw new Error("call enableElementAnimation() before a transition is attached");
-  }
+// Defines `name` on `target` and returns what puts it back as it was.
+function define({ target, name, descriptor }: {
+  target: object;
+  name: string;
+  descriptor: PropertyDescriptor;
+}) {
+  const previous = Object.getOwnPropertyDescriptor(target, name);
+  Object.defineProperty(target, name, {
+    configurable: true,
+    ...descriptor
+  });
+  return () => {
+    if (previous) {
+      Object.defineProperty(target, name, previous);
+      return;
+    }
 
-  return current;
+    Object.defineProperty(target, name, {
+      value: undefined,
+      configurable: true
+    });
+  };
+}
+
+// What the engine gives an element the way the DOM does: methods that use `this`.
+function elementMembers(engine: ReturnType<typeof createEngine>) {
+  return {
+    animate: {
+      value(this: MotionNode, keyframes: Keyframe[], options: AnimateOptions) {
+        return engine.animate({
+          node: this,
+          keyframes,
+          options
+        });
+      }
+    },
+    getAnimations: {
+      value(this: MotionNode) {
+        return engine.animations(this);
+      }
+    },
+    getBoundingClientRect: {
+      value(this: MotionNode) {
+        return engine.boundingRect(this);
+      }
+    },
+    clientWidth: {
+      get(this: MotionNode) {
+        return engine.boundingRect(this).width;
+      }
+    },
+    clientHeight: {
+      get(this: MotionNode) {
+        return engine.boundingRect(this).height;
+      }
+    },
+    // The browser's page zoom, which `animate:` divides by.
+    currentCSSZoom: {
+      value: 1
+    },
+    getTotalLength: {
+      value(this: MotionNode) {
+        return engine.totalLength(this);
+      }
+    },
+    // Svelte announces `introstart` and the like; only handlers the tree
+    // already holds for the type are called (a WinUI control has no such event).
+    dispatchEvent: {
+      value(this: ElementNode<unknown>, event: { type: string }) {
+        for (const handler of this.listeners.get(event.type)?.keys() ?? []) {
+          const isHandler = isCallable(handler);
+          if (isHandler) {
+            handler.call(this, event);
+          }
+        }
+
+        return true;
+      }
+    },
+    inert: {
+      get(this: MotionNode) {
+        return engine.isInert(this);
+      },
+      set(this: MotionNode, isInert: boolean) {
+        engine.setInert({
+          node: this,
+          isInert
+        });
+      }
+    }
+  } satisfies PropertyDescriptorMap;
 }
 
 /**
- * Turns on transitions: the renderer then keeps a leaving element in its
- * parent until its outro has run, and svelte/transition's functions can read
- * a control's opacity through the global `getComputedStyle`, which this
- * defines for WinUI's elements (any other element goes to the one there was,
- * if any). Call it once, before the first component is mounted. An app that
- * never imports this module does not bundle any of it.
+ * Turns on what Svelte's transitions need of a WinUI element: `animate()`,
+ * `getAnimations()`, `getBoundingClientRect()`, `getTotalLength()` (for
+ * `draw`) and `inert` on the tree's elements, and on the global scope
+ * `getComputedStyle` (which answers for WinUI's elements and passes any other
+ * to the one there was, if any), `requestAnimationFrame` and
+ * `cancelAnimationFrame` (for `tweened`, `spring` and a transition's `tick`).
+ * The Vite plugin calls it from every component that uses a `transition:`,
+ * `in:`, `out:` or `animate:` directive or imports `svelte/transition`,
+ * `svelte/animate` or `svelte/motion`; call it yourself only to give another
+ * clock (a test) or when you do not use the plugin. Calling it again with no
+ * options keeps what is on. An app that never imports this module does not
+ * bundle any of it.
  *
  * @param options - The clock, to step by something other than the UI thread's timer, and what to do after a frame.
  * @returns A function that turns it off again.
  */
-export function enableElementAnimation(options: ElementAnimationOptions = {}) {
-  disableCurrent?.();
-  const created = createEngine({
-    clock: options.clock ?? dispatcherClock,
-    onFrame: options.onFrame ?? flush,
-    warn: options.warn ?? (message => console.warn(message))
-  });
-  engine = created;
+export function enableElementAnimation(options?: ElementAnimationOptions) {
+  const current = disableCurrent;
+  const isAlreadyOn = options === undefined && current !== null;
+  if (isAlreadyOn) {
+    return current;
+  }
 
-  const removeNode = renderer.remove.bind(renderer);
-  renderer.remove = node => created.remove({
-    node,
-    remove: removeNode
+  current?.();
+  const engine = createEngine({
+    clock: options?.clock ?? dispatcherClock,
+    onFrame: options?.onFrame ?? flush,
+    warn: options?.warn ?? (message => console.warn(message)),
+    createDashes: options?.createDashes ?? doubleCollection
   });
 
   const previousComputedStyle = read(globalThis, GET_COMPUTED_STYLE);
   // eslint-disable-next-line no-restricted-syntax -- stands in for the global getComputedStyle(element, pseudoElement)
   function computedStyleOf(node: NativeValue, ...rest: NativeValue[]) {
     if (isMotionNode(node)) {
-      return created.computedStyle(node);
+      return engine.computedStyle(node);
     }
 
     if (!isCallable(previousComputedStyle)) {
-      throw new TypeError("getComputedStyle was given something that is not a WinUI element");
+      throw new TypeError("getComputedStyle was given something that is not a WinUI element ");
     }
 
     return previousComputedStyle.call(globalThis, node, ...rest);
   }
 
-  write(globalThis, GET_COMPUTED_STYLE, computedStyleOf);
+  const members = elementMembers(engine);
+  const undo = [
+    ...Object.entries(members).map(([name, descriptor]) => define({
+      target: ElementNode.prototype,
+      name,
+      descriptor
+    })),
+    define({
+      target: globalThis,
+      name: GET_COMPUTED_STYLE,
+      descriptor: {
+        value: computedStyleOf
+      }
+    }),
+    define({
+      target: globalThis,
+      name: REQUEST_FRAME,
+      descriptor: {
+        value: engine.requestFrame
+      }
+    }),
+    define({
+      target: globalThis,
+      name: CANCEL_FRAME,
+      descriptor: {
+        value: engine.cancelFrame
+      }
+    })
+  ];
 
   function disable() {
-    renderer.remove = removeNode;
-    write(globalThis, GET_COMPUTED_STYLE, previousComputedStyle);
-    engine = null;
+    for (const restore of undo) {
+      restore();
+    }
+
     disableCurrent = null;
   }
 
   disableCurrent = disable;
   return disable;
-}
-
-/** What `@attach` takes: the element, and what undoes the attachment. */
-export type TransitionAttachment = (node: object) => (() => void) | undefined;
-
-/** A transition function that needs no parameters. */
-export interface BareTransition {
-  /** The transition function. */
-  use: TransitionFunction<undefined>;
-}
-
-/** A transition function and the parameters it is given. */
-export interface ParameterizedTransition<Params> {
-  /** The transition function. */
-  use: TransitionFunction<Params>;
-
-  /** What `use` is given besides the element. */
-  params: Params;
-}
-
-interface LooseTransition<Params> {
-  use: TransitionFunction<Params | undefined>;
-  params?: Params;
-}
-
-function attachment<Params>({ options, isIntro, isOutro }: {
-  options: LooseTransition<Params>;
-  isIntro: boolean;
-  isOutro: boolean;
-}) {
-  return (node: object) => currentEngine().attach({
-    motion: {
-      fn: options.use,
-      params: options.params,
-      isIntro,
-      isOutro
-    },
-    node
-  });
-}
-
-/**
- * Svelte's `transition:` for a WinUI element, written after `@attach` in braces:
- * `transition({ use: fade, params: { duration: 200 } })`. It plays
- * when the element is made (also one made with its component, unlike
- * `transition:`: show a first render you want still with an `{#if}`) and when
- * Svelte removes it, which the renderer then holds off until it has played.
- * Only an element Svelte removes itself leaves with an outro: one that is the
- * root of its `{#if}` or `{#each}` block, not one inside a block that goes.
- *
- * @param options - The transition function (`fade`, `fly`, `scale` or `blur` from svelte/transition,
- *   `slide` with its opacity only, or your own) and its parameters.
- * @returns The attachment to put after `@attach`.
- */
-export function transition(options: BareTransition): TransitionAttachment;
-export function transition<Params>(options: ParameterizedTransition<Params>): TransitionAttachment;
-export function transition<Params>(options: LooseTransition<Params>) {
-  return attachment({
-    options,
-    isIntro: true,
-    isOutro: true
-  });
-}
-
-/**
- * Svelte's `in:` for a WinUI element: a transition that plays when the
- * element is made. See `transition`.
- *
- * @param options - The transition function and its parameters.
- * @returns The attachment to put after `@attach`.
- */
-export function intro(options: BareTransition): TransitionAttachment;
-export function intro<Params>(options: ParameterizedTransition<Params>): TransitionAttachment;
-export function intro<Params>(options: LooseTransition<Params>) {
-  return attachment({
-    options,
-    isIntro: true,
-    isOutro: false
-  });
-}
-
-/**
- * Svelte's `out:` for a WinUI element: a transition that plays when Svelte
- * removes the element, which the renderer holds off until it has played. See
- * `transition`.
- *
- * @param options - The transition function and its parameters.
- * @returns The attachment to put after `@attach`.
- */
-export function outro(options: BareTransition): TransitionAttachment;
-export function outro<Params>(options: ParameterizedTransition<Params>): TransitionAttachment;
-export function outro<Params>(options: LooseTransition<Params>) {
-  return attachment({
-    options,
-    isIntro: false,
-    isOutro: true
-  });
 }

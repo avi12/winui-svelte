@@ -1,3 +1,4 @@
+import type { CompileOptions } from "./compile.ts";
 import { compileSvelte, isSvelteFile } from "./compile.ts";
 import { isPatchedRuntime, patchSvelteRuntime } from "./runtime-patch.ts";
 import { readFileSync } from "node:fs";
@@ -6,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const BROWSER_CONDITION = "browser";
 const SVELTE_SPECIFIER = "svelte";
-const svelteFolder = /[\\/]node_modules[\\/]svelte[\\/]/u;
+const svelteFolder = /[\\/]node_modules[\\/](?:svelte|esm-env)[\\/]/u;
 
 function isSvelteImport({ specifier, parentUrl }: {
   specifier: string;
@@ -22,8 +23,10 @@ function isSvelteImport({ specifier, parentUrl }: {
  * compiled as it loads, and the files of Svelte's runtime the package reads
  * with edits are edited (`runtime-patch.ts`). The window itself runs from
  * source through the Vite dev server instead (`server.ts`).
+ *
+ * @param options - What each component is compiled with (for a test, the module that turns on transitions).
  */
-export function svelteHooks() {
+export function svelteHooks(options: CompileOptions = {}) {
   const hooks: RegisterHooksOptions = {
     resolve(specifier, context, nextResolve) {
       const isSvelte = isSvelteImport({
@@ -57,7 +60,8 @@ export function svelteHooks() {
         format: "module",
         source: compileSvelte({
           filename,
-          source: readFileSync(filename, "utf8")
+          source: readFileSync(filename, "utf8"),
+          options
         }),
         shortCircuit: true
       };
