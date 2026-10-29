@@ -1065,6 +1065,41 @@ function bagOf(keys: string[]) {
   return keys.length === 0 ? "{}" : `{\n${members.join(",\n")}\n  }`;
 }
 
+function hostConnectLines({ name, host }: {
+  name: string;
+  host: NonNullable<ReturnType<typeof hostOf>>;
+}) {
+  return [
+    "",
+    `  function connect(native: ${name}) {`,
+    `    const disconnectProperties = connect${name}(native, rest, bound);`,
+    `    const items = ${host.attach};`,
+    ...host.hasHandle ? ["    handle = items.handle;"] : [],
+    "    return () => {",
+    "      items.dispose();",
+    "      disconnectProperties();",
+    "    };",
+    "  }"
+  ];
+}
+
+function overlayConnectLines({ name, overlay }: {
+  name: string;
+  overlay: NonNullable<ReturnType<typeof overlayOf>>;
+}) {
+  return [
+    "",
+    `  function connect(placed: PlacedControl<${name}>) {`,
+    `    const disconnectProperties = connect${name}(placed.control, rest, bound);`,
+    `    const overlay = ${overlay.attach}({ placed, props: rest, bound });`,
+    "    return () => {",
+    "      overlay.dispose();",
+    "      disconnectProperties();",
+    "    };",
+    "  }"
+  ];
+}
+
 export function emitComponent(level: ClassModel) {
   const name = level.type.name;
   const host = hostOf(name);
@@ -1099,29 +1134,6 @@ export function emitComponent(level: ClassModel) {
   const markup = inner.length === 0
     ? `${open}></${level.tag}>`
     : `${open}>\n${inner.map(line => `  ${line}`).join("\n")}\n</${level.tag}>`;
-  const hosting = isHosted ? [
-    "",
-    `  function connect(native: ${name}) {`,
-    `    const disconnectProperties = connect${name}(native, rest, bound);`,
-    `    const items = ${host.attach};`,
-    ...host.hasHandle ? ["    handle = items.handle;"] : [],
-    "    return () => {",
-    "      items.dispose();",
-    "      disconnectProperties();",
-    "    };",
-    "  }"
-  ] : [];
-  const overlaying = isOverlay ? [
-    "",
-    `  function connect(placed: PlacedControl<${name}>) {`,
-    `    const disconnectProperties = connect${name}(placed.control, rest, bound);`,
-    `    const overlay = ${overlay.attach}({ placed, props: rest, bound });`,
-    "    return () => {",
-    "      overlay.dispose();",
-    "      disconnectProperties();",
-    "    };",
-    "  }"
-  ] : [];
   const propsType = hostedPropsType({
     name,
     host,
@@ -1149,8 +1161,14 @@ export function emitComponent(level: ClassModel) {
     `  let { ${destructured.join(", ")} }: ${propsType} = $props();`,
     `  const bound = ${bound};`,
     `  registerControls({ "${level.tag}": ${name} });`,
-    ...hosting,
-    ...overlaying,
+    ...isHosted ? hostConnectLines({
+      name,
+      host
+    }) : [],
+    ...isOverlay ? overlayConnectLines({
+      name,
+      overlay
+    }) : [],
     "</script>",
     "",
     markup
