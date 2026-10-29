@@ -8,6 +8,7 @@ import {
   gridLengthParts,
   GridUnit,
   isResourceRecord,
+  isSvgBytes,
   isSvgUri,
   numberList,
   parseColor,
@@ -244,4 +245,11 @@ test("a plain object is a record of resources and a WinRT object is not", () => 
   assert.equal(isResourceRecord({ accent: "#0af" }), true);
   assert.equal(isResourceRecord(Object.create(null)), true);
   assert.equal(isResourceRecord(new ResourceDictionaryLike()), false);
+});
+
+test("bytes are SVG when an svg element opens the file, PNG bytes are not", () => {
+  const encoder = new TextEncoder();
+  assert.equal(isSvgBytes(encoder.encode("<?xml version=\"1.0\"?> <svg xmlns=\"u\"/>")), true);
+  assert.equal(isSvgBytes(encoder.encode("  <SVG width=\"1\"></SVG>")), true);
+  assert.equal(isSvgBytes(Uint8Array.of(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)), false);
 });

@@ -74,6 +74,11 @@
       "svelte": "./dist/renderer/host/element-animation.js",
       "default": "./dist/renderer/host/element-animation.js"
     },
+    "./connected-animation": {
+      "types": "./dist/renderer/host/connected-animation.d.ts",
+      "svelte": "./dist/renderer/host/connected-animation.js",
+      "default": "./dist/renderer/host/connected-animation.js"
+    },
     "./css": {
       "types": "./dist/css/index.d.ts",
       "default": "./dist/css/index.js"

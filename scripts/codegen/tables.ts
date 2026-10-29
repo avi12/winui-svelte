@@ -878,6 +878,7 @@ export const PropertyKind = {
   NULLABLE_POINT: "nullablePoint",
   NULLABLE_RECT: "nullableRect",
   NULLABLE_COLOR: "nullableColor",
+  MEDIA_PLAYBACK_SOURCE: "mediaPlaybackSource",
   OBJECT: "object",
   PASSTHROUGH: "passthrough"
 } as const;
@@ -893,6 +894,7 @@ export const kindOfType = new Map<string, PropertyKind>([
   ["Microsoft.UI.Xaml.Media.Brush", PropertyKind.BRUSH],
   ["Windows.UI.Color", PropertyKind.COLOR],
   ["Microsoft.UI.Xaml.Media.ImageSource", PropertyKind.IMAGE_SOURCE],
+  ["Windows.Media.Playback.IMediaPlaybackSource", PropertyKind.MEDIA_PLAYBACK_SOURCE],
   ["Microsoft.UI.Xaml.Media.FontFamily", PropertyKind.FONT_FAMILY],
   ["Windows.Foundation.Uri", PropertyKind.URI],
   ["Microsoft.UI.Xaml.Duration", PropertyKind.DURATION],

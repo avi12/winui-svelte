@@ -37,6 +37,7 @@ import type {
   ResourceDictionary,
   UIElement
 } from "./generated/bindings.ts";
+import { mediaSeam } from "./media-seam.ts";
 import type { ResourceRecordInput } from "./resource-record.ts";
 import { styleTarget } from "./style-targets.ts";
 import type {
@@ -73,6 +74,7 @@ import {
   gridLengthParts,
   GridUnit,
   isResourceRecord,
+  isSvgBytes,
   isSvgUri,
   numberList,
   parseColor,
@@ -91,6 +93,7 @@ import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
 import { classNameOf, read, write } from "#src/renderer/host/reflect.js";
 import { boxed } from "#src/renderer/host/values.js";
+import type { IMediaPlaybackSource } from "#winui/windows/media/playback/IMediaPlaybackSource";
 
 // A prop's value as the bindings take it: the generated components call these
 // where a prop is not already the bindings' own type.
@@ -152,8 +155,14 @@ export type GridLengthInput = number | string | GridLengthValue;
 /** A color string (see `ColorInput`), a theme resource name, or a brush. */
 export type BrushInput = string | Brush;
 
-/** A URI string (a `.svg` is an SVG image, any other a bitmap) or an image source. */
-export type ImageSourceInput = string | ImageSource;
+/**
+ * A URI string (a `.svg` is an SVG image, any other a bitmap), an image source,
+ * or the bytes of an image file (SVG text is told by its `<svg` element).
+ */
+export type ImageSourceInput = string | ImageSource | Uint8Array | ArrayBuffer;
+
+/** A media URI or a playback source (a MediaPlayerElement's `source`). */
+export type MediaPlaybackSourceInput = string | IMediaPlaybackSource;
 
 /** Path data as XAML writes it ("M0,0 L10,10 Z") or a geometry. */
 export type GeometryInput = string | Geometry;
@@ -688,6 +697,16 @@ export function fontFamilyOf(input: FontFamilyInput) {
  * when it ends in `.svg`, else of a bitmap.
  */
 export function imageSourceOf(input: ImageSourceInput) {
+  const isBuffer = input instanceof ArrayBuffer;
+  const isBytes = isBuffer || input instanceof Uint8Array;
+  if (isBytes) {
+    const bytes = isBuffer ? new Uint8Array(input) : input;
+    return mediaSeam().imageOfBytes({
+      bytes,
+      isSvg: isSvgBytes(bytes)
+    });
+  }
+
   const isSource = typeof input !== "string";
   if (isSource) {
     return input;
@@ -703,6 +722,16 @@ export function imageSourceOf(input: ImageSourceInput) {
   const image = new BitmapImage();
   image.uriSource = new Uri(input);
   return image;
+}
+
+/** A media prop as an `IMediaPlaybackSource`; a string is a URI, opened as a `MediaSource`. */
+export function mediaPlaybackSourceOf(input: MediaPlaybackSourceInput) {
+  const isSource = typeof input !== "string";
+  if (isSource) {
+    return input;
+  }
+
+  return mediaSeam().playbackSourceOf(input);
 }
 
 /**

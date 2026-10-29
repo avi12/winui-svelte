@@ -1,3 +1,4 @@
+import { installMedia } from "#src/components/media.js";
 import { installXaml } from "#src/components/xaml.js";
 import { installCss } from "#src/css/index.js";
 import * as winui from "#src/winui.js";
@@ -28,6 +29,7 @@ export async function runWindow(options: RunWindowOptions) {
     Application.create(() => {
       installCss(winui);
       installXaml();
+      installMedia();
       options.onStart();
     });
   });
