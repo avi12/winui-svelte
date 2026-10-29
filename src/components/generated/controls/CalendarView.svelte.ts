@@ -7,6 +7,7 @@ import {
   enumValue,
   fontFamilyOf,
   fontWeightOf,
+  styleOf,
   thicknessOf
 } from "../../convert.ts";
 import type {
@@ -17,6 +18,7 @@ import type {
   EnumInput,
   FontFamilyInput,
   FontWeightInput,
+  StyleInput,
   ThicknessInput
 } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
@@ -46,7 +48,7 @@ export interface CalendarViewProps extends ControlProps {
   calendarItemForeground?: BrushInput | Snippet;
   calendarItemHoverBackground?: BrushInput | Snippet;
   calendarItemPressedBackground?: BrushInput | Snippet;
-  calendarViewDayItemStyle?: CalendarView["calendarViewDayItemStyle"];
+  calendarViewDayItemStyle?: StyleInput;
   dayItemFontFamily?: FontFamilyInput;
   dayItemFontSize?: number;
   dayItemFontStyle?: EnumInput<typeof FontStyle>;
@@ -210,7 +212,7 @@ export function linkCalendarView(
     props,
     key: "calendarViewDayItemStyle",
     apply(value) {
-      control.calendarViewDayItemStyle = value;
+      control.calendarViewDayItemStyle = styleOf({ input: value, owner: control, property: "calendarViewDayItemStyle" });
     }
   });
   link.property({
