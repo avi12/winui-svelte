@@ -443,7 +443,9 @@ class Builder {
     for (const member of interfaces.flatMap(entry => entry.properties)) {
       const key = camelCase(member.name);
       const isFilled = createdCollections.has(member.name);
-      const isSkipped = skippedProperties.has(member.name) || reservedKeys.has(key) || isFilled;
+      const isSkippedByName = skippedProperties.has(member.name)
+        || skippedProperties.has(`${model.type.name}.${member.name}`);
+      const isSkipped = isSkippedByName || reservedKeys.has(key) || isFilled;
       const isNew = !seenProperties.has(member.name);
       const isWritableProperty = member.hasSetter && !isSkipped && isNew;
       if (isWritableProperty) {
