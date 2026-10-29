@@ -708,7 +708,10 @@ Mount it as the app's root (`mountControl({ component: App, props })` inside `ru
 `"micaAlt"` or `"none"` (`Backdrop`, also taken by `createWindow`); it can
 change while the window is open. WinUI itself shows the theme's solid color
 in place of the material while the window is inactive, and restores it on
-activation; nothing needs wiring. A `titleBar` snippet is shown above the content
+activation; nothing needs wiring. The base and thin acrylic variants are not offered:
+they need a custom `SystemBackdrop` subclass overriding `OnTargetConnected`,
+and the generated bindings expose neither `ISystemBackdropOverrides` nor a way
+to implement one from JavaScript. A `titleBar` snippet is shown above the content
 and set as the window's title bar (`setTitleBar`, so it is the drag region and
 the controls in it still click); it makes `extendsIntoTitleBar` true unless
 given. Sizes are in device-independent pixels (the window's DPI applied);
