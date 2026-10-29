@@ -2,7 +2,11 @@
 # never activated), reads back from WinUI which material the window holds, and
 # saves a PrintWindow capture of each as <OutDir>\window-<backdrop>.png. Ends
 # only the processes it started.
-param([string]$OutDir = $env:TEMP, [string[]]$Backdrops = @('acrylic', 'mica', 'micaAlt', 'none'))
+param(
+  [string]$OutDir = $env:TEMP,
+  [string[]]$Backdrops = @('acrylic', 'mica', 'micaAlt', 'none'))
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\..\harness\window-tools.ps1"
 
 foreach ($backdrop in $Backdrops) {
