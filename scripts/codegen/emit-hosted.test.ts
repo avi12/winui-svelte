@@ -37,11 +37,11 @@ for (const name of ["ListView", "GridView"]) {
     assert.match(component, /<script generics="Item" lang="ts">/u);
     assert.match(
       component,
-      /let \{ handle = \$bindable\(\), selectedKey = \$bindable\(\), selectedKeys = \$bindable\(\), class: className, style, \.\.\.rest \}/u
+      /let \{ selectedKey = \$bindable\(\), selectedKeys = \$bindable\(\), handle = \$bindable\(\), class: className, style, \.\.\.rest \}/u
     );
-    assert.match(component, /const selection = \{\n    get selectedKey\(\) \{\n      return selectedKey;\n    \},\n    set selectedKey\(next\) \{/u);
+    assert.match(component, /const bound = \{\n    get selectedKey\(\) \{\n      return selectedKey;\n    \},\n    set selectedKey\(next\) \{/u);
     assert.match(component, new RegExp(`ListComponentProps<Item, ${name}ComponentProps>`, "u"));
-    assert.match(component, /attachItems\(\{ view: native, props: rest, selection \}\)/u);
+    assert.match(component, /attachItems\(\{ view: native, props: rest, selection: bound \}\)/u);
     assert.match(component, /handle = items\.handle;/u);
     assert.doesNotMatch(component, /children/u);
     assert.doesNotMatch(component, /attachRepeaterItems/u);
