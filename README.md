@@ -920,14 +920,15 @@ Stated plainly, so nobody finds them by surprise:
 - **CSS is WinUI's subset.** Layout follows the element's type (`src/css/API.md`
   has the table): `display: flex` is a `<stack-panel>`, `display: grid` a
   `<grid>` (tracks in `fr`, `px`, `auto`, `minmax()`), `position: absolute` a
-  `<canvas>` child, and `@media (min-width...)` restyles as the window resizes.
+  `<canvas>` child, `@media (min-width...)` restyles as the window resizes, and descendant, child
+  and sibling selectors, `:first-child`, `:nth-child()` and `:is()` are resolved
+  against the component's markup at build time.
   A Style cannot reach an element's parent, children or siblings, so these are
   build errors that say what to write instead: `float`, `position: sticky`,
   `right` and `bottom`, `flex-grow` and `flex-wrap` (use `fr` tracks; WinUI has
   no wrapping panel), `align-items` and `justify-content` on a container (set
   `place-self` on the child), `order`, `aspect-ratio`, a % size other than
-  100%, `calc()` with a % or a variable, `@container`, descendant, child and
-  sibling selectors, `:first-child`, `:nth-child`, `:focus-within`,
+  100%, `calc()` with a % or a variable, `@container`, `:has()`, `:focus-within`,
   `box-shadow` (use `-winui-elevation`), `filter`, `animation` and
   `@keyframes`. Gradients are `linear-gradient()` and `radial-gradient()` only
   (no repeating or conic ones, no stop in `px`), and replace `background-color`.

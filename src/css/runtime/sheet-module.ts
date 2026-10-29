@@ -1,4 +1,5 @@
 import type { ResourceCatalogue } from "./resources.ts";
+import { resolveRelationalSelectors } from "#src/css/relational/relational.js";
 import { LAZY_GROUPS } from "#src/css/translate/lazy-groups.js";
 import { errorsOf, formatDiagnostic, translateStyleSheet } from "#src/css/translate/translate.js";
 import type { Diagnostic, StyleSheetData } from "#src/css/translate/types.js";
@@ -112,7 +113,16 @@ function registrationCode({ sheet, runtimeModule }: {
  * something WinUI cannot say.
  */
 export function compileSheetModule(input: SheetModuleInput) {
-  const result = compile(input.source, {
+  const relational = resolveRelationalSelectors({
+    source: input.source,
+    file: input.sheetId
+  });
+  const hasRelationalErrors = relational.diagnostics.length > 0;
+  if (hasRelationalErrors) {
+    throw new SheetError(relational.diagnostics);
+  }
+
+  const result = compile(relational.source, {
     runes: true,
     ...input.compilerOptions,
     filename: input.filename,

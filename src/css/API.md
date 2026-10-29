@@ -427,14 +427,38 @@ the width and height. `text-align: start` and `end` are Left and Right.
 
 ## Selectors
 
-A selector is one compound of a type, classes and one state (`:hover`,
-`:active`, `:focus`, `:focus-visible`, `:disabled`, `:checked`), plus `:where()`
-and `:not(.a, .b)`, which excludes the classes (it counts as a class in the
-specificity). A Style is set on one element, so what needs the element's
-surroundings is an error that says to give the element a class: descendant,
-child and sibling combinators, `:first-child`, `:last-child`, `:nth-child`,
-`:only-child`, `:empty`, `:has()`, `:focus-within` and `:not()` of a type or
-state.
+A selector is a type, classes, one state (`:hover`, `:active`, `:focus`,
+`:focus-visible`, `:disabled`, `:checked`), `:where()` and `:not(.a, .b)`. A Style
+sets one element by its own type and classes, so a selector about its
+surroundings is resolved at build time, against the component's markup:
+
+```css
+.list > .item:first-child { ... }   /* becomes .wsc-1 on exactly that element */
+.card text-block { ... }            /* descendant, through {#if} and {#each} */
+.a + .b, .a ~ .c { ... }            /* sibling combinators */
+.item:nth-child(2n+1), :is(.a, .b) > .c { ... }
+```
+
+The build parses the component (Svelte's own parser), finds the elements each
+descendant, child and sibling selector, `:first-child`, `:last-child`,
+`:only-child`, `:nth-child()`, `:nth-last-child()` and `:is()` can match, adds a
+generated class (`wsc-1`, in the element's `class`) to exactly those, and the
+selector names that class instead, keeping a state of the last compound
+(`.item:first-child:hover` is `.wsc-1:hover`). Both Svelte's compile and the
+sheet's use the rewritten source (`resolveRelationalSelectors`).
+
+It is a build error, with the line, where the markup does not decide:
+
+- an element's class is set by an expression, a `class:` directive or a spread, and
+  the selector tests a class on it (when the element would otherwise match);
+- a position (`:first-child`, `:nth-child()`, `+`, `~`) of an element whose siblings
+  depend on an `{#if}`, an `{#each}`, a component or a snippet, or of the root of the
+  component (its neighbours are the parent's);
+- `:has()`, a state (`:hover`) on an element other than the styled one, and an id,
+  attribute or pseudo-element.
+
+Elements inside a component's children, a snippet or `<svelte:element>` are not
+seen. Relational selectors in a rule nested in another are not resolved.
 
 ## What stays unsupported, and why
 
