@@ -957,4 +957,6 @@ In this repository (run these at its root):
 
 ## License
 
-[MIT](LICENSE).
+[Apache-2.0](LICENSE). Copies and forks must keep the `LICENSE` and `NOTICE`
+files and the copyright notice (Apache-2.0, section 4), so credit to the
+original author travels with the code.

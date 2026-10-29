@@ -25,7 +25,7 @@
     "type": "git",
     "url": "git+https://github.com/avi12/winui-svelte.git"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "Avi Hanan",
   "type": "module",
   "packageManager": "pnpm@11.13.1",
@@ -165,7 +165,8 @@
     "!src/renderer/testing/fake-controls.ts",
     "!src/renderer/testing/tree-probe.ts",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "NOTICE"
   ],
   "sideEffects": false,
   "publishConfig": {

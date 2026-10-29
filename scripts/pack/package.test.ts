@@ -25,7 +25,7 @@ const manifestSchema = z.object({
   }),
   files: z.array(z.string()),
   sideEffects: z.literal(false),
-  license: z.literal("MIT")
+  license: z.literal("Apache-2.0")
 });
 
 function targetsOf(entry: Json) {
@@ -101,6 +101,7 @@ test("the WebView2 libraries ship wherever they were restored", { skip: !IS_BUIL
 test("the published files never include the contributor notes", () => {
   assert.ok(!manifest.files.includes("CLAUDE.md"));
   assert.ok(manifest.files.includes("LICENSE"));
+  assert.ok(manifest.files.includes("NOTICE"));
 });
 
 const sourceMapSchema = z.object({ sources: z.array(z.string()) });

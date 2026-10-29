@@ -11,7 +11,7 @@ allowlist, and `pnpm pack --dry-run` must not list it).
 - Svelte 5 (runes) on the custom renderer the package ships; the generated components come from WinUI's metadata through `scripts/codegen` (never hand-edit `src/components/generated`)
 - What the generator decides by hand is a table in `scripts/codegen/tables.ts` (`rootClasses` for the families that become components, `itemsHosted` for the controls that take `items`/`key`/`item`, `nonConstructible`, `bindingsAfterWinapp`). Change the table and run `pnpm gen:components`, never the output. Only `Window` and the item hosts (`src/components/hand-written/items`) are hand-written. The WinUI bindings come from `pnpm bindings` (winapp, then `scripts/bindings/after-winapp.ts`); the API is in `API.md`, the contributor steps in `CONTRIBUTING.md`
 - `pnpm test:windows` needs an ordinary desktop session (WebView2 cannot launch its browser in a sandboxed process)
-- Licence: MIT
+- Licence: Apache-2.0: keep `LICENSE` and `NOTICE` (forks must carry the copyright and NOTICE)
 
 # Which rules win
 1. **Google's style guide for the language** (https://google.github.io/styleguide/), followed strictly wherever it speaks, in every language the repository holds, not only TypeScript: TypeScript (https://google.github.io/styleguide/tsguide.html), JavaScript, HTML and CSS (the markup and `<style>` of `.svelte` files), JSON, Markdown and XML. The table under "Other languages" says which guide covers which files and where a tool dictates otherwise.
