@@ -66,6 +66,10 @@ export interface SingleInstanceOptions {
   readonly onRedirect: (activation: Activation) => void;
 }
 
+// WinRT drops the key's registration when the wrapper is collected, so the
+// primary's instance stays here until it is released.
+const heldInstances = new Set<RegisteredInstance>();
+
 function activationOf(args: AppActivationArguments) {
   const parsed = launchDataSchema.safeParse(args.data);
   const commandLine = parsed.success ? parsed.data.arguments : undefined;
@@ -128,14 +132,18 @@ export async function claimInstance({ key, onRedirect, source, runOnUiThread }: 
     } satisfies SingleInstance;
   }
 
-  const release = instance.onActivated(activation => {
+  heldInstances.add(instance);
+  const stopListening = instance.onActivated(activation => {
     runOnUiThread(() => {
       onRedirect(activation);
     });
   });
   return {
     isPrimary: true,
-    release
+    release() {
+      stopListening();
+      heldInstances.delete(instance);
+    }
   } satisfies SingleInstance;
 }
 
