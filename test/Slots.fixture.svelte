@@ -4,8 +4,10 @@
   // writes it, a pane, commands, menu items, inlines, a flyout, a header and
   // a paragraph holding a control, items written with {#each}, and value
   // objects (a brush with stops, a transform, a storyboard) in their properties,
-  // and transitions in the collections WinUI leaves null.
+  // transitions in the collections WinUI leaves null, and a navigator that
+  // shows the page its history is at.
   // Each control is handed to the test by name.
+  import NavigationPage from "./NavigationPage.fixture.svelte";
   import {
     AppBarButton,
     Bold,
@@ -25,10 +27,11 @@
     MenuFlyoutItem,
     NavigationView,
     NavigationViewItem,
+    Navigator,
     Paragraph,
     PopupThemeTransition,
-    RichTextBlock,
     RepositionThemeTransition,
+    RichTextBlock,
     RotateTransform,
     SplitView,
     StackPanel,
@@ -36,7 +39,9 @@
     TextBlock,
     ToggleSwitch
   } from "#src/components/index.js";
+  import type { NavigatorHandle } from "#src/components/index.js";
   import { control } from "#src/index.js";
+  import { untrack } from "svelte";
 
   interface Props {
     isShown: boolean;
@@ -47,6 +52,17 @@
   }
 
   const props: Props = $props();
+  let navigator = $state<NavigatorHandle | undefined>();
+
+  $effect(() => {
+    const label = props.isShown ? "Second" : "First";
+    untrack(() => navigator?.navigate({
+      page: NavigationPage,
+      params: {
+        label
+      }
+    }));
+  });
 
   function found(name: string) {
     return control((native: object) => props.onFound({
@@ -87,6 +103,16 @@
       <PopupThemeTransition />
     {/snippet}
   </StackPanel>
+  <Navigator {@attach found("navigator")} bind:handle={navigator} />
+  <Navigator
+    {@attach found("readyNavigator")}
+    onReady={ready => ready.navigate({
+      page: NavigationPage,
+      params: {
+        label: "Ready"
+      }
+    })}
+  />
   <Storyboard {@attach found("storyboard")}>
     <DoubleAnimation to={1.5} />
   </Storyboard>

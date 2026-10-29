@@ -1022,6 +1022,11 @@ function menuItemCountOf(button: object) {
   return menu?.items?.size ?? 0;
 }
 
+function pageLabelOf(navigator: object) {
+  const page = bindings.projectAs(read(navigator, "content"), bindings.TextBlock);
+  return page.text;
+}
+
 function stopCountOf(border: object) {
   const brush = bindings.projectAs(read(border, "background"), bindings.LinearGradientBrush);
   return brush.gradientStops.size;
@@ -1056,6 +1061,16 @@ const slotsAtFirst: SlotExpectation[] = [
       control,
       property: "transitions"
     }) === 1
+  },
+  {
+    name: "navigator",
+    what: "the navigator shows the page it was navigated to",
+    isMet: control => pageLabelOf(control) === "First"
+  },
+  {
+    name: "readyNavigator",
+    what: "a page navigated to from onReady, while the control is being attached, is shown",
+    isMet: control => pageLabelOf(control) === "Ready"
   },
   {
     name: "storyboard",
@@ -1125,6 +1140,11 @@ const slotsAtFirst: SlotExpectation[] = [
 ];
 
 const slotsWhenShown: SlotExpectation[] = [
+  {
+    name: "navigator",
+    what: "a second navigation replaces the page in the control",
+    isMet: control => pageLabelOf(control) === "Second"
+  },
   {
     name: "flyout",
     what: "a flyout asked to open before its element is on screen waits for it instead of failing",
