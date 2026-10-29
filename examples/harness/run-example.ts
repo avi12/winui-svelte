@@ -23,11 +23,13 @@ export interface ExampleRun {
   entry: string;
   link: MessagePort;
   options: Record<string, string>;
+  // Takes in the module server's hot updates; called with each tick.
+  receive(): void;
 }
 
 export type RunExample = (run: ExampleRun) => Promise<void>;
 
-export async function runExample({ entry, link, options }: ExampleRun) {
+export async function runExample({ entry, link, options, receive }: ExampleRun) {
   const parsedExample = exampleModuleSchema.safeParse(await import(/* @vite-ignore */ entry));
   if (!parsedExample.success) {
     throw new Error(`${entry} exports no start()`);
@@ -50,6 +52,7 @@ export async function runExample({ entry, link, options }: ExampleRun) {
       timer.interval = { duration: BigInt(COMMAND_MILLISECONDS) * ticksPerMillisecond };
       timer.isRepeating = true;
       timer.onTick(() => {
+        receive();
         let received = receiveMessageOnPort(link);
         while (received !== undefined) {
           const parsedCommand = exampleCommandSchema.safeParse(received.message);

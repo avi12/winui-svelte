@@ -54,6 +54,7 @@
     "examples/lists/main.ts",
     "examples/transitions/main.ts",
     "examples/items/main.ts",
+    "examples/interaction/main.ts",
     "examples/navigation/main.ts",
     "examples/tree/main.ts",
     "examples/overlays/main.ts",
