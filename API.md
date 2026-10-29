@@ -1260,7 +1260,9 @@ bytes of a PNG or JPEG, a URI or a file path), `bitmapFromColors`,
 The classes a draw function uses are re-exported from the bindings: `CanvasDevice`, `CanvasBitmap`, `CanvasRenderTarget`, `CanvasCommandList`, `CanvasAlphaMode`, `CanvasImageInterpolation`, `CanvasComposite`, `CanvasBlend`, `CanvasDpiRounding`, `CanvasSolidColorBrush`, `CanvasLinearGradientBrush`, `CanvasRadialGradientBrush`, `CanvasImageBrush`, `CanvasGeometry`, `CanvasPathBuilder`, `CanvasStrokeStyle`, `CanvasCapStyle`, `CanvasLineJoin`, `CanvasDashStyle`, `CanvasFigureLoop`, `CanvasFigureFill`, `CanvasTextFormat`, `CanvasTextLayout`, `CanvasHorizontalAlignment`, `CanvasVerticalAlignment`, `CanvasWordWrapping`.
 Effects are ICanvasImage: set `source` and draw one with `drawImage`.
 Re-exported: `GaussianBlurEffect`, `DirectionalBlurEffect`, `ColorMatrixEffect`, `BlendEffect`, `BlendEffectMode`, `ShadowEffect`, `SaturationEffect`, `GrayscaleEffect`, `BrightnessEffect`, `ContrastEffect`, `HueRotationEffect`, `InvertEffect`, `SepiaEffect`, `OpacityEffect`, `CompositeEffect`, `ArithmeticCompositeEffect`, `CropEffect`, `ScaleEffect`, `BorderEffect`, `MorphologyEffect`, `EmbossEffect`, `SharpenEffect`, `Transform2DEffect`, `TintEffect`, `ExposureEffect`. Any other class is
-imported from `#winui/microsoft/graphics/canvas/...`.
+imported from `#winui/microsoft/graphics/canvas/...`. The types `Color`, `Matrix3x2`, `Rect`,
+`Vector2`, `Vector4`, `CanvasDrawingSession`, `ICanvasImage` and `ICanvasBrush`
+are re-exported too.
 
 ### Effects on elements (the CSS bridge)
 
