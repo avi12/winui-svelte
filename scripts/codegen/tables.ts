@@ -320,7 +320,8 @@ export const nonConstructible = new Map<string, string>([
   ],
   [
     "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem",
-    "constructing it fails with E_NOINTERFACE: it is activatable in the metadata but WinUI makes it only inside a Pivot"
+    "covered by Pivot: WinUI makes it only inside a Pivot, as the header of a PivotItem (constructing it fails with "
+    + "E_NOINTERFACE), so a header is styled with the `header` snippet of PivotItem"
   ]
 ]);
 
@@ -832,11 +833,16 @@ export const extraBindings: Array<{
     alias: "IReference_Rect",
     module: "#winui/windows/foundation/IReference_WindowsFoundationRect_g7d5f48bd5717ecb2"
   },
-  // The list components hold their keys in a vector of boxed values, and
+  // The list components hold their keys in a vector of boxed values (in a
+  // vector of groups, a grouped list's), and
   // narrow the controls WinUI hands back (projectAs).
   {
     name: "IVector_Object",
     module: "#winui/windows/foundation/collections/IVector_Object"
+  },
+  {
+    name: "IObservableVector_Object",
+    module: "#winui/windows/foundation/collections/IObservableVector_Object"
   },
   {
     name: "projectAs",
