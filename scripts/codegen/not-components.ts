@@ -228,15 +228,4 @@ export const notComponents = new Map<string, string>(
 
 // Classes that should become components and have not yet. The coverage test
 // lists them as gaps; a class leaves this table when it is generated.
-export const knownGaps = new Map<string, string>([
-  [`${XAML}.StateTriggerBase`, "the abstract base of the visual state triggers"],
-  [`${XAML}.AdaptiveTrigger`, "a visual state trigger: not in the bindings yet"],
-  [`${XAML}.StateTrigger`, "a visual state trigger: not in the bindings yet"],
-  [`${XAML}.SetterBase`, "the abstract base of Setter: not in the bindings yet"],
-  [`${XAML}.Setter`, "a visual state setter: not in the bindings yet"],
-  [`${XAML}.VisualState`, "a state of a group: needs hosting beside the element, not in it"],
-  [`${XAML}.VisualStateGroup`, "a group of states: needs hosting beside the element, not in it"],
-  [`${XAML}.VisualTransition`, "a transition of a group: needs hosting beside the element, not in it"],
-  [`${XAML}.Controls.GroupStyle`, "grouping of a list: needs a CollectionViewSource over a JS group"],
-  [`${XAML}.Data.CollectionViewSource`, "grouping of a list: needs a JS ICollectionViewGroup"]
-]);
+export const knownGaps = new Map<string, string>();

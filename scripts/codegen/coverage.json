@@ -1,23 +1,12 @@
 {
   "counts": {
-    "abstract base of components": 47,
-    "component": 304,
+    "abstract base of components": 49,
+    "component": 312,
     "hand-written": 1,
-    "known gap": 10,
     "non-constructible": 2,
     "not a component": 552
   },
   "listed": [
-    {
-      "name": "Microsoft.UI.Xaml.AdaptiveTrigger",
-      "coverage": "known gap",
-      "reason": "a visual state trigger: not in the bindings yet"
-    },
-    {
-      "name": "Microsoft.UI.Xaml.Controls.GroupStyle",
-      "coverage": "known gap",
-      "reason": "grouping of a list: needs a CollectionViewSource over a JS group"
-    },
     {
       "name": "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem",
       "coverage": "non-constructible",
@@ -27,46 +16,6 @@
       "name": "Microsoft.UI.Xaml.Controls.SwapChainBackgroundPanel",
       "coverage": "non-constructible",
       "reason": "the UWP panel WinUI 3 keeps for compatibility: it refuses most FrameworkElement properties (Opacity, Height...), so a component for it would throw on being given them; SwapChainPanel is its replacement"
-    },
-    {
-      "name": "Microsoft.UI.Xaml.Data.CollectionViewSource",
-      "coverage": "known gap",
-      "reason": "grouping of a list: needs a JS ICollectionViewGroup"
-    },
-    {
-      "name": "Microsoft.UI.Xaml.Setter",
-      "coverage": "known gap",
-      "reason": "a visual state setter: not in the bindings yet"
-    },
-    {
-      "name": "Microsoft.UI.Xaml.SetterBase",
-      "coverage": "known gap",
-      "reason": "the abstract base of Setter: not in the bindings yet"
-    },
-    {
-      "name": "Microsoft.UI.Xaml.StateTrigger",
-      "coverage": "known gap",
-      "reason": "a visual state trigger: not in the bindings yet"
-    },
-    {
-      "name": "Microsoft.UI.Xaml.StateTriggerBase",
-      "coverage": "known gap",
-      "reason": "the abstract base of the visual state triggers"
-    },
-    {
-      "name": "Microsoft.UI.Xaml.VisualState",
-      "coverage": "known gap",
-      "reason": "a state of a group: needs hosting beside the element, not in it"
-    },
-    {
-      "name": "Microsoft.UI.Xaml.VisualStateGroup",
-      "coverage": "known gap",
-      "reason": "a group of states: needs hosting beside the element, not in it"
-    },
-    {
-      "name": "Microsoft.UI.Xaml.VisualTransition",
-      "coverage": "known gap",
-      "reason": "a transition of a group: needs hosting beside the element, not in it"
     }
   ]
 }
