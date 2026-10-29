@@ -1,10 +1,10 @@
 import { callOverload } from "./overloads.ts";
+import type { ICanvasBrush } from "#winui/microsoft/graphics/canvas/brushes/ICanvasBrush";
 import type { CanvasBitmap } from "#winui/microsoft/graphics/canvas/CanvasBitmap";
 import type { Color, Matrix3x2, Rect, Vector2 } from "#winui/microsoft/graphics/canvas/CanvasDrawingSession";
 import type { CanvasDrawingSession } from "#winui/microsoft/graphics/canvas/CanvasDrawingSession";
-import type { ICanvasImage } from "#winui/microsoft/graphics/canvas/ICanvasImage";
-import type { ICanvasBrush } from "#winui/microsoft/graphics/canvas/brushes/ICanvasBrush";
 import type { CanvasGeometry } from "#winui/microsoft/graphics/canvas/geometry/CanvasGeometry";
+import type { ICanvasImage } from "#winui/microsoft/graphics/canvas/ICanvasImage";
 import type { CanvasTextFormat } from "#winui/microsoft/graphics/canvas/text/CanvasTextFormat";
 
 // Drawing on a CanvasDrawingSession with options objects. A paint is a Color
@@ -35,12 +35,11 @@ interface Box {
   height: number;
 }
 
-const COLOR_CHANNELS = ["a", "r", "g", "b"];
 const MAX_CHANNEL = 255;
 
 /** Whether a paint is a Color rather than a brush. */
 export function isColor(paint: Paint) {
-  return COLOR_CHANNELS.every(channel => typeof Reflect.get(paint, channel) === "number");
+  return "a" in paint && "r" in paint && "g" in paint && "b" in paint;
 }
 
 function paintName(paint: Paint) {

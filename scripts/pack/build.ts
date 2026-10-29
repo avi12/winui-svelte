@@ -132,7 +132,10 @@ function copyExtraLibraries({ extra, architecture }: {
   }
 
   for (const library of restoredLibraries) {
-    copyFileSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, library), path.join(SHIPPED_BOOTSTRAPPERS, architecture, library));
+    copyFileSync(
+      path.join(RESTORED_BOOTSTRAPPERS, architecture, library),
+      path.join(SHIPPED_BOOTSTRAPPERS, architecture, library)
+    );
   }
 }
 

@@ -1,9 +1,9 @@
-import { CompositionEffectSourceParameter } from "#winui/microsoft/ui/composition/CompositionEffectSourceParameter";
 import type { Vector2 } from "#winui/microsoft/graphics/canvas/CanvasDrawingSession";
-import type { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
-import { ElementCompositionPreview } from "#winui/microsoft/ui/xaml/hosting/ElementCompositionPreview";
-import type { Compositor } from "#winui/microsoft/ui/composition/Compositor";
 import type { CompositionBrush } from "#winui/microsoft/ui/composition/CompositionBrush";
+import { CompositionEffectSourceParameter } from "#winui/microsoft/ui/composition/CompositionEffectSourceParameter";
+import type { Compositor } from "#winui/microsoft/ui/composition/Compositor";
+import { ElementCompositionPreview } from "#winui/microsoft/ui/xaml/hosting/ElementCompositionPreview";
+import type { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
 import type { IGraphicsEffect } from "#winui/windows/graphics/effects/IGraphicsEffect";
 
 // The bridge from Win2D effect graphs to the Composition layer, where any
@@ -69,11 +69,13 @@ export function applyEffect({ element, effect, source = BACKDROP }: {
   sprite.brush = createEffectBrush({
     compositor,
     effect,
-    sources: { [ELEMENT_SOURCE]: sourceBrush({
-      compositor,
-      source,
-      size: sprite.size
-    }) }
+    sources: {
+      [ELEMENT_SOURCE]: sourceBrush({
+        compositor,
+        source,
+        size: sprite.size
+      })
+    }
   });
   ElementCompositionPreview.setElementChildVisual(element, sprite);
   return () => {
@@ -87,7 +89,8 @@ function sourceBrush({ compositor, source, size }: {
   source: typeof BACKDROP | UIElement;
   size: Vector2;
 }) {
-  if (source === BACKDROP) {
+  const isBackdrop = source === BACKDROP;
+  if (isBackdrop) {
     return compositor.createBackdropBrush();
   }
 

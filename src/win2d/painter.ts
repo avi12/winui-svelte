@@ -163,13 +163,13 @@ export class Painter {
         session,
         matrix: multiply({
           first: matrix,
-          then: session.transform
+          second: session.transform
         })
       });
     });
     draw(this);
     this.run(session => {
-      if (previous !== undefined) {
+      if (previous) {
         setTransform({
           session,
           matrix: previous

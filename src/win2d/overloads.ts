@@ -6,16 +6,28 @@
 // overload by the parameter names the metadata gives it, which stay when the
 // numbering changes.
 
+type Overload = (this: object, ...args: unknown[]) => unknown;
+
 const PARAMETER_LIST = /^\s*[\w$]+\(([^)]*)\)/u;
-const overloadsByKey = new Map<string, Function>();
+const overloadsByKey = new Map<string, Overload>();
+
+function isOverload(value: unknown): value is Overload {
+  return typeof value === "function";
+}
+
+function methodOf({ prototype, name }: {
+  prototype: object;
+  name: string;
+}) {
+  return Object.getOwnPropertyDescriptor(prototype, name)?.value;
+}
 
 function parametersOf(overload: unknown) {
-  const isFunction = typeof overload === "function";
-  if (!isFunction) {
+  if (!isOverload(overload)) {
     return [];
   }
 
-  const names = PARAMETER_LIST.exec(Function.prototype.toString.call(overload))?.[1] ?? "";
+  const names = PARAMETER_LIST.exec(overload.toString())?.[1] ?? "";
   return names.split(",").map(name => name.trim()).filter(name => name !== "");
 }
 
@@ -24,6 +36,32 @@ function isSameList({ left, right }: {
   right: string[];
 }) {
   return left.length === right.length && left.every((name, i) => name === right[i]);
+}
+
+function findOverload({ prototype, method, parameters }: {
+  prototype: object;
+  method: string;
+  parameters: string[];
+}) {
+  const candidates = Object.getOwnPropertyNames(prototype).filter(name => name.startsWith(`_${method}_`));
+  const found = candidates.find(name => isSameList({
+    left: parametersOf(
+      methodOf({
+        prototype,
+        name
+      })
+    ),
+    right: parameters
+  }));
+  const candidate = found === undefined ? undefined : methodOf({
+    prototype,
+    name: found
+  });
+  if (!isOverload(candidate)) {
+    throw new Error(`${method}(${parameters.join(",")}) is not among the overloads of the bindings`);
+  }
+
+  return candidate;
 }
 
 /**
@@ -39,22 +77,13 @@ export function callOverload({ target, method, parameters, args }: {
   args: unknown[];
 }) {
   const prototype = Object.getPrototypeOf(target);
-  const key = `${prototype?.constructor?.name}.${method}(${parameters.join(",")})`;
+  const key = `${prototype.constructor.name}.${method}(${parameters.join(",")})`;
   const known = overloadsByKey.get(key);
-  if (known !== undefined) {
-    return known.apply(target, args);
-  }
-
-  const candidates = Object.getOwnPropertyNames(prototype).filter(name => name.startsWith(`_${method}_`));
-  const found = candidates.find(name => isSameList({
-    left: parametersOf(Reflect.get(prototype, name)),
-    right: parameters
-  }));
-  const candidate = found === undefined ? undefined : Reflect.get(prototype, found);
-  if (typeof candidate !== "function") {
-    throw new Error(`${key} is not among the overloads of the bindings`);
-  }
-
-  overloadsByKey.set(key, candidate);
-  return candidate.apply(target, args);
+  const overload = known ?? findOverload({
+    prototype,
+    method,
+    parameters
+  });
+  overloadsByKey.set(key, overload);
+  return overload.apply(target, args);
 }

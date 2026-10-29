@@ -1,22 +1,21 @@
+import { streamOf } from "#src/components/byte-stream.js";
 import { CanvasBitmap } from "#winui/microsoft/graphics/canvas/CanvasBitmap";
 import { CanvasDevice } from "#winui/microsoft/graphics/canvas/CanvasDevice";
-import { CanvasRenderTarget } from "#winui/microsoft/graphics/canvas/CanvasRenderTarget";
 import type { Color, Vector2 } from "#winui/microsoft/graphics/canvas/CanvasDrawingSession";
-import type { ICanvasResourceCreator } from "#winui/microsoft/graphics/canvas/ICanvasResourceCreator";
-import { CanvasGeometry } from "#winui/microsoft/graphics/canvas/geometry/CanvasGeometry";
+import { CanvasRenderTarget } from "#winui/microsoft/graphics/canvas/CanvasRenderTarget";
 import { CanvasFigureLoop } from "#winui/microsoft/graphics/canvas/geometry/CanvasFigureLoop";
+import { CanvasGeometry } from "#winui/microsoft/graphics/canvas/geometry/CanvasGeometry";
 import { CanvasPathBuilder } from "#winui/microsoft/graphics/canvas/geometry/CanvasPathBuilder";
+import type { ICanvasResourceCreator } from "#winui/microsoft/graphics/canvas/ICanvasResourceCreator";
 import { CanvasTextFormat } from "#winui/microsoft/graphics/canvas/text/CanvasTextFormat";
 import { Uri } from "#winui/windows/foundation/Uri";
-import { DataWriter } from "#winui/windows/storage/streams/DataWriter";
-import { InMemoryRandomAccessStream } from "#winui/windows/storage/streams/InMemoryRandomAccessStream";
 
 // Making what a draw handler draws with: devices, off-screen surfaces,
 // bitmaps, text formats and geometries.
 
 const DEFAULT_DPI = 96;
+const DEFAULT_FONT_SIZE = 14;
 const BYTES_PER_PIXEL = 4;
-const START_OF_STREAM = 0n;
 const URI_SCHEME = /^[a-z][a-z\d+.-]*:\/\//iu;
 
 /**
@@ -28,7 +27,8 @@ const URI_SCHEME = /^[a-z][a-z\d+.-]*:\/\//iu;
  */
 export function sharedDevice() {
   const device = CanvasDevice.getSharedDevice();
-  if (device === null) {
+  const isMissing = device === null;
+  if (isMissing) {
     throw new Error("Win2D could not make a device");
   }
 
@@ -72,16 +72,6 @@ export function pixelAt({ pixels, x, y }: {
   } satisfies Color;
 }
 
-async function streamOf(bytes: Uint8Array) {
-  const stream = new InMemoryRandomAccessStream();
-  const writer = new DataWriter(stream);
-  writer.writeBytes(bytes);
-  await writer.storeAsync();
-  writer.detachStream();
-  stream.seek(START_OF_STREAM);
-  return stream;
-}
-
 /**
  * Decodes an image into a bitmap on the device: from the bytes of an encoded
  * file (PNG, JPEG, ...), a URI (`https://`, `ms-appx://`...) or a file path.
@@ -110,7 +100,7 @@ export function bitmapFromColors({ creator, colors, width, height }: {
 }
 
 /** A text format, for drawText. */
-export function createTextFormat({ family = "Segoe UI", size = 14 }: {
+export function createTextFormat({ family = "Segoe UI", size = DEFAULT_FONT_SIZE }: {
   family?: string;
   size?: number;
 } = {}) {

@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import { Window } from "winui-svelte/components";
-  import { exitApplication } from "winui-svelte/window";
   import {
     bitmapFromColors,
     Canvas,
@@ -9,12 +8,15 @@
     createTextFormat,
     GaussianBlurEffect
   } from "winui-svelte/win2d";
+  import { exitApplication } from "winui-svelte/window";
 
   const WINDOW_HEIGHT = 360;
   const WINDOW_WIDTH = 480;
   const TILE_SIZE = 8;
   const TILE_SCALE = 8;
   const INITIAL_BLUR = 4;
+  const SUN_HEIGHT_DIVISOR = 3;
+  const MARGIN = 16;
 
   interface Props {
     // The harness's, handed over once: it never changes.
@@ -92,7 +94,7 @@
       });
       painter.fillCircle({
         x: width / 2,
-        y: height / 3,
+        y: height / SUN_HEIGHT_DIVISOR,
         radius: 48,
         paint: {
           a: 255,
@@ -127,8 +129,8 @@
           m12: 0,
           m21: 0,
           m22: TILE_SCALE,
-          m31: 16,
-          m32: height - TILE_SIZE * TILE_SCALE - 16
+          m31: MARGIN,
+          m32: height - TILE_SIZE * TILE_SCALE - MARGIN
         },
         draw: scaled => scaled.drawImage({ image: blur })
       });

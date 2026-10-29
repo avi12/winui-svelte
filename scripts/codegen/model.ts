@@ -641,7 +641,10 @@ class Builder {
     wanted?: Set<string>;
   }) {
     this.collectAttached();
-    const isWanted = (type: TypeInfo) => wanted === undefined || wanted.has(fullName(type));
+    function isWanted(type: TypeInfo) {
+      return wanted === undefined || wanted.has(fullName(type));
+    }
+
     const candidates = components.types.filter(type => isWanted(type) && this.isCandidate(type));
     for (const type of candidates) {
       const reason = nonConstructible.get(fullName(type));

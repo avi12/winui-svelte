@@ -1,4 +1,10 @@
-import { BindingScope, bindingsAfterWinapp, COMPONENT_WINMD, extraPackages, lateClasses } from "#scripts/codegen/tables.ts";
+import {
+  bindingsAfterWinapp,
+  BindingScope,
+  COMPONENT_WINMD,
+  extraPackages,
+  lateClasses
+} from "#scripts/codegen/tables.ts";
 import { filesIn } from "#scripts/files-in.ts";
 import { WINAPP_BINARIES, WINAPP_BINDINGS, WINAPP_LOCK } from "#scripts/winapp-paths.ts";
 import { execFileSync } from "node:child_process";
@@ -67,7 +73,8 @@ function winmdNamed({ winmds, name }: {
   name: string;
 }) {
   const found = winmds.find(winmd => path.basename(winmd).toLowerCase() === name.toLowerCase());
-  if (found === undefined) {
+  const isFound = found !== undefined;
+  if (!isFound) {
     throw new Error(`${WINAPP_LOCK} must name ${name}: run winapp restore`);
   }
 
@@ -85,7 +92,7 @@ interface GeneratorRun {
   };
 }
 
-function runsOf(extra: ExtraPackage): GeneratorRun[] {
+function runsOf(extra: ExtraPackage) {
   const isListed = extra.scope === BindingScope.LISTED;
   if (!isListed) {
     return [{
@@ -196,8 +203,10 @@ function bindPackage({ workFolder, winmds, extra }: {
     }),
     restoredLibrary
   });
-  process.stdout.write(`${extra.name}: ${files} binding files added, ${libraries} native libraries copied
-`);
+  process.stdout.write(
+    `${extra.name}: ${files} binding files added, ${libraries} native libraries copied
+`
+  );
 }
 
 function bindLateClasses({ workFolder, winmds }: {
@@ -216,8 +225,10 @@ function bindLateClasses({ workFolder, winmds }: {
         }
       })
     );
-    process.stdout.write(`${late.namespace}: ${files} binding files added
-`);
+    process.stdout.write(
+      `${late.namespace}: ${files} binding files added
+`
+    );
   }
 }
 

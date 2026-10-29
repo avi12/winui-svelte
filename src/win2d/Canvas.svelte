@@ -8,7 +8,7 @@
   // so what it reads is tracked: when that changes, or the control is resized,
   // it runs again and the control is invalidated, and the Draw event replays
   // what it painted.
-  let { draw, createResources, onDrawn, onSizeChanged, ...rest }: CanvasProps = $props();
+  const { draw, createResources, onDrawn, onSizeChanged, ...rest }: CanvasProps = $props();
   let native = $state.raw<CanvasControlNative>();
   let size = $state.raw({
     width: 0,
@@ -18,7 +18,8 @@
   let drawCount = 0;
 
   $effect(() => {
-    if (native === undefined) {
+    const isReady = native !== undefined;
+    if (!isReady) {
       return;
     }
 
@@ -36,16 +37,6 @@
 
 <CanvasControl
   {...rest}
-  onSizeChanged={(...args) => {
-    if (native !== undefined) {
-      size = {
-        width: native.actualWidth,
-        height: native.actualHeight
-      };
-    }
-
-    onSizeChanged?.(...args);
-  }}
   onCreateResources={sender => {
     native = sender;
     size = {
@@ -59,5 +50,16 @@
     recording.replay(args.drawingSession);
     drawCount++;
     onDrawn?.(drawCount);
+  }}
+  onSizeChanged={(...args) => {
+    const hasNative = native !== undefined;
+    if (hasNative) {
+      size = {
+        width: native.actualWidth,
+        height: native.actualHeight
+      };
+    }
+
+    onSizeChanged?.(...args);
   }}
 />

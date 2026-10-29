@@ -1,7 +1,7 @@
 import type { Matrix3x2 } from "#winui/microsoft/graphics/canvas/CanvasDrawingSession";
 
 // 2D transforms as Win2D's Matrix3x2 (row vectors: a point is multiplied from
-// the left, so `multiply({ first, then })` applies `first`, then `then`).
+// the left, so `multiply({ first, second })` applies `first`, and after it `second`).
 
 /** The transform that changes nothing. */
 export const IDENTITY: Matrix3x2 = {
@@ -59,17 +59,17 @@ export function rotation({ radians, centerX = 0, centerY = 0 }: {
   };
 }
 
-/** The transform that applies `first`, then `then`. */
-export function multiply({ first, then }: {
+/** The transform that applies `first`, and after it `second`. */
+export function multiply({ first, second }: {
   first: Matrix3x2;
-  then: Matrix3x2;
+  second: Matrix3x2;
 }) {
   return {
-    m11: first.m11 * then.m11 + first.m12 * then.m21,
-    m12: first.m11 * then.m12 + first.m12 * then.m22,
-    m21: first.m21 * then.m11 + first.m22 * then.m21,
-    m22: first.m21 * then.m12 + first.m22 * then.m22,
-    m31: first.m31 * then.m11 + first.m32 * then.m21 + then.m31,
-    m32: first.m31 * then.m12 + first.m32 * then.m22 + then.m32
+    m11: first.m11 * second.m11 + first.m12 * second.m21,
+    m12: first.m11 * second.m12 + first.m12 * second.m22,
+    m21: first.m21 * second.m11 + first.m22 * second.m21,
+    m22: first.m21 * second.m12 + first.m22 * second.m22,
+    m31: first.m31 * second.m11 + first.m32 * second.m21 + second.m31,
+    m32: first.m31 * second.m12 + first.m32 * second.m22 + second.m32
   };
 }

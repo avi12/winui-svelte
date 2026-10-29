@@ -1,5 +1,20 @@
-import { clear, drawImage, drawLine, drawText, fillCircle, fillGeometry, fillRectangle, setTransform } from "./draw.ts";
-import { IDENTITY, multiply, rotation, scaling, translation } from "./matrix.ts";
+import {
+  clear,
+  drawImage,
+  drawLine,
+  drawText,
+  fillCircle,
+  fillGeometry,
+  fillRectangle,
+  setTransform
+} from "./draw.ts";
+import {
+  IDENTITY,
+  multiply,
+  rotation,
+  scaling,
+  translation
+} from "./matrix.ts";
 import {
   bitmapFromColors,
   createRenderTarget,
@@ -9,8 +24,8 @@ import {
   readPixels,
   sharedDevice
 } from "./resources.ts";
-import { initWindowsAppSdk } from "#src/window/bootstrap.js";
 import { roInitialize } from "@microsoft/dynwinrt";
+import { initWindowsAppSdk } from "#src/window/bootstrap.js";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -44,7 +59,6 @@ const NATIVE_LIBRARY = path.join(import.meta.dirname, "..", "..", ".winapp", "bi
 const BINDINGS = path.join(import.meta.dirname, "..", "..", "dist", "bindings", "microsoft", "graphics", "canvas", "CanvasDevice.js");
 const IS_AVAILABLE = existsSync(NATIVE_LIBRARY) && existsSync(BINDINGS);
 const SLACK = 2;
-
 if (IS_AVAILABLE) {
   roInitialize();
   initWindowsAppSdk();
@@ -77,7 +91,7 @@ function assertColor({ actual, expected }: {
 }
 
 test("a rectangle filled with a color, and one with a brush, both paint", { skip: !IS_AVAILABLE }, async () => {
-  const { CanvasSolidColorBrush } = await import("#winui/microsoft/graphics/canvas/brushes/CanvasSolidColorBrush");
+  const brushes = await import("#winui/microsoft/graphics/canvas/brushes/CanvasSolidColorBrush");
   const pixels = render(session => {
     fillRectangle({
       session,
@@ -93,7 +107,7 @@ test("a rectangle filled with a color, and one with a brush, both paint", { skip
       y: 0,
       width: MIDDLE,
       height: SIZE,
-      paint: new CanvasSolidColorBrush(sharedDevice(), BLUE)
+      paint: new brushes.CanvasSolidColorBrush(sharedDevice(), BLUE)
     });
   });
   assertColor({
@@ -172,7 +186,7 @@ test("a transform moves what is drawn after it, and setting it back restores", {
           x: 2,
           y: 2
         }),
-        then: translation({
+        second: translation({
           x: 8,
           y: 8
         })
@@ -283,7 +297,7 @@ test("a text puts pixels where it is written", { skip: !IS_AVAILABLE }, () => {
 });
 
 test("a bitmap from colors is drawn, and a blur effect softens its edge", { skip: !IS_AVAILABLE }, async () => {
-  const { GaussianBlurEffect } = await import("#winui/microsoft/graphics/canvas/effects/GaussianBlurEffect");
+  const effects = await import("#winui/microsoft/graphics/canvas/effects/GaussianBlurEffect");
   const device = sharedDevice();
   const colors = Array.from({ length: 4 * 4 }, (_color, i) => i % 4 < 2 ? RED : BLUE);
   const bitmap = bitmapFromColors({
@@ -312,7 +326,7 @@ test("a bitmap from colors is drawn, and a blur effect softens its edge", { skip
     }),
     expected: BLUE
   });
-  const blur = new GaussianBlurEffect();
+  const blur = new effects.GaussianBlurEffect();
   blur.source = bitmap;
   blur.blurAmount = 2;
   const soft = render(session => drawImage({
@@ -336,8 +350,10 @@ test("rotating by a quarter turn around a point keeps that point still", () => {
   const x = 10 * turned.m11 + 10 * turned.m21 + turned.m31;
   const y = 10 * turned.m12 + 10 * turned.m22 + turned.m32;
   assert.ok(Math.abs(x - 10) < 1e-9 && Math.abs(y - 10) < 1e-9);
-  assert.deepEqual(multiply({
-    first: IDENTITY,
-    then: IDENTITY
-  }), IDENTITY);
+  assert.deepEqual(
+    multiply({
+      first: IDENTITY,
+      second: IDENTITY
+    }), IDENTITY
+  );
 });
