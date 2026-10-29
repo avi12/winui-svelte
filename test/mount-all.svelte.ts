@@ -1047,6 +1047,17 @@ const slotsAtFirst: SlotExpectation[] = [
     isMet: control => bindings.projectAs(read(control, "renderTransform"), bindings.RotateTransform).angle === 45
   },
   {
+    name: "transitionPanel",
+    what: "transitions in the childrenTransitions and transitions snippets fill collections made for the null properties",
+    isMet: control => sizeOf({
+      control,
+      property: "childrenTransitions"
+    }) === 2 && sizeOf({
+      control,
+      property: "transitions"
+    }) === 1
+  },
+  {
     name: "storyboard",
     what: "the animation is a child of the storyboard, which no panel holds",
     isMet: control => sizeOf({

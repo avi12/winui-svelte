@@ -3,7 +3,8 @@
   // test (mount-all.svelte.ts): each control written the way a XAML app
   // writes it, a pane, commands, menu items, inlines, a flyout, a header and
   // a paragraph holding a control, items written with {#each}, and value
-  // objects (a brush with stops, a transform, a storyboard) in their properties.
+  // objects (a brush with stops, a transform, a storyboard) in their properties,
+  // and transitions in the collections WinUI leaves null.
   // Each control is handed to the test by name.
   import {
     AppBarButton,
@@ -15,6 +16,7 @@
     CommandBar,
     ContentDialog,
     DoubleAnimation,
+    EntranceThemeTransition,
     Flyout,
     GradientStop,
     InlineUIContainer,
@@ -24,7 +26,9 @@
     NavigationView,
     NavigationViewItem,
     Paragraph,
+    PopupThemeTransition,
     RichTextBlock,
+    RepositionThemeTransition,
     RotateTransform,
     SplitView,
     StackPanel,
@@ -74,6 +78,15 @@
       <RotateTransform angle={45} />
     {/snippet}
   </Border>
+  <StackPanel {@attach found("transitionPanel")}>
+    {#snippet childrenTransitions()}
+      <EntranceThemeTransition />
+      <RepositionThemeTransition />
+    {/snippet}
+    {#snippet transitions()}
+      <PopupThemeTransition />
+    {/snippet}
+  </StackPanel>
   <Storyboard {@attach found("storyboard")}>
     <DoubleAnimation to={1.5} />
   </Storyboard>

@@ -305,7 +305,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `BitmapIconSource` | Controls | `showAsMonochrome`, `uriSource` |  |  |
 | `BitmapImage` | Media.Imaging | `autoPlay`, `createOptions`, `decodePixelHeight`, `decodePixelType`, `decodePixelWidth`, `uriSource` |  |  |
 | `Bold` | Documents |  |  | yes |
-| `Border` | Controls | `background`, `backgroundSizing`, `backgroundTransition`, `borderBrush`, `borderThickness`, `child`, `childTransitions`, `cornerRadius`, +1 more |  | yes |
+| `Border` | Controls | `background`, `backgroundSizing`, `backgroundTransition`, `borderBrush`, `borderThickness`, `child`, `cornerRadius`, `padding` |  | yes |
 | `BounceEase` | Media.Animation | `bounces`, `bounciness` |  |  |
 | `BreadcrumbBar` | Controls | `itemsSource`, `itemTemplate` |  |  |
 | `BreadcrumbBarItem` | Controls |  |  | yes |
@@ -333,9 +333,9 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `CommonNavigationTransitionInfo` | Media.Animation | `isStaggeringEnabled` |  |  |
 | `CompositeTransform` | Media | `centerX`, `centerY`, `rotation`, `scaleX`, `scaleY`, `skewX`, `skewY`, `translateX`, +1 more |  |  |
 | `CompositeTransform3D` | Media.Media3D | `centerX`, `centerY`, `centerZ`, `rotationX`, `rotationY`, `rotationZ`, `scaleX`, `scaleY`, +4 more |  |  |
-| `ContentControl` | Controls | `content`, `contentTemplate`, `contentTemplateSelector`, `contentTransitions` |  | yes |
+| `ContentControl` | Controls | `content`, `contentTemplate`, `contentTemplateSelector` |  | yes |
 | `ContentDialog` | Controls | `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonStyle`, `closeButtonText`, `defaultButton`, `fullSizeDesired`, `isPrimaryButtonEnabled`, `isSecondaryButtonEnabled`, +10 more | `open` | yes |
-| `ContentPresenter` | Controls | `background`, `backgroundSizing`, `backgroundTransition`, `borderBrush`, `borderThickness`, `characterSpacing`, `content`, `contentTemplate`, +19 more |  | yes |
+| `ContentPresenter` | Controls | `background`, `backgroundSizing`, `backgroundTransition`, `borderBrush`, `borderThickness`, `characterSpacing`, `content`, `contentTemplate`, +18 more |  | yes |
 | `ContentThemeTransition` | Media.Animation | `horizontalOffset`, `verticalOffset` |  |  |
 | `ContinuumNavigationTransitionInfo` | Media.Animation | `exitElement` |  |  |
 | `CubicEase` | Media.Animation |  |  |  |
@@ -399,8 +399,8 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `InlineUIContainer` | Documents | `child` |  | yes |
 | `Italic` | Documents |  |  | yes |
 | `ItemContainer` | Controls | `child`, `isSelected` |  |  |
-| `ItemsControl` | Controls | `displayMemberPath`, `groupStyleSelector`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemContainerTransitions`, `itemsPanel`, `itemsSource`, `itemTemplate`, +1 more |  | yes |
-| `ItemsPresenter` | Controls | `footer`, `footerTemplate`, `footerTransitions`, `header`, `headerTemplate`, `headerTransitions`, `padding` |  |  |
+| `ItemsControl` | Controls | `displayMemberPath`, `groupStyleSelector`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemsPanel`, `itemsSource`, `itemTemplate`, `itemTemplateSelector` |  | yes |
+| `ItemsPresenter` | Controls | `footer`, `footerTemplate`, `header`, `headerTemplate`, `padding` |  |  |
 | `ItemsRepeater` | Controls | `background`, `horizontalCacheLength`, `itemsSource`, `itemTemplate`, `itemTransitionProvider`, `layout`, `verticalCacheLength` |  |  |
 | `ItemsRepeaterScrollHost` | Controls | `horizontalAnchorRatio`, `scrollViewer`, `verticalAnchorRatio` |  |  |
 | `ItemsStackPanel` | Controls | `areStickyGroupHeadersEnabled`, `cacheLength`, `groupHeaderPlacement`, `groupPadding`, `itemsUpdatingScrollMode`, `orientation` |  | yes |
@@ -479,7 +479,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `PolyQuadraticBezierSegment` | Media | `points` |  | yes |
 | `PopInThemeAnimation` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
 | `PopOutThemeAnimation` | Media.Animation | `targetName` |  |  |
-| `Popup` | Controls.Primitives | `child`, `childTransitions`, `desiredPlacement`, `horizontalOffset`, `isLightDismissEnabled`, `isOpen`, `lightDismissOverlayMode`, `placementTarget`, +3 more | `isOpen` | yes |
+| `Popup` | Controls.Primitives | `child`, `desiredPlacement`, `horizontalOffset`, `isLightDismissEnabled`, `isOpen`, `lightDismissOverlayMode`, `placementTarget`, `shouldConstrainToRootBounds`, +2 more | `isOpen` | yes |
 | `PopupThemeTransition` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset` |  |  |
 | `PowerEase` | Media.Animation | `power` |  |  |
 | `ProgressBar` | Controls | `isIndeterminate`, `showError`, `showPaused` | `value` |  |
@@ -566,7 +566,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `ToolTip` | Controls | `horizontalOffset`, `isOpen`, `placement`, `placementRect`, `placementTarget`, `verticalOffset` | `isOpen` | yes |
 | `TransformGroup` | Media |  |  | yes |
 | `TranslateTransform` | Media | `x`, `y` |  |  |
-| `TreeView` | Controls | `canDragItems`, `canReorderItems`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemContainerTransitions`, `itemsSource`, `itemTemplate`, `itemTemplateSelector`, +3 more | `selectedItem` |  |
+| `TreeView` | Controls | `canDragItems`, `canReorderItems`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemsSource`, `itemTemplate`, `itemTemplateSelector`, `selectedItem`, +2 more | `selectedItem` |  |
 | `TreeViewItem` | Controls | `collapsedGlyph`, `expandedGlyph`, `glyphBrush`, `glyphOpacity`, `glyphSize`, `hasUnrealizedChildren`, `isExpanded`, `itemsSource` |  | yes |
 | `TreeViewList` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `TreeViewNode` | Controls | `content`, `hasUnrealizedChildren`, `isExpanded` |  |  |
@@ -637,6 +637,23 @@ names the property:
     </LinearGradientBrush>
   {/snippet}
 </Border>
+```
+
+The transitions an element plays are the same: `transitions`,
+`childrenTransitions` (a panel), `childTransitions` (a `Border`, a `Popup`),
+`contentTransitions`, `itemContainerTransitions`, `headerTransitions` and
+`footerTransitions` are snippets that hold transition components
+(`EntranceThemeTransition`, `RepositionThemeTransition`...). WinUI leaves
+these collections null; the renderer makes the `TransitionCollection` when the
+snippet has a transition in it.
+
+```svelte
+<StackPanel>
+  {#snippet childrenTransitions()}
+    <EntranceThemeTransition />
+    <RepositionThemeTransition />
+  {/snippet}
+</StackPanel>
 ```
 
 One written directly among an element's children (a `Storyboard`) is made but

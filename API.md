@@ -140,6 +140,17 @@ Raw kebab elements: tag = WinUI class, kebab attribute = camelCase property,
 `<host element={control} />` places a control made elsewhere,
 `ontoggled={handler}` = the event `Toggled`.
 
+`<property name="childrenTransitions" collection="transition-collection">`
+fills a property WinUI leaves null with a collection: when the property holds
+none and the element has a control in it, the renderer makes the class the
+`collection` tag names (registered through `registerControls`, as the
+transition components do) and sets it, then fills it as any collection. The
+generated components write this for `transitions`, `childrenTransitions`,
+`childTransitions`, `contentTransitions`, `itemContainerTransitions`,
+`headerTransitions` and `footerTransitions` (`createdCollections` in
+`scripts/codegen/tables.ts`), which are snippet props in place of the
+properties, and each transition component registers `TransitionCollection`.
+
 A property whose name starts with "on" (ToggleSwitch.OnContent) on a raw
 element: Svelte takes any attribute starting with lower-case "on" for an event
 (`on-content="x"` is a compile error; `on-content={value}` hands the host a
