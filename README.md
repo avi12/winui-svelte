@@ -919,7 +919,7 @@ Stated plainly, so nobody finds them by surprise:
   URL cannot be the top frame.
 - **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `box-shadow`
   (use `-winui-elevation`), `filter`, `animation`, descendant, child or sibling
-  selectors, nesting or `@keyframes`: each is a build error that says what to
+  selectors or `@keyframes`: each is a build error that says what to
   use instead. Gradients are `linear-gradient()` and `radial-gradient()` only
   (no repeating or conic ones, no stop in `px`), and replace `background-color`.
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can

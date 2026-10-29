@@ -19,7 +19,7 @@ import type { AtRuleBlock, Block, RuleBlock } from "#src/css/parse/parser.js";
 import { BlockKind, CssSyntaxError, parseCss } from "#src/css/parse/parser.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 import type { ParsedSelector } from "#src/css/parse/selectors.js";
-import { parseSelectorList } from "#src/css/parse/selectors.js";
+import { flattenNestedSelector, parseSelectorList } from "#src/css/parse/selectors.js";
 import type { PositionMapper, SourceMapV3 } from "#src/css/parse/source-map.js";
 import { createPositionMapper } from "#src/css/parse/source-map.js";
 import type { ResourceCatalogue, ResourceKind } from "#src/css/runtime/resources.js";
@@ -259,10 +259,10 @@ function addRuleBlock({ translator, block, scheme }: {
   block: RuleBlock;
   scheme: ColorScheme;
 }) {
-  for (const nestedAt of block.nested) {
+  for (const nestedAt of block.nestedAtRules) {
     reportError({
       translator,
-      message: "nested rules have no WinUI meaning (write each selector at the top level)",
+      message: "an at-rule nested in a rule has no WinUI meaning (write the @media block around the rule)",
       generatedAt: nestedAt
     });
   }
@@ -282,6 +282,20 @@ function addRuleBlock({ translator, block, scheme }: {
         generatedAt: block.at
       });
     }
+  }
+
+  for (const child of block.nested) {
+    addRuleBlock({
+      translator,
+      block: {
+        ...child,
+        selector: flattenNestedSelector({
+          parent: block.selector,
+          child: child.selector
+        })
+      },
+      scheme
+    });
   }
 }
 

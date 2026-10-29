@@ -12,8 +12,10 @@ export interface RuleBlock {
   selector: string;
   at: SourcePosition;
   declarations: Declaration[];
-  /** A rule nested in this one, which has no WinUI meaning. */
-  nested: SourcePosition[];
+  /** The style rules nested in this one; the translator flattens them with `&`. */
+  nested: RuleBlock[];
+  /** Where an at-rule nested in this one began: it has no WinUI meaning there. */
+  nestedAtRules: SourcePosition[];
 }
 
 /** An at-rule (@media, @import...), with its blocks when it has a body. */
@@ -202,6 +204,17 @@ function toDeclaration(prelude: Prelude) {
   };
 }
 
+function ruleBlock(prelude: Prelude) {
+  return {
+    kind: BlockKind.RULE,
+    selector: prelude.text,
+    at: prelude.at,
+    declarations: [],
+    nested: [],
+    nestedAtRules: []
+  } satisfies RuleBlock;
+}
+
 // After the `{` of a style rule.
 function readRuleBody({ cursor, block }: {
   cursor: Cursor;
@@ -212,10 +225,20 @@ function readRuleBody({ cursor, block }: {
     cursor.index++;
 
     const isNestedRule = prelude.terminator === Terminator.OPEN_BRACE;
-    if (isNestedRule) {
-      // Nesting: skip its body and record where it was.
-      block.nested.push(prelude.at);
+    const isNestedAtRule = isNestedRule && prelude.text.startsWith("@");
+    if (isNestedAtRule) {
+      block.nestedAtRules.push(prelude.at);
       skipBody(cursor);
+      continue;
+    }
+
+    if (isNestedRule) {
+      const child = ruleBlock(prelude);
+      readRuleBody({
+        cursor,
+        block: child
+      });
+      block.nested.push(child);
       continue;
     }
 
@@ -290,13 +313,7 @@ function readBlocks({ cursor, isNested }: {
         }) : null
       });
     } else if (isBlock) {
-      const block: RuleBlock = {
-        kind: BlockKind.RULE,
-        selector: prelude.text,
-        at: prelude.at,
-        declarations: [],
-        nested: []
-      };
+      const block = ruleBlock(prelude);
       readRuleBody({
         cursor,
         block
@@ -312,7 +329,7 @@ function readBlocks({ cursor, isNested }: {
  * Reads the CSS Svelte emits for a component into rules and at-rules, with
  * the 1-based line and column of every declaration. Only what a stylesheet
  * written for a component can hold: style rules, @media blocks, declarations
- * and comments. Anything else (nesting, @import, @keyframes...) is reported
+ * and comments, with style rules nested in one another. Anything else (@import, @keyframes...) is reported
  * by the caller as having no WinUI meaning, with the position this gives it.
  */
 export function parseCss(css: string) {

@@ -67,7 +67,7 @@ test("@media holds rules and an at-rule ending in a semicolon has no children", 
   assert.equal(media.children?.length, 2);
 });
 
-test("a rule nested in a rule is recorded where it starts", () => {
+test("a rule nested in a rule is parsed with its own declarations", () => {
   const [block] = parseCss(".a {\n  color: red;\n  &:hover { color: blue }\n  margin: 0 }");
   assert.equal(block?.kind, BlockKind.RULE);
 
@@ -76,10 +76,7 @@ test("a rule nested in a rule is recorded where it starts", () => {
     return;
   }
 
-  assert.deepEqual(block.nested, [{
-    line: 3,
-    column: 3
-  }]);
+  assert.deepEqual(block.nested.map(child => [child.selector, child.declarations.map(declaration => declaration.property)]), [["&:hover", ["color"]]]);
   assert.deepEqual(block.declarations.map(declaration => declaration.property), ["color", "margin"]);
 });
 

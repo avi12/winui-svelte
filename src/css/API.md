@@ -308,6 +308,14 @@ the custom properties of a class) throws, naming the class. The Style is built
 when called: a sheet registered later (hot reload) does not change it. Which
 `elementType` a prop styles is `src/components/style-targets.ts`.
 
+## Nesting
+
+A rule nested in another is flattened at build time (CSS Nesting): `&` is each
+selector of the parent (`.a, .b { &:hover { ... } &.on { ... } }` is four
+rules), and a nested selector without `&` is a descendant, which stays an error
+(a Style has no "inside"). An at-rule inside a rule (`@media`) is an error:
+write it around the rule.
+
 ## What stays unsupported, and why
 
 `unsupported-properties.ts` holds the reason shown for each property no group

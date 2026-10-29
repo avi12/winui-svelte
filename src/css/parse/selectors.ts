@@ -313,3 +313,20 @@ export function parseSelectorList(text: string) {
     } as const;
   });
 }
+
+const NESTING_SELECTOR = "&";
+
+/**
+ * The selector list a nested rule stands for, written out: `&` is each selector
+ * of the parent, and a nested selector without one is a descendant of it (which
+ * the selector parser then reports, since a Style has no "inside").
+ */
+export function flattenNestedSelector({ parent, child }: {
+  parent: string;
+  child: string;
+}) {
+  const parents = splitCommas(parent);
+  return splitCommas(child).flatMap(part => parents.map(outer => (
+    part.includes(NESTING_SELECTOR) ? part.replaceAll(NESTING_SELECTOR, outer) : `${outer} ${part}`
+  ))).join(", ");
+}

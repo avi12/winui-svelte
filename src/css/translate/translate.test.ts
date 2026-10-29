@@ -251,7 +251,8 @@ test("positions are mapped back to the .svelte file", () => {
 
 test("descendant selectors, nesting, @keyframes and other @media are errors", () => {
   assert.match(errors(".a .b { color: red }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
-  assert.match(errors(".a { color: red; &:hover { color: blue } }").join(), /nested rules have no WinUI meaning/u);
+  assert.match(errors(".a { color: red; .b { color: blue } }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
+  assert.match(errors(".a { @media (min-width: 1px) { color: blue } }").join(), /an at-rule nested in a rule has no WinUI meaning/u);
   assert.match(errors("@keyframes spin { to { opacity: 0 } }").join(), /@keyframes has no WinUI meaning/u);
   assert.match(errors("@media (min-width: 600px) { .a { color: red } }").join(), /@media \(min-width: 600px\) has no WinUI meaning/u);
   assert.match(errors("@import 'a.css';").join(), /@import has no WinUI meaning/u);
@@ -434,4 +435,22 @@ test("a Style as XAML: based on, setters, element-form setters", () => {
       "</Style>"
     ].join("\n")
   );
+});
+
+test("nested rules flatten with & into top-level rules", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a, .b { color: red; &:hover { color: blue } &.c { margin: 0 } }",
+    resources
+  });
+  assert.deepEqual(diagnostics.map(formatDiagnostic), []);
+  const shapes = sheet.rules.map(rule => [rule.classes.join("."), rule.state, rule.declarations[0]?.property]);
+  assert.deepEqual(shapes, [
+    ["a", null, "color"],
+    ["b", null, "color"],
+    ["a", "hover", "color"],
+    ["b", "hover", "color"],
+    ["a.c", null, "margin-top"],
+    ["b.c", null, "margin-top"]
+  ]);
 });
