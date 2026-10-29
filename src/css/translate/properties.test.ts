@@ -423,14 +423,36 @@ test("elevation and a backdrop blur warn what WinUI cannot do", () => {
   assert.match(backdrop.warnings.join(" "), /no literal background-color/u);
 });
 
-test("a transition on transform warns that nothing animates it", () => {
+test("a transition on a transform WinUI cannot animate says so", () => {
   const result = lower({
     elementType: null,
-    declarations: "transform: rotate(10deg); transition: transform 200ms, opacity 200ms"
+    declarations: "transform: skew(10deg); transition: transform 200ms, opacity 200ms"
   });
   assert.deepEqual(result.errors, []);
-  assert.match(result.warnings.join(" "), /transition: transform cannot be animated/u);
-  assert.deepEqual(result.setters.map(([property]) => property).toSorted(), ["OpacityTransition", "RenderTransform"]);
+  assert.match(result.warnings.join(" "), /transition: transform animates only a list of translate, rotate and scale/u);
+  assert.deepEqual(result.setters.map(([property]) => property).filter(property => !property.endsWith("Transition")), ["RenderTransform"]);
+});
+
+test("a transformed element with a transition is lowered to the properties WinUI animates", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "transform: translate(4px, 8px) rotate(10deg) scale(1.5); transition: transform 200ms"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.warnings, []);
+  assert.deepEqual(result.setters.filter(([property]) => !property.endsWith("Transition")), [
+    ["Translation", "4,8,0"],
+    ["Scale", "1.5,1.5,1"],
+    ["Rotation", "10"]
+  ]);
+});
+
+test("a transform out of translate, rotate, scale order stays a RenderTransform", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "transform: scale(2) translate(4px); transition: all 1s"
+  });
+  assert.deepEqual(result.setters.map(([property]) => property).includes("RenderTransform"), true);
 });
 
 test("an outline makes the control use the system's focus visuals", () => {
@@ -488,6 +510,24 @@ test("a transition WinUI cannot animate warns and is dropped", () => {
   assert.deepEqual(result.errors, []);
   assert.equal(result.warnings.length, 2);
   assert.deepEqual(result.setters.map(([property]) => property), ["OpacityTransition"]);
+});
+
+test("a box-shadow transition animates the Z of Translation, a shadow's depth", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "transition: box-shadow 150ms"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.setters, [["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.150\"/>"]]);
+});
+
+test("a border-color transition has no WinUI counterpart", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "transition: border-color 1s"
+  });
+  assert.deepEqual(result.setters, []);
+  assert.match(result.warnings.join(), /border-color cannot be animated/u);
 });
 
 const failures: Array<[string, string | null, string, RegExp]> = [

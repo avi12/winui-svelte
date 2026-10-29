@@ -1,3 +1,4 @@
+import { setter } from "./property-kit.ts";
 import type { PropertyGroup } from "./property-kit.ts";
 import { defaultOriginProperty, transformOriginProperty } from "./transform-origin-properties.ts";
 import { DEFAULT_ORIGIN, ORIGIN_TARGET } from "./transform-origin.ts";
@@ -167,6 +168,110 @@ function parseFunction({ word, reader }: {
   });
 }
 
+// The order WinUI applies Scale, Rotation and Translation in (about CenterPoint)
+// is CSS's `translate() rotate() scale()`: the one list a transition can animate.
+const IMPLICIT_ORDER = new Map([
+  ["translate", 0],
+  ["translatex", 0],
+  ["translatey", 0],
+  ["rotate", 1],
+  ["rotatez", 1],
+  ["scale", 2],
+  ["scalex", 2],
+  ["scaley", 2]
+]);
+const TRANSITIONED = /(?:^|[\s,])(?:transform|all)(?=[\s,]|$)/iu;
+
+function isInOrder(names: string[]) {
+  const ranks = names.map(name => IMPLICIT_ORDER.get(name));
+  return ranks.every((rank, i) => rank !== undefined && (i === 0 || rank >= (ranks[i - 1] ?? 0)));
+}
+
+interface ImplicitState {
+  translation: [number, number];
+  scale: [number, number];
+  rotation: number;
+}
+
+// How each function of the implicit forms changes the state; the second
+// argument is the one a two-argument function takes.
+const IMPLICIT_APPLY = new Map<string, (state: ImplicitState, amount: number, other: number | null) => void>([
+  ["translate", (state, amount, other) => {
+    state.translation = [amount, other ?? 0];
+  }],
+  ["translatex", (state, amount) => {
+    state.translation[0] = amount;
+  }],
+  ["translatey", (state, amount) => {
+    state.translation[1] = amount;
+  }],
+  ["rotate", (state, amount) => {
+    state.rotation = amount;
+  }],
+  ["rotatez", (state, amount) => {
+    state.rotation = amount;
+  }],
+  ["scale", (state, amount, other) => {
+    state.scale = [amount, other ?? amount];
+  }],
+  ["scalex", (state, amount) => {
+    state.scale[0] = amount;
+  }],
+  ["scaley", (state, amount) => {
+    state.scale[1] = amount;
+  }]
+]);
+
+function numberOrLength(token: string | undefined) {
+  return token === undefined ? null : parseNumber(token) ?? parseLength(token);
+}
+
+/**
+ * The same list as the Translation, Rotation and Scale properties, which
+ * WinUI's implicit transitions animate (a RenderTransform they skip), or null
+ * when the list is not one of translate, rotate and scale in that order.
+ */
+function implicitSetters(words: string[]) {
+  const calls = words.map(word => FUNCTION.exec(word));
+  const names = calls.map(call => (call?.[1] ?? "").toLowerCase());
+  const isImplicit = calls.every(call => call !== null) && isInOrder(names);
+  if (!isImplicit) {
+    return null;
+  }
+
+  const state: ImplicitState = {
+    translation: [0, 0],
+    scale: [1, 1],
+    rotation: 0
+  };
+  for (const [i, call] of calls.entries()) {
+    const name = names[i] ?? "";
+    const [first, second] = splitCommas(call?.[2] ?? "").map(argument => argument.trim());
+    const amount = name.startsWith("rotate") ? parseDegrees(first ?? "") : numberOrLength(first);
+    const isAmountMissing = amount === null;
+    if (isAmountMissing) {
+      return null;
+    }
+
+    IMPLICIT_APPLY.get(name)?.(state, amount, numberOrLength(second));
+  }
+
+  return [
+    setter({
+      property: "Translation",
+      value: `${state.translation.join(",")},0`
+    }),
+    setter({
+      property: "Scale",
+      value: `${state.scale.join(",")},1`
+    }),
+    setter({
+      property: "Rotation",
+      value: String(state.rotation)
+    })
+  ];
+}
+
 /**
  * The XAML of a RenderTransform for a CSS function list. CSS applies the list
  * right to left (the last function acts on the element first) and a
@@ -209,6 +314,13 @@ function transformProperty() {
         return [];
       }
 
+      const isTransitioned = TRANSITIONED.test(input.computed.get("transition")?.value ?? "");
+      const implicit = isTransitioned ? implicitSetters(words) : null;
+      const isUnanimated = isTransitioned && implicit === null;
+      if (isUnanimated) {
+        reader.warn("transition: transform animates only a list of translate, rotate and scale in that order; this one is a RenderTransform, which WinUI does not animate implicitly");
+      }
+
       const isPivotWritten = ["transform-origin", "scale", "rotate"].some(member => input.computed.has(member));
       const pivot = isPivotWritten ? [] : [{
         kind: "write",
@@ -216,11 +328,11 @@ function transformProperty() {
         value: DEFAULT_ORIGIN
       } as const];
       return [
-        {
+        ...implicit ?? [{
           kind: "content",
           property: "RenderTransform",
           xaml: transformXaml(transforms)
-        } as const,
+        } as const],
         ...pivot
       ];
     }
