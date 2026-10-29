@@ -24,10 +24,11 @@ await runOnUiThread(async () => {
   }
 
   const data = parsedPorts.data;
-  const { runner } = createWindowModuleRunner(data.modules);
+  const { runner, receive } = createWindowModuleRunner(data.modules);
   const { runExample } = await runner.import<{ runExample: RunExample }>(RUN_EXAMPLE_MODULE);
   await runExample({
     entry: data.entry,
+    receive,
     link: data.link,
     options: data.options
   });
