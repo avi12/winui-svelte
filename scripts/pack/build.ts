@@ -171,9 +171,9 @@ rmSync(OUTPUT_FOLDER, {
   recursive: true,
   force: true
 });
+copyBindings();
 compile();
 copyShipped();
-copyBindings();
 copyBootstrappers();
 resolveSourceAliases();
 process.stdout.write(`dist: ${filesIn(OUTPUT_FOLDER).length} files\n`);
