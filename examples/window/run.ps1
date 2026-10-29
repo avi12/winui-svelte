@@ -18,7 +18,9 @@ foreach ($backdrop in $Backdrops) {
     $info = Ask $example @{ cmd = 'info' } 'info'
     $file = Join-Path $OutDir "window-$backdrop.png"
     [ExampleWin]::Save($hwnd, $file)
-    "{0,-8} holds {1,-8} title bar extended: {2}, {3}x{4}, saved {5}" -f $backdrop, $info.backdrop, $info.extendsIntoTitleBar, $info.width, $info.height, $file
+    "{0,-8} holds {1,-8} title bar extended: {2}, {3}x{4}, saved {5}" -f `
+      $backdrop, $info.backdrop, $info.extendsIntoTitleBar, $info.width,
+      $info.height, $file
   } finally {
     Stop-Example $example
   }
