@@ -412,6 +412,7 @@ export { SwipeBackThemeAnimation } from "#winui/microsoft/ui/xaml/media/animatio
 export { SwipeHintThemeAnimation } from "#winui/microsoft/ui/xaml/media/animation/SwipeHintThemeAnimation";
 export { Timeline } from "#winui/microsoft/ui/xaml/media/animation/Timeline";
 export { Transition } from "#winui/microsoft/ui/xaml/media/animation/Transition";
+export { TransitionCollection } from "#winui/microsoft/ui/xaml/media/animation/TransitionCollection";
 export { ArcSegment } from "#winui/microsoft/ui/xaml/media/ArcSegment";
 export { BezierSegment } from "#winui/microsoft/ui/xaml/media/BezierSegment";
 export { BitmapCache } from "#winui/microsoft/ui/xaml/media/BitmapCache";

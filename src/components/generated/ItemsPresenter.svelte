@@ -36,6 +36,9 @@
   {#if isSnippet(rest.transform3D)}
     <property name="transform3D">{@render rest.transform3D()}</property>
   {/if}
+  {#if rest.transitions}
+    <property name="transitions" collection="transition-collection">{@render rest.transitions()}</property>
+  {/if}
   {#if isSnippet(rest.focusVisualPrimaryBrush)}
     <property name="focusVisualPrimaryBrush">{@render rest.focusVisualPrimaryBrush()}</property>
   {/if}
@@ -45,7 +48,13 @@
   {#if isSnippet(rest.footer)}
     <property name="footer">{@render rest.footer()}</property>
   {/if}
+  {#if rest.footerTransitions}
+    <property name="footerTransitions" collection="transition-collection">{@render rest.footerTransitions()}</property>
+  {/if}
   {#if isSnippet(rest.header)}
     <property name="header">{@render rest.header()}</property>
+  {/if}
+  {#if rest.headerTransitions}
+    <property name="headerTransitions" collection="transition-collection">{@render rest.headerTransitions()}</property>
   {/if}
 </items-presenter>

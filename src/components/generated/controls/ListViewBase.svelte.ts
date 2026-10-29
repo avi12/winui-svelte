@@ -10,15 +10,15 @@ import type { SelectorBound, SelectorProps } from "./Selector.svelte.ts";
 import type { Snippet } from "svelte";
 
 export interface ListViewBaseProps extends SelectorProps {
+  footerTransitions?: Snippet;
+  headerTransitions?: Snippet;
   canDragItems?: boolean;
   canReorderItems?: boolean;
   dataFetchSize?: number;
   footer?: ObjectInput | Snippet;
   footerTemplate?: ListViewBase["footerTemplate"];
-  footerTransitions?: ListViewBase["footerTransitions"];
   header?: ObjectInput | Snippet;
   headerTemplate?: ListViewBase["headerTemplate"];
-  headerTransitions?: ListViewBase["headerTransitions"];
   incrementalLoadingThreshold?: number;
   incrementalLoadingTrigger?: EnumInput<typeof IncrementalLoadingTrigger>;
   isActiveView?: boolean;
@@ -85,13 +85,6 @@ export function linkListViewBase(
   });
   link.property({
     props,
-    key: "footerTransitions",
-    apply(value) {
-      control.footerTransitions = value;
-    }
-  });
-  link.property({
-    props,
     key: "header",
     apply(value) {
       control.header = objectOf(value);
@@ -102,13 +95,6 @@ export function linkListViewBase(
     key: "headerTemplate",
     apply(value) {
       control.headerTemplate = value;
-    }
-  });
-  link.property({
-    props,
-    key: "headerTransitions",
-    apply(value) {
-      control.headerTransitions = value;
     }
   });
   link.property({

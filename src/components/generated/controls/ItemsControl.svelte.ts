@@ -10,11 +10,11 @@ import type { Snippet } from "svelte";
 
 export interface ItemsControlProps extends ControlProps {
   children?: Snippet;
+  itemContainerTransitions?: Snippet;
   displayMemberPath?: string;
   groupStyleSelector?: ItemsControl["groupStyleSelector"];
   itemContainerStyle?: ItemsControl["itemContainerStyle"];
   itemContainerStyleSelector?: ItemsControl["itemContainerStyleSelector"];
-  itemContainerTransitions?: ItemsControl["itemContainerTransitions"];
   itemsPanel?: ItemsControl["itemsPanel"];
   itemsSource?: CollectionInput;
   itemTemplate?: ItemsControl["itemTemplate"];
@@ -58,13 +58,6 @@ export function linkItemsControl(
     key: "itemContainerStyleSelector",
     apply(value) {
       control.itemContainerStyleSelector = value;
-    }
-  });
-  link.property({
-    props,
-    key: "itemContainerTransitions",
-    apply(value) {
-      control.itemContainerTransitions = value;
     }
   });
   link.property({

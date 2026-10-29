@@ -9,12 +9,12 @@ import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkEl
 import type { Snippet } from "svelte";
 
 export interface ItemsPresenterProps extends FrameworkElementProps {
+  footerTransitions?: Snippet;
+  headerTransitions?: Snippet;
   footer?: ObjectInput | Snippet;
   footerTemplate?: ItemsPresenter["footerTemplate"];
-  footerTransitions?: ItemsPresenter["footerTransitions"];
   header?: ObjectInput | Snippet;
   headerTemplate?: ItemsPresenter["headerTemplate"];
-  headerTransitions?: ItemsPresenter["headerTransitions"];
   padding?: ThicknessInput;
   onHorizontalSnapPointsChanged?: Parameters<ItemsPresenter["onHorizontalSnapPointsChanged"]>[0];
   onVerticalSnapPointsChanged?: Parameters<ItemsPresenter["onVerticalSnapPointsChanged"]>[0];
@@ -47,13 +47,6 @@ export function linkItemsPresenter(
   });
   link.property({
     props,
-    key: "footerTransitions",
-    apply(value) {
-      control.footerTransitions = value;
-    }
-  });
-  link.property({
-    props,
     key: "header",
     apply(value) {
       control.header = objectOf(value);
@@ -64,13 +57,6 @@ export function linkItemsPresenter(
     key: "headerTemplate",
     apply(value) {
       control.headerTemplate = value;
-    }
-  });
-  link.property({
-    props,
-    key: "headerTransitions",
-    apply(value) {
-      control.headerTransitions = value;
     }
   });
   link.property({

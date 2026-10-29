@@ -10,10 +10,10 @@ import type { Snippet } from "svelte";
 
 export interface ContentControlProps extends ControlProps {
   children?: Snippet;
+  contentTransitions?: Snippet;
   content?: ObjectInput | Snippet;
   contentTemplate?: ContentControl["contentTemplate"];
   contentTemplateSelector?: ContentControl["contentTemplateSelector"];
-  contentTransitions?: ContentControl["contentTransitions"];
 }
 
 export type ContentControlBound = ControlBound;
@@ -46,13 +46,6 @@ export function linkContentControl(
     key: "contentTemplateSelector",
     apply(value) {
       control.contentTemplateSelector = value;
-    }
-  });
-  link.property({
-    props,
-    key: "contentTransitions",
-    apply(value) {
-      control.contentTransitions = value;
     }
   });
 }

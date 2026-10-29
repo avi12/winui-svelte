@@ -17,13 +17,13 @@ import type { Snippet } from "svelte";
 
 export interface BorderProps extends FrameworkElementProps {
   children?: Snippet;
+  childTransitions?: Snippet;
   background?: BrushInput | Snippet;
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
   backgroundTransition?: Border["backgroundTransition"];
   borderBrush?: BrushInput | Snippet;
   borderThickness?: ThicknessInput;
   child?: Border["child"] | Snippet;
-  childTransitions?: Border["childTransitions"];
   cornerRadius?: CornerRadiusInput;
   padding?: ThicknessInput;
 }
@@ -79,13 +79,6 @@ export function linkBorder(
     key: "child",
     apply(value) {
       control.child = value;
-    }
-  });
-  link.property({
-    props,
-    key: "childTransitions",
-    apply(value) {
-      control.childTransitions = value;
     }
   });
   link.property({

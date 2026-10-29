@@ -47,6 +47,7 @@ import type { Snippet } from "svelte";
 
 export interface UIElementProps {
   keyboardAccelerators?: Snippet;
+  transitions?: Snippet;
   canvasLeft?: number;
   canvasTop?: number;
   canvasZIndex?: number;
@@ -152,7 +153,6 @@ export interface UIElementProps {
   tabIndex?: number;
   transform3D?: UIElement["transform3D"] | Snippet;
   transformMatrix?: UIElement["transformMatrix"];
-  transitions?: UIElement["transitions"];
   translation?: Vector3Input;
   translationTransition?: UIElement["translationTransition"];
   useLayoutRounding?: boolean;
@@ -952,13 +952,6 @@ export function linkUIElement(
     key: "transformMatrix",
     apply(value) {
       control.transformMatrix = value;
-    }
-  });
-  link.property({
-    props,
-    key: "transitions",
-    apply(value) {
-      control.transitions = value;
     }
   });
   link.property({

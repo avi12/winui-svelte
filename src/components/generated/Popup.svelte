@@ -48,11 +48,17 @@
   {#if isSnippet(rest.transform3D)}
     <property name="transform3D">{@render rest.transform3D()}</property>
   {/if}
+  {#if rest.transitions}
+    <property name="transitions" collection="transition-collection">{@render rest.transitions()}</property>
+  {/if}
   {#if isSnippet(rest.focusVisualPrimaryBrush)}
     <property name="focusVisualPrimaryBrush">{@render rest.focusVisualPrimaryBrush()}</property>
   {/if}
   {#if isSnippet(rest.focusVisualSecondaryBrush)}
     <property name="focusVisualSecondaryBrush">{@render rest.focusVisualSecondaryBrush()}</property>
+  {/if}
+  {#if rest.childTransitions}
+    <property name="childTransitions" collection="transition-collection">{@render rest.childTransitions()}</property>
   {/if}
   {#if isSnippet(rest.systemBackdrop)}
     <property name="systemBackdrop">{@render rest.systemBackdrop()}</property>

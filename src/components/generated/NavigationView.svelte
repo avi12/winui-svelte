@@ -54,6 +54,9 @@
   {#if isSnippet(rest.transform3D)}
     <property name="transform3D">{@render rest.transform3D()}</property>
   {/if}
+  {#if rest.transitions}
+    <property name="transitions" collection="transition-collection">{@render rest.transitions()}</property>
+  {/if}
   {#if isSnippet(rest.focusVisualPrimaryBrush)}
     <property name="focusVisualPrimaryBrush">{@render rest.focusVisualPrimaryBrush()}</property>
   {/if}
@@ -68,6 +71,9 @@
   {/if}
   {#if isSnippet(rest.foreground)}
     <property name="foreground">{@render rest.foreground()}</property>
+  {/if}
+  {#if rest.contentTransitions}
+    <property name="contentTransitions" collection="transition-collection">{@render rest.contentTransitions()}</property>
   {/if}
   {#if isSnippet(rest.autoSuggestBox)}
     <property name="autoSuggestBox">{@render rest.autoSuggestBox()}</property>
