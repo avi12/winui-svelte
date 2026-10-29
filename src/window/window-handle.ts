@@ -1,6 +1,14 @@
 import { scaleOf } from "./native.ts";
+import type { OpenFilePickerOptions, PickerOptions, SaveFilePickerOptions } from "./pickers.ts";
+import { pickFile, pickFiles, pickFolder, saveFile } from "./pickers.ts";
 import type { Window } from "#src/winui.js";
-import { OverlappedPresenter, projectAs } from "#src/winui.js";
+import {
+  FileOpenPicker,
+  FileSavePicker,
+  FolderPicker,
+  OverlappedPresenter,
+  projectAs
+} from "#src/winui.js";
 
 /**
  * What app code does with an open window: `bind:handle` on `<Window>` gives it
@@ -62,6 +70,61 @@ export class WindowHandle {
   bringToFront() {
     this.restore();
     this.activate();
+  }
+
+  /**
+   * Asks the user for a file in the system open dialog, over this window.
+   * Needs no package identity. Call it on the UI thread.
+   *
+   * @param options - The dialog title, start folder, accepted file types and so on.
+   * @returns The file path, or null when the user cancelled.
+   */
+  pickFile(options: OpenFilePickerOptions = {}) {
+    return pickFile({
+      picker: new FileOpenPicker(this.appWindow.id),
+      options
+    });
+  }
+
+  /**
+   * Asks the user for any number of files in the system open dialog, over
+   * this window.
+   *
+   * @param options - The dialog title, start folder, accepted file types and so on.
+   * @returns The file paths in the order picked; empty when the user cancelled.
+   */
+  pickFiles(options: OpenFilePickerOptions = {}) {
+    return pickFiles({
+      picker: new FileOpenPicker(this.appWindow.id),
+      options
+    });
+  }
+
+  /**
+   * Asks the user for a folder in the system folder dialog, over this window.
+   *
+   * @param options - The dialog title, start folder and so on.
+   * @returns The folder path, or null when the user cancelled.
+   */
+  pickFolder(options: PickerOptions = {}) {
+    return pickFolder({
+      picker: new FolderPicker(this.appWindow.id),
+      options
+    });
+  }
+
+  /**
+   * Asks the user where to save a file in the system save dialog, over this
+   * window. The file is not made: the app writes it.
+   *
+   * @param options - The dialog title, suggested name, offered file types and so on.
+   * @returns The path the user chose, or null when the user cancelled.
+   */
+  saveFile(options: SaveFilePickerOptions = {}) {
+    return saveFile({
+      picker: new FileSavePicker(this.appWindow.id),
+      options
+    });
   }
 
   /**

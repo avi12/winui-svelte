@@ -826,7 +826,7 @@ protocol and the tests.
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
 | `winui-svelte/vite` | `winuiSvelte()` for `vite.config.ts`; `startModuleServer()` for hot reload |
 | `winui-svelte/runner` | `createWindowModuleRunner()`, the window thread's side of the module server |
-| `winui-svelte/window` | `runWindow`, `createWindow`, `startTimer`, `exitApplication` |
+| `winui-svelte/window` | `runWindow`, `createWindow`, `startTimer`, `exitApplication`, `systemSettings` |
 | `winui-svelte/thread` | `runOnUiThread`, the first call of the UI thread's worker |
 | `winui-svelte/bootstrap` | `initWindowsAppSdk`, for the host's main thread |
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |

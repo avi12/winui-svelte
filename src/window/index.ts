@@ -7,3 +7,7 @@ export { TitleBarHeight, WindowPresentation, WindowTheme } from "./chrome.ts";
 export { createWindow } from "./create-window.ts";
 export type { TimerOptions } from "./timers.ts";
 export { startTimer } from "./timers.ts";
+export type { SystemSettings } from "./system-settings.svelte.ts";
+export { systemSettings } from "./system-settings.svelte.ts";
+export type { OpenFilePickerOptions, PickerOptions, SaveFilePickerOptions } from "./pickers.ts";
+export { PickerLocation } from "./pickers.ts";
