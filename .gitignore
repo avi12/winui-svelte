@@ -7,3 +7,4 @@ dist
 .claude/worktrees
 # Scratch space for checks and fresh-clone verification; deleted when done.
 .verify
+.idea
