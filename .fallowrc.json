@@ -53,6 +53,7 @@
     "examples/lists/main.ts",
     "examples/transitions/main.ts",
     "examples/items/main.ts",
+    "examples/navigation/main.ts",
     "examples/overlays/main.ts",
     "examples/web/main.ts",
     "examples/window/main.ts",
