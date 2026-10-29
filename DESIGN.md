@@ -35,9 +35,10 @@ and Mica are real backdrops, accessibility is UI Automation's).
 - **Every WinUI 3 control** is a component, generated from WinUI's metadata
   (WinMD), with typed props, events and bindable properties, so the library
   follows the framework as it is, not a hand-picked subset.
-- **Svelte's own compiler and runtime**, through Svelte's custom-renderer API
-  (sveltejs/svelte#18042; installed from pkg.pr.new until it ships). Nothing
-  Svelte does is re-implemented.
+- **Svelte's own compiler and runtime**, a published release. The tree
+  presents itself as a DOM (the globals Svelte's client runtime reads), and
+  three spots of the runtime are read with edits. Nothing Svelte does is
+  re-implemented.
 - Generic: nothing in the package knows about any app ([Edge+](https://github.com/avi12/edge-plus)
   is its first user and its proving ground).
 
@@ -45,8 +46,8 @@ and Mica are real backdrops, accessibility is UI Automation's).
 
 | Folder | What | Owner in the first round |
 |---|---|---|
-| `src/renderer/` | the custom renderer (the node tree, the WinUI host that turns elements into controls), `mount` | renderer |
-| `src/vite/` | the Vite plugin (compile options, custom renderer, CSS hook) and the module server/runner that gives hot reload inside the window process | renderer |
+| `src/renderer/` | the node tree and its DOM shape, the WinUI host that turns elements into controls, `mount` | renderer |
+| `src/vite/` | the Vite plugin (Svelte's compiler as a Vite plugin, the runtime edits, CSS hook) and the module server/runner that gives hot reload inside the window process | renderer |
 | `src/window/` | starting WinUI: the bootstrap, the UI thread, Application and Window | renderer |
 | `src/components/` | the generated components and their index, plus `scripts/codegen/` that generates them from the WinMD | components |
 | `src/css/` | `<style>` blocks to WinUI Styles: the compile step and the runtime that applies them | css |

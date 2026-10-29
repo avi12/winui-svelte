@@ -24,8 +24,8 @@ backdrop. No browser engine is involved; there is no DOM.
   generated from WinUI's own metadata, with typed props, typed events and
   `bind:`-able properties. The package follows WinUI instead of a hand-picked
   subset; lists (`ListView`, `GridView`...) are generated too.
-- **Svelte's own compiler and runtime**, through its custom-renderer API.
-  Runes, context, `{#if}`, `{#each}`, snippets, `svelte/reactivity` and stores
+- **Svelte's own compiler and runtime**, a published release (the package
+  draws into a small DOM it provides). Runes, context, `{#if}`, `{#each}`, snippets, `svelte/reactivity` and stores
   work as they do on the web.
 - **Hot reload** while you develop: save a `.svelte` file and the open window
   changes in place.
@@ -40,14 +40,9 @@ backdrop. No browser engine is involved; there is no DOM.
 Built for [Edge+](https://github.com/avi12/edge-plus), whose settings panel is
 written with it.
 
-> **Status: pre-release.** The custom-renderer API the package needs is a
-> Svelte pull request that has not shipped
-> ([sveltejs/svelte#18042](https://github.com/sveltejs/svelte/pull/18042)), and
-> `svelte` is installed from a pkg.pr.new build until it does. **No stable
-> release can go out before Svelte ships that API and `svelte` is pinned to a
-> published version** (see [CONTRIBUTING.md](CONTRIBUTING.md#the-svelte-build)).
-> What is described here is what the repository's tests and the
-> [hello example](examples/hello) run. See [CHANGELOG.md](CHANGELOG.md).
+> **Status: pre-release.** What is described here is what the repository's
+> tests and the [hello example](examples/hello) run. See
+> [CHANGELOG.md](CHANGELOG.md).
 
 ## Requirements
 
@@ -56,7 +51,7 @@ written with it.
 | OS | Windows 10 1809 (17763) or newer, Windows 11 |
 | Node | 24 or newer |
 | Windows App SDK runtime | 2.2, installed on the machine. A missing runtime makes `initWindowsAppSdk` throw `WindowsAppRuntimeMissing`; the package does not install it (your app ships the installer and offers it) |
-| Svelte | the build with the custom-renderer API: `svelte@https://pkg.pr.new/svelte@18042` until it is released |
+| Svelte | 5.56.7 or a later 5.56 release (the peer range is `~5.56.7`; the package edits three spots of Svelte's runtime and says so when a release no longer matches) |
 | Vite | 8 (for the dev server and hot reload) |
 
 ## Install
@@ -802,8 +797,9 @@ what is not covered.
 
 ## Transitions
 
-Svelte's compiler refuses `transition:`, `in:`, `out:` and `animate:` on a
-custom renderer, so the same transition functions play through attachments
+The package refuses `transition:`, `in:`, `out:` and `animate:` at compile
+time (they need the browser's `Element.animate()`), so the same transition
+functions play through attachments
 from `winui-svelte/element-animation` (an app that does not import it does not
 bundle it):
 
@@ -859,7 +855,7 @@ protocol and the tests.
 
 The published package ships `dist/`: the TypeScript compiled with its
 declarations, and the Svelte files as source (with `types` and `svelte`
-conditions on `exports`), which your Vite compiles with the custom renderer.
+conditions on `exports`), which your Vite compiles (`winuiSvelte()`).
 
 ### Source maps
 
@@ -893,8 +889,12 @@ Stated plainly, so nobody finds them by surprise:
   `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
   `window.systemBackdrop` reads null for them (the controller holds the
   material).
-- **Needs an unreleased Svelte.** The custom-renderer API is a pull request;
-  until it ships, the package works with the pkg.pr.new build named above.
+- **Svelte is held to one minor.** The package reads three spots of Svelte's
+  runtime with edits, so the peer range is `~5.56.7` and widens only after a
+  release is checked.
+- **Write an attribute on a raw element in kebab case** (`corner-radius="4"`).
+  Svelte's compiler lowercases the names of static attributes, so
+  `cornerRadius="4"` reaches the element as `cornerradius`.
 - **`bind:` works on components, not on raw elements.**
   `<ToggleSwitch bind:isOn>` is supported; `<toggle-switch bind:is-on>` is not. Use the component, or
   `{@attach control(...)}` and subscribe to the control's event yourself.
@@ -907,8 +907,8 @@ Stated plainly, so nobody finds them by surprise:
   setters while they are active, and a control that handles an event itself (a
   Button handles `PointerPressed`) never reports it, so `:active` does nothing
   there. Override the control's theme resources instead.
-- **`transition:`, `in:`, `out:` and `animate:` do not compile.** Svelte's
-  custom-renderer build refuses them. Use the `transition`, `intro` and `outro`
+- **`transition:`, `in:`, `out:` and `animate:` do not compile.** The package
+  refuses them. Use the `transition`, `intro` and `outro`
   attachments (see "Transitions"); there is no `animate:flip`.
 - **Two controls are not components:** `SwapChainBackgroundPanel` (the UWP
   panel WinUI 3 keeps for compatibility, which refuses most element properties;
