@@ -13,10 +13,17 @@ const SINGLE_THREADED_APARTMENT = 0;
  * the thread alive; in a worker this ends only the worker, so the host ends
  * the process when the worker exits.
  *
- * It never returns: the process ends once `main` has.
+ * It never returns: the process ends once `main` has, with code 1 and the
+ * error on stderr when `main` rejects, so a failed start is never silent.
  */
 export async function runOnUiThread(main: () => Promise<void>) {
   roInitialize(SINGLE_THREADED_APARTMENT);
-  await main();
+  try {
+    await main();
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+
   process.exit(0);
 }
