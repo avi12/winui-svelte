@@ -6,6 +6,8 @@ export { default as Window } from "./hand-written/Window.svelte";
 export type { WindowComponentProps } from "./hand-written/Window.d.svelte.ts";
 export type { Group } from "./hand-written/items/grouping.ts";
 export type { ListHandle } from "./hand-written/items/items-host.svelte.ts";
+export { default as VisualStateGroups } from "./hand-written/visual-states/VisualStateGroups.svelte";
+export type { VisualStateGroupsProps } from "./hand-written/visual-states/VisualStateGroups.d.svelte.ts";
 export { default as Navigator } from "./hand-written/navigation/Navigator.svelte";
 export type { NavigatorComponentProps } from "./hand-written/navigation/Navigator.d.svelte.ts";
 export type {
