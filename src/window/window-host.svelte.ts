@@ -232,6 +232,7 @@ class WindowHost {
 
     const window = new Window();
     this.handle = new WindowHandle(window);
+    this.handle.guardClose(() => this.isCloseRefused());
     window.content = content;
     this.keepInLine(() => this.syncText());
     this.keepInLine(() => this.syncBackdrop());
@@ -537,6 +538,10 @@ class WindowHost {
     });
   }
 
+  private isCloseRefused() {
+    return this.props.onClosing?.() === true;
+  }
+
   private listen() {
     const { window } = this.handle;
     this.unsubscribe.push(
@@ -544,10 +549,7 @@ class WindowHost {
         this.props.onActiveChanged?.(event.windowActivationState !== WindowActivationState.Deactivated);
       }),
       window.appWindow.onClosing((_sender, event) => {
-        const isCancelled = this.props.onClosing?.() === true;
-        if (isCancelled) {
-          event.cancel = true;
-        }
+        event.cancel = this.isCloseRefused();
       }),
       window.onClosed(() => this.props.onClosed?.()),
       window.appWindow.onChanged((_sender, event) => {

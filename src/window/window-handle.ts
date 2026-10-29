@@ -10,6 +10,7 @@ export class WindowHandle {
   /** The native WinUI window. */
   readonly window: Window;
   private isClosed = false;
+  private closeGuard = () => false;
 
   constructor(window: Window) {
     this.window = window;
@@ -63,9 +64,19 @@ export class WindowHandle {
     this.activate();
   }
 
-  /** Closes the window. Closing a closed window is a no-op. */
+  /**
+   * Sets what is asked before `close` closes the window: `true` keeps it
+   * open. WinUI's own Closing event is raised only for a close the user
+   * asks for (the close button, Alt+F4), not for Window.Close().
+   */
+  guardClose(guard: () => boolean) {
+    this.closeGuard = guard;
+  }
+
+  /** Closes the window, unless the window component's `onClosing` keeps it open. Closing a closed window is a no-op. */
   close() {
-    if (!this.isClosed) {
+    const isCloseAllowed = !this.isClosed && !this.closeGuard();
+    if (isCloseAllowed) {
       this.window.close();
     }
   }
