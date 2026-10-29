@@ -451,12 +451,21 @@ It is a build error, with the line, where the markup does not decide:
   attribute or pseudo-element.
 
 Elements inside a component's children, a snippet or `<svelte:element>` are not
-seen. Relational selectors in a rule nested in another are not resolved.
+seen.
+
+A rule nested in another is flattened first (`.list { > .item:first-child { ... } }`
+is `.list > .item:first-child`) and matched like the rest. When a nested rule
+needs the markup, it and everything nested in it are taken out of the parent and
+written at the end of the `<style>` with their full selectors (so they come after
+the rest in the cascade). `@scope (.card) to (.limit) { ... }` is written out the
+same way: `:scope` and `&` are the root, other selectors are under it, and an
+element at or under the limit is left out. The root and the limit are
+selectors; `@scope` holds style rules only.
 
 ## At-rules without a WinUI meaning
 
 `@container` (an element's style would depend on its own size: query the window
-with `@media`), `@scope` (write the full selectors), `@supports`,
+with `@media`), `@supports`,
 `@starting-style` (an entrance needs an animation, which a Style cannot hold),
 `@keyframes` and `@import` are build errors that say so. Also not done:
 `color-mix` in a space other than sRGB, relative color syntax, and

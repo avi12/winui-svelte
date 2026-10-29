@@ -1,172 +1,14 @@
-import { matchingElements, UnresolvableSelector } from "./match.ts";
+import { UnresolvableSelector } from "./match.ts";
+import { positionOf } from "./resolve-selector.ts";
+import type { Context } from "./resolve-selector.ts";
+import { styleEdits } from "./style-edits.ts";
+import type { Edit } from "./style-edits.ts";
 import { templateElements } from "./template-elements.ts";
 import type { TemplateElement } from "./template-elements.ts";
-import { parseComplexSelector, splitSelectorList, STATE_PSEUDO_CLASSES } from "#src/css/parse/complex-selector.js";
-import type { Compound } from "#src/css/parse/complex-selector.js";
-import type { Block, RuleBlock } from "#src/css/parse/parser.js";
-import { BlockKind, CssSyntaxError, parseCss } from "#src/css/parse/parser.js";
+import { CssSyntaxError, parseCss } from "#src/css/parse/parser.js";
 import type { Diagnostic } from "#src/css/translate/types.js";
 import type { AST } from "svelte/compiler";
 import { parse } from "svelte/compiler";
-
-const CLASS_PREFIX = "wsc-";
-const NEEDS_MATCHING: ReadonlySet<string> = new Set([
-  "first-child",
-  "last-child",
-  "only-child",
-  "nth-child",
-  "nth-last-child",
-  "is",
-  "has"
-]);
-
-interface Edit {
-  start: number;
-  end: number;
-  text: string;
-}
-
-interface Context {
-  source: string;
-  file: string;
-  /** Where the `<style>` content starts in the source. */
-  cssStart: number;
-  css: string;
-  elements: TemplateElement[];
-  /** The generated class of each selector resolved, by the selector's text. */
-  names: Map<string, string>;
-  /** The generated classes each element is given. */
-  given: Map<TemplateElement, string[]>;
-  diagnostics: Diagnostic[];
-}
-
-function positionOf({ source, offset }: {
-  source: string;
-  offset: number;
-}) {
-  const before = source.slice(0, offset);
-  const lines = before.split("\n");
-  return {
-    line: lines.length,
-    column: (lines.at(-1) ?? "").length + 1
-  };
-}
-
-function offsetInCss({ css, line, column }: {
-  css: string;
-  line: number;
-  column: number;
-}) {
-  const lines = css.split("\n");
-  let before = 0;
-  for (const text of lines.slice(0, line - 1)) {
-    before += text.length + 1;
-  }
-
-  return before + column - 1;
-}
-
-function needsMatching(compounds: readonly Compound[]) {
-  const hasCombinator = compounds.length > 1;
-  const hasPosition = compounds.some(compound => compound.pseudoClasses.some(({ name }) => NEEDS_MATCHING.has(name)));
-  return hasCombinator || hasPosition;
-}
-
-// The states of the last compound stay on the replaced selector: the control reports them.
-function stateSuffix(subject: Compound | undefined) {
-  const states = subject?.pseudoClasses.filter(({ name }) => STATE_PSEUDO_CLASSES.has(name)) ?? [];
-  return states.map(({ name }) => `:${name}`).join("");
-}
-
-function resolveSelector({ context, selector, at }: {
-  context: Context;
-  selector: string;
-  at: number;
-}) {
-  const parsed = parseComplexSelector(selector);
-  const isPlain = !parsed.isValid || !needsMatching(parsed.compounds);
-  if (isPlain) {
-    return selector;
-  }
-
-  const known = context.names.get(selector);
-  const name = known ?? `${CLASS_PREFIX}${context.names.size + 1}`;
-  const isNew = known === undefined;
-  if (isNew) {
-    context.names.set(selector, name);
-    try {
-      for (const element of matchingElements({
-        compounds: parsed.compounds,
-        elements: context.elements
-      })) {
-        context.given.set(element, [...context.given.get(element) ?? [], name]);
-      }
-    } catch (error) {
-      if (!(error instanceof UnresolvableSelector)) {
-        throw error;
-      }
-
-      context.diagnostics.push({
-        severity: "error",
-        message: `selector "${selector}": ${error.message}`,
-        file: context.file,
-        at: positionOf({
-          source: context.source,
-          offset: at
-        })
-      });
-      return selector;
-    }
-  }
-
-  return `.${name}${stateSuffix(parsed.compounds.at(-1))}`;
-}
-
-function ruleEdit({ context, rule }: {
-  context: Context;
-  rule: RuleBlock;
-}) {
-  const offset = offsetInCss({
-    css: context.css,
-    line: rule.at.line,
-    column: rule.at.column
-  });
-  const written = context.css.slice(offset, offset + rule.selector.length);
-  const isReadable = written === rule.selector;
-  if (!isReadable) {
-    return [];
-  }
-
-  const start = context.cssStart + offset;
-  const selectors = splitSelectorList(rule.selector).map(selector => resolveSelector({
-    context,
-    selector,
-    at: start
-  }));
-  const text = selectors.join(", ");
-  return text === rule.selector ? [] : [{
-    start,
-    end: start + rule.selector.length,
-    text
-  } satisfies Edit];
-}
-
-// Every style rule, in the at-rules too.
-function ruleBlocks(blocks: readonly Block[]) {
-  const rules: RuleBlock[] = [];
-  const pending = [...blocks];
-  while (pending.length > 0) {
-    const block = pending.shift();
-    const isRule = block?.kind === BlockKind.RULE;
-    if (isRule) {
-      rules.push(block);
-    } else if (block !== undefined) {
-      pending.unshift(...block.children ?? []);
-    }
-  }
-
-  return rules;
-}
 
 // A class goes into the element's class attribute, or becomes one.
 function classEdit({ element, names }: {
@@ -251,6 +93,19 @@ function cssBlocks(css: string) {
  * expression, siblings in an `{#each}` or beside a component, `:has()`) comes
  * back as a diagnostic with the line, and stays as written.
  */
+/**
+ * Rewrites a component so a Style can express what a selector says about an
+ * element's surroundings. A Style applies to one element by its type and classes;
+ * the markup is known at build time, so each descendant, child or sibling
+ * selector, `:first-child`, `:last-child`, `:only-child`, `:nth-child()` and
+ * `:is()` is matched against the template and its subject elements are given a
+ * generated class (`wsc-1`), which the selector then names. The returned source
+ * is what Svelte and the sheet translation should both compile.
+ *
+ * A selector that depends on what the markup does not fix (a class set by an
+ * expression, siblings in an `{#each}` or beside a component, `:has()`) comes
+ * back as a diagnostic with the line, and stays as written.
+ */
 export function resolveRelationalSelectors({ source, file }: {
   source: string;
   file: string;
@@ -284,12 +139,13 @@ export function resolveRelationalSelectors({ source, file }: {
     }),
     names: new Map(),
     given: new Map(),
+    hoisted: [],
     diagnostics: []
   };
-  const edits = ruleBlocks(blocks).flatMap(rule => ruleEdit({
+  const edits = styleEdits({
     context,
-    rule
-  }));
+    blocks
+  });
   const hasErrors = context.diagnostics.length > 0;
   if (hasErrors) {
     return {
@@ -303,10 +159,15 @@ export function resolveRelationalSelectors({ source, file }: {
       element,
       names
     }));
+    const hoistedEdits = context.hoisted.length === 0 ? [] : [{
+      start: style.end,
+      end: style.end,
+      text: `\n${context.hoisted.join("\n")}\n`
+    } satisfies Edit];
     return {
       source: applyEdits({
         source,
-        edits: [...edits, ...markupEdits]
+        edits: [...edits, ...hoistedEdits, ...markupEdits]
       }),
       diagnostics: []
     };
@@ -321,10 +182,10 @@ export function resolveRelationalSelectors({ source, file }: {
         severity: "error" as const,
         message: error.message,
         file,
-        at: {
-          line: 1,
-          column: 1
-        }
+        at: positionOf({
+          source,
+          offset: style.start
+        })
       }]
     };
   }

@@ -12,6 +12,9 @@ export interface RuleBlock {
   selector: string;
   at: SourcePosition;
   declarations: Declaration[];
+  /** Where the rule starts and ends (after its closing brace) in the CSS text. */
+  start: number;
+  end: number;
   /** The style rules nested in this one; the translator flattens them with `&`. */
   nested: RuleBlock[];
   /** The at-rules nested in this one; their body styles this rule's own selector (`&`). */
@@ -24,6 +27,9 @@ export interface AtRuleBlock {
   name: string;
   prelude: string;
   at: SourcePosition;
+  /** Where the at-rule starts and ends in the CSS text. */
+  start: number;
+  end: number;
   /** Null for an at-rule that ends with `;` (@import). */
   children: Block[] | null;
 }
@@ -129,6 +135,8 @@ const Terminator = {
 type Terminator = (typeof Terminator)[keyof typeof Terminator];
 
 interface Prelude {
+  /** Where the prelude starts in the CSS text. */
+  start: number;
   text: string;
   at: SourcePosition;
   terminator: Terminator;
@@ -171,6 +179,7 @@ function readPrelude(cursor: Cursor) {
     if (isTerminator) {
       return {
         text: text.trim(),
+        start,
         at: position,
         terminator: character
       };
@@ -182,6 +191,7 @@ function readPrelude(cursor: Cursor) {
 
   return {
     text: text.trim(),
+    start,
     at: position,
     terminator: Terminator.END
   };
@@ -207,9 +217,10 @@ function toDeclaration(prelude: Prelude) {
   };
 }
 
-function atRule({ prelude, children }: {
+function atRule({ prelude, children, end }: {
   prelude: Prelude;
   children: Block[] | null;
+  end: number;
 }) {
   const [name = "", ...rest] = prelude.text.slice(1).split(/\s+/u);
   return {
@@ -217,6 +228,8 @@ function atRule({ prelude, children }: {
     name: name.toLowerCase(),
     prelude: rest.join(" "),
     at: prelude.at,
+    start: prelude.start,
+    end,
     children
   } satisfies AtRuleBlock;
 }
@@ -226,6 +239,8 @@ function ruleBlock(prelude: Prelude) {
     kind: BlockKind.RULE,
     selector: prelude.text,
     at: prelude.at,
+    start: prelude.start,
+    end: prelude.start,
     declarations: [],
     nested: [],
     nestedAtRules: []
@@ -252,10 +267,12 @@ function readRuleBody({ cursor, block }: {
         cursor,
         block: body
       });
+      body.end = cursor.index;
       block.nestedAtRules.push(
         atRule({
           prelude,
-          children: [body]
+          children: [body],
+          end: cursor.index
         })
       );
       continue;
@@ -267,6 +284,7 @@ function readRuleBody({ cursor, block }: {
         cursor,
         block: child
       });
+      child.end = cursor.index;
       block.nested.push(child);
       continue;
     }
@@ -307,7 +325,8 @@ function readBlocks({ cursor, isNested }: {
     const hasDeclarations = isAtRule && isBlock && DECLARATION_AT_RULES.has(
       atRule({
         prelude,
-        children: null
+        children: null,
+        end: prelude.start
       }).name
     );
     if (hasDeclarations) {
@@ -319,20 +338,24 @@ function readBlocks({ cursor, isNested }: {
         cursor,
         block: body
       });
+      body.end = cursor.index;
       blocks.push(
         atRule({
           prelude,
-          children: [body]
+          children: [body],
+          end: cursor.index
         })
       );
     } else if (isAtRule) {
+      const children = isBlock ? readBlocks({
+        cursor,
+        isNested: true
+      }) : null;
       blocks.push(
         atRule({
           prelude,
-          children: isBlock ? readBlocks({
-            cursor,
-            isNested: true
-          }) : null
+          children,
+          end: cursor.index
         })
       );
     } else if (isBlock) {
@@ -341,6 +364,7 @@ function readBlocks({ cursor, isNested }: {
         cursor,
         block
       });
+      block.end = cursor.index;
       blocks.push(block);
     }
   }

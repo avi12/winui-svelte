@@ -103,3 +103,50 @@ test("a component with no relational selector is left alone", () => {
     }).source, input
   );
 });
+
+test("a rule nested in another is flattened first, then matched against the markup", () => {
+  const { source, diagnostics } = resolve({
+    markup: LIST,
+    css: ".list { opacity: 1; > .item { opacity: 0.5; &:hover { opacity: 0.2 } } }"
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.equal(source.match(/class="item wsc-1 wsc-2"/gu)?.length, 3);
+  assert.match(source, /\.list \{ opacity: 1;\s+\}/u);
+  assert.match(source, /\.wsc-1 \{ opacity: 0\.5; \}/u);
+  assert.match(source, /\.wsc-2:hover \{ opacity: 0\.2; \}/u);
+});
+
+test("a nested rule that needs no markup stays where it is", () => {
+  const { source } = resolve({
+    markup: LIST,
+    css: ".item { opacity: 1; &:hover { opacity: 0.5 } }"
+  });
+  assert.match(source, /&:hover \{ opacity: 0\.5 \}/u);
+});
+
+test("@scope is written out under its root and matched", () => {
+  const { source, diagnostics } = resolve({
+    markup: "<stack-panel class=\"card\"><border class=\"title\"/></stack-panel><border class=\"title\"/>",
+    css: "@scope (.card) { :scope { opacity: 1 } .title { opacity: 0.5 } }"
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.doesNotMatch(source, /@scope/u);
+  assert.match(source, /\.card \{ opacity: 1; \}/u);
+  assert.match(source, /<stack-panel class="card"><border class="title wsc-1"\/><\/stack-panel><border class="title"\/>/u);
+});
+
+test("an @scope limit leaves out what is under the limit", () => {
+  const { source } = resolve({
+    markup: "<stack-panel class=\"card\"><border class=\"title\"/><border class=\"slot\"><border class=\"title\"/></border></stack-panel>",
+    css: "@scope (.card) to (.slot) { .title { opacity: 0.5 } }"
+  });
+  assert.match(source, /<border class="title wsc-1"\/><border class="slot"><border class="title"\/><\/border>/u);
+});
+
+test("an @scope without a root is an error", () => {
+  const { diagnostics } = resolve({
+    markup: LIST,
+    css: "@scope { .item { opacity: 1 } }"
+  });
+  assert.match(diagnostics[0]?.message ?? "", /@scope must be written/u);
+});
