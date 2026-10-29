@@ -157,12 +157,23 @@ function mathResult({ name, lengths }: {
   return isMin ? Math.min(...lengths) : Math.max(...lengths);
 }
 
-function foldCalc(token: string) {
+function foldQuantity(token: string) {
   const inner = CALC.exec(token.trim())?.[1];
   const tokens = inner === undefined ? null : tokenize(inner.trim());
-  const result = tokens === null ? null : fold(tokens);
+  return tokens === null ? null : fold(tokens);
+}
+
+function foldCalc(token: string) {
+  const result = foldQuantity(token);
   const isLength = result !== null && result.isLength;
   return isLength ? result.value : null;
+}
+
+/** The number a `calc()` of plain numbers comes to; null for anything else (a length, a %, a var()). */
+export function evaluateNumberCalc(token: string) {
+  const result = foldQuantity(token);
+  const isNumber = result !== null && !result.isLength;
+  return isNumber ? result.value : null;
 }
 
 // Replaces the innermost min(), max() or clamp() with the px it comes to; null

@@ -394,28 +394,21 @@ still have no WinUI meaning and say so.
 
 ## Modern colors
 
-`oklch()`, `oklab()`, `lab()`, `lch()`, `hwb()` and `color-mix(in srgb, a 30%, b)`
-are resolved to sRGB by the build, in rules and custom properties alike, so the
-window carries no parser for them (out-of-gamut colors are clipped). Not
-supported: `color-mix` in another space, relative color syntax, `light-dark()`
-(declare the color for `@media (prefers-color-scheme: dark)` on `:root`
-instead), `color-scheme` and `accent-color`.
+`oklch()`, `oklab()`, `lab()`, `lch()`, `hwb()`, `color-mix()` and relative color
+syntax are resolved to sRGB by the build, in rules and custom properties alike,
+so the window carries no parser for them (out-of-gamut colors are clipped).
 
-## `@layer`, `@property`, `light-dark()`
-
-- `@layer a, b;` and `@layer a { ... }` (nested ones are `a.b`) put rules in layers
-  in the order the names first appear: a rule in a later layer beats one in an
-  earlier layer whatever their specificity, and a rule outside every layer
-  beats all of them. `!important` does not reverse the order.
-- `@property --x { syntax: ...; inherits: ...; initial-value: ... }` declares
-  `--x` with its initial value, which any rule that sets `--x` overrides. The
-  syntax is not checked and `inherits` is ignored (a WinUI resource is looked up
-  through the tree). Without an `initial-value` it is an error.
-- `light-dark(a, b)` in a declaration becomes a custom property of the sheet
-  (`--light-dark-0`) with `a` for the light theme and `b` for the dark one, so
-  it follows the window's `RequestedTheme` like `@media (prefers-color-scheme)`.
-- `min()`, `max()` and `clamp()` fold like `calc()`, when every argument is in px
-  or rem.
+- `color-mix(in <space> [shorter|longer|increasing|decreasing hue], a 30%, b)`
+  works in srgb, srgb-linear, xyz (xyz-d65), xyz-d50, lab, lch, oklab, oklch, hsl
+  and hwb, interpolating premultiplied by alpha, with the hue method for the
+  polar spaces.
+- `rgb(from <origin> r g b / 50%)`, and `hsl`, `hwb`, `lab`, `lch`, `oklab`, `oklch`
+  the same way: the origin's channels are keywords (`r g b`, `h s l`, `h w b`,
+  `l a b`, `l c h`, `alpha`), written as they are or in a `calc()` of plain numbers
+  (`calc(h + 120)`). The origin is a color or a `var(--c)` of a custom property the
+  sheet sets outside any `@media`.
+- `light-dark()` is described below. Not supported: the `color()` function, and a
+  relative color whose origin is a `var()` set only per theme.
 
 ## Logical properties
 

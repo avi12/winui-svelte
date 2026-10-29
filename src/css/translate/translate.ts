@@ -132,20 +132,20 @@ function originalDeclaration({ translator, declaration }: {
 }) {
   const at = translator.mapPosition(declaration.at);
   const { value, pairs } = replaceLightDark({
-    value: resolveModernColors(declaration.value),
+    value: resolveModernColors({ value: declaration.value }),
     nameFor: () => `--light-dark-${translator.lightDarkCount++}`
   });
   for (const { name, light, dark } of pairs) {
     translator.variables.push(
       {
         name,
-        value: resolveModernColors(light),
+        value: resolveModernColors({ value: light }),
         scheme: ColorScheme.LIGHT,
         at
       },
       {
         name,
-        value: resolveModernColors(dark),
+        value: resolveModernColors({ value: dark }),
         scheme: ColorScheme.DARK,
         at
       }
@@ -479,7 +479,7 @@ function addProperty({ translator, block }: {
 
   translator.variables.unshift({
     name,
-    value: resolveModernColors(initial.value),
+    value: resolveModernColors({ value: initial.value }),
     scheme: ColorScheme.DEFAULT,
     at: translator.mapPosition(initial.at)
   });
@@ -580,6 +580,33 @@ function reportIncompleteVariables(translator: Translator) {
         at: first.at,
         message: `${name} is declared for ${words.join(" and ")} only; declare it outside @media too (the default value)`
       });
+    }
+  }
+}
+
+const RELATIVE_COLOR = /\(\s*from\s/iu;
+
+// A relative color whose origin is a custom property is resolved once every
+// custom property of the sheet is known (it uses the value outside any @media).
+function resolveRelativeColors(translator: Translator) {
+  const defaults = translator.variables.filter(variable => variable.scheme === ColorScheme.DEFAULT);
+  const lookup = new Map(defaults.map(variable => [variable.name, variable.value]));
+  for (const variable of translator.variables) {
+    variable.value = resolveModernColors({
+      value: variable.value,
+      lookup
+    });
+  }
+
+  for (const rule of translator.rules) {
+    for (const declaration of rule.declarations) {
+      const isRelative = RELATIVE_COLOR.test(declaration.value);
+      if (isRelative) {
+        declaration.value = resolveModernColors({
+          value: declaration.value,
+          lookup
+        });
+      }
     }
   }
 }
@@ -701,6 +728,7 @@ export function translateStyleSheet(input: TranslateInput) {
     });
   }
 
+  resolveRelativeColors(translator);
   const resourcesXaml = buildVariableResources(translator);
   validateRules({
     translator,
