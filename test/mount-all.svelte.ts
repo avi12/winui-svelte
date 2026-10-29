@@ -1,15 +1,19 @@
 import type { Counts, Failure, Report } from "./mount-report.ts";
 import SlotsFixture from "./Slots.fixture.svelte";
+import { checkXamlBehaviours } from "./xaml-behaviours.svelte.ts";
 import { unboxObject } from "@microsoft/dynwinrt";
 import * as bindings from "#src/components/generated/bindings.js";
 import type { LevelMetadata } from "#src/components/generated/metadata.js";
 import { levels } from "#src/components/generated/metadata.js";
 import ToggleSwitch from "#src/components/generated/ToggleSwitch.svelte";
+import { installXaml } from "#src/components/xaml.js";
 import { ticksDate } from "#src/components/values.js";
+import { installCss } from "#src/css/index.js";
 import type { NativeValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
 import { isRecord, read, vectorOf } from "#src/renderer/host/reflect.js";
 import { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
+import * as winui from "#src/winui.js";
 import { Application } from "#winui/microsoft/ui/xaml/Application";
 import { Window } from "#winui/microsoft/ui/xaml/Window";
 import assert from "node:assert/strict";
@@ -889,6 +893,10 @@ function checkBehaviours({ connectors, failures }: {
     }
   });
 
+  checkXamlBehaviours({
+    check,
+    checkProps
+  });
   return count;
 }
 
@@ -1219,10 +1227,14 @@ export async function run(report: (result: Report) => void) {
   const connectors = await loadConnectors();
   trace("loaded");
   await Application.startScheduled(() => {
-    Application.create(() => launch({
-      connectors,
-      report,
-      throughRenderer: [checkComponentThroughRenderer, checkSlotsThroughRenderer]
-    }));
+    Application.create(() => {
+      installCss(winui);
+      installXaml();
+      launch({
+        connectors,
+        report,
+        throughRenderer: [checkComponentThroughRenderer, checkSlotsThroughRenderer]
+      });
+    });
   });
 }

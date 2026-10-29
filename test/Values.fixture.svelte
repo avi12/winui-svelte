@@ -1,18 +1,28 @@
 <script lang="ts">
   // Never mounted: `pnpm check` (svelte-check) reads it. Each value prop is
   // written in the forms it takes; value-props.types.ts holds the ones it refuses.
-  import type { DateInput } from "#src/components/convert.js";
+  import type { DataTemplateInput, DateInput } from "#src/components/convert.js";
   import {
     AutoSuggestBox,
+    Button,
+    ComboBox,
+    ContentDialog,
     DatePicker,
     DoubleAnimation,
+    ItemsControl,
     Path,
     Polygon,
     Rectangle,
     TextBlock,
-    TextBox
+    TextBox,
+    xamlOf,
+    XamlKind
   } from "#src/components/index.js";
 
+  const rowTemplate: DataTemplateInput = xamlOf({
+    kind: XamlKind.DATA_TEMPLATE,
+    xaml: "<DataTemplate><TextBlock Text=\"{Binding}\"/></DataTemplate>"
+  });
   let date = $state<DateInput | undefined>(new Date());
 </script>
 
@@ -34,3 +44,8 @@
 <AutoSuggestBox itemsSource={["one", "two"]} />
 <TextBox inputScope="Url" />
 <TextBox inputScope={["Url", "Search"]} />
+<Button template="<ControlTemplate TargetType='Button'><Border/></ControlTemplate>" />
+<Button contentTemplate={rowTemplate} resources={{ ButtonBackground: "#0af", ButtonPadding: 12, Compact: true }} />
+<ItemsControl itemTemplate={rowTemplate} itemsPanel="<ItemsPanelTemplate><StackPanel/></ItemsPanelTemplate>" />
+<ComboBox itemContainerStyle="row" />
+<ContentDialog closeButtonStyle="primary-action" />
