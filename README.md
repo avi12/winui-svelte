@@ -849,6 +849,7 @@ protocol and the tests.
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation`, and the `transition`, `intro` and `outro` attachments |
 | `winui-svelte/app` | single-instance handling and app notifications |
+| `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
 | `winui-svelte/css/transform`, `/css/focus`, `/css/surface`, `/css/resources` | the opt-in CSS groups: 2D transform, focus visuals, surfaces, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
@@ -885,6 +886,14 @@ Stated plainly, so nobody finds them by surprise:
   native binding" error, and `initWindowsAppSdk` throws a plain error naming
   the supported platforms; no entry point does work when imported. The
   Windows App SDK runtime must be installed; the package does not install it.
+- **The tray icon hears the mouse by polling.** WinUI has no tray API, and
+  dynwinrt cannot make a JavaScript function a native window procedure, so
+  `winui-svelte/tray` reads the pointer and the buttons every 30 ms instead of
+  receiving the shell's callback. Clicks, double clicks, middle clicks and
+  right clicks (with their position) work; keyboard activation, touch, and a
+  click on a balloon cannot be heard, and there is no `menu` snippet (a flyout
+  needs a live window; open one yourself on `oncontextmenu`). A Tauri or
+  Electron host that already has a tray should keep using it.
 - **Base and thin acrylic are controller backdrops.** `acrylicBase` and
   `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
   `window.systemBackdrop` reads null for them (the controller holds the

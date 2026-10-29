@@ -27,6 +27,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
+| `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon`, `createTrayIcon()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
 needs no build. `pnpm build` compiles them to `dist/` and `publishConfig`
@@ -1176,6 +1177,79 @@ An opt-in subpath: an app that does not import it does not bundle it.
   and reports what `notify` did; run it in a desktop session before relying on
   either. With package identity (an MSIX or sparse package) both are the
   supported case.
+
+### System tray (`winui-svelte/tray`)
+
+WinUI and the Windows App SDK have no notification-area API (apps call
+`Shell_NotifyIconW`), so this opt-in entry point talks to the shell itself.
+An app that does not import it does not bundle it.
+
+```svelte
+<script lang="ts">
+  import { Window } from "winui-svelte/components";
+  import type { WindowHandle } from "winui-svelte/components";
+  import { hideToTray, toggleInTray, TrayIcon } from "winui-svelte/tray";
+
+  let handle: WindowHandle | undefined = $state();
+</script>
+
+<Window onClosing={() => { if (handle) hideToTray(handle); return true; }} bind:handle>...</Window>
+<TrayIcon
+  icon={{ forLightTaskbar: "dark.ico", forDarkTaskbar: "light.ico" }}
+  tooltip="My app"
+  guid="6f1d3c52-8c1a-4a55-9d0e-7b2f4e9a1c03"
+  onclick={() => handle && toggleInTray(handle)}
+  oncontextmenu={({ x, y }) => openMenuAt({ x, y })}
+/>
+```
+
+- `<TrayIcon>` props: `icon` (an `.ico` path, or `{ forLightTaskbar,
+  forDarkTaskbar }`, swapped when the taskbar theme changes), `tooltip`,
+  `isVisible` (default true), `guid`, `onclick`, `ondoubleclick`,
+  `oncontextmenu`, `onmiddleclick`, and `bind:handle`. The icon exists while
+  the component does and is removed when it unmounts.
+- Each handler gets `{ gesture, x, y }`, the pointer in screen pixels: where to
+  put a menu. A double click is the second `onclick` and then `ondoubleclick`.
+- `createTrayIcon(options)` is the same without a component and returns the
+  handle: `update({ icon, tooltip, isVisible })`, `notify({ title, body,
+  icon, isSilent })` (a balloon), `bounds()` (where the shell drew the icon,
+  from `Shell_NotifyIconGetRect`), `isRegistered`, `remove()`. Call it on the
+  UI thread. `removeAllTrayIcons()` runs at process exit, so none stays as a
+  ghost.
+- `guid` (a GUID of your own that never changes) is `NIF_GUID`: the shell keeps
+  the icon's place and the user's "always show" choice. It ties the GUID to the
+  program's path, so a moved or unsigned build can lose it. Without it the
+  icon is identified by the hidden owner window and an id.
+- `hideToTray(handle)` hides a `WindowHandle`'s window and its taskbar button
+  (`AppWindow.IsShownInSwitchers`), `restoreFromTray(handle)` undoes both and
+  brings it to the front, `toggleInTray(handle)` picks by visibility.
+- The icon is registered again by itself when explorer restarts (no
+  `TaskbarCreated` window message is heard; the icon is checked about once a
+  second), is reloaded at the system DPI's small-icon size, and swaps on a
+  light or dark taskbar.
+
+How clicks are heard, and what that cannot do: dynwinrt (0.1.0-preview.23)
+binds Win32 functions to call, but offers no way to turn a JavaScript function
+into a native function pointer (a window procedure, a hook, `SetWindowSubclass`):
+in a probe, the table of a COM object it made ended after the three `IUnknown`
+entries, and a COM thunk needs its own object as `this`. So the shell's callback message
+(`NIF_MESSAGE`) cannot be received. The tray polls every 30 ms instead:
+`GetCursorPos`, `GetAsyncKeyState` and `Shell_NotifyIconGetRect`, and a click
+is a press and a release both over the icon while the pointer is on the taskbar
+or the overflow flyout. It reads input; it never sends any. What this means:
+
+| Works | Cannot be heard |
+|---|---|
+| click, double click, middle click, right click with its position | keyboard activation (Enter or the context-menu key on a focused icon), touch and pen taps, `NIN_BALLOONUSERCLICK` / `NIN_BALLOONTIMEOUT` (so `notify` has no click event), `NIN_POPUPOPEN` hover cards |
+| icon swap on theme and DPI, restart of explorer, update, hide | clicks on an icon the user has moved into the hidden overflow flyout while it is closed |
+
+Menus: there is no `menu` snippet. WinUI shows a flyout only from an element in
+a live window, which a tray-only app does not have. On `oncontextmenu`, restore
+a window (or open a small one with `createWindow`) and open your own
+`MenuFlyout` or `CommandBarFlyout` at `{ x, y }`; bring the window forward first
+(`handle.activate()`), or the flyout will not close when the user clicks away.
+A Tauri or Electron host that already has a tray should keep it: two icons
+would show, and this one lives and dies with the WinUI window's process.
 
 ### Localization: what works unpackaged
 
