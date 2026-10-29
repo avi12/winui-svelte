@@ -40,6 +40,9 @@ interface Converter {
   convert: string;
   inputType: string;
   readBack?: string;
+  // The conversion also takes the control and the prop's name (a Style prop
+  // finds the element it styles by them).
+  isOwned?: boolean;
 }
 
 const DURATION: Converter = {
@@ -108,6 +111,27 @@ const converters = new Map<PropertyKind, Converter>([
   [PropertyKind.GEOMETRY, {
     convert: "geometryOf",
     inputType: "GeometryInput"
+  }],
+  [PropertyKind.CONTROL_TEMPLATE, {
+    convert: "controlTemplateOf",
+    inputType: "ControlTemplateInput"
+  }],
+  [PropertyKind.DATA_TEMPLATE, {
+    convert: "dataTemplateOf",
+    inputType: "DataTemplateInput"
+  }],
+  [PropertyKind.ITEMS_PANEL_TEMPLATE, {
+    convert: "itemsPanelTemplateOf",
+    inputType: "ItemsPanelTemplateInput"
+  }],
+  [PropertyKind.STYLE, {
+    convert: "styleOf",
+    inputType: "StyleInput",
+    isOwned: true
+  }],
+  [PropertyKind.RESOURCE_DICTIONARY, {
+    convert: "resourcesOf",
+    inputType: "ResourcesInput"
   }],
   [PropertyKind.NULLABLE_TIME_SPAN, {
     convert: "nullableTimeSpanOf",
@@ -330,7 +354,8 @@ function valueExpression({ kind, enumType, key }: {
     return "value";
   }
 
-  return `${converter.convert}(value)`;
+  const argument = converter.isOwned ? `{ input: value, owner: control, property: "${key}" }` : "value";
+  return `${converter.convert}(${argument})`;
 }
 
 function attachedType(attached: AttachedModel) {

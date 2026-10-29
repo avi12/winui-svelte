@@ -9,6 +9,7 @@ export {
   registerPropertyGroups,
   registerStyleSheet,
   styledElement,
+  styleOfClasses,
   unregisterStyleSheet
 } from "./runtime/runtime.ts";
 export type { CssNative, StyledElement } from "./runtime/runtime.ts";

@@ -696,6 +696,43 @@ build error with its file and line; nothing is silently ignored.
 | `--name: value` on `:root`, or on a class | an app-wide resource, or one only the elements with that class (and their templates) see: `.danger { --button-background-pointer-over: red }` |
 | `.class`, `type`, `:hover`, `:focus`, `:active`, `:root`, `:where()` | class and type matching, the control's events, custom properties |
 
+## Templates, styles and resources
+
+Props typed with a WinUI template take XAML text, so a control is restyled
+without leaving Svelte; a `*Style` prop takes the CSS classes whose rules make
+its Style; `resources` takes a record of theme keys. WinUI's own objects are
+accepted too, and `xamlOf` loads text once for several props.
+
+```svelte
+<script lang="ts">
+  import { Button, ComboBox, goToState } from "winui-svelte/components";
+</script>
+
+<Button
+  template="<ControlTemplate TargetType='Button'><Border Background='Teal'>
+    <ContentPresenter/></Border></ControlTemplate>"
+  resources={{ "--button-background-pointer-over": "#c42b1c", "--button-padding": 12 }}>
+  Save
+</Button>
+
+<ComboBox itemContainerStyle="row" headerTemplate="<DataTemplate>
+  <TextBlock Text='{Binding}'/></DataTemplate>" />
+
+<style>
+  :global(.row) { padding: 8px; background-color: #123456 }
+</style>
+```
+
+As for any class passed to a component, Svelte does not scope it: write the
+rule `:global(.row)`. A root element without `xmlns` gets WinUI's, and the wrong
+root for the prop (a `DataTemplate` for `template`) is an error that names both.
+A key of `resources` is a custom property's name, as in a stylesheet, or the
+resource's own (`ButtonBackground`); a color or length keeps the kind its key
+has in WinUI (`ButtonBackground` is a brush, `ButtonPadding` a thickness).
+`goToState({ control, name })` enters a state the control's template defines.
+[API.md](API.md) has the rest: what each `*Style` prop styles, `xamlOf`, and
+what is not covered.
+
 ## Transitions
 
 Svelte's compiler refuses `transition:`, `in:`, `out:` and `animate:` on a
@@ -736,7 +773,7 @@ protocol and the tests.
 | Specifier | What |
 | --- | --- |
 | `winui-svelte` | `control`, `withControl`, `mountControl`, `registerControls`, `dispatch` / `flush`, the value helpers |
-| `winui-svelte/components` | every control as a component, and its props type |
+| `winui-svelte/components` | every control as a component, and its props type; `xamlOf`, `goToState`, `installXaml` |
 | `winui-svelte/state` | the window's side of host state |
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
 | `winui-svelte/vite` | `winuiSvelte()` for `vite.config.ts`; `startModuleServer()` for hot reload |

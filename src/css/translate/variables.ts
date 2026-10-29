@@ -202,7 +202,25 @@ export function variableEntries({ variable, catalogue, reportProblem }: {
   reportProblem(message: string): void;
 }) {
   const name = resourceNameOf(variable.name);
-  const key = catalogue.keyOf(name) ?? name;
+  return entriesForKey({
+    variable,
+    key: catalogue.keyOf(name) ?? name,
+    catalogue,
+    reportProblem
+  });
+}
+
+/**
+ * The resources of a value under a key that is already spelled as WinUI spells
+ * it: what `variableEntries` does once it has turned a custom property into a
+ * key, and what a record of resources (the `resources` prop) starts from.
+ */
+export function entriesForKey({ variable, key, catalogue, reportProblem }: {
+  variable: Variable;
+  key: string;
+  catalogue: ResourceCatalogue;
+  reportProblem(message: string): void;
+}) {
   const known = catalogue.kindOf(key);
   const value = colorValueOf({
     text: variable.value,

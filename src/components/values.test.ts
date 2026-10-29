@@ -7,6 +7,7 @@ import {
   fontWeightNumber,
   gridLengthParts,
   GridUnit,
+  isResourceRecord,
   isSvgUri,
   numberList,
   parseColor,
@@ -236,4 +237,11 @@ test("path data is wrapped as the XAML of a Path, with its characters escaped", 
     "<Path xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Data=\"M0,0 L10,10\"/>"
   );
   assert.match(pathMarkup("M0,0\"/><Button/>"), /Data="M0,0&quot;\/&gt;&lt;Button\/&gt;"/u);
+});
+
+test("a plain object is a record of resources and a WinRT object is not", () => {
+  class ResourceDictionaryLike {}
+  assert.equal(isResourceRecord({ accent: "#0af" }), true);
+  assert.equal(isResourceRecord(Object.create(null)), true);
+  assert.equal(isResourceRecord(new ResourceDictionaryLike()), false);
 });

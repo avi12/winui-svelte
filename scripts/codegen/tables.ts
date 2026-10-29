@@ -482,6 +482,23 @@ export const supportClasses: TypeName[] = [
     namespace: "Microsoft.UI.Xaml.Markup",
     name: "XamlReader"
   },
+  // What XAML text and a record of resources are loaded as (src/components/xaml.ts).
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "ControlTemplate"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "ItemsPanelTemplate"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "ResourceDictionary"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "Style"
+  },
   {
     namespace: "Microsoft.UI.Xaml.Media",
     name: "VisualTreeHelper"
@@ -815,6 +832,11 @@ export const PropertyKind = {
   DOUBLE_COLLECTION: "doubleCollection",
   INPUT_SCOPE: "inputScope",
   GEOMETRY: "geometry",
+  CONTROL_TEMPLATE: "controlTemplate",
+  DATA_TEMPLATE: "dataTemplate",
+  ITEMS_PANEL_TEMPLATE: "itemsPanelTemplate",
+  STYLE: "style",
+  RESOURCE_DICTIONARY: "resourceDictionary",
   NULLABLE_BOOLEAN: "nullableBoolean",
   NULLABLE_DOUBLE: "nullableDouble",
   NULLABLE_TIME_SPAN: "nullableTimeSpan",
@@ -853,7 +875,12 @@ export const kindOfType = new Map<string, PropertyKind>([
   ["Microsoft.UI.Xaml.Media.PointCollection", PropertyKind.POINT_COLLECTION],
   ["Microsoft.UI.Xaml.Media.DoubleCollection", PropertyKind.DOUBLE_COLLECTION],
   ["Microsoft.UI.Xaml.Input.InputScope", PropertyKind.INPUT_SCOPE],
-  ["Microsoft.UI.Xaml.Media.Geometry", PropertyKind.GEOMETRY]
+  ["Microsoft.UI.Xaml.Media.Geometry", PropertyKind.GEOMETRY],
+  ["Microsoft.UI.Xaml.Controls.ControlTemplate", PropertyKind.CONTROL_TEMPLATE],
+  ["Microsoft.UI.Xaml.DataTemplate", PropertyKind.DATA_TEMPLATE],
+  ["Microsoft.UI.Xaml.Controls.ItemsPanelTemplate", PropertyKind.ITEMS_PANEL_TEMPLATE],
+  ["Microsoft.UI.Xaml.Style", PropertyKind.STYLE],
+  ["Microsoft.UI.Xaml.ResourceDictionary", PropertyKind.RESOURCE_DICTIONARY]
 ]);
 
 // The same for a value the metadata types IReference<T> (null when unset), by

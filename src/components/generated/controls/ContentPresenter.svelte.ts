@@ -3,6 +3,7 @@
 import {
   brushOf,
   cornerRadiusOf,
+  dataTemplateOf,
   enumValue,
   fontFamilyOf,
   fontWeightOf,
@@ -12,6 +13,7 @@ import {
 import type {
   BrushInput,
   CornerRadiusInput,
+  DataTemplateInput,
   ElementProps,
   EnumInput,
   FontFamilyInput,
@@ -45,7 +47,7 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   borderThickness?: ThicknessInput;
   characterSpacing?: number;
   content?: ObjectInput | Snippet;
-  contentTemplate?: ContentPresenter["contentTemplate"];
+  contentTemplate?: DataTemplateInput;
   contentTemplateSelector?: ContentPresenter["contentTemplateSelector"];
   contentTransitions?: ContentPresenter["contentTransitions"];
   cornerRadius?: CornerRadiusInput;
@@ -131,7 +133,7 @@ export function linkContentPresenter(
     props,
     key: "contentTemplate",
     apply(value) {
-      control.contentTemplate = value;
+      control.contentTemplate = dataTemplateOf(value);
     }
   });
   link.property({

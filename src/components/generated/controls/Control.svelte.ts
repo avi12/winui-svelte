@@ -2,6 +2,7 @@
 
 import {
   brushOf,
+  controlTemplateOf,
   cornerRadiusOf,
   enumValue,
   fontFamilyOf,
@@ -11,6 +12,7 @@ import {
 } from "../../convert.ts";
 import type {
   BrushInput,
+  ControlTemplateInput,
   CornerRadiusInput,
   EnumInput,
   FontFamilyInput,
@@ -57,7 +59,7 @@ export interface ControlProps extends FrameworkElementProps {
   padding?: ThicknessInput;
   requiresPointer?: EnumInput<typeof RequiresPointer>;
   tabNavigation?: EnumInput<typeof KeyboardNavigationMode>;
-  template?: Control["template"];
+  template?: ControlTemplateInput;
   verticalContentAlignment?: EnumInput<typeof VerticalAlignment>;
   onFocusDisengaged?: Parameters<Control["onFocusDisengaged"]>[0];
   onFocusEngaged?: Parameters<Control["onFocusEngaged"]>[0];
@@ -231,7 +233,7 @@ export function linkControl(
     props,
     key: "template",
     apply(value) {
-      control.template = value;
+      control.template = controlTemplateOf(value);
     }
   });
   link.property({

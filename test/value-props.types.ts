@@ -1,5 +1,7 @@
 import type {
   AutoSuggestBoxComponentProps,
+  ButtonComponentProps,
+  ContentDialogComponentProps,
   DatePickerComponentProps,
   DoubleAnimationComponentProps,
   PathComponentProps,
@@ -22,6 +24,11 @@ export const refused: {
   data: PathComponentProps;
   itemsSource: AutoSuggestBoxComponentProps;
   inputScope: TextBoxComponentProps;
+  template: ButtonComponentProps;
+  contentTemplate: ButtonComponentProps;
+  resources: ButtonComponentProps;
+  resourceValue: ButtonComponentProps;
+  closeButtonStyle: ContentDialogComponentProps;
 } = {
   duration: {
     // @ts-expect-error a boolean is no duration
@@ -60,5 +67,27 @@ export const refused: {
   inputScope: {
     // @ts-expect-error "Nope" is no input scope name
     inputScope: "Nope"
+  },
+  template: {
+    // @ts-expect-error a number is no control template
+    template: 42
+  },
+  contentTemplate: {
+    // @ts-expect-error a boolean is no data template
+    contentTemplate: true
+  },
+  resources: {
+    // @ts-expect-error a number is no record of resources
+    resources: 42
+  },
+  resourceValue: {
+    resources: {
+      // @ts-expect-error a resource is not left undefined
+      "--button-background": undefined
+    }
+  },
+  closeButtonStyle: {
+    // @ts-expect-error a number is neither class names nor a Style
+    closeButtonStyle: 42
   }
 };

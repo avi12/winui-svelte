@@ -11,7 +11,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | Specifier | File | What |
 |---|---|---|
 | `winui-svelte` | `src/index.ts` | `control`, `withControl`, `elementRef`, `mountControl`, `registerControls`, `setClassHandler`, `dispatch` / `flush` / `onFlush`, the value helpers |
-| `winui-svelte/components` | `src/components/generated/index.ts` | every WinUI 3 control as a component (`StackPanel`, `ToggleSwitch`, ...) and its props type (`ToggleSwitchComponentProps`); importing it registers the generated bindings with the renderer |
+| `winui-svelte/components` | `src/components/generated/index.ts` | every WinUI 3 control as a component (`StackPanel`, `ToggleSwitch`, ...) and its props type (`ToggleSwitchComponentProps`); `xamlOf`, `goToState`, `installXaml`, `resourceDictionaryOf`; importing it registers the generated bindings with the renderer |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()` (its `messaging` is the typed link), `hostState()`, `StateProtocol`, the transports (stdio, MessagePort, in-memory), `diff` / `applyOps` (see `src/state/README.md`) |
 | `winui-svelte/host` | `src/renderer/host/host.ts` | the custom renderer a compiled component imports (default export); not for app code |
 | `winui-svelte/element-animation` | `src/renderer/host/element-animation.ts` | `enableElementAnimation()`, and the attachments `transition()`, `intro()`, `outro()`: Svelte's transition functions on WinUI elements (opt-in; an app that does not import it does not bundle it) |
@@ -359,6 +359,106 @@ bindable `date` or time reads back as a `Date` or as milliseconds. For an event
 argument, `ticksDate(ticks)` and `ticksMilliseconds(ticks)` from
 `winui-svelte/components` turn WinUI's ticks (`args.newDate.universalTime`,
 `args.newTime.duration`) into the same.
+
+## Templates, styles and resources (`winui-svelte/components`)
+
+A prop typed with a WinUI template takes XAML text; a `*Style` prop takes CSS
+class names; `resources` takes a record. Each also takes WinUI's own object
+(a `ControlTemplate`, a `Style`, a `ResourceDictionary`), so a value read
+from a control can be written back. The kind of each prop is read from its type
+(`kindOfType` in `scripts/codegen/tables.ts`), and the converter and input
+type of each kind come from the table in `scripts/codegen/emit.ts`.
+
+| WinUI type | Props | Input type | Written as |
+|---|---|---|---|
+| `ControlTemplate` | `template` | `ControlTemplateInput` | XAML text starting with `<ControlTemplate` |
+| `DataTemplate` | `contentTemplate`, `itemTemplate`, `headerTemplate` (19 controls), ... | `DataTemplateInput` | XAML text starting with `<DataTemplate` |
+| `ItemsPanelTemplate` | `itemsPanel` | `ItemsPanelTemplateInput` | XAML text starting with `<ItemsPanelTemplate` |
+| `Style` | `itemContainerStyle`, `closeButtonStyle`, `textBoxStyle`, ... | `StyleInput` | CSS class names |
+| `ResourceDictionary` | `resources` | `ResourcesInput` | a record of resources |
+
+```svelte
+<Button
+  template="<ControlTemplate TargetType='Button'><Border Background='Teal'>
+    <ContentPresenter/></Border></ControlTemplate>"
+  resources={{ "--button-background-pointer-over": "#c42b1c", "--button-padding": 12 }}>
+  Save
+</Button>
+
+<ListView items={rows} key={row => row.id} itemContainerStyle="row">
+  {#snippet item(row)}
+    <TextBlock text={row.name} />
+  {/snippet}
+</ListView>
+
+<ItemsControl itemsSource={names} itemsPanel="<ItemsPanelTemplate>
+  <StackPanel Orientation='Horizontal'/></ItemsPanelTemplate>"
+  itemTemplate="<DataTemplate><TextBlock Text='{Binding}'/></DataTemplate>" />
+```
+
+`ListView`, `GridView`, `ItemsRepeater`, `BreadcrumbBar` and `ItemsView` show
+their items by a snippet and own their item template; the other items
+controls (`ItemsControl`, `ComboBox`, `TreeView`, ...) take `itemTemplate`.
+
+```ts
+xamlOf({ kind: XamlKind, xaml }): ControlTemplate | DataTemplate | ...
+goToState({ control, name, useTransitions = false }): boolean
+installXaml(): void
+resourceDictionaryOf(record: ResourceRecordInput): ResourceDictionary
+```
+
+- **`xamlOf`** loads XAML text through `XamlReader` as the kind named by
+  `XamlKind` (`controlTemplate`, `dataTemplate`, `itemsPanelTemplate`,
+  `style`, `resourceDictionary`) and returns the class, to keep and give to
+  several props. The root element must be the kind's (a `RangeError` names the
+  kinds, a `TypeError` the root it found), and a root that declares no
+  `xmlns` or `xmlns:x` gets WinUI's, so a template is written without them.
+  `src/components/xaml-source.ts` checks the text and needs no WinUI.
+- **A prop given XAML text** loads it the same way. The components reach the
+  reader through a seam (`src/components/xaml-seam.ts`), so an app that
+  writes no template does not bundle `XamlReader` or the template classes:
+  `runWindow` installs it when the application starts, and a host of one's own
+  (a test that creates the application itself) calls `installXaml()` once.
+  Without it a string throws, saying so.
+- **A `*Style` prop given class names** gets the Style the `<style>` rules
+  for those classes make for the element the prop styles
+  (`styleOfClasses` in [`src/css/API.md`](src/css/API.md)). WinUI does not say
+  which element that is, so `src/components/style-targets.ts` does: the button
+  of `closeButtonStyle`, the `TextBox` of `textBoxStyle`, and for
+  `itemContainerStyle` the container of the control (`ListViewItem` for a
+  `ListView`, `GridViewItem`, `ComboBoxItem`, `FlipViewItem`,
+  `TreeViewItem`; a control not listed takes a `Style` object). The
+  generator refuses a Style prop that table lacks. The rule is written
+  `:global(.row)`, since Svelte scopes no class passed to a component. The Style is built when the
+  prop is set and states are ignored; a class no rule matches, or one that
+  sets what only an element holds (a grid's columns, the focus ring, a custom
+  property), throws. `FrameworkElement.Style` stays skipped: `style` is the CSS
+  string of the element.
+- **A `resources` record** maps resource keys to values. A key is a custom
+  property's name (`"--button-background"`, the form a stylesheet uses) or the
+  resource's own (`ButtonBackground`).
+  A color or a length keeps the kind its key has in WinUI, by the rule CSS
+  custom properties follow (`entriesForKey`, `src/css/translate/variables.ts`): a
+  Brush key such as `ButtonBackground` gets a `SolidColorBrush`, a Thickness
+  key (`ButtonPadding`) one length on every side, a CornerRadius key a
+  `CornerRadius`, any other number a `Double`; a key WinUI does not define
+  is a `Color` with a `Brush` of the same name plus `Brush`. A key is
+  spelled as WinUI spells it whatever case it is written in. Text for a text or
+  font family key, a boolean, and a WinRT object (a brush, a style) are put in
+  as they are. A value of another kind than its key's throws with the key and
+  its kind. The record becomes the element's whole `Resources` (as
+  `<Button.Resources>` does); the kinds come from `winui-resources.g.json`,
+  read the first time a record is given. The prop does not combine with a class
+  whose custom properties are merged into the same element's resources.
+- **`goToState`** is `VisualStateManager.GoToState`: it enters a state the
+  control's template defines (`Pressed`, `PointerOver`) and returns whether
+  it did. The template must be applied (`control.applyTemplate()`, or the
+  control shown).
+
+`VisualStateGroup`, `VisualState`, `Setter`, `AdaptiveTrigger` and
+`StateTrigger` are not components: `Setter`, `AdaptiveTrigger` and
+`StateTrigger` are not in the bindings, and a state group is written inside a
+template (XAML text) rather than among a control's children.
 
 ## Components that show items (`winui-svelte/components`)
 

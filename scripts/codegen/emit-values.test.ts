@@ -112,3 +112,69 @@ test("an items source takes an array and makes it a collection", () => {
   assert.match(text, /content\?: ObjectInput;/u);
   assert.match(text, /control\.content = objectOf\(value\);/u);
 });
+
+test("a template prop takes XAML text or the template and is written through its converter", () => {
+  const text = emitLevel(
+    pickerWith([
+      property({
+        key: "date",
+        kind: PropertyKind.DATE_TIME
+      }),
+      property({
+        key: "template",
+        kind: PropertyKind.CONTROL_TEMPLATE
+      }),
+      property({
+        key: "headerTemplate",
+        kind: PropertyKind.DATA_TEMPLATE
+      }),
+      property({
+        key: "itemsPanel",
+        kind: PropertyKind.ITEMS_PANEL_TEMPLATE
+      })
+    ])
+  );
+  assert.match(text, /template\?: ControlTemplateInput;/u);
+  assert.match(text, /headerTemplate\?: DataTemplateInput;/u);
+  assert.match(text, /itemsPanel\?: ItemsPanelTemplateInput;/u);
+  assert.match(text, /control\.template = controlTemplateOf\(value\);/u);
+  assert.match(text, /control\.headerTemplate = dataTemplateOf\(value\);/u);
+  assert.match(text, /control\.itemsPanel = itemsPanelTemplateOf\(value\);/u);
+});
+
+test("a Style prop is converted with the control and its own name, which say what it styles", () => {
+  const text = emitLevel(
+    pickerWith([
+      property({
+        key: "date",
+        kind: PropertyKind.DATE_TIME
+      }),
+      property({
+        key: "itemContainerStyle",
+        kind: PropertyKind.STYLE
+      })
+    ])
+  );
+  assert.match(text, /itemContainerStyle\?: StyleInput;/u);
+  assert.match(
+    text,
+    /control\.itemContainerStyle = styleOf\(\{ input: value, owner: control, property: "itemContainerStyle" \}\);/u
+  );
+});
+
+test("a resources prop takes a record or a ResourceDictionary", () => {
+  const text = emitLevel(
+    pickerWith([
+      property({
+        key: "date",
+        kind: PropertyKind.DATE_TIME
+      }),
+      property({
+        key: "resources",
+        kind: PropertyKind.RESOURCE_DICTIONARY
+      })
+    ])
+  );
+  assert.match(text, /resources\?: ResourcesInput;/u);
+  assert.match(text, /control\.resources = resourcesOf\(value\);/u);
+});

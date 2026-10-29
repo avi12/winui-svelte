@@ -1,3 +1,4 @@
+import { installXaml } from "#src/components/xaml.js";
 import { installCss } from "#src/css/index.js";
 import * as winui from "#src/winui.js";
 import { Application } from "#src/winui.js";
@@ -6,8 +7,9 @@ import { Application } from "#src/winui.js";
 export interface RunWindowOptions {
   /**
    * Runs on the UI thread once WinUI is up (its own resources installed, and
-   * the components' `<style>` sheets merged over them): the place to register
-   * controls and open windows.
+   * the components' `<style>` sheets merged over them, and the XAML reader the
+   * template and resources props use ready): the place to register controls
+   * and open windows.
    */
   onStart: () => void;
 }
@@ -25,6 +27,7 @@ export async function runWindow(options: RunWindowOptions) {
   await Application.startScheduled(() => {
     Application.create(() => {
       installCss(winui);
+      installXaml();
       options.onStart();
     });
   });
