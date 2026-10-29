@@ -1,3 +1,4 @@
+import { tracksOf } from "./animation-tracks.ts";
 import { computeDeclarations } from "./cascade.ts";
 import { LAZY_GROUPS } from "./lazy-groups.ts";
 import { lowerDeclarations } from "./properties.ts";
@@ -6,6 +7,8 @@ import { ColorScheme } from "./types.ts";
 import type {
   Declaration,
   Diagnostic,
+  Keyframes,
+  KeyframeStep,
   ResourceEntry,
   Rule,
   Severity,
@@ -22,6 +25,7 @@ import type { ParsedSelector } from "#src/css/parse/selectors.js";
 import { parseSelectorList } from "#src/css/parse/selectors.js";
 import type { PositionMapper, SourceMapV3 } from "#src/css/parse/source-map.js";
 import { createPositionMapper } from "#src/css/parse/source-map.js";
+import { parsePercent } from "#src/css/parse/values.js";
 import type { ResourceCatalogue, ResourceKind } from "#src/css/runtime/resources.js";
 import { hasStyle, resolveVariable } from "#src/css/runtime/resources.js";
 
@@ -60,6 +64,7 @@ interface Translator {
   /** The kinds of the resources custom properties define, anywhere in the sheet. */
   kinds: Map<string, ResourceKind>;
   rules: Rule[];
+  keyframes: Keyframes[];
   nextOrder: number;
 }
 
@@ -285,6 +290,71 @@ function addRuleBlock({ translator, block, scheme }: {
   }
 }
 
+// `from`, `to` or a percentage; a keyframe selector is a list of them.
+function keyframeOffset(selector: string) {
+  const lower = selector.trim().toLowerCase();
+  const named = new Map([["from", 0], ["to", 1]]).get(lower);
+  const percent = parsePercent(lower);
+  const isPercentValid = percent !== null && percent >= 0 && percent <= 1;
+  return named ?? (isPercentValid ? percent : null);
+}
+
+function keyframeSteps({ translator, blocks }: {
+  translator: Translator;
+  blocks: Block[];
+}) {
+  const steps: KeyframeStep[] = [];
+  for (const block of blocks) {
+    const offsets = block.kind === BlockKind.RULE ? block.selector.split(",").map(keyframeOffset) : [];
+    const isValid = block.kind === BlockKind.RULE && offsets.length > 0 && !offsets.includes(null);
+    if (!isValid) {
+      reportError({
+        translator,
+        message: "@keyframes holds from, to and percentage keyframes only",
+        generatedAt: block.at
+      });
+      continue;
+    }
+
+    const declarations = block.declarations.map(declaration => originalDeclaration({
+      translator,
+      declaration
+    }));
+    for (const offset of offsets.filter(each => each !== null)) {
+      steps.push({
+        offset,
+        declarations
+      });
+    }
+  }
+
+  return steps.toSorted((first, second) => first.offset - second.offset);
+}
+
+function addKeyframes({ translator, block }: {
+  translator: Translator;
+  block: AtRuleBlock;
+}) {
+  const name = block.prelude.trim();
+  const isNamed = name !== "" && !name.includes(" ");
+  if (!isNamed) {
+    reportError({
+      translator,
+      message: "@keyframes takes one name",
+      generatedAt: block.at
+    });
+    return;
+  }
+
+  translator.keyframes.push({
+    name,
+    steps: keyframeSteps({
+      translator,
+      blocks: block.children ?? []
+    })
+  });
+}
+
 function addBlocks({ translator, blocks, scheme }: {
   translator: Translator;
   blocks: Block[];
@@ -297,6 +367,15 @@ function addBlocks({ translator, blocks, scheme }: {
         translator,
         block,
         scheme
+      });
+      continue;
+    }
+
+    const isKeyframes = block.name === "keyframes" && scheme === ColorScheme.DEFAULT;
+    if (isKeyframes) {
+      addKeyframes({
+        translator,
+        block
       });
       continue;
     }
@@ -382,6 +461,21 @@ function buildVariableResources(translator: Translator) {
   return resourceDictionaryXaml(entries.map(entryOf));
 }
 
+// Every keyframe property must be one WinUI animates, found now rather than when the animation runs.
+function validateKeyframes(translator: Translator) {
+  for (const keyframes of translator.keyframes) {
+    tracksOf({
+      keyframes,
+      report: ({ message, at }) => report({
+        translator,
+        severity: "error",
+        message,
+        position: at
+      })
+    });
+  }
+}
+
 // Lowering every rule alone finds what has no WinUI meaning before the app runs.
 function validateRules({ translator, catalogue }: {
   translator: Translator;
@@ -403,6 +497,10 @@ function validateRules({ translator, catalogue }: {
         }
 
         return resolution;
+      },
+      keyframes: {
+        find: name => translator.keyframes.findLast(keyframes => keyframes.name === name),
+        isComplete: false
       },
       hasStyle: key => hasStyle({
         catalogue,
@@ -444,6 +542,7 @@ export function translateStyleSheet(input: TranslateInput) {
     variables: [],
     kinds: new Map(),
     rules: [],
+    keyframes: [],
     nextOrder: 0
   };
   try {
@@ -465,6 +564,7 @@ export function translateStyleSheet(input: TranslateInput) {
   }
 
   const resourcesXaml = buildVariableResources(translator);
+  validateKeyframes(translator);
   validateRules({
     translator,
     catalogue: input.resources.extend(translator.kinds)
@@ -473,6 +573,7 @@ export function translateStyleSheet(input: TranslateInput) {
     sheet: {
       id: input.file,
       rules: translator.rules,
+      keyframes: translator.keyframes,
       resourcesXaml
     } satisfies StyleSheetData,
     diagnostics: translator.diagnostics

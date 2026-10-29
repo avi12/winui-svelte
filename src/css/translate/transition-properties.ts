@@ -14,6 +14,16 @@ const TRANSITION_TARGETS = new Map<string, Array<[string, string]>>([
   ["rotate", [["RotationTransition", "ScalarTransition"]]],
   ["background", [["BackgroundTransition", "BrushTransition"]]],
   ["background-color", [["BackgroundTransition", "BrushTransition"]]],
+  // The Z of Translation is a ThemeShadow's depth: the shadow's elevation animates with it.
+  ["box-shadow", [["TranslationTransition", "Vector3Transition"]]],
+  ["-winui-elevation", [["TranslationTransition", "Vector3Transition"]]],
+  // A transform list of translate, rotate and scale is lowered to the properties
+  // of those names (transform-properties.ts), which these animate.
+  ["transform", [
+    ["TranslationTransition", "Vector3Transition"],
+    ["ScaleTransition", "Vector3Transition"],
+    ["RotationTransition", "ScalarTransition"]
+  ]],
   ["all", [
     ["OpacityTransition", "ScalarTransition"],
     ["TranslationTransition", "Vector3Transition"],
@@ -36,7 +46,7 @@ function transition(reader: Reader) {
     const targets = TRANSITION_TARGETS.get(property.toLowerCase());
     const isTargetsMissing = targets === undefined;
     if (isTargetsMissing) {
-      reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate and background); ignored`);
+      reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background and a shadow's depth; a border brush has no implicit transition); ignored`);
       continue;
     }
 

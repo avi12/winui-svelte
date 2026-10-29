@@ -1,7 +1,7 @@
 import { parseColor } from "./colors.ts";
 import { parseLength, parseVariable, splitWords } from "./values.ts";
 import type { ResourceKind, VariableResolution } from "#src/css/runtime/resources.js";
-import type { Declaration, Severity, SourcePosition } from "#src/css/translate/types.js";
+import type { Declaration, Keyframes, Severity, SourcePosition } from "#src/css/translate/types.js";
 
 /** What lowering a declaration needs from its surroundings. */
 export interface LowerOptions {
@@ -13,6 +13,15 @@ export interface LowerOptions {
     name: string;
     kind: ResourceKind;
   }): VariableResolution;
+  /**
+   * The `@keyframes` of an `animation-name`: absent where only a sheet's syntax
+   * is checked and the names of other sheets are not known; `isComplete` says
+   * whether a name `find` does not return is an error.
+   */
+  keyframes?: {
+    find(name: string): Keyframes | undefined;
+    isComplete: boolean;
+  };
   /** Whether a style with this key already exists. */
   hasStyle(key: string): boolean;
   /** Reports a problem at the declaration's source position. */

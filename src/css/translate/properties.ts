@@ -23,16 +23,25 @@ import {
   fontStyles,
   fontWeight,
   letterSpacing,
+  lineClamp,
   lineHeight,
   textAlignments,
   textDecorations,
   textOverflows,
+  textSelections,
   whiteSpaceKeywords,
+  wordBreaks,
   wrapKeywords
 } from "./text-properties.ts";
 import type { Declaration } from "./types.ts";
 import { unsupportedReason } from "./unsupported-properties.ts";
-import { hitTesting, opacity, visibilities, zIndex } from "./visual-properties.ts";
+import {
+  hitTesting,
+  objectFits,
+  opacity,
+  visibilities,
+  zIndex
+} from "./visual-properties.ts";
 import { NOT_A_NUMBER, Reader, UNBOUNDED } from "#src/css/parse/reader.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 
@@ -173,6 +182,15 @@ const propertyGroups: readonly PropertyGroup[] = [
     property: "TextAlignment",
     choices: textAlignments
   }),
+  {
+    members: ["line-clamp", "-webkit-line-clamp"],
+    lower: lineClamp
+  },
+  keywordProperty({
+    member: "word-break",
+    property: "TextWrapping",
+    choices: wordBreaks
+  }),
   keywordProperty({
     member: "text-wrap",
     property: "TextWrapping",
@@ -247,6 +265,16 @@ const propertyGroups: readonly PropertyGroup[] = [
     property: "IsHitTestVisible",
     choices: hitTesting
   }),
+  keywordProperty({
+    member: "user-select",
+    property: "IsTextSelectionEnabled",
+    choices: textSelections
+  }),
+  keywordProperty({
+    member: "object-fit",
+    property: "Stretch",
+    choices: objectFits
+  }),
   simple({
     member: "z-index",
     property: "Canvas.ZIndex",
@@ -266,7 +294,7 @@ const propertyGroups: readonly PropertyGroup[] = [
   }),
   ignored({
     member: "cursor",
-    why: "WinUI's controls choose their own cursor"
+    why: "WinUI sets a cursor through the protected UIElement.ProtectedCursor and an InputSystemCursor, neither of which the bindings expose"
   })
 ];
 

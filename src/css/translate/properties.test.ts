@@ -210,6 +210,19 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["Shadow", "<ThemeShadow/>"],
     ["Translation", "0,0,16"]
   ]],
+  ["box-shadow depth is its blur", null, "box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3)", [
+    ["Shadow", "<ThemeShadow/>"],
+    ["Translation", "0,0,8"]
+  ]],
+  ["box-shadow without blur uses its larger offset", null, "box-shadow: 3px -6px red", [
+    ["Shadow", "<ThemeShadow/>"],
+    ["Translation", "0,0,6"]
+  ]],
+  ["box-shadow none casts nothing", null, "box-shadow: none", []],
+  ["elevation wins over box-shadow", null, "box-shadow: 0 0 4px red; -winui-elevation: 16px", [
+    ["Shadow", "<ThemeShadow/>"],
+    ["Translation", "0,0,16"]
+  ]],
   ["elevation keeps the x and y of translate", null, "translate: 4px 8px; -winui-elevation: 32px", [
     ["Shadow", "<ThemeShadow/>"],
     ["Translation", "4,8,32"]
@@ -265,6 +278,28 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["OpacityTransition", "<ScalarTransition Duration=\"0:0:0.200\"/>"],
     ["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.100\"/>"],
     ["BackgroundTransition", "<BrushTransition Duration=\"0:0:1.000\"/>"]
+  ]],
+  ["user-select none", null, "user-select: none", [["IsTextSelectionEnabled", "False"]]],
+  ["user-select text", null, "user-select: text", [["IsTextSelectionEnabled", "True"]]],
+  ["object-fit cover", null, "object-fit: cover", [["Stretch", "UniformToFill"]]],
+  ["object-fit contain", null, "object-fit: contain", [["Stretch", "Uniform"]]],
+  ["word-break break-all", null, "word-break: break-all", [["TextWrapping", "Wrap"]]],
+  ["word-break keep-all", null, "word-break: keep-all", [["TextWrapping", "WrapWholeWords"]]],
+  ["line-clamp wraps, trims and counts", null, "line-clamp: 3", [
+    ["TextWrapping", "Wrap"],
+    ["TextTrimming", "CharacterEllipsis"],
+    ["MaxLines", "3"]
+  ]],
+  ["-webkit-line-clamp", null, "-webkit-line-clamp: 2", [
+    ["TextWrapping", "Wrap"],
+    ["TextTrimming", "CharacterEllipsis"],
+    ["MaxLines", "2"]
+  ]],
+  ["line-clamp none", null, "line-clamp: none", [["MaxLines", "0"]]],
+  ["text-overflow clip wins over the clamp's ellipsis", null, "line-clamp: 2; text-overflow: clip", [
+    ["TextWrapping", "Wrap"],
+    ["MaxLines", "2"],
+    ["TextTrimming", "Clip"]
   ]]
 ];
 
@@ -388,14 +423,36 @@ test("elevation and a backdrop blur warn what WinUI cannot do", () => {
   assert.match(backdrop.warnings.join(" "), /no literal background-color/u);
 });
 
-test("a transition on transform warns that nothing animates it", () => {
+test("a transition on a transform WinUI cannot animate says so", () => {
   const result = lower({
     elementType: null,
-    declarations: "transform: rotate(10deg); transition: transform 200ms, opacity 200ms"
+    declarations: "transform: skew(10deg); transition: transform 200ms, opacity 200ms"
   });
   assert.deepEqual(result.errors, []);
-  assert.match(result.warnings.join(" "), /transition: transform cannot be animated/u);
-  assert.deepEqual(result.setters.map(([property]) => property).toSorted(), ["OpacityTransition", "RenderTransform"]);
+  assert.match(result.warnings.join(" "), /transition: transform animates only a list of translate, rotate and scale/u);
+  assert.deepEqual(result.setters.map(([property]) => property).filter(property => !property.endsWith("Transition")), ["RenderTransform"]);
+});
+
+test("a transformed element with a transition is lowered to the properties WinUI animates", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "transform: translate(4px, 8px) rotate(10deg) scale(1.5); transition: transform 200ms"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.warnings, []);
+  assert.deepEqual(result.setters.filter(([property]) => !property.endsWith("Transition")), [
+    ["Translation", "4,8,0"],
+    ["Scale", "1.5,1.5,1"],
+    ["Rotation", "10"]
+  ]);
+});
+
+test("a transform out of translate, rotate, scale order stays a RenderTransform", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "transform: scale(2) translate(4px); transition: all 1s"
+  });
+  assert.deepEqual(result.setters.map(([property]) => property).includes("RenderTransform"), true);
 });
 
 test("an outline makes the control use the system's focus visuals", () => {
@@ -455,8 +512,28 @@ test("a transition WinUI cannot animate warns and is dropped", () => {
   assert.deepEqual(result.setters.map(([property]) => property), ["OpacityTransition"]);
 });
 
+test("a box-shadow transition animates the Z of Translation, a shadow's depth", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "transition: box-shadow 150ms"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.setters, [["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.150\"/>"]]);
+});
+
+test("a border-color transition has no WinUI counterpart", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "transition: border-color 1s"
+  });
+  assert.deepEqual(result.setters, []);
+  assert.match(result.warnings.join(), /border-color cannot be animated/u);
+});
+
 const failures: Array<[string, string | null, string, RegExp]> = [
-  ["a property WinUI has no counterpart for", null, "box-shadow: 0 0 4px red", /^t\.svelte:1:6: box-shadow has no WinUI meaning \(a WinUI shadow is a ThemeShadow/u],
+  ["a property WinUI has no counterpart for", null, "float: left", /^t\.svelte:1:6: float has no WinUI meaning \(WinUI has no float/u],
+  ["an inset shadow", null, "box-shadow: inset 0 0 4px red", /box-shadow: inset has no WinUI meaning/u],
+  ["a box-shadow without an offset", null, "box-shadow: red", /box-shadow: expected offset-x offset-y/u],
   ["an unknown property", null, "frobnicate: 1", /frobnicate has no WinUI meaning \(WinUI has no property that corresponds to it\)/u],
   ["flex sizing of a child", null, "flex: 1", /flex has no WinUI meaning \(a child cannot size itself in its parent: give the parent grid-template-columns with fr tracks\)/u],
   ["align-items on a container", null, "align-items: center", /align-items has no WinUI meaning \(WinUI aligns a child by its own VerticalAlignment: set align-self on the child\)/u],
@@ -504,3 +581,67 @@ for (const [name, elementType, declarations, pattern] of failures) {
     assert.match(result.errors.join("\n"), pattern);
   });
 }
+
+test("clip-path inset becomes a write of the four insets", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "clip-path: inset(4px 10%)"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.writes, [["clip", "4px,10%,4px,10%"]]);
+});
+
+test("a clip-path other than inset fails the build and says why", () => {
+  const circle = lower({
+    elementType: null,
+    declarations: "clip-path: circle(50%)"
+  });
+  assert.match(circle.errors.join(), /UIElement\.Clip is a RectangleGeometry: only inset\(\) has a WinUI meaning/u);
+  const rounded = lower({
+    elementType: null,
+    declarations: "clip-path: inset(0 round 8px)"
+  });
+  assert.match(rounded.errors.join(), /no round/u);
+});
+
+test("aspect-ratio becomes a write of the ratio", () => {
+  assert.deepEqual(
+    lower({
+      elementType: null,
+      declarations: "aspect-ratio: 16 / 9"
+    }).writes, [["aspect", String(16 / 9)]]
+  );
+  assert.deepEqual(
+    lower({
+      elementType: null,
+      declarations: "aspect-ratio: auto"
+    }).writes, []
+  );
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "aspect-ratio: wide"
+    }).errors.join(), /aspect-ratio: expected auto/u
+  );
+});
+
+test("filter, mix-blend-mode and text-transform fail the build with their reason", () => {
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "filter: blur(4px)"
+    }).errors.join(), /filter has no WinUI meaning \(WinUI has no filter/u
+  );
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "mix-blend-mode: multiply"
+    }).errors.join(), /no blend modes/u
+  );
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "text-transform: uppercase"
+    }).errors.join(), /so change the text/u
+  );
+});

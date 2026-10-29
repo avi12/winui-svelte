@@ -1,5 +1,6 @@
 import type { CssNative } from "./runtime.ts";
 import { installCssRuntime } from "./runtime.ts";
+import { XAML_NAMESPACES } from "#src/css/translate/cascade.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 
 interface ProjectedType<Instance extends object> {
@@ -8,6 +9,16 @@ interface ProjectedType<Instance extends object> {
 
 interface DictionaryLike {
   lookup(key: BoxedValue): BoxedValue;
+}
+
+interface StoryboardLike {
+  children: {
+    size: number;
+    getAt(index: number): object;
+  };
+  begin(): void;
+  pause(): void;
+  stop(): void;
 }
 
 interface ListLike {
@@ -31,6 +42,14 @@ export interface CssWinui {
   };
   ResourceDictionary: ProjectedType<DictionaryLike>;
   Style: ProjectedType<object>;
+  Storyboard: ProjectedType<StoryboardLike> & {
+    setTarget(timeline: object, target: object): void;
+    getTargetProperty(timeline: object): string;
+    setTargetProperty(timeline: object, path: string): void;
+  };
+  CompositeTransform: new () => object;
+  RectangleGeometry: ProjectedType<object>;
+  SolidColorBrush: ProjectedType<object>;
   XamlReader: { load(xaml: string): BoxedValue };
   PropertyValue: { createString(value: string): BoxedValue };
   projectAs<Instance extends object>(value: BoxedValue, type: ProjectedType<Instance>): Instance;
@@ -46,6 +65,10 @@ export interface CssWinui {
 /* eslint-enable @typescript-eslint/naming-convention */
 
 const LIST_SEPARATOR = ",";
+// A color animation names the brush of the element (`Background.(SolidColorBrush.Color)`):
+// the runtime targets the element's own brush by its Color, whatever the element's type.
+const BRUSH_COLOR_PATH = /^(\w)(\w*)\.\(SolidColorBrush\.Color\)$/u;
+const BRUSH_COLOR = "Color";
 const STAR_SUFFIX = "*";
 const AUTO_LENGTH = "Auto";
 
@@ -192,7 +215,78 @@ export function createCssNative(winui: CssWinui) {
     read: ({ control, property }) => readMember({
       target: control,
       key: property
-    })
+    }),
+    clip({ control, rect }) {
+      const geometry = rect === null ? null : winui.projectAs(
+        winui.XamlReader.load(`<RectangleGeometry ${XAML_NAMESPACES} Rect="${rect.x},${rect.y},${rect.width},${rect.height}"/>`),
+        winui.RectangleGeometry
+      );
+      Object.assign(control, { clip: geometry });
+    },
+    animate({ control, storyboards, hasTransform, brushes }) {
+      const restores: Array<() => void> = [];
+      function replace({ property, value }: {
+        property: string;
+        value: object;
+      }) {
+        const previous = readMember({
+          target: control,
+          key: property
+        });
+        Object.assign(control, { [property]: value });
+        restores.push(() => Object.assign(control, { [property]: previous }));
+        return value;
+      }
+      const ownBrushes = new Map<string, object>();
+      if (hasTransform) {
+        replace({
+          property: "renderTransform",
+          value: new winui.CompositeTransform()
+        });
+      }
+
+      for (const { property, color } of brushes) {
+        const brush = winui.projectAs(winui.XamlReader.load(`<SolidColorBrush ${XAML_NAMESPACES} Color="${color}"/>`), winui.SolidColorBrush);
+        ownBrushes.set(
+          property, replace({
+            property,
+            value: brush
+          })
+        );
+      }
+
+      const started = storyboards.map(({ xaml, isPaused }) => {
+        const storyboard = winui.projectAs(winui.XamlReader.load(xaml), winui.Storyboard);
+        const timelines = Array.from({ length: storyboard.children.size }, (_, i) => storyboard.children.getAt(i));
+        for (const timeline of timelines) {
+          const brushPath = BRUSH_COLOR_PATH.exec(winui.Storyboard.getTargetProperty(timeline));
+          const brush = ownBrushes.get(`${(brushPath?.[1] ?? "").toLowerCase()}${brushPath?.[2] ?? ""}`);
+          winui.Storyboard.setTarget(timeline, brush ?? control);
+
+          const isOwnBrush = brush !== undefined;
+          if (isOwnBrush) {
+            winui.Storyboard.setTargetProperty(timeline, BRUSH_COLOR);
+          }
+        }
+
+        storyboard.begin();
+
+        if (isPaused) {
+          storyboard.pause();
+        }
+
+        return storyboard;
+      });
+      return () => {
+        for (const storyboard of started) {
+          storyboard.stop();
+        }
+
+        for (const restore of restores.toReversed()) {
+          restore();
+        }
+      };
+    }
   };
   return native;
 }

@@ -233,8 +233,8 @@ test("var(): a custom property of another sheet is unknown here", () => {
 });
 
 test("what a sheet cannot say is an error with its position", () => {
-  const result = errors(".a { color: red }\n.b {\n  box-shadow: 0 0 2px red;\n}");
-  assert.deepEqual(result, ["card.svelte:3:3: box-shadow has no WinUI meaning (a WinUI shadow is a ThemeShadow, which takes no blur, offset, spread or color: use -winui-elevation, its depth in px)"]);
+  const result = errors(".a { color: red }\n.b {\n  float: left;\n}");
+  assert.deepEqual(result, ["card.svelte:3:3: float has no WinUI meaning (WinUI has no float; use a grid or a stack-panel)"]);
 });
 
 test("positions are mapped back to the .svelte file", () => {
@@ -252,7 +252,7 @@ test("positions are mapped back to the .svelte file", () => {
 test("descendant selectors, nesting, @keyframes and other @media are errors", () => {
   assert.match(errors(".a .b { color: red }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
   assert.match(errors(".a { color: red; &:hover { color: blue } }").join(), /nested rules have no WinUI meaning/u);
-  assert.match(errors("@keyframes spin { to { opacity: 0 } }").join(), /@keyframes has no WinUI meaning/u);
+  assert.match(errors("@supports (display: grid) { .a { color: red } }").join(), /@supports has no WinUI meaning/u);
   assert.match(errors("@media (min-width: 600px) { .a { color: red } }").join(), /@media \(min-width: 600px\) has no WinUI meaning/u);
   assert.match(errors("@import 'a.css';").join(), /@import has no WinUI meaning/u);
 });

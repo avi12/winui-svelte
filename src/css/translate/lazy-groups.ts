@@ -1,4 +1,6 @@
+import { ANIMATION_MEMBERS, animationGroups } from "./animation-properties.ts";
 import { gradientGroups } from "./background-properties.ts";
+import { EFFECT_MEMBERS, effectGroups } from "./effect-properties.ts";
 import { focusGroups, OUTLINE_MEMBERS } from "./focus-properties.ts";
 import type { PropertyGroup } from "./property-kit.ts";
 import { resourceGroups } from "./resource-properties.ts";
@@ -48,6 +50,18 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     subpath: "/surface",
     exportName: "surfaceGroups",
     groups: surfaceGroups
+  },
+  {
+    isNeededBy: usesProperties(ANIMATION_MEMBERS),
+    subpath: "/animation",
+    exportName: "animationGroups",
+    groups: animationGroups
+  },
+  {
+    isNeededBy: usesProperties(EFFECT_MEMBERS),
+    subpath: "/effects",
+    exportName: "effectGroups",
+    groups: effectGroups
   },
   {
     isNeededBy: rule => rule.resourcesXaml !== null,

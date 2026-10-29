@@ -94,11 +94,27 @@ export interface Rule {
   resourcesXaml: string | null;
 }
 
+/** One keyframe of an `@keyframes` rule: the declarations that hold at `offset`. */
+export interface KeyframeStep {
+  /** From 0 (`from`) to 1 (`to`). */
+  offset: number;
+  declarations: Declaration[];
+}
+
+/** An `@keyframes` rule as data: global to the app, like CSS's, whatever sheet declares it. */
+export interface Keyframes {
+  name: string;
+  /** In offset order. */
+  steps: KeyframeStep[];
+}
+
 /** A component's stylesheet as data. */
 export interface StyleSheetData {
   /** The component's file: registering the same id again replaces the sheet. */
   id: string;
   rules: Rule[];
+  /** The sheet's `@keyframes`, which any element's `animation-name` may name. */
+  keyframes: Keyframes[];
   /** A XAML ResourceDictionary of the sheet's `:root` custom properties, or null. */
   resourcesXaml: string | null;
 }

@@ -3,6 +3,12 @@ import type { WriteContext } from "./property-kit.ts";
 const PERCENT_SCALE = 100;
 export const ORIGIN_TARGET = "origin";
 
+/**
+ * The write that sets only RenderTransformOrigin, for an element whose
+ * RenderTransform is in use (WinUI refuses CenterPoint then).
+ */
+export const RENDER_ORIGIN_TARGET = "render-origin";
+
 /** The separator between the horizontal and the vertical coordinate of an origin. */
 export const AXIS_SEPARATOR = ",";
 
@@ -73,8 +79,11 @@ function resolveTransformOrigin({ value, width, height }: {
   } satisfies ElementOrigin;
 }
 
-/** The `origin` write: CenterPoint and RenderTransformOrigin follow the element's size. */
-export function pivotAbout({ native, control, value }: WriteContext) {
+function pivot({ context, hasCenterPoint }: {
+  context: WriteContext;
+  hasCenterPoint: boolean;
+}) {
+  const { native, control, value } = context;
   function size(property: string) {
     return Number(
       native.read({
@@ -91,15 +100,33 @@ export function pivotAbout({ native, control, value }: WriteContext) {
       height: size("actualHeight")
     });
     native.assign(control, {
-      centerPoint: {
-        x: absolute.x,
-        y: absolute.y,
-        z: 0
-      },
+      ...hasCenterPoint ? {
+        centerPoint: {
+          x: absolute.x,
+          y: absolute.y,
+          z: 0
+        }
+      } : {},
       renderTransformOrigin: relative
     });
   }
 
   place();
   return native.subscribe(control, "SizeChanged", place);
+}
+
+/** The `origin` write: CenterPoint and RenderTransformOrigin follow the element's size. */
+export function pivotAbout(context: WriteContext) {
+  return pivot({
+    context,
+    hasCenterPoint: true
+  });
+}
+
+/** The `render-origin` write: RenderTransformOrigin follows the element's size. */
+export function pivotRenderTransform(context: WriteContext) {
+  return pivot({
+    context,
+    hasCenterPoint: false
+  });
 }

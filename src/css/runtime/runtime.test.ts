@@ -8,7 +8,9 @@ import {
   styleOfClasses,
   unregisterStyleSheet
 } from "./runtime.ts";
+import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import { effectGroups } from "#src/css/translate/effect-properties.js";
 import { focusGroups } from "#src/css/translate/focus-properties.js";
 import { resourceGroups } from "#src/css/translate/resource-properties.js";
 import { transformGroups } from "#src/css/translate/transform-properties.js";
@@ -31,6 +33,7 @@ interface FakeControl {
   resources: string[];
   handlers: Map<string, () => void>;
   properties: Record<string, NativeValue>;
+  animations: string[];
 }
 
 function control(properties: Record<string, NativeValue> = {}) {
@@ -41,7 +44,8 @@ function control(properties: Record<string, NativeValue> = {}) {
     assigned: {},
     resources: [],
     handlers: new Map(),
-    properties
+    properties,
+    animations: []
   };
 }
 
@@ -90,7 +94,15 @@ const fakeNative: CssNative = {
     fakeControl.handlers.set(event, handler);
     return () => fakeControl.handlers.delete(event);
   },
-  read: ({ control, property }) => fake(control).properties[property]
+  read: ({ control, property }) => fake(control).properties[property],
+  clip({ control, rect }) {
+    fake(control).assigned["clip"] = rect;
+  },
+  animate({ control, storyboards, hasTransform }) {
+    const { animations } = fake(control);
+    animations.push(...storyboards.map(({ xaml, isPaused }) => `${isPaused ? "paused " : ""}${hasTransform ? "transform " : ""}${xaml}`));
+    return () => animations.splice(0);
+  }
 };
 
 function sheet({ id, css }: {
@@ -550,4 +562,76 @@ test("a class that sets what only an element holds is refused for a Style", () =
     }),
     /"g2" sets columns, which an element holds and a Style does not/u
   );
+});
+
+test("an animation begins when its class applies and stops when the class goes", () => {
+  registerPropertyGroups(animationGroups());
+  registerStyleSheet(
+    sheet({
+      id: "animated.svelte",
+      css: "@keyframes fade { from { opacity: 0 } to { opacity: 1 } }\n.fade { animation: fade 500ms ease-out forwards }\n.spin { animation: spin 1s linear infinite paused }\n@keyframes spin { to { transform: rotate(360deg) } }"
+    })
+  );
+  const target = control();
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("fade");
+  assert.equal(target.animations.length, 1);
+  assert.match(target.animations[0] ?? "", /^<Storyboard .*Storyboard\.TargetProperty="Opacity".*FillBehavior="HoldEnd"/u);
+  element.setClasses("");
+  assert.deepEqual(target.animations, []);
+  element.setClasses("spin");
+  assert.match(target.animations[0] ?? "", /^paused transform <Storyboard .*CompositeTransform\.Rotation.*RepeatBehavior="Forever"/u);
+  assert.deepEqual(fake(target).assigned["renderTransformOrigin"], {
+    x: 0.5,
+    y: 0.5
+  });
+  element.dispose();
+  assert.deepEqual(target.animations, []);
+});
+
+test("an animation that names no @keyframes fails when the element is styled", () => {
+  registerPropertyGroups(animationGroups());
+  registerStyleSheet(
+    sheet({
+      id: "missing.svelte",
+      css: ".gone { animation: nowhere 1s }"
+    })
+  );
+  const element = styledElement({
+    control: control(),
+    elementType: "border"
+  });
+  assert.throws(() => element.setClasses("gone"), /@keyframes nowhere is not declared in any stylesheet/u);
+  element.dispose();
+  unregisterStyleSheet("missing.svelte");
+});
+
+test("a clip-path inset clips the element to its size and unclips with the class", () => {
+  registerPropertyGroups(effectGroups());
+  registerStyleSheet(
+    sheet({
+      id: "clip.svelte",
+      css: ".clipped { clip-path: inset(10px 5%) }"
+    })
+  );
+  const target = control({
+    actualWidth: 200,
+    actualHeight: 100
+  });
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("clipped");
+  assert.deepEqual(fake(target).assigned["clip"], {
+    x: 10,
+    y: 10,
+    width: 180,
+    height: 80
+  });
+  element.setClasses("");
+  assert.equal(fake(target).assigned["clip"], null);
 });

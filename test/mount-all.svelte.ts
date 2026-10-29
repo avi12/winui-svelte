@@ -1,3 +1,4 @@
+import { checkCssEffects } from "./css-effects-behaviours.ts";
 import type { Counts, Failure, Report } from "./mount-report.ts";
 import SlotsFixture from "./Slots.fixture.svelte";
 import { checkXamlBehaviours } from "./xaml-behaviours.svelte.ts";
@@ -985,6 +986,7 @@ function checkBehaviours({ connectors, failures }: {
     check,
     checkProps
   });
+  checkCssEffects({ check });
   return count;
 }
 
