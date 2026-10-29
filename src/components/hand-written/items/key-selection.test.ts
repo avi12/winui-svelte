@@ -212,3 +212,26 @@ test("inListOrder and sameKeys compare keys, not positions of the input", () => 
     }), false
   );
 });
+
+test("what the control selects along with a key becomes what the app holds", () => {
+  const { selection, selected, bound } = setup({
+    kind: SelectionKind.MULTIPLE,
+    bound: {
+      selectedKeys: ["a"]
+    }
+  });
+  // A tree selects an item's children with it.
+  const append = selected.append.bind(selected);
+  selected.append = held => {
+    append(held);
+    const isParent = held.text === "a";
+    if (isParent) {
+      append(codec.box("b"));
+    }
+  };
+  selection.apply();
+  assert.deepEqual(bound.selectedKeys, ["a", "b"]);
+  selected.writes.length = 0;
+  selection.apply();
+  assert.deepEqual(selected.writes, []);
+});
