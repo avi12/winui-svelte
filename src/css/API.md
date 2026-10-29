@@ -309,6 +309,23 @@ the custom properties of a class) throws, naming the class. The Style is built
 when called: a sheet registered later (hot reload) does not change it. Which
 `elementType` a prop styles is `src/components/style-targets.ts`.
 
+## Grid tracks: `grid-template-columns`, `grid-template-rows`
+
+Tracks are written to the grid's definitions (a Style cannot hold them), as the
+`columns` and `rows` props spell them, "Auto,*,2*,120".
+
+| CSS track | WinUI |
+|---|---|
+| `auto`, `min-content`, `max-content` | `Auto` |
+| `120px` | 120 pixels |
+| `1fr`, `2fr` | `*`, `2*` |
+| `minmax(100px, 1fr)` | `*` with MinWidth (MinHeight) 100 |
+| `minmax(50px, 300px)`, `fit-content(200px)` | `Auto` with MinWidth 50 and MaxWidth 300 (200) |
+| `repeat(3, 1fr)` | three tracks |
+| `repeat(auto-fill, ...)`, `auto-fit`, a % | error: a grid has a fixed set of tracks |
+
+A bound is written after colons in the prop too: `columns="*:100:,Auto::300"`.
+
 ## Position: `position`, `top`, `left`, `right`, `bottom`, `inset`
 
 Opt-in (`winui-svelte/css/position`). Offsets are lengths in px (or `auto`).

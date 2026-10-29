@@ -2,6 +2,7 @@ import { gridLengthOf } from "#src/components/convert.js";
 import { ColumnDefinition, RowDefinition } from "#src/components/generated/bindings.js";
 import type { Grid } from "#src/components/generated/bindings.js";
 import type { Linker } from "#src/components/runtime.svelte.js";
+import { trackListParts } from "#src/components/values.js";
 
 // Hand-written props of the generated Grid: WinUI's ColumnDefinitions and
 // RowDefinitions are read-only collections, which the generator leaves out
@@ -10,41 +11,46 @@ import type { Linker } from "#src/components/runtime.svelte.js";
 //
 //   <Grid columns="Auto,*,Auto" rows="Auto,Auto">
 
-const LIST_SEPARATOR = ",";
-
 /** The props the metadata cannot give the generated Grid. */
 export interface GridExtras {
-  // "Auto", "*", "2*" or a number of pixels, separated by commas.
+  // "Auto", "*", "2*" or a number of pixels, separated by commas; a track may
+  // end in a minimum and a maximum, "*:100" or "Auto::300".
   columns?: string;
   rows?: string;
 }
 
 type Definition = ColumnDefinition | RowDefinition;
 
-// The lengths replace the definitions the grid holds.
+// The tracks replace the definitions the grid holds.
 function define<Item extends Definition>({ definitions, make, lengths }: {
   definitions: {
     clear(): void;
     append(item: Item): void;
   };
-  make: (length: string) => Item;
+  make: (track: Track) => Item;
   lengths: string;
 }) {
   definitions.clear();
-  for (const length of lengths.split(LIST_SEPARATOR)) {
-    definitions.append(make(length.trim()));
+  for (const track of trackListParts(lengths)) {
+    definitions.append(make(track));
   }
 }
 
-function column(length: string) {
+type Track = ReturnType<typeof trackListParts>[number];
+
+function column(track: Track) {
   const definition = new ColumnDefinition();
-  definition.width = gridLengthOf(length);
+  definition.width = gridLengthOf(track.length);
+  definition.minWidth = track.min ?? 0;
+  definition.maxWidth = track.max ?? Infinity;
   return definition;
 }
 
-function row(length: string) {
+function row(track: Track) {
   const definition = new RowDefinition();
-  definition.height = gridLengthOf(length);
+  definition.height = gridLengthOf(track.length);
+  definition.minHeight = track.min ?? 0;
+  definition.maxHeight = track.max ?? Infinity;
   return definition;
 }
 

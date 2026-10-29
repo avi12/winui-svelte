@@ -1,5 +1,6 @@
 import type { CssNative } from "./runtime.ts";
 import { installCssRuntime } from "./runtime.ts";
+import { gridLengthParts, GridUnit, trackListParts } from "#src/components/values.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 
 interface ProjectedType<Instance extends object> {
@@ -45,10 +46,6 @@ export interface CssWinui {
 
 /* eslint-enable @typescript-eslint/naming-convention */
 
-const LIST_SEPARATOR = ",";
-const STAR_SUFFIX = "*";
-const AUTO_LENGTH = "Auto";
-
 function isRecord(value: NativeValue): value is Record<string, NativeValue> {
   return (typeof value === "object" || typeof value === "function") && value !== null;
 }
@@ -72,30 +69,21 @@ function isEventMethod(value: NativeValue): value is (handler: () => void) => Na
   return typeof value === "function";
 }
 
+const GRID_UNIT_NAMES = new Map<string, keyof CssWinui["GridUnitType"]>([
+  [GridUnit.AUTO, "Auto"],
+  [GridUnit.PIXEL, "Pixel"],
+  [GridUnit.STAR, "Star"]
+]);
+
 // "Auto", "*", "2*" or pixels, as WinUI's GridLength.
 function gridLength({ winui, text }: {
   winui: CssWinui;
   text: string;
 }) {
-  const isAuto = text === AUTO_LENGTH;
-  if (isAuto) {
-    return {
-      value: 1,
-      gridUnitType: winui.GridUnitType.Auto
-    };
-  }
-
-  if (text.endsWith(STAR_SUFFIX)) {
-    const weight = text.slice(0, -STAR_SUFFIX.length);
-    return {
-      value: weight === "" ? 1 : Number(weight),
-      gridUnitType: winui.GridUnitType.Star
-    };
-  }
-
+  const { unit, value } = gridLengthParts(text);
   return {
-    value: Number(text),
-    gridUnitType: winui.GridUnitType.Pixel
+    value,
+    gridUnitType: winui.GridUnitType[GRID_UNIT_NAMES.get(unit) ?? "Pixel"]
   };
 }
 
@@ -163,13 +151,15 @@ export function createCssNative(winui: CssWinui) {
       }
 
       definitions.clear();
-      for (const length of lengths === "" ? [] : lengths.split(LIST_SEPARATOR)) {
+      for (const track of trackListParts(lengths)) {
         const definition = isColumns ? new winui.ColumnDefinition() : new winui.RowDefinition();
         Object.assign(definition, {
           [isColumns ? "width" : "height"]: gridLength({
             winui,
-            text: length.trim()
-          })
+            text: track.length
+          }),
+          [isColumns ? "minWidth" : "minHeight"]: track.min ?? 0,
+          [isColumns ? "maxWidth" : "maxHeight"]: track.max ?? Infinity
         });
         definitions.append(definition);
       }

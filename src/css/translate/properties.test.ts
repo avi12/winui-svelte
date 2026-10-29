@@ -117,6 +117,18 @@ test("position's reasons are build errors", () => {
   }
 });
 
+test("minmax and fit-content tracks carry their bounds", () => {
+  const result = lower({
+    elementType: "grid",
+    declarations: "grid-template-columns: minmax(100px, 1fr) minmax(auto, 2fr) minmax(50px, 300px) fit-content(200px) min-content; grid-template-rows: minmax(0, auto)"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.writes, [
+    ["columns", "*:100:,2*,Auto:50:300,Auto::200,Auto"],
+    ["rows", "Auto:0:"]
+  ]);
+});
+
 test("sizes WinUI cannot say are build errors", () => {
   const cases: Array<[string, RegExp]> = [
     ["box-sizing: content-box", /content-box has no WinUI meaning/u],
@@ -555,7 +567,8 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["gap on a border", "border", "gap: 4px", /gap has no WinUI meaning on <border>/u],
   ["display flex on a grid", "grid", "display: flex", /display: flex has no WinUI meaning on <grid>/u],
   ["display grid on a stack", "stack-panel", "display: grid", /display: grid has no WinUI meaning on <stack-panel>/u],
-  ["minmax in a template", "grid", "grid-template-columns: minmax(10px, 1fr)", /minmax\(\) has no WinUI meaning/u],
+  ["auto-fill in a template", "grid", "grid-template-columns: repeat(auto-fill, 100px)", /auto-fill and auto-fit have no WinUI meaning/u],
+  ["minmax with a percentage", "grid", "grid-template-columns: minmax(10%, 1fr)", /found "10%"/u],
   ["overflow on a border", "border", "overflow: hidden", /overflow-x: hidden has no WinUI meaning on <border>/u],
   ["letter spacing in px", null, "letter-spacing: 2px", /expected normal or a size in em/u],
   ["a backdrop filter other than blur", null, "backdrop-filter: saturate(2)", /backdrop-filter: saturate\(2\) has no WinUI meaning \(only blur\(\) has/u],

@@ -388,6 +388,36 @@ export function gridLengthParts(input: number | string) {
   };
 }
 
+const TRACK_SEPARATOR = ",";
+const BOUND_SEPARATOR = ":";
+
+function trackBound(text: string | undefined) {
+  const isBounded = text !== undefined && text.trim() !== "";
+  return isBounded ? toPixels(text) : null;
+}
+
+/**
+ * A grid's tracks from "Auto,*,2*,120": each is a length (see `gridLengthParts`)
+ * with an optional minimum and maximum in pixels after colons, "*:100" (at least
+ * 100) or "Auto::300" (at most 300), which CSS's `minmax()` lowers to. Empty is
+ * no tracks.
+ */
+export function trackListParts(text: string) {
+  const isEmpty = text.trim() === "";
+  if (isEmpty) {
+    return [];
+  }
+
+  return text.split(TRACK_SEPARATOR).map(track => {
+    const [length = "", min, max] = track.split(BOUND_SEPARATOR);
+    return {
+      length: length.trim(),
+      min: trackBound(min),
+      max: trackBound(max)
+    };
+  });
+}
+
 /**
  * The text of a color as WinUI's four channels, or null when it is not one
  * (a theme resource name is then looked up).
