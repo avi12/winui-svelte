@@ -408,6 +408,23 @@ export const supportClasses: TypeName[] = [
     namespace: "Microsoft.UI.Xaml.Markup",
     name: "XamlReader"
   },
+  // What XAML text and a record of resources are loaded as (src/components/xaml.ts).
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "ControlTemplate"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "ItemsPanelTemplate"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "ResourceDictionary"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "Style"
+  },
   {
     namespace: "Microsoft.UI.Xaml.Media",
     name: "VisualTreeHelper"

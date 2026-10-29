@@ -34,19 +34,6 @@ const TEXT_KINDS: ReadonlySet<ResourceKind | undefined> = new Set([
   ResourceKind.FONT_FAMILY
 ]);
 
-function isPlainRecord(value: object) {
-  const prototype: unknown = Object.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
-}
-
-/**
- * Whether a `resources` prop is a record of resources and not a
- * ResourceDictionary already (or anything else WinRT made).
- */
-export function isResourceRecord(input: object): input is ResourceRecordInput {
-  return isPlainRecord(input);
-}
-
 function mismatch({ key, kind, reason }: {
   key: string;
   kind: ResourceKind | undefined;

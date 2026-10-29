@@ -1,5 +1,6 @@
 import { PRESENTATION_NAMESPACE } from "#src/css/translate/cascade.js";
 import { FONT_WEIGHTS } from "#src/css/translate/text-properties.js";
+import type { ResourceRecordInput } from "./resource-record.ts";
 import type { NativeValue } from "#src/native-value.js";
 
 // The plain values a component's props take, and how each is read: pure, so
@@ -670,4 +671,13 @@ export function colorOf(input: ColorInput) {
   }
 
   return color;
+}
+
+/**
+ * Whether a `resources` prop is a record of resources (a plain object) and
+ * not a ResourceDictionary already, or anything else WinRT made.
+ */
+export function isResourceRecord(input: object): input is ResourceRecordInput {
+  const prototype: unknown = Object.getPrototypeOf(input);
+  return prototype === Object.prototype || prototype === null;
 }

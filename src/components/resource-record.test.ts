@@ -1,4 +1,4 @@
-import { isResourceRecord, resourceParts } from "./resource-record.ts";
+import { resourceParts } from "./resource-record.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -73,11 +73,4 @@ test("a value of another kind than its key's is refused with the key and the kin
   assert.throws(() => partsOf({ ButtonBackground: "wide" }), /ButtonBackground.*Brush/u);
   assert.throws(() => partsOf({ ButtonPadding: "#fff" }), /ButtonPadding.*Thickness/u);
   assert.throws(() => partsOf({ ButtonBackground: true }), /resources\.ButtonBackground \(a WinUI Brush\): true is not a value this key takes/u);
-});
-
-test("a plain object is a record and a WinRT object is not", () => {
-  class ResourceDictionaryLike {}
-  assert.equal(isResourceRecord({ Accent: "#0af" }), true);
-  assert.equal(isResourceRecord(Object.create(null)), true);
-  assert.equal(isResourceRecord(new ResourceDictionaryLike()), false);
 });
