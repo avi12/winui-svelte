@@ -34,6 +34,9 @@ const { values, positionals } = parseArgs({
     },
     selection: {
       type: "string"
+    },
+    key: {
+      type: "string"
     }
   }
 });
