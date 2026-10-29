@@ -546,4 +546,5 @@ export { IReference_WindowsFoundationDateTime_g49e2fdd1bcf351db as IReference_Da
 export { IReference_WindowsFoundationPoint_g401c6a14650e6826 as IReference_Point } from "#winui/windows/foundation/IReference_WindowsFoundationPoint_g401c6a14650e6826";
 export { IReference_WindowsFoundationRect_g7d5f48bd5717ecb2 as IReference_Rect } from "#winui/windows/foundation/IReference_WindowsFoundationRect_g7d5f48bd5717ecb2";
 export { IVector_Object } from "#winui/windows/foundation/collections/IVector_Object";
+export { IObservableVector_Object } from "#winui/windows/foundation/collections/IObservableVector_Object";
 export { projectAs } from "#winui/lifetime";
