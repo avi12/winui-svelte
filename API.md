@@ -1105,7 +1105,11 @@ An opt-in subpath: an app that does not import it does not bundle it.
   resolves with `isPrimary: false`. `onRedirect` gets `kind`, `commandLine`
   (when the activation has one) and the raw `data`. Call it before the first
   window; it needs `initWindowsAppSdk`. Every Node-hosted app is `node.exe`, so
-  pick a key nobody else would.
+  pick a key nobody else would. Measured from `node.exe` in a real session:
+  the later copy detects the first (`isPrimary: false`), its redirect completes
+  and it exits, but the first copy's `Activated` handler never runs, so
+  `onRedirect` is not called there. Treat the redirect as unavailable; the
+  single-instance check itself works.
 - `notify` is `AppNotificationBuilder` and `AppNotificationManager.Show`.
   Unpackaged apps must register first: the first call does, with
   `displayName` and `iconPath` (both or neither), and listens for clicks with
