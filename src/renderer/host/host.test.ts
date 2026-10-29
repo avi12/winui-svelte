@@ -2,12 +2,14 @@ import { registerControls, setClassHandler } from "./host.ts";
 import type { NativeValue } from "#src/native-value.js";
 import type { PlacedControl } from "#src/renderer/host/control.js";
 import {
+  FakeBag,
   FakeBorder,
   FakeButton,
   fakeControls,
   FakeFlyout,
   FakeMenuItem,
   FakePanel,
+  FakeService,
   FakeTextBlock,
   FakeToggle
 } from "#src/renderer/testing/fake-controls.js";
@@ -213,6 +215,68 @@ test("a <property> element fills its parent's property and gives it back when it
   });
   assert.equal(flyoutOf(conditionalButton), null);
   assert.deepEqual(textsOf(panel), ["First"]);
+  mounted.unmount();
+});
+
+test("a <property> element named owner.property fills an attached property and clears it when it goes", () => {
+  const mounted = mountControl<{
+    isShown: boolean;
+    label: string;
+  }>({
+    component: PropertyFixture,
+    props: {
+      isShown: false,
+      label: "Open"
+    }
+  });
+  const root: object = mounted.root;
+  assert.ok(root instanceof FakePanel);
+  const [, , , , noteButton] = root.children.items;
+  assert.ok(noteButton instanceof FakeButton);
+  assert.equal(FakeService.notes.get(noteButton), undefined);
+
+  mounted.set({
+    isShown: true,
+    label: "Open"
+  });
+  assert.ok(FakeService.notes.get(noteButton) instanceof FakeTextBlock);
+
+  mounted.set({
+    isShown: false,
+    label: "Open"
+  });
+  assert.equal(FakeService.notes.get(noteButton), null, "the attached property is given back");
+  mounted.unmount();
+});
+
+test("the children of a control that is a collection itself are its items", () => {
+  const mounted = mountControl<{
+    isShown: boolean;
+    label: string;
+  }>({
+    component: PropertyFixture,
+    props: {
+      isShown: false,
+      label: "Open"
+    }
+  });
+  const root: object = mounted.root;
+  assert.ok(root instanceof FakePanel);
+  const [, , , , , bag] = root.children.items;
+  assert.ok(bag instanceof FakeBag);
+  assert.equal(bag.items.length, 1);
+
+  mounted.set({
+    isShown: true,
+    label: "Open"
+  });
+  assert.equal(bag.items.length, 2);
+
+  mounted.set({
+    isShown: false,
+    label: "Open"
+  });
+  assert.equal(bag.items.length, 1);
   mounted.unmount();
 });
 

@@ -1,7 +1,9 @@
 <script lang="ts">
   // <property> elements, for host.test.ts: a button's flyout with content of
   // its own, one that comes and goes with a flag, a menu item's text and a
-  // panel's children, each filling its parent's property.
+  // panel's children, each filling its parent's property; an attached property
+  // filled the same way (owner.property), and a control that is a collection
+  // itself, holding its children.
   interface Props {
     isShown: boolean;
     label: string;
@@ -38,4 +40,17 @@
       {/if}
     </property>
   </fake-panel>
+  <fake-button>
+    {#if props.isShown}
+      <property name="fake-service.note">
+        <fake-text-block>Hint</fake-text-block>
+      </property>
+    {/if}
+  </fake-button>
+  <fake-bag>
+    <fake-text-block>First</fake-text-block>
+    {#if props.isShown}
+      <fake-text-block>Second</fake-text-block>
+    {/if}
+  </fake-bag>
 </fake-panel>
