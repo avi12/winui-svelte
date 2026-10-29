@@ -79,8 +79,19 @@
   // Generated from WinUI's metadata: 167 components that differ by their
   // property lists, and an app renders them, not the package.
   // Called on the in-memory link by the state tests, through a type fallow
-  // does not follow.
-  "usedClassMembers": ["sendMalformed", "close"],
+  // does not follow. The WindowHandle methods are public API that an app calls
+  // and the package itself does not.
+  "usedClassMembers": [
+    "sendMalformed",
+    "close",
+    "minimize",
+    "maximize",
+    "bringToFront",
+    "pickFile",
+    "pickFiles",
+    "pickFolder",
+    "saveFile"
+  ],
   "ignoreExports": [
     {
       "file": "src/components/generated/**",
