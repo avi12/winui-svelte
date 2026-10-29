@@ -294,7 +294,7 @@ const propertyGroups: readonly PropertyGroup[] = [
   }),
   ignored({
     member: "cursor",
-    why: "WinUI's controls choose their own cursor"
+    why: "WinUI sets a cursor through the protected UIElement.ProtectedCursor and an InputSystemCursor, neither of which the bindings expose"
   })
 ];
 

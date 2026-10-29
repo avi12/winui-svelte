@@ -310,13 +310,16 @@ button:focus-visible { outline: 2px solid #0af; outline-offset: 2px }
 .quiet { outline: none }
 ```
 
-## Elevation and backdrop: `-winui-elevation`, `backdrop-filter`
+## Elevation and backdrop: `-winui-elevation`, `box-shadow`, `backdrop-filter`
 
 `-winui-elevation: <length>px` is a WinUI shadow: the element's `Shadow` is a
 `ThemeShadow` and the Z of its `Translation` is the depth (16 for a card, 32 for
 a flyout), which WinUI draws the shadow from. A `translate` on the element keeps
 its X and Y. A ThemeShadow has no blur, offset, spread or color, so
-`box-shadow` is an error that points here. Windows 11 casts the shadow with
+`box-shadow` is read for its depth only: the first shadow's blur (or, with no
+blur, its larger offset) is the depth, as if written `-winui-elevation`, and a
+warning says the color, offset and spread are dropped. `inset` is an error.
+`-winui-elevation` wins where both are written. Windows 11 casts the shadow with
 nothing more; earlier, or for an app that targets a Windows SDK older than
 22000, it draws only on the elements named in the shadow's `Receivers`, which a
 Style cannot set. Every use warns of that; it is not verified without a window.
@@ -360,7 +363,11 @@ handles. Declarations like these fail the build with it:
 | Property | Why |
 |---|---|
 | `position`, `top`, `left`, `right`, `bottom` | a Style does not know its parent: a Canvas places by `Canvas.Left` / `Canvas.Top` (no right or bottom), the others have no counterpart |
-| `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color: use `-winui-elevation` |
-| `filter` | WinUI has no filters; use an acrylic brush or a Mica backdrop |
+| `filter`, `mix-blend-mode`, `mask`, `mask-image` | blur, grayscale, brightness, drop-shadow, blend modes and opacity masks are Composition effect and mask brushes, which need `ElementCompositionPreview` (to attach a SpriteVisual to the element) and Win2D's effect classes; neither is in `.winapp/bindings`. Use `backdrop-filter: blur()` or an acrylic or Mica backdrop |
+| `clip-path` other than `inset()` (circle, ellipse, polygon, path), `inset(... round ...)` | `UIElement.Clip` is a `RectangleGeometry` with square corners |
+| `cursor` | accepted and ignored with a warning: the cursor is `UIElement.ProtectedCursor`, a protected property set to an `InputSystemCursor`, and the bindings have neither a public setter nor `InputSystemCursor` |
+| `text-transform` | a `TextBlock` draws its `Text` as written |
+| `border-color` in a `transition` | WinUI has no brush transition for the border; a `border-color` keyframe in an animation does work |
 | `animation` without its module | see Animations |
-| `float`, `flex*`, `align-items`, `justify-*`, `place-items`, `content`, `list-style`, `text-transform`, `text-indent`, `word-break`, `user-select` | no WinUI equivalent in a Style; each message names the nearest WinUI way |
+| `user-select`, `object-fit`, `line-clamp` (`-webkit-line-clamp`), `word-break` | `IsTextSelectionEnabled`, an image's `Stretch` (`contain` is `Uniform`, `cover` `UniformToFill`; `scale-down` is an error), `MaxLines` (with `Wrap` and an ellipsis, which `text-wrap` and `text-overflow` override), `TextWrapping` |
+| `float`, `flex*`, `align-items`, `justify-*`, `place-items`, `content`, `list-style`, `text-indent` | no WinUI equivalent in a Style; each message names the nearest WinUI way |

@@ -752,6 +752,8 @@ build error with its file and line; nothing is silently ignored.
 | `grid-template-columns`, `grid-template-rows`, `grid-column`, `grid-row` | `ColumnDefinitions`, `RowDefinitions`, `Grid.Column`... |
 | `display: none`, `visibility`, `pointer-events`, `z-index`, `overflow` | `Visibility`, `IsHitTestVisible`, `Canvas.ZIndex`, the scroll bar visibilities |
 | `outline`, `outline-offset` | the focus visual: `FocusVisualPrimaryBrush`, `FocusVisualPrimaryThickness`, `FocusVisualMargin` |
+| `animation`, `@keyframes` | `Storyboard`s of key frames (opacity, size, colors, translate, scale, rotate, transform), begun with the class |
+| `box-shadow`, `clip-path: inset()`, `aspect-ratio`, `user-select`, `object-fit`, `line-clamp`, `word-break` | a `ThemeShadow` of the blur's depth, `UIElement.Clip`, a Height that follows the Width, `IsTextSelectionEnabled`, `Stretch`, `MaxLines`, `TextWrapping` |
 | `-winui-elevation`, `backdrop-filter: blur()` | a `ThemeShadow` lifted by its depth; an `AcrylicBrush` Background (the blur radius is ignored) |
 | `translate`, `scale`, `rotate`, `transform-origin`, `transition`; `transform` (translate, scale, rotate, skew, matrix) | the UIElement transforms, their pivot (`CenterPoint`, 50% 50% as in CSS) and their implicit transitions |
 | `var(--card-background-fill-color-default)` | `{ThemeResource CardBackgroundFillColorDefault}`: WinUI's own resources, so light and dark follow Windows |
@@ -917,15 +919,20 @@ Stated plainly, so nobody finds them by surprise:
 - **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
   service started cannot launch the browser (error 0x8007139F), and a `data:`
   URL cannot be the top frame.
-- **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `box-shadow`
-  (use `-winui-elevation`), `filter`, `animation`, descendant, child or sibling
-  selectors, nesting or `@keyframes`: each is a build error that says what to
-  use instead. Gradients are `linear-gradient()` and `radial-gradient()` only
+- **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `filter`,
+  `mix-blend-mode`, `mask`, `text-transform`, a `clip-path` other than
+  `inset()`, descendant, child or sibling selectors or nesting: each is a build
+  error that says what to use instead (filters, blend modes and masks are
+  Composition effects, which need `ElementCompositionPreview` and Win2D, absent
+  from the bindings). `cursor` is ignored with a warning (`ProtectedCursor` and
+  `InputSystemCursor` are not exposed). `box-shadow` keeps only its depth, and
+  `transition: border-color` does nothing (WinUI has no border brush transition).
+  Gradients are `linear-gradient()` and `radial-gradient()` only
   (no repeating or conic ones, no stop in `px`), and replace `background-color`.
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can
   declare custom properties only (a Style cannot depend on the scheme).
 - **Some CSS is opt-in, and approximate.** `transform` is a 2D RenderTransform
-  that no implicit transition animates; `backdrop-filter: blur()` is an acrylic
+  that a transition animates only as translate, rotate and scale in that order; `backdrop-filter: blur()` is an acrylic
   that ignores the radius; `-winui-elevation` is a `ThemeShadow`, which needs
   Windows 11 (or receivers a Style cannot set); `outline` is the control's focus
   visual. A custom property on a class applies when the class is on the element
