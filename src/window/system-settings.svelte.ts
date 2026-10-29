@@ -137,7 +137,16 @@ export function systemSettings() {
       onColorValuesChanged: callback => uiSettings.onColorValuesChanged(callback),
       onTextScaleFactorChanged: callback => uiSettings.onTextScaleFactorChanged(callback),
       onAnimationsEnabledChanged: callback => uiSettings.onAnimationsEnabledChanged(callback),
-      onHighContrastChanged: callback => accessibility.onHighContrastChanged(callback)
+      onHighContrastChanged(callback) {
+        // Outside a packaged app WinUI can refuse the subscription with
+        // "Element not found"; the value is then still read live, only
+        // without a change notification.
+        try {
+          return accessibility.onHighContrastChanged(callback);
+        } catch {
+          return () => {};
+        }
+      }
     },
     runOnUiThread: uiThreadDispatcher()
   });
