@@ -1,13 +1,14 @@
 import type { ResourceCatalogue } from "#src/css/runtime/resources.js";
-import { ResourceKind } from "#src/css/runtime/resources.js";
-import { entriesForKey, resourceDictionaryXaml } from "#src/css/translate/variables.js";
+import { ResourceKind, resourceNameOf } from "#src/css/runtime/resources.js";
 import { ColorScheme } from "#src/css/translate/types.js";
+import { entriesForKey, resourceDictionaryXaml } from "#src/css/translate/variables.js";
 
 // A record of resources (the `resources` prop) split into the part XAML says
 // and the part is handed to the dictionary as it is. Pure: the catalogue is
 // WinUI's resource names and kinds, the same the CSS custom properties read, so
 // a key WinUI defines keeps its kind (`ButtonBackground` is a brush however it
-// is written).
+// is written). A key is a custom property's name (`--button-background`, as in
+// a stylesheet) or the resource's own (`ButtonBackground`).
 
 /**
  * What a resource can be given as: a color (any CSS color text), a length (a
@@ -16,7 +17,10 @@ import { ColorScheme } from "#src/css/translate/types.js";
  */
 export type ResourceValueInput = string | number | boolean | object;
 
-/** Resources by key, the keys WinUI's theme resources have (`ButtonBackground`) or any of the app's. */
+/**
+ * Resources by key: a custom property's name (`"--button-background"`) or the
+ * resource's own (`ButtonBackground`), WinUI's theme resources or the app's.
+ */
 export type ResourceRecordInput = Readonly<Record<string, ResourceValueInput>>;
 
 /** A resource that goes into the dictionary as the value it is, not as XAML. */
@@ -26,6 +30,8 @@ export interface DirectResource {
   kind: ResourceKind | undefined;
   value: string | boolean | object;
 }
+
+const CUSTOM_PROPERTY_PREFIX = "--";
 
 // What text may be, besides a color or a length, for a key of this kind.
 const TEXT_KINDS: ReadonlySet<ResourceKind | undefined> = new Set([
@@ -112,11 +118,15 @@ export function resourceParts({ record, catalogue }: {
   record: ResourceRecordInput;
   catalogue: ResourceCatalogue;
 }) {
-  const parts = Object.entries(record).map(([name, value]) => partOf({
-    catalogue,
-    key: catalogue.keyOf(name) ?? name,
-    value
-  }));
+  const parts = Object.entries(record).map(([written, value]) => {
+    const isCustomProperty = written.startsWith(CUSTOM_PROPERTY_PREFIX);
+    const name = isCustomProperty ? resourceNameOf(written) : written;
+    return partOf({
+      catalogue,
+      key: catalogue.keyOf(name) ?? name,
+      value
+    });
+  });
   const entries = parts.flatMap(part => part.entries);
   const hasEntries = entries.length > 0;
   return {
