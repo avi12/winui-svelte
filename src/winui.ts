@@ -37,3 +37,7 @@ export { Window } from "#winui/microsoft/ui/xaml/Window";
 export { FocusState } from "#winui/microsoft/ui/xaml/FocusState";
 export { UISettings } from "#winui/windows/ui/view-management/UISettings";
 export { UIColorType } from "#winui/windows/ui/view-management/UIColorType";
+export { FileOpenPicker } from "#winui/microsoft/windows/storage/pickers/FileOpenPicker";
+export { FileSavePicker } from "#winui/microsoft/windows/storage/pickers/FileSavePicker";
+export { FolderPicker } from "#winui/microsoft/windows/storage/pickers/FolderPicker";
+export { PickerLocationId } from "#winui/microsoft/windows/storage/pickers/PickerLocationId";

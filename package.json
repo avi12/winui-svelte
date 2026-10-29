@@ -672,6 +672,7 @@
           "namespace": "Microsoft.Windows.Storage.Pickers",
           "classes": [
             "FileOpenPicker",
+            "FileSavePicker",
             "FolderPicker"
           ]
         },
