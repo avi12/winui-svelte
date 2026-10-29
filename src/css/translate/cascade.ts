@@ -41,6 +41,11 @@ const XML_ESCAPES = new Map([
   ["\"", "&quot;"]
 ]);
 
+// A rule outside every layer beats the layered ones.
+function layerOf(ranked: RankedRule) {
+  return ranked.rule.layer ?? Number.POSITIVE_INFINITY;
+}
+
 function ruleApplies({ rule, facts, isStateIgnored, isMediaIgnored }: {
   rule: Rule;
   facts: ElementFacts;
@@ -77,7 +82,11 @@ export function matchingRanked({ rules, facts, isStateIgnored = false, isMediaIg
       isStateIgnored,
       isMediaIgnored
     }))
-    .sort((first, second) => first.rule.specificity - second.rule.specificity || first.rank - second.rank);
+    .sort((first, second) => (
+      layerOf(first) - layerOf(second)
+      || first.rule.specificity - second.rule.specificity
+      || first.rank - second.rank
+    ));
 }
 
 /** The same rules as `matchingRanked`, without their ranks. */

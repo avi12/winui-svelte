@@ -401,6 +401,22 @@ supported: `color-mix` in another space, relative color syntax, `light-dark()`
 (declare the color for `@media (prefers-color-scheme: dark)` on `:root`
 instead), `color-scheme` and `accent-color`.
 
+## `@layer`, `@property`, `light-dark()`
+
+- `@layer a, b;` and `@layer a { ... }` (nested ones are `a.b`) put rules in layers
+  in the order the names first appear: a rule in a later layer beats one in an
+  earlier layer whatever their specificity, and a rule outside every layer
+  beats all of them. `!important` does not reverse the order.
+- `@property --x { syntax: ...; inherits: ...; initial-value: ... }` declares
+  `--x` with its initial value, which any rule that sets `--x` overrides. The
+  syntax is not checked and `inherits` is ignored (a WinUI resource is looked up
+  through the tree). Without an `initial-value` it is an error.
+- `light-dark(a, b)` in a declaration becomes a custom property of the sheet
+  (`--light-dark-0`) with `a` for the light theme and `b` for the dark one, so
+  it follows the window's `RequestedTheme` like `@media (prefers-color-scheme)`.
+- `min()`, `max()` and `clamp()` fold like `calc()`, when every argument is in px
+  or rem.
+
 ## Logical properties
 
 WinUI lays out left to right, top to bottom, so the inline axis is horizontal and

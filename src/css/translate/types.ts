@@ -84,6 +84,8 @@ export interface Rule {
   classes: string[];
   /** Classes the element must not have (`:not(.busy)`); absent for none. */
   notClasses?: string[];
+  /** The place of the `@layer` the rule is in, from the weakest; absent outside every layer, which beats them all. */
+  layer?: number;
   state: PseudoState | null;
   /** Classes plus pseudo-class plus one for a type, as in CSS (`:where()` is 0). */
   specificity: number;

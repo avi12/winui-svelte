@@ -542,3 +542,56 @@ test("modern colors are resolved to sRGB at build time, in rules and custom prop
   assert.deepEqual(diagnostics, []);
   assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => declaration.value), ["#FF0000", "#800080"]);
 });
+
+test("@property gives a custom property its initial value, which a rule can override", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: "@property --tint { syntax: '<color>'; inherits: false; initial-value: #112233 }\n:root { --other: red }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.match(sheet.resourcesXaml ?? "", /Tint|tint/u);
+  assert.match(sheet.resourcesXaml ?? "", /#112233|FF112233|112233/u);
+});
+
+test("@property without an initial-value, or with another descriptor, is an error", () => {
+  assert.match(errors("@property --a { syntax: '*' }").join(), /needs an initial-value/u);
+  assert.match(errors("@property --a { syntax: '*'; initial-value: red; color: red }").join(), /color is not a descriptor/u);
+});
+
+test("@layer orders the cascade: a later layer beats an earlier one, and no layer beats all", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: "@layer base, theme;\n.a { opacity: 0.1 }\n@layer theme { .a { opacity: 0.2 } }\n@layer base { .a { opacity: 0.3 } }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules.map(rule => rule.layer ?? null), [null, 1, 0]);
+  const facts = {
+    elementType: "border",
+    classes: new Set(["a"]),
+    states: new Set<never>()
+  };
+  const ranked = sheet.rules.map((rule, order) => ({
+    rule,
+    id: `t#${order}`,
+    rank: order
+  }));
+  const winners = matchingRules({
+    rules: ranked,
+    facts
+  }).map(rule => rule.declarations[0]?.value);
+  assert.deepEqual(winners, ["0.3", "0.2", "0.1"]);
+});
+
+test("light-dark() becomes a custom property with a value per theme", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { background-color: light-dark(#ffffff, #000000) }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.equal(sheet.rules[0]?.declarations[0]?.value, "var(--light-dark-0)");
+  assert.match(sheet.resourcesXaml ?? "", /Light/u);
+  assert.match(sheet.resourcesXaml ?? "", /Dark/u);
+});

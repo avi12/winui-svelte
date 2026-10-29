@@ -42,6 +42,8 @@ export class CssSyntaxError extends Error {
 }
 
 const NESTING_SELECTOR = "&";
+// At-rules whose body is declarations, not rules: it is read as one rule body.
+const DECLARATION_AT_RULES: ReadonlySet<string> = new Set(["property"]);
 const quoteCharacters = new Set(["\"", "'"]);
 const NEWLINE = "\n";
 
@@ -302,7 +304,28 @@ function readBlocks({ cursor, isNested }: {
     const isBlock = prelude.terminator === Terminator.OPEN_BRACE;
     cursor.index++;
 
-    if (isAtRule) {
+    const hasDeclarations = isAtRule && isBlock && DECLARATION_AT_RULES.has(
+      atRule({
+        prelude,
+        children: null
+      }).name
+    );
+    if (hasDeclarations) {
+      const body = ruleBlock({
+        ...prelude,
+        text: NESTING_SELECTOR
+      });
+      readRuleBody({
+        cursor,
+        block: body
+      });
+      blocks.push(
+        atRule({
+          prelude,
+          children: [body]
+        })
+      );
+    } else if (isAtRule) {
       blocks.push(
         atRule({
           prelude,
