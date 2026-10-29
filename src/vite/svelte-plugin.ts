@@ -1,5 +1,6 @@
 import { withElementAnimation } from "./compile.ts";
 import { isPatchedRuntime, patchSvelteRuntime } from "./runtime-patch.ts";
+import { resolveRelationalSelectors } from "#src/css/relational/relational.js";
 import type { CompileOptions, ModuleCompileOptions } from "svelte/compiler";
 import { compile, compileModule } from "svelte/compiler";
 import type { Plugin, Rollup } from "vite";
@@ -150,13 +151,18 @@ export function svelteCompiler(options: CompileOptions) {
       }
 
       try {
-        const { js, warnings } = compile(code, {
-          ...options,
-          dev: isDevelopment,
-          hmr: isDevelopment && isServing,
-          css: "external",
-          filename
-        });
+        const { js, warnings } = compile(
+          resolveRelationalSelectors({
+            source: code,
+            file: filename
+          }).source, {
+            ...options,
+            dev: isDevelopment,
+            hmr: isDevelopment && isServing,
+            css: "external",
+            filename
+          }
+        );
         reportWarnings({
           context: this,
           warnings,

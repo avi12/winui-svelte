@@ -12,8 +12,13 @@ export interface RuleBlock {
   selector: string;
   at: SourcePosition;
   declarations: Declaration[];
-  /** A rule nested in this one, which has no WinUI meaning. */
-  nested: SourcePosition[];
+  /** Where the rule starts and ends (after its closing brace) in the CSS text. */
+  start: number;
+  end: number;
+  /** The style rules nested in this one; the translator flattens them with `&`. */
+  nested: RuleBlock[];
+  /** The at-rules nested in this one; their body styles this rule's own selector (`&`). */
+  nestedAtRules: AtRuleBlock[];
 }
 
 /** An at-rule (@media, @import...), with its blocks when it has a body. */
@@ -22,6 +27,9 @@ export interface AtRuleBlock {
   name: string;
   prelude: string;
   at: SourcePosition;
+  /** Where the at-rule starts and ends in the CSS text. */
+  start: number;
+  end: number;
   /** Null for an at-rule that ends with `;` (@import). */
   children: Block[] | null;
 }
@@ -39,6 +47,9 @@ export class CssSyntaxError extends Error {
   }
 }
 
+const NESTING_SELECTOR = "&";
+// At-rules whose body is declarations, not rules: it is read as one rule body.
+const DECLARATION_AT_RULES: ReadonlySet<string> = new Set(["property"]);
 const quoteCharacters = new Set(["\"", "'"]);
 const NEWLINE = "\n";
 
@@ -124,6 +135,8 @@ const Terminator = {
 type Terminator = (typeof Terminator)[keyof typeof Terminator];
 
 interface Prelude {
+  /** Where the prelude starts in the CSS text. */
+  start: number;
   text: string;
   at: SourcePosition;
   terminator: Terminator;
@@ -166,6 +179,7 @@ function readPrelude(cursor: Cursor) {
     if (isTerminator) {
       return {
         text: text.trim(),
+        start,
         at: position,
         terminator: character
       };
@@ -177,6 +191,7 @@ function readPrelude(cursor: Cursor) {
 
   return {
     text: text.trim(),
+    start,
     at: position,
     terminator: Terminator.END
   };
@@ -202,6 +217,36 @@ function toDeclaration(prelude: Prelude) {
   };
 }
 
+function atRule({ prelude, children, end }: {
+  prelude: Prelude;
+  children: Block[] | null;
+  end: number;
+}) {
+  const [name = "", ...rest] = prelude.text.slice(1).split(/\s+/u);
+  return {
+    kind: BlockKind.AT_RULE,
+    name: name.toLowerCase(),
+    prelude: rest.join(" "),
+    at: prelude.at,
+    start: prelude.start,
+    end,
+    children
+  } satisfies AtRuleBlock;
+}
+
+function ruleBlock(prelude: Prelude) {
+  return {
+    kind: BlockKind.RULE,
+    selector: prelude.text,
+    at: prelude.at,
+    start: prelude.start,
+    end: prelude.start,
+    declarations: [],
+    nested: [],
+    nestedAtRules: []
+  } satisfies RuleBlock;
+}
+
 // After the `{` of a style rule.
 function readRuleBody({ cursor, block }: {
   cursor: Cursor;
@@ -212,10 +257,35 @@ function readRuleBody({ cursor, block }: {
     cursor.index++;
 
     const isNestedRule = prelude.terminator === Terminator.OPEN_BRACE;
+    const isNestedAtRule = isNestedRule && prelude.text.startsWith("@");
+    if (isNestedAtRule) {
+      const body = ruleBlock({
+        ...prelude,
+        text: NESTING_SELECTOR
+      });
+      readRuleBody({
+        cursor,
+        block: body
+      });
+      body.end = cursor.index;
+      block.nestedAtRules.push(
+        atRule({
+          prelude,
+          children: [body],
+          end: cursor.index
+        })
+      );
+      continue;
+    }
+
     if (isNestedRule) {
-      // Nesting: skip its body and record where it was.
-      block.nested.push(prelude.at);
-      skipBody(cursor);
+      const child = ruleBlock(prelude);
+      readRuleBody({
+        cursor,
+        block: child
+      });
+      child.end = cursor.index;
+      block.nested.push(child);
       continue;
     }
 
@@ -228,31 +298,6 @@ function readRuleBody({ cursor, block }: {
     if (isRuleEnd) {
       return;
     }
-  }
-}
-
-function skipBody(cursor: Cursor) {
-  let depth = 1;
-  while (!cursor.isAtEnd && depth > 0) {
-    const character = cursor.text[cursor.index] ?? "";
-    if (cursor.text.startsWith("/*", cursor.index)) {
-      cursor.skipComment();
-      continue;
-    }
-
-    if (quoteCharacters.has(character)) {
-      cursor.skipString();
-      continue;
-    }
-
-    const isOpeningBrace = character === Terminator.OPEN_BRACE;
-    if (isOpeningBrace) {
-      depth++;
-    } else if (character === Terminator.CLOSE_BRACE) {
-      depth--;
-    }
-
-    cursor.index++;
   }
 }
 
@@ -277,30 +322,49 @@ function readBlocks({ cursor, isNested }: {
     const isBlock = prelude.terminator === Terminator.OPEN_BRACE;
     cursor.index++;
 
-    if (isAtRule) {
-      const [name = "", ...rest] = prelude.text.slice(1).split(/\s+/u);
-      blocks.push({
-        kind: BlockKind.AT_RULE,
-        name: name.toLowerCase(),
-        prelude: rest.join(" "),
-        at: prelude.at,
-        children: isBlock ? readBlocks({
-          cursor,
-          isNested: true
-        }) : null
+    const hasDeclarations = isAtRule && isBlock && DECLARATION_AT_RULES.has(
+      atRule({
+        prelude,
+        children: null,
+        end: prelude.start
+      }).name
+    );
+    if (hasDeclarations) {
+      const body = ruleBlock({
+        ...prelude,
+        text: NESTING_SELECTOR
       });
+      readRuleBody({
+        cursor,
+        block: body
+      });
+      body.end = cursor.index;
+      blocks.push(
+        atRule({
+          prelude,
+          children: [body],
+          end: cursor.index
+        })
+      );
+    } else if (isAtRule) {
+      const children = isBlock ? readBlocks({
+        cursor,
+        isNested: true
+      }) : null;
+      blocks.push(
+        atRule({
+          prelude,
+          children,
+          end: cursor.index
+        })
+      );
     } else if (isBlock) {
-      const block: RuleBlock = {
-        kind: BlockKind.RULE,
-        selector: prelude.text,
-        at: prelude.at,
-        declarations: [],
-        nested: []
-      };
+      const block = ruleBlock(prelude);
       readRuleBody({
         cursor,
         block
       });
+      block.end = cursor.index;
       blocks.push(block);
     }
   }
@@ -312,7 +376,7 @@ function readBlocks({ cursor, isNested }: {
  * Reads the CSS Svelte emits for a component into rules and at-rules, with
  * the 1-based line and column of every declaration. Only what a stylesheet
  * written for a component can hold: style rules, @media blocks, declarations
- * and comments. Anything else (nesting, @import, @keyframes...) is reported
+ * and comments, with style rules nested in one another. Anything else (@import, @keyframes...) is reported
  * by the caller as having no WinUI meaning, with the position this gives it.
  */
 export function parseCss(css: string) {

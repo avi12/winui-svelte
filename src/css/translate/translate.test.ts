@@ -31,6 +31,7 @@ test("selectors: classes, a type, a state and Svelte's scope", () => {
     selector: {
       elementType: "text-block",
       classes: ["title", "svelte-abc"],
+      notClasses: [],
       state: "hover",
       specificity: 4,
       isRoot: false
@@ -249,11 +250,11 @@ test("positions are mapped back to the .svelte file", () => {
   assert.match(messages.join("\n"), /card\.svelte:11:/u);
 });
 
-test("descendant selectors, nesting, @keyframes and other @media are errors", () => {
+test("descendant selectors, nested descendants and other @media are errors", () => {
   assert.match(errors(".a .b { color: red }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
-  assert.match(errors(".a { color: red; &:hover { color: blue } }").join(), /nested rules have no WinUI meaning/u);
-  assert.match(errors("@supports (display: grid) { .a { color: red } }").join(), /@supports has no WinUI meaning/u);
-  assert.match(errors("@media (min-width: 600px) { .a { color: red } }").join(), /@media \(min-width: 600px\) has no WinUI meaning/u);
+  assert.match(errors(".a { color: red; .b { color: blue } }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
+  assert.match(errors(".a { @supports (color: red) { color: blue } }").join(), /@supports has no WinUI meaning/u);
+  assert.match(errors("@media (orientation: landscape) { .a { color: red } }").join(), /@media \(orientation: landscape\) has no WinUI meaning/u);
   assert.match(errors("@import 'a.css';").join(), /@import has no WinUI meaning/u);
 });
 
@@ -434,4 +435,223 @@ test("a Style as XAML: based on, setters, element-form setters", () => {
       "</Style>"
     ].join("\n")
   );
+});
+
+test("nested rules flatten with & into top-level rules", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a, .b { color: red; &:hover { color: blue } &.c { margin: 0 } }",
+    resources
+  });
+  assert.deepEqual(diagnostics.map(formatDiagnostic), []);
+  const shapes = sheet.rules.map(rule => [rule.classes.join("."), rule.state, rule.declarations[0]?.property]);
+  assert.deepEqual(shapes, [
+    ["a", null, "color"],
+    ["b", null, "color"],
+    ["a", "hover", "color"],
+    ["b", "hover", "color"],
+    ["a.c", null, "margin-top"],
+    ["b.c", null, "margin-top"]
+  ]);
+});
+
+test("rules under a width @media keep the bounds, and a custom property under one is refused", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { opacity: 1 }\n@media (min-width: 600px) and (max-width: 900px) { .a { opacity: 0.5 } }\n@media (min-width: 1px) { :root { --x: red } }",
+    resources
+  });
+  assert.deepEqual(sheet.rules.map(rule => rule.media ?? null), [
+    null,
+    {
+      minWidth: 600,
+      maxWidth: 900,
+      minHeight: null,
+      maxHeight: null
+    }
+  ]);
+  assert.match(diagnostics.map(formatDiagnostic).join(), /custom property of :root cannot depend on the window's size/u);
+});
+
+test(":not(.class) excludes elements that have the class", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a:not(.busy, .off) { opacity: 1 }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  const [rule] = sheet.rules;
+  assert.deepEqual(rule?.notClasses, ["busy", "off"]);
+  function facts(classes: string[]) {
+    return {
+      elementType: "border",
+      classes: new Set(classes),
+      states: new Set<never>()
+    };
+  }
+  assert.ok(rule);
+  const ranked = [{
+    rule,
+    id: "t#0",
+    rank: 0
+  }];
+  assert.equal(
+    matchingRules({
+      rules: ranked,
+      facts: facts(["a"])
+    }).length, 1
+  );
+  assert.equal(
+    matchingRules({
+      rules: ranked,
+      facts: facts(["a", "off"])
+    }).length, 0
+  );
+});
+
+test("structural pseudo-classes say a Style cannot see the siblings", () => {
+  assert.match(errors(".a:first-child { opacity: 1 }").join(), /:first-child has no WinUI meaning \(a Style cannot see/u);
+});
+
+test(":not() takes classes only", () => {
+  assert.match(errors(".a:not(border) { opacity: 1 }").join(), /:not\(\) takes classes/u);
+  assert.match(errors(".a:not(:hover) { opacity: 1 }").join(), /:not\(\) takes classes/u);
+});
+
+test("an at-rule inside a rule styles that rule's selector", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { opacity: 1; @media (min-width: 600px) { opacity: 0.5; &:hover { opacity: 0.2 } } }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules.map(rule => [rule.classes.join(), rule.state, rule.media?.minWidth ?? null]), [
+    ["a", null, null],
+    ["a", null, 600],
+    ["a", "hover", 600]
+  ]);
+});
+
+test("modern colors are resolved to sRGB at build time, in rules and custom properties", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { background-color: hwb(0 0% 0%); color: color-mix(in srgb, #ff0000, #0000ff) }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => declaration.value), ["#FF0000", "#800080"]);
+});
+
+test("@property gives a custom property its initial value, which a rule can override", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: "@property --tint { syntax: '<color>'; inherits: false; initial-value: #112233 }\n:root { --other: red }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.match(sheet.resourcesXaml ?? "", /Tint|tint/u);
+  assert.match(sheet.resourcesXaml ?? "", /#112233|FF112233|112233/u);
+});
+
+test("@property without an initial-value, or with another descriptor, is an error", () => {
+  assert.match(errors("@property --a { syntax: '*' }").join(), /needs an initial-value/u);
+  assert.match(errors("@property --a { syntax: '*'; initial-value: red; color: red }").join(), /color is not a descriptor/u);
+});
+
+test("@layer orders the cascade: a later layer beats an earlier one, and no layer beats all", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: "@layer base, theme;\n.a { opacity: 0.1 }\n@layer theme { .a { opacity: 0.2 } }\n@layer base { .a { opacity: 0.3 } }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules.map(rule => rule.layer ?? null), [null, 1, 0]);
+  const facts = {
+    elementType: "border",
+    classes: new Set(["a"]),
+    states: new Set<never>()
+  };
+  const ranked = sheet.rules.map((rule, order) => ({
+    rule,
+    id: `t#${order}`,
+    rank: order
+  }));
+  const winners = matchingRules({
+    rules: ranked,
+    facts
+  }).map(rule => rule.declarations[0]?.value);
+  assert.deepEqual(winners, ["0.3", "0.2", "0.1"]);
+});
+
+test("light-dark() becomes a custom property with a value per theme", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { background-color: light-dark(#ffffff, #000000) }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.equal(sheet.rules[0]?.declarations[0]?.value, "var(--light-dark-0)");
+  assert.match(sheet.resourcesXaml ?? "", /Light/u);
+  assert.match(sheet.resourcesXaml ?? "", /Dark/u);
+});
+
+test("at-rules with no WinUI meaning say what to write instead", () => {
+  assert.match(errors("@scope (.card) { .title { opacity: 1 } }").join(), /@scope has no WinUI meaning.*component build/u);
+});
+
+test("an @container rule keeps its bounds and the container's name", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { opacity: 1 }\n@container card (min-width: 400px) { .a { opacity: 0.5 } }\n.b { @container (max-width: 100px) { opacity: 0.2 } }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  const queries = sheet.rules.map(rule => [
+    rule.media?.container ?? null,
+    rule.media?.minWidth ?? rule.media?.maxWidth ?? null
+  ]);
+  assert.deepEqual(queries, [
+    [null, null],
+    ["card", 400],
+    [null, null],
+    ["", 100]
+  ]);
+});
+
+test("a container is made by container-type, with the shorthand's names", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".c { container: card / inline-size }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => [declaration.property, declaration.value]), [
+    ["container-name", "card"],
+    ["container-type", "inline-size"]
+  ]);
+});
+
+test("a length that depends on the layout is renamed for the dynamic-length group", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { width: calc(100% - 8px); height: 20px; min-width: clamp(10px, 5vw, 40px) }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => declaration.property), [
+    "-winui-dynamic-width",
+    "height",
+    "-winui-dynamic-min-width"
+  ]);
+});
+
+test("@starting-style marks its rules, around a rule or inside one", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { opacity: 1; @starting-style { opacity: 0 } }\n@starting-style { .b { opacity: 0 } }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules.map(rule => rule.startingStyle ?? false), [false, true, true]);
+  assert.match(errors("@starting-style (min-width: 1px) { .a { opacity: 0 } }").join(), /@starting-style takes a block of rules/u);
 });

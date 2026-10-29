@@ -19,7 +19,8 @@ import {
   thicknessSides,
   ticksDate,
   ticksMilliseconds,
-  timeSpanTicks
+  timeSpanTicks,
+  trackListParts
 } from "./values.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -252,4 +253,35 @@ test("bytes are SVG when an svg element opens the file, PNG bytes are not", () =
   assert.equal(isSvgBytes(encoder.encode("<?xml version=\"1.0\"?> <svg xmlns=\"u\"/>")), true);
   assert.equal(isSvgBytes(encoder.encode("  <SVG width=\"1\"></SVG>")), true);
   assert.equal(isSvgBytes(Uint8Array.of(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)), false);
+});
+
+test("a track list reads each length with its minimum and maximum", () => {
+  assert.deepEqual(trackListParts("Auto, *:100:, 2*, Auto::300, 120"), [
+    {
+      length: "Auto",
+      min: null,
+      max: null
+    },
+    {
+      length: "*",
+      min: 100,
+      max: null
+    },
+    {
+      length: "2*",
+      min: null,
+      max: null
+    },
+    {
+      length: "Auto",
+      min: null,
+      max: 300
+    },
+    {
+      length: "120",
+      min: null,
+      max: null
+    }
+  ]);
+  assert.deepEqual(trackListParts(""), []);
 });

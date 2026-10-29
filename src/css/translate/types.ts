@@ -1,3 +1,5 @@
+import type { MediaCondition } from "#src/css/parse/media.js";
+
 /**
  * The words every part of the CSS translation shares. Nothing here imports
  * WinUI: the translation runs in Node at build time and in tests.
@@ -80,12 +82,20 @@ export interface Rule {
   /** "text-block", or null when the selector names no element type. */
   elementType: string | null;
   classes: string[];
+  /** Classes the element must not have (`:not(.busy)`); absent for none. */
+  notClasses?: string[];
+  /** The place of the `@layer` the rule is in, from the weakest; absent outside every layer, which beats them all. */
+  layer?: number;
+  /** Set for a rule in `@starting-style`: it styles the element only until it is loaded (an entrance starts there). */
+  startingStyle?: true;
   state: PseudoState | null;
   /** Classes plus pseudo-class plus one for a type, as in CSS (`:where()` is 0). */
   specificity: number;
   /** Source order across the whole sheet. */
   order: number;
   declarations: Declaration[];
+  /** The window size the rule applies at (an `@media (min-width...)` around it); absent for every size. */
+  media?: MediaCondition;
   /**
    * A XAML ResourceDictionary of the custom properties declared in this rule,
    * or null: resources set on each element the rule matches (and so seen by the

@@ -74,6 +74,129 @@ function setters({ elementType, declarations }: {
   return result.setters;
 }
 
+const positionRows: Array<[string, string, Array<[string, string]>]> = [
+  ["absolute left and top place on a canvas", "position: absolute; left: 10px; top: 4px", [
+    ["Canvas.Left", "10"],
+    ["Canvas.Top", "4"]
+  ]],
+  ["inset expands to the four sides", "position: absolute; inset: 8px auto auto 2px", [
+    ["Canvas.Left", "2"],
+    ["Canvas.Top", "8"]
+  ]],
+  ["fixed is absolute", "position: fixed; top: 1px", [["Canvas.Top", "1"]]],
+  ["auto is no offset", "position: absolute; left: auto; top: 3px", [["Canvas.Top", "3"]]],
+  ["relative offsets move without relayout", "position: relative; left: 5px; bottom: 2px", [["Translation", "5,-2,0"]]],
+  ["static sets nothing", "position: static", []]
+];
+
+for (const [name, declarations, expected] of positionRows) {
+  test(`position: ${name}`, () => {
+    assert.deepEqual(
+      setters({
+        elementType: null,
+        declarations
+      }), expected
+    );
+  });
+}
+
+test("position's reasons are build errors", () => {
+  const cases: Array<[string, RegExp]> = [
+    ["position: absolute; right: 4px", /canvas places by canvas-left and canvas-top/u],
+    ["position: sticky", /sticky has no WinUI meaning/u],
+    ["position: relative; left: 1px; translate: 2px", /Translation, which translate also sets/u],
+    ["position: absolute; left: 50%", /left: expected a length in px/u]
+  ];
+  for (const [declarations, pattern] of cases) {
+    assert.match(
+      lower({
+        elementType: null,
+        declarations
+      }).errors.join(), pattern, declarations
+    );
+  }
+});
+
+test("minmax and fit-content tracks carry their bounds", () => {
+  const result = lower({
+    elementType: "grid",
+    declarations: "grid-template-columns: minmax(100px, 1fr) minmax(auto, 2fr) minmax(50px, 300px) fit-content(200px) min-content; grid-template-rows: minmax(0, auto)"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.writes, [
+    ["columns", "*:100:,2*,Auto:50:300,Auto::200,Auto"],
+    ["rows", "Auto:0:"]
+  ]);
+});
+
+test("grid-area expands to its longhands", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "grid-area: 2 / 3 / span 2 / span 4"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.setters, [
+    ["Grid.Column", "2"],
+    ["Grid.ColumnSpan", "4"],
+    ["Grid.Row", "1"],
+    ["Grid.RowSpan", "2"]
+  ]);
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "grid-area: header"
+    }).errors.join(), /named grid areas have no WinUI meaning/u
+  );
+});
+
+test("grid-gap is an unknown property, as every legacy name is", () => {
+  const result = lower({
+    elementType: "grid",
+    declarations: "grid-gap: 4px"
+  });
+  assert.match(result.errors.join(), /grid-gap has no WinUI meaning/u);
+});
+
+test("logical properties are the left-to-right, top-to-bottom physical ones", () => {
+  assert.deepEqual(
+    setters({
+      elementType: null,
+      declarations: "margin-inline: 4px 8px; padding-block-start: 2px; inline-size: 100px; min-block-size: 20px; max-inline-size: 300px"
+    }), [
+      ["Margin", "4,0,8,0"],
+      ["Padding", "0,2,0,0"],
+      ["Width", "100"],
+      ["MinHeight", "20"],
+      ["MaxWidth", "300"]
+    ]
+  );
+});
+
+test("sizes WinUI cannot say are build errors", () => {
+  const cases: Array<[string, RegExp]> = [
+    ["box-sizing: content-box", /content-box has no WinUI meaning/u],
+    ["width: 50%", /width: expected a length in px/u],
+    ["width: calc(100% - 8px * 2px)", /expected a calc\(\), min\(\), max\(\) or clamp\(\) of lengths/u]
+  ];
+  for (const [declarations, pattern] of cases) {
+    assert.match(
+      lower({
+        elementType: null,
+        declarations
+      }).errors.join(), pattern, declarations
+    );
+  }
+});
+
+test("offsets without a position warn", () => {
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "left: 1px"
+    }).warnings.join(), /ignored without position/u
+  );
+});
+
 const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ["margin, CSS side order to a Thickness", null, "margin: 0 12px", [["Margin", "12,0,12,0"]]],
   ["margin, one value", null, "margin: 8px", [["Margin", "8,8,8,8"]]],
@@ -109,6 +232,15 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["Height", "32"]
   ]],
   ["auto is NaN", null, "width: auto", [["Width", "NaN"]]],
+  ["100% fills as the parent allows", null, "width: 100%; height: 100%", [
+    ["Width", "NaN"],
+    ["Height", "NaN"]
+  ]],
+  ["calc of lengths", null, "width: calc(100px - 2 * 8px); min-height: calc(1rem + 4px)", [
+    ["Width", "84"],
+    ["MinHeight", "20"]
+  ]],
+  ["border-box is what WinUI does", null, "box-sizing: border-box", []],
   ["min and max", null, "min-width: 0; min-height: 68px; max-width: none; max-height: 300px", [
     ["MinWidth", "0"],
     ["MinHeight", "68"],
@@ -536,7 +668,7 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["a box-shadow without an offset", null, "box-shadow: red", /box-shadow: expected offset-x offset-y/u],
   ["an unknown property", null, "frobnicate: 1", /frobnicate has no WinUI meaning \(WinUI has no property that corresponds to it\)/u],
   ["flex sizing of a child", null, "flex: 1", /flex has no WinUI meaning \(a child cannot size itself in its parent: give the parent grid-template-columns with fr tracks\)/u],
-  ["align-items on a container", null, "align-items: center", /align-items has no WinUI meaning \(WinUI aligns a child by its own VerticalAlignment: set align-self on the child\)/u],
+  ["align-items on a container", null, "align-items: center", /align-items has no WinUI meaning \(WinUI aligns a child by its own VerticalAlignment: set align-self on each child\)/u],
   ["a length without a unit", null, "width: 12", /width: expected a length in px/u],
   ["a percentage length", null, "width: 50%", /width: expected a length in px/u],
   ["a bad color", null, "color: sparkly", /color: expected a color/u],
@@ -555,7 +687,8 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["gap on a border", "border", "gap: 4px", /gap has no WinUI meaning on <border>/u],
   ["display flex on a grid", "grid", "display: flex", /display: flex has no WinUI meaning on <grid>/u],
   ["display grid on a stack", "stack-panel", "display: grid", /display: grid has no WinUI meaning on <stack-panel>/u],
-  ["minmax in a template", "grid", "grid-template-columns: minmax(10px, 1fr)", /minmax\(\) has no WinUI meaning/u],
+  ["auto-fill in a template", "grid", "grid-template-columns: repeat(auto-fill, 100px)", /auto-fill and auto-fit have no WinUI meaning/u],
+  ["minmax with a percentage", "grid", "grid-template-columns: minmax(10%, 1fr)", /found "10%"/u],
   ["overflow on a border", "border", "overflow: hidden", /overflow-x: hidden has no WinUI meaning on <border>/u],
   ["letter spacing in px", null, "letter-spacing: 2px", /expected normal or a size in em/u],
   ["a backdrop filter other than blur", null, "backdrop-filter: saturate(2)", /backdrop-filter: saturate\(2\) has no WinUI meaning \(only blur\(\) has/u],

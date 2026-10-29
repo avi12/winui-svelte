@@ -89,6 +89,7 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | `winui-svelte/css/effects` | `clip-path: inset()`, `aspect-ratio` | Clip and aspect ratio |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
+| `winui-svelte/css/position` | `position`, `top`, `left`, `right`, `bottom`, `inset` | Position |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |
 
 A group may also bring the shorthands it expands and the handlers of the
@@ -355,6 +356,197 @@ the custom properties of a class) throws, naming the class. The Style is built
 when called: a sheet registered later (hot reload) does not change it. Which
 `elementType` a prop styles is `src/components/style-targets.ts`.
 
+## Layout: which CSS becomes which panel
+
+A Style sets the properties of the element it styles and cannot reach its
+parent or its children, so layout follows the element's type. The element is
+the panel; the CSS names what it does.
+
+| CSS | WinUI | Decision |
+|---|---|---|
+| `display: flex` (`flex-direction` row or column) on `<stack-panel>` | `Orientation` | row is Horizontal, column Vertical; `-reverse` is an error |
+| `gap`, `row-gap`, `column-gap` | stack `Spacing` (along its orientation), grid `RowSpacing` / `ColumnSpacing` | |
+| `display: grid` on `<grid>`, `grid-template-*` | the grid's definitions | see Grid tracks |
+| `grid-column`, `grid-row`, `grid-area` | `Grid.Column`, `Grid.Row`, `Grid.ColumnSpan`, `Grid.RowSpan` (lines are 1-based in CSS, 0-based in WinUI) | named areas, auto-placement and implicit tracks are errors |
+| `flex: 1`, `flex-grow` on a child | a `*` track | error: the parent decides, write `grid-template-columns: 1fr auto` on a `<grid>` |
+| `flex-wrap` | none | error: WinUI has no wrapping panel |
+| `align-self`, `justify-self`, `place-self` | `VerticalAlignment`, `HorizontalAlignment` (`start` is Top / Left) | on the child |
+| `align-items`, `justify-items`, `justify-content`, `align-content` | none | error: a Style cannot reach the children; set `place-self` on each |
+| `width`, `height` in px, rem, `calc()` of them, `auto`, `100%` | `Width`, `Height` (NaN for auto and 100%: a stretching element fills) | another % is an error: use a `*` track |
+| `min-*`, `max-*` | `MinWidth`... | |
+| `box-sizing: border-box` | nothing: WinUI's size includes padding and border | `content-box` is an error |
+| `overflow` on `<scroll-viewer>` | scroll bar visibility (`scroll` Visible, `auto` Auto, `hidden` Disabled) | on any other element an error: wrap the content in a `<scroll-viewer>` |
+| `order` | none | error: reorder the elements |
+| `position`, `inset`, `z-index` | see Position | |
+
+## Grid tracks: `grid-template-columns`, `grid-template-rows`
+
+Tracks are written to the grid's definitions (a Style cannot hold them), as the
+`columns` and `rows` props spell them, "Auto,*,2*,120".
+
+| CSS track | WinUI |
+|---|---|
+| `auto`, `min-content`, `max-content` | `Auto` |
+| `120px` | 120 pixels |
+| `1fr`, `2fr` | `*`, `2*` |
+| `minmax(100px, 1fr)` | `*` with MinWidth (MinHeight) 100 |
+| `minmax(50px, 300px)`, `fit-content(200px)` | `Auto` with MinWidth 50 and MaxWidth 300 (200) |
+| `repeat(3, 1fr)` | three tracks |
+| `repeat(auto-fill, ...)`, `auto-fit`, a % | error: a grid has a fixed set of tracks |
+
+A bound is written after colons in the prop too: `columns="*:100:,Auto::300"`.
+
+## Position: `position`, `top`, `left`, `right`, `bottom`, `inset`
+
+Opt-in (`winui-svelte/css/position`). Offsets are lengths in px (or `auto`).
+
+| CSS | WinUI |
+|---|---|
+| `position: absolute` or `fixed` with `left`, `top` | `Canvas.Left`, `Canvas.Top` (the parent is a `<canvas>`) |
+| `position: relative` with offsets | `Translation` `x,y,0`: the element moves and the layout does not (`left` and `top` win over `right` and `bottom`); an error with `translate`, which sets the same property |
+| `inset: a b c d` | the four offsets, top right bottom left |
+| `position: static` | nothing |
+| `right`, `bottom` on an absolute element | error: a canvas places from the top left; use `justify-self: end` / `align-self: end` in a grid cell |
+| `position: sticky` | error: a ScrollViewer does not pin its children |
+| offsets without `position` | warning, ignored (as in CSS) |
+
+`z-index` is `Canvas.ZIndex`.
+
+## Lengths that depend on the layout
+
+`calc()`, `min()`, `max()` and `clamp()` of px and rem fold at build time. With a
+percentage, a viewport unit (`vw`, `vh`, `vmin`, `vmax`) or a container unit
+(`cqw`, `cqh`, `cqi`, `cqb`, `cqmin`, `cqmax`) in `width`, `height`, `min-*` or `max-*`,
+the build renames the property and the opt-in `winui-svelte/css/dynamic-length`
+group evaluates it at run time, through the same fold: a % is of the parent's
+size along that axis (`calc(50% - 8px)`), a viewport unit of the window's content,
+a container unit of the nearest container. The result is assigned to the control,
+and again when the parent, the window (`XamlRoot.Changed`) or the container
+(`SizeChanged`) resizes, and when the control is loaded. It needs a component's
+`<style>` (a `style` attribute is not renamed by the build); an expression that
+is not a length is a build error.
+
+## Entrances: `@starting-style`
+
+The rules in `@starting-style { .a { opacity: 0 } }` (or `.a { @starting-style { opacity: 0 } }`)
+style an element until it is loaded; then the normal style replaces them. The
+second style is a change of properties, so a `transition` on them (the opt-in
+transform group) animates the entrance; without one the element simply appears in
+its final style. An element in the tree when it is styled settles at once.
+
+## Container size: `@container`
+
+`container-type: size | inline-size`, `container-name` and `container: name / type`
+(opt-in, `winui-svelte/css/container`) make an element a container.
+`@container [name] (min-width: 400px)`, `(max-width)`, `(min-height)`, `(max-height)`
+(and `inline-size`, `block-size`, the range forms) around a rule make it apply while
+the size of the nearest container ancestor (of that name; any, if unnamed) is inside
+the bounds. The element listens to that container's `SizeChanged` (and to its own
+`Loaded`, if it was styled before it was in the tree), exactly while one of its
+matching rules asks. A style query (`@container style(...)`) and a container
+unit are not supported.
+
+## Window size: `@media`
+
+`@media (min-width: 600px)`, `(max-width)`, `(min-height)`, `(max-height)` (px, rem or em;
+`and` joins them, `(width >= 600px)` works, a leading `screen and` is ignored)
+around a rule make it apply while the window's content is inside the bounds.
+Each rule keeps its `media` (`MediaCondition`), and an element that matches one
+listens to its `XamlRoot` (`Changed`; before the control is loaded, its
+`Loaded`) and is restyled when the size crosses a bound. An element none of
+whose rules is under an `@media` listens to nothing.
+
+Only the properties a Style can hold change with the size; a grid's tracks are a
+write and swap like the rest. Not supported, with the build error saying why:
+`orientation`, `or` and `not`, a % bound, a `:root` custom property under
+a size query, and a query inside another `@media`. `CssNative` gains
+`viewportOf` and `watchViewport` for it.
+
+## Nesting
+
+A rule nested in another is flattened at build time (CSS Nesting): `&` is each
+selector of the parent (`.a, .b { &:hover { ... } &.on { ... } }` is four
+rules), and a nested selector without `&` is a descendant, which stays an error
+(a Style has no "inside"). `&` may stand anywhere in a nested selector. An
+at-rule inside a rule (`.a { @media (min-width: 600px) { ... } }`) styles the
+rule's own selector under that at-rule; `@supports` still has no WinUI meaning there
+and says so.
+
+## Modern colors
+
+`oklch()`, `oklab()`, `lab()`, `lch()`, `hwb()`, `color-mix()` and relative color
+syntax are resolved to sRGB by the build, in rules and custom properties alike,
+so the window carries no parser for them (out-of-gamut colors are clipped).
+
+- `color-mix(in <space> [shorter|longer|increasing|decreasing hue], a 30%, b)`
+  works in srgb, srgb-linear, xyz (xyz-d65), xyz-d50, lab, lch, oklab, oklch, hsl
+  and hwb, interpolating premultiplied by alpha, with the hue method for the
+  polar spaces.
+- `rgb(from <origin> r g b / 50%)`, and `hsl`, `hwb`, `lab`, `lch`, `oklab`, `oklch`
+  the same way: the origin's channels are keywords (`r g b`, `h s l`, `h w b`,
+  `l a b`, `l c h`, `alpha`), written as they are or in a `calc()` of plain numbers
+  (`calc(h + 120)`). The origin is a color or a `var(--c)` of a custom property the
+  sheet sets outside any `@media`.
+- `light-dark()` is described below. Not supported: the `color()` function, and a
+  relative color whose origin is a `var()` set only per theme.
+
+## Logical properties
+
+WinUI lays out left to right, top to bottom, so the inline axis is horizontal and
+the block axis vertical: `margin-inline`, `margin-block`, `padding-inline`,
+`padding-block` and their `-start` / `-end` forms are the left, right, top and
+bottom longhands, and `inline-size` and `block-size` (with `min-` and `max-`) are
+the width and height. `text-align: start` and `end` are Left and Right.
+
+## Selectors
+
+A selector is a type, classes, one state (`:hover`, `:active`, `:focus`,
+`:focus-visible`, `:disabled`, `:checked`), `:where()` and `:not(.a, .b)`. A Style
+sets one element by its own type and classes, so a selector about its
+surroundings is resolved at build time, against the component's markup:
+
+```css
+.list > .item:first-child { ... }   /* becomes .wsc-1 on exactly that element */
+.card text-block { ... }            /* descendant, through {#if} and {#each} */
+.a + .b, .a ~ .c { ... }            /* sibling combinators */
+.item:nth-child(2n+1), :is(.a, .b) > .c { ... }
+```
+
+The build parses the component (Svelte's own parser), finds the elements each
+descendant, child and sibling selector, `:first-child`, `:last-child`,
+`:only-child`, `:nth-child()`, `:nth-last-child()` and `:is()` can match, adds a
+generated class (`wsc-1`, in the element's `class`) to exactly those, and the
+selector names that class instead, keeping a state of the last compound
+(`.item:first-child:hover` is `.wsc-1:hover`). Both Svelte's compile and the
+sheet's use the rewritten source (`resolveRelationalSelectors`).
+
+It is a build error, with the line, where the markup does not decide:
+
+- an element's class is set by an expression, a `class:` directive or a spread, and
+  the selector tests a class on it (when the element would otherwise match);
+- a position (`:first-child`, `:nth-child()`, `+`, `~`) of an element whose siblings
+  depend on an `{#if}`, an `{#each}`, a component or a snippet, or of the root of the
+  component (its neighbours are the parent's);
+- `:has()`, a state (`:hover`) on an element other than the styled one, and an id,
+  attribute or pseudo-element.
+
+Elements inside a component's children, a snippet or `<svelte:element>` are not
+seen.
+
+A rule nested in another is flattened first (`.list { > .item:first-child { ... } }`
+is `.list > .item:first-child`) and matched like the rest. When a nested rule
+needs the markup, it and everything nested in it are taken out of the parent and
+written at the end of the `<style>` with their full selectors (so they come after
+the rest in the cascade). `@scope (.card) to (.limit) { ... }` is written out the
+same way: `:scope` and `&` are the root, other selectors are under it, and an
+element at or under the limit is left out. The root and the limit are
+selectors; `@scope` holds style rules only.
+
+## At-rules without a WinUI meaning
+
+`@supports`,
+`@keyframes` and `@import` are build errors that say so.
+
 ## What stays unsupported, and why
 
 `unsupported-properties.ts` holds the reason shown for each property no group
@@ -362,8 +554,9 @@ handles. Declarations like these fail the build with it:
 
 | Property | Why |
 |---|---|
-| `position`, `top`, `left`, `right`, `bottom` | a Style does not know its parent: a Canvas places by `Canvas.Left` / `Canvas.Top` (no right or bottom), the others have no counterpart |
-| `filter`, `mix-blend-mode`, `mask`, `mask-image` | blur, grayscale, brightness, drop-shadow, blend modes and opacity masks are Composition effect and mask brushes, which need `ElementCompositionPreview` (to attach a SpriteVisual to the element) and Win2D's effect classes; neither is in `.winapp/bindings`. Use `backdrop-filter: blur()` or an acrylic or Mica backdrop |
+| `position`, `top`, `left`, `right`, `bottom`, `inset` in a style attribute | they are read from a component's `<style>` block (see Position); `right`, `bottom` and `position: sticky` have no WinUI counterpart |
+| `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color: use `-winui-elevation` |
+| `filter`, `mix-blend-mode`, `mask`, `mask-image` | blur, grayscale, brightness, drop-shadow, blend modes and opacity masks are Composition effect and mask brushes, which need `ElementCompositionPreview` (to attach a SpriteVisual to the element) and Win2D's effect classes. Use `backdrop-filter: blur()` or an acrylic or Mica backdrop |
 | `clip-path` other than `inset()` (circle, ellipse, polygon, path), `inset(... round ...)` | `UIElement.Clip` is a `RectangleGeometry` with square corners |
 | `cursor` | accepted and ignored with a warning: the cursor is `UIElement.ProtectedCursor`, a protected property set to an `InputSystemCursor`, and the bindings have neither a public setter nor `InputSystemCursor` |
 | `text-transform` | a `TextBlock` draws its `Text` as written |

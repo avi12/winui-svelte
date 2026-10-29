@@ -94,6 +94,18 @@
       "types": "./dist/css/focus.d.ts",
       "default": "./dist/css/focus.js"
     },
+    "./css/dynamic-length": {
+      "types": "./dist/css/dynamic-length.d.ts",
+      "default": "./dist/css/dynamic-length.js"
+    },
+    "./css/container": {
+      "types": "./dist/css/container.d.ts",
+      "default": "./dist/css/container.js"
+    },
+    "./css/position": {
+      "types": "./dist/css/position.d.ts",
+      "default": "./dist/css/position.js"
+    },
     "./css/resources": {
       "types": "./dist/css/resources.d.ts",
       "default": "./dist/css/resources.js"

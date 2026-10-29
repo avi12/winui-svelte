@@ -1,4 +1,7 @@
+import { ContainerWatch } from "./containers.ts";
 import { parseInlineStyle } from "./inline.ts";
+import { mediaMatches } from "#src/css/parse/media.js";
+import type { MediaCondition, Viewport } from "#src/css/parse/media.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 import type { RankedRule } from "#src/css/translate/cascade.js";
 import {
@@ -12,7 +15,7 @@ import type { LoweredStyle } from "#src/css/translate/properties.js";
 import { lowerDeclarations } from "#src/css/translate/properties.js";
 import type { PropertyGroup, WriteSeam } from "#src/css/translate/property-kit.js";
 import { RESOURCES_TARGET, XAML_SEPARATOR } from "#src/css/translate/property-kit.js";
-import type { Declaration, Keyframes, StyleSheetData } from "#src/css/translate/types.js";
+import type { Declaration, Keyframes, Rule, StyleSheetData } from "#src/css/translate/types.js";
 import { PseudoState } from "#src/css/translate/types.js";
 import type { NativeValue } from "#src/native-value.js";
 
@@ -27,6 +30,10 @@ export interface CssNative extends WriteSeam {
   /** Whether the application's resources (merged dictionaries included) hold `key`. */
   hasApplicationResource(key: string): boolean;
   setStyle(control: object, style: object | null): void;
+  /** The size of the window content the control is in, in px; null while it is in none. */
+  viewportOf(control: object): Viewport | null;
+  /** Calls `handler` when that size changes (or the control gets into a window); null if it cannot be watched. */
+  watchViewport(control: object, handler: () => void): (() => void) | null;
 }
 
 /**
@@ -455,6 +462,11 @@ class ElementStyle implements StyledElement {
   private readonly subscriptions = new Map<PseudoState, Array<() => void>>();
   private appliedKey: string | null = null;
   private appliedStyle: object | null = null;
+  private viewport: Viewport | null = null;
+  private unwatchViewport: (() => void) | null = null;
+  private isSettled = false;
+  private unwatchSettle: (() => void) | null = null;
+  private containers: ContainerWatch | null = null;
   private appliedWrites = "";
   private writeUndos: Array<() => void> = [];
   private isDisposed = false;
@@ -486,6 +498,9 @@ class ElementStyle implements StyledElement {
     }
 
     this.subscriptions.clear();
+    this.unwatchViewport?.();
+    this.unwatchSettle?.();
+    this.containers?.dispose();
     for (const undo of this.writeUndos) {
       undo();
     }
@@ -522,12 +537,18 @@ class ElementStyle implements StyledElement {
       facts: {
         elementType: this.elementType,
         classes: this.classes,
-        states: this.states
+        states: this.states,
+        isStarting: !this.isSettled
       },
-      isStateIgnored: true
+      isStateIgnored: true,
+      isMediaIgnored: true
     });
+    this.watchSettling(candidates.some(({ rule }) => rule.startingStyle === true));
     this.syncStates(new Set(candidates.flatMap(({ rule }) => (rule.state === null ? [] : [rule.state]))));
-    const matched = candidates.filter(({ rule }) => rule.state === null || this.states.has(rule.state));
+    const queries = candidates.flatMap(({ rule }) => rule.media ?? []);
+    this.syncViewport(queries.some(query => query.container === undefined));
+    this.syncContainers(new Set(queries.flatMap(query => query.container ?? [])));
+    const matched = candidates.filter(({ rule }) => this.isRuleActive(rule));
     const inline = this.inlineDeclarations();
     const inlineKey = inline.map(({ property, value }) => `${property}:${value}`).join(";");
     const isAnimated = [...matched.flatMap(({ rule }) => rule.declarations), ...inline].some(({ property }) => property === "animation-name");
@@ -565,6 +586,39 @@ class ElementStyle implements StyledElement {
     this.appliedKey = isUnstyled ? null : key;
   }
 
+  // The @starting-style rules style the element until it is loaded: the second style
+  // is a change of properties, which a `transition` animates. An element with no such
+  // rule has nothing to settle.
+  private watchSettling(hasStartingRules: boolean) {
+    const currentNative = native;
+    const isDone = this.isSettled || this.unwatchSettle !== null;
+    const isUnavailable = isDone || currentNative === null;
+    if (isUnavailable) {
+      return;
+    }
+
+    if (!hasStartingRules) {
+      this.isSettled = true;
+      return;
+    }
+
+    const settle = () => {
+      this.unwatchSettle?.();
+      this.unwatchSettle = null;
+      this.isSettled = true;
+      this.refresh();
+    };
+    const isLoaded = currentNative.read({
+      control: this.control,
+      property: "isLoaded"
+    }) === true;
+    this.unwatchSettle = currentNative.subscribe(this.control, "Loaded", settle) ?? (() => undefined);
+
+    if (isLoaded) {
+      queueMicrotask(settle);
+    }
+  }
+
   // The writes the style calls for are applied again, after the last ones are
   // undone, when any of them changes.
   private applyWrites({ currentNative, writes }: {
@@ -599,6 +653,66 @@ class ElementStyle implements StyledElement {
       return undo ? [undo] : [];
     });
     this.appliedWrites = signature;
+  }
+
+  private isRuleActive(rule: Rule) {
+    const isStateActive = rule.state === null || this.states.has(rule.state);
+    const isMediaActive = rule.media === undefined || mediaMatches({
+      media: rule.media,
+      viewport: this.viewportFor(rule.media)
+    });
+    return isStateActive && isMediaActive;
+  }
+
+  // The size a query is about: the window's, or the nearest container's (of its name).
+  private viewportFor(media: MediaCondition) {
+    const { container } = media;
+    return container === undefined ? this.viewport : this.containers?.sizeOf(container) ?? null;
+  }
+
+  // Listens to the containers the matching @container rules ask about.
+  private syncContainers(names: ReadonlySet<string>) {
+    const currentNative = native;
+    const isUnneeded = names.size === 0 && this.containers === null;
+    const isUnavailable = isUnneeded || currentNative === null;
+    if (isUnavailable) {
+      return;
+    }
+
+    this.containers ??= new ContainerWatch({
+      control: this.control,
+      native: currentNative,
+      refresh: () => {
+        this.refresh();
+      }
+    });
+    this.containers.sync(names);
+  }
+
+  // Listens to the window's size exactly while some matching rule is under an @media.
+  private syncViewport(isNeeded: boolean) {
+    const currentNative = native;
+    const isWatching = this.unwatchViewport !== null;
+    if (!isNeeded) {
+      this.unwatchViewport?.();
+      this.unwatchViewport = null;
+      this.viewport = null;
+      return;
+    }
+
+    const isNativeMissing = currentNative === null;
+    if (isNativeMissing) {
+      return;
+    }
+
+    if (!isWatching) {
+      this.unwatchViewport = currentNative.watchViewport(this.control, () => {
+        this.viewport = currentNative.viewportOf(this.control);
+        this.refresh();
+      });
+    }
+
+    this.viewport = currentNative.viewportOf(this.control);
   }
 
   private readProperty: ReadProperty = property => (native === null ? undefined : native.read({

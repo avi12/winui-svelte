@@ -2,7 +2,7 @@ import { ElementType, enumMap, setter, simple } from "./property-kit.ts";
 import type { GroupInput, Output, PropertyGroup } from "./property-kit.ts";
 import type { Declaration } from "./types.ts";
 import type { Reader } from "#src/css/parse/reader.js";
-import { parseLength, parseNumber, splitWords } from "#src/css/parse/values.js";
+import { parseLength, parseNumber, splitCommas, splitWords } from "#src/css/parse/values.js";
 
 const GRID_LINES = new Map<string, [string, string]>([
   ["grid-column", ["Grid.Column", "Grid.ColumnSpan"]],
@@ -79,12 +79,81 @@ function repeated(track: string) {
   return Array.from({ length: count }, () => splitWords(match[2] ?? "")).flat();
 }
 
+const AUTO_TRACKS = new Set(["auto", "min-content", "max-content"]);
+const MINMAX = /^minmax\((.*)\)$/isu;
+const FIT_CONTENT = /^fit-content\((.*)\)$/isu;
+const TRACK_HINT = "an auto, a length in px, a size in fr, minmax(px, fr) or fit-content(px)";
+
+// A length of one bound: px, or null for the content-sized keywords.
+function trackBound({ bound, reader }: {
+  bound: string;
+  reader: Reader;
+}) {
+  const lower = bound.trim().toLowerCase();
+  const isAuto = AUTO_TRACKS.has(lower);
+  if (isAuto) {
+    return null;
+  }
+
+  const pixels = parseLength(bound.trim());
+  return pixels ?? reader.expectedToken({
+    what: TRACK_HINT,
+    token: bound
+  });
+}
+
+function sizeAndBounds({ length, min, max }: {
+  length: string;
+  min: number | null;
+  max: number | null;
+}) {
+  const hasBounds = min !== null || max !== null;
+  return hasBounds ? `${length}:${min ?? ""}:${max ?? ""}` : length;
+}
+
+// minmax(min, max): a fr maximum is a star track with a minimum; a px or
+// content maximum is an Auto track kept between the two bounds.
+function minMaxTrack({ args, reader }: {
+  args: string;
+  reader: Reader;
+}) {
+  const [minText = "", maxText = "", ...rest] = splitCommas(args);
+  const isPair = maxText !== "" && rest.length === 0;
+  if (!isPair) {
+    return reader.expected("minmax(min, max)");
+  }
+
+  const min = trackBound({
+    bound: minText,
+    reader
+  });
+  const fraction = /^(\d*\.?\d+)fr$/iu.exec(maxText.trim());
+  const hasFraction = fraction !== null;
+  if (hasFraction) {
+    return sizeAndBounds({
+      length: Number(fraction[1]) === 1 ? "*" : `${fraction[1]}*`,
+      min,
+      max: null
+    });
+  }
+
+  const max = trackBound({
+    bound: maxText,
+    reader
+  });
+  return sizeAndBounds({
+    length: "Auto",
+    min,
+    max
+  });
+}
+
 function gridLength({ track, reader }: {
   track: string;
   reader: Reader;
 }) {
   const lower = track.toLowerCase();
-  const isAuto = lower === "auto";
+  const isAuto = AUTO_TRACKS.has(lower);
   if (isAuto) {
     return "Auto";
   }
@@ -95,14 +164,36 @@ function gridLength({ track, reader }: {
     return Number(fraction[1]) === 1 ? "*" : `${fraction[1]}*`;
   }
 
+  const minmax = MINMAX.exec(track)?.[1];
+  const hasMinmax = minmax !== undefined;
+  if (hasMinmax) {
+    return minMaxTrack({
+      args: minmax,
+      reader
+    });
+  }
+
+  const fit = FIT_CONTENT.exec(track)?.[1];
+  const hasFit = fit !== undefined;
+  if (hasFit) {
+    return sizeAndBounds({
+      length: "Auto",
+      min: null,
+      max: trackBound({
+        bound: fit,
+        reader
+      })
+    });
+  }
+
   const pixels = parseLength(track);
   const hasPixels = pixels !== null;
   if (hasPixels) {
     return String(pixels);
   }
 
-  const isMinMax = lower.startsWith("minmax(");
-  const hint = isMinMax ? "minmax() has no WinUI meaning (a track is Auto, a size or a star)" : "an auto, a length in px, or a size in fr";
+  const isRepeating = lower.startsWith("repeat(");
+  const hint = isRepeating ? "repeat() needs a count (repeat(3, 1fr)); auto-fill and auto-fit have no WinUI meaning (a grid has a fixed set of tracks)" : TRACK_HINT;
   return reader.expectedToken({
     what: hint,
     token: track
@@ -403,4 +494,16 @@ export function overflow(input: GroupInput) {
   }
 
   return outputs;
+}
+
+/** `box-sizing`: a WinUI Width and Height include padding and border, so border-box is the only kind. */
+export function boxSizing(input: GroupInput) {
+  const reader = input.reading("box-sizing");
+  const word = reader.single()?.toLowerCase();
+  const isContentBox = word === "content-box";
+  if (isContentBox) {
+    reader.error("box-sizing: content-box has no WinUI meaning (a WinUI Width and Height include the padding and border, as border-box does; add the padding to the width)");
+  }
+
+  return [];
 }

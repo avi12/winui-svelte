@@ -76,10 +76,24 @@ test("an error names the line of the .svelte file, not of the generated CSS", ()
     error instanceof SheetError && error.message.startsWith("ui/card.svelte:6:5: float has no WinUI meaning"));
 });
 
-test("a descendant selector Svelte keeps is reported at its rule", () => {
-  const nested = `<border class="a"><text-block class="b" /></border>\n<style>\n  .a .b { color: red }\n</style>\n`;
-  assert.throws(() => moduleFor(nested), (error: Error) =>
-    error instanceof SheetError && error.message.startsWith("ui/card.svelte:3:3:") && error.message.includes("descendant"));
+test("a descendant selector is resolved against the markup into a generated class", () => {
+  const nested = `<border class="a"><text-block class="b" /></border>
+<style>
+  .a .b { color: red }
+</style>
+`;
+  const rules = moduleFor(nested)?.sheet.rules ?? [];
+  assert.ok(rules.some(rule => rule.classes.includes("wsc-1")));
+});
+
+test("a descendant selector the markup cannot decide is reported at its rule", () => {
+  const dynamic = `<border class={x}><text-block class="b" /></border>
+<style>
+  .a .b { color: red }
+</style>
+`;
+  assert.throws(() => moduleFor(dynamic), (error: Error) =>
+    error instanceof SheetError && error.message.startsWith("ui/card.svelte:3:3:") && error.message.includes("set by an expression"));
 });
 
 test("a sheet opts into the transform parser only when it has a transform", () => {

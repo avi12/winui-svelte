@@ -1,5 +1,7 @@
 import type { LoweredStyle } from "./properties.ts";
 import type { Declaration, PseudoState, Rule } from "./types.ts";
+import { mediaMatches } from "#src/css/parse/media.js";
+import type { Viewport } from "#src/css/parse/media.js";
 
 /**
  * CSS's cascade for one element: which rules apply to it (its type, classes
@@ -19,6 +21,10 @@ export interface ElementFacts {
   elementType: string;
   classes: ReadonlySet<string>;
   states: ReadonlySet<PseudoState>;
+  /** Whether the element is still in its starting state, which the `@starting-style` rules style. */
+  isStarting?: boolean;
+  /** The window's content size, or null where it is unknown: a rule under an @media then does not apply. */
+  viewport?: Viewport | null;
 }
 
 /** The namespace XAML's controls, templates and styles are written in. */
@@ -37,34 +43,53 @@ const XML_ESCAPES = new Map([
   ["\"", "&quot;"]
 ]);
 
-function ruleApplies({ rule, facts, isStateIgnored }: {
+// A rule outside every layer beats the layered ones.
+function layerOf(ranked: RankedRule) {
+  return ranked.rule.layer ?? Number.POSITIVE_INFINITY;
+}
+
+function ruleApplies({ rule, facts, isStateIgnored, isMediaIgnored }: {
   rule: Rule;
   facts: ElementFacts;
   isStateIgnored: boolean;
+  isMediaIgnored: boolean;
 }) {
   const isTypeMatch = rule.elementType === null || rule.elementType === facts.elementType;
   const hasClasses = rule.classes.every(name => facts.classes.has(name));
+  const hasNoExcluded = (rule.notClasses ?? []).every(name => !facts.classes.has(name));
   const isStateActive = rule.state === null || isStateIgnored || facts.states.has(rule.state);
-  return isTypeMatch && hasClasses && isStateActive;
+  const isMediaActive = rule.media === undefined || isMediaIgnored || mediaMatches({
+    media: rule.media,
+    viewport: facts.viewport ?? null
+  });
+  const isStartingActive = rule.startingStyle === undefined || facts.isStarting === true;
+  return isTypeMatch && hasClasses && hasNoExcluded && isStateActive && isMediaActive && isStartingActive;
 }
 
 /**
  * The rules that style the element, lowest priority first. With
  * `isStateIgnored`, a state rule counts whether or not its state is active:
- * that is how the runtime learns which events an element needs.
+ * that is how the runtime learns which events an element needs; with
+ * `isMediaIgnored`, so does a rule under an @media, whatever the window's size.
  */
-export function matchingRanked({ rules, facts, isStateIgnored = false }: {
+export function matchingRanked({ rules, facts, isStateIgnored = false, isMediaIgnored = false }: {
   rules: readonly RankedRule[];
   facts: ElementFacts;
   isStateIgnored?: boolean;
+  isMediaIgnored?: boolean;
 }) {
   return rules
     .filter(ranked => ruleApplies({
       rule: ranked.rule,
       facts,
-      isStateIgnored
+      isStateIgnored,
+      isMediaIgnored
     }))
-    .sort((first, second) => first.rule.specificity - second.rule.specificity || first.rank - second.rank);
+    .sort((first, second) => (
+      layerOf(first) - layerOf(second)
+      || first.rule.specificity - second.rule.specificity
+      || first.rank - second.rank
+    ));
 }
 
 /** The same rules as `matchingRanked`, without their ranks. */

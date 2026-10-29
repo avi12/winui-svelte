@@ -749,7 +749,7 @@ build error with its file and line; nothing is silently ignored.
 | `font-size`, `font-weight`, `font-family`, `font-style`, `line-height`, `letter-spacing`, `text-align`, `text-wrap`, `text-overflow`, `text-decoration` | the `TextBlock` and `Control` font and text properties |
 | `gap`, `row-gap`, `column-gap` | `Spacing` (a stack), `RowSpacing` and `ColumnSpacing` (a grid) |
 | `flex-direction`, `display: flex` on a stack, `align-self`, `justify-self` | `Orientation`, `VerticalAlignment`, `HorizontalAlignment` |
-| `grid-template-columns`, `grid-template-rows`, `grid-column`, `grid-row` | `ColumnDefinitions`, `RowDefinitions`, `Grid.Column`... |
+| `grid-template-columns`, `grid-template-rows` (`fr`, `px`, `auto`, `minmax()`, `fit-content()`, `repeat(n, ...)`), `grid-column`, `grid-row` | `ColumnDefinitions`, `RowDefinitions`, `Grid.Column`... |
 | `display: none`, `visibility`, `pointer-events`, `z-index`, `overflow` | `Visibility`, `IsHitTestVisible`, `Canvas.ZIndex`, the scroll bar visibilities |
 | `outline`, `outline-offset` | the focus visual: `FocusVisualPrimaryBrush`, `FocusVisualPrimaryThickness`, `FocusVisualMargin` |
 | `animation`, `@keyframes` | `Storyboard`s of key frames (opacity, size, colors, translate, scale, rotate, transform), begun with the class |
@@ -852,7 +852,7 @@ protocol and the tests.
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
-| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, theme resources ([`src/css/API.md`](src/css/API.md)) |
+| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 
 The published package ships `dist/`: the TypeScript compiled with its
@@ -921,15 +921,22 @@ Stated plainly, so nobody finds them by surprise:
 - **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
   service started cannot launch the browser (error 0x8007139F), and a `data:`
   URL cannot be the top frame.
-- **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `filter`,
-  `mix-blend-mode`, `mask`, `text-transform`, a `clip-path` other than
-  `inset()`, descendant, child or sibling selectors or nesting: each is a build
-  error that says what to use instead (filters, blend modes and masks are
-  Composition effects, which need `ElementCompositionPreview` and Win2D, absent
-  from the bindings). `cursor` is ignored with a warning (`ProtectedCursor` and
-  `InputSystemCursor` are not exposed). `box-shadow` keeps only its depth, and
-  `transition: border-color` does nothing (WinUI has no border brush transition).
-  Gradients are `linear-gradient()` and `radial-gradient()` only
+- **CSS is WinUI's subset.** Layout follows the element's type (`src/css/API.md`
+  has the table): `display: flex` is a `<stack-panel>`, `display: grid` a
+  `<grid>` (tracks in `fr`, `px`, `auto`, `minmax()`), `position: absolute` a
+  `<canvas>` child, `@media (min-width...)` restyles as the window resizes, and descendant, child
+  and sibling selectors, `:first-child`, `:nth-child()` and `:is()` are resolved
+  against the component's markup at build time.
+  A Style cannot reach an element's parent, children or siblings, so these are
+  build errors that say what to write instead: `float`, `position: sticky`,
+  `right` and `bottom`, `flex-grow` and `flex-wrap` (use `fr` tracks; WinUI has
+  no wrapping panel), `align-items` and `justify-content` on a container (set
+  `place-self` on the child), `order`, `aspect-ratio`, a % size other than
+  100%, `calc()` with a % or a variable, container style queries, `:has()`, `:focus-within`,
+  `box-shadow` (use `-winui-elevation`), `filter` and `mix-blend-mode`
+  (Composition effects, which need `ElementCompositionPreview` and Win2D), `mask`,
+  `text-transform` and a `clip-path` other than `inset()`. `cursor` is ignored
+  with a warning (`ProtectedCursor` is not exposed). Gradients are `linear-gradient()` and `radial-gradient()` only
   (no repeating or conic ones, no stop in `px`), and replace `background-color`.
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can
   declare custom properties only (a Style cannot depend on the scheme).

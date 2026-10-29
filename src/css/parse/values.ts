@@ -1,3 +1,7 @@
+import { evaluateCalc } from "./calc.ts";
+
+export { matchingParenthesis, splitCommas, splitSlash, splitWords } from "./split.ts";
+
 // The values a declaration holds, read one token at a time. Each parser
 // returns null when the token is not that kind of value, so a property can
 // try the kinds it accepts and name the one it expected.
@@ -8,85 +12,19 @@ const PIXELS_PER_REM = 16;
 const MILLISECONDS_PER_SECOND = 1000;
 const PERCENT_SCALE = 100;
 
-function depthChange(character: string) {
-  const isOpeningParenthesis = character === "(";
-  if (isOpeningParenthesis) {
-    return 1;
-  }
-
-  return character === ")" ? -1 : 0;
-}
-
-// Splits at `separator` outside parentheses and strings; empty pieces dropped
-// when the separator is whitespace.
-function splitOutside({ text, isSeparator }: {
-  text: string;
-  isSeparator(character: string): boolean;
-}) {
-  const pieces: string[] = [];
-  let depth = 0;
-  let current = "";
-  let quote = "";
-  for (const character of text) {
-    const isInString = quote !== "";
-    if (isInString) {
-      current += character;
-
-      const isClosingQuote = character === quote;
-      if (isClosingQuote) {
-        quote = "";
-      }
-
-      continue;
-    }
-
-    const isQuote = character === "\"" || character === "'";
-    if (isQuote) {
-      quote = character;
-    }
-
-    depth += depthChange(character);
-    const isSplit = depth === 0 && !isQuote && isSeparator(character);
-    if (isSplit) {
-      pieces.push(current);
-      current = "";
-    } else {
-      current += character;
-    }
-  }
-
-  pieces.push(current);
-  return pieces.map(piece => piece.trim());
-}
-
-/** Splits a value at whitespace outside parentheses and strings. */
-export function splitWords(text: string) {
-  return splitOutside({
-    text,
-    isSeparator: character => character.trim() === ""
-  }).filter(word => word !== "");
-}
-
-/** Splits a value at commas outside parentheses and strings. */
-export function splitCommas(text: string) {
-  return splitOutside({
-    text,
-    isSeparator: character => character === ","
-  });
-}
-
-/** Splits a value at slashes outside parentheses and strings. */
-export function splitSlash(text: string) {
-  return splitOutside({
-    text,
-    isSeparator: character => character === "/"
-  });
-}
-
 const lengthPattern = /^(-?(?:\d+\.?\d*|\.\d+))(px|rem)?$/iu;
 
-/** A length in device-independent pixels: `px`, `rem` (1rem is 16px) or a bare 0; null for anything else. */
+/**
+ * A length in device-independent pixels: `px`, `rem` (1rem is 16px), a bare 0
+ * or a `calc()` of them; null for anything else.
+ */
 export function parseLength(token: string) {
+  const folded = evaluateCalc(token);
+  const isCalc = folded !== null;
+  if (isCalc) {
+    return folded;
+  }
+
   const match = lengthPattern.exec(token);
   const isMatchMissing = match === null;
   if (isMatchMissing) {

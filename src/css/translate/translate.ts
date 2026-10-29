@@ -1,5 +1,8 @@
 import { tracksOf } from "./animation-tracks.ts";
 import { computeDeclarations } from "./cascade.ts";
+import { dynamicPropertyOf } from "./dynamic-length-properties.ts";
+import { createLayerOrder, declareLayer, layerRank, withinLayer } from "./layers.ts";
+import type { LayerOrder } from "./layers.ts";
 import { LAZY_GROUPS } from "./lazy-groups.ts";
 import { lowerDeclarations } from "./properties.ts";
 import { expandDeclaration } from "./shorthands.ts";
@@ -16,16 +19,23 @@ import type {
   StyleSheetData,
   Translation
 } from "./types.ts";
+import { unsupportedAtRuleReason } from "./unsupported-properties.ts";
 import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
+import { isDynamicLength } from "#src/css/parse/dynamic-length.js";
+import { replaceLightDark } from "#src/css/parse/light-dark.js";
+import type { MediaCondition } from "#src/css/parse/media.js";
+import { parseContainerQuery, parseMediaQuery } from "#src/css/parse/media.js";
+import { resolveModernColors } from "#src/css/parse/modern-colors.js";
 import type { AtRuleBlock, Block, RuleBlock } from "#src/css/parse/parser.js";
 import { BlockKind, CssSyntaxError, parseCss } from "#src/css/parse/parser.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 import type { ParsedSelector } from "#src/css/parse/selectors.js";
-import { parseSelectorList } from "#src/css/parse/selectors.js";
+import { flattenNestedSelector, parseSelectorList } from "#src/css/parse/selectors.js";
 import type { PositionMapper, SourceMapV3 } from "#src/css/parse/source-map.js";
 import { createPositionMapper } from "#src/css/parse/source-map.js";
 import { parsePercent } from "#src/css/parse/values.js";
+import { splitCommas } from "#src/css/parse/split.js";
 import type { ResourceCatalogue, ResourceKind } from "#src/css/runtime/resources.js";
 import { hasStyle, resolveVariable } from "#src/css/runtime/resources.js";
 
@@ -66,6 +76,13 @@ interface Translator {
   rules: Rule[];
   keyframes: Keyframes[];
   nextOrder: number;
+  layers: LayerOrder;
+  /** Whether the rules being read are inside `@starting-style`. */
+  isStartingStyle: boolean;
+  /** The layer each rule was written in, turned into its place once the sheet is read. */
+  ruleLayers: Map<Rule, string>;
+  /** How many `light-dark()` calls were given a custom property of their own. */
+  lightDarkCount: number;
 }
 
 function report({ translator, severity, message, position }: {
@@ -103,9 +120,11 @@ function schemeOf({ translator, block }: {
   const isSchemeMissing = scheme === undefined;
   if (isSchemeMissing) {
     const what = block.name === "media" ? `@media ${block.prelude}` : `@${block.name}`;
+    const reason = unsupportedAtRuleReason(block.name);
+    const advice = reason === "" ? "" : `; ${reason}`;
     reportError({
       translator,
-      message: `${what} has no WinUI meaning (only @media (prefers-color-scheme: dark), (prefers-color-scheme: light) and (forced-colors: active) do, for custom properties)`,
+      message: `${what} has no WinUI meaning (only @media (min-width), (max-width), (min-height) and (max-height), which restyle as the window resizes, and, for custom properties, (prefers-color-scheme: dark), (prefers-color-scheme: light) and (forced-colors: active) do)${advice}`,
       generatedAt: block.at
     });
     return null;
@@ -114,13 +133,41 @@ function schemeOf({ translator, block }: {
   return scheme;
 }
 
+// A light-dark() is a custom property of the sheet that has the light value in
+// the light theme and the dark one in the dark theme.
 function originalDeclaration({ translator, declaration }: {
   translator: Translator;
   declaration: Declaration;
 }) {
+  const at = translator.mapPosition(declaration.at);
+  const dynamic = dynamicPropertyOf(declaration.property);
+  const isDynamic = dynamic !== null && isDynamicLength(declaration.value);
+  const { value, pairs } = replaceLightDark({
+    value: resolveModernColors({ value: declaration.value }),
+    nameFor: () => `--light-dark-${translator.lightDarkCount++}`
+  });
+  for (const { name, light, dark } of pairs) {
+    translator.variables.push(
+      {
+        name,
+        value: resolveModernColors({ value: light }),
+        scheme: ColorScheme.LIGHT,
+        at
+      },
+      {
+        name,
+        value: resolveModernColors({ value: dark }),
+        scheme: ColorScheme.DARK,
+        at
+      }
+    );
+  }
+
   return {
     ...declaration,
-    at: translator.mapPosition(declaration.at)
+    property: isDynamic ? dynamic : declaration.property,
+    value,
+    at
   };
 }
 
@@ -189,11 +236,12 @@ function entryOf({ scheme, key, xaml }: VariableEntry) {
 // One selector of a rule: `:root` custom properties become the app's
 // resources, a rule's own become resources of the elements it matches, and its
 // other declarations a rule, unless the selector or the @media cannot style.
-function addSelectorRule({ translator, block, selector, scheme }: {
+function addSelectorRule({ translator, block, selector, scheme, media }: {
   translator: Translator;
   block: RuleBlock;
   selector: ParsedSelector;
   scheme: ColorScheme;
+  media: MediaCondition | null;
 }) {
   const declarations = block.declarations.map(declaration => originalDeclaration({
     translator,
@@ -202,6 +250,16 @@ function addSelectorRule({ translator, block, selector, scheme }: {
   const customProperties = declarations.filter(declaration => declaration.property.startsWith("--"));
   const properties = declarations.filter(declaration => !declaration.property.startsWith("--"));
   if (selector.isRoot) {
+    const isSizeConditional = media !== null;
+    if (isSizeConditional) {
+      reportDeclarations({
+        translator,
+        declarations,
+        message: "has no WinUI meaning here (a custom property of :root cannot depend on the window's size: put the query around a rule)"
+      });
+      return;
+    }
+
     for (const custom of customProperties) {
       translator.variables.push({
         name: custom.property,
@@ -247,38 +305,56 @@ function addSelectorRule({ translator, block, selector, scheme }: {
     return;
   }
 
-  translator.rules.push({
+  const rule: Rule = {
     elementType: selector.elementType,
     classes: selector.classes,
+    ...selector.notClasses.length === 0 ? {} : { notClasses: selector.notClasses },
     state: selector.state,
     specificity: selector.specificity,
     order: translator.nextOrder,
     declarations: isSchemeConditional ? [] : properties,
+    ...media === null ? {} : { media },
+    ...translator.isStartingStyle ? { startingStyle: true as const } : {},
     resourcesXaml
-  });
+  };
+  translator.rules.push(rule);
+  const { current } = translator.layers;
+  const isLayered = current !== null;
+  if (isLayered) {
+    translator.ruleLayers.set(rule, current);
+  }
+
   translator.nextOrder++;
 }
 
-function addRuleBlock({ translator, block, scheme }: {
+// A rule inside a nested at-rule, its `&` the selector of the rule around the at-rule.
+function withParent({ child, parent }: {
+  child: RuleBlock;
+  parent: string;
+}) {
+  return {
+    ...child,
+    selector: flattenNestedSelector({
+      parent,
+      child: child.selector
+    })
+  };
+}
+
+function addRuleBlock({ translator, block, scheme, media }: {
   translator: Translator;
   block: RuleBlock;
   scheme: ColorScheme;
+  media: MediaCondition | null;
 }) {
-  for (const nestedAt of block.nested) {
-    reportError({
-      translator,
-      message: "nested rules have no WinUI meaning (write each selector at the top level)",
-      generatedAt: nestedAt
-    });
-  }
-
   for (const result of parseSelectorList(block.selector)) {
     if (result.isValid) {
       addSelectorRule({
         translator,
         block,
         selector: result.selector,
-        scheme
+        scheme,
+        media
       });
     } else {
       reportError({
@@ -287,6 +363,33 @@ function addRuleBlock({ translator, block, scheme }: {
         generatedAt: block.at
       });
     }
+  }
+
+  for (const child of block.nested) {
+    addRuleBlock({
+      translator,
+      block: withParent({
+        child,
+        parent: block.selector
+      }),
+      scheme,
+      media
+    });
+  }
+
+  for (const nestedAt of block.nestedAtRules) {
+    addAtRule({
+      translator,
+      block: {
+        ...nestedAt,
+        children: (nestedAt.children ?? []).map(child => (child.kind === BlockKind.RULE ? withParent({
+          child,
+          parent: block.selector
+        }) : child))
+      },
+      scheme,
+      media
+    });
   }
 }
 
@@ -355,10 +458,11 @@ function addKeyframes({ translator, block }: {
   });
 }
 
-function addBlocks({ translator, blocks, scheme }: {
+function addBlocks({ translator, blocks, scheme, media }: {
   translator: Translator;
   blocks: Block[];
   scheme: ColorScheme;
+  media: MediaCondition | null;
 }) {
   for (const block of blocks) {
     const isRuleBlock = block.kind === BlockKind.RULE;
@@ -366,46 +470,227 @@ function addBlocks({ translator, blocks, scheme }: {
       addRuleBlock({
         translator,
         block,
-        scheme
+        scheme,
+        media
       });
       continue;
     }
 
-    const isKeyframes = block.name === "keyframes" && scheme === ColorScheme.DEFAULT;
-    if (isKeyframes) {
-      addKeyframes({
-        translator,
-        block
-      });
-      continue;
-    }
-
-    const isNestedMedia = scheme !== ColorScheme.DEFAULT;
-    const inner = isNestedMedia ? null : schemeOf({
+    addAtRule({
       translator,
-      block
+      block,
+      scheme,
+      media
     });
-    const { children } = block;
-    const canNest = inner !== null && children !== null;
-    if (isNestedMedia) {
-      reportError({
-        translator,
-        message: `@${block.name} inside @media has no WinUI meaning`,
-        generatedAt: block.at
+  }
+}
+
+// `@starting-style { ... }`: the rules style the element until its first layout. Its rules
+// must not be in a media query: the state an entrance starts from does not change with the size.
+function addStartingStyle({ translator, block, scheme, media }: {
+  translator: Translator;
+  block: AtRuleBlock;
+  scheme: ColorScheme;
+  media: MediaCondition | null;
+}) {
+  const { children } = block;
+  const isReadable = children !== null && block.prelude.trim() === "" && !translator.isStartingStyle;
+  if (!isReadable) {
+    reportError({
+      translator,
+      message: "@starting-style takes a block of rules (or declarations, inside a rule) and cannot nest",
+      generatedAt: block.at
+    });
+    return;
+  }
+
+  translator.isStartingStyle = true;
+  try {
+    addBlocks({
+      translator,
+      blocks: children,
+      scheme,
+      media
+    });
+  } finally {
+    translator.isStartingStyle = false;
+  }
+}
+
+// `@layer a, b;` orders layers; `@layer a { ... }` puts its rules in one.
+function addLayer({ translator, block, scheme, media }: {
+  translator: Translator;
+  block: AtRuleBlock;
+  scheme: ColorScheme;
+  media: MediaCondition | null;
+}) {
+  const { children } = block;
+  const names = splitCommas(block.prelude).filter(name => name !== "");
+  const isStatement = children === null;
+  if (isStatement) {
+    for (const name of names) {
+      declareLayer({
+        order: translator.layers,
+        name
       });
-    } else if (canNest) {
+    }
+
+    return;
+  }
+
+  withinLayer({
+    order: translator.layers,
+    name: names.join(""),
+    body: () => {
       addBlocks({
         translator,
         blocks: children,
-        scheme: inner
-      });
-    } else if (inner !== null) {
-      reportError({
-        translator,
-        message: `@${block.name} has no WinUI meaning`,
-        generatedAt: block.at
+        scheme,
+        media
       });
     }
+  });
+}
+
+const PROPERTY_MEMBERS = new Set(["syntax", "inherits", "initial-value"]);
+
+// `@property --x { syntax: "<color>"; inherits: false; initial-value: red }`: the
+// initial value is the custom property's value until a rule gives it another. The
+// syntax and inheritance have no WinUI meaning: a resource has no type check, and
+// a resource is looked up through the tree.
+function addProperty({ translator, block }: {
+  translator: Translator;
+  block: AtRuleBlock;
+}) {
+  const name = block.prelude.trim();
+  const bodies = (block.children ?? []).filter(child => child.kind === BlockKind.RULE);
+  const declarations = bodies.flatMap(body => body.declarations);
+  for (const declaration of declarations) {
+    const isKnown = PROPERTY_MEMBERS.has(declaration.property);
+    if (!isKnown) {
+      reportDeclarationProblem({
+        translator,
+        at: translator.mapPosition(declaration.at),
+        message: `@property ${name}: ${declaration.property} is not a descriptor (syntax, inherits, initial-value)`
+      });
+    }
+  }
+
+  const initial = declarations.find(declaration => declaration.property === "initial-value");
+  const isInitialMissing = initial === undefined;
+  if (isInitialMissing) {
+    reportError({
+      translator,
+      message: `@property ${name} needs an initial-value (WinUI resources have no unset state)`,
+      generatedAt: block.at
+    });
+    return;
+  }
+
+  translator.variables.unshift({
+    name,
+    value: resolveModernColors({ value: initial.value }),
+    scheme: ColorScheme.DEFAULT,
+    at: translator.mapPosition(initial.at)
+  });
+}
+
+// The bounds an @media (min-width...) or an @container asks for; null for any other at-rule.
+function sizeQueryOf(block: AtRuleBlock) {
+  const queries = new Map([
+    ["media", parseMediaQuery],
+    ["container", parseContainerQuery]
+  ]);
+  return queries.get(block.name)?.(block.prelude) ?? null;
+}
+
+function addAtRule({ translator, block, scheme, media }: {
+  translator: Translator;
+  block: AtRuleBlock;
+  scheme: ColorScheme;
+  media: MediaCondition | null;
+}) {
+  const isProperty = block.name === "property";
+  if (isProperty) {
+    addProperty({
+      translator,
+      block
+    });
+    return;
+  }
+
+  const isStarting = block.name === "starting-style";
+  if (isStarting) {
+    addStartingStyle({
+      translator,
+      block,
+      scheme,
+      media
+    });
+    return;
+  }
+
+  const isLayer = block.name === "layer";
+  if (isLayer) {
+    addLayer({
+      translator,
+      block,
+      scheme,
+      media
+    });
+    return;
+  }
+
+  const isKeyframes = block.name === "keyframes" && scheme === ColorScheme.DEFAULT && media === null;
+  if (isKeyframes) {
+    addKeyframes({
+      translator,
+      block
+    });
+    return;
+  }
+
+  const isNestedMedia = scheme !== ColorScheme.DEFAULT || media !== null;
+  const sizeQuery = isNestedMedia ? null : sizeQueryOf(block);
+  const { children } = block;
+  const isSizeBlock = sizeQuery !== null && children !== null;
+  if (isSizeBlock) {
+    addBlocks({
+      translator,
+      blocks: children,
+      scheme,
+      media: sizeQuery
+    });
+    return;
+  }
+
+  if (isNestedMedia) {
+    reportError({
+      translator,
+      message: `@${block.name} inside @media has no WinUI meaning`,
+      generatedAt: block.at
+    });
+    return;
+  }
+
+  const inner = schemeOf({
+    translator,
+    block
+  });
+  const canNest = inner !== null && children !== null;
+  if (canNest) {
+    addBlocks({
+      translator,
+      blocks: children,
+      scheme: inner,
+      media
+    });
+  } else if (inner !== null) {
+    reportError({
+      translator,
+      message: `@${block.name} has no WinUI meaning`,
+      generatedAt: block.at
+    });
   }
 }
 
@@ -433,6 +718,33 @@ function reportIncompleteVariables(translator: Translator) {
         at: first.at,
         message: `${name} is declared for ${words.join(" and ")} only; declare it outside @media too (the default value)`
       });
+    }
+  }
+}
+
+const RELATIVE_COLOR = /\(\s*from\s/iu;
+
+// A relative color whose origin is a custom property is resolved once every
+// custom property of the sheet is known (it uses the value outside any @media).
+function resolveRelativeColors(translator: Translator) {
+  const defaults = translator.variables.filter(variable => variable.scheme === ColorScheme.DEFAULT);
+  const lookup = new Map(defaults.map(variable => [variable.name, variable.value]));
+  for (const variable of translator.variables) {
+    variable.value = resolveModernColors({
+      value: variable.value,
+      lookup
+    });
+  }
+
+  for (const rule of translator.rules) {
+    for (const declaration of rule.declarations) {
+      const isRelative = RELATIVE_COLOR.test(declaration.value);
+      if (isRelative) {
+        declaration.value = resolveModernColors({
+          value: declaration.value,
+          lookup
+        });
+      }
     }
   }
 }
@@ -543,13 +855,18 @@ export function translateStyleSheet(input: TranslateInput) {
     kinds: new Map(),
     rules: [],
     keyframes: [],
-    nextOrder: 0
+    nextOrder: 0,
+    layers: createLayerOrder(),
+    isStartingStyle: false,
+    ruleLayers: new Map(),
+    lightDarkCount: 0
   };
   try {
     addBlocks({
       translator,
       blocks: parseCss(input.css),
-      scheme: ColorScheme.DEFAULT
+      scheme: ColorScheme.DEFAULT,
+      media: null
     });
   } catch (error) {
     if (!(error instanceof CssSyntaxError)) {
@@ -563,6 +880,14 @@ export function translateStyleSheet(input: TranslateInput) {
     });
   }
 
+  for (const [rule, layer] of translator.ruleLayers) {
+    rule.layer = layerRank({
+      order: translator.layers,
+      name: layer
+    });
+  }
+
+  resolveRelativeColors(translator);
   const resourcesXaml = buildVariableResources(translator);
   validateKeyframes(translator);
   validateRules({

@@ -11,6 +11,8 @@ import {
 import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { effectGroups } from "#src/css/translate/effect-properties.js";
+import { containerGroups } from "#src/css/translate/container-properties.js";
+import { dynamicLengthGroups } from "#src/css/translate/dynamic-length-properties.js";
 import { focusGroups } from "#src/css/translate/focus-properties.js";
 import { resourceGroups } from "#src/css/translate/resource-properties.js";
 import { transformGroups } from "#src/css/translate/transform-properties.js";
@@ -82,6 +84,19 @@ const fakeNative: CssNative = {
     const fakeControl = fake(target);
     fakeControl.style = style === null ? null : String(read(style, "xaml"));
     fakeControl.styleChanges++;
+  },
+  viewportOf(target) {
+    const { width, height } = fake(target).properties;
+    const isSized = typeof width === "number" && typeof height === "number";
+    return isSized ? {
+      width,
+      height
+    } : null;
+  },
+  watchViewport(target, handler) {
+    const fakeControl = fake(target);
+    fakeControl.handlers.set("viewport", handler);
+    return () => fakeControl.handlers.delete("viewport");
   },
   setGridDefinitions(target, kind, lengths) {
     fake(target).columns = `${kind}:${lengths}`;
@@ -238,6 +253,125 @@ test("a state rule listens for its events and restyles as the state changes", ()
 
   element.setClasses("other");
   assert.equal(target.handlers.size, 0);
+  element.dispose();
+});
+
+test("a rule under @media follows the window's size and listens only while one matches", () => {
+  registerStyleSheet(
+    sheet({
+      id: "media.svelte",
+      css: ".m.svelte-9 { opacity: 1 }\n@media (min-width: 600px) { .m.svelte-9 { opacity: 0.5 } }\n@media (max-width: 300px) { .m.svelte-9 { width: 7px } }"
+    })
+  );
+  const target = control({
+    width: 800,
+    height: 400
+  });
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("m svelte-9");
+  assert.match(target.style ?? "", /Value="0.5"/u);
+  assert.doesNotMatch(target.style ?? "", /Width/u);
+  assert.ok(target.handlers.has("viewport"));
+
+  target.properties["width"] = 200;
+  target.handlers.get("viewport")?.();
+  assert.match(target.style ?? "", /Value="1"/u);
+  assert.match(target.style ?? "", /Width/u);
+
+  element.setClasses("other");
+  assert.equal(target.handlers.has("viewport"), false);
+  element.dispose();
+});
+
+test("an @container rule follows the nearest container's size, and listens only while one matches", () => {
+  registerPropertyGroups(containerGroups());
+  registerStyleSheet(
+    sheet({
+      id: "container.svelte",
+      css: ".host.svelte-8 { container: card / inline-size }\n.k.svelte-8 { opacity: 1 }\n@container card (min-width: 300px) { .k.svelte-8 { opacity: 0.5 } }"
+    })
+  );
+  const host = control({
+    actualWidth: 500,
+    actualHeight: 100
+  });
+  const hostElement = styledElement({
+    control: host,
+    elementType: "border"
+  });
+  hostElement.setClasses("host svelte-8");
+  const target = control({
+    parent: host
+  });
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("k svelte-8");
+  assert.match(target.style ?? "", /Value="0.5"/u);
+  assert.ok(host.handlers.has("SizeChanged"));
+
+  host.properties["actualWidth"] = 200;
+  host.handlers.get("SizeChanged")?.();
+  assert.match(target.style ?? "", /Value="1"/u);
+
+  element.setClasses("other");
+  assert.equal(host.handlers.has("SizeChanged"), false);
+  element.dispose();
+  hostElement.dispose();
+});
+
+test("a length with a % follows the parent's size", () => {
+  registerPropertyGroups(dynamicLengthGroups());
+  registerStyleSheet(
+    sheet({
+      id: "dynamic.svelte",
+      css: ".d.svelte-7 { width: calc(50% - 10px) }"
+    })
+  );
+  const parent = control({
+    actualWidth: 400,
+    actualHeight: 100
+  });
+  const target = control({
+    parent
+  });
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("d svelte-7");
+  assert.equal(fake(target).assigned["width"], 190);
+
+  parent.properties["actualWidth"] = 600;
+  parent.handlers.get("SizeChanged")?.();
+  assert.equal(fake(target).assigned["width"], 290);
+  element.dispose();
+  assert.equal(parent.handlers.has("SizeChanged"), false);
+});
+
+test("@starting-style styles an element until it is loaded, then the normal style takes over", () => {
+  registerStyleSheet(
+    sheet({
+      id: "starting.svelte",
+      css: ".s.svelte-6 { opacity: 1 }\n@starting-style { .s.svelte-6 { opacity: 0 } }"
+    })
+  );
+  const target = control();
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("s svelte-6");
+  assert.match(target.style ?? "", /Value="0"/u);
+  assert.ok(target.handlers.has("Loaded"));
+
+  target.handlers.get("Loaded")?.();
+  assert.match(target.style ?? "", /Value="1"/u);
+  assert.equal(target.handlers.has("Loaded"), false);
   element.dispose();
 });
 

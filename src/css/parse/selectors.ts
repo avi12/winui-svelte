@@ -1,8 +1,10 @@
-import { splitCommas } from "./values.ts";
+import { matchingParenthesis, splitCommas } from "./values.ts";
 import { PseudoState } from "#src/css/translate/types.js";
 
 const COMBINATOR_REASON = "descendant, child and sibling selectors have no WinUI meaning (a style applies to an element by its own type and classes; give the element a class)";
 const CLASS_WEIGHT = 1;
+const NOT_OPENING = ":not(";
+const STRUCTURAL = new Set(["first-child", "last-child", "nth-child", "nth-last-child", "only-child", "first-of-type", "last-of-type", "nth-of-type", "empty", "focus-within", "has"]);
 const TYPE_WEIGHT = 1;
 const states = new Set<string>(Object.values(PseudoState));
 const identifier = /^-?[a-z_][\w-]*/iu;
@@ -19,6 +21,8 @@ const identifier = /^-?[a-z_][\w-]*/iu;
 export interface ParsedSelector {
   elementType: string | null;
   classes: string[];
+  /** The classes `:not(.a, .b)` excludes. */
+  notClasses: string[];
   state: PseudoState | null;
   specificity: number;
   /** `:root`, which declares custom properties and styles no element. */
@@ -28,6 +32,7 @@ export interface ParsedSelector {
 class Compound {
   elementType: string | null = null;
   readonly classes: string[] = [];
+  readonly notClasses: string[] = [];
   state: PseudoState | null = null;
   specificity = 0;
   isRoot = false;
@@ -70,6 +75,40 @@ function readWhere({ rest, openLength, compound }: {
   return {
     length: end + 1,
     problem
+  };
+}
+
+// `:not(.a, .b)`: classes only, since a Style cannot be told what an element is not.
+function readNot({ rest, compound, weight }: {
+  rest: string;
+  compound: Compound;
+  weight: number;
+}) {
+  const openLength = NOT_OPENING.length;
+  const end = matchingParenthesis({
+    text: rest,
+    open: openLength - 1
+  });
+  for (const part of splitCommas(rest.slice(openLength, end))) {
+    const inner = new Compound();
+    const problem = readCompound({
+      text: part.trim(),
+      compound: inner,
+      weight: 0
+    });
+    const isUntyped = inner.elementType === null && inner.state === null;
+    const isClassOnly = problem === null && inner.classes.length > 0 && isUntyped;
+    if (!isClassOnly) {
+      return failedStep(problem ?? ":not() takes classes (:not(.busy)); a Style cannot be told what type or state an element is not");
+    }
+
+    compound.notClasses.push(...inner.classes);
+    compound.specificity += weight * CLASS_WEIGHT;
+  }
+
+  return {
+    length: end + 1,
+    problem: null
   };
 }
 
@@ -128,6 +167,15 @@ function readStep({ rest, isStart, compound, weight }: {
   compound: Compound;
   weight: number;
 }) {
+  const isNot = rest.toLowerCase().startsWith(NOT_OPENING);
+  if (isNot) {
+    return readNot({
+      rest,
+      compound,
+      weight
+    });
+  }
+
   const where = /^:where\(/iu.exec(rest);
   const hasWhere = where !== null;
   if (hasWhere) {
@@ -207,24 +255,6 @@ function readCompound({ text, compound, weight }: {
   return null;
 }
 
-function matchingParenthesis({ text, open }: {
-  text: string;
-  open: number;
-}) {
-  let depth = 0;
-  for (let index = open; index < text.length; index++) {
-    depth += text[index] === "(" ? 1 : 0;
-    depth -= text[index] === ")" ? 1 : 0;
-
-    const isBalanced = depth === 0;
-    if (isBalanced) {
-      return index;
-    }
-  }
-
-  return text.length;
-}
-
 function readPseudo({ compound, name, weight }: {
   compound: Compound;
   name: string | undefined;
@@ -238,6 +268,11 @@ function readPseudo({ compound, name, weight }: {
 
   const isKnownState = name !== undefined && states.has(name);
   if (!isKnownState) {
+    const isStructural = name !== undefined && STRUCTURAL.has(name);
+    if (isStructural) {
+      return `:${name} has no WinUI meaning (a Style cannot see an element's siblings or children; give the element a class, such as one set from the {#each} index)`;
+    }
+
     const known = [...states].map(state => `:${state}`).join(", ");
     return `:${name ?? ""} has no WinUI meaning (a control reports ${known})`;
   }
@@ -306,10 +341,28 @@ export function parseSelectorList(text: string) {
       selector: {
         elementType: compound.elementType,
         classes: compound.classes,
+        notClasses: compound.notClasses,
         state: compound.state,
         specificity: compound.specificity,
         isRoot: compound.isRoot
       }
     } as const;
   });
+}
+
+const NESTING_SELECTOR = "&";
+
+/**
+ * The selector list a nested rule stands for, written out: `&` is each selector
+ * of the parent, and a nested selector without one is a descendant of it (which
+ * the selector parser then reports, since a Style has no "inside").
+ */
+export function flattenNestedSelector({ parent, child }: {
+  parent: string;
+  child: string;
+}) {
+  const parents = splitCommas(parent);
+  return splitCommas(child).flatMap(part => parents.map(outer => (
+    part.includes(NESTING_SELECTOR) ? part.replaceAll(NESTING_SELECTOR, outer) : `${outer} ${part}`
+  ))).join(", ");
 }

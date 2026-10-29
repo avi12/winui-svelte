@@ -7,6 +7,7 @@ import { parseLength, parseVariable, splitSlash } from "#src/css/parse/values.js
 
 const MAX_BOX_VALUES = 4;
 const MAX_PAIR_VALUES = 2;
+const GRID_LINE = /^(auto|\d+|span\s+\d+)$/iu;
 
 // CSS's thin, medium and thick, in pixels.
 const BORDER_WIDTH_KEYWORDS = new Map([
@@ -52,7 +53,8 @@ function isWholeVariable(declaration: Declaration) {
   return parseVariable(declaration.value) !== null;
 }
 
-function expandBox({ declaration, names, reader, template }: {
+/** A CSS one-to-four value box (top right bottom left) as a longhand per name. */
+export function expandBox({ declaration, names, reader, template }: {
   declaration: Declaration;
   names: readonly string[];
   reader: Reader;
@@ -291,6 +293,30 @@ function expandLines({ declaration, reader, axis }: {
     })];
 }
 
+// `grid-area: row-start / column-start / row-end / column-end`; a missing end is
+// the line it starts at, so `grid-area: 2 / 3` is the cell in row 2, column 3.
+function expandArea({ declaration, reader }: ExpansionInput) {
+  const lines = splitSlash(declaration.value);
+  const isNumbered = lines.length <= MAX_BOX_VALUES && lines.every(line => GRID_LINE.test(line));
+  if (!isNumbered) {
+    reader.expected("lines separated by /, such as 2 / 3 / span 2 / span 2 (named grid areas have no WinUI meaning: a grid has no grid-template-areas)");
+    return [];
+  }
+
+  const [rowStart = "", columnStart = "auto", rowEnd = "auto", columnEnd = "auto"] = lines;
+  const placements: Array<[string, string]> = [
+    ["grid-row-start", rowStart],
+    ["grid-column-start", columnStart],
+    ["grid-row-end", rowEnd],
+    ["grid-column-end", columnEnd]
+  ];
+  return placements.map(([property, value]) => longhand({
+    declaration,
+    property,
+    value
+  }));
+}
+
 function expandRadius({ declaration, reader }: ExpansionInput) {
   const isElliptical = declaration.value.includes("/");
   if (isElliptical) {
@@ -327,7 +353,45 @@ function sideExpansion(side: (typeof SIDES)[number]) {
   return [`border-${side}`, expandSide] as const;
 }
 
+// Logical properties, for the left-to-right, top-to-bottom writing mode WinUI
+// lays out in: the inline axis is horizontal and the block axis vertical.
+const LOGICAL_SIDES: ReadonlyArray<readonly [string, string]> = [
+  ["inline-start", "left"],
+  ["inline-end", "right"],
+  ["block-start", "top"],
+  ["block-end", "bottom"]
+];
+const LOGICAL_PAIRS: ReadonlyArray<readonly [string, readonly [string, string]]> = [
+  ["inline", ["left", "right"]],
+  ["block", ["top", "bottom"]]
+];
+const LOGICAL_SIZES: ReadonlyArray<readonly [string, string]> = [
+  ["inline-size", "width"],
+  ["block-size", "height"]
+];
+const BOX_PROPERTIES = ["margin", "padding"];
+const SIZE_PREFIXES = ["", "min-", "max-"];
+
+function renamed(property: string) {
+  return ({ declaration }: ExpansionInput) => [longhand({
+    declaration,
+    property,
+    value: declaration.value
+  })];
+}
+
+const logicalExpansions: ReadonlyArray<readonly [string, Expansion]> = [
+  ...BOX_PROPERTIES.flatMap(box => LOGICAL_SIDES.map(([logical, physical]) => [`${box}-${logical}`, renamed(`${box}-${physical}`)] as const)),
+  ...BOX_PROPERTIES.flatMap(box => LOGICAL_PAIRS.map(([logical, [first, second]]) => [`${box}-${logical}`, ({ declaration, reader }: ExpansionInput) => expandPair({
+    declaration,
+    reader,
+    names: [`${box}-${first}`, `${box}-${second}`]
+  })] as const)),
+  ...SIZE_PREFIXES.flatMap(prefix => LOGICAL_SIZES.map(([logical, physical]) => [`${prefix}${logical}`, renamed(`${prefix}${physical}`)] as const))
+];
+
 const expansions = new Map<string, Expansion>([
+  ...logicalExpansions,
   ["margin", ({ declaration, reader }) => expandBox({
     declaration,
     names: SIDES,
@@ -383,6 +447,7 @@ const expansions = new Map<string, Expansion>([
     reader,
     axis: "row"
   })],
+  ["grid-area", expandArea],
   ["flex-flow", expandFlow]
 ]);
 

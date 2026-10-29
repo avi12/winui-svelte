@@ -1,6 +1,7 @@
 import type { CssNative } from "./runtime.ts";
 import { installCssRuntime } from "./runtime.ts";
 import { XAML_NAMESPACES } from "#src/css/translate/cascade.js";
+import { gridLengthParts, GridUnit, trackListParts } from "#src/components/values.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 
 interface ProjectedType<Instance extends object> {
@@ -64,13 +65,10 @@ export interface CssWinui {
 
 /* eslint-enable @typescript-eslint/naming-convention */
 
-const LIST_SEPARATOR = ",";
 // A color animation names the brush of the element (`Background.(SolidColorBrush.Color)`):
 // the runtime targets the element's own brush by its Color, whatever the element's type.
 const BRUSH_COLOR_PATH = /^(\w)(\w*)\.\(SolidColorBrush\.Color\)$/u;
 const BRUSH_COLOR = "Color";
-const STAR_SUFFIX = "*";
-const AUTO_LENGTH = "Auto";
 
 function isRecord(value: NativeValue): value is Record<string, NativeValue> {
   return (typeof value === "object" || typeof value === "function") && value !== null;
@@ -95,30 +93,21 @@ function isEventMethod(value: NativeValue): value is (handler: () => void) => Na
   return typeof value === "function";
 }
 
+const GRID_UNIT_NAMES = new Map<string, keyof CssWinui["GridUnitType"]>([
+  [GridUnit.AUTO, "Auto"],
+  [GridUnit.PIXEL, "Pixel"],
+  [GridUnit.STAR, "Star"]
+]);
+
 // "Auto", "*", "2*" or pixels, as WinUI's GridLength.
 function gridLength({ winui, text }: {
   winui: CssWinui;
   text: string;
 }) {
-  const isAuto = text === AUTO_LENGTH;
-  if (isAuto) {
-    return {
-      value: 1,
-      gridUnitType: winui.GridUnitType.Auto
-    };
-  }
-
-  if (text.endsWith(STAR_SUFFIX)) {
-    const weight = text.slice(0, -STAR_SUFFIX.length);
-    return {
-      value: weight === "" ? 1 : Number(weight),
-      gridUnitType: winui.GridUnitType.Star
-    };
-  }
-
+  const { unit, value } = gridLengthParts(text);
   return {
-    value: Number(text),
-    gridUnitType: winui.GridUnitType.Pixel
+    value,
+    gridUnitType: winui.GridUnitType[GRID_UNIT_NAMES.get(unit) ?? "Pixel"]
   };
 }
 
@@ -175,6 +164,59 @@ export function createCssNative(winui: CssWinui) {
     setStyle(control, style) {
       Object.assign(control, { style });
     },
+    viewportOf(control) {
+      const size = readMember({
+        target: readMember({
+          target: control,
+          key: "xamlRoot"
+        }),
+        key: "size"
+      });
+      const width = readMember({
+        target: size,
+        key: "width"
+      });
+      const height = readMember({
+        target: size,
+        key: "height"
+      });
+      const isSized = typeof width === "number" && typeof height === "number";
+      return isSized ? {
+        width,
+        height
+      } : null;
+    },
+    // The window's XamlRoot says when it resizes, but a control has none until
+    // it is in the tree: its Loaded event is the first moment to listen.
+    watchViewport(control, handler) {
+      const unsubscribers: Array<() => void> = [];
+      function listen() {
+        const root = readMember({
+          target: control,
+          key: "xamlRoot"
+        });
+        const unsubscribe = isRecord(root) ? native.subscribe(root, "Changed", handler) : null;
+        const isSubscribed = unsubscribe !== null;
+        if (isSubscribed) {
+          unsubscribers.push(unsubscribe);
+        }
+      }
+      listen();
+      const unloaded = native.subscribe(control, "Loaded", () => {
+        listen();
+        handler();
+      });
+      const isWaiting = unloaded !== null;
+      if (isWaiting) {
+        unsubscribers.push(unloaded);
+      }
+
+      return () => {
+        for (const unsubscribe of unsubscribers) {
+          unsubscribe();
+        }
+      };
+    },
     setGridDefinitions(control, target, lengths) {
       const isColumns = target === "columns";
       const definitions = readMember({
@@ -186,13 +228,15 @@ export function createCssNative(winui: CssWinui) {
       }
 
       definitions.clear();
-      for (const length of lengths === "" ? [] : lengths.split(LIST_SEPARATOR)) {
+      for (const track of trackListParts(lengths)) {
         const definition = isColumns ? new winui.ColumnDefinition() : new winui.RowDefinition();
         Object.assign(definition, {
           [isColumns ? "width" : "height"]: gridLength({
             winui,
-            text: length.trim()
-          })
+            text: track.length
+          }),
+          [isColumns ? "minWidth" : "minHeight"]: track.min ?? 0,
+          [isColumns ? "maxWidth" : "maxHeight"]: track.max ?? Infinity
         });
         definitions.append(definition);
       }
