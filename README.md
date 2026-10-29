@@ -34,7 +34,8 @@ backdrop. No browser engine is involved; there is no DOM.
   main process, or you from a terminal. The host and the window talk in JSON
   lines (or a `MessagePort` in-process).
 - **Windows only.** Windows 10 version 1809 (build 17763) and Windows 11, on
-  the Windows App SDK (WinUI 3) through [dynwinrt](https://github.com/microsoft/dynwinrt).
+  the Windows App SDK (WinUI 3) through
+  [dynwinrt](https://github.com/microsoft/dynwinrt).
 
 Built for [Edge+](https://github.com/avi12/edge-plus), whose settings panel is
 written with it.
@@ -88,8 +89,8 @@ export default defineConfig({
 
 <!-- hello/vite.config.ts:end -->
 
-`App.svelte` is the window's content. `bind:isOn` works on the component like any
-Svelte binding:
+`App.svelte` is the window's content. `bind:isOn` works on the component like
+any Svelte binding:
 
 <!-- hello/App.svelte:start -->
 
@@ -238,7 +239,8 @@ scripts and captures).
 
 State changes need no `flushSync`: the window's loop is started with
 `Application.startScheduled`, so Node drains microtasks after each WinUI
-callback and Svelte's own flush runs ([experiment](examples/scheduling/README.md)).
+callback and Svelte's own flush runs
+([experiment](examples/scheduling/README.md)).
 
 ## Host integration
 
@@ -249,11 +251,14 @@ window as one deeply reactive object, and the window answers with actions; see
 [`src/state/README.md`](src/state/README.md) for the wire protocol, `hostState`
 and `send`.
 
-**Tauri** (what [Edge+](https://github.com/avi12/edge-plus) does). The Rust core starts the window as a child process
+**Tauri** (what [Edge+](https://github.com/avi12/edge-plus) does). The Rust
+core starts the window as a child process
 (a sidecar: your `main.ts`, or a bundled executable with Node inside) with its
-stdin and stdout piped, writes request lines (`{"id":1,"type":"snapshot","data":{"name":"view","value":{...}},"timestamp":...}`)
+stdin and stdout piped, writes request lines
+(`{"id":1,"type":"snapshot","data":{"name":"view","value":{...}},"timestamp":...}`)
 and later `patch` ones, and reads `action` requests back, answering each with a
-response line (`{"id":1,"response":null}` or `{"id":1,"error":"..."}`). In the window, `createStdioTransport()` and `reserveStdout()` (so a
+response line (`{"id":1,"response":null}` or `{"id":1,"error":"..."}`). In the
+window, `createStdioTransport()` and `reserveStdout()` (so a
 stray `console.log` goes to stderr and cannot corrupt the protocol) are the
 other end. Edge+'s `app/panel-tauri` (`ui/main.ts`, with the core in
 `src-tauri`) is the working example.
@@ -633,8 +638,8 @@ How a value is written:
   `source` takes a URI.
 - An `itemsSource` takes an array, which becomes the collection WinUI reads; an
   `inputScope` takes a name (`"Url"`) or a list of names.
-- A property that takes any object (`header`, `content`) takes a string, which is
-  boxed for it, or a control.
+- A property that takes any object (`header`, `content`) takes a string, which
+  is boxed for it, or a control.
 - Attached properties are plain props: `gridRow`, `gridColumn`, `gridRowSpan`,
   `gridColumnSpan`, `canvasLeft`, `canvasTop`, `canvasZIndex`,
   `automationName`, `automationHelpText`, `toolTip`. Any other:
@@ -678,7 +683,8 @@ snippet has a transition in it.
 ```
 
 One written directly among an element's children (a `Storyboard`) is made but
-placed nowhere; reach it with `{@attach control(storyboard => storyboard.begin())}`.
+placed nowhere; reach it with
+`{@attach control(storyboard => storyboard.begin())}`.
 
 Items come in two forms. `ListView`, `GridView`, `ItemsRepeater`, `ItemsView`,
 `BreadcrumbBar` and `TreeView` take `items`, `key` and an `item` snippet, and
@@ -724,8 +730,8 @@ package and `initWindowsAppSdk` makes them findable; the browser starts in an
 ordinary desktop session, not in a sandboxed process. A `data:` URL is blocked
 as the top frame, as WebView2 does.
 
-The raw elements the components are made of work too: `<stack-panel spacing={8}>`,
-`<text-block>`, `grid.column={1}` for an attached property; they need
+The raw elements the components are made of work too:
+`<stack-panel spacing={8}>`, `<text-block>`, `grid.column={1}` for an attached property; they need
 `registerControls(...)` with the classes they name (a component registers only
 its own class, when it is made, so an app bundles only the bindings it uses).
 Components are the supported way; see [API.md](API.md) for the raw forms and
@@ -881,16 +887,16 @@ Stated plainly, so nobody finds them by surprise:
 - **Windows only**, and only Windows 10 1809 and newer. Importing an entry
   point that loads WinRT on another system fails with dynwinrt's "Cannot find
   native binding" error, and `initWindowsAppSdk` throws a plain error naming
-  the supported platforms; no entry point does work when imported. The Windows App SDK
-  runtime must be installed; the package does not install it.
+  the supported platforms; no entry point does work when imported. The
+  Windows App SDK runtime must be installed; the package does not install it.
 - **Base and thin acrylic are controller backdrops.** `acrylicBase` and
   `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
   `window.systemBackdrop` reads null for them (the controller holds the
   material).
 - **Needs an unreleased Svelte.** The custom-renderer API is a pull request;
   until it ships, the package works with the pkg.pr.new build named above.
-- **`bind:` works on components, not on raw elements.** `<ToggleSwitch bind:isOn>`
-  is supported; `<toggle-switch bind:is-on>` is not. Use the component, or
+- **`bind:` works on components, not on raw elements.**
+  `<ToggleSwitch bind:isOn>` is supported; `<toggle-switch bind:is-on>` is not. Use the component, or
   `{@attach control(...)}` and subscribe to the control's event yourself.
 - **A property whose name starts with "on"** (`ToggleSwitch.OnContent`) is a
   prop on components, but on a raw element Svelte takes the attribute for an
@@ -914,8 +920,8 @@ Stated plainly, so nobody finds them by surprise:
 - **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `box-shadow`
   (use `-winui-elevation`), `filter`, `animation`, descendant, child or sibling
   selectors, nesting or `@keyframes`: each is a build error that says what to
-  use instead. Gradients are `linear-gradient()` and `radial-gradient()` only (no
-  repeating or conic ones, no stop in `px`), and replace `background-color`.
+  use instead. Gradients are `linear-gradient()` and `radial-gradient()` only
+  (no repeating or conic ones, no stop in `px`), and replace `background-color`.
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can
   declare custom properties only (a Style cannot depend on the scheme).
 - **Some CSS is opt-in, and approximate.** `transform` is a 2D RenderTransform
