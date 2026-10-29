@@ -1,5 +1,4 @@
 const POSITIONED = `is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot. A <canvas> child places by canvas-left and canvas-top`;
-const DEPRECATED_GAP = "deprecated alias: use gap, row-gap or column-gap";
 const SIZED_BY_PARENT = "a child cannot size itself in its parent";
 const FR_TRACKS = "give the parent grid-template-columns with fr tracks";
 const ALIGNED_BY_CHILD = "WinUI aligns a child by its own";
@@ -19,9 +18,6 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["grid-auto-rows", "a WinUI grid has the rows grid-template-rows lists and no implicit ones"],
   ["grid-auto-columns", "a WinUI grid has the columns grid-template-columns lists and no implicit ones"],
   ["aspect-ratio", "WinUI has no aspect ratio on an element; set width and height (a Viewbox keeps a ratio)"],
-  ["grid-gap", DEPRECATED_GAP],
-  ["grid-row-gap", DEPRECATED_GAP],
-  ["grid-column-gap", DEPRECATED_GAP],
   ["float", "WinUI has no float; use a grid or a stack-panel"],
   ["flex", `${SIZED_BY_PARENT}: ${FR_TRACKS}`],
   ["flex-grow", `${SIZED_BY_PARENT}: ${FR_TRACKS}`],

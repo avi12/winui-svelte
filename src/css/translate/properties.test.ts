@@ -149,14 +149,12 @@ test("grid-area expands to its longhands", () => {
   );
 });
 
-test("the deprecated grid- gap aliases are build errors", () => {
-  for (const name of ["grid-gap", "grid-row-gap", "grid-column-gap"]) {
-    const result = lower({
-      elementType: "grid",
-      declarations: `${name}: 4px`
-    });
-    assert.match(result.errors.join(), /deprecated alias: use gap, row-gap or column-gap/u);
-  }
+test("grid-gap is an unknown property, as every legacy name is", () => {
+  const result = lower({
+    elementType: "grid",
+    declarations: "grid-gap: 4px"
+  });
+  assert.match(result.errors.join(), /grid-gap has no WinUI meaning/u);
 });
 
 test("sizes WinUI cannot say are build errors", () => {
