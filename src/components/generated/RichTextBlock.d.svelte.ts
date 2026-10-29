@@ -5,5 +5,5 @@ import type { Component } from "svelte";
 
 export type { RichTextBlockComponentProps };
 
-declare const RichTextBlock: Component<RichTextBlockComponentProps, Record<string, never>, "">;
+declare const RichTextBlock: Component<RichTextBlockComponentProps, Record<string, never>, "isTextTrimmed">;
 export default RichTextBlock;

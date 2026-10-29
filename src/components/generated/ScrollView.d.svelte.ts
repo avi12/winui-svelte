@@ -5,5 +5,5 @@ import type { Component } from "svelte";
 
 export type { ScrollViewComponentProps };
 
-declare const ScrollView: Component<ScrollViewComponentProps, Record<string, never>, "">;
+declare const ScrollView: Component<ScrollViewComponentProps, Record<string, never>, "extentHeight" | "extentWidth" | "horizontalOffset" | "state" | "verticalOffset" | "zoomFactor">;
 export default ScrollView;

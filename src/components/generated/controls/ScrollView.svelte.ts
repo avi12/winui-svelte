@@ -2,11 +2,13 @@
 
 import { enumValue } from "../../convert.ts";
 import type { ElementProps, EnumInput } from "../../convert.ts";
+import { observe } from "../../observed.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import {
   ScrollingChainMode,
   ScrollingContentOrientation,
   ScrollingInputKinds,
+  ScrollingInteractionState,
   ScrollingRailMode,
   ScrollingScrollBarVisibility,
   ScrollingScrollMode,
@@ -18,6 +20,12 @@ import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
 export interface ScrollViewProps extends ControlProps {
+  extentHeight?: number | undefined;
+  extentWidth?: number | undefined;
+  horizontalOffset?: number | undefined;
+  state?: EnumInput<typeof ScrollingInteractionState> | undefined;
+  verticalOffset?: number | undefined;
+  zoomFactor?: number | undefined;
   content?: ScrollView["content"] | Snippet;
   contentOrientation?: EnumInput<typeof ScrollingContentOrientation>;
   horizontalAnchorRatio?: number;
@@ -46,7 +54,7 @@ export interface ScrollViewProps extends ControlProps {
   onZoomCompleted?: Parameters<ScrollView["onZoomCompleted"]>[0];
 }
 
-export type ScrollViewBound = ControlBound;
+export type ScrollViewBound = ControlBound & Pick<ScrollViewProps, "extentHeight" | "extentWidth" | "horizontalOffset" | "state" | "verticalOffset" | "zoomFactor">;
 
 export type ScrollViewComponentProps = ScrollViewProps & ElementProps;
 
@@ -175,6 +183,60 @@ export function linkScrollView(
     apply(value) {
       control.zoomMode = enumValue({ table: ScrollingZoomMode, input: value });
     }
+  });
+  observe({
+    link,
+    bound,
+    key: "extentHeight",
+    read: () => control.extentHeight,
+    subscribers: [
+      handler => control.onExtentChanged(handler)
+    ]
+  });
+  observe({
+    link,
+    bound,
+    key: "extentWidth",
+    read: () => control.extentWidth,
+    subscribers: [
+      handler => control.onExtentChanged(handler)
+    ]
+  });
+  observe({
+    link,
+    bound,
+    key: "horizontalOffset",
+    read: () => control.horizontalOffset,
+    subscribers: [
+      handler => control.onViewChanged(handler)
+    ]
+  });
+  observe({
+    link,
+    bound,
+    key: "state",
+    read: () => control.state,
+    subscribers: [
+      handler => control.onStateChanged(handler)
+    ]
+  });
+  observe({
+    link,
+    bound,
+    key: "verticalOffset",
+    read: () => control.verticalOffset,
+    subscribers: [
+      handler => control.onViewChanged(handler)
+    ]
+  });
+  observe({
+    link,
+    bound,
+    key: "zoomFactor",
+    read: () => control.zoomFactor,
+    subscribers: [
+      handler => control.onViewChanged(handler)
+    ]
   });
 
   if ("onAnchorRequested" in props) {

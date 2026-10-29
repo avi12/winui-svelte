@@ -5,11 +5,12 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { MapControl } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface MapControlProps extends ControlProps {
   center?: MapControl["center"];
   interactiveControlsVisible?: boolean;
-  layers?: MapControl["layers"];
+  layers?: MapControl["layers"] | Snippet;
   mapServiceToken?: string;
   zoomLevel?: number;
   onMapElementClick?: Parameters<MapControl["onMapElementClick"]>[0];

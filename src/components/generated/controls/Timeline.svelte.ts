@@ -15,10 +15,13 @@ import type {
   RepeatBehaviorInput
 } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
-import { FillBehavior } from "../bindings.ts";
+import { FillBehavior, Storyboard } from "../bindings.ts";
 import type { Timeline } from "../bindings.ts";
 
 export interface TimelineProps {
+  storyboardTargetProperty?: string;
+  storyboardTargetName?: string;
+  storyboardTarget?: Parameters<typeof Storyboard.setTarget>[1];
   autoReverse?: boolean;
   beginTime?: NullableTimeSpanInput;
   duration?: DurationInput;
@@ -37,6 +40,27 @@ export function linkTimeline(
   _bound: TimelineBound,
   link: Linker
 ) {
+  link.property({
+    props,
+    key: "storyboardTargetProperty",
+    apply(value) {
+      Storyboard.setTargetProperty(control, value);
+    }
+  });
+  link.property({
+    props,
+    key: "storyboardTargetName",
+    apply(value) {
+      Storyboard.setTargetName(control, value);
+    }
+  });
+  link.property({
+    props,
+    key: "storyboardTarget",
+    apply(value) {
+      Storyboard.setTarget(control, value);
+    }
+  });
   link.property({
     props,
     key: "autoReverse",

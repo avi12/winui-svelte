@@ -5,5 +5,5 @@ import type { Component } from "svelte";
 
 export type { TextBlockComponentProps };
 
-declare const TextBlock: Component<TextBlockComponentProps, Record<string, never>, "">;
+declare const TextBlock: Component<TextBlockComponentProps, Record<string, never>, "isTextTrimmed">;
 export default TextBlock;

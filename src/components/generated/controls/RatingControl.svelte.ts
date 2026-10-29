@@ -5,6 +5,7 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { RatingControl } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface RatingControlProps extends ControlProps {
   value?: number | undefined;
@@ -12,7 +13,7 @@ export interface RatingControlProps extends ControlProps {
   initialSetValue?: number;
   isClearEnabled?: boolean;
   isReadOnly?: boolean;
-  itemInfo?: RatingControl["itemInfo"];
+  itemInfo?: RatingControl["itemInfo"] | Snippet;
   maxRating?: number;
   placeholderValue?: number;
   onValueChanged?: Parameters<RatingControl["onValueChanged"]>[0];

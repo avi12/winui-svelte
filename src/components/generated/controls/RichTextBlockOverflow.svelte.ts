@@ -2,19 +2,21 @@
 
 import { thicknessOf } from "../../convert.ts";
 import type { ElementProps, ThicknessInput } from "../../convert.ts";
+import { observe } from "../../observed.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { RichTextBlockOverflow } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 
 export interface RichTextBlockOverflowProps extends FrameworkElementProps {
+  isTextTrimmed?: boolean | undefined;
   maxLines?: number;
   overflowContentTarget?: RichTextBlockOverflow["overflowContentTarget"];
   padding?: ThicknessInput;
   onIsTextTrimmedChanged?: Parameters<RichTextBlockOverflow["onIsTextTrimmedChanged"]>[0];
 }
 
-export type RichTextBlockOverflowBound = FrameworkElementBound;
+export type RichTextBlockOverflowBound = FrameworkElementBound & Pick<RichTextBlockOverflowProps, "isTextTrimmed">;
 
 export type RichTextBlockOverflowComponentProps = RichTextBlockOverflowProps & ElementProps;
 
@@ -45,6 +47,15 @@ export function linkRichTextBlockOverflow(
     apply(value) {
       control.padding = thicknessOf(value);
     }
+  });
+  observe({
+    link,
+    bound,
+    key: "isTextTrimmed",
+    read: () => control.isTextTrimmed,
+    subscribers: [
+      handler => control.onIsTextTrimmedChanged(handler)
+    ]
   });
 
   if ("onIsTextTrimmedChanged" in props) {

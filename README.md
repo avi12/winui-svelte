@@ -374,7 +374,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `FlyoutPresenter` | Controls | `isDefaultShadowEnabled` |  | yes |
 | `FontIcon` | Controls | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `glyph`, `isTextScaleFactorEnabled`, `mirroredWhenRightToLeft` |  |  |
 | `FontIconSource` | Controls | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `glyph`, `isTextScaleFactorEnabled`, `mirroredWhenRightToLeft` |  |  |
-| `Frame` | Controls | `cacheSize`, `isNavigationStackEnabled`, `sourcePageType` |  | yes |
+| `Frame` | Controls | `cacheSize`, `isNavigationStackEnabled`, `sourcePageType` | `backStackDepth`, `canGoBack`, `canGoForward` | yes |
 | `GeometryGroup` | Media | `fillRule` |  | yes |
 | `Glyphs` | Documents | `colorFontPaletteIndex`, `fill`, `fontRenderingEmSize`, `fontUri`, `indices`, `isColorFontEnabled`, `originX`, `originY`, +2 more |  |  |
 | `GradientStop` | Media | `color`, `offset` |  | yes |
@@ -425,6 +425,8 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `ListViewItem` | Controls |  |  | yes |
 | `ListViewItemPresenter` | Controls.Primitives | `checkBoxBorderBrush`, `checkBoxBrush`, `checkBoxCornerRadius`, `checkBoxDisabledBorderBrush`, `checkBoxDisabledBrush`, `checkBoxPointerOverBorderBrush`, `checkBoxPointerOverBrush`, `checkBoxPressedBorderBrush`, +51 more |  | yes |
 | `MapControl` | Controls | `center`, `interactiveControlsVisible`, `layers`, `mapServiceToken`, `zoomLevel` |  |  |
+| `MapElementsLayer` | Controls | `mapElements` |  |  |
+| `MapIcon` | Controls | `location` |  |  |
 | `Matrix3DProjection` | Media | `projectionMatrix` |  | yes |
 | `MatrixTransform` | Media | `matrix` |  |  |
 | `MediaPlayerElement` | Controls | `areTransportControlsEnabled`, `autoPlay`, `isFullWindow`, `posterSource`, `source`, `stretch`, `transportControls` |  |  |
@@ -441,7 +443,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `MicaBackdrop` | Media | `kind` |  |  |
 | `MonochromaticOverlayPresenter` | Controls.Primitives | `replacementColor`, `sourceElement` |  | yes |
 | `NavigationThemeTransition` | Media.Animation | `defaultNavigationTransitionInfo` |  | yes |
-| `NavigationView` | Controls | `alwaysShowHeader`, `autoSuggestBox`, `compactModeThresholdWidth`, `compactPaneLength`, `contentOverlay`, `expandedModeThresholdWidth`, `footerMenuItemsSource`, `header`, +24 more | `isPaneOpen`, `selectedItem` | yes |
+| `NavigationView` | Controls | `alwaysShowHeader`, `autoSuggestBox`, `compactModeThresholdWidth`, `compactPaneLength`, `contentOverlay`, `expandedModeThresholdWidth`, `footerMenuItemsSource`, `header`, +24 more | `isPaneOpen`, `selectedItem`, `displayMode` | yes |
 | `NavigationViewItem` | Controls | `hasUnrealizedChildren`, `icon`, `infoBadge`, `isChildSelected`, `isExpanded`, `menuItemsSource`, `selectsOnInvoked` |  | yes |
 | `NavigationViewItemHeader` | Controls |  |  | yes |
 | `NavigationViewItemPresenter` | Controls.Primitives | `icon`, `infoBadge` |  | yes |
@@ -479,7 +481,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `PolyQuadraticBezierSegment` | Media | `points` |  | yes |
 | `PopInThemeAnimation` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
 | `PopOutThemeAnimation` | Media.Animation | `targetName` |  |  |
-| `Popup` | Controls.Primitives | `child`, `childTransitions`, `desiredPlacement`, `horizontalOffset`, `isLightDismissEnabled`, `isOpen`, `lightDismissOverlayMode`, `placementTarget`, +3 more | `isOpen` | yes |
+| `Popup` | Controls.Primitives | `child`, `childTransitions`, `desiredPlacement`, `horizontalOffset`, `isLightDismissEnabled`, `isOpen`, `lightDismissOverlayMode`, `placementTarget`, +3 more | `isOpen`, `actualPlacement` | yes |
 | `PopupThemeTransition` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset` |  |  |
 | `PowerEase` | Media.Animation | `power` |  |  |
 | `ProgressBar` | Controls | `isIndeterminate`, `showError`, `showPaused` | `value` |  |
@@ -493,6 +495,9 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `RadioButtons` | Controls | `header`, `headerTemplate`, `itemsSource`, `itemTemplate`, `maxColumns`, `selectedIndex`, `selectedItem` | `selectedIndex`, `selectedItem` |  |
 | `RadioMenuFlyoutItem` | Controls | `groupName`, `isChecked` |  | yes |
 | `RatingControl` | Controls | `caption`, `initialSetValue`, `isClearEnabled`, `isReadOnly`, `itemInfo`, `maxRating`, `placeholderValue`, `value` | `value` |  |
+| `RatingItemFontInfo` | Controls | `disabledGlyph`, `glyph`, `placeholderGlyph`, `pointerOverGlyph`, `pointerOverPlaceholderGlyph`, `unsetGlyph` |  |  |
+| `RatingItemImageInfo` | Controls | `disabledImage`, `image`, `placeholderImage`, `pointerOverImage`, `pointerOverPlaceholderImage`, `unsetImage` |  |  |
+| `RatingItemInfo` | Controls |  |  |  |
 | `Rectangle` | Shapes | `radiusX`, `radiusY` |  |  |
 | `RectangleGeometry` | Media | `rect` |  |  |
 | `RefreshContainer` | Controls | `pullDirection`, `visualizer` |  | yes |
@@ -505,16 +510,16 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `RepositionThemeTransition` | Media.Animation | `isStaggeringEnabled` |  |  |
 | `RevealListViewItemPresenter` | Controls |  |  | yes |
 | `RichEditBox` | Controls | `acceptsReturn`, `characterCasing`, `clipboardCopyFormat`, `description`, `desiredCandidateWindowAlignment`, `disabledFormattingAccelerators`, `header`, `headerTemplate`, +15 more |  |  |
-| `RichTextBlock` | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +18 more |  | yes |
-| `RichTextBlockOverflow` | Controls | `maxLines`, `overflowContentTarget`, `padding` |  |  |
+| `RichTextBlock` | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +18 more | `isTextTrimmed` | yes |
+| `RichTextBlockOverflow` | Controls | `maxLines`, `overflowContentTarget`, `padding` | `isTextTrimmed` |  |
 | `RotateTransform` | Media | `angle`, `centerX`, `centerY` |  |  |
 | `Run` | Documents | `flowDirection`, `text` |  | yes |
 | `ScaleTransform` | Media | `centerX`, `centerY`, `scaleX`, `scaleY` |  |  |
 | `ScrollBar` | Controls.Primitives | `indicatorMode`, `orientation`, `viewportSize` | `value` |  |
 | `ScrollContentPresenter` | Controls | `canContentRenderOutsideBounds`, `canHorizontallyScroll`, `canVerticallyScroll`, `scrollOwner`, `sizesContentToTemplatedParent` |  | yes |
-| `ScrollPresenter` | Controls.Primitives | `background`, `content`, `contentOrientation`, `horizontalAnchorRatio`, `horizontalScrollChainMode`, `horizontalScrollController`, `horizontalScrollMode`, `horizontalScrollRailMode`, +10 more |  |  |
-| `ScrollView` | Controls | `content`, `contentOrientation`, `horizontalAnchorRatio`, `horizontalScrollBarVisibility`, `horizontalScrollChainMode`, `horizontalScrollMode`, `horizontalScrollRailMode`, `ignoredInputKinds`, +9 more |  |  |
-| `ScrollViewer` | Controls | `bringIntoViewOnFocusChange`, `canContentRenderOutsideBounds`, `horizontalAnchorRatio`, `horizontalScrollBarVisibility`, `horizontalScrollMode`, `horizontalSnapPointsAlignment`, `horizontalSnapPointsType`, `isDeferredScrollingEnabled`, +20 more |  | yes |
+| `ScrollPresenter` | Controls.Primitives | `background`, `content`, `contentOrientation`, `horizontalAnchorRatio`, `horizontalScrollChainMode`, `horizontalScrollController`, `horizontalScrollMode`, `horizontalScrollRailMode`, +10 more | `state` |  |
+| `ScrollView` | Controls | `content`, `contentOrientation`, `horizontalAnchorRatio`, `horizontalScrollBarVisibility`, `horizontalScrollChainMode`, `horizontalScrollMode`, `horizontalScrollRailMode`, `ignoredInputKinds`, +9 more | `extentHeight`, `extentWidth`, `horizontalOffset`, `state`, `verticalOffset`, `zoomFactor` |  |
+| `ScrollViewer` | Controls | `bringIntoViewOnFocusChange`, `canContentRenderOutsideBounds`, `horizontalAnchorRatio`, `horizontalScrollBarVisibility`, `horizontalScrollMode`, `horizontalSnapPointsAlignment`, `horizontalSnapPointsType`, `isDeferredScrollingEnabled`, +20 more | `horizontalOffset`, `verticalOffset`, `zoomFactor` | yes |
 | `SelectorBar` | Controls | `selectedItem` | `selectedItem` |  |
 | `SelectorBarItem` | Controls | `icon`, `text` |  |  |
 | `SemanticZoom` | Controls | `canChangeViews`, `isZoomedInViewActive`, `isZoomOutButtonEnabled`, `zoomedInView`, `zoomedOutView` |  | yes |
@@ -543,6 +548,8 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `SwipeBackThemeAnimation` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
 | `SwipeControl` | Controls | `bottomItems`, `leftItems`, `rightItems`, `topItems` |  | yes |
 | `SwipeHintThemeAnimation` | Media.Animation | `targetName`, `toHorizontalOffset`, `toVerticalOffset` |  |  |
+| `SwipeItem` | Controls | `background`, `behaviorOnInvoked`, `command`, `commandParameter`, `foreground`, `iconSource`, `text` |  |  |
+| `SwipeItems` | Controls | `mode` |  | yes |
 | `SymbolIcon` | Controls | `symbol` |  |  |
 | `SymbolIconSource` | Controls | `symbol` |  |  |
 | `SystemBackdropElement` | Controls | `cornerRadius`, `systemBackdrop` |  |  |
@@ -550,9 +557,10 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `TabViewItem` | Controls | `header`, `headerTemplate`, `iconSource`, `isClosable` |  | yes |
 | `TabViewListView` | Controls.Primitives |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `TeachingTip` | Controls | `actionButtonCommand`, `actionButtonCommandParameter`, `actionButtonContent`, `actionButtonStyle`, `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonContent`, `closeButtonStyle`, +12 more | `isOpen` | yes |
-| `TextBlock` | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +17 more |  | yes |
+| `TextBlock` | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +17 more | `isTextTrimmed` | yes |
 | `TextBox` | Controls | `acceptsReturn`, `characterCasing`, `description`, `desiredCandidateWindowAlignment`, `header`, `headerTemplate`, `horizontalTextAlignment`, `inputScope`, +18 more | `selectionLength`, `selectionStart`, `text` |  |
 | `TextCommandBarFlyout` | Controls |  | `open` |  |
+| `TextHighlighter` | Documents | `background`, `foreground` |  |  |
 | `ThemeShadow` | Media |  |  |  |
 | `Thumb` | Controls.Primitives |  |  |  |
 | `TickBar` | Controls.Primitives | `fill` |  |  |
@@ -570,7 +578,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `TreeViewItem` | Controls | `collapsedGlyph`, `expandedGlyph`, `glyphBrush`, `glyphOpacity`, `glyphSize`, `hasUnrealizedChildren`, `isExpanded`, `itemsSource` |  | yes |
 | `TreeViewList` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `TreeViewNode` | Controls | `content`, `hasUnrealizedChildren`, `isExpanded` |  |  |
-| `TwoPaneView` | Controls | `minTallModeHeight`, `minWideModeWidth`, `pane1`, `pane1Length`, `pane2`, `pane2Length`, `panePriority`, `tallModeConfiguration`, +1 more |  |  |
+| `TwoPaneView` | Controls | `minTallModeHeight`, `minWideModeWidth`, `pane1`, `pane1Length`, `pane2`, `pane2Length`, `panePriority`, `tallModeConfiguration`, +1 more | `mode` |  |
 | `Underline` | Documents |  |  | yes |
 | `UniformGridLayout` | Controls | `itemsJustification`, `itemsStretch`, `maximumRowsOrColumns`, `minColumnSpacing`, `minItemHeight`, `minItemWidth`, `minRowSpacing`, `orientation` |  |  |
 | `UserControl` | Controls | `content` |  | yes |
