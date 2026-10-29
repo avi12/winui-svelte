@@ -448,6 +448,8 @@ class ElementStyle implements StyledElement {
   private appliedStyle: object | null = null;
   private viewport: Viewport | null = null;
   private unwatchViewport: (() => void) | null = null;
+  private isSettled = false;
+  private unwatchSettle: (() => void) | null = null;
   private containers: ContainerWatch | null = null;
   private appliedWrites = "";
   private writeUndos: Array<() => void> = [];
@@ -481,6 +483,7 @@ class ElementStyle implements StyledElement {
 
     this.subscriptions.clear();
     this.unwatchViewport?.();
+    this.unwatchSettle?.();
     this.containers?.dispose();
     for (const undo of this.writeUndos) {
       undo();
@@ -517,11 +520,13 @@ class ElementStyle implements StyledElement {
       facts: {
         elementType: this.elementType,
         classes: this.classes,
-        states: this.states
+        states: this.states,
+        isStarting: !this.isSettled
       },
       isStateIgnored: true,
       isMediaIgnored: true
     });
+    this.watchSettling(candidates.some(({ rule }) => rule.startingStyle === true));
     this.syncStates(new Set(candidates.flatMap(({ rule }) => (rule.state === null ? [] : [rule.state]))));
     const queries = candidates.flatMap(({ rule }) => rule.media ?? []);
     this.syncViewport(queries.some(query => query.container === undefined));
@@ -561,6 +566,39 @@ class ElementStyle implements StyledElement {
       writes: [...built.writes, ...resourceWrites(matched)]
     });
     this.appliedKey = isUnstyled ? null : key;
+  }
+
+  // The @starting-style rules style the element until it is loaded: the second style
+  // is a change of properties, which a `transition` animates. An element with no such
+  // rule has nothing to settle.
+  private watchSettling(hasStartingRules: boolean) {
+    const currentNative = native;
+    const isDone = this.isSettled || this.unwatchSettle !== null;
+    const isUnavailable = isDone || currentNative === null;
+    if (isUnavailable) {
+      return;
+    }
+
+    if (!hasStartingRules) {
+      this.isSettled = true;
+      return;
+    }
+
+    const settle = () => {
+      this.unwatchSettle?.();
+      this.unwatchSettle = null;
+      this.isSettled = true;
+      this.refresh();
+    };
+    const isLoaded = currentNative.read({
+      control: this.control,
+      property: "isLoaded"
+    }) === true;
+    this.unwatchSettle = currentNative.subscribe(this.control, "Loaded", settle) ?? (() => undefined);
+
+    if (isLoaded) {
+      queueMicrotask(settle);
+    }
   }
 
   // The writes the style calls for are applied again, after the last ones are

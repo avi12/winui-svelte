@@ -55,7 +55,6 @@ export function unsupportedReason(property: string) {
 const UNSUPPORTED_AT_RULES: ReadonlyMap<string, string> = new Map([
   ["scope", "it is written out against the component's markup by the component build, not by a bare stylesheet"],
   ["supports", "WinUI supports exactly what this translator accepts; write the rules without the condition"],
-  ["starting-style", "an entrance needs an animation, which a Style cannot hold; use transition on opacity, translate, scale or rotate"],
   ["keyframes", "use transition on opacity, translate, scale or rotate"],
   ["import", "import the component or its stylesheet from the script"]
 ]);

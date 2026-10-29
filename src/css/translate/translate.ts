@@ -72,6 +72,8 @@ interface Translator {
   rules: Rule[];
   nextOrder: number;
   layers: LayerOrder;
+  /** Whether the rules being read are inside `@starting-style`. */
+  isStartingStyle: boolean;
   /** The layer each rule was written in, turned into its place once the sheet is read. */
   ruleLayers: Map<Rule, string>;
   /** How many `light-dark()` calls were given a custom property of their own. */
@@ -307,6 +309,7 @@ function addSelectorRule({ translator, block, selector, scheme, media }: {
     order: translator.nextOrder,
     declarations: isSchemeConditional ? [] : properties,
     ...media === null ? {} : { media },
+    ...translator.isStartingStyle ? { startingStyle: true as const } : {},
     resourcesXaml
   };
   translator.rules.push(rule);
@@ -412,6 +415,38 @@ function addBlocks({ translator, blocks, scheme, media }: {
   }
 }
 
+// `@starting-style { ... }`: the rules style the element until its first layout. Its rules
+// must not be in a media query: the state an entrance starts from does not change with the size.
+function addStartingStyle({ translator, block, scheme, media }: {
+  translator: Translator;
+  block: AtRuleBlock;
+  scheme: ColorScheme;
+  media: MediaCondition | null;
+}) {
+  const { children } = block;
+  const isReadable = children !== null && block.prelude.trim() === "" && !translator.isStartingStyle;
+  if (!isReadable) {
+    reportError({
+      translator,
+      message: "@starting-style takes a block of rules (or declarations, inside a rule) and cannot nest",
+      generatedAt: block.at
+    });
+    return;
+  }
+
+  translator.isStartingStyle = true;
+  try {
+    addBlocks({
+      translator,
+      blocks: children,
+      scheme,
+      media
+    });
+  } finally {
+    translator.isStartingStyle = false;
+  }
+}
+
 // `@layer a, b;` orders layers; `@layer a { ... }` puts its rules in one.
 function addLayer({ translator, block, scheme, media }: {
   translator: Translator;
@@ -510,6 +545,17 @@ function addAtRule({ translator, block, scheme, media }: {
     addProperty({
       translator,
       block
+    });
+    return;
+  }
+
+  const isStarting = block.name === "starting-style";
+  if (isStarting) {
+    addStartingStyle({
+      translator,
+      block,
+      scheme,
+      media
     });
     return;
   }
@@ -712,6 +758,7 @@ export function translateStyleSheet(input: TranslateInput) {
     rules: [],
     nextOrder: 0,
     layers: createLayerOrder(),
+    isStartingStyle: false,
     ruleLayers: new Map(),
     lightDarkCount: 0
   };

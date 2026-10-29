@@ -21,6 +21,8 @@ export interface ElementFacts {
   elementType: string;
   classes: ReadonlySet<string>;
   states: ReadonlySet<PseudoState>;
+  /** Whether the element is still in its starting state, which the `@starting-style` rules style. */
+  isStarting?: boolean;
   /** The window's content size, or null where it is unknown: a rule under an @media then does not apply. */
   viewport?: Viewport | null;
 }
@@ -60,7 +62,8 @@ function ruleApplies({ rule, facts, isStateIgnored, isMediaIgnored }: {
     media: rule.media,
     viewport: facts.viewport ?? null
   });
-  return isTypeMatch && hasClasses && hasNoExcluded && isStateActive && isMediaActive;
+  const isStartingActive = rule.startingStyle === undefined || facts.isStarting === true;
+  return isTypeMatch && hasClasses && hasNoExcluded && isStateActive && isMediaActive && isStartingActive;
 }
 
 /**

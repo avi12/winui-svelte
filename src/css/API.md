@@ -379,6 +379,14 @@ and again when the parent, the window (`XamlRoot.Changed`) or the container
 `<style>` (a `style` attribute is not renamed by the build); an expression that
 is not a length is a build error.
 
+## Entrances: `@starting-style`
+
+The rules in `@starting-style { .a { opacity: 0 } }` (or `.a { @starting-style { opacity: 0 } }`)
+style an element until it is loaded; then the normal style replaces them. The
+second style is a change of properties, so a `transition` on them (the opt-in
+transform group) animates the entrance; without one the element simply appears in
+its final style. An element in the tree when it is styled settles at once.
+
 ## Container size: `@container`
 
 `container-type: size | inline-size`, `container-name` and `container: name / type`
@@ -414,8 +422,8 @@ selector of the parent (`.a, .b { &:hover { ... } &.on { ... } }` is four
 rules), and a nested selector without `&` is a descendant, which stays an error
 (a Style has no "inside"). `&` may stand anywhere in a nested selector. An
 at-rule inside a rule (`.a { @media (min-width: 600px) { ... } }`) styles the
-rule's own selector under that at-rule; `@supports` and `@starting-style`
-still have no WinUI meaning there and say so.
+rule's own selector under that at-rule; `@supports` still has no WinUI meaning there
+and says so.
 
 ## Modern colors
 
@@ -490,7 +498,6 @@ selectors; `@scope` holds style rules only.
 ## At-rules without a WinUI meaning
 
 `@supports`,
-`@starting-style` (an entrance needs an animation, which a Style cannot hold),
 `@keyframes` and `@import` are build errors that say so.
 
 ## What stays unsupported, and why

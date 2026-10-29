@@ -598,7 +598,6 @@ test("light-dark() becomes a custom property with a value per theme", () => {
 
 test("at-rules with no WinUI meaning say what to write instead", () => {
   assert.match(errors("@scope (.card) { .title { opacity: 1 } }").join(), /@scope has no WinUI meaning.*component build/u);
-  assert.match(errors("@starting-style { .a { opacity: 0 } }").join(), /@starting-style has no WinUI meaning.*transition/u);
 });
 
 test("an @container rule keeps its bounds and the container's name", () => {
@@ -645,4 +644,15 @@ test("a length that depends on the layout is renamed for the dynamic-length grou
     "height",
     "-winui-dynamic-min-width"
   ]);
+});
+
+test("@starting-style marks its rules, around a rule or inside one", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { opacity: 1; @starting-style { opacity: 0 } }\n@starting-style { .b { opacity: 0 } }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules.map(rule => rule.startingStyle ?? false), [false, true, true]);
+  assert.match(errors("@starting-style (min-width: 1px) { .a { opacity: 0 } }").join(), /@starting-style takes a block of rules/u);
 });

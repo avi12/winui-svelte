@@ -86,6 +86,8 @@ export interface Rule {
   notClasses?: string[];
   /** The place of the `@layer` the rule is in, from the weakest; absent outside every layer, which beats them all. */
   layer?: number;
+  /** Set for a rule in `@starting-style`: it styles the element only until it is loaded (an entrance starts there). */
+  startingStyle?: true;
   state: PseudoState | null;
   /** Classes plus pseudo-class plus one for a type, as in CSS (`:where()` is 0). */
   specificity: number;

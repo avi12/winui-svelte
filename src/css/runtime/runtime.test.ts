@@ -341,6 +341,28 @@ test("a length with a % follows the parent's size", () => {
   assert.equal(parent.handlers.has("SizeChanged"), false);
 });
 
+test("@starting-style styles an element until it is loaded, then the normal style takes over", () => {
+  registerStyleSheet(
+    sheet({
+      id: "starting.svelte",
+      css: ".s.svelte-6 { opacity: 1 }\n@starting-style { .s.svelte-6 { opacity: 0 } }"
+    })
+  );
+  const target = control();
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("s svelte-6");
+  assert.match(target.style ?? "", /Value="0"/u);
+  assert.ok(target.handlers.has("Loaded"));
+
+  target.handlers.get("Loaded")?.();
+  assert.match(target.style ?? "", /Value="1"/u);
+  assert.equal(target.handlers.has("Loaded"), false);
+  element.dispose();
+});
+
 test(":disabled and :checked start from the control's own state", () => {
   registerStyleSheet(
     sheet({
