@@ -365,6 +365,20 @@ Opt-in (`winui-svelte/css/position`). Offsets are lengths in px (or `auto`).
 
 `z-index` is `Canvas.ZIndex`.
 
+## Lengths that depend on the layout
+
+`calc()`, `min()`, `max()` and `clamp()` of px and rem fold at build time. With a
+percentage, a viewport unit (`vw`, `vh`, `vmin`, `vmax`) or a container unit
+(`cqw`, `cqh`, `cqi`, `cqb`, `cqmin`, `cqmax`) in `width`, `height`, `min-*` or `max-*`,
+the build renames the property and the opt-in `winui-svelte/css/dynamic-length`
+group evaluates it at run time, through the same fold: a % is of the parent's
+size along that axis (`calc(50% - 8px)`), a viewport unit of the window's content,
+a container unit of the nearest container. The result is assigned to the control,
+and again when the parent, the window (`XamlRoot.Changed`) or the container
+(`SizeChanged`) resizes, and when the control is loaded. It needs a component's
+`<style>` (a `style` attribute is not renamed by the build); an expression that
+is not a length is a build error.
+
 ## Container size: `@container`
 
 `container-type: size | inline-size`, `container-name` and `container: name / type`
@@ -477,9 +491,7 @@ selectors; `@scope` holds style rules only.
 
 `@supports`,
 `@starting-style` (an entrance needs an animation, which a Style cannot hold),
-`@keyframes` and `@import` are build errors that say so. Also not done:
-`color-mix` in a space other than sRGB, relative color syntax, and
-`clamp()`/`min()`/`max()` with a % or a viewport unit.
+`@keyframes` and `@import` are build errors that say so.
 
 ## What stays unsupported, and why
 

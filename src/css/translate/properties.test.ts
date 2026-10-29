@@ -176,7 +176,7 @@ test("sizes WinUI cannot say are build errors", () => {
   const cases: Array<[string, RegExp]> = [
     ["box-sizing: content-box", /content-box has no WinUI meaning/u],
     ["width: 50%", /width: expected a length in px/u],
-    ["width: calc(100% - 8px)", /width: expected a length in px/u]
+    ["width: calc(100% - 8px * 2px)", /expected a calc\(\), min\(\), max\(\) or clamp\(\) of lengths/u]
   ];
   for (const [declarations, pattern] of cases) {
     assert.match(

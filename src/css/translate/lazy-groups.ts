@@ -1,5 +1,6 @@
 import { gradientGroups } from "./background-properties.ts";
 import { CONTAINER_MEMBERS, containerGroups } from "./container-properties.ts";
+import { DYNAMIC_MEMBERS, dynamicLengthGroups } from "./dynamic-length-properties.ts";
 import { focusGroups, OUTLINE_MEMBERS } from "./focus-properties.ts";
 import { POSITION_MEMBERS, positionGroups } from "./position-properties.ts";
 import type { PropertyGroup } from "./property-kit.ts";
@@ -56,6 +57,12 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     subpath: "/position",
     exportName: "positionGroups",
     groups: positionGroups
+  },
+  {
+    isNeededBy: usesProperties(DYNAMIC_MEMBERS),
+    subpath: "/dynamic-length",
+    exportName: "dynamicLengthGroups",
+    groups: dynamicLengthGroups
   },
   {
     isNeededBy: usesProperties(CONTAINER_MEMBERS),

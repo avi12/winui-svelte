@@ -38,7 +38,7 @@ function isNamed({ names, name }: {
 }
 
 /** The nearest ancestor of `control` that is a container with this name (any container for an empty name). */
-function containerOf({ control, name, native }: {
+export function containerOf({ control, name, native }: {
   control: object;
   name: string;
   native: ContainerNative;
@@ -67,7 +67,7 @@ function containerOf({ control, name, native }: {
 }
 
 /** The size of a container in px, or null while it has none. */
-function sizeOfContainer({ container, native }: {
+export function sizeOfContainer({ container, native }: {
   container: object;
   native: ContainerNative;
 }) {

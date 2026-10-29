@@ -1,4 +1,5 @@
 import { computeDeclarations } from "./cascade.ts";
+import { dynamicPropertyOf } from "./dynamic-length-properties.ts";
 import { createLayerOrder, declareLayer, layerRank, withinLayer } from "./layers.ts";
 import type { LayerOrder } from "./layers.ts";
 import { LAZY_GROUPS } from "./lazy-groups.ts";
@@ -18,6 +19,7 @@ import type {
 import { unsupportedAtRuleReason } from "./unsupported-properties.ts";
 import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
+import { isDynamicLength } from "#src/css/parse/dynamic-length.js";
 import { replaceLightDark } from "#src/css/parse/light-dark.js";
 import type { MediaCondition } from "#src/css/parse/media.js";
 import { parseContainerQuery, parseMediaQuery } from "#src/css/parse/media.js";
@@ -131,6 +133,8 @@ function originalDeclaration({ translator, declaration }: {
   declaration: Declaration;
 }) {
   const at = translator.mapPosition(declaration.at);
+  const dynamic = dynamicPropertyOf(declaration.property);
+  const isDynamic = dynamic !== null && isDynamicLength(declaration.value);
   const { value, pairs } = replaceLightDark({
     value: resolveModernColors({ value: declaration.value }),
     nameFor: () => `--light-dark-${translator.lightDarkCount++}`
@@ -154,6 +158,7 @@ function originalDeclaration({ translator, declaration }: {
 
   return {
     ...declaration,
+    property: isDynamic ? dynamic : declaration.property,
     value,
     at
   };
