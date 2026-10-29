@@ -84,7 +84,7 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | Module | Properties | Section |
 |---|---|---|
 | `winui-svelte/css/gradients` | `background-image` | Gradients |
-| `winui-svelte/css/transform` | `transform`, `transform-origin`, and the pivot of `scale` and `rotate` | Transforms |
+| `winui-svelte/css/transform` | `transform`, `transform-origin`, `transition`, and the pivot of `scale` and `rotate` | Transforms |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |
@@ -210,9 +210,10 @@ default. `CenterPoint` is absolute (device-independent pixels, a `Vector3`) and
 a Style cannot compute it from the size, so it is not a setter: the `origin`
 write sets it from the element's size and sets it again on `SizeChanged`. It is
 part of the transform module (`winui-svelte/css/transform`), which a sheet
-imports when it has `scale`, `rotate`, `transform` or `transform-origin`; with
-none of those in any sheet, a `scale` in a style attribute pivots at the
-top-left corner, as WinUI does.
+imports when it has `scale`, `rotate`, `transform`, `transform-origin` or
+`transition`; with none of those in any sheet, a `scale` in a style attribute
+pivots at the top-left corner, as WinUI does. A `transition` in a style
+attribute works only once some sheet of the app has the module.
 
 `transform-origin` takes one or two positions: `left`, `center`, `right`, `top`,
 `bottom` (either order), a percentage of the element's size, or a length in

@@ -96,6 +96,17 @@ test("a sheet opts into the transform parser only when it has a transform", () =
   assert.match(transformed?.code ?? "", /registerPropertyGroups as \w+/u);
 });
 
+test("a sheet opts into the transform module for a transition", () => {
+  const transitioned = moduleFor(
+    `<border class="card"></border>
+<style>
+  .card { transition: opacity 200ms }
+</style>
+`
+  );
+  assert.match(transitioned?.code ?? "", /from "winui-svelte\/css\/transform"/u);
+});
+
 test("a sheet opts into the other groups by the properties it uses", () => {
   const code = moduleFor(
     `<border class="card"></border>

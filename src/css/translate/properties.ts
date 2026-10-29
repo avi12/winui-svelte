@@ -8,7 +8,7 @@ import {
   gridTemplate,
   overflow
 } from "./layout-properties.ts";
-import { rotation, scaling, transition, translation } from "./motion-properties.ts";
+import { rotation, scaling, translation } from "./motion-properties.ts";
 import {
   brushProperty,
   ignored,
@@ -264,10 +264,6 @@ const propertyGroups: readonly PropertyGroup[] = [
     member: "rotate",
     parse: rotation
   }),
-  {
-    members: ["transition"],
-    lower: transition
-  },
   ignored({
     member: "cursor",
     why: "WinUI's controls choose their own cursor"

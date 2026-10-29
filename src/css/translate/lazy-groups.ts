@@ -32,7 +32,7 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     groups: gradientGroups
   },
   {
-    isNeededBy: usesProperties(["transform", "transform-origin", "scale", "rotate"]),
+    isNeededBy: usesProperties(["transform", "transform-origin", "scale", "rotate", "transition"]),
     subpath: "/transform",
     exportName: "transformGroups",
     groups: transformGroups

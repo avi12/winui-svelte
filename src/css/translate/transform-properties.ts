@@ -1,6 +1,7 @@
 import type { PropertyGroup } from "./property-kit.ts";
 import { defaultOriginProperty, transformOriginProperty } from "./transform-origin-properties.ts";
 import { DEFAULT_ORIGIN, ORIGIN_TARGET } from "./transform-origin.ts";
+import { transitionProperty } from "./transition-properties.ts";
 import { parseDegrees } from "#src/css/parse/angles.js";
 import type { Reader } from "#src/css/parse/reader.js";
 import { parseLength, parseNumber, splitCommas, splitWords } from "#src/css/parse/values.js";
@@ -227,10 +228,16 @@ function transformProperty() {
 }
 
 /**
- * The property groups of `transform` and `transform-origin`. Apart from the
- * built-in groups, as the gradients are: a sheet that uses one registers them
- * (`registerPropertyGroups`), so a window with none carries no parser for them.
+ * The property groups of `transform`, `transform-origin` and `transition`.
+ * Apart from the built-in groups, as the gradients are: a sheet that uses one
+ * registers them (`registerPropertyGroups`), so a window with none carries no
+ * parser for them.
  */
 export function transformGroups() {
-  return [transformProperty(), transformOriginProperty(), defaultOriginProperty()];
+  return [
+    transformProperty(),
+    transformOriginProperty(),
+    defaultOriginProperty(),
+    transitionProperty()
+  ];
 }
