@@ -645,7 +645,8 @@ class Builder {
         isValueType: false
       });
       const isItem = item?.kind === "named" && levels.includes(fullName(item.type));
-      if (isItem && model.isComponent) {
+      const isRegistered = isItem && model.isComponent;
+      if (isRegistered) {
         model.registers.push(collection);
       }
     }

@@ -60,9 +60,18 @@ test("navigating pushes the page and back and forward walk the history", () => {
 test("a new page after going back drops the pages that were forward", () => {
   const stack = new NavigationStack<Entry>();
   const required = NavigationCacheMode.REQUIRED;
-  const home = entry({ name: "home", cacheMode: required });
-  const settings = entry({ name: "settings", cacheMode: required });
-  const about = entry({ name: "about", cacheMode: required });
+  const home = entry({
+    name: "home",
+    cacheMode: required
+  });
+  const settings = entry({
+    name: "settings",
+    cacheMode: required
+  });
+  const about = entry({
+    name: "about",
+    cacheMode: required
+  });
   stack.navigate(home);
   stack.navigate(settings);
   stack.goBack();
@@ -116,8 +125,14 @@ test("a required page is kept however many pages follow, and an enabled one whil
 test("the cache counts when a page was last shown, not when it was made", () => {
   const stack = new NavigationStack<Entry>({ cacheSize: () => 1 });
   const enabled = NavigationCacheMode.ENABLED;
-  const first = entry({ name: "first", cacheMode: enabled });
-  const second = entry({ name: "second", cacheMode: enabled });
+  const first = entry({
+    name: "first",
+    cacheMode: enabled
+  });
+  const second = entry({
+    name: "second",
+    cacheMode: enabled
+  });
   stack.navigate(first);
   stack.navigate(second);
   stack.goBack();
@@ -130,9 +145,28 @@ test("the cache size is read at each step", () => {
   let size = 2;
   const stack = new NavigationStack<Entry>({ cacheSize: () => size });
   const enabled = NavigationCacheMode.ENABLED;
-  stack.navigate(entry({ name: "a", cacheMode: enabled }));
-  stack.navigate(entry({ name: "b", cacheMode: enabled }));
-  assert.deepEqual(names(stack.navigate(entry({ name: "c", cacheMode: enabled })).released), []);
+  stack.navigate(
+    entry({
+      name: "a",
+      cacheMode: enabled
+    })
+  );
+  stack.navigate(
+    entry({
+      name: "b",
+      cacheMode: enabled
+    })
+  );
+  assert.deepEqual(
+    names(
+      stack.navigate(
+        entry({
+          name: "c",
+          cacheMode: enabled
+        })
+      ).released
+    ), []
+  );
   size = 1;
   assert.deepEqual(names(stack.navigate(entry({ name: "d" })).released), ["a", "b"]);
 });

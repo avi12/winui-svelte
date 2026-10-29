@@ -84,7 +84,8 @@ export class NavigationStack<Entry extends StackEntry> {
   /** Goes to a new page; the pages that were forward of the current one are dropped. */
   navigate(entry: Entry) {
     const from = this.present;
-    if (from !== null) {
+    const hasFrom = from !== null;
+    if (hasFrom) {
       this.back.push(from);
     }
 
@@ -158,8 +159,9 @@ export class NavigationStack<Entry extends StackEntry> {
       .filter(([entry]) => entry.cacheMode === NavigationCacheMode.ENABLED)
       .toSorted(([, first], [, second]) => second - first);
     const cached = new Set(enabled.slice(0, this.cacheSize()).map(([entry]) => entry));
-    const isKept = (entry: Entry) => entry.cacheMode === NavigationCacheMode.REQUIRED || cached.has(entry);
-    const released = others.map(([entry]) => entry).filter(entry => !isKept(entry));
+    const released = others
+      .map(([entry]) => entry)
+      .filter(entry => entry.cacheMode !== NavigationCacheMode.REQUIRED && !cached.has(entry));
     for (const entry of released) {
       this.mounted.delete(entry);
     }

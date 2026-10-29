@@ -37,16 +37,18 @@ function classNamed(overrides: Partial<ClassModel>) {
 }
 
 test("a slot with a created collection names its class's tag on the <property> element", () => {
-  const component = emitComponent(classNamed({
-    slots: [
-      {
-        key: "childrenTransitions",
-        winName: "ChildrenTransitions",
-        kind: SlotKind.COLLECTION,
-        collection: TRANSITION_COLLECTION
-      }
-    ]
-  }));
+  const component = emitComponent(
+    classNamed({
+      slots: [
+        {
+          key: "childrenTransitions",
+          winName: "ChildrenTransitions",
+          kind: SlotKind.COLLECTION,
+          collection: TRANSITION_COLLECTION
+        }
+      ]
+    })
+  );
   assert.match(
     component,
     /\{#if rest\.childrenTransitions\}\n\s+<property name="childrenTransitions" collection="transition-collection">/u
@@ -54,14 +56,16 @@ test("a slot with a created collection names its class's tag on the <property> e
 });
 
 test("a component that can be an item registers the collection class beside its own", () => {
-  const component = emitComponent(classNamed({
-    type: {
-      namespace: "Microsoft.UI.Xaml.Media.Animation",
-      name: "EntranceThemeTransition"
-    },
-    tag: "entrance-theme-transition",
-    registers: [TRANSITION_COLLECTION]
-  }));
+  const component = emitComponent(
+    classNamed({
+      type: {
+        namespace: "Microsoft.UI.Xaml.Media.Animation",
+        name: "EntranceThemeTransition"
+      },
+      tag: "entrance-theme-transition",
+      registers: [TRANSITION_COLLECTION]
+    })
+  );
   assert.match(component, /import \{ EntranceThemeTransition, TransitionCollection \} from "\.\/bindings\.ts";/u);
   assert.match(
     component,
@@ -75,12 +79,43 @@ test("the transition collection properties are slots, and only transitions regis
     return model.classes.find(level => level.type.name === name);
   }
 
-  const slotOf = (level: ClassModel | undefined, winName: string) => level?.slots.find(slot => slot.winName === winName);
-  assert.equal(slotOf(find("UIElement"), "Transitions")?.collection?.name, "TransitionCollection");
-  assert.equal(slotOf(find("Panel"), "ChildrenTransitions")?.kind, SlotKind.COLLECTION);
-  assert.equal(slotOf(find("ContentControl"), "ContentTransitions")?.collection?.name, "TransitionCollection");
-  assert.equal(slotOf(find("Border"), "ChildTransitions")?.collection?.name, "TransitionCollection");
-  assert.equal(slotOf(find("ItemsControl"), "ItemContainerTransitions")?.collection?.name, "TransitionCollection");
+  function slotOf({ level, winName }: {
+    level: ClassModel | undefined;
+    winName: string;
+  }) {
+    return level?.slots.find(slot => slot.winName === winName);
+  }
+
+  assert.equal(
+    slotOf({
+      level: find("UIElement"),
+      winName: "Transitions"
+    })?.collection?.name, "TransitionCollection"
+  );
+  assert.equal(
+    slotOf({
+      level: find("Panel"),
+      winName: "ChildrenTransitions"
+    })?.kind, SlotKind.COLLECTION
+  );
+  assert.equal(
+    slotOf({
+      level: find("ContentControl"),
+      winName: "ContentTransitions"
+    })?.collection?.name, "TransitionCollection"
+  );
+  assert.equal(
+    slotOf({
+      level: find("Border"),
+      winName: "ChildTransitions"
+    })?.collection?.name, "TransitionCollection"
+  );
+  assert.equal(
+    slotOf({
+      level: find("ItemsControl"),
+      winName: "ItemContainerTransitions"
+    })?.collection?.name, "TransitionCollection"
+  );
   assert.deepEqual(find("EntranceThemeTransition")?.registers.map(type => type.name), ["TransitionCollection"]);
   assert.deepEqual(find("Button")?.registers, []);
   assert.doesNotMatch(emitComponent(find("Button") ?? classNamed({})), /TransitionCollection/u);

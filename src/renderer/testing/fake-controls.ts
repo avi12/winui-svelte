@@ -205,7 +205,5 @@ export const fakeControls = Object.fromEntries(
     FakeMenuItem,
     FakeTransition,
     FakeTransitionCollection
-  ].map(
-    control => [control.name, control]
-  )
+  ].map(control => [control.name, control])
 );
