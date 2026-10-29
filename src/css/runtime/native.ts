@@ -166,7 +166,7 @@ export function createCssNative(winui: CssWinui) {
     // it is in the tree: its Loaded event is the first moment to listen.
     watchViewport(control, handler) {
       const unsubscribers: Array<() => void> = [];
-      const listen = () => {
+      function listen() {
         const root = readMember({
           target: control,
           key: "xamlRoot"
@@ -176,7 +176,7 @@ export function createCssNative(winui: CssWinui) {
         if (isSubscribed) {
           unsubscribers.push(unsubscribe);
         }
-      };
+      }
       listen();
       const unloaded = native.subscribe(control, "Loaded", () => {
         listen();

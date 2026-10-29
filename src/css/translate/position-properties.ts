@@ -146,7 +146,7 @@ function lowerPosition(input: GroupInput) {
 }
 
 /** `position` and `top`, `left`, `right`, `bottom`, `inset`: a canvas child's place, or a relative offset. */
-export function positionGroup() {
+function positionGroup() {
   return {
     members: [POSITION, ...OFFSETS],
     lower: lowerPosition,

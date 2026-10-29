@@ -335,47 +335,63 @@ function addBlocks({ translator, blocks, scheme, media }: {
       continue;
     }
 
-    const isNestedMedia = scheme !== ColorScheme.DEFAULT || media !== null;
-    const canBeSizeQuery = !isNestedMedia && block.name === "media";
-    const sizeQuery = canBeSizeQuery ? parseMediaQuery(block.prelude) : null;
-    const sizeChildren = block.children;
-    const isSizeBlock = sizeQuery !== null && sizeChildren !== null;
-    if (isSizeBlock) {
-      addBlocks({
-        translator,
-        blocks: sizeChildren,
-        scheme,
-        media: sizeQuery
-      });
-      continue;
-    }
-
-    const inner = isNestedMedia ? null : schemeOf({
+    addAtRule({
       translator,
-      block
+      block,
+      scheme,
+      media
     });
-    const { children } = block;
-    const canNest = inner !== null && children !== null;
-    if (isNestedMedia) {
-      reportError({
-        translator,
-        message: `@${block.name} inside @media has no WinUI meaning`,
-        generatedAt: block.at
-      });
-    } else if (canNest) {
-      addBlocks({
-        translator,
-        blocks: children,
-        scheme: inner,
-        media
-      });
-    } else if (inner !== null) {
-      reportError({
-        translator,
-        message: `@${block.name} has no WinUI meaning`,
-        generatedAt: block.at
-      });
-    }
+  }
+}
+
+function addAtRule({ translator, block, scheme, media }: {
+  translator: Translator;
+  block: AtRuleBlock;
+  scheme: ColorScheme;
+  media: MediaCondition | null;
+}) {
+  const isNestedMedia = scheme !== ColorScheme.DEFAULT || media !== null;
+  const canBeSizeQuery = !isNestedMedia && block.name === "media";
+  const sizeQuery = canBeSizeQuery ? parseMediaQuery(block.prelude) : null;
+  const { children } = block;
+  const isSizeBlock = sizeQuery !== null && children !== null;
+  if (isSizeBlock) {
+    addBlocks({
+      translator,
+      blocks: children,
+      scheme,
+      media: sizeQuery
+    });
+    return;
+  }
+
+  if (isNestedMedia) {
+    reportError({
+      translator,
+      message: `@${block.name} inside @media has no WinUI meaning`,
+      generatedAt: block.at
+    });
+    return;
+  }
+
+  const inner = schemeOf({
+    translator,
+    block
+  });
+  const canNest = inner !== null && children !== null;
+  if (canNest) {
+    addBlocks({
+      translator,
+      blocks: children,
+      scheme: inner,
+      media
+    });
+  } else if (inner !== null) {
+    reportError({
+      translator,
+      message: `@${block.name} has no WinUI meaning`,
+      generatedAt: block.at
+    });
   }
 }
 

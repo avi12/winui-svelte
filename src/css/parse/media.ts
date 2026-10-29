@@ -23,6 +23,19 @@ const RANGE = new RegExp(String.raw`^\(\s*(?<axis>width|height)\s*(?<operator>>=
 const MEDIA_TYPE = /^(?:only\s+)?(?:screen|all)\s+and\s+/iu;
 const AND = /\s+and\s+/iu;
 
+function limitKey({ isMin, isWidth }: {
+  isMin: boolean;
+  isWidth: boolean;
+}) {
+  const keys: ReadonlyMap<string, keyof MediaCondition> = new Map([
+    ["true true", "minWidth"],
+    ["true false", "minHeight"],
+    ["false true", "maxWidth"],
+    ["false false", "maxHeight"]
+  ]);
+  return keys.get(`${isMin} ${isWidth}`) ?? "minWidth";
+}
+
 function termOf(text: string) {
   const groups = FEATURE.exec(text)?.groups ?? RANGE.exec(text)?.groups;
   const { limit, operator, axis = "", amount = "0", unit = "px" } = groups ?? {};
@@ -33,7 +46,10 @@ function termOf(text: string) {
 
   const isMin = limit?.toLowerCase() === "min" || operator === ">=";
   const isWidth = axis.toLowerCase() === "width";
-  const key: keyof MediaCondition = isMin ? (isWidth ? "minWidth" : "minHeight") : (isWidth ? "maxWidth" : "maxHeight");
+  const key = limitKey({
+    isMin,
+    isWidth
+  });
   return {
     key,
     isMin,

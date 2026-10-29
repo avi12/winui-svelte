@@ -65,10 +65,7 @@ function apply({ operator, left, right }: {
   } : null;
 }
 
-function reduce({ values, operators }: {
-  values: Array<Quantity | null>;
-  operators: string[];
-}) {
+function reduce({ values, operators }: Stacks) {
   const operator = operators.pop() ?? "";
   const right = values.pop() ?? null;
   const left = values.pop() ?? null;
@@ -82,51 +79,62 @@ function reduce({ values, operators }: {
   );
 }
 
+interface Stacks {
+  values: Array<Quantity | null>;
+  operators: string[];
+}
+
+function reduceUntilOpening(stacks: Stacks) {
+  while (stacks.operators.length > 0 && stacks.operators.at(-1) !== "(") {
+    reduce(stacks);
+  }
+}
+
+function pushOperator({ stacks, token, precedence }: {
+  stacks: Stacks;
+  token: string;
+  precedence: number;
+}) {
+  while ((PRECEDENCE.get(stacks.operators.at(-1) ?? "") ?? 0) >= precedence) {
+    reduce(stacks);
+  }
+
+  stacks.operators.push(token);
+}
+
 // Shunting-yard: operators wait on a stack until one of lower precedence arrives.
 function fold(tokens: readonly string[]) {
-  const values: Array<Quantity | null> = [];
-  const operators: string[] = [];
+  const stacks: Stacks = {
+    values: [],
+    operators: []
+  };
   for (const token of tokens) {
     const precedence = PRECEDENCE.get(token);
     const isOperator = precedence !== undefined;
     const isOpening = token === "(";
-    if (isOpening) {
-      operators.push(token);
-    } else if (token === ")") {
-      while (operators.length > 0 && operators.at(-1) !== "(") {
-        reduce({
-          values,
-          operators
-        });
-      }
-
-      const isOpened = operators.pop() === "(";
+    const isClosing = token === ")";
+    if (isClosing) {
+      reduceUntilOpening(stacks);
+      const isOpened = stacks.operators.pop() === "(";
       if (!isOpened) {
         return null;
       }
+    } else if (isOpening) {
+      stacks.operators.push(token);
     } else if (isOperator) {
-      while ((PRECEDENCE.get(operators.at(-1) ?? "") ?? 0) >= precedence) {
-        reduce({
-          values,
-          operators
-        });
-      }
-
-      operators.push(token);
+      pushOperator({
+        stacks,
+        token,
+        precedence
+      });
     } else {
-      values.push(operand(token));
+      stacks.values.push(operand(token));
     }
   }
 
-  while (operators.length > 0 && operators.at(-1) !== "(") {
-    reduce({
-      values,
-      operators
-    });
-  }
-
-  const isFolded = operators.length === 0 && values.length === 1;
-  return isFolded ? values[0] ?? null : null;
+  reduceUntilOpening(stacks);
+  const isFolded = stacks.operators.length === 0 && stacks.values.length === 1;
+  return isFolded ? stacks.values[0] ?? null : null;
 }
 
 /**

@@ -483,11 +483,13 @@ test(":not(.class) excludes elements that have the class", () => {
   assert.deepEqual(diagnostics, []);
   const [rule] = sheet.rules;
   assert.deepEqual(rule?.notClasses, ["busy", "off"]);
-  const facts = (classes: string[]) => ({
-    elementType: "border",
-    classes: new Set(classes),
-    states: new Set<never>()
-  });
+  function facts(classes: string[]) {
+    return {
+      elementType: "border",
+      classes: new Set(classes),
+      states: new Set<never>()
+    };
+  }
   assert.ok(rule);
   const ranked = [{
     rule,

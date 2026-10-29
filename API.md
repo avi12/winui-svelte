@@ -1222,7 +1222,7 @@ entry point is named nowhere in the docs.
 | `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed |
 | `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, and removal of a stylesheet |
-| `gradientGroups`, `focusGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
+| `gradientGroups`, `focusGroups`, `positionGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
 | `WINDOW_ENVIRONMENT` | `winui-svelte/vite` | the Vite environment the window's modules load in |
 | `LOG_EVENT` | `winui-svelte/runner` | the event the window thread's log lines are sent under |
