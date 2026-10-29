@@ -1,3 +1,5 @@
+import type { MediaCondition } from "#src/css/parse/media.js";
+
 /**
  * The words every part of the CSS translation shares. Nothing here imports
  * WinUI: the translation runs in Node at build time and in tests.
@@ -86,6 +88,8 @@ export interface Rule {
   /** Source order across the whole sheet. */
   order: number;
   declarations: Declaration[];
+  /** The window size the rule applies at (an `@media (min-width...)` around it); absent for every size. */
+  media?: MediaCondition;
   /**
    * A XAML ResourceDictionary of the custom properties declared in this rule,
    * or null: resources set on each element the rule matches (and so seen by the

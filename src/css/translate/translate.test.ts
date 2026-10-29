@@ -254,7 +254,7 @@ test("descendant selectors, nesting, @keyframes and other @media are errors", ()
   assert.match(errors(".a { color: red; .b { color: blue } }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
   assert.match(errors(".a { @media (min-width: 1px) { color: blue } }").join(), /an at-rule nested in a rule has no WinUI meaning/u);
   assert.match(errors("@keyframes spin { to { opacity: 0 } }").join(), /@keyframes has no WinUI meaning/u);
-  assert.match(errors("@media (min-width: 600px) { .a { color: red } }").join(), /@media \(min-width: 600px\) has no WinUI meaning/u);
+  assert.match(errors("@media (orientation: landscape) { .a { color: red } }").join(), /@media \(orientation: landscape\) has no WinUI meaning/u);
   assert.match(errors("@import 'a.css';").join(), /@import has no WinUI meaning/u);
 });
 
@@ -453,4 +453,22 @@ test("nested rules flatten with & into top-level rules", () => {
     ["a.c", null, "margin-top"],
     ["b.c", null, "margin-top"]
   ]);
+});
+
+test("rules under a width @media keep the bounds, and a custom property under one is refused", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { opacity: 1 }\n@media (min-width: 600px) and (max-width: 900px) { .a { opacity: 0.5 } }\n@media (min-width: 1px) { :root { --x: red } }",
+    resources
+  });
+  assert.deepEqual(sheet.rules.map(rule => rule.media ?? null), [
+    null,
+    {
+      minWidth: 600,
+      maxWidth: 900,
+      minHeight: null,
+      maxHeight: null
+    }
+  ]);
+  assert.match(diagnostics.map(formatDiagnostic).join(), /custom property of :root cannot depend on the window's size/u);
 });

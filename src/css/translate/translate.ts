@@ -15,6 +15,8 @@ import type {
 } from "./types.ts";
 import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
+import type { MediaCondition } from "#src/css/parse/media.js";
+import { parseMediaQuery } from "#src/css/parse/media.js";
 import type { AtRuleBlock, Block, RuleBlock } from "#src/css/parse/parser.js";
 import { BlockKind, CssSyntaxError, parseCss } from "#src/css/parse/parser.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
@@ -100,7 +102,7 @@ function schemeOf({ translator, block }: {
     const what = block.name === "media" ? `@media ${block.prelude}` : `@${block.name}`;
     reportError({
       translator,
-      message: `${what} has no WinUI meaning (only @media (prefers-color-scheme: dark), (prefers-color-scheme: light) and (forced-colors: active) do, for custom properties)`,
+      message: `${what} has no WinUI meaning (only @media (min-width), (max-width), (min-height) and (max-height), which restyle as the window resizes, and, for custom properties, (prefers-color-scheme: dark), (prefers-color-scheme: light) and (forced-colors: active) do; @container has none: query the window)`,
       generatedAt: block.at
     });
     return null;
@@ -184,11 +186,12 @@ function entryOf({ scheme, key, xaml }: VariableEntry) {
 // One selector of a rule: `:root` custom properties become the app's
 // resources, a rule's own become resources of the elements it matches, and its
 // other declarations a rule, unless the selector or the @media cannot style.
-function addSelectorRule({ translator, block, selector, scheme }: {
+function addSelectorRule({ translator, block, selector, scheme, media }: {
   translator: Translator;
   block: RuleBlock;
   selector: ParsedSelector;
   scheme: ColorScheme;
+  media: MediaCondition | null;
 }) {
   const declarations = block.declarations.map(declaration => originalDeclaration({
     translator,
@@ -197,6 +200,16 @@ function addSelectorRule({ translator, block, selector, scheme }: {
   const customProperties = declarations.filter(declaration => declaration.property.startsWith("--"));
   const properties = declarations.filter(declaration => !declaration.property.startsWith("--"));
   if (selector.isRoot) {
+    const isSizeConditional = media !== null;
+    if (isSizeConditional) {
+      reportDeclarations({
+        translator,
+        declarations,
+        message: "has no WinUI meaning here (a custom property of :root cannot depend on the window's size: put the query around a rule)"
+      });
+      return;
+    }
+
     for (const custom of customProperties) {
       translator.variables.push({
         name: custom.property,
@@ -249,15 +262,17 @@ function addSelectorRule({ translator, block, selector, scheme }: {
     specificity: selector.specificity,
     order: translator.nextOrder,
     declarations: isSchemeConditional ? [] : properties,
+    ...media === null ? {} : { media },
     resourcesXaml
   });
   translator.nextOrder++;
 }
 
-function addRuleBlock({ translator, block, scheme }: {
+function addRuleBlock({ translator, block, scheme, media }: {
   translator: Translator;
   block: RuleBlock;
   scheme: ColorScheme;
+  media: MediaCondition | null;
 }) {
   for (const nestedAt of block.nestedAtRules) {
     reportError({
@@ -273,7 +288,8 @@ function addRuleBlock({ translator, block, scheme }: {
         translator,
         block,
         selector: result.selector,
-        scheme
+        scheme,
+        media
       });
     } else {
       reportError({
@@ -294,15 +310,17 @@ function addRuleBlock({ translator, block, scheme }: {
           child: child.selector
         })
       },
-      scheme
+      scheme,
+      media
     });
   }
 }
 
-function addBlocks({ translator, blocks, scheme }: {
+function addBlocks({ translator, blocks, scheme, media }: {
   translator: Translator;
   blocks: Block[];
   scheme: ColorScheme;
+  media: MediaCondition | null;
 }) {
   for (const block of blocks) {
     const isRuleBlock = block.kind === BlockKind.RULE;
@@ -310,12 +328,27 @@ function addBlocks({ translator, blocks, scheme }: {
       addRuleBlock({
         translator,
         block,
-        scheme
+        scheme,
+        media
       });
       continue;
     }
 
-    const isNestedMedia = scheme !== ColorScheme.DEFAULT;
+    const isNestedMedia = scheme !== ColorScheme.DEFAULT || media !== null;
+    const canBeSizeQuery = !isNestedMedia && block.name === "media";
+    const sizeQuery = canBeSizeQuery ? parseMediaQuery(block.prelude) : null;
+    const sizeChildren = block.children;
+    const isSizeBlock = sizeQuery !== null && sizeChildren !== null;
+    if (isSizeBlock) {
+      addBlocks({
+        translator,
+        blocks: sizeChildren,
+        scheme,
+        media: sizeQuery
+      });
+      continue;
+    }
+
     const inner = isNestedMedia ? null : schemeOf({
       translator,
       block
@@ -332,7 +365,8 @@ function addBlocks({ translator, blocks, scheme }: {
       addBlocks({
         translator,
         blocks: children,
-        scheme: inner
+        scheme: inner,
+        media
       });
     } else if (inner !== null) {
       reportError({
@@ -464,7 +498,8 @@ export function translateStyleSheet(input: TranslateInput) {
     addBlocks({
       translator,
       blocks: parseCss(input.css),
-      scheme: ColorScheme.DEFAULT
+      scheme: ColorScheme.DEFAULT,
+      media: null
     });
   } catch (error) {
     if (!(error instanceof CssSyntaxError)) {

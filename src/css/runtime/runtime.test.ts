@@ -79,6 +79,19 @@ const fakeNative: CssNative = {
     fakeControl.style = style === null ? null : String(read(style, "xaml"));
     fakeControl.styleChanges++;
   },
+  viewportOf(target) {
+    const { width, height } = fake(target).properties;
+    const isSized = typeof width === "number" && typeof height === "number";
+    return isSized ? {
+      width,
+      height
+    } : null;
+  },
+  watchViewport(target, handler) {
+    const fakeControl = fake(target);
+    fakeControl.handlers.set("viewport", handler);
+    return () => fakeControl.handlers.delete("viewport");
+  },
   setGridDefinitions(target, kind, lengths) {
     fake(target).columns = `${kind}:${lengths}`;
   },
@@ -226,6 +239,36 @@ test("a state rule listens for its events and restyles as the state changes", ()
 
   element.setClasses("other");
   assert.equal(target.handlers.size, 0);
+  element.dispose();
+});
+
+test("a rule under @media follows the window's size and listens only while one matches", () => {
+  registerStyleSheet(
+    sheet({
+      id: "media.svelte",
+      css: ".m.svelte-9 { opacity: 1 }\n@media (min-width: 600px) { .m.svelte-9 { opacity: 0.5 } }\n@media (max-width: 300px) { .m.svelte-9 { width: 7px } }"
+    })
+  );
+  const target = control({
+    width: 800,
+    height: 400
+  });
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("m svelte-9");
+  assert.match(target.style ?? "", /Value="0.5"/u);
+  assert.doesNotMatch(target.style ?? "", /Width/u);
+  assert.ok(target.handlers.has("viewport"));
+
+  target.properties["width"] = 200;
+  target.handlers.get("viewport")?.();
+  assert.match(target.style ?? "", /Value="1"/u);
+  assert.match(target.style ?? "", /Width/u);
+
+  element.setClasses("other");
+  assert.equal(target.handlers.has("viewport"), false);
   element.dispose();
 });
 

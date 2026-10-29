@@ -365,6 +365,23 @@ Opt-in (`winui-svelte/css/position`). Offsets are lengths in px (or `auto`).
 
 `z-index` is `Canvas.ZIndex`.
 
+## Window size: `@media`
+
+`@media (min-width: 600px)`, `(max-width)`, `(min-height)`, `(max-height)` (px, rem or em;
+`and` joins them, `(width >= 600px)` works, a leading `screen and` is ignored)
+around a rule make it apply while the window's content is inside the bounds.
+Each rule keeps its `media` (`MediaCondition`), and an element that matches one
+listens to its `XamlRoot` (`Changed`; before the control is loaded, its
+`Loaded`) and is restyled when the size crosses a bound. An element none of
+whose rules is under an `@media` listens to nothing.
+
+Only the properties a Style can hold change with the size; a grid's tracks are a
+write and swap like the rest. Not supported, with the build error saying why:
+`@container` (an element's style would depend on its own size: query the
+window), `orientation`, `or` and `not`, a % bound, a `:root` custom property under
+a size query, and a query inside another `@media`. `CssNative` gains
+`viewportOf` and `watchViewport` for it.
+
 ## Nesting
 
 A rule nested in another is flattened at build time (CSS Nesting): `&` is each

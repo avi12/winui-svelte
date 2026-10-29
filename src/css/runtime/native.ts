@@ -140,6 +140,59 @@ export function createCssNative(winui: CssWinui) {
     setStyle(control, style) {
       Object.assign(control, { style });
     },
+    viewportOf(control) {
+      const size = readMember({
+        target: readMember({
+          target: control,
+          key: "xamlRoot"
+        }),
+        key: "size"
+      });
+      const width = readMember({
+        target: size,
+        key: "width"
+      });
+      const height = readMember({
+        target: size,
+        key: "height"
+      });
+      const isSized = typeof width === "number" && typeof height === "number";
+      return isSized ? {
+        width,
+        height
+      } : null;
+    },
+    // The window's XamlRoot says when it resizes, but a control has none until
+    // it is in the tree: its Loaded event is the first moment to listen.
+    watchViewport(control, handler) {
+      const unsubscribers: Array<() => void> = [];
+      const listen = () => {
+        const root = readMember({
+          target: control,
+          key: "xamlRoot"
+        });
+        const unsubscribe = isRecord(root) ? native.subscribe(root, "Changed", handler) : null;
+        const isSubscribed = unsubscribe !== null;
+        if (isSubscribed) {
+          unsubscribers.push(unsubscribe);
+        }
+      };
+      listen();
+      const unloaded = native.subscribe(control, "Loaded", () => {
+        listen();
+        handler();
+      });
+      const isWaiting = unloaded !== null;
+      if (isWaiting) {
+        unsubscribers.push(unloaded);
+      }
+
+      return () => {
+        for (const unsubscribe of unsubscribers) {
+          unsubscribe();
+        }
+      };
+    },
     setGridDefinitions(control, target, lengths) {
       const isColumns = target === "columns";
       const definitions = readMember({

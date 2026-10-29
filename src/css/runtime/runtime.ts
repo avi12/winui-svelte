@@ -1,4 +1,6 @@
 import { parseInlineStyle } from "./inline.ts";
+import { mediaMatches } from "#src/css/parse/media.js";
+import type { Viewport } from "#src/css/parse/media.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 import type { RankedRule } from "#src/css/translate/cascade.js";
 import {
@@ -12,7 +14,7 @@ import type { LoweredStyle } from "#src/css/translate/properties.js";
 import { lowerDeclarations } from "#src/css/translate/properties.js";
 import type { PropertyGroup, WriteSeam } from "#src/css/translate/property-kit.js";
 import { RESOURCES_TARGET, XAML_SEPARATOR } from "#src/css/translate/property-kit.js";
-import type { Declaration, StyleSheetData } from "#src/css/translate/types.js";
+import type { Declaration, Rule, StyleSheetData } from "#src/css/translate/types.js";
 import { PseudoState } from "#src/css/translate/types.js";
 import type { NativeValue } from "#src/native-value.js";
 
@@ -27,6 +29,10 @@ export interface CssNative extends WriteSeam {
   /** Whether the application's resources (merged dictionaries included) hold `key`. */
   hasApplicationResource(key: string): boolean;
   setStyle(control: object, style: object | null): void;
+  /** The size of the window content the control is in, in px; null while it is in none. */
+  viewportOf(control: object): Viewport | null;
+  /** Calls `handler` when that size changes (or the control gets into a window); null if it cannot be watched. */
+  watchViewport(control: object, handler: () => void): (() => void) | null;
 }
 
 /**
@@ -439,6 +445,8 @@ class ElementStyle implements StyledElement {
   private readonly subscriptions = new Map<PseudoState, Array<() => void>>();
   private appliedKey: string | null = null;
   private appliedStyle: object | null = null;
+  private viewport: Viewport | null = null;
+  private unwatchViewport: (() => void) | null = null;
   private appliedWrites = "";
   private writeUndos: Array<() => void> = [];
   private isDisposed = false;
@@ -470,6 +478,7 @@ class ElementStyle implements StyledElement {
     }
 
     this.subscriptions.clear();
+    this.unwatchViewport?.();
     for (const undo of this.writeUndos) {
       undo();
     }
@@ -507,10 +516,12 @@ class ElementStyle implements StyledElement {
         classes: this.classes,
         states: this.states
       },
-      isStateIgnored: true
+      isStateIgnored: true,
+      isMediaIgnored: true
     });
     this.syncStates(new Set(candidates.flatMap(({ rule }) => (rule.state === null ? [] : [rule.state]))));
-    const matched = candidates.filter(({ rule }) => rule.state === null || this.states.has(rule.state));
+    this.syncViewport(candidates.some(({ rule }) => rule.media !== undefined));
+    const matched = candidates.filter(({ rule }) => this.isRuleActive(rule));
     const inline = this.inlineDeclarations();
     const inlineKey = inline.map(({ property, value }) => `${property}:${value}`).join(";");
     // The key carries each rule's sheet version, so an element is restyled
@@ -581,6 +592,41 @@ class ElementStyle implements StyledElement {
       return undo ? [undo] : [];
     });
     this.appliedWrites = signature;
+  }
+
+  private isRuleActive(rule: Rule) {
+    const isStateActive = rule.state === null || this.states.has(rule.state);
+    const isMediaActive = rule.media === undefined || mediaMatches({
+      media: rule.media,
+      viewport: this.viewport
+    });
+    return isStateActive && isMediaActive;
+  }
+
+  // Listens to the window's size exactly while some matching rule is under an @media.
+  private syncViewport(isNeeded: boolean) {
+    const currentNative = native;
+    const isWatching = this.unwatchViewport !== null;
+    if (!isNeeded) {
+      this.unwatchViewport?.();
+      this.unwatchViewport = null;
+      this.viewport = null;
+      return;
+    }
+
+    const isNativeMissing = currentNative === null;
+    if (isNativeMissing) {
+      return;
+    }
+
+    if (!isWatching) {
+      this.unwatchViewport = currentNative.watchViewport(this.control, () => {
+        this.viewport = currentNative.viewportOf(this.control);
+        this.refresh();
+      });
+    }
+
+    this.viewport = currentNative.viewportOf(this.control);
   }
 
   private readProperty: ReadProperty = property => (native === null ? undefined : native.read({
