@@ -1,58 +1,22 @@
+import {
+  CommentNode,
+  ElementNode,
+  FragmentNode,
+  NodeType,
+  TextNode
+} from "./dom.ts";
+import type { ParentNode, TreeNode, TreeRenderer } from "./dom.ts";
 import type { NativeValue } from "#src/native-value.js";
-import { createRenderer } from "svelte/renderer";
 
-// The tree of nodes a Svelte custom renderer keeps, with no platform in it:
+// The tree of nodes a Svelte component draws into, with no platform in it:
 // elements, text, the comments Svelte anchors its {#if} and {#each} blocks
 // on, and the fragments it builds them in. Each element carries the native
 // object it stands for; the host is told when an element's children change,
-// so it can bring the native children in line.
+// so it can bring the native children in line. The nodes are shaped like the
+// DOM's (dom.ts), so a stock Svelte draws into them.
 
-/** The kinds of node the tree holds. */
-export const NodeType = {
-  FRAGMENT: "fragment",
-  ELEMENT: "element",
-  TEXT: "text",
-  COMMENT: "comment"
-} as const;
-
-/** An element: a tag, the native object it stands for, and its attributes and children. */
-export interface ElementNode<Native> {
-  type: typeof NodeType.ELEMENT;
-  name: string;
-  native: Native;
-  attributes: Map<string, NativeValue>;
-  children: Array<TreeNode<Native>>;
-  parent: ParentNode<Native> | null;
-  // By event type, then by handler: what ends each subscription.
-  listeners: Map<string, Map<NativeValue, () => void>>;
-}
-
-/** The root Svelte builds a block in before inserting it, or mounts a component on. */
-export interface FragmentNode<Native> {
-  type: typeof NodeType.FRAGMENT;
-  children: Array<TreeNode<Native>>;
-  parent: null;
-}
-
-/** A run of text. */
-export interface TextNode<Native> {
-  type: typeof NodeType.TEXT;
-  value: string;
-  parent: ParentNode<Native> | null;
-}
-
-/** The comment Svelte anchors an `{#if}` or `{#each}` block on. */
-export interface CommentNode<Native> {
-  type: typeof NodeType.COMMENT;
-  value: string;
-  parent: ParentNode<Native> | null;
-}
-
-/** A node that has children. */
-export type ParentNode<Native> = ElementNode<Native> | FragmentNode<Native>;
-
-/** A node that can sit in a parent's children. */
-export type TreeNode<Native> = ElementNode<Native> | TextNode<Native> | CommentNode<Native>;
+export { ElementNode, FragmentNode, NodeType };
+export type { TreeNode };
 
 type AnyNode<Native> = TreeNode<Native> | FragmentNode<Native>;
 
@@ -214,33 +178,23 @@ export function nextSibling<Native>(node: TreeNode<Native>) {
   return siblings[siblings.indexOf(node) + 1] ?? null;
 }
 
-// An element's text replaces all its children with one text node.
-function setElementText<Native>({ host, element, text }: {
+// Takes all of a parent's children out at once; the host hears of it once.
+function clearParent<Native>({ host, parent }: {
   host: NativeHost<Native>;
-  element: ElementNode<Native>;
-  text: string;
+  parent: ParentNode<Native>;
 }) {
-  for (const child of element.children.splice(0)) {
+  const removed = parent.children.splice(0);
+  for (const child of removed) {
     child.parent = null;
   }
 
-  link({
-    parent: element,
-    node: createText<Native>(text),
-    anchor: null
-  });
   notify({
     host,
-    parent: element
+    parent
   });
-}
-
-function createText<Native>(value: string) {
-  return {
-    type: NodeType.TEXT,
-    value,
-    parent: null
-  } satisfies TextNode<Native>;
+  for (const child of removed) {
+    host.removed(child);
+  }
 }
 
 function listenersOf<Native>({ element, type }: {
@@ -258,57 +212,26 @@ function listenersOf<Native>({ element, type }: {
 }
 
 /**
- * Builds the Svelte renderer for a platform, over a tree that tells the
- * platform what changed. A component compiled with `customRenderer` draws
- * through it.
+ * Builds the renderer for a platform, over a tree that tells the platform
+ * what changed. The DOM shim (`installDom`) puts it behind the `document`
+ * Svelte's client runtime draws through.
  *
  * @param host - The platform's side: making elements and applying attributes, and hearing of changes.
- * @returns The renderer Svelte's `mount` takes.
+ * @returns The operations the DOM shim and the platform's mount code use.
  */
 export function createTreeRenderer<Native>(host: NativeHost<Native>) {
-  return createRenderer<{
-    fragment: FragmentNode<Native>;
-    element: ElementNode<Native>;
-    text: TextNode<Native>;
-    comment: CommentNode<Native>;
-  }>({
+  const renderer: TreeRenderer<Native> = {
     createFragment() {
-      return {
-        type: NodeType.FRAGMENT,
-        children: [],
-        parent: null
-      };
+      return new FragmentNode(renderer);
     },
     createElement(name) {
-      return {
-        type: NodeType.ELEMENT,
-        name,
-        native: host.create(name),
-        attributes: new Map(),
-        children: [],
-        parent: null,
-        listeners: new Map()
-      };
+      return new ElementNode(renderer, name, host.create(name));
     },
     createTextNode(data) {
-      return createText(data);
+      return new TextNode(renderer, data);
     },
     createComment(data) {
-      return {
-        type: NodeType.COMMENT,
-        value: data,
-        parent: null
-      };
-    },
-    nodeType(node) {
-      return node.type;
-    },
-    getNodeValue(node) {
-      return node.value;
-    },
-    getAttribute(element, name) {
-      const value = element.attributes.get(name);
-      return value === undefined ? null : String(value);
+      return new CommentNode(renderer, data);
     },
     setAttribute(element, key, value) {
       element.attributes.set(key, value);
@@ -318,34 +241,12 @@ export function createTreeRenderer<Native>(host: NativeHost<Native>) {
       element.attributes.delete(name);
       host.removeAttribute(element, name);
     },
-    hasAttribute(element, name) {
-      return element.attributes.has(name);
-    },
     setText(node, text) {
-      const isElement = node.type === NodeType.ELEMENT;
-      if (isElement) {
-        setElementText({
-          host,
-          element: node,
-          text
-        });
-        return;
-      }
-
       node.value = text;
       notify({
         host,
         parent: node.parent
       });
-    },
-    getFirstChild(element) {
-      return element.children[0] ?? null;
-    },
-    getLastChild(element) {
-      return element.children.at(-1) ?? null;
-    },
-    getNextSibling(node) {
-      return nextSibling(node);
     },
     insert(parent, node, anchor) {
       insertNode({
@@ -362,8 +263,11 @@ export function createTreeRenderer<Native>(host: NativeHost<Native>) {
       });
       host.removed(node);
     },
-    getParent(node) {
-      return node.parent;
+    clear(parent) {
+      clearParent({
+        host,
+        parent
+      });
     },
     addEventListener(target, type, handler) {
       const unsubscribe = host.listen(target, type, handler);
@@ -379,5 +283,6 @@ export function createTreeRenderer<Native>(host: NativeHost<Native>) {
       listeners?.get(handler)?.();
       listeners?.delete(handler);
     }
-  });
+  };
+  return renderer;
 }

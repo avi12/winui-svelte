@@ -79,8 +79,39 @@
   // Generated from WinUI's metadata: 167 components that differ by their
   // property lists, and an app renders them, not the package.
   // Called on the in-memory link by the state tests, through a type fallow
-  // does not follow.
-  "usedClassMembers": ["sendMalformed", "close"],
+  // does not follow; and the DOM members Svelte's client runtime reads off the
+  // tree's nodes (renderer/tree/dom.ts).
+  "usedClassMembers": [
+    "sendMalformed",
+    "close",
+    "nodeType",
+    "parentNode",
+    "firstChild",
+    "lastChild",
+    "nextSibling",
+    "cloneNode",
+    "remove",
+    "before",
+    "append",
+    "appendChild",
+    "insertBefore",
+    "removeChild",
+    "textContent",
+    "data",
+    "nodeValue",
+    "namespaceURI",
+    "nodeName",
+    "className",
+    "classList",
+    "style",
+    "getAttribute",
+    "hasAttribute",
+    "removeAttribute",
+    "addEventListener",
+    "removeEventListener",
+    "focus",
+    "value"
+  ],
   "ignoreExports": [
     {
       "file": "src/components/generated/**",

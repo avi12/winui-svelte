@@ -34,7 +34,7 @@ const probeHost: NativeHost<ProbeNative> = {
   }
 };
 
-const probeRenderer = createTreeRenderer(probeHost);
+export const probeRenderer = createTreeRenderer(probeHost);
 
 // The tree as text: an element as name(children), text in quotes, a comment
 // as #. Fragments show their children.
@@ -57,7 +57,3 @@ export function outline(node: TreeNode<ProbeNative> | FragmentNode<ProbeNative>)
   const children = outlines.join(" ");
   return node.type === NodeType.ELEMENT ? `${node.name}(${children})` : children;
 }
-
-// Svelte's customRenderer option imports the renderer module's default export.
-// eslint-disable-next-line no-restricted-exports -- Svelte requires the default export
-export default probeRenderer;

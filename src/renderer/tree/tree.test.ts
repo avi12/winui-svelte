@@ -1,5 +1,5 @@
-import { nextSibling } from "./tree.ts";
-import probeRenderer, { outline } from "#src/renderer/testing/tree-probe.js";
+import { nextSibling, NodeType } from "./tree.ts";
+import { outline, probeRenderer } from "#src/renderer/testing/tree-probe.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -66,31 +66,31 @@ test("next sibling, first and last child, and remove", () => {
   const [first, second] = [block("a"), block("b")];
   probeRenderer.insert(parent, first, null);
   probeRenderer.insert(parent, second, null);
-  assert.equal(nextSibling(first), second);
-  assert.equal(nextSibling(second), null);
-  assert.equal(probeRenderer.getFirstChild(parent), first);
-  assert.equal(probeRenderer.getLastChild(parent), second);
+  assert.equal(first.nextSibling, second);
+  assert.equal(second.nextSibling, null);
+  assert.equal(parent.firstChild, first);
+  assert.equal(parent.lastChild, second);
 
   probeRenderer.remove(first);
   assert.equal(outline(parent), "stack-panel(b())");
   assert.equal(first.parent, null);
-  assert.equal(nextSibling(first), null, "a detached node has no sibling");
+  assert.equal(first.nextSibling, null, "a detached node has no sibling");
   probeRenderer.remove(first);
   assert.equal(outline(parent), "stack-panel(b())", "removing a detached node does nothing");
 });
 
-test("an element's text replaces its children", () => {
+test("an element's text content replaces its children", () => {
   const parent = panel();
   const child = block("a");
   probeRenderer.insert(parent, child, null);
-  probeRenderer.setText(parent, "hello");
+  parent.textContent = "hello";
   assert.equal(outline(parent), "stack-panel(\"hello\")");
   assert.equal(child.parent, null, "the old child is detached");
 
   const [text] = parent.children;
-  assert.ok(text !== undefined);
+  assert.ok(text !== undefined && text.type === NodeType.TEXT);
   const changesBefore = parent.native.childChanges;
-  probeRenderer.setText(text, "bye");
+  text.data = "bye";
   assert.equal(outline(parent), "stack-panel(\"bye\")");
   assert.equal(parent.native.childChanges, changesBefore + 1, "a text change tells its element");
 });
@@ -120,10 +120,10 @@ test("a block between comment anchors is removed and re-inserted", () => {
 test("attributes are kept, and listeners end on removal", () => {
   const element = block("button");
   probeRenderer.setAttribute(element, "margin", 4);
-  assert.equal(probeRenderer.getAttribute(element, "margin"), "4");
-  assert.ok(probeRenderer.hasAttribute(element, "margin"));
+  assert.equal(element.getAttribute("margin"), "4");
+  assert.ok(element.hasAttribute("margin"));
   probeRenderer.removeAttribute(element, "margin");
-  assert.equal(probeRenderer.getAttribute(element, "margin"), null);
+  assert.equal(element.getAttribute("margin"), null);
 
   function handler() {}
   probeRenderer.addEventListener(element, "click", handler);

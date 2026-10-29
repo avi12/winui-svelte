@@ -1,17 +1,17 @@
 import type { ProbeElement } from "./tree-probe.ts";
-import probeRenderer, { outline } from "./tree-probe.ts";
+import { outline, probeRenderer } from "./tree-probe.ts";
 import { NodeType } from "#src/renderer/tree/tree.js";
 import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
-import path from "node:path";
 import { test } from "node:test";
 
 // A real component through the tree: {#if} and keyed {#each} anchor on
 // comments, insert before them, and a reorder moves the same nodes.
 
-registerHooks(svelteHooks(path.join(import.meta.dirname, "tree-probe.ts")));
-const { flushSync, mount } = await import("svelte");
+registerHooks(svelteHooks());
+const { flushSync } = await import("svelte");
+const { mountOnTree } = await import("#src/renderer/tree/document.js");
 const { default: Blocks } = await import("./Blocks.fixture.svelte");
 
 // What the fixture exports, which its component type does not say.
@@ -35,9 +35,11 @@ function shown(panel: ProbeElement) {
 
 test("{#if} and keyed {#each} render, update and reorder through the tree", () => {
   const target = probeRenderer.createFragment();
-  const blocks = mount(Blocks, {
-    target,
-    renderer: probeRenderer
+  const blocks = mountOnTree({
+    component: Blocks,
+    props: {},
+    renderer: probeRenderer,
+    target
   });
   assert.ok(isBlocksExports(blocks));
   flushSync();
