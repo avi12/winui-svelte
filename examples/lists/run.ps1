@@ -32,24 +32,6 @@ try {
   $scrolled = Ask $example @{ cmd = 'stats' } 'stats'
   "scrolled: $($scrolled.created) created, $($scrolled.destroyed) ended, " +
     "$($scrolled.live) live"
-
-  # The keyboard path for real: focus a row, post Alt+Down to the window's
-  # input site.
-  $null = Ask $example @{ cmd = 'scroll'; key = 'row-0' } 'scrolled'
-  Start-Sleep -Seconds 1
-  $null = Ask $example @{ cmd = 'focus'; key = 'row-2' } 'focused'
-  'children: ' + ([ExampleWin]::Children($hwnd) -join '; ')
-  $site = [ExampleWin]::FindChild(
-    $hwnd, 'Microsoft.UI.Content.DesktopChildSiteBridge')
-  if ($site -ne [IntPtr]::Zero) {
-    [ExampleWin]::PostAltKey($site, 0x28)
-  } else {
-    [ExampleWin]::PostAltKey($hwnd, 0x28)
-  }
-  Start-Sleep -Seconds 1
-  $keyed = Ask $example @{ cmd = 'stats' } 'stats'
-  "after a posted Alt+Down: reorders = $($keyed.reorders), " +
-    "first = $($keyed.first -join ',')"
 } finally {
   Stop-Example $example
 }

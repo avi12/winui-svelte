@@ -9,7 +9,8 @@
 # A control with no AutomationId is found by -Name instead.
 # Actions: read, exists, names, invoke, toggle, set-value, set-range, select,
 # select-item (a combo box: opens it and picks the item named by -Item),
-# focus, press (-Value is a virtual key code, sent to the focused control).
+# focus. No action sends keys or moves the mouse: every one is a UI
+# Automation pattern call, so the desktop of whoever runs it stays untouched.
 param(
   [Parameter(Mandatory)][int]$ProcessId,
   [Parameter(Mandatory)][string]$Action,
@@ -22,18 +23,6 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes
-Add-Type -TypeDefinition @'
-using System;
-using System.Runtime.InteropServices;
-public static class UiaKeys {
-  [DllImport("user32.dll")]
-  static extern void keybd_event(byte key, byte scan, uint flags, UIntPtr extra);
-  public static void Press(byte key) {
-    keybd_event(key, 0, 0, UIntPtr.Zero);
-    keybd_event(key, 0, 2, UIntPtr.Zero);
-  }
-}
-'@
 
 $automation = [System.Windows.Automation.AutomationElement]
 $patterns = [System.Windows.Automation.AutomationPattern]
@@ -143,7 +132,6 @@ function Invoke-Action {
     }
     'select-item' { Select-ComboItem $element $Item }
     'focus' { $element.SetFocus() }
-    'press' { [UiaKeys]::Press([byte]$Value) }
     default { throw "unknown action '$Action'" }
   }
   Start-Sleep -Milliseconds $pauseMilliseconds

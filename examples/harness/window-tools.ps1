@@ -32,8 +32,6 @@ public static class ExampleWin {
   [DllImport("user32.dll")]
   static extern bool SetWindowPos(
       IntPtr h, IntPtr after, int x, int y, int cx, int cy, uint flags);
-  [DllImport("user32.dll")]
-  static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
   [DllImport("user32.dll", CharSet = CharSet.Unicode)]
   static extern int GetClassName(IntPtr h, StringBuilder name, int count);
   public struct RECT { public int L, T, R, B; }
@@ -89,13 +87,6 @@ public static class ExampleWin {
       return true;
     }, IntPtr.Zero);
     return found;
-  }
-  // Alt+<key> as the keyboard sends it to a window (WM_SYSKEYDOWN with the
-  // context bit, then WM_SYSKEYUP), without taking the foreground.
-  public static void PostAltKey(IntPtr h, int vk) {
-    PostMessage(h, 0x0104, new IntPtr(vk), new IntPtr(0x20000001));
-    PostMessage(
-        h, 0x0105, new IntPtr(vk), unchecked((IntPtr)(long)0xE0000001L));
   }
 }
 '@

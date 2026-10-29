@@ -61,7 +61,7 @@ function run({ pid, action, id = "", name = "", value = "", item = "" }: UiaRequ
 
 /**
  * Does `action` to a control (invoke, toggle, set-value, set-range, select,
- * select-item, focus, press) and returns what the control reports after.
+ * select-item, focus) and returns what the control reports after.
  */
 export function act(request: UiaRequest) {
   return stateSchema.parse(run(request));

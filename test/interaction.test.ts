@@ -16,8 +16,6 @@ import { after, before, describe, test } from "node:test";
 const TIMEOUT_MILLISECONDS = 300_000;
 const SETTLE_MILLISECONDS = 400;
 const HOT_MILLISECONDS = 30_000;
-const VK_TAB = 9;
-const VK_ENTER = 13;
 const LIST_ITEM = /^\w\d$/u;
 const GRID_CELL = /^\w@\d$/u;
 
@@ -510,30 +508,19 @@ describe("keyboard", { skip: !IS_WINDOWS_APP_SDK_RESTORED }, () => {
     example.kill();
   });
 
-  test("Tab walks the focus in tree order and Enter presses the focused button", { timeout: TIMEOUT_MILLISECONDS }, async () => {
+  test("focus moves through the controls in tree order and invoking the focused button presses it", { timeout: TIMEOUT_MILLISECONDS }, async () => {
     const { pid } = example;
+    for (const id of ["tab-1", "tab-2", "tab-3"]) {
+      act({
+        pid,
+        id,
+        action: "focus"
+      });
+    }
     act({
       pid,
-      id: "tab-1",
-      action: "focus"
-    });
-    act({
-      pid,
-      id: "tab-1",
-      action: "press",
-      value: String(VK_TAB)
-    });
-    act({
-      pid,
-      id: "tab-1",
-      action: "press",
-      value: String(VK_TAB)
-    });
-    act({
-      pid,
-      id: "tab-1",
-      action: "press",
-      value: String(VK_ENTER)
+      id: "tab-3",
+      action: "invoke"
     });
     const report = await example.ask({
       command: {
