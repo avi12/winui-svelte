@@ -3,52 +3,91 @@ import { compileSheetModule, cssHash, SheetError } from "#src/css/runtime/sheet-
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { stripTypeScriptTypes } from "node:module";
 import path from "node:path";
-import { compile, compileModule } from "svelte/compiler";
-
-/**
- * The module a component imports its renderer from: a package specifier, or
- * a file, which the component then imports by relative path.
- */
-export const WINUI_RENDERER = "winui-svelte/host";
+import type { CompileOptions as SvelteCompileOptions } from "svelte/compiler";
+import { compile, compileModule, parse } from "svelte/compiler";
 
 const COMPONENT_EXTENSION = ".svelte";
 const RUNES_EXTENSION = ".svelte.ts";
 const WINUI_CSS_RUNTIME = "winui-svelte/css";
 const resources = loadWinuiCatalogue();
+// What Svelte warns about markup written for HTML: WinUI's tags are not
+// HTML's, so a self-closing <grid />, an unknown attribute or a click on a
+// <border> is not a mistake.
+const HTML_ONLY_WARNING = /^(?:a11y_|element_invalid_self_closing_tag$|attribute_illegal_colon$|attribute_avoid_is$|attribute_invalid_property_name$)/u;
+
+/**
+ * What every component is compiled with, whoever compiles it: for the
+ * client, whose runtime draws through the tree (see `installDom`), with
+ * the scoping class the component's `<style>` rules name.
+ */
+export const WINUI_COMPILE_OPTIONS = {
+  generate: "client",
+  cssHash,
+  warningFilter: ({ code }) => !HTML_ONLY_WARNING.test(code)
+} satisfies SvelteCompileOptions;
 
 /**
  * How `.svelte` components (and the `.svelte.ts` modules that use runes)
  * become JavaScript where Vite is not in the way: a bundler building a
- * release (esbuild) and tests. Components render through the WinUI renderer
- * unless told another one (the tests render through one without WinUI). The
- * dev server does the same through the Vite plugin (`plugin.ts`).
+ * release (esbuild) and tests. The dev server does the same through the Vite
+ * plugin (`plugin.ts`).
  */
 export interface CompileOptions {
-  /** The module a component imports its renderer from. */
-  renderer?: string;
   /** Sheet ids and their diagnostics are paths relative to this. */
   root?: string;
   /** The module that exports registerStyleSheet, as the compiled component imports it. */
   cssRuntime?: string;
 }
 
-function importPath({ filename, module }: {
-  filename: string;
-  module: string;
-}) {
-  const relative = path.relative(path.dirname(filename), module).replaceAll("\\", "/");
-  return relative.startsWith(".") ? relative : `./${relative}`;
+const WEB_ANIMATION_DIRECTIVES = new Set(["TransitionDirective", "AnimateDirective"]);
+
+interface DirectiveFound {
+  readonly name: string;
+  readonly start: number;
 }
 
-/** How a component at `filename` imports the renderer. */
-export function rendererImport({ filename, renderer }: {
+function directiveIn(root: unknown) {
+  const pending: unknown[] = [root];
+  for (const node of pending) {
+    const isObject = typeof node === "object" && node !== null;
+    if (!isObject) {
+      continue;
+    }
+
+    const isDirective = "type" in node && typeof node.type === "string" && WEB_ANIMATION_DIRECTIVES.has(node.type);
+    const isNamed = "name" in node && typeof node.name === "string" && "start" in node && typeof node.start === "number";
+    const isFound = isDirective && isNamed;
+    if (isFound) {
+      return {
+        name: String(node.name),
+        start: Number(node.start)
+      } satisfies DirectiveFound;
+    }
+
+    pending.push(...Object.values(node));
+  }
+
+  return null;
+}
+
+/**
+ * Throws, naming the line, when a component uses `transition:`, `in:`,
+ * `out:` or `animate:`: they drive the browser's `Element.animate()`, which a
+ * WinUI window has no equivalent of. The `transition`, `intro` and `outro`
+ * attachments of `winui-svelte/element-animation` play the same functions.
+ *
+ * @param options - The component's path and source.
+ * @throws {Error} When the component uses one of the directives.
+ */
+export function assertNoWebAnimations({ filename, source }: {
   filename: string;
-  renderer: string;
+  source: string;
 }) {
-  return path.isAbsolute(renderer) ? importPath({
-    filename,
-    module: renderer
-  }) : renderer;
+  const found = directiveIn(parse(source, { modern: true }));
+  if (found) {
+    const line = source.slice(0, found.start).split("\n").length;
+    throw new Error(`${path.basename(filename)}:${line}: transition:, in:, out: and animate: need the browser's Element.animate(); use the transition, intro and outro attachments of winui-svelte/element-animation instead (${found.name})`);
+  }
 }
 
 /** Whether a file is a component or a runes module. */
@@ -84,18 +123,14 @@ function compileSource({ filename, source, options }: {
     });
   }
 
-  const renderer = options.renderer ?? WINUI_RENDERER;
   const { js } = compile(source, {
+    ...WINUI_COMPILE_OPTIONS,
     filename,
-    generate: "client",
-    runes: true,
-    cssHash,
-    experimental: {
-      customRenderer: ({ filename: name }) => rendererImport({
-        filename: name,
-        renderer
-      })
-    }
+    runes: true
+  });
+  assertNoWebAnimations({
+    filename,
+    source
   });
   // The dev server registers the sheet through the Vite plugin (css/vite.ts);
   // here its statements are appended to the component.

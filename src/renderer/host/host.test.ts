@@ -18,7 +18,6 @@ import {
 import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
-import path from "node:path";
 import { test } from "node:test";
 
 // The WinUI renderer's host (host.ts) run on stand-in controls: a real
@@ -29,7 +28,7 @@ registerControls(fakeControls);
 setClassHandler((control, value) => {
   Object.assign(control, { className: value });
 });
-registerHooks(svelteHooks(path.join(import.meta.dirname, "host.ts")));
+registerHooks(svelteHooks());
 const { mountControl } = await import("./mount.svelte.ts");
 const { default: Fixture } = await import("#src/renderer/testing/Host.fixture.svelte");
 const { default: CollectionsFixture } = await import("#src/renderer/testing/Collections.fixture.svelte");

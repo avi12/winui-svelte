@@ -3,7 +3,6 @@ import { fakeControls, FakeElement, FakePanel } from "#src/renderer/testing/fake
 import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
-import path from "node:path";
 import { test } from "node:test";
 
 // elementSize and elementTheme through a component: the attachments reach the
@@ -21,7 +20,7 @@ const NARROW = {
 } as const;
 
 registerControls(fakeControls);
-registerHooks(svelteHooks(path.join(import.meta.dirname, "host.ts")));
+registerHooks(svelteHooks());
 const { mountControl } = await import("./mount.svelte.ts");
 const { default: Adaptive } = await import("#src/renderer/testing/Adaptive.fixture.svelte");
 

@@ -6,7 +6,7 @@ import type { CompileOptions } from "svelte/compiler";
 import { compile } from "svelte/compiler";
 
 /**
- * Neither a query nor `.svelte.` in the name: vite-plugin-svelte compiles
+ * Neither a query nor `.svelte.` in the name: the Vite plugin compiles
  * `a.svelte?x` as a component and `a.svelte.x` as a rune module.
  */
 export const SHEET_SUFFIX = "-winui-css.js";
