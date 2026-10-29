@@ -36,6 +36,7 @@ export { ResourceDictionary } from "#winui/microsoft/ui/xaml/ResourceDictionary"
 export { Style } from "#winui/microsoft/ui/xaml/Style";
 export { XamlReader } from "#winui/microsoft/ui/xaml/markup/XamlReader";
 export { GridUnitType } from "#winui/microsoft/ui/xaml/GridUnitType";
+export { DoubleCollection } from "#winui/microsoft/ui/xaml/media/DoubleCollection";
 export { PropertyValue } from "#winui/windows/foundation/PropertyValue";
 export { Uri } from "#winui/windows/foundation/Uri";
 export { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
