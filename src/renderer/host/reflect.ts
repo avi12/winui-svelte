@@ -99,3 +99,14 @@ export function vectorOf(value: NativeValue) {
   });
   return isVector ? vector : null;
 }
+
+/**
+ * The class name of a native object, as the bindings name it (`ListView`).
+ *
+ * @param control - A control or any other projected object.
+ * @returns The name, or an empty string for an object without one.
+ */
+export function classNameOf(control: object) {
+  const name = read(read(Object.getPrototypeOf(control), "constructor"), "name");
+  return typeof name === "string" ? name : "";
+}

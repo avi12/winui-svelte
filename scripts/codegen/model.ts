@@ -30,6 +30,7 @@ import type {
   TypeSignature
 } from "./winmd.ts";
 import { fullName, TypeAttribute, TypeIndex, WinMdFile } from "./winmd.ts";
+import { hasStyleTarget } from "#src/components/style-targets.js";
 import { camelCase, kebabCase } from "#src/renderer/tree/markup.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -411,6 +412,11 @@ class Builder {
       if (isWritableProperty) {
         seenProperties.add(member.name);
         const { kind, enumType } = this.classify(member.type);
+        const isStyleWithoutElement = kind === PropertyKind.STYLE && !hasStyleTarget(key);
+        if (isStyleWithoutElement) {
+          throw new Error(`${model.type.name}.${key} takes a Style: add the element it styles to src/components/style-targets.ts`);
+        }
+
         model.properties.push({
           winName: member.name,
           key,

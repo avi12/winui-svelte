@@ -23,11 +23,20 @@ import {
   PropertyValue,
   RepeatBehaviorType,
   SolidColorBrush,
+  Style,
   SvgImageSource,
   Uri,
   XamlReader
 } from "./generated/bindings.ts";
-import type { Geometry, ImageSource, UIElement } from "./generated/bindings.ts";
+import type {
+  ControlTemplate,
+  DataTemplate,
+  Geometry,
+  ImageSource,
+  ItemsPanelTemplate,
+  ResourceDictionary,
+  UIElement
+} from "./generated/bindings.ts";
 import type {
   AttachedInput,
   ColorInput,
@@ -61,6 +70,7 @@ import {
   fontWeightNumber,
   gridLengthParts,
   GridUnit,
+  isResourceRecord,
   isSvgUri,
   numberList,
   parseColor,
@@ -73,9 +83,13 @@ import {
   ticksMilliseconds,
   timeSpanTicks
 } from "./values.ts";
+import type { ResourceRecordInput } from "./resource-record.ts";
+import { styleTarget } from "./style-targets.ts";
+import { xamlSeam } from "./xaml-seam.ts";
+import { styleOfClasses } from "#src/css/index.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
-import { read, write } from "#src/renderer/host/reflect.js";
+import { classNameOf, read, write } from "#src/renderer/host/reflect.js";
 import { boxed } from "#src/renderer/host/values.js";
 
 // A prop's value as the bindings take it: the generated components call these
@@ -149,6 +163,24 @@ export type FontFamilyInput = string | FontFamily;
 
 /** A URI string or a URI. */
 export type UriInput = string | Uri;
+
+/** XAML text (see `xamlOf`) or a ControlTemplate. */
+export type ControlTemplateInput = string | ControlTemplate;
+
+/** XAML text (see `xamlOf`) or a DataTemplate. */
+export type DataTemplateInput = string | DataTemplate;
+
+/** XAML text (see `xamlOf`) or an ItemsPanelTemplate. */
+export type ItemsPanelTemplateInput = string | ItemsPanelTemplate;
+
+/**
+ * CSS class names (the rules a component's `<style>` declares for them make
+ * the Style) or a Style.
+ */
+export type StyleInput = string | Style;
+
+/** A record of resources (see `ResourceRecordInput`) or a ResourceDictionary. */
+export type ResourcesInput = ResourceRecordInput | ResourceDictionary;
 
 /** A nullable boolean property such as ToggleButton.IsChecked. */
 export type NullableBooleanInput = boolean | null;
@@ -688,6 +720,67 @@ export function geometryOf(input: GeometryInput) {
   const geometry = projectAs(path.data, PathGeometry);
   write(path, "data", null);
   return geometry;
+}
+
+/** A template prop given XAML text loads it as a ControlTemplate; a ControlTemplate is used as it is. */
+export function controlTemplateOf(input: ControlTemplateInput) {
+  const isXaml = typeof input === "string";
+  return isXaml ? xamlSeam().controlTemplate(input) : input;
+}
+
+/** A template prop given XAML text loads it as a DataTemplate; a DataTemplate is used as it is. */
+export function dataTemplateOf(input: DataTemplateInput) {
+  const isXaml = typeof input === "string";
+  return isXaml ? xamlSeam().dataTemplate(input) : input;
+}
+
+/** A panel prop given XAML text loads it as an ItemsPanelTemplate; an ItemsPanelTemplate is used as it is. */
+export function itemsPanelTemplateOf(input: ItemsPanelTemplateInput) {
+  const isXaml = typeof input === "string";
+  return isXaml ? xamlSeam().itemsPanelTemplate(input) : input;
+}
+
+function isStyle(value: object | null): value is Style {
+  return value instanceof Style;
+}
+
+/**
+ * A Style prop given class names gets the Style their rules make for the
+ * element the prop styles (`itemContainerStyle` of a ListView styles its
+ * ListViewItems); a Style is used as it is.
+ *
+ * @throws {Error} When the prop's element is not known for the control, or no rule matches the classes.
+ */
+export function styleOf({ input, owner, property }: {
+  input: StyleInput;
+  owner: object;
+  property: string;
+}) {
+  const isStyleObject = typeof input !== "string";
+  if (isStyleObject) {
+    return input;
+  }
+
+  const style = styleOfClasses({
+    elementType: styleTarget({
+      property,
+      owner: classNameOf(owner)
+    }),
+    classNames: input
+  });
+  if (!isStyle(style)) {
+    throw new Error(`no CSS rule matches "${input}" for ${property}: declare it in a <style> block`);
+  }
+
+  return style;
+}
+
+/**
+ * A resources prop given a record makes a ResourceDictionary of it; a
+ * ResourceDictionary is used as it is.
+ */
+export function resourcesOf(input: ResourcesInput) {
+  return isResourceRecord(input) ? xamlSeam().resources(input) : input;
 }
 
 /**
