@@ -54,6 +54,15 @@ const UNWATCHED_FOLDERS = ["dist", ".winapp", ".worktrees", ".verify", ".fallow"
 const queryOrHash = /[?#].*$/u;
 const scriptExtension = /\.[cm]?[jt]s$/u;
 
+// Anchored to the root: a root that itself sits in one of these folders (a
+// git worktree) is still watched.
+function unwatchedPattern({ root, folder }: {
+  root: string;
+  folder: string;
+}) {
+  return `${root.replaceAll(path.sep, "/")}/${folder}/**`;
+}
+
 function isSameFile({ file, other }: {
   file: string;
   other: string;
@@ -192,7 +201,10 @@ export async function startModuleServer(options: ModuleServerOptions) {
       middlewareMode: true,
       ws: false,
       watch: {
-        ignored: UNWATCHED_FOLDERS.map(folder => `**/${folder}/**`)
+        ignored: UNWATCHED_FOLDERS.map(folder => unwatchedPattern({
+          root: options.root,
+          folder
+        }))
       }
     },
     plugins: hasConfigFile ? [] : winuiSvelte(),

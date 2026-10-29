@@ -39,3 +39,27 @@ test("the watcher skips build output, worktrees and the restored SDK", async () 
     });
   }
 });
+
+test("a root inside a worktrees folder is still watched", async () => {
+  const outer = mkdtempSync(path.join(tmpdir(), "winui-server-"));
+  const root = path.join(outer, ".worktrees", "branch");
+  mkdirSync(path.join(root, "src"), { recursive: true });
+  writeFileSync(path.join(root, "src", "file.ts"), "export const a = 1;\n");
+  const channel = new MessageChannel();
+  const server = await startModuleServer({
+    root,
+    port: channel.port1
+  });
+  try {
+    await new Promise(resolve => setTimeout(resolve, WATCH_SETTLE_MILLISECONDS));
+    const watched = Object.keys(server.watcher.getWatched()).map(folder => path.relative(root, folder));
+    assert.ok(watched.includes("src"));
+  } finally {
+    await server.close();
+    channel.port2.close();
+    rmSync(outer, {
+      recursive: true,
+      force: true
+    });
+  }
+});
