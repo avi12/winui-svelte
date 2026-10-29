@@ -3578,7 +3578,7 @@ export const levels: Record<string, LevelMetadata> = {
     properties: ["canDragItems", "canReorderItems", "itemContainerStyle", "itemContainerStyleSelector", "itemContainerTransitions", "itemsSource", "itemTemplate", "itemTemplateSelector", "selectedItem", "selectedNode", "selectionMode"],
     events: ["onCollapsed", "onDragItemsCompleted", "onDragItemsStarting", "onExpanding", "onItemInvoked", "onSelectionChanged"],
     attached: {},
-    bindables: ["selectedItem"],
+    bindables: [],
     contentProperty: null,
     isComponent: true,
     tag: "tree-view",

@@ -566,7 +566,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `ToolTip` | Controls | `horizontalOffset`, `isOpen`, `placement`, `placementRect`, `placementTarget`, `verticalOffset` | `isOpen` | yes |
 | `TransformGroup` | Media |  |  | yes |
 | `TranslateTransform` | Media | `x`, `y` |  |  |
-| `TreeView` | Controls | `canDragItems`, `canReorderItems`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemContainerTransitions`, `itemsSource`, `itemTemplate`, `itemTemplateSelector`, +3 more | `selectedItem` |  |
+| `TreeView` | Controls | `canDragItems`, `canReorderItems`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemContainerTransitions`, `itemsSource`, `itemTemplate`, `itemTemplateSelector`, +3 more | `selectedKey`, `selectedKeys`, `expandedKeys` |  |
 | `TreeViewItem` | Controls | `collapsedGlyph`, `expandedGlyph`, `glyphBrush`, `glyphOpacity`, `glyphSize`, `hasUnrealizedChildren`, `isExpanded`, `itemsSource` |  | yes |
 | `TreeViewList` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `TreeViewNode` | Controls | `content`, `hasUnrealizedChildren`, `isExpanded` |  |  |
