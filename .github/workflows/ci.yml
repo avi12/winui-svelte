@@ -48,6 +48,11 @@ jobs:
       - run: pnpm build
       - name: Pack the tarball
         run: pnpm pack --pack-destination ${{ runner.temp }}
+      - name: Keep the tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarball
+          path: ${{ runner.temp }}/winui-svelte-*.tgz
       - name: Install the tarball in a fresh app and load the package
         shell: pwsh
         run: |

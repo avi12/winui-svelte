@@ -39,11 +39,14 @@ backdrop. No browser engine is involved; there is no DOM.
 Built for [Edge+](https://github.com/avi12/edge-plus), whose settings panel is
 written with it.
 
-> **Status: not published yet.** The package name is a working name, the
-> custom-renderer API it needs is a Svelte pull request that has not shipped
+> **Status: pre-release.** The custom-renderer API the package needs is a
+> Svelte pull request that has not shipped
 > ([sveltejs/svelte#18042](https://github.com/sveltejs/svelte/pull/18042)), and
-> `package.json` still says `"private": true`. What is described here is what
-> the repository's tests and the [hello example](examples/hello) run.
+> `svelte` is installed from a pkg.pr.new build until it does. **No stable
+> release can go out before Svelte ships that API and `svelte` is pinned to a
+> published version** (see [CONTRIBUTING.md](CONTRIBUTING.md#the-svelte-build)).
+> What is described here is what the repository's tests and the
+> [hello example](examples/hello) run. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Requirements
 
@@ -834,6 +837,7 @@ protocol and the tests.
 | `winui-svelte/components` | every control as a component, and its props type; `xamlOf`, `goToState`, `installXaml` |
 | `winui-svelte/state` | the window's side of host state |
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
+| `winui-svelte/messaging` | `defineMessaging`: typed request and response messages over a transport, loadable in plain Node |
 | `winui-svelte/vite` | `winuiSvelte()` for `vite.config.ts`; `startModuleServer()` for hot reload |
 | `winui-svelte/runner` | `createWindowModuleRunner()`, the window thread's side of the module server |
 | `winui-svelte/window` | `runWindow`, `createWindow`, `startTimer`, `exitApplication`, `systemSettings` |
@@ -842,7 +846,9 @@ protocol and the tests.
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation`, and the `transition`, `intro` and `outro` attachments |
+| `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
+| `winui-svelte/css/transform`, `/css/focus`, `/css/surface`, `/css/resources` | the opt-in CSS groups: 2D transform, focus visuals, surfaces, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 
 The published package ships `dist/`: the TypeScript compiled with its
@@ -861,11 +867,21 @@ stack traces name the TypeScript lines. The dev server maps the components it
 compiles for you; a component compiled through `compileSvelte` (tests,
 `winui-svelte/compile`) ends with an inline map of its own.
 
+## Size
+
+An app with one `Button` bundles to under 123,000 bytes (the budget the
+bundle test enforces; `pnpm test` fails when it grows), because the package is
+tree-shakeable: a consumer that imports `Button` does not bundle
+`NavigationView`.
+
 ## Limitations
 
 Stated plainly, so nobody finds them by surprise:
 
-- **Windows only**, and only Windows 10 1809 and newer. The Windows App SDK
+- **Windows only**, and only Windows 10 1809 and newer. Importing an entry
+  point that loads WinRT on another system fails with dynwinrt's "Cannot find
+  native binding" error, and `initWindowsAppSdk` throws a plain error naming
+  the supported platforms; no entry point does work when imported. The Windows App SDK
   runtime must be installed; the package does not install it.
 - **Base and thin acrylic are controller backdrops.** `acrylicBase` and
   `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
@@ -920,7 +936,7 @@ Stated plainly, so nobody finds them by surprise:
 
 ## Development
 
-In this repository (a pnpm workspace; run these in `packages/winui-svelte`):
+In this repository (run these at its root):
 
 | | |
 | --- | --- |

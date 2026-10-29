@@ -1196,3 +1196,26 @@ An opt-in subpath: an app that does not import it does not bundle it.
 
 The working example is `examples/services` (`test/services.test.ts` runs it in
 a real window; the dialogs themselves need a person and are not opened there).
+
+## Reference: the remaining exports
+
+Exports that other sections do not need to name; each has JSDoc in its source.
+A test (`scripts/pack/api-docs.test.ts`) fails when a value exported by an
+entry point is named nowhere in the docs.
+
+| Export | Entry point | What |
+| --- | --- | --- |
+| `PatchError`, `reconcile` | `winui-svelte/state` | a patch that cannot apply; `next` merged into `previous`, keeping the identity of equal parts |
+| `PatchOperation`, `patchDataSchema`, `snapshotDataSchema` | `winui-svelte/state` | the protocol's change kinds and message data schemas |
+| `isJsonObject` | `winui-svelte/state/host` | whether a value is a JSON object |
+| `MemoryEnd` | `winui-svelte/state` | one end of an in-memory transport; `MemoryEnd.pair()` makes both |
+| `requestFrameSchema`, `responseFrameSchema` | `winui-svelte/messaging` | the wire shapes of a request and its answer |
+| `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed |
+| `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
+| `createCssNative`, `installCssRuntime`, `unregisterStyleSheet` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, and removal of a stylesheet |
+| `gradientGroups`, `focusGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
+| `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
+| `WINDOW_ENVIRONMENT` | `winui-svelte/vite` | the Vite environment the window's modules load in |
+| `LOG_EVENT` | `winui-svelte/runner` | the event the window thread's log lines are sent under |
+| `WINUI_RENDERER`, `rendererImport`, `isSvelteFile` | `winui-svelte/compile` | the renderer module a component imports, how a file imports it, whether a file is a component |
+| `TitleBarHeight`, `WindowPresentation`, `WindowTheme` | `winui-svelte/window` | the title bar height, presentation and theme choices of a window |

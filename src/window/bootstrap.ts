@@ -55,6 +55,13 @@ export interface WindowsAppSdkOptions {
  */
 export class WindowsAppRuntimeMissing extends Error {}
 
+function assertSupportedPlatform() {
+  const isSupported = process.platform === "win32" && (process.arch === "x64" || process.arch === "arm64");
+  if (!isSupported) {
+    throw new Error(`winui-svelte runs on Windows (x64 or arm64) only, not ${process.platform} ${process.arch}`);
+  }
+}
+
 function defaultUserDataFolder() {
   const appName = path.parse(process.argv[1] ?? "").name || DEFAULT_APP_NAME;
   return path.join(process.env["LOCALAPPDATA"] ?? tmpdir(), "winui-svelte", appName, "WebView2");
@@ -81,9 +88,11 @@ function bootstrapPath(folders: string[]) {
  * WebView2 profile folder) reaches the process only from there, and a worker
  * started afterwards inherits it.
  *
+ * @throws {Error} on a platform other than Windows x64 or arm64
  * @throws {WindowsAppRuntimeMissing} when the runtime is not installed
  */
 export function initWindowsAppSdk(options: WindowsAppSdkOptions = {}) {
+  assertSupportedPlatform();
   const {
     major = WINDOWS_APP_SDK_MAJOR,
     minor = WINDOWS_APP_SDK_MINOR,
