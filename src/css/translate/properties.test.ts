@@ -129,10 +129,10 @@ test("minmax and fit-content tracks carry their bounds", () => {
   ]);
 });
 
-test("grid-area and the grid- gap aliases expand to their longhands", () => {
+test("grid-area expands to its longhands", () => {
   const result = lower({
     elementType: null,
-    declarations: "grid-area: 2 / 3 / span 2 / span 4; grid-gap: 4px 8px"
+    declarations: "grid-area: 2 / 3 / span 2 / span 4"
   });
   assert.deepEqual(result.errors, []);
   assert.deepEqual(result.setters, [
@@ -149,16 +149,14 @@ test("grid-area and the grid- gap aliases expand to their longhands", () => {
   );
 });
 
-test("grid-gap on a grid is its spacing", () => {
-  assert.deepEqual(
-    setters({
+test("the deprecated grid- gap aliases are build errors", () => {
+  for (const name of ["grid-gap", "grid-row-gap", "grid-column-gap"]) {
+    const result = lower({
       elementType: "grid",
-      declarations: "grid-gap: 4px 8px; grid-column-gap: 2px"
-    }), [
-      ["RowSpacing", "4"],
-      ["ColumnSpacing", "2"]
-    ]
-  );
+      declarations: `${name}: 4px`
+    });
+    assert.match(result.errors.join(), /deprecated alias: use gap, row-gap or column-gap/u);
+  }
 });
 
 test("sizes WinUI cannot say are build errors", () => {

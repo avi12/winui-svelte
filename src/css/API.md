@@ -318,7 +318,7 @@ the panel; the CSS names what it does.
 | CSS | WinUI | Decision |
 |---|---|---|
 | `display: flex` (`flex-direction` row or column) on `<stack-panel>` | `Orientation` | row is Horizontal, column Vertical; `-reverse` is an error |
-| `gap`, `row-gap`, `column-gap`, `grid-gap` | stack `Spacing` (along its orientation), grid `RowSpacing` / `ColumnSpacing` | |
+| `gap`, `row-gap`, `column-gap` (`grid-gap` and its row and column forms are errors: deprecated aliases) | stack `Spacing` (along its orientation), grid `RowSpacing` / `ColumnSpacing` | |
 | `display: grid` on `<grid>`, `grid-template-*` | the grid's definitions | see Grid tracks |
 | `grid-column`, `grid-row`, `grid-area` | `Grid.Column`, `Grid.Row`, `Grid.ColumnSpan`, `Grid.RowSpan` (lines are 1-based in CSS, 0-based in WinUI) | named areas, auto-placement and implicit tracks are errors |
 | `flex: 1`, `flex-grow` on a child | a `*` track | error: the parent decides, write `grid-template-columns: 1fr auto` on a `<grid>` |
