@@ -54,6 +54,7 @@
     "examples/transitions/main.ts",
     "examples/items/main.ts",
     "examples/overlays/main.ts",
+    "examples/services/main.ts",
     "examples/web/main.ts",
     "examples/window/main.ts",
     "eslint.config.js"

@@ -727,13 +727,13 @@ protocol and the tests.
 
 | Specifier | What |
 | --- | --- |
-| `winui-svelte` | `control`, `withControl`, `mountControl`, `registerControls`, `dispatch` / `flush`, the value helpers |
+| `winui-svelte` | `control`, `withControl`, `elementSize`, `elementTheme`, `focusElement`, `mountControl`, `registerControls`, `dispatch` / `flush`, the value helpers |
 | `winui-svelte/components` | every control as a component, and its props type |
 | `winui-svelte/state` | the window's side of host state |
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
 | `winui-svelte/vite` | `winuiSvelte()` for `vite.config.ts`; `startModuleServer()` for hot reload |
 | `winui-svelte/runner` | `createWindowModuleRunner()`, the window thread's side of the module server |
-| `winui-svelte/window` | `runWindow`, `createWindow`, `startTimer`, `exitApplication` |
+| `winui-svelte/window` | `runWindow`, `createWindow`, `startTimer`, `exitApplication`, `systemSettings` |
 | `winui-svelte/thread` | `runOnUiThread`, the first call of the UI thread's worker |
 | `winui-svelte/bootstrap` | `initWindowsAppSdk`, for the host's main thread |
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |

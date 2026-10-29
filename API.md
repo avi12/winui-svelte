@@ -10,7 +10,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 
 | Specifier | File | What |
 |---|---|---|
-| `winui-svelte` | `src/index.ts` | `control`, `withControl`, `elementRef`, `mountControl`, `registerControls`, `setClassHandler`, `dispatch` / `flush` / `onFlush`, the value helpers |
+| `winui-svelte` | `src/index.ts` | `control`, `withControl`, `elementRef`, `elementSize`, `elementTheme`, `focusElement`, `mountControl`, `registerControls`, `setClassHandler`, `dispatch` / `flush` / `onFlush`, the value helpers |
 | `winui-svelte/components` | `src/components/generated/index.ts` | every WinUI 3 control as a component (`StackPanel`, `ToggleSwitch`, ...) and its props type (`ToggleSwitchComponentProps`); importing it registers the generated bindings with the renderer |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()` (its `messaging` is the typed link), `hostState()`, `StateProtocol`, the transports (stdio, MessagePort, in-memory), `diff` / `applyOps` (see `src/state/README.md`) |
 | `winui-svelte/host` | `src/renderer/host/host.ts` | the custom renderer a compiled component imports (default export); not for app code |
@@ -24,7 +24,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/testing` | `src/vite/loader.ts` | `svelteHooks()`: Node module hooks that run `.svelte` files with a chosen renderer (pure tests) |
 | `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`; imports nothing of WinRT, safe on the host's main thread |
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
-| `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()` |
+| `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
 needs no build. `pnpm build` compiles them to `dist/` and `publishConfig`
@@ -534,8 +534,10 @@ opens; `createWindow` takes them too. The `owner` link is a Win32 call
 
 `bind:handle` gives a `WindowHandle`: `window`, `appWindow`,
 `presenter`, `scale`, `close()`, `restore()`, `minimize()`, `maximize()`,
-`bringToFront()`. `appUserModelId` names the process for the taskbar (it is
-process-wide: read once, before the window opens).
+`bringToFront()`, and the file dialogs `pickFile()`, `pickFiles()`,
+`pickFolder()` and `saveFile()` (see App services). `appUserModelId` names the
+process for the taskbar (it is process-wide: read once, before the window
+opens).
 
 ## Overlays (`winui-svelte/components`)
 
@@ -591,3 +593,120 @@ flyouts: `Flyout`, `MenuFlyout`, `MenuBarItemFlyout`, `CommandBarFlyout`,
   to `false` first removes it from the line. The line is one for the thread, so
   a dialog of a second window also waits.
 - `Flyout`'s content is a control: write `<TextBlock>` in it, not bare text.
+
+## App services (`winui-svelte`, `winui-svelte/window`)
+
+What an app reads from Windows and asks of it, beyond controls. All of it
+runs on the UI thread, unpackaged (started from `node.exe`), except what the
+last two lists say.
+
+### Reactive readers of an element (`winui-svelte`)
+
+```ts
+// Put `.attach` after @attach on the element; read the rest where needed.
+// All reactive, and reset when the element goes.
+const size = elementSize();     // size.width, size.height: ActualWidth/Height,
+                                // device-independent pixels, 0 before layout
+const theme = elementTheme();   // theme.current: ElementTheme.Light | Dark,
+                                // undefined before the element is made
+
+// Focus a control like element.focus() on the web. `state` is how focus is
+// said to arrive: "programmatic" (default), "keyboard" (draws the focus
+// visual) or "pointer". Returns false when the control cannot take focus.
+function focusElement(options: {
+  control: Focusable;
+  state?: FocusKind;
+}): boolean;
+```
+
+```svelte
+<StackPanel {@attach size.attach} {@attach theme.attach}>
+  {#if size.width < 480}<NarrowLayout />{:else}<WideLayout />{/if}
+</StackPanel>
+```
+
+The control for `focusElement` comes from `elementRef().current` or
+`@attach control(...)`. Focus lands only once the control is shown, in an
+active window: a call earlier returns `false`.
+
+### System settings (`winui-svelte/window`)
+
+```ts
+const settings = systemSettings();   // once, on the UI thread
+settings.accentColor;       // "#rrggbb": any color prop takes it
+settings.textScaleFactor;   // 1 is 100%, 1.5 is 150%
+settings.isAnimationEnabled;
+```
+
+Over `Windows.UI.ViewManagement.UISettings`. Each field is read live and is
+reactive: it updates on `ColorValuesChanged`, `TextScaleFactorChanged` and
+`AnimationsEnabledChanged`, and the subscription lasts only while an effect
+reads it. `UISettings` raises its events off the UI thread, so the change is
+handed to it through a dispatcher captured when `systemSettings()` is called.
+High contrast is not here yet: `AccessibilitySettings` is not in the generated
+bindings (planned, below).
+
+### File and folder dialogs (`WindowHandle`)
+
+```ts
+const path = await handle.pickFile({
+  title: "Open a note",
+  startIn: PickerLocation.documents,   // or startFolder: "C:\notes"
+  fileTypes: [".txt", ".md"],          // "*" or left out: every file
+});                                    // string, or null when cancelled
+const paths = await handle.pickFiles({ fileTypes: [".png"] });  // []: none
+const folder = await handle.pickFolder({ title: "Choose a folder" });
+const target = await handle.saveFile({
+  suggestedFileName: "note",
+  defaultFileExtension: ".txt",
+  fileTypeChoices: { text: [".txt"], markdown: [".md"] },
+  shouldPromptOverwrite: true,
+});
+```
+
+They wrap the Windows App SDK pickers (`Microsoft.Windows.Storage.Pickers`:
+`FileOpenPicker`, `FileSavePicker`, `FolderPicker`), which take the window's
+`WindowId` (`appWindow.id`) so the dialog opens over that window. The older
+`Windows.Storage.Pickers` classes need an `IInitializeWithWindow` call and are
+not used. All take `PickerOptions`: `title`, `commitButtonText`, `startIn`
+(`documents`, `computer`, `desktop`, `downloads`, `music`, `pictures`,
+`videos`), `startFolder` (a path, wins over `startIn`) and `settingsIdentifier`
+(dialogs sharing it open where the user last chose). The dialog is modal to
+its window; the promise settles when it closes. A path is all that comes back:
+read and write the file with `node:fs`.
+
+### Localization: what works unpackaged
+
+- **`Intl` and your own string tables work everywhere.**
+  `new Intl.DateTimeFormat().resolvedOptions().locale` is the user's locale
+  and needs nothing from Windows; a table keyed by language is the portable
+  way to translate an app hosted from `node.exe`.
+- **WinUI's `ResourceLoader` (`.resw` / `resources.pri`) is not wired up, and
+  by default will not find your strings.** An unpackaged app's default
+  resource file is `resources.pri` next to the running `.exe` (Microsoft's
+  documentation, for apps without package identity: build it with `makepri`
+  without a packaging section and copy it beside the program). Hosted from
+  Node, that program is `node.exe`, in Node's folder, not yours. Its bindings
+  have a constructor that takes a `.pri` path (`new ResourceLoader(fileName)`),
+  which would sidestep this; it is not exercised by any test here, so treat it
+  as untried. Without package identity the loader also follows the system
+  display language, not the user's preferred-language list.
+- **XAML's `x:Uid` does not apply**: components are Svelte, not XAML.
+- **Package identity** (an MSIX, or a sparse package) is what unlocks the
+  rest of Windows' app model: the per-package resource lookup above, toast
+  notifications that survive the app closing, and `AppInstance` redirection
+  by package. Nothing in this section needs it; the planned items below might.
+
+### Planned, not in the package yet
+
+- `AppInstance` (single instance, activation redirection): the classes are in
+  the generated bindings, no wrapper yet.
+- Notifications (`AppNotificationManager`): the same. Whether they work
+  without package identity is to be checked when they are wrapped.
+- Reading `AccessibilitySettings` (high contrast): the class is not in the
+  generated bindings; it needs adding to `winapp.jsBindings` and a
+  `pnpm bindings` run.
+- A `ResourceLoader` wrapper that finds a `.pri` beside the app.
+
+The working example is `examples/services` (`test/services.test.ts` runs it in
+a real window; the dialogs themselves need a person and are not opened there).
