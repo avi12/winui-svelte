@@ -913,7 +913,8 @@ Stated plainly, so nobody finds them by surprise:
 - **Two controls are not components:** `SwapChainBackgroundPanel` (the UWP
   panel WinUI 3 keeps for compatibility, which refuses most element properties;
   `SwapChainPanel` replaces it) and `PivotHeaderItem` (WinUI makes it only
-  inside a `Pivot`).
+  inside a `Pivot`; style a header with the `header` snippet of `PivotItem`,
+  which takes any element).
 - **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
   service started cannot launch the browser (error 0x8007139F), and a `data:`
   URL cannot be the top frame.

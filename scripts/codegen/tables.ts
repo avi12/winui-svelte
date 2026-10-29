@@ -320,7 +320,8 @@ export const nonConstructible = new Map<string, string>([
   ],
   [
     "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem",
-    "constructing it fails with E_NOINTERFACE: it is activatable in the metadata but WinUI makes it only inside a Pivot"
+    "covered by Pivot: WinUI makes it only inside a Pivot, as the header of a PivotItem (constructing it fails with "
+    + "E_NOINTERFACE), so a header is styled with the `header` snippet of PivotItem"
   ]
 ]);
 
