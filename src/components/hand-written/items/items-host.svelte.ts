@@ -1,8 +1,9 @@
-import type { ItemRowsProps } from "./item-rows.svelte.ts";
+import type { ItemNameProps, ItemRowsProps } from "./item-rows.svelte.ts";
 import {
   ItemRows,
   keyBox,
   keyText,
+  nameContainer,
   SLOT_ELEMENT,
   templateOf
 } from "./item-rows.svelte.ts";
@@ -11,7 +12,6 @@ import { KeySelection, SelectionKind } from "./key-selection.ts";
 import { movedIndex, MoveDirection, sameOrder } from "./reorder.ts";
 import type { ContainerContentChangingEventArgs, ListViewBase } from "#src/components/generated/bindings.js";
 import {
-  AutomationProperties,
   ContentControl,
   Control,
   DataTemplate,
@@ -49,7 +49,7 @@ const selectionKinds = new Map<ListViewSelectionMode, SelectionKind>([
 ]);
 
 /** What a list component takes besides its control's properties: the items and how a row shows one. */
-export interface ItemsHostProps<Item> extends ItemRowsProps<Item> {
+export interface ItemsHostProps<Item> extends ItemRowsProps<Item>, ItemNameProps<Item> {
   // The user drags an item to a new place (the control's own reorder).
   reorderable?: boolean;
   // Alt+Up / Alt+Down moves the focused item one place.
@@ -65,8 +65,6 @@ export interface ItemsHostProps<Item> extends ItemRowsProps<Item> {
   // move. The list keeps that order until `items` changes; an app that keeps
   // its own order updates `items` from it.
   onReorder?: (order: string[]) => void;
-  // The accessible name of an item's container.
-  itemName?: (item: Item) => string;
   // The control, for what the control exposes and the component does not
   // (item transitions, scrolling, focus). The cleanup runs when it goes.
   onControl?: (view: ListViewBase) => void | (() => void);
@@ -210,16 +208,17 @@ class ItemsHost<Item> implements ListHandle {
       return;
     }
 
+    const key = keyText(args.item);
     const item = this.rows.show({
       container,
       slot: projectAs(container.contentTemplateRoot, ContentControl),
-      key: keyText(args.item)
+      key
     });
-    const name = item === undefined ? undefined : this.props.itemName?.(item);
-    const hasName = name !== undefined;
-    if (hasName) {
-      AutomationProperties.setName(container, name);
-    }
+    nameContainer({
+      container,
+      item,
+      props: this.props
+    });
   }
 
   private dragCompleted() {

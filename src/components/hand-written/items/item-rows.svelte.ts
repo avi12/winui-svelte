@@ -1,21 +1,16 @@
 import { duplicateKey, syncKeyVector } from "./key-vector.ts";
 import type { KeyBox } from "./key-vector.ts";
-import type { LiveRow } from "./live-rows.ts";
-import { LiveRows } from "./live-rows.ts";
-import type { RowProps } from "./row-source.svelte.ts";
-import { RowSource } from "./row-source.svelte.ts";
-import Row from "./Row.svelte";
+import { KeyedRows, mountSnippetRow } from "./keyed-rows.svelte.ts";
 import { DynWinRtType, DynWinRtValue } from "@microsoft/dynwinrt";
 import type { ContentControl, FrameworkElement } from "#src/components/generated/bindings.js";
-import { IVector_Object, PropertyValue } from "#src/components/generated/bindings.js";
+import { AutomationProperties, IVector_Object, PropertyValue } from "#src/components/generated/bindings.js";
 import type { BoxedValue } from "#src/native-value.js";
-import { mountControl } from "#src/renderer/host/mount.svelte.js";
 import { unboxed } from "#src/renderer/host/values.js";
 import type { Snippet } from "svelte";
 
-// What every control that shows the app's items by a snippet shares: the keys
-// the control holds as its items, the rows mounted into the slots of its item
-// template, and which container shows which key. The control decides when a
+// What every control that shows a flat list of the app's items by a snippet
+// shares: the keys the control holds as its items, and the rows (keyed-rows.svelte.ts)
+// mounted into the slots of its item template. The control decides when a
 // container shows a key (ListView: ContainerContentChanging, ItemsRepeater:
 // ElementPrepared); this class does the rest.
 
@@ -39,6 +34,25 @@ export interface ItemRowsProps<Item> {
   item?: Snippet<[Item]>;
 }
 
+/** What a control takes to name the container of an item for assistive technology. */
+export interface ItemNameProps<Item> {
+  // The accessible name of an item's container.
+  itemName?: (item: Item) => string;
+}
+
+/** Gives the container the accessible name the app has for its item, if it has one. */
+export function nameContainer<Item>({ container, item, props }: {
+  container: FrameworkElement;
+  item: Item | undefined;
+  props: ItemNameProps<Item>;
+}) {
+  const name = item === undefined ? undefined : props.itemName?.(item);
+  const hasName = name !== undefined;
+  if (hasName) {
+    AutomationProperties.setName(container, name);
+  }
+}
+
 /** The text of a boxed key; a value that is not a key reads as the empty text. */
 export function keyText(boxedKey: BoxedValue) {
   const value = unboxed(boxedKey);
@@ -56,10 +70,7 @@ export class ItemRows<Item> {
   /** The control's items: the keys, boxed. */
   readonly keys = IVector_Object.from(DynWinRtValue.createVector([], DynWinRtType.object()));
   private readonly props: ItemRowsProps<Item>;
-  private readonly rows = new LiveRows<Item, FrameworkElement>();
-  // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
-  private itemsByKey = new Map<string, Item>();
-  private nextContainerId = 0;
+  private readonly rows: KeyedRows<Item>;
 
   private keyOrder: string[] = [];
   private isChangingKeys = false;
@@ -70,6 +81,11 @@ export class ItemRows<Item> {
     onSynced?: () => void;
   }) {
     this.props = props;
+    this.rows = new KeyedRows(({ slot, entry }) => mountSnippetRow({
+      slot,
+      snippet: props.item,
+      value: entry
+    }));
     $effect(() => {
       this.sync(props.items ?? []);
       onSynced?.();
@@ -100,7 +116,7 @@ export class ItemRows<Item> {
       this.keys.removeAt(this.keyOrder.indexOf(key));
       this.keys.insertAt(target, keyBox.box(key));
     });
-    this.keyOrder = this.readOrder();
+    this.adoptOrder(this.readOrder());
   }
 
   /** The containers that show a row now. */
@@ -128,28 +144,16 @@ export class ItemRows<Item> {
     slot: ContentControl;
     key: string;
   }) {
-    const item = this.itemsByKey.get(key);
-    const isKnown = item !== undefined;
-    if (!isKnown) {
-      return undefined;
-    }
-
-    this.rows.fill({
-      containerId: this.containerId(container),
+    return this.rows.show({
       container,
-      key,
-      item,
-      create: () => this.mountRow({
-        slot,
-        item
-      })
+      slot,
+      key
     });
-    return item;
   }
 
   /** The container went to the recycle queue: its row ends. */
   release(container: FrameworkElement) {
-    this.rows.release(this.containerId(container));
+    this.rows.release(container);
   }
 
   /** Ends every row. */
@@ -166,15 +170,14 @@ export class ItemRows<Item> {
       throw new Error(`two items have the key "${duplicate}"; a list's keys must be unique`);
     }
 
-    // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
-    this.itemsByKey = new Map(keyed);
     this.keyOrder = wanted;
     this.changingKeys(() => syncKeyVector({
       vector: this.keys,
       codec: keyBox,
       wanted
     }));
-    this.rows.refresh(key => this.itemsByKey.get(key));
+    // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
+    this.rows.setEntries(new Map(keyed));
   }
 
   private changingKeys(change: () => void) {
@@ -184,58 +187,5 @@ export class ItemRows<Item> {
     } finally {
       this.isChangingKeys = false;
     }
-  }
-
-  // WinUI hands back a new wrapper for the same container, so a container is
-  // known by an id kept in its Tag.
-  private containerId(container: FrameworkElement) {
-    const known = unboxed(container.tag);
-    const isKnown = typeof known === "string";
-    if (isKnown) {
-      return known;
-    }
-
-    const id = `row-${this.nextContainerId}`;
-    this.nextContainerId++;
-    container.tag = PropertyValue.createString(id);
-    return id;
-  }
-
-  private mountRow({ slot, item }: {
-    slot: ContentControl;
-    item: Item;
-  }) {
-    const snippet = this.props.item;
-    const hasSnippet = snippet !== undefined;
-    if (!hasSnippet) {
-      const emptyRow: LiveRow<Item> = {
-        update: () => undefined,
-        unmount: () => undefined
-      };
-      return emptyRow;
-    }
-
-    const source = new RowSource(item);
-    const mounted = mountControl<RowProps<Item>>({
-      component: Row,
-      props: {
-        snippet,
-        source
-      }
-    });
-    slot.content = mounted.root;
-    const row: LiveRow<Item> = {
-      update(next) {
-        const isChanged = source.current !== next;
-        if (isChanged) {
-          source.current = next;
-        }
-      },
-      unmount() {
-        slot.content = null;
-        mounted.unmount();
-      }
-    };
-    return row;
   }
 }
