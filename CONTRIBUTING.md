@@ -123,6 +123,14 @@ version, and set the `svelte` peer range to it (the `*` peer is only honest
 while the build is unreleased). `CUSTOM_SVELTE_SOURCE` in
 `src/vite/custom-svelte.ts` then names the release instead.
 
+## Patches
+
+`patches/svelte-language-server@0.18.5.patch` (applied by pnpm through
+`patchedDependencies` in `pnpm-workspace.yaml`) stops the editor check from
+reporting the inlay hints svelte2tsx writes for a component's content snippet.
+It affects only `pnpm check:editor`, never the published package. Drop it when
+a language-server release fixes the hint.
+
 ## Releasing
 
 Releases go out only when the maintainer asks: bump `version`, `pnpm lint`,

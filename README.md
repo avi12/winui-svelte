@@ -859,11 +859,21 @@ stack traces name the TypeScript lines. The dev server maps the components it
 compiles for you; a component compiled through `compileSvelte` (tests,
 `winui-svelte/compile`) ends with an inline map of its own.
 
+## Size
+
+An app with one `Button` bundles to under 123,000 bytes (the budget the
+bundle test enforces; `pnpm test` fails when it grows), because the package is
+tree-shakeable: a consumer that imports `Button` does not bundle
+`NavigationView`.
+
 ## Limitations
 
 Stated plainly, so nobody finds them by surprise:
 
-- **Windows only**, and only Windows 10 1809 and newer. The Windows App SDK
+- **Windows only**, and only Windows 10 1809 and newer. Importing an entry
+  point that loads WinRT on another system fails with dynwinrt's "Cannot find
+  native binding" error, and `initWindowsAppSdk` throws a plain error naming
+  the supported platforms; no entry point does work when imported. The Windows App SDK
   runtime must be installed; the package does not install it.
 - **No base or thin acrylic backdrop.** They need a `SystemBackdrop` subclass
   overriding `OnTargetConnected` (`ISystemBackdropOverrides`), which the
@@ -918,7 +928,7 @@ Stated plainly, so nobody finds them by surprise:
 
 ## Development
 
-In this repository (a pnpm workspace; run these in `packages/winui-svelte`):
+In this repository (run these at its root):
 
 | | |
 | --- | --- |
