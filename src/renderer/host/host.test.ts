@@ -9,7 +9,9 @@ import {
   FakeMenuItem,
   FakePanel,
   FakeTextBlock,
-  FakeToggle
+  FakeToggle,
+  FakeTransition,
+  FakeTransitionCollection
 } from "#src/renderer/testing/fake-controls.js";
 import { svelteHooks } from "#src/vite/loader.js";
 import assert from "node:assert/strict";
@@ -28,6 +30,7 @@ setClassHandler((control, value) => {
 registerHooks(svelteHooks(path.join(import.meta.dirname, "host.ts")));
 const { mountControl } = await import("./mount.svelte.ts");
 const { default: Fixture } = await import("#src/renderer/testing/Host.fixture.svelte");
+const { default: CollectionsFixture } = await import("#src/renderer/testing/Collections.fixture.svelte");
 const { default: PropertyFixture } = await import("#src/renderer/testing/Property.fixture.svelte");
 const { default: ReorderableFixture } = await import("#src/renderer/testing/Reorderable.fixture.svelte");
 const { default: TextFixture } = await import("#src/renderer/testing/Text.fixture.svelte");
@@ -264,4 +267,59 @@ test("a child the control reordered itself stays in step with the tree", () => {
   mounted.set({ items: ["e", "b", "c", "d"] });
   assert.deepEqual(textsOf(root), ["e", "b", "c", "d"], "a move the tree also made is no further move");
   mounted.unmount();
+});
+
+test("a <property> element makes the collection its class names when the property holds none", () => {
+  const mounted = mountControl<{
+    isShown: boolean;
+    hasProperty: boolean;
+    collection: string;
+  }>({
+    component: CollectionsFixture,
+    props: {
+      isShown: false,
+      hasProperty: true,
+      collection: "fake-transition-collection"
+    }
+  });
+  const root: object = mounted.root;
+  assert.ok(root instanceof FakePanel);
+  const [filled, empty] = root.children.items;
+  assert.ok(filled instanceof FakePanel);
+  assert.ok(empty instanceof FakePanel);
+  assert.ok(filled.childrenTransitions instanceof FakeTransitionCollection);
+  assert.equal(filled.childrenTransitions.items.length, 1);
+  assert.ok(filled.childrenTransitions.items[0] instanceof FakeTransition);
+  assert.equal(empty.childrenTransitions, null, "no collection is made for a property with nothing in it");
+
+  const made = filled.childrenTransitions;
+  mounted.set({
+    isShown: true,
+    hasProperty: true,
+    collection: "fake-transition-collection"
+  });
+  assert.equal(filled.childrenTransitions, made, "later items go into the collection that was made");
+  assert.equal(made.items.length, 2);
+
+  mounted.set({
+    isShown: true,
+    hasProperty: false,
+    collection: "fake-transition-collection"
+  });
+  assert.equal(made.items.length, 0, "a <property> element that goes takes its items out");
+  mounted.unmount();
+});
+
+test("a <property> element naming a collection class that was not registered says so", () => {
+  assert.throws(
+    () => mountControl({
+      component: CollectionsFixture,
+      props: {
+        isShown: false,
+        hasProperty: true,
+        collection: "no-such-collection"
+      }
+    }),
+    /no-such-collection/u
+  );
 });
