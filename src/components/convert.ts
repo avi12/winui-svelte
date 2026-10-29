@@ -214,8 +214,6 @@ function repeatBehaviorTypes() {
     [RepeatKind.FOREVER, RepeatBehaviorType.Forever]
   ]);
 }
-const INT32_BITS = 32;
-const MAX_INT32 = 2 ** (INT32_BITS - 1) - 1;
 
 function isFlagMask(members: readonly number[]) {
   const flags = members.filter(member => member !== 0);
