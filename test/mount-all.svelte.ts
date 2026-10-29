@@ -6,6 +6,7 @@ import * as bindings from "#src/components/generated/bindings.js";
 import type { LevelMetadata } from "#src/components/generated/metadata.js";
 import { levels } from "#src/components/generated/metadata.js";
 import ToggleSwitch from "#src/components/generated/ToggleSwitch.svelte";
+import { installMedia } from "#src/components/media.js";
 import { ticksDate } from "#src/components/values.js";
 import { installXaml } from "#src/components/xaml.js";
 import { installCss } from "#src/css/index.js";
@@ -94,6 +95,11 @@ const BOLD_WEIGHT = 700;
 const POLYGON_POINT_COUNT = 3;
 const DASH_COUNT = 2;
 const SUGGESTION_COUNT = 2;
+const SVG_TEXT = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"/>";
+const PNG_BYTES = Uint8Array.from(
+  atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="),
+  character => character.charCodeAt(0)
+);
 const PICKED_DATE = new Date(Date.UTC(2020, 5, 15, 12));
 const DATE_TOLERANCE_MILLISECONDS = 86_400_000;
 
@@ -888,6 +894,54 @@ function checkBehaviours({ connectors, failures }: {
   });
 
   check({
+    name: "SVG bytes make an SvgImageSource, other bytes a BitmapImage (Image.source)",
+    action() {
+      const svgImage = new bindings.Image();
+      const bitmapImage = new bindings.Image();
+      const closeSvg = open({
+        connect: connectorFor("Image"),
+        control: svgImage,
+        props: {
+          source: new TextEncoder().encode(SVG_TEXT)
+        },
+        bound: {}
+      });
+      const closeBitmap = open({
+        connect: connectorFor("Image"),
+        control: bitmapImage,
+        props: {
+          source: PNG_BYTES
+        },
+        bound: {}
+      });
+      flushSync();
+      assert.ok(
+        bindings.projectAs(svgImage.source, bindings.SvgImageSource) !== null,
+        "SVG bytes made no SvgImageSource"
+      );
+      assert.ok(
+        bindings.projectAs(bitmapImage.source, bindings.BitmapImage) !== null,
+        "PNG bytes made no BitmapImage"
+      );
+      closeSvg();
+      closeBitmap();
+    }
+  });
+
+  const player = new bindings.MediaPlayerElement();
+  checkProps({
+    name: "a URI string makes a MediaSource (MediaPlayerElement.source)",
+    component: "MediaPlayerElement",
+    control: player,
+    props: {
+      source: "https://example.com/clip.mp4"
+    },
+    verify() {
+      assert.ok(read(player, "source") !== null, "the URI made no media source");
+    }
+  });
+
+  check({
     name: "a bindable date reaches the picker (DatePicker.date)",
     action() {
       const picker = new bindings.DatePicker();
@@ -1359,6 +1413,7 @@ export async function run(report: (result: Report) => void) {
     Application.create(() => {
       installCss(winui);
       installXaml();
+      installMedia();
       launch({
         connectors,
         report,

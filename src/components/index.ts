@@ -21,6 +21,7 @@ export { NavigationCacheMode, NavigationMode } from "./hand-written/navigation/n
 export { MoveDirection } from "./hand-written/items/reorder.ts";
 export { ticksDate, ticksMilliseconds } from "./values.ts";
 export type { ResourceRecordInput, ResourceValueInput } from "./resource-record.ts";
+export { installMedia } from "./media.ts";
 export { goToState, installXaml, resourceDictionaryOf, xamlOf } from "./xaml.ts";
 export type { XamlSource } from "./xaml-source.ts";
 export { XamlKind } from "./xaml-source.ts";

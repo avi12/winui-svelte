@@ -179,6 +179,10 @@ const converters = new Map<PropertyKind, Converter>([
     convert: "imageSourceOf",
     inputType: "ImageSourceInput"
   }],
+  [PropertyKind.MEDIA_PLAYBACK_SOURCE, {
+    convert: "mediaPlaybackSourceOf",
+    inputType: "MediaPlaybackSourceInput"
+  }],
   [PropertyKind.FONT_FAMILY, {
     convert: "fontFamilyOf",
     inputType: "FontFamilyInput"

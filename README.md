@@ -617,7 +617,9 @@ How a value is written:
   text (`"4 2"`).
 - A geometry prop (`Path.data`, `PathIcon.data`) takes path data as XAML writes
   it (`"M0,0 L10,10"`).
-- An image source takes a URI; one ending in `.svg` is drawn as an SVG.
+- An image source takes a URI (one ending in `.svg` is drawn as an SVG) or the
+  bytes of an image file (`Uint8Array`, `ArrayBuffer`). A `MediaPlayerElement`'s
+  `source` takes a URI.
 - An `itemsSource` takes an array, which becomes the collection WinUI reads; an
   `inputScope` takes a name (`"Url"`) or a list of names.
 - A property that takes any object (`header`, `content`) takes a string, which is
@@ -832,6 +834,7 @@ protocol and the tests.
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation`, and the `transition`, `intro` and `outro` attachments |
+| `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 
 The published package ships `dist/`: the TypeScript compiled with its

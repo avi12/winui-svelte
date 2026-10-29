@@ -15,6 +15,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()` (its `messaging` is the typed link), `hostState()`, `StateProtocol`, the transports (stdio, MessagePort, in-memory), `diff` / `applyOps` (see `src/state/README.md`) |
 | `winui-svelte/host` | `src/renderer/host/host.ts` | the custom renderer a compiled component imports (default export); not for app code |
 | `winui-svelte/element-animation` | `src/renderer/host/element-animation.ts` | `enableElementAnimation()`, and the attachments `transition()`, `intro()`, `outro()`: Svelte's transition functions on WinUI elements (opt-in; an app that does not import it does not bundle it) |
+| `winui-svelte/connected-animation` | `src/renderer/host/connected-animation.ts` | `connectElement({ key, element })`, `startConnected({ key, element })`: WinUI's connected animation between two pages (opt-in) |
 | `winui-svelte/keyed-list` | `src/renderer/list/keyed-list.ts` | `syncKeyed()`: sync a native collection to wanted keys, touching only what changed |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()`, `hostState()`, the transports (see `src/state/README.md`) |
 | `winui-svelte/messaging` | `src/messaging/index.ts` | `defineMessaging(transport)`: typed `sendMessage` / `onMessage` over a ProtocolMap, as @webext-core/messaging; the state channel is built on it |
@@ -223,6 +224,21 @@ What it does:
 - `animate:flip` has no equivalent. WinUI's own `RepositionThemeTransition`
   is the native tool for a moved element (not tried here).
 
+## Connected animation (`winui-svelte/connected-animation`)
+
+`connectElement({ key, element })` remembers an element as the start of a
+connected animation, just before navigating; `startConnected({ key, element })`
+on the next page plays it from there to the new element and returns whether one
+was prepared under the key (WinUI forgets it after a few seconds, and plays it
+once). Both take the current view's service unless a `host` is given.
+
+```ts
+import { connectElement, startConnected } from "winui-svelte/connected-animation";
+
+connectElement({ key: "photo", element: thumbnail });
+startConnected({ key: "photo", element: hero });
+```
+
 ## Scheduling (`winui-svelte`)
 
 ```ts
@@ -362,8 +378,15 @@ each kind from one table in `scripts/codegen/emit.ts`.
 | `DoubleCollection` | `DoubleCollectionInput` | `[4, 2]`, `"4 2"` |
 | `InputScope` | `InputScopeInput` | `"Url"`, `["Url", "Search"]` |
 | `Geometry` | `GeometryInput` | `"M0,0 L10,10"` |
-| `ImageSource` | `ImageSourceInput` | a URI; `.svg` makes an `SvgImageSource` |
+| `ImageSource` | `ImageSourceInput` | a URI (`.svg` makes an `SvgImageSource`), or the bytes of an image file (`Uint8Array`, `ArrayBuffer`; SVG text makes an `SvgImageSource`) |
+| `IMediaPlaybackSource` | `MediaPlaybackSourceInput` | a URI, opened as a `MediaSource` (`MediaPlayerElement.source`) |
 | an `itemsSource` | `CollectionInput` | an array, made an `IVector` of boxed items |
+
+Image bytes and media URIs go through streams and `MediaSource`, which a bundle
+of one Button does not carry: `runWindow` installs them, and an app that starts
+WinUI another way calls `installMedia()`. Bytes are written to an in-memory
+stream and the image fills itself when it is ready; a bad image raises the
+image's own `ImageFailed` event.
 
 The nullable ones (`beginTime`, `selectedDate`, ...) take `null` as well. A
 bindable `date` or time reads back as a `Date` or as milliseconds. For an event

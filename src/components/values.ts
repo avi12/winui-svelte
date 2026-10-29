@@ -241,6 +241,8 @@ const POINT_LENGTH = 2;
 const EPOCH_OFFSET_MILLISECONDS = 11_644_473_600_000;
 const SVG_EXTENSION = ".svg";
 const SVG_DATA_PREFIX = "data:image/svg+xml";
+const SVG_SNIFF_BYTES = 1024;
+const SVG_ROOT = /<svg[\s>]/iu;
 const URI_SUFFIX = /[?#].*$/u;
 const XML_SPECIALS = /[&<>"]/gu;
 const XML_ESCAPES = new Map([
@@ -649,6 +651,12 @@ export function isSvgUri(uri: string) {
   const text = uri.trim().toLowerCase();
   const isData = text.startsWith(SVG_DATA_PREFIX);
   return isData || text.replace(URI_SUFFIX, "").endsWith(SVG_EXTENSION);
+}
+
+/** Whether image bytes are SVG text: an `<svg` element in the first kilobyte. */
+export function isSvgBytes(bytes: Uint8Array) {
+  const head = new TextDecoder().decode(bytes.subarray(0, SVG_SNIFF_BYTES));
+  return SVG_ROOT.test(head);
 }
 
 /** The XAML of a Path with this mini-language data ("M0,0 L10,10"), for the reader that parses it into a geometry. */
