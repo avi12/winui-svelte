@@ -16,6 +16,14 @@ export const hitTesting = enumMap([
   ["all", "True"]
 ]);
 
+/** `object-fit`, as an image's Stretch. */
+export const objectFits = enumMap([
+  ["fill", "Fill"],
+  ["contain", "Uniform"],
+  ["cover", "UniformToFill"],
+  ["none", "None"]
+]);
+
 /** `opacity`: a number or a percentage from 0 to 1. */
 export function opacity(reader: Reader) {
   const word = reader.single();

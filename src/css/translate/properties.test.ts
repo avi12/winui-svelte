@@ -265,6 +265,28 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["OpacityTransition", "<ScalarTransition Duration=\"0:0:0.200\"/>"],
     ["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.100\"/>"],
     ["BackgroundTransition", "<BrushTransition Duration=\"0:0:1.000\"/>"]
+  ]],
+  ["user-select none", null, "user-select: none", [["IsTextSelectionEnabled", "False"]]],
+  ["user-select text", null, "user-select: text", [["IsTextSelectionEnabled", "True"]]],
+  ["object-fit cover", null, "object-fit: cover", [["Stretch", "UniformToFill"]]],
+  ["object-fit contain", null, "object-fit: contain", [["Stretch", "Uniform"]]],
+  ["word-break break-all", null, "word-break: break-all", [["TextWrapping", "Wrap"]]],
+  ["word-break keep-all", null, "word-break: keep-all", [["TextWrapping", "WrapWholeWords"]]],
+  ["line-clamp wraps, trims and counts", null, "line-clamp: 3", [
+    ["TextWrapping", "Wrap"],
+    ["TextTrimming", "CharacterEllipsis"],
+    ["MaxLines", "3"]
+  ]],
+  ["-webkit-line-clamp", null, "-webkit-line-clamp: 2", [
+    ["TextWrapping", "Wrap"],
+    ["TextTrimming", "CharacterEllipsis"],
+    ["MaxLines", "2"]
+  ]],
+  ["line-clamp none", null, "line-clamp: none", [["MaxLines", "0"]]],
+  ["text-overflow clip wins over the clamp's ellipsis", null, "line-clamp: 2; text-overflow: clip", [
+    ["TextWrapping", "Wrap"],
+    ["MaxLines", "2"],
+    ["TextTrimming", "Clip"]
   ]]
 ];
 

@@ -32,8 +32,7 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["list-style", "WinUI has no lists to mark"],
   ["text-transform", "WinUI has no text-transform; change the text"],
   ["text-indent", "WinUI has no text indent"],
-  ["word-break", "WinUI wraps on words; use text-wrap"],
-  ["user-select", "set IsTextSelectionEnabled on the text block"]
+  ["aspect-ratio", "WinUI has no aspect ratio; give the width and the height"]
 ]);
 
 /** Why a property no group handles has no WinUI meaning, for the ones an author is likely to write. */
