@@ -743,6 +743,7 @@
         {
           "namespace": "Windows.UI.ViewManagement",
           "classes": [
+            "AccessibilitySettings",
             "UISettings"
           ]
         },
