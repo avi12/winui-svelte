@@ -1,11 +1,10 @@
 <script lang="ts">
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
-  import type { Border as BorderControl } from "#winui/microsoft/ui/xaml/controls/Border";
-  import type { StackPanel as StackPanelControl } from "#winui/microsoft/ui/xaml/controls/StackPanel";
+    import type { StackPanel as StackPanelControl } from "#winui/microsoft/ui/xaml/controls/StackPanel";
+  import type { TextBlock as TextBlockControl } from "#winui/microsoft/ui/xaml/controls/TextBlock";
   import { fly } from "svelte/transition";
   import { control } from "winui-svelte";
-  import { Border, StackPanel, TextBlock, Window } from "winui-svelte/components";
-  import { transition } from "winui-svelte/element-animation";
+  import { StackPanel, TextBlock, Window } from "winui-svelte/components";
   import { exitApplication } from "winui-svelte/window";
 
   const WINDOW_HEIGHT = 320;
@@ -28,7 +27,7 @@
 
   let isShown = $state(false);
   let panel: StackPanelControl | undefined;
-  let card: BorderControl | undefined;
+  let card: TextBlockControl | undefined;
 
   function report(kind: string) {
     host.report({
@@ -76,18 +75,13 @@
   >
     <TextBlock text="A card flies in and out" />
     {#if isShown}
-      <Border
-        {@attach control<BorderControl>(native => {
+      <text-block
+        {@attach control<TextBlockControl>(native => {
           card = native;
         })}
-        {@attach transition({
-          use: fly,
-          params: flyParams
-        })}
-        padding={PADDING}
-      >
-        <TextBlock text="Hello" />
-      </Border>
+        text="Hello"
+        transition:fly={flyParams}
+      ></text-block>
     {/if}
   </StackPanel>
 </Window>
