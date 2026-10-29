@@ -4425,6 +4425,6 @@ export const levels: Record<string, LevelMetadata> = {
 };
 
 export const excluded: Record<string, string> = {
-  "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem": "constructing it fails with E_NOINTERFACE: it is activatable in the metadata but WinUI makes it only inside a Pivot",
+  "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem": "covered by Pivot: WinUI makes it only inside a Pivot, as the header of a PivotItem (constructing it fails with E_NOINTERFACE), so a header is styled with the `header` snippet of PivotItem",
   "Microsoft.UI.Xaml.Controls.SwapChainBackgroundPanel": "the UWP panel WinUI 3 keeps for compatibility: it refuses most FrameworkElement properties (Opacity, Height...), so a component for it would throw on being given them; SwapChainPanel is its replacement"
 };
