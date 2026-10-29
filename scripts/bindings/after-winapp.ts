@@ -1,4 +1,4 @@
-import { BindingScope, bindingsAfterWinapp, COMPONENT_WINMD, extraPackages } from "#scripts/codegen/tables.ts";
+import { BindingScope, bindingsAfterWinapp, COMPONENT_WINMD, extraPackages, lateClasses } from "#scripts/codegen/tables.ts";
 import { filesIn } from "#scripts/files-in.ts";
 import { WINAPP_BINARIES, WINAPP_BINDINGS, WINAPP_LOCK } from "#scripts/winapp-paths.ts";
 import { execFileSync } from "node:child_process";
@@ -74,27 +74,49 @@ function winmdNamed({ winmds, name }: {
   return found;
 }
 
-function generate({ workFolder, winmds, extra }: {
-  workFolder: string;
-  winmds: string[];
-  extra: ExtraPackage;
-}) {
+// One run of the generator: the winmds to emit (by file name), and the classes
+// of one namespace, or every namespace when none is named.
+interface GeneratorRun {
+  name: string;
+  emitted: string[];
+  scope?: {
+    namespace: string;
+    classes: string[];
+  };
+}
+
+function runsOf(extra: ExtraPackage): GeneratorRun[] {
   const isListed = extra.scope === BindingScope.LISTED;
-  const emittedList = [winmdNamed({
-    winmds,
-    name: extra.winmd
-  })];
-  if (isListed) {
-    emittedList.unshift(winmdNamed({
-      winmds,
-      name: COMPONENT_WINMD
-    }));
+  if (!isListed) {
+    return [{
+      name: extra.name,
+      emitted: [extra.winmd]
+    }];
   }
 
-  const referenceList = path.join(workFolder, `${extra.name}-references.txt`);
+  return [{
+    name: extra.name,
+    emitted: [COMPONENT_WINMD, extra.winmd],
+    scope: {
+      namespace: CONTROLS_NAMESPACE,
+      classes: listedClassNames()
+    }
+  }];
+}
+
+function generate({ workFolder, winmds, run }: {
+  workFolder: string;
+  winmds: string[];
+  run: GeneratorRun;
+}) {
+  const emittedList = run.emitted.map(name => winmdNamed({
+    winmds,
+    name
+  }));
+  const referenceList = path.join(workFolder, `${run.name}-references.txt`);
   writeFileSync(referenceList, winmds.filter(winmd => !emittedList.includes(winmd)).join("\n"));
-  const output = path.join(workFolder, extra.name);
-  const scopeArguments = isListed ? ["--namespace", CONTROLS_NAMESPACE, "--class-name", listedClassNames().join(",")] : [];
+  const output = path.join(workFolder, run.name);
+  const scopeArguments = run.scope === undefined ? [] : ["--namespace", run.scope.namespace, "--class-name", run.scope.classes.join(",")];
   execFileSync(GENERATOR, [
     "generate",
     "--winmd",
@@ -155,13 +177,17 @@ function bindPackage({ workFolder, winmds, extra }: {
   winmds: string[];
   extra: ExtraPackage;
 }) {
-  const files = addMissingFiles(
-    generate({
-      workFolder,
-      winmds,
-      extra
-    })
-  );
+  let files = 0;
+  for (const run of runsOf(extra)) {
+    files += addMissingFiles(
+      generate({
+        workFolder,
+        winmds,
+        run
+      })
+    );
+  }
+
   const { restoredLibrary } = extra;
   const libraries = restoredLibrary === undefined ? 0 : addNativeLibraries({
     winmd: winmdNamed({
@@ -172,6 +198,27 @@ function bindPackage({ workFolder, winmds, extra }: {
   });
   process.stdout.write(`${extra.name}: ${files} binding files added, ${libraries} native libraries copied
 `);
+}
+
+function bindLateClasses({ workFolder, winmds }: {
+  workFolder: string;
+  winmds: string[];
+}) {
+  for (const late of lateClasses) {
+    const files = addMissingFiles(
+      generate({
+        workFolder,
+        winmds,
+        run: {
+          name: late.namespace,
+          emitted: [late.winmd],
+          scope: late
+        }
+      })
+    );
+    process.stdout.write(`${late.namespace}: ${files} binding files added
+`);
+  }
 }
 
 function run() {
@@ -185,6 +232,11 @@ function run() {
         extra
       });
     }
+
+    bindLateClasses({
+      workFolder,
+      winmds
+    });
   } finally {
     rmSync(workFolder, {
       recursive: true,

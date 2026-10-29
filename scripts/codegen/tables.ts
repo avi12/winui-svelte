@@ -357,6 +357,25 @@ export const bindingsAfterWinapp = new Set([
   "Microsoft.UI.Xaml.Controls.WebView2"
 ]);
 
+/**
+ * Classes of the Windows App SDK that the helpers of winui-svelte/win2d need
+ * and the components do not: scripts/bindings/after-winapp.ts makes their
+ * bindings after winapp's run, so a full `pnpm bindings` (about twelve
+ * minutes) is not needed to add one.
+ */
+export const lateClasses = [
+  {
+    winmd: "Microsoft.UI.winmd",
+    namespace: "Microsoft.UI.Composition",
+    classes: ["CompositionEffectSourceParameter"]
+  },
+  {
+    winmd: COMPONENT_WINMD,
+    namespace: "Microsoft.UI.Xaml.Hosting",
+    classes: ["ElementCompositionPreview"]
+  }
+];
+
 /** How an extra package's classes reach the bindings. */
 export const BindingScope = {
   // The classes of bindingsAfterWinapp, emitted with the Microsoft.UI.Xaml metadata.
