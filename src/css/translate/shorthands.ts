@@ -52,7 +52,8 @@ function isWholeVariable(declaration: Declaration) {
   return parseVariable(declaration.value) !== null;
 }
 
-function expandBox({ declaration, names, reader, template }: {
+/** A CSS one-to-four value box (top right bottom left) as a longhand per name. */
+export function expandBox({ declaration, names, reader, template }: {
   declaration: Declaration;
   names: readonly string[];
   reader: Reader;

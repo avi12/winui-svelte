@@ -74,6 +74,58 @@ function setters({ elementType, declarations }: {
   return result.setters;
 }
 
+const positionRows: Array<[string, string, Array<[string, string]>]> = [
+  ["absolute left and top place on a canvas", "position: absolute; left: 10px; top: 4px", [
+    ["Canvas.Left", "10"],
+    ["Canvas.Top", "4"]
+  ]],
+  ["inset expands to the four sides", "position: absolute; inset: 8px auto auto 2px", [
+    ["Canvas.Left", "2"],
+    ["Canvas.Top", "8"]
+  ]],
+  ["fixed is absolute", "position: fixed; top: 1px", [["Canvas.Top", "1"]]],
+  ["auto is no offset", "position: absolute; left: auto; top: 3px", [["Canvas.Top", "3"]]],
+  ["relative offsets move without relayout", "position: relative; left: 5px; bottom: 2px", [["Translation", "5,-2,0"]]],
+  ["static sets nothing", "position: static", []]
+];
+
+for (const [name, declarations, expected] of positionRows) {
+  test(`position: ${name}`, () => {
+    assert.deepEqual(
+      setters({
+        elementType: null,
+        declarations
+      }), expected
+    );
+  });
+}
+
+test("position's reasons are build errors", () => {
+  const cases: Array<[string, RegExp]> = [
+    ["position: absolute; right: 4px", /canvas places by canvas-left and canvas-top/u],
+    ["position: sticky", /sticky has no WinUI meaning/u],
+    ["position: relative; left: 1px; translate: 2px", /Translation, which translate also sets/u],
+    ["position: absolute; left: 50%", /left: expected a length in px/u]
+  ];
+  for (const [declarations, pattern] of cases) {
+    assert.match(
+      lower({
+        elementType: null,
+        declarations
+      }).errors.join(), pattern, declarations
+    );
+  }
+});
+
+test("offsets without a position warn", () => {
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "left: 1px"
+    }).warnings.join(), /ignored without position/u
+  );
+});
+
 const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ["margin, CSS side order to a Thickness", null, "margin: 0 12px", [["Margin", "12,0,12,0"]]],
   ["margin, one value", null, "margin: 8px", [["Margin", "8,8,8,8"]]],

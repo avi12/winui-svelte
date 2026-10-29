@@ -917,7 +917,7 @@ Stated plainly, so nobody finds them by surprise:
 - **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
   service started cannot launch the browser (error 0x8007139F), and a `data:`
   URL cannot be the top frame.
-- **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `box-shadow`
+- **CSS is WinUI's subset.** No `float`, `position: sticky`, `flex-grow`, `box-shadow`
   (use `-winui-elevation`), `filter`, `animation`, descendant, child or sibling
   selectors or `@keyframes`: each is a build error that says what to
   use instead. Gradients are `linear-gradient()` and `radial-gradient()` only

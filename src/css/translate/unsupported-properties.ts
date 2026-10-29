@@ -1,15 +1,16 @@
-const PANELS = "WinUI lays children out with panels";
+const POSITIONED = `is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot. A <canvas> child places by canvas-left and canvas-top`;
 const SIZED_BY_PARENT = "a child cannot size itself in its parent";
 const FR_TRACKS = "give the parent grid-template-columns with fr tracks";
 const ALIGNED_BY_CHILD = "WinUI aligns a child by its own";
 const OPT_IN = "is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot";
 
 const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
-  ["position", `${PANELS}; a <canvas> places by canvas-left and canvas-top`],
-  ["top", `${PANELS}; a <canvas> places by canvas-top`],
-  ["left", `${PANELS}; a <canvas> places by canvas-left`],
-  ["right", PANELS],
-  ["bottom", PANELS],
+  ["position", `${POSITIONED} (position, top, left, right, bottom and inset)`],
+  ["inset", POSITIONED],
+  ["top", POSITIONED],
+  ["left", POSITIONED],
+  ["right", POSITIONED],
+  ["bottom", POSITIONED],
   ["float", "WinUI has no float; use a grid or a stack-panel"],
   ["flex", `${SIZED_BY_PARENT}: ${FR_TRACKS}`],
   ["flex-grow", `${SIZED_BY_PARENT}: ${FR_TRACKS}`],

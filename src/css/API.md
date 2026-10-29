@@ -87,6 +87,7 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | `winui-svelte/css/transform` | `transform`, `transform-origin`, `transition`, and the pivot of `scale` and `rotate` | Transforms |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
+| `winui-svelte/css/position` | `position`, `top`, `left`, `right`, `bottom`, `inset` | Position |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |
 
 A group may also bring the shorthands it expands and the handlers of the
@@ -308,6 +309,22 @@ the custom properties of a class) throws, naming the class. The Style is built
 when called: a sheet registered later (hot reload) does not change it. Which
 `elementType` a prop styles is `src/components/style-targets.ts`.
 
+## Position: `position`, `top`, `left`, `right`, `bottom`, `inset`
+
+Opt-in (`winui-svelte/css/position`). Offsets are lengths in px (or `auto`).
+
+| CSS | WinUI |
+|---|---|
+| `position: absolute` or `fixed` with `left`, `top` | `Canvas.Left`, `Canvas.Top` (the parent is a `<canvas>`) |
+| `position: relative` with offsets | `Translation` `x,y,0`: the element moves and the layout does not (`left` and `top` win over `right` and `bottom`); an error with `translate`, which sets the same property |
+| `inset: a b c d` | the four offsets, top right bottom left |
+| `position: static` | nothing |
+| `right`, `bottom` on an absolute element | error: a canvas places from the top left; use `justify-self: end` / `align-self: end` in a grid cell |
+| `position: sticky` | error: a ScrollViewer does not pin its children |
+| offsets without `position` | warning, ignored (as in CSS) |
+
+`z-index` is `Canvas.ZIndex`.
+
 ## Nesting
 
 A rule nested in another is flattened at build time (CSS Nesting): `&` is each
@@ -323,7 +340,7 @@ handles. Declarations like these fail the build with it:
 
 | Property | Why |
 |---|---|
-| `position`, `top`, `left`, `right`, `bottom` | a Style does not know its parent: a Canvas places by `Canvas.Left` / `Canvas.Top` (no right or bottom), the others have no counterpart |
+| `position`, `top`, `left`, `right`, `bottom`, `inset` in a style attribute | they are read from a component's `<style>` block (see Position); `right`, `bottom` and `position: sticky` have no WinUI counterpart |
 | `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color: use `-winui-elevation` |
 | `filter` | WinUI has no filters; use an acrylic brush or a Mica backdrop |
 | `animation` | use `transition` on opacity, translate, scale or rotate: WinUI has no keyframes |
