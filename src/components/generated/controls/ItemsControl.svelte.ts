@@ -16,6 +16,7 @@ import type { Snippet } from "svelte";
 
 export interface ItemsControlProps extends ControlProps {
   children?: Snippet;
+  groupStyle?: Snippet;
   itemContainerTransitions?: Snippet;
   displayMemberPath?: string;
   groupStyleSelector?: ItemsControl["groupStyleSelector"];

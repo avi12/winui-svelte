@@ -29,6 +29,18 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "acrylic-brush",
     namespace: "Microsoft.UI.Xaml.Media"
   },
+  AdaptiveTrigger: {
+    parent: "StateTriggerBase",
+    properties: ["minWindowHeight", "minWindowWidth"],
+    events: [],
+    attached: {},
+    bindables: [],
+    observed: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "adaptive-trigger",
+    namespace: "Microsoft.UI.Xaml"
+  },
   AddDeleteThemeTransition: {
     parent: "Transition",
     properties: [],
@@ -472,6 +484,18 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "circle-ease",
     namespace: "Microsoft.UI.Xaml.Media.Animation"
+  },
+  CollectionViewSource: {
+    parent: null,
+    properties: ["isSourceGrouped", "itemsPath", "source"],
+    events: [],
+    attached: {},
+    bindables: [],
+    observed: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "collection-view-source",
+    namespace: "Microsoft.UI.Xaml.Data"
   },
   ColorAnimation: {
     parent: "Timeline",
@@ -1364,6 +1388,18 @@ export const levels: Record<string, LevelMetadata> = {
     contentProperty: "Content",
     isComponent: true,
     tag: "group-item",
+    namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  GroupStyle: {
+    parent: null,
+    properties: ["containerStyleSelector", "headerTemplate", "headerTemplateSelector", "hidesIfEmpty", "panel"],
+    events: ["onPropertyChanged"],
+    attached: {},
+    bindables: [],
+    observed: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "group-style",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
   Hub: {
@@ -3298,6 +3334,30 @@ export const levels: Record<string, LevelMetadata> = {
     tag: "semantic-zoom",
     namespace: "Microsoft.UI.Xaml.Controls"
   },
+  Setter: {
+    parent: "SetterBase",
+    properties: ["value"],
+    events: [],
+    attached: {},
+    bindables: [],
+    observed: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "setter",
+    namespace: "Microsoft.UI.Xaml"
+  },
+  SetterBase: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    observed: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "setter-base",
+    namespace: "Microsoft.UI.Xaml"
+  },
   Shadow: {
     parent: null,
     properties: [],
@@ -3537,6 +3597,30 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "standard-ui-command",
     namespace: "Microsoft.UI.Xaml.Input"
+  },
+  StateTrigger: {
+    parent: "StateTriggerBase",
+    properties: ["isActive"],
+    events: [],
+    attached: {},
+    bindables: [],
+    observed: [],
+    contentProperty: null,
+    isComponent: true,
+    tag: "state-trigger",
+    namespace: "Microsoft.UI.Xaml"
+  },
+  StateTriggerBase: {
+    parent: null,
+    properties: [],
+    events: [],
+    attached: {},
+    bindables: [],
+    observed: [],
+    contentProperty: null,
+    isComponent: false,
+    tag: "state-trigger-base",
+    namespace: "Microsoft.UI.Xaml"
   },
   Storyboard: {
     parent: "Timeline",
@@ -4253,6 +4337,42 @@ export const levels: Record<string, LevelMetadata> = {
     isComponent: true,
     tag: "virtualizing-stack-panel",
     namespace: "Microsoft.UI.Xaml.Controls"
+  },
+  VisualState: {
+    parent: null,
+    properties: ["storyboard"],
+    events: [],
+    attached: {},
+    bindables: [],
+    observed: [],
+    contentProperty: "Storyboard",
+    isComponent: true,
+    tag: "visual-state",
+    namespace: "Microsoft.UI.Xaml"
+  },
+  VisualStateGroup: {
+    parent: null,
+    properties: [],
+    events: ["onCurrentStateChanged", "onCurrentStateChanging"],
+    attached: {},
+    bindables: [],
+    observed: [],
+    contentProperty: "States",
+    isComponent: true,
+    tag: "visual-state-group",
+    namespace: "Microsoft.UI.Xaml"
+  },
+  VisualTransition: {
+    parent: null,
+    properties: ["from", "generatedDuration", "generatedEasingFunction", "storyboard", "to"],
+    events: [],
+    attached: {},
+    bindables: [],
+    observed: [],
+    contentProperty: "Storyboard",
+    isComponent: true,
+    tag: "visual-transition",
+    namespace: "Microsoft.UI.Xaml"
   },
   WebView2: {
     parent: "FrameworkElement",

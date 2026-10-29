@@ -189,7 +189,7 @@ const lockFileSchema = z.object({
 
 // The index of the metadata `winapp restore` locked, and the file the
 // components are in.
-function loadMetadata(lockPath: string) {
+export function loadMetadata(lockPath: string) {
   const parsedLock = lockFileSchema.safeParse(JSON.parse(readFileSync(lockPath, "utf8")));
   if (!parsedLock.success) {
     throw new Error(`${lockPath} is not a winapp lock file`);
@@ -443,7 +443,9 @@ class Builder {
     for (const member of interfaces.flatMap(entry => entry.properties)) {
       const key = camelCase(member.name);
       const isFilled = createdCollections.has(member.name);
-      const isSkipped = skippedProperties.has(member.name) || reservedKeys.has(key) || isFilled;
+      const isSkippedByName = skippedProperties.has(member.name)
+        || skippedProperties.has(`${model.type.name}.${member.name}`);
+      const isSkipped = isSkippedByName || reservedKeys.has(key) || isFilled;
       const isNew = !seenProperties.has(member.name);
       const isWritableProperty = member.hasSetter && !isSkipped && isNew;
       if (isWritableProperty) {

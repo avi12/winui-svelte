@@ -259,15 +259,25 @@
         {
           "namespace": "Microsoft.UI.Xaml",
           "classes": [
+            "AdaptiveTrigger",
             "Application",
             "DataTemplate",
             "DependencyObject",
             "FrameworkElement",
+            "PropertyPath",
             "ResourceDictionary",
             "ScalarTransition",
+            "Setter",
+            "SetterBase",
+            "StateTrigger",
+            "StateTriggerBase",
             "Style",
+            "TargetPropertyPath",
             "UIElement",
+            "VisualState",
+            "VisualStateGroup",
             "VisualStateManager",
+            "VisualTransition",
             "Window"
           ]
         },
@@ -330,6 +340,7 @@
             "GridViewHeaderItem",
             "GridViewItem",
             "GroupItem",
+            "GroupStyle",
             "Hub",
             "HubSection",
             "HyperlinkButton",
@@ -492,6 +503,12 @@
             "Thumb",
             "TickBar",
             "ToggleButton"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Xaml.Data",
+          "classes": [
+            "CollectionViewSource"
           ]
         },
         {

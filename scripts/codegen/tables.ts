@@ -126,6 +126,38 @@ export const rootClasses: TypeName[] = [
     namespace: "Microsoft.UI.Xaml.Documents",
     name: "ContentLinkProvider"
   },
+  // The visual state groups of a control's root element, which a control
+  // template would hold: the states, their setters and their triggers.
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "VisualStateGroup"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "VisualState"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "VisualTransition"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "SetterBase"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "StateTriggerBase"
+  },
+  // What a list needs to group its items natively: the source that groups
+  // them and the style of a group's header.
+  {
+    namespace: "Microsoft.UI.Xaml.Data",
+    name: "CollectionViewSource"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "GroupStyle"
+  },
   // Value objects that are not elements: a swipe control's commands and the
   // list of them, a map's layers and what they hold, a text block's
   // highlights, a rating control's glyphs or images.
@@ -181,9 +213,14 @@ export const unimplementedEvents = new Map<string, string[]>([
   ]
 ]);
 
-// A property a component does not take, and why.
+// A property a component does not take, and why: by its name, or by
+// `Class.Name` for the one class that declares it.
 export const skippedProperties = new Map<string, string>([
-  ["Style", "style is the CSS string of the element; WinUI's Style object is set from the class"]
+  ["Style", "style is the CSS string of the element; WinUI's Style object is set from the class"],
+  ["Setter.Property", "a DependencyProperty handle: the setter's `path` prop names the property instead"],
+  ["Setter.Target", "built by the setter's extension from its `target` and `path` props"],
+  ["GroupStyle.ContainerStyle", "a group's container takes the class of the list's own item container"],
+  ["GroupStyle.HeaderContainerStyle", "a group's header takes the class of the list's own header container"]
 ]);
 
 // The metadata types these properties Object, but WinUI takes less than any
@@ -239,6 +276,7 @@ export const unslottedProperties = new Set([
   "SemanticZoomOwner",
   "OverflowContentTarget",
   "Source",
+  "View",
   "ScrollOwner",
   "SourceElement"
 ]);
@@ -437,6 +475,18 @@ export const attachedOwners: Array<{
 // What the runtime conversions build or read, which the bindings must hold
 // whether or not a property names them.
 export const supportClasses: TypeName[] = [
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "VisualStateManager"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "PropertyPath"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml",
+    name: "TargetPropertyPath"
+  },
   {
     namespace: "Microsoft.UI.Xaml",
     name: "Application"
@@ -934,3 +984,34 @@ export const nullableKindOfType = new Map<string, PropertyKind>([
 ]);
 
 export const numericPrimitives = new Set(["SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Single", "Double"]);
+
+// Classes WinUI only accepts made ready (src/components/constructed.ts): the
+// component reads these props once, when the control is made, and the helper
+// makes the control from them. By class name: the helper, the interface of
+// the props, and the props.
+export const constructedClasses = new Map<string, {
+  helper: string;
+  props: string;
+  keys: string[];
+  // Whether the helper makes the control from XAML and needs the class's XAML name.
+  isMadeByXaml: boolean;
+}>([
+  ["VisualState", {
+    helper: "namedByXaml",
+    props: "NamedProps",
+    keys: ["name"],
+    isMadeByXaml: true
+  }],
+  ["VisualStateGroup", {
+    helper: "namedByXaml",
+    props: "NamedProps",
+    keys: ["name"],
+    isMadeByXaml: true
+  }],
+  ["Setter", {
+    helper: "setterAt",
+    props: "SetterTargetProps",
+    keys: ["target", "path"],
+    isMadeByXaml: false
+  }]
+]);

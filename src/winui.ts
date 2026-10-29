@@ -13,6 +13,11 @@ export { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue
 export { DesktopAcrylicBackdrop } from "#winui/microsoft/ui/xaml/media/DesktopAcrylicBackdrop";
 export { MicaBackdrop } from "#winui/microsoft/ui/xaml/media/MicaBackdrop";
 export { SystemBackdrop } from "#winui/microsoft/ui/xaml/media/SystemBackdrop";
+export { DesktopAcrylicController } from "#winui/microsoft/ui/composition/system-backdrops/DesktopAcrylicController";
+export { DesktopAcrylicKind } from "#winui/microsoft/ui/composition/system-backdrops/DesktopAcrylicKind";
+export { SystemBackdropConfiguration } from "#winui/microsoft/ui/composition/system-backdrops/SystemBackdropConfiguration";
+export { SystemBackdropTheme } from "#winui/microsoft/ui/composition/system-backdrops/SystemBackdropTheme";
+export { ICompositionSupportsSystemBackdrop } from "#winui/microsoft/ui/composition/ICompositionSupportsSystemBackdrop";
 export { MicaKind } from "#winui/microsoft/ui/composition/system-backdrops/MicaKind";
 export { AppWindow } from "#winui/microsoft/ui/windowing/AppWindow";
 export { AppWindowPresenterKind } from "#winui/microsoft/ui/windowing/AppWindowPresenterKind";

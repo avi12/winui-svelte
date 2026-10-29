@@ -10,6 +10,7 @@ import type {
 } from "./model.ts";
 import { bindingClasses, SlotKind } from "./model.ts";
 import {
+  constructedClasses,
   extendedClasses,
   extraBindings,
   ItemsHost,
@@ -844,6 +845,8 @@ function emitLevelImports({ level, imports }: {
   const name = level.type.name;
   const extras = extrasOf(level);
   const hasExtras = extras !== null;
+  const isNamedProps = constructedClasses.has(name);
+  const isLinked = hasExtras && !isNamedProps;
   const hasObserved = level.observed.length > 0;
   const extension = `../../extensions/${kebabCase(name)}.ts`;
   const lines = [
@@ -856,13 +859,13 @@ function emitLevelImports({ level, imports }: {
       from: "../../convert.ts",
       isType: true
     }),
-    ...hasExtras ? importLine({
+    ...isLinked ? importLine({
       names: [`link${extras}`],
       from: extension
     }) : [],
     ...hasExtras ? importLine({
       names: [extras],
-      from: extension,
+      from: isNamedProps ? "../../constructed.ts" : extension,
       isType: true
     }) : [],
     ...importLine({
@@ -909,6 +912,12 @@ function emitLevelImports({ level, imports }: {
 // (extendedClasses in tables.ts): its props mix into this level's.
 function extrasOf(level: ClassModel) {
   const name = level.type.name;
+  const constructed = constructedClasses.get(name);
+  const isConstructed = constructed !== undefined;
+  if (isConstructed) {
+    return constructed.props;
+  }
+
   return extendedClasses.has(name) ? `${name}Extras` : null;
 }
 
@@ -963,12 +972,15 @@ export function emitLevel(level: ClassModel) {
   }
 
   const extras = extrasOf(level);
-  const extended = [parentName === undefined ? null : `${parentName}Props`, extras].filter(part => part !== null);
+  const isExtrasConstructed = constructedClasses.has(name);
+  const ownExtras = isExtrasConstructed ? null : extras;
+  const extended = [parentName === undefined ? null : `${parentName}Props`, ownExtras].filter(part => part !== null);
   const propsExtends = extended.length === 0 ? "" : ` extends ${extended.join(", ")}`;
   const isBoundUsed = level.parent !== null || level.bindables.length > 0 || level.observed.length > 0;
+  const isExtrasLinked = extras !== null && !constructedClasses.has(name);
   const parentLink = [
     ...parentName === undefined ? [] : [`  link${parentName}(control, props, bound, link);`],
-    ...extras === null ? [] : [`  link${extras}({ control, props, link });`]
+    ...isExtrasLinked ? [`  link${extras}({ control, props, link });`] : []
   ];
   const lines = [
     GENERATED_HEADER,
@@ -987,7 +999,7 @@ export function emitLevel(level: ClassModel) {
     // Here, not in the component's .d.svelte.ts: the Svelte language server
     // reads `./X.d.svelte.ts` imported from X.svelte as X.svelte itself, which
     // exports only the component.
-    ...level.isComponent ? [`export type ${name}ComponentProps = ${name}Props & ElementProps;`, ""] : [],
+    ...level.isComponent ? [`export type ${name}ComponentProps = ${name}Props & ElementProps${isExtrasConstructed ? ` & ${extras}` : ""};`, ""] : [],
     `export function link${name}(`,
     `  control: ${name},`,
     `  props: ${name}Props,`,
@@ -1264,12 +1276,14 @@ function registeredClasses(level: ClassModel) {
   return new Map(classes.map(type => [type.name, type]));
 }
 
-function destructuredProps({ bindables, hasHandle, hasChildren }: {
+function destructuredProps({ bindables, hasHandle, hasChildren, constructedKeys }: {
   bindables: string[];
   hasHandle: boolean;
   hasChildren: boolean;
+  constructedKeys: string[];
 }) {
   return [
+    ...constructedKeys,
     ...bindables.map(key => `${key} = $bindable()`),
     ...hasHandle ? ["handle = $bindable()"] : [],
     ...hasChildren ? ["children"] : [],
@@ -1292,13 +1306,29 @@ function elementMarkup({ open, tag, inner }: {
     : `${open}>\n${inner.map(line => `  ${line}`).join("\n")}\n</${tag}>`;
 }
 
+// The class a component registers in place of its own, made ready from props.
+function constructedValue({ type, constructed }: {
+  type: TypeName;
+  constructed: NonNullable<ReturnType<typeof constructedClasses.get>>;
+}) {
+  const keys = constructed.keys.map(key => `${key}: untrack(() => ${key})`);
+  const xamlName = constructed.isMadeByXaml ? [`xamlName: "${type.name}"`] : [];
+  return `${constructed.helper}({ ${[`type: ${type.name}`, ...xamlName, ...keys].join(", ")} })`;
+}
+
 function registerControlsLine({ level, registered }: {
   level: ClassModel;
   registered: Map<string, TypeName>;
 }) {
   const entries = [...registered.values()].map(type => {
-    const tag = type === level.type ? level.tag : kebabCase(type.name);
-    return `"${tag}": ${type.name}`;
+    const isOwn = type === level.type;
+    const tag = isOwn ? level.tag : kebabCase(type.name);
+    const constructed = isOwn ? constructedClasses.get(type.name) : undefined;
+    const value = constructed === undefined ? type.name : constructedValue({
+      type,
+      constructed
+    });
+    return `"${tag}": ${value}`;
   });
   return `  registerControls({ ${entries.join(", ")} });`;
 }
@@ -1312,10 +1342,12 @@ export function emitComponent(level: ClassModel) {
   const isOverlay = overlay !== undefined;
   const hasChildren = (level.contentProperty !== null || holdsItems(level)) && !isHosted;
   const bindables = componentBindableNames(level);
+  const constructed = constructedClasses.get(name);
   const destructured = destructuredProps({
     bindables,
     hasHandle,
-    hasChildren
+    hasChildren,
+    constructedKeys: constructed?.keys ?? []
   });
   const bound = bagOf(bindables);
   const connect = isHosted ? "connect(native)" : `connect${name}(native, rest, bound)`;
@@ -1362,6 +1394,7 @@ export function emitComponent(level: ClassModel) {
       "  import type { PlacedControl } from \"../runtime.ts\";"
     ] : [],
     `  import { ${runtimeNames.join(", ")} } from "../runtime.ts";`,
+    ...constructed === undefined ? [] : [`  import { ${constructed.helper} } from "../constructed.ts";`],
     `  import type { ${name}ComponentProps } from "./controls/${name}.svelte.ts";`,
     `  import { connect${name} } from "./controls/${name}.svelte.ts";`,
     "",

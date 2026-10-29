@@ -7,10 +7,12 @@
   // transitions in the collections WinUI leaves null, a navigator that
   // shows the page its history is at, and the value objects that are no
   // element: swipe items, a map's layers, a text block's highlights, a rating
-  // control's glyph and a tool tip.
+  // control's glyph and a tool tip, and the visual state groups of a panel with
+  // a state that has a trigger and a setter.
   // Each control is handed to the test by name.
   import NavigationPage from "./NavigationPage.fixture.svelte";
   import {
+    AdaptiveTrigger,
     AppBarButton,
     Bold,
     Border,
@@ -23,8 +25,11 @@
     EntranceThemeTransition,
     Flyout,
     GradientStop,
+    Grid,
+    GroupStyle,
     InlineUIContainer,
     LinearGradientBrush,
+    ListBox,
     MapControl,
     MapElementsLayer,
     MapIcon,
@@ -40,6 +45,7 @@
     RepositionThemeTransition,
     RichTextBlock,
     RotateTransform,
+    Setter,
     SplitView,
     StackPanel,
     Storyboard,
@@ -49,10 +55,14 @@
     TextBlock,
     TextHighlighter,
     ToggleSwitch,
-    TreeView
+    TreeView,
+    VisualState,
+    VisualStateGroup,
+    VisualStateGroups
   } from "#src/components/index.js";
   import type { NavigatorHandle } from "#src/components/index.js";
   import { control } from "#src/index.js";
+  import type { UIElement } from "#src/winui.js";
   import { untrack } from "svelte";
 
   interface Props {
@@ -65,6 +75,7 @@
 
   const props: Props = $props();
   let navigator = $state<NavigatorHandle | undefined>();
+  let stateTarget = $state.raw<UIElement | undefined>();
 
   $effect(() => {
     const label = props.isShown ? "Second" : "First";
@@ -237,4 +248,33 @@
       </MapElementsLayer>
     {/snippet}
   </MapControl>
+  <ListBox {@attach found("groupedList")}>
+    {#snippet groupStyle()}
+      <GroupStyle hidesIfEmpty />
+    {/snippet}
+  </ListBox>
+  <Grid {@attach found("stateGrid")}>
+    <Border
+{@attach control((native: UIElement) => {
+  stateTarget = native;
+  props.onFound({
+    name: "stateTarget",
+    native
+  });
+})} />
+    <VisualStateGroups>
+      <VisualStateGroup name="Sizes">
+        <VisualState name="Wide">
+          {#snippet stateTriggers()}
+            <AdaptiveTrigger minWindowWidth={640} />
+          {/snippet}
+          {#snippet setters()}
+            {#if stateTarget}
+              <Setter path="Opacity" target={stateTarget} value={0.5} />
+            {/if}
+          {/snippet}
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateGroups>
+  </Grid>
 </StackPanel>

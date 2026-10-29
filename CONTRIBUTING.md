@@ -84,6 +84,16 @@ Everything the generator decides by hand is a table in
   test beside the generator when the output's shape changes
   (`scripts/codegen/emit-hosted.test.ts`).
 
+## Coverage of WinUI's classes
+
+`scripts/codegen/coverage.test.ts` reads every class of WinUI's metadata and
+fails for one that is not a component, hand-written, non-constructible, an
+abstract base, or in `scripts/codegen/not-components.ts` with a reason (a
+single entry, a name pattern, or `knownGaps` for what should become a
+component). A WinUI update that adds a class fails it until the class is
+sorted. The counts and the gaps are committed in
+`scripts/codegen/coverage.json`; `UPDATE_COVERAGE=1` rewrites it.
+
 ## Editor integration
 
 Two checks run what an editor underlines, so a pass in `pnpm lint` means the

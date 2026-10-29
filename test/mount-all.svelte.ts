@@ -1118,6 +1118,15 @@ function menuItemCountOf(button: object) {
   return menu?.items?.size ?? 0;
 }
 
+// The panel's first visual state group as "group/state/triggers/setters".
+function stateSummaryOf(control: NativeValue) {
+  const groups = vectorOf(call(bindings.VisualStateManager, "getVisualStateGroups", control));
+  const group = call(groups, "getAt", 0);
+  const state = call(vectorOf(read(group, "states")), "getAt", 0);
+  const sizes = ["stateTriggers", "setters"].map(property => String(read(read(state, property), "size")));
+  return [read(group, "name"), read(state, "name"), ...sizes].join("/");
+}
+
 function highlightRangeCountOf(textBlock: object) {
   const highlighters = vectorOf(read(textBlock, "textHighlighters"));
   const isOne = read(highlighters, "size") === 1;
@@ -1272,6 +1281,19 @@ const slotsAtFirst: SlotExpectation[] = [
         control
       })
     )
+  },
+  {
+    name: "groupedList",
+    what: "the groupStyle snippet adds its group style to the list",
+    isMet: control => sizeOf({
+      control,
+      property: "groupStyle"
+    }) === 1
+  },
+  {
+    name: "stateGrid",
+    what: "VisualStateGroups fills the panel's visual state groups with a named group, state, trigger and setter",
+    isMet: control => stateSummaryOf(control) === "Sizes/Wide/1/1"
   },
   {
     name: "mapControl",

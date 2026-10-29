@@ -335,7 +335,7 @@ function createWindow<Props extends object>(options: WindowOptions<Props>): AppW
 type WindowOptions<Props> = {
   title?: string;
   size?: { width: number; height: number };   // device pixels
-  backdrop?: Backdrop;                        // "acrylic" | "mica" | "micaAlt" | "none"
+  backdrop?: Backdrop;                        // "acrylic" | "acrylicBase" | "acrylicThin" | "mica" | "micaAlt" | "none"
   extendsIntoTitleBar?: boolean;
   isBackground?: boolean;                     // shown without activating (tests, captures)
 } & ({ component: Component<Props>; props: Props } | { control: FrameworkElement });
@@ -490,10 +490,45 @@ resourceDictionaryOf(record: ResourceRecordInput): ResourceDictionary
   it did. The template must be applied (`control.applyTemplate()`, or the
   control shown).
 
-`VisualStateGroup`, `VisualState`, `Setter`, `AdaptiveTrigger` and
-`StateTrigger` are not components: `Setter`, `AdaptiveTrigger` and
-`StateTrigger` are not in the bindings, and a state group is written inside a
-template (XAML text) rather than among a control's children.
+### Visual states
+
+`VisualStateGroup`, `VisualState`, `VisualTransition`, `Setter`,
+`AdaptiveTrigger` and `StateTrigger` are components. A group holds states
+(its children), a state holds its `setters` and `stateTriggers` (snippets)
+and a storyboard (its children or the `storyboard` snippet). `VisualStateGroups`
+puts the groups in the element it sits in: WinUI's
+`VisualStateManager.VisualStateGroups` has a getter and no setter, so no
+snippet can fill it. It is no element, so the panel lays out its siblings only:
+
+```svelte
+<UserControl>
+  <Grid>
+    <Border {@attach control(native => (box = native))} />
+    <VisualStateGroups>
+      <VisualStateGroup name="Sizes">
+        <VisualState name="Wide">
+          {#snippet stateTriggers()}
+            <AdaptiveTrigger minWindowWidth={640} />
+          {/snippet}
+          {#snippet setters()}
+            <Setter target={box} path="Opacity" value={0.5} />
+          {/snippet}
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateGroups>
+  </Grid>
+</UserControl>
+```
+
+Three things WinUI forces, each read once, when the control is made (see
+`src/components/constructed.ts`): `name` of a state or a group (WinUI names
+them only when XAML makes them, so the component makes them through
+`XamlReader`), and `target` and `path` of a `Setter` (a visual state refuses a
+setter that has no target, so mount it where the element it changes exists,
+inside an `{#if}`). `path` is a property path as XAML writes it (`Opacity`,
+`(Grid.Row)`); `value` is boxed like any object prop. The triggers act on a
+control's template root, so put the groups in the root of a `UserControl` (or a
+`Page`), not under a window's bare content; `goToState` enters a state by name.
 
 ## Components that show items (`winui-svelte/components`)
 
@@ -630,9 +665,17 @@ disabled, so the theme's disabled foreground applies unless the snippet sets
 its own), and `reorderable` and `keyboardReorder` are ignored in a grouped
 list. `selectedKey`, `onReorder`'s keys and `itemName` only ever hold items. It
 is not WinUI's own grouping (`CollectionViewSource.IsSourceGrouped` with a
-`GroupStyle`): that needs `CollectionViewSource` and a JavaScript object that
-implements `ICollectionViewGroup`, neither of which the bindings have, and
-gives a header that sticks to the top of the list, which a header row does not.
+`GroupStyle`), which gives a header that sticks to the top of the list and
+which a header row does not. `CollectionViewSource` and `GroupStyle` are
+components now, and `groupStyle` is a snippet of every items control, so a
+source of groups that are native objects (an `ICollectionViewGroup`, or
+objects the view reads an `itemsPath` from) groups natively in a list that
+takes an items source. The hosted `ListView` and `GridView` keep header rows:
+a probe in a real window (a JavaScript object made to implement
+`ICollectionViewGroup` through dynwinrt's `DynWinRtImplementation`) was accepted
+as a grouped source, but the view stayed empty and WinUI never asked the group
+for its items, and the hosts would also need the headers' templates to be
+rendered through the renderer. Header rows are the supported way.
 
 ### TreeView
 
@@ -704,14 +747,15 @@ the control's own nodes, and binding it undoes the key selection.
 ```
 
 Mount it as the app's root (`mountControl({ component: App, props })` inside `runWindow`'s
-`onStart`): the component is the window. `backdrop` is `"acrylic"`, `"mica"`,
-`"micaAlt"` or `"none"` (`Backdrop`, also taken by `createWindow`); it can
+`onStart`): the component is the window. `backdrop` is `"acrylic"`, `"acrylicBase"`,
+`"acrylicThin"`, `"mica"`, `"micaAlt"` or `"none"` (`Backdrop`, also taken by `createWindow`); it can
 change while the window is open. WinUI itself shows the theme's solid color
 in place of the material while the window is inactive, and restores it on
-activation; nothing needs wiring. The base and thin acrylic variants are not offered:
-they need a custom `SystemBackdrop` subclass overriding `OnTargetConnected`,
-and the generated bindings expose neither `ISystemBackdropOverrides` nor a way
-to implement one from JavaScript. A `titleBar` snippet is shown above the content
+activation; nothing needs wiring. `"acrylicBase"` and `"acrylicThin"` are
+the other two acrylic variants: XAML's `DesktopAcrylicBackdrop` has no kind, so
+the window takes `DesktopAcrylicController` as a target instead
+(`window.systemBackdrop` reads null; the controller is closed when the backdrop
+changes or the window closes). A `titleBar` snippet is shown above the content
 and set as the window's title bar (`setTitleBar`, so it is the drag region and
 the controls in it still click); it makes `extendsIntoTitleBar` true unless
 given. Sizes are in device-independent pixels (the window's DPI applied);
@@ -922,11 +966,11 @@ and the property that holds it takes a snippet of that name:
 - `MapControl.layers` is settable, so the snippet fills the collection the map
   holds when it holds one.
 
-Not components, on purpose: `GroupStyle` (it is not a `DependencyObject`, only
-templates and styles, and the lists do not group), the scroll snap points
-(`ScrollSnapPoint`, `RepeatedScrollSnapPoint`, ...: their factories take
-arguments, so none has a default constructor), and the visual state, trigger
-and setter families.
+Not components, on purpose: the scroll snap points (`ScrollSnapPoint`,
+`RepeatedScrollSnapPoint`, ...: their factories take arguments, so none has a
+default constructor). `scripts/codegen/not-components.ts` lists every class of
+WinUI's metadata that is not a component, with the reason, and
+`scripts/codegen/coverage.test.ts` fails for one that is not sorted.
 
 ### Attached slots
 

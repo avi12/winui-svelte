@@ -1,0 +1,21 @@
+{
+  "counts": {
+    "abstract base of components": 49,
+    "component": 312,
+    "hand-written": 1,
+    "non-constructible": 2,
+    "not a component": 552
+  },
+  "listed": [
+    {
+      "name": "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem",
+      "coverage": "non-constructible",
+      "reason": "constructing it fails with E_NOINTERFACE: it is activatable in the metadata but WinUI makes it only inside a Pivot"
+    },
+    {
+      "name": "Microsoft.UI.Xaml.Controls.SwapChainBackgroundPanel",
+      "coverage": "non-constructible",
+      "reason": "the UWP panel WinUI 3 keeps for compatibility: it refuses most FrameworkElement properties (Opacity, Height...), so a component for it would throw on being given them; SwapChainPanel is its replacement"
+    }
+  ]
+}

@@ -204,6 +204,7 @@ class WindowHost {
   private readonly content: FrameworkElement;
   private readonly unsubscribe: Array<() => void> = [];
   private appliedBackdrop: Backdrop | null = null;
+  private releaseBackdrop: (() => void) | null = null;
   private isThemeApplied = false;
   private isPresentationApplied = false;
   private appliedHeight: TitleBarHeight | null = null;
@@ -251,6 +252,7 @@ class WindowHost {
   }
 
   dispose() {
+    this.releaseBackdrop?.();
     for (const unsubscribe of this.unsubscribe.splice(0)) {
       unsubscribe();
     }
@@ -278,7 +280,8 @@ class WindowHost {
     const backdrop = this.props.backdrop ?? BackdropKind.none;
     const isApplied = backdrop === this.appliedBackdrop;
     if (!isApplied) {
-      applyBackdrop({
+      this.releaseBackdrop?.();
+      this.releaseBackdrop = applyBackdrop({
         window: this.handle.window,
         backdrop
       });

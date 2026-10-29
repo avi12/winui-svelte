@@ -57,6 +57,9 @@ test("every class src/winui.ts imports is among the classes the bindings are gen
     "windows/ui/view-management/uicolortype",
     "microsoft/windows/storage/pickers/pickerlocationid",
     "microsoft/ui/composition/system-backdrops/micakind",
+    "microsoft/ui/composition/system-backdrops/desktopacrylickind",
+    "microsoft/ui/composition/system-backdrops/systembackdroptheme",
+    "microsoft/ui/composition/icompositionsupportssystembackdrop",
     "lifetime"
   ]);
   const listed = listedModules();
