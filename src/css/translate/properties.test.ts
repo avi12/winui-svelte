@@ -581,3 +581,67 @@ for (const [name, elementType, declarations, pattern] of failures) {
     assert.match(result.errors.join("\n"), pattern);
   });
 }
+
+test("clip-path inset becomes a write of the four insets", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "clip-path: inset(4px 10%)"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.writes, [["clip", "4px,10%,4px,10%"]]);
+});
+
+test("a clip-path other than inset fails the build and says why", () => {
+  const circle = lower({
+    elementType: null,
+    declarations: "clip-path: circle(50%)"
+  });
+  assert.match(circle.errors.join(), /UIElement\.Clip is a RectangleGeometry: only inset\(\) has a WinUI meaning/u);
+  const rounded = lower({
+    elementType: null,
+    declarations: "clip-path: inset(0 round 8px)"
+  });
+  assert.match(rounded.errors.join(), /no round/u);
+});
+
+test("aspect-ratio becomes a write of the ratio", () => {
+  assert.deepEqual(
+    lower({
+      elementType: null,
+      declarations: "aspect-ratio: 16 / 9"
+    }).writes, [["aspect", String(16 / 9)]]
+  );
+  assert.deepEqual(
+    lower({
+      elementType: null,
+      declarations: "aspect-ratio: auto"
+    }).writes, []
+  );
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "aspect-ratio: wide"
+    }).errors.join(), /aspect-ratio: expected auto/u
+  );
+});
+
+test("filter, mix-blend-mode and text-transform fail the build with their reason", () => {
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "filter: blur(4px)"
+    }).errors.join(), /filter has no WinUI meaning \(WinUI has no filter/u
+  );
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "mix-blend-mode: multiply"
+    }).errors.join(), /no blend modes/u
+  );
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "text-transform: uppercase"
+    }).errors.join(), /so change the text/u
+  );
+});

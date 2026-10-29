@@ -86,6 +86,7 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | `winui-svelte/css/gradients` | `background-image` | Gradients |
 | `winui-svelte/css/transform` | `transform`, `transform-origin`, `transition`, and the pivot of `scale` and `rotate` | Transforms |
 | `winui-svelte/css/animation` | `animation`, `animation-*`, `@keyframes` | Animations |
+| `winui-svelte/css/effects` | `clip-path: inset()`, `aspect-ratio` | Clip and aspect ratio |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |

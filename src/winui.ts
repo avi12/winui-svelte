@@ -35,6 +35,7 @@ export { projectAs } from "#winui/lifetime";
 export { ResourceDictionary } from "#winui/microsoft/ui/xaml/ResourceDictionary";
 export { Style } from "#winui/microsoft/ui/xaml/Style";
 export { Storyboard } from "#winui/microsoft/ui/xaml/media/animation/Storyboard";
+export { RectangleGeometry } from "#winui/microsoft/ui/xaml/media/RectangleGeometry";
 export { CompositeTransform } from "#winui/microsoft/ui/xaml/media/CompositeTransform";
 export { SolidColorBrush } from "#winui/microsoft/ui/xaml/media/SolidColorBrush";
 export { XamlReader } from "#winui/microsoft/ui/xaml/markup/XamlReader";

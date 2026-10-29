@@ -23,16 +23,20 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["align-content", `${ALIGNED_BY_CHILD} alignment: set align-self on the child`],
   ["background-image", `a gradient ${OPT_IN}`],
   ["box-shadow", `a shadow ${OPT_IN}`],
-  ["filter", "WinUI has no filters; use an acrylic or Mica backdrop"],
+  ["filter", "WinUI has no filter: blur, grayscale, brightness and drop-shadow are Composition effects that need Win2D and ElementCompositionPreview, which the bindings lack; use backdrop-filter: blur() or an acrylic or Mica backdrop"],
   ["backdrop-filter", `blur() ${OPT_IN}`],
   ["transform", `a transform ${OPT_IN}`],
   ["transition", `a transition ${OPT_IN}`],
   ["animation", `an animation ${OPT_IN}`],
   ["content", "WinUI has no generated content"],
   ["list-style", "WinUI has no lists to mark"],
-  ["text-transform", "WinUI has no text-transform; change the text"],
+  ["text-transform", "WinUI draws a TextBlock's Text as written, so change the text"],
   ["text-indent", "WinUI has no text indent"],
-  ["aspect-ratio", "WinUI has no aspect ratio; give the width and the height"]
+  ["aspect-ratio", `a ratio ${OPT_IN}`],
+  ["clip-path", `a clip ${OPT_IN}`],
+  ["mix-blend-mode", "WinUI has no blend modes: a Composition effect brush needs Win2D, which the bindings lack"],
+  ["mask", "WinUI has no opacity mask on an element: a Composition mask brush needs ElementCompositionPreview, which the bindings lack"],
+  ["mask-image", "WinUI has no opacity mask on an element: a Composition mask brush needs ElementCompositionPreview, which the bindings lack"]
 ]);
 
 /** Why a property no group handles has no WinUI meaning, for the ones an author is likely to write. */

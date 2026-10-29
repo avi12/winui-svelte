@@ -10,6 +10,7 @@ import {
 } from "./runtime.ts";
 import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import { effectGroups } from "#src/css/translate/effect-properties.js";
 import { focusGroups } from "#src/css/translate/focus-properties.js";
 import { resourceGroups } from "#src/css/translate/resource-properties.js";
 import { transformGroups } from "#src/css/translate/transform-properties.js";
@@ -94,6 +95,9 @@ const fakeNative: CssNative = {
     return () => fakeControl.handlers.delete(event);
   },
   read: ({ control, property }) => fake(control).properties[property],
+  clip({ control, rect }) {
+    fake(control).assigned["clip"] = rect;
+  },
   animate({ control, storyboards, hasTransform }) {
     const { animations } = fake(control);
     animations.push(...storyboards.map(({ xaml, isPaused }) => `${isPaused ? "paused " : ""}${hasTransform ? "transform " : ""}${xaml}`));
@@ -601,4 +605,33 @@ test("an animation that names no @keyframes fails when the element is styled", (
     elementType: "border"
   });
   assert.throws(() => element.setClasses("gone"), /@keyframes nowhere is not declared in any stylesheet/u);
+  element.dispose();
+  unregisterStyleSheet("missing.svelte");
+});
+
+test("a clip-path inset clips the element to its size and unclips with the class", () => {
+  registerPropertyGroups(effectGroups());
+  registerStyleSheet(
+    sheet({
+      id: "clip.svelte",
+      css: ".clipped { clip-path: inset(10px 5%) }"
+    })
+  );
+  const target = control({
+    actualWidth: 200,
+    actualHeight: 100
+  });
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("clipped");
+  assert.deepEqual(fake(target).assigned["clip"], {
+    x: 10,
+    y: 10,
+    width: 180,
+    height: 80
+  });
+  element.setClasses("");
+  assert.equal(fake(target).assigned["clip"], null);
 });
