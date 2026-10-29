@@ -25,7 +25,10 @@ metadata (so WebView2's events cannot be bound in its run) and trips over
 `bindingsAfterWinapp` in `scripts/codegen/tables.ts`, which keeps them out of the
 list winapp is given; the step runs the generator for them alone, adds
 the files winapp's run did not make, and restores `Microsoft.Web.WebView2.Core.dll`
-beside the bootstrappers. The first run downloads the SDK and takes about ten
+beside the bootstrappers. The same step does it for every package of
+`extraPackages` (Win2D, whose winmd it generates whole) and for `lateClasses`
+(single Windows App SDK classes the Win2D helpers need), so a class of those
+lists is added by running `pnpm bindings:after-winapp`, not the full run. The first run downloads the SDK and takes about ten
 minutes; it is a cache after that. Run `pnpm bindings` again when the class
 list changes (`pnpm gen:components` rewrites it).
 

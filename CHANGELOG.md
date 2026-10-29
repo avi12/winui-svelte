@@ -21,6 +21,10 @@ project adheres to [Semantic Versioning](https://semver.org/).
   `transform`, `focus`, `surface` and `resources` groups.
 - Motion: element animation and connected animation.
 - State: host state shared with a Tauri, Electron or Node host.
+- Win2D (`winui-svelte/win2d`, opt-in): the Win2D controls as components, a
+  `Canvas` you draw on with a reactive function, drawing, resource and effect
+  helpers, and `applyEffect` to put a Win2D effect on an element through
+  Composition. Its NuGet package is restored by `winapp.yaml`.
 - Tooling: a Vite plugin with hot reload (it compiles with Svelte's own
   compiler; `@sveltejs/vite-plugin-svelte` is no longer a dependency), a test
   loader and a compile hook.
