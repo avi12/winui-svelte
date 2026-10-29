@@ -4,8 +4,9 @@ import { randomUUID } from "node:crypto";
 import { test } from "node:test";
 
 // The app subpath (examples/app) in real windows, off screen: the first copy
-// is primary, a second copy with the same key hands over and exits (the first never hears the redirect from node.exe, see API.md), the first
-// counts the redirect, and high contrast is read. Whether a notification
+// is primary, a second copy with the same key detects it and exits, and high
+// contrast is read. The first copy never hears the redirect from node.exe (see
+// API.md). Whether a notification
 // shows from node.exe is reported, not asserted: it depends on the identity
 // the platform accepts (see API.md, App lifecycle). Skipped where the Windows
 // App SDK was not restored.
