@@ -51,6 +51,22 @@ export function uiThreadDispatcher() {
 }
 
 /**
+ * Like `uiThreadDispatcher`, for code that may run before the UI thread has a
+ * dispatcher queue (before the first window).
+ *
+ * @returns What runs work on the UI thread, then flushes; or `undefined` when
+ *   this thread has no queue yet.
+ */
+export function uiThreadDispatcherIfReady() {
+  const hasQueue = DispatcherQueue.getForCurrentThread() != null;
+  if (!hasQueue) {
+    return undefined;
+  }
+
+  return uiThreadDispatcher();
+}
+
+/**
  * Runs `work` on the UI thread's dispatcher queue, then flushes. Called on
  * the UI thread, the only one with a queue to get.
  *

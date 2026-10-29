@@ -547,6 +547,10 @@ export const supportClasses: TypeName[] = [
 // step): an app generates bindings for these as well.
 export const coreClasses: TypeName[] = [
   {
+    namespace: "Windows.UI.ViewManagement",
+    name: "AccessibilitySettings"
+  },
+  {
     namespace: "Microsoft.UI.Dispatching",
     name: "DispatcherQueue"
   },

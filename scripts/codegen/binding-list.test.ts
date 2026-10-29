@@ -44,6 +44,7 @@ test("every class src/winui.ts imports is among the classes the bindings are gen
   // Not metadata classes: the enums that arrive with the classes that name
   // them, and the generated bindings' own lifetime helper.
   const exempt = new Set([
+    "microsoft/windows/app-lifecycle/extendedactivationkind",
     "microsoft/ui/xaml/gridunittype",
     "microsoft/ui/xaml/windowactivationstate",
     "microsoft/ui/windowing/displayareafallback",

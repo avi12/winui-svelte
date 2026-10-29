@@ -34,6 +34,7 @@ test("the window follows the system settings and reports its size and theme", {
       }) >= 1, "the text scale is 100% or more"
     );
     assert.equal(typeof stats["isAnimationEnabled"], "boolean");
+    assert.equal(typeof stats["isHighContrast"], "boolean");
     assert.ok(
       numberOf({
         report: stats,

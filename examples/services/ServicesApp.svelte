@@ -130,6 +130,7 @@
       swatch: swatchColor(),
       textScaleFactor: settings.textScaleFactor,
       isAnimationEnabled: settings.isAnimationEnabled,
+      isHighContrast: settings.isHighContrast,
       width: size.width,
       height: size.height,
       theme: theme.current,

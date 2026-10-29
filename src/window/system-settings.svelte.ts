@@ -1,6 +1,6 @@
 import { uiThreadDispatcher } from "#src/scheduling.js";
 import type { UIColorType } from "#src/winui.js";
-import { UIColorType as ColorKind, UISettings } from "#src/winui.js";
+import { AccessibilitySettings, UIColorType as ColorKind, UISettings } from "#src/winui.js";
 import { createSubscriber } from "svelte/reactivity";
 
 const OPAQUE = 255;
@@ -14,14 +14,19 @@ interface Channels {
   b: number;
 }
 
-/** The part of `UISettings` that `systemSettings` reads; a test stands in for it. */
+/**
+ * The part of `UISettings` and `AccessibilitySettings` that `systemSettings`
+ * reads; a test stands in for it.
+ */
 export interface SettingsSource {
   readonly textScaleFactor: number;
   readonly animationsEnabled: boolean;
+  readonly highContrast: boolean;
   getColorValue(color: UIColorType): Channels;
   onColorValuesChanged(callback: () => void): () => void;
   onTextScaleFactorChanged(callback: () => void): () => void;
   onAnimationsEnabledChanged(callback: () => void): () => void;
+  onHighContrastChanged(callback: () => void): () => void;
 }
 
 /**
@@ -41,6 +46,9 @@ export interface SystemSettings {
 
   /** False when the user turned animation effects off (Settings, Accessibility, Visual effects). */
   readonly isAnimationEnabled: boolean;
+
+  /** True while a high contrast theme is on (Settings, Accessibility, Contrast themes). */
+  readonly isHighContrast: boolean;
 }
 
 function hexOf(channel: number) {
@@ -74,7 +82,8 @@ export function observeSettings({ source, runOnUiThread }: {
     const stops = [
       source.onColorValuesChanged(notify),
       source.onTextScaleFactorChanged(notify),
-      source.onAnimationsEnabledChanged(notify)
+      source.onAnimationsEnabledChanged(notify),
+      source.onHighContrastChanged(notify)
     ];
     return () => {
       for (const stop of stops) {
@@ -94,21 +103,42 @@ export function observeSettings({ source, runOnUiThread }: {
     get isAnimationEnabled() {
       subscribe();
       return source.animationsEnabled;
+    },
+    get isHighContrast() {
+      subscribe();
+      return source.highContrast;
     }
   } satisfies SystemSettings;
 }
 
 /**
  * Reads the user's Windows settings (accent color, text scale, animation
- * effects) as reactive values. Call it once on the UI thread, in a `.svelte`
+ * effects, high contrast) as reactive values. Call it once on the UI thread, in a `.svelte`
  * script or a `.svelte.ts` module, and keep the result: `UISettings` is
  * created with it.
  *
  * @returns The settings, which update when the user changes them.
  */
 export function systemSettings() {
+  const uiSettings = UISettings.create();
+  const accessibility = new AccessibilitySettings();
   return observeSettings({
-    source: UISettings.create(),
+    source: {
+      get textScaleFactor() {
+        return uiSettings.textScaleFactor;
+      },
+      get animationsEnabled() {
+        return uiSettings.animationsEnabled;
+      },
+      get highContrast() {
+        return accessibility.highContrast;
+      },
+      getColorValue: color => uiSettings.getColorValue(color),
+      onColorValuesChanged: callback => uiSettings.onColorValuesChanged(callback),
+      onTextScaleFactorChanged: callback => uiSettings.onTextScaleFactorChanged(callback),
+      onAnimationsEnabledChanged: callback => uiSettings.onAnimationsEnabledChanged(callback),
+      onHighContrastChanged: callback => accessibility.onHighContrastChanged(callback)
+    },
     runOnUiThread: uiThreadDispatcher()
   });
 }

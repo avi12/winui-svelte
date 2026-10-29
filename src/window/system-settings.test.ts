@@ -27,10 +27,19 @@ class FakeSettings {
     return this.isAnimationOn;
   }
   isAnimationOn = true;
+  isHighContrastOn = false;
   private readonly listeners: Array<() => void> = [];
 
   get listenerCount() {
     return this.listeners.length;
+  }
+
+  get highContrast() {
+    return this.isHighContrastOn;
+  }
+
+  onHighContrastChanged(callback: () => void) {
+    return this.listen(callback);
   }
 
   getColorValue(color: number) {
@@ -94,7 +103,8 @@ test("a change in the settings reaches the effects that read them, and an ended 
   const accent = track(() => settings.accentColor);
   const scale = track(() => settings.textScaleFactor);
   const animation = track(() => settings.isAnimationEnabled);
-  assert.equal(source.listenerCount, 3, "one subscription per event, shared by every effect");
+  const contrast = track(() => settings.isHighContrast);
+  assert.equal(source.listenerCount, 4, "one subscription per event, shared by every effect");
 
   source.accent = {
     a: 255,
@@ -104,14 +114,17 @@ test("a change in the settings reaches the effects that read them, and an ended 
   };
   source.textScaleFactor = TEXT_SCALE_150_PERCENT;
   source.isAnimationOn = false;
+  source.isHighContrastOn = true;
   source.raise();
   assert.deepEqual(accent.values, ["#0078d4", "#ff0000"]);
   assert.deepEqual(scale.values, [1, TEXT_SCALE_150_PERCENT]);
   assert.deepEqual(animation.values, [true, false]);
+  assert.deepEqual(contrast.values, [false, true]);
 
   accent.stop();
   scale.stop();
   animation.stop();
+  contrast.stop();
   // Svelte lets go of the source one tick after the last reader has gone.
   await tick();
   assert.equal(source.listenerCount, 0);

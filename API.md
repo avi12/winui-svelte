@@ -26,6 +26,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`; imports nothing of WinRT, safe on the host's main thread |
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
+| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
 needs no build. `pnpm build` compiles them to `dist/` and `publishConfig`
@@ -1027,15 +1028,16 @@ const settings = systemSettings();   // once, on the UI thread
 settings.accentColor;       // "#rrggbb": any color prop takes it
 settings.textScaleFactor;   // 1 is 100%, 1.5 is 150%
 settings.isAnimationEnabled;
+settings.isHighContrast;    // a contrast theme is on
 ```
 
 Over `Windows.UI.ViewManagement.UISettings`. Each field is read live and is
 reactive: it updates on `ColorValuesChanged`, `TextScaleFactorChanged` and
-`AnimationsEnabledChanged`, and the subscription lasts only while an effect
+`AnimationsEnabledChanged` (and `HighContrastChanged` of
+`Windows.UI.ViewManagement.AccessibilitySettings`, for `isHighContrast`), and
+the subscription lasts only while an effect
 reads it. `UISettings` raises its events off the UI thread, so the change is
 handed to it through a dispatcher captured when `systemSettings()` is called.
-High contrast is not here yet: `AccessibilitySettings` is not in the generated
-bindings (planned, below).
 
 ### File and folder dialogs (`WindowHandle`)
 
@@ -1066,6 +1068,53 @@ not used. All take `PickerOptions`: `title`, `commitButtonText`, `startIn`
 its window; the promise settles when it closes. A path is all that comes back:
 read and write the file with `node:fs`.
 
+### App lifecycle (`winui-svelte/app`)
+
+```ts
+import { ensureSingleInstance, notify } from "winui-svelte/app";
+
+const single = await ensureSingleInstance({
+  key: "com.example.notes",
+  onRedirect: ({ commandLine }) => openFile(commandLine),
+});
+if (!single.isPrimary) {
+  exitApplication();   // its activation was handed to the first copy
+}
+
+notify({
+  title: "Saved",
+  body: "note.txt",
+  arguments: { file: "note.txt" },
+  onInvoked: ({ arguments: pairs }) => reveal(pairs.get("file")),
+  displayName: "Notes",
+  iconPath: "C:\notes\icon.png",
+  appUserModelId: "com.example.notes",
+});
+```
+
+An opt-in subpath: an app that does not import it does not bundle it.
+
+- `ensureSingleInstance` is `AppInstance.FindOrRegisterForKey`: the first copy
+  to register the key is the primary and listens to `Activated`; a later copy
+  calls `RedirectActivationToAsync` with its own activation arguments and
+  resolves with `isPrimary: false`. `onRedirect` gets `kind`, `commandLine`
+  (when the activation has one) and the raw `data`. Call it before the first
+  window; it needs `initWindowsAppSdk`. Every Node-hosted app is `node.exe`, so
+  pick a key nobody else would.
+- `notify` is `AppNotificationBuilder` and `AppNotificationManager.Show`.
+  Unpackaged apps must register first: the first call does, with
+  `displayName` and `iconPath` (both or neither), and listens for clicks with
+  that call's `onInvoked`. `appUserModelId` is the window's `appUserModelId`
+  (`joinAppUserModel`): give both the same id.
+- **What works from `node.exe` is not known.** Both are written to Microsoft's
+  documented unpackaged path and unit-tested on stand-ins; neither was run
+  against a real second process or a real toast, and the platform may refuse a
+  process with no package identity (no notification, or a click that cannot
+  start the app once it has exited). `test/app.test.ts` starts a second copy
+  and reports what `notify` did; run it in a desktop session before relying on
+  either. With package identity (an MSIX or sparse package) both are the
+  supported case.
+
 ### Localization: what works unpackaged
 
 - **`Intl` and your own string tables work everywhere.**
@@ -1086,17 +1135,10 @@ read and write the file with `node:fs`.
 - **Package identity** (an MSIX, or a sparse package) is what unlocks the
   rest of Windows' app model: the per-package resource lookup above, toast
   notifications that survive the app closing, and `AppInstance` redirection
-  by package. Nothing in this section needs it; the planned items below might.
+  by package. Nothing in this section needs it.
 
 ### Planned, not in the package yet
 
-- `AppInstance` (single instance, activation redirection): the classes are in
-  the generated bindings, no wrapper yet.
-- Notifications (`AppNotificationManager`): the same. Whether they work
-  without package identity is to be checked when they are wrapped.
-- Reading `AccessibilitySettings` (high contrast): the class is not in the
-  generated bindings; it needs adding to `winapp.jsBindings` and a
-  `pnpm bindings` run.
 - A `ResourceLoader` wrapper that finds a `.pri` beside the app.
 
 The working example is `examples/services` (`test/services.test.ts` runs it in
