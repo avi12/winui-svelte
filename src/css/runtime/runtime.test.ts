@@ -5,6 +5,7 @@ import {
   registerPropertyGroups,
   registerStyleSheet,
   styledElement,
+  styleOfClasses,
   unregisterStyleSheet
 } from "./runtime.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
@@ -502,4 +503,48 @@ test("a declaration the element cannot take fails with where it came from", () =
   });
   assert.throws(() => element.setClasses("b"), /<border> cannot take the style of bad\.svelte#0: gap has no WinUI meaning on <border>/u);
   element.dispose();
+});
+
+test("the classes of a prop that takes a Style make the Style an element of that type would get", () => {
+  registerStyleSheet(
+    sheet({
+      id: "row.svelte",
+      css: ".row { padding: 8px }\nlist-view-item.picked { opacity: 0.5 }\nbutton.picked { opacity: 0.1 }\n.row:hover { opacity: 0.9 }"
+    })
+  );
+  const style = String(read(styleOfClasses({
+    elementType: "list-view-item",
+    classNames: "row picked"
+  }), "xaml"));
+  assert.match(style, /TargetType="ListViewItem" BasedOn="\{StaticResource DefaultListViewItemStyle\}"/u);
+  assert.match(style, /<Setter Property="Padding" Value="8,8,8,8"\/>/u);
+  assert.match(style, /<Setter Property="Opacity" Value="0\.5"\/>/u);
+  assert.doesNotMatch(style, /0\.1|0\.9/u);
+});
+
+test("a prop given classes no rule knows gets no Style", () => {
+  assert.equal(styleOfClasses({
+    elementType: "list-view-item",
+    classNames: "nothing-styles-this"
+  }), null);
+  assert.equal(styleOfClasses({
+    elementType: "list-view-item",
+    classNames: ""
+  }), null);
+});
+
+test("a class that sets what only an element holds is refused for a Style", () => {
+  registerStyleSheet(
+    sheet({
+      id: "grid-style.svelte",
+      css: "grid.g2 { grid-template-columns: auto 1fr }"
+    })
+  );
+  assert.throws(
+    () => styleOfClasses({
+      elementType: "grid",
+      classNames: "g2"
+    }),
+    /"g2" sets columns, which an element holds and a Style does not/u
+  );
 });

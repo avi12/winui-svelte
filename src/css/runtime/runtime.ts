@@ -651,6 +651,51 @@ class ElementStyle implements StyledElement {
   }
 }
 
+/**
+ * The Style the rules of these classes make for an element type, for a prop
+ * that takes a Style (`itemContainerStyle="row"`) rather than an element it
+ * styles: the one an element of that type and class would get, without
+ * states. Null when no rule applies. The Style is built when this is called,
+ * so a sheet registered later does not change it.
+ *
+ * @throws {Error} When a rule sets something only an element can hold (a
+ * grid's columns, the focus ring, a custom property): a Style cannot.
+ */
+export function styleOfClasses({ elementType, classNames }: {
+  elementType: string;
+  classNames: string;
+}) {
+  const classes = new Set(classNames.split(classSeparator).filter(name => name !== ""));
+  const matched = matchingRanked({
+    rules,
+    facts: {
+      elementType,
+      classes,
+      states: new Set()
+    }
+  });
+  const isUnstyled = matched.length === 0;
+  if (isUnstyled) {
+    return null;
+  }
+
+  const built = builtFor({
+    key: [elementType, ...matched.map(({ id }) => versionedId(id)), ""].join("|"),
+    elementType,
+    matched,
+    inline: []
+  });
+  const writes = [...built.writes, ...resourceWrites(matched)];
+  const hasWrites = writes.length > 0;
+  if (hasWrites) {
+    throw new Error(
+      `"${classNames}" sets ${writes.map(write => write.target).join(", ")}, which an element holds and a Style does not`
+    );
+  }
+
+  return built.style;
+}
+
 /** One per element the renderer creates that is given class, style or style:. */
 export function styledElement({ control, elementType }: {
   control: object;
