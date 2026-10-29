@@ -21,12 +21,10 @@ export function linkPowerEase(
   link: Linker
 ) {
   linkEasingFunctionBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "power",
-    apply(value) {
-      control.power = value;
-    }
+    control,
+    keys: ["power"]
   });
 }
 

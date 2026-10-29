@@ -32,89 +32,10 @@ export function linkPlaneProjection(
   link: Linker
 ) {
   linkProjection(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "centerOfRotationX",
-    apply(value) {
-      control.centerOfRotationX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "centerOfRotationY",
-    apply(value) {
-      control.centerOfRotationY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "centerOfRotationZ",
-    apply(value) {
-      control.centerOfRotationZ = value;
-    }
-  });
-  link.property({
-    props,
-    key: "globalOffsetX",
-    apply(value) {
-      control.globalOffsetX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "globalOffsetY",
-    apply(value) {
-      control.globalOffsetY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "globalOffsetZ",
-    apply(value) {
-      control.globalOffsetZ = value;
-    }
-  });
-  link.property({
-    props,
-    key: "localOffsetX",
-    apply(value) {
-      control.localOffsetX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "localOffsetY",
-    apply(value) {
-      control.localOffsetY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "localOffsetZ",
-    apply(value) {
-      control.localOffsetZ = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rotationX",
-    apply(value) {
-      control.rotationX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rotationY",
-    apply(value) {
-      control.rotationY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rotationZ",
-    apply(value) {
-      control.rotationZ = value;
-    }
+    control,
+    keys: ["centerOfRotationX", "centerOfRotationY", "centerOfRotationZ", "globalOffsetX", "globalOffsetY", "globalOffsetZ", "localOffsetX", "localOffsetY", "localOffsetZ", "rotationX", "rotationY", "rotationZ"]
   });
 }
 

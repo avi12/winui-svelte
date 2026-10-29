@@ -79,25 +79,16 @@ export function linkTextBlock(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "characterSpacing",
-    apply(value) {
-      control.characterSpacing = value;
-    }
+    control,
+    keys: ["characterSpacing", "fontSize", "isColorFontEnabled", "isTextScaleFactorEnabled", "isTextSelectionEnabled", "lineHeight", "maxLines", "selectionFlyout", "selectionHighlightColor", "text"]
   });
   link.property({
     props,
     key: "fontFamily",
     apply(value) {
       control.fontFamily = fontFamilyOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "fontSize",
-    apply(value) {
-      control.fontSize = value;
     }
   });
   link.property({
@@ -137,44 +128,9 @@ export function linkTextBlock(
   });
   link.property({
     props,
-    key: "isColorFontEnabled",
-    apply(value) {
-      control.isColorFontEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTextScaleFactorEnabled",
-    apply(value) {
-      control.isTextScaleFactorEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTextSelectionEnabled",
-    apply(value) {
-      control.isTextSelectionEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "lineHeight",
-    apply(value) {
-      control.lineHeight = value;
-    }
-  });
-  link.property({
-    props,
     key: "lineStackingStrategy",
     apply(value) {
       control.lineStackingStrategy = enumValue({ table: LineStackingStrategy, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "maxLines",
-    apply(value) {
-      control.maxLines = value;
     }
   });
   link.property({
@@ -189,27 +145,6 @@ export function linkTextBlock(
     key: "padding",
     apply(value) {
       control.padding = thicknessOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "selectionFlyout",
-    apply(value) {
-      control.selectionFlyout = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectionHighlightColor",
-    apply(value) {
-      control.selectionHighlightColor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "text",
-    apply(value) {
-      control.text = value;
     }
   });
   link.property({

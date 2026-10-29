@@ -45,19 +45,10 @@ export function linkInfoBar(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "actionButton",
-    apply(value) {
-      control.actionButton = value;
-    }
-  });
-  link.property({
-    props,
-    key: "closeButtonCommand",
-    apply(value) {
-      control.closeButtonCommand = value;
-    }
+    control,
+    keys: ["actionButton", "closeButtonCommand", "iconSource", "isClosable", "isIconVisible", "message", "title"]
   });
   link.property({
     props,
@@ -89,44 +80,9 @@ export function linkInfoBar(
   });
   link.property({
     props,
-    key: "iconSource",
-    apply(value) {
-      control.iconSource = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isClosable",
-    apply(value) {
-      control.isClosable = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isIconVisible",
-    apply(value) {
-      control.isIconVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "message",
-    apply(value) {
-      control.message = value;
-    }
-  });
-  link.property({
-    props,
     key: "severity",
     apply(value) {
       control.severity = enumValue({ table: InfoBarSeverity, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "title",
-    apply(value) {
-      control.title = value;
     }
   });
   link.bindable({

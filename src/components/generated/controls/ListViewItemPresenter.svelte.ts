@@ -93,6 +93,11 @@ export function linkListViewItemPresenter(
   link: Linker
 ) {
   linkContentPresenter(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["disabledOpacity", "dragOpacity", "reorderHintOffset", "revealBackgroundShowsAboveContent", "selectionCheckMarkVisualEnabled", "selectionIndicatorVisualEnabled"]
+  });
   link.property({
     props,
     key: "checkBoxBorderBrush",
@@ -235,13 +240,6 @@ export function linkListViewItemPresenter(
   });
   link.property({
     props,
-    key: "disabledOpacity",
-    apply(value) {
-      control.disabledOpacity = value;
-    }
-  });
-  link.property({
-    props,
     key: "dragBackground",
     apply(value) {
       control.dragBackground = brushOf(value);
@@ -252,13 +250,6 @@ export function linkListViewItemPresenter(
     key: "dragForeground",
     apply(value) {
       control.dragForeground = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "dragOpacity",
-    apply(value) {
-      control.dragOpacity = value;
     }
   });
   link.property({
@@ -340,23 +331,9 @@ export function linkListViewItemPresenter(
   });
   link.property({
     props,
-    key: "reorderHintOffset",
-    apply(value) {
-      control.reorderHintOffset = value;
-    }
-  });
-  link.property({
-    props,
     key: "revealBackground",
     apply(value) {
       control.revealBackground = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "revealBackgroundShowsAboveContent",
-    apply(value) {
-      control.revealBackgroundShowsAboveContent = value;
     }
   });
   link.property({
@@ -452,13 +429,6 @@ export function linkListViewItemPresenter(
   });
   link.property({
     props,
-    key: "selectionCheckMarkVisualEnabled",
-    apply(value) {
-      control.selectionCheckMarkVisualEnabled = value;
-    }
-  });
-  link.property({
-    props,
     key: "selectionIndicatorBrush",
     apply(value) {
       control.selectionIndicatorBrush = brushOf(value);
@@ -497,13 +467,6 @@ export function linkListViewItemPresenter(
     key: "selectionIndicatorPressedBrush",
     apply(value) {
       control.selectionIndicatorPressedBrush = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "selectionIndicatorVisualEnabled",
-    apply(value) {
-      control.selectionIndicatorVisualEnabled = value;
     }
   });
 }

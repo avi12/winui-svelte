@@ -22,19 +22,10 @@ export function linkContentThemeTransition(
   link: Linker
 ) {
   linkTransition(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "horizontalOffset",
-    apply(value) {
-      control.horizontalOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "verticalOffset",
-    apply(value) {
-      control.verticalOffset = value;
-    }
+    control,
+    keys: ["horizontalOffset", "verticalOffset"]
   });
 }
 

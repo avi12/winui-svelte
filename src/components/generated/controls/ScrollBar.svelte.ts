@@ -26,6 +26,11 @@ export function linkScrollBar(
   link: Linker
 ) {
   linkRangeBase(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["viewportSize"]
+  });
   link.property({
     props,
     key: "indicatorMode",
@@ -38,13 +43,6 @@ export function linkScrollBar(
     key: "orientation",
     apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "viewportSize",
-    apply(value) {
-      control.viewportSize = value;
     }
   });
 

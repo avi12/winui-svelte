@@ -29,40 +29,10 @@ export function linkAppBarButton(
   link: Linker
 ) {
   linkButton(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "dynamicOverflowOrder",
-    apply(value) {
-      control.dynamicOverflowOrder = value;
-    }
-  });
-  link.property({
-    props,
-    key: "icon",
-    apply(value) {
-      control.icon = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isCompact",
-    apply(value) {
-      control.isCompact = value;
-    }
-  });
-  link.property({
-    props,
-    key: "keyboardAcceleratorTextOverride",
-    apply(value) {
-      control.keyboardAcceleratorTextOverride = value;
-    }
-  });
-  link.property({
-    props,
-    key: "label",
-    apply(value) {
-      control.label = value;
-    }
+    control,
+    keys: ["dynamicOverflowOrder", "icon", "isCompact", "keyboardAcceleratorTextOverride", "label"]
   });
   link.property({
     props,

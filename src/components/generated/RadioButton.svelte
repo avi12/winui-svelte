@@ -48,6 +48,9 @@
   {#if isSnippet(rest.transform3D)}
     <property name="transform3D">{@render rest.transform3D()}</property>
   {/if}
+  {#if rest.transitions}
+    <property name="transitions" collection="transition-collection">{@render rest.transitions()}</property>
+  {/if}
   {#if isSnippet(rest.toolTip)}
     <property name="tool-tip-service.tool-tip">{@render rest.toolTip()}</property>
   {/if}
@@ -65,6 +68,9 @@
   {/if}
   {#if isSnippet(rest.foreground)}
     <property name="foreground">{@render rest.foreground()}</property>
+  {/if}
+  {#if rest.contentTransitions}
+    <property name="contentTransitions" collection="transition-collection">{@render rest.contentTransitions()}</property>
   {/if}
   {#if isSnippet(rest.command)}
     <property name="command">{@render rest.command()}</property>

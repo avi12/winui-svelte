@@ -53,12 +53,10 @@ export function linkContentDialog(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "closeButtonCommand",
-    apply(value) {
-      control.closeButtonCommand = value;
-    }
+    control,
+    keys: ["closeButtonCommand", "closeButtonText", "fullSizeDesired", "isPrimaryButtonEnabled", "isSecondaryButtonEnabled", "primaryButtonCommand", "primaryButtonText", "secondaryButtonCommand", "secondaryButtonText"]
   });
   link.property({
     props,
@@ -76,44 +74,9 @@ export function linkContentDialog(
   });
   link.property({
     props,
-    key: "closeButtonText",
-    apply(value) {
-      control.closeButtonText = value;
-    }
-  });
-  link.property({
-    props,
     key: "defaultButton",
     apply(value) {
       control.defaultButton = enumValue({ table: ContentDialogButton, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "fullSizeDesired",
-    apply(value) {
-      control.fullSizeDesired = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isPrimaryButtonEnabled",
-    apply(value) {
-      control.isPrimaryButtonEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isSecondaryButtonEnabled",
-    apply(value) {
-      control.isSecondaryButtonEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "primaryButtonCommand",
-    apply(value) {
-      control.primaryButtonCommand = value;
     }
   });
   link.property({
@@ -132,20 +95,6 @@ export function linkContentDialog(
   });
   link.property({
     props,
-    key: "primaryButtonText",
-    apply(value) {
-      control.primaryButtonText = value;
-    }
-  });
-  link.property({
-    props,
-    key: "secondaryButtonCommand",
-    apply(value) {
-      control.secondaryButtonCommand = value;
-    }
-  });
-  link.property({
-    props,
     key: "secondaryButtonCommandParameter",
     apply(value) {
       control.secondaryButtonCommandParameter = objectOf(value);
@@ -156,13 +105,6 @@ export function linkContentDialog(
     key: "secondaryButtonStyle",
     apply(value) {
       control.secondaryButtonStyle = styleOf({ input: value, owner: control, property: "secondaryButtonStyle" });
-    }
-  });
-  link.property({
-    props,
-    key: "secondaryButtonText",
-    apply(value) {
-      control.secondaryButtonText = value;
     }
   });
   link.property({

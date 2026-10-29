@@ -22,12 +22,10 @@ export function linkButton(
   link: Linker
 ) {
   linkButtonBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "flyout",
-    apply(value) {
-      control.flyout = value;
-    }
+    control,
+    keys: ["flyout"]
   });
 }
 

@@ -23,26 +23,10 @@ export function linkRotateTransform(
   link: Linker
 ) {
   linkTransform(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "angle",
-    apply(value) {
-      control.angle = value;
-    }
-  });
-  link.property({
-    props,
-    key: "centerX",
-    apply(value) {
-      control.centerX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "centerY",
-    apply(value) {
-      control.centerY = value;
-    }
+    control,
+    keys: ["angle", "centerX", "centerY"]
   });
 }
 

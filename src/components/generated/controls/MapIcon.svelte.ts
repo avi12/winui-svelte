@@ -21,12 +21,10 @@ export function linkMapIcon(
   link: Linker
 ) {
   linkMapElement(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "location",
-    apply(value) {
-      control.location = value;
-    }
+    control,
+    keys: ["location"]
   });
 }
 

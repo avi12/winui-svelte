@@ -22,19 +22,10 @@ export function linkElasticEase(
   link: Linker
 ) {
   linkEasingFunctionBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "oscillations",
-    apply(value) {
-      control.oscillations = value;
-    }
-  });
-  link.property({
-    props,
-    key: "springiness",
-    apply(value) {
-      control.springiness = value;
-    }
+    control,
+    keys: ["oscillations", "springiness"]
   });
 }
 

@@ -30,53 +30,16 @@ export function linkNavigationViewItem(
   link: Linker
 ) {
   linkNavigationViewItemBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "hasUnrealizedChildren",
-    apply(value) {
-      control.hasUnrealizedChildren = value;
-    }
-  });
-  link.property({
-    props,
-    key: "icon",
-    apply(value) {
-      control.icon = value;
-    }
-  });
-  link.property({
-    props,
-    key: "infoBadge",
-    apply(value) {
-      control.infoBadge = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isChildSelected",
-    apply(value) {
-      control.isChildSelected = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isExpanded",
-    apply(value) {
-      control.isExpanded = value;
-    }
+    control,
+    keys: ["hasUnrealizedChildren", "icon", "infoBadge", "isChildSelected", "isExpanded", "selectsOnInvoked"]
   });
   link.property({
     props,
     key: "menuItemsSource",
     apply(value) {
       control.menuItemsSource = collectionOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "selectsOnInvoked",
-    apply(value) {
-      control.selectsOnInvoked = value;
     }
   });
 }

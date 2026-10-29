@@ -32,67 +32,16 @@ export function linkPersonPicture(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "badgeGlyph",
-    apply(value) {
-      control.badgeGlyph = value;
-    }
+    control,
+    keys: ["badgeGlyph", "badgeNumber", "badgeText", "contact", "displayName", "initials", "isGroup", "preferSmallImage"]
   });
   link.property({
     props,
     key: "badgeImageSource",
     apply(value) {
       control.badgeImageSource = imageSourceOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "badgeNumber",
-    apply(value) {
-      control.badgeNumber = value;
-    }
-  });
-  link.property({
-    props,
-    key: "badgeText",
-    apply(value) {
-      control.badgeText = value;
-    }
-  });
-  link.property({
-    props,
-    key: "contact",
-    apply(value) {
-      control.contact = value;
-    }
-  });
-  link.property({
-    props,
-    key: "displayName",
-    apply(value) {
-      control.displayName = value;
-    }
-  });
-  link.property({
-    props,
-    key: "initials",
-    apply(value) {
-      control.initials = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isGroup",
-    apply(value) {
-      control.isGroup = value;
-    }
-  });
-  link.property({
-    props,
-    key: "preferSmallImage",
-    apply(value) {
-      control.preferSmallImage = value;
     }
   });
   link.property({

@@ -30,6 +30,11 @@ export function linkExpander(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["headerTemplateSelector"]
+  });
   link.property({
     props,
     key: "expandDirection",
@@ -49,13 +54,6 @@ export function linkExpander(
     key: "headerTemplate",
     apply(value) {
       control.headerTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "headerTemplateSelector",
-    apply(value) {
-      control.headerTemplateSelector = value;
     }
   });
   link.bindable({

@@ -31,26 +31,10 @@ export function linkFrame(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "cacheSize",
-    apply(value) {
-      control.cacheSize = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isNavigationStackEnabled",
-    apply(value) {
-      control.isNavigationStackEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "sourcePageType",
-    apply(value) {
-      control.sourcePageType = value;
-    }
+    control,
+    keys: ["cacheSize", "isNavigationStackEnabled", "sourcePageType"]
   });
   observe({
     link,

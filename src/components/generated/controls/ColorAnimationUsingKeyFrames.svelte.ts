@@ -23,12 +23,10 @@ export function linkColorAnimationUsingKeyFrames(
   link: Linker
 ) {
   linkTimeline(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "enableDependentAnimation",
-    apply(value) {
-      control.enableDependentAnimation = value;
-    }
+    control,
+    keys: ["enableDependentAnimation"]
   });
 }
 

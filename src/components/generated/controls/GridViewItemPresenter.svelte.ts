@@ -45,6 +45,11 @@ export function linkGridViewItemPresenter(
   link: Linker
 ) {
   linkContentPresenter(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["disabledOpacity", "dragOpacity", "reorderHintOffset", "selectionCheckMarkVisualEnabled"]
+  });
   link.property({
     props,
     key: "checkBrush",
@@ -75,13 +80,6 @@ export function linkGridViewItemPresenter(
   });
   link.property({
     props,
-    key: "disabledOpacity",
-    apply(value) {
-      control.disabledOpacity = value;
-    }
-  });
-  link.property({
-    props,
     key: "dragBackground",
     apply(value) {
       control.dragBackground = brushOf(value);
@@ -92,13 +90,6 @@ export function linkGridViewItemPresenter(
     key: "dragForeground",
     apply(value) {
       control.dragForeground = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "dragOpacity",
-    apply(value) {
-      control.dragOpacity = value;
     }
   });
   link.property({
@@ -152,13 +143,6 @@ export function linkGridViewItemPresenter(
   });
   link.property({
     props,
-    key: "reorderHintOffset",
-    apply(value) {
-      control.reorderHintOffset = value;
-    }
-  });
-  link.property({
-    props,
     key: "selectedBackground",
     apply(value) {
       control.selectedBackground = brushOf(value);
@@ -190,13 +174,6 @@ export function linkGridViewItemPresenter(
     key: "selectedPointerOverBorderBrush",
     apply(value) {
       control.selectedPointerOverBorderBrush = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "selectionCheckMarkVisualEnabled",
-    apply(value) {
-      control.selectionCheckMarkVisualEnabled = value;
     }
   });
 }

@@ -80,6 +80,11 @@ export function linkContentPresenter(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["backgroundTransition", "characterSpacing", "contentTemplateSelector", "fontSize", "isTextScaleFactorEnabled", "lineHeight", "maxLines"]
+  });
   link.property({
     props,
     key: "background",
@@ -96,13 +101,6 @@ export function linkContentPresenter(
   });
   link.property({
     props,
-    key: "backgroundTransition",
-    apply(value) {
-      control.backgroundTransition = value;
-    }
-  });
-  link.property({
-    props,
     key: "borderBrush",
     apply(value) {
       control.borderBrush = brushOf(value);
@@ -113,13 +111,6 @@ export function linkContentPresenter(
     key: "borderThickness",
     apply(value) {
       control.borderThickness = thicknessOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "characterSpacing",
-    apply(value) {
-      control.characterSpacing = value;
     }
   });
   link.contentProperty({
@@ -138,13 +129,6 @@ export function linkContentPresenter(
   });
   link.property({
     props,
-    key: "contentTemplateSelector",
-    apply(value) {
-      control.contentTemplateSelector = value;
-    }
-  });
-  link.property({
-    props,
     key: "cornerRadius",
     apply(value) {
       control.cornerRadius = cornerRadiusOf(value);
@@ -155,13 +139,6 @@ export function linkContentPresenter(
     key: "fontFamily",
     apply(value) {
       control.fontFamily = fontFamilyOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "fontSize",
-    apply(value) {
-      control.fontSize = value;
     }
   });
   link.property({
@@ -201,30 +178,9 @@ export function linkContentPresenter(
   });
   link.property({
     props,
-    key: "isTextScaleFactorEnabled",
-    apply(value) {
-      control.isTextScaleFactorEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "lineHeight",
-    apply(value) {
-      control.lineHeight = value;
-    }
-  });
-  link.property({
-    props,
     key: "lineStackingStrategy",
     apply(value) {
       control.lineStackingStrategy = enumValue({ table: LineStackingStrategy, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "maxLines",
-    apply(value) {
-      control.maxLines = value;
     }
   });
   link.property({

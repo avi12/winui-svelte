@@ -23,18 +23,16 @@ export function linkGradientStop(
   _bound: GradientStopBound,
   link: Linker
 ) {
+  link.plain({
+    props,
+    control,
+    keys: ["offset"]
+  });
   link.contentProperty({
     props,
     key: "color",
     apply(value) {
       control.color = colorOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "offset",
-    apply(value) {
-      control.offset = value;
     }
   });
   link.property({

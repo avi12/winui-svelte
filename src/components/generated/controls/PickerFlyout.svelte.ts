@@ -25,12 +25,10 @@ export function linkPickerFlyout(
   link: Linker
 ) {
   linkPickerFlyoutBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "confirmationButtonsVisible",
-    apply(value) {
-      control.confirmationButtonsVisible = value;
-    }
+    control,
+    keys: ["confirmationButtonsVisible"]
   });
   link.contentProperty({
     props,

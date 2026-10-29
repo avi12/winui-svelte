@@ -22,19 +22,10 @@ export function linkTranslateTransform(
   link: Linker
 ) {
   linkTransform(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "x",
-    apply(value) {
-      control.x = value;
-    }
-  });
-  link.property({
-    props,
-    key: "y",
-    apply(value) {
-      control.y = value;
-    }
+    control,
+    keys: ["x", "y"]
   });
 }
 

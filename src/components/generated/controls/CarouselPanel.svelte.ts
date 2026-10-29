@@ -26,19 +26,10 @@ export function linkCarouselPanel(
   link: Linker
 ) {
   linkVirtualizingPanel(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "canHorizontallyScroll",
-    apply(value) {
-      control.canHorizontallyScroll = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canVerticallyScroll",
-    apply(value) {
-      control.canVerticallyScroll = value;
-    }
+    control,
+    keys: ["canHorizontallyScroll", "canVerticallyScroll"]
   });
   link.property({
     props,

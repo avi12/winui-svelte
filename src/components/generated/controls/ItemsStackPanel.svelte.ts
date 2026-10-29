@@ -28,19 +28,10 @@ export function linkItemsStackPanel(
   link: Linker
 ) {
   linkPanel(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "areStickyGroupHeadersEnabled",
-    apply(value) {
-      control.areStickyGroupHeadersEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "cacheLength",
-    apply(value) {
-      control.cacheLength = value;
-    }
+    control,
+    keys: ["areStickyGroupHeadersEnabled", "cacheLength"]
   });
   link.property({
     props,

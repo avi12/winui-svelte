@@ -29,68 +29,10 @@ export function linkCompositeTransform(
   link: Linker
 ) {
   linkTransform(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "centerX",
-    apply(value) {
-      control.centerX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "centerY",
-    apply(value) {
-      control.centerY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rotation",
-    apply(value) {
-      control.rotation = value;
-    }
-  });
-  link.property({
-    props,
-    key: "scaleX",
-    apply(value) {
-      control.scaleX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "scaleY",
-    apply(value) {
-      control.scaleY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "skewX",
-    apply(value) {
-      control.skewX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "skewY",
-    apply(value) {
-      control.skewY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "translateX",
-    apply(value) {
-      control.translateX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "translateY",
-    apply(value) {
-      control.translateY = value;
-    }
+    control,
+    keys: ["centerX", "centerY", "rotation", "scaleX", "scaleY", "skewX", "skewY", "translateX", "translateY"]
   });
 }
 

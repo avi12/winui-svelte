@@ -33,75 +33,10 @@ export function linkTitleBar(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "autoRefreshDragRegions",
-    apply(value) {
-      control.autoRefreshDragRegions = value;
-    }
-  });
-  link.property({
-    props,
-    key: "content",
-    apply(value) {
-      control.content = value;
-    }
-  });
-  link.property({
-    props,
-    key: "iconSource",
-    apply(value) {
-      control.iconSource = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isBackButtonEnabled",
-    apply(value) {
-      control.isBackButtonEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isBackButtonVisible",
-    apply(value) {
-      control.isBackButtonVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isPaneToggleButtonVisible",
-    apply(value) {
-      control.isPaneToggleButtonVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "leftHeader",
-    apply(value) {
-      control.leftHeader = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rightHeader",
-    apply(value) {
-      control.rightHeader = value;
-    }
-  });
-  link.property({
-    props,
-    key: "subtitle",
-    apply(value) {
-      control.subtitle = value;
-    }
-  });
-  link.property({
-    props,
-    key: "title",
-    apply(value) {
-      control.title = value;
-    }
+    control,
+    keys: ["autoRefreshDragRegions", "content", "iconSource", "isBackButtonEnabled", "isBackButtonVisible", "isPaneToggleButtonVisible", "leftHeader", "rightHeader", "subtitle", "title"]
   });
 
   if ("onBackRequested" in props) {

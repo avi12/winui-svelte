@@ -21,12 +21,10 @@ export function linkRadioButton(
   link: Linker
 ) {
   linkToggleButton(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "groupName",
-    apply(value) {
-      control.groupName = value;
-    }
+    control,
+    keys: ["groupName"]
   });
 }
 

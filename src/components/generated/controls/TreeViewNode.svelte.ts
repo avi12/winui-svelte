@@ -23,25 +23,16 @@ export function linkTreeViewNode(
   _bound: TreeViewNodeBound,
   link: Linker
 ) {
+  link.plain({
+    props,
+    control,
+    keys: ["hasUnrealizedChildren", "isExpanded"]
+  });
   link.property({
     props,
     key: "content",
     apply(value) {
       control.content = objectOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "hasUnrealizedChildren",
-    apply(value) {
-      control.hasUnrealizedChildren = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isExpanded",
-    apply(value) {
-      control.isExpanded = value;
     }
   });
   link.property({

@@ -26,12 +26,10 @@ export function linkToggleButton(
   link: Linker
 ) {
   linkButtonBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isThreeState",
-    apply(value) {
-      control.isThreeState = value;
-    }
+    control,
+    keys: ["isThreeState"]
   });
   link.bindable({
     bound,

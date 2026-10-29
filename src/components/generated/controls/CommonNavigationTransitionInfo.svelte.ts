@@ -24,12 +24,10 @@ export function linkCommonNavigationTransitionInfo(
   link: Linker
 ) {
   linkNavigationTransitionInfo(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isStaggeringEnabled",
-    apply(value) {
-      control.isStaggeringEnabled = value;
-    }
+    control,
+    keys: ["isStaggeringEnabled"]
   });
 }
 

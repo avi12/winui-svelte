@@ -39,6 +39,11 @@ export function linkBorder(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["backgroundTransition"]
+  });
   link.property({
     props,
     key: "background",
@@ -51,13 +56,6 @@ export function linkBorder(
     key: "backgroundSizing",
     apply(value) {
       control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "backgroundTransition",
-    apply(value) {
-      control.backgroundTransition = value;
     }
   });
   link.property({

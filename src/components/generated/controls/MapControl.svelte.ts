@@ -28,40 +28,10 @@ export function linkMapControl(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "center",
-    apply(value) {
-      control.center = value;
-    }
-  });
-  link.property({
-    props,
-    key: "interactiveControlsVisible",
-    apply(value) {
-      control.interactiveControlsVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "layers",
-    apply(value) {
-      control.layers = value;
-    }
-  });
-  link.property({
-    props,
-    key: "mapServiceToken",
-    apply(value) {
-      control.mapServiceToken = value;
-    }
-  });
-  link.property({
-    props,
-    key: "zoomLevel",
-    apply(value) {
-      control.zoomLevel = value;
-    }
+    control,
+    keys: ["center", "interactiveControlsVisible", "layers", "mapServiceToken", "zoomLevel"]
   });
 
   if ("onMapElementClick" in props) {

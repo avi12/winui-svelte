@@ -25,12 +25,10 @@ export function linkKeyboardAccelerator(
   _bound: KeyboardAcceleratorBound,
   link: Linker
 ) {
-  link.property({
+  link.plain({
     props,
-    key: "isEnabled",
-    apply(value) {
-      control.isEnabled = value;
-    }
+    control,
+    keys: ["isEnabled", "scopeOwner"]
   });
   link.property({
     props,
@@ -44,13 +42,6 @@ export function linkKeyboardAccelerator(
     key: "modifiers",
     apply(value) {
       control.modifiers = enumValue({ table: VirtualKeyModifiers, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "scopeOwner",
-    apply(value) {
-      control.scopeOwner = value;
     }
   });
 

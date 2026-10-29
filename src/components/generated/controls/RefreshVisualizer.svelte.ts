@@ -27,12 +27,10 @@ export function linkRefreshVisualizer(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "content",
-    apply(value) {
-      control.content = value;
-    }
+    control,
+    keys: ["content"]
   });
   link.property({
     props,

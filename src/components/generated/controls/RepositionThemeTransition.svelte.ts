@@ -21,12 +21,10 @@ export function linkRepositionThemeTransition(
   link: Linker
 ) {
   linkTransition(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isStaggeringEnabled",
-    apply(value) {
-      control.isStaggeringEnabled = value;
-    }
+    control,
+    keys: ["isStaggeringEnabled"]
   });
 }
 

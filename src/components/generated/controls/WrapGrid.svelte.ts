@@ -31,32 +31,16 @@ export function linkWrapGrid(
   link: Linker
 ) {
   linkOrientedVirtualizingPanel(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["itemHeight", "itemWidth", "maximumRowsOrColumns"]
+  });
   link.property({
     props,
     key: "horizontalChildrenAlignment",
     apply(value) {
       control.horizontalChildrenAlignment = enumValue({ table: HorizontalAlignment, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "itemHeight",
-    apply(value) {
-      control.itemHeight = value;
-    }
-  });
-  link.property({
-    props,
-    key: "itemWidth",
-    apply(value) {
-      control.itemWidth = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maximumRowsOrColumns",
-    apply(value) {
-      control.maximumRowsOrColumns = value;
     }
   });
   link.property({

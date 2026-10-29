@@ -23,26 +23,10 @@ export function linkProgressBar(
   link: Linker
 ) {
   linkRangeBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isIndeterminate",
-    apply(value) {
-      control.isIndeterminate = value;
-    }
-  });
-  link.property({
-    props,
-    key: "showError",
-    apply(value) {
-      control.showError = value;
-    }
-  });
-  link.property({
-    props,
-    key: "showPaused",
-    apply(value) {
-      control.showPaused = value;
-    }
+    control,
+    keys: ["isIndeterminate", "showError", "showPaused"]
   });
 }
 

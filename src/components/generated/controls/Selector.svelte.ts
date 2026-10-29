@@ -25,18 +25,16 @@ export function linkSelector(
   link: Linker
 ) {
   linkItemsControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["selectedValuePath"]
+  });
   link.property({
     props,
     key: "isSynchronizedWithCurrentItem",
     apply(value) {
       control.isSynchronizedWithCurrentItem = nullableBooleanOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "selectedValuePath",
-    apply(value) {
-      control.selectedValuePath = value;
     }
   });
   link.bindable({

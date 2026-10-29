@@ -23,26 +23,10 @@ export function linkPerspectiveTransform3D(
   link: Linker
 ) {
   linkTransform3D(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "depth",
-    apply(value) {
-      control.depth = value;
-    }
-  });
-  link.property({
-    props,
-    key: "offsetX",
-    apply(value) {
-      control.offsetX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "offsetY",
-    apply(value) {
-      control.offsetY = value;
-    }
+    control,
+    keys: ["depth", "offsetX", "offsetY"]
   });
 }
 

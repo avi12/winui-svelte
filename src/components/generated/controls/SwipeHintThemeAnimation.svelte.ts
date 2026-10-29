@@ -23,26 +23,10 @@ export function linkSwipeHintThemeAnimation(
   link: Linker
 ) {
   linkTimeline(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "targetName",
-    apply(value) {
-      control.targetName = value;
-    }
-  });
-  link.property({
-    props,
-    key: "toHorizontalOffset",
-    apply(value) {
-      control.toHorizontalOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "toVerticalOffset",
-    apply(value) {
-      control.toVerticalOffset = value;
-    }
+    control,
+    keys: ["targetName", "toHorizontalOffset", "toVerticalOffset"]
   });
 }
 

@@ -27,6 +27,11 @@ export function linkHubSection(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["isHeaderInteractive"]
+  });
   link.contentProperty({
     props,
     key: "contentTemplate",
@@ -46,13 +51,6 @@ export function linkHubSection(
     key: "headerTemplate",
     apply(value) {
       control.headerTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "isHeaderInteractive",
-    apply(value) {
-      control.isHeaderInteractive = value;
     }
   });
 }

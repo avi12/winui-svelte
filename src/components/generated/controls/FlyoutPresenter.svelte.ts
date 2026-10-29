@@ -21,12 +21,10 @@ export function linkFlyoutPresenter(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isDefaultShadowEnabled",
-    apply(value) {
-      control.isDefaultShadowEnabled = value;
-    }
+    control,
+    keys: ["isDefaultShadowEnabled"]
   });
 }
 

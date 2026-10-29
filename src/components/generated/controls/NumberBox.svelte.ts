@@ -43,12 +43,10 @@ export function linkNumberBox(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "acceptsExpression",
-    apply(value) {
-      control.acceptsExpression = value;
-    }
+    control,
+    keys: ["acceptsExpression", "isWrapEnabled", "largeChange", "maximum", "minimum", "numberFormatter", "placeholderText", "preventKeyboardDisplayOnProgrammaticFocus", "selectionFlyout", "selectionHighlightColor", "smallChange", "text"]
   });
   link.property({
     props,
@@ -73,86 +71,9 @@ export function linkNumberBox(
   });
   link.property({
     props,
-    key: "isWrapEnabled",
-    apply(value) {
-      control.isWrapEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "largeChange",
-    apply(value) {
-      control.largeChange = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maximum",
-    apply(value) {
-      control.maximum = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minimum",
-    apply(value) {
-      control.minimum = value;
-    }
-  });
-  link.property({
-    props,
-    key: "numberFormatter",
-    apply(value) {
-      control.numberFormatter = value;
-    }
-  });
-  link.property({
-    props,
-    key: "placeholderText",
-    apply(value) {
-      control.placeholderText = value;
-    }
-  });
-  link.property({
-    props,
-    key: "preventKeyboardDisplayOnProgrammaticFocus",
-    apply(value) {
-      control.preventKeyboardDisplayOnProgrammaticFocus = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectionFlyout",
-    apply(value) {
-      control.selectionFlyout = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectionHighlightColor",
-    apply(value) {
-      control.selectionHighlightColor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "smallChange",
-    apply(value) {
-      control.smallChange = value;
-    }
-  });
-  link.property({
-    props,
     key: "spinButtonPlacementMode",
     apply(value) {
       control.spinButtonPlacementMode = enumValue({ table: NumberBoxSpinButtonPlacementMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "text",
-    apply(value) {
-      control.text = value;
     }
   });
   link.property({

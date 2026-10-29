@@ -25,18 +25,16 @@ export function linkButtonBase(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["command"]
+  });
   link.property({
     props,
     key: "clickMode",
     apply(value) {
       control.clickMode = enumValue({ table: ClickMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "command",
-    apply(value) {
-      control.command = value;
     }
   });
   link.property({

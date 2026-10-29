@@ -481,7 +481,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `PolyQuadraticBezierSegment` | Media | `points` |  | yes |
 | `PopInThemeAnimation` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
 | `PopOutThemeAnimation` | Media.Animation | `targetName` |  |  |
-| `Popup` | Controls.Primitives | `child`, `childTransitions`, `desiredPlacement`, `horizontalOffset`, `isLightDismissEnabled`, `isOpen`, `lightDismissOverlayMode`, `placementTarget`, +3 more | `isOpen`, `actualPlacement` | yes |
+| `Popup` | Controls.Primitives | `child`, `desiredPlacement`, `horizontalOffset`, `isLightDismissEnabled`, `isOpen`, `lightDismissOverlayMode`, `placementTarget`, `shouldConstrainToRootBounds`, +2 more | `isOpen`, `actualPlacement` | yes |
 | `PopupThemeTransition` | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset` |  |  |
 | `PowerEase` | Media.Animation | `power` |  |  |
 | `ProgressBar` | Controls | `isIndeterminate`, `showError`, `showPaused` | `value` |  |
@@ -574,7 +574,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `ToolTip` | Controls | `horizontalOffset`, `isOpen`, `placement`, `placementRect`, `placementTarget`, `verticalOffset` | `isOpen` | yes |
 | `TransformGroup` | Media |  |  | yes |
 | `TranslateTransform` | Media | `x`, `y` |  |  |
-| `TreeView` | Controls | `canDragItems`, `canReorderItems`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemsSource`, `itemTemplate`, `itemTemplateSelector`, `selectedItem`, +2 more | `selectedItem` |  |
+| `TreeView` | Controls | `canDragItems`, `canReorderItems`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemsSource`, `itemTemplate`, `itemTemplateSelector`, `selectedItem`, +2 more | `selectedKey`, `selectedKeys`, `expandedKeys` |  |
 | `TreeViewItem` | Controls | `collapsedGlyph`, `expandedGlyph`, `glyphBrush`, `glyphOpacity`, `glyphSize`, `hasUnrealizedChildren`, `isExpanded`, `itemsSource` |  | yes |
 | `TreeViewList` | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
 | `TreeViewNode` | Controls | `content`, `hasUnrealizedChildren`, `isExpanded` |  |  |

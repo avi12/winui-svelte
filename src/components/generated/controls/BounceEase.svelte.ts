@@ -22,19 +22,10 @@ export function linkBounceEase(
   link: Linker
 ) {
   linkEasingFunctionBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "bounces",
-    apply(value) {
-      control.bounces = value;
-    }
-  });
-  link.property({
-    props,
-    key: "bounciness",
-    apply(value) {
-      control.bounciness = value;
-    }
+    control,
+    keys: ["bounces", "bounciness"]
   });
 }
 

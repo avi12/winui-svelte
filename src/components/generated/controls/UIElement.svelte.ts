@@ -219,6 +219,11 @@ export function linkUIElement(
   _bound: UIElementBound,
   link: Linker
 ) {
+  link.plain({
+    props,
+    control,
+    keys: ["accessKey", "accessKeyScopeOwner", "allowDrop", "cacheMode", "canBeScrollAnchor", "canDrag", "clip", "contextFlyout", "exitDisplayModeOnAccessKeyInvoked", "isAccessKeyScope", "isDoubleTapEnabled", "isHitTestVisible", "isHoldingEnabled", "isRightTapEnabled", "isTabStop", "isTapEnabled", "keyboardAcceleratorPlacementTarget", "keyTipHorizontalOffset", "keyTipTarget", "keyTipVerticalOffset", "opacity", "opacityTransition", "projection", "rasterizationScale", "renderTransform", "rotation", "rotationTransition", "scaleTransition", "shadow", "tabIndex", "transform3D", "transformMatrix", "translationTransition", "useLayoutRounding", "useSystemFocusVisuals", "xamlRoot", "xYFocusDown", "xYFocusLeft", "xYFocusRight", "xYFocusUp"]
+  });
   link.property({
     props,
     key: "canvasLeft",
@@ -662,58 +667,9 @@ export function linkUIElement(
   });
   link.property({
     props,
-    key: "accessKey",
-    apply(value) {
-      control.accessKey = value;
-    }
-  });
-  link.property({
-    props,
-    key: "accessKeyScopeOwner",
-    apply(value) {
-      control.accessKeyScopeOwner = value;
-    }
-  });
-  link.property({
-    props,
-    key: "allowDrop",
-    apply(value) {
-      control.allowDrop = value;
-    }
-  });
-  link.property({
-    props,
-    key: "cacheMode",
-    apply(value) {
-      control.cacheMode = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canBeScrollAnchor",
-    apply(value) {
-      control.canBeScrollAnchor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canDrag",
-    apply(value) {
-      control.canDrag = value;
-    }
-  });
-  link.property({
-    props,
     key: "centerPoint",
     apply(value) {
       control.centerPoint = vector3Of(value);
-    }
-  });
-  link.property({
-    props,
-    key: "clip",
-    apply(value) {
-      control.clip = value;
     }
   });
   link.property({
@@ -725,72 +681,9 @@ export function linkUIElement(
   });
   link.property({
     props,
-    key: "contextFlyout",
-    apply(value) {
-      control.contextFlyout = value;
-    }
-  });
-  link.property({
-    props,
-    key: "exitDisplayModeOnAccessKeyInvoked",
-    apply(value) {
-      control.exitDisplayModeOnAccessKeyInvoked = value;
-    }
-  });
-  link.property({
-    props,
     key: "highContrastAdjustment",
     apply(value) {
       control.highContrastAdjustment = enumValue({ table: ElementHighContrastAdjustment, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "isAccessKeyScope",
-    apply(value) {
-      control.isAccessKeyScope = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isDoubleTapEnabled",
-    apply(value) {
-      control.isDoubleTapEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isHitTestVisible",
-    apply(value) {
-      control.isHitTestVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isHoldingEnabled",
-    apply(value) {
-      control.isHoldingEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isRightTapEnabled",
-    apply(value) {
-      control.isRightTapEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTabStop",
-    apply(value) {
-      control.isTabStop = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTapEnabled",
-    apply(value) {
-      control.isTapEnabled = value;
     }
   });
   link.property({
@@ -802,37 +695,9 @@ export function linkUIElement(
   });
   link.property({
     props,
-    key: "keyboardAcceleratorPlacementTarget",
-    apply(value) {
-      control.keyboardAcceleratorPlacementTarget = value;
-    }
-  });
-  link.property({
-    props,
-    key: "keyTipHorizontalOffset",
-    apply(value) {
-      control.keyTipHorizontalOffset = value;
-    }
-  });
-  link.property({
-    props,
     key: "keyTipPlacementMode",
     apply(value) {
       control.keyTipPlacementMode = enumValue({ table: KeyTipPlacementMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "keyTipTarget",
-    apply(value) {
-      control.keyTipTarget = value;
-    }
-  });
-  link.property({
-    props,
-    key: "keyTipVerticalOffset",
-    apply(value) {
-      control.keyTipVerticalOffset = value;
     }
   });
   link.property({
@@ -844,51 +709,9 @@ export function linkUIElement(
   });
   link.property({
     props,
-    key: "opacity",
-    apply(value) {
-      control.opacity = value;
-    }
-  });
-  link.property({
-    props,
-    key: "opacityTransition",
-    apply(value) {
-      control.opacityTransition = value;
-    }
-  });
-  link.property({
-    props,
-    key: "projection",
-    apply(value) {
-      control.projection = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rasterizationScale",
-    apply(value) {
-      control.rasterizationScale = value;
-    }
-  });
-  link.property({
-    props,
-    key: "renderTransform",
-    apply(value) {
-      control.renderTransform = value;
-    }
-  });
-  link.property({
-    props,
     key: "renderTransformOrigin",
     apply(value) {
       control.renderTransformOrigin = pointOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "rotation",
-    apply(value) {
-      control.rotation = value;
     }
   });
   link.property({
@@ -900,30 +723,9 @@ export function linkUIElement(
   });
   link.property({
     props,
-    key: "rotationTransition",
-    apply(value) {
-      control.rotationTransition = value;
-    }
-  });
-  link.property({
-    props,
     key: "scale",
     apply(value) {
       control.scale = vector3Of(value);
-    }
-  });
-  link.property({
-    props,
-    key: "scaleTransition",
-    apply(value) {
-      control.scaleTransition = value;
-    }
-  });
-  link.property({
-    props,
-    key: "shadow",
-    apply(value) {
-      control.shadow = value;
     }
   });
   link.property({
@@ -935,27 +737,6 @@ export function linkUIElement(
   });
   link.property({
     props,
-    key: "tabIndex",
-    apply(value) {
-      control.tabIndex = value;
-    }
-  });
-  link.property({
-    props,
-    key: "transform3D",
-    apply(value) {
-      control.transform3D = value;
-    }
-  });
-  link.property({
-    props,
-    key: "transformMatrix",
-    apply(value) {
-      control.transformMatrix = value;
-    }
-  });
-  link.property({
-    props,
     key: "translation",
     apply(value) {
       control.translation = vector3Of(value);
@@ -963,44 +744,9 @@ export function linkUIElement(
   });
   link.property({
     props,
-    key: "translationTransition",
-    apply(value) {
-      control.translationTransition = value;
-    }
-  });
-  link.property({
-    props,
-    key: "useLayoutRounding",
-    apply(value) {
-      control.useLayoutRounding = value;
-    }
-  });
-  link.property({
-    props,
-    key: "useSystemFocusVisuals",
-    apply(value) {
-      control.useSystemFocusVisuals = value;
-    }
-  });
-  link.property({
-    props,
     key: "visibility",
     apply(value) {
       control.visibility = enumValue({ table: Visibility, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "xamlRoot",
-    apply(value) {
-      control.xamlRoot = value;
-    }
-  });
-  link.property({
-    props,
-    key: "xYFocusDown",
-    apply(value) {
-      control.xYFocusDown = value;
     }
   });
   link.property({
@@ -1019,13 +765,6 @@ export function linkUIElement(
   });
   link.property({
     props,
-    key: "xYFocusLeft",
-    apply(value) {
-      control.xYFocusLeft = value;
-    }
-  });
-  link.property({
-    props,
     key: "xYFocusLeftNavigationStrategy",
     apply(value) {
       control.xYFocusLeftNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
@@ -1033,23 +772,9 @@ export function linkUIElement(
   });
   link.property({
     props,
-    key: "xYFocusRight",
-    apply(value) {
-      control.xYFocusRight = value;
-    }
-  });
-  link.property({
-    props,
     key: "xYFocusRightNavigationStrategy",
     apply(value) {
       control.xYFocusRightNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "xYFocusUp",
-    apply(value) {
-      control.xYFocusUp = value;
     }
   });
   link.property({

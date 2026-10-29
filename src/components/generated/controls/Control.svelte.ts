@@ -75,6 +75,11 @@ export function linkControl(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["characterSpacing", "fontSize", "isEnabled", "isFocusEngaged", "isFocusEngagementEnabled", "isTextScaleFactorEnabled"]
+  });
   link.property({
     props,
     key: "background",
@@ -105,13 +110,6 @@ export function linkControl(
   });
   link.property({
     props,
-    key: "characterSpacing",
-    apply(value) {
-      control.characterSpacing = value;
-    }
-  });
-  link.property({
-    props,
     key: "cornerRadius",
     apply(value) {
       control.cornerRadius = cornerRadiusOf(value);
@@ -136,13 +134,6 @@ export function linkControl(
     key: "fontFamily",
     apply(value) {
       control.fontFamily = fontFamilyOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "fontSize",
-    apply(value) {
-      control.fontSize = value;
     }
   });
   link.property({
@@ -178,34 +169,6 @@ export function linkControl(
     key: "horizontalContentAlignment",
     apply(value) {
       control.horizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "isEnabled",
-    apply(value) {
-      control.isEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isFocusEngaged",
-    apply(value) {
-      control.isFocusEngaged = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isFocusEngagementEnabled",
-    apply(value) {
-      control.isFocusEngagementEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTextScaleFactorEnabled",
-    apply(value) {
-      control.isTextScaleFactorEnabled = value;
     }
   });
   link.property({

@@ -40,6 +40,11 @@ export function linkPopup(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["horizontalOffset", "isLightDismissEnabled", "placementTarget", "shouldConstrainToRootBounds", "systemBackdrop", "verticalOffset"]
+  });
   link.contentProperty({
     props,
     key: "child",
@@ -56,51 +61,9 @@ export function linkPopup(
   });
   link.property({
     props,
-    key: "horizontalOffset",
-    apply(value) {
-      control.horizontalOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isLightDismissEnabled",
-    apply(value) {
-      control.isLightDismissEnabled = value;
-    }
-  });
-  link.property({
-    props,
     key: "lightDismissOverlayMode",
     apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "placementTarget",
-    apply(value) {
-      control.placementTarget = value;
-    }
-  });
-  link.property({
-    props,
-    key: "shouldConstrainToRootBounds",
-    apply(value) {
-      control.shouldConstrainToRootBounds = value;
-    }
-  });
-  link.property({
-    props,
-    key: "systemBackdrop",
-    apply(value) {
-      control.systemBackdrop = value;
-    }
-  });
-  link.property({
-    props,
-    key: "verticalOffset",
-    apply(value) {
-      control.verticalOffset = value;
     }
   });
   link.bindable({

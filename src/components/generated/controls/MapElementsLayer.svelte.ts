@@ -23,12 +23,10 @@ export function linkMapElementsLayer(
   link: Linker
 ) {
   linkMapLayer(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "mapElements",
-    apply(value) {
-      control.mapElements = value;
-    }
+    control,
+    keys: ["mapElements"]
   });
 
   if ("onMapElementClick" in props) {

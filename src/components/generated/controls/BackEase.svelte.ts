@@ -21,12 +21,10 @@ export function linkBackEase(
   link: Linker
 ) {
   linkEasingFunctionBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "amplitude",
-    apply(value) {
-      control.amplitude = value;
-    }
+    control,
+    keys: ["amplitude"]
   });
 }
 

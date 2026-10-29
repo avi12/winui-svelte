@@ -33,60 +33,16 @@ export function linkColorSpectrum(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["hsvColor", "maxHue", "maxSaturation", "maxValue", "minHue", "minSaturation", "minValue"]
+  });
   link.property({
     props,
     key: "components",
     apply(value) {
       control.components = enumValue({ table: ColorSpectrumComponents, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "hsvColor",
-    apply(value) {
-      control.hsvColor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxHue",
-    apply(value) {
-      control.maxHue = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxSaturation",
-    apply(value) {
-      control.maxSaturation = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxValue",
-    apply(value) {
-      control.maxValue = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minHue",
-    apply(value) {
-      control.minHue = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minSaturation",
-    apply(value) {
-      control.minSaturation = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minValue",
-    apply(value) {
-      control.minValue = value;
     }
   });
   link.property({

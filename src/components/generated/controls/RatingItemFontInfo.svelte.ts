@@ -26,47 +26,10 @@ export function linkRatingItemFontInfo(
   link: Linker
 ) {
   linkRatingItemInfo(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "disabledGlyph",
-    apply(value) {
-      control.disabledGlyph = value;
-    }
-  });
-  link.property({
-    props,
-    key: "glyph",
-    apply(value) {
-      control.glyph = value;
-    }
-  });
-  link.property({
-    props,
-    key: "placeholderGlyph",
-    apply(value) {
-      control.placeholderGlyph = value;
-    }
-  });
-  link.property({
-    props,
-    key: "pointerOverGlyph",
-    apply(value) {
-      control.pointerOverGlyph = value;
-    }
-  });
-  link.property({
-    props,
-    key: "pointerOverPlaceholderGlyph",
-    apply(value) {
-      control.pointerOverPlaceholderGlyph = value;
-    }
-  });
-  link.property({
-    props,
-    key: "unsetGlyph",
-    apply(value) {
-      control.unsetGlyph = value;
-    }
+    control,
+    keys: ["disabledGlyph", "glyph", "placeholderGlyph", "pointerOverGlyph", "pointerOverPlaceholderGlyph", "unsetGlyph"]
   });
 }
 

@@ -21,12 +21,10 @@ export function linkCalendarViewDayItem(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isBlackout",
-    apply(value) {
-      control.isBlackout = value;
-    }
+    control,
+    keys: ["isBlackout"]
   });
 }
 

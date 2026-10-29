@@ -26,18 +26,16 @@ export function linkRefreshContainer(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["visualizer"]
+  });
   link.property({
     props,
     key: "pullDirection",
     apply(value) {
       control.pullDirection = enumValue({ table: RefreshPullDirection, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "visualizer",
-    apply(value) {
-      control.visualizer = value;
     }
   });
 

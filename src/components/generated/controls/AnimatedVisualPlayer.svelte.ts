@@ -28,6 +28,11 @@ export function linkAnimatedVisualPlayer(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["autoPlay", "playbackRate", "source"]
+  });
   link.property({
     props,
     key: "animationOptimization",
@@ -37,30 +42,9 @@ export function linkAnimatedVisualPlayer(
   });
   link.property({
     props,
-    key: "autoPlay",
-    apply(value) {
-      control.autoPlay = value;
-    }
-  });
-  link.property({
-    props,
     key: "fallbackContent",
     apply(value) {
       control.fallbackContent = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "playbackRate",
-    apply(value) {
-      control.playbackRate = value;
-    }
-  });
-  link.property({
-    props,
-    key: "source",
-    apply(value) {
-      control.source = value;
     }
   });
   link.property({

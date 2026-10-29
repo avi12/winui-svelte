@@ -48,12 +48,10 @@ export function linkTimePicker(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "clockIdentifier",
-    apply(value) {
-      control.clockIdentifier = value;
-    }
+    control,
+    keys: ["clockIdentifier", "minuteIncrement"]
   });
   link.contentProperty({
     props,
@@ -74,13 +72,6 @@ export function linkTimePicker(
     key: "lightDismissOverlayMode",
     apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "minuteIncrement",
-    apply(value) {
-      control.minuteIncrement = value;
     }
   });
   link.bindable({

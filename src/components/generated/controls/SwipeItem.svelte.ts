@@ -35,6 +35,11 @@ export function linkSwipeItem(
   _bound: SwipeItemBound,
   link: Linker
 ) {
+  link.plain({
+    props,
+    control,
+    keys: ["command", "iconSource", "text"]
+  });
   link.property({
     props,
     key: "background",
@@ -51,13 +56,6 @@ export function linkSwipeItem(
   });
   link.property({
     props,
-    key: "command",
-    apply(value) {
-      control.command = value;
-    }
-  });
-  link.property({
-    props,
     key: "commandParameter",
     apply(value) {
       control.commandParameter = objectOf(value);
@@ -68,20 +66,6 @@ export function linkSwipeItem(
     key: "foreground",
     apply(value) {
       control.foreground = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "iconSource",
-    apply(value) {
-      control.iconSource = value;
-    }
-  });
-  link.property({
-    props,
-    key: "text",
-    apply(value) {
-      control.text = value;
     }
   });
 

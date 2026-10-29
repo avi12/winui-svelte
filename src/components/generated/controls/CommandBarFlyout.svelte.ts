@@ -24,12 +24,10 @@ export function linkCommandBarFlyout(
   link: Linker
 ) {
   linkFlyoutBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "alwaysExpanded",
-    apply(value) {
-      control.alwaysExpanded = value;
-    }
+    control,
+    keys: ["alwaysExpanded"]
   });
 }
 

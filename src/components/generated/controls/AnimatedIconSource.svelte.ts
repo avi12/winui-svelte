@@ -24,26 +24,10 @@ export function linkAnimatedIconSource(
   link: Linker
 ) {
   linkIconSource(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "fallbackIconSource",
-    apply(value) {
-      control.fallbackIconSource = value;
-    }
-  });
-  link.property({
-    props,
-    key: "mirroredWhenRightToLeft",
-    apply(value) {
-      control.mirroredWhenRightToLeft = value;
-    }
-  });
-  link.property({
-    props,
-    key: "source",
-    apply(value) {
-      control.source = value;
-    }
+    control,
+    keys: ["fallbackIconSource", "mirroredWhenRightToLeft", "source"]
   });
 }
 

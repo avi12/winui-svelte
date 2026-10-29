@@ -50,53 +50,16 @@ export function linkTextElement(
   _bound: TextElementBound,
   link: Linker
 ) {
-  link.property({
+  link.plain({
     props,
-    key: "accessKey",
-    apply(value) {
-      control.accessKey = value;
-    }
-  });
-  link.property({
-    props,
-    key: "accessKeyScopeOwner",
-    apply(value) {
-      control.accessKeyScopeOwner = value;
-    }
-  });
-  link.property({
-    props,
-    key: "allowFocusOnInteraction",
-    apply(value) {
-      control.allowFocusOnInteraction = value;
-    }
-  });
-  link.property({
-    props,
-    key: "characterSpacing",
-    apply(value) {
-      control.characterSpacing = value;
-    }
-  });
-  link.property({
-    props,
-    key: "exitDisplayModeOnAccessKeyInvoked",
-    apply(value) {
-      control.exitDisplayModeOnAccessKeyInvoked = value;
-    }
+    control,
+    keys: ["accessKey", "accessKeyScopeOwner", "allowFocusOnInteraction", "characterSpacing", "exitDisplayModeOnAccessKeyInvoked", "fontSize", "isAccessKeyScope", "isTextScaleFactorEnabled", "keyTipHorizontalOffset", "keyTipVerticalOffset", "language", "xamlRoot"]
   });
   link.property({
     props,
     key: "fontFamily",
     apply(value) {
       control.fontFamily = fontFamilyOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "fontSize",
-    apply(value) {
-      control.fontSize = value;
     }
   });
   link.property({
@@ -129,27 +92,6 @@ export function linkTextElement(
   });
   link.property({
     props,
-    key: "isAccessKeyScope",
-    apply(value) {
-      control.isAccessKeyScope = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTextScaleFactorEnabled",
-    apply(value) {
-      control.isTextScaleFactorEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "keyTipHorizontalOffset",
-    apply(value) {
-      control.keyTipHorizontalOffset = value;
-    }
-  });
-  link.property({
-    props,
     key: "keyTipPlacementMode",
     apply(value) {
       control.keyTipPlacementMode = enumValue({ table: KeyTipPlacementMode, input: value });
@@ -157,30 +99,9 @@ export function linkTextElement(
   });
   link.property({
     props,
-    key: "keyTipVerticalOffset",
-    apply(value) {
-      control.keyTipVerticalOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "language",
-    apply(value) {
-      control.language = value;
-    }
-  });
-  link.property({
-    props,
     key: "textDecorations",
     apply(value) {
       control.textDecorations = enumValue({ table: TextDecorations, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "xamlRoot",
-    apply(value) {
-      control.xamlRoot = value;
     }
   });
   link.property({

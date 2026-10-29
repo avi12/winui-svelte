@@ -40,6 +40,11 @@ export function linkTimeline(
   _bound: TimelineBound,
   link: Linker
 ) {
+  link.plain({
+    props,
+    control,
+    keys: ["autoReverse", "speedRatio"]
+  });
   link.property({
     props,
     key: "storyboardTargetProperty",
@@ -59,13 +64,6 @@ export function linkTimeline(
     key: "storyboardTarget",
     apply(value) {
       Storyboard.setTarget(control, value);
-    }
-  });
-  link.property({
-    props,
-    key: "autoReverse",
-    apply(value) {
-      control.autoReverse = value;
     }
   });
   link.property({
@@ -94,13 +92,6 @@ export function linkTimeline(
     key: "repeatBehavior",
     apply(value) {
       control.repeatBehavior = repeatBehaviorOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "speedRatio",
-    apply(value) {
-      control.speedRatio = value;
     }
   });
 

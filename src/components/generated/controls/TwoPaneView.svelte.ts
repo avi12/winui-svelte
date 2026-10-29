@@ -40,39 +40,16 @@ export function linkTwoPaneView(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "minTallModeHeight",
-    apply(value) {
-      control.minTallModeHeight = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minWideModeWidth",
-    apply(value) {
-      control.minWideModeWidth = value;
-    }
-  });
-  link.property({
-    props,
-    key: "pane1",
-    apply(value) {
-      control.pane1 = value;
-    }
+    control,
+    keys: ["minTallModeHeight", "minWideModeWidth", "pane1", "pane2"]
   });
   link.property({
     props,
     key: "pane1Length",
     apply(value) {
       control.pane1Length = gridLengthOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "pane2",
-    apply(value) {
-      control.pane2 = value;
     }
   });
   link.property({

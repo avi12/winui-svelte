@@ -66,26 +66,10 @@ export function linkScrollViewer(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "bringIntoViewOnFocusChange",
-    apply(value) {
-      control.bringIntoViewOnFocusChange = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canContentRenderOutsideBounds",
-    apply(value) {
-      control.canContentRenderOutsideBounds = value;
-    }
-  });
-  link.property({
-    props,
-    key: "horizontalAnchorRatio",
-    apply(value) {
-      control.horizontalAnchorRatio = value;
-    }
+    control,
+    keys: ["bringIntoViewOnFocusChange", "canContentRenderOutsideBounds", "horizontalAnchorRatio", "isDeferredScrollingEnabled", "isHorizontalRailEnabled", "isHorizontalScrollChainingEnabled", "isScrollInertiaEnabled", "isVerticalRailEnabled", "isVerticalScrollChainingEnabled", "isZoomChainingEnabled", "isZoomInertiaEnabled", "leftHeader", "maxZoomFactor", "minZoomFactor", "reduceViewportForCoreInputViewOcclusions", "topHeader", "topLeftHeader", "verticalAnchorRatio"]
   });
   link.property({
     props,
@@ -113,111 +97,6 @@ export function linkScrollViewer(
     key: "horizontalSnapPointsType",
     apply(value) {
       control.horizontalSnapPointsType = enumValue({ table: SnapPointsType, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "isDeferredScrollingEnabled",
-    apply(value) {
-      control.isDeferredScrollingEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isHorizontalRailEnabled",
-    apply(value) {
-      control.isHorizontalRailEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isHorizontalScrollChainingEnabled",
-    apply(value) {
-      control.isHorizontalScrollChainingEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isScrollInertiaEnabled",
-    apply(value) {
-      control.isScrollInertiaEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isVerticalRailEnabled",
-    apply(value) {
-      control.isVerticalRailEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isVerticalScrollChainingEnabled",
-    apply(value) {
-      control.isVerticalScrollChainingEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isZoomChainingEnabled",
-    apply(value) {
-      control.isZoomChainingEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isZoomInertiaEnabled",
-    apply(value) {
-      control.isZoomInertiaEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "leftHeader",
-    apply(value) {
-      control.leftHeader = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxZoomFactor",
-    apply(value) {
-      control.maxZoomFactor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minZoomFactor",
-    apply(value) {
-      control.minZoomFactor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "reduceViewportForCoreInputViewOcclusions",
-    apply(value) {
-      control.reduceViewportForCoreInputViewOcclusions = value;
-    }
-  });
-  link.property({
-    props,
-    key: "topHeader",
-    apply(value) {
-      control.topHeader = value;
-    }
-  });
-  link.property({
-    props,
-    key: "topLeftHeader",
-    apply(value) {
-      control.topLeftHeader = value;
-    }
-  });
-  link.property({
-    props,
-    key: "verticalAnchorRatio",
-    apply(value) {
-      control.verticalAnchorRatio = value;
     }
   });
   link.property({

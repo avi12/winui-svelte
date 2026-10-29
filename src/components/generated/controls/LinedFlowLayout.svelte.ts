@@ -29,6 +29,11 @@ export function linkLinedFlowLayout(
   link: Linker
 ) {
   linkVirtualizingLayout(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["lineHeight", "lineSpacing", "minItemSpacing"]
+  });
   link.property({
     props,
     key: "itemsJustification",
@@ -41,27 +46,6 @@ export function linkLinedFlowLayout(
     key: "itemsStretch",
     apply(value) {
       control.itemsStretch = enumValue({ table: LinedFlowLayoutItemsStretch, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "lineHeight",
-    apply(value) {
-      control.lineHeight = value;
-    }
-  });
-  link.property({
-    props,
-    key: "lineSpacing",
-    apply(value) {
-      control.lineSpacing = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minItemSpacing",
-    apply(value) {
-      control.minItemSpacing = value;
     }
   });
 

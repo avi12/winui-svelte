@@ -22,12 +22,10 @@ export function linkSplineDoubleKeyFrame(
   link: Linker
 ) {
   linkDoubleKeyFrame(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "keySpline",
-    apply(value) {
-      control.keySpline = value;
-    }
+    control,
+    keys: ["keySpline"]
   });
 }
 

@@ -21,12 +21,10 @@ export function linkFlipView(
   link: Linker
 ) {
   linkSelector(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "useTouchAnimationsForAllNavigation",
-    apply(value) {
-      control.useTouchAnimationsForAllNavigation = value;
-    }
+    control,
+    keys: ["useTouchAnimationsForAllNavigation"]
   });
 }
 

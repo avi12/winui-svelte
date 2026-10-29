@@ -23,26 +23,10 @@ export function linkEntranceThemeTransition(
   link: Linker
 ) {
   linkTransition(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "fromHorizontalOffset",
-    apply(value) {
-      control.fromHorizontalOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "fromVerticalOffset",
-    apply(value) {
-      control.fromVerticalOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isStaggeringEnabled",
-    apply(value) {
-      control.isStaggeringEnabled = value;
-    }
+    control,
+    keys: ["fromHorizontalOffset", "fromVerticalOffset", "isStaggeringEnabled"]
   });
 }
 

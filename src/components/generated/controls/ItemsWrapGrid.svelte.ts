@@ -30,19 +30,10 @@ export function linkItemsWrapGrid(
   link: Linker
 ) {
   linkPanel(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "areStickyGroupHeadersEnabled",
-    apply(value) {
-      control.areStickyGroupHeadersEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "cacheLength",
-    apply(value) {
-      control.cacheLength = value;
-    }
+    control,
+    keys: ["areStickyGroupHeadersEnabled", "cacheLength", "itemHeight", "itemWidth", "maximumRowsOrColumns"]
   });
   link.property({
     props,
@@ -56,27 +47,6 @@ export function linkItemsWrapGrid(
     key: "groupPadding",
     apply(value) {
       control.groupPadding = thicknessOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "itemHeight",
-    apply(value) {
-      control.itemHeight = value;
-    }
-  });
-  link.property({
-    props,
-    key: "itemWidth",
-    apply(value) {
-      control.itemWidth = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maximumRowsOrColumns",
-    apply(value) {
-      control.maximumRowsOrColumns = value;
     }
   });
   link.property({

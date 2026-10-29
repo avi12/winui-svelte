@@ -60,18 +60,16 @@ export function linkScrollPresenter(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["content", "horizontalAnchorRatio", "horizontalScrollController", "maxZoomFactor", "minZoomFactor", "verticalAnchorRatio", "verticalScrollController"]
+  });
   link.property({
     props,
     key: "background",
     apply(value) {
       control.background = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "content",
-    apply(value) {
-      control.content = value;
     }
   });
   link.property({
@@ -83,23 +81,9 @@ export function linkScrollPresenter(
   });
   link.property({
     props,
-    key: "horizontalAnchorRatio",
-    apply(value) {
-      control.horizontalAnchorRatio = value;
-    }
-  });
-  link.property({
-    props,
     key: "horizontalScrollChainMode",
     apply(value) {
       control.horizontalScrollChainMode = enumValue({ table: ScrollingChainMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "horizontalScrollController",
-    apply(value) {
-      control.horizontalScrollController = value;
     }
   });
   link.property({
@@ -125,37 +109,9 @@ export function linkScrollPresenter(
   });
   link.property({
     props,
-    key: "maxZoomFactor",
-    apply(value) {
-      control.maxZoomFactor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minZoomFactor",
-    apply(value) {
-      control.minZoomFactor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "verticalAnchorRatio",
-    apply(value) {
-      control.verticalAnchorRatio = value;
-    }
-  });
-  link.property({
-    props,
     key: "verticalScrollChainMode",
     apply(value) {
       control.verticalScrollChainMode = enumValue({ table: ScrollingChainMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "verticalScrollController",
-    apply(value) {
-      control.verticalScrollController = value;
     }
   });
   link.property({

@@ -24,33 +24,10 @@ export function linkDrillOutThemeAnimation(
   link: Linker
 ) {
   linkTimeline(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "entranceTarget",
-    apply(value) {
-      control.entranceTarget = value;
-    }
-  });
-  link.property({
-    props,
-    key: "entranceTargetName",
-    apply(value) {
-      control.entranceTargetName = value;
-    }
-  });
-  link.property({
-    props,
-    key: "exitTarget",
-    apply(value) {
-      control.exitTarget = value;
-    }
-  });
-  link.property({
-    props,
-    key: "exitTargetName",
-    apply(value) {
-      control.exitTargetName = value;
-    }
+    control,
+    keys: ["entranceTarget", "entranceTargetName", "exitTarget", "exitTargetName"]
   });
 }
 

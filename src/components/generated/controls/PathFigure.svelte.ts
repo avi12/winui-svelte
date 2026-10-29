@@ -25,19 +25,10 @@ export function linkPathFigure(
   _bound: PathFigureBound,
   link: Linker
 ) {
-  link.property({
+  link.plain({
     props,
-    key: "isClosed",
-    apply(value) {
-      control.isClosed = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isFilled",
-    apply(value) {
-      control.isFilled = value;
-    }
+    control,
+    keys: ["isClosed", "isFilled"]
   });
   link.contentProperty({
     props,

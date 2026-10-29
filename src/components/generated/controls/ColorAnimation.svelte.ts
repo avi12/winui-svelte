@@ -27,25 +27,16 @@ export function linkColorAnimation(
   link: Linker
 ) {
   linkTimeline(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["easingFunction", "enableDependentAnimation"]
+  });
   link.property({
     props,
     key: "by",
     apply(value) {
       control.by = nullableColorOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "easingFunction",
-    apply(value) {
-      control.easingFunction = value;
-    }
-  });
-  link.property({
-    props,
-    key: "enableDependentAnimation",
-    apply(value) {
-      control.enableDependentAnimation = value;
     }
   });
   link.property({

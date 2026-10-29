@@ -25,12 +25,10 @@ export function linkContinuumNavigationTransitionInfo(
   link: Linker
 ) {
   linkNavigationTransitionInfo(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "exitElement",
-    apply(value) {
-      control.exitElement = value;
-    }
+    control,
+    keys: ["exitElement"]
   });
 }
 

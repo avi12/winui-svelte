@@ -19,12 +19,10 @@ export function linkGeometry(
   _bound: GeometryBound,
   link: Linker
 ) {
-  link.property({
+  link.plain({
     props,
-    key: "transform",
-    apply(value) {
-      control.transform = value;
-    }
+    control,
+    keys: ["transform"]
   });
   link.property({
     props,

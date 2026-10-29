@@ -26,33 +26,10 @@ export function linkAnnotatedScrollBar(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "detailLabelTemplate",
-    apply(value) {
-      control.detailLabelTemplate = value;
-    }
-  });
-  link.property({
-    props,
-    key: "labels",
-    apply(value) {
-      control.labels = value;
-    }
-  });
-  link.property({
-    props,
-    key: "labelTemplate",
-    apply(value) {
-      control.labelTemplate = value;
-    }
-  });
-  link.property({
-    props,
-    key: "smallChange",
-    apply(value) {
-      control.smallChange = value;
-    }
+    control,
+    keys: ["detailLabelTemplate", "labels", "labelTemplate", "smallChange"]
   });
 
   if ("onDetailLabelRequested" in props) {

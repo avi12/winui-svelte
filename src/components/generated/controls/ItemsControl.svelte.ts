@@ -16,11 +16,11 @@ import type { Snippet } from "svelte";
 
 export interface ItemsControlProps extends ControlProps {
   children?: Snippet;
+  itemContainerTransitions?: Snippet;
   displayMemberPath?: string;
   groupStyleSelector?: ItemsControl["groupStyleSelector"];
   itemContainerStyle?: StyleInput;
   itemContainerStyleSelector?: ItemsControl["itemContainerStyleSelector"];
-  itemContainerTransitions?: ItemsControl["itemContainerTransitions"];
   itemsPanel?: ItemsPanelTemplateInput;
   itemsSource?: CollectionInput;
   itemTemplate?: DataTemplateInput;
@@ -38,39 +38,16 @@ export function linkItemsControl(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "displayMemberPath",
-    apply(value) {
-      control.displayMemberPath = value;
-    }
-  });
-  link.property({
-    props,
-    key: "groupStyleSelector",
-    apply(value) {
-      control.groupStyleSelector = value;
-    }
+    control,
+    keys: ["displayMemberPath", "groupStyleSelector", "itemContainerStyleSelector", "itemTemplateSelector"]
   });
   link.property({
     props,
     key: "itemContainerStyle",
     apply(value) {
       control.itemContainerStyle = styleOf({ input: value, owner: control, property: "itemContainerStyle" });
-    }
-  });
-  link.property({
-    props,
-    key: "itemContainerStyleSelector",
-    apply(value) {
-      control.itemContainerStyleSelector = value;
-    }
-  });
-  link.property({
-    props,
-    key: "itemContainerTransitions",
-    apply(value) {
-      control.itemContainerTransitions = value;
     }
   });
   link.property({
@@ -92,13 +69,6 @@ export function linkItemsControl(
     key: "itemTemplate",
     apply(value) {
       control.itemTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "itemTemplateSelector",
-    apply(value) {
-      control.itemTemplateSelector = value;
     }
   });
 }

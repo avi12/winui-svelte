@@ -34,6 +34,11 @@ export function linkSlider(
   link: Linker
 ) {
   linkRangeBase(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["intermediateValue", "isDirectionReversed", "isThumbToolTipEnabled", "stepFrequency", "thumbToolTipValueConverter", "tickFrequency"]
+  });
   link.property({
     props,
     key: "header",
@@ -50,27 +55,6 @@ export function linkSlider(
   });
   link.property({
     props,
-    key: "intermediateValue",
-    apply(value) {
-      control.intermediateValue = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isDirectionReversed",
-    apply(value) {
-      control.isDirectionReversed = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isThumbToolTipEnabled",
-    apply(value) {
-      control.isThumbToolTipEnabled = value;
-    }
-  });
-  link.property({
-    props,
     key: "orientation",
     apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
@@ -81,27 +65,6 @@ export function linkSlider(
     key: "snapsTo",
     apply(value) {
       control.snapsTo = enumValue({ table: SliderSnapsTo, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "stepFrequency",
-    apply(value) {
-      control.stepFrequency = value;
-    }
-  });
-  link.property({
-    props,
-    key: "thumbToolTipValueConverter",
-    apply(value) {
-      control.thumbToolTipValueConverter = value;
-    }
-  });
-  link.property({
-    props,
-    key: "tickFrequency",
-    apply(value) {
-      control.tickFrequency = value;
     }
   });
   link.property({

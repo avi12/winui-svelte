@@ -10,15 +10,15 @@ import type { SelectorBound, SelectorProps } from "./Selector.svelte.ts";
 import type { Snippet } from "svelte";
 
 export interface ListViewBaseProps extends SelectorProps {
+  footerTransitions?: Snippet;
+  headerTransitions?: Snippet;
   canDragItems?: boolean;
   canReorderItems?: boolean;
   dataFetchSize?: number;
   footer?: ObjectInput | Snippet;
   footerTemplate?: DataTemplateInput;
-  footerTransitions?: ListViewBase["footerTransitions"];
   header?: ObjectInput | Snippet;
   headerTemplate?: DataTemplateInput;
-  headerTransitions?: ListViewBase["headerTransitions"];
   incrementalLoadingThreshold?: number;
   incrementalLoadingTrigger?: EnumInput<typeof IncrementalLoadingTrigger>;
   isActiveView?: boolean;
@@ -48,26 +48,10 @@ export function linkListViewBase(
   link: Linker
 ) {
   linkSelector(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "canDragItems",
-    apply(value) {
-      control.canDragItems = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canReorderItems",
-    apply(value) {
-      control.canReorderItems = value;
-    }
-  });
-  link.property({
-    props,
-    key: "dataFetchSize",
-    apply(value) {
-      control.dataFetchSize = value;
-    }
+    control,
+    keys: ["canDragItems", "canReorderItems", "dataFetchSize", "incrementalLoadingThreshold", "isActiveView", "isItemClickEnabled", "isMultiSelectCheckBoxEnabled", "isSwipeEnabled", "isZoomedInView", "semanticZoomOwner", "showsScrollingPlaceholders", "singleSelectionFollowsFocus"]
   });
   link.property({
     props,
@@ -81,13 +65,6 @@ export function linkListViewBase(
     key: "footerTemplate",
     apply(value) {
       control.footerTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "footerTransitions",
-    apply(value) {
-      control.footerTransitions = value;
     }
   });
   link.property({
@@ -106,58 +83,9 @@ export function linkListViewBase(
   });
   link.property({
     props,
-    key: "headerTransitions",
-    apply(value) {
-      control.headerTransitions = value;
-    }
-  });
-  link.property({
-    props,
-    key: "incrementalLoadingThreshold",
-    apply(value) {
-      control.incrementalLoadingThreshold = value;
-    }
-  });
-  link.property({
-    props,
     key: "incrementalLoadingTrigger",
     apply(value) {
       control.incrementalLoadingTrigger = enumValue({ table: IncrementalLoadingTrigger, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "isActiveView",
-    apply(value) {
-      control.isActiveView = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isItemClickEnabled",
-    apply(value) {
-      control.isItemClickEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isMultiSelectCheckBoxEnabled",
-    apply(value) {
-      control.isMultiSelectCheckBoxEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isSwipeEnabled",
-    apply(value) {
-      control.isSwipeEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isZoomedInView",
-    apply(value) {
-      control.isZoomedInView = value;
     }
   });
   link.property({
@@ -172,27 +100,6 @@ export function linkListViewBase(
     key: "selectionMode",
     apply(value) {
       control.selectionMode = enumValue({ table: ListViewSelectionMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "semanticZoomOwner",
-    apply(value) {
-      control.semanticZoomOwner = value;
-    }
-  });
-  link.property({
-    props,
-    key: "showsScrollingPlaceholders",
-    apply(value) {
-      control.showsScrollingPlaceholders = value;
-    }
-  });
-  link.property({
-    props,
-    key: "singleSelectionFollowsFocus",
-    apply(value) {
-      control.singleSelectionFollowsFocus = value;
     }
   });
 

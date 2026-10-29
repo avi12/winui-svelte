@@ -4,7 +4,6 @@ import {
   collectionOf,
   dataTemplateOf,
   enumValue,
-  objectInputOf,
   objectOf,
   styleOf
 } from "../../convert.ts";
@@ -27,7 +26,6 @@ export interface TreeViewProps extends ControlProps {
   rootNodes?: Snippet;
   selectedNodes?: Snippet;
   itemContainerTransitions?: Snippet;
-  selectedItem?: ObjectInput | undefined;
   canDragItems?: boolean;
   canReorderItems?: boolean;
   itemContainerStyle?: StyleInput;
@@ -35,6 +33,7 @@ export interface TreeViewProps extends ControlProps {
   itemsSource?: CollectionInput;
   itemTemplate?: DataTemplateInput;
   itemTemplateSelector?: TreeView["itemTemplateSelector"];
+  selectedItem?: ObjectInput;
   selectedNode?: TreeView["selectedNode"] | Snippet;
   selectionMode?: EnumInput<typeof TreeViewSelectionMode>;
   onCollapsed?: Parameters<TreeView["onCollapsed"]>[0];
@@ -45,7 +44,7 @@ export interface TreeViewProps extends ControlProps {
   onSelectionChanged?: Parameters<TreeView["onSelectionChanged"]>[0];
 }
 
-export type TreeViewBound = ControlBound & Pick<TreeViewProps, "selectedItem">;
+export type TreeViewBound = ControlBound;
 
 export type TreeViewComponentProps = TreeViewProps & ElementProps;
 
@@ -56,32 +55,16 @@ export function linkTreeView(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "canDragItems",
-    apply(value) {
-      control.canDragItems = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canReorderItems",
-    apply(value) {
-      control.canReorderItems = value;
-    }
+    control,
+    keys: ["canDragItems", "canReorderItems", "itemContainerStyleSelector", "itemTemplateSelector", "selectedNode"]
   });
   link.property({
     props,
     key: "itemContainerStyle",
     apply(value) {
       control.itemContainerStyle = styleOf({ input: value, owner: control, property: "itemContainerStyle" });
-    }
-  });
-  link.property({
-    props,
-    key: "itemContainerStyleSelector",
-    apply(value) {
-      control.itemContainerStyleSelector = value;
     }
   });
   link.property({
@@ -100,16 +83,9 @@ export function linkTreeView(
   });
   link.property({
     props,
-    key: "itemTemplateSelector",
+    key: "selectedItem",
     apply(value) {
-      control.itemTemplateSelector = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectedNode",
-    apply(value) {
-      control.selectedNode = value;
+      control.selectedItem = objectOf(value);
     }
   });
   link.property({
@@ -118,19 +94,6 @@ export function linkTreeView(
     apply(value) {
       control.selectionMode = enumValue({ table: TreeViewSelectionMode, input: value });
     }
-  });
-  link.bindable({
-    bound,
-    key: "selectedItem",
-    access: {
-      read: () => objectInputOf(control.selectedItem),
-      write(value) {
-        control.selectedItem = objectOf(value);
-      }
-    },
-    subscribers: [
-      handler => control.onSelectionChanged(handler)
-    ]
   });
 
   if ("onCollapsed" in props) {

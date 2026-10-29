@@ -37,26 +37,10 @@ export function linkParallaxView(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "child",
-    apply(value) {
-      control.child = value;
-    }
-  });
-  link.property({
-    props,
-    key: "horizontalShift",
-    apply(value) {
-      control.horizontalShift = value;
-    }
-  });
-  link.property({
-    props,
-    key: "horizontalSourceEndOffset",
-    apply(value) {
-      control.horizontalSourceEndOffset = value;
-    }
+    control,
+    keys: ["child", "horizontalShift", "horizontalSourceEndOffset", "horizontalSourceStartOffset", "isHorizontalShiftClamped", "isVerticalShiftClamped", "maxHorizontalShiftRatio", "maxVerticalShiftRatio", "source", "verticalShift", "verticalSourceEndOffset", "verticalSourceStartOffset"]
   });
   link.property({
     props,
@@ -67,72 +51,9 @@ export function linkParallaxView(
   });
   link.property({
     props,
-    key: "horizontalSourceStartOffset",
-    apply(value) {
-      control.horizontalSourceStartOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isHorizontalShiftClamped",
-    apply(value) {
-      control.isHorizontalShiftClamped = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isVerticalShiftClamped",
-    apply(value) {
-      control.isVerticalShiftClamped = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxHorizontalShiftRatio",
-    apply(value) {
-      control.maxHorizontalShiftRatio = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxVerticalShiftRatio",
-    apply(value) {
-      control.maxVerticalShiftRatio = value;
-    }
-  });
-  link.property({
-    props,
-    key: "source",
-    apply(value) {
-      control.source = value;
-    }
-  });
-  link.property({
-    props,
-    key: "verticalShift",
-    apply(value) {
-      control.verticalShift = value;
-    }
-  });
-  link.property({
-    props,
-    key: "verticalSourceEndOffset",
-    apply(value) {
-      control.verticalSourceEndOffset = value;
-    }
-  });
-  link.property({
-    props,
     key: "verticalSourceOffsetKind",
     apply(value) {
       control.verticalSourceOffsetKind = enumValue({ table: ParallaxSourceOffsetKind, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "verticalSourceStartOffset",
-    apply(value) {
-      control.verticalSourceStartOffset = value;
     }
   });
 }

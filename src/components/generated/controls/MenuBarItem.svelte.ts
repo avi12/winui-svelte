@@ -23,12 +23,10 @@ export function linkMenuBarItem(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "title",
-    apply(value) {
-      control.title = value;
-    }
+    control,
+    keys: ["title"]
   });
 }
 

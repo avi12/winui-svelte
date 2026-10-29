@@ -23,26 +23,10 @@ export function linkPopInThemeAnimation(
   link: Linker
 ) {
   linkTimeline(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "fromHorizontalOffset",
-    apply(value) {
-      control.fromHorizontalOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "fromVerticalOffset",
-    apply(value) {
-      control.fromVerticalOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "targetName",
-    apply(value) {
-      control.targetName = value;
-    }
+    control,
+    keys: ["fromHorizontalOffset", "fromVerticalOffset", "targetName"]
   });
 }
 

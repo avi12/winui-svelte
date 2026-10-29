@@ -67,12 +67,10 @@ export function linkTabView(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "addTabButtonCommand",
-    apply(value) {
-      control.addTabButtonCommand = value;
-    }
+    control,
+    keys: ["addTabButtonCommand", "allowDropTabs", "canDragTabs", "canReorderTabs", "canTearOutTabs", "isAddTabButtonVisible", "tabItemTemplateSelector"]
   });
   link.property({
     props,
@@ -83,44 +81,9 @@ export function linkTabView(
   });
   link.property({
     props,
-    key: "allowDropTabs",
-    apply(value) {
-      control.allowDropTabs = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canDragTabs",
-    apply(value) {
-      control.canDragTabs = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canReorderTabs",
-    apply(value) {
-      control.canReorderTabs = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canTearOutTabs",
-    apply(value) {
-      control.canTearOutTabs = value;
-    }
-  });
-  link.property({
-    props,
     key: "closeButtonOverlayMode",
     apply(value) {
       control.closeButtonOverlayMode = enumValue({ table: TabViewCloseButtonOverlayMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "isAddTabButtonVisible",
-    apply(value) {
-      control.isAddTabButtonVisible = value;
     }
   });
   link.property({
@@ -135,13 +98,6 @@ export function linkTabView(
     key: "tabItemTemplate",
     apply(value) {
       control.tabItemTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "tabItemTemplateSelector",
-    apply(value) {
-      control.tabItemTemplateSelector = value;
     }
   });
   link.property({

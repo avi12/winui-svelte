@@ -22,19 +22,10 @@ export function linkRectangle(
   link: Linker
 ) {
   linkShape(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "radiusX",
-    apply(value) {
-      control.radiusX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "radiusY",
-    apply(value) {
-      control.radiusY = value;
-    }
+    control,
+    keys: ["radiusX", "radiusY"]
   });
 }
 

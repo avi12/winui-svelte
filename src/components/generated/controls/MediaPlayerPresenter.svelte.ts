@@ -25,19 +25,10 @@ export function linkMediaPlayerPresenter(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isFullWindow",
-    apply(value) {
-      control.isFullWindow = value;
-    }
-  });
-  link.property({
-    props,
-    key: "mediaPlayer",
-    apply(value) {
-      control.mediaPlayer = value;
-    }
+    control,
+    keys: ["isFullWindow", "mediaPlayer"]
   });
   link.property({
     props,

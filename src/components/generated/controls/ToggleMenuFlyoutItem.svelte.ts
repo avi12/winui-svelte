@@ -21,12 +21,10 @@ export function linkToggleMenuFlyoutItem(
   link: Linker
 ) {
   linkMenuFlyoutItem(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isChecked",
-    apply(value) {
-      control.isChecked = value;
-    }
+    control,
+    keys: ["isChecked"]
   });
 }
 

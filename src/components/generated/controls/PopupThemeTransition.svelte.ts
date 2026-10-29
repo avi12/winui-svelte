@@ -22,19 +22,10 @@ export function linkPopupThemeTransition(
   link: Linker
 ) {
   linkTransition(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "fromHorizontalOffset",
-    apply(value) {
-      control.fromHorizontalOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "fromVerticalOffset",
-    apply(value) {
-      control.fromVerticalOffset = value;
-    }
+    control,
+    keys: ["fromHorizontalOffset", "fromVerticalOffset"]
   });
 }
 

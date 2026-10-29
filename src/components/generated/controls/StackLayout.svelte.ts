@@ -24,18 +24,16 @@ export function linkStackLayout(
   link: Linker
 ) {
   linkVirtualizingLayout(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["spacing"]
+  });
   link.property({
     props,
     key: "orientation",
     apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "spacing",
-    apply(value) {
-      control.spacing = value;
     }
   });
 }

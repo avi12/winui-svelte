@@ -32,89 +32,10 @@ export function linkCompositeTransform3D(
   link: Linker
 ) {
   linkTransform3D(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "centerX",
-    apply(value) {
-      control.centerX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "centerY",
-    apply(value) {
-      control.centerY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "centerZ",
-    apply(value) {
-      control.centerZ = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rotationX",
-    apply(value) {
-      control.rotationX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rotationY",
-    apply(value) {
-      control.rotationY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rotationZ",
-    apply(value) {
-      control.rotationZ = value;
-    }
-  });
-  link.property({
-    props,
-    key: "scaleX",
-    apply(value) {
-      control.scaleX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "scaleY",
-    apply(value) {
-      control.scaleY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "scaleZ",
-    apply(value) {
-      control.scaleZ = value;
-    }
-  });
-  link.property({
-    props,
-    key: "translateX",
-    apply(value) {
-      control.translateX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "translateY",
-    apply(value) {
-      control.translateY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "translateZ",
-    apply(value) {
-      control.translateZ = value;
-    }
+    control,
+    keys: ["centerX", "centerY", "centerZ", "rotationX", "rotationY", "rotationZ", "scaleX", "scaleY", "scaleZ", "translateX", "translateY", "translateZ"]
   });
 }
 

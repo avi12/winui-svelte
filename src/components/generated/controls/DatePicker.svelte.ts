@@ -56,26 +56,10 @@ export function linkDatePicker(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "calendarIdentifier",
-    apply(value) {
-      control.calendarIdentifier = value;
-    }
-  });
-  link.property({
-    props,
-    key: "dayFormat",
-    apply(value) {
-      control.dayFormat = value;
-    }
-  });
-  link.property({
-    props,
-    key: "dayVisible",
-    apply(value) {
-      control.dayVisible = value;
-    }
+    control,
+    keys: ["calendarIdentifier", "dayFormat", "dayVisible", "monthFormat", "monthVisible", "yearFormat", "yearVisible"]
   });
   link.contentProperty({
     props,
@@ -114,37 +98,9 @@ export function linkDatePicker(
   });
   link.property({
     props,
-    key: "monthFormat",
-    apply(value) {
-      control.monthFormat = value;
-    }
-  });
-  link.property({
-    props,
-    key: "monthVisible",
-    apply(value) {
-      control.monthVisible = value;
-    }
-  });
-  link.property({
-    props,
     key: "orientation",
     apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "yearFormat",
-    apply(value) {
-      control.yearFormat = value;
-    }
-  });
-  link.property({
-    props,
-    key: "yearVisible",
-    apply(value) {
-      control.yearVisible = value;
     }
   });
   link.bindable({

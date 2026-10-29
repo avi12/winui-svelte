@@ -30,26 +30,10 @@ export function linkMediaPlayerElement(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "areTransportControlsEnabled",
-    apply(value) {
-      control.areTransportControlsEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "autoPlay",
-    apply(value) {
-      control.autoPlay = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isFullWindow",
-    apply(value) {
-      control.isFullWindow = value;
-    }
+    control,
+    keys: ["areTransportControlsEnabled", "autoPlay", "isFullWindow", "source", "transportControls"]
   });
   link.property({
     props,
@@ -60,23 +44,9 @@ export function linkMediaPlayerElement(
   });
   link.property({
     props,
-    key: "source",
-    apply(value) {
-      control.source = value;
-    }
-  });
-  link.property({
-    props,
     key: "stretch",
     apply(value) {
       control.stretch = enumValue({ table: Stretch, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "transportControls",
-    apply(value) {
-      control.transportControls = value;
     }
   });
 }

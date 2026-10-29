@@ -26,39 +26,16 @@ export function linkScrollContentPresenter(
   link: Linker
 ) {
   linkContentPresenter(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "canContentRenderOutsideBounds",
-    apply(value) {
-      control.canContentRenderOutsideBounds = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canHorizontallyScroll",
-    apply(value) {
-      control.canHorizontallyScroll = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canVerticallyScroll",
-    apply(value) {
-      control.canVerticallyScroll = value;
-    }
+    control,
+    keys: ["canContentRenderOutsideBounds", "canHorizontallyScroll", "canVerticallyScroll", "sizesContentToTemplatedParent"]
   });
   link.property({
     props,
     key: "scrollOwner",
     apply(value) {
       control.scrollOwner = objectOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "sizesContentToTemplatedParent",
-    apply(value) {
-      control.sizesContentToTemplatedParent = value;
     }
   });
 }

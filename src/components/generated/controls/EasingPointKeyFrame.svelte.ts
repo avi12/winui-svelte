@@ -22,12 +22,10 @@ export function linkEasingPointKeyFrame(
   link: Linker
 ) {
   linkPointKeyFrame(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "easingFunction",
-    apply(value) {
-      control.easingFunction = value;
-    }
+    control,
+    keys: ["easingFunction"]
   });
 }
 

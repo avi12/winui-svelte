@@ -33,25 +33,16 @@ export function linkGlyphs(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "colorFontPaletteIndex",
-    apply(value) {
-      control.colorFontPaletteIndex = value;
-    }
+    control,
+    keys: ["colorFontPaletteIndex", "fontRenderingEmSize", "indices", "isColorFontEnabled", "originX", "originY", "unicodeString"]
   });
   link.property({
     props,
     key: "fill",
     apply(value) {
       control.fill = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "fontRenderingEmSize",
-    apply(value) {
-      control.fontRenderingEmSize = value;
     }
   });
   link.property({
@@ -63,44 +54,9 @@ export function linkGlyphs(
   });
   link.property({
     props,
-    key: "indices",
-    apply(value) {
-      control.indices = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isColorFontEnabled",
-    apply(value) {
-      control.isColorFontEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "originX",
-    apply(value) {
-      control.originX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "originY",
-    apply(value) {
-      control.originY = value;
-    }
-  });
-  link.property({
-    props,
     key: "styleSimulations",
     apply(value) {
       control.styleSimulations = enumValue({ table: StyleSimulations, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "unicodeString",
-    apply(value) {
-      control.unicodeString = value;
     }
   });
 }

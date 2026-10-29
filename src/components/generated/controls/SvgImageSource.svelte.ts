@@ -26,19 +26,10 @@ export function linkSvgImageSource(
   link: Linker
 ) {
   linkImageSource(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "rasterizePixelHeight",
-    apply(value) {
-      control.rasterizePixelHeight = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rasterizePixelWidth",
-    apply(value) {
-      control.rasterizePixelWidth = value;
-    }
+    control,
+    keys: ["rasterizePixelHeight", "rasterizePixelWidth"]
   });
   link.property({
     props,

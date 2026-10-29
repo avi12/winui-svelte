@@ -33,81 +33,16 @@ export function linkSplitOpenThemeAnimation(
   link: Linker
 ) {
   linkTimeline(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "closedLength",
-    apply(value) {
-      control.closedLength = value;
-    }
-  });
-  link.property({
-    props,
-    key: "closedTarget",
-    apply(value) {
-      control.closedTarget = value;
-    }
-  });
-  link.property({
-    props,
-    key: "closedTargetName",
-    apply(value) {
-      control.closedTargetName = value;
-    }
-  });
-  link.property({
-    props,
-    key: "contentTarget",
-    apply(value) {
-      control.contentTarget = value;
-    }
-  });
-  link.property({
-    props,
-    key: "contentTargetName",
-    apply(value) {
-      control.contentTargetName = value;
-    }
+    control,
+    keys: ["closedLength", "closedTarget", "closedTargetName", "contentTarget", "contentTargetName", "contentTranslationOffset", "offsetFromCenter", "openedLength", "openedTarget", "openedTargetName"]
   });
   link.property({
     props,
     key: "contentTranslationDirection",
     apply(value) {
       control.contentTranslationDirection = enumValue({ table: AnimationDirection, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "contentTranslationOffset",
-    apply(value) {
-      control.contentTranslationOffset = value;
-    }
-  });
-  link.property({
-    props,
-    key: "offsetFromCenter",
-    apply(value) {
-      control.offsetFromCenter = value;
-    }
-  });
-  link.property({
-    props,
-    key: "openedLength",
-    apply(value) {
-      control.openedLength = value;
-    }
-  });
-  link.property({
-    props,
-    key: "openedTarget",
-    apply(value) {
-      control.openedTarget = value;
-    }
-  });
-  link.property({
-    props,
-    key: "openedTargetName",
-    apply(value) {
-      control.openedTargetName = value;
     }
   });
 }

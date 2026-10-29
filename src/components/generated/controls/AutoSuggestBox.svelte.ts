@@ -38,12 +38,10 @@ export function linkAutoSuggestBox(
   link: Linker
 ) {
   linkItemsControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "autoMaximizeSuggestionArea",
-    apply(value) {
-      control.autoMaximizeSuggestionArea = value;
-    }
+    control,
+    keys: ["autoMaximizeSuggestionArea", "isSuggestionListOpen", "maxSuggestionListHeight", "placeholderText", "queryIcon", "textMemberPath", "updateTextOnSelect"]
   });
   link.property({
     props,
@@ -61,13 +59,6 @@ export function linkAutoSuggestBox(
   });
   link.property({
     props,
-    key: "isSuggestionListOpen",
-    apply(value) {
-      control.isSuggestionListOpen = value;
-    }
-  });
-  link.property({
-    props,
     key: "lightDismissOverlayMode",
     apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
@@ -75,44 +66,9 @@ export function linkAutoSuggestBox(
   });
   link.property({
     props,
-    key: "maxSuggestionListHeight",
-    apply(value) {
-      control.maxSuggestionListHeight = value;
-    }
-  });
-  link.property({
-    props,
-    key: "placeholderText",
-    apply(value) {
-      control.placeholderText = value;
-    }
-  });
-  link.property({
-    props,
-    key: "queryIcon",
-    apply(value) {
-      control.queryIcon = value;
-    }
-  });
-  link.property({
-    props,
     key: "textBoxStyle",
     apply(value) {
       control.textBoxStyle = styleOf({ input: value, owner: control, property: "textBoxStyle" });
-    }
-  });
-  link.property({
-    props,
-    key: "textMemberPath",
-    apply(value) {
-      control.textMemberPath = value;
-    }
-  });
-  link.property({
-    props,
-    key: "updateTextOnSelect",
-    apply(value) {
-      control.updateTextOnSelect = value;
     }
   });
   link.bindable({

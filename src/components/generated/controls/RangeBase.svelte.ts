@@ -23,33 +23,10 @@ export function linkRangeBase(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "largeChange",
-    apply(value) {
-      control.largeChange = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maximum",
-    apply(value) {
-      control.maximum = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minimum",
-    apply(value) {
-      control.minimum = value;
-    }
-  });
-  link.property({
-    props,
-    key: "smallChange",
-    apply(value) {
-      control.smallChange = value;
-    }
+    control,
+    keys: ["largeChange", "maximum", "minimum", "smallChange"]
   });
   link.bindable({
     bound,

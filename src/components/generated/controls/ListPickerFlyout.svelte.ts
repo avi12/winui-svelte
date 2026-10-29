@@ -37,12 +37,10 @@ export function linkListPickerFlyout(
   link: Linker
 ) {
   linkPickerFlyoutBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "displayMemberPath",
-    apply(value) {
-      control.displayMemberPath = value;
-    }
+    control,
+    keys: ["displayMemberPath", "selectedIndex", "selectedValuePath"]
   });
   link.property({
     props,
@@ -60,13 +58,6 @@ export function linkListPickerFlyout(
   });
   link.property({
     props,
-    key: "selectedIndex",
-    apply(value) {
-      control.selectedIndex = value;
-    }
-  });
-  link.property({
-    props,
     key: "selectedItem",
     apply(value) {
       control.selectedItem = objectOf(value);
@@ -77,13 +68,6 @@ export function linkListPickerFlyout(
     key: "selectedValue",
     apply(value) {
       control.selectedValue = objectOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "selectedValuePath",
-    apply(value) {
-      control.selectedValuePath = value;
     }
   });
   link.property({

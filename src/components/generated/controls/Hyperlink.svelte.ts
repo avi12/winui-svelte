@@ -38,18 +38,16 @@ export function linkHyperlink(
   link: Linker
 ) {
   linkSpan(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["isTabStop", "tabIndex", "xYFocusDown", "xYFocusLeft", "xYFocusRight", "xYFocusUp"]
+  });
   link.property({
     props,
     key: "elementSoundMode",
     apply(value) {
       control.elementSoundMode = enumValue({ table: ElementSoundMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "isTabStop",
-    apply(value) {
-      control.isTabStop = value;
     }
   });
   link.property({
@@ -61,23 +59,9 @@ export function linkHyperlink(
   });
   link.property({
     props,
-    key: "tabIndex",
-    apply(value) {
-      control.tabIndex = value;
-    }
-  });
-  link.property({
-    props,
     key: "underlineStyle",
     apply(value) {
       control.underlineStyle = enumValue({ table: UnderlineStyle, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "xYFocusDown",
-    apply(value) {
-      control.xYFocusDown = value;
     }
   });
   link.property({
@@ -89,13 +73,6 @@ export function linkHyperlink(
   });
   link.property({
     props,
-    key: "xYFocusLeft",
-    apply(value) {
-      control.xYFocusLeft = value;
-    }
-  });
-  link.property({
-    props,
     key: "xYFocusLeftNavigationStrategy",
     apply(value) {
       control.xYFocusLeftNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
@@ -103,23 +80,9 @@ export function linkHyperlink(
   });
   link.property({
     props,
-    key: "xYFocusRight",
-    apply(value) {
-      control.xYFocusRight = value;
-    }
-  });
-  link.property({
-    props,
     key: "xYFocusRightNavigationStrategy",
     apply(value) {
       control.xYFocusRightNavigationStrategy = enumValue({ table: XYFocusNavigationStrategy, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "xYFocusUp",
-    apply(value) {
-      control.xYFocusUp = value;
     }
   });
   link.property({

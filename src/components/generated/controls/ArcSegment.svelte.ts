@@ -27,25 +27,16 @@ export function linkArcSegment(
   link: Linker
 ) {
   linkPathSegment(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isLargeArc",
-    apply(value) {
-      control.isLargeArc = value;
-    }
+    control,
+    keys: ["isLargeArc", "rotationAngle"]
   });
   link.property({
     props,
     key: "point",
     apply(value) {
       control.point = pointOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "rotationAngle",
-    apply(value) {
-      control.rotationAngle = value;
     }
   });
   link.property({

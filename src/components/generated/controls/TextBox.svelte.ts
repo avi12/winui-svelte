@@ -81,12 +81,10 @@ export function linkTextBox(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "acceptsReturn",
-    apply(value) {
-      control.acceptsReturn = value;
-    }
+    control,
+    keys: ["acceptsReturn", "isColorFontEnabled", "isReadOnly", "isSpellCheckEnabled", "isTextPredictionEnabled", "maxLength", "placeholderText", "preventKeyboardDisplayOnProgrammaticFocus", "selectedText", "selectionFlyout", "selectionHighlightColor", "selectionHighlightColorWhenNotFocused"]
   });
   link.property({
     props,
@@ -139,86 +137,9 @@ export function linkTextBox(
   });
   link.property({
     props,
-    key: "isColorFontEnabled",
-    apply(value) {
-      control.isColorFontEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isReadOnly",
-    apply(value) {
-      control.isReadOnly = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isSpellCheckEnabled",
-    apply(value) {
-      control.isSpellCheckEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTextPredictionEnabled",
-    apply(value) {
-      control.isTextPredictionEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxLength",
-    apply(value) {
-      control.maxLength = value;
-    }
-  });
-  link.property({
-    props,
     key: "placeholderForeground",
     apply(value) {
       control.placeholderForeground = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "placeholderText",
-    apply(value) {
-      control.placeholderText = value;
-    }
-  });
-  link.property({
-    props,
-    key: "preventKeyboardDisplayOnProgrammaticFocus",
-    apply(value) {
-      control.preventKeyboardDisplayOnProgrammaticFocus = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectedText",
-    apply(value) {
-      control.selectedText = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectionFlyout",
-    apply(value) {
-      control.selectionFlyout = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectionHighlightColor",
-    apply(value) {
-      control.selectionHighlightColor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectionHighlightColorWhenNotFocused",
-    apply(value) {
-      control.selectionHighlightColorWhenNotFocused = value;
     }
   });
   link.property({

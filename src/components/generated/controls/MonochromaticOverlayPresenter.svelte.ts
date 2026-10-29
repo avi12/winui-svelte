@@ -23,18 +23,16 @@ export function linkMonochromaticOverlayPresenter(
   link: Linker
 ) {
   linkGrid(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["sourceElement"]
+  });
   link.property({
     props,
     key: "replacementColor",
     apply(value) {
       control.replacementColor = colorOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "sourceElement",
-    apply(value) {
-      control.sourceElement = value;
     }
   });
 }

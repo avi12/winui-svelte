@@ -40,6 +40,11 @@ export function linkPivot(
   link: Linker
 ) {
   linkItemsControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["isHeaderItemsCarouselEnabled", "isLocked"]
+  });
   link.property({
     props,
     key: "headerFocusVisualPlacement",
@@ -52,20 +57,6 @@ export function linkPivot(
     key: "headerTemplate",
     apply(value) {
       control.headerTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "isHeaderItemsCarouselEnabled",
-    apply(value) {
-      control.isHeaderItemsCarouselEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isLocked",
-    apply(value) {
-      control.isLocked = value;
     }
   });
   link.property({

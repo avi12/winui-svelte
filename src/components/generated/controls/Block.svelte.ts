@@ -25,18 +25,16 @@ export function linkBlock(
   link: Linker
 ) {
   linkTextElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["lineHeight"]
+  });
   link.property({
     props,
     key: "horizontalTextAlignment",
     apply(value) {
       control.horizontalTextAlignment = enumValue({ table: TextAlignment, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "lineHeight",
-    apply(value) {
-      control.lineHeight = value;
     }
   });
   link.property({

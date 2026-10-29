@@ -18,11 +18,9 @@ export function linkSelectorItem(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isSelected",
-    apply(value) {
-      control.isSelected = value;
-    }
+    control,
+    keys: ["isSelected"]
   });
 }

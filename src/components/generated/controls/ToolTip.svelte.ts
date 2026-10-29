@@ -30,12 +30,10 @@ export function linkToolTip(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "horizontalOffset",
-    apply(value) {
-      control.horizontalOffset = value;
-    }
+    control,
+    keys: ["horizontalOffset", "placementTarget", "verticalOffset"]
   });
   link.property({
     props,
@@ -49,20 +47,6 @@ export function linkToolTip(
     key: "placementRect",
     apply(value) {
       control.placementRect = nullableRectOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "placementTarget",
-    apply(value) {
-      control.placementTarget = value;
-    }
-  });
-  link.property({
-    props,
-    key: "verticalOffset",
-    apply(value) {
-      control.verticalOffset = value;
     }
   });
   link.bindable({

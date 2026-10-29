@@ -24,19 +24,10 @@ export function linkMenuFlyoutSubItem(
   link: Linker
 ) {
   linkMenuFlyoutItemBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "icon",
-    apply(value) {
-      control.icon = value;
-    }
-  });
-  link.property({
-    props,
-    key: "text",
-    apply(value) {
-      control.text = value;
-    }
+    control,
+    keys: ["icon", "text"]
   });
 }
 

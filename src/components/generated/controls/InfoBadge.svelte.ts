@@ -23,19 +23,10 @@ export function linkInfoBadge(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "iconSource",
-    apply(value) {
-      control.iconSource = value;
-    }
-  });
-  link.property({
-    props,
-    key: "value",
-    apply(value) {
-      control.value = value;
-    }
+    control,
+    keys: ["iconSource", "value"]
   });
 }
 

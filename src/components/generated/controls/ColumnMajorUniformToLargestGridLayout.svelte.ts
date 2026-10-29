@@ -23,26 +23,10 @@ export function linkColumnMajorUniformToLargestGridLayout(
   link: Linker
 ) {
   linkNonVirtualizingLayout(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "columnSpacing",
-    apply(value) {
-      control.columnSpacing = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxColumns",
-    apply(value) {
-      control.maxColumns = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rowSpacing",
-    apply(value) {
-      control.rowSpacing = value;
-    }
+    control,
+    keys: ["columnSpacing", "maxColumns", "rowSpacing"]
   });
 }
 

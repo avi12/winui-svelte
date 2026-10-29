@@ -19,18 +19,16 @@ export function linkDoubleKeyFrame(
   _bound: DoubleKeyFrameBound,
   link: Linker
 ) {
+  link.plain({
+    props,
+    control,
+    keys: ["value"]
+  });
   link.property({
     props,
     key: "keyTime",
     apply(value) {
       control.keyTime = keyTimeOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "value",
-    apply(value) {
-      control.value = value;
     }
   });
   link.property({

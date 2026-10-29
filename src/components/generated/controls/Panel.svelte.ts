@@ -24,18 +24,16 @@ export function linkPanel(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["backgroundTransition"]
+  });
   link.property({
     props,
     key: "background",
     apply(value) {
       control.background = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "backgroundTransition",
-    apply(value) {
-      control.backgroundTransition = value;
     }
   });
 }

@@ -32,32 +32,16 @@ export function linkDatePickerFlyout(
   link: Linker
 ) {
   linkPickerFlyoutBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "calendarIdentifier",
-    apply(value) {
-      control.calendarIdentifier = value;
-    }
+    control,
+    keys: ["calendarIdentifier", "dayFormat", "dayVisible", "monthFormat", "monthVisible", "yearFormat", "yearVisible"]
   });
   link.property({
     props,
     key: "date",
     apply(value) {
       control.date = dateTimeOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "dayFormat",
-    apply(value) {
-      control.dayFormat = value;
-    }
-  });
-  link.property({
-    props,
-    key: "dayVisible",
-    apply(value) {
-      control.dayVisible = value;
     }
   });
   link.property({
@@ -72,34 +56,6 @@ export function linkDatePickerFlyout(
     key: "minYear",
     apply(value) {
       control.minYear = dateTimeOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "monthFormat",
-    apply(value) {
-      control.monthFormat = value;
-    }
-  });
-  link.property({
-    props,
-    key: "monthVisible",
-    apply(value) {
-      control.monthVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "yearFormat",
-    apply(value) {
-      control.yearFormat = value;
-    }
-  });
-  link.property({
-    props,
-    key: "yearVisible",
-    apply(value) {
-      control.yearVisible = value;
     }
   });
 

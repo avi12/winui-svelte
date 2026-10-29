@@ -57,12 +57,10 @@ export function linkTeachingTip(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "actionButtonCommand",
-    apply(value) {
-      control.actionButtonCommand = value;
-    }
+    control,
+    keys: ["actionButtonCommand", "closeButtonCommand", "heroContent", "iconSource", "isLightDismissEnabled", "shouldConstrainToRootBounds", "subtitle", "target", "title"]
   });
   link.property({
     props,
@@ -83,13 +81,6 @@ export function linkTeachingTip(
     key: "actionButtonStyle",
     apply(value) {
       control.actionButtonStyle = styleOf({ input: value, owner: control, property: "actionButtonStyle" });
-    }
-  });
-  link.property({
-    props,
-    key: "closeButtonCommand",
-    apply(value) {
-      control.closeButtonCommand = value;
     }
   });
   link.property({
@@ -115,30 +106,9 @@ export function linkTeachingTip(
   });
   link.property({
     props,
-    key: "heroContent",
-    apply(value) {
-      control.heroContent = value;
-    }
-  });
-  link.property({
-    props,
     key: "heroContentPlacement",
     apply(value) {
       control.heroContentPlacement = enumValue({ table: TeachingTipHeroContentPlacementMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "iconSource",
-    apply(value) {
-      control.iconSource = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isLightDismissEnabled",
-    apply(value) {
-      control.isLightDismissEnabled = value;
     }
   });
   link.property({
@@ -157,37 +127,9 @@ export function linkTeachingTip(
   });
   link.property({
     props,
-    key: "shouldConstrainToRootBounds",
-    apply(value) {
-      control.shouldConstrainToRootBounds = value;
-    }
-  });
-  link.property({
-    props,
-    key: "subtitle",
-    apply(value) {
-      control.subtitle = value;
-    }
-  });
-  link.property({
-    props,
     key: "tailVisibility",
     apply(value) {
       control.tailVisibility = enumValue({ table: TeachingTipTailVisibility, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "target",
-    apply(value) {
-      control.target = value;
-    }
-  });
-  link.property({
-    props,
-    key: "title",
-    apply(value) {
-      control.title = value;
     }
   });
   link.bindable({

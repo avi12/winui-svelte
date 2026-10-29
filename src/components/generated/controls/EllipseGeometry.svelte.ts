@@ -24,25 +24,16 @@ export function linkEllipseGeometry(
   link: Linker
 ) {
   linkGeometry(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["radiusX", "radiusY"]
+  });
   link.property({
     props,
     key: "center",
     apply(value) {
       control.center = pointOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "radiusX",
-    apply(value) {
-      control.radiusX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "radiusY",
-    apply(value) {
-      control.radiusY = value;
     }
   });
 }

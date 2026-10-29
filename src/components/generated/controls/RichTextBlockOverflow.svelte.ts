@@ -27,19 +27,10 @@ export function linkRichTextBlockOverflow(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "maxLines",
-    apply(value) {
-      control.maxLines = value;
-    }
-  });
-  link.property({
-    props,
-    key: "overflowContentTarget",
-    apply(value) {
-      control.overflowContentTarget = value;
-    }
+    control,
+    keys: ["maxLines", "overflowContentTarget"]
   });
   link.property({
     props,

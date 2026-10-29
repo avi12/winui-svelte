@@ -52,6 +52,11 @@ export function linkComboBox(
   link: Linker
 ) {
   linkSelector(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["isEditable", "isTextSearchEnabled", "maxDropDownHeight", "placeholderText", "text"]
+  });
   link.property({
     props,
     key: "description",
@@ -75,30 +80,9 @@ export function linkComboBox(
   });
   link.property({
     props,
-    key: "isEditable",
-    apply(value) {
-      control.isEditable = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTextSearchEnabled",
-    apply(value) {
-      control.isTextSearchEnabled = value;
-    }
-  });
-  link.property({
-    props,
     key: "lightDismissOverlayMode",
     apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "maxDropDownHeight",
-    apply(value) {
-      control.maxDropDownHeight = value;
     }
   });
   link.property({
@@ -110,23 +94,9 @@ export function linkComboBox(
   });
   link.property({
     props,
-    key: "placeholderText",
-    apply(value) {
-      control.placeholderText = value;
-    }
-  });
-  link.property({
-    props,
     key: "selectionChangedTrigger",
     apply(value) {
       control.selectionChangedTrigger = enumValue({ table: ComboBoxSelectionChangedTrigger, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "text",
-    apply(value) {
-      control.text = value;
     }
   });
   link.property({

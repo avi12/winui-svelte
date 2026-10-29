@@ -21,26 +21,10 @@ export function linkBrush(
   _bound: BrushBound,
   link: Linker
 ) {
-  link.property({
+  link.plain({
     props,
-    key: "opacity",
-    apply(value) {
-      control.opacity = value;
-    }
-  });
-  link.property({
-    props,
-    key: "relativeTransform",
-    apply(value) {
-      control.relativeTransform = value;
-    }
-  });
-  link.property({
-    props,
-    key: "transform",
-    apply(value) {
-      control.transform = value;
-    }
+    control,
+    keys: ["opacity", "relativeTransform", "transform"]
   });
   link.property({
     props,

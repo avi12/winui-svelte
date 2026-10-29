@@ -29,40 +29,10 @@ export function linkXamlUICommand(
   _bound: XamlUICommandBound,
   link: Linker
 ) {
-  link.property({
+  link.plain({
     props,
-    key: "accessKey",
-    apply(value) {
-      control.accessKey = value;
-    }
-  });
-  link.property({
-    props,
-    key: "command",
-    apply(value) {
-      control.command = value;
-    }
-  });
-  link.property({
-    props,
-    key: "description",
-    apply(value) {
-      control.description = value;
-    }
-  });
-  link.property({
-    props,
-    key: "iconSource",
-    apply(value) {
-      control.iconSource = value;
-    }
-  });
-  link.property({
-    props,
-    key: "label",
-    apply(value) {
-      control.label = value;
-    }
+    control,
+    keys: ["accessKey", "command", "description", "iconSource", "label"]
   });
 
   if ("onCanExecuteChanged" in props) {

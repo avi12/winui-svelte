@@ -33,12 +33,10 @@ export function linkHub(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "defaultSectionIndex",
-    apply(value) {
-      control.defaultSectionIndex = value;
-    }
+    control,
+    keys: ["defaultSectionIndex", "isActiveView", "isZoomedInView", "semanticZoomOwner"]
   });
   link.property({
     props,
@@ -56,30 +54,9 @@ export function linkHub(
   });
   link.property({
     props,
-    key: "isActiveView",
-    apply(value) {
-      control.isActiveView = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isZoomedInView",
-    apply(value) {
-      control.isZoomedInView = value;
-    }
-  });
-  link.property({
-    props,
     key: "orientation",
     apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "semanticZoomOwner",
-    apply(value) {
-      control.semanticZoomOwner = value;
     }
   });
 

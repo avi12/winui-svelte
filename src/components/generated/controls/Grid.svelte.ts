@@ -39,6 +39,11 @@ export function linkGrid(
 ) {
   linkPanel(control, props, bound, link);
   linkGridExtras({ control, props, link });
+  link.plain({
+    props,
+    control,
+    keys: ["columnSpacing", "rowSpacing"]
+  });
   link.property({
     props,
     key: "backgroundSizing",
@@ -62,13 +67,6 @@ export function linkGrid(
   });
   link.property({
     props,
-    key: "columnSpacing",
-    apply(value) {
-      control.columnSpacing = value;
-    }
-  });
-  link.property({
-    props,
     key: "cornerRadius",
     apply(value) {
       control.cornerRadius = cornerRadiusOf(value);
@@ -79,13 +77,6 @@ export function linkGrid(
     key: "padding",
     apply(value) {
       control.padding = thicknessOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "rowSpacing",
-    apply(value) {
-      control.rowSpacing = value;
     }
   });
 }

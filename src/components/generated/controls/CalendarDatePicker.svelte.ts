@@ -61,32 +61,16 @@ export function linkCalendarDatePicker(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "calendarIdentifier",
-    apply(value) {
-      control.calendarIdentifier = value;
-    }
+    control,
+    keys: ["calendarIdentifier", "dateFormat", "dayOfWeekFormat", "isCalendarOpen", "isGroupLabelVisible", "isOutOfScopeEnabled", "isTodayHighlighted", "placeholderText"]
   });
   link.property({
     props,
     key: "calendarViewStyle",
     apply(value) {
       control.calendarViewStyle = styleOf({ input: value, owner: control, property: "calendarViewStyle" });
-    }
-  });
-  link.property({
-    props,
-    key: "dateFormat",
-    apply(value) {
-      control.dateFormat = value;
-    }
-  });
-  link.property({
-    props,
-    key: "dayOfWeekFormat",
-    apply(value) {
-      control.dayOfWeekFormat = value;
     }
   });
   link.property({
@@ -126,34 +110,6 @@ export function linkCalendarDatePicker(
   });
   link.property({
     props,
-    key: "isCalendarOpen",
-    apply(value) {
-      control.isCalendarOpen = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isGroupLabelVisible",
-    apply(value) {
-      control.isGroupLabelVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isOutOfScopeEnabled",
-    apply(value) {
-      control.isOutOfScopeEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTodayHighlighted",
-    apply(value) {
-      control.isTodayHighlighted = value;
-    }
-  });
-  link.property({
-    props,
     key: "lightDismissOverlayMode",
     apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
@@ -171,13 +127,6 @@ export function linkCalendarDatePicker(
     key: "minDate",
     apply(value) {
       control.minDate = dateTimeOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "placeholderText",
-    apply(value) {
-      control.placeholderText = value;
     }
   });
   link.bindable({

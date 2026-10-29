@@ -29,32 +29,16 @@ export function linkMenuFlyoutItem(
   link: Linker
 ) {
   linkMenuFlyoutItemBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "command",
-    apply(value) {
-      control.command = value;
-    }
+    control,
+    keys: ["command", "icon", "keyboardAcceleratorTextOverride"]
   });
   link.property({
     props,
     key: "commandParameter",
     apply(value) {
       control.commandParameter = objectOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "icon",
-    apply(value) {
-      control.icon = value;
-    }
-  });
-  link.property({
-    props,
-    key: "keyboardAcceleratorTextOverride",
-    apply(value) {
-      control.keyboardAcceleratorTextOverride = value;
     }
   });
   link.contentProperty({

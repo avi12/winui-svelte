@@ -24,33 +24,10 @@ export function linkSkewTransform(
   link: Linker
 ) {
   linkTransform(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "angleX",
-    apply(value) {
-      control.angleX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "angleY",
-    apply(value) {
-      control.angleY = value;
-    }
-  });
-  link.property({
-    props,
-    key: "centerX",
-    apply(value) {
-      control.centerX = value;
-    }
-  });
-  link.property({
-    props,
-    key: "centerY",
-    apply(value) {
-      control.centerY = value;
-    }
+    control,
+    keys: ["angleX", "angleY", "centerX", "centerY"]
   });
 }
 

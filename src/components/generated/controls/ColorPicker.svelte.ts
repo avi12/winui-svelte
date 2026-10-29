@@ -43,6 +43,11 @@ export function linkColorPicker(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["isAlphaEnabled", "isAlphaSliderVisible", "isAlphaTextInputVisible", "isColorChannelTextInputVisible", "isColorPreviewVisible", "isColorSliderVisible", "isColorSpectrumVisible", "isHexInputVisible", "isMoreButtonVisible", "maxHue", "maxSaturation", "maxValue", "minHue", "minSaturation", "minValue"]
+  });
   link.property({
     props,
     key: "colorSpectrumComponents",
@@ -55,111 +60,6 @@ export function linkColorPicker(
     key: "colorSpectrumShape",
     apply(value) {
       control.colorSpectrumShape = enumValue({ table: ColorSpectrumShape, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "isAlphaEnabled",
-    apply(value) {
-      control.isAlphaEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isAlphaSliderVisible",
-    apply(value) {
-      control.isAlphaSliderVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isAlphaTextInputVisible",
-    apply(value) {
-      control.isAlphaTextInputVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isColorChannelTextInputVisible",
-    apply(value) {
-      control.isColorChannelTextInputVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isColorPreviewVisible",
-    apply(value) {
-      control.isColorPreviewVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isColorSliderVisible",
-    apply(value) {
-      control.isColorSliderVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isColorSpectrumVisible",
-    apply(value) {
-      control.isColorSpectrumVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isHexInputVisible",
-    apply(value) {
-      control.isHexInputVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isMoreButtonVisible",
-    apply(value) {
-      control.isMoreButtonVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxHue",
-    apply(value) {
-      control.maxHue = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxSaturation",
-    apply(value) {
-      control.maxSaturation = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxValue",
-    apply(value) {
-      control.maxValue = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minHue",
-    apply(value) {
-      control.minHue = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minSaturation",
-    apply(value) {
-      control.minSaturation = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minValue",
-    apply(value) {
-      control.minValue = value;
     }
   });
   link.property({

@@ -34,12 +34,10 @@ export function linkPipsPager(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "maxVisiblePips",
-    apply(value) {
-      control.maxVisiblePips = value;
-    }
+    control,
+    keys: ["maxVisiblePips", "numberOfPages", "selectedPageIndex"]
   });
   link.property({
     props,
@@ -64,13 +62,6 @@ export function linkPipsPager(
   });
   link.property({
     props,
-    key: "numberOfPages",
-    apply(value) {
-      control.numberOfPages = value;
-    }
-  });
-  link.property({
-    props,
     key: "orientation",
     apply(value) {
       control.orientation = enumValue({ table: Orientation, input: value });
@@ -88,13 +79,6 @@ export function linkPipsPager(
     key: "previousButtonVisibility",
     apply(value) {
       control.previousButtonVisibility = enumValue({ table: PipsPagerButtonVisibility, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "selectedPageIndex",
-    apply(value) {
-      control.selectedPageIndex = value;
     }
   });
   link.property({

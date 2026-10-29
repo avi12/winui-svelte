@@ -28,12 +28,10 @@ export function linkVirtualizingStackPanel(
   link: Linker
 ) {
   linkOrientedVirtualizingPanel(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "areScrollSnapPointsRegular",
-    apply(value) {
-      control.areScrollSnapPointsRegular = value;
-    }
+    control,
+    keys: ["areScrollSnapPointsRegular"]
   });
   link.property({
     props,

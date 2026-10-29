@@ -32,6 +32,11 @@ export function linkShape(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["strokeDashOffset", "strokeMiterLimit", "strokeThickness"]
+  });
   link.property({
     props,
     key: "fill",
@@ -69,13 +74,6 @@ export function linkShape(
   });
   link.property({
     props,
-    key: "strokeDashOffset",
-    apply(value) {
-      control.strokeDashOffset = value;
-    }
-  });
-  link.property({
-    props,
     key: "strokeEndLineCap",
     apply(value) {
       control.strokeEndLineCap = enumValue({ table: PenLineCap, input: value });
@@ -90,23 +88,9 @@ export function linkShape(
   });
   link.property({
     props,
-    key: "strokeMiterLimit",
-    apply(value) {
-      control.strokeMiterLimit = value;
-    }
-  });
-  link.property({
-    props,
     key: "strokeStartLineCap",
     apply(value) {
       control.strokeStartLineCap = enumValue({ table: PenLineCap, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "strokeThickness",
-    apply(value) {
-      control.strokeThickness = value;
     }
   });
 }

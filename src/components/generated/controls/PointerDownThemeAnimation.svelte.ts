@@ -21,12 +21,10 @@ export function linkPointerDownThemeAnimation(
   link: Linker
 ) {
   linkTimeline(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "targetName",
-    apply(value) {
-      control.targetName = value;
-    }
+    control,
+    keys: ["targetName"]
   });
 }
 

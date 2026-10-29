@@ -21,12 +21,10 @@ export function linkExponentialEase(
   link: Linker
 ) {
   linkEasingFunctionBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "exponent",
-    apply(value) {
-      control.exponent = value;
-    }
+    control,
+    keys: ["exponent"]
   });
 }
 

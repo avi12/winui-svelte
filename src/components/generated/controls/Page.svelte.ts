@@ -26,25 +26,16 @@ export function linkPage(
   link: Linker
 ) {
   linkUserControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "bottomAppBar",
-    apply(value) {
-      control.bottomAppBar = value;
-    }
+    control,
+    keys: ["bottomAppBar", "topAppBar"]
   });
   link.property({
     props,
     key: "navigationCacheMode",
     apply(value) {
       control.navigationCacheMode = enumValue({ table: NavigationCacheMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "topAppBar",
-    apply(value) {
-      control.topAppBar = value;
     }
   });
 }

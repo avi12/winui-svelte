@@ -39,12 +39,10 @@ export function linkStackPanel(
   link: Linker
 ) {
   linkPanel(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "areScrollSnapPointsRegular",
-    apply(value) {
-      control.areScrollSnapPointsRegular = value;
-    }
+    control,
+    keys: ["areScrollSnapPointsRegular", "spacing"]
   });
   link.property({
     props,
@@ -86,13 +84,6 @@ export function linkStackPanel(
     key: "padding",
     apply(value) {
       control.padding = thicknessOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "spacing",
-    apply(value) {
-      control.spacing = value;
     }
   });
 

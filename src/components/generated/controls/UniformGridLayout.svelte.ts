@@ -30,6 +30,11 @@ export function linkUniformGridLayout(
   link: Linker
 ) {
   linkVirtualizingLayout(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["maximumRowsOrColumns", "minColumnSpacing", "minItemHeight", "minItemWidth", "minRowSpacing"]
+  });
   link.property({
     props,
     key: "itemsJustification",
@@ -42,41 +47,6 @@ export function linkUniformGridLayout(
     key: "itemsStretch",
     apply(value) {
       control.itemsStretch = enumValue({ table: UniformGridLayoutItemsStretch, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "maximumRowsOrColumns",
-    apply(value) {
-      control.maximumRowsOrColumns = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minColumnSpacing",
-    apply(value) {
-      control.minColumnSpacing = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minItemHeight",
-    apply(value) {
-      control.minItemHeight = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minItemWidth",
-    apply(value) {
-      control.minItemWidth = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minRowSpacing",
-    apply(value) {
-      control.minRowSpacing = value;
     }
   });
   link.property({

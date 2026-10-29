@@ -30,6 +30,11 @@ export function linkCommandBar(
   link: Linker
 ) {
   linkAppBar(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["isDynamicOverflowEnabled"]
+  });
   link.property({
     props,
     key: "commandBarOverflowPresenterStyle",
@@ -42,13 +47,6 @@ export function linkCommandBar(
     key: "defaultLabelPosition",
     apply(value) {
       control.defaultLabelPosition = enumValue({ table: CommandBarDefaultLabelPosition, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "isDynamicOverflowEnabled",
-    apply(value) {
-      control.isDynamicOverflowEnabled = value;
     }
   });
   link.property({

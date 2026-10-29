@@ -25,19 +25,10 @@ export function linkTimePickerFlyout(
   link: Linker
 ) {
   linkPickerFlyoutBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "clockIdentifier",
-    apply(value) {
-      control.clockIdentifier = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minuteIncrement",
-    apply(value) {
-      control.minuteIncrement = value;
-    }
+    control,
+    keys: ["clockIdentifier", "minuteIncrement"]
   });
   link.property({
     props,

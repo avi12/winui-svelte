@@ -23,12 +23,10 @@ export function linkBitmapIconSource(
   link: Linker
 ) {
   linkIconSource(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "showAsMonochrome",
-    apply(value) {
-      control.showAsMonochrome = value;
-    }
+    control,
+    keys: ["showAsMonochrome"]
   });
   link.property({
     props,

@@ -31,12 +31,10 @@ export function linkBitmapImage(
   link: Linker
 ) {
   linkBitmapSource(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "autoPlay",
-    apply(value) {
-      control.autoPlay = value;
-    }
+    control,
+    keys: ["autoPlay", "decodePixelHeight", "decodePixelWidth"]
   });
   link.property({
     props,
@@ -47,23 +45,9 @@ export function linkBitmapImage(
   });
   link.property({
     props,
-    key: "decodePixelHeight",
-    apply(value) {
-      control.decodePixelHeight = value;
-    }
-  });
-  link.property({
-    props,
     key: "decodePixelType",
     apply(value) {
       control.decodePixelType = enumValue({ table: DecodePixelType, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "decodePixelWidth",
-    apply(value) {
-      control.decodePixelWidth = value;
     }
   });
   link.property({

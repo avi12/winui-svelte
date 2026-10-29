@@ -27,6 +27,11 @@ export function linkTabViewItem(
   link: Linker
 ) {
   linkListViewItem(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["iconSource", "isClosable"]
+  });
   link.property({
     props,
     key: "header",
@@ -39,20 +44,6 @@ export function linkTabViewItem(
     key: "headerTemplate",
     apply(value) {
       control.headerTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "iconSource",
-    apply(value) {
-      control.iconSource = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isClosable",
-    apply(value) {
-      control.isClosable = value;
     }
   });
 

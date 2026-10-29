@@ -27,6 +27,11 @@ export function linkContentControl(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["contentTemplateSelector"]
+  });
   link.contentProperty({
     props,
     key: "content",
@@ -39,13 +44,6 @@ export function linkContentControl(
     key: "contentTemplate",
     apply(value) {
       control.contentTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "contentTemplateSelector",
-    apply(value) {
-      control.contentTemplateSelector = value;
     }
   });
 }

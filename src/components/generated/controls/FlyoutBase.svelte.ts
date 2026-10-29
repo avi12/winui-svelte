@@ -34,26 +34,10 @@ export function linkFlyoutBase(
   _bound: FlyoutBaseBound,
   link: Linker
 ) {
-  link.property({
+  link.plain({
     props,
-    key: "allowFocusOnInteraction",
-    apply(value) {
-      control.allowFocusOnInteraction = value;
-    }
-  });
-  link.property({
-    props,
-    key: "allowFocusWhenDisabled",
-    apply(value) {
-      control.allowFocusWhenDisabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "areOpenCloseAnimationsEnabled",
-    apply(value) {
-      control.areOpenCloseAnimationsEnabled = value;
-    }
+    control,
+    keys: ["allowFocusOnInteraction", "allowFocusWhenDisabled", "areOpenCloseAnimationsEnabled", "overlayInputPassThroughElement", "shouldConstrainToRootBounds", "systemBackdrop", "xamlRoot"]
   });
   link.property({
     props,
@@ -71,13 +55,6 @@ export function linkFlyoutBase(
   });
   link.property({
     props,
-    key: "overlayInputPassThroughElement",
-    apply(value) {
-      control.overlayInputPassThroughElement = value;
-    }
-  });
-  link.property({
-    props,
     key: "placement",
     apply(value) {
       control.placement = enumValue({ table: FlyoutPlacementMode, input: value });
@@ -85,30 +62,9 @@ export function linkFlyoutBase(
   });
   link.property({
     props,
-    key: "shouldConstrainToRootBounds",
-    apply(value) {
-      control.shouldConstrainToRootBounds = value;
-    }
-  });
-  link.property({
-    props,
     key: "showMode",
     apply(value) {
       control.showMode = enumValue({ table: FlyoutShowMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "systemBackdrop",
-    apply(value) {
-      control.systemBackdrop = value;
-    }
-  });
-  link.property({
-    props,
-    key: "xamlRoot",
-    apply(value) {
-      control.xamlRoot = value;
     }
   });
 

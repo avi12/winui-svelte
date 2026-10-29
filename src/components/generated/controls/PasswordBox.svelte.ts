@@ -47,6 +47,11 @@ export function linkPasswordBox(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["isPasswordRevealButtonEnabled", "maxLength", "passwordChar", "placeholderText", "preventKeyboardDisplayOnProgrammaticFocus", "selectionFlyout", "selectionHighlightColor"]
+  });
   link.property({
     props,
     key: "description",
@@ -77,58 +82,9 @@ export function linkPasswordBox(
   });
   link.property({
     props,
-    key: "isPasswordRevealButtonEnabled",
-    apply(value) {
-      control.isPasswordRevealButtonEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxLength",
-    apply(value) {
-      control.maxLength = value;
-    }
-  });
-  link.property({
-    props,
-    key: "passwordChar",
-    apply(value) {
-      control.passwordChar = value;
-    }
-  });
-  link.property({
-    props,
     key: "passwordRevealMode",
     apply(value) {
       control.passwordRevealMode = enumValue({ table: PasswordRevealMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "placeholderText",
-    apply(value) {
-      control.placeholderText = value;
-    }
-  });
-  link.property({
-    props,
-    key: "preventKeyboardDisplayOnProgrammaticFocus",
-    apply(value) {
-      control.preventKeyboardDisplayOnProgrammaticFocus = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectionFlyout",
-    apply(value) {
-      control.selectionFlyout = value;
-    }
-  });
-  link.property({
-    props,
-    key: "selectionHighlightColor",
-    apply(value) {
-      control.selectionHighlightColor = value;
     }
   });
   link.property({

@@ -30,18 +30,16 @@ export function linkAppBar(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["isSticky"]
+  });
   link.property({
     props,
     key: "closedDisplayMode",
     apply(value) {
       control.closedDisplayMode = enumValue({ table: AppBarClosedDisplayMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "isSticky",
-    apply(value) {
-      control.isSticky = value;
     }
   });
   link.property({

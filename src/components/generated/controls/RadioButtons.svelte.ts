@@ -37,6 +37,11 @@ export function linkRadioButtons(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["maxColumns"]
+  });
   link.property({
     props,
     key: "header",
@@ -63,13 +68,6 @@ export function linkRadioButtons(
     key: "itemTemplate",
     apply(value) {
       control.itemTemplate = objectOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "maxColumns",
-    apply(value) {
-      control.maxColumns = value;
     }
   });
   link.bindable({

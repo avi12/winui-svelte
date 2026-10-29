@@ -25,40 +25,10 @@ export function linkProgressRing(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "isActive",
-    apply(value) {
-      control.isActive = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isIndeterminate",
-    apply(value) {
-      control.isIndeterminate = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maximum",
-    apply(value) {
-      control.maximum = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minimum",
-    apply(value) {
-      control.minimum = value;
-    }
-  });
-  link.property({
-    props,
-    key: "value",
-    apply(value) {
-      control.value = value;
-    }
+    control,
+    keys: ["isActive", "isIndeterminate", "maximum", "minimum", "value"]
   });
 }
 

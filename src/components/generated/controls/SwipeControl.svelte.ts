@@ -25,33 +25,10 @@ export function linkSwipeControl(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "bottomItems",
-    apply(value) {
-      control.bottomItems = value;
-    }
-  });
-  link.property({
-    props,
-    key: "leftItems",
-    apply(value) {
-      control.leftItems = value;
-    }
-  });
-  link.property({
-    props,
-    key: "rightItems",
-    apply(value) {
-      control.rightItems = value;
-    }
-  });
-  link.property({
-    props,
-    key: "topItems",
-    apply(value) {
-      control.topItems = value;
-    }
+    control,
+    keys: ["bottomItems", "leftItems", "rightItems", "topItems"]
   });
 }
 

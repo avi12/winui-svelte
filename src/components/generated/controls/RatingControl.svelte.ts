@@ -30,54 +30,10 @@ export function linkRatingControl(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "caption",
-    apply(value) {
-      control.caption = value;
-    }
-  });
-  link.property({
-    props,
-    key: "initialSetValue",
-    apply(value) {
-      control.initialSetValue = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isClearEnabled",
-    apply(value) {
-      control.isClearEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isReadOnly",
-    apply(value) {
-      control.isReadOnly = value;
-    }
-  });
-  link.property({
-    props,
-    key: "itemInfo",
-    apply(value) {
-      control.itemInfo = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxRating",
-    apply(value) {
-      control.maxRating = value;
-    }
-  });
-  link.property({
-    props,
-    key: "placeholderValue",
-    apply(value) {
-      control.placeholderValue = value;
-    }
+    control,
+    keys: ["caption", "initialSetValue", "isClearEnabled", "isReadOnly", "itemInfo", "maxRating", "placeholderValue"]
   });
   link.bindable({
     bound,

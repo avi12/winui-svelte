@@ -37,12 +37,10 @@ export function linkSplitView(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "compactPaneLength",
-    apply(value) {
-      control.compactPaneLength = value;
-    }
+    control,
+    keys: ["compactPaneLength", "openPaneLength", "pane"]
   });
   link.contentProperty({
     props,
@@ -63,20 +61,6 @@ export function linkSplitView(
     key: "lightDismissOverlayMode",
     apply(value) {
       control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "openPaneLength",
-    apply(value) {
-      control.openPaneLength = value;
-    }
-  });
-  link.property({
-    props,
-    key: "pane",
-    apply(value) {
-      control.pane = value;
     }
   });
   link.property({

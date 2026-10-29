@@ -30,19 +30,10 @@ export function linkWebView2(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "canGoBack",
-    apply(value) {
-      control.canGoBack = value;
-    }
-  });
-  link.property({
-    props,
-    key: "canGoForward",
-    apply(value) {
-      control.canGoForward = value;
-    }
+    control,
+    keys: ["canGoBack", "canGoForward"]
   });
   link.property({
     props,

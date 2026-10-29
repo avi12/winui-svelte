@@ -65,25 +65,16 @@ export function linkScrollView(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "content",
-    apply(value) {
-      control.content = value;
-    }
+    control,
+    keys: ["content", "horizontalAnchorRatio", "maxZoomFactor", "minZoomFactor", "verticalAnchorRatio"]
   });
   link.property({
     props,
     key: "contentOrientation",
     apply(value) {
       control.contentOrientation = enumValue({ table: ScrollingContentOrientation, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "horizontalAnchorRatio",
-    apply(value) {
-      control.horizontalAnchorRatio = value;
     }
   });
   link.property({
@@ -119,27 +110,6 @@ export function linkScrollView(
     key: "ignoredInputKinds",
     apply(value) {
       control.ignoredInputKinds = enumValue({ table: ScrollingInputKinds, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "maxZoomFactor",
-    apply(value) {
-      control.maxZoomFactor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minZoomFactor",
-    apply(value) {
-      control.minZoomFactor = value;
-    }
-  });
-  link.property({
-    props,
-    key: "verticalAnchorRatio",
-    apply(value) {
-      control.verticalAnchorRatio = value;
     }
   });
   link.property({

@@ -25,25 +25,16 @@ export function linkDragOverThemeAnimation(
   link: Linker
 ) {
   linkTimeline(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["targetName", "toOffset"]
+  });
   link.property({
     props,
     key: "direction",
     apply(value) {
       control.direction = enumValue({ table: AnimationDirection, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "targetName",
-    apply(value) {
-      control.targetName = value;
-    }
-  });
-  link.property({
-    props,
-    key: "toOffset",
-    apply(value) {
-      control.toOffset = value;
     }
   });
 }

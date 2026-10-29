@@ -124,6 +124,11 @@ export function linkCalendarView(
   link: Linker
 ) {
   linkControl(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["calendarIdentifier", "dayItemFontSize", "dayOfWeekFormat", "firstOfMonthLabelFontSize", "firstOfYearDecadeLabelFontSize", "isGroupLabelVisible", "isOutOfScopeEnabled", "isTodayHighlighted", "monthYearItemFontSize", "numberOfWeeksInView"]
+  });
   link.property({
     props,
     key: "blackoutBackground",
@@ -143,13 +148,6 @@ export function linkCalendarView(
     key: "blackoutStrikethroughBrush",
     apply(value) {
       control.blackoutStrikethroughBrush = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "calendarIdentifier",
-    apply(value) {
-      control.calendarIdentifier = value;
     }
   });
   link.property({
@@ -224,13 +222,6 @@ export function linkCalendarView(
   });
   link.property({
     props,
-    key: "dayItemFontSize",
-    apply(value) {
-      control.dayItemFontSize = value;
-    }
-  });
-  link.property({
-    props,
     key: "dayItemFontStyle",
     apply(value) {
       control.dayItemFontStyle = enumValue({ table: FontStyle, input: value });
@@ -248,13 +239,6 @@ export function linkCalendarView(
     key: "dayItemMargin",
     apply(value) {
       control.dayItemMargin = thicknessOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "dayOfWeekFormat",
-    apply(value) {
-      control.dayOfWeekFormat = value;
     }
   });
   link.property({
@@ -287,13 +271,6 @@ export function linkCalendarView(
   });
   link.property({
     props,
-    key: "firstOfMonthLabelFontSize",
-    apply(value) {
-      control.firstOfMonthLabelFontSize = value;
-    }
-  });
-  link.property({
-    props,
     key: "firstOfMonthLabelFontStyle",
     apply(value) {
       control.firstOfMonthLabelFontStyle = enumValue({ table: FontStyle, input: value });
@@ -318,13 +295,6 @@ export function linkCalendarView(
     key: "firstOfYearDecadeLabelFontFamily",
     apply(value) {
       control.firstOfYearDecadeLabelFontFamily = fontFamilyOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "firstOfYearDecadeLabelFontSize",
-    apply(value) {
-      control.firstOfYearDecadeLabelFontSize = value;
     }
   });
   link.property({
@@ -378,27 +348,6 @@ export function linkCalendarView(
   });
   link.property({
     props,
-    key: "isGroupLabelVisible",
-    apply(value) {
-      control.isGroupLabelVisible = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isOutOfScopeEnabled",
-    apply(value) {
-      control.isOutOfScopeEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTodayHighlighted",
-    apply(value) {
-      control.isTodayHighlighted = value;
-    }
-  });
-  link.property({
-    props,
     key: "maxDate",
     apply(value) {
       control.maxDate = dateTimeOf(value);
@@ -420,13 +369,6 @@ export function linkCalendarView(
   });
   link.property({
     props,
-    key: "monthYearItemFontSize",
-    apply(value) {
-      control.monthYearItemFontSize = value;
-    }
-  });
-  link.property({
-    props,
     key: "monthYearItemFontStyle",
     apply(value) {
       control.monthYearItemFontStyle = enumValue({ table: FontStyle, input: value });
@@ -444,13 +386,6 @@ export function linkCalendarView(
     key: "monthYearItemMargin",
     apply(value) {
       control.monthYearItemMargin = thicknessOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "numberOfWeeksInView",
-    apply(value) {
-      control.numberOfWeeksInView = value;
     }
   });
   link.property({

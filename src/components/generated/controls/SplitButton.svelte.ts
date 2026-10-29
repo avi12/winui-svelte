@@ -26,25 +26,16 @@ export function linkSplitButton(
   link: Linker
 ) {
   linkContentControl(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "command",
-    apply(value) {
-      control.command = value;
-    }
+    control,
+    keys: ["command", "flyout"]
   });
   link.property({
     props,
     key: "commandParameter",
     apply(value) {
       control.commandParameter = objectOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "flyout",
-    apply(value) {
-      control.flyout = value;
     }
   });
 

@@ -29,12 +29,10 @@ export function linkAcrylicBrush(
   link: Linker
 ) {
   linkXamlCompositionBrushBase(control, props, bound, link);
-  link.property({
+  link.plain({
     props,
-    key: "alwaysUseFallback",
-    apply(value) {
-      control.alwaysUseFallback = value;
-    }
+    control,
+    keys: ["alwaysUseFallback", "tintOpacity"]
   });
   link.property({
     props,
@@ -48,13 +46,6 @@ export function linkAcrylicBrush(
     key: "tintLuminosityOpacity",
     apply(value) {
       control.tintLuminosityOpacity = nullableDoubleOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "tintOpacity",
-    apply(value) {
-      control.tintOpacity = value;
     }
   });
   link.property({

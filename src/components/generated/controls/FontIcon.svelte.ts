@@ -29,18 +29,16 @@ export function linkFontIcon(
   link: Linker
 ) {
   linkIconElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["fontSize", "glyph", "isTextScaleFactorEnabled", "mirroredWhenRightToLeft"]
+  });
   link.property({
     props,
     key: "fontFamily",
     apply(value) {
       control.fontFamily = fontFamilyOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "fontSize",
-    apply(value) {
-      control.fontSize = value;
     }
   });
   link.property({
@@ -55,27 +53,6 @@ export function linkFontIcon(
     key: "fontWeight",
     apply(value) {
       control.fontWeight = fontWeightOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "glyph",
-    apply(value) {
-      control.glyph = value;
-    }
-  });
-  link.property({
-    props,
-    key: "isTextScaleFactorEnabled",
-    apply(value) {
-      control.isTextScaleFactorEnabled = value;
-    }
-  });
-  link.property({
-    props,
-    key: "mirroredWhenRightToLeft",
-    apply(value) {
-      control.mirroredWhenRightToLeft = value;
     }
   });
 }

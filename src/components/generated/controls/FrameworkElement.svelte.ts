@@ -74,6 +74,11 @@ export function linkFrameworkElement(
   link: Linker
 ) {
   linkUIElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["allowFocusOnInteraction", "allowFocusWhenDisabled", "height", "language", "maxHeight", "maxWidth", "minHeight", "minWidth", "name", "width"]
+  });
   link.property({
     props,
     key: "gridRow",
@@ -100,20 +105,6 @@ export function linkFrameworkElement(
     key: "gridColumnSpan",
     apply(value) {
       Grid.setColumnSpan(control, value);
-    }
-  });
-  link.property({
-    props,
-    key: "allowFocusOnInteraction",
-    apply(value) {
-      control.allowFocusOnInteraction = value;
-    }
-  });
-  link.property({
-    props,
-    key: "allowFocusWhenDisabled",
-    apply(value) {
-      control.allowFocusWhenDisabled = value;
     }
   });
   link.property({
@@ -167,13 +158,6 @@ export function linkFrameworkElement(
   });
   link.property({
     props,
-    key: "height",
-    apply(value) {
-      control.height = value;
-    }
-  });
-  link.property({
-    props,
     key: "horizontalAlignment",
     apply(value) {
       control.horizontalAlignment = enumValue({ table: HorizontalAlignment, input: value });
@@ -181,51 +165,9 @@ export function linkFrameworkElement(
   });
   link.property({
     props,
-    key: "language",
-    apply(value) {
-      control.language = value;
-    }
-  });
-  link.property({
-    props,
     key: "margin",
     apply(value) {
       control.margin = thicknessOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "maxHeight",
-    apply(value) {
-      control.maxHeight = value;
-    }
-  });
-  link.property({
-    props,
-    key: "maxWidth",
-    apply(value) {
-      control.maxWidth = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minHeight",
-    apply(value) {
-      control.minHeight = value;
-    }
-  });
-  link.property({
-    props,
-    key: "minWidth",
-    apply(value) {
-      control.minWidth = value;
-    }
-  });
-  link.property({
-    props,
-    key: "name",
-    apply(value) {
-      control.name = value;
     }
   });
   link.property({
@@ -254,13 +196,6 @@ export function linkFrameworkElement(
     key: "verticalAlignment",
     apply(value) {
       control.verticalAlignment = enumValue({ table: VerticalAlignment, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "width",
-    apply(value) {
-      control.width = value;
     }
   });
 

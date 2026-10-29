@@ -24,18 +24,16 @@ export function linkSystemBackdropElement(
   link: Linker
 ) {
   linkFrameworkElement(control, props, bound, link);
+  link.plain({
+    props,
+    control,
+    keys: ["systemBackdrop"]
+  });
   link.property({
     props,
     key: "cornerRadius",
     apply(value) {
       control.cornerRadius = cornerRadiusOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "systemBackdrop",
-    apply(value) {
-      control.systemBackdrop = value;
     }
   });
 }
