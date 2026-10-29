@@ -100,6 +100,9 @@
   {#if isSnippet(rest.foreground)}
     <property name="foreground">{@render rest.foreground()}</property>
   {/if}
+  {#if rest.groupStyle}
+    <property name="groupStyle">{@render rest.groupStyle()}</property>
+  {/if}
   {#if rest.itemContainerTransitions}
     <property name="itemContainerTransitions" collection="transition-collection">{@render rest.itemContainerTransitions()}</property>
   {/if}

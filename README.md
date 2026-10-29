@@ -286,6 +286,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | Component | Namespace | Props it adds | Bindable | Children |
 | --- | --- | --- | --- | --- |
 | `AcrylicBrush` | Media | `alwaysUseFallback`, `tintColor`, `tintLuminosityOpacity`, `tintOpacity`, `tintTransitionDuration` |  |  |
+| `AdaptiveTrigger` | Microsoft.UI.Xaml | `minWindowHeight`, `minWindowWidth` |  |  |
 | `AddDeleteThemeTransition` | Media.Animation |  |  |  |
 | `AnimatedIcon` | Controls | `fallbackIconSource`, `mirroredWhenRightToLeft`, `source` |  |  |
 | `AnimatedIconSource` | Controls | `fallbackIconSource`, `mirroredWhenRightToLeft`, `source` |  |  |
@@ -318,6 +319,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `CarouselPanel` | Controls.Primitives | `canHorizontallyScroll`, `canVerticallyScroll`, `scrollOwner` |  | yes |
 | `CheckBox` | Controls |  | `isChecked` | yes |
 | `CircleEase` | Media.Animation |  |  |  |
+| `CollectionViewSource` | Data | `isSourceGrouped`, `itemsPath`, `source` |  |  |
 | `ColorAnimation` | Media.Animation | `by`, `easingFunction`, `enableDependentAnimation`, `from`, `to` |  |  |
 | `ColorAnimationUsingKeyFrames` | Media.Animation | `enableDependentAnimation` |  | yes |
 | `ColorPicker` | Controls | `color`, `colorSpectrumComponents`, `colorSpectrumShape`, `isAlphaEnabled`, `isAlphaSliderVisible`, `isAlphaTextInputVisible`, `isColorChannelTextInputVisible`, `isColorPreviewVisible`, +12 more | `color` |  |
@@ -384,6 +386,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `GridViewItem` | Controls |  |  | yes |
 | `GridViewItemPresenter` | Controls.Primitives | `checkBrush`, `checkHintBrush`, `checkSelectingBrush`, `contentMargin`, `disabledOpacity`, `dragBackground`, `dragForeground`, `dragOpacity`, +14 more |  | yes |
 | `GroupItem` | Controls |  |  | yes |
+| `GroupStyle` | Controls | `containerStyleSelector`, `headerTemplate`, `headerTemplateSelector`, `hidesIfEmpty`, `panel` |  |  |
 | `Hub` | Controls | `defaultSectionIndex`, `header`, `headerTemplate`, `isActiveView`, `isZoomedInView`, `orientation`, `semanticZoomOwner` |  | yes |
 | `HubSection` | Controls | `contentTemplate`, `header`, `headerTemplate`, `isHeaderInteractive` |  | yes |
 | `Hyperlink` | Documents | `elementSoundMode`, `isTabStop`, `navigateUri`, `tabIndex`, `underlineStyle`, `xYFocusDown`, `xYFocusDownNavigationStrategy`, `xYFocusLeft`, +5 more |  | yes |
@@ -523,6 +526,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `SelectorBar` | Controls | `selectedItem` | `selectedItem` |  |
 | `SelectorBarItem` | Controls | `icon`, `text` |  |  |
 | `SemanticZoom` | Controls | `canChangeViews`, `isZoomedInViewActive`, `isZoomOutButtonEnabled`, `zoomedInView`, `zoomedOutView` |  | yes |
+| `Setter` | Microsoft.UI.Xaml | `value` |  |  |
 | `SineEase` | Media.Animation |  |  |  |
 | `SkewTransform` | Media | `angleX`, `angleY`, `centerX`, `centerY` |  |  |
 | `SlideNavigationTransitionInfo` | Media.Animation | `effect` |  |  |
@@ -541,6 +545,7 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `StackLayout` | Controls | `orientation`, `spacing` |  |  |
 | `StackPanel` | Controls | `areScrollSnapPointsRegular`, `backgroundSizing`, `borderBrush`, `borderThickness`, `cornerRadius`, `orientation`, `padding`, `spacing` |  | yes |
 | `StandardUICommand` | Input | `kind` |  |  |
+| `StateTrigger` | Microsoft.UI.Xaml | `isActive` |  |  |
 | `Storyboard` | Media.Animation |  |  | yes |
 | `SuppressNavigationTransitionInfo` | Media.Animation |  |  |  |
 | `SvgImageSource` | Media.Imaging | `rasterizePixelHeight`, `rasterizePixelWidth`, `uriSource` |  |  |
@@ -586,6 +591,9 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `Viewbox` | Controls | `child`, `stretch`, `stretchDirection` |  | yes |
 | `VirtualizingLayout` | Controls |  |  |  |
 | `VirtualizingStackPanel` | Controls | `areScrollSnapPointsRegular`, `orientation` |  | yes |
+| `VisualState` | Microsoft.UI.Xaml | `storyboard` |  | yes |
+| `VisualStateGroup` | Microsoft.UI.Xaml |  |  | yes |
+| `VisualTransition` | Microsoft.UI.Xaml | `from`, `generatedDuration`, `generatedEasingFunction`, `storyboard`, `to` |  | yes |
 | `WebView2` | Controls | `canGoBack`, `canGoForward`, `defaultBackgroundColor`, `source` |  |  |
 | `WrapGrid` | Controls | `horizontalChildrenAlignment`, `itemHeight`, `itemWidth`, `maximumRowsOrColumns`, `orientation`, `verticalChildrenAlignment` |  | yes |
 | `XamlUICommand` | Input | `accessKey`, `command`, `description`, `iconSource`, `label` |  |  |
