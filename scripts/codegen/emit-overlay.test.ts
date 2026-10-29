@@ -21,7 +21,8 @@ function classNamed({ name, contentProperty }: {
     events: [],
     attached: [],
     bindables: [],
-    slots: []
+    slots: [],
+    registers: []
   };
 }
 

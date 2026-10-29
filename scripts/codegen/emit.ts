@@ -533,13 +533,16 @@ function allBindables(level: ClassModel) {
 
 // The <property> element a snippet fills its property through, rendered
 // while the prop holds one.
-function propertyBlock({ key, snippet, isSnippetTested }: {
+// A property whose collection the renderer makes names its class's tag.
+function propertyBlock({ key, snippet, isSnippetTested, collection }: {
   key: string;
   snippet: string;
   isSnippetTested: boolean;
+  collection: TypeName | null;
 }) {
   const condition = isSnippetTested ? `isSnippet(${snippet})` : snippet;
-  return [`{#if ${condition}}`, `  <property name="${key}">{@render ${snippet}()}</property>`, "{/if}"];
+  const attribute = collection === null ? "" : ` collection="${kebabCase(collection.name)}"`;
+  return [`{#if ${condition}}`, `  <property name="${key}"${attribute}>{@render ${snippet}()}</property>`, "{/if}"];
 }
 
 // What the component renders inside its element: its children in the
@@ -571,7 +574,8 @@ function slotMarkup({ level, bindables, isHosted }: {
   const others = slots.filter(slot => slot.key !== contentKey).flatMap(slot => propertyBlock({
     key: slot.key,
     snippet: sourceOf(slot),
-    isSnippetTested: slot.kind === SlotKind.VALUE
+    isSnippetTested: slot.kind === SlotKind.VALUE,
+    collection: slot.collection
   }));
   return [...content, ...others];
 }
@@ -1139,12 +1143,22 @@ export function emitComponent(level: ClassModel) {
     host,
     overlay
   });
+  const registered = [
+    {
+      tag: level.tag,
+      className: name
+    },
+    ...level.registers.map(type => ({
+      tag: kebabCase(type.name),
+      className: type.name
+    }))
+  ].map(entry => `"${entry.tag}": ${entry.className}`).join(", ");
   const runtimeNames = ["attachmentsOf", isOverlay ? "placedControl" : "control", ...isSnippetUsed ? ["isSnippet"] : [], "registerControls"];
   return `${[
     SVELTE_HEADER,
     isHosted ? "<script generics=\"Item\" lang=\"ts\">" : "<script lang=\"ts\">",
     "  import { untrack } from \"svelte\";",
-    `  import { ${name} } from "./bindings.ts";`,
+    `  import { ${[name, ...level.registers.map(type => type.name)].join(", ")} } from "./bindings.ts";`,
     ...isHosted ? [
       `  import { ${host.imports.join(", ")} } from "${ITEMS_FOLDER}/${host.module}";`,
       `  import type { ${host.props} } from "${ITEMS_FOLDER}/items-props.ts";`
@@ -1160,7 +1174,7 @@ export function emitComponent(level: ClassModel) {
     "",
     `  let { ${destructured.join(", ")} }: ${propsType} = $props();`,
     `  const bound = ${bound};`,
-    `  registerControls({ "${level.tag}": ${name} });`,
+    `  registerControls({ ${registered} });`,
     ...isHosted ? hostConnectLines({
       name,
       host
