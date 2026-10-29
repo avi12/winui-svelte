@@ -66,3 +66,28 @@ test("mergedEntries sorts by namespace and keeps whole-namespace entries", () =>
   });
   assert.deepEqual(merged.map(entry => entry.namespace), ["Microsoft.UI.Xaml", "Windows.Storage"]);
 });
+
+test("mergedEntries lists the system backdrops last, which winapp's incremental run needs", () => {
+  const merged = mergedEntries({
+    existing: [],
+    wanted: [
+      {
+        namespace: "Microsoft.UI.Composition.SystemBackdrops",
+        name: "MicaController"
+      },
+      {
+        namespace: "Microsoft.UI.Dispatching",
+        name: "DispatcherQueue"
+      },
+      {
+        namespace: "Microsoft.UI.Xaml",
+        name: "Window"
+      }
+    ]
+  });
+  assert.deepEqual(merged.map(entry => entry.namespace), [
+    "Microsoft.UI.Dispatching",
+    "Microsoft.UI.Xaml",
+    "Microsoft.UI.Composition.SystemBackdrops"
+  ]);
+});
