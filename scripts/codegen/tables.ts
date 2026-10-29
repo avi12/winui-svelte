@@ -200,6 +200,27 @@ export const referenceWinmds = [
   "Windows.Foundation.UniversalApiContract.winmd"
 ];
 
+/**
+ * Packages beyond WinUI whose controls become components too: the winmd they
+ * are read from (an entry of extraPackages), the namespace they live in, the
+ * folder of src/components/generated and subpath export they are written to,
+ * and the classes that become components (the rest of the winmd is reached
+ * through bindings and the drawing API). Their parents are WinUI's levels.
+ */
+export const componentWinmds = [
+  {
+    winmd: "Microsoft.Graphics.Canvas.winmd",
+    namespace: "Microsoft.Graphics.Canvas",
+    folder: "win2d",
+    classes: [
+      "Microsoft.Graphics.Canvas.UI.Xaml.CanvasAnimatedControl",
+      "Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl",
+      "Microsoft.Graphics.Canvas.UI.Xaml.CanvasSwapChainPanel",
+      "Microsoft.Graphics.Canvas.UI.Xaml.CanvasVirtualControl"
+    ]
+  }
+];
+
 // An interface a class implements for the code that derives from it, not for
 // the code that uses it.
 export const subclassInterfaceSuffixes = ["Protected", "Overrides", "Private", "Factory", "Statics"];
@@ -336,6 +357,70 @@ export const bindingsAfterWinapp = new Set([
   "Microsoft.UI.Xaml.Controls.SwapChainPanel",
   "Microsoft.UI.Xaml.Controls.WebView2"
 ]);
+
+/**
+ * Classes of the Windows App SDK that the helpers of winui-svelte/win2d need
+ * and the components do not: scripts/bindings/after-winapp.ts makes their
+ * bindings after winapp's run, so a full `pnpm bindings` (about twelve
+ * minutes) is not needed to add one.
+ */
+export const lateClasses = [
+  {
+    winmd: "Microsoft.UI.winmd",
+    namespace: "Microsoft.UI.Composition",
+    classes: ["CompositionEffectSourceParameter"]
+  },
+  {
+    winmd: COMPONENT_WINMD,
+    namespace: "Microsoft.UI.Xaml.Hosting",
+    classes: ["ElementCompositionPreview"]
+  }
+];
+
+/** How an extra package's classes reach the bindings. */
+export const BindingScope = {
+  // The classes of bindingsAfterWinapp, emitted with the Microsoft.UI.Xaml metadata.
+  LISTED: "listed",
+  // Every namespace of the package's own winmd.
+  WHOLE_PACKAGE: "whole-package"
+} as const;
+export type BindingScope = typeof BindingScope[keyof typeof BindingScope];
+
+/**
+ * The NuGet packages beyond the Windows App SDK that winapp.yaml restores and
+ * scripts/bindings/after-winapp.ts makes bindings for (winapp's own run cannot
+ * pass their metadata): the one table that script and the build both read.
+ * `libraries` are the native files the package ships per architecture;
+ * `restoredLibrary` is set when winapp does not copy the library to .winapp/bin
+ * itself, and says where in the package it is.
+ */
+export const extraPackages: Array<{
+  name: string;
+  winmd: string;
+  scope: BindingScope;
+  libraries: string[];
+  restoredLibrary?: {
+    file: string;
+    runtimeFolder: string;
+  };
+}> = [
+  {
+    name: "WebView2",
+    winmd: "Microsoft.Web.WebView2.Core.winmd",
+    scope: BindingScope.LISTED,
+    libraries: ["WebView2Loader.dll", "Microsoft.Web.WebView2.Core.dll"],
+    restoredLibrary: {
+      file: "Microsoft.Web.WebView2.Core.dll",
+      runtimeFolder: "native_uap"
+    }
+  },
+  {
+    name: "Win2D",
+    winmd: "Microsoft.Graphics.Canvas.winmd",
+    scope: BindingScope.WHOLE_PACKAGE,
+    libraries: ["Microsoft.Graphics.Canvas.dll"]
+  }
+];
 
 // A property whose value changes by the user raises an event; the property
 // is then $bindable(). The rule `<Property>Changed` finds the regular ones;

@@ -1,24 +1,12 @@
+import { streamOf } from "./byte-stream.ts";
 import { BitmapImage, SvgImageSource, Uri } from "./generated/bindings.ts";
 import { installMediaSeam } from "./media-seam.ts";
 import { read } from "#src/renderer/host/reflect.js";
 import { MediaSource } from "#winui/windows/media/core/MediaSource";
 import { IMediaPlaybackSource } from "#winui/windows/media/playback/IMediaPlaybackSource";
-import { DataWriter } from "#winui/windows/storage/streams/DataWriter";
-import { InMemoryRandomAccessStream } from "#winui/windows/storage/streams/InMemoryRandomAccessStream";
 
-const START = 0n;
 // The class wrapper keeps its native value here; the interface is cast from that.
 const NATIVE_OBJECT = "_obj";
-
-async function streamOf(bytes: Uint8Array) {
-  const stream = new InMemoryRandomAccessStream();
-  const writer = new DataWriter(stream);
-  writer.writeBytes(bytes);
-  await writer.storeAsync();
-  writer.detachStream();
-  stream.seek(START);
-  return stream;
-}
 
 // The image is handed on at once and fills itself when the stream is ready; a
 // bad image reaches the app as the image's own ImageFailed event.

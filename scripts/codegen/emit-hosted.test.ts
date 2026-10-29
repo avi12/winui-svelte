@@ -24,7 +24,8 @@ function classNamed({ name, contentProperty }: {
     observed: [],
     slots: [],
     holdsItems: false,
-    registers: []
+    registers: [],
+    folder: ""
   };
 }
 

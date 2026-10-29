@@ -1,3 +1,4 @@
+import { extraPackages } from "#scripts/codegen/tables.ts";
 import { filesIn } from "#scripts/files-in.ts";
 import { jsonSchema } from "#src/messaging/json.js";
 import type { Json } from "#src/messaging/json.js";
@@ -87,9 +88,10 @@ test("the bindings and the Windows App SDK bootstrapper ship in dist", { skip: !
   assert.ok(existsSync(bootstrapper), `${bootstrapper} is missing: pnpm build did not copy it`);
 });
 
-test("the WebView2 libraries ship wherever they were restored", { skip: !IS_BUILT }, () => {
+test("the extra packages' native libraries ship wherever they were restored", { skip: !IS_BUILT }, () => {
   const restoredFolder = path.join(PACKAGE_ROOT, ".winapp", "bin", process.arch);
-  for (const library of ["WebView2Loader.dll", "Microsoft.Web.WebView2.Core.dll"]) {
+  const libraries = extraPackages.flatMap(extra => extra.libraries);
+  for (const library of libraries) {
     const isRestored = existsSync(path.join(restoredFolder, library));
     if (isRestored) {
       const shipped = path.join(PACKAGE_ROOT, "dist", "bin", process.arch, library);

@@ -2,3 +2,9 @@ winui-svelte
 Copyright 2026 Avi (https://avi12.com)
 
 This product includes software developed by Avi (https://avi12.com).
+
+Third-party software redistributed in the published package:
+
+Win2D (Microsoft.Graphics.Win2D, Microsoft.Graphics.Canvas.dll in dist/bin)
+Copyright (c) Microsoft Corporation. Licensed under the MIT License,
+https://github.com/microsoft/Win2D/blob/master/LICENSE.txt

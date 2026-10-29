@@ -16,6 +16,10 @@ export const notComponentPatterns: Array<{
   reason: string;
 }> = [
   {
+    namespacePrefix: "Microsoft.Graphics.Canvas",
+    reason: "Win2D drawing API, not an element: an app makes these in a draw handler through winui-svelte/win2d (the controls themselves are components)"
+  },
+  {
     suffix: "AutomationPeer",
     reason: "a UI Automation peer: WinUI makes them for its own controls, an app writes one only to subclass a control"
   },

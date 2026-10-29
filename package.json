@@ -82,6 +82,11 @@
       "svelte": "./dist/renderer/host/connected-animation.js",
       "default": "./dist/renderer/host/connected-animation.js"
     },
+    "./win2d": {
+      "types": "./dist/win2d/index.d.ts",
+      "svelte": "./dist/win2d/index.js",
+      "default": "./dist/win2d/index.js"
+    },
     "./css": {
       "types": "./dist/css/index.d.ts",
       "default": "./dist/css/index.js"
@@ -213,7 +218,7 @@
     "lint:stylelint": "stylelint \"**/*.svelte\" --ignore-pattern src/components/generated",
     "lint:summary": "node --disable-warning=ExperimentalWarning scripts/lint/summary.ts",
     "test": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" test/mount-all.test.ts",
-    "test:windows": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-timeout=120000 test/app.test.ts test/lists.test.ts test/items.test.ts test/interaction.test.ts test/tree.test.ts test/navigation.test.ts test/overlays.test.ts test/services.test.ts test/transitions.test.ts test/web.test.ts test/window.test.ts"
+    "test:windows": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-timeout=120000 test/app.test.ts test/lists.test.ts test/items.test.ts test/interaction.test.ts test/tree.test.ts test/navigation.test.ts test/overlays.test.ts test/services.test.ts test/transitions.test.ts test/web.test.ts test/win2d.test.ts test/window.test.ts"
   },
   "dependencies": {
     "@microsoft/dynwinrt": "0.1.0-preview.23",

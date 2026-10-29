@@ -33,6 +33,7 @@ function classNamed(overrides: Partial<ClassModel>) {
     slots: [],
     holdsItems: false,
     registers: [],
+    folder: "",
     ...overrides
   };
   return level;

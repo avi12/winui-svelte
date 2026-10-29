@@ -6,8 +6,8 @@ import { fileURLToPath } from "node:url";
 
 // The Windows App SDK (WinUI 3) comes first, before any WinRT object: its
 // bootstrapper finds the runtime packages installed for the user. The folder the
-// bootstrapper is in goes on PATH too: it holds the native libraries a WebView2
-// loads by name (WebView2Loader.dll, Microsoft.Web.WebView2.Core.dll), which
+// bootstrapper is in goes on PATH too: it holds the native libraries a WebView2 or
+// Win2D canvas loads by name (WebView2Loader.dll, Microsoft.Graphics.Canvas.dll), which
 // would not be found beside node.exe.
 
 const BOOTSTRAP_VARIABLE = "WINAPPSDK_BOOTSTRAP_DLL_PATH";

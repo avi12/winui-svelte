@@ -600,6 +600,10 @@ component takes content (its WinUI content property: `Content`, `Child`,
 | `WebView2` | Controls | `canGoBack`, `canGoForward`, `defaultBackgroundColor`, `source` |  |  |
 | `WrapGrid` | Controls | `horizontalChildrenAlignment`, `itemHeight`, `itemWidth`, `maximumRowsOrColumns`, `orientation`, `verticalChildrenAlignment` |  | yes |
 | `XamlUICommand` | Input | `accessKey`, `command`, `description`, `iconSource`, `label` |  |  |
+| `CanvasAnimatedControl` | Microsoft.Graphics.Canvas.UI.Xaml | `clearColor`, `customDevice`, `dpiScale`, `forceSoftwareRenderer`, `isFixedTimeStep`, `paused`, `syncInterval`, `targetElapsedTime`, +1 more |  | yes |
+| `CanvasControl` | Microsoft.Graphics.Canvas.UI.Xaml | `clearColor`, `customDevice`, `dpiScale`, `forceSoftwareRenderer`, `useSharedDevice` |  | yes |
+| `CanvasSwapChainPanel` | Microsoft.Graphics.Canvas.UI.Xaml | `swapChain` |  | yes |
+| `CanvasVirtualControl` | Microsoft.Graphics.Canvas.UI.Xaml | `clearColor`, `customDevice`, `dpiScale`, `forceSoftwareRenderer`, `useSharedDevice` |  | yes |
 
 <!-- controls:end -->
 
@@ -724,6 +728,13 @@ it to a `NavigationView`.
 package and `initWindowsAppSdk` makes them findable; the browser starts in an
 ordinary desktop session, not in a sandboxed process. A `data:` URL is blocked
 as the top frame, as WebView2 does.
+
+Win2D is opt-in: `import { Canvas } from "winui-svelte/win2d"`, and
+`<Canvas draw={({ painter }) => painter.fillCircle({ x: 50, y: 50, radius: 40, paint: { a: 255, r: 255, g: 0, b: 0 } })} />`
+draws, and draws again when the state `draw` read changes; the Win2D effects
+(`GaussianBlurEffect`, `ColorMatrixEffect`, `BlendEffect`, `ShadowEffect`...) draw
+through `painter.drawImage`. An app that does not import it does not bundle it.
+[API.md](API.md) has the details and `examples/win2d` the example.
 
 The raw elements the components are made of work too:
 `<stack-panel spacing={8}>`, `<text-block>`, `grid.column={1}` for an attached property; they need
@@ -921,6 +932,16 @@ Stated plainly, so nobody finds them by surprise:
 - **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
   service started cannot launch the browser (error 0x8007139F), and a `data:`
   URL cannot be the top frame.
+- **Win2D effects on an element are built, not seen.** `applyEffect` puts a
+  Win2D effect on an element as a Composition effect brush, but nothing reads
+  pixels back from Composition without a screen capture, so only the drawing
+  (`Canvas`, render targets) is proved by pixels. An element cannot be its own
+  effect source: its child visual would be part of what it samples.
+- **Win2D's overloads need the package's helpers.** The bindings pick an
+  overload from the argument count and JavaScript types, so
+  `session.fillRectangle(x, y, w, h, brush)` calls the Color overload; the
+  functions of `winui-svelte/win2d` find the overload by its parameter names.
+- **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `box-shadow`
 - **CSS is WinUI's subset.** Layout follows the element's type (`src/css/API.md`
   has the table): `display: flex` is a `<stack-panel>`, `display: grid` a
   `<grid>` (tracks in `fr`, `px`, `auto`, `minmax()`), `position: absolute` a

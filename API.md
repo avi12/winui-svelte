@@ -27,6 +27,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
+| `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
 needs no build. `pnpm build` compiles them to `dist/` and `publishConfig`
@@ -1189,6 +1190,82 @@ An opt-in subpath: an app that does not import it does not bundle it.
 
 The working example is `examples/services` (`test/services.test.ts` runs it in
 a real window; the dialogs themselves need a person and are not opened there).
+
+## Win2D (`winui-svelte/win2d`)
+
+Opt-in: an app that does not import it bundles none of it and never loads
+`Microsoft.Graphics.Canvas.dll`. Win2D is the NuGet package
+`Microsoft.Graphics.Win2D` (the WinUI 3 build, MIT, Microsoft); `winapp.yaml`
+restores it, `pnpm build` ships the library in `dist/bin/<architecture>`, and
+`initWindowsAppSdk` puts that folder on `PATH`.
+
+The four controls are components made from the metadata like the rest:
+`CanvasControl`, `CanvasAnimatedControl`, `CanvasVirtualControl` and
+`CanvasSwapChainPanel` (props, `onDraw`, `onCreateResources`, `onUpdate`). The
+rest of Win2D is its classes, used as they are, with the helpers below.
+
+### Canvas
+
+`<Canvas draw={({ painter, width, height, dpi, device }) => { ... }} />` is a
+`CanvasControl` you draw on with a function. `draw` runs in an `$effect`: what it
+reads is tracked, and when it changes, or the control is resized, it runs again
+and the control is invalidated. Each call on `painter` is kept, and the Draw
+event replays them on the control's session. `createResources` runs once the
+device exists; `onDrawn(count)` after each redraw; `dpi` is the screen's, and
+`dpiScale` (a `CanvasControl` prop) scales it. A `Painter` is also made at once
+on a session with `drawingPainter(session)`, and the same calls exist as
+functions on a session: `clear`, `fillRectangle`, `drawRectangle`,
+`fillRoundedRectangle`, `fillEllipse`, `drawEllipse`, `fillCircle`, `drawCircle`,
+`drawLine`, `drawText`, `fillGeometry`, `drawGeometry`, `drawImage`, `drawBitmap`,
+`setTransform`. A `Paint` is a `Color` (`{ a, r, g, b }`, 0 to 255) or any brush
+(`isColor` tells them apart). `painter.transformed({ matrix, draw })` scopes a
+transform; `IDENTITY`, `translation`, `scaling`, `rotation` and `multiply` build
+the `Matrix3x2`. `Recording` and `Command` are what `Canvas` keeps the calls in;
+`CanvasFrame` and `CanvasProps` type the component; `TextOptions` and `Figure`
+type the helpers.
+
+The bindings choose an overload from the argument count and JavaScript types
+alone, so `session.fillRectangle(x, y, w, h, brush)` calls the Color overload and
+`session.clear(color)` the Vector4 one. The functions above find the right
+overload by its parameter names; for another Win2D method with overloads of one
+arity, check the pixels.
+
+### Resources
+
+`sharedDevice()`, `createRenderTarget({ creator, width, height, dpi })` (an
+off-screen surface: no window needed), `readPixels(surface)` and
+`pixelAt({ pixels, x, y })` (BGRA bytes), `loadBitmap({ creator, source })` (the
+bytes of a PNG or JPEG, a URI or a file path), `bitmapFromColors`,
+`createTextFormat`, `polylineGeometry`, `roundedRectangleGeometry` and
+`circleGeometry`.
+
+### Classes and effects
+
+The classes a draw function uses are re-exported from the bindings: `CanvasDevice`, `CanvasBitmap`, `CanvasRenderTarget`, `CanvasCommandList`, `CanvasAlphaMode`, `CanvasImageInterpolation`, `CanvasComposite`, `CanvasBlend`, `CanvasDpiRounding`, `CanvasSolidColorBrush`, `CanvasLinearGradientBrush`, `CanvasRadialGradientBrush`, `CanvasImageBrush`, `CanvasGeometry`, `CanvasPathBuilder`, `CanvasStrokeStyle`, `CanvasCapStyle`, `CanvasLineJoin`, `CanvasDashStyle`, `CanvasFigureLoop`, `CanvasFigureFill`, `CanvasTextFormat`, `CanvasTextLayout`, `CanvasHorizontalAlignment`, `CanvasVerticalAlignment`, `CanvasWordWrapping`.
+Effects are ICanvasImage: set `source` and draw one with `drawImage`.
+Re-exported: `GaussianBlurEffect`, `DirectionalBlurEffect`, `ColorMatrixEffect`, `BlendEffect`, `BlendEffectMode`, `ShadowEffect`, `SaturationEffect`, `GrayscaleEffect`, `BrightnessEffect`, `ContrastEffect`, `HueRotationEffect`, `InvertEffect`, `SepiaEffect`, `OpacityEffect`, `CompositeEffect`, `ArithmeticCompositeEffect`, `CropEffect`, `ScaleEffect`, `BorderEffect`, `MorphologyEffect`, `EmbossEffect`, `SharpenEffect`, `Transform2DEffect`, `TintEffect`, `ExposureEffect`. Any other class is
+imported from `#winui/microsoft/graphics/canvas/...`. The types `Color`, `Matrix3x2`, `Rect`,
+`Vector2`, `Vector4`, `CanvasDrawingSession`, `ICanvasImage` and `ICanvasBrush`
+are re-exported too.
+
+### Effects on elements (the CSS bridge)
+
+A Win2D effect graph is a Composition effect: `createEffectBrush({ compositor,
+effect, sources })` builds the `CompositionEffectBrush`, where `effectSource(name)`
+(a `CompositionEffectSourceParameter`, `ELEMENT_SOURCE` by default) stands for the
+pixels that go in. `applyEffect({ element, effect, source })` puts it on an
+element as a child sprite visual and returns a function that removes it;
+`source` is `BACKDROP` (what is behind the element: `backdrop-filter`, a blend) or
+another element (its own pixels: `filter: blur()`, `drop-shadow()`,
+`grayscale()`, `mix-blend-mode`). An element cannot be its own source (its child
+visual would be part of what it samples): put the content in one element and
+the effect in a sibling over it. The CSS `filter` property will map onto
+this; today CSS `filter` is still a build error, and `applyEffect` was built and
+type-checked but not looked at on screen.
+
+The working example is `examples/win2d` (`test/win2d.test.ts` runs it in a real
+window and checks the redraw; `src/win2d/win2d.test.ts` draws on a render
+target and checks the pixels).
 
 ## Reference: the remaining exports
 
