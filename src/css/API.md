@@ -392,6 +392,15 @@ at-rule inside a rule (`.a { @media (min-width: 600px) { ... } }`) styles the
 rule's own selector under that at-rule; `@supports`, `@layer` and `@container`
 still have no WinUI meaning and say so.
 
+## Modern colors
+
+`oklch()`, `oklab()`, `lab()`, `lch()`, `hwb()` and `color-mix(in srgb, a 30%, b)`
+are resolved to sRGB by the build, in rules and custom properties alike, so the
+window carries no parser for them (out-of-gamut colors are clipped). Not
+supported: `color-mix` in another space, relative color syntax, `light-dark()`
+(declare the color for `@media (prefers-color-scheme: dark)` on `:root`
+instead), `color-scheme` and `accent-color`.
+
 ## Logical properties
 
 WinUI lays out left to right, top to bottom, so the inline axis is horizontal and

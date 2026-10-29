@@ -1,4 +1,4 @@
-import { splitCommas } from "./values.ts";
+import { matchingParenthesis, splitCommas } from "./values.ts";
 import { PseudoState } from "#src/css/translate/types.js";
 
 const COMBINATOR_REASON = "descendant, child and sibling selectors have no WinUI meaning (a style applies to an element by its own type and classes; give the element a class)";
@@ -253,24 +253,6 @@ function readCompound({ text, compound, weight }: {
   }
 
   return null;
-}
-
-function matchingParenthesis({ text, open }: {
-  text: string;
-  open: number;
-}) {
-  let depth = 0;
-  for (let index = open; index < text.length; index++) {
-    depth += text[index] === "(" ? 1 : 0;
-    depth -= text[index] === ")" ? 1 : 0;
-
-    const isBalanced = depth === 0;
-    if (isBalanced) {
-      return index;
-    }
-  }
-
-  return text.length;
 }
 
 function readPseudo({ compound, name, weight }: {

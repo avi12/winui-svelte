@@ -532,3 +532,13 @@ test("an at-rule inside a rule styles that rule's selector", () => {
     ["a", "hover", 600]
   ]);
 });
+
+test("modern colors are resolved to sRGB at build time, in rules and custom properties", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { background-color: hwb(0 0% 0%); color: color-mix(in srgb, #ff0000, #0000ff) }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => declaration.value), ["#FF0000", "#800080"]);
+});

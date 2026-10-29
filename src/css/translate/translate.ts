@@ -17,6 +17,7 @@ import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
 import type { MediaCondition } from "#src/css/parse/media.js";
 import { parseMediaQuery } from "#src/css/parse/media.js";
+import { resolveModernColors } from "#src/css/parse/modern-colors.js";
 import type { AtRuleBlock, Block, RuleBlock } from "#src/css/parse/parser.js";
 import { BlockKind, CssSyntaxError, parseCss } from "#src/css/parse/parser.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
@@ -117,6 +118,7 @@ function originalDeclaration({ translator, declaration }: {
 }) {
   return {
     ...declaration,
+    value: resolveModernColors(declaration.value),
     at: translator.mapPosition(declaration.at)
   };
 }

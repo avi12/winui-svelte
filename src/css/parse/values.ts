@@ -161,3 +161,22 @@ export function parseVariable(token: string) {
     fallback: isFallbackMissing ? null : fallback
   };
 }
+
+/** The index of the `)` closing the `(` at `open`; the text's length when it never closes. */
+export function matchingParenthesis({ text, open }: {
+  text: string;
+  open: number;
+}) {
+  let depth = 0;
+  for (let index = open; index < text.length; index++) {
+    depth += text[index] === "(" ? 1 : 0;
+    depth -= text[index] === ")" ? 1 : 0;
+
+    const isBalanced = depth === 0;
+    if (isBalanced) {
+      return index;
+    }
+  }
+
+  return text.length;
+}
