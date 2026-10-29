@@ -3,7 +3,10 @@
   // test (mount-all.svelte.ts): each control written the way a XAML app
   // writes it, a pane, commands, menu items, inlines, a flyout, a header and
   // a paragraph holding a control, items written with {#each}, and value
-  // objects (a brush with stops, a transform, a storyboard) in their properties.
+  // objects (a brush with stops, a transform, a storyboard) in their properties,
+  // and the value objects that are no element: swipe items, a map's layers, a
+  // text block's highlights, a rating control's glyph, a tool tip and an
+  // attached flyout.
   // Each control is handed to the test by name.
   import {
     AppBarButton,
@@ -19,17 +22,26 @@
     GradientStop,
     InlineUIContainer,
     LinearGradientBrush,
+    MapElementsLayer,
+    MapIcon,
+    MapControl,
     MenuFlyout,
     MenuFlyoutItem,
     NavigationView,
     NavigationViewItem,
     Paragraph,
+    RatingControl,
+    RatingItemFontInfo,
     RichTextBlock,
     RotateTransform,
     SplitView,
     StackPanel,
     Storyboard,
+    SwipeControl,
+    SwipeItem,
+    SwipeItems,
     TextBlock,
+    TextHighlighter,
     ToggleSwitch
   } from "#src/components/index.js";
   import { control } from "#src/index.js";
@@ -119,4 +131,44 @@
       Press <InlineUIContainer><Button>here</Button></InlineUIContainer>
     </Paragraph>
   </RichTextBlock>
+  <SwipeControl {@attach found("swipeControl")}>
+    Row
+    {#snippet leftItems()}
+      <SwipeItems>
+        <SwipeItem text="Delete" />
+        <SwipeItem text="Flag" />
+      </SwipeItems>
+    {/snippet}
+  </SwipeControl>
+  <TextBlock {@attach found("highlightedText")}>
+    Highlight me
+    {#snippet textHighlighters()}
+      <TextHighlighter background="#ffee00" ranges={[{ startIndex: 0, length: 9 }]} />
+    {/snippet}
+  </TextBlock>
+  <RatingControl {@attach found("ratingControl")}>
+    {#snippet itemInfo()}
+      <RatingItemFontInfo glyph="*" />
+    {/snippet}
+  </RatingControl>
+  <Button {@attach found("tipButton")}>
+    Hover me
+    {#snippet toolTip()}
+      <TextBlock>Tip</TextBlock>
+    {/snippet}
+    {#snippet attachedFlyout()}
+      <Flyout>
+        <TextBlock>Attached</TextBlock>
+      </Flyout>
+    {/snippet}
+  </Button>
+  <MapControl {@attach found("mapControl")}>
+    {#snippet layers()}
+      <MapElementsLayer>
+        {#snippet mapElements()}
+          <MapIcon />
+        {/snippet}
+      </MapElementsLayer>
+    {/snippet}
+  </MapControl>
 </StackPanel>

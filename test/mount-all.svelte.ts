@@ -8,7 +8,7 @@ import ToggleSwitch from "#src/components/generated/ToggleSwitch.svelte";
 import { ticksDate } from "#src/components/values.js";
 import type { NativeValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
-import { isRecord, read, vectorOf } from "#src/renderer/host/reflect.js";
+import { call, isRecord, read, vectorOf } from "#src/renderer/host/reflect.js";
 import { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
 import { Application } from "#winui/microsoft/ui/xaml/Application";
 import { Window } from "#winui/microsoft/ui/xaml/Window";
@@ -268,7 +268,7 @@ function boundOver({ state, name }: {
 }) {
   const bound: Record<string, NativeValue> = {};
   for (const level of chainOf(name)) {
-    for (const key of level.bindables) {
+    for (const key of [...level.bindables, ...level.observed]) {
       Object.defineProperty(bound, key, {
         get: () => state[key],
         set(value) {
@@ -614,6 +614,40 @@ function checkBehaviours({ connectors, failures }: {
       flushSync();
       assert.ok(box.isChecked === true, `the state's true did not reach the box (it reads ${String(box.isChecked)})`);
       close();
+    }
+  });
+
+  check({
+    name: "an observed property holds the control's value as soon as it is linked (NavigationView.displayMode, TextBlock.isTextTrimmed)",
+    action() {
+      const view = new bindings.NavigationView();
+      const text = new bindings.TextBlock();
+      const viewState = $state<Record<string, NativeValue>>({});
+      const textState = $state<Record<string, NativeValue>>({});
+      const closeView = open({
+        connect: connectorFor("NavigationView"),
+        control: view,
+        props: {},
+        bound: boundOver({
+          state: viewState,
+          name: "NavigationView"
+        })
+      });
+      const closeText = open({
+        connect: connectorFor("TextBlock"),
+        control: text,
+        props: {},
+        bound: boundOver({
+          state: textState,
+          name: "TextBlock"
+        })
+      });
+      flushSync();
+      assert.ok(typeof viewState["displayMode"] === "number", "the display mode did not reach the state");
+      assert.ok(viewState["displayMode"] === view.displayMode, "the state is not the control's display mode");
+      assert.ok(textState["isTextTrimmed"] === false, "the text block's trimming did not reach the state");
+      closeView();
+      closeText();
     }
   });
 
@@ -1022,6 +1056,12 @@ function menuItemCountOf(button: object) {
   return menu?.items?.size ?? 0;
 }
 
+function highlightRangeCountOf(textBlock: object) {
+  const highlighters = vectorOf(read(textBlock, "textHighlighters"));
+  const isOne = read(highlighters, "size") === 1;
+  return isOne ? read(read(call(highlighters, "getAt", 0), "ranges"), "size") : 0;
+}
+
 function stopCountOf(border: object) {
   const brush = bindings.projectAs(read(border, "background"), bindings.LinearGradientBrush);
   return brush.gradientStops.size;
@@ -1109,6 +1149,38 @@ const slotsAtFirst: SlotExpectation[] = [
     isMet: control => sizeOf({
       control,
       property: "blocks"
+    }) === 1
+  },
+  {
+    name: "swipeControl",
+    what: "the leftItems snippet fills LeftItems with the swipe items written in it",
+    isMet: control => sizeOf({
+      control,
+      property: "leftItems"
+    }) === 2
+  },
+  {
+    name: "highlightedText",
+    what: "the textHighlighters snippet adds a highlighter that holds its range",
+    isMet: control => highlightRangeCountOf(control) === 1
+  },
+  {
+    name: "ratingControl",
+    what: "the itemInfo snippet fills ItemInfo",
+    isMet: control => isRecord(read(control, "itemInfo"))
+  },
+  {
+    name: "tipButton",
+    what: "the toolTip snippet is the tool tip and the attachedFlyout snippet the attached flyout",
+    isMet: control => isRecord(bindings.ToolTipService.getToolTip(control))
+      && isRecord(bindings.FlyoutBase.getAttachedFlyout(control))
+  },
+  {
+    name: "mapControl",
+    what: "the layers snippet adds its layer to the map",
+    isMet: control => sizeOf({
+      control,
+      property: "layers"
     }) === 1
   }
 ];
