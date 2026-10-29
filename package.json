@@ -193,11 +193,10 @@
   },
   "dependencies": {
     "@microsoft/dynwinrt": "0.1.0-preview.23",
-    "@sveltejs/vite-plugin-svelte": "7.3.1",
     "zod": "^4.6.7"
   },
   "peerDependencies": {
-    "svelte": "*",
+    "svelte": "~5.56.7",
     "vite": "8.x"
   },
   "devDependencies": {
@@ -222,7 +221,7 @@
     "publint": "^0.3.25",
     "stylelint": "^17.16.0",
     "stylelint-config-ccb": "^3.32.0",
-    "svelte": "https://pkg.pr.new/svelte@18042",
+    "svelte": "5.56.7",
     "svelte-check": "^4.7.7",
     "svelte-eslint-parser": "^1.10.0",
     "svelte-language-server": "0.18.5",

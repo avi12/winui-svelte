@@ -1,6 +1,5 @@
 import { describeError, errorOf } from "./diagnostics.ts";
 import { WINDOW_ENVIRONMENT, winuiSvelte } from "./plugin.ts";
-import type { WinuiSvelteOptions } from "./plugin.ts";
 import { LOG_EVENT } from "./runner.ts";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -15,11 +14,11 @@ import { z } from "zod";
  * with no HTTP server, that compiles a window's modules for a module runner
  * (`runner.ts`) on the window's thread and sends it hot updates, both over a
  * MessagePort. Components compile for the client with HMR and render through
- * the custom renderer; Svelte resolves to its browser build. The compile
+ * the tree renderer; Svelte resolves to its browser build. The compile
  * settings are the plugin's (`plugin.ts`), from the app's Vite config or,
  * with none, the plugin's defaults.
  */
-export interface ModuleServerOptions extends WinuiSvelteOptions {
+export interface ModuleServerOptions {
   /** The folder of the window's sources, which Vite serves and watches. */
   root: string;
   /** The runner's end of this port is the window thread's. */
@@ -196,7 +195,7 @@ export async function startModuleServer(options: ModuleServerOptions) {
         ignored: UNWATCHED_FOLDERS.map(folder => `**/${folder}/**`)
       }
     },
-    plugins: hasConfigFile ? [] : winuiSvelte(options),
+    plugins: hasConfigFile ? [] : winuiSvelte(),
     environments: {
       [WINDOW_ENVIRONMENT]: {
         dev: {

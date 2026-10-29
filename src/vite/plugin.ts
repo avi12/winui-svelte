@@ -1,22 +1,11 @@
-import { WINUI_RENDERER } from "./compile.ts";
-import { assertCustomRendererSvelte } from "./custom-svelte.ts";
-import type { Options } from "@sveltejs/vite-plugin-svelte";
-import { svelte } from "@sveltejs/vite-plugin-svelte";
-import { cssHash } from "#src/css/runtime/sheet-module.js";
+import { WINUI_COMPILE_OPTIONS } from "./compile.ts";
+import { svelteCompiler } from "./svelte-plugin.ts";
 import { winuiCss } from "#src/css/vite.js";
 import type { CompileOptions } from "svelte/compiler";
 import type { Plugin, UserConfig } from "vite";
 
-/** What `winuiSvelte()` takes. */
-export interface WinuiSvelteOptions {
-  /** The module a component imports its renderer from; default winui-svelte/host. */
-  renderer?: string;
-}
-
-/** What the plugin passes on to Svelte's own Vite plugin, without Vite. */
+/** What the plugin compiles every component with, without Vite. */
 export interface PluginOptions {
-  svelte: Options;
-  /** What every component is compiled with, on top of its own settings. */
   compile: CompileOptions;
 }
 
@@ -27,6 +16,8 @@ export interface PluginOptions {
 export const WINDOW_ENVIRONMENT = "winui";
 
 const BROWSER_CONDITIONS = ["browser"];
+// A Svelte library names its component entry under this condition.
+const SVELTE_CONDITION = "svelte";
 // Svelte and esm-env pick their builds by condition, and winui-svelte is
 // source, so Vite compiles them for the runner rather than leaving them to
 // Node.
@@ -44,33 +35,14 @@ function hasSideEffects(id: string, isExternal: boolean) {
   return !isExternal || !bindingModule.test(id);
 }
 
-/** What the plugin passes on, without Vite: kept apart so it can be checked. */
-export function winuiPluginOptions(options: WinuiSvelteOptions = {}) {
-  const compile: CompileOptions = {
-    // The runner is Node, so the environment is a server one, but the window
-    // mounts components: they compile for the client.
-    generate: "client",
-    // The scoping class a component's elements carry and its <style>'s
-    // selectors name must agree (see css/sheet-module.ts).
-    cssHash,
-    experimental: {
-      customRenderer: options.renderer ?? WINUI_RENDERER
+/** What the plugin compiles with, without Vite: kept apart so it can be checked. */
+export function winuiPluginOptions() {
+  const options: PluginOptions = {
+    compile: {
+      ...WINUI_COMPILE_OPTIONS
     }
   };
-  const svelteOptions: Options = {
-    configFile: false,
-    // WinUI has no stylesheets, and a custom renderer takes no injected
-    // CSS.
-    emitCss: false,
-    compilerOptions: {
-      css: "external"
-    },
-    dynamicCompileOptions: () => compile
-  };
-  return {
-    compile,
-    svelte: svelteOptions
-  };
+  return options;
 }
 
 /** The Vite settings the window's modules need. */
@@ -78,7 +50,7 @@ export function windowConfig() {
   const config: UserConfig = {
     // Svelte's browser build is the one that mounts components.
     resolve: {
-      conditions: BROWSER_CONDITIONS
+      conditions: [...BROWSER_CONDITIONS, SVELTE_CONDITION]
     },
     build: {
       rollupOptions: {
@@ -96,7 +68,7 @@ export function windowConfig() {
       [WINDOW_ENVIRONMENT]: {
         consumer: "server",
         resolve: {
-          conditions: [...BROWSER_CONDITIONS, "development"],
+          conditions: [...BROWSER_CONDITIONS, SVELTE_CONDITION, "development"],
           noExternal: compiledPackages
         },
         dev: {
@@ -109,23 +81,22 @@ export function windowConfig() {
 }
 
 /**
- * The one line in an app's Vite config: `plugins: [winuiSvelte()]`. It is
- * Svelte's own Vite plugin, told to compile components for the client
- * against the WinUI renderer, plus the module environment the window's
+ * The one line in an app's Vite config: `plugins: [winuiSvelte()]`. It
+ * compiles components for the client with Svelte's own compiler, which
+ * draws through the tree renderer, plus the module environment the window's
  * modules load in (see `server.ts` for the dev server that uses it).
  */
-export function winuiSvelte(options: WinuiSvelteOptions = {}) {
-  assertCustomRendererSvelte();
+export function winuiSvelte() {
   const environment: Plugin = {
     name: "winui-svelte:environment",
     config: windowConfig
   };
-  const { svelte: svelteOptions, compile } = winuiPluginOptions(options);
+  const { compile } = winuiPluginOptions();
   // A component's <style> becomes WinUI Styles its module registers; a rule
   // WinUI cannot say is reported, and the open window keeps running.
   const css = winuiCss({
     compilerOptions: compile,
     onError: "report"
   });
-  return [environment, ...svelte(svelteOptions), css];
+  return [environment, ...svelteCompiler(compile), css];
 }
