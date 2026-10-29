@@ -850,7 +850,7 @@ protocol and the tests.
 | `winui-svelte/element-animation` | `enableElementAnimation`, and the `transition`, `intro` and `outro` attachments |
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
-| `winui-svelte/css/transform`, `/css/focus`, `/css/surface`, `/css/position`, `/css/resources` | the opt-in CSS groups: 2D transform, focus visuals, surfaces, position and inset, theme resources ([`src/css/API.md`](src/css/API.md)) |
+| `winui-svelte/css/transform`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/resources` | the opt-in CSS groups: 2D transform, focus visuals, surfaces, position and inset, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 
 The published package ships `dist/`: the TypeScript compiled with its
@@ -928,7 +928,7 @@ Stated plainly, so nobody finds them by surprise:
   `right` and `bottom`, `flex-grow` and `flex-wrap` (use `fr` tracks; WinUI has
   no wrapping panel), `align-items` and `justify-content` on a container (set
   `place-self` on the child), `order`, `aspect-ratio`, a % size other than
-  100%, `calc()` with a % or a variable, `@container`, `:has()`, `:focus-within`,
+  100%, `calc()` with a % or a variable, container style queries, `:has()`, `:focus-within`,
   `box-shadow` (use `-winui-elevation`), `filter`, `animation` and
   `@keyframes`. Gradients are `linear-gradient()` and `radial-gradient()` only
   (no repeating or conic ones, no stop in `px`), and replace `background-color`.

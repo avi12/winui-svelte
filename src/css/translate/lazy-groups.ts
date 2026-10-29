@@ -1,4 +1,5 @@
 import { gradientGroups } from "./background-properties.ts";
+import { CONTAINER_MEMBERS, containerGroups } from "./container-properties.ts";
 import { focusGroups, OUTLINE_MEMBERS } from "./focus-properties.ts";
 import { POSITION_MEMBERS, positionGroups } from "./position-properties.ts";
 import type { PropertyGroup } from "./property-kit.ts";
@@ -55,6 +56,12 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     subpath: "/position",
     exportName: "positionGroups",
     groups: positionGroups
+  },
+  {
+    isNeededBy: usesProperties(CONTAINER_MEMBERS),
+    subpath: "/container",
+    exportName: "containerGroups",
+    groups: containerGroups
   },
   {
     isNeededBy: rule => rule.resourcesXaml !== null,

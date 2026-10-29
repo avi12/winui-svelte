@@ -365,6 +365,18 @@ Opt-in (`winui-svelte/css/position`). Offsets are lengths in px (or `auto`).
 
 `z-index` is `Canvas.ZIndex`.
 
+## Container size: `@container`
+
+`container-type: size | inline-size`, `container-name` and `container: name / type`
+(opt-in, `winui-svelte/css/container`) make an element a container.
+`@container [name] (min-width: 400px)`, `(max-width)`, `(min-height)`, `(max-height)`
+(and `inline-size`, `block-size`, the range forms) around a rule make it apply while
+the size of the nearest container ancestor (of that name; any, if unnamed) is inside
+the bounds. The element listens to that container's `SizeChanged` (and to its own
+`Loaded`, if it was styled before it was in the tree), exactly while one of its
+matching rules asks. A style query (`@container style(...)`) and a container
+unit are not supported.
+
 ## Window size: `@media`
 
 `@media (min-width: 600px)`, `(max-width)`, `(min-height)`, `(max-height)` (px, rem or em;
@@ -377,8 +389,7 @@ whose rules is under an `@media` listens to nothing.
 
 Only the properties a Style can hold change with the size; a grid's tracks are a
 write and swap like the rest. Not supported, with the build error saying why:
-`@container` (an element's style would depend on its own size: query the
-window), `orientation`, `or` and `not`, a % bound, a `:root` custom property under
+`orientation`, `or` and `not`, a % bound, a `:root` custom property under
 a size query, and a query inside another `@media`. `CssNative` gains
 `viewportOf` and `watchViewport` for it.
 
@@ -389,8 +400,8 @@ selector of the parent (`.a, .b { &:hover { ... } &.on { ... } }` is four
 rules), and a nested selector without `&` is a descendant, which stays an error
 (a Style has no "inside"). `&` may stand anywhere in a nested selector. An
 at-rule inside a rule (`.a { @media (min-width: 600px) { ... } }`) styles the
-rule's own selector under that at-rule; `@supports`, `@layer` and `@container`
-still have no WinUI meaning and say so.
+rule's own selector under that at-rule; `@supports` and `@starting-style`
+still have no WinUI meaning there and say so.
 
 ## Modern colors
 
@@ -464,8 +475,7 @@ selectors; `@scope` holds style rules only.
 
 ## At-rules without a WinUI meaning
 
-`@container` (an element's style would depend on its own size: query the window
-with `@media`), `@supports`,
+`@supports`,
 `@starting-style` (an entrance needs an animation, which a Style cannot hold),
 `@keyframes` and `@import` are build errors that say so. Also not done:
 `color-mix` in a space other than sRGB, relative color syntax, and

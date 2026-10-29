@@ -253,7 +253,7 @@ test("positions are mapped back to the .svelte file", () => {
 test("descendant selectors, nesting, @keyframes and other @media are errors", () => {
   assert.match(errors(".a .b { color: red }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
   assert.match(errors(".a { color: red; .b { color: blue } }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
-  assert.match(errors(".a { @container (min-width: 1px) { color: blue } }").join(), /@container has no WinUI meaning/u);
+  assert.match(errors(".a { @supports (color: red) { color: blue } }").join(), /@supports has no WinUI meaning/u);
   assert.match(errors("@keyframes spin { to { opacity: 0 } }").join(), /@keyframes has no WinUI meaning/u);
   assert.match(errors("@media (orientation: landscape) { .a { color: red } }").join(), /@media \(orientation: landscape\) has no WinUI meaning/u);
   assert.match(errors("@import 'a.css';").join(), /@import has no WinUI meaning/u);
@@ -599,5 +599,36 @@ test("light-dark() becomes a custom property with a value per theme", () => {
 test("at-rules with no WinUI meaning say what to write instead", () => {
   assert.match(errors("@scope (.card) { .title { opacity: 1 } }").join(), /@scope has no WinUI meaning.*component build/u);
   assert.match(errors("@starting-style { .a { opacity: 0 } }").join(), /@starting-style has no WinUI meaning.*transition/u);
-  assert.match(errors("@container (min-width: 1px) { .a { opacity: 0 } }").join(), /@container has no WinUI meaning.*query the window/u);
+});
+
+test("an @container rule keeps its bounds and the container's name", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".a { opacity: 1 }\n@container card (min-width: 400px) { .a { opacity: 0.5 } }\n.b { @container (max-width: 100px) { opacity: 0.2 } }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  const queries = sheet.rules.map(rule => [
+    rule.media?.container ?? null,
+    rule.media?.minWidth ?? rule.media?.maxWidth ?? null
+  ]);
+  assert.deepEqual(queries, [
+    [null, null],
+    ["card", 400],
+    [null, null],
+    ["", 100]
+  ]);
+});
+
+test("a container is made by container-type, with the shorthand's names", () => {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: "t.svelte",
+    css: ".c { container: card / inline-size }",
+    resources
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => [declaration.property, declaration.value]), [
+    ["container-name", "card"],
+    ["container-type", "inline-size"]
+  ]);
 });

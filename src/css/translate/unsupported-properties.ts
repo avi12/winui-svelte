@@ -20,9 +20,6 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["aspect-ratio", "WinUI has no aspect ratio on an element; set width and height (a Viewbox keeps a ratio)"],
   ["color-scheme", "the theme is the window's RequestedTheme; set it on the root element (a Style cannot change it)"],
   ["accent-color", "WinUI's accent color is the system's; override its resources instead (--accent-fill-color-default)"],
-  ["container-type", "an element's style would depend on its own size; query the window with @media (min-width)"],
-  ["container-name", "an element's style would depend on its own size; query the window with @media (min-width)"],
-  ["container", "an element's style would depend on its own size; query the window with @media (min-width)"],
   ["float", "WinUI has no float; use a grid or a stack-panel"],
   ["flex", `${SIZED_BY_PARENT}: ${FR_TRACKS}`],
   ["flex-grow", `${SIZED_BY_PARENT}: ${FR_TRACKS}`],
@@ -56,7 +53,6 @@ export function unsupportedReason(property: string) {
 }
 
 const UNSUPPORTED_AT_RULES: ReadonlyMap<string, string> = new Map([
-  ["container", "an element's style would depend on its own size; query the window with @media (min-width)"],
   ["scope", "it is written out against the component's markup by the component build, not by a bare stylesheet"],
   ["supports", "WinUI supports exactly what this translator accepts; write the rules without the condition"],
   ["starting-style", "an entrance needs an animation, which a Style cannot hold; use transition on opacity, translate, scale or rotate"],

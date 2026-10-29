@@ -94,6 +94,10 @@
       "types": "./dist/css/focus.d.ts",
       "default": "./dist/css/focus.js"
     },
+    "./css/container": {
+      "types": "./dist/css/container.d.ts",
+      "default": "./dist/css/container.js"
+    },
     "./css/position": {
       "types": "./dist/css/position.d.ts",
       "default": "./dist/css/position.js"

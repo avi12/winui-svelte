@@ -1,6 +1,7 @@
+import { ContainerWatch } from "./containers.ts";
 import { parseInlineStyle } from "./inline.ts";
 import { mediaMatches } from "#src/css/parse/media.js";
-import type { Viewport } from "#src/css/parse/media.js";
+import type { MediaCondition, Viewport } from "#src/css/parse/media.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 import type { RankedRule } from "#src/css/translate/cascade.js";
 import {
@@ -447,6 +448,7 @@ class ElementStyle implements StyledElement {
   private appliedStyle: object | null = null;
   private viewport: Viewport | null = null;
   private unwatchViewport: (() => void) | null = null;
+  private containers: ContainerWatch | null = null;
   private appliedWrites = "";
   private writeUndos: Array<() => void> = [];
   private isDisposed = false;
@@ -479,6 +481,7 @@ class ElementStyle implements StyledElement {
 
     this.subscriptions.clear();
     this.unwatchViewport?.();
+    this.containers?.dispose();
     for (const undo of this.writeUndos) {
       undo();
     }
@@ -520,7 +523,9 @@ class ElementStyle implements StyledElement {
       isMediaIgnored: true
     });
     this.syncStates(new Set(candidates.flatMap(({ rule }) => (rule.state === null ? [] : [rule.state]))));
-    this.syncViewport(candidates.some(({ rule }) => rule.media !== undefined));
+    const queries = candidates.flatMap(({ rule }) => rule.media ?? []);
+    this.syncViewport(queries.some(query => query.container === undefined));
+    this.syncContainers(new Set(queries.flatMap(query => query.container ?? [])));
     const matched = candidates.filter(({ rule }) => this.isRuleActive(rule));
     const inline = this.inlineDeclarations();
     const inlineKey = inline.map(({ property, value }) => `${property}:${value}`).join(";");
@@ -598,9 +603,34 @@ class ElementStyle implements StyledElement {
     const isStateActive = rule.state === null || this.states.has(rule.state);
     const isMediaActive = rule.media === undefined || mediaMatches({
       media: rule.media,
-      viewport: this.viewport
+      viewport: this.viewportFor(rule.media)
     });
     return isStateActive && isMediaActive;
+  }
+
+  // The size a query is about: the window's, or the nearest container's (of its name).
+  private viewportFor(media: MediaCondition) {
+    const { container } = media;
+    return container === undefined ? this.viewport : this.containers?.sizeOf(container) ?? null;
+  }
+
+  // Listens to the containers the matching @container rules ask about.
+  private syncContainers(names: ReadonlySet<string>) {
+    const currentNative = native;
+    const isUnneeded = names.size === 0 && this.containers === null;
+    const isUnavailable = isUnneeded || currentNative === null;
+    if (isUnavailable) {
+      return;
+    }
+
+    this.containers ??= new ContainerWatch({
+      control: this.control,
+      native: currentNative,
+      refresh: () => {
+        this.refresh();
+      }
+    });
+    this.containers.sync(names);
   }
 
   // Listens to the window's size exactly while some matching rule is under an @media.

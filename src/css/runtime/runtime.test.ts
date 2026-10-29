@@ -9,6 +9,7 @@ import {
   unregisterStyleSheet
 } from "./runtime.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import { containerGroups } from "#src/css/translate/container-properties.js";
 import { focusGroups } from "#src/css/translate/focus-properties.js";
 import { resourceGroups } from "#src/css/translate/resource-properties.js";
 import { transformGroups } from "#src/css/translate/transform-properties.js";
@@ -270,6 +271,44 @@ test("a rule under @media follows the window's size and listens only while one m
   element.setClasses("other");
   assert.equal(target.handlers.has("viewport"), false);
   element.dispose();
+});
+
+test("an @container rule follows the nearest container's size, and listens only while one matches", () => {
+  registerPropertyGroups(containerGroups());
+  registerStyleSheet(
+    sheet({
+      id: "container.svelte",
+      css: ".host.svelte-8 { container: card / inline-size }\n.k.svelte-8 { opacity: 1 }\n@container card (min-width: 300px) { .k.svelte-8 { opacity: 0.5 } }"
+    })
+  );
+  const host = control({
+    actualWidth: 500,
+    actualHeight: 100
+  });
+  const hostElement = styledElement({
+    control: host,
+    elementType: "border"
+  });
+  hostElement.setClasses("host svelte-8");
+  const target = control({
+    parent: host
+  });
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("k svelte-8");
+  assert.match(target.style ?? "", /Value="0.5"/u);
+  assert.ok(host.handlers.has("SizeChanged"));
+
+  host.properties["actualWidth"] = 200;
+  host.handlers.get("SizeChanged")?.();
+  assert.match(target.style ?? "", /Value="1"/u);
+
+  element.setClasses("other");
+  assert.equal(host.handlers.has("SizeChanged"), false);
+  element.dispose();
+  hostElement.dispose();
 });
 
 test(":disabled and :checked start from the control's own state", () => {

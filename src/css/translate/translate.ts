@@ -20,7 +20,7 @@ import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
 import { replaceLightDark } from "#src/css/parse/light-dark.js";
 import type { MediaCondition } from "#src/css/parse/media.js";
-import { parseMediaQuery } from "#src/css/parse/media.js";
+import { parseContainerQuery, parseMediaQuery } from "#src/css/parse/media.js";
 import { resolveModernColors } from "#src/css/parse/modern-colors.js";
 import type { AtRuleBlock, Block, RuleBlock } from "#src/css/parse/parser.js";
 import { BlockKind, CssSyntaxError, parseCss } from "#src/css/parse/parser.js";
@@ -485,6 +485,15 @@ function addProperty({ translator, block }: {
   });
 }
 
+// The bounds an @media (min-width...) or an @container asks for; null for any other at-rule.
+function sizeQueryOf(block: AtRuleBlock) {
+  const queries = new Map([
+    ["media", parseMediaQuery],
+    ["container", parseContainerQuery]
+  ]);
+  return queries.get(block.name)?.(block.prelude) ?? null;
+}
+
 function addAtRule({ translator, block, scheme, media }: {
   translator: Translator;
   block: AtRuleBlock;
@@ -512,8 +521,7 @@ function addAtRule({ translator, block, scheme, media }: {
   }
 
   const isNestedMedia = scheme !== ColorScheme.DEFAULT || media !== null;
-  const canBeSizeQuery = !isNestedMedia && block.name === "media";
-  const sizeQuery = canBeSizeQuery ? parseMediaQuery(block.prelude) : null;
+  const sizeQuery = isNestedMedia ? null : sizeQueryOf(block);
   const { children } = block;
   const isSizeBlock = sizeQuery !== null && children !== null;
   if (isSizeBlock) {
