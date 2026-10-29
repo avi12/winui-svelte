@@ -3,6 +3,7 @@ import {
   bindableEvents,
   bindingsAfterWinapp,
   COMPONENT_WINMD,
+  componentWinmds,
   coreClasses,
   createdCollections,
   featureClasses,
@@ -168,9 +169,14 @@ export interface ClassModel {
   // The collection classes the component registers beside its own: those
   // whose items it can be.
   registers: TypeName[];
+  // The folder of src/components/generated the level is written to: empty for
+  // WinUI, the component winmd's own for an extra package (Win2D).
+  folder: string;
 }
 
 export interface Model {
+  // Empty for the WinUI components, else the folder of the extra package they are for.
+  folder: string;
   classes: ClassModel[];
   // Every enum the properties name, for the bindings.
   enums: TypeName[];
@@ -187,8 +193,8 @@ const lockFileSchema = z.object({
   packages: z.array(z.object({ winmds: z.array(z.string()) }))
 });
 
-// The index of the metadata `winapp restore` locked, and the file the
-// components are in.
+// The index of the metadata `winapp restore` locked, the file the WinUI
+// components are in and the files of the extra packages' (componentWinmds).
 export function loadMetadata(lockPath: string) {
   const parsedLock = lockFileSchema.safeParse(JSON.parse(readFileSync(lockPath, "utf8")));
   if (!parsedLock.success) {
@@ -212,9 +218,18 @@ export function loadMetadata(lockPath: string) {
     index.add(new WinMdFile(find(name)));
   }
 
+  const extras = componentWinmds.map(extra => {
+    const file = new WinMdFile(find(extra.winmd));
+    index.add(file);
+    return {
+      extra,
+      file
+    };
+  });
   return {
     index,
-    components
+    components,
+    extras
   };
 }
 
@@ -424,7 +439,8 @@ class Builder {
       observed: [],
       slots: [],
       holdsItems: false,
-      registers: []
+      registers: [],
+      folder: folderOf(type.namespace)
     };
     this.classes.set(key, model);
     this.fillMembers({
@@ -619,9 +635,14 @@ class Builder {
     this.attachedByTarget.set(level, list);
   }
 
-  build(components: WinMdFile) {
+  // `wanted` limits the components to the classes it names (an extra package's).
+  build({ components, wanted }: {
+    components: WinMdFile;
+    wanted?: Set<string>;
+  }) {
     this.collectAttached();
-    const candidates = components.types.filter(type => this.isCandidate(type));
+    const isWanted = (type: TypeInfo) => wanted === undefined || wanted.has(fullName(type));
+    const candidates = components.types.filter(type => isWanted(type) && this.isCandidate(type));
     for (const type of candidates) {
       const reason = nonConstructible.get(fullName(type));
       const isExcluded = reason !== undefined;
@@ -650,6 +671,7 @@ class Builder {
 
     this.checkNames(classes);
     return {
+      folder: "",
       classes,
       enums: [...this.enums.values()].sort((left, right) => fullName(left).localeCompare(fullName(right))),
       owners: [...this.owners.values()],
@@ -838,9 +860,32 @@ class Builder {
   }
 }
 
+function folderOf(namespace: string) {
+  const extra = componentWinmds.find(entry => namespace === entry.namespace || namespace.startsWith(`${entry.namespace}.`));
+  return extra?.folder ?? "";
+}
+
 export function buildModel(lockPath: string) {
   const { index, components } = loadMetadata(lockPath);
-  return new Builder(index).build(components);
+  return new Builder(index).build({ components });
+}
+
+// The components of each extra package (componentWinmds) as a model of their
+// own: only the levels of the package's namespace, whose parents are the
+// WinUI levels they derive from.
+export function buildExtraModels(lockPath: string) {
+  const { index, extras } = loadMetadata(lockPath);
+  return extras.map(({ extra, file }) => {
+    const model = new Builder(index).build({
+      components: file,
+      wanted: new Set(extra.classes)
+    });
+    return {
+      ...model,
+      folder: extra.folder,
+      classes: model.classes.filter(level => level.folder === extra.folder)
+    };
+  });
 }
 
 // Every class the bindings must hold for the model: the hierarchy, the
@@ -849,6 +894,12 @@ export function bindingClasses(model: Model) {
   const all = new Map<string, TypeName>();
   for (const level of model.classes) {
     all.set(fullName(level.type), level.type);
+  }
+
+  const isExtra = model.folder !== "";
+  if (isExtra) {
+    return [...all.values(), ...model.enums.filter(type => folderOf(type.namespace) === model.folder)]
+      .sort((left, right) => fullName(left).localeCompare(fullName(right)));
   }
 
   const created = createdCollections.values();

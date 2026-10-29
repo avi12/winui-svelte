@@ -1,4 +1,4 @@
-import { buildModel, loadMetadata } from "./model.ts";
+import { buildExtraModels, buildModel, loadMetadata } from "./model.ts";
 import { handWrittenComponents, knownGaps, notComponentPatterns, notComponents } from "./not-components.ts";
 import { nonConstructible } from "./tables.ts";
 import { fullName, TypeAttribute } from "./winmd.ts";
@@ -89,12 +89,12 @@ function classify({ name, level, excludedReason }: {
  * static class) with how the package covers it, sorted by name.
  */
 export function inventory(lockPath: string) {
-  const model = buildModel(lockPath);
-  const { components } = loadMetadata(lockPath);
-  const levels = new Map(model.classes.map(level => [fullName(level.type), level]));
-  const excluded = new Map(model.excluded.map(entry => [entry.name, entry.reason]));
+  const { components, extras } = loadMetadata(lockPath);
+  const models = [buildModel(lockPath), ...buildExtraModels(lockPath)];
+  const levels = new Map(models.flatMap(model => model.classes).map(level => [fullName(level.type), level]));
+  const excluded = new Map(models.flatMap(model => model.excluded).map(entry => [entry.name, entry.reason]));
   const entries = [];
-  for (const type of components.types) {
+  for (const type of [components, ...extras.map(entry => entry.file)].flatMap(file => file.types)) {
     const isInterface = (type.flags & TypeAttribute.INTERFACE) !== 0;
     const isStatic = (type.flags & TypeAttribute.ABSTRACT) !== 0 && (type.flags & TypeAttribute.SEALED) !== 0;
     const isValue = type.base === null || VALUE_BASES.has(type.base.name);

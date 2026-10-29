@@ -42,7 +42,8 @@ function pickerWith(properties: PropertyModel[]) {
     observed: [],
     slots: [],
     holdsItems: false,
-    registers: []
+    registers: [],
+    folder: ""
   };
 }
 

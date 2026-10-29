@@ -200,6 +200,27 @@ export const referenceWinmds = [
   "Windows.Foundation.UniversalApiContract.winmd"
 ];
 
+/**
+ * Packages beyond WinUI whose controls become components too: the winmd they
+ * are read from (an entry of extraPackages), the namespace they live in, the
+ * folder of src/components/generated and subpath export they are written to,
+ * and the classes that become components (the rest of the winmd is reached
+ * through bindings and the drawing API). Their parents are WinUI's levels.
+ */
+export const componentWinmds = [
+  {
+    winmd: "Microsoft.Graphics.Canvas.winmd",
+    namespace: "Microsoft.Graphics.Canvas",
+    folder: "win2d",
+    classes: [
+      "Microsoft.Graphics.Canvas.UI.Xaml.CanvasAnimatedControl",
+      "Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl",
+      "Microsoft.Graphics.Canvas.UI.Xaml.CanvasSwapChainPanel",
+      "Microsoft.Graphics.Canvas.UI.Xaml.CanvasVirtualControl"
+    ]
+  }
+];
+
 // An interface a class implements for the code that derives from it, not for
 // the code that uses it.
 export const subclassInterfaceSuffixes = ["Protected", "Overrides", "Private", "Factory", "Statics"];

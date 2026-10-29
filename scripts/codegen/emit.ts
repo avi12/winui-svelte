@@ -236,7 +236,12 @@ export function emitBindings(model: Model) {
     lines.push(`export { ${type.name} } from "${bindingModule(type)}";`);
   }
 
-  for (const extra of extraBindings) {
+  const isExtra = model.folder !== "";
+  if (isExtra) {
+    lines.push("export * from \"../bindings.ts\";");
+  }
+
+  for (const extra of isExtra ? [] : extraBindings) {
     const isAliased = extra.alias !== undefined;
     const exported = isAliased ? `${extra.name} as ${extra.alias}` : extra.name;
     lines.push(`export { ${exported} } from "${extra.module}";`);
@@ -838,6 +843,27 @@ function emitLevelBody({ level, imports }: {
   };
 }
 
+// A level of an extra package is one folder deeper than the shared modules
+// (convert.ts, runtime.ts...) it imports.
+function sharedRoot(level: ClassModel) {
+  const isExtra = level.folder !== "";
+  return isExtra ? "../" : "";
+}
+
+// Where a level imports its parent's link from: beside it, or in the WinUI folder.
+function parentModule({ level, parent }: {
+  level: ClassModel;
+  parent: string;
+}) {
+  let ancestor = level.parent;
+  while (ancestor !== null && ancestor.type.name !== parent) {
+    ancestor = ancestor.parent;
+  }
+
+  const isBeside = ancestor === null || ancestor.folder === level.folder;
+  return isBeside ? `./${parent}.svelte.ts` : `${sharedRoot(level)}../controls/${parent}.svelte.ts`;
+}
+
 function emitLevelImports({ level, imports }: {
   level: ClassModel;
   imports: LevelImports;
@@ -848,15 +874,16 @@ function emitLevelImports({ level, imports }: {
   const isNamedProps = constructedClasses.has(name);
   const isLinked = hasExtras && !isNamedProps;
   const hasObserved = level.observed.length > 0;
-  const extension = `../../extensions/${kebabCase(name)}.ts`;
+  const root = sharedRoot(level);
+  const extension = `${root}../../extensions/${kebabCase(name)}.ts`;
   const lines = [
     ...importLine({
       names: imports.convert,
-      from: "../../convert.ts"
+      from: `${root}../../convert.ts`
     }),
     ...importLine({
       names: imports.convertTypes,
-      from: "../../convert.ts",
+      from: `${root}../../convert.ts`,
       isType: true
     }),
     ...isLinked ? importLine({
@@ -865,16 +892,16 @@ function emitLevelImports({ level, imports }: {
     }) : [],
     ...hasExtras ? importLine({
       names: [extras],
-      from: isNamedProps ? "../../constructed.ts" : extension,
+      from: isNamedProps ? `${root}../../constructed.ts` : extension,
       isType: true
     }) : [],
     ...importLine({
       names: hasObserved ? ["observe"] : [],
-      from: "../../observed.ts"
+      from: `${root}../../observed.ts`
     }),
     ...importLine({
       names: ["Linker"],
-      from: "../../runtime.svelte.ts"
+      from: `${root}../../runtime.svelte.ts`
     }),
     ...importLine({
       names: imports.bindingValues,
@@ -887,11 +914,15 @@ function emitLevelImports({ level, imports }: {
     })
   ];
   for (const parent of imports.parents) {
-    lines.push(`import { link${parent} } from "./${parent}.svelte.ts";`);
+    const module = parentModule({
+      level,
+      parent
+    });
+    lines.push(`import { link${parent} } from "${module}";`);
     lines.push(
       ...importLine({
         names: [`${parent}Bound`, `${parent}Props`],
-        from: `./${parent}.svelte.ts`,
+        from: module,
         isType: true
       })
     );
@@ -1391,10 +1422,10 @@ export function emitComponent(level: ClassModel) {
     ...isOverlay ? [
       `  import { ${overlay.attach} } from "${OVERLAY_FOLDER}/overlay-host.svelte.ts";`,
       `  import type { ${overlay.props} } from "${OVERLAY_FOLDER}/overlay-props.ts";`,
-      "  import type { PlacedControl } from \"../runtime.ts\";"
+      `  import type { PlacedControl } from "${sharedRoot(level)}../runtime.ts";`
     ] : [],
-    `  import { ${runtimeNames.join(", ")} } from "../runtime.ts";`,
-    ...constructed === undefined ? [] : [`  import { ${constructed.helper} } from "../constructed.ts";`],
+    `  import { ${runtimeNames.join(", ")} } from "${sharedRoot(level)}../runtime.ts";`,
+    ...constructed === undefined ? [] : [`  import { ${constructed.helper} } from "${sharedRoot(level)}../constructed.ts";`],
     `  import type { ${name}ComponentProps } from "./controls/${name}.svelte.ts";`,
     `  import { connect${name} } from "./controls/${name}.svelte.ts";`,
     "",
@@ -1465,7 +1496,7 @@ export function emitStrictness(model: Model) {
   const lines = [
     GENERATED_HEADER,
     "",
-    "import type { Expect, StrictProps } from \"../strictness.ts\";",
+    `import type { Expect, StrictProps } from "${model.folder === "" ? "" : "../"}../strictness.ts";`,
     `import type { ${names.map(name => `${name}ComponentProps`).join(", ")} } from "./index.ts";`,
     "",
     "export type PropsStrictness = [",

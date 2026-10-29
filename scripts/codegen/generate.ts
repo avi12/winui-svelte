@@ -10,7 +10,8 @@ import {
   emitMetadata,
   emitStrictness
 } from "./emit.ts";
-import { bindingClasses, buildModel, requestedClasses } from "./model.ts";
+import { bindingClasses, buildExtraModels, buildModel, requestedClasses } from "./model.ts";
+import type { Model } from "./model.ts";
 import type { TypeName } from "./winmd.ts";
 import { filesIn } from "#scripts/files-in.ts";
 import {
@@ -100,52 +101,70 @@ function updatedReadme(blocks: ReadmeBlock[]) {
   };
 }
 
-function generatedFiles(project: string) {
-  const model = buildModel(path.join(project, ...LOCK_PATH));
+// The files of one model: the WinUI components in the generated folder
+// itself, an extra package's in the folder of its own (src/components/
+// generated/win2d, the subpath export `winui-svelte/win2d`).
+function modelFiles(model: Model) {
+  const folder = path.join(GENERATED_FOLDER, model.folder);
   const output: OutputFile[] = [
     {
-      file: path.join(GENERATED_FOLDER, "bindings.ts"),
+      file: path.join(folder, "bindings.ts"),
       text: emitBindings(model)
     },
     {
-      file: path.join(GENERATED_FOLDER, "index.ts"),
+      file: path.join(folder, "index.ts"),
       text: emitIndex(model)
     },
     {
-      file: path.join(GENERATED_FOLDER, "metadata.ts"),
-      text: emitMetadata(model)
-    },
-    {
-      file: path.join(GENERATED_FOLDER, "props-strictness.ts"),
+      file: path.join(folder, "props-strictness.ts"),
       text: emitStrictness(model)
     }
   ];
+  const isWinUi = model.folder === "";
+  if (isWinUi) {
+    output.push({
+      file: path.join(folder, "metadata.ts"),
+      text: emitMetadata(model)
+    });
+  }
+
   for (const level of model.classes) {
     const name = level.type.name;
     output.push({
-      file: path.join(GENERATED_FOLDER, "controls", `${name}.svelte.ts`),
+      file: path.join(folder, "controls", `${name}.svelte.ts`),
       text: emitLevel(level)
     });
 
     if (level.isComponent) {
       output.push(
         {
-          file: path.join(GENERATED_FOLDER, `${name}.svelte`),
+          file: path.join(folder, `${name}.svelte`),
           text: emitComponent(level)
         },
         {
-          file: path.join(GENERATED_FOLDER, `${name}.d.svelte.ts`),
+          file: path.join(folder, `${name}.d.svelte.ts`),
           text: emitDeclaration(level)
         }
       );
     }
   }
 
+  return output;
+}
+
+function generatedFiles(project: string) {
+  const lockPath = path.join(project, ...LOCK_PATH);
+  const model = buildModel(lockPath);
+  const extraModels = buildExtraModels(lockPath);
+  const output = [model, ...extraModels].flatMap(modelFiles);
   output.push(
     updatedReadme([
       {
         name: "controls",
-        body: emitControlsTable(model)
+        body: emitControlsTable({
+          ...model,
+          classes: [...model.classes, ...extraModels.flatMap(extra => extra.classes)]
+        })
       },
       ...quickStartFiles.map(exampleBlock)
     ])
@@ -158,7 +177,7 @@ function generatedFiles(project: string) {
   );
   reportMissingBindings({
     project,
-    wanted: bindingClasses(model)
+    wanted: [model, ...extraModels].flatMap(entry => bindingClasses(entry))
   });
   return output;
 }

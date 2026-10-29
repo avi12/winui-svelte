@@ -1,10 +1,10 @@
 {
   "counts": {
     "abstract base of components": 49,
-    "component": 312,
+    "component": 316,
     "hand-written": 1,
     "non-constructible": 2,
-    "not a component": 552
+    "not a component": 661
   },
   "listed": [
     {

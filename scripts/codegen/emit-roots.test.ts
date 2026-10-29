@@ -29,6 +29,7 @@ function levelOf({ name, ...overrides }: Partial<ClassModel> & { name: string })
     slots: [],
     holdsItems: false,
     registers: [],
+    folder: "",
     ...overrides
   };
 }
