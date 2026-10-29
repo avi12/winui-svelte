@@ -4,6 +4,7 @@ import {
   bindingsAfterWinapp,
   COMPONENT_WINMD,
   coreClasses,
+  hostOwnedBindables,
   kindOfType,
   neverBindable,
   nonConstructible,
@@ -449,7 +450,11 @@ class Builder {
 
   private deriveBindables(model: ClassModel) {
     const available = this.eventsAvailable(model);
-    for (const property of model.properties.filter(entry => !neverBindable.has(entry.winName))) {
+    const hostOwned = hostOwnedBindables.get(model.type.name) ?? [];
+    const candidatesOf = model.properties
+      .filter(entry => !neverBindable.has(entry.winName))
+      .filter(entry => !hostOwned.includes(entry.winName));
+    for (const property of candidatesOf) {
       const candidates = [...bindableEvents.get(property.winName) ?? [], `${property.winName}${CHANGED_SUFFIX}`];
       const events = candidates.filter(name => available.has(name));
       const hasEvents = events.length > 0;

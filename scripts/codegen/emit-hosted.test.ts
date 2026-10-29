@@ -1,4 +1,5 @@
 import { emitComponent, emitDeclaration } from "./emit.ts";
+import { SlotKind } from "./model.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -78,6 +79,57 @@ test("ItemsView attaches a repeater whose elements are item containers", () => {
   assert.doesNotMatch(component, /handle/u);
   assert.doesNotMatch(component, /children/u);
   assert.match(emitDeclaration(hosted("ItemsView")), /declare const ItemsView: RepeaterComponent<ItemsViewControlProps>;/u);
+});
+
+test("TreeView renders none of the slots its host owns, and the others it keeps", () => {
+  const tree = {
+    ...hosted("TreeView"),
+    slots: [
+      {
+        key: "rootNodes",
+        winName: "RootNodes",
+        kind: SlotKind.COLLECTION
+      },
+      {
+        key: "selectedNode",
+        winName: "SelectedNode",
+        kind: SlotKind.VALUE
+      },
+      {
+        key: "selectedNodes",
+        winName: "SelectedNodes",
+        kind: SlotKind.COLLECTION
+      },
+      {
+        key: "contextFlyout",
+        winName: "ContextFlyout",
+        kind: SlotKind.VALUE
+      }
+    ]
+  };
+  const component = emitComponent(tree);
+  assert.doesNotMatch(component, /rootNodes|selectedNode/u);
+  assert.match(component, /<property name="contextFlyout">\{@render rest\.contextFlyout\(\)\}<\/property>/u);
+});
+
+test("TreeView is generic over its items, binds its selection and expanded keys, and has no handle", () => {
+  const component = emitComponent(hosted("TreeView"));
+  assert.match(component, /<script generics="Item" lang="ts">/u);
+  assert.match(
+    component,
+    /let \{ selectedKey = \$bindable\(\), selectedKeys = \$bindable\(\), expandedKeys = \$bindable\(\), class: className, style, \.\.\.rest \}/u
+  );
+  assert.match(component, /get expandedKeys\(\) \{\n      return expandedKeys;/u);
+  assert.match(component, /TreeComponentProps<Item, TreeViewComponentProps>/u);
+  assert.match(component, /import \{ attachTree \} from "\.\.\/hand-written\/items\/tree-host\.svelte\.ts";/u);
+  assert.match(component, /attachTree\(\{ view: native, props: rest, bound \}\)/u);
+  assert.doesNotMatch(component, /handle|children|attachItems|attachRepeaterItems/u);
+});
+
+test("TreeView declares its props generic and typed as a TreeComponent", () => {
+  const declaration = emitDeclaration(hosted("TreeView"));
+  assert.match(declaration, /export type TreeViewComponentProps<Item = object> = TreeComponentProps<Item, TreeViewControlProps>;/u);
+  assert.match(declaration, /declare const TreeView: TreeComponent<TreeViewControlProps>;/u);
 });
 
 test("a class that is not hosted keeps its children and has no generics", () => {
