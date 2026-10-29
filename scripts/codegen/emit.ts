@@ -388,30 +388,25 @@ class LevelImports {
   readonly runtimeTypes = new Set<string>();
   readonly parents = new Set<string>();
 
-  note({ kind, enumType, key }: {
+  // A property the component writes: what it only reads, and the converter it
+  // writes through.
+  note(property: {
     kind: PropertyKind;
     enumType: TypeName | null;
     key: string;
   }) {
-    const isEnum = kind === PropertyKind.ENUM;
+    this.noteReadOnly(property);
+    const isEnum = property.kind === PropertyKind.ENUM;
     if (isEnum) {
-      this.bindingValues.add(enumName({ enumType }));
       this.convert.add("enumValue");
-      this.convertTypes.add("EnumInput");
       return;
     }
 
-    const converter = converterOf({
-      kind,
-      key
-    });
+    const converter = converterOf(property);
     const hasConverter = converter !== undefined;
-    if (!hasConverter) {
-      return;
+    if (hasConverter) {
+      this.convert.add(converter.convert);
     }
-
-    this.convert.add(converter.convert);
-    this.convertTypes.add(converter.inputType);
   }
 
   // A property the component only reads: its type is named, and nothing
@@ -439,6 +434,11 @@ class LevelImports {
   }
 }
 
+// A property the control takes just as the prop gives it: no conversion.
+function isPlainProperty(property: PropertyModel) {
+  return !property.isContent && valueExpression(property) === "value";
+}
+
 function emitProperty({ property, className, imports, isSlot }: {
   property: PropertyModel;
   className: string;
@@ -447,13 +447,15 @@ function emitProperty({ property, className, imports, isSlot }: {
 }) {
   imports.note(property);
   const method = property.isContent ? "contentProperty" : "property";
+  const isPlain = isPlainProperty(property);
   return {
     member: `  ${property.key}?: ${memberType({
       property,
       className,
       isSlot
     })};`,
-    body: [
+    plainKey: isPlain ? property.key : null,
+    body: isPlain ? [] : [
       `  link.${method}({`,
       "    props,",
       `    key: "${property.key}",`,
@@ -685,24 +687,31 @@ function emitPropertyBody({ level, imports }: {
     level,
     kind: SlotKind.VALUE
   });
-  const emitted = [
-    ...level.attached.map(attached => emitAttached({
-      attached,
+  const attached = level.attached.map(entry => emitAttached({
+    attached: entry,
+    imports,
+    isSlot: slotKeys.has(entry.key)
+  }));
+  const properties = level.properties
+    .filter(property => !bindableKeys.has(property.key))
+    .map(property => emitProperty({
+      property,
+      className,
       imports,
-      isSlot: slotKeys.has(attached.key)
-    })),
-    ...level.properties
-      .filter(property => !bindableKeys.has(property.key))
-      .map(property => emitProperty({
-        property,
-        className,
-        imports,
-        isSlot: slotKeys.has(property.key)
-      }))
-  ];
+      isSlot: slotKeys.has(property.key)
+    }));
+  const plainKeys = properties.flatMap(entry => entry.plainKey === null ? [] : [entry.plainKey]);
+  const hasPlain = plainKeys.length > 0;
+  const plain = hasPlain ? [
+    "  link.plain({",
+    "    props,",
+    "    control,",
+    `    keys: [${plainKeys.map(key => `"${key}"`).join(", ")}]`,
+    "  });"
+  ] : [];
   return {
-    members: emitted.map(entry => entry.member),
-    body: emitted.flatMap(entry => entry.body)
+    members: [...attached, ...properties].map(entry => entry.member),
+    body: [...plain, ...attached.flatMap(entry => entry.body), ...properties.flatMap(entry => entry.body)]
   };
 }
 
@@ -1244,6 +1253,52 @@ function attachedSlotOwners(level: ClassModel) {
   return [...owners.values()];
 }
 
+// The classes a component registers: its own, the collections it can be an
+// item of, and the owners of the attached properties it sets by snippet.
+function registeredClasses(level: ClassModel) {
+  const classes = [level.type, ...level.registers, ...attachedSlotOwners(level)];
+  return new Map(classes.map(type => [type.name, type]));
+}
+
+function destructuredProps({ bindables, hasHandle, hasChildren }: {
+  bindables: string[];
+  hasHandle: boolean;
+  hasChildren: boolean;
+}) {
+  return [
+    ...bindables.map(key => `${key} = $bindable()`),
+    ...hasHandle ? ["handle = $bindable()"] : [],
+    ...hasChildren ? ["children"] : [],
+    "class: className",
+    "style",
+    "...rest"
+  ];
+}
+
+// Never self-closed: Svelte warns that `<tag />` is ambiguous for an element
+// that is not void, which every custom element is.
+function elementMarkup({ open, tag, inner }: {
+  open: string;
+  tag: string;
+  inner: string[];
+}) {
+  const isEmpty = inner.length === 0;
+  return isEmpty
+    ? `${open}></${tag}>`
+    : `${open}>\n${inner.map(line => `  ${line}`).join("\n")}\n</${tag}>`;
+}
+
+function registerControlsLine({ level, registered }: {
+  level: ClassModel;
+  registered: Map<string, TypeName>;
+}) {
+  const entries = [...registered.values()].map(type => {
+    const tag = type === level.type ? level.tag : kebabCase(type.name);
+    return `"${tag}": ${type.name}`;
+  });
+  return `  registerControls({ ${entries.join(", ")} });`;
+}
+
 export function emitComponent(level: ClassModel) {
   const name = level.type.name;
   const host = hostOf(name);
@@ -1253,14 +1308,11 @@ export function emitComponent(level: ClassModel) {
   const isOverlay = overlay !== undefined;
   const hasChildren = (level.contentProperty !== null || holdsItems(level)) && !isHosted;
   const bindables = componentBindableNames(level);
-  const destructured = [
-    ...bindables.map(key => `${key} = $bindable()`),
-    ...hasHandle ? ["handle = $bindable()"] : [],
-    ...hasChildren ? ["children"] : [],
-    "class: className",
-    "style",
-    "...rest"
-  ];
+  const destructured = destructuredProps({
+    bindables,
+    hasHandle,
+    hasChildren
+  });
   const bound = bagOf(bindables);
   const connect = isHosted ? "connect(native)" : `connect${name}(native, rest, bound)`;
   const attachment = isOverlay
@@ -1274,18 +1326,23 @@ export function emitComponent(level: ClassModel) {
     owned: host?.owned ?? []
   });
   const isSnippetUsed = inner.some(line => line.includes("isSnippet("));
-  // Never self-closed: Svelte warns that `<tag />` is ambiguous for an element
-  // that is not void, which every custom element is.
-  const markup = inner.length === 0
-    ? `${open}></${level.tag}>`
-    : `${open}>\n${inner.map(line => `  ${line}`).join("\n")}\n</${level.tag}>`;
+  const markup = elementMarkup({
+    open,
+    tag: level.tag,
+    inner
+  });
   const propsType = hostedPropsType({
     name,
     host,
     overlay
   });
-  const registered = new Map([level.type, ...level.registers, ...attachedSlotOwners(level)].map(type => [type.name, type]));
-  const runtimeNames = ["attachmentsOf", isOverlay ? "placedControl" : "control", ...isSnippetUsed ? ["isSnippet"] : [], "registerControls"];
+  const registered = registeredClasses(level);
+  const runtimeNames = [
+    "attachmentsOf",
+    isOverlay ? "placedControl" : "control",
+    ...isSnippetUsed ? ["isSnippet"] : [],
+    "registerControls"
+  ];
   return `${[
     SVELTE_HEADER,
     isHosted ? "<script generics=\"Item\" lang=\"ts\">" : "<script lang=\"ts\">",
@@ -1306,7 +1363,10 @@ export function emitComponent(level: ClassModel) {
     "",
     `  let { ${destructured.join(", ")} }: ${propsType} = $props();`,
     `  const bound = ${bound};`,
-    `  registerControls({ ${[...registered.values()].map(type => `"${type === level.type ? level.tag : kebabCase(type.name)}": ${type.name}`).join(", ")} });`,
+    registerControlsLine({
+      level,
+      registered
+    }),
     ...isHosted ? hostConnectLines({
       name,
       host

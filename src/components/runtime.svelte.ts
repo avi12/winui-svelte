@@ -14,6 +14,11 @@ type Given<Value> = Value & (NonNullable<unknown> | null);
 // What a prop's effect writes: a given value that is not a snippet.
 type Written<Value> = Given<Exclude<Value, Snippet>>;
 
+// The props that name a property of the control that takes what they give.
+type PlainKey<Props, Target> = {
+  [Key in keyof Props & keyof Target]-?: Written<Props[Key]> extends Target[Key] ? Key : never;
+}[keyof Props & keyof Target];
+
 /**
  * Whether a prop holds a snippet, which the component renders in a
  * `<property>` element that fills the property, rather than a value.
@@ -60,6 +65,29 @@ export class Linker {
       apply,
       isBlocked: () => false
     });
+  }
+
+  /**
+   * Props the control takes as they are, each in the property of its name:
+   * the same effect as `property` for each, from a list of names instead of
+   * a function apiece, which a bundle of one control carries for every
+   * property its classes have.
+   */
+  plain<Props extends object, Target extends object>({ props, control, keys }: {
+    props: Props;
+    control: Target;
+    keys: ReadonlyArray<PlainKey<Props, Target>>;
+  }) {
+    for (const key of keys) {
+      this.follow({
+        props,
+        key,
+        apply(value) {
+          Object.assign(control, { [key]: value });
+        },
+        isBlocked: () => false
+      });
+    }
   }
 
   /** The property the children are: a child, when there is one, is the value. */

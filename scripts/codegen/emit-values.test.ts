@@ -179,3 +179,29 @@ test("a resources prop takes a record or a ResourceDictionary", () => {
   assert.match(text, /resources\?: ResourcesInput;/u);
   assert.match(text, /control\.resources = resourcesOf\(value\);/u);
 });
+
+test("props that are written as given are linked from one list of names, the others each by a function", () => {
+  const text = emitLevel(
+    pickerWith([
+      property({
+        key: "date",
+        kind: PropertyKind.DATE_TIME
+      }),
+      property({
+        key: "header",
+        kind: PropertyKind.STRING
+      }),
+      property({
+        key: "isEnabled",
+        kind: PropertyKind.BOOLEAN
+      }),
+      property({
+        key: "duration",
+        kind: PropertyKind.DURATION
+      })
+    ])
+  );
+  assert.match(text, /link\.plain\(\{\n {4}props,\n {4}control,\n {4}keys: \["header", "isEnabled"\]\n {2}\}\);/u);
+  assert.doesNotMatch(text, /key: "header"/u);
+  assert.match(text, /key: "duration",\n {4}apply\(value\) \{\n {6}control\.duration = durationOf\(value\);/u);
+});
