@@ -6,7 +6,7 @@ import {
   SLOT_ELEMENT,
   templateOf
 } from "./item-rows.svelte.ts";
-import type { SelectionBound, SelectionView } from "./key-selection.ts";
+import type { SelectedVector, SelectionBound, SelectionView } from "./key-selection.ts";
 import { KeySelection, SelectionKind } from "./key-selection.ts";
 import { movedIndex, MoveDirection, sameOrder } from "./reorder.ts";
 import type { ContainerContentChangingEventArgs, ListViewBase } from "#src/components/generated/bindings.js";
@@ -155,7 +155,8 @@ class ItemsHost<Item> implements ListHandle {
   }
 
   // The selection as the control holds it: boxed keys, found by the very boxes
-  // the control's items are.
+  // the control's items are. A single-selection list refuses to change its
+  // SelectedItems (E_UNEXPECTED), so there it is written through SelectedItem.
   private selectionView() {
     const { view, rows } = this;
     return {
@@ -169,7 +170,23 @@ class ItemsHost<Item> implements ListHandle {
           throw new Error("the list has no selected items vector");
         }
 
-        return selected;
+        const isSingle = selectionKinds.get(view.selectionMode) === SelectionKind.SINGLE;
+        if (!isSingle) {
+          return selected;
+        }
+
+        return {
+          get size() {
+            return selected.size;
+          },
+          getAt: index => selected.getAt(index),
+          clear() {
+            view.selectedItem = null;
+          },
+          append(boxedKey) {
+            view.selectedItem = boxedKey;
+          }
+        } satisfies SelectedVector<BoxedValue>;
       },
       boxOf: key => rows.keys.getAt(rows.order.indexOf(key))
     } satisfies SelectionView<BoxedValue>;
