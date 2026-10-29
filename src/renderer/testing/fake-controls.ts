@@ -181,19 +181,19 @@ export class FakeMenuItem {
 // A collection that is a control itself, as SwipeItems is.
 export class FakeBag {
   readonly margin = null;
-  readonly items: object[] = [];
+  readonly held: object[] = [];
 
   indexOf(item: object) {
-    return this.items.indexOf(item);
+    return this.held.indexOf(item);
   }
 
   // eslint-disable-next-line no-restricted-syntax -- mirrors WinUI's signature
   insertAt(index: number, item: object) {
-    this.items.splice(index, 0, item);
+    this.held.splice(index, 0, item);
   }
 
   removeAt(index: number) {
-    this.items.splice(index, 1);
+    this.held.splice(index, 1);
   }
 }
 

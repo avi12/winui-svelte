@@ -333,8 +333,12 @@ export const observedProperties = new Map<string, string[]>([
 // keeps its own name (AutomationId is automationId, not automationAutomationId).
 // `slots` names the properties (as WinUI does) whose value is a control, so a
 // snippet of that name fills them as it fills a property: the tool tip a
-// ToolTipService sets, the flyout a FlyoutBase attaches. The others point at a
-// control placed elsewhere or hold data.
+// ToolTipService sets. The others point at a control placed elsewhere or hold
+// data. FlyoutBase.AttachedFlyout is left to the `attached` prop
+// (`attached={[FlyoutBase, "AttachedFlyout", flyout]}`): as a prop of every
+// framework element it puts FlyoutBase, a binding module of its own, and a
+// snippet block in every component, which the one-Button bundle budget
+// (scripts/pack/treeshake.test.ts) cannot take.
 export const attachedOwners: Array<{
   owner: TypeName;
   prefix: string;
@@ -389,15 +393,6 @@ export const attachedOwners: Array<{
       name: "AutomationProperties"
     },
     prefix: "automation"
-  },
-  // `attachedFlyout`, not `flyout`: a button has a Flyout property of its own.
-  {
-    owner: {
-      namespace: "Microsoft.UI.Xaml.Controls.Primitives",
-      name: "FlyoutBase"
-    },
-    prefix: "attached",
-    slots: ["AttachedFlyout"]
   },
   // The target of an animation: storyboardTarget, storyboardTargetName and
   // storyboardTargetProperty, on every timeline.

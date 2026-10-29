@@ -1171,9 +1171,14 @@ const slotsAtFirst: SlotExpectation[] = [
   },
   {
     name: "tipButton",
-    what: "the toolTip snippet is the tool tip and the attachedFlyout snippet the attached flyout",
-    isMet: control => isRecord(bindings.ToolTipService.getToolTip(control))
-      && isRecord(bindings.FlyoutBase.getAttachedFlyout(control))
+    what: "the toolTip snippet is the tool tip",
+    isMet: control => isRecord(
+      attachedValue({
+        owner: "ToolTipService",
+        setter: "setToolTip",
+        control
+      })
+    )
   },
   {
     name: "mapControl",

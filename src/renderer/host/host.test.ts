@@ -264,19 +264,19 @@ test("the children of a control that is a collection itself are its items", () =
   assert.ok(root instanceof FakePanel);
   const [, , , , , bag] = root.children.items;
   assert.ok(bag instanceof FakeBag);
-  assert.equal(bag.items.length, 1);
+  assert.equal(bag.held.length, 1);
 
   mounted.set({
     isShown: true,
     label: "Open"
   });
-  assert.equal(bag.items.length, 2);
+  assert.equal(bag.held.length, 2);
 
   mounted.set({
     isShown: false,
     label: "Open"
   });
-  assert.equal(bag.items.length, 1);
+  assert.equal(bag.held.length, 1);
   mounted.unmount();
 });
 

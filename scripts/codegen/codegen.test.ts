@@ -24,7 +24,7 @@ test("the model finds the components, their bindables and attached properties", 
   assert.equal(find("Grid")?.contentProperty, "Children");
   assert.equal(find("Control")?.isComponent, false);
   const attached = find("FrameworkElement")?.attached.map(entry => entry.key);
-  assert.deepEqual(attached, ["gridRow", "gridColumn", "gridRowSpan", "gridColumnSpan", "attachedFlyout"]);
+  assert.deepEqual(attached, ["gridRow", "gridColumn", "gridRowSpan", "gridColumnSpan"]);
 });
 
 test("a flag-less bindable pair comes from the <Property>Changed rule", { skip: !HAS_METADATA }, () => {

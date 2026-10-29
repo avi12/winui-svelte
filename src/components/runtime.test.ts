@@ -4,10 +4,11 @@ import { registerHooks } from "node:module";
 import path from "node:path";
 import { test } from "node:test";
 
-// Linker.observed: state the control gives back and the app only reads.
+// observe: state the control gives back and the app only reads.
 
 registerHooks(svelteHooks(path.join(import.meta.dirname, "runtime.svelte.ts")));
 const { Linker } = await import("./runtime.svelte.ts");
+const { observe } = await import("./observed.ts");
 
 interface Bound {
   canGoBack?: boolean | undefined;
@@ -29,12 +30,13 @@ class Raised {
   }
 }
 
-function observe() {
+function observed() {
   const link = new Linker();
   const raised = new Raised();
   const bound: Bound = {};
   const state = { canGoBack: false };
-  link.observed({
+  observe({
+    link,
     bound,
     key: "canGoBack",
     read: () => state.canGoBack,
@@ -49,12 +51,12 @@ function observe() {
 }
 
 test("an observed property holds the control's value as soon as it is linked", () => {
-  const { bound } = observe();
+  const { bound } = observed();
   assert.equal(bound.canGoBack, false);
 });
 
 test("an observed property follows the control each time its event is raised", () => {
-  const { bound, state, raised } = observe();
+  const { bound, state, raised } = observed();
   state.canGoBack = true;
   assert.equal(bound.canGoBack, false, "nothing changes until the control says it did");
   raised.raise();
@@ -62,7 +64,7 @@ test("an observed property follows the control each time its event is raised", (
 });
 
 test("an observed property stops following when the control is unlinked", () => {
-  const { link, bound, state, raised } = observe();
+  const { link, bound, state, raised } = observed();
   link.dispose();
   state.canGoBack = true;
   raised.raise();

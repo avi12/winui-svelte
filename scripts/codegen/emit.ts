@@ -534,7 +534,8 @@ function emitObserved({ observed, className, imports }: {
   return {
     member: `  ${observed.key}?: ${type} | undefined;`,
     body: [
-      "  link.observed({",
+      "  observe({",
+      "    link,",
       "    bound,",
       `    key: "${observed.key}",`,
       `    read: () => ${read},`,
@@ -800,6 +801,7 @@ function emitLevelImports({ level, imports }: {
   const name = level.type.name;
   const extras = extrasOf(level);
   const hasExtras = extras !== null;
+  const hasObserved = level.observed.length > 0;
   const extension = `../../extensions/${kebabCase(name)}.ts`;
   const lines = [
     ...importLine({
@@ -820,6 +822,10 @@ function emitLevelImports({ level, imports }: {
       from: extension,
       isType: true
     }) : [],
+    ...importLine({
+      names: hasObserved ? ["observe"] : [],
+      from: "../../observed.ts"
+    }),
     ...importLine({
       names: ["Linker"],
       from: "../../runtime.svelte.ts"

@@ -647,9 +647,6 @@ An attached property whose value is a control takes a snippet as well
 
 - `toolTip` (every element): `{#snippet toolTip()}<TextBlock>Save</TextBlock>{/snippet}`.
   A string, number or boolean prop works as before.
-- `attachedFlyout` (every framework element): a `Flyout` or `MenuFlyout` in a
-  snippet. It is `attachedFlyout` and not `flyout`, which `Button` and
-  `SplitButton` have as a property of their own.
 
 The component renders a `<property name="tool-tip-service.tool-tip">`
 element; a property element named `owner.property` fills the attached property
@@ -657,8 +654,13 @@ through the owner's `set<Property>`, as the attribute of that name does, and
 gives it back (`null`) when it goes. The component registers the owner, so no
 app code does.
 
-The animation target is attached the same way, on every timeline:
-`storyboardTarget`, `storyboardTargetName` and `storyboardTargetProperty` call
+`FlyoutBase.AttachedFlyout` has no prop of its own: a prop of every framework
+element would add `FlyoutBase` (a binding module) and a snippet block to every
+component, more than the one-Button bundle budget allows. Use the `attached`
+prop: `attached={[FlyoutBase, "AttachedFlyout", flyout]}`.
+
+The animation target is attached on every timeline: `storyboardTarget`,
+`storyboardTargetName` and `storyboardTargetProperty` call
 `Storyboard.SetTarget`, `SetTargetName` and `SetTargetProperty`.
 
 ### Observed state

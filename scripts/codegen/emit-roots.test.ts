@@ -1,5 +1,5 @@
 import { emitComponent, emitLevel, emitMetadata } from "./emit.ts";
-import type { ClassModel } from "./model.ts";
+import type { ClassModel, Model } from "./model.ts";
 import { buildModel, SlotKind } from "./model.ts";
 import { observedProperties, PropertyKind } from "./tables.ts";
 import assert from "node:assert/strict";
@@ -46,7 +46,8 @@ test("an observed property is a bound prop the control writes and the prop never
   const text = emitLevel(level);
   assert.match(text, /canGoBack\?: boolean \| undefined;/u);
   assert.match(text, /export type FrameBound = Pick<FrameProps, "canGoBack">;/u);
-  assert.match(text, /link\.observed\(\{\n {4}bound,\n {4}key: "canGoBack",\n {4}read: \(\) => control\.canGoBack,/u);
+  assert.match(text, /import \{ observe \} from "\.\.\/\.\.\/observed\.ts";/u);
+  assert.match(text, /observe\(\{\n {4}link,\n {4}bound,\n {4}key: "canGoBack",\n {4}read: \(\) => control\.canGoBack,/u);
   assert.match(text, /handler => control\.onNavigated\(handler\)/u);
   assert.doesNotMatch(text, /control\.canGoBack = /u);
   assert.match(emitComponent(level), /let \{ canGoBack = \$bindable\(\), class: className/u);
@@ -134,6 +135,33 @@ test("the metadata lists what a level observes", () => {
   assert.match(text, /observed: \["verticalOffset"\],/u);
 });
 
+function levelNamed({ model, name }: {
+  model: Model;
+  name: string;
+}) {
+  return model.classes.find(level => level.type.name === name);
+}
+
+function slotsOf({ model, name }: {
+  model: Model;
+  name: string;
+}) {
+  return levelNamed({
+    model,
+    name
+  })?.slots ?? [];
+}
+
+function slotKeysOf({ model, name }: {
+  model: Model;
+  name: string;
+}) {
+  return slotsOf({
+    model,
+    name
+  }).map(slot => slot.key);
+}
+
 // The metadata is the one `pnpm restore` locked, so these need it.
 test("every row of observedProperties is a read-only property of a component, with its event", { skip: !HAS_METADATA }, () => {
   const model = buildModel(LOCK_PATH);
@@ -147,42 +175,68 @@ test("every row of observedProperties is a read-only property of a component, wi
 
 test("the value objects are components, and a collection of them holds its children", { skip: !HAS_METADATA }, () => {
   const model = buildModel(LOCK_PATH);
-  const find = (name: string) => model.classes.find(level => level.type.name === name);
   const names = ["SwipeItem", "SwipeItems", "MapIcon", "MapElementsLayer", "TextHighlighter", "RatingItemFontInfo", "RatingItemImageInfo"];
-  for (const name of names) {
-    assert.equal(find(name)?.isComponent, true, `${name} is a component`);
-  }
-
-  assert.equal(find("SwipeItems")?.holdsItems, true);
-  assert.equal(find("SwipeItem")?.holdsItems, false);
+  const components = names.filter(name => levelNamed({
+    model,
+    name
+  })?.isComponent === true);
+  assert.deepEqual(components, names);
+  assert.equal(
+    levelNamed({
+      model,
+      name: "SwipeItems"
+    })?.holdsItems, true
+  );
+  assert.equal(
+    levelNamed({
+      model,
+      name: "SwipeItem"
+    })?.holdsItems, false
+  );
 });
 
 test("a swipe control, a map, a text block and a rating control take the value objects by snippet", { skip: !HAS_METADATA }, () => {
   const model = buildModel(LOCK_PATH);
-  const slots = (name: string) => model.classes.find(level => level.type.name === name)?.slots ?? [];
-  const keys = (name: string) => slots(name).map(slot => slot.key);
+  function keys(name: string) {
+    return slotKeysOf({
+      model,
+      name
+    });
+  }
+
   assert.deepEqual(keys("SwipeControl").sort(), ["bottomItems", "leftItems", "rightItems", "topItems"]);
   assert.ok(keys("MapControl").includes("layers"));
   assert.ok(keys("MapElementsLayer").includes("mapElements"));
-  assert.equal(slots("TextBlock").find(slot => slot.key === "textHighlighters")?.kind, SlotKind.COLLECTION);
+  const highlighters = slotsOf({
+    model,
+    name: "TextBlock"
+  }).find(slot => slot.key === "textHighlighters");
+  assert.equal(highlighters?.kind, SlotKind.COLLECTION);
   assert.ok(keys("RichTextBlock").includes("textHighlighters"));
   assert.ok(keys("RatingControl").includes("itemInfo"));
 });
 
-test("the tool tip and the attached flyout are snippet slots of every element, set through their owners", { skip: !HAS_METADATA }, () => {
+test("the tool tip is a snippet slot of every element, set through its owner", { skip: !HAS_METADATA }, () => {
   const model = buildModel(LOCK_PATH);
-  const slotOf = (level: string, key: string) => {
-    const slots = model.classes.find(entry => entry.type.name === level)?.slots;
-    return slots?.find(slot => slot.key === key);
-  };
-  assert.equal(slotOf("UIElement", "toolTip")?.elementName, "tool-tip-service.tool-tip");
-  assert.equal(slotOf("FrameworkElement", "attachedFlyout")?.elementName, "flyout-base.attached-flyout");
-  assert.equal(slotOf("UIElement", "toolTipPlacement"), undefined, "an attached property that holds no control is no slot");
+  const slots = slotsOf({
+    model,
+    name: "UIElement"
+  });
+  assert.equal(slots.find(slot => slot.key === "toolTip")?.elementName, "tool-tip-service.tool-tip");
+  assert.equal(slots.find(slot => slot.key === "toolTipPlacement"), undefined, "an attached property that holds no control is no slot");
+  const frameworkSlots = slotKeysOf({
+    model,
+    name: "FrameworkElement"
+  });
+  assert.ok(!frameworkSlots.includes("attachedFlyout"), "the attached flyout stays on the attached prop");
 });
 
 test("the storyboard's target is set on every timeline", { skip: !HAS_METADATA }, () => {
   const model = buildModel(LOCK_PATH);
-  const timeline = model.classes.find(level => level.type.name === "Timeline");
+  const timeline = levelNamed({
+    model,
+    name: "Timeline"
+  });
   assert.deepEqual(timeline?.attached.map(entry => entry.key).sort(), [
     "storyboardTarget",
     "storyboardTargetName",

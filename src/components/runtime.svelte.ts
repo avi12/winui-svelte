@@ -126,28 +126,6 @@ export class Linker {
     }
   }
 
-  /**
-   * State the app only reads: the control's value is written to the prop
-   * when the control is linked and each time one of `subscribers`' events
-   * says it changed. Nothing the prop holds is written to the control.
-   */
-  observed<Bound extends object, Key extends keyof Bound>({ bound, key, read, subscribers }: {
-    bound: Bound;
-    key: Key;
-    read: () => Bound[Key];
-    subscribers: readonly Subscribe[];
-  }) {
-    const publish = () => this.changedByUser({
-      bound,
-      key,
-      read
-    });
-    publish();
-    for (const subscribe of subscribers) {
-      this.add(subscribe(publish));
-    }
-  }
-
   private changedByUser<Bound extends object, Key extends keyof Bound>({ bound, key, read }: {
     bound: Bound;
     key: Key;

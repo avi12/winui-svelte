@@ -5,8 +5,7 @@
   // a paragraph holding a control, items written with {#each}, and value
   // objects (a brush with stops, a transform, a storyboard) in their properties,
   // and the value objects that are no element: swipe items, a map's layers, a
-  // text block's highlights, a rating control's glyph, a tool tip and an
-  // attached flyout.
+  // text block's highlights, a rating control's glyph and a tool tip.
   // Each control is handed to the test by name.
   import {
     AppBarButton,
@@ -22,9 +21,9 @@
     GradientStop,
     InlineUIContainer,
     LinearGradientBrush,
+    MapControl,
     MapElementsLayer,
     MapIcon,
-    MapControl,
     MenuFlyout,
     MenuFlyoutItem,
     NavigationView,
@@ -143,7 +142,11 @@
   <TextBlock {@attach found("highlightedText")}>
     Highlight me
     {#snippet textHighlighters()}
-      <TextHighlighter background="#ffee00" ranges={[{ startIndex: 0, length: 9 }]} />
+      <TextHighlighter
+        background="#ffee00" ranges={[{
+          startIndex: 0,
+          length: 9
+        }]} />
     {/snippet}
   </TextBlock>
   <RatingControl {@attach found("ratingControl")}>
@@ -155,11 +158,6 @@
     Hover me
     {#snippet toolTip()}
       <TextBlock>Tip</TextBlock>
-    {/snippet}
-    {#snippet attachedFlyout()}
-      <Flyout>
-        <TextBlock>Attached</TextBlock>
-      </Flyout>
     {/snippet}
   </Button>
   <MapControl {@attach found("mapControl")}>
