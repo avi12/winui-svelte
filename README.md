@@ -667,6 +667,35 @@ controls takes them as Svelte's own blocks: `{#each}` in the children of
 (`menuItems`), `TabView` (`tabItems`), `RadioButtons` (`items`) and `TreeView`
 (`rootNodes`, of `TreeViewNode`). [API.md](API.md) has the details.
 
+Pages are Svelte components: `Navigator` shows one in a content control and
+keeps the back and forward history (`Frame` needs a page type XAML
+registered, which a Node host cannot give it). A page's props are the params
+it was navigated to with, and its `NavigationCacheMode` says whether it stays
+mounted, with its state, while the user is elsewhere:
+
+```svelte
+<script lang="ts">
+  import { NavigationCacheMode } from "winui-svelte/components";
+
+  let navigator = $state<NavigatorHandle>();
+</script>
+
+<Navigator bind:handle={navigator} onReady={ready => ready.navigate({ page: HomePage })}>
+  {#snippet transition()}
+    <DrillInNavigationTransitionInfo />
+  {/snippet}
+</Navigator>
+
+<Button onClick={() => navigator?.navigate({
+  page: { component: SettingsPage, cacheMode: NavigationCacheMode.REQUIRED },
+  params: { section: "display" }
+})}>Settings</Button>
+```
+
+`handle.goBack()`, `goForward()`, `canGoBack`, `canGoForward` and `current`
+complete it; [API.md](API.md) has the details, and `examples/navigation` ties
+it to a `NavigationView`.
+
 `WebView2` is a component like the rest. Its native libraries ship with the
 package and `initWindowsAppSdk` makes them findable; the browser starts in an
 ordinary desktop session, not in a sandboxed process. A `data:` URL is blocked
