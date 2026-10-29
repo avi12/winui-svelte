@@ -595,3 +595,9 @@ test("light-dark() becomes a custom property with a value per theme", () => {
   assert.match(sheet.resourcesXaml ?? "", /Light/u);
   assert.match(sheet.resourcesXaml ?? "", /Dark/u);
 });
+
+test("at-rules with no WinUI meaning say what to write instead", () => {
+  assert.match(errors("@scope (.card) { .title { opacity: 1 } }").join(), /@scope has no WinUI meaning.*write the full selectors/u);
+  assert.match(errors("@starting-style { .a { opacity: 0 } }").join(), /@starting-style has no WinUI meaning.*transition/u);
+  assert.match(errors("@container (min-width: 1px) { .a { opacity: 0 } }").join(), /@container has no WinUI meaning.*query the window/u);
+});

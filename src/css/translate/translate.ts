@@ -15,6 +15,7 @@ import type {
   StyleSheetData,
   Translation
 } from "./types.ts";
+import { unsupportedAtRuleReason } from "./unsupported-properties.ts";
 import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
 import { replaceLightDark } from "#src/css/parse/light-dark.js";
@@ -110,9 +111,11 @@ function schemeOf({ translator, block }: {
   const isSchemeMissing = scheme === undefined;
   if (isSchemeMissing) {
     const what = block.name === "media" ? `@media ${block.prelude}` : `@${block.name}`;
+    const reason = unsupportedAtRuleReason(block.name);
+    const advice = reason === "" ? "" : `; ${reason}`;
     reportError({
       translator,
-      message: `${what} has no WinUI meaning (only @media (min-width), (max-width), (min-height) and (max-height), which restyle as the window resizes, and, for custom properties, (prefers-color-scheme: dark), (prefers-color-scheme: light) and (forced-colors: active) do; @container has none: query the window)`,
+      message: `${what} has no WinUI meaning (only @media (min-width), (max-width), (min-height) and (max-height), which restyle as the window resizes, and, for custom properties, (prefers-color-scheme: dark), (prefers-color-scheme: light) and (forced-colors: active) do)${advice}`,
       generatedAt: block.at
     });
     return null;

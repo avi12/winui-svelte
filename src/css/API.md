@@ -460,6 +460,15 @@ It is a build error, with the line, where the markup does not decide:
 Elements inside a component's children, a snippet or `<svelte:element>` are not
 seen. Relational selectors in a rule nested in another are not resolved.
 
+## At-rules without a WinUI meaning
+
+`@container` (an element's style would depend on its own size: query the window
+with `@media`), `@scope` (write the full selectors), `@supports`,
+`@starting-style` (an entrance needs an animation, which a Style cannot hold),
+`@keyframes` and `@import` are build errors that say so. Also not done:
+`color-mix` in a space other than sRGB, relative color syntax, and
+`clamp()`/`min()`/`max()` with a % or a viewport unit.
+
 ## What stays unsupported, and why
 
 `unsupported-properties.ts` holds the reason shown for each property no group
