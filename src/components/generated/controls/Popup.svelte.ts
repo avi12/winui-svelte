@@ -2,6 +2,7 @@
 
 import { enumValue } from "../../convert.ts";
 import type { ElementProps, EnumInput } from "../../convert.ts";
+import { observe } from "../../observed.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import { LightDismissOverlayMode, PopupPlacementMode } from "../bindings.ts";
 import type { Popup } from "../bindings.ts";
@@ -12,6 +13,7 @@ import type { Snippet } from "svelte";
 export interface PopupProps extends FrameworkElementProps {
   children?: Snippet;
   isOpen?: boolean | undefined;
+  actualPlacement?: EnumInput<typeof PopupPlacementMode> | undefined;
   child?: Popup["child"] | Snippet;
   childTransitions?: Popup["childTransitions"];
   desiredPlacement?: EnumInput<typeof PopupPlacementMode>;
@@ -27,7 +29,7 @@ export interface PopupProps extends FrameworkElementProps {
   onOpened?: Parameters<Popup["onOpened"]>[0];
 }
 
-export type PopupBound = FrameworkElementBound & Pick<PopupProps, "isOpen">;
+export type PopupBound = FrameworkElementBound & Pick<PopupProps, "isOpen" | "actualPlacement">;
 
 export type PopupComponentProps = PopupProps & ElementProps;
 
@@ -120,6 +122,15 @@ export function linkPopup(
     subscribers: [
       handler => control.onOpened(handler),
       handler => control.onClosed(handler)
+    ]
+  });
+  observe({
+    link,
+    bound,
+    key: "actualPlacement",
+    read: () => control.actualPlacement,
+    subscribers: [
+      handler => control.onActualPlacementChanged(handler)
     ]
   });
 

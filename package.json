@@ -241,7 +241,9 @@
           "namespace": "Microsoft.UI.Windowing",
           "classes": [
             "AppWindow",
+            "CompactOverlayPresenter",
             "DisplayArea",
+            "FullScreenPresenter",
             "OverlappedPresenter"
           ]
         },
@@ -348,6 +350,10 @@
             "ListViewHeaderItem",
             "ListViewItem",
             "MapControl",
+            "MapElement",
+            "MapElementsLayer",
+            "MapIcon",
+            "MapLayer",
             "MediaPlayerElement",
             "MediaPlayerPresenter",
             "MediaTransportControls",
@@ -384,6 +390,9 @@
             "RadioButtons",
             "RadioMenuFlyoutItem",
             "RatingControl",
+            "RatingItemFontInfo",
+            "RatingItemImageInfo",
+            "RatingItemInfo",
             "RefreshContainer",
             "RefreshVisualizer",
             "RelativePanel",
@@ -405,6 +414,8 @@
             "StackLayout",
             "StackPanel",
             "SwipeControl",
+            "SwipeItem",
+            "SwipeItems",
             "SymbolIcon",
             "SymbolIconSource",
             "SystemBackdropElement",
@@ -487,6 +498,7 @@
             "Run",
             "Span",
             "TextElement",
+            "TextHighlighter",
             "Underline"
           ]
         },
@@ -571,6 +583,7 @@
             "ColorAnimationUsingKeyFrames",
             "ColorKeyFrame",
             "CommonNavigationTransitionInfo",
+            "ConnectedAnimationService",
             "ContentThemeTransition",
             "ContinuumNavigationTransitionInfo",
             "CubicEase",
@@ -669,9 +682,33 @@
           ]
         },
         {
+          "namespace": "Microsoft.Windows.AppLifecycle",
+          "classes": [
+            "AppInstance"
+          ]
+        },
+        {
+          "namespace": "Microsoft.Windows.AppNotifications",
+          "classes": [
+            "AppNotification",
+            "AppNotificationManager"
+          ]
+        },
+        {
+          "namespace": "Microsoft.Windows.AppNotifications.Builder",
+          "classes": [
+            "AppNotificationBuilder",
+            "AppNotificationButton",
+            "AppNotificationComboBox",
+            "AppNotificationProgressBar",
+            "AppNotificationTextProperties"
+          ]
+        },
+        {
           "namespace": "Microsoft.Windows.Storage.Pickers",
           "classes": [
             "FileOpenPicker",
+            "FileSavePicker",
             "FolderPicker"
           ]
         },
@@ -689,9 +726,30 @@
           ]
         },
         {
+          "namespace": "Windows.Media.Core",
+          "classes": [
+            "MediaSource"
+          ]
+        },
+        {
+          "namespace": "Windows.Storage.Streams",
+          "classes": [
+            "DataWriter",
+            "InMemoryRandomAccessStream"
+          ]
+        },
+        {
           "namespace": "Windows.UI.ViewManagement",
           "classes": [
             "UISettings"
+          ]
+        },
+        {
+          "namespace": "Microsoft.UI.Composition.SystemBackdrops",
+          "classes": [
+            "DesktopAcrylicController",
+            "MicaController",
+            "SystemBackdropConfiguration"
           ]
         }
       ]

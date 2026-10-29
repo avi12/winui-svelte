@@ -2,8 +2,10 @@
 
 import { enumValue, gridLengthOf } from "../../convert.ts";
 import type { ElementProps, EnumInput, GridLengthInput } from "../../convert.ts";
+import { observe } from "../../observed.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import {
+  TwoPaneViewMode,
   TwoPaneViewPriority,
   TwoPaneViewTallModeConfiguration,
   TwoPaneViewWideModeConfiguration
@@ -14,6 +16,7 @@ import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
 export interface TwoPaneViewProps extends ControlProps {
+  mode?: EnumInput<typeof TwoPaneViewMode> | undefined;
   minTallModeHeight?: number;
   minWideModeWidth?: number;
   pane1?: TwoPaneView["pane1"] | Snippet;
@@ -26,7 +29,7 @@ export interface TwoPaneViewProps extends ControlProps {
   onModeChanged?: Parameters<TwoPaneView["onModeChanged"]>[0];
 }
 
-export type TwoPaneViewBound = ControlBound;
+export type TwoPaneViewBound = ControlBound & Pick<TwoPaneViewProps, "mode">;
 
 export type TwoPaneViewComponentProps = TwoPaneViewProps & ElementProps;
 
@@ -99,6 +102,15 @@ export function linkTwoPaneView(
     apply(value) {
       control.wideModeConfiguration = enumValue({ table: TwoPaneViewWideModeConfiguration, input: value });
     }
+  });
+  observe({
+    link,
+    bound,
+    key: "mode",
+    read: () => control.mode,
+    subscribers: [
+      handler => control.onModeChanged(handler)
+    ]
   });
 
   if ("onModeChanged" in props) {

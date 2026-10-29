@@ -2,6 +2,7 @@
 
 import { enumValue } from "../../convert.ts";
 import type { ElementProps, EnumInput } from "../../convert.ts";
+import { observe } from "../../observed.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import {
   ScrollBarVisibility,
@@ -16,6 +17,9 @@ import type { ContentControlBound, ContentControlProps } from "./ContentControl.
 import type { Snippet } from "svelte";
 
 export interface ScrollViewerProps extends ContentControlProps {
+  horizontalOffset?: number | undefined;
+  verticalOffset?: number | undefined;
+  zoomFactor?: number | undefined;
   bringIntoViewOnFocusChange?: boolean;
   canContentRenderOutsideBounds?: boolean;
   horizontalAnchorRatio?: number;
@@ -51,7 +55,7 @@ export interface ScrollViewerProps extends ContentControlProps {
   onViewChanging?: Parameters<ScrollViewer["onViewChanging"]>[0];
 }
 
-export type ScrollViewerBound = ContentControlBound;
+export type ScrollViewerBound = ContentControlBound & Pick<ScrollViewerProps, "horizontalOffset" | "verticalOffset" | "zoomFactor">;
 
 export type ScrollViewerComponentProps = ScrollViewerProps & ElementProps;
 
@@ -257,6 +261,33 @@ export function linkScrollViewer(
     apply(value) {
       control.zoomSnapPointsType = enumValue({ table: SnapPointsType, input: value });
     }
+  });
+  observe({
+    link,
+    bound,
+    key: "horizontalOffset",
+    read: () => control.horizontalOffset,
+    subscribers: [
+      handler => control.onViewChanged(handler)
+    ]
+  });
+  observe({
+    link,
+    bound,
+    key: "verticalOffset",
+    read: () => control.verticalOffset,
+    subscribers: [
+      handler => control.onViewChanged(handler)
+    ]
+  });
+  observe({
+    link,
+    bound,
+    key: "zoomFactor",
+    read: () => control.zoomFactor,
+    subscribers: [
+      handler => control.onViewChanged(handler)
+    ]
   });
 
   if ("onAnchorRequested" in props) {

@@ -2,11 +2,13 @@
 
 import { brushOf, enumValue } from "../../convert.ts";
 import type { BrushInput, ElementProps, EnumInput } from "../../convert.ts";
+import { observe } from "../../observed.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import {
   ScrollingChainMode,
   ScrollingContentOrientation,
   ScrollingInputKinds,
+  ScrollingInteractionState,
   ScrollingRailMode,
   ScrollingScrollMode,
   ScrollingZoomMode
@@ -17,6 +19,7 @@ import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkEl
 import type { Snippet } from "svelte";
 
 export interface ScrollPresenterProps extends FrameworkElementProps {
+  state?: EnumInput<typeof ScrollingInteractionState> | undefined;
   background?: BrushInput | Snippet;
   content?: ScrollPresenter["content"] | Snippet;
   contentOrientation?: EnumInput<typeof ScrollingContentOrientation>;
@@ -46,7 +49,7 @@ export interface ScrollPresenterProps extends FrameworkElementProps {
   onZoomCompleted?: Parameters<ScrollPresenter["onZoomCompleted"]>[0];
 }
 
-export type ScrollPresenterBound = FrameworkElementBound;
+export type ScrollPresenterBound = FrameworkElementBound & Pick<ScrollPresenterProps, "state">;
 
 export type ScrollPresenterComponentProps = ScrollPresenterProps & ElementProps;
 
@@ -182,6 +185,15 @@ export function linkScrollPresenter(
     apply(value) {
       control.zoomMode = enumValue({ table: ScrollingZoomMode, input: value });
     }
+  });
+  observe({
+    link,
+    bound,
+    key: "state",
+    read: () => control.state,
+    subscribers: [
+      handler => control.onStateChanged(handler)
+    ]
   });
 
   if ("onAnchorRequested" in props) {

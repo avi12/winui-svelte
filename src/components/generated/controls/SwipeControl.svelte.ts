@@ -5,12 +5,13 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { SwipeControl } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface SwipeControlProps extends ContentControlProps {
-  bottomItems?: SwipeControl["bottomItems"];
-  leftItems?: SwipeControl["leftItems"];
-  rightItems?: SwipeControl["rightItems"];
-  topItems?: SwipeControl["topItems"];
+  bottomItems?: SwipeControl["bottomItems"] | Snippet;
+  leftItems?: SwipeControl["leftItems"] | Snippet;
+  rightItems?: SwipeControl["rightItems"] | Snippet;
+  topItems?: SwipeControl["topItems"] | Snippet;
 }
 
 export type SwipeControlBound = ContentControlBound;

@@ -15,6 +15,7 @@ import type {
   FontWeightInput,
   ThicknessInput
 } from "../../convert.ts";
+import { observe } from "../../observed.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import {
   FontStretch,
@@ -35,6 +36,8 @@ import type { Snippet } from "svelte";
 
 export interface TextBlockProps extends FrameworkElementProps {
   children?: Snippet;
+  textHighlighters?: Snippet;
+  isTextTrimmed?: boolean | undefined;
   characterSpacing?: number;
   fontFamily?: FontFamilyInput;
   fontSize?: number;
@@ -65,7 +68,7 @@ export interface TextBlockProps extends FrameworkElementProps {
   onSelectionChanged?: Parameters<TextBlock["onSelectionChanged"]>[0];
 }
 
-export type TextBlockBound = FrameworkElementBound;
+export type TextBlockBound = FrameworkElementBound & Pick<TextBlockProps, "isTextTrimmed">;
 
 export type TextBlockComponentProps = TextBlockProps & ElementProps;
 
@@ -250,6 +253,15 @@ export function linkTextBlock(
     apply(value) {
       control.textWrapping = enumValue({ table: TextWrapping, input: value });
     }
+  });
+  observe({
+    link,
+    bound,
+    key: "isTextTrimmed",
+    read: () => control.isTextTrimmed,
+    subscribers: [
+      handler => control.onIsTextTrimmedChanged(handler)
+    ]
   });
 
   if ("onContextMenuOpening" in props) {

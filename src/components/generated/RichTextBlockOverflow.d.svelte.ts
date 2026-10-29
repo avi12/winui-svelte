@@ -5,5 +5,5 @@ import type { Component } from "svelte";
 
 export type { RichTextBlockOverflowComponentProps };
 
-declare const RichTextBlockOverflow: Component<RichTextBlockOverflowComponentProps, Record<string, never>, "">;
+declare const RichTextBlockOverflow: Component<RichTextBlockOverflowComponentProps, Record<string, never>, "isTextTrimmed">;
 export default RichTextBlockOverflow;

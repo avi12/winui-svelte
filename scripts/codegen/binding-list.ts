@@ -23,6 +23,20 @@ export interface ClassName {
   name: string;
 }
 
+// Listed after every other namespace. winapp adds to the bindings it made
+// before, and fails (`Retained JavaScript module ... does not export its
+// projected type`) when the system backdrop controllers are listed first: they
+// reach Windows.System.DispatcherQueue, which Microsoft.UI.Dispatching shares
+// a name with, and the names winapp gives the two then differ from the
+// retained ones. Last, the run adds the files and keeps the names.
+const TRAILING_NAMESPACES = new Set(["Microsoft.UI.Composition.SystemBackdrops"]);
+
+// eslint-disable-next-line no-restricted-syntax -- the comparator Array.sort calls
+function compareNamespaces(left: BindingEntry, right: BindingEntry) {
+  const trailing = Number(TRAILING_NAMESPACES.has(left.namespace)) - Number(TRAILING_NAMESPACES.has(right.namespace));
+  return trailing || left.namespace.localeCompare(right.namespace);
+}
+
 /** The entries of a parsed list; what is not an entry is left out. */
 function bindingEntriesOf(list: Json[]) {
   return list.flatMap(item => {
@@ -33,7 +47,8 @@ function bindingEntriesOf(list: Json[]) {
 
 /**
  * `existing` with the wanted classes added; the ones already there stay. The
- * result is sorted by namespace, and each namespace's classes by name.
+ * result is sorted by namespace (the system backdrops last, see
+ * TRAILING_NAMESPACES), and each namespace's classes by name.
  */
 export function mergedEntries({ existing, wanted }: {
   existing: BindingEntry[];
@@ -59,7 +74,7 @@ export function mergedEntries({ existing, wanted }: {
     namespace,
     classes: [...classes].sort((left, right) => left.localeCompare(right))
   }));
-  return [...entries, ...wholeNamespaces].sort((left, right) => left.namespace.localeCompare(right.namespace));
+  return [...entries, ...wholeNamespaces].sort(compareNamespaces);
 }
 
 /**

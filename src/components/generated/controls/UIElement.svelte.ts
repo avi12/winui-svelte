@@ -85,7 +85,7 @@ export interface UIElementProps {
   scrollViewerBringIntoViewOnFocusChange?: boolean;
   toolTipPlacement?: EnumInput<typeof PlacementMode>;
   toolTipPlacementTarget?: Parameters<typeof ToolTipService.setPlacementTarget>[1];
-  toolTip?: ObjectInput;
+  toolTip?: ObjectInput | Snippet;
   automationAcceleratorKey?: string;
   automationAccessKey?: string;
   automationId?: string;

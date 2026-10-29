@@ -2,9 +2,11 @@
 
 import { collectionOf, enumValue, objectInputOf, objectOf } from "../../convert.ts";
 import type { CollectionInput, ElementProps, EnumInput, ObjectInput } from "../../convert.ts";
+import { observe } from "../../observed.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import {
   NavigationViewBackButtonVisible,
+  NavigationViewDisplayMode,
   NavigationViewOverflowLabelMode,
   NavigationViewPaneDisplayMode,
   NavigationViewSelectionFollowsFocus,
@@ -20,6 +22,7 @@ export interface NavigationViewProps extends ContentControlProps {
   menuItems?: Snippet;
   selectedItem?: ObjectInput | undefined;
   isPaneOpen?: boolean | undefined;
+  displayMode?: EnumInput<typeof NavigationViewDisplayMode> | undefined;
   alwaysShowHeader?: boolean;
   autoSuggestBox?: NavigationView["autoSuggestBox"] | Snippet;
   compactModeThresholdWidth?: number;
@@ -62,7 +65,7 @@ export interface NavigationViewProps extends ContentControlProps {
   onSelectionChanged?: Parameters<NavigationView["onSelectionChanged"]>[0];
 }
 
-export type NavigationViewBound = ContentControlBound & Pick<NavigationViewProps, "isPaneOpen" | "selectedItem">;
+export type NavigationViewBound = ContentControlBound & Pick<NavigationViewProps, "isPaneOpen" | "selectedItem" | "displayMode">;
 
 export type NavigationViewComponentProps = NavigationViewProps & ElementProps;
 
@@ -308,6 +311,15 @@ export function linkNavigationView(
     },
     subscribers: [
       handler => control.onSelectionChanged(handler)
+    ]
+  });
+  observe({
+    link,
+    bound,
+    key: "displayMode",
+    read: () => control.displayMode,
+    subscribers: [
+      handler => control.onDisplayModeChanged(handler)
     ]
   });
 

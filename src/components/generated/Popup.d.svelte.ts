@@ -5,5 +5,5 @@ import type { Component } from "svelte";
 
 export type { PopupComponentProps };
 
-declare const Popup: Component<PopupComponentProps, Record<string, never>, "isOpen">;
+declare const Popup: Component<PopupComponentProps, Record<string, never>, "isOpen" | "actualPlacement">;
 export default Popup;

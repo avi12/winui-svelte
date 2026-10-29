@@ -5,5 +5,5 @@ import type { Component } from "svelte";
 
 export type { ScrollPresenterComponentProps };
 
-declare const ScrollPresenter: Component<ScrollPresenterComponentProps, Record<string, never>, "">;
+declare const ScrollPresenter: Component<ScrollPresenterComponentProps, Record<string, never>, "state">;
 export default ScrollPresenter;

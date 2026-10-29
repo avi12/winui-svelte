@@ -5,5 +5,5 @@ import type { Component } from "svelte";
 
 export type { NavigationViewComponentProps };
 
-declare const NavigationView: Component<NavigationViewComponentProps, Record<string, never>, "isPaneOpen" | "selectedItem">;
+declare const NavigationView: Component<NavigationViewComponentProps, Record<string, never>, "isPaneOpen" | "selectedItem" | "displayMode">;
 export default NavigationView;

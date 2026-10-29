@@ -5,5 +5,5 @@ import type { Component } from "svelte";
 
 export type { FrameComponentProps };
 
-declare const Frame: Component<FrameComponentProps, Record<string, never>, "">;
+declare const Frame: Component<FrameComponentProps, Record<string, never>, "backStackDepth" | "canGoBack" | "canGoForward">;
 export default Frame;

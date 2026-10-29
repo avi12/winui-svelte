@@ -4,11 +4,13 @@ import {
   bindingsAfterWinapp,
   COMPONENT_WINMD,
   coreClasses,
+  featureClasses,
   kindOfType,
   neverBindable,
   nonConstructible,
   nullableKindOfType,
   numericPrimitives,
+  observedProperties,
   PropertyKind,
   referenceWinmds,
   reservedKeys,
@@ -45,11 +47,12 @@ const COMPOSABLE_ATTRIBUTE = "Windows.Foundation.Metadata.ComposableAttribute";
 const STATIC_ATTRIBUTE = "Windows.Foundation.Metadata.StaticAttribute";
 const PUBLIC_COMPOSITION = 2;
 const ATTACHED_SETTER_PREFIX = "Set";
+const ATTACHED_SEPARATOR = ".";
 const ATTACHED_SETTER_PARAMETERS = 2;
 const CHANGED_SUFFIX = "Changed";
 const EVENT_PREFIX = "on";
 const FACTORY_PARAMETERS = 2;
-const targetTypes = new Set(["DependencyObject", "UIElement", "FrameworkElement"]);
+const targetTypes = new Set(["DependencyObject", "UIElement", "FrameworkElement", "Timeline"]);
 const ENUM_BASE = "Enum";
 const NULLABLE_NAME = "IReference`1";
 const nullablePrimitiveKinds = new Map<string, PropertyKind>([
@@ -98,6 +101,10 @@ export interface SlotModel {
   key: string;
   winName: string;
   kind: SlotKind;
+  // The name of the <property> element that carries the snippet: the prop's
+  // own, or for an attached property `owner.property` in kebab case, which
+  // the renderer sets through the owner.
+  elementName: string;
 }
 
 export interface EventModel {
@@ -114,11 +121,25 @@ export interface BindableModel {
 export interface AttachedModel {
   key: string;
   owner: TypeName;
+  // The attached property's name as WinUI has it (ToolTip, AttachedFlyout).
+  name: string;
   setter: string;
+  // Whether a snippet fills it (attachedOwners in tables.ts).
+  isSlot: boolean;
   kind: PropertyKind;
   enumType: TypeName | null;
   // The class whose level holds it: the narrowest type the setter takes.
   target: string;
+}
+
+// Read-only state the control exposes one-way (observedProperties in tables.ts):
+// the prop is bindable, written by the control and never to it.
+export interface ObservedModel {
+  key: string;
+  winName: string;
+  kind: PropertyKind;
+  enumType: TypeName | null;
+  events: string[];
 }
 
 export interface ClassModel {
@@ -133,7 +154,11 @@ export interface ClassModel {
   events: EventModel[];
   attached: AttachedModel[];
   bindables: BindableModel[];
+  observed: ObservedModel[];
   slots: SlotModel[];
+  // The class is itself a collection of controls (SwipeItems): its children
+  // are its items.
+  holdsItems: boolean;
 }
 
 export interface Model {
@@ -387,7 +412,9 @@ class Builder {
       events: [],
       attached: this.attachedByTarget.get(type.name) ?? [],
       bindables: [],
-      slots: []
+      observed: [],
+      slots: [],
+      holdsItems: false
     };
     this.classes.set(key, model);
     this.fillMembers({
@@ -417,6 +444,22 @@ class Builder {
           kind,
           enumType,
           isContent: member.name === model.contentProperty && model.contentProperty !== null
+        });
+      }
+    }
+
+    for (const member of interfaces.flatMap(entry => entry.properties)) {
+      const events = observedProperties.get(`${type.name}.${member.name}`);
+      const isObserved = !member.hasSetter && events !== undefined && !seenProperties.has(member.name);
+      if (isObserved) {
+        seenProperties.add(member.name);
+        const { kind, enumType } = this.classify(member.type);
+        model.observed.push({
+          winName: member.name,
+          key: camelCase(member.name),
+          kind,
+          enumType,
+          events
         });
       }
     }
@@ -463,9 +506,20 @@ class Builder {
     }
   }
 
+  // The events of an observed property that the class has, and none of the
+  // property's when it has none to say it changed.
+  private deriveObserved(model: ClassModel) {
+    const available = this.eventsAvailable(model);
+    const observed = model.observed.map(property => ({
+      ...property,
+      events: property.events.filter(name => available.has(name))
+    }));
+    model.observed = observed.filter(property => property.events.length > 0);
+  }
+
   // The attached properties, grouped by the level that takes them.
   collectAttached() {
-    for (const { owner, prefix } of attachedOwners) {
+    for (const { owner, prefix, slots = [] } of attachedOwners) {
       const type = this.index.find(owner);
       const isInMetadata = type !== undefined;
       if (!isInMetadata) {
@@ -483,6 +537,7 @@ class Builder {
           this.collectSetter({
             owner,
             prefix,
+            slots,
             method
           });
         }
@@ -490,9 +545,10 @@ class Builder {
     }
   }
 
-  private collectSetter({ owner, prefix, method }: {
+  private collectSetter({ owner, prefix, slots, method }: {
     owner: TypeName;
     prefix: string;
+    slots: string[];
     method: TypeInfo["methods"][number];
   }) {
     const target = method.parameters[0]?.type;
@@ -512,7 +568,9 @@ class Builder {
     const model: AttachedModel = {
       key,
       owner,
+      name,
       setter: `set${name}`,
+      isSlot: slots.includes(name),
       kind,
       enumType,
       target: targetName
@@ -544,11 +602,13 @@ class Builder {
     const classes = [...this.classes.values()].sort((left, right) => left.type.name.localeCompare(right.type.name));
     for (const model of classes) {
       this.deriveBindables(model);
+      this.deriveObserved(model);
       this.noteInterfaces(model);
     }
 
     for (const model of classes) {
       this.deriveSlots(model);
+      this.deriveHoldsItems(model);
     }
 
     this.checkNames(classes);
@@ -602,10 +662,14 @@ class Builder {
     return !isUnslotted && !reservedKeys.has(camelCase(name));
   }
 
-  // A settable property typed as a control or Object.
+  // A settable property typed as a control or Object, or as a collection of
+  // controls (MapControl.Layers): a snippet of controls fills it, in the
+  // collection it holds.
   private valueSlotOf({ model, member }: SlotCandidate) {
     const property = model.properties.find(candidate => candidate.winName === member.name);
-    const isValueSlot = property !== undefined && this.takesControl(member.type);
+    const item = member.type.kind === "generic" ? this.itemTypeOf(member.type) : null;
+    const isControlCollection = item !== null && this.takesControl(item);
+    const isValueSlot = property !== undefined && (this.takesControl(member.type) || isControlCollection);
     if (!isValueSlot) {
       return null;
     }
@@ -613,7 +677,8 @@ class Builder {
     return {
       key: property.key,
       winName: member.name,
-      kind: SlotKind.VALUE
+      kind: SlotKind.VALUE,
+      elementName: property.key
     };
   }
 
@@ -635,7 +700,8 @@ class Builder {
     return {
       key: camelCase(member.name),
       winName: member.name,
-      kind: SlotKind.COLLECTION
+      kind: SlotKind.COLLECTION,
+      elementName: camelCase(member.name)
     };
   }
 
@@ -656,6 +722,26 @@ class Builder {
         model.slots.push(slot);
       }
     }
+
+    for (const attached of model.attached.filter(entry => entry.isSlot)) {
+      model.slots.push({
+        key: attached.key,
+        winName: attached.name,
+        kind: SlotKind.VALUE,
+        elementName: `${kebabCase(attached.owner.name)}${ATTACHED_SEPARATOR}${kebabCase(attached.name)}`
+      });
+    }
+  }
+
+  // A class that is a vector of controls itself, below a root: SwipeItems.
+  private deriveHoldsItems(model: ClassModel) {
+    const type = this.index.find(model.type);
+    const item = type === undefined ? null : this.itemTypeOf({
+      kind: "named",
+      type: model.type,
+      isValueType: false
+    });
+    model.holdsItems = item !== null && this.takesControl(item);
   }
 
   // A class that is a component: not an interface or a static class, below a
@@ -711,7 +797,7 @@ export function bindingClasses(model: Model) {
 export function requestedClasses(model: Model) {
   const enums = new Set([...model.enums, ...supportEnums].map(fullName));
   const classes = new Map<string, TypeName>();
-  for (const type of [...bindingClasses(model), ...coreClasses]) {
+  for (const type of [...bindingClasses(model), ...coreClasses, ...featureClasses]) {
     classes.set(fullName(type), type);
   }
 

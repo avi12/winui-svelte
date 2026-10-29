@@ -125,6 +125,33 @@ export const rootClasses: TypeName[] = [
   {
     namespace: "Microsoft.UI.Xaml.Documents",
     name: "ContentLinkProvider"
+  },
+  // Value objects that are not elements: a swipe control's commands and the
+  // list of them, a map's layers and what they hold, a text block's
+  // highlights, a rating control's glyphs or images.
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "SwipeItem"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "SwipeItems"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "MapElement"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "MapLayer"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Documents",
+    name: "TextHighlighter"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Controls",
+    name: "RatingItemInfo"
   }
 ];
 
@@ -188,10 +215,11 @@ export const narrowedObjectInputs = new Map<string, string>([
 ]);
 
 // A component with props the metadata cannot give (Grid's columns and rows
-// are read-only collections): src/components/extensions/<kebab-name>.ts
-// exports `<Name>Extras` (the props) and `link<Name>Extras(control, props,
-// link)`, which the generated level mixes in.
-export const extendedClasses = new Set(["Grid"]);
+// and a text highlighter's ranges are read-only collections):
+// src/components/extensions/<kebab-name>.ts exports `<Name>Extras` (the props)
+// and `link<Name>Extras(control, props, link)`, which the generated level mixes
+// in.
+export const extendedClasses = new Set(["Grid", "TextHighlighter"]);
 
 // Properties markup does not fill with a snippet, though their type would let
 // it (the slot rule in model.ts takes every settable property typed as a
@@ -272,13 +300,49 @@ export const bindableEvents = new Map<string, string[]>([
 // a disabled parent would write false into an enabled child for good.
 export const neverBindable = new Set(["DataContext", "IsEnabled"]);
 
+// Read-only state a control exposes one-way, as a bindable prop the control
+// writes and the app only reads: `Class.Property`, each with the events that
+// say it changed (an event the class does not have is left out). Not the
+// regular `<Property>Changed` rule: the base classes (FrameworkElement's
+// ActualTheme, ActualWidth) would put the subscription in every component.
+export const observedProperties = new Map<string, string[]>([
+  ["NavigationView.DisplayMode", ["DisplayModeChanged"]],
+  ["Frame.CanGoBack", ["Navigated"]],
+  ["Frame.CanGoForward", ["Navigated"]],
+  ["Frame.BackStackDepth", ["Navigated"]],
+  ["ScrollViewer.HorizontalOffset", ["ViewChanged"]],
+  ["ScrollViewer.VerticalOffset", ["ViewChanged"]],
+  ["ScrollViewer.ZoomFactor", ["ViewChanged"]],
+  ["ScrollView.HorizontalOffset", ["ViewChanged"]],
+  ["ScrollView.VerticalOffset", ["ViewChanged"]],
+  ["ScrollView.ZoomFactor", ["ViewChanged"]],
+  ["ScrollView.ExtentWidth", ["ExtentChanged"]],
+  ["ScrollView.ExtentHeight", ["ExtentChanged"]],
+  ["ScrollView.State", ["StateChanged"]],
+  ["ScrollPresenter.State", ["StateChanged"]],
+  ["Popup.ActualPlacement", ["ActualPlacementChanged"]],
+  ["TwoPaneView.Mode", ["ModeChanged"]],
+  ["TextBlock.IsTextTrimmed", ["IsTextTrimmedChanged"]],
+  ["RichTextBlock.IsTextTrimmed", ["IsTextTrimmedChanged"]],
+  ["RichTextBlockOverflow.IsTextTrimmed", ["IsTextTrimmedChanged"]]
+]);
+
 // Classes whose static Set<Name>(element, value) methods are attached
 // properties, each as a prop named by the prefix and the property: gridRow,
 // automationName, toolTip. A property that starts with the prefix already
 // keeps its own name (AutomationId is automationId, not automationAutomationId).
+// `slots` names the properties (as WinUI does) whose value is a control, so a
+// snippet of that name fills them as it fills a property: the tool tip a
+// ToolTipService sets. The others point at a control placed elsewhere or hold
+// data. FlyoutBase.AttachedFlyout is left to the `attached` prop
+// (`attached={[FlyoutBase, "AttachedFlyout", flyout]}`): as a prop of every
+// framework element it puts FlyoutBase, a binding module of its own, and a
+// snippet block in every component, which the one-Button bundle budget
+// (scripts/pack/treeshake.test.ts) cannot take.
 export const attachedOwners: Array<{
   owner: TypeName;
   prefix: string;
+  slots?: string[];
 }> = [
   {
     owner: {
@@ -320,7 +384,8 @@ export const attachedOwners: Array<{
       namespace: "Microsoft.UI.Xaml.Controls",
       name: "ToolTipService"
     },
-    prefix: "toolTip"
+    prefix: "toolTip",
+    slots: ["ToolTip"]
   },
   {
     owner: {
@@ -328,6 +393,15 @@ export const attachedOwners: Array<{
       name: "AutomationProperties"
     },
     prefix: "automation"
+  },
+  // The target of an animation: storyboardTarget, storyboardTargetName and
+  // storyboardTargetProperty, on every timeline.
+  {
+    owner: {
+      namespace: "Microsoft.UI.Xaml.Media.Animation",
+      name: "Storyboard"
+    },
+    prefix: "storyboard"
   }
 ];
 
@@ -485,6 +559,85 @@ export const coreClasses: TypeName[] = [
   {
     namespace: "Microsoft.UI.Xaml.Media",
     name: "SystemBackdrop"
+  }
+];
+
+// Classes the next features reach, which the bindings hold but nothing in
+// src/ imports yet: the window's presenters, the system backdrop controllers,
+// the save picker, app notifications, the app instance, connected animations
+// and the in-memory streams a media source plays.
+export const featureClasses: TypeName[] = [
+  {
+    namespace: "Microsoft.UI.Windowing",
+    name: "FullScreenPresenter"
+  },
+  {
+    namespace: "Microsoft.UI.Windowing",
+    name: "CompactOverlayPresenter"
+  },
+  {
+    namespace: "Microsoft.UI.Composition.SystemBackdrops",
+    name: "DesktopAcrylicController"
+  },
+  {
+    namespace: "Microsoft.UI.Composition.SystemBackdrops",
+    name: "MicaController"
+  },
+  {
+    namespace: "Microsoft.UI.Composition.SystemBackdrops",
+    name: "SystemBackdropConfiguration"
+  },
+  {
+    namespace: "Microsoft.Windows.Storage.Pickers",
+    name: "FileSavePicker"
+  },
+  {
+    namespace: "Microsoft.Windows.AppNotifications",
+    name: "AppNotificationManager"
+  },
+  {
+    namespace: "Microsoft.Windows.AppNotifications",
+    name: "AppNotification"
+  },
+  {
+    namespace: "Microsoft.Windows.AppNotifications.Builder",
+    name: "AppNotificationBuilder"
+  },
+  {
+    namespace: "Microsoft.Windows.AppNotifications.Builder",
+    name: "AppNotificationButton"
+  },
+  {
+    namespace: "Microsoft.Windows.AppNotifications.Builder",
+    name: "AppNotificationComboBox"
+  },
+  {
+    namespace: "Microsoft.Windows.AppNotifications.Builder",
+    name: "AppNotificationProgressBar"
+  },
+  {
+    namespace: "Microsoft.Windows.AppNotifications.Builder",
+    name: "AppNotificationTextProperties"
+  },
+  {
+    namespace: "Microsoft.Windows.AppLifecycle",
+    name: "AppInstance"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    name: "ConnectedAnimationService"
+  },
+  {
+    namespace: "Windows.Storage.Streams",
+    name: "InMemoryRandomAccessStream"
+  },
+  {
+    namespace: "Windows.Storage.Streams",
+    name: "DataWriter"
+  },
+  {
+    namespace: "Windows.Media.Core",
+    name: "MediaSource"
   }
 ];
 

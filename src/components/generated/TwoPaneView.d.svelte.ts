@@ -5,5 +5,5 @@ import type { Component } from "svelte";
 
 export type { TwoPaneViewComponentProps };
 
-declare const TwoPaneView: Component<TwoPaneViewComponentProps, Record<string, never>, "">;
+declare const TwoPaneView: Component<TwoPaneViewComponentProps, Record<string, never>, "mode">;
 export default TwoPaneView;

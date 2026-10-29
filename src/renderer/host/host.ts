@@ -385,9 +385,20 @@ function isPropertyElement(node: TreeNode<WinuiNative>): node is PropertyElement
 }
 
 // What a <property> element fills: its name attribute.
+// `owner.property` (`tool-tip-service.tool-tip`) fills an attached property,
+// as the attribute of that name does; any other is the control's own.
 function propertyName(element: PropertyElement) {
   const name = element.attributes.get(PROPERTY_NAME_ATTRIBUTE);
-  return typeof name === "string" ? camelCase(name) : null;
+  const isText = typeof name === "string";
+  if (!isText) {
+    return null;
+  }
+
+  return isAttachedName(name) ? name : camelCase(name);
+}
+
+function isAttachedName(name: string) {
+  return name.includes(ATTACHED_SEPARATOR);
 }
 
 // A child of the element's own, which goes where the control's children go:
@@ -555,7 +566,12 @@ const childSlots: Array<[string, ChildSlotHandler]> = [
   })],
   ["text", syncText],
   ["child", syncChild],
-  ["content", syncContent]
+  ["content", syncContent],
+  // A control that is a collection itself (SwipeItems): its children are its items.
+  ["insertAt", ({ element, control }) => syncCollection({
+    element,
+    collection: control
+  })]
 ];
 
 // The Run each text child of an inline collection is shown as.
@@ -628,6 +644,15 @@ function syncProperty({ element, control, name }: {
   control: UIElement;
   name: string;
 }) {
+  if (isAttachedName(name)) {
+    applyAttached({
+      control,
+      name,
+      value: contentOf(element)
+    });
+    return;
+  }
+
   const current = read(control, name);
   const collection = vectorOf(current);
   const isElementSlot = isFrameworkElement(control) && elementProperties.has(name);
@@ -659,6 +684,15 @@ function clearProperty({ element, control, name }: {
   control: UIElement;
   name: string;
 }) {
+  if (isAttachedName(name)) {
+    applyAttached({
+      control,
+      name,
+      value: null
+    });
+    return;
+  }
+
   const current = read(control, name);
   const collection = vectorOf(current);
   const isValue = collection === null;

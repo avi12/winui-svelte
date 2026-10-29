@@ -178,6 +178,35 @@ export class FakeMenuItem {
   text = "";
 }
 
+// A collection that is a control itself, as SwipeItems is.
+export class FakeBag {
+  readonly margin = null;
+  readonly held: object[] = [];
+
+  indexOf(item: object) {
+    return this.held.indexOf(item);
+  }
+
+  // eslint-disable-next-line no-restricted-syntax -- mirrors WinUI's signature
+  insertAt(index: number, item: object) {
+    this.held.splice(index, 0, item);
+  }
+
+  removeAt(index: number) {
+    this.held.splice(index, 1);
+  }
+}
+
+// An owner of an attached property, as ToolTipService is: setNote(control, value).
+export class FakeService {
+  static readonly notes = new WeakMap<object, unknown>();
+
+  // eslint-disable-next-line no-restricted-syntax -- mirrors WinUI's static Set<Property>(element, value)
+  static setNote(control: object, value: unknown) {
+    FakeService.notes.set(control, value);
+  }
+}
+
 export class FakeTextBlock {
   readonly margin = null;
   text = "";
@@ -185,7 +214,16 @@ export class FakeTextBlock {
 
 // By the class names a tag spells: <fake-panel> is FakePanel.
 export const fakeControls = Object.fromEntries(
-  [FakePanel, FakeMotionPanel, FakeToggle, FakeBorder, FakeTextBlock, FakeButton, FakeFlyout, FakeMenuItem].map(
-    control => [control.name, control]
-  )
+  [
+    FakePanel,
+    FakeMotionPanel,
+    FakeToggle,
+    FakeBorder,
+    FakeTextBlock,
+    FakeButton,
+    FakeFlyout,
+    FakeMenuItem,
+    FakeBag,
+    FakeService
+  ].map(control => [control.name, control])
 );
