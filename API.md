@@ -366,10 +366,11 @@ A control that shows its items from a data source is generated like the rest,
 with `items`, `key` and `item` in place of its children and items source: the
 table `itemsHosted` in `scripts/codegen/tables.ts` names them and the host each
 uses (`src/components/hand-written/items`). They are `ListView`, `GridView`,
-`ItemsRepeater`, `ItemsView` and `BreadcrumbBar`. `ListView` and `GridView`
-report their containers (and take the list props below); the other three keep
-their items in an `ItemsRepeater`, whose elements the host fills, and take
-`items`, `key` and `item` only. Every other property, event and snippet slot
+`ItemsRepeater`, `ItemsView`, `BreadcrumbBar` and `TreeView`. `ListView` and
+`GridView` report their containers (and take the list props below); `TreeView`
+reports the containers of the list inside it (and takes the tree props below);
+the other three keep their items in an `ItemsRepeater`, whose elements the host
+fills, and take `items`, `key` and `item` only. Every other property, event and snippet slot
 of the control is the generated component's. `Window` is not a control (it is
 no UIElement), so it is the one component only in `hand-written/` and
 `components/index.ts`.
@@ -379,8 +380,8 @@ its item template: `{#each rows as row (row.id)}<ComboBoxItem content={row.name}
 keeps, adds, moves and removes items as the array changes. They are the
 children of `ComboBox`, `FlipView` and `ListBox`, and the snippet that names
 the property in `NavigationView` (`menuItems`, `footerMenuItems`), `TabView`
-(`tabItems`), `RadioButtons` (`items`) and `TreeView` (`rootNodes`, of
-`TreeViewNode`).
+(`tabItems`) and `RadioButtons` (`items`). A `TreeView` takes its items by
+`items` and `children` instead (below), not as `TreeViewNode` blocks.
 
 Value objects are components too, and fill the property they are written in.
 They are the brushes, geometry, transforms, transitions, animations (with key
@@ -448,6 +449,8 @@ desktop session (a sandboxed process cannot launch the browser, 0x8007139F).
 | `onReorder` | `(keys: string[]) => void`, after a drag or a keyboard move, the keys in the order the user left. The list keeps that order until `items` changes |
 | `itemName` | the accessible name of an item's container |
 | `onControl` | `(view) => void \| cleanup`: the `ListViewBase` itself, for what the component does not cover (item transitions) |
+| `groupBy` | `(item) => string`: shows the items in groups (see "Groups" below) |
+| `groupHeader` | the header row snippet of a group, given the `Group` (`{ key, items }`) |
 | `bind:selectedKey` | `string \| undefined`: the key of the selected item (for the single selection modes). Set it to select an item, read it for the user's choice; it is cleared when the item goes and follows the item when the items reorder |
 | `bind:selectedKeys` | `string[]`: the keys of the selected items in list order, for `Multiple` and `Extended` (`selectedKey` is then the first of them) |
 | `bind:handle` | `ListHandle`: `move(key, direction)` (what Alt+Up/Down does), `scrollToKey(key)`, `focus(key)` |
@@ -473,6 +476,82 @@ are mounted outside the list's own component tree: they do not see its Svelte
 context. The key sync touches only keys that came, went or moved (an empty
 list is filled in one reset), so the control's item transitions play for
 exactly those.
+
+#### Groups
+
+```svelte
+<ListView items={rows} key={row => row.id} groupBy={row => row.city}>
+  {#snippet item(row)}<RowView {row} />{/snippet}
+  {#snippet groupHeader(group)}<text-block>{group.key} ({group.items.length})</text-block>{/snippet}
+</ListView>
+```
+
+`groupBy` arranges the items by a group key: groups follow each other in the
+order their first item appears, each group's items in the order of `items`.
+Each group's header is a row of its own before its items (the control's items
+are the keys of both, so a group's header is one of them), shown with the
+`groupHeader` snippet. A header cannot be selected or focused (its container is
+disabled, so the theme's disabled foreground applies unless the snippet sets
+its own), and `reorderable` and `keyboardReorder` are ignored in a grouped
+list. `selectedKey`, `onReorder`'s keys and `itemName` only ever hold items. It
+is not WinUI's own grouping (`CollectionViewSource.IsSourceGrouped` with a
+`GroupStyle`): that needs `CollectionViewSource` and a JavaScript object that
+implements `ICollectionViewGroup`, neither of which the bindings have, and
+gives a header that sticks to the top of the list, which a header row does not.
+
+### TreeView
+
+```svelte
+<TreeView items={folders} key={folder => folder.path}
+          children={folder => folder.children}
+          bind:expandedKeys bind:selectedKey>
+  {#snippet item(folder)}
+    <FolderRow {folder} />
+  {/snippet}
+</TreeView>
+```
+
+| Prop | |
+|---|---|
+| `items` | the root items |
+| `key` | `(item) => string`: the item's identity, **unique in the whole tree** |
+| `children` | `(item) => Item[]`: the items under an item |
+| `item` | the row snippet, given the item; mounted once per realized container |
+| `itemName` | the accessible name of an item's container |
+| `bind:expandedKeys` | `string[]`: the keys of the expanded items, in the tree's order. Set it to open items, read it for what the user opened; a key the tree has no item for is kept |
+| `bind:selectedKey` | `string \| undefined`: the key of the selected item (`selectionMode` `Single`, the control's default) |
+| `bind:selectedKeys` | `string[]`: the keys of the selected items in the tree's order (`Multiple`); selecting an item selects the items under it, which are in the list too |
+| `onControl` | `(view) => void \| cleanup`: the `TreeView` itself |
+
+Every other property and event of the control is a prop as on the generated
+components. `rootNodes`, `selectedNode`, `selectedNodes`, `selectedItem`,
+`itemsSource` and `itemTemplate` are the component's, and so is `children`
+(which is not Svelte's snippet here). The control's own drag reorder is not
+supported: a move it makes is undone by the next sync of `items`.
+
+How it works: the control's nodes are `TreeViewNode`s whose content is the
+item's **boxed key**, so every node a tree needs is made from the items, not
+by the app. A node's children are made only when the node is expanded (its key
+is in `expandedKeys`) or already were: a collapsed node with children says it
+has some it has not made (`hasUnrealizedChildren`) and `children(item)` is
+called to know it, and the control's `Expanding` event, which it raises for the
+user's click and for the app's `isExpanded` alike, has them made while it
+asks. So a tree that is mostly closed holds nodes for what is open, and a
+node that is closed after it was open keeps its children, in step with the
+items. A node is kept for as long as its item stays under the same parent, so
+a reorder, an insertion or a removal changes exactly those nodes (an item that
+moves to another parent is a new node, and keeps its expanded state through
+its key). Rows work as in the list: the control draws its nodes in a
+`ListView` of its own (the part `ListControl`), which reports each container it
+realizes, and the `item` snippet is mounted into that container's slot and
+ends when the container is recycled (`test/tree.test.ts`: 2000 roots hold the
+rows of about 90 containers).
+
+Selecting is by key as in the list, with one difference: only the items whose
+node is made can be selected, so a key whose parent was never opened is not a
+selection and is dropped from `selectedKey`; put its ancestors in
+`expandedKeys` first. `selectedItem` is not bindable on a `TreeView`: it holds
+the control's own nodes, and binding it undoes the key selection.
 
 ### Window
 
