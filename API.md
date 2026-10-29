@@ -591,3 +591,112 @@ flyouts: `Flyout`, `MenuFlyout`, `MenuBarItemFlyout`, `CommandBarFlyout`,
   to `false` first removes it from the line. The line is one for the thread, so
   a dialog of a second window also waits.
 - `Flyout`'s content is a control: write `<TextBlock>` in it, not bare text.
+
+## Value objects, attached slots and observed state (`winui-svelte/components`)
+
+### Value objects
+
+Classes that are no element but hold what an element shows are components too.
+Each is a root of the generator (`rootClasses` in `scripts/codegen/tables.ts`),
+and the property that holds it takes a snippet of that name:
+
+| Component | Goes in | Snippet |
+|---|---|---|
+| `SwipeItems` (its children are the items), `SwipeItem` | `SwipeControl` | `leftItems`, `rightItems`, `topItems`, `bottomItems` |
+| `MapElementsLayer` (`mapElements`), `MapIcon` | `MapControl` | `layers` |
+| `TextHighlighter` | `TextBlock`, `RichTextBlock` | `textHighlighters` |
+| `RatingItemFontInfo`, `RatingItemImageInfo` | `RatingControl` | `itemInfo` |
+
+```svelte
+<SwipeControl>
+  <TextBlock>Message</TextBlock>
+  {#snippet leftItems()}
+    <SwipeItems mode="Execute">
+      <SwipeItem text="Delete" onInvoked={remove} />
+    </SwipeItems>
+  {/snippet}
+</SwipeControl>
+
+<TextBlock>
+  Find the needle
+  {#snippet textHighlighters()}
+    <TextHighlighter background="#ffee00" ranges={[{ startIndex: 9, length: 6 }]} />
+  {/snippet}
+</TextBlock>
+```
+
+- A class that is a collection of controls itself (`SwipeItems`) takes them as
+  its children: the renderer puts the children of a control that has
+  `insertAt` and no other place for them into it.
+- `TextHighlighter.ranges` is hand-written
+  (`src/components/extensions/text-highlighter.ts`): WinUI's `Ranges` is a
+  read-only collection of structs. The array replaces the ranges it holds.
+- `MapControl.layers` is settable, so the snippet fills the collection the map
+  holds when it holds one.
+
+Not components, on purpose: `GroupStyle` (it is not a `DependencyObject`, only
+templates and styles, and the lists do not group), the scroll snap points
+(`ScrollSnapPoint`, `RepeatedScrollSnapPoint`, ...: their factories take
+arguments, so none has a default constructor), and the visual state, trigger
+and setter families.
+
+### Attached slots
+
+An attached property whose value is a control takes a snippet as well
+(`slots` of `attachedOwners`):
+
+- `toolTip` (every element): `{#snippet toolTip()}<TextBlock>Save</TextBlock>{/snippet}`.
+  A string, number or boolean prop works as before.
+- `attachedFlyout` (every framework element): a `Flyout` or `MenuFlyout` in a
+  snippet. It is `attachedFlyout` and not `flyout`, which `Button` and
+  `SplitButton` have as a property of their own.
+
+The component renders a `<property name="tool-tip-service.tool-tip">`
+element; a property element named `owner.property` fills the attached property
+through the owner's `set<Property>`, as the attribute of that name does, and
+gives it back (`null`) when it goes. The component registers the owner, so no
+app code does.
+
+The animation target is attached the same way, on every timeline:
+`storyboardTarget`, `storyboardTargetName` and `storyboardTargetProperty` call
+`Storyboard.SetTarget`, `SetTargetName` and `SetTargetProperty`.
+
+### Observed state
+
+Read-only state WinUI reports by an event is a bindable prop the control
+writes and the app only reads. It holds the control's value as soon as the
+control is made, and follows each time the event is raised; what the prop is
+given is never written to the control. The table is `observedProperties` in
+`scripts/codegen/tables.ts`, `Class.Property` with the events that say it
+changed:
+
+| Component | Props (event) |
+|---|---|
+| `NavigationView` | `displayMode` (`DisplayModeChanged`) |
+| `Frame` | `canGoBack`, `canGoForward`, `backStackDepth` (`Navigated`) |
+| `ScrollViewer`, `ScrollView` | `horizontalOffset`, `verticalOffset`, `zoomFactor` (`ViewChanged`) |
+| `ScrollView` | `extentWidth`, `extentHeight` (`ExtentChanged`), `state` (`StateChanged`) |
+| `ScrollPresenter` | `state` (`StateChanged`) |
+| `Popup` | `actualPlacement` (`ActualPlacementChanged`) |
+| `TwoPaneView` | `mode` (`ModeChanged`) |
+| `TextBlock`, `RichTextBlock`, `RichTextBlockOverflow` | `isTextTrimmed` (`IsTextTrimmedChanged`) |
+
+```svelte
+<NavigationView bind:displayMode>
+  ...
+</NavigationView>
+{#if displayMode === NavigationViewDisplayMode.Minimal}...{/if}
+```
+
+Not observed: the properties of `FrameworkElement` (`actualWidth`,
+`actualTheme`, `isLoaded`), which would put a subscription in every component.
+
+### Bindings for the next features
+
+`featureClasses` in `scripts/codegen/tables.ts` lists the classes `pnpm bindings`
+makes though nothing in `src/` imports them yet: `FullScreenPresenter`,
+`CompactOverlayPresenter`, `DesktopAcrylicController`, `MicaController`,
+`SystemBackdropConfiguration`, the Windows App SDK `FileSavePicker`,
+`AppNotificationManager`, `AppNotification` and its builders, `AppInstance`,
+`ConnectedAnimationService`, `InMemoryRandomAccessStream`, `DataWriter` and
+`MediaSource`.
