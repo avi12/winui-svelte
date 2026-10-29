@@ -62,6 +62,8 @@
     "examples/web/main.ts",
     "examples/window/main.ts",
     "examples/gallery/main.ts",
+    "examples/todo/main.ts",
+    "examples/settings/main.ts",
     "eslint.config.js"
   ],
   // The bindings are reached through the #winui/* import map, the linters run

@@ -1,6 +1,9 @@
 import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED } from "./example-process.ts";
 import type { Report } from "./example-process.ts";
 import assert from "node:assert/strict";
+import { readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { test } from "node:test";
 
 // Each app of examples/ in a real WinUI window, off screen and never
@@ -51,5 +54,60 @@ test("the gallery shows each of its pages", {
     await closed(example);
   } finally {
     example.kill();
+  }
+});
+
+const SINGLE_WINDOW_APPS = [
+  "todo",
+  "settings"
+];
+
+for (const name of SINGLE_WINDOW_APPS) {
+  test(`the ${name} app opens, shows its key control and closes`, {
+    skip: !IS_WINDOWS_APP_SDK_RESTORED,
+    timeout: TIMEOUT_MILLISECONDS
+  }, async () => {
+    const example = ExampleProcess.start({
+      entry: `examples/${name}/main.ts`,
+      flags: [...BACKGROUND_FLAGS, "--file", path.join(tmpdir(), `winui-svelte-${name}-test.json`)]
+    });
+    try {
+      const shown = await example.settled({
+        command: {
+          cmd: "stats"
+        },
+        kind: "stats"
+      });
+      assert.ok(presentIn(shown).includes(name), `the ${name} app shows its key control`);
+      await closed(example);
+    } finally {
+      example.kill();
+    }
+  });
+}
+
+test("a task added in the todo app is saved to its file", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const file = path.join(tmpdir(), "winui-svelte-todo-saved-test.json");
+  rmSync(file, { force: true });
+  const example = ExampleProcess.start({
+    entry: "examples/todo/main.ts",
+    flags: [...BACKGROUND_FLAGS, "--file", file]
+  });
+  try {
+    await example.ask({
+      command: {
+        cmd: "add",
+        title: "Write the README"
+      },
+      kind: "added"
+    });
+    await closed(example);
+    assert.match(readFileSync(file, "utf8"), /Write the README/u);
+  } finally {
+    example.kill();
+    rmSync(file, { force: true });
   }
 });
