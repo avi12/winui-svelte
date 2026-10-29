@@ -512,10 +512,11 @@ test("the classes of a prop that takes a Style make the Style an element of that
       css: ".row { padding: 8px }\nlist-view-item.picked { opacity: 0.5 }\nbutton.picked { opacity: 0.1 }\n.row:hover { opacity: 0.9 }"
     })
   );
-  const style = String(read(styleOfClasses({
+  const built = styleOfClasses({
     elementType: "list-view-item",
     classNames: "row picked"
-  }), "xaml"));
+  });
+  const style = String(read(built, "xaml"));
   assert.match(style, /TargetType="ListViewItem" BasedOn="\{StaticResource DefaultListViewItemStyle\}"/u);
   assert.match(style, /<Setter Property="Padding" Value="8,8,8,8"\/>/u);
   assert.match(style, /<Setter Property="Opacity" Value="0\.5"\/>/u);
@@ -523,14 +524,16 @@ test("the classes of a prop that takes a Style make the Style an element of that
 });
 
 test("a prop given classes no rule knows gets no Style", () => {
-  assert.equal(styleOfClasses({
+  const unknown = styleOfClasses({
     elementType: "list-view-item",
     classNames: "nothing-styles-this"
-  }), null);
-  assert.equal(styleOfClasses({
+  });
+  const none = styleOfClasses({
     elementType: "list-view-item",
     classNames: ""
-  }), null);
+  });
+  assert.equal(unknown, null);
+  assert.equal(none, null);
 });
 
 test("a class that sets what only an element holds is refused for a Style", () => {

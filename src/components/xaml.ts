@@ -1,6 +1,5 @@
 import { fontFamilyOf } from "./convert.ts";
 import {
-  Control,
   ControlTemplate,
   DataTemplate,
   ItemsPanelTemplate,
@@ -10,6 +9,7 @@ import {
   VisualStateManager,
   XamlReader
 } from "./generated/bindings.ts";
+import type { Control } from "./generated/bindings.ts";
 import type { DirectResource, ResourceRecordInput } from "./resource-record.ts";
 import { resourceParts } from "./resource-record.ts";
 import { installXamlSeam } from "./xaml-seam.ts";
@@ -131,10 +131,10 @@ export function installXaml() {
  * @returns True when the control is now in the state (or already was), false
  * when its template has no state of that name.
  */
-export function goToState({ control, name, useTransitions = false }: {
+export function goToState({ control, name, useTransitions: isTransitioned = false }: {
   control: Control;
   name: string;
   useTransitions?: boolean;
 }) {
-  return VisualStateManager.goToState(control, name, useTransitions);
+  return VisualStateManager.goToState(control, name, isTransitioned);
 }

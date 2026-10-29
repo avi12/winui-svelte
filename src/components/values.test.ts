@@ -241,7 +241,7 @@ test("path data is wrapped as the XAML of a Path, with its characters escaped", 
 
 test("a plain object is a record of resources and a WinRT object is not", () => {
   class ResourceDictionaryLike {}
-  assert.equal(isResourceRecord({ Accent: "#0af" }), true);
+  assert.equal(isResourceRecord({ accent: "#0af" }), true);
   assert.equal(isResourceRecord(Object.create(null)), true);
   assert.equal(isResourceRecord(new ResourceDictionaryLike()), false);
 });

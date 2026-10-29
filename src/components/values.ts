@@ -1,6 +1,6 @@
+import type { ResourceRecordInput } from "./resource-record.ts";
 import { PRESENTATION_NAMESPACE } from "#src/css/translate/cascade.js";
 import { FONT_WEIGHTS } from "#src/css/translate/text-properties.js";
-import type { ResourceRecordInput } from "./resource-record.ts";
 import type { NativeValue } from "#src/native-value.js";
 
 // The plain values a component's props take, and how each is read: pure, so

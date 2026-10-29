@@ -37,6 +37,8 @@ import type {
   ResourceDictionary,
   UIElement
 } from "./generated/bindings.ts";
+import type { ResourceRecordInput } from "./resource-record.ts";
+import { styleTarget } from "./style-targets.ts";
 import type {
   AttachedInput,
   ColorInput,
@@ -83,8 +85,6 @@ import {
   ticksMilliseconds,
   timeSpanTicks
 } from "./values.ts";
-import type { ResourceRecordInput } from "./resource-record.ts";
-import { styleTarget } from "./style-targets.ts";
 import { xamlSeam } from "./xaml-seam.ts";
 import { styleOfClasses } from "#src/css/index.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";

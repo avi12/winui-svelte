@@ -83,7 +83,7 @@ export const refused: {
   resourceValue: {
     resources: {
       // @ts-expect-error a resource is not left undefined
-      ButtonBackground: undefined
+      "--button-background": undefined
     }
   },
   closeButtonStyle: {

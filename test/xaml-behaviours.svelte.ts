@@ -1,6 +1,6 @@
 import * as bindings from "#src/components/generated/bindings.js";
-import { goToState, xamlOf } from "#src/components/xaml.js";
 import { XamlKind } from "#src/components/xaml-source.js";
+import { goToState, xamlOf } from "#src/components/xaml.js";
 import { registerStyleSheet } from "#src/css/index.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
@@ -55,7 +55,9 @@ export function checkXamlBehaviours({ check, checkProps }: Checks) {
     name: "XAML text is a ControlTemplate (Button.template)",
     component: "Button",
     control: templated,
-    props: { template: BUTTON_TEMPLATE },
+    props: {
+      template: BUTTON_TEMPLATE
+    },
     verify() {
       assert.ok(templated.template.targetType.name.endsWith("Button"), "the template's TargetType is not Button");
       assert.ok(templated.applyTemplate(), "the control did not apply the template");
@@ -99,7 +101,9 @@ export function checkXamlBehaviours({ check, checkProps }: Checks) {
     name: "a template object is used as it is (Button.template)",
     component: "Button",
     control: kept,
-    props: { template: templated.template },
+    props: {
+      template: templated.template
+    },
     verify() {
       assert.ok(kept.template !== null, "the template object was not written");
     }
@@ -131,16 +135,16 @@ export function checkXamlBehaviours({ check, checkProps }: Checks) {
     control: overridden,
     props: {
       resources: {
-        ButtonBackground: "#336699",
-        ButtonPadding: CUSTOM_PADDING,
-        Spacing: true
+        "--button-background": "#336699",
+        "--button-padding": CUSTOM_PADDING,
+        "--is-compact": true
       }
     },
     verify() {
       const dictionary = themeDictionary(overridden.resources);
       assert.ok(dictionary.hasKey(boxed("ButtonBackground")), "ButtonBackground is not in the theme dictionary");
       assert.ok(dictionary.hasKey(boxed("ButtonPadding")), "ButtonPadding is not in the theme dictionary");
-      assert.ok(overridden.resources.hasKey(boxed("Spacing")), "the boolean is not in the dictionary");
+      assert.ok(overridden.resources.hasKey(boxed("IsCompact")), "the boolean is not in the dictionary");
     }
   });
 
@@ -156,7 +160,9 @@ export function checkXamlBehaviours({ check, checkProps }: Checks) {
     name: "CSS class names make the Style of the prop (ListView.itemContainerStyle)",
     component: "ListView",
     control: styled,
-    props: { itemContainerStyle: "row" },
+    props: {
+      itemContainerStyle: "row"
+    },
     verify() {
       const style = styled.itemContainerStyle;
       assert.ok(style.targetType.name.endsWith("ListViewItem"), `the Style targets ${style.targetType.name}`);
@@ -169,7 +175,9 @@ export function checkXamlBehaviours({ check, checkProps }: Checks) {
     name: "CSS class names make the Style of a prop that styles a Button (ContentDialog.closeButtonStyle)",
     component: "ContentDialog",
     control: dialog,
-    props: { closeButtonStyle: "row" },
+    props: {
+      closeButtonStyle: "row"
+    },
     verify() {
       assert.ok(dialog.closeButtonStyle.targetType.name.endsWith("Button"), "the Style does not target Button");
     }
@@ -180,18 +188,24 @@ export function checkXamlBehaviours({ check, checkProps }: Checks) {
     name: "goToState moves a control to a state its template defines",
     component: "Button",
     control: stated,
-    props: { template: STATE_TEMPLATE },
+    props: {
+      template: STATE_TEMPLATE
+    },
     verify() {
       assert.ok(stated.applyTemplate(), "the control did not apply the template");
-      assert.equal(goToState({
-        control: stated,
-        name: "Pressed"
-      }), true, "the state the template defines was not entered");
-      assert.equal(goToState({
-        control: stated,
-        name: "NoSuchState",
-        useTransitions: false
-      }), false, "a state the template lacks was entered");
+      assert.equal(
+        goToState({
+          control: stated,
+          name: "Pressed"
+        }), true, "the state the template defines was not entered"
+      );
+      assert.equal(
+        goToState({
+          control: stated,
+          name: "NoSuchState",
+          useTransitions: false
+        }), false, "a state the template lacks was entered"
+      );
     }
   });
 }

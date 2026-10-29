@@ -1,4 +1,10 @@
-import type { ControlTemplate, DataTemplate, ItemsPanelTemplate, ResourceDictionary, Style } from "./generated/bindings.ts";
+import type {
+  ControlTemplate,
+  DataTemplate,
+  ItemsPanelTemplate,
+  ResourceDictionary,
+  Style
+} from "./generated/bindings.ts";
 import type { ResourceRecordInput } from "./resource-record.ts";
 import type { XamlKind } from "./xaml-source.ts";
 
@@ -39,9 +45,11 @@ export function installXamlSeam(seam: XamlSeam) {
  * @throws {Error} When no application has installed it.
  */
 export function xamlSeam() {
-  if (installed === null) {
+  const seam = installed;
+  const isInstalled = seam !== null;
+  if (!isInstalled) {
     throw new Error("XAML text and records of resources need runWindow or installXaml()");
   }
 
-  return installed;
+  return seam;
 }

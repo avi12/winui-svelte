@@ -3,29 +3,24 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 test("a prop that styles one element names it whatever control holds it", () => {
-  assert.equal(styleTarget({
+  const dialogButton = styleTarget({
     property: "closeButtonStyle",
     owner: "ContentDialog"
-  }), "button");
-  assert.equal(styleTarget({
+  });
+  const comboBoxInput = styleTarget({
     property: "textBoxStyle",
     owner: "ComboBox"
-  }), "text-box");
+  });
+  assert.equal(dialogButton, "button");
+  assert.equal(comboBoxInput, "text-box");
 });
 
 test("a container style names the container of the control that holds it", () => {
-  assert.equal(styleTarget({
+  const targets = ["ListView", "GridView", "TreeView"].map(owner => styleTarget({
     property: "itemContainerStyle",
-    owner: "ListView"
-  }), "list-view-item");
-  assert.equal(styleTarget({
-    property: "itemContainerStyle",
-    owner: "GridView"
-  }), "grid-view-item");
-  assert.equal(styleTarget({
-    property: "itemContainerStyle",
-    owner: "TreeView"
-  }), "tree-view-item");
+    owner
+  }));
+  assert.deepEqual(targets, ["list-view-item", "grid-view-item", "tree-view-item"]);
 });
 
 test("a container style of a control whose container is not known asks for a Style object", () => {

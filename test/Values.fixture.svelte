@@ -15,8 +15,8 @@
     Rectangle,
     TextBlock,
     TextBox,
-    xamlOf,
-    XamlKind
+    XamlKind,
+    xamlOf
   } from "#src/components/index.js";
 
   const rowTemplate: DataTemplateInput = xamlOf({
@@ -45,7 +45,12 @@
 <TextBox inputScope="Url" />
 <TextBox inputScope={["Url", "Search"]} />
 <Button template="<ControlTemplate TargetType='Button'><Border/></ControlTemplate>" />
-<Button contentTemplate={rowTemplate} resources={{ ButtonBackground: "#0af", ButtonPadding: 12, Compact: true }} />
+<Button
+  contentTemplate={rowTemplate} resources={{
+    "--button-background": "#0af",
+    "--button-padding": 12,
+    "--is-compact": true
+  }} />
 <ItemsControl itemTemplate={rowTemplate} itemsPanel="<ItemsPanelTemplate><StackPanel/></ItemsPanelTemplate>" />
 <ComboBox itemContainerStyle="row" />
 <ContentDialog closeButtonStyle="primary-action" />

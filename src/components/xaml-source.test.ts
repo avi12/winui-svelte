@@ -29,10 +29,11 @@ test("a namespace the root declares is kept, and only the other is added", () =>
 
 test("a root with both namespaces is passed on as it is", () => {
   const written = `<ResourceDictionary xmlns="${PRESENTATION}" xmlns:x="${KEYWORDS}"/>`;
-  assert.equal(loadableXaml({
+  const loadable = loadableXaml({
     kind: XamlKind.RESOURCE_DICTIONARY,
     xaml: written
-  }), written);
+  });
+  assert.equal(loadable, written);
 });
 
 test("an XML declaration and comments before the root are kept", () => {
