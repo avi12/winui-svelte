@@ -39,7 +39,9 @@ function pickerWith(properties: PropertyModel[]) {
       winName: "Date",
       events: ["DateChanged"]
     }],
-    slots: []
+    observed: [],
+    slots: [],
+    holdsItems: false
   };
 }
 

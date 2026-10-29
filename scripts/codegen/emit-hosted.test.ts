@@ -20,7 +20,9 @@ function classNamed({ name, contentProperty }: {
     events: [],
     attached: [],
     bindables: [],
-    slots: []
+    observed: [],
+    slots: [],
+    holdsItems: false
   };
 }
 

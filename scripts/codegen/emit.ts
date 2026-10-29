@@ -4,6 +4,7 @@ import type {
   ClassModel,
   EventModel,
   Model,
+  ObservedModel,
   PropertyModel,
   SlotModel
 } from "./model.ts";
@@ -387,6 +388,30 @@ class LevelImports {
     this.convert.add(converter.convert);
     this.convertTypes.add(converter.inputType);
   }
+
+  // A property the component only reads: its type is named, and nothing
+  // converts a value written to it.
+  noteReadOnly({ kind, enumType, key }: {
+    kind: PropertyKind;
+    enumType: TypeName | null;
+    key: string;
+  }) {
+    const isEnum = kind === PropertyKind.ENUM;
+    if (isEnum) {
+      this.bindingValues.add(enumName({ enumType }));
+      this.convertTypes.add("EnumInput");
+      return;
+    }
+
+    const inputType = inputTypeOf({
+      kind,
+      key
+    });
+    const hasInputType = inputType !== undefined;
+    if (hasInputType) {
+      this.convertTypes.add(inputType);
+    }
+  }
 }
 
 function emitProperty({ property, className, imports, isSlot }: {
@@ -415,14 +440,16 @@ function emitProperty({ property, className, imports, isSlot }: {
   };
 }
 
-function emitAttached({ attached, imports }: {
+function emitAttached({ attached, imports, isSlot }: {
   attached: AttachedModel;
   imports: LevelImports;
+  isSlot: boolean;
 }) {
   imports.note(attached);
   imports.bindingValues.add(attached.owner.name);
+  const type = attachedType(attached);
   return {
-    member: `  ${attached.key}?: ${attachedType(attached)};`,
+    member: `  ${attached.key}?: ${isSlot ? `${type} | Snippet` : type};`,
     body: [
       "  link.property({",
       "    props,",
@@ -486,6 +513,39 @@ function emitBindable({ bindable, property, imports }: {
   ];
 }
 
+function emitObserved({ observed, className, imports }: {
+  observed: ObservedModel;
+  className: string;
+  imports: LevelImports;
+}) {
+  imports.noteReadOnly(observed);
+  const read = readExpression({
+    converter: converterOf(observed),
+    imports,
+    access: `control.${observed.key}`
+  });
+  const type = propertyType({
+    property: {
+      ...observed,
+      isContent: false
+    },
+    className
+  });
+  return {
+    member: `  ${observed.key}?: ${type} | undefined;`,
+    body: [
+      "  link.observed({",
+      "    bound,",
+      `    key: "${observed.key}",`,
+      `    read: () => ${read},`,
+      "    subscribers: [",
+      observed.events.map(name => `      handler => control.on${name}(handler)`).join(",\n"),
+      "    ]",
+      "  });"
+    ]
+  };
+}
+
 function emitEvent(event: EventModel) {
   return [
     "",
@@ -525,10 +585,16 @@ function chain(level: ClassModel) {
   return levels;
 }
 
-// The bindables of the level and everything it inherits, in the order the
-// component destructures them.
+// The props the control gives back, bindables and observed state, of the
+// level and everything it inherits, in the order the component destructures
+// them.
 function allBindables(level: ClassModel) {
-  return chain(level).flatMap(entry => entry.bindables);
+  return chain(level).flatMap(entry => [...entry.bindables, ...entry.observed]);
+}
+
+// Whether the level or one it inherits is a collection of controls itself.
+function holdsItems(level: ClassModel) {
+  return chain(level).some(entry => entry.holdsItems);
 }
 
 // The <property> element a snippet fills its property through, rendered
@@ -568,12 +634,14 @@ function slotMarkup({ level, bindables, isHosted }: {
     ],
     "{/if}"
   ] : [];
+  const isItemsRendered = holdsItems(level) && !isHosted;
+  const items = isItemsRendered ? ["{#if children}", "  {@render children()}", "{/if}"] : [];
   const others = slots.filter(slot => slot.key !== contentKey).flatMap(slot => propertyBlock({
-    key: slot.key,
+    key: slot.elementName,
     snippet: sourceOf(slot),
     isSnippetTested: slot.kind === SlotKind.VALUE
   }));
-  return [...content, ...others];
+  return [...content, ...items, ...others];
 }
 
 function emitPropertyBody({ level, imports }: {
@@ -589,7 +657,8 @@ function emitPropertyBody({ level, imports }: {
   const emitted = [
     ...level.attached.map(attached => emitAttached({
       attached,
-      imports
+      imports,
+      isSlot: slotKeys.has(attached.key)
     })),
     ...level.properties
       .filter(property => !bindableKeys.has(property.key))
@@ -690,9 +759,15 @@ function emitLevelBody({ level, imports }: {
     level,
     imports
   });
+  const observed = level.observed.map(entry => emitObserved({
+    observed: entry,
+    className: level.type.name,
+    imports
+  }));
   const events = emitEventBody(level);
   const attached = isRoot ? [emitAttachedBody(level)] : [];
-  const children = level.declaresContent ? ["  children?: Snippet;"] : [];
+  const hasChildren = level.declaresContent || level.holdsItems;
+  const children = hasChildren ? ["  children?: Snippet;"] : [];
   const collections = [...slotKeysOf({
     level,
     kind: SlotKind.COLLECTION
@@ -703,6 +778,7 @@ function emitLevelBody({ level, imports }: {
       ...children,
       ...collections,
       ...bindables.members,
+      ...observed.map(part => part.member),
       ...properties.members,
       ...events.members,
       ...attached.flatMap(part => part.members)
@@ -710,6 +786,7 @@ function emitLevelBody({ level, imports }: {
     body: [
       ...properties.body,
       ...bindables.body,
+      ...observed.flatMap(part => part.body),
       ...events.body,
       ...attached.flatMap(part => part.body)
     ]
@@ -768,7 +845,7 @@ function emitLevelImports({ level, imports }: {
     );
   }
 
-  const hasSnippets = level.declaresContent || level.slots.length > 0;
+  const hasSnippets = level.declaresContent || level.holdsItems || level.slots.length > 0;
   lines.push(
     ...importLine({
       names: hasSnippets ? ["Snippet"] : [],
@@ -789,8 +866,9 @@ function extrasOf(level: ClassModel) {
 function boundTypeOf(level: ClassModel) {
   const name = level.type.name;
   const parentName = level.parent?.type.name;
-  const boundMembers = level.bindables.map(bindable => `"${bindable.key}"`).join(" | ");
-  const ownBound = level.bindables.length === 0 ? null : `Pick<${name}Props, ${boundMembers}>`;
+  const boundKeys = [...level.bindables, ...level.observed];
+  const boundMembers = boundKeys.map(bound => `"${bound.key}"`).join(" | ");
+  const ownBound = boundKeys.length === 0 ? null : `Pick<${name}Props, ${boundMembers}>`;
   const parentBound = parentName === undefined ? null : `${parentName}Bound`;
   return [parentBound, ownBound].filter(part => part !== null).join(" & ") || "Record<never, never>";
 }
@@ -838,7 +916,7 @@ export function emitLevel(level: ClassModel) {
   const extras = extrasOf(level);
   const extended = [parentName === undefined ? null : `${parentName}Props`, extras].filter(part => part !== null);
   const propsExtends = extended.length === 0 ? "" : ` extends ${extended.join(", ")}`;
-  const isBoundUsed = level.parent !== null || level.bindables.length > 0;
+  const isBoundUsed = level.parent !== null || level.bindables.length > 0 || level.observed.length > 0;
   const parentLink = [
     ...parentName === undefined ? [] : [`  link${parentName}(control, props, bound, link);`],
     ...extras === null ? [] : [`  link${extras}({ control, props, link });`]
@@ -1100,6 +1178,17 @@ function overlayConnectLines({ name, overlay }: {
   ];
 }
 
+// The classes whose attached properties a snippet of the level fills: the
+// renderer sets them through the class's tag.
+function attachedSlotOwners(level: ClassModel) {
+  const owners = new Map<string, TypeName>();
+  for (const attached of chain(level).flatMap(entry => entry.attached.filter(candidate => candidate.isSlot))) {
+    owners.set(attached.owner.name, attached.owner);
+  }
+
+  return [...owners.values()];
+}
+
 export function emitComponent(level: ClassModel) {
   const name = level.type.name;
   const host = hostOf(name);
@@ -1107,7 +1196,7 @@ export function emitComponent(level: ClassModel) {
   const hasHandle = isHosted && host.hasHandle;
   const overlay = overlayOf(name);
   const isOverlay = overlay !== undefined;
-  const hasChildren = level.contentProperty !== null && !isHosted;
+  const hasChildren = (level.contentProperty !== null || holdsItems(level)) && !isHosted;
   const bindables = componentBindableNames(level);
   const destructured = [
     ...bindables.map(key => `${key} = $bindable()`),
@@ -1139,12 +1228,13 @@ export function emitComponent(level: ClassModel) {
     host,
     overlay
   });
+  const owners = attachedSlotOwners(level);
   const runtimeNames = ["attachmentsOf", isOverlay ? "placedControl" : "control", ...isSnippetUsed ? ["isSnippet"] : [], "registerControls"];
   return `${[
     SVELTE_HEADER,
     isHosted ? "<script generics=\"Item\" lang=\"ts\">" : "<script lang=\"ts\">",
     "  import { untrack } from \"svelte\";",
-    `  import { ${name} } from "./bindings.ts";`,
+    `  import { ${sorted([name, ...owners.map(owner => owner.name)]).join(", ")} } from "./bindings.ts";`,
     ...isHosted ? [
       `  import { ${host.imports.join(", ")} } from "${ITEMS_FOLDER}/${host.module}";`,
       `  import type { ${host.props} } from "${ITEMS_FOLDER}/items-props.ts";`
@@ -1160,7 +1250,7 @@ export function emitComponent(level: ClassModel) {
     "",
     `  let { ${destructured.join(", ")} }: ${propsType} = $props();`,
     `  const bound = ${bound};`,
-    `  registerControls({ "${level.tag}": ${name} });`,
+    `  registerControls({ ${[`"${level.tag}": ${name}`, ...owners.map(owner => `"${kebabCase(owner.name)}": ${owner.name}`)].join(", ")} });`,
     ...isHosted ? hostConnectLines({
       name,
       host
@@ -1192,7 +1282,8 @@ export function emitControlsTable(model: Model) {
     const hiddenCount = own.length - OWN_PROPERTY_LIMIT;
     const props = hiddenCount > 0 ? `${shown}, +${hiddenCount} more` : shown;
     const category = level.type.namespace.replace(NAMESPACE_PREFIX, "");
-    const content = level.contentProperty === null ? "" : "yes";
+    const hasContent = level.contentProperty !== null || holdsItems(level);
+    const content = hasContent ? "yes" : "";
     return `| \`${level.type.name}\` | ${category} | ${props} | ${codeList(componentBindableNames(level))} | ${content} |`;
   });
   return [
@@ -1250,6 +1341,8 @@ export function emitMetadata(model: Model) {
     "  // Each attached prop and the static [owner, setter] it calls.",
     "  attached: Record<string, [string, string]>;",
     "  bindables: string[];",
+    "  // Read-only state the control gives back one-way, bound the same way.",
+    "  observed: string[];",
     "  contentProperty: string | null;",
     "  isComponent: boolean;",
     "  tag: string;",
@@ -1265,6 +1358,7 @@ export function emitMetadata(model: Model) {
     `    events: ${quoted(level.events.map(event => event.key))},`,
     `    attached: {${level.attached.map(attached => `\n      ${attached.key}: ${quoted([attached.owner.name, attached.setter])}`).join(",")}${level.attached.length === 0 ? "" : "\n    "}},`,
     `    bindables: ${quoted(level.bindables.map(bindable => bindable.key))},`,
+    `    observed: ${quoted(level.observed.map(observed => observed.key))},`,
     `    contentProperty: ${level.contentProperty === null ? "null" : JSON.stringify(level.contentProperty)},`,
     `    isComponent: ${level.isComponent},`,
     `    tag: ${JSON.stringify(level.tag)},`,
