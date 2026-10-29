@@ -71,9 +71,9 @@ test("a component without a <style> has no sheet", () => {
 });
 
 test("an error names the line of the .svelte file, not of the generated CSS", () => {
-  const broken = `<border class="a" />\n\n<style>\n  .a {\n    color: red;\n    box-shadow: 0 0 2px red;\n  }\n</style>\n`;
+  const broken = `<border class="a" />\n\n<style>\n  .a {\n    color: red;\n    float: left;\n  }\n</style>\n`;
   assert.throws(() => moduleFor(broken), (error: Error) =>
-    error instanceof SheetError && error.message.startsWith("ui/card.svelte:6:5: box-shadow has no WinUI meaning"));
+    error instanceof SheetError && error.message.startsWith("ui/card.svelte:6:5: float has no WinUI meaning"));
 });
 
 test("a descendant selector Svelte keeps is reported at its rule", () => {
@@ -94,6 +94,20 @@ test("a sheet opts into the transform parser only when it has a transform", () =
   assert.match(transformed?.code ?? "", /import \{ transformGroups as \w+ \} from "winui-svelte\/css\/transform"/u);
   assert.doesNotMatch(transformed?.code ?? "", /css\/gradients/u);
   assert.match(transformed?.code ?? "", /registerPropertyGroups as \w+/u);
+});
+
+test("a sheet opts into the animation module for an animation", () => {
+  const animated = moduleFor(
+    `<border class="card"></border>
+<style>
+  @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+  .card { animation: fade 1s }
+</style>
+`
+  );
+  assert.match(animated?.code ?? "", /import \{ animationGroups as \w+ \} from "winui-svelte\/css\/animation"/u);
+  assert.match(animated?.code ?? "", /"keyframes":\[\{"name":"svelte-[\w-]+-fade"/u);
+  assert.doesNotMatch(moduleFor(SOURCE)?.code ?? "", /css\/animation/u);
 });
 
 test("a sheet opts into the transform module for a transition", () => {

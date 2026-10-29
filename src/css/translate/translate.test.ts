@@ -252,7 +252,7 @@ test("positions are mapped back to the .svelte file", () => {
 test("descendant selectors, nesting, @keyframes and other @media are errors", () => {
   assert.match(errors(".a .b { color: red }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
   assert.match(errors(".a { color: red; &:hover { color: blue } }").join(), /nested rules have no WinUI meaning/u);
-  assert.match(errors("@keyframes spin { to { opacity: 0 } }").join(), /@keyframes has no WinUI meaning/u);
+  assert.match(errors("@supports (display: grid) { .a { color: red } }").join(), /@supports has no WinUI meaning/u);
   assert.match(errors("@media (min-width: 600px) { .a { color: red } }").join(), /@media \(min-width: 600px\) has no WinUI meaning/u);
   assert.match(errors("@import 'a.css';").join(), /@import has no WinUI meaning/u);
 });

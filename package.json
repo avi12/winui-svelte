@@ -98,6 +98,10 @@
       "types": "./dist/css/resources.d.ts",
       "default": "./dist/css/resources.js"
     },
+    "./css/animation": {
+      "types": "./dist/css/animation.d.ts",
+      "default": "./dist/css/animation.js"
+    },
     "./css/surface": {
       "types": "./dist/css/surface.d.ts",
       "default": "./dist/css/surface.js"

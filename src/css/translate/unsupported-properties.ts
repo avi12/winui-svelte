@@ -27,7 +27,7 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["backdrop-filter", `blur() ${OPT_IN}`],
   ["transform", `a transform ${OPT_IN}`],
   ["transition", `a transition ${OPT_IN}`],
-  ["animation", "use transition on opacity, translate, scale or rotate"],
+  ["animation", `an animation ${OPT_IN}`],
   ["content", "WinUI has no generated content"],
   ["list-style", "WinUI has no lists to mark"],
   ["text-transform", "WinUI has no text-transform; change the text"],

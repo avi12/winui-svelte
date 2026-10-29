@@ -60,6 +60,24 @@ export interface WriteSeam {
     control: object;
     property: string;
   }): NativeValue;
+  /**
+   * Begins Storyboards (XAML) on the control. `hasTransform` gives it a
+   * CompositeTransform as RenderTransform, and each of `brushes` a SolidColorBrush
+   * of its own (of the given color) to animate; returns what stops the
+   * storyboards and puts back what they replaced.
+   */
+  animate(input: {
+    control: object;
+    storyboards: ReadonlyArray<{
+      xaml: string;
+      isPaused: boolean;
+    }>;
+    hasTransform: boolean;
+    brushes: ReadonlyArray<{
+      property: string;
+      color: string;
+    }>;
+  }): () => void;
 }
 
 /** What a write handler is given: the control, the value the group wrote, and the seam. */

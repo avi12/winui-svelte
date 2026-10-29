@@ -85,6 +85,7 @@ and the `outline` shorthand does not work there: write `outline-width`,
 |---|---|---|
 | `winui-svelte/css/gradients` | `background-image` | Gradients |
 | `winui-svelte/css/transform` | `transform`, `transform-origin`, `transition`, and the pivot of `scale` and `rotate` | Transforms |
+| `winui-svelte/css/animation` | `animation`, `animation-*`, `@keyframes` | Animations |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |
@@ -237,12 +238,54 @@ The `origin` write above also sets `RenderTransformOrigin` (a fraction of the
 size, which is what WinUI wants here), so `scale`, `rotate` and `transform`
 share one `transform-origin`, as in CSS.
 
-`transition: transform` warns and is dropped: WinUI's implicit transitions
-animate `Translation`, `Scale` and `Rotation` and not a RenderTransform, so for
-motion use `translate`, `scale` and `rotate`.
+WinUI's implicit transitions animate `Translation`, `Scale` and `Rotation` and
+not a RenderTransform. So when a rule has a `transition` that names `transform`
+(or `all`), a `transform` list of `translate()`, `rotate()` and `scale()` in that
+order (WinUI's own order of applying them) is set as those three properties and
+the transition animates it. Any other list (a `skew()`, a `matrix()`, another
+order) stays a RenderTransform, and the transition warns that it does nothing.
+A transition on `box-shadow` or `-winui-elevation` animates the shadow's depth,
+the Z of `Translation`. A transition on `border-color` warns and is dropped:
+WinUI has no brush transition for the border.
 
 ```css
 .badge { transform: translate(4px, -4px) rotate(8deg) }
+```
+
+## Animations: `animation`, `@keyframes`
+
+`@keyframes` stays inside the sheet's data (`StyleSheetData.keyframes`, global to
+the app as in CSS: any element's `animation-name` may name a rule of any sheet)
+and `animation` runs on a WinUI `Storyboard` that the runtime begins when the
+rule applies to the element and stops when it stops applying (a class removed,
+the element gone). The module is `winui-svelte/css/animation`, which a sheet
+imports when it has an `animation` property.
+
+| CSS | WinUI |
+|---|---|
+| `animation-name`, the shorthand | one `Storyboard` per animation of the list |
+| `animation-duration`, `animation-delay` | key times; a delay is `BeginTime` (a negative one starts mid-way) |
+| `animation-timing-function` | `KeySpline` of a `SplineDoubleKeyFrame` or `SplineColorKeyFrame` for `ease`, `ease-in`, `ease-out`, `ease-in-out` and `cubic-bezier()`; `linear` key frames; `steps()`, `step-start` and `step-end` as discrete key frames. A keyframe's own `animation-timing-function` eases the interval it starts |
+| `animation-iteration-count` | `RepeatBehavior` (`3x`, `Forever`); a whole number only |
+| `animation-direction` | the key frames written reversed, with the easing mirrored; `alternate` repeats a forward and a backward run |
+| `animation-fill-mode` | `forwards` and `both` hold the end (`HoldEnd`), otherwise `Stop`; `backwards` and `both` hold the first frame through the delay (not with a repeat count) |
+| `animation-play-state` | `paused` begins the storyboard paused; changing it restarts the animation |
+
+Keyframes can set `opacity`, `width`, `height`, `background-color`, `color`,
+`border-color`, `translate`, `scale`, `rotate` and `transform`. Anything else is
+a build error that lists these. A transform animates a `CompositeTransform` that
+becomes the element's `RenderTransform` while the animation runs (translate and
+scale add up, rotate and skew add up; a list is not applied in order), pivoting
+about `transform-origin` (centre by default). A color animates a
+`SolidColorBrush` that the element is given for the time being; write the colors
+out (hex, `rgb()`, a name): `var()` is an error. Give every animated property
+a `from` and a `to` (or `0%` and `100%`): a property with no first frame starts
+from the element's own value, and with more than one iteration the later
+iterations start from where the last one ended.
+
+```css
+@keyframes pulse { from { opacity: 1 } 50% { opacity: 0.4 } to { opacity: 1 } }
+.badge { animation: pulse 1.2s ease-in-out infinite }
 ```
 
 ## Focus ring: `outline`
@@ -318,5 +361,5 @@ handles. Declarations like these fail the build with it:
 | `position`, `top`, `left`, `right`, `bottom` | a Style does not know its parent: a Canvas places by `Canvas.Left` / `Canvas.Top` (no right or bottom), the others have no counterpart |
 | `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color: use `-winui-elevation` |
 | `filter` | WinUI has no filters; use an acrylic brush or a Mica backdrop |
-| `animation` | use `transition` on opacity, translate, scale or rotate: WinUI has no keyframes |
+| `animation` without its module | see Animations |
 | `float`, `flex*`, `align-items`, `justify-*`, `place-items`, `content`, `list-style`, `text-transform`, `text-indent`, `word-break`, `user-select` | no WinUI equivalent in a Style; each message names the nearest WinUI way |

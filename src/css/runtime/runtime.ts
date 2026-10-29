@@ -12,7 +12,7 @@ import type { LoweredStyle } from "#src/css/translate/properties.js";
 import { lowerDeclarations } from "#src/css/translate/properties.js";
 import type { PropertyGroup, WriteSeam } from "#src/css/translate/property-kit.js";
 import { RESOURCES_TARGET, XAML_SEPARATOR } from "#src/css/translate/property-kit.js";
-import type { Declaration, StyleSheetData } from "#src/css/translate/types.js";
+import type { Declaration, Keyframes, StyleSheetData } from "#src/css/translate/types.js";
 import { PseudoState } from "#src/css/translate/types.js";
 import type { NativeValue } from "#src/native-value.js";
 
@@ -182,6 +182,10 @@ const stylesByXaml = new Map<string, object>();
 const defaultStyles = new Map<string, string | null>();
 // The groups beyond the built-in ones that sheets have opted into, by member.
 const extraGroups = new Map<string, PropertyGroup>();
+// The `@keyframes` of every sheet, by name (a later sheet's replaces an earlier one's).
+let keyframesByName = new Map<string, Keyframes>();
+let keyframesSignature = "";
+let keyframesVersion = 0;
 let native: CssNative | null = null;
 let rules: RankedRule[] = [];
 let nextSequence = 0;
@@ -227,6 +231,14 @@ function rebuildRules() {
     rank: sequence * RANK_STRIDE + rule.order
   })));
   builtStyles.clear();
+  const declared = [...sheets.values()].flatMap(({ sheet }) => sheet.keyframes);
+  keyframesByName = new Map(declared.map(keyframes => [keyframes.name, keyframes] as const));
+  const signature = JSON.stringify([...keyframesByName.values()]);
+  const isChanged = signature !== keyframesSignature;
+  if (isChanged) {
+    keyframesSignature = signature;
+    keyframesVersion++;
+  }
 }
 
 function mergeResources(registered: RegisteredSheet) {
@@ -321,6 +333,10 @@ function lowerOptions({ elementType, problems }: {
   const options: LowerOptions = {
     elementType,
     resolveVariable: resolveBuiltVariable,
+    keyframes: {
+      find: name => keyframesByName.get(name),
+      isComplete: true
+    },
     // The build checked every -winui-based-on against WinUI's styles.
     hasStyle: isAlways,
     report({ severity, message, position }) {
@@ -483,7 +499,8 @@ class ElementStyle implements StyledElement {
     });
     const declarations = this.inlineText === null ? [] : parseInlineStyle({
       cssText: this.inlineText,
-      options
+      options,
+      extra: new Map([...extraGroups.values()].flatMap(group => [...group.shorthands ?? []]))
     });
     const hasProblems = problems.length > 0;
     if (hasProblems) {
@@ -513,9 +530,10 @@ class ElementStyle implements StyledElement {
     const matched = candidates.filter(({ rule }) => rule.state === null || this.states.has(rule.state));
     const inline = this.inlineDeclarations();
     const inlineKey = inline.map(({ property, value }) => `${property}:${value}`).join(";");
+    const isAnimated = [...matched.flatMap(({ rule }) => rule.declarations), ...inline].some(({ property }) => property === "animation-name");
     // The key carries each rule's sheet version, so an element is restyled
     // only when a sheet it matches was replaced.
-    const key = [this.elementType, ...matched.map(({ id }) => versionedId(id)), inlineKey].join("|");
+    const key = [this.elementType, ...matched.map(({ id }) => versionedId(id)), inlineKey, isAnimated ? keyframesVersion : ""].join("|");
     const isKeyApplied = key === this.appliedKey;
     if (isKeyApplied) {
       return;

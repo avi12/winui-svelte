@@ -850,7 +850,7 @@ protocol and the tests.
 | `winui-svelte/element-animation` | `enableElementAnimation`, and the `transition`, `intro` and `outro` attachments |
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
-| `winui-svelte/css/transform`, `/css/focus`, `/css/surface`, `/css/resources` | the opt-in CSS groups: 2D transform, focus visuals, surfaces, theme resources ([`src/css/API.md`](src/css/API.md)) |
+| `winui-svelte/css/transform`, `/css/animation`, `/css/focus`, `/css/surface`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, focus visuals, surfaces, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 
 The published package ships `dist/`: the TypeScript compiled with its
