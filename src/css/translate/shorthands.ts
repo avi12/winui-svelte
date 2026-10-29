@@ -7,6 +7,7 @@ import { parseLength, parseVariable, splitSlash } from "#src/css/parse/values.js
 
 const MAX_BOX_VALUES = 4;
 const MAX_PAIR_VALUES = 2;
+const GRID_LINE = /^(auto|\d+|span\s+\d+)$/iu;
 
 // CSS's thin, medium and thick, in pixels.
 const BORDER_WIDTH_KEYWORDS = new Map([
@@ -292,6 +293,30 @@ function expandLines({ declaration, reader, axis }: {
     })];
 }
 
+// `grid-area: row-start / column-start / row-end / column-end`; a missing end is
+// the line it starts at, so `grid-area: 2 / 3` is the cell in row 2, column 3.
+function expandArea({ declaration, reader }: ExpansionInput) {
+  const lines = splitSlash(declaration.value);
+  const isNumbered = lines.length <= MAX_BOX_VALUES && lines.every(line => GRID_LINE.test(line));
+  if (!isNumbered) {
+    reader.expected("lines separated by /, such as 2 / 3 / span 2 / span 2 (named grid areas have no WinUI meaning: a grid has no grid-template-areas)");
+    return [];
+  }
+
+  const [rowStart = "", columnStart = "auto", rowEnd = "auto", columnEnd = "auto"] = lines;
+  const placements: Array<[string, string]> = [
+    ["grid-row-start", rowStart],
+    ["grid-column-start", columnStart],
+    ["grid-row-end", rowEnd],
+    ["grid-column-end", columnEnd]
+  ];
+  return placements.map(([property, value]) => longhand({
+    declaration,
+    property,
+    value
+  }));
+}
+
 function expandRadius({ declaration, reader }: ExpansionInput) {
   const isElliptical = declaration.value.includes("/");
   if (isElliptical) {
@@ -384,6 +409,22 @@ const expansions = new Map<string, Expansion>([
     reader,
     axis: "row"
   })],
+  ["grid-area", expandArea],
+  ["grid-gap", ({ declaration, reader }) => expandPair({
+    declaration,
+    reader,
+    names: ["row-gap", "column-gap"]
+  })],
+  ["grid-row-gap", ({ declaration }) => [longhand({
+    declaration,
+    property: "row-gap",
+    value: declaration.value
+  })]],
+  ["grid-column-gap", ({ declaration }) => [longhand({
+    declaration,
+    property: "column-gap",
+    value: declaration.value
+  })]],
   ["flex-flow", expandFlow]
 ]);
 

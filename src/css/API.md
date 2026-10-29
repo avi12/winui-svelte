@@ -309,6 +309,29 @@ the custom properties of a class) throws, naming the class. The Style is built
 when called: a sheet registered later (hot reload) does not change it. Which
 `elementType` a prop styles is `src/components/style-targets.ts`.
 
+## Layout: which CSS becomes which panel
+
+A Style sets the properties of the element it styles and cannot reach its
+parent or its children, so layout follows the element's type. The element is
+the panel; the CSS names what it does.
+
+| CSS | WinUI | Decision |
+|---|---|---|
+| `display: flex` (`flex-direction` row or column) on `<stack-panel>` | `Orientation` | row is Horizontal, column Vertical; `-reverse` is an error |
+| `gap`, `row-gap`, `column-gap`, `grid-gap` | stack `Spacing` (along its orientation), grid `RowSpacing` / `ColumnSpacing` | |
+| `display: grid` on `<grid>`, `grid-template-*` | the grid's definitions | see Grid tracks |
+| `grid-column`, `grid-row`, `grid-area` | `Grid.Column`, `Grid.Row`, `Grid.ColumnSpan`, `Grid.RowSpan` (lines are 1-based in CSS, 0-based in WinUI) | named areas, auto-placement and implicit tracks are errors |
+| `flex: 1`, `flex-grow` on a child | a `*` track | error: the parent decides, write `grid-template-columns: 1fr auto` on a `<grid>` |
+| `flex-wrap` | none | error: WinUI has no wrapping panel |
+| `align-self`, `justify-self`, `place-self` | `VerticalAlignment`, `HorizontalAlignment` (`start` is Top / Left) | on the child |
+| `align-items`, `justify-items`, `justify-content`, `align-content` | none | error: a Style cannot reach the children; set `place-self` on each |
+| `width`, `height` in px, rem, `calc()` of them, `auto`, `100%` | `Width`, `Height` (NaN for auto and 100%: a stretching element fills) | another % is an error: use a `*` track |
+| `min-*`, `max-*` | `MinWidth`... | |
+| `box-sizing: border-box` | nothing: WinUI's size includes padding and border | `content-box` is an error |
+| `overflow` on `<scroll-viewer>` | scroll bar visibility (`scroll` Visible, `auto` Auto, `hidden` Disabled) | on any other element an error: wrap the content in a `<scroll-viewer>` |
+| `order` | none | error: reorder the elements |
+| `position`, `inset`, `z-index` | see Position | |
+
 ## Grid tracks: `grid-template-columns`, `grid-template-rows`
 
 Tracks are written to the grid's definitions (a Style cannot hold them), as the

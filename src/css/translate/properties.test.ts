@@ -129,6 +129,38 @@ test("minmax and fit-content tracks carry their bounds", () => {
   ]);
 });
 
+test("grid-area and the grid- gap aliases expand to their longhands", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "grid-area: 2 / 3 / span 2 / span 4; grid-gap: 4px 8px"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.setters, [
+    ["Grid.Column", "2"],
+    ["Grid.ColumnSpan", "4"],
+    ["Grid.Row", "1"],
+    ["Grid.RowSpan", "2"]
+  ]);
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "grid-area: header"
+    }).errors.join(), /named grid areas have no WinUI meaning/u
+  );
+});
+
+test("grid-gap on a grid is its spacing", () => {
+  assert.deepEqual(
+    setters({
+      elementType: "grid",
+      declarations: "grid-gap: 4px 8px; grid-column-gap: 2px"
+    }), [
+      ["RowSpacing", "4"],
+      ["ColumnSpacing", "2"]
+    ]
+  );
+});
+
 test("sizes WinUI cannot say are build errors", () => {
   const cases: Array<[string, RegExp]> = [
     ["box-sizing: content-box", /content-box has no WinUI meaning/u],
@@ -548,7 +580,7 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["a property WinUI has no counterpart for", null, "box-shadow: 0 0 4px red", /^t\.svelte:1:6: box-shadow has no WinUI meaning \(a WinUI shadow is a ThemeShadow/u],
   ["an unknown property", null, "frobnicate: 1", /frobnicate has no WinUI meaning \(WinUI has no property that corresponds to it\)/u],
   ["flex sizing of a child", null, "flex: 1", /flex has no WinUI meaning \(a child cannot size itself in its parent: give the parent grid-template-columns with fr tracks\)/u],
-  ["align-items on a container", null, "align-items: center", /align-items has no WinUI meaning \(WinUI aligns a child by its own VerticalAlignment: set align-self on the child\)/u],
+  ["align-items on a container", null, "align-items: center", /align-items has no WinUI meaning \(WinUI aligns a child by its own VerticalAlignment: set align-self on each child\)/u],
   ["a length without a unit", null, "width: 12", /width: expected a length in px/u],
   ["a percentage length", null, "width: 50%", /width: expected a length in px/u],
   ["a bad color", null, "color: sparkly", /color: expected a color/u],
