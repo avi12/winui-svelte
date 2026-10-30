@@ -90,9 +90,11 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | `winui-svelte/css/gradients` | `background-image` | Gradients |
 | `winui-svelte/css/transform` | `transform`, `translate`, `scale`, `rotate`, `transform-origin`, `transition` | Transforms |
 | `winui-svelte/css/animation` | `animation`, `animation-*`, `@keyframes` | Animations |
-| `winui-svelte/css/effects` | `clip-path: inset()`, `aspect-ratio` | Clip and aspect ratio |
+| `winui-svelte/css/effects` | `aspect-ratio` | Aspect ratio |
+| `winui-svelte/css/filter` | `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` | Filters, blends and masks |
+| `winui-svelte/css/clip` | `clip-path` | Clip shapes |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
-| `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
+| `winui-svelte/css/surface` | `-winui-elevation`, `box-shadow` | Elevation |
 | `winui-svelte/css/position` | `position`, `top`, `left`, `right`, `bottom`, `inset` | Position |
 | `winui-svelte/css/queries` | `@media`, `@container` and `@starting-style` rules (a group with no property of its own) | Responsive rules |
 | `winui-svelte/css/compat` | `word-break`, `user-select`, `object-fit`, `line-clamp`, `box-sizing`, `cursor` (ignored) | Unsupported |
@@ -358,7 +360,7 @@ button:focus-visible { outline: 2px solid #0af; outline-offset: 2px }
 .quiet { outline: none }
 ```
 
-## Elevation and backdrop: `-winui-elevation`, `box-shadow`, `backdrop-filter`
+## Elevation: `-winui-elevation`, `box-shadow`
 
 `-winui-elevation: <length>px` is a WinUI shadow: the element's `Shadow` is a
 `ThemeShadow` and the Z of its `Translation` is the depth (16 for a card, 32 for
@@ -376,21 +378,92 @@ nothing more; earlier, or for an app that targets a Windows SDK older than
 Style cannot set
 Every use warns of that; it is not verified without a window
 
-`backdrop-filter: blur(<length>px)` makes the Background an `AcrylicBrush`,
-which blurs what is behind the element
-The brush has a blur of its own, so the
-radius is ignored (a warning says so); the tint is the element's literal
-`background-color`, its alpha the `TintOpacity`
-Without a `background-color` the
-acrylic is untinted
-Other filter functions are errors, and so is `filter`
-
 ```css
 .card { -winui-elevation: 16px }
-.sheet { background-color: rgba(32, 32, 32, 0.6); backdrop-filter: blur(20px) }
 ```
 
 Both are in `winui-svelte/css/surface`
+
+## Filters, blends and masks: `filter`, `backdrop-filter`, `mix-blend-mode`, `mask-image`
+
+These draw the element through an effect graph of Win2D effects on its
+Composition visual, so a Style cannot set them: a sheet that uses one imports
+`winui-svelte/css/filter` (and with it Win2D, which no other group loads), and
+the build lowers all five properties of an element to one write, the graph
+
+- `filter` takes `blur()`, `drop-shadow()`, `grayscale()`, `sepia()`,
+  `saturate()`, `hue-rotate()`, `invert()`, `opacity()`, `brightness()` and
+  `contrast()`, in any order and number
+  Neighbouring colour functions become one colour matrix (the Filter Effects
+  spec's own), `blur()` a Gaussian blur of that standard deviation, and
+  `drop-shadow()` a blurred, offset copy of the pixels' alpha in the colour
+  given, under the pixels
+  A `url()` reference is an error
+- `backdrop-filter` takes the same list (but no `drop-shadow()`) and draws what
+  is behind the element through it, under the element: a real filter of the
+  backdrop, which the element's own translucent `background-color` shows
+- `mix-blend-mode` takes `multiply`, `screen`, `overlay`, `darken`, `lighten`,
+  `color-dodge`, `color-burn`, `hard-light`, `soft-light`, `difference`,
+  `exclusion`, `hue`, `saturation`, `color` and `luminosity`, and blends the
+  element with what is behind it
+- `mask-image` (and the first image of a `mask` shorthand) takes a
+  `linear-gradient()` or `radial-gradient()`, whose alpha is the mask, or a
+  `url()` of an image (a file path or an `ms-appx://` or `https://` URI), whose
+  alpha is
+  `mask-position`, `mask-size`, `mask-repeat` and `mask-mode` are not read
+
+How it is drawn: a sprite visual samples the element's visual through a visual
+surface, which renders it whatever its `IsVisible`, so the element hides itself
+and the sprite draws it; the sprite sits in the child visual slot of the
+element's parent, since the element's own slot is part of what the surface
+samples
+That has three consequences
+The element draws over the later siblings it overlaps
+An element that already has a Composition child visual of its own, or whose
+parent has one (set by `ElementCompositionPreview.SetElementChildVisual`),
+cannot take a filter, and the window's stderr says so
+A blur or a shadow draws outside the element, up to three deviations of the
+blur
+
+```css
+.frosted { background-color: rgba(255, 255, 255, 0.3); backdrop-filter: blur(12px) saturate(180%) }
+.sepia { filter: sepia(1) drop-shadow(4px 4px 6px #000) }
+.fade-out { mask-image: linear-gradient(to bottom, #000, transparent) }
+.multiplied { mix-blend-mode: multiply }
+```
+
+Svelte's `blur` transition uses the same blur: it animates the radius of the
+element's blur (see Transitions in the API)
+
+## Clip shapes: `clip-path`
+
+`clip-path` is the Composition clip of the element's visual (a
+`CompositionGeometricClip`), where `UIElement.Clip` takes only a rectangle: a
+sheet that uses it imports `winui-svelte/css/clip`
+`inset()` (with `round`, one to four radii, a slash and four more), `circle()`,
+`ellipse()` (with `closest-side`, `farthest-side`, lengths and percentages, and
+`at <position>`), `polygon()` (with `nonzero` or `evenodd`) and `path()` (SVG
+path data in quotes, with its fill rule) are read; a geometry box after the
+shape is ignored
+A circle, an ellipse and a rounded rectangle are Composition's own geometries;
+a polygon, a path and corners of different radii are made by Win2D
+The shape is resolved against the element's size, and again when it changes
+`rect()`, `xywh()` and `url()` are errors
+An element with a filter, a blend or a mask is clipped on the sprite that
+draws it
+
+```css
+.avatar { clip-path: circle(50%) }
+.badge { clip-path: polygon(50% 0, 100% 100%, 0 100%) }
+.card { clip-path: inset(0 round 12px) }
+```
+
+## Aspect ratio: `aspect-ratio`
+
+`winui-svelte/css/effects` has `aspect-ratio` (`auto`, a number or `w / h`):
+WinUI has none, so the element's Height follows its Width, as laid out, on
+every size change
+An element that also has a `height` gets the ratio's, which a warning says
 
 ## Styles for props: `styleOfClasses`
 
@@ -638,8 +711,8 @@ Declarations like these fail the build with it:
 |---|---|
 | `position`, `top`, `left`, `right`, `bottom`, `inset` in a style attribute | they are read from a component's `<style>` block (see Position); `right`, `bottom` and `position: sticky` have no WinUI counterpart |
 | `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color: use `-winui-elevation` |
-| `filter`, `mix-blend-mode`, `mask`, `mask-image` | blur, grayscale, brightness, drop-shadow, blend modes and opacity masks are Composition effects on a visual over the element, which a Style cannot attach or aim at a sibling. Call `applyEffect` of `winui-svelte/win2d` from an attachment (see Win2D in the API), or use `backdrop-filter: blur()` or an acrylic or Mica backdrop |
-| `clip-path` other than `inset()` (circle, ellipse, polygon, path), `inset(... round ...)` | `UIElement.Clip` is a `RectangleGeometry` with square corners |
+| `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` in a style attribute | they are read from a component's `<style>` block, which opts the window into `winui-svelte/css/filter` (see Filters, blends and masks); `url()` filters, `mask-position`, `mask-size`, `mask-repeat` and `mask-mode` have no counterpart |
+| `clip-path` as `rect()`, `xywh()` or `url()` | `inset()`, `circle()`, `ellipse()`, `polygon()` and `path()` have one (see Clip shapes) |
 | `cursor` | accepted and ignored with a warning: the cursor is `UIElement.ProtectedCursor`, a protected property set to an `InputSystemCursor`, and the bindings have neither a public setter nor `InputSystemCursor` |
 | `text-transform` | a `TextBlock` draws its `Text` as written |
 | `border-color` in a `transition` | WinUI has no brush transition for the border; a `border-color` keyframe in an animation does work |

@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
+  import { projectAs } from "#winui/lifetime";
   import type { FrameworkElement } from "#winui/microsoft/ui/xaml/FrameworkElement";
+  import { XamlReader } from "#winui/microsoft/ui/xaml/markup/XamlReader";
+  import { PathGeometry } from "#winui/microsoft/ui/xaml/media/PathGeometry";
+  import { Path } from "#winui/microsoft/ui/xaml/shapes/Path";
+  import { blur, draw } from "svelte/transition";
   import { elementRef } from "winui-svelte";
   import { Border, Grid, Window } from "winui-svelte/components";
   import { exitApplication } from "winui-svelte/window";
@@ -16,8 +21,35 @@
   const { host }: Props = $props();
   const stage = elementRef<FrameworkElement>();
   let targetClass = $state("");
+  let isCardShown = $state(false);
+  let isLineShown = $state(false);
 
+  const BLUR_AMOUNT = 30;
+  // A raw <path> takes a Geometry, which XAML's reader makes from the path data of a Path.
+  const holder = projectAs(
+    XamlReader.load("<Path xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Data=\"M10,10 L190,10 L190,70\"/>"),
+    Path
+  );
+  const lineGeometry = projectAs(holder.data, PathGeometry);
+  Object.assign(holder, { data: null });
+  // Svelte types a <path> as SVG's, which has no `data`: the renderer sets it on the WinUI Path all the same.
+  const lineAttributes = { data: lineGeometry };
+  const TRANSITION_MILLISECONDS = 3000;
   const commands = new Map<string, (command: ExampleCommand) => void>([
+    ["card", command => {
+      isCardShown = command["show"] === true;
+      host.report({
+        kind: "card",
+        isCardShown
+      });
+    }],
+    ["line", command => {
+      isLineShown = command["show"] === true;
+      host.report({
+        kind: "line",
+        isLineShown
+      });
+    }],
     ["stats", () => host.report({
       kind: "stats",
       scale: stage.current?.xamlRoot?.rasterizationScale ?? 1
@@ -49,7 +81,21 @@
   <Grid class="fx-stage" {@attach stage.attach}>
     <Border class="fx-left" />
     <Border class="fx-right" />
-    <Border class={["fx-target", targetClass]}>
+    {#if isCardShown}
+      <grid
+        class="fx-card" transition:blur={{
+          amount: BLUR_AMOUNT,
+          opacity: 1,
+          duration: TRANSITION_MILLISECONDS
+        }}>
+        <border class="fx-white"></border>
+        <border class="fx-ink"></border>
+      </grid>
+    {/if}
+    {#if isLineShown}
+      <path class="fx-line" {...lineAttributes} in:draw={{ duration: TRANSITION_MILLISECONDS }}></path>
+    {/if}
+    <Border class="fx-target {targetClass}">
       <Grid>
         <Border class="fx-green" />
         <Border class="fx-black" />
@@ -94,6 +140,34 @@
     justify-self: end;
     width: 40px;
     background-color: #000000;
+  }
+
+  :global(.fx-card) {
+    align-self: start;
+    justify-self: start;
+    width: 100px;
+    height: 60px;
+    margin: 16px;
+  }
+
+  :global(.fx-white) {
+    justify-self: start;
+    width: 50px;
+    background-color: #ffffff;
+  }
+
+  :global(.fx-ink) {
+    justify-self: end;
+    width: 50px;
+    background-color: #000000;
+  }
+
+  :global(.fx-line) {
+    align-self: end;
+    justify-self: start;
+    margin: 8px;
+    stroke: #ffffff;
+    stroke-width: 4px;
   }
 
   :global(.fx-blur) {

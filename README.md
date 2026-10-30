@@ -802,8 +802,10 @@ build error with its file and line; nothing is silently ignored
 | `display: none`, `visibility`, `pointer-events`, `z-index`, `overflow` | `Visibility`, `IsHitTestVisible`, `Canvas.ZIndex`, the scroll bar visibilities |
 | `outline`, `outline-offset` | the focus visual: `FocusVisualPrimaryBrush`, `FocusVisualPrimaryThickness`, `FocusVisualMargin` |
 | `animation`, `@keyframes` | `Storyboard`s of key frames (opacity, size, colors, translate, scale, rotate, transform), begun with the class |
-| `box-shadow`, `clip-path: inset()`, `aspect-ratio`, `user-select`, `object-fit`, `line-clamp`, `word-break` | a `ThemeShadow` of the blur's depth, `UIElement.Clip`, a Height that follows the Width, `IsTextSelectionEnabled`, `Stretch`, `MaxLines`, `TextWrapping` |
-| `-winui-elevation`, `backdrop-filter: blur()` | a `ThemeShadow` lifted by its depth; an `AcrylicBrush` Background (the blur radius is ignored) |
+| `box-shadow`, `aspect-ratio`, `user-select`, `object-fit`, `line-clamp`, `word-break` | a `ThemeShadow` of the blur's depth, a Height that follows the Width, `IsTextSelectionEnabled`, `Stretch`, `MaxLines`, `TextWrapping` |
+| `-winui-elevation` | a `ThemeShadow` lifted by its depth |
+| `filter`, `backdrop-filter`, `mix-blend-mode`, `mask-image` | an effect graph of Win2D effects (Gaussian blur, colour matrix, blend, alpha mask) that the element's Composition visual is drawn through; `backdrop-filter` samples a real backdrop brush |
+| `clip-path`: `inset()` (with `round`), `circle()`, `ellipse()`, `polygon()`, `path()` | a `CompositionGeometricClip` on the element's visual |
 | `translate`, `scale`, `rotate`, `transform-origin`, `transition`; `transform` (translate, scale, rotate, skew, matrix) | the UIElement transforms, their pivot (`CenterPoint`, 50% 50% as in CSS) and their implicit transitions |
 | `var(--card-background-fill-color-default)` | `{ThemeResource CardBackgroundFillColorDefault}`: WinUI's own resources, so light and dark follow Windows |
 | `--name: value` on `:root`, or on a class | an app-wide resource, or one only the elements with that class (and their templates) see: `.danger { --button-background-pointer-over: red }` |
@@ -853,7 +855,7 @@ what is not covered
 Svelte's own `transition:`, `in:`, `out:` and `animate:` work on the raw
 elements of a component (`<border>`, `<text-block>`), with the functions of
 `svelte/transition` (`fade`, `fly`, `slide`, `scale`, `draw`, `crossfade`;
-`blur` fades without blurring), `svelte/animate` (`flip`) and `svelte/motion`
+`blur` blurs the element for real), `svelte/animate` (`flip`) and `svelte/motion`
 (`Tween`, `Spring`):
 
 ```svelte
@@ -904,10 +906,11 @@ protocol and the tests
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
+| `winui-svelte/element-effects` | `enableElementEffects` (the Vite plugin calls it from a component that imports `blur` or `draw`): the blur transition blurs for real and `draw` measures a `path`, with Composition and Win2D |
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
-| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
+| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/filter`, `/css/clip`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, aspect ratio, filters and masks, clip shapes, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 
 The published package ships `dist/`: the TypeScript compiled with its
@@ -982,10 +985,9 @@ Stated plainly, so nobody finds them by surprise:
   Button handles `PointerPressed`) never reports it, so `:active` does nothing
   there
   Override the control's theme resources instead
-- **Transitions that WinUI cannot draw.** `blur` fades without blurring (no
-  element blur in WinUI without Composition effects), `draw` cannot measure a
-  `path` (a geometry has no length), a directive goes on a raw element, and a
-  leaving element in a keyed `{#each}` stays in the layout until it is gone
+- **Transitions on a raw element.** A directive goes on a raw element, a
+  `<path>` takes a `Geometry` (not path data) for `draw`, and a leaving element
+  in a keyed `{#each}` stays in the layout until it is gone
 - **Two controls are not components:** `SwapChainBackgroundPanel` (the UWP
   panel WinUI 3 keeps for compatibility: it refuses Opacity, Width, Height, the
   min and max sizes and Margin, and is allowed only as the application's root
@@ -1019,9 +1021,9 @@ Stated plainly, so nobody finds them by surprise:
   no wrapping panel), `align-items` and `justify-content` on a container (set
   `place-self` on the child), `order`, `aspect-ratio`, a % size other than
   100%, `calc()` with a % or a variable, container style queries, `:has()`, `:focus-within`,
-  `box-shadow` (use `-winui-elevation`), `filter` and `mix-blend-mode`
-  (Composition effects, which need `ElementCompositionPreview` and Win2D), `mask`,
-  `text-transform` and a `clip-path` other than `inset()`
+  `box-shadow` (use `-winui-elevation`), `text-transform`, `clip-path` as
+  `rect()` or `xywh()`, `mask-position`, `mask-size`, `mask-repeat` and `url()`
+  filters
   `cursor` is ignored
   with a warning (`ProtectedCursor` is not exposed)
   Gradients are `linear-gradient()` and `radial-gradient()` only
@@ -1029,8 +1031,11 @@ Stated plainly, so nobody finds them by surprise:
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can
   declare custom properties only (a Style cannot depend on the scheme)
 - **Some CSS is opt-in, and approximate.** `transform` is a 2D RenderTransform
-  that a transition animates only as translate, rotate and scale in that order; `backdrop-filter: blur()` is an acrylic
-  that ignores the radius; `-winui-elevation` is a `ThemeShadow`, which needs
+  that a transition animates only as translate, rotate and scale in that order;
+  `filter`, `backdrop-filter`, `mix-blend-mode` and `mask-image` draw the element
+  through a sprite in its parent's child visual slot, so an element with one
+  draws over the later siblings it overlaps, and one whose parent already holds a
+  Composition child visual of its own cannot take one; `-winui-elevation` is a `ThemeShadow`, which needs
   Windows 11 (or receivers a Style cannot set); `outline` is the control's focus
   visual
   A custom property on a class applies when the class is on the element

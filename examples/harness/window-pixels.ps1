@@ -25,11 +25,11 @@ if ($hwnd -eq [IntPtr]::Zero) { throw 'no window' }
 $bitmap = [ExampleWin]::Capture($hwnd)
 try {
   # The content starts where the example's background color first shows,
-  # looking down and across the middle of the capture.
+  # looking across the middle of the capture and down a column left of the middle
   $x0 = 0
   $y0 = 0
   while ($x0 -lt $bitmap.Width -and (Format-Color $bitmap.GetPixel($x0, [int]($bitmap.Height / 2))) -ne $Origin) { $x0++ }
-  while ($y0 -lt $bitmap.Height -and (Format-Color $bitmap.GetPixel([int]($bitmap.Width / 4), $y0)) -ne $Origin) { $y0++ }
+  while ($y0 -lt $bitmap.Height -and (Format-Color $bitmap.GetPixel([int]($bitmap.Width * 0.45), $y0)) -ne $Origin) { $y0++ }
   $colors = foreach ($point in $Points.Split(';')) {
     $x, $y = $point.Split(',')
     Format-Color $bitmap.GetPixel($x0 + [int]([double]$x * $Scale), $y0 + [int]([double]$y * $Scale))

@@ -173,7 +173,7 @@ handed over as it is and read once, when the element is made)
 A property that
 changes is set through `{@attach control(...)}`, as components do
 
-## Transitions (`winui-svelte/element-animation`)
+## Transitions (`winui-svelte/element-animation`, `winui-svelte/element-effects`)
 
 Svelte's `transition:`, `in:`, `out:` and `animate:` run unchanged: Svelte's
 runtime asks its elements for `animate()`, `getComputedStyle`,
@@ -186,6 +186,13 @@ it yourself only to give another clock (a test) or when you do not use the
 plugin
 It is idempotent, and an app that never uses a transition never bundles
 the module
+A component that imports `blur` or `draw` from `svelte/transition` also gets
+`enableElementEffects()` of `winui-svelte/element-effects` (Win2D and
+Composition, which no other transition loads), so `blur` blurs and `draw`
+measures a `path`
+It hands the blur to the animations through `provideElementBlur(setBlur)` of
+`winui-svelte/element-animation`, which another drawing of the blur may call
+the same way
 
 A directive goes on a raw element (`<border transition:fade>`), as Svelte does
 not allow one on a component
@@ -196,6 +203,7 @@ function enableElementAnimation(options?: {
   onFrame?: () => void; // default: flush()
   warn?: (message: string) => void; // default: console.warn
   createDashes?: (lengths: number[]) => object; // default: a DoubleCollection
+  setBlur?: (input: { control: object; radius: number | null }) => void; // default: the blur of winui-svelte/element-effects, if it is in use
 }): () => void; // turns it off again
 ```
 
@@ -213,8 +221,11 @@ What it does:
   collapse, the layout clips what overflows), `crossfade` (pairs by key; the
   incoming element scales from its corner) and `draw` work
   `draw` measures a
-  `line`, `polyline`, `polygon`, `ellipse` or `rectangle`; a `path` has no
-  length in WinUI and throws
+  `line`, `polyline`, `polygon`, `ellipse` or `rectangle` itself, and a `path` with
+  `winui-svelte/element-effects` (below): a `<path>` takes a `Geometry` (a
+  `PathGeometry`, or a line, rectangle or ellipse geometry, or a group of them)
+  rather than path data, which Win2D measures as a `CanvasGeometry`, closing
+  included
 - `animate:flip` reads each element's place from `TransformToVisual` after a
   layout pass
   A leaving element in a keyed `{#each}` stays in the layout
@@ -225,8 +236,13 @@ What it does:
 - `Tween`, `Spring` and a transition's `tick` step on `requestAnimationFrame`,
   which is the same clock
   `prefersReducedMotion` matches nothing
-- A property WinUI cannot animate (`filter`, so `blur` only fades) is named
-  once through `warn` and left out
+- `filter: blur(<length>)` (what Svelte's `blur` writes) is read as the radius
+  of a blur, which `setBlur` draws: with `winui-svelte/element-effects` it is a
+  real Gaussian blur of the element's Composition visual, animated by its
+  radius and let go of when it reaches 0; without it `blur` only fades, and a
+  warning says so
+- A property WinUI cannot animate (any other `filter`) is named once through
+  `warn` and left out
 - `introstart`, `outroend` and the like are not WinUI events: an `onintrostart`
   handler throws, and none of them are raised
 - `getComputedStyle` is defined as a global for WinUI's elements; any other
@@ -1513,18 +1529,19 @@ element as a child sprite visual and returns a function that removes it;
 `source` is `BACKDROP` (what is behind the element: `backdrop-filter`, a blend) or
 another element (its own pixels: `filter: blur()`, `drop-shadow()`,
 `grayscale()`, `mix-blend-mode`)
-An element cannot be its own source (its child
-visual would be part of what it samples): put the content in one element and
-the effect in a sibling over it
-CSS `filter` and `mix-blend-mode` stay build
-errors, for two reasons a Style cannot get around: the effect is a Composition
-visual attached to the element through `applyEffect`, not a property a Style
-can set, and a CSS rule on an element cannot name the sibling that must hold
-the effect
-Call `applyEffect` from an attachment instead
-It was built and
-type-checked but not looked at on screen: nothing reads the pixels of a
-Composition effect back without a screen capture
+`applyEffect` cannot take an element as its own source (its child visual
+would be part of what it samples)
+The CSS properties can: `filter`, `backdrop-filter`, `mix-blend-mode`,
+`mask-image` and `clip-path` of `winui-svelte/css/filter` and
+`winui-svelte/css/clip` draw an element through an effect graph, with a sprite
+visual in its parent's child visual slot that samples the element's visual
+through a visual surface (which renders it whatever its `IsVisible`) while the
+element hides itself ([`src/css/API.md`](src/css/API.md#filters-blends-and-masks-filter-backdrop-filter-mix-blend-mode-mask-image))
+`elementVisualOf(element)` is the same from code: `setEffects(effects)`,
+`setClip(shape)` and `setBlur(radius)` on one element's visual
+The effect graph is checked on pixels without a window
+(`src/win2d/effect-graph.test.ts`), and the effects in a real window through
+`PrintWindow` (`test/effects.test.ts`, with `examples/effects`)
 
 The working example is `examples/win2d` (`test/win2d.test.ts` runs it in a real
 window and checks the redraw; `src/win2d/win2d.test.ts` draws on a render
@@ -1546,7 +1563,7 @@ entry point is named nowhere in the docs
 | `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed |
 | `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, and removal of a stylesheet |
-| `animationGroups`, `effectGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `dynamicLengthGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
+| `animationGroups`, `effectGroups`, `visualEffectGroups`, `clipGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `dynamicLengthGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
 | `WINDOW_ENVIRONMENT` | `winui-svelte/vite` | the Vite environment the window's modules load in |
 | `LOG_EVENT` | `winui-svelte/runner` | the event the window thread's log lines are sent under |

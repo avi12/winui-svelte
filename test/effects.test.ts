@@ -263,3 +263,83 @@ test("filter, backdrop-filter, mix-blend-mode, mask-image and clip-path change w
     example.kill();
   }
 });
+
+// The example's transitions run 3000 milliseconds: its card blurs in and its path draws in.
+const EARLY_MILLISECONDS = 500;
+const NEAR_THE_END_MILLISECONDS = 2500;
+const PAST_THE_END_MILLISECONDS = 4200;
+const CARD_BOUNDARY_X = 66;
+const CARD_MIDDLE_Y = 46;
+const WHITE = 255;
+const PURE_SLACK = 8;
+// The path runs 180 pixels across, then 60 down, at the bottom left of the stage:
+// only a measured length of all 240 has drawn the way down this late.
+const PATH_DOWN_X = 198;
+const PATH_DOWN_Y = 290;
+const PATH_COLOR = 255;
+
+test("the blur transition blurs the element for real, and draw measures a path", {
+  skip: !IS_AVAILABLE,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const example = ExampleProcess.start({ entry: "examples/effects/main.ts" });
+  try {
+    const scale = numberOf({
+      report: await example.ask({
+        command: {
+          cmd: "stats"
+        },
+        kind: "stats"
+      }),
+      field: "scale"
+    });
+    const cardPoints = [{
+      x: CARD_BOUNDARY_X - 10,
+      y: CARD_MIDDLE_Y
+    }, {
+      x: CARD_BOUNDARY_X + 10,
+      y: CARD_MIDDLE_Y
+    }];
+    function read(points: typeof cardPoints) {
+      return windowPixels({
+        pid: example.pid,
+        scale,
+        origin: STAGE_COLOR,
+        points
+      });
+    }
+    await example.ask({
+      command: {
+        cmd: "card",
+        show: true
+      },
+      kind: "card"
+    });
+    await wait(EARLY_MILLISECONDS);
+    const [earlyWhite, earlyInk] = read(cardPoints);
+    assert.ok(earlyWhite !== undefined && earlyWhite.g < WHITE - PURE_SLACK, `the white half is still sharp: ${JSON.stringify(earlyWhite)}`);
+    assert.ok(earlyInk !== undefined && earlyInk.g > PURE_SLACK, `the black half is still sharp: ${JSON.stringify(earlyInk)}`);
+    await wait(PAST_THE_END_MILLISECONDS);
+    const [lateWhite, lateInk] = read(cardPoints);
+    assert.ok(lateWhite !== undefined && lateWhite.g >= WHITE - PURE_SLACK, `the white half did not come into focus: ${JSON.stringify(lateWhite)}`);
+    assert.ok(lateInk !== undefined && lateInk.g <= PURE_SLACK, `the black half did not come into focus: ${JSON.stringify(lateInk)}`);
+
+    await example.ask({
+      command: {
+        cmd: "line",
+        show: true
+      },
+      kind: "line"
+    });
+    await wait(NEAR_THE_END_MILLISECONDS);
+    const [down] = read([{
+      x: PATH_DOWN_X,
+      y: PATH_DOWN_Y
+    }]);
+    assert.ok(down !== undefined && down.g >= PATH_COLOR - PURE_SLACK, `the path is not drawn down its second part: ${JSON.stringify(down)}`);
+    example.send({ cmd: "close" });
+    assert.equal(await example.exited, 0);
+  } finally {
+    example.kill();
+  }
+});
