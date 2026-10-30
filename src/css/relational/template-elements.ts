@@ -19,6 +19,11 @@ export interface TemplateElement {
   classEnd: number | null;
   parent: TemplateElement | null;
   level: Level;
+  /** Where the element starts and ends in the source. */
+  start: number;
+  end: number;
+  /** The nodes written directly inside it. */
+  childLevel: Level;
 }
 
 /** The nodes written next to each other in one place. */
@@ -26,6 +31,10 @@ export interface Level {
   items: Array<TemplateElement | null>;
   /** Whether the items are all there is: no block or component among them, and a known parent. */
   isStatic: boolean;
+  /** Whether an `{#if}`, `{#each}`, `{#key}` or `{#await}` is among them: the number of elements depends on data. */
+  hasBlock: boolean;
+  /** Whether a component, a snippet render or other markup that is not an element is among them. */
+  hasOpaque: boolean;
 }
 
 type TemplateNode = AST.Fragment["nodes"][number];
@@ -96,6 +105,12 @@ function addElement({ walk, node, parent, level }: {
   parent: TemplateElement | null;
   level: Level;
 }) {
+  const childLevel: Level = {
+    items: [],
+    isStatic: true,
+    hasBlock: false,
+    hasOpaque: false
+  };
   const element: TemplateElement = {
     name: node.name.toLowerCase(),
     ...classFacts({
@@ -104,7 +119,10 @@ function addElement({ walk, node, parent, level }: {
     }),
     nameEnd: node.start + 1 + node.name.length,
     parent,
-    level
+    level,
+    start: node.start,
+    end: node.end,
+    childLevel
   };
   level.items.push(element);
   walk.elements.push(element);
@@ -112,7 +130,7 @@ function addElement({ walk, node, parent, level }: {
     walk,
     nodes: node.fragment.nodes,
     parent: element,
-    isStatic: true
+    level: childLevel
   });
 }
 
@@ -132,16 +150,12 @@ function blockFragments(node: TemplateNode) {
   }
 }
 
-function addNodes({ walk, nodes, parent, isStatic }: {
+function addNodes({ walk, nodes, parent, level }: {
   walk: Walk;
   nodes: readonly TemplateNode[];
   parent: TemplateElement | null;
-  isStatic: boolean;
+  level: Level;
 }) {
-  const level: Level = {
-    items: [],
-    isStatic: isStatic && parent !== null
-  };
   for (const node of nodes) {
     const isElement = node.type === "RegularElement";
     if (isElement) {
@@ -163,12 +177,19 @@ function addNodes({ walk, nodes, parent, isStatic }: {
 
     level.items.push(null);
     level.isStatic = false;
+    level.hasBlock ||= isBlock;
+    level.hasOpaque ||= !isBlock;
     for (const fragment of isBlock ? fragments : []) {
       addNodes({
         walk,
         nodes: fragment?.nodes ?? [],
         parent,
-        isStatic: false
+        level: {
+          items: [],
+          isStatic: false,
+          hasBlock: false,
+          hasOpaque: false
+        }
       });
     }
   }
@@ -187,7 +208,12 @@ export function templateElements({ root, source }: {
     walk,
     nodes: root.fragment.nodes,
     parent: null,
-    isStatic: false
+    level: {
+      items: [],
+      isStatic: false,
+      hasBlock: false,
+      hasOpaque: false
+    }
   });
   return walk.elements;
 }

@@ -71,6 +71,13 @@ const ID_SEPARATOR = "#";
 const STYLE_RESOURCE_KEY = "css-style";
 const classSeparator = /\s+/u;
 
+interface StyledElementInput {
+  control: object;
+  elementType: string;
+  /** Writes the element's text again (the renderer's own sync of it), for a `text-transform` that came or went. */
+  refreshText: () => void;
+}
+
 type ReadProperty = (property: string) => NativeValue;
 
 interface StateBinding {
@@ -476,10 +483,12 @@ class ElementStyle implements StyledElement {
   private appliedWrites = "";
   private writeUndos: Array<() => void> = [];
   private isDisposed = false;
+  private readonly refreshText: () => void;
 
-  constructor(control: object, elementType: string) {
+  constructor({ control, elementType, refreshText }: StyledElementInput) {
     this.control = control;
     this.elementType = elementType;
+    this.refreshText = refreshText;
     elements.add(this);
   }
 
@@ -630,7 +639,8 @@ class ElementStyle implements StyledElement {
       const undo = writeHandler(target)?.({
         control: this.control,
         value,
-        native: currentNative
+        native: currentNative,
+        refreshText: this.refreshText
       });
       return undo ? [undo] : [];
     });
@@ -756,9 +766,6 @@ export function styleOfClasses({ elementType, classNames }: {
 }
 
 /** One per element the renderer creates that is given class, style or style:. */
-export function styledElement({ control, elementType }: {
-  control: object;
-  elementType: string;
-}) {
-  return new ElementStyle(control, elementType);
+export function styledElement(input: StyledElementInput) {
+  return new ElementStyle(input);
 }

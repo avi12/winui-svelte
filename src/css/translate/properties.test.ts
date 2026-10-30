@@ -662,13 +662,56 @@ test("a box-shadow transition animates the Z of Translation, a shadow's depth", 
   assert.deepEqual(result.setters, [["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.150\"/>"]]);
 });
 
-test("a border-color transition has no WinUI counterpart", () => {
+test("a border-color transition is a write the runtime animates, with the colors written out", () => {
   const result = lower({
     elementType: null,
-    declarations: "transition: border-color 1s"
+    declarations: "border-color: #ff0000; transition: border-color 1s ease-out 50ms"
   });
-  assert.deepEqual(result.setters, []);
-  assert.match(result.warnings.join(), /border-color cannot be animated/u);
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.warnings, []);
+  const [[target, value] = ["", ""]] = result.writes;
+  assert.equal(target, "border-color-transition");
+  assert.deepEqual(JSON.parse(value), {
+    color: "#FF0000",
+    durationMs: 1000,
+    delayMs: 50,
+    easing: "ease-out"
+  });
+});
+
+test("a border-color transition without a color written out warns and is dropped", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "border-color: var(--edge); transition: border-color 1s"
+  });
+  assert.deepEqual(result.writes, []);
+  assert.match(result.warnings.join(), /border-color is animated between colors written out/u);
+});
+
+test("text-transform writes the transform the runtime shows the text with", () => {
+  for (const word of ["uppercase", "lowercase", "capitalize"]) {
+    const result = lower({
+      elementType: "text-block",
+      declarations: `text-transform: ${word}`
+    });
+    assert.deepEqual(result.errors, []);
+    assert.deepEqual(result.writes, [["text-transform", word]]);
+  }
+
+  const none = lower({
+    elementType: "text-block",
+    declarations: "text-transform: none"
+  });
+  assert.deepEqual(none.writes, []);
+  assert.deepEqual(none.errors, []);
+});
+
+test("a text-transform WinUI cannot show is a build error", () => {
+  const result = lower({
+    elementType: "text-block",
+    declarations: "text-transform: full-width"
+  });
+  assert.match(result.errors.join(), /text-transform: expected none, uppercase, lowercase or capitalize/u);
 });
 
 const failures: Array<[string, string | null, string, RegExp]> = [
@@ -676,8 +719,8 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["an inset shadow", null, "box-shadow: inset 0 0 4px red", /box-shadow: inset has no WinUI meaning/u],
   ["a box-shadow without an offset", null, "box-shadow: red", /box-shadow: expected offset-x offset-y/u],
   ["an unknown property", null, "frobnicate: 1", /frobnicate has no WinUI meaning \(WinUI has no property that corresponds to it\)/u],
-  ["flex sizing of a child", null, "flex: 1", /flex has no WinUI meaning \(a child cannot size itself in its parent: give the parent grid-template-columns with fr tracks\)/u],
-  ["align-items on a container", null, "align-items: center", /align-items has no WinUI meaning \(WinUI aligns a child by its own VerticalAlignment: set align-self on each child\)/u],
+  ["flex sizing of a child", null, "flex: 1", /flex has no WinUI meaning \(is lowered by the component build into the children of a <stack-panel> or <grid>/u],
+  ["align-items on a container", null, "align-items: center", /align-items has no WinUI meaning \(is lowered by the component build into the children of a <stack-panel> or <grid>/u],
   ["a length without a unit", null, "width: 12", /width: expected a length in px/u],
   ["a percentage length", null, "width: 50%", /width: expected a length in px/u],
   ["a bad color", null, "color: sparkly", /color: expected a color/u],
@@ -767,7 +810,7 @@ test("aspect-ratio becomes a write of the ratio", () => {
   );
 });
 
-test("filter, mix-blend-mode and text-transform fail the build with their reason", () => {
+test("filter and mix-blend-mode fail the build with their reason", () => {
   assert.match(
     lower({
       elementType: null,
@@ -779,11 +822,5 @@ test("filter, mix-blend-mode and text-transform fail the build with their reason
       elementType: null,
       declarations: "mix-blend-mode: multiply"
     }).errors.join(), /no blend modes/u
-  );
-  assert.match(
-    lower({
-      elementType: null,
-      declarations: "text-transform: uppercase"
-    }).errors.join(), /so change the text/u
   );
 });

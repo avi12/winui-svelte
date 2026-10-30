@@ -2,7 +2,7 @@ import { matchingElements, UnresolvableSelector } from "./match.ts";
 import type { TemplateElement } from "./template-elements.ts";
 import { parseComplexSelector, splitSelectorList, STATE_PSEUDO_CLASSES } from "#src/css/parse/complex-selector.js";
 import type { Compound } from "#src/css/parse/complex-selector.js";
-import type { Diagnostic } from "#src/css/translate/types.js";
+import type { Declaration, Diagnostic } from "#src/css/translate/types.js";
 
 const CLASS_PREFIX = "wsc-";
 const NEEDS_MATCHING: ReadonlySet<string> = new Set([
@@ -29,7 +29,22 @@ export interface Context {
   given: Map<TemplateElement, string[]>;
   /** Rules taken out of a nested position and written at the end of the style. */
   hoisted: string[];
+  /** Rules for generated classes, written at the start of the style so every rule of the author wins a tie. */
+  prelude: string[];
+  /** The declarations a container's lowering took out of their rules, which a rewritten rule leaves out too. */
+  removed: Set<Declaration>;
   diagnostics: Diagnostic[];
+}
+
+/** The generated class for a key, the same one each time the key is asked for. */
+export function generatedName({ context, key }: {
+  context: Context;
+  key: string;
+}) {
+  const known = context.names.get(key);
+  const name = known ?? `${CLASS_PREFIX}${context.names.size + 1}`;
+  context.names.set(key, name);
+  return name;
 }
 
 /** An `@scope (root) to (limit)`: the selectors inside are under the root and stop at the limit. */

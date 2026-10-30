@@ -1031,15 +1031,21 @@ Stated plainly, so nobody finds them by surprise:
   against the component's markup at build time
   A Style cannot reach an element's parent, children or siblings, so these are
   build errors that say what to write instead: `float`, `position: sticky`,
-  `right` and `bottom`, `flex-grow` and `flex-wrap` (use `fr` tracks; WinUI has
-  no wrapping panel), `align-items` and `justify-content` on a container (set
-  `place-self` on the child), `order`, `aspect-ratio`, a % size other than
+  `right` and `bottom`, `flex-wrap` (WinUI has no wrapping panel), `aspect-ratio`, a % size other than
   100%, `calc()` with a % or a variable, container style queries, `:has()`, `:focus-within`,
   `box-shadow` (use `-winui-elevation`), `filter` and `mix-blend-mode`
-  (Composition effects, which need `ElementCompositionPreview` and Win2D), `mask`,
-  `text-transform` and a `clip-path` other than `inset()`
-  `cursor` is ignored
-  with a warning (`ProtectedCursor` is not exposed)
+  (Composition effects, which need `ElementCompositionPreview` and Win2D), `mask`
+  and a `clip-path` other than `inset()`
+  A container's `align-items`, `justify-content`, `place-items`, its children's
+  `flex-grow`, `flex-basis` and `order`, and `display: flex` on a `<grid>` are
+  lowered at build time into generated classes on the children (and the
+  children are written in `order`), so they work where the markup fixes the
+  children (`src/css/API.md`, Containers); `text-transform` shows the text
+  changed and keeps the source text; a `transition` on `border-color` runs a
+  color animation on the border brush
+  `cursor` is ignored with a warning: `InputSystemCursor` and
+  `InputSystemCursorShape` (Microsoft.UI.Input) are not in the bindings, and
+  `ProtectedCursor` takes only one of those
   Gradients are `linear-gradient()` and `radial-gradient()` only
   (no repeating or conic ones, no stop in `px`), and replace `background-color`
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can

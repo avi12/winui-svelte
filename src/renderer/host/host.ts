@@ -13,7 +13,7 @@ import {
   thickness
 } from "./values.ts";
 import type { StyledElement } from "#src/css/index.js";
-import { styledElement } from "#src/css/index.js";
+import { styledElement, textTransforms } from "#src/css/index.js";
 import type { NativeValue } from "#src/native-value.js";
 import type { KeyedItems } from "#src/renderer/list/keyed-list.js";
 import { syncKeyed } from "#src/renderer/list/keyed-list.js";
@@ -259,7 +259,10 @@ function stylingOf({ element, control }: {
     elementType: elementType({
       element,
       control
-    })
+    }),
+    refreshText() {
+      sync(element);
+    }
   });
   return element.native.styled;
 }
@@ -421,11 +424,22 @@ function isLooseChild(node: TreeNode<WinuiNative>) {
 // indentation, which a browser collapses and WinUI would draw.
 const htmlWhitespaceRun = /[ \t\n\r\f]+/gu;
 
+// The text with the element's `text-transform`; the source text stays in the tree.
+function shown({ element, text }: {
+  element: WinuiElement;
+  text: string;
+}) {
+  return textTransforms.get(element.native.control ?? element)?.(text) ?? text;
+}
+
 // An element's text as a browser would show it: whitespace runs collapsed to
 // one space and the ends trimmed. A no-break space is kept, as in HTML.
 function textOf(element: WinuiElement) {
   const raw = element.children.map(child => child.type === NodeType.TEXT ? child.value : "").join("");
-  return raw.replaceAll(htmlWhitespaceRun, " ").replace(/^ | $/gu, "");
+  return shown({
+    element,
+    text: raw.replaceAll(htmlWhitespaceRun, " ").replace(/^ | $/gu, "")
+  });
 }
 
 // Each control's key in the panels it is placed in.
@@ -634,7 +648,10 @@ function inlinesOf(element: WinuiElement) {
     const trimmed = isLast ? trimmedStart.replace(/ $/u, "") : trimmedStart;
     return trimmed === "" ? [] : [textRun({
       node,
-      text: trimmed
+      text: shown({
+        element,
+        text: trimmed
+      })
     })];
   });
 }

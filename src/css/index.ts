@@ -13,4 +13,5 @@ export {
   unregisterStyleSheet
 } from "./runtime/runtime.ts";
 export type { CssNative, StyledElement } from "./runtime/runtime.ts";
+export { textTransforms } from "./runtime/text-transforms.ts";
 export type { StyleSheetData } from "./translate/types.ts";

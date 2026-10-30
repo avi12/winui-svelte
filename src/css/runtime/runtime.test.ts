@@ -4,12 +4,14 @@ import {
   installCssRuntime,
   registerPropertyGroups,
   registerStyleSheet,
-  styledElement,
+  styledElement as styledElementOf,
   styleOfClasses,
   unregisterStyleSheet
 } from "./runtime.ts";
+import { textTransforms } from "./text-transforms.ts";
 import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import { compatGroups } from "#src/css/translate/compat-properties.js";
 import { containerGroups } from "#src/css/translate/container-properties.js";
 import { dynamicLengthGroups } from "#src/css/translate/dynamic-length-properties.js";
 import { effectGroups } from "#src/css/translate/effect-properties.js";
@@ -40,6 +42,7 @@ interface FakeControl {
   handlers: Map<string, () => void>;
   properties: Record<string, NativeValue>;
   animations: string[];
+  brushes: string[];
 }
 
 function control(properties: Record<string, NativeValue> = {}) {
@@ -52,7 +55,8 @@ function control(properties: Record<string, NativeValue> = {}) {
     resources: [],
     handlers: new Map(),
     properties,
-    animations: []
+    animations: [],
+    brushes: []
   };
 }
 
@@ -66,6 +70,18 @@ function fake(target: object) {
   }
 
   return target;
+}
+
+function styledElement({ control, elementType, refreshText = () => undefined }: {
+  control: object;
+  elementType: string;
+  refreshText?: () => void;
+}) {
+  return styledElementOf({
+    control,
+    elementType,
+    refreshText
+  });
 }
 
 const mergedResources: string[] = [];
@@ -122,10 +138,14 @@ const fakeNative: CssNative = {
   clip({ control, rect }) {
     fake(control).assigned["clip"] = rect;
   },
-  animate({ control, storyboards, hasTransform }) {
-    const { animations } = fake(control);
+  animate({ control, storyboards, hasTransform, brushes }) {
+    const { animations, brushes: animatedBrushes } = fake(control);
+    animatedBrushes.push(...brushes.map(({ property, color }) => `${property}:${color}`));
     animations.push(...storyboards.map(({ xaml, isPaused }) => `${isPaused ? "paused " : ""}${hasTransform ? "transform " : ""}${xaml}`));
-    return () => animations.splice(0);
+    return () => {
+      animations.splice(0);
+      animatedBrushes.splice(0);
+    };
   }
 };
 
@@ -769,4 +789,62 @@ test("a clip-path inset clips the element to its size and unclips with the class
   });
   element.setClasses("");
   assert.equal(fake(target).assigned["clip"], null);
+});
+
+test("a border-color transition animates the brush from the old color to the new one", () => {
+  registerPropertyGroups(transformGroups());
+  registerStyleSheet(
+    sheet({
+      id: "border-transition.svelte",
+      css: ".edge { border-color: #00f; transition: border-color 200ms ease-out }\n.edge.on { border-color: #f00 }"
+    })
+  );
+  const target = control();
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("edge");
+  assert.deepEqual(target.animations, []);
+  element.setClasses("edge on");
+  assert.equal(target.animations.length, 1);
+  assert.match(target.animations[0] ?? "", /^<Storyboard .*Storyboard\.TargetProperty="BorderBrush\.\(SolidColorBrush\.Color\)".*FillBehavior="HoldEnd"/u);
+  assert.match(target.animations[0] ?? "", /0:00:00\.200/u);
+  assert.deepEqual(target.brushes, ["borderBrush:#0000FF"]);
+  element.setClasses("edge");
+  assert.deepEqual(target.brushes, ["borderBrush:#FF0000"]);
+  element.dispose();
+  assert.deepEqual(target.animations, []);
+  unregisterStyleSheet("border-transition.svelte");
+});
+
+test("a text-transform sets what the control's text is shown with and asks for it to be written again", () => {
+  registerPropertyGroups(compatGroups());
+  registerStyleSheet(
+    sheet({
+      id: "text-transform.svelte",
+      css: ".shout { text-transform: uppercase }\n.title { text-transform: capitalize }"
+    })
+  );
+  const target = control();
+  let refreshes = 0;
+  const element = styledElement({
+    control: target,
+    elementType: "text-block",
+    refreshText() {
+      refreshes++;
+    }
+  });
+  element.setClasses("shout");
+  assert.equal(textTransforms.get(target)?.("hello"), "HELLO");
+  assert.equal(refreshes, 1);
+  element.setClasses("title");
+  assert.equal(textTransforms.get(target)?.("hello wide-world, it's x"), "Hello Wide-World, It's X");
+  element.setClasses("");
+  assert.equal(textTransforms.has(target), false);
+  assert.ok(refreshes >= 3);
+  element.setClasses("shout");
+  element.dispose();
+  assert.equal(textTransforms.has(target), false);
+  unregisterStyleSheet("text-transform.svelte");
 });

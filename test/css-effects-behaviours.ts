@@ -44,7 +44,8 @@ function styled({ control, elementType, classNames }: {
 }) {
   const element = styledElement({
     control,
-    elementType
+    elementType,
+    refreshText: () => undefined
   });
   element.setClasses(classNames);
   return element;

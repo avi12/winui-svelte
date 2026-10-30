@@ -95,7 +95,7 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
 | `winui-svelte/css/position` | `position`, `top`, `left`, `right`, `bottom`, `inset` | Position |
 | `winui-svelte/css/queries` | `@media`, `@container` and `@starting-style` rules (a group with no property of its own) | Responsive rules |
-| `winui-svelte/css/compat` | `word-break`, `user-select`, `object-fit`, `line-clamp`, `box-sizing`, `cursor` (ignored) | Unsupported |
+| `winui-svelte/css/compat` | `text-transform`, `word-break`, `user-select`, `object-fit`, `line-clamp`, `box-sizing`, `cursor` (ignored) | Unsupported |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |
 
 `calc()`, `min()`, `max()` and `clamp()` of px and rem fold when the build
@@ -287,8 +287,12 @@ Any other list (a `skew()`, a `matrix()`, another
 order) stays a RenderTransform, and the transition warns that it does nothing
 A transition on `box-shadow` or `-winui-elevation` animates the shadow's depth,
 the Z of `Translation`
-A transition on `border-color` warns and is dropped:
-WinUI has no brush transition for the border
+A transition on `border-color` is a Storyboard on the border's brush: when the colors the rules
+say change (a `:hover`, a class), a color animation runs from the old color to the new one,
+with the duration, the timing function (`ease` when unwritten) and the delay of the
+`transition` (`transition: border-color 200ms ease-out`)
+Both colors must be written out (hex, `rgb()`, a name): a `var()` warns and the transition is dropped
+The first color an element gets is set, not animated; the border keeps a brush of its own after a transition
 
 ```css
 .badge { transform: translate(4px, -4px) rotate(8deg) }
@@ -428,16 +432,83 @@ the panel; the CSS names what it does
 | `gap`, `row-gap`, `column-gap` | stack `Spacing` (along its orientation), grid `RowSpacing` / `ColumnSpacing` | |
 | `display: grid` on `<grid>`, `grid-template-*` | the grid's definitions | see Grid tracks |
 | `grid-column`, `grid-row`, `grid-area` | `Grid.Column`, `Grid.Row`, `Grid.ColumnSpan`, `Grid.RowSpan` (lines are 1-based in CSS, 0-based in WinUI) | named areas, auto-placement and implicit tracks are errors |
-| `flex: 1`, `flex-grow` on a child | a `*` track | error: the parent decides, write `grid-template-columns: 1fr auto` on a `<grid>` |
+| `flex: 1`, `flex-grow`, `flex-basis` on a child | a `*`, `Auto` or px track | lowered by the build when the container is a `<grid>` with `display: flex` (see Containers); on a `<stack-panel>` an error that points to it |
 | `flex-wrap` | none | error: WinUI has no wrapping panel |
 | `align-self`, `justify-self`, `place-self` | `VerticalAlignment`, `HorizontalAlignment` (`start` is Top / Left) | on the child |
-| `align-items`, `justify-items`, `justify-content`, `align-content` | none | error: a Style cannot reach the children; set `place-self` on each |
+| `align-items`, `justify-items`, `place-items`, `justify-content`, `align-content` | each child's `align-self` / `justify-self`, or spacer tracks | lowered into the children by the build (see Containers) |
 | `width`, `height` in px, rem, `calc()` of them, `auto`, `100%` | `Width`, `Height` (NaN for auto and 100%: a stretching element fills) | another % is an error: use a `*` track |
 | `min-*`, `max-*` | `MinWidth`... | |
 | `box-sizing: border-box` | nothing: WinUI's size includes padding and border | `content-box` is an error |
 | `overflow` on `<scroll-viewer>` | scroll bar visibility (`scroll` Visible, `auto` Auto, `hidden` Disabled) | on any other element an error: wrap the content in a `<scroll-viewer>` |
-| `order` | none | error: reorder the elements |
+| `order` | the children written in that order | by the build, for children fixed in the markup (see Containers); otherwise an error: sort the list in the script |
 | `position`, `inset`, `z-index` | see Position | |
+
+## Containers: alignment, flex sizes and order
+
+A Style cannot see an element's children, but the markup is known at build
+time: the component build matches a container's rules against the markup,
+gives each child a generated class (`wsc-1`, in a rule of no specificity at the
+start of the style, so every rule you write for the child wins), and takes the
+lowered declarations out of the rule
+It applies to a `<stack-panel>` or `<grid>` written in the component, in a rule
+that is not inside an `@media`
+
+| On the container | `<stack-panel>` (a flex row or column) | `<grid>` with `display: grid` | `<grid>` with `display: flex` |
+|---|---|---|---|
+| `align-items` | each child's `align-self` (row) or `justify-self` (column) | each child's `align-self` | each child's `align-self` (row) or `justify-self` (column) |
+| `justify-items` | none, as in CSS flex | each child's `justify-self` | none |
+| `place-items` | the `align-items` part | both | the `align-items` part |
+| `justify-content`, `align-content`, `place-content` | `start` only (the panel lays out from the start); another value is an error that points to a grid | `normal`, `stretch`, `start` only; give the grid `1fr` tracks around the content | `start`, `end`, `center`, `space-between`, `space-around`, `space-evenly` become `1fr` spacer tracks (when no child grows) |
+| `display: flex`, `flex-direction`, `flex-wrap: nowrap` | `Orientation` as before | | removed: the tracks are made from the children |
+
+A flex row or column written as a `<grid>` gets a track for each child, in
+`grid-template-columns` (row) or `grid-template-rows` (column), and each child
+a `grid-column` or `grid-row`
+
+| On the child | Track |
+|---|---|
+| `flex: 1`, `flex-grow: n` | `1fr`, `nfr` |
+| `flex-grow` with a `flex-basis` in px | `minmax(Npx, nfr)` |
+| `flex-basis: 80px` without growth | `80px` |
+| `flex: none`, `flex: 0 0 auto`, nothing | `auto` |
+| `flex-shrink` | accepted and ignored: a WinUI panel never shrinks a child |
+
+On a `<stack-panel>` a child's `flex-basis` in px is its `width` (row) or
+`height` (column), and `flex-grow` above 0 is an error that points to a `<grid>`
+with `display: flex`
+
+`order` writes the container's children in that order (a stable sort, `0` when
+unwritten) by rewriting the markup, since WinUI lays children out in markup
+order
+Selectors such as `:nth-child()` still count the children as written
+`order` needs children that are fixed in the markup: with an `{#each}`, an
+`{#if}` or a component among them it is an error that names the line (sort the
+list in the script)
+
+Alignment needs a class on each child: children that an `{#each}` or `{#if}`
+repeats get it on the repeated element, and a component among the children is
+an error (set the alignment inside the component)
+A flex `<grid>` makes its tracks from the children, so it rejects an `{#each}`,
+an `{#if}` and components among them: write `grid-template-columns` and place
+each child with `grid-column`
+
+```svelte
+<grid class="toolbar">
+  <text-block class="title">Files</text-block>
+  <button class="more">More</button>
+</grid>
+
+<style>
+  .toolbar { display: flex; align-items: center; gap: 8px }
+  .title { flex: 1 }
+</style>
+```
+
+A declaration is taken out of a rule only when every element the rule reaches
+was lowered: if `.row` also names an element that is not a `<stack-panel>` or a
+`<grid>`, the declaration stays and the translator reports it
+Where `gap` is on a flex `<grid>` with spacer tracks, it is added beside each
+spacer as well
 
 ## Grid tracks: `grid-template-columns`, `grid-template-rows`
 
@@ -640,9 +711,10 @@ Declarations like these fail the build with it:
 | `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color: use `-winui-elevation` |
 | `filter`, `mix-blend-mode`, `mask`, `mask-image` | blur, grayscale, brightness, drop-shadow, blend modes and opacity masks are Composition effects on a visual over the element, which a Style cannot attach or aim at a sibling. Call `applyEffect` of `winui-svelte/win2d` from an attachment (see Win2D in the API), or use `backdrop-filter: blur()` or an acrylic or Mica backdrop |
 | `clip-path` other than `inset()` (circle, ellipse, polygon, path), `inset(... round ...)` | `UIElement.Clip` is a `RectangleGeometry` with square corners |
-| `cursor` | accepted and ignored with a warning: the cursor is `UIElement.ProtectedCursor`, a protected property set to an `InputSystemCursor`, and the bindings have neither a public setter nor `InputSystemCursor` |
-| `text-transform` | a `TextBlock` draws its `Text` as written |
-| `border-color` in a `transition` | WinUI has no brush transition for the border; a `border-color` keyframe in an animation does work |
+| `cursor` | accepted and ignored with a warning: `IUIElementProtected.ProtectedCursor` is in the bindings, but the `InputCursor` it takes can only be made by `Microsoft.UI.Input.InputSystemCursor.Create(InputSystemCursorShape)`, and the bindings have neither `InputSystemCursor` nor `InputSystemCursorShape` (add them to the bindings and it becomes a write like the others) |
 | `animation` without its module | see Animations |
+| `text-transform: uppercase`, `lowercase`, `capitalize` | the text an element shows is written through the change, in a `<text-block>`, a `<run>`, a button's content and the text of an inline element: the tree keeps the text as written, and the control reports the changed one (`none` is no change; an inherited transform is not: write it on the element that holds the text) |
 | `user-select`, `object-fit`, `line-clamp` (`-webkit-line-clamp`), `word-break` | `IsTextSelectionEnabled`, an image's `Stretch` (`contain` is `Uniform`, `cover` `UniformToFill`; `scale-down` is an error), `MaxLines` (with `Wrap` and an ellipsis, which `text-wrap` and `text-overflow` override), `TextWrapping` |
-| `float`, `flex*`, `align-items`, `justify-*`, `place-items`, `content`, `list-style`, `text-indent` | no WinUI equivalent in a Style; each message names the nearest WinUI way |
+| `float`, `flex-wrap` other than `nowrap`, `content`, `list-style`, `text-indent` | no WinUI equivalent in a Style; each message names the nearest WinUI way |
+| `text-transform: full-width` and `full-size-kana` | WinUI has no such transform of a string (`uppercase`, `lowercase` and `capitalize` work) |
+| the container properties in an `@media`, in a stylesheet that is not a component, or on a container that is a component | the build lowers them against the component's markup; elsewhere the message says where they work |
