@@ -123,7 +123,7 @@
 
   :global(.media-probe) {
     background-color: light-dark(#ffffff, #000000);
-    opacity: 100%;
+    opacity: 1;
     transition: opacity 300ms;
   }
 

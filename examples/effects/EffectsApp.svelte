@@ -191,7 +191,7 @@
   }
 
   :global(.fx-backdrop) {
-    background-color: rgb(255 255 0 / 30%);
+    background-color: rgb(255 255 0 / 0.3);
     backdrop-filter: blur(8px);
   }
 

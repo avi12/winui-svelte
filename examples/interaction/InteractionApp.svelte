@@ -322,6 +322,6 @@
 
 <style>
   .hot {
-    opacity: 25%;
+    opacity: 0.25;
   }
 </style>

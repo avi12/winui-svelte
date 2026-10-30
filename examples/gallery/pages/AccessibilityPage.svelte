@@ -74,7 +74,7 @@
 
   :global(.access-glass) {
     padding: 16px;
-    background-color: rgb(128 128 128 / 50%);
+    background-color: rgb(128 128 128 / 0.5);
   }
 
   @media (prefers-reduced-transparency: reduce) {
@@ -92,11 +92,11 @@
 
   @keyframes access-pulse {
     from {
-      opacity: 40%;
+      opacity: 0.4;
     }
 
     to {
-      opacity: 100%;
+      opacity: 1;
     }
   }
 </style>
