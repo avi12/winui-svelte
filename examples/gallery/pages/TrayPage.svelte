@@ -14,6 +14,14 @@
   });
 
   let isShown = $state(false);
+
+  function status() {
+    if (isShown) {
+      return "Look in the notification area";
+    }
+
+    return "No icon yet";
+  }
 </script>
 
 <PageFrame
@@ -21,7 +29,7 @@
   title="Tray icon"
 >
   <ToggleSwitch {@attach keyControl("tray")} header="Show a tray icon" bind:isOn={isShown} />
-  <TextBlock text={isShown ? "Look in the notification area" : "No icon yet"} />
+  <TextBlock>{status()}</TextBlock>
   {#if isShown}
     <TrayIcon guid={GUID} icon={ICON} tooltip="winui-svelte gallery" />
   {/if}

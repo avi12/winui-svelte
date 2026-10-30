@@ -9,12 +9,12 @@
 </script>
 
 <StackPanel class="demo-window">
-  <TextBlock text={props.message} />
-  <TextBlock text="A second window made with createWindow." />
+  <TextBlock>{props.message}</TextBlock>
+  <TextBlock>A second window made with createWindow.</TextBlock>
 </StackPanel>
 
 <style>
-  :global(.demo-window) {
+  .demo-window {
     gap: 8px;
     padding: 24px;
   }

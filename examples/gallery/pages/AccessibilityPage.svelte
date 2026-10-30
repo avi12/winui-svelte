@@ -1,5 +1,6 @@
 <script lang="ts">
   import PageFrame from "#examples/gallery/PageFrame.svelte";
+  import { holds, onOff, themeOf } from "#examples/gallery/pages/words.ts";
   import { keyControl } from "#examples/harness/smoke.ts";
   import { Border, StackPanel, TextBlock, ToggleSwitch } from "winui-svelte/components";
   import { mediaQuery, systemSettings } from "winui-svelte/window";
@@ -16,19 +17,28 @@
   caption="The library follows Windows: the theme, the contrast theme, animation effects and transparency. The same media queries work in a stylesheet and in script."
   title="Accessibility and theming"
 >
-  <StackPanel class="access-block" requestedTheme={isDark ? "Dark" : "Light"}>
+  <StackPanel class="access-block" requestedTheme={themeOf(isDark)}>
     <ToggleSwitch header="Force this panel dark (color-scheme)" bind:isOn={isDark} />
-    <Border class="access-card" {@attach keyControl("accessibility")}><TextBlock class="access-card-text" text="This card follows prefers-color-scheme, forced-colors and prefers-contrast" /></Border>
-    <Border class="access-pulse"><TextBlock text="Pulses, unless animation effects are off in Windows" /></Border>
-    <Border class="access-glass"><TextBlock text="Opaque when transparency effects are off" /></Border>
+    <Border class="access-card" {@attach keyControl("accessibility")}>
+      <TextBlock class="access-card-text">
+        This card follows prefers-color-scheme, forced-colors and prefers-contrast
+      </TextBlock>
+    </Border>
+    <Border class="access-pulse"><TextBlock>Pulses, unless animation effects are off in Windows</TextBlock></Border>
+    <Border class="access-glass"><TextBlock>Opaque when transparency effects are off</TextBlock></Border>
   </StackPanel>
   <StackPanel class="access-block">
-    <TextBlock text="Dark mode {settings.isDarkTheme ? "on" : "off"}" />
-    <TextBlock text="High contrast {settings.isHighContrast ? "on" : "off"} (prefers-contrast: more {isContrastMore.matches ? "holds" : "does not"})" />
-    <TextBlock text="Animation effects {settings.isAnimationEnabled ? "on" : "off"} (prefers-reduced-motion: reduce {isReducedMotion.matches ? "holds" : "does not"})" />
-    <TextBlock text="Transparency effects {settings.isTransparencyEnabled ? "on" : "off"}" />
-    <TextBlock text="Text size {Math.round(settings.textScaleFactor * PERCENT)} percent" />
-    <TextBlock text="Narrow monitor (max-width: 900px) {isNarrow.matches ? "holds" : "does not"}" />
+    <TextBlock>Dark mode {onOff(settings.isDarkTheme)}</TextBlock>
+    <TextBlock>
+      High contrast {onOff(settings.isHighContrast)} (prefers-contrast: more {holds(isContrastMore.matches)})
+    </TextBlock>
+    <TextBlock>
+      Animation effects {onOff(settings.isAnimationEnabled)}
+      (prefers-reduced-motion: reduce {holds(isReducedMotion.matches)})
+    </TextBlock>
+    <TextBlock>Transparency effects {onOff(settings.isTransparencyEnabled)}</TextBlock>
+    <TextBlock>Text size {Math.round(settings.textScaleFactor * PERCENT)} percent</TextBlock>
+    <TextBlock>Narrow monitor (max-width: 900px) {holds(isNarrow.matches)}</TextBlock>
   </StackPanel>
 </PageFrame>
 
@@ -52,39 +62,39 @@
     }
   }
 
-  :global(.access-block) {
+  .access-block {
     gap: 8px;
     padding: 12px;
   }
 
-  :global(.access-card) {
+  .access-card {
     padding: 16px;
     background-color: var(--access-card);
   }
 
-  :global(.access-card-text) {
+  .access-card-text {
     color: var(--access-card-text);
   }
 
-  :global(.access-pulse) {
+  .access-pulse {
     padding: 16px;
     background-color: #0078d4;
     animation: access-pulse 1200ms infinite alternate;
   }
 
-  :global(.access-glass) {
+  .access-glass {
     padding: 16px;
     background-color: rgb(128 128 128 / 0.5);
   }
 
   @media (prefers-reduced-transparency: reduce) {
-    :global(.access-glass) {
+    .access-glass {
       background-color: var(--access-card);
     }
   }
 
   @media (prefers-contrast: more) {
-    :global(.access-card) {
+    .access-card {
       border-color: var(--access-card-text);
       border-width: 2px;
     }

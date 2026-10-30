@@ -88,7 +88,7 @@
   title="Lists"
 >
   <StackPanel class="lists-block">
-    <TextBlock text="ListView, keyed, reorderable. Selected: {selectedKey ?? "none"}. {order}" />
+    <TextBlock>ListView, keyed, reorderable. Selected: {selectedKey ?? "none"}. {order}</TextBlock>
     <ListView
       class="lists-view"
       {@attach keyControl("lists")}
@@ -100,23 +100,23 @@
       bind:selectedKey
     >
       {#snippet item(fruit)}
-        <TextBlock text="{fruit.name} ({fruit.color})" />
+        <TextBlock>{fruit.name} ({fruit.color})</TextBlock>
       {/snippet}
     </ListView>
     <ListView class="lists-view" groupBy={fruit => fruit.color} items={fruits} key={fruit => fruit.id}>
       {#snippet item(fruit)}
-        <TextBlock text={fruit.name} />
+        <TextBlock>{fruit.name}</TextBlock>
       {/snippet}
       {#snippet groupHeader(group)}
-        <TextBlock text="{group.key} ({group.items.length})" />
+        <TextBlock>{group.key} ({group.items.length})</TextBlock>
       {/snippet}
     </ListView>
     <GridView class="lists-view" items={fruits} key={fruit => fruit.id}>
       {#snippet item(fruit)}
-        <TextBlock text={fruit.name} />
+        <TextBlock>{fruit.name}</TextBlock>
       {/snippet}
     </GridView>
-    <TextBlock text="TreeView. Selected: {folderKey ?? "none"}" />
+    <TextBlock>TreeView. Selected: {folderKey ?? "none"}</TextBlock>
     <TreeView
       class="lists-view"
       children={folder => folder.children}
@@ -126,18 +126,18 @@
       bind:selectedKey={folderKey}
     >
       {#snippet item(folder)}
-        <TextBlock text={folder.name} />
+        <TextBlock>{folder.name}</TextBlock>
       {/snippet}
     </TreeView>
   </StackPanel>
 </PageFrame>
 
 <style>
-  :global(.lists-block) {
+  .lists-block {
     gap: 8px;
   }
 
-  :global(.lists-view) {
+  .lists-view {
     height: 150px;
   }
 </style>

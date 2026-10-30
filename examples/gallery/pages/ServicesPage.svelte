@@ -1,5 +1,6 @@
 <script lang="ts">
   import PageFrame from "#examples/gallery/PageFrame.svelte";
+  import { onOff } from "#examples/gallery/pages/words.ts";
   import { shell } from "#examples/gallery/shell.svelte.ts";
   import { keyControl } from "#examples/harness/smoke.ts";
   import { notify } from "winui-svelte/app";
@@ -46,16 +47,18 @@
   <StackPanel class="services-block">
     <Button {@attach keyControl("services")} onclick={pick}>Pick a file</Button>
     <Button onclick={save}>Save as</Button>
-    <TextBlock text={picked} />
-    <TextBlock text="Accent {settings.accentColor}, text scale {settings.textScaleFactor}" />
-    <TextBlock text="Animations {settings.isAnimationEnabled ? "on" : "off"}, high contrast {settings.isHighContrast ? "on" : "off"}" />
+    <TextBlock>{picked}</TextBlock>
+    <TextBlock>Accent {settings.accentColor}, text scale {settings.textScaleFactor}</TextBlock>
+    <TextBlock>
+      Animations {onOff(settings.isAnimationEnabled)}, high contrast {onOff(settings.isHighContrast)}
+    </TextBlock>
     <Button onclick={toast}>Notify</Button>
-    <TextBlock text={notice} />
+    <TextBlock>{notice}</TextBlock>
   </StackPanel>
 </PageFrame>
 
 <style>
-  :global(.services-block) {
+  .services-block {
     gap: 8px;
   }
 </style>

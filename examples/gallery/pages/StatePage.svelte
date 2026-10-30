@@ -42,22 +42,22 @@
   title="State management"
 >
   <StackPanel class="state-block">
-    <TextBlock text="$state, $derived and $effect" />
+    <TextBlock>$state, $derived and $effect</TextBlock>
     <Button {@attach keyControl("state")} onclick={() => count++}>Count {count}</Button>
-    <TextBlock text="doubled {doubled()}; an $effect saw {seen.join(", ")}" />
+    <TextBlock>doubled {doubled()}; an $effect saw {seen.join(", ")}</TextBlock>
   </StackPanel>
   <StackPanel class="state-block">
-    <TextBlock text="Host state: {tally.current?.clicks ?? "waiting"} clicks" />
-    <TextBlock text="log: {tally.current?.log.join(", ") ?? ""}" />
+    <TextBlock>Host state: {tally.current?.clicks ?? "waiting"} clicks</TextBlock>
+    <TextBlock>log: {tally.current?.log.join(", ") ?? ""}</TextBlock>
     <Button onclick={() => send({ kind: "click" })}>Host click</Button>
     <Button onclick={() => send({ kind: "refuse" })}>Ask the host to refuse</Button>
     <Button onclick={() => send({ kind: "reset" })}>Reset</Button>
-    <TextBlock text="outcome: {outcome}" />
+    <TextBlock>outcome: {outcome}</TextBlock>
   </StackPanel>
 </PageFrame>
 
 <style>
-  :global(.state-block) {
+  .state-block {
     gap: 8px;
   }
 </style>
