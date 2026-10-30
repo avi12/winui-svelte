@@ -11,6 +11,7 @@ import type {
   BrushInput,
   ElementProps,
   EnumInput,
+  FlagsInput,
   FontFamilyInput,
   FontWeightInput,
   ThicknessInput
@@ -58,7 +59,7 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   selectionFlyout?: RichTextBlock["selectionFlyout"] | Snippet;
   selectionHighlightColor?: RichTextBlock["selectionHighlightColor"] | Snippet;
   textAlignment?: EnumInput<typeof TextAlignment>;
-  textDecorations?: EnumInput<typeof TextDecorations>;
+  textDecorations?: FlagsInput<typeof TextDecorations>;
   textIndent?: number;
   textLineBounds?: EnumInput<typeof TextLineBounds>;
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;

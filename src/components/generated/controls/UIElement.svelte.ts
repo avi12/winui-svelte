@@ -11,6 +11,7 @@ import type {
   AttachedInput,
   ElementReferenceInput,
   EnumInput,
+  FlagsInput,
   ObjectInput,
   PointInput,
   Vector3Input
@@ -122,7 +123,7 @@ export interface UIElementProps {
   compositeMode?: EnumInput<typeof ElementCompositeMode>;
   contextFlyout?: UIElement["contextFlyout"] | Snippet;
   exitDisplayModeOnAccessKeyInvoked?: boolean;
-  highContrastAdjustment?: EnumInput<typeof ElementHighContrastAdjustment>;
+  highContrastAdjustment?: FlagsInput<typeof ElementHighContrastAdjustment>;
   isAccessKeyScope?: boolean;
   isDoubleTapEnabled?: boolean;
   isHitTestVisible?: boolean;
@@ -136,7 +137,7 @@ export interface UIElementProps {
   keyTipPlacementMode?: EnumInput<typeof KeyTipPlacementMode>;
   keyTipTarget?: UIElement["keyTipTarget"];
   keyTipVerticalOffset?: number;
-  manipulationMode?: EnumInput<typeof ManipulationModes>;
+  manipulationMode?: FlagsInput<typeof ManipulationModes>;
   opacity?: number;
   opacityTransition?: UIElement["opacityTransition"];
   projection?: UIElement["projection"] | Snippet;
