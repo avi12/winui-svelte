@@ -136,14 +136,13 @@ any Svelte binding:
   </TextBlock>
 </StackPanel>
 
-<!-- Global: Svelte does not scope a class passed to a component. -->
 <style>
-  :global(.hello) {
+  .hello {
     gap: 12px;
     padding: 24px;
   }
 
-  :global(.title) {
+  .title {
     font-size: 24px;
   }
 </style>
@@ -977,6 +976,27 @@ the instance receives), so the window pays nothing for it at run time
 A class the parent scopes does not reach the elements inside a child component;
 a child that takes a `class` prop and puts it on its own root element receives
 the scope class with the value (an array or an object works, as `clsx` does)
+
+The editor and `svelte-check` run Svelte's plain compiler, which cannot see a
+component instance and warns `css_unused_selector` for `.title`
+`winuiSvelte()` already tells the editor otherwise; a project with no Vite
+config (or one that does not use the plugin) puts the same two hooks in
+`svelte.config.js`:
+
+```js
+import { winuiDiagnostics } from "winui-svelte/preprocess";
+
+const winui = winuiDiagnostics();
+
+export default {
+  preprocess: [winui.preprocess],
+  compilerOptions: {
+    warningFilter: winui.warningFilter
+  }
+};
+```
+
+A rule that matches no element and no instance still warns
 
 A prop and a rule that set the same WinUI property both work, and the prop
 wins: `<TextBlock isTextSelectionEnabled={false}>` stays false under

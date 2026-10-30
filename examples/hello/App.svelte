@@ -16,14 +16,13 @@
   </TextBlock>
 </StackPanel>
 
-<!-- Global: Svelte does not scope a class passed to a component. -->
 <style>
-  :global(.hello) {
+  .hello {
     gap: 12px;
     padding: 24px;
   }
 
-  :global(.title) {
+  .title {
     font-size: 24px;
   }
 </style>
