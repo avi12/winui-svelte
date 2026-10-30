@@ -51,6 +51,7 @@
     "examples/scheduling/window.ts",
     "examples/hello/main.ts",
     "examples/win2d/main.ts",
+    "examples/effects/main.ts",
     "examples/hello/App.svelte",
     "examples/hello/window.ts",
     "src/components/index.ts",
