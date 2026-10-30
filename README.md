@@ -6,6 +6,12 @@ so the app looks and behaves like Windows: light and dark follow Windows, the
 controls animate and are accessible as WinUI makes them, and acrylic is a real
 backdrop. No browser engine is involved; there is no DOM.
 
+## Why
+
+When you make a C# app that uses WinUI 3, every little change to the code or UI requires recompilation and relaunch, which really disrupts the flow in my opinion
+
+Then I stumbled upon [node-winui](https://github.com/microsoft/winappCli/blob/main/samples/node-winui) and I thought that it would be cool to use the power of Svelte's ergonomics and ease of use as well as Vite's HMR to dynamically update the UI, and the result is this npm module
+
 ```svelte
 <script lang="ts">
   import { StackPanel, TextBlock, ToggleSwitch } from "winui-svelte/components";
