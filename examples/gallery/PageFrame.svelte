@@ -13,24 +13,24 @@
 
 <ScrollViewer>
   <StackPanel class="gallery-page">
-    <TextBlock class="gallery-title" text={props.title} />
-    <TextBlock class="gallery-caption" text={props.caption} />
+    <TextBlock class="gallery-title">{props.title}</TextBlock>
+    <TextBlock class="gallery-caption">{props.caption}</TextBlock>
     {@render props.children()}
   </StackPanel>
 </ScrollViewer>
 
 <style>
-  :global(.gallery-page) {
+  .gallery-page {
     gap: 12px;
     padding: 24px;
   }
 
-  :global(.gallery-title) {
+  .gallery-title {
     font-weight: 600;
     font-size: 28px;
   }
 
-  :global(.gallery-caption) {
+  .gallery-caption {
     opacity: 70%;
   }
 </style>
