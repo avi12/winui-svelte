@@ -795,6 +795,79 @@ its own class, when it is made, so an app bundles only the bindings it uses)
 Components are the supported way; see [API.md](API.md) for the raw forms and
 the renderer's functions
 
+## Forms
+
+`winui-svelte/forms` submits a group of controls the way an HTML form does
+(opt-in; an app that does not import it does not bundle it)
+
+```svelte
+<script lang="ts">
+  import { TextBox, NumberBox, Button } from "winui-svelte/components";
+  import { Form, FormField, textField, numberField, formButton } from "winui-svelte/forms";
+  import { z } from "zod";
+
+  const schema = z.object({ email: z.email(), age: z.number().min(18) });
+</script>
+
+<Form {schema} onSubmit={({ data }) => save(data)}>
+  <FormField field="email" label="E-mail">
+    <TextBox {@attach textField({ name: "email", required: true, type: "email" })} />
+  </FormField>
+  <FormField field="age" label="Age">
+    <NumberBox {@attach numberField({ name: "age", required: true, min: 18 })} />
+  </FormField>
+  <Button {@attach formButton()}>Sign up</Button>
+</Form>
+```
+
+- A control joins the form above it through an attachment named for its kind:
+  `textField` (TextBox, AutoSuggestBox), `passwordField`, `numberField`,
+  `sliderField`, `ratingField`, `checkField` (CheckBox, ToggleButton),
+  `switchField`, `selectField` (ComboBox, RadioButtons), `dateField`
+  (DatePicker, CalendarDatePicker), `timeField`, `colorField`
+- WinUI components have no `name` prop (a prop on 600 generated components
+  would be a second state beside `bind:`), so the attachment carries it; the
+  control keeps its own value, `bind:text` still works, and the form reads
+  the control through its property and change event
+- The HTML attributes are typed options: `required`, `minLength`, `maxLength`,
+  `min`, `max`, `step`, `pattern` and `type` (`email`, `url`, `number`, and so
+  on); each field has a `ValidityState` (`valueMissing`, `typeMismatch`,
+  `patternMismatch`, `tooShort`, `tooLong`, `rangeUnderflow`, `rangeOverflow`,
+  `stepMismatch`, `badInput`, `customError`, `valid`) and `setCustomValidity`
+- `schema` is a zod schema: its issues become field errors by path, and its
+  output types `data`, so `onSubmit({ data })` is the schema's inferred type
+  (without a schema, `data` is the entries as an object, and `formData` is a
+  `FormValues`, a `FormData` for numbers, booleans and dates that
+  `Object.fromEntries` reads)
+- `bind:handle` gives `requestSubmit()` (validates, then submits), `submit()`
+  (no validation), `reset()`, `checkValidity()`, `reportValidity()`, `values()`,
+  `field(name)`, and the reactive `isPending`, `isSubmitted` and `isValid`
+- `action` is an async function that runs after `onSubmit`; while it runs the
+  controls and buttons are disabled and `isPending` is true
+- An invalid control gets a red border and its accessible help text; the
+  first invalid control takes focus; the error shows once the user has left the
+  field or tried to submit (HTML's `:user-invalid`), then follows each change;
+  `FormField` shows it under the control in a polite live region, so a screen
+  reader announces it
+- Enter in a single-line field clicks the first submit button (or submits when
+  the form has one text field and no button); Escape calls `onCancel`;
+  `formButton({ kind: "reset" })` resets, `"button"` does nothing to the form
+- `noValidate` skips validation on submit, and a field or button outside the
+  `Form` joins it with `form: handle`
+- A selected ComboBoxItem reaches JavaScript as an opaque object, so a
+  `selectField` collects the item itself when it is text, a number or a
+  boolean, else its index; `values: ["Free", "Pro"]` (one per item) or
+  `itemValue` says what it stands for
+- Limits: WinUI has no `:invalid` or `:required` visual states for the style
+  sheet to match, so the form states live on `handle.field(name)`
+  (`isUserInvalid`, `isTouched`, `isDirty`, `validity`) for a component to
+  bind a class or a property to; there is no HTTP `method` or `action` URL
+  (submitting is your callback); a schema with an async refinement is not run
+
+`examples/form` is the working example (`test/forms.test.ts` fills it in
+through UI Automation and reads back the errors and the submitted data); the
+gallery's Form submission page shows it
+
 ## Styling with CSS
 
 `<style>` blocks are translated at build time into WinUI `Style`s and applied
@@ -922,6 +995,7 @@ protocol and the tests
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
+| `winui-svelte/forms` | `Form`, `FormField` and the attachments that join a control to a form by name, with HTML's constraint validation and zod (opt-in; [`API.md`](API.md#forms-winui-svelteforms)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
 | `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
