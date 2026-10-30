@@ -13,19 +13,12 @@
     focusElement,
     FocusKind
   } from "winui-svelte";
-  import {
-    Border,
-    Button,
-    StackPanel,
-    TextBlock,
-    Window
-  } from "winui-svelte/components";
+  import { Button, StackPanel, TextBlock, Window } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
   import { exitApplication, PickerLocation, systemSettings } from "winui-svelte/window";
 
   const WINDOW_HEIGHT = 420;
   const WINDOW_WIDTH = 520;
-  const SWATCH_SIZE = 48;
   const NARROW_WIDTH = 260;
   const PERCENT = 100;
   const TEXT_FILES = [".txt", ".md"];
@@ -157,14 +150,13 @@
   bind:handle
 >
   <StackPanel {@attach size.attach} {@attach theme.attach}>
-    <Border
+    <border
+      style:background={settings.accentColor}
+      class="swatch"
       {@attach control<BorderControl>(native => {
         swatch = native;
       })}
-      background={settings.accentColor}
-      height={SWATCH_SIZE}
-      width={SWATCH_SIZE}
-    />
+    ></border>
     <TextBlock>Accent {settings.accentColor}, text {settings.textScaleFactor * PERCENT}%</TextBlock>
     <TextBlock>Animations {animationText()}, language {LANGUAGE}</TextBlock>
     <TextBlock>This page is {sizeText()}</TextBlock>
@@ -174,3 +166,10 @@
     <TextBlock>{picked}</TextBlock>
   </StackPanel>
 </Window>
+
+<style>
+  .swatch {
+    width: 48px;
+    height: 48px;
+  }
+</style>
