@@ -6,7 +6,8 @@ import { test } from "node:test";
 
 // The Win2D example (examples/win2d) in a real WinUI window, off screen and
 // never activated: a Canvas and a Canvas2D (the HTML Canvas 2D API) draw, and
-// draw again when their state changes.
+// draw again when their state changes, and draw while a template calls a
+// blocking WinRT call, where a Draw handler may not write state.
 // Skipped where the Windows App SDK or the Win2D library was not restored
 // (pnpm restore). The drawing itself is proved by pixels, without a window, in
 // src/win2d/win2d.test.ts.
@@ -76,6 +77,16 @@ test("a Canvas paints, and paints again when the state its draw function read ch
     });
     assert.ok(Number(third["chartRuns"]) > chartRunsBefore, "the chart did not draw again");
     assert.ok(Number(third["chartRedraws"]) > chartRedrawsBefore, "the Canvas2D did not paint the new chart");
+    const pumped = await example.ask({
+      command: {
+        cmd: "pump"
+      },
+      kind: "pumped"
+    });
+    assert.equal(pumped["error"], undefined, "a Draw inside a blocking call threw");
+    assert.ok(Number(pumped["drawsDuringPump"]) > 0, "no Draw ran inside the blocking calls, so nothing was proved");
+    const afterPump = await stats(example);
+    assert.ok(Number(afterPump["redraws"]) > 0, "the window still answers after the Draws inside a derived");
     example.send({ cmd: "close" });
     assert.equal(await example.exited, 0);
   } finally {
