@@ -1,5 +1,5 @@
 import {
-  CHECK_ADAPTER,
+  checkAdapter,
   COLOR_ADAPTER,
   DATE_ADAPTER,
   NUMBER_ADAPTER,
@@ -76,17 +76,19 @@ test("check: only a true isChecked counts, and all three events are heard", () =
   const checked = event();
   const unchecked = event();
   const indeterminate = event();
-  const box: Parameters<typeof CHECK_ADAPTER.read>[0] = {
+  const checks = checkAdapter(isChecked => `boxed:${isChecked}`);
+  const box: Parameters<typeof checks.read>[0] = {
     isChecked: null,
     onChecked: checked.add,
     onUnchecked: unchecked.add,
     onIndeterminate: indeterminate.add
   };
-  assert.equal(CHECK_ADAPTER.read(box), false);
+  assert.equal(checks.read(box), false);
+  const restore = checks.capture(box);
   box.isChecked = true;
-  assert.equal(CHECK_ADAPTER.read(box), true);
+  assert.equal(checks.read(box), true);
   let heard = 0;
-  const stop = CHECK_ADAPTER.subscribe({
+  const stop = checks.subscribe({
     control: box,
     listener: () => heard++
   });
@@ -94,6 +96,8 @@ test("check: only a true isChecked counts, and all three events are heard", () =
   unchecked.fire();
   indeterminate.fire();
   assert.equal(heard, 3);
+  restore();
+  assert.equal(box.isChecked, "boxed:null", "a reset writes the converted value");
   stop();
   assert.equal(checked.count() + unchecked.count() + indeterminate.count(), 0);
 });
@@ -102,19 +106,17 @@ test("selection: the item's value, null for no selection, and the index restored
   const adapter = selectionAdapter();
   const box: Parameters<typeof adapter.read>[0] = {
     selectedIndex: 1,
-    selectedItem: {
-      content: "Pro"
-    },
+    selectedItem: {},
     onSelectionChanged: event().add
   };
-  assert.equal(adapter.read(box), "Pro");
+  assert.equal(adapter.read(box), 1, "an opaque item is its index");
   const restore = adapter.capture(box);
   box.selectedIndex = -1;
   box.selectedItem = null;
   assert.equal(adapter.read(box), null);
   restore();
   assert.equal(box.selectedIndex, 1);
-  const upper = selectionAdapter(item => String(item).toUpperCase());
+  const upper = selectionAdapter(({ item }) => String(item).toUpperCase());
   assert.equal(
     upper.read({
       selectedIndex: 0,

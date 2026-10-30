@@ -1,5 +1,5 @@
 import {
-  CHECK_ADAPTER,
+  checkAdapter,
   COLOR_ADAPTER,
   DATE_ADAPTER,
   NUMBER_ADAPTER,
@@ -15,7 +15,7 @@ import type { FieldAdapter, ItemValue } from "./field-adapters.ts";
 import { ButtonKind, FormController, formOf } from "./form-controller.svelte.ts";
 import type { ButtonBinding, FieldBinding, FormHandle } from "./form-controller.svelte.ts";
 import type { Constraints, FieldValue, ValidityFlag } from "./validity.ts";
-import { brushOf } from "#src/components/convert.js";
+import { brushOf, nullableBooleanOf } from "#src/components/convert.js";
 import { AutomationProperties, VirtualKey } from "#src/components/generated/bindings.js";
 import type { DependencyObject } from "#src/components/generated/bindings.js";
 import { control } from "#src/components/runtime.js";
@@ -278,7 +278,7 @@ export function ratingField(options: FieldOptions) {
  */
 export function checkField(options: FieldOptions) {
   return fieldAttachment({
-    adapter: CHECK_ADAPTER,
+    adapter: checkAdapter(nullableBooleanOf),
     options
   });
 }
@@ -296,17 +296,30 @@ export function switchField(options: FieldOptions) {
   });
 }
 
+function valuesOf({ itemValue, values }: {
+  itemValue?: ItemValue | undefined;
+  values?: readonly FieldValue[] | undefined;
+}) {
+  const hasValues = values !== undefined;
+  if (!hasValues) {
+    return itemValue;
+  }
+
+  return ({ index }: { index: number }) => values[index] ?? null;
+}
+
 /**
  * Joins a ComboBox or a RadioButtons to the surrounding `Form`; nothing selected collects null.
  *
- * @param options - The name, the validation attributes, and `itemValue`: how the selected item becomes its value.
+ * @param options - The name, the validation attributes, and what a selection stands for: `values` or `itemValue`.
  * @returns The attachment to put after `@attach`.
  */
 export function selectField(options: FieldOptions & {
   readonly itemValue?: ItemValue | undefined;
+  readonly values?: readonly FieldValue[] | undefined;
 }) {
   return fieldAttachment({
-    adapter: selectionAdapter(options.itemValue),
+    adapter: selectionAdapter(valuesOf(options)),
     options
   });
 }

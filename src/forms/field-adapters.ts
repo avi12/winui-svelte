@@ -108,29 +108,39 @@ export const RATING_ADAPTER: FieldAdapter<ValueControl> = {
 };
 
 interface CheckControl {
-  isChecked: boolean | null;
+  get isChecked(): boolean | null;
+  set isChecked(value: unknown);
   onChecked(callback: Listener): Unsubscribe;
   onUnchecked(callback: Listener): Unsubscribe;
   onIndeterminate(callback: Listener): Unsubscribe;
 }
 
-/** CheckBox, ToggleButton and the like: whether it is checked (indeterminate counts as not). */
-export const CHECK_ADAPTER: FieldAdapter<CheckControl> = {
-  read: control => control.isChecked === true,
-  subscribe: ({ control, listener }) => joinEnds([
-    control.onChecked(listener),
-    control.onUnchecked(listener),
-    control.onIndeterminate(listener)
-  ]),
-  capture(control) {
-    const isInitiallyChecked = control.isChecked;
-    return () => {
-      control.isChecked = isInitiallyChecked;
-    };
-  },
-  type: undefined,
-  isTextEntry: false
-};
+/**
+ * CheckBox, ToggleButton and the like: whether it is checked (indeterminate
+ * counts as not).
+ *
+ * @param nullableBoolean - Makes the value WinUI's setter takes of a boolean or null (a boxed nullable).
+ * @returns The adapter.
+ */
+export function checkAdapter(nullableBoolean: (value: boolean | null) => unknown) {
+  const adapter: FieldAdapter<CheckControl> = {
+    read: control => control.isChecked === true,
+    subscribe: ({ control, listener }) => joinEnds([
+      control.onChecked(listener),
+      control.onUnchecked(listener),
+      control.onIndeterminate(listener)
+    ]),
+    capture(control) {
+      const isInitiallyChecked = control.isChecked;
+      return () => {
+        control.isChecked = nullableBoolean(isInitiallyChecked);
+      };
+    },
+    type: undefined,
+    isTextEntry: false
+  };
+  return adapter;
+}
 
 interface SwitchControl {
   isOn: boolean;
@@ -157,42 +167,41 @@ interface SelectionControl {
   onSelectionChanged(callback: Listener): Unsubscribe;
 }
 
-/** How a selected item becomes the value a form collects. */
-export type ItemValue = (item: unknown) => FieldValue;
+/** How the selected item, and where it is in the list, become the value a form collects. */
+export type ItemValue = (selection: {
+  item: unknown;
+  index: number;
+}) => FieldValue;
 
 /**
- * The value of an item that is text, a number or a boolean as it is, of a
- * ComboBoxItem or the like as its text content, and of anything else as its
- * text.
+ * The value of an item that is text, a number or a boolean as it is. WinUI
+ * hands any other item (a ComboBoxItem) over as an opaque object that cannot
+ * be read, so the value is where it is in the list; the `values` of the field
+ * say what it stands for.
  *
- * @param item - The selected item.
+ * @param selection - The selected item and its index.
  * @returns The value the form collects.
  */
-export function defaultItemValue(item: unknown) {
-  const isNone = item === null || item === undefined;
-  if (isNone) {
-    return null;
-  }
-
+export function defaultItemValue({ item, index }: {
+  item: unknown;
+  index: number;
+}) {
   const isPlain = typeof item === "string" || typeof item === "number" || typeof item === "boolean";
-  if (isPlain) {
-    return item;
-  }
-
-  const hasContent = typeof item === "object" && "content" in item;
-  const content = hasContent ? item.content : item;
-  return typeof content === "string" ? content : String(content);
+  return isPlain ? item : index;
 }
 
 /**
  * ComboBox and RadioButtons: the value of the selected item, null when none is.
  *
- * @param itemValue - How an item becomes a value (its text by default).
+ * @param itemValue - How an item becomes a value (by default the item when it is plain, else its index).
  * @returns The adapter.
  */
 export function selectionAdapter(itemValue: ItemValue = defaultItemValue) {
   const adapter: FieldAdapter<SelectionControl> = {
-    read: control => (control.selectedIndex < 0 ? null : itemValue(control.selectedItem)),
+    read: control => (control.selectedIndex < 0 ? null : itemValue({
+      item: control.selectedItem,
+      index: control.selectedIndex
+    })),
     subscribe: ({ control, listener }) => control.onSelectionChanged(listener),
     capture(control) {
       const original = control.selectedIndex;
