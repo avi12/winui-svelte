@@ -43,6 +43,16 @@ const projectSyntax = [
 ];
 
 const restrictedSyntax = [...projectSyntax, ...syntaxRules];
+// The Canvas 2D API is positional (context.moveTo(x, y)), so that a library
+// written for a browser canvas calls it unchanged: its classes keep the
+// platform's parameter lists (CLAUDE.md, "Which rules win").
+const platformApiSyntax = restrictedSyntax.filter(({ message }) => !message.startsWith("A method with 2+ parameters"));
+const platformApiFiles = [
+  "src/win2d/context-2d/context.ts",
+  "src/win2d/context-2d/path.ts",
+  "src/win2d/context-2d/paint.ts",
+  "src/win2d/context-2d/canvas-element.ts"
+];
 
 // Adapted from avi/pade. Logic and correctness rules live in oxlint
 // (.oxlintrc.json) - ESLint only carries what oxlint cannot: formatting,
@@ -339,6 +349,12 @@ export default [
     rules: {
       ...sourceRules,
       "no-restricted-syntax": ["error", ...restrictedSyntax, ...treeShakingSyntax]
+    }
+  },
+  {
+    files: platformApiFiles,
+    rules: {
+      "no-restricted-syntax": ["error", ...platformApiSyntax, ...treeShakingSyntax]
     }
   },
   {
