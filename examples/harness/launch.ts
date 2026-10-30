@@ -38,9 +38,6 @@ const { values, positionals } = parseArgs({
     key: {
       type: "string"
     },
-    background: {
-      type: "string"
-    },
     file: {
       type: "string"
     }

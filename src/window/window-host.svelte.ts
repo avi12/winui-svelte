@@ -7,6 +7,8 @@ import {
 } from "./apply-chrome.ts";
 import type { Backdrop } from "./backdrop.ts";
 import { applyBackdrop, Backdrop as BackdropKind } from "./backdrop.ts";
+import { isBackgroundRun } from "./background-mode.ts";
+import { backgroundPlacement, keepInBackground } from "./background.ts";
 import type { CaptionButtonColors, CaptionButtonProperty, TitleBarHeight, WindowRegion } from "./chrome.ts";
 import { TitleBarHeight as TitleBarHeightKind, WindowPresentation, WindowTheme } from "./chrome.ts";
 import { joinAppUserModel, ownWindow } from "./native.ts";
@@ -233,6 +235,11 @@ class WindowHost {
 
     const window = new Window();
     this.handle = new WindowHandle(window);
+
+    if (isBackgroundRun()) {
+      keepInBackground(this.handle.appWindow.id.value);
+    }
+
     this.handle.guardClose(() => this.isCloseRefused());
     window.content = content;
     this.keepInLine(() => this.syncText());
@@ -395,6 +402,11 @@ class WindowHost {
       appWindow: this.handle.appWindow,
       presentation: presentation ?? WindowPresentation.windowed
     });
+
+    if (isBackgroundRun()) {
+      // A presenter (full screen, compact overlay) puts the window on a display.
+      this.handle.appWindow.moveAndResize(backgroundPlacement(this.handle.appWindow.size));
+    }
   }
 
   private syncLimits() {
@@ -405,7 +417,8 @@ class WindowHost {
     const { isAlwaysOnTop, isResizable, isMaximizable, isMinimizable } = this.props;
     const { minWidth, minHeight, maxWidth, maxHeight } = this.props;
     const { presenter, scale } = this.handle;
-    if (isGiven(isAlwaysOnTop)) {
+    const isTopAllowed = isGiven(isAlwaysOnTop) && !isBackgroundRun();
+    if (isTopAllowed) {
       presenter.isAlwaysOnTop = isAlwaysOnTop;
     }
 
@@ -487,6 +500,16 @@ class WindowHost {
         scale
       })
     };
+    if (isBackgroundRun()) {
+      appWindow.moveAndResize(
+        backgroundPlacement({
+          width: props.placement?.width ?? size.width,
+          height: props.placement?.height ?? size.height
+        })
+      );
+      return;
+    }
+
     const placement = props.placement ?? null;
     const isPlaced = placement !== null;
     if (isPlaced) {
@@ -603,7 +626,7 @@ class WindowHost {
   // them (to reopen where the window was) needs them before the user moves it.
   private show() {
     const { window } = this.handle;
-    const isBackground = this.props.activate === false;
+    const isBackground = this.props.activate === false || isBackgroundRun();
     if (isBackground) {
       window.appWindow.showWithActivation(false);
     } else {

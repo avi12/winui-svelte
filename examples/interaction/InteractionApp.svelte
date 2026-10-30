@@ -215,13 +215,8 @@
 {/snippet}
 
 <Window
-  activate={host.options["view"] === "keyboard"}
   height={WINDOW_HEIGHT}
   onClosed={exitApplication}
-  placement={{
-    x: -8000,
-    y: 0
-  }}
   title="Interaction example"
   width={WINDOW_WIDTH}
 >

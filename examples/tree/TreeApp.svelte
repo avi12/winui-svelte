@@ -213,13 +213,8 @@
 {/snippet}
 
 <Window
-  activate={false}
   height={WINDOW_HEIGHT}
   onClosed={exitApplication}
-  placement={{
-    x: -8000,
-    y: 0
-  }}
   title="Tree example"
   width={WINDOW_WIDTH}
 >

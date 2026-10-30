@@ -32,6 +32,7 @@ import {
 } from "#src/renderer/tree/markup.js";
 import type { ElementNode, FragmentNode, NativeHost, TreeNode } from "#src/renderer/tree/tree.js";
 import { createTreeRenderer, NodeType, parentElement } from "#src/renderer/tree/tree.js";
+import { isBackgroundRun } from "#src/window/background-mode.js";
 import type { FrameworkElement, UIElement } from "#src/winui.js";
 import { ColumnDefinition, Grid, RowDefinition, Run } from "#src/winui.js";
 
@@ -991,6 +992,16 @@ function release(node: TreeNode<WinuiNative>) {
   forgetControls(node);
 }
 
+// A popup that may leave its window (a flyout, a menu) opens a window of its
+// own, which WinUI clamps onto the nearest display; in a background run it
+// stays inside the window, which is off screen.
+function keepPopupInWindow(control: object) {
+  const isPopup = isBackgroundRun() && "shouldConstrainToRootBounds" in control;
+  if (isPopup) {
+    write(control, "shouldConstrainToRootBounds", true);
+  }
+}
+
 function createNative(name: string) {
   // <host> holds a control made elsewhere, <property> fills its parent's: no
   // control of their own.
@@ -1010,8 +1021,10 @@ function createNative(name: string) {
     throw new Error(`<${name}> is not a WinUI control registerControls was given`);
   }
 
+  const control = new type();
+  keepPopupInWindow(control);
   return {
-    control: new type(),
+    control,
     styled: null,
     placed: [],
     properties: new Map(),

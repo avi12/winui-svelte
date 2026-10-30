@@ -2,7 +2,7 @@
   import type { Todo, TodoAction, TodoList } from "./todo-host.ts";
   import { startTodoHost, TODO_NAME } from "./todo-host.ts";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
-  import { keyControl, serveExample, windowDefaults } from "#examples/harness/smoke.ts";
+  import { keyControl, serveExample } from "#examples/harness/smoke.ts";
   import { ContentDialogResult } from "#winui/microsoft/ui/xaml/controls/ContentDialogResult";
   import { tmpdir } from "node:os";
   import { join } from "node:path";
@@ -88,7 +88,7 @@
   $effect(() => () => channel.dispose());
 </script>
 
-<Window {...windowDefaults(host)} height={WINDOW_HEIGHT} title="Todo" width={WINDOW_WIDTH}>
+<Window height={WINDOW_HEIGHT} title="Todo" width={WINDOW_WIDTH}>
   <StackPanel class="todo">
     <TextBlock class="todo-title" text="Todo" />
     <Grid class="todo-add">

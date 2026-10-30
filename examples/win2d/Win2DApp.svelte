@@ -121,13 +121,8 @@
 </script>
 
 <Window
-  activate={false}
   height={WINDOW_HEIGHT}
   onClosed={exitApplication}
-  placement={{
-    x: -8000,
-    y: 0
-  }}
   title="Win2D example"
   width={WINDOW_WIDTH}
 >

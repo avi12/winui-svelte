@@ -117,14 +117,9 @@
 </script>
 
 <Window
-  activate={false}
   appUserModelId="winui-svelte.examples.tray"
   height={WINDOW_HEIGHT}
   onClosed={() => exitApplication()}
-  placement={{
-    x: -8000,
-    y: 0
-  }}
   title="Tray example"
   width={WINDOW_WIDTH}
   bind:handle

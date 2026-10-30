@@ -15,6 +15,7 @@ import { installCss } from "#src/css/index.js";
 import type { NativeValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
 import { call, isRecord, read, vectorOf } from "#src/renderer/host/reflect.js";
+import { backgroundPlacement, keepInBackground } from "#src/window/background.js";
 import * as winui from "#src/winui.js";
 import { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
 import { Application } from "#winui/microsoft/ui/xaml/Application";
@@ -32,9 +33,7 @@ import { z } from "zod";
 // checked: a bindable goes both ways, a changed prop is written again, and
 // the conversions build what WinUI takes.
 
-const offScreen = {
-  x: -8000,
-  y: 0,
+const WINDOW_SIZE = {
   width: 700,
   height: 4000
 };
@@ -1047,7 +1046,8 @@ function launch({ connectors, report, throughRenderer }: {
     check(exercise.failures);
   }
   trace("show");
-  window.appWindow.moveAndResize(offScreen);
+  keepInBackground(window.appWindow.id.value);
+  window.appWindow.moveAndResize(backgroundPlacement(WINDOW_SIZE));
   window.appWindow.showWithActivation(false);
   trace("shown");
   // Let WinUI measure and arrange what was placed before the verdict.

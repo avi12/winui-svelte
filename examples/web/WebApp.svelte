@@ -34,13 +34,8 @@
 </script>
 
 <Window
-  activate={false}
   height={WINDOW_HEIGHT}
   onClosed={exitApplication}
-  placement={{
-    x: -8000,
-    y: 0
-  }}
   title="Web example"
   width={WINDOW_WIDTH}
 >

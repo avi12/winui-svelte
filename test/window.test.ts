@@ -1,4 +1,5 @@
 import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED, numberOf } from "./example-process.ts";
+import { virtualScreen } from "#src/window/native.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -51,12 +52,14 @@ test("a window opens as its props say, follows them, and reports what happens to
         field: "minimumWidth"
       }), Math.round(MINIMUM_WIDTH * scale)
     );
-    assert.equal(
-      numberOf({
-        report: opened,
-        field: "x"
-      }), -8000, "the placement is where it opened"
-    );
+    const rightEdge = numberOf({
+      report: opened,
+      field: "x"
+    }) + numberOf({
+      report: opened,
+      field: "width"
+    });
+    assert.ok(rightEdge <= virtualScreen().left, "the window opened left of every display");
     assert.equal(
       numberOf({
         report: opened,

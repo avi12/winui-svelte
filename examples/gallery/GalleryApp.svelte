@@ -2,7 +2,7 @@
   import { GALLERY_PAGES } from "./pages.ts";
   import { shell } from "./shell.svelte.ts";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
-  import { keyControl, serveExample, windowDefaults } from "#examples/harness/smoke.ts";
+  import { keyControl, serveExample } from "#examples/harness/smoke.ts";
   import { unboxed } from "winui-svelte";
   import type { NavigatorHandle } from "winui-svelte/components";
   import {
@@ -53,7 +53,6 @@
 </script>
 
 <Window
-  {...windowDefaults(host)}
   backdrop={shell.backdrop}
   height={WINDOW_HEIGHT}
   onClosed={() => host.report({ kind: "closed" })}
