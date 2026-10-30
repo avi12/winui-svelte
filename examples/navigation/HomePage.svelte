@@ -1,8 +1,5 @@
 <script lang="ts">
   import { pageStats } from "./page-stats.ts";
-  import { StackPanel, TextBlock } from "winui-svelte/components";
-
-  const PADDING = 24;
 
   pageStats.home.created++;
   $effect(() => () => {
@@ -10,7 +7,13 @@
   });
 </script>
 
-<StackPanel padding={PADDING}>
-  <TextBlock text="Home" />
-  <TextBlock text="Not cached: this page ends when you leave it." />
-</StackPanel>
+<stack-panel class="page">
+  <text-block>Home</text-block>
+  <text-block>Not cached: this page ends when you leave it.</text-block>
+</stack-panel>
+
+<style>
+  .page {
+    padding: 24px;
+  }
+</style>

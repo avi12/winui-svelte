@@ -1,12 +1,9 @@
 <script lang="ts">
   import { pageStats } from "./page-stats.ts";
-  import { Button, StackPanel, TextBlock } from "winui-svelte/components";
 
   interface Props {
     title: string;
   }
-
-  const PADDING = 24;
 
   const props: Props = $props();
   let count = $state(0);
@@ -23,8 +20,14 @@
   });
 </script>
 
-<StackPanel padding={PADDING}>
-  <TextBlock text={props.title} />
-  <TextBlock text="Required: the count survives leaving and coming back." />
-  <Button onclick={() => count++}>Clicked {count} times</Button>
-</StackPanel>
+<stack-panel class="page">
+  <text-block>{props.title}</text-block>
+  <text-block>Required: the count survives leaving and coming back.</text-block>
+  <button onclick={() => count++}>Clicked {count} times</button>
+</stack-panel>
+
+<style>
+  .page {
+    padding: 24px;
+  }
+</style>
