@@ -1,7 +1,7 @@
 import { exportAliases, ExportTarget } from "#scripts/export-aliases.ts";
 import { winuiSvelte } from "#src/vite/plugin.js";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 import { build } from "vite";
@@ -29,7 +29,13 @@ const BUDGET_BINDINGS = 46;
 // and the renderer's own handful.
 const GOAL_BINDINGS = 40;
 
-async function bundleOfOneButton() {
+// What importing one enum may add to an app: the import of its bindings
+// module and the expression that reads it, never the other enums.
+const ONE_ENUM_BYTES = 200;
+const ENUMS_FILE = path.join(PACKAGE_ROOT, "src", "components", "generated", "enums.ts");
+const enumModule = /from "(#winui\/[\w./-]+)"/gu;
+
+async function bundleOf(input: string) {
   const result = await build({
     configFile: false,
     root: APP_FOLDER,
@@ -42,7 +48,7 @@ async function bundleOfOneButton() {
       write: false,
       minify: true,
       rollupOptions: {
-        input: "main.ts",
+        input,
         external: (id: string) => externalModule.test(id)
       }
     }
@@ -52,7 +58,15 @@ async function bundleOfOneButton() {
   const code = chunks.map(chunk => chunk.code).join("\n");
   return {
     bytes: Buffer.byteLength(code),
-    bindings: new Set(code.match(bindingImport) ?? []).size
+    modules: new Set(code.match(bindingImport) ?? [])
+  };
+}
+
+async function bundleOfOneButton() {
+  const bundle = await bundleOf("main.ts");
+  return {
+    ...bundle,
+    bindings: bundle.modules.size
   };
 }
 
@@ -72,4 +86,20 @@ test("an app with one Button imports only the bindings it uses", {
 }, async () => {
   const bundle = await bundleOfOneButton();
   assert.ok(bundle.bindings <= GOAL_BINDINGS, `${bundle.bindings} binding imports for one Button, the goal is ${GOAL_BINDINGS}`);
+});
+
+// The same Button, importing one enum's value and another's type from
+// winui-svelte/enums: the type erases, and the value brings its module alone.
+test("an app bundles only the enums it imports from winui-svelte/enums", {
+  skip: !IS_BUILT,
+  timeout: BUNDLE_TIMEOUT_MILLISECONDS
+}, async () => {
+  const [button, withEnum] = await Promise.all([bundleOf("main.ts"), bundleOf("enum-main.ts")]);
+  const enumModules = new Set([...readFileSync(ENUMS_FILE, "utf8").matchAll(enumModule)].map(match => match[1]));
+  const added = [...withEnum.modules].filter(module => !button.modules.has(module));
+  const addedEnums = added.filter(module => enumModules.has(module));
+  console.log(`one Button: ${button.bytes} bytes; with one enum imported: ${withEnum.bytes} bytes`);
+  assert.deepEqual(addedEnums, ["#winui/microsoft/ui/xaml/controls/AppBarClosedDisplayMode"]);
+  assert.deepEqual(added, addedEnums);
+  assert.ok(withEnum.bytes - button.bytes <= ONE_ENUM_BYTES, `one enum added ${withEnum.bytes - button.bytes} bytes`);
 });

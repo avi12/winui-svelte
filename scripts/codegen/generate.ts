@@ -5,6 +5,7 @@ import {
   emitComponent,
   emitControlsTable,
   emitDeclaration,
+  emitEnums,
   emitIndex,
   emitLevel,
   emitMetadata,
@@ -125,6 +126,9 @@ function modelFiles(model: Model) {
     output.push({
       file: path.join(folder, "metadata.ts"),
       text: emitMetadata(model)
+    }, {
+      file: path.join(folder, "enums.ts"),
+      text: emitEnums(model)
     });
   }
 
