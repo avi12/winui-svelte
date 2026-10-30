@@ -1,7 +1,5 @@
 const POSITIONED = `is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot. A <canvas> child places by canvas-left and canvas-top`;
-const SIZED_BY_PARENT = "a child cannot size itself in its parent";
-const FR_TRACKS = "give the parent grid-template-columns with fr tracks";
-const ALIGNED_BY_CHILD = "WinUI aligns a child by its own";
+const LOWERED = "is lowered by the component build into the children of a <stack-panel> or <grid> written in the same component; a rule inside @media, a container that is a component and a stylesheet outside a component are not reached (write align-self, justify-self and grid-column on the elements instead)";
 const OPT_IN = "is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot";
 
 const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
@@ -11,7 +9,17 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["left", POSITIONED],
   ["right", POSITIONED],
   ["bottom", POSITIONED],
-  ["order", "WinUI lays children out in markup order; reorder the elements (an {#each} over a sorted list does it)"],
+  ["order", LOWERED],
+  ["flex", LOWERED],
+  ["flex-grow", LOWERED],
+  ["flex-shrink", LOWERED],
+  ["flex-basis", LOWERED],
+  ["align-items", LOWERED],
+  ["justify-items", LOWERED],
+  ["place-items", LOWERED],
+  ["justify-content", LOWERED],
+  ["align-content", LOWERED],
+  ["place-content", LOWERED],
   ["grid-template-areas", "a grid has no named areas; place a child with grid-column and grid-row (or grid-area: row / column / row-end / column-end)"],
   ["grid-template", "write grid-template-columns and grid-template-rows"],
   ["grid-auto-flow", "a WinUI grid places a child by its Grid.Row and Grid.Column (default 0): there is no auto-placement; set grid-column and grid-row"],
@@ -21,17 +29,7 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["color-scheme", "the theme is the window's RequestedTheme; set it on the root element (a Style cannot change it)"],
   ["accent-color", "WinUI's accent color is the system's; override its resources instead (--accent-fill-color-default)"],
   ["float", "WinUI has no float; use a grid or a stack-panel"],
-  ["flex", `${SIZED_BY_PARENT}: ${FR_TRACKS}`],
-  ["flex-grow", `${SIZED_BY_PARENT}: ${FR_TRACKS}`],
-  ["flex-shrink", `WinUI panels do not shrink their children; ${FR_TRACKS}`],
-  ["flex-basis", `${SIZED_BY_PARENT}: use width or a grid parent`],
   ["flex-wrap", "WinUI has no wrapping stack (WrapPanel is in the Community Toolkit)"],
-  ["align-items", `${ALIGNED_BY_CHILD} VerticalAlignment: set align-self on each child`],
-  ["justify-items", `${ALIGNED_BY_CHILD} HorizontalAlignment: set justify-self on each child`],
-  ["place-items", `${ALIGNED_BY_CHILD} alignment: set align-self and justify-self (place-self) on each child`],
-  ["justify-content", `${ALIGNED_BY_CHILD} alignment: set justify-self on the child, or give a <grid> an auto track and a * track around it`],
-  ["align-content", `${ALIGNED_BY_CHILD} alignment: set align-self on the child, or give a <grid> an auto row and a * row around it`],
-  ["place-content", `${ALIGNED_BY_CHILD} alignment: set place-self on the child`],
   ["background-image", `a gradient ${OPT_IN}`],
   ["box-shadow", `a shadow ${OPT_IN}`],
   ["filter", "WinUI has no filter: blur, grayscale, brightness and drop-shadow are Composition effects that need Win2D and ElementCompositionPreview, which the bindings lack; use backdrop-filter: blur() or an acrylic or Mica backdrop"],

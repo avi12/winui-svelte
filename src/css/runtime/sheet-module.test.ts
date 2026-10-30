@@ -164,3 +164,29 @@ test("a sheet opts into the gradient parser only when it has a gradient", () => 
   assert.match(gradient?.code ?? "", /import \{ gradientGroups as \w+ \} from "winui-svelte\/css\/gradients"/u);
   assert.match(gradient?.code ?? "", /registerPropertyGroups as \w+/u);
 });
+
+test("a flex row written as a grid is lowered into tracks and placed children that the translator accepts", () => {
+  const result = moduleFor(`<grid class="row"><button class="a">A</button><text-block class="b">B</text-block></grid>
+
+<style>
+  .row { display: flex; align-items: center; gap: 8px }
+  .b { flex: 1 }
+  .a { align-self: end }
+</style>
+`);
+  const rules = result?.sheet.rules.map(rule => [rule.specificity, rule.declarations.map(({ property, value }) => `${property}:${value}`)]);
+  assert.deepEqual(rules, [
+    [0, ["grid-template-columns:auto 1fr"]],
+    [0, ["grid-column-start:1", "align-self:center"]],
+    [0, ["grid-column-start:2", "align-self:center"]],
+    [2, ["row-gap:8px", "column-gap:8px"]],
+    [2, ["align-self:end"]]
+  ]);
+});
+
+test("a container the build cannot lower is still the translator's error", () => {
+  assert.throws(
+    () => moduleFor("<border class=\"b\"><button/></border>\n\n<style>\n  .b { align-items: center }\n</style>\n"),
+    (error: unknown) => error instanceof SheetError && /align-items has no WinUI meaning \(is lowered by the component build/u.test(error.message)
+  );
+});
