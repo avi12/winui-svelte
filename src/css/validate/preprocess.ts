@@ -1,6 +1,7 @@
 import { positionAt } from "./diagnostic.ts";
 import type { ValidationDiagnostic } from "./diagnostic.ts";
 import { validateComponent } from "./validate.ts";
+import { withScopedInstances } from "#src/css/relational/scope.js";
 import type { ResourceCatalogue } from "#src/css/runtime/resources.js";
 import { unusedSelectorMessages } from "#src/css/runtime/sheet-module.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
@@ -65,15 +66,30 @@ const UNUSED_SELECTOR = "css_unused_selector";
  * Svelte language server marks the exact declaration WinUI cannot say,
  * and `svelte-check` prints it with the same message the build gives. It
  * reports the first error (fix it and the next shows); warnings are for
- * stylelint and the build. It never changes the source.
+ * stylelint and the build. Its `markup` hook lowers `style:` and `class:`
+ * directives on component instances to `style` and `class` attributes, as the
+ * build does, because Svelte's plain compiler refuses a directive on a
+ * component (`component_invalid_directive`); the editor reads that copy, the
+ * file on disk is untouched.
  *
  *   preprocess: [winuiPreprocess(), vitePreprocess()]
  */
 export function winuiPreprocess(options: WinuiPreprocessOptions = {}) {
   const resources = options.resources ?? loadWinuiCatalogue();
+  const written = new Map<string, string>();
   return {
     name: PREPROCESSOR_NAME,
-    style({ content, markup, filename }) {
+    markup({ content, filename }) {
+      written.set(filename ?? "component.svelte", content);
+      return {
+        code: withScopedInstances({
+          source: content,
+          scope: ""
+        })
+      };
+    },
+    style({ content, markup: lowered, filename }) {
+      const markup = written.get(filename ?? "component.svelte") ?? lowered;
       options.unusedSelectors?.set(
         filename ?? "component.svelte", unusedSelectorMessages({
           source: markup,
