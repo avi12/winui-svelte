@@ -1,3 +1,4 @@
+import { readPointerDevices, watchPointerDevices } from "./pointer-devices.ts";
 import type { SettingsStore } from "./settings-store.ts";
 import { isDarkTheme, systemSettingsStore } from "./settings-store.ts";
 import type { MediaChange, MediaInputs, MediaStore } from "#src/css/media/features.js";
@@ -46,11 +47,7 @@ function createMediaStore({ settings, inputs = {}, watch = {} }: MediaStoreOptio
     isAnimationEnabled: () => source.animationsEnabled,
     isTransparencyEnabled: () => source.advancedEffectsEnabled,
     presentation: () => MediaPresentation.windowed,
-    devices: () => ({
-      hasMouse: true,
-      hasTouch: false,
-      hasPen: false
-    }),
+    devices: readPointerDevices,
     isHdr: () => false,
     gamut: () => ColorGamut.srgb,
     isMetered: () => false
@@ -90,9 +87,13 @@ function createMediaStore({ settings, inputs = {}, watch = {} }: MediaStoreOptio
  * @param options - Other answers and events than the settings'.
  * @returns The store.
  */
-export function systemMediaStore(options: Omit<MediaStoreOptions, "settings"> = {}) {
+export function systemMediaStore({ watch, ...options }: Omit<MediaStoreOptions, "settings"> = {}) {
   return createMediaStore({
     settings: systemSettingsStore(),
+    watch: {
+      devices: watchPointerDevices,
+      ...watch
+    },
     ...options
   });
 }
