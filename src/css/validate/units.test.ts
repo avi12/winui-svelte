@@ -238,7 +238,7 @@ test("the preprocessor, stylelint and the Vite plugin report the same unit error
     const warnings = await lintedWarnings(file);
     const lintedAt = warnings.map(warning => [warning.text, warning.line, warning.column]);
     const seenByLinter = position.isLinted ? all : [];
-    const expectedAt = seenByLinter.map(diagnostic => [diagnostic.message, diagnostic.start.line, diagnostic.start.column + 1]);
+    const expectedAt = seenByLinter.map(({ message, start }) => [message, start.line, start.column + 1]);
     const suffix = ` (${ruleName})`;
     const plainAt = lintedAt.map(([text, line, column]) => [String(text).replace(suffix, ""), line, column]);
     assert.deepEqual(plainAt, expectedAt, position.name);
