@@ -449,7 +449,7 @@ class Controller implements ElementVisual {
         width,
         height
       });
-      this.placeMask({
+      void this.placeMask({
         shown,
         wanted
       });
