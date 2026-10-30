@@ -482,12 +482,12 @@ const vertical: Orientation = 1;
 
 | Kind | Takes | Example |
 |---|---|---|
-| A WinUI enum (`EnumInput`) | the member's WinUI name or its value | `closedDisplayMode="Minimal"`, `AppBarClosedDisplayMode.Minimal` |
+| A WinUI enum (`EnumInput`) | the member's value from `winui-svelte/enums` (its WinUI name as text also works) | `closedDisplayMode={AppBarClosedDisplayMode.Minimal}` |
 | A flag enum WinUI marks `[Flags]` (`FlagsInput`) | the same, or a list of names it combines | `modifiers={["Control", "Shift"]}` |
 | A color (`ColorInput`) | hex text (`HexColor`), a `ColorKeyword`, or WinUI's own value | `"#0078d4"`, `"transparent"` |
 | A brush (`BrushInput`) | a color, a `ThemeBrush`, a key of `AppBrushes`, or a `Brush` | `"AcrylicBackgroundFillColorDefaultBrush"` |
 | A grid length (`GridLengthInput`) | pixels, or `GridLengthText` as XAML writes it | `"Auto"`, `"2*"`, `"120"` |
-| The package's own | `Backdrop`, `WindowTheme`, `TitleBarHeight`, `WindowPresentation`, `PickerLocation`, `NavigationCacheMode`, `NavigationMode`, `MoveDirection`, `XamlKind`, `FocusKind`, `TrayGesture`, `TrayBalloonIcon` | `backdrop="mica"` |
+| The package's own | `Backdrop`, `WindowTheme`, `TitleBarHeight`, `WindowPresentation`, `PickerLocation`, `NavigationCacheMode`, `NavigationMode`, `MoveDirection`, `XamlKind`, `FocusKind`, `TrayGesture`, `TrayBalloonIcon` | `backdrop={Backdrop.mica}` |
 
 A WinUI enum's members keep WinUI's names and case (`"Minimal"`, not
 `"minimal"`), as the metadata and the docs have them; the package's own sets
@@ -694,7 +694,7 @@ no UIElement), so it is the one component only in `hand-written/` and
 `components/index.ts`
 
 A control whose items are controls takes them as Svelte's own blocks, which are
-its item template: `{#each rows as row (row.id)}<ComboBoxItem content={row.name} />{/each}`
+its item template: `{#each rows as row (row.id)}<ComboBoxItem>{row.name}</ComboBoxItem>{/each}`
 keeps, adds, moves and removes items as the array changes
 They are the
 children of `ComboBox`, `FlipView` and `ListBox`, and the snippet that names
@@ -900,12 +900,12 @@ the control's own nodes, and binding it undoes the key selection
 ### Window
 
 ```svelte
-<Window title="My app" backdrop="acrylic" icon={iconPath} appUserModelId={id}
+<Window title="My app" backdrop={Backdrop.acrylic} icon={iconPath} appUserModelId={id}
         width={560} minWidth={560} maxWidth={560} minHeight={420} height={640}
         isMaximizable={false} placement={saved} activate={!isBackground}
         onactivechanged={refresh} onboundschanged={report}
-        onclosing={hasUnsavedWork} onclosed={exitApplication} theme="dark"
-        titleBarHeight="tall" captionButtons={{ foreground: "#fff" }}
+        onclosing={hasUnsavedWork} onclosed={exitApplication} theme={WindowTheme.dark}
+        titleBarHeight={TitleBarHeight.tall} captionButtons={{ foreground: "#fff" }}
         bind:handle>
   {#snippet titleBar()}...{/snippet}
   ...the page...
@@ -1137,7 +1137,7 @@ and the property that holds it takes a snippet of that name:
 <SwipeControl>
   <TextBlock>Message</TextBlock>
   {#snippet leftItems()}
-    <SwipeItems mode="Execute">
+    <SwipeItems mode={SwipeMode.Execute}>
       <SwipeItem text="Delete" oninvoked={remove} />
     </SwipeItems>
   {/snippet}
@@ -1626,15 +1626,14 @@ bytes in memory
     }
   }}
 >
-  <text-block text="Drop here"></text-block>
+  <text-block>Drop here</text-block>
 </border>
 
 <text-block
   ondragstart={(event: DragEvent) => event.dataTransfer.setData("text/plain", "hello")}
   ondrag={(event: DragEvent) => console.log(event.clientX, event.clientY)}
   ondragend={(event: DragEvent) => console.log(event.dataTransfer.dropEffect)}
-  text="Drag me"
-></text-block>
+>Drag me</text-block>
 ```
 
 `enableDragEvents()` adds the seven names to the renderer's event-alias table
@@ -2233,7 +2232,7 @@ Everything here was checked to work from `node.exe` with no package identity;
 
 <StackPanel>
   {#each speakers.devices.items as device (device.id)}
-    <TextBlock text={device.name} />
+    <TextBlock>{device.name}</TextBlock>
   {/each}
 </StackPanel>
 ```
@@ -2265,7 +2264,7 @@ Windows lists no property names it was not asked for, so only `requestedProperti
   const input = inputDevices();
 </script>
 
-<TextBlock text="Mouse {input.hasMouse ? `with ${input.mouseButtons} buttons` : "absent"}" />
+<TextBlock>Mouse {input.hasMouse ? `with ${input.mouseButtons} buttons` : "absent"}</TextBlock>
 ```
 
 `inputDevices()` reads `MouseCapabilities`, `KeyboardCapabilities`,
@@ -2309,7 +2308,7 @@ the one reader the pointer media features (`hover`, `pointer`, `any-hover`,
 </script>
 
 {#each scanner.advertisements.items as ad (ad.addressText)}
-  <TextBlock text="{ad.localName || ad.addressText}  {ad.rssi} dBm" />
+  <TextBlock>{ad.localName || ad.addressText}  {ad.rssi} dBm</TextBlock>
 {/each}
 ```
 
