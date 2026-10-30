@@ -791,6 +791,33 @@ test("a clip-path inset clips the element to its size and unclips with the class
   assert.equal(fake(target).assigned["clip"], null);
 });
 
+test("a border-color transition animates the brush from the old color to the new one", () => {
+  registerPropertyGroups(transformGroups());
+  registerStyleSheet(
+    sheet({
+      id: "border-transition.svelte",
+      css: ".edge { border-color: #00f; transition: border-color 200ms ease-out }\n.edge.on { border-color: #f00 }"
+    })
+  );
+  const target = control();
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("edge");
+  assert.deepEqual(target.animations, []);
+  element.setClasses("edge on");
+  assert.equal(target.animations.length, 1);
+  assert.match(target.animations[0] ?? "", /^<Storyboard .*Storyboard\.TargetProperty="BorderBrush\.\(SolidColorBrush\.Color\)".*FillBehavior="HoldEnd"/u);
+  assert.match(target.animations[0] ?? "", /0:00:00\.200/u);
+  assert.deepEqual(target.brushes, ["borderBrush:#0000FF"]);
+  element.setClasses("edge");
+  assert.deepEqual(target.brushes, ["borderBrush:#FF0000"]);
+  element.dispose();
+  assert.deepEqual(target.animations, []);
+  unregisterStyleSheet("border-transition.svelte");
+});
+
 test("a text-transform sets what the control's text is shown with and asks for it to be written again", () => {
   registerPropertyGroups(compatGroups());
   registerStyleSheet(

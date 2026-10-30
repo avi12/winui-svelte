@@ -1,8 +1,13 @@
-import { multiple } from "./property-kit.ts";
-import type { Output } from "./property-kit.ts";
-import type { Reader } from "#src/css/parse/reader.js";
+import { AnimationDirection, AnimationFill, storyboardXaml } from "./animation-xaml.ts";
+import { TrackKind } from "./animation-tracks.ts";
+import { parseEasing } from "./easing.ts";
+import type { GroupInput, Output, PropertyGroup, WriteContext } from "./property-kit.ts";
+import { parseColor } from "#src/css/parse/colors.js";
 import { parseMilliseconds, splitCommas, splitWords } from "#src/css/parse/values.js";
 
+const BORDER_COLOR = "border-color";
+const BORDER_COLOR_TARGET = "border-color-transition";
+const DEFAULT_EASING = "ease";
 const MILLISECONDS_PER_SECOND = 1000;
 const DURATION_FRACTION_DIGITS = 3;
 
@@ -37,16 +42,137 @@ function duration(milliseconds: number) {
   return `0:0:${seconds}`;
 }
 
-/** `transition`: the implicit transition WinUI sets on each animatable property named. */
-function transition(reader: Reader) {
+// The color a border brush last had (the one a change is animated from).
+const borderColors = new WeakMap<object, string>();
+
+// What each write's text stands for (the write's value is a string), as the animation group does.
+const resolved = new Map<string, BorderColorTransition>();
+
+interface BorderColorTransition {
+  color: string;
+  durationMs: number;
+  delayMs: number;
+  easing: string;
+}
+
+// `border-color 200ms ease-out 50ms`: a timing function and a delay may follow the duration.
+function borderColorWrite({ input, durationMs, rest }: {
+  input: GroupInput;
+  durationMs: number;
+  rest: readonly string[];
+}) {
+  const reader = input.reading("transition");
+  const color = parseColor((input.computed.get(BORDER_COLOR)?.value ?? "").trim());
+  const isColorMissing = color === null;
+  if (isColorMissing) {
+    reader.warn("transition: border-color is animated between colors written out (hex, rgb(), a name) in the border-color of the rules that apply; ignored");
+    return [];
+  }
+
+  const easing = rest.find(word => parseEasing(word) !== null) ?? DEFAULT_EASING;
+  const delays = rest.map(parseMilliseconds).filter(delay => delay !== null);
+  const unread = rest.filter(word => parseEasing(word) === null && parseMilliseconds(word) === null);
+  const hasUnread = unread.length > 0;
+  if (hasUnread) {
+    reader.warn(`transition: "${unread.join(" ")}" ignored (a border-color transition takes a duration, a timing function and a delay)`);
+  }
+
+  const transition = {
+    color,
+    durationMs,
+    delayMs: delays[0] ?? 0,
+    easing
+  } satisfies BorderColorTransition;
+  const value = JSON.stringify(transition);
+  resolved.set(value, transition);
+  return [{
+    kind: "write",
+    target: BORDER_COLOR_TARGET,
+    value
+  } as const];
+}
+
+// When the border color changes, its brush runs from the old color to the new one on a Storyboard.
+function animateBorderColor({ control, value, native }: WriteContext) {
+  const transition = resolved.get(value);
+  const isUnknown = transition === undefined;
+  if (isUnknown) {
+    return null;
+  }
+
+  const { color, durationMs, delayMs, easing } = transition;
+  const from = borderColors.get(control);
+  borderColors.set(control, color);
+  const isUnchanged = from === undefined || from === color;
+  if (isUnchanged) {
+    return null;
+  }
+
+  const xaml = storyboardXaml({
+    name: BORDER_COLOR_TARGET,
+    durationMs,
+    delayMs,
+    easing,
+    iterations: 1,
+    direction: AnimationDirection.NORMAL,
+    fill: AnimationFill.FORWARDS,
+    isPaused: false,
+    tracks: [{
+      target: "BorderBrush.(SolidColorBrush.Color)",
+      kind: TrackKind.COLOR,
+      brush: "borderBrush",
+      isTransform: false,
+      frames: [
+        {
+          offset: 0,
+          value: from,
+          easing: null
+        },
+        {
+          offset: 1,
+          value: color,
+          easing: null
+        }
+      ]
+    }]
+  });
+  return native.animate({
+    control,
+    storyboards: [{
+      xaml,
+      isPaused: false
+    }],
+    hasTransform: false,
+    brushes: [{
+      property: "borderBrush",
+      color: from
+    }]
+  });
+}
+
+/** `transition`: the implicit transition WinUI sets on each animatable property named, and a Storyboard for a border color. */
+function transition(input: GroupInput) {
+  const reader = input.reading("transition");
   const outputs: Output[] = [];
   for (const entry of splitCommas(reader.declaration.value)) {
     const [property = "", time, ...rest] = splitWords(entry);
     const milliseconds = time === undefined ? null : parseMilliseconds(time);
+    const isBorderColor = property.toLowerCase() === BORDER_COLOR && milliseconds !== null;
+    if (isBorderColor) {
+      outputs.push(
+        ...borderColorWrite({
+          input,
+          durationMs: milliseconds,
+          rest
+        })
+      );
+      continue;
+    }
+
     const targets = TRANSITION_TARGETS.get(property.toLowerCase());
     const isTargetsMissing = targets === undefined;
     if (isTargetsMissing) {
-      reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background and a shadow's depth; a border brush has no implicit transition); ignored`);
+      reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background, border-color and a shadow's depth); ignored`);
       continue;
     }
 
@@ -76,10 +202,11 @@ function transition(reader: Reader) {
   return outputs;
 }
 
-/** The group of `transition`. */
+/** The group of `transition`: WinUI's implicit transitions, and a border color's Storyboard. */
 export function transitionProperty() {
-  return multiple({
-    member: "transition",
-    parse: transition
-  });
+  return {
+    members: ["transition"],
+    lower: transition,
+    writes: { [BORDER_COLOR_TARGET]: animateBorderColor }
+  } satisfies PropertyGroup;
 }

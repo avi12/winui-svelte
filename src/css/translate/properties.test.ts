@@ -662,6 +662,32 @@ test("a box-shadow transition animates the Z of Translation, a shadow's depth", 
   assert.deepEqual(result.setters, [["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.150\"/>"]]);
 });
 
+test("a border-color transition is a write the runtime animates, with the colors written out", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "border-color: #ff0000; transition: border-color 1s ease-out 50ms"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.warnings, []);
+  const [[target, value] = ["", ""]] = result.writes;
+  assert.equal(target, "border-color-transition");
+  assert.deepEqual(JSON.parse(value), {
+    color: "#FF0000",
+    durationMs: 1000,
+    delayMs: 50,
+    easing: "ease-out"
+  });
+});
+
+test("a border-color transition without a color written out warns and is dropped", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "border-color: var(--edge); transition: border-color 1s"
+  });
+  assert.deepEqual(result.writes, []);
+  assert.match(result.warnings.join(), /border-color is animated between colors written out/u);
+});
+
 test("text-transform writes the transform the runtime shows the text with", () => {
   for (const word of ["uppercase", "lowercase", "capitalize"]) {
     const result = lower({
