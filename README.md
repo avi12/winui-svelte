@@ -27,13 +27,12 @@ Then I stumbled upon [node-winui](https://github.com/microsoft/winappCli/blob/ma
 </StackPanel>
 
 <style>
-  /* Global: Svelte does not scope a class passed to a component */
-  :global(.page) {
+  .page {
     gap: 12px;
     padding: 24px;
   }
 
-  :global(.title) {
+  .title {
     font-size: 24px;
   }
 </style>
@@ -825,6 +824,34 @@ build error with its file and line; nothing is silently ignored
 | `--name: value` on `:root`, or on a class | an app-wide resource, or one only the elements with that class (and their templates) see: `.danger { --button-background-pointer-over: red }` |
 | `.class`, `type`, `:hover`, `:focus`, `:active`, `:root`, `:where()` | class and type matching, the control's events, custom properties |
 
+### Scoping
+
+A rule in a component's `<style>` reaches only the elements and the component
+instances that component writes, as in Svelte: `.title` styles `<TextBlock
+class="title">` in that file, and a `.title` in another component does not
+collide with it
+No `:global` is needed for that
+The scope is added at build time (the scope class is part of the `class` value
+the instance receives), so the window pays nothing for it at run time
+`:global(.x)` and `:global { }` escape the scope, as in Svelte
+A class the parent scopes does not reach the elements inside a child component;
+a child that takes a `class` prop and puts it on its own root element receives
+the scope class with the value (an array or an object works, as `clsx` does)
+
+A prop and a rule that set the same WinUI property both work, and the prop
+wins: `<TextBlock isTextSelectionEnabled={false}>` stays false under
+`user-select: text`, and a rule fills in where the prop is absent
+(`padding`, `gap` and `font-size` the same)
+This is the reverse of the web's presentation attributes, on purpose: the prop
+is the direct, local value
+An animation still overrides a local value while it runs, as on the web
+
+`style:` and `class:` directives work on component instances too
+`<TextBlock style:padding="{p}px" class:active={isActive}>` is rewritten at
+build time into a `style` string and a `class` array that stay reactive;
+`null`, `undefined` and `false` leave a declaration out
+As they are CSS, an explicit prop wins over them as well
+
 ## Templates, styles and resources
 
 Props typed with a WinUI template take XAML text, so a control is restyled
@@ -853,8 +880,8 @@ accepted too, and `xamlOf` loads text once for several props
 </style>
 ```
 
-As for any class passed to a component, Svelte does not scope it: write the
-rule `:global(.row)`
+`itemContainerStyle="row"` names a class and no element of the component,
+so the rule that styles it is written `:global(.row)`
 A root element without `xmlns` gets WinUI's, and the wrong
 root for the prop (a `DataTemplate` for `template`) is an error that names both
 A key of `resources` is a custom property's name, as in a stylesheet, or the

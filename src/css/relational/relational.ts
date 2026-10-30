@@ -52,10 +52,14 @@ function isInside({ edit, other }: {
   return other !== edit && isWithin && other.end - other.start > edit.end - edit.start;
 }
 
-function applyEdits({ source, edits, moves }: {
+/**
+ * The source with each edit applied (an edit inside another one's range is
+ * part of that one), then the moves.
+ */
+export function applyEdits({ source, edits, moves = [] }: {
   source: string;
   edits: readonly Edit[];
-  moves: readonly Move[];
+  moves?: readonly Move[];
 }) {
   const applied = edits.filter(edit => !edits.some(other => isInside({
     edit,

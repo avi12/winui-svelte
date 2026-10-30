@@ -1,5 +1,5 @@
 import { describeError, errorOf } from "./diagnostics.ts";
-import { compileSheetModule, cssHash, SheetError } from "#src/css/runtime/sheet-module.js";
+import { compileSheetModule, cssHash, scopedMarkup, SheetError } from "#src/css/runtime/sheet-module.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { stripTypeScriptTypes } from "node:module";
 import path from "node:path";
@@ -13,7 +13,7 @@ const resources = loadWinuiCatalogue();
 // What Svelte warns about markup written for HTML: WinUI's tags are not
 // HTML's, so a self-closing <grid />, an unknown attribute or a click on a
 // <border> is not a mistake.
-const HTML_ONLY_WARNING = /^(?:a11y_|element_invalid_self_closing_tag$|attribute_illegal_colon$|attribute_avoid_is$|attribute_invalid_property_name$)/u;
+const HTML_ONLY_WARNING = /^(?:a11y_|element_invalid_self_closing_tag$|attribute_illegal_colon$|attribute_avoid_is$|attribute_invalid_property_name$|css_unused_selector$)/u;
 
 /**
  * What every component is compiled with, whoever compiles it: for the
@@ -137,7 +137,12 @@ function compileSource({ filename, source, options }: {
     });
   }
 
-  const { js } = compile(source, {
+  const markup = scopedMarkup({
+    source,
+    file: filename,
+    filename
+  });
+  const { js } = compile(markup, {
     ...WINUI_COMPILE_OPTIONS,
     filename,
     runes: true

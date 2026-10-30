@@ -1,4 +1,5 @@
 import { checkCssEffects } from "./css-effects-behaviours.ts";
+import { checkCssPrecedence } from "./css-precedence-behaviours.ts";
 import type { Counts, Failure, Report } from "./mount-report.ts";
 import SlotsFixture from "./Slots.fixture.svelte";
 import { checkXamlBehaviours } from "./xaml-behaviours.svelte.ts";
@@ -987,6 +988,7 @@ function checkBehaviours({ connectors, failures }: {
     checkProps
   });
   checkCssEffects({ check });
+  checkCssPrecedence({ check });
   return count;
 }
 

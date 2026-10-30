@@ -1,4 +1,10 @@
-import { compileSheetModule, cssHash, SheetError } from "./sheet-module.ts";
+import {
+  compileSheetModule,
+  cssHash,
+  scopeClassOf,
+  scopedMarkup,
+  SheetError
+} from "./sheet-module.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -191,4 +197,93 @@ test("a container the build cannot lower is still the translator's error", () =>
     () => moduleFor("<border class=\"b\"><button/></border>\n\n<style>\n  .b { align-items: center }\n</style>\n"),
     (error: unknown) => error instanceof SheetError && /align-items has no WinUI meaning \(is lowered by the component build/u.test(error.message)
   );
+});
+
+const PARENT = `<script>
+  import { TextBlock, StackPanel } from "winui-svelte/components";
+  let { extra } = $props();
+</script>
+<StackPanel class="page"><TextBlock class="title">Hi</TextBlock><TextBlock class={extra}>x</TextBlock><TextBlock>y</TextBlock><text-block class="title"/></StackPanel>
+<style>
+  .page { padding: 4px }
+  .title { font-size: 20px }
+  :global(.shared) { gap: 3px }
+  .missing { opacity: 0.5 }
+</style>
+`;
+
+test("a rule reaches the component instances of its own markup, and a global one stays unscoped", () => {
+  const result = moduleFor(PARENT);
+  const scope = scopeClassOf(FILENAME);
+  assert.deepEqual(result?.sheet.rules.slice(0, 3).map(rule => rule.classes), [
+    ["page", scope],
+    ["title", scope],
+    ["shared"]
+  ]);
+  const unused = moduleFor("<StackPanel class=\"page\"/><style>.page { gap: 1px } .missing { gap: 2px }</style>");
+  assert.match(unused?.diagnostics.map(({ message }) => message).join() ?? "", /missing/u);
+});
+
+test("every instance of the component carries the scope class, in a string or an array", () => {
+  const scope = scopeClassOf(FILENAME);
+  const markup = scopedMarkup({
+    source: PARENT,
+    file: "t.svelte",
+    filename: FILENAME
+  });
+  assert.match(markup, new RegExp(`<StackPanel class="page ${scope}">`, "u"));
+  assert.match(markup, new RegExp(`<TextBlock class="title ${scope}">`, "u"));
+  assert.ok(markup.includes(`class={[extra, "${scope}"]}`));
+  assert.match(markup, new RegExp(`<TextBlock class="${scope}">y`, "u"));
+});
+
+test("two components with one class name get different scopes", () => {
+  assert.notEqual(scopeClassOf("/a/One.svelte"), scopeClassOf("/a/Two.svelte"));
+});
+
+test("two components with the same class name register rules that do not collide", () => {
+  const markup = "<StackPanel class=\"box\"><TextBlock class=\"title\"/></StackPanel>";
+  const sheets = [["/app/One.svelte", "12px"], ["/app/Two.svelte", "30px"]].map(([filename, gap]) => ({
+    filename: filename ?? "",
+    sheet: compileSheetModule({
+      filename: filename ?? "",
+      source: `${markup}<style>.box { gap: ${gap} } .title { font-size: ${gap} }</style>`,
+      sheetId: "t.svelte",
+      resources,
+      runtimeModule: "winui-svelte/css"
+    })?.sheet
+  }));
+  for (const { filename, sheet } of sheets) {
+    const scope = scopeClassOf(filename);
+    assert.ok(sheet?.rules.every(rule => rule.classes.includes(scope)));
+    const compiled = scopedMarkup({
+      source: `${markup}<style>.box { gap: 1px }</style>`,
+      file: "t.svelte",
+      filename
+    });
+    assert.ok(compiled.includes(`class="title ${scope}"`));
+  }
+
+  assert.notEqual(sheets[0]?.sheet?.rules[0]?.classes[1], sheets[1]?.sheet?.rules[0]?.classes[1]);
+});
+
+test("style: and class: directives on a component become reactive props", () => {
+  const markup = scopedMarkup({
+    source: "<TextBlock class=\"a\" style=\"color: red\" style:padding=\"{p}px\" style:--gap={gap} style:margin|important=\"1px\" class:on={isOn} class:big />",
+    file: "t.svelte",
+    filename: FILENAME
+  });
+  assert.ok(markup.includes("class={[`a`, {"));
+  assert.ok(markup.includes("\"on\": isOn"));
+  assert.ok(markup.includes("\"big\": big"));
+  assert.ok(markup.includes("padding: ${value}") && markup.includes("`${p}px`"));
+  assert.ok(markup.includes("--gap: ${value}"));
+  assert.ok(markup.includes("margin: ${value} !important"));
+  assert.ok(!markup.includes("style:") && !markup.includes("class:"));
+  const compiled = compile(markup, {
+    filename: FILENAME,
+    generate: "client",
+    runes: true
+  });
+  assert.ok(compiled.js.code.includes("TextBlock"));
 });
