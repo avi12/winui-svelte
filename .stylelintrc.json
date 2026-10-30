@@ -1,8 +1,10 @@
 {
   "extends": ["stylelint-config-ccb"],
   "customSyntax": "postcss-html",
+  "plugins": ["./dist/css/validate/stylelint.js"],
   "ignoreFiles": ["node_modules/**", "dist/**", "src-tauri/**", ".winapp/**"],
   "rules": {
+    "winui-svelte/no-unsupported-css": true,
     "plugin/stylelint-no-indistinguishable-colors": null,
     "color-format/format": null,
     "prettier/prettier": null,

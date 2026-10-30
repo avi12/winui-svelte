@@ -1,0 +1,23 @@
+{
+  "version": 1.1,
+  "properties": [
+    {
+      "name": "-winui-based-on",
+      "syntax": "<resource-key>",
+      "description": "The WinUI Style this rule is based on (a key such as BodyTextBlockStyle): the rule's declarations are set on top of it."
+    },
+    {
+      "name": "-winui-elevation",
+      "syntax": "<length>",
+      "description": "The depth of the element's ThemeShadow, in px: a WinUI shadow that follows the theme. Units: Converted to px when building: px, rem, em, pt, pc, in, cm, mm, q. Resolved at layout, inside calc(), min(), max() or clamp(): %, vw, vh, vmin, vmax, cqw, cqh, cqi, cqb, cqmin, cqmax. No WinUI equivalent (an error): ch, ex, cap, ic, lh, rlh, rch, rex, rcap, ric, svw, svh, lvw, lvh, dvw, dvh, vi, vb."
+    },
+    {
+      "name": "grid-template-columns",
+      "description": "WinUI: a track is auto, a length or an fr size, and they mix freely; repeat(N, ...) is expanded when building. No WinUI equivalent: repeat(auto-fill|auto-fit, ...), subgrid, masonry, named lines and % tracks (the editor's diagnostics say what to write instead)."
+    },
+    {
+      "name": "grid-template-rows",
+      "description": "WinUI: a track is auto, a length or an fr size, and they mix freely; repeat(N, ...) is expanded when building. No WinUI equivalent: repeat(auto-fill|auto-fit, ...), subgrid, masonry, named lines and % tracks (the editor's diagnostics say what to write instead)."
+    }
+  ]
+}
