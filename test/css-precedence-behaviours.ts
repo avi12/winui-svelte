@@ -27,7 +27,8 @@ function restyle({ control, elementType }: {
 }) {
   styledElement({
     control,
-    elementType
+    elementType,
+    refreshText: () => undefined
   }).setClasses("t");
 }
 
