@@ -340,6 +340,12 @@ export const nonConstructible = new Map<string, string>([
     + "so a component for it would throw on being given them; SwapChainPanel is its replacement"
   ],
   [
+    "Microsoft.UI.Xaml.Controls.SwapChainBackgroundPanel",
+    "the UWP panel WinUI 3 keeps for compatibility, bound and mounted: it refuses Opacity, Width, Height, MinWidth, "
+    + "MaxWidth, MinHeight, MaxHeight and Margin (0x80004005) and is allowed only as the application's root visual or "
+    + "inside a Page, so it cannot be placed in a panel like every other component; SwapChainPanel is its replacement"
+  ],
+  [
     "Microsoft.UI.Xaml.Controls.Primitives.PivotHeaderItem",
     "covered by Pivot: WinUI makes it only inside a Pivot, as the header of a PivotItem (constructing it fails with "
     + "E_NOINTERFACE), so a header is styled with the `header` snippet of PivotItem"

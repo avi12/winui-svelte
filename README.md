@@ -935,7 +935,9 @@ Stated plainly, so nobody finds them by surprise:
   `path` (a geometry has no length), a directive goes on a raw element, and a
   leaving element in a keyed `{#each}` stays in the layout until it is gone.
 - **Two controls are not components:** `SwapChainBackgroundPanel` (the UWP
-  panel WinUI 3 keeps for compatibility, which refuses most element properties;
+  panel WinUI 3 keeps for compatibility: it refuses Opacity, Width, Height, the
+  min and max sizes and Margin, and is allowed only as the application's root
+  visual or inside a Page, so it cannot go in a panel;
   `SwapChainPanel` replaces it) and `PivotHeaderItem` (WinUI makes it only
   inside a `Pivot`; style a header with the `header` snippet of `PivotItem`,
   which takes any element).
