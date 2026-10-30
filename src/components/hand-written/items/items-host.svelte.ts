@@ -67,10 +67,10 @@ export interface ItemsHostProps<Item> extends ItemRowsProps<Item>, ItemNameProps
   // The keys in the order the user left them in, after a drag or a keyboard
   // move. The list keeps that order until `items` changes; an app that keeps
   // its own order updates `items` from it.
-  onReorder?: (order: string[]) => void;
+  onreorder?: (order: string[]) => void;
   // The control, for what the control exposes and the component does not
   // (item transitions, scrolling, focus). The cleanup runs when it goes.
-  onControl?: (view: ListViewBase) => void | (() => void);
+  oncontrol?: (view: ListViewBase) => void | (() => void);
 }
 
 function directionOf(event: KeyRoutedEventArgs) {
@@ -90,7 +90,7 @@ function directionOf(event: KeyRoutedEventArgs) {
  */
 export interface ListHandle {
   // Moves the item with this key one place, as Alt+Up / Alt+Down does: seen at
-  // once, reported to onReorder, the focus following it.
+  // once, reported to onreorder, the focus following it.
   move({ key, direction }: {
     key: string;
     direction: MoveDirection;
@@ -251,7 +251,7 @@ class ItemsHost<Item> implements ListHandle {
     });
     if (isMoved) {
       this.rows.adoptOrder(order);
-      this.props.onReorder?.([...order]);
+      this.props.onreorder?.([...order]);
     }
 
     this.selection.apply();
@@ -310,7 +310,7 @@ class ItemsHost<Item> implements ListHandle {
       target
     });
     this.selection.apply();
-    this.props.onReorder?.([...this.rows.order]);
+    this.props.onreorder?.([...this.rows.order]);
     this.focus(key);
   }
 
@@ -369,7 +369,7 @@ export function attachItems<Item>({ view, props, selection }: {
     props,
     selection
   });
-  const releaseControl = props.onControl?.(view);
+  const releaseControl = props.oncontrol?.(view);
   return {
     handle: host,
     dispose() {

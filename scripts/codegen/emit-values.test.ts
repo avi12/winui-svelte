@@ -31,7 +31,7 @@ function pickerWith(properties: PropertyModel[]) {
     properties,
     events: [{
       winName: "DateChanged",
-      key: "onDateChanged"
+      key: "ondatechanged"
     }],
     attached: [],
     bindables: [{

@@ -12,9 +12,9 @@
   let {
     handle = $bindable(),
     transition,
-    onReady,
+    onready,
     cacheSize,
-    onNavigated,
+    onnavigated,
     ...rest
   }: NavigatorComponentProps = $props();
 
@@ -25,13 +25,13 @@
         get cacheSize() {
           return cacheSize;
         },
-        get onNavigated() {
-          return onNavigated;
+        get onnavigated() {
+          return onnavigated;
         }
       }
     });
     handle = attached.handle;
-    onReady?.(attached.handle);
+    onready?.(attached.handle);
     return attached.dispose;
   }
 </script>

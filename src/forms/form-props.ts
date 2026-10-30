@@ -16,17 +16,17 @@ export interface FormComponentProps<Schema extends z.ZodType = z.ZodType<FormObj
   /** Skips validation on submit, as HTML's `novalidate` does; the fields still know their validity. */
   noValidate?: boolean | undefined;
   /** Called with the values when the form is valid and submitted. */
-  onSubmit?: ((submission: FormSubmission<z.output<Schema>>) => void | Promise<void>) | undefined;
-  /** Runs after `onSubmit`; while its promise is pending the controls are disabled and `handle.isPending` is true. */
+  onsubmit?: ((submission: FormSubmission<z.output<Schema>>) => void | Promise<void>) | undefined;
+  /** Runs after `onsubmit`; while its promise is pending the controls are disabled and `handle.isPending` is true. */
   action?: ((submission: FormSubmission<z.output<Schema>>) => void | Promise<void>) | undefined;
   /** Called when a submit was stopped by invalid fields, with them. */
-  onInvalid?: ((fields: readonly InvalidField[]) => void) | undefined;
+  oninvalid?: ((fields: readonly InvalidField[]) => void) | undefined;
   /** Called after the fields were put back. */
-  onReset?: (() => void) | undefined;
+  onreset?: (() => void) | undefined;
   /** Called when Escape is pressed in a field. */
-  onCancel?: (() => void) | undefined;
-  /** Called with what `onSubmit` or `action` threw; without it the error is rethrown where nothing catches it. */
-  onError?: ((error: unknown) => void) | undefined;
+  oncancel?: (() => void) | undefined;
+  /** Called with what `onsubmit` or `action` threw; without it the error is rethrown where nothing catches it. */
+  onerror?: ((error: unknown) => void) | undefined;
   /** The form, for code that submits, resets and reads it (`bind:handle`). */
   handle?: FormHandle | undefined;
 }

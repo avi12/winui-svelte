@@ -16,5 +16,5 @@
 
 <fake-panel>
   <fake-text-block>{props.label} {clicks}</fake-text-block>
-  <fake-toggle onToggled={() => clicks++}></fake-toggle>
+  <fake-toggle ontoggled={() => clicks++}></fake-toggle>
 </fake-panel>

@@ -41,7 +41,7 @@ export interface FlyoutHostProps {
 /** The props the dialog host reads. */
 export interface DialogHostProps<Root, Result> {
   target?: LoadableElement<Root> | undefined;
-  onResult?: ((result: Result) => void) | undefined;
+  onresult?: ((result: Result) => void) | undefined;
 }
 
 /** The component's `open`, as the component binds it. */
@@ -152,7 +152,7 @@ interface DialogRequest<Result> {
 
 /**
  * Keeps a ContentDialog's `open` in step with whether it is open, and answers
- * `onResult`. Dialogs open one after another (WinUI shows one at a time), each
+ * `onresult`. Dialogs open one after another (WinUI shows one at a time), each
  * in the window of the element it is written in or `target`; one the user
  * closes sets `open` back to false.
  *
@@ -191,7 +191,7 @@ export function attachDialog<Root, Result>({ placed, props, bound }: {
 
     const isAnswered = result !== undefined;
     if (isAnswered) {
-      props.onResult?.(result);
+      props.onresult?.(result);
     }
   }
 

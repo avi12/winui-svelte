@@ -57,6 +57,8 @@
     "src/components/generated/win2d/props-strictness.ts",
     // Read by tsc only: it fails there if a value prop accepts a wrong value.
     "test/value-props.types.ts",
+    // Read by tsc only: it fails there if the camel-case spelling of an event prop is accepted.
+    "test/event-props.types.ts",
     "examples/counter/launch.ts",
     "examples/counter/window.ts",
     "examples/scheduling/launch.ts",

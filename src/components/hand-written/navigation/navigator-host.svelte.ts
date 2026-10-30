@@ -37,7 +37,7 @@ export interface NavigationEntry {
   readonly cacheMode: NavigationCacheMode;
 }
 
-/** What `onNavigated` is told. */
+/** What `onnavigated` is told. */
 export interface NavigatedEvent {
   readonly entry: NavigationEntry;
   readonly mode: NavigationMode;
@@ -65,7 +65,7 @@ export interface NavigatorHandle {
 export interface NavigatorHostProps {
   // How many enabled pages stay mounted: WinUI's Frame.CacheSize.
   cacheSize?: number | undefined;
-  onNavigated?: ((event: NavigatedEvent) => void) | undefined;
+  onnavigated?: ((event: NavigatedEvent) => void) | undefined;
 }
 
 /** Where a page is shown: a ContentControl, or anything with its Content. */
@@ -196,7 +196,7 @@ class NavigatorHost implements NavigatorHandle {
       canGoForward: this.stack.canGoForward
     };
     flush();
-    this.props.onNavigated?.({
+    this.props.onnavigated?.({
       entry: to,
       mode
     });

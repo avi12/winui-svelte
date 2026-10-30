@@ -14,15 +14,15 @@
     canvas = $bindable(createCanvas2D({ device: customDevice ?? undefined })),
     draw,
     shouldFit = true,
-    onDrawn,
-    onSizeChanged,
-    onPointerPressed,
-    onPointerMoved,
-    onPointerReleased,
-    onPointerEntered,
-    onPointerExited,
-    onPointerCanceled,
-    onPointerWheelChanged,
+    ondrawn,
+    onsizechanged,
+    onpointerpressed,
+    onpointermoved,
+    onpointerreleased,
+    onpointerentered,
+    onpointerexited,
+    onpointercanceled,
+    onpointerwheelchanged,
     ...rest
   }: Canvas2DProps = $props();
   let native = $state.raw<CanvasControlNative>();
@@ -77,29 +77,29 @@
     canvas,
     element: () => native,
     user: {
-      onPointerPressed,
-      onPointerMoved,
-      onPointerReleased,
-      onPointerEntered,
-      onPointerExited,
-      onPointerCanceled,
-      onPointerWheelChanged
+      onpointerpressed,
+      onpointermoved,
+      onpointerreleased,
+      onpointerentered,
+      onpointerexited,
+      onpointercanceled,
+      onpointerwheelchanged
     }
   })}
-  onCreateResources={sender => {
+  oncreateresources={sender => {
     native = sender;
     measure();
   }}
-  onDraw={(_sender, args) => {
+  ondraw={(_sender, args) => {
     drawImage({
       session: args.drawingSession,
       image: canvas.target
     });
     drawCount++;
-    onDrawn?.(drawCount);
+    ondrawn?.(drawCount);
   }}
-  onSizeChanged={(...args) => {
+  onsizechanged={(...args) => {
     measure();
-    onSizeChanged?.(...args);
+    onsizechanged?.(...args);
   }}
 />

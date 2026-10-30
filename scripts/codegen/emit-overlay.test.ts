@@ -50,7 +50,7 @@ test("ContentDialog binds open, keeps its children and connects the dialog host"
   assert.doesNotMatch(component, /generics|attachFlyout|attachItems/u);
 });
 
-test("ContentDialog declares open as its binding and takes onResult", () => {
+test("ContentDialog declares open as its binding and takes onresult", () => {
   const declaration = emitDeclaration(
     classNamed({
       name: "ContentDialog",

@@ -19,7 +19,7 @@ export interface CanvasFrame {
 }
 
 /** The props of Canvas: a CanvasControl's, minus its raw events, plus the draw function. */
-export interface CanvasProps extends Omit<CanvasControlComponentProps, "onDraw" | "onCreateResources" | "children"> {
+export interface CanvasProps extends Omit<CanvasControlComponentProps, "ondraw" | "oncreateresources" | "children"> {
   /**
    * Draws the canvas. It runs again, and the canvas redraws, whenever state it
    * read changes or the canvas is resized.
@@ -27,7 +27,7 @@ export interface CanvasProps extends Omit<CanvasControlComponentProps, "onDraw" 
   draw: (frame: CanvasFrame) => void;
 
   /** Runs after each redraw the control painted, with the number of redraws so far. */
-  onDrawn?: (count: number) => void;
+  ondrawn?: (count: number) => void;
 
   /** Makes the resources `draw` needs, once the device exists and again when it is lost. */
   createResources?: (options: { device: CanvasDevice }) => void | Promise<void>;

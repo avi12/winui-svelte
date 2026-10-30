@@ -13,7 +13,7 @@
     menu: Snippet<[TrayMenuContext]>;
     activation: "focus" | "background";
     focus: (hwnd: bigint) => void;
-    onClose: () => void;
+    onclose: () => void;
   } = $props();
   let handle: WindowHandle | undefined = $state();
 
@@ -41,14 +41,14 @@
   isMaximizable={false}
   isMinimizable={false}
   isResizable={false}
-  onActiveChanged={isActive => {
+  onactivechanged={isActive => {
     if (!isActive) {
-      props.onClose();
+      props.onclose();
     }
   }}
-  onClosed={props.onClose}
+  onclosed={props.onclose}
   placement={props.placement}
   bind:handle
 >
-  {@render props.menu({ close: props.onClose })}
+  {@render props.menu({ close: props.onclose })}
 </Window>

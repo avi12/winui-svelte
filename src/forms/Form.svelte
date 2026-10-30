@@ -11,12 +11,12 @@
     handle = $bindable(),
     schema,
     noValidate: isNoValidate,
-    onSubmit,
+    onsubmit,
     action,
-    onInvalid,
-    onReset,
-    onCancel,
-    onError,
+    oninvalid,
+    onreset,
+    oncancel,
+    onerror,
     ...rest
   }: FormComponentProps<z.ZodType<unknown>> = $props();
 
@@ -33,12 +33,12 @@
     get isNoValidate() {
       return isNoValidate === true;
     },
-    onSubmit: submission => onSubmit?.(submission),
+    onSubmit: submission => onsubmit?.(submission),
     action: submission => action?.(submission),
-    onInvalid: fields => onInvalid?.(fields),
-    onReset: () => onReset?.(),
-    onCancel: () => onCancel?.(),
-    onError: error => (onError ?? rethrowLater)(error)
+    onInvalid: fields => oninvalid?.(fields),
+    onReset: () => onreset?.(),
+    onCancel: () => oncancel?.(),
+    onError: error => (onerror ?? rethrowLater)(error)
   });
   provideForm(controller);
   handle = controller;

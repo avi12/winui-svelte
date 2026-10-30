@@ -22,6 +22,6 @@ export interface NavigatorComponentProps
   transition?: Snippet;
   // Called once the control is in place, with the handle: where the first page
   // is navigated to.
-  onReady?: ((handle: NavigatorHandle) => void) | undefined;
-  onNavigated?: ((event: NavigatedEvent) => void) | undefined;
+  onready?: ((handle: NavigatorHandle) => void) | undefined;
+  onnavigated?: ((event: NavigatedEvent) => void) | undefined;
 }

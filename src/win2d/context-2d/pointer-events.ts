@@ -35,7 +35,7 @@ const POINTER_TYPES = new Map<number, string>([
 ]);
 
 /** The handler props of the control that the canvas listens through. */
-export type PointerHandlerName = "onPointerPressed" | "onPointerMoved" | "onPointerReleased" | "onPointerEntered" | "onPointerExited" | "onPointerCanceled" | "onPointerWheelChanged";
+export type PointerHandlerName = "onpointerpressed" | "onpointermoved" | "onpointerreleased" | "onpointerentered" | "onpointerexited" | "onpointercanceled" | "onpointerwheelchanged";
 
 type PointerHandler = (...args: unknown[]) => void;
 
@@ -48,13 +48,13 @@ type PointerHandlers = Pick<CanvasControlComponentProps, PointerHandlerName>;
 
 // What each WinUI event is called in the DOM; a pointer event also has its mouse twin.
 const EVENT_TYPES: Record<PointerHandlerName, string[]> = {
-  onPointerPressed: ["pointerdown", "mousedown"],
-  onPointerMoved: ["pointermove", "mousemove"],
-  onPointerReleased: ["pointerup", "mouseup", "click"],
-  onPointerEntered: ["pointerenter", "mouseenter", "pointerover", "mouseover"],
-  onPointerExited: ["pointerleave", "mouseleave", "pointerout", "mouseout"],
-  onPointerCanceled: ["pointercancel"],
-  onPointerWheelChanged: ["wheel"]
+  onpointerpressed: ["pointerdown", "mousedown"],
+  onpointermoved: ["pointermove", "mousemove"],
+  onpointerreleased: ["pointerup", "mouseup", "click"],
+  onpointerentered: ["pointerenter", "mouseenter", "pointerover", "mouseover"],
+  onpointerexited: ["pointerleave", "mouseleave", "pointerout", "mouseout"],
+  onpointercanceled: ["pointercancel"],
+  onpointerwheelchanged: ["wheel"]
 };
 
 function isPointerArguments(value: unknown): value is PointerRoutedEventArgs {
@@ -181,12 +181,12 @@ export function pointerHandlers({ canvas, element, user }: {
   }
 
   return {
-    onPointerPressed: handler("onPointerPressed"),
-    onPointerMoved: handler("onPointerMoved"),
-    onPointerReleased: handler("onPointerReleased"),
-    onPointerEntered: handler("onPointerEntered"),
-    onPointerExited: handler("onPointerExited"),
-    onPointerCanceled: handler("onPointerCanceled"),
-    onPointerWheelChanged: handler("onPointerWheelChanged")
+    onpointerpressed: handler("onpointerpressed"),
+    onpointermoved: handler("onpointermoved"),
+    onpointerreleased: handler("onpointerreleased"),
+    onpointerentered: handler("onpointerentered"),
+    onpointerexited: handler("onpointerexited"),
+    onpointercanceled: handler("onpointercanceled"),
+    onpointerwheelchanged: handler("onpointerwheelchanged")
   } satisfies PointerHandlers;
 }

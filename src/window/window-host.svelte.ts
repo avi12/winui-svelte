@@ -147,28 +147,28 @@ export interface WindowProps {
   activate?: boolean;
 
   /** The window became the active one (true) or lost that to another (false). */
-  onActiveChanged?: (isActive: boolean) => void;
+  onactivechanged?: (isActive: boolean) => void;
 
   /**
    * The window is about to close (the user's close button, Alt+F4, or
    * `handle.close()`). Returning true keeps it open: ask the user, then close
    * it again from code. Anything else lets it close.
    */
-  onClosing?: () => boolean | void;
-  onClosed?: () => void;
+  onclosing?: () => boolean | void;
+  onclosed?: () => void;
 
   /**
    * The window's scale changed (it moved to a display with another DPI, or the
    * user changed the display's scale): device pixels per device-independent
    * pixel. The size limits and regions follow it.
    */
-  onScaleChanged?: (scale: number) => void;
+  onscalechanged?: (scale: number) => void;
 
   /**
    * The bounds the window opens with, then whenever it is moved or resized, by
    * the user or by code; in device pixels.
    */
-  onBoundsChanged?: (bounds: WindowBounds) => void;
+  onboundschanged?: (bounds: WindowBounds) => void;
 }
 
 /** A size in device pixels. */
@@ -567,14 +567,14 @@ class WindowHost {
   }
 
   private isCloseRefused() {
-    return this.props.onClosing?.() === true;
+    return this.props.onclosing?.() === true;
   }
 
   private listen() {
     const { window } = this.handle;
     this.unsubscribe.push(
       window.onActivated((_sender, event) => {
-        this.props.onActiveChanged?.(event.windowActivationState !== WindowActivationState.Deactivated);
+        this.props.onactivechanged?.(event.windowActivationState !== WindowActivationState.Deactivated);
       }),
       window.appWindow.onClosing((_sender, event) => {
         event.cancel = this.isCloseRefused();
@@ -584,7 +584,7 @@ class WindowHost {
         // window goes (access violation at exit).
         this.releaseBackdrop?.();
         this.releaseBackdrop = null;
-        this.props.onClosed?.();
+        this.props.onclosed?.();
       }),
       window.appWindow.onChanged((_sender, event) => {
         const isMoved = event.didPositionChange || event.didSizeChange;
@@ -602,7 +602,7 @@ class WindowHost {
       onChange: scale => {
         this.syncLimits();
         this.syncRegions();
-        this.props.onScaleChanged?.(scale);
+        this.props.onscalechanged?.(scale);
       }
     });
     this.unsubscribe.push(
@@ -614,7 +614,7 @@ class WindowHost {
 
   private reportBounds() {
     const { position, size } = this.handle.appWindow;
-    this.props.onBoundsChanged?.({
+    this.props.onboundschanged?.({
       x: position.x,
       y: position.y,
       width: size.width,

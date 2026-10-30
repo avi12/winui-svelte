@@ -987,7 +987,7 @@ export const itemsHosted = new Map<string, ItemsHost>([
 // (src/components/hand-written/overlay): the component takes `open` (bindable,
 // kept in step with the control's Opened and Closed events), `target` (the
 // element it opens next to; by default the one it is written in) and, for a
-// dialog, `onResult`. DIALOG shows through ShowAsync, one at a time, in the
+// dialog, `onresult`. DIALOG shows through ShowAsync, one at a time, in the
 // window of its element; FLYOUT through ShowAt that element. Both close
 // through Hide.
 export const OverlayHost = {

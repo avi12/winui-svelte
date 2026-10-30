@@ -29,7 +29,7 @@ function start(props: {
     slot,
     props: {
       ...props,
-      onNavigated: event => events.push(event)
+      onnavigated: event => events.push(event)
     }
   });
   function page(label: string) {

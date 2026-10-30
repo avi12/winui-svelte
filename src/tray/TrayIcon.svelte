@@ -92,7 +92,7 @@
       activation={shouldActivateMenu ? "focus" : "background"}
       focus={hwnd => native.focusWindow(hwnd)}
       {menu}
-      onClose={() => trayMenu.close()}
+      onclose={() => trayMenu.close()}
       {placement}
     />
   {/key}

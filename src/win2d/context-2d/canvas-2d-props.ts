@@ -2,7 +2,7 @@ import type { CanvasElement } from "./canvas-element.ts";
 import type { CanvasControlComponentProps } from "#src/components/generated/win2d/index.js";
 
 /** The props of Canvas2D: a CanvasControl's, minus its raw draw events, plus the canvas the control shows. */
-export interface Canvas2DProps extends Omit<CanvasControlComponentProps, "onDraw" | "onCreateResources" | "children"> {
+export interface Canvas2DProps extends Omit<CanvasControlComponentProps, "ondraw" | "oncreateresources" | "children"> {
   /**
    * The canvas the control shows (bindable). Without one, the component makes
    * one, so `bind:canvas` hands you the canvas to draw on.
@@ -19,5 +19,5 @@ export interface Canvas2DProps extends Omit<CanvasControlComponentProps, "onDraw
   shouldFit?: boolean;
 
   /** Runs after each time the control painted the canvas, with the number of paints so far. */
-  onDrawn?: (count: number) => void;
+  ondrawn?: (count: number) => void;
 }

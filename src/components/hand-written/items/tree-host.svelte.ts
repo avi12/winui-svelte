@@ -69,7 +69,7 @@ export interface TreeHostProps<Item> extends ItemRowsProps<Item>, ItemNameProps<
   expandedKeys?: string[] | undefined;
   // The control, for what the control exposes and the component does not. The
   // cleanup runs when it goes.
-  onControl?: (view: TreeView) => void | (() => void);
+  oncontrol?: (view: TreeView) => void | (() => void);
 }
 
 /** What a tree component binds: the selection and the expanded keys. */
@@ -347,7 +347,7 @@ export function attachTree<Item>({ view, props, bound }: {
     releases.push(view.onceLoaded(listenWhenFound));
   }
 
-  const releaseControl = props.onControl?.(view);
+  const releaseControl = props.oncontrol?.(view);
   return {
     dispose() {
       releaseControl?.();

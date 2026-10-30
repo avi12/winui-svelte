@@ -233,7 +233,7 @@ function dialogIn(anchor: FakeAnchor) {
       parent: anchor
     }),
     props: {
-      onResult: result => results.push(result)
+      onresult: result => results.push(result)
     },
     bound: state
   }));
@@ -248,7 +248,7 @@ function dialogIn(anchor: FakeAnchor) {
   };
 }
 
-test("a dialog shows in its element's window, answers onResult and sets open back to false", async () => {
+test("a dialog shows in its element's window, answers onresult and sets open back to false", async () => {
   const anchor = new FakeAnchor({ name: "panel" });
   const { dialog, state, results, stop } = dialogIn(anchor);
   state.open = true;

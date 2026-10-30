@@ -66,7 +66,7 @@ export interface FormSubmission<Data> {
   readonly signal: AbortSignal;
 }
 
-/** A field that failed, as `onInvalid` lists them. */
+/** A field that failed, as `oninvalid` lists them. */
 export interface InvalidField {
   readonly name: string;
   readonly message: string;

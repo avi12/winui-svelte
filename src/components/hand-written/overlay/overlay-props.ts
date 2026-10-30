@@ -26,11 +26,11 @@ export interface DialogOverlayProps extends FlyoutOverlayProps {
    * Called with the button the user chose when the dialog closes, and with
    * `None` when the close button, Escape or `open = false` closed it.
    */
-  onResult?: ((result: ContentDialogResult) => void) | undefined;
+  onresult?: ((result: ContentDialogResult) => void) | undefined;
 }
 
 /** Every prop a flyout component takes: its control's properties (with their element props), `open` and `target`. */
 export type FlyoutOverlayComponentProps<ControlProps> = ControlProps & FlyoutOverlayProps;
 
-/** Every prop a ContentDialog component takes: the control's, `open`, `target` and `onResult`. */
+/** Every prop a ContentDialog component takes: the control's, `open`, `target` and `onresult`. */
 export type DialogOverlayComponentProps<ControlProps> = ControlProps & DialogOverlayProps;
