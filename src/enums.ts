@@ -15,4 +15,3 @@ export { TrayBalloonIcon } from "./tray/tray-core.ts";
 export { Backdrop } from "./window/backdrop.ts";
 export { TitleBarHeight, WindowPresentation, WindowTheme } from "./window/chrome.ts";
 export { PickerLocation } from "./window/pickers.ts";
-export { ExtendedActivationKind } from "#winui/microsoft/windows/app-lifecycle/ExtendedActivationKind";

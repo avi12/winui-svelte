@@ -470,7 +470,7 @@ const vertical: Orientation = 1;
 | A color (`ColorInput`) | hex text (`HexColor`), a `ColorKeyword`, or WinUI's own value | `"#0078d4"`, `"transparent"` |
 | A brush (`BrushInput`) | a color, a `ThemeBrush`, a key of `AppBrushes`, or a `Brush` | `"AcrylicBackgroundFillColorDefaultBrush"` |
 | A grid length (`GridLengthInput`) | pixels, or `GridLengthText` as XAML writes it | `"Auto"`, `"2*"`, `"120"` |
-| The package's own | `Backdrop`, `WindowTheme`, `TitleBarHeight`, `WindowPresentation`, `PickerLocation`, `NavigationCacheMode`, `NavigationMode`, `MoveDirection`, `XamlKind`, `FocusKind`, `TrayGesture`, `TrayBalloonIcon`, `ExtendedActivationKind` | `backdrop="mica"` |
+| The package's own | `Backdrop`, `WindowTheme`, `TitleBarHeight`, `WindowPresentation`, `PickerLocation`, `NavigationCacheMode`, `NavigationMode`, `MoveDirection`, `XamlKind`, `FocusKind`, `TrayGesture`, `TrayBalloonIcon` | `backdrop="mica"` |
 
 A WinUI enum's members keep WinUI's names and case (`"Minimal"`, not
 `"minimal"`), as the metadata and the docs have them; the package's own sets
@@ -1214,7 +1214,7 @@ Not observed: the properties of `FrameworkElement` (`actualWidth`,
 makes though nothing in `src/` imports them yet: `FullScreenPresenter`,
 `CompactOverlayPresenter`, `DesktopAcrylicController`, `MicaController`,
 `SystemBackdropConfiguration`, the Windows App SDK `FileSavePicker`,
-`AppNotificationManager`, `AppNotification` and its builders, `AppInstance`,
+`AppNotificationManager`, `AppNotification` and its builders,
 `ConnectedAnimationService`, `InMemoryRandomAccessStream`, `DataWriter` and
 `MediaSource`
 
@@ -1365,12 +1365,13 @@ read and write the file with `node:fs`
 ```ts
 import { ensureSingleInstance, notify } from "winui-svelte/app";
 
-const single = await ensureSingleInstance({
+const single = ensureSingleInstance({
   key: "com.example.notes",
-  onRedirect: ({ commandLine }) => openFile(commandLine),
+  window: mainWindow,
+  onRedirect: ({ arguments: args }) => openFile(args[0]),
 });
 if (!single.isPrimary) {
-  exitApplication();   // its activation was handed to the first copy
+  exitApplication();   // its arguments were handed to the first copy
 }
 
 notify({
@@ -1386,38 +1387,43 @@ notify({
 
 An opt-in subpath: an app that does not import it does not bundle it
 
-- `ensureSingleInstance` is `AppInstance.FindOrRegisterForKey`: the first copy
-  to register the key is the primary and listens to `Activated`; a later copy
-  calls `RedirectActivationToAsync` with its own activation arguments and
-  resolves with `isPrimary: false`
-  `onRedirect` gets `kind`, `commandLine`
-  (when the activation has one) and the raw `data`
-  Call it before the first
-  window; it needs `initWindowsAppSdk`
-  Every Node-hosted app is `node.exe`, so
-  pick a key nobody else would
-  Measured from `node.exe` in a real session:
-  the later copy detects the first (`isPrimary: false`), its redirect completes
-  and it exits, but the first copy's `Activated` handler never runs, so
-  `onRedirect` is not called there
-  Treat the redirect as unavailable; the
-  single-instance check itself works
+- `ensureSingleInstance` is a named pipe per key and user
+  (`\\.\pipe\winui-svelte-<hash of the key and the user's SID>`), served
+  with Node's `net` from a worker thread, because the UI thread's own Node
+  loop never turns
+  The first copy to call it serves the pipe and is the primary; a later copy
+  sends one JSON line, `{ arguments, workingDirectory }`, and resolves with
+  `isPrimary: false`
+  `onRedirect` runs on the UI thread, after the primary's dispatcher timer
+  drains the worker's port, with the later copy's `arguments` (its
+  `process.argv` after the script) and `workingDirectory`
+  Pass `window` (a `WindowHandle`) to have it brought to the front first
+  It works unpackaged and from `node.exe`, with no Windows App SDK call
+  The primary must call it from `runWindow`'s `onStart` or later (it needs
+  the dispatcher queue); a later copy may call it at any time
+  In a worker thread `process.argv` holds only the script, so start the
+  worker with the `argv` option to pass the command line through
+  Security: the pipe is reachable by the current user only (the default
+  pipe permissions, the SID in the name, and Node's refusal of remote
+  clients); a message larger than 64 KiB is dropped, input that is not the
+  expected shape is ignored, and nothing received is ever run
+  The pipe goes with the process: there is nothing to clean up
+  Use a key no other app would, such as a reverse-domain name
 - `notify` is `AppNotificationBuilder` and `AppNotificationManager.Show`
   Unpackaged apps must register first: the first call does, with
   `displayName` and `iconPath` (both or neither), and listens for clicks with
   that call's `onInvoked`
   `appUserModelId` is the window's `appUserModelId`
   (`joinAppUserModel`): give both the same id
-- **What works from `node.exe` is not known.** Both are written to Microsoft's
-  documented unpackaged path and unit-tested on stand-ins; neither was run
-  against a real second process or a real toast, and the platform may refuse a
-  process with no package identity (no notification, or a click that cannot
-  start the app once it has exited)
-  `test/app.test.ts` starts a second copy
-  and reports what `notify` did; run it in a desktop session before relying on
-  either
-  With package identity (an MSIX or sparse package) both are the
-  supported case
+- **`notify` from `node.exe` is not known to work.** It is written to
+  Microsoft's documented unpackaged path and unit-tested on stand-ins, and the
+  platform may refuse a process with no package identity (no notification, or
+  a click that cannot start the app once it has exited)
+  `test/app.test.ts` reports what `notify` did; run it in a desktop session
+  before relying on it
+  With package identity (an MSIX or sparse package) it is the supported case
+  `ensureSingleInstance` needs no identity: `test/app.test.ts` starts a real
+  second copy and checks that the first hears its arguments
 
 ### System tray (`winui-svelte/tray`)
 
@@ -1553,8 +1559,7 @@ would show, and this one lives and dies with the WinUI window's process
 - **XAML's `x:Uid` does not apply**: components are Svelte, not XAML
 - **Package identity** (an MSIX, or a sparse package) is what unlocks the
   rest of Windows' app model: the per-package resource lookup above, toast
-  notifications that survive the app closing, and `AppInstance` redirection
-  by package
+  notifications that survive the app closing
   Nothing in this section needs it
 
 ### Planned, not in the package yet

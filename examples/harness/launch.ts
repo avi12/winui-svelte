@@ -67,6 +67,7 @@ const server = await startModuleServer({
   port: modules.port1
 });
 const worker = new Worker(new URL("worker.ts", import.meta.url), {
+  argv: process.argv.slice(2),
   workerData: {
     modules: modules.port2,
     link: link.port2,

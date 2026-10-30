@@ -1,105 +1,219 @@
-import type { Activation } from "./single-instance.ts";
+import type { Json } from "#src/messaging/json.js";
 import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 import { test } from "node:test";
+import { receiveMessageOnPort } from "node:worker_threads";
 
-// The single-instance and notification logic on stand-ins for the platform:
-// who is primary, what a redirect carries, when the app registers, and what
-// the notification holds. A real second process and a real toast are for
-// test/app.test.ts in a desktop session.
+// The single-instance and notification logic: who is primary, what a redirect
+// carries and what is refused, the pipe name, a real pipe between two openers,
+// when the app registers, and what the notification holds. A real second
+// process and a real toast are for test/app.test.ts.
 
 const { claimInstance } = await import("./single-instance.ts");
 const { argumentsOf, showNotification } = await import("./notify.ts");
+const { decodeRedirect, encodeRedirect, MAX_REDIRECT_BYTES } = await import("./redirect.ts");
+const { openPipe, pipeNameFor } = await import("./instance-pipe.ts");
+const { MemoryEnd } = await import("#src/state/transports/memory.js");
 
 function immediately(work: () => void) {
   work();
 }
 
-class FakeInstance {
-  redirects = 0;
-  private callback: ((activation: Activation) => void) | undefined;
+const ACTIVATION = {
+  arguments: ["open", "a.txt"],
+  workingDirectory: "C:\\work"
+};
 
-  readonly isCurrent: boolean;
+function fakeSource({ isPrimary }: { isPrimary: boolean }) {
+  const [server, client] = MemoryEnd.pair<Json>();
+  const handedOver: unknown[] = [];
+  const state = {
+    client,
+    handedOver,
+    isClosed: false
+  };
+  const source = {
+    claim({ activation }: { activation: unknown }) {
+      if (!isPrimary) {
+        state.handedOver.push(activation);
+        return { isPrimary: false } as const;
+      }
 
-  constructor(isCurrent: boolean) {
-    this.isCurrent = isCurrent;
-  }
-
-  get isListening() {
-    return this.callback !== undefined;
-  }
-
-  redirectOwnActivation() {
-    this.redirects += 1;
-    return Promise.resolve();
-  }
-
-  onActivated(callback: (activation: Activation) => void) {
-    this.callback = callback;
-    return () => {
-      this.callback = undefined;
-    };
-  }
-
-  raise(activation: Activation) {
-    this.callback?.(activation);
-  }
+      return {
+        isPrimary: true,
+        transport: server,
+        close() {
+          state.isClosed = true;
+        }
+      } as const;
+    }
+  };
+  return {
+    state,
+    source
+  };
 }
 
-test("the first copy is primary and hears the redirected activations until it releases", async () => {
-  const instance = new FakeInstance(true);
-  const heard: string[] = [];
-  const single = await claimInstance({
+function settle() {
+  return new Promise(resolve => setTimeout(resolve, 10));
+}
+
+test("the first copy is primary and hears what a later copy sends until it releases", async () => {
+  const { state, source } = fakeSource({ isPrimary: true });
+  const heard: Array<{ arguments: string[] }> = [];
+  let isWindowRaised = false;
+  const single = claimInstance({
     key: "app.test",
-    source: {
-      register: () => instance
-    },
+    source,
+    activation: ACTIVATION,
     runOnUiThread: immediately,
+    window: {
+      bringToFront() {
+        isWindowRaised = true;
+      }
+    },
     onRedirect(activation) {
-      heard.push(activation.commandLine ?? "");
+      heard.push(activation);
     }
   });
   assert.equal(single.isPrimary, true);
-  assert.equal(instance.redirects, 0, "the primary redirects nothing");
-  instance.raise({
-    kind: "Launch",
-    commandLine: "open a.txt",
-    data: null
-  });
-  assert.deepEqual(heard, ["open a.txt"]);
+  state.client.sendJson({ value: ACTIVATION });
+  await settle();
+  assert.deepEqual(heard, [ACTIVATION]);
+  assert.equal(isWindowRaised, true);
   single.release();
-  assert.equal(instance.isListening, false);
+  assert.equal(state.isClosed, true);
+  state.client.sendJson({ value: ACTIVATION });
+  await settle();
+  assert.equal(heard.length, 1, "nothing is heard after release");
 });
 
-test("a later copy hands its activation over and is not primary", async () => {
-  const instance = new FakeInstance(false);
-  const single = await claimInstance({
+test("malformed or foreign input is ignored and never reaches onRedirect", async () => {
+  const { state, source } = fakeSource({ isPrimary: true });
+  const heard: unknown[] = [];
+  claimInstance({
     key: "app.test",
-    source: {
-      register: () => instance
-    },
+    source,
+    activation: ACTIVATION,
+    runOnUiThread: immediately,
+    onRedirect: activation => heard.push(activation)
+  });
+  state.client.sendJson({
+    value: {
+      arguments: "rm -rf",
+      workingDirectory: 1
+    }
+  });
+  state.client.sendJson({
+    value: {
+      arguments: [1],
+      workingDirectory: "x"
+    }
+  });
+  state.client.sendJson({
+    arguments: ["a"],
+    workingDirectory: "x"
+  });
+  state.client.sendJson("text");
+  state.client.sendMalformed("not json");
+  await settle();
+  assert.deepEqual(heard, []);
+});
+
+test("a later copy hands its activation over and is not primary", () => {
+  const { state, source } = fakeSource({ isPrimary: false });
+  const single = claimInstance({
+    key: "app.test",
+    source,
+    activation: ACTIVATION,
     runOnUiThread: immediately,
     onRedirect() {
       assert.fail("a copy that redirects hears nothing");
     }
   });
   assert.equal(single.isPrimary, false);
-  assert.equal(instance.redirects, 1);
-  assert.equal(instance.isListening, false);
+  assert.deepEqual(state.handedOver, [ACTIVATION]);
 });
 
-test("an empty key is refused before the platform is asked", async () => {
-  await assert.rejects(
-    claimInstance({
+test("an empty key is refused before the link is asked", () => {
+  assert.throws(
+    () => claimInstance({
       key: "",
       source: {
-        register() {
+        claim() {
           assert.fail("not reached");
         }
       },
+      activation: ACTIVATION,
       runOnUiThread: immediately,
       onRedirect: () => undefined
     }), /non-empty key/u
   );
+});
+
+test("a redirect line reads back, and a wrong or oversized one is refused", () => {
+  assert.deepEqual(decodeRedirect(JSON.parse(encodeRedirect(ACTIVATION))), ACTIVATION);
+  assert.equal(decodeRedirect(null), undefined);
+  assert.equal(decodeRedirect({ arguments: [] }), undefined);
+  assert.throws(() => encodeRedirect({
+    arguments: ["x".repeat(MAX_REDIRECT_BYTES)],
+    workingDirectory: "C:\\"
+  }), /larger than/u);
+});
+
+test("the pipe name is per key and per user, and never holds either", () => {
+  const base = pipeNameFor({
+    key: "a",
+    sid: "S-1-5-21-1"
+  });
+  assert.ok(base.startsWith("\\\\.\\pipe\\winui-svelte-"));
+  assert.match(base.slice(-32), /^[0-9a-f]{32}$/u);
+  assert.notEqual(
+    base, pipeNameFor({
+      key: "b",
+      sid: "S-1-5-21-1"
+    })
+  );
+  assert.notEqual(
+    base, pipeNameFor({
+      key: "a",
+      sid: "S-1-5-21-2"
+    })
+  );
+  assert.equal(
+    base, pipeNameFor({
+      key: "a",
+      sid: "S-1-5-21-1"
+    })
+  );
+  assert.equal(base.includes("S-1-5"), false);
+});
+
+test("on a real pipe the first opener serves and a later one delivers its line", async () => {
+  const pipeName = pipeNameFor({
+    key: `test.${randomUUID()}`,
+    sid: "S-1-5-test"
+  });
+  const first = openPipe({
+    pipeName,
+    payload: "{}"
+  });
+  assert.equal(first.isPrimary, true);
+
+  if (!first.isPrimary) {
+    return;
+  }
+
+  const second = openPipe({
+    pipeName,
+    payload: encodeRedirect(ACTIVATION)
+  });
+  assert.equal(second.isPrimary, false);
+  await settle();
+  await settle();
+  const received = receiveMessageOnPort(first.port)?.message;
+  first.close();
+  assert.deepEqual(received, { value: ACTIVATION });
 });
 
 function recordingSource() {

@@ -1159,7 +1159,7 @@ attachments, because a component prop would pull this code into every app
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
-| `winui-svelte/app` | single-instance handling and app notifications |
+| `winui-svelte/app` | single-instance handling over a named pipe, and app notifications |
 | `winui-svelte/data-transfer` | web-shaped drag and drop, `NativeFile`, pickers, the clipboard and the launcher (opt-in) |
 | `winui-svelte/media` | `bitmapImageOf`, `svgImageSourceOf`, `createMediaPlayer`: image sources and a windowless `MediaPlayer` (opt-in; [`API.md`](API.md#media-winui-sveltemedia)) |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |

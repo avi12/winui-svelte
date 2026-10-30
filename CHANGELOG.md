@@ -18,7 +18,9 @@ project adheres to [Semantic Versioning](https://semver.org/)
   needed
 - Window: `runWindow`, `createWindow`, window chrome, backdrops, pickers,
   timers and live system settings
-- App: single-instance handling and app notifications (`winui-svelte/app`)
+- App: single-instance handling over a per-user named pipe, so a later copy's
+  arguments and working directory reach the first copy even from `node.exe`,
+  and app notifications (`winui-svelte/app`)
 - Tray: a notification-area icon (`winui-svelte/tray`): `TrayIcon`,
   `createTrayIcon`, click, double click, middle click and right click with the
   pointer's position, balloons, a light and dark taskbar icon, `guid`, and

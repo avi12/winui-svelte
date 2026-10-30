@@ -19,14 +19,14 @@
   const settings = systemSettings();
   let isPrimary: boolean | undefined = $state();
   let redirects = $state(0);
-  let lastCommandLine = $state("");
+  let lastArguments = $state("");
 
-  async function claim() {
-    const single = await ensureSingleInstance({
+  function claim() {
+    const single = ensureSingleInstance({
       key: host.options["key"] ?? DEFAULT_KEY,
       onRedirect(activation) {
         redirects += 1;
-        lastCommandLine = activation.commandLine ?? "";
+        lastArguments = activation.arguments.join(" ");
       }
     });
     isPrimary = single.isPrimary;
@@ -66,7 +66,7 @@
       kind: "stats",
       isPrimary,
       redirects,
-      lastCommandLine,
+      lastArguments,
       isHighContrast: settings.isHighContrast
     });
   }
@@ -93,7 +93,7 @@
 >
   <StackPanel>
     <TextBlock>Primary copy: {isPrimary}</TextBlock>
-    <TextBlock>Other copies redirected here: {redirects} {lastCommandLine}</TextBlock>
+    <TextBlock>Other copies redirected here: {redirects} {lastArguments}</TextBlock>
     <TextBlock>High contrast: {settings.isHighContrast}</TextBlock>
   </StackPanel>
 </Window>
