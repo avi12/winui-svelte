@@ -79,7 +79,9 @@ function createClock() {
   };
 }
 
-function mountFixture(overrides: Partial<Props> = {}) {
+function mountFixture({ blurs, ...overrides }: Partial<Props> & {
+  blurs?: Array<number | null>;
+} = {}) {
   const clock = createClock();
   const warnings: string[] = [];
   const dashes: number[][] = [];
@@ -89,6 +91,11 @@ function mountFixture(overrides: Partial<Props> = {}) {
     createDashes(lengths) {
       dashes.push(lengths);
       return lengths;
+    },
+    ...blurs === undefined ? {} : {
+      setBlur({ radius }) {
+        blurs.push(radius);
+      }
     }
   });
   const mounted = mountControl<Props>({
@@ -278,6 +285,21 @@ test("a property WinUI cannot animate (blur's filter) is named once and the rest
   assert.match(warnings.join(), /filter/u);
   assert.ok(blurring.opacities.some(opacity => opacity > 0 && opacity < 1), "the opacity of a blur still steps");
   assert.equal(blurring.opacity, 1);
+  finish();
+});
+
+test("a blur transition blurs the control through setBlur, and lets go of the blur at its end", () => {
+  const blurs: Array<number | null> = [];
+  const { clock, root, mounted, finish } = mountFixture({ blurs });
+  mounted.set({ isBlurring: true });
+  const [blurring] = panelsOf(root);
+  assert.ok(blurring);
+  clock.advance(FRAME * 3);
+  const radii = blurs.filter(radius => radius !== null);
+  assert.ok(radii.length > 0 && radii.every(radius => radius > 0), `the blur stepped: ${blurs.join()}`);
+  assert.ok((radii[0] ?? 0) > (radii.at(-1) ?? 0), "and shrinks as the element comes in");
+  clock.advance(PAST_THE_END);
+  assert.equal(blurs.at(-1), null, "and there is none at the end");
   finish();
 });
 

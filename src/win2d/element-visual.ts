@@ -7,6 +7,7 @@ import { resolveClipShape } from "#src/css/parse/clip-shapes.js";
 import type { ClipShape } from "#src/css/parse/clip-shapes.js";
 import { isNoEffect, NO_EFFECTS } from "#src/css/parse/visual-effects.js";
 import type { VisualEffects } from "#src/css/parse/visual-effects.js";
+import { releaseProjected } from "#winui/lifetime";
 import type { CompositionEffectBrush } from "#winui/microsoft/ui/composition/CompositionEffectBrush";
 import type { CompositionVisualSurface } from "#winui/microsoft/ui/composition/CompositionVisualSurface";
 import type { CompositionContainerVisual } from "#winui/microsoft/ui/composition/ContainerVisual";
@@ -374,6 +375,10 @@ class Controller implements ElementVisual {
         slot.container.children.remove(sprite);
         sprite.close();
         surface.close();
+        const hasParent = parent !== null;
+        if (hasParent) {
+          releaseProjected(parent);
+        }
       }
     };
     this.shown = shown;
@@ -485,16 +490,19 @@ class Controller implements ElementVisual {
       width,
       height
     });
-    const clipFor = (offset: number) => shape === null ? compositor.createInsetClip(
-      -UNCLIPPED_INSET, -UNCLIPPED_INSET, -UNCLIPPED_INSET, -UNCLIPPED_INSET
-    ) : createGeometricClip({
-      compositor,
-      shape,
-      offset: {
-        x: offset,
-        y: offset
-      }
-    });
+    function clipFor(offset: number) {
+      return shape === null ? compositor.createInsetClip(
+        -UNCLIPPED_INSET, -UNCLIPPED_INSET, -UNCLIPPED_INSET, -UNCLIPPED_INSET
+      ) : createGeometricClip({
+        compositor,
+        shape,
+        offset: {
+          x: offset,
+          y: offset
+        }
+      });
+    }
+
     const isElementClipped = shape !== null && shown === null;
     const shouldSetElementClip = isElementClipped || this.isElementClipSet;
     if (shouldSetElementClip) {

@@ -50,7 +50,7 @@ test("the translate, scale and rotate properties are read like their functions",
 test("a property or a value WinUI cannot take is named and the rest is kept", () => {
   const { pose, unsupported } = readKeyframe({
     opacity: 1,
-    filter: "blur(2px)",
+    filter: "grayscale(1)",
     transform: "skew(10deg)",
     overflow: "hidden",
     offset: 0.5,
@@ -60,6 +60,18 @@ test("a property or a value WinUI cannot take is named and the rest is kept", ()
   assert.deepEqual(unsupported, ["filter", "transform"]);
   assert.deepEqual(readKeyframe({ transform: "none" }).pose, {});
   assert.deepEqual(readKeyframe({ transform: "translate(NaNpx, 0px)" }).unsupported, ["transform"]);
+});
+
+test("filter: blur() is a blur in pixels, and none is no blur", () => {
+  assert.deepEqual(readKeyframe({ filter: "blur(2.5px)" }), {
+    pose: {
+      blur: 2.5
+    },
+    unsupported: []
+  });
+  assert.deepEqual(readKeyframe({ filter: "none" }).pose, { blur: 0 });
+  assert.deepEqual(readKeyframe({ filter: "blur(big)" }).unsupported, ["filter"]);
+  assert.deepEqual(readKeyframe({ filter: "blur(-1px)" }).unsupported, ["filter"]);
 });
 
 test("keyframes are spaced evenly and interpolated linearly", () => {

@@ -8,6 +8,8 @@ export { default as Canvas } from "./Canvas.svelte";
 export type { CanvasFrame, CanvasProps } from "./canvas-props.ts";
 export * from "./classes.ts";
 export { applyEffect, BACKDROP, createEffectBrush, effectSource, ELEMENT_SOURCE } from "./composition.ts";
+export { elementVisualOf } from "./element-visual.ts";
+export type { ElementVisual } from "./element-visual.ts";
 export type { Paint, TextOptions } from "./draw.ts";
 export {
   clear,

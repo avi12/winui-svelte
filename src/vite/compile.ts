@@ -39,11 +39,16 @@ export interface CompileOptions {
   cssRuntime?: string;
   /** The module that exports enableElementAnimation, as a component that uses a transition imports it. */
   animationRuntime?: string;
+  /** The module that exports enableElementEffects, as a component that uses the blur or draw transition imports it. */
+  effectsRuntime?: string;
 }
 
 const ELEMENT_ANIMATION_DIRECTIVES = new Set(["TransitionDirective", "AnimateDirective"]);
 const ELEMENT_ANIMATION_IMPORT = /\bfrom\s*["']svelte\/(?:transition|animate|motion)["']/u;
+const ELEMENT_EFFECTS_IMPORT = /import\s*\{[^}]*\b(?:blur|draw)\b[^}]*\}\s*from\s*["']svelte\/transition["']/u;
 const ELEMENT_ANIMATION_RUNTIME = "winui-svelte/element-animation";
+const ELEMENT_EFFECTS_RUNTIME = "winui-svelte/element-effects";
+const ELEMENT_EFFECTS_BINDING = "winuiEnableElementEffects";
 const ELEMENT_ANIMATION_BINDING = "winuiEnableElementAnimation";
 
 function hasDirective(root: unknown) {
@@ -71,17 +76,26 @@ function hasDirective(root: unknown) {
  * `transition:`, `in:`, `out:` or `animate:`, or imports
  * `svelte/transition`, `svelte/animate` or `svelte/motion`: Svelte's
  * transitions then run on WinUI controls, and an app that uses none never
- * bundles any of it. The call is idempotent, so every such module may make it.
+ * bundles any of it. A source that imports `blur` or `draw` of `svelte/transition`
+ * also turns on `winui-svelte/element-effects`, which blurs for real and
+ * measures a path. The calls are idempotent, so every such module may make them.
  *
  * @param options - The module's source and what it compiled to, whether it is a component,
  *   and the module that exports `enableElementAnimation`.
  * @returns The compiled module, with the registration appended when it needs one.
  */
-export function withElementAnimation({ source, code, isComponent, runtime = ELEMENT_ANIMATION_RUNTIME }: {
+export function withElementAnimation({
+  source,
+  code,
+  isComponent,
+  runtime = ELEMENT_ANIMATION_RUNTIME,
+  effectsRuntime = ELEMENT_EFFECTS_RUNTIME
+}: {
   source: string;
   code: string;
   isComponent: boolean;
   runtime?: string;
+  effectsRuntime?: string;
 }) {
   const isImported = ELEMENT_ANIMATION_IMPORT.test(source);
   const isNeeded = isImported || isComponent && hasDirective(
@@ -94,7 +108,9 @@ export function withElementAnimation({ source, code, isComponent, runtime = ELEM
   }
 
   const registration = `import { enableElementAnimation as ${ELEMENT_ANIMATION_BINDING} } from ${JSON.stringify(runtime)};\n${ELEMENT_ANIMATION_BINDING}();`;
-  return `${code}\n${registration}\n`;
+  const isBlurOrDraw = ELEMENT_EFFECTS_IMPORT.test(source);
+  const effects = isBlurOrDraw ? `\nimport { enableElementEffects as ${ELEMENT_EFFECTS_BINDING} } from ${JSON.stringify(effectsRuntime)};\n${ELEMENT_EFFECTS_BINDING}();` : "";
+  return `${code}\n${registration}${effects}\n`;
 }
 
 /** Whether a file is a component or a runes module. */
@@ -131,6 +147,9 @@ function compileSource({ filename, source, options }: {
         isComponent: false,
         ...options.animationRuntime && {
           runtime: options.animationRuntime
+        },
+        ...options.effectsRuntime && {
+          effectsRuntime: options.effectsRuntime
         }
       }),
       map: js.map
@@ -158,6 +177,9 @@ function compileSource({ filename, source, options }: {
       isComponent: true,
       ...options.animationRuntime && {
         runtime: options.animationRuntime
+      },
+      ...options.effectsRuntime && {
+        effectsRuntime: options.effectsRuntime
       }
     }),
     map: js.map

@@ -53,7 +53,8 @@ export const PoseField = {
   BORDER_RIGHT: "borderRight",
   BORDER_BOTTOM: "borderBottom",
   STROKE_DASH: "strokeDash",
-  STROKE_DASH_OFFSET: "strokeDashOffset"
+  STROKE_DASH_OFFSET: "strokeDashOffset",
+  BLUR: "blur"
 } as const;
 
 /** A name in `PoseField`. */
@@ -65,7 +66,8 @@ export type PoseValue = number | Vector;
 /**
  * The values of the fields a keyframe sets: opacity from 0 to 1, translation
  * and sizes in pixels, scale as factors, rotation in degrees, the origin of
- * scale and rotation as fractions of the size, the dashes as lengths in pixels.
+ * scale and rotation as fractions of the size, the dashes as lengths in pixels,
+ * the blur as a standard deviation in pixels.
  */
 export type Pose = Partial<Record<PoseField, PoseValue>>;
 
@@ -349,6 +351,21 @@ function dashOf(text: string) {
   } satisfies Pose : null;
 }
 
+const BLUR_FUNCTION = /^blur\((.*)\)$/iu;
+
+// `filter: blur(4px)` (what Svelte's blur writes) or `none`: the standard deviation of the blur, in pixels.
+function blurOf(text: string) {
+  const word = text.trim().toLowerCase();
+  const isNone = word === NO_TRANSFORM;
+  if (isNone) {
+    return { blur: 0 } satisfies Pose;
+  }
+
+  const radius = parseLength(BLUR_FUNCTION.exec(word)?.[1]?.trim() ?? "");
+  const isRadius = radius !== null && radius >= 0;
+  return isRadius ? { blur: radius } satisfies Pose : null;
+}
+
 const ORIGIN_CENTER = 0.5;
 const ORIGIN_KEYWORDS = new Map([
   ["left", 0],
@@ -390,6 +407,7 @@ const propertyReaders = new Map<string, (text: string) => Pose | null>([
   ["scale", text => scaleOf(splitWords(text))],
   ["rotate", text => rotationOf(splitWords(text))],
   ["transformOrigin", originOf],
+  ["filter", blurOf],
   ["strokeDasharray", dashOf],
   ["strokeDashoffset", lengthReader(PoseField.STROKE_DASH_OFFSET)],
   ["width", extentReader(PoseField.WIDTH)],
@@ -412,8 +430,8 @@ const propertyReaders = new Map<string, (text: string) => Pose | null>([
  * Reads a Web Animations keyframe into a pose of what WinUI animates.
  * `transform` (its `translate`, `scale` and `rotate` functions), `translate`,
  * `scale`, `rotate`, `transform-origin`, `opacity`, the size, the margin,
- * padding and border width of each side, and the stroke's dashes are read; any
- * other property (`filter`), and a value that cannot be read, is named in
+ * padding and border width of each side, the stroke's dashes and `filter: blur()`
+ * are read; any other property, and a value that cannot be read, is named in
  * `unsupported`.
  *
  * @param keyframe - One keyframe, as Svelte or Element.animate() gives it.

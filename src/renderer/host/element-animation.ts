@@ -66,6 +66,34 @@ export interface ElementAnimationOptions {
 
   /** Makes the value a shape's `strokeDashArray` takes from lengths; default: a `DoubleCollection`. */
   createDashes?: (lengths: number[]) => object;
+
+  /**
+   * Draws a control through a blur of that standard deviation, or with none for null: what a
+   * `filter: blur()` keyframe (Svelte's `blur` transition) asks. Default: the one
+   * `provideElementBlur` was given (`winui-svelte/element-effects`), else a blur only fades.
+   */
+  setBlur?: (input: {
+    control: object;
+    radius: number | null;
+  }) => void;
+}
+
+/** The function that draws a control through a blur, or with none. */
+export type BlurSetter = NonNullable<ElementAnimationOptions["setBlur"]>;
+
+interface EngineOptions extends Required<Omit<ElementAnimationOptions, "setBlur">> {
+  setBlur: BlurSetter | undefined;
+}
+
+// What the opt-in modules gave: the engine asks when it animates, so a module that loads after it still counts.
+const provided: { blur: BlurSetter | null } = { blur: null };
+
+/**
+ * Tells the animations how to draw a blur, which `winui-svelte/element-effects` does with
+ * Composition and Win2D: with it, `filter: blur()` keyframes (Svelte's `blur`) blur the control.
+ */
+export function provideElementBlur(setBlur: BlurSetter) {
+  provided.blur = setBlur;
 }
 
 interface Handle {
@@ -100,6 +128,7 @@ interface MotionNode {
 interface Target {
   readonly control: MotionControl;
   readonly createDashes: (lengths: number[]) => object;
+  readonly setBlur: BlurSetter;
 }
 
 // How a field is read from a control, and written back to it.
@@ -120,6 +149,7 @@ interface Layer {
 interface MotionState {
   readonly node: MotionNode;
   readonly createDashes: (lengths: number[]) => object;
+  readonly setBlur: BlurSetter;
   // In the order the animations were made: a later one wins a field.
   readonly layers: Layer[];
   // What the control held before the first animation of each field began.
@@ -256,6 +286,20 @@ const dashOffsetAccess = {
   }
 } satisfies FieldAccess;
 
+// A blur is drawn by the effects (winui-svelte/element-effects), not read from the control: it starts at none.
+const blurAccess = {
+  read: () => 0,
+  write({ target, value }) {
+    const isRadius = typeof value === "number";
+    if (isRadius) {
+      target.setBlur({
+        control: target.control,
+        radius: value > 0 ? value : null
+      });
+    }
+  }
+} satisfies FieldAccess;
+
 function capitalized(word: string) {
   return `${word.slice(0, 1).toUpperCase()}${word.slice(1)}`;
 }
@@ -281,6 +325,7 @@ const fieldAccesses = new Map<string, FieldAccess>([
   [PoseField.HEIGHT, numberAccess("height")],
   [PoseField.STROKE_DASH, dashAccess],
   [PoseField.STROKE_DASH_OFFSET, dashOffsetAccess],
+  [PoseField.BLUR, blurAccess],
   ...sideAccesses({
     property: "margin",
     prefix: "margin"
@@ -408,7 +453,8 @@ function render(state: MotionState) {
   writePose({
     target: {
       control,
-      createDashes: state.createDashes
+      createDashes: state.createDashes,
+      setBlur: state.setBlur
     },
     pose: shown
   });
@@ -471,9 +517,25 @@ function boxStyleOf(control: MotionControl) {
   return Object.fromEntries(BOX_STYLES.map(([name, property, side]) => [name, `${numberOf(read(read(control, property), side)) ?? 0}px`]));
 }
 
+// A reading with the blur taken out, and `filter` named unsupported when it had one.
+function withoutBlur(reading: ReturnType<typeof readKeyframe>) {
+  const isBlurred = PoseField.BLUR in reading.pose;
+  if (!isBlurred) {
+    return reading;
+  }
+
+  return {
+    pose: filterPose({
+      pose: reading.pose,
+      isKept: field => field !== PoseField.BLUR
+    }),
+    unsupported: [...reading.unsupported, "filter"]
+  };
+}
+
 // The keyframes' own time runs on the engine's clock; the engine steps what
 // is running on each frame, and stops the clock when nothing is.
-function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAnimationOptions>) {
+function createEngine({ clock, onFrame, warn, createDashes, setBlur }: EngineOptions) {
   const states = new WeakMap<object, MotionState>();
   const steps = new Set<(now: number) => void>();
   const frameCallbacks = new Map<number, (time: number) => void>();
@@ -533,6 +595,7 @@ function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAn
     const created: MotionState = {
       node,
       createDashes,
+      setBlur: input => (setBlur ?? provided.blur)?.(input),
       layers: [],
       base: {},
       baseCenter: null,
@@ -554,7 +617,7 @@ function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAn
       warned.add(property);
     }
 
-    warn(`${fresh.join(", ")} cannot be animated on a WinUI control (opacity, translate, scale, rotate, transform with translate, scale and rotate, the size, margin, padding and border of a side, and a shape's dashes can); ignored`);
+    warn(`${fresh.join(", ")} cannot be animated on a WinUI control (opacity, translate, scale, rotate, transform with translate, scale and rotate, the size, margin, padding and border of a side, a shape's dashes and, with winui-svelte/element-effects, filter: blur() can); ignored`);
   }
 
   function animate({ node, keyframes, options }: {
@@ -563,7 +626,11 @@ function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAn
     options: AnimateOptions;
   }) {
     const state = stateFor(node);
-    const readings = keyframes.map(readKeyframe);
+    const isBlurDrawn = (setBlur ?? provided.blur) !== null;
+    const readings = keyframes.map(keyframe => {
+      const reading = readKeyframe(keyframe);
+      return isBlurDrawn ? reading : withoutBlur(reading);
+    });
     warnOnce(readings.flatMap(reading => reading.unsupported));
     const poses = readings.map(reading => reading.pose);
     const { duration } = options;
@@ -892,7 +959,8 @@ export function enableElementAnimation(options?: ElementAnimationOptions) {
     clock: options?.clock ?? dispatcherClock,
     onFrame: options?.onFrame ?? flush,
     warn: options?.warn ?? (message => console.warn(message)),
-    createDashes: options?.createDashes ?? doubleCollection
+    createDashes: options?.createDashes ?? doubleCollection,
+    setBlur: options?.setBlur
   });
 
   const previousComputedStyle = read(globalThis, GET_COMPUTED_STYLE);
