@@ -37,7 +37,7 @@ function classEdit({ element, names }: {
   } satisfies Edit;
 }
 
-function applyEdits({ source, edits }: {
+export function applyEdits({ source, edits }: {
   source: string;
   edits: readonly Edit[];
 }) {

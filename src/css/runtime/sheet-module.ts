@@ -1,9 +1,10 @@
 import type { ResourceCatalogue } from "./resources.ts";
 import { resolveRelationalSelectors } from "#src/css/relational/relational.js";
+import { withInstancesAsElements, withScopedInstances } from "#src/css/relational/scope.js";
 import { LAZY_GROUPS } from "#src/css/translate/lazy-groups.js";
 import { errorsOf, formatDiagnostic, translateStyleSheet } from "#src/css/translate/translate.js";
 import type { Diagnostic, StyleSheetData } from "#src/css/translate/types.js";
-import type { CompileOptions } from "svelte/compiler";
+import type { CompileOptions, Warning } from "svelte/compiler";
 import { compile } from "svelte/compiler";
 
 /**
@@ -15,6 +16,8 @@ export const SHEET_SUFFIX = "-winui-css.js";
 const REGISTER_ALIAS = "registerWinuiSheet";
 const GROUPS_ALIAS = "registerWinuiGroups";
 const LAZY_ALIAS = "winuiLazyGroups";
+const UNUSED_SELECTOR = "css_unused_selector";
+const PROBE = "<i></i><style>i{color:red}</style>";
 
 /**
  * A `.svelte` file's `<style>` as the JavaScript module that registers its
@@ -57,6 +60,50 @@ export function cssHash({ filename, hash }: {
   hash(text: string): string;
 }) {
   return `svelte-${hash(filename.replaceAll("\\", "/"))}`;
+}
+
+let hashOfSvelte: ((text: string) => string) | null = null;
+
+/**
+ * The scoping class Svelte gives the elements of the component at `filename`
+ * (`svelte-` and a hash of the path). Svelte hands its hash function to
+ * `cssHash` only while it compiles, so one probe component fetches it.
+ */
+export function scopeClassOf(filename: string) {
+  if (hashOfSvelte === null) {
+    compile(PROBE, {
+      filename: "probe.svelte",
+      css: "external",
+      cssHash: ({ hash }) => {
+        hashOfSvelte = hash;
+        return "probe";
+      }
+    });
+  }
+
+  return cssHash({
+    filename,
+    hash: hashOfSvelte ?? String
+  });
+}
+
+/**
+ * The component's source as Svelte compiles it for the window: relational
+ * selectors resolved, and the scope class on every component instance, so the
+ * sheet's scoped selectors match the elements and instances the markup writes.
+ */
+export function scopedMarkup({ source, file, filename }: {
+  source: string;
+  file: string;
+  filename: string;
+}) {
+  return withScopedInstances({
+    source: resolveRelationalSelectors({
+      source,
+      file
+    }).source,
+    scope: scopeClassOf(filename)
+  });
 }
 
 /** A stylesheet with something WinUI cannot say; the message lists every error, one per line. */
@@ -107,6 +154,19 @@ function registrationCode({ sheet, runtimeModule }: {
   ].join("\n");
 }
 
+// Svelte's own report of a rule that matches no element or component instance.
+function unusedSelectors(warnings: readonly Warning[], file: string) {
+  return warnings.map(({ message, start }) => ({
+    severity: "warning" as const,
+    message,
+    file,
+    at: {
+      line: start?.line ?? 1,
+      column: (start?.column ?? 0) + 1
+    }
+  }));
+}
+
 /**
  * Compiles a component's `<style>` into its registration module; null when
  * the component has no `<style>`. Throws SheetError when the CSS has
@@ -122,13 +182,14 @@ export function compileSheetModule(input: SheetModuleInput) {
     throw new SheetError(relational.diagnostics);
   }
 
-  const result = compile(relational.source, {
+  const result = compile(withInstancesAsElements(relational.source), {
     runes: true,
     ...input.compilerOptions,
     filename: input.filename,
     generate: "client",
     css: "external",
-    cssHash
+    cssHash,
+    warningFilter: ({ code }) => code === UNUSED_SELECTOR
   });
   const css = result.css;
   const hasStyles = css !== null && css.code.trim() !== "";
@@ -154,6 +215,6 @@ export function compileSheetModule(input: SheetModuleInput) {
       runtimeModule: input.runtimeModule
     })}${hot}\n`,
     sheet: translation.sheet,
-    diagnostics: translation.diagnostics
+    diagnostics: [...unusedSelectors(result.warnings, input.sheetId), ...translation.diagnostics]
   };
 }
