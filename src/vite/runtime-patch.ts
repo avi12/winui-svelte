@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { z } from "zod";
 
 // Svelte's client runtime assumes a browser's events: one argument per
 // handler, and a root listener that routes the delegated ones (here every
@@ -7,12 +10,16 @@ import path from "node:path";
 // edits, in memory, wherever it is loaded (the Vite plugin, the Node loader).
 // A media query has no WinUI to ask, and svelte/motion makes one as it loads,
 // before the DOM is installed: it matches nothing, and nothing changes.
-// An edit whose anchor is gone fails loudly: it means a Svelte release the
-// package has not been checked against.
+// An anchor is matched by its tokens, whatever the whitespace between them
+// (Svelte re-indents a function when it wraps it in a block). One that is gone
+// fails loudly, naming the file and the Svelte release: it is a release the
+// package has not been checked against (`pnpm check:svelte-matrix`).
 
 interface Edit {
   readonly from: string;
   readonly to: string;
+  /** The edit is for releases that still have the anchor; a release without it needs none. */
+  readonly isOptional?: boolean;
 }
 
 interface FilePatch {
@@ -77,6 +84,16 @@ const patches: readonly FilePatch[] = [
     ]
   },
   {
+    file: "internal/client/dom/operations.js",
+    edits: [
+      {
+        from: "document.createElementNS(namespace ?? NAMESPACE_HTML, tag, options)",
+        to: "document.createElement(tag)",
+        isOptional: true
+      }
+    ]
+  },
+  {
     file: "internal/client/dom/elements/attributes.js",
     edits: [
       {
@@ -88,6 +105,28 @@ const patches: readonly FilePatch[] = [
 ];
 
 const RUNTIME_FOLDER = ["svelte", "src"].join("/");
+
+const REGEXP_SPECIAL = /[.*+?^${}()|[\]\\]/gu;
+const WHITESPACE_RUN = /\s+/u;
+
+function anchorOf(text: string) {
+  const tokens = text.trim().split(WHITESPACE_RUN).map(token => token.replaceAll(REGEXP_SPECIAL, String.raw`\$&`));
+  return new RegExp(tokens.join(String.raw`\s+`), "u");
+}
+
+function versionOf(filename: string) {
+  const location = filename.replace(/[?#].*$/u, "");
+  const file = location.startsWith("file:") ? fileURLToPath(location) : location;
+  const folder = file.slice(0, file.lastIndexOf(path.join("svelte", "src")) + "svelte".length);
+  try {
+    const manifest = z.object({
+      version: z.string()
+    }).parse(JSON.parse(readFileSync(path.join(folder, "package.json"), "utf8")));
+    return manifest.version;
+  } catch {
+    return "unknown";
+  }
+}
 
 function patchOf(filename: string) {
   const normalized = filename.replaceAll(path.sep, "/").replace(/[?#].*$/u, "");
@@ -119,14 +158,25 @@ export function patchSvelteRuntime({ filename, source }: {
   }
 
   let patched = source;
-  for (const { from, to } of patch.edits) {
-    const isAnchorMissing = !patched.includes(from);
-    if (isAnchorMissing) {
-      throw new Error(`winui-svelte cannot read this Svelte: ${patch.file} no longer has "${from}". Install a Svelte release within the peer range.`);
+  for (const { from, to, isOptional } of patch.edits) {
+    const anchor = anchorOf(from);
+    const isAnchorMissing = !anchor.test(patched);
+    const isSkipped = isAnchorMissing && isOptional;
+    if (isSkipped) {
+      continue;
     }
 
-    patched = patched.replace(from, () => to);
+    if (isAnchorMissing) {
+      throw new Error(`winui-svelte cannot read Svelte ${versionOf(filename)}: src/${patch.file} no longer has "${from.replaceAll(/\s+/gu, " ")}". This Svelte release is outside the range the package is checked against (see "Svelte versions" in CONTRIBUTING.md); install one inside the peer range, or add the release to the matrix.`);
+    }
+
+    patched = patched.replace(anchor, () => to);
   }
 
   return patched;
+}
+
+/** The files of Svelte's runtime (relative to its `src` folder) the package reads with edits. */
+export function patchedRuntimeFiles() {
+  return patches.map(({ file }) => file);
 }

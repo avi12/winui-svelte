@@ -63,7 +63,7 @@ written with it
 | OS | Windows 10 1809 (17763) or newer, Windows 11 |
 | Node | 24 or newer |
 | Windows App SDK runtime | 2.2, installed on the machine. A missing runtime makes `initWindowsAppSdk` throw `WindowsAppRuntimeMissing`; the package does not install it (your app ships the installer and offers it) |
-| Svelte | 5.56.7 or a later 5.56 release (the peer range is `~5.56.7`; the package edits three spots of Svelte's runtime and says so when a release no longer matches) |
+| Svelte | 5.51.1 to 5.57.3 (the peer range `5.51.1 - 5.57.3` is what `pnpm check:svelte-matrix` proves; the package edits a few spots of Svelte's runtime and says so, naming the file and the release, when one no longer matches) |
 | Vite | 8 (for the dev server and hot reload) |
 
 ## Install
@@ -962,9 +962,10 @@ Stated plainly, so nobody finds them by surprise:
   `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
   `window.systemBackdrop` reads null for them (the controller holds the
   material)
-- **Svelte is held to one minor.** The package reads three spots of Svelte's
-  runtime with edits, so the peer range is `~5.56.7` and widens only after a
-  release is checked
+- **Svelte is held to the releases checked.** The package reads a few spots of
+  Svelte's runtime with edits, so the peer range is the span of releases the
+  matrix (`pnpm check:svelte-matrix`) runs the tests against, and it widens
+  only after a release passes; 5.51.0 and older do not match an anchor
 - **Write an attribute on a raw element in kebab case** (`corner-radius="4"`)
   Svelte's compiler lowercases the names of static attributes, so
   `cornerRadius="4"` reaches the element as `cornerradius`

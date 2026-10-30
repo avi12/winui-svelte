@@ -295,7 +295,7 @@ function startModuleServer(options: {
 function createWindowModuleRunner(port: MessagePort): { runner: ModuleRunner; receive(): void };
 ```
 
-Svelte is a published release (peer range `~5.56.7`), compiled with its own
+Svelte is a published release (peer range `5.51.1 - 5.57.3`), compiled with its own
 compiler and run on its own client runtime
 The package owns the rest: the
 tree's nodes are shaped like DOM nodes (`src/renderer/tree/dom.ts`), and
@@ -303,12 +303,13 @@ tree's nodes are shaped like DOM nodes (`src/renderer/tree/dom.ts`), and
 `Node`, `Element`, `Text`, `Comment` and `DocumentFragment` the runtime reads
 A component's static markup is parsed once into inert nodes and cloned into
 the tree
-Three spots of the runtime are read with edits (`runtime-patch.ts`,
+A few spots of the runtime are read with edits (`runtime-patch.ts`,
 applied by the plugin and by `svelteHooks()`): a handler gets all of WinUI's
-arguments (sender and args), delegated events listen on their own control, and
-the root listener is off
-An edit whose anchor is missing throws, naming the
-file: it means a Svelte release outside the peer range
+arguments (sender and args), delegated events listen on their own control, the
+root listener is off, and an element is made without a namespace
+An anchor is matched by its tokens, whatever the whitespace between them
+An edit whose anchor is missing throws, naming the file and the Svelte
+release: it means a release outside the peer range
 
 Compile errors: a `.svelte` file that does not compile is printed on the host
 process's stderr as `file:line:column: message [code]` and its code frame (at
