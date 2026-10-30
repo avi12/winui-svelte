@@ -202,6 +202,14 @@
   host.onCommand(command => commands.get(String(command["cmd"]))?.(command));
 </script>
 
+{#snippet failedView(error: unknown, reset: () => void)}
+  <TextBlock automationId="boundary">failed {describe(error)}</TextBlock>
+  <Button
+    automationId="boundary-reset" onClick={() => {
+      reset();
+    }}>reset</Button>
+{/snippet}
+
 {#snippet label(value: Word)}
   <TextBlock automationId="snippet">snippet {value}</TextBlock>
 {/snippet}
@@ -300,17 +308,10 @@
       {@attach keep("array")}
     >array</text-block>
     <svelte:element this={tag} {@attach keep("dynamic")}>dynamic</svelte:element>
-    <svelte:boundary>
+    <svelte:boundary failed={failedView}>
       {#key isBombArmed}
         <Bomb isArmed={isBombArmed} />
       {/key}
-      {#snippet failed(error: unknown, reset: () => void)}
-        <TextBlock automationId="boundary">failed {describe(error)}</TextBlock>
-        <Button
-          automationId="boundary-reset" onClick={() => {
-            reset();
-          }}>reset</Button>
-      {/snippet}
     </svelte:boundary>
     {#if isLifecycleShown}
       <Lifecycle />

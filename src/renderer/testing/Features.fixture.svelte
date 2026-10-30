@@ -92,15 +92,15 @@
   {#if hasChild}
     <Child />
   {/if}
-  <svelte:boundary>
+  {#snippet failedView(_: unknown)}
+    <text-block>failed</text-block>
+  {/snippet}
+  <svelte:boundary failed={failedView}>
     {#if isHot && count > 100}
       {(() => {
         throw new Error("boom");
       })()}
     {/if}
     <text-block>ok</text-block>
-    {#snippet failed(_: unknown)}
-      <text-block>failed</text-block>
-    {/snippet}
   </svelte:boundary>
 </stack-panel>
