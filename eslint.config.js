@@ -16,6 +16,7 @@ import importNewlines from "eslint-plugin-import-newlines";
 import jsdoc from "eslint-plugin-jsdoc";
 import perfectionist from "eslint-plugin-perfectionist";
 import svelteEslint from "eslint-plugin-svelte";
+import unusedImports from "eslint-plugin-unused-imports";
 import { globalIgnores } from "eslint/config";
 import globals from "globals";
 import svelteParser from "svelte-eslint-parser";
@@ -58,6 +59,9 @@ const platformApiFiles = [
 // (.oxlintrc.json) - ESLint only carries what oxlint cannot: formatting,
 // selector bans and the local custom rules
 const tsStyleRules = {
+  // Only the auto-removal of dead imports lives here: oxlint reports unused
+  // variables, but its plain --fix does not remove an import.
+  "unused-imports/no-unused-imports": "error",
   // oxlint bans it in .ts; this carries the ban into .svelte, which oxlint
   // does not read.
   "@typescript-eslint/no-explicit-any": "error",
@@ -268,6 +272,7 @@ const sharedPlugins = {
   "@stylistic": stylistic,
   "@typescript-eslint": typescriptEslint.plugin,
   "import-newlines": importNewlines,
+  "unused-imports": unusedImports,
   jsdoc,
   perfectionist,
   local: {
