@@ -1,3 +1,4 @@
+import AccessibilityPage from "./pages/AccessibilityPage.svelte";
 import AnimationPage from "./pages/AnimationPage.svelte";
 import CssLayoutPage from "./pages/CssLayoutPage.svelte";
 import DataPage from "./pages/DataPage.svelte";
@@ -49,6 +50,11 @@ export const GALLERY_PAGES: readonly GalleryPage[] = [
     key: "overlays",
     title: "Overlays",
     page: OverlaysPage
+  },
+  {
+    key: "accessibility",
+    title: "Accessibility and theming",
+    page: AccessibilityPage
   },
   {
     key: "theming",

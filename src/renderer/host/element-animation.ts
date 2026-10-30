@@ -3,9 +3,11 @@ import { poseAt, PoseField, readKeyframe, touchedFields } from "./keyframes.ts";
 import { isRecord, read, write } from "./reflect.ts";
 import { shapeLength } from "./shape-length.ts";
 import { doubleCollection } from "./values.ts";
+import { MOTION_ALWAYS_CLASS } from "#src/motion.js";
 import type { NativeValue } from "#src/native-value.js";
 import { ElementNode } from "#src/renderer/tree/dom.js";
 import { flush } from "#src/scheduling.js";
+import { systemSettingsStore } from "#src/window/settings-store.js";
 import { startTimer } from "#src/window/timers.js";
 
 // The Web Animations a stock Svelte asks its elements for, on WinUI's
@@ -63,6 +65,13 @@ export interface ElementAnimationOptions {
 
   /** Hears of the keyframe properties WinUI cannot animate, once for each; default: console.warn. */
   warn?: (message: string) => void;
+
+  /**
+   * Whether the user asked for reduced motion, which makes every animation of
+   * an element without the `winui-motion-always` class skip to its end; default:
+   * Windows' animation effects are off.
+   */
+  isMotionReduced?: () => boolean;
 
   /** Makes the value a shape's `strokeDashArray` takes from lengths; default: a `DoubleCollection`. */
   createDashes?: (lengths: number[]) => object;
@@ -135,6 +144,20 @@ function isMotionControl(value: NativeValue): value is MotionControl {
 
 function isMotionNode(value: NativeValue): value is MotionNode {
   return isRecord(value) && isRecord(read(value, "native"));
+}
+
+function keepsMotion(node: MotionNode) {
+  const classes = read(node, "className");
+  return typeof classes === "string" && classes.split(" ").includes(MOTION_ALWAYS_CLASS);
+}
+
+function isMotionReducedBySystem() {
+  // No settings (off the UI thread, or no Windows) leaves the motion as asked.
+  try {
+    return !systemSettingsStore().source.animationsEnabled;
+  } catch {
+    return false;
+  }
 }
 
 function isCallable(value: NativeValue): value is (...values: NativeValue[]) => NativeValue {
@@ -473,7 +496,7 @@ function boxStyleOf(control: MotionControl) {
 
 // The keyframes' own time runs on the engine's clock; the engine steps what
 // is running on each frame, and stops the clock when nothing is.
-function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAnimationOptions>) {
+function createEngine({ clock, onFrame, warn, createDashes, isMotionReduced }: Required<ElementAnimationOptions>) {
   const states = new WeakMap<object, MotionState>();
   const steps = new Set<(now: number) => void>();
   const frameCallbacks = new Map<number, (time: number) => void>();
@@ -566,7 +589,8 @@ function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAn
     const readings = keyframes.map(readKeyframe);
     warnOnce(readings.flatMap(reading => reading.unsupported));
     const poses = readings.map(reading => reading.pose);
-    const { duration } = options;
+    const isSkipped = isMotionReduced() && !keepsMotion(node);
+    const duration = isSkipped ? 0 : options.duration;
     const isKept = keptFills.has(options.fill);
     let playState: PlayState = PlayState.IDLE;
     let startedAt = 0;
@@ -892,7 +916,8 @@ export function enableElementAnimation(options?: ElementAnimationOptions) {
     clock: options?.clock ?? dispatcherClock,
     onFrame: options?.onFrame ?? flush,
     warn: options?.warn ?? (message => console.warn(message)),
-    createDashes: options?.createDashes ?? doubleCollection
+    createDashes: options?.createDashes ?? doubleCollection,
+    isMotionReduced: options?.isMotionReduced ?? isMotionReducedBySystem
   });
 
   const previousComputedStyle = read(globalThis, GET_COMPUTED_STYLE);

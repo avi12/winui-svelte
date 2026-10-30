@@ -918,6 +918,29 @@ The animation moves the control's `Opacity`, `Translation`, `Scale`,
 See
 [API.md](API.md) for the details and what WinUI cannot do
 
+## Accessibility and theming
+
+The library follows the user's Windows settings with no setup
+The theme is the system's (a window's `theme` is `system` unless you say `light`
+or `dark`), high contrast applies WinUI's contrast themes and system colors,
+and reduced motion switches off CSS transitions and animations and Svelte's
+transitions
+In a stylesheet the web's media queries read these settings:
+
+```css
+@media (prefers-color-scheme: dark) { .card { background-color: #202020 } }
+@media (forced-colors: active) { .card { background-color: Canvas; color: CanvasText } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none } }
+@media (prefers-reduced-transparency: reduce) { .panel { background-color: Canvas } }
+```
+
+and in script `mediaQuery("(prefers-reduced-motion: reduce)").matches` is a
+reactive boolean, `systemSettings()` has `isDarkTheme`, `isHighContrast`,
+`isAnimationEnabled`, `isTransparencyEnabled` and `textScaleFactor`, and
+`installMatchMedia()` gives libraries the web's `matchMedia`
+See [API.md](API.md) and [src/css/API.md](src/css/API.md) for every media
+feature and what each one is answered from
+
 ## State
 
 Svelte's own state tools work unchanged (runes, context, `SvelteMap`, stores)
@@ -950,7 +973,7 @@ protocol and the tests
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
-| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
+| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/queries`, `/css/environment`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, media preferences and display features, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/preprocess`, `winui-svelte/stylelint`, `winui-svelte/vscode-css-data.json` | the editor side of the CSS: a Svelte preprocessor, a stylelint rule and VS Code custom data, all from the same validator and tables, so the editor, the linter and the build say the same thing ([`src/css/API.md`](src/css/API.md#diagnostics-in-the-editor-the-linter-and-the-build)) |
 

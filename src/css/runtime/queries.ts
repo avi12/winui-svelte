@@ -1,5 +1,7 @@
 import { ContainerWatch } from "./containers.ts";
+import type { ElementEnvironment } from "./environment.ts";
 import type { CssNative } from "./runtime.ts";
+import { environmentOf } from "./runtime.ts";
 import { mediaMatches } from "#src/css/parse/media.js";
 import type { MediaCondition, Viewport } from "#src/css/parse/media.js";
 import type { Rule } from "#src/css/translate/types.js";
@@ -18,6 +20,7 @@ export class ElementQueries {
   private unwatchViewport: (() => void) | null = null;
   private unwatchSettle: (() => void) | null = null;
   private containers: ContainerWatch | null = null;
+  private environment: ElementEnvironment | null = null;
 
   /** Whether the element has loaded, which ends the styling its `@starting-style` rules give. */
   isSettled = false;
@@ -38,15 +41,23 @@ export class ElementQueries {
     const queries = candidates.flatMap(rule => rule.media ?? []);
     this.syncViewport(queries.some(query => query.container === undefined));
     this.syncContainers(new Set(queries.flatMap(query => query.container ?? [])));
+    this.syncEnvironment(new Set(queries.flatMap(query => query.container === undefined ? query.query ?? [] : [])));
   }
 
   /** Whether the rule's query holds now. */
   isMediaActive(rule: Rule) {
     const { media } = rule;
-    return media === undefined || mediaMatches({
+    const isUnconditional = media === undefined;
+    if (isUnconditional) {
+      return true;
+    }
+
+    const isSizeMatching = mediaMatches({
       media,
       viewport: this.viewportFor(media)
     });
+    const { query } = media;
+    return isSizeMatching && (query === undefined || this.environment?.matches(query) === true);
   }
 
   /** Stops listening. */
@@ -54,6 +65,7 @@ export class ElementQueries {
     this.unwatchViewport?.();
     this.unwatchSettle?.();
     this.containers?.dispose();
+    this.environment?.dispose();
   }
 
   // The @starting-style rules style the element until it is loaded: the second style
@@ -91,6 +103,22 @@ export class ElementQueries {
   private viewportFor(media: MediaCondition) {
     const { container } = media;
     return container === undefined ? this.viewport : this.containers?.sizeOf(container) ?? null;
+  }
+
+  // Listens to what the @media terms beyond the size ask about.
+  private syncEnvironment(queries: ReadonlySet<string>) {
+    const isUnneeded = queries.size === 0 && this.environment === null;
+    if (isUnneeded) {
+      return;
+    }
+
+    this.environment ??= environmentOf({
+      control: this.control,
+      native: this.native,
+      refresh: this.refresh,
+      viewport: () => this.viewport
+    });
+    this.environment?.sync(queries);
   }
 
   // Listens to the containers the matching @container rules ask about.

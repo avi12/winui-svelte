@@ -29,7 +29,13 @@ import {
   wrapKeywords
 } from "./text-properties.ts";
 import type { Declaration } from "./types.ts";
-import { hitTesting, opacity, visibilities, zIndex } from "./visual-properties.ts";
+import {
+  colorSchemes,
+  hitTesting,
+  opacity,
+  visibilities,
+  zIndex
+} from "./visual-properties.ts";
 import { NOT_A_NUMBER, Reader, UNBOUNDED } from "#src/css/parse/reader.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 
@@ -248,6 +254,11 @@ export const propertyGroups: readonly PropertyGroup[] = [
     member: "pointer-events",
     property: "IsHitTestVisible",
     choices: hitTesting
+  }),
+  keywordProperty({
+    member: "color-scheme",
+    property: "RequestedTheme",
+    choices: colorSchemes
   }),
   simple({
     member: "z-index",

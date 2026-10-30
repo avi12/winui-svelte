@@ -138,6 +138,7 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
 | `winui-svelte/css/position` | `position`, `top`, `left`, `right`, `bottom`, `inset` | Position |
 | `winui-svelte/css/queries` | `@media`, `@container` and `@starting-style` rules (a group with no property of its own) | Responsive rules |
+| `winui-svelte/css/environment` | the `@media` features beyond the size (preferences, display, input; a group with no property of its own) | Media features |
 | `winui-svelte/css/compat` | `text-transform`, `word-break`, `user-select`, `object-fit`, `line-clamp`, `box-sizing`, `cursor` (ignored) | Unsupported |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |
 
@@ -250,7 +251,8 @@ CSS system color (`Canvas`, `CanvasText`, `ButtonFace`, `ButtonText`, `GrayText`
 `Highlight`, `HighlightText`, `LinkText`) or `var(--system-color-...-color)`, any
 of WinUI's `SystemColor*Color` resources: they become a `{ThemeResource}`
 reference, which WinUI keeps current as the user changes the contrast theme
-A style rule in these blocks is an error, as in a dark one
+A style rule in these blocks is not a dictionary entry: it applies while the
+query holds, as any other `@media` rule does (see Media features)
 
 As soon as a sheet declares any scheme, the dictionaries are the explicit
 `Light`, `Dark` and `HighContrast` that Microsoft's theme resources guidance
@@ -634,10 +636,122 @@ whose rules is under an `@media` listens to nothing
 Only the properties a Style can hold change with the size; a grid's tracks are a
 write and swap like the rest
 Not supported, with the build error saying why:
-`orientation`, `or` and `not`, a % bound, a `:root` custom property under
-a size query, and a query inside another `@media`
+a % bound, a `:root` custom property under a query (other than a scheme), and a
+query inside another `@media`
 `CssNative` gains
 `viewportOf` and `watchViewport` for it
+
+## Media features: preferences, display and input
+
+Any other `@media` query is read by one evaluator (`src/css/media/query.ts`)
+that `matchMedia` and `mediaQuery` share with the stylesheet: media types
+(`all` and `screen` hold, `print`, `speech`, `tty` and `tv` parse and never hold),
+`not`, `only`, `and`, `or`, comma lists, parentheses, the `min-` and `max-` forms,
+the range syntax (`(400px <= width <= 700px)`), the boolean form
+(`(prefers-reduced-motion)`), and the units px, em, rem, dppx, x, dpi, dpcm and
+ratios
+A feature the table does not know is a build error that names it, and
+inside `matchMedia` a query that does not parse never holds
+A rule keeps the query text in `media.query` and the element listens only to
+what its matching rules ask about: a rule with no preference query listens to
+no setting, one with `prefers-reduced-motion` listens to `UISettings` and
+restyles live when the user flips the setting
+The module `winui-svelte/css/environment` (imported by a sheet that has such a
+rule, so an app that has none carries none of it) gives the runtime the answers
+
+Every feature is one row of `MEDIA_FEATURES` (`src/css/media/features.ts`):
+what it measures, where the answer comes from, and which change can flip it
+Adding one is adding a row, and a test per row keeps the table honest
+Where the answer is not read from Windows the table says so, and an app that
+knows better supplies it (`installMatchMedia({ inputs: { devices: ... } })`)
+
+| Feature | Kind | Answered from |
+|---|---|---|
+| `width` | range | the window's client area in a stylesheet; in matchMedia the size the app supplies (the primary monitor otherwise) |
+| `height` | range | as width |
+| `aspect-ratio` | range | as width |
+| `orientation` | keyword | as width |
+| `device-width` | range | the primary monitor (DisplayArea), in device pixels |
+| `device-height` | range | as device-width |
+| `device-aspect-ratio` | range | as device-width |
+| `resolution` | range | the element's XamlRoot.RasterizationScale in a stylesheet; in matchMedia the scale the app supplies (1 otherwise); dppx, x, dpi and dpcm |
+| `-webkit-device-pixel-ratio` | range | as resolution |
+| `display-mode` | keyword | the presenter the app supplies (standalone otherwise); fullscreen and picture-in-picture for a full-screen or compact-overlay window |
+| `color` | range | always 8: Windows composes in 8 bits per channel or wider |
+| `color-index` | range | always 0: no display uses an indexed palette |
+| `monochrome` | range | always 0: the display is a color one |
+| `grid` | range | always 0: a window is a bitmap display |
+| `color-gamut` | keyword | srgb, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet |
+| `dynamic-range`, `video-dynamic-range` | keyword | standard, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet |
+| `hover`, `any-hover` | keyword | read from GetSystemMetrics (mouse present, digitizer touch and pen bits), asked again every two seconds while a query listens; hover is none for touch only |
+| `pointer`, `any-pointer` | keyword | read from GetSystemMetrics: fine for a mouse or pen, coarse when touch is the only pointer |
+| `scan` | keyword | always progressive |
+| `update` | keyword | always fast |
+| `overflow-block`, `overflow-inline` | keyword | always scroll: a window has no pages |
+| `scripting` | keyword | always enabled |
+| `prefers-color-scheme` | keyword | the element's ActualTheme in a stylesheet (it follows RequestedTheme and the system); UISettings' foreground color in matchMedia |
+| `prefers-contrast` | keyword | AccessibilitySettings.HighContrast: more while a contrast theme is on, else no-preference (less and custom never match) |
+| `prefers-reduced-motion` | keyword | UISettings.AnimationsEnabled |
+| `prefers-reduced-transparency` | keyword | UISettings.AdvancedEffectsEnabled (Transparency effects) |
+| `forced-colors` | keyword | AccessibilitySettings.HighContrast |
+| `prefers-reduced-data` | keyword | no-preference, or what the app supplies: Windows.Networking.Connectivity.NetworkInformation is not in the generated bindings (only ConnectionCost is) |
+| `inverted-colors` | keyword | always none: Windows tells apps of no color inversion |
+| `light-level` | keyword | always normal: no ambient light sensor is read |
+| `nav-controls` | keyword | always back |
+| `horizontal-viewport-segments`, `vertical-viewport-segments` | range | always 1: a window is one segment |
+| `device-posture` | keyword | always continuous: no fold is reported |
+
+`env(safe-area-inset-top|right|bottom|left)` is `0px` (a window has no notch)
+`env(titlebar-area-x|y|width|height)` is an error: the custom title bar's
+rectangle is known only at run time and WinUI has no run-time lengths (see
+Lengths that depend on the layout); read `AppWindow.TitleBar` in script instead
+
+### Preferences, in short
+
+| Need | Write |
+|---|---|
+| Dark theme | `@media (prefers-color-scheme: dark)` on a rule, `light-dark(a, b)` or the same query around a custom property of `:root` |
+| High contrast | `@media (forced-colors: active)` (or `(prefers-contrast: more)`) with system colors `Canvas`, `CanvasText`, `ButtonFace`, `ButtonText`, `GrayText`, `Highlight`, `HighlightText`, `LinkText` or `var(--system-color-...-color)` |
+| Reduced motion | automatic (below), or `@media (prefers-reduced-motion: reduce)` |
+| Reduced transparency | `@media (prefers-reduced-transparency: reduce)` with an opaque `background-color` |
+| Theme of one subtree | `color-scheme: light`, `dark` or `normal` (RequestedTheme) |
+
+`forced-color-adjust` has no WinUI meaning (WinUI's contrast theme recolors
+controls through theme resources an element cannot opt out of) and is a build
+error that says what to write instead
+
+### Dark values follow the element's theme
+
+A declaration that reads a custom property with a dark value, or `light-dark()`,
+is written out for both themes: the rule keeps the light value and a copy under
+`prefers-color-scheme: dark` has the dark one
+WinUI does not read a Style's theme resource again when the theme of the element
+changes (a `RequestedTheme` above it), while a rule under a media query
+restyles live from `ActualThemeChanged`, so the color follows the theme as it
+changes
+The dictionaries stay for the controls' own templates
+
+### Testing against fake settings
+
+When the environment variable `WINUI_SVELTE_FAKE_SETTINGS` names a JSON file
+(`isDark`, `isHighContrast`, `isAnimationEnabled`, `isTransparencyEnabled`
+booleans and `textScaleFactor`, each optional), the settings store reads that file
+instead of Windows' settings and notices a rewrite within a tenth of a second
+Nothing is read when the variable is not set; `test/media.test.ts` drives a real
+window through it
+
+### Reduced motion is automatic
+
+A rule with `transition` or `animation` is followed, at build time, by a copy
+under `@media (prefers-reduced-motion: reduce)` that sets `transition: none` and
+`animation: none`, so the user's Windows animation setting is honoured with no
+work from the author (the copy is an ordinary rule: a later rule of yours wins
+over it, and a rule you wrote for `prefers-reduced-motion` yourself gets no copy)
+An element with the class `winui-motion-always` keeps its motion
+Svelte's `transition:`, `in:`, `out:` and `animate:` follow the same setting
+(duration 0 on any element without that class; `enableElementAnimation` takes
+`isMotionReduced` to ask differently)
+WinUI decides for its own theme animations, and has no property to force it
 
 ## Nesting
 

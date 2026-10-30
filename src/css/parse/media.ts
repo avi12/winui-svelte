@@ -16,6 +16,12 @@ export interface MediaCondition {
    * container of any name), whose size the bounds are about. Absent for `@media`.
    */
   container?: string;
+  /**
+   * The rest of an `@media` query, text the one evaluator (media/query.ts)
+   * reads: `(prefers-reduced-motion: reduce)`. The bounds above are the size
+   * terms of a query that has only those.
+   */
+  query?: string;
 }
 
 /** The size of the window's content, in px. */

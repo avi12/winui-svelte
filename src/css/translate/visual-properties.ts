@@ -16,6 +16,13 @@ export const hitTesting = enumMap([
   ["all", "True"]
 ]);
 
+/** `color-scheme`, as RequestedTheme: the element and its children draw in that theme; `normal` follows the system. */
+export const colorSchemes = enumMap([
+  ["normal", "Default"],
+  ["light", "Light"],
+  ["dark", "Dark"]
+]);
+
 /** `opacity`: a number or a percentage from 0 to 1. */
 export function opacity(reader: Reader) {
   const word = reader.single();

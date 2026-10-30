@@ -26,7 +26,7 @@ const patches: readonly FilePatch[] = [
     edits: [
       {
         from: "const q = window.matchMedia(final_query);",
-        to: "const q = globalThis.window?.matchMedia?.(final_query) ?? { matches: false, addEventListener() {}, removeEventListener() {} };"
+        to: "const q = (globalThis.matchMedia ?? globalThis.window?.matchMedia)?.(final_query) ?? { matches: false, addEventListener() {}, removeEventListener() {} };"
       }
     ]
   },

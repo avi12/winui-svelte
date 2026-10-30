@@ -1,3 +1,4 @@
+import type { ElementEnvironment } from "./environment.ts";
 import { parseInlineStyle } from "./inline.ts";
 import type { ElementQueries } from "./queries.ts";
 import type { Viewport } from "#src/css/parse/media.js";
@@ -27,6 +28,24 @@ let createQueries: ((input: ConstructorParameters<typeof ElementQueries>[0]) => 
  */
 export function provideQueries(factory: NonNullable<typeof createQueries>) {
   createQueries = factory;
+}
+
+type EnvironmentInput = Omit<ConstructorParameters<typeof ElementEnvironment>[0], "store">;
+
+let createEnvironment: ((input: EnvironmentInput) => ElementEnvironment) | null = null;
+
+/**
+ * Gives the runtime the `@media` terms beyond the window's size. The
+ * `environment` property group calls it, so a window whose sheets ask none
+ * carries none of it.
+ */
+export function provideEnvironment(factory: NonNullable<typeof createEnvironment>) {
+  createEnvironment = factory;
+}
+
+/** Makes the environment of one element, once the sheets that need it have been loaded; null before. */
+export function environmentOf(input: EnvironmentInput) {
+  return createEnvironment?.(input) ?? null;
 }
 
 /**

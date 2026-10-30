@@ -93,6 +93,12 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     groups: queryGroups
   },
   {
+    isNeededBy: rule => rule.media?.query !== undefined,
+    subpath: "/environment",
+    exportName: "environmentGroups",
+    groups: () => []
+  },
+  {
     isNeededBy: rule => rule.resourcesXaml !== null,
     subpath: "/resources",
     exportName: "resourceGroups",

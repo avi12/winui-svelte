@@ -65,6 +65,7 @@
     "examples/tree/main.ts",
     "examples/overlays/main.ts",
     "examples/services/main.ts",
+    "examples/media/main.ts",
     "examples/app/main.ts",
     "examples/web/main.ts",
     "examples/window/main.ts",

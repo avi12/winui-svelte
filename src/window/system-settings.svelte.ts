@@ -1,6 +1,6 @@
-import { uiThreadDispatcher } from "#src/scheduling.js";
-import type { UIColorType } from "#src/winui.js";
-import { AccessibilitySettings, UIColorType as ColorKind, UISettings } from "#src/winui.js";
+import { createSettingsStore, isDarkTheme, systemSettingsStore } from "./settings-store.ts";
+import type { SettingsStore } from "./settings-store.ts";
+import { UIColorType as ColorKind } from "#src/winui.js";
 import { createSubscriber } from "svelte/reactivity";
 
 const OPAQUE = 255;
@@ -12,21 +12,6 @@ interface Channels {
   r: number;
   g: number;
   b: number;
-}
-
-/**
- * The part of `UISettings` and `AccessibilitySettings` that `systemSettings`
- * reads; a test stands in for it.
- */
-export interface SettingsSource {
-  readonly textScaleFactor: number;
-  readonly animationsEnabled: boolean;
-  readonly highContrast: boolean;
-  getColorValue(color: UIColorType): Channels;
-  onColorValuesChanged(callback: () => void): () => void;
-  onTextScaleFactorChanged(callback: () => void): () => void;
-  onAnimationsEnabledChanged(callback: () => void): () => void;
-  onHighContrastChanged(callback: () => void): () => void;
 }
 
 /**
@@ -49,6 +34,12 @@ export interface SystemSettings {
 
   /** True while a high contrast theme is on (Settings, Accessibility, Contrast themes). */
   readonly isHighContrast: boolean;
+
+  /** True while Windows is in dark mode (Settings, Personalization, Colors, Choose your mode). */
+  readonly isDarkTheme: boolean;
+
+  /** False when the user turned transparency effects off (Settings, Accessibility, Visual effects). */
+  readonly isTransparencyEnabled: boolean;
 }
 
 function hexOf(channel: number) {
@@ -61,36 +52,11 @@ function hexColorOf({ a, r, g, b }: Channels) {
   return `#${alpha}${hexOf(r)}${hexOf(g)}${hexOf(b)}`;
 }
 
-/**
- * Makes the settings reader over any source of them, and a way to reach the
- * UI thread: `systemSettings` is this over `UISettings`.
- *
- * @param options - Where the settings come from, and how to run work on the UI thread.
- * @returns The settings, read live and reactive.
- */
-export function observeSettings({ source, runOnUiThread }: {
-  source: SettingsSource;
-  runOnUiThread: (work: () => void) => void;
-}) {
-  // Reading a field inside an effect subscribes to the source for as long as
-  // the effect lives; outside one it only reads. UISettings raises its events
-  // on a thread of its own, so the change is handed to the UI thread.
-  const subscribe = createSubscriber(update => {
-    function notify() {
-      runOnUiThread(update);
-    }
-    const stops = [
-      source.onColorValuesChanged(notify),
-      source.onTextScaleFactorChanged(notify),
-      source.onAnimationsEnabledChanged(notify),
-      source.onHighContrastChanged(notify)
-    ];
-    return () => {
-      for (const stop of stops) {
-        stop();
-      }
-    };
-  });
+function readStore(store: SettingsStore) {
+  // Reading a field inside an effect subscribes to the store for as long as
+  // the effect lives; outside one it only reads.
+  const subscribe = createSubscriber(update => store.subscribe(update));
+  const { source } = store;
   return {
     get accentColor() {
       subscribe();
@@ -107,47 +73,36 @@ export function observeSettings({ source, runOnUiThread }: {
     get isHighContrast() {
       subscribe();
       return source.highContrast;
+    },
+    get isDarkTheme() {
+      subscribe();
+      return isDarkTheme(source);
+    },
+    get isTransparencyEnabled() {
+      subscribe();
+      return source.advancedEffectsEnabled;
     }
   } satisfies SystemSettings;
 }
 
 /**
+ * Makes the settings reader over any source of them, and a way to reach the UI
+ * thread: `systemSettings` is this over `UISettings`.
+ *
+ * @param options - Where the settings come from, and how to run work on the UI thread.
+ * @returns The settings, read live and reactive.
+ */
+export function observeSettings(options: Parameters<typeof createSettingsStore>[0]) {
+  return readStore(createSettingsStore(options));
+}
+
+/**
  * Reads the user's Windows settings (accent color, text scale, animation
- * effects, high contrast) as reactive values. Call it once on the UI thread, in a `.svelte`
- * script or a `.svelte.ts` module, and keep the result: `UISettings` is
- * created with it.
+ * effects, high contrast, dark mode, transparency) as reactive values. Call it
+ * once on the UI thread, in a `.svelte` script or a `.svelte.ts` module.
  *
  * @returns The settings, which update when the user changes them.
  */
 export function systemSettings() {
-  const uiSettings = UISettings.create();
-  const accessibility = new AccessibilitySettings();
-  return observeSettings({
-    source: {
-      get textScaleFactor() {
-        return uiSettings.textScaleFactor;
-      },
-      get animationsEnabled() {
-        return uiSettings.animationsEnabled;
-      },
-      get highContrast() {
-        return accessibility.highContrast;
-      },
-      getColorValue: color => uiSettings.getColorValue(color),
-      onColorValuesChanged: callback => uiSettings.onColorValuesChanged(callback),
-      onTextScaleFactorChanged: callback => uiSettings.onTextScaleFactorChanged(callback),
-      onAnimationsEnabledChanged: callback => uiSettings.onAnimationsEnabledChanged(callback),
-      onHighContrastChanged(callback) {
-        // Outside a packaged app WinUI can refuse the subscription with
-        // "Element not found"; the value is then still read live, only
-        // without a change notification.
-        try {
-          return accessibility.onHighContrastChanged(callback);
-        } catch {
-          return () => {};
-        }
-      }
-    },
-    runOnUiThread: uiThreadDispatcher()
-  });
+  return readStore(systemSettingsStore());
 }

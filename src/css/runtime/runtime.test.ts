@@ -1,7 +1,9 @@
+import { ElementEnvironment } from "./environment.ts";
 import { hasStyle } from "./resources.ts";
 import type { CssNative } from "./runtime.ts";
 import {
   installCssRuntime,
+  provideEnvironment,
   registerPropertyGroups,
   registerStyleSheet,
   styledElement as styledElementOf,
@@ -9,6 +11,8 @@ import {
   unregisterStyleSheet
 } from "./runtime.ts";
 import { textTransforms } from "./text-transforms.ts";
+import { fakeInputs } from "#src/css/media/fake-inputs.js";
+import type { MediaChange, MediaInputs, MediaStore } from "#src/css/media/features.js";
 import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { compatGroups } from "#src/css/translate/compat-properties.js";
@@ -28,6 +32,30 @@ import { test } from "node:test";
 // the XAML of the dictionary it was looked up in.
 
 queryGroups();
+
+const environment: {
+  inputs: Partial<MediaInputs>;
+  callbacks: Set<() => void>;
+  changes: Array<ReadonlySet<MediaChange>>;
+} = {
+  inputs: {},
+  callbacks: new Set(),
+  changes: []
+};
+const fakeStore: MediaStore = {
+  get inputs() {
+    return fakeInputs(environment.inputs);
+  },
+  subscribe({ changes, callback }) {
+    environment.changes.push(changes);
+    environment.callbacks.add(callback);
+    return () => environment.callbacks.delete(callback);
+  }
+};
+provideEnvironment(input => new ElementEnvironment({
+  ...input,
+  store: fakeStore
+}));
 
 const resources = loadWinuiCatalogue();
 
@@ -311,6 +339,50 @@ test("a rule under @media follows the window's size and listens only while one m
 
   element.setClasses("other");
   assert.equal(target.handlers.has("viewport"), false);
+  element.dispose();
+});
+
+test("a rule under an environment @media follows the settings, the element's theme, and listens only while one matches", () => {
+  registerStyleSheet(
+    sheet({
+      id: "environment.svelte",
+      css: [
+        ".e.svelte-8 { opacity: 1 }",
+        "@media (prefers-reduced-motion: reduce) { .e.svelte-8 { opacity: 0.25 } }",
+        "@media (prefers-color-scheme: dark) { .e.svelte-8 { width: 9px } }"
+      ].join("\n")
+    })
+  );
+  environment.inputs = {};
+  const target = control({
+    width: 800,
+    height: 400,
+    actualTheme: 1
+  });
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("e svelte-8");
+  assert.match(target.style ?? "", /Value="1"/u);
+  assert.doesNotMatch(target.style ?? "", /Width/u);
+  assert.ok(target.handlers.has("ActualThemeChanged"));
+  assert.deepEqual([...environment.changes.at(-1) ?? []], ["settings"]);
+
+  environment.inputs = { isAnimationEnabled: () => false };
+  for (const callback of environment.callbacks) {
+    callback();
+  }
+
+  assert.match(target.style ?? "", /Value="0.25"/u, "reduced motion applies live");
+
+  target.properties["actualTheme"] = 2;
+  target.handlers.get("ActualThemeChanged")?.();
+  assert.match(target.style ?? "", /Width/u, "the element's own theme answers prefers-color-scheme");
+
+  element.setClasses("other");
+  assert.equal(environment.callbacks.size, 0);
+  assert.equal(target.handlers.has("ActualThemeChanged"), false);
   element.dispose();
 });
 

@@ -26,7 +26,7 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["grid-auto-rows", "a WinUI grid has the rows grid-template-rows lists and no implicit ones"],
   ["grid-auto-columns", "a WinUI grid has the columns grid-template-columns lists and no implicit ones"],
   ["aspect-ratio", "WinUI has no aspect ratio on an element; set width and height (a Viewbox keeps a ratio)"],
-  ["color-scheme", "the theme is the window's RequestedTheme; set it on the root element (a Style cannot change it)"],
+  ["forced-color-adjust", "WinUI's high contrast theme recolors controls through theme resources, which an element cannot opt out of; set its colors in an @media (forced-colors: active) rule with a system color (Canvas, CanvasText, ButtonFace...) or var(--system-color-...-color)"],
   ["accent-color", "WinUI's accent color is the system's; override its resources instead (--accent-fill-color-default)"],
   ["float", "WinUI has no float; use a grid or a stack-panel"],
   ["flex-wrap", "WinUI has no wrapping stack (WrapPanel is in the Community Toolkit)"],

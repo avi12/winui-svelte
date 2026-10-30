@@ -11,6 +11,19 @@ const { observeSettings } = await import("./system-settings.svelte.ts");
 const { track } = await import("#src/state/test-support/track.svelte.js");
 
 const ACCENT = 5;
+const FOREGROUND = 1;
+const WHITE = {
+  a: 255,
+  r: 255,
+  g: 255,
+  b: 255
+};
+const BLACK = {
+  a: 255,
+  r: 0,
+  g: 0,
+  b: 0
+};
 const TEXT_SCALE_150_PERCENT = 1.5;
 
 class FakeSettings {
@@ -27,6 +40,12 @@ class FakeSettings {
     return this.isAnimationOn;
   }
   isAnimationOn = true;
+  isEffectsOn = true;
+
+  get advancedEffectsEnabled() {
+    return this.isEffectsOn;
+  }
+  isDarkOn = false;
   isHighContrastOn = false;
   private readonly listeners: Array<() => void> = [];
 
@@ -43,8 +62,17 @@ class FakeSettings {
   }
 
   getColorValue(color: number) {
-    assert.equal(color, ACCENT, "only the accent is asked for");
+    const isForeground = color === FOREGROUND;
+    if (isForeground) {
+      return this.isDarkOn ? WHITE : BLACK;
+    }
+
+    assert.equal(color, ACCENT);
     return this.accent;
+  }
+
+  onAdvancedEffectsEnabledChanged(callback: () => void) {
+    return this.listen(callback);
   }
 
   onColorValuesChanged(callback: () => void) {
@@ -104,7 +132,9 @@ test("a change in the settings reaches the effects that read them, and an ended 
   const scale = track(() => settings.textScaleFactor);
   const animation = track(() => settings.isAnimationEnabled);
   const contrast = track(() => settings.isHighContrast);
-  assert.equal(source.listenerCount, 4, "one subscription per event, shared by every effect");
+  const dark = track(() => settings.isDarkTheme);
+  const effects = track(() => settings.isTransparencyEnabled);
+  assert.equal(source.listenerCount, 5, "one subscription per event, shared by every effect");
 
   source.accent = {
     a: 255,
@@ -115,7 +145,11 @@ test("a change in the settings reaches the effects that read them, and an ended 
   source.textScaleFactor = TEXT_SCALE_150_PERCENT;
   source.isAnimationOn = false;
   source.isHighContrastOn = true;
+  source.isDarkOn = true;
+  source.isEffectsOn = false;
   source.raise();
+  assert.deepEqual(dark.values, [false, true]);
+  assert.deepEqual(effects.values, [true, false]);
   assert.deepEqual(accent.values, ["#0078d4", "#ff0000"]);
   assert.deepEqual(scale.values, [1, TEXT_SCALE_150_PERCENT]);
   assert.deepEqual(animation.values, [true, false]);
@@ -125,6 +159,8 @@ test("a change in the settings reaches the effects that read them, and an ended 
   scale.stop();
   animation.stop();
   contrast.stop();
+  dark.stop();
+  effects.stop();
   // Svelte lets go of the source one tick after the last reader has gone.
   await tick();
   assert.equal(source.listenerCount, 0);

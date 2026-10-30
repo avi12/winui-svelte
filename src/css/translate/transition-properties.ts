@@ -157,6 +157,11 @@ function transition(input: GroupInput) {
   for (const entry of splitCommas(reader.declaration.value)) {
     const [property = "", time, ...rest] = splitWords(entry);
     const milliseconds = time === undefined ? null : parseMilliseconds(time);
+    const isNone = property.toLowerCase() === "none";
+    if (isNone) {
+      continue;
+    }
+
     const isBorderColor = property.toLowerCase() === BORDER_COLOR && milliseconds !== null;
     if (isBorderColor) {
       outputs.push(

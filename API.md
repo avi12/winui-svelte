@@ -1184,6 +1184,8 @@ settings.accentColor;       // "#rrggbb": any color prop takes it
 settings.textScaleFactor;   // 1 is 100%, 1.5 is 150%
 settings.isAnimationEnabled;
 settings.isHighContrast;    // a contrast theme is on
+settings.isDarkTheme;       // Windows is in dark mode
+settings.isTransparencyEnabled;
 ```
 
 Over `Windows.UI.ViewManagement.UISettings`
@@ -1195,6 +1197,56 @@ the subscription lasts only while an effect
 reads it
 `UISettings` raises its events off the UI thread, so the change is
 handed to it through a dispatcher captured when `systemSettings()` is called
+
+### Media queries: `mediaQuery`, `matchMedia` (`winui-svelte/window`)
+
+```ts
+const isReduced = mediaQuery("(prefers-reduced-motion: reduce)");   // once, on the UI thread
+isReduced.matches;                    // reactive: read it in markup, $derived or $effect
+
+installMatchMedia();                  // opt in, once, before anything calls window.matchMedia
+const list = matchMedia("(prefers-color-scheme: dark) and (min-width: 600px)");
+list.matches;
+list.addEventListener("change", event => console.log(event.matches));
+```
+
+One evaluator and one reactive source of Windows' settings serve the `@media`
+rules of a stylesheet, `mediaQuery` and `matchMedia`: the grammar is Media
+Queries 4 (types, `not`, `only`, `and`, `or`, comma lists, range syntax, px, em,
+rem, dppx, dpi) and the features are the table in
+[src/css/API.md](src/css/API.md) (preferences, window and monitor size,
+resolution, input, display)
+`matchMedia` returns a `MediaQueryList` with `matches`, `media`, `onchange`,
+`addEventListener("change")` and the legacy `addListener`, and listens to Windows
+only while it has a listener
+`installMatchMedia()` puts it on `globalThis` (and `window`, where there is one);
+nothing is installed at import time, and it returns the function that takes it
+away
+Libraries that call `window.matchMedia`, such as Svelte's `MediaQuery` from
+`svelte/reactivity`, work once it is installed: the Vite plugin makes that class
+read the installed `matchMedia` when it is made (before it, it holds nothing)
+
+Pointing devices are read from Windows (GetSystemMetrics); where Windows does not tell, the answers are defaults an app can replace:
+`installMatchMedia({ inputs: { viewport, scale, devices, presentation, isHdr,
+gamut, isMetered }, watch })` takes the readers (and, in `watch`, the events that
+flip them)
+The width and height of `matchMedia` are those of the primary monitor until the
+app supplies a window's
+
+### Themes, high contrast and reduced motion
+
+- The theme follows Windows: a window's `theme` is `WindowTheme.system` by
+  default (`light` and `dark` override it), its content and caption buttons
+  follow the system as it changes, and Mica and acrylic follow the content's
+  actual theme
+- Theme dictionaries (`@media (prefers-color-scheme)`, `light-dark()`) are
+  re-read by WinUI on a theme change; a rule under `prefers-color-scheme` reads
+  the element's `ActualTheme` and restyles on `ActualThemeChanged`
+- A contrast theme applies the `HighContrast` dictionary and the system
+  colors, and `@media (forced-colors: active)` rules apply while it is on
+- `prefers-reduced-motion` is honoured by CSS transitions and animations
+  (automatically, unless the element has the class `winui-motion-always`) and by
+  Svelte's transitions
 
 ### File and folder dialogs (`WindowHandle`)
 
@@ -1546,7 +1598,7 @@ entry point is named nowhere in the docs
 | `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed |
 | `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, and removal of a stylesheet |
-| `animationGroups`, `effectGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
+| `animationGroups`, `effectGroups`, `environmentGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
 | `translateComponent` | `winui-svelte/css/sheet-module` | the build's translation of a component's `<style>`, which the validator and the Vite plugin share |
 | `winuiPreprocess`, `WinuiStyleError` | `winui-svelte/preprocess` | the Svelte preprocessor that marks a style WinUI cannot say in the editor and in `svelte-check`; the error it throws |
