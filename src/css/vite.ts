@@ -1,6 +1,8 @@
 import { compileSheetModule, SHEET_SUFFIX, SheetError } from "./runtime/sheet-module.ts";
 import { loadWinuiCatalogue } from "./translate/catalogue.ts";
 import { formatDiagnostic } from "./translate/translate.ts";
+import { formatValidation } from "./validate/diagnostic.ts";
+import { validateComponent } from "./validate/validate.ts";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import type { CompileOptions } from "svelte/compiler";
@@ -121,9 +123,34 @@ export function winuiCss(options: WinuiCssOptions) {
       const filename = id.slice(0, -SHEET_SUFFIX.length);
       this.addWatchFile(filename);
       try {
+        const source = readFileSync(filename, "utf8");
+        const problems = validateComponent({
+          source,
+          filename,
+          resources,
+          sheetId: path.relative(root, filename).replaceAll("\\", "/"),
+          compilerOptions: options.compilerOptions
+        });
+        for (const problem of problems.filter(item => item.severity === "warning")) {
+          this.warn(formatValidation(problem));
+        }
+
+        const errors = problems.filter(item => item.severity === "error");
+        const hasErrors = errors.length > 0;
+        if (hasErrors) {
+          const report = errors.map(formatValidation).join("\n");
+          const isReported = options.onError === "report";
+          if (isReported) {
+            process.stderr.write(`${report}\n`);
+            return "export default null;";
+          }
+
+          this.error(report);
+        }
+
         const module = compileSheetModule({
           filename,
-          source: readFileSync(filename, "utf8"),
+          source,
           sheetId: path.relative(root, filename).replaceAll("\\", "/"),
           resources,
           runtimeModule,

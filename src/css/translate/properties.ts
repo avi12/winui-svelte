@@ -72,7 +72,7 @@ function basedOn(input: GroupInput) {
 // same WinUI property, the later one wins (display none over visibility). A
 // property absent here has no WinUI meaning and fails the build;
 // `explainUnsupported` (the build supplies it) says why for the likely ones.
-const propertyGroups: readonly PropertyGroup[] = [
+export const propertyGroups: readonly PropertyGroup[] = [
   {
     members: [BASED_ON_PROPERTY],
     lower: basedOn
