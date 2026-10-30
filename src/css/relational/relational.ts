@@ -66,7 +66,7 @@ function applyEdits({ source, edits, moves }: {
     text = text.slice(0, edit.start) + edit.text + text.slice(edit.end);
   }
 
-  const shift = (offset: number) => {
+  function shift(offset: number) {
     let shifted = offset;
     for (const edit of applied) {
       const isBefore = edit.end <= offset;
@@ -74,7 +74,7 @@ function applyEdits({ source, edits, moves }: {
     }
 
     return shifted;
-  };
+  }
   return applyMoves({
     text,
     moves,

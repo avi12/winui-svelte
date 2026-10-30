@@ -260,7 +260,7 @@ function stylingOf({ element, control }: {
       element,
       control
     }),
-    refreshText: () => {
+    refreshText() {
       sync(element);
     }
   });

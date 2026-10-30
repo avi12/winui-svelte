@@ -137,10 +137,9 @@ export function reorder({ run, container, children }: {
     return children;
   }
 
-  const byOrder = (first: number, second: number) => (
+  const sequence = children.map((_child, i) => i).toSorted((first, second) => (
     (children[first]?.order ?? 0) - (children[second]?.order ?? 0) || first - second
-  );
-  const sequence = children.map((_child, i) => i).toSorted(byOrder);
+  ));
   const isSorted = sequence.every((written, i) => written === i);
   if (!isSorted) {
     run.moves.push({

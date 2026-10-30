@@ -166,14 +166,16 @@ test("a sheet opts into the gradient parser only when it has a gradient", () => 
 });
 
 test("a flex row written as a grid is lowered into tracks and placed children that the translator accepts", () => {
-  const result = moduleFor(`<grid class="row"><button class="a">A</button><text-block class="b">B</text-block></grid>
+  const result = moduleFor(
+    `<grid class="row"><button class="a">A</button><text-block class="b">B</text-block></grid>
 
 <style>
   .row { display: flex; align-items: center; gap: 8px }
   .b { flex: 1 }
   .a { align-self: end }
 </style>
-`);
+`
+  );
   const rules = result?.sheet.rules.map(rule => [rule.specificity, rule.declarations.map(({ property, value }) => `${property}:${value}`)]);
   assert.deepEqual(rules, [
     [0, ["grid-template-columns:auto 1fr"]],

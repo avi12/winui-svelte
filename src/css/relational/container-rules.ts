@@ -146,10 +146,10 @@ export function declarationsOf({ subjects, element }: {
   element: TemplateElement;
 }) {
   const reaching = subjects.filter(subject => subject.matched.includes(element));
-  const byCascade = (first: RuleSubject, second: RuleSubject) => (
+  const ordered = reaching.toSorted((first, second) => (
     first.specificity - second.specificity || first.order - second.order
-  );
-  const declarations = reaching.toSorted(byCascade).flatMap(subject => subject.declarations);
+  ));
+  const declarations = ordered.flatMap(subject => subject.declarations);
   return [
     ...declarations.filter(declaration => !declaration.isImportant),
     ...declarations.filter(declaration => declaration.isImportant)
