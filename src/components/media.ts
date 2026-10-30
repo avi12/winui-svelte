@@ -10,7 +10,11 @@ const NATIVE_OBJECT = "_obj";
 
 // The image is handed on at once and fills itself when the stream is ready; a
 // bad image reaches the app as the image's own ImageFailed event.
-async function fillImage({ bytes, image }: {
+/**
+ * Decodes image bytes into an image source; the bytes are the source's own
+ * once this settles.
+ */
+export async function fillImage({ bytes, image }: {
   bytes: Uint8Array;
   image: BitmapImage | SvgImageSource;
 }) {

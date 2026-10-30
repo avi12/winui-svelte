@@ -51,4 +51,7 @@
   {#if isSnippet(rest.foreground)}
     <property name="foreground">{@render rest.foreground()}</property>
   {/if}
+  {#if isSnippet(rest.source)}
+    <property name="source">{@render rest.source()}</property>
+  {/if}
 </image-icon>

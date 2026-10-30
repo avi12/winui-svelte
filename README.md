@@ -870,6 +870,22 @@ the renderer's functions
 `examples/form` is the working example (`test/forms.test.ts` fills it in
 through UI Automation and reads back the errors and the submitted data); the
 gallery's Form submission page shows it
+## Media
+
+`Image`, `ImageBrush`, `ImageIcon`, `PathIcon`, `MediaPlayerElement` and
+`MediaTransportControls` keep WinUI's names, properties and events
+An image `source` is a URI, a file path, the bytes of a file, an
+`SvgImageSource`, or a snippet holding `<BitmapImage>` or `<SvgImageSource>`,
+as XAML writes `<Image.Source>`
+`winui-svelte/media` is opt-in and adds `bitmapImageOf` and `svgImageSourceOf`
+(decode options, SVG markup, `data:` URIs, bytes), and `createMediaPlayer`, a
+real `MediaPlayer` with no window for audio, with its position, duration and
+state as runes
+SVG is an `SvgImageSource` in an `Image`, `ImageBrush` or `ImageIcon` (static
+SVG: no scripts, no animation, limited CSS), or a path string in `PathIcon`;
+`ImageIcon` with `showAsMonochrome` takes its colour from `foreground`
+[API.md](API.md#media-winui-sveltemedia) has the formats WinUI decodes and the
+details, and `examples/media-elements` the example
 
 ## Styling with CSS
 
@@ -1103,6 +1119,7 @@ attachments, because a component prop would pull this code into every app
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/data-transfer` | web-shaped drag and drop, `NativeFile`, pickers, the clipboard and the launcher (opt-in) |
+| `winui-svelte/media` | `bitmapImageOf`, `svgImageSourceOf`, `createMediaPlayer`: image sources and a windowless `MediaPlayer` (opt-in; [`API.md`](API.md#media-winui-sveltemedia)) |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
 | `winui-svelte/forms` | `Form`, `FormField` and the attachments that join a control to a form by name, with HTML's constraint validation and zod (opt-in; [`API.md`](API.md#forms-winui-svelteforms)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
@@ -1156,6 +1173,15 @@ Stated plainly, so nobody finds them by surprise:
   `ShareUnavailableError` from a plain Node.js or Electron process, and the
   clipboard and launcher calls run on the UI thread
 
+- **MediaPlayer events do not reach JavaScript.** `MediaPlayer` raises all of
+  its events (`MediaOpened`, `MediaEnded`, `CurrentStateChanged`, ...) on a
+  thread of its own, and dynwinrt does not deliver a callback raised on another
+  thread
+  `createMediaPlayer` keeps a `state` that it reads again every 100 ms on the
+  UI thread (`playbackState`, `position`, `naturalDuration`, `isEnded`), which
+  is what an app relies on
+- **No `WriteableBitmap` component.** The bindings hold no `WriteableBitmap`;
+  `RenderTargetBitmap`, `SoftwareBitmapSource` and `BitmapImage` are there
 - **The tray icon hears the mouse by polling.** WinUI has no tray API, and
   dynwinrt cannot make a JavaScript function a native window procedure, so
   `winui-svelte/tray` reads the pointer and the buttons every 30 ms instead of

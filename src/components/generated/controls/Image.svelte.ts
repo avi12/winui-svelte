@@ -7,10 +7,11 @@ import { Stretch } from "../bindings.ts";
 import type { Image } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ImageProps extends FrameworkElementProps {
   nineGrid?: ThicknessInput;
-  source?: ImageSourceInput;
+  source?: ImageSourceInput | Snippet;
   stretch?: EnumInput<typeof Stretch>;
   onImageFailed?: Parameters<Image["onImageFailed"]>[0];
   onImageOpened?: Parameters<Image["onImageOpened"]>[0];

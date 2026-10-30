@@ -48,4 +48,7 @@
   {#if isSnippet(rest.focusVisualSecondaryBrush)}
     <property name="focusVisualSecondaryBrush">{@render rest.focusVisualSecondaryBrush()}</property>
   {/if}
+  {#if isSnippet(rest.source)}
+    <property name="source">{@render rest.source()}</property>
+  {/if}
 </image>

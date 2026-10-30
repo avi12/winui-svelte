@@ -6,9 +6,10 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { ImageIcon } from "../bindings.ts";
 import { linkIconElement } from "./IconElement.svelte.ts";
 import type { IconElementBound, IconElementProps } from "./IconElement.svelte.ts";
+import type { Snippet } from "svelte";
 
 export interface ImageIconProps extends IconElementProps {
-  source?: ImageSourceInput;
+  source?: ImageSourceInput | Snippet;
 }
 
 export type ImageIconBound = IconElementBound;

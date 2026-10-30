@@ -79,6 +79,8 @@ function nullableKindOf(signature: TypeSignature) {
   return isNamed ? nullableKindOfType.get(fullName(argument.type)) : undefined;
 }
 const OBJECT_NAME = "Object";
+// Image.Source is a snippet slot like ImageBrush.ImageSource, though "Source" names state elsewhere.
+const IMAGE_SOURCE_NAME = "Microsoft.UI.Xaml.Media.ImageSource";
 // The collections whose items markup can fill.
 const vectorNames = new Set(["IVector`1", "IObservableVector`1"]);
 
@@ -725,8 +727,13 @@ class Builder {
     return vector?.kind === "generic" ? vector.args[0] ?? null : null;
   }
 
-  private isSlotted(name: string) {
-    const isUnslotted = unslottedProperties.has(name) || unslottedSuffixes.some(suffix => name.endsWith(suffix));
+  private isSlotted({ name, type }: {
+    name: string;
+    type: TypeSignature;
+  }) {
+    const isImageSource = type.kind === "named" && fullName(type.type) === IMAGE_SOURCE_NAME;
+    const isUnslottedName = !isImageSource && unslottedProperties.has(name);
+    const isUnslotted = isUnslottedName || unslottedSuffixes.some(suffix => name.endsWith(suffix));
     return !isUnslotted && !reservedKeys.has(camelCase(name));
   }
 
@@ -807,7 +814,7 @@ class Builder {
     const type = this.index.find(model.type);
     const members = type === undefined ? [] : this.instanceInterfaces(type).flatMap(entry => entry.properties);
     const seen = new Set<string>();
-    for (const member of members.filter(entry => this.isSlotted(entry.name))) {
+    for (const member of members.filter(entry => this.isSlotted(entry))) {
       const candidate = {
         model,
         member

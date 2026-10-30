@@ -30,6 +30,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
+| `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
@@ -1809,6 +1810,115 @@ interface Constraints {
 - Pure parts (`validityOf`, `FormValues`, the adapters) run in plain Node; the
   attachments need WinUI; `test/forms.test.ts` runs `examples/form` in a real
   window
+
+## Media (`winui-svelte/media`)
+
+The controls keep WinUI's names: `Image`, `ImageBrush`, `ImageIcon`,
+`BitmapIcon`, `PathIcon`, `MediaPlayerElement` and `MediaTransportControls`
+come from `winui-svelte/components` with WinUI's properties and events
+`winui-svelte/media` adds what a bare prop cannot say, and is opt-in
+
+### Image sources
+
+`Image.source`, `ImageIcon.source`, `ImageBrush.imageSource` and
+`MediaPlayerElement.posterSource` take any of these:
+
+| Form | Becomes |
+|---|---|
+| a URI string (`https://`, `ms-appx://`, a file path such as `C:\pics\a.png`) | a `BitmapImage` with `UriSource`; `.svg` makes an `SvgImageSource` |
+| the bytes of a file (`Uint8Array`, `ArrayBuffer`) | the same, decoded from an in-memory stream; SVG text is told by its `<svg` element |
+| an `ImageSource` object | itself: `BitmapImage`, `SvgImageSource`, `SoftwareBitmapSource`, `RenderTargetBitmap` |
+| a snippet holding a value object | `<Image>{#snippet source()}<BitmapImage decodePixelWidth={64} uriSource={path} />{/snippet}</Image>`, as XAML writes `<Image.Source>` |
+
+`BitmapImage` and `SvgImageSource` are components too, with all their
+properties (`decodePixelWidth`, `decodePixelHeight`, `decodePixelType`,
+`createOptions`, `autoPlay`, `rasterizePixelWidth`, `rasterizePixelHeight`,
+`uriSource`) and events (`onImageOpened` and `onImageFailed` on the `Image`;
+`onDownloadProgress` and `onImageOpened` on the bitmap; `onOpened` and
+`onOpenFailed` on the SVG)
+`WriteableBitmap` and `BitmapSource` have no component: the bindings
+hold no `WriteableBitmap`, and `BitmapSource` is abstract
+
+| Export | Does |
+|---|---|
+| `bitmapImageOf({ source, decodePixelWidth, decodePixelHeight, decodePixelType, createOptions, autoPlay, onFailed })` | A `BitmapImage` from a URI, a `data:` URI or bytes, with the options set before it loads |
+| `svgImageSourceOf({ source, rasterizePixelWidth, rasterizePixelHeight, onFailed })` | An `SvgImageSource` from markup, a `.svg` URI, a `data:` URI or bytes |
+| `decodeDataUri(uri)`, `isDataUri(text)` | A `data:` URI as `{ mimeType, bytes }`: WinUI opens no `data:` URI itself |
+
+WinUI raises `ImageFailed` for a URI it cannot open; bytes it cannot decode
+raise nothing, and `onFailed` receives the error of `SetSourceAsync` instead
+
+What WinUI decodes: `BitmapImage` reads PNG, JPEG, GIF, BMP, ICO and TIFF, and
+WebP, AVIF, HEIC and others where the Windows codec is installed (a GIF or
+APNG animates when `autoPlay` is true, which is the default)
+`SvgImageSource` renders static SVG: shapes, paths, text, gradients,
+patterns, clip paths, masks, `use` and styling by presentation attributes, a
+`style` attribute and an internal `<style>` element
+It runs no scripts, plays no SMIL or CSS animation, loads no external
+resource, and ignores unsupported CSS rather than failing
+
+Sharp SVG on a high-DPI screen: an SVG is rasterised at its own size, then
+scaled
+Set `rasterizePixelWidth` and `rasterizePixelHeight` to the displayed size
+times the screen's `RasterizationScale`
+
+Colouring an SVG icon: an `SvgImageSource` keeps the colours it is drawn in
+`ImageIcon` with `showAsMonochrome` paints the image's alpha channel in the
+icon's `foreground`, so a black glyph takes any colour
+For a glyph that is only a path, use `PathIcon` (`data="M12 2 L22 22 L2 22 Z"`)
+or a `Path`, whose `fill` is a brush
+
+### MediaPlayerElement and MediaTransportControls
+
+`source` takes a URI (opened as a `MediaSource`) or any
+`IMediaPlaybackSource`: a `MediaSource`, a `MediaPlaybackItem` or a
+`MediaPlaybackList`
+`areTransportControlsEnabled`, `autoPlay`, `stretch`, `posterSource`,
+`isFullWindow` and the `transportControls` snippet are WinUI's
+The real `MediaPlayer` is `native.mediaPlayer`:
+
+```svelte
+<MediaPlayerElement {@attach control(native => (player = native.mediaPlayer))} />
+```
+
+`MediaTransportControls` takes WinUI's `isPlayPauseButtonVisible`,
+`isSeekBarVisible`, `isVolumeButtonVisible`, `isCompact` and the rest of its
+`Is*Visible` and `Is*Enabled` properties
+
+### A MediaPlayer with no window
+
+```ts
+import { createMediaPlayer, mediaSourceOfBytes } from "winui-svelte/media";
+
+const audio = createMediaPlayer({ source: "ms-appx:///chime.mp3", volume: 0.5 });
+audio.player.play();
+audio.state.position;
+audio.dispose();
+```
+
+`createMediaPlayer(options)` makes a `Windows.Media.Playback.MediaPlayer`,
+sets `autoPlay`, `isLoopingEnabled`, `isMuted`, `volume`, `playbackRate` and
+`source`, listens to the events named like WinUI's (`onMediaOpened`,
+`onMediaEnded`, `onMediaFailed`, `onCurrentStateChanged`, `onVolumeChanged`,
+`onSeekCompleted`, `onBufferingStarted`, `onBufferingEnded`,
+`onMediaPlayerRateChanged`, `onPlaybackMediaMarkerReached`,
+`onSourceChanged`, `onIsMutedChanged`), and returns:
+
+- `player`, the real `MediaPlayer`
+- `state`, a `PlaybackState` of runes: `playbackState`, `position` and
+  `naturalDuration` in milliseconds, `bufferingProgress`, `canSeek`,
+  `volume`, `isMuted` and `isEnded`
+- `dispose()`, which unsubscribes and closes the player
+
+`mediaSourceOfBytes({ bytes, contentType })` makes a source from an in-memory
+file; `observePlayback({ player, poll })` fills a `PlaybackState` from any
+object shaped like a player
+
+`MediaPlayer` raises all of its events on a thread of its own, and the
+bindings do not deliver an event raised on another thread
+The handlers in the options therefore run only where WinUI raises on the UI
+thread; `state` is read again every 100 ms on the UI thread and is what to
+rely on
 
 ## Win2D (`winui-svelte/win2d`)
 
