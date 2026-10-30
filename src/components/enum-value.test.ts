@@ -8,7 +8,8 @@ const Modifiers = {
   None: 0,
   Control: 1,
   Menu: 2,
-  Shift: 4
+  Shift: 4,
+  High: 2147483648
 } as const;
 /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -45,4 +46,13 @@ test("an enum prop refuses what is no member", () => {
       input
     }), RangeError);
   }
+});
+
+test("a member with the top bit set stays unsigned", () => {
+  assert.equal(
+    enumValue({
+      table: Modifiers,
+      input: "High"
+    }), Modifiers.High
+  );
 });

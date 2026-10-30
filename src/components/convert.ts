@@ -301,7 +301,7 @@ export function enumValue<Table extends Record<string, number>>({ table, input }
       throw new RangeError(`${String(part)} is not one of ${Object.keys(table).join(", ")}`);
     }
 
-    bits |= Number(value);
+    bits = (bits | Number(value)) >>> 0;
   }
 
   if (isValue(bits)) {
