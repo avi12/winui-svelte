@@ -90,7 +90,7 @@ Never write against a guide "because the file is small": the style is the same e
   Allowed idioms (the `id-length` allow-list): `i`/`j` loop counters, `x`/`y`, `id`, `to`, `on`, `ok`, `T` for a type parameter and `_` for an unused parameter; `hwnd`, `rva` and `dip` are long enough
 - Booleans carry `is` / `has` / `can` / `should` and read positively (`isEnabled`, never `isDisabled`)
 - An index variable is `i`-prefixed (`iItem`), or a bare `i` in a loop
-- Generated and hand-written components mirror WinUI's own names (`StackPanel`, `childrenTransitions`); props are the WinUI property in `lowerCamelCase`, events `on` + the WinUI event name
+- Generated and hand-written components mirror WinUI's own names (`StackPanel`, `childrenTransitions`); props are the WinUI property in `lowerCamelCase`, events `on` + the WinUI event name in lowercase, like the DOM's (`ontoggled`, `onselectionchanged`)
 
 # Hardcoded values
 - A closed set of values is an enum; a lone magic string or number is a named `CONSTANT_CASE` constant (unless self-evident: `0`, `1`, `/ 2`)

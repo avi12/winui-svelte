@@ -7,6 +7,13 @@ project adheres to [Semantic Versioning](https://semver.org/)
 
 ## [Unreleased]
 
+### Changed
+
+- Breaking: event props are the WinUI event name in lowercase, like the DOM's
+  (`ontoggled`, `onselectionchanged`, `ondraw`, `onclosed`), not `onToggled`;
+  the camel-case spelling is an unknown prop and fails `svelte-check`
+  Props keep WinUI's lowerCamelCase (`isOn`)
+
 ### Added
 
 - Components: every WinUI 3 control as a Svelte 5 component, generated from

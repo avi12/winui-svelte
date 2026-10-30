@@ -100,7 +100,8 @@ through an attachment the renderer provides:
 - A property with a matching change event (`IsOn`/`Toggled`,
   `Text`/`TextChanged`, `SelectedIndex`/`SelectionChanged`, `Value`/
   `ValueChanged`, …) is `$bindable()`
-- Events as `onToggled={(sender, args) => …}`, typed
+- Events as `ontoggled={(sender, args) => …}`: `on` plus the WinUI event name
+  in lowercase, like the DOM's, made by `eventPropName`; typed
   A property whose name
   starts with "on" (ToggleSwitch.OnContent) stays a property: components are
   not raw elements, so Svelte's `on*` rule for elements does not apply

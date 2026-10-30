@@ -319,7 +319,8 @@ Every concrete WinUI 3 control, and every value object a property can take, is
 a component in `winui-svelte/components`
 A component has the properties of its
 WinUI class and of every class it inherits from, as camelCase props (`isOn`,
-`horizontalAlignment`), its events as `on...` props (`onToggled`), and `bind:`
+`horizontalAlignment`), its events as `on...` props named like the DOM's, in
+lowercase (`ontoggled`, `onselectionchanged`), and `bind:`
 on a property that has a matching change event
 The table shows what each class
 adds; `Bindable` includes the inherited bindables
@@ -764,13 +765,13 @@ mounted, with its state, while the user is elsewhere:
   let navigator = $state<NavigatorHandle>();
 </script>
 
-<Navigator bind:handle={navigator} onReady={ready => ready.navigate({ page: HomePage })}>
+<Navigator bind:handle={navigator} onready={ready => ready.navigate({ page: HomePage })}>
   {#snippet transition()}
     <DrillInNavigationTransitionInfo />
   {/snippet}
 </Navigator>
 
-<Button onClick={() => navigator?.navigate({
+<Button onclick={() => navigator?.navigate({
   page: { component: SettingsPage, cacheMode: NavigationCacheMode.REQUIRED },
   params: { section: "display" }
 })}>Settings</Button>
@@ -818,7 +819,7 @@ the renderer's functions
   const schema = z.object({ email: z.email(), age: z.number().min(18) });
 </script>
 
-<Form {schema} onSubmit={({ data }) => save(data)}>
+<Form {schema} onsubmit={({ data }) => save(data)}>
   <FormField field="email" label="E-mail">
     <TextBox {@attach textField({ name: "email", required: true, type: "email" })} />
   </FormField>
@@ -844,14 +845,14 @@ the renderer's functions
   `patternMismatch`, `tooShort`, `tooLong`, `rangeUnderflow`, `rangeOverflow`,
   `stepMismatch`, `badInput`, `customError`, `valid`) and `setCustomValidity`
 - `schema` is a zod schema: its issues become field errors by path, and its
-  output types `data`, so `onSubmit({ data })` is the schema's inferred type
+  output types `data`, so `onsubmit({ data })` is the schema's inferred type
   (without a schema, `data` is the entries as an object, and `formData` is a
   `FormValues`, a `FormData` for numbers, booleans and dates that
   `Object.fromEntries` reads)
 - `bind:handle` gives `requestSubmit()` (validates, then submits), `submit()`
   (no validation), `reset()`, `checkValidity()`, `reportValidity()`, `values()`,
   `field(name)`, and the reactive `isPending`, `isSubmitted` and `isValid`
-- `action` is an async function that runs after `onSubmit`; while it runs the
+- `action` is an async function that runs after `onsubmit`; while it runs the
   controls and buttons are disabled and `isPending` is true
 - An invalid control gets a red border and its accessible help text; the
   first invalid control takes focus; the error shows once the user has left the
@@ -859,7 +860,7 @@ the renderer's functions
   `FormField` shows it under the control in a polite live region, so a screen
   reader announces it
 - Enter in a single-line field clicks the first submit button (or submits when
-  the form has one text field and no button); Escape calls `onCancel`;
+  the form has one text field and no button); Escape calls `oncancel`;
   `formButton({ kind: "reset" })` resets, `"button"` does nothing to the form
 - `noValidate` skips validation on submit, and a field or button outside the
   `Form` joins it with `form: handle`
@@ -1137,8 +1138,8 @@ the drag events with a `DragEvent` and a `dataTransfer`, files as `NativeFile`
 <Button {@attach filePicker({ accept: "image/*", multiple: true, onPick: files => (names = files.map(file => file.name)) })}>
   Choose
 </Button>
-<Button onClick={() => clipboard.writeText("copied")}>Copy</Button>
-<Button onClick={() => launchUri("https://example.com")}>Open</Button>
+<Button onclick={() => clipboard.writeText("copied")}>Copy</Button>
+<Button onclick={() => launchUri("https://example.com")}>Open</Button>
 ```
 
 Dragging out (`ondragstart`, `draggable({ files })`), the `drag` event, the

@@ -734,7 +734,7 @@ brushes; see "Gradients" in `src/css/API.md`
 
 ### WebView2
 
-`<WebView2 source="https://..." onNavigationCompleted={...} />` is generated
+`<WebView2 source="https://..." onnavigationcompleted={...} />` is generated
 like the rest
 Its bindings are made by `pnpm bindings` after winapp's run
 (`scripts/bindings/after-winapp.ts`), since winapp gives the code generator no
@@ -758,8 +758,8 @@ desktop session (a sandboxed process cannot launch the browser, 0x8007139F)
 
 ```svelte
 <ListView items={rows} key={row => row.id} reorderable keyboardReorder
-          onReorder={ids => save(ids)} itemName={row => row.name}
-          onControl={view => animate(view)} bind:handle bind:selectedKey>
+          onreorder={ids => save(ids)} itemName={row => row.name}
+          oncontrol={view => animate(view)} bind:handle bind:selectedKey>
   {#snippet item(row)}
     <ThemeRow {row} />
   {/snippet}
@@ -773,9 +773,9 @@ desktop session (a sandboxed process cannot launch the browser, 0x8007139F)
 | `item` | the row snippet, given the item; mounted once per realized container |
 | `reorderable` | the control's own drag reorder (`canReorderItems`, `canDragItems`, `allowDrop`) |
 | `keyboardReorder` | Alt+Up / Alt+Down moves the focused item one place |
-| `onReorder` | `(keys: string[]) => void`, after a drag or a keyboard move, the keys in the order the user left. The list keeps that order until `items` changes |
+| `onreorder` | `(keys: string[]) => void`, after a drag or a keyboard move, the keys in the order the user left. The list keeps that order until `items` changes |
 | `itemName` | the accessible name of an item's container |
-| `onControl` | `(view) => void \| cleanup`: the `ListViewBase` itself, for what the component does not cover (item transitions) |
+| `oncontrol` | `(view) => void \| cleanup`: the `ListViewBase` itself, for what the component does not cover (item transitions) |
 | `groupBy` | `(item) => string`: shows the items in groups (see "Groups" below) |
 | `groupHeader` | the header row snippet of a group, given the `Group` (`{ key, items }`) |
 | `bind:selectedKey` | `string \| undefined`: the key of the selected item (for the single selection modes). Set it to select an item, read it for the user's choice; it is cleared when the item goes and follows the item when the items reorder |
@@ -783,7 +783,7 @@ desktop session (a sandboxed process cannot launch the browser, 0x8007139F)
 | `bind:handle` | `ListHandle`: `move(key, direction)` (what Alt+Up/Down does), `scrollToKey(key)`, `focus(key)` |
 
 Every other property and event of the control is a prop as on the generated
-components (`selectionMode`, `itemContainerStyle`, `onDragItemsCompleted`, ...);
+components (`selectionMode`, `itemContainerStyle`, `ondragitemscompleted`, ...);
 `selectedIndex` is an index into `items` and is as good as a key, but the
 control's `selectedItem` and `selectedValue` hold the **boxed key**, not the
 item (read one with `unboxed`; setting them does not select, use
@@ -826,7 +826,7 @@ The `groupHeader` snippet is the row of a
 header
 A header is not an item: it cannot be selected, and `reorderable` and
 `keyboardReorder` are ignored in a grouped list
-`selectedKey`, `onReorder`'s
+`selectedKey`, `onreorder`'s
 keys and `itemName` only ever hold items
 Groups and items that come or go
 change the live view in place
@@ -858,7 +858,7 @@ group's place in the list gives its key
 | `bind:expandedKeys` | `string[]`: the keys of the expanded items, in the tree's order. Set it to open items, read it for what the user opened; a key the tree has no item for is kept |
 | `bind:selectedKey` | `string \| undefined`: the key of the selected item (`selectionMode` `Single`, the control's default) |
 | `bind:selectedKeys` | `string[]`: the keys of the selected items in the tree's order (`Multiple`); selecting an item selects the items under it, which are in the list too |
-| `onControl` | `(view) => void \| cleanup`: the `TreeView` itself |
+| `oncontrol` | `(view) => void \| cleanup`: the `TreeView` itself |
 
 Every other property and event of the control is a prop as on the generated
 components
@@ -903,8 +903,8 @@ the control's own nodes, and binding it undoes the key selection
 <Window title="My app" backdrop="acrylic" icon={iconPath} appUserModelId={id}
         width={560} minWidth={560} maxWidth={560} minHeight={420} height={640}
         isMaximizable={false} placement={saved} activate={!isBackground}
-        onActiveChanged={refresh} onBoundsChanged={report}
-        onClosing={hasUnsavedWork} onClosed={exitApplication} theme="dark"
+        onactivechanged={refresh} onboundschanged={report}
+        onclosing={hasUnsavedWork} onclosed={exitApplication} theme="dark"
         titleBarHeight="tall" captionButtons={{ foreground: "#fff" }}
         bind:handle>
   {#snippet titleBar()}...{/snippet}
@@ -934,13 +934,13 @@ Sizes are in device-independent pixels (the window's DPI applied);
 centering, which is the default
 `activate={false}` shows the window without
 taking focus
-`onBoundsChanged` hears the bounds the window opened with and
+`onboundschanged` hears the bounds the window opened with and
 then every move or resize (device pixels), so an app that reopens the window
 where it was has them before the user touches it
-`onClosing` runs when the window is asked to close (the close button, Alt+F4,
+`onclosing` runs when the window is asked to close (the close button, Alt+F4,
 `handle.close()`): returning `true` keeps it open (ask the user, then close it
-again from code); `onClosed` follows a close that went through
-`onScaleChanged(scale)` hears a DPI change (the window moved to another
+again from code); `onclosed` follows a close that went through
+`onscalechanged(scale)` hears a DPI change (the window moved to another
 display, or the user changed the display scale); the size limits and regions,
 which WinUI takes in device pixels, are set again for it
 
@@ -999,17 +999,17 @@ control's navigation transition play when the page changes
   let navigator = $state<NavigatorHandle>();
 </script>
 
-<Navigator bind:handle={navigator} onReady={ready => ready.navigate({ page: HomePage })}>
+<Navigator bind:handle={navigator} onready={ready => ready.navigate({ page: HomePage })}>
   {#snippet transition()}
     <DrillInNavigationTransitionInfo />
   {/snippet}
 </Navigator>
 
-<Button onClick={() => navigator?.navigate({
+<Button onclick={() => navigator?.navigate({
   page: { component: SettingsPage, cacheMode: NavigationCacheMode.REQUIRED },
   params: { section: "display" }
 })}>Settings</Button>
-<Button disabled={!navigator?.canGoBack} onClick={() => navigator?.goBack()}>Back</Button>
+<Button disabled={!navigator?.canGoBack} onclick={() => navigator?.goBack()}>Back</Button>
 ```
 
 ```ts
@@ -1025,9 +1025,9 @@ interface NavigatorHandle {
 }
 ```
 
-- Props of the component: `bind:handle`; `onReady(handle)`, called once the
+- Props of the component: `bind:handle`; `onready(handle)`, called once the
   control is in place, where the first page is navigated to;
-  `onNavigated({ entry, mode })`, with `mode` a `NavigationMode` (`new`,
+  `onnavigated({ entry, mode })`, with `mode` a `NavigationMode` (`new`,
   `back`, `forward`); `cacheSize` (default 10); `transition`, a snippet with
   one of the `...NavigationTransitionInfo` components (it is the
   `DefaultNavigationTransitionInfo` of the control's `NavigationThemeTransition`;
@@ -1050,13 +1050,13 @@ interface NavigatorHandle {
   the ones of them that were kept
 - With a `NavigationView`, put the navigator in the view's content, go to the
   page of the chosen item in `onSelectionChanged`, go back in
-  `onBackRequested`, and select the item of `handle.current` when the history
+  `onbackrequested`, and select the item of `handle.current` when the history
   moves; `examples/navigation` does this
 
 ## Overlays (`winui-svelte/components`)
 
 A control that opens over the window takes `open` and `target` (and a dialog
-`onResult`) besides its own props; the table `overlayHosted` in
+`onresult`) besides its own props; the table `overlayHosted` in
 `scripts/codegen/tables.ts` names them and the host each uses
 (`src/components/hand-written/overlay`)
 They are `ContentDialog`, and the
@@ -1081,7 +1081,7 @@ flyouts: `Flyout`, `MenuFlyout`, `MenuBarItemFlyout`, `CommandBarFlyout`,
     title="Delete?"
     primaryButtonText="Delete"
     closeButtonText="Cancel"
-    onResult={result => result === ContentDialogResult.Primary && remove()}
+    onresult={result => result === ContentDialogResult.Primary && remove()}
   >This cannot be undone.</ContentDialog>
 </StackPanel>
 ```
@@ -1104,10 +1104,10 @@ flyouts: `Flyout`, `MenuFlyout`, `MenuBarItemFlyout`, `CommandBarFlyout`,
   element loads, and not at all when closed first
   One still open when its
   component goes is closed
-- `onResult(result)` of a `ContentDialog` gets the button the user chose
+- `onresult(result)` of a `ContentDialog` gets the button the user chose
   (`ContentDialogResult.Primary`, `Secondary`) and `None` for the close
   button, Escape and `open = false`
-  `onClosed` and the control's other events
+  `onclosed` and the control's other events
   are the generated ones
 - WinUI shows one `ContentDialog` at a time (a second `ShowAsync` fails with
   0x80000019)
@@ -1138,7 +1138,7 @@ and the property that holds it takes a snippet of that name:
   <TextBlock>Message</TextBlock>
   {#snippet leftItems()}
     <SwipeItems mode="Execute">
-      <SwipeItem text="Delete" onInvoked={remove} />
+      <SwipeItem text="Delete" oninvoked={remove} />
     </SwipeItems>
   {/snippet}
 </SwipeControl>
@@ -1457,7 +1457,7 @@ An app that does not import it does not bundle it
   let handle: WindowHandle | undefined = $state();
 </script>
 
-<Window onClosing={() => { if (handle) hideToTray(handle); return true; }} bind:handle>...</Window>
+<Window onclosing={() => { if (handle) hideToTray(handle); return true; }} bind:handle>...</Window>
 <TrayIcon
   icon={{ forLightTaskbar: "dark.ico", forDarkTaskbar: "light.ico" }}
   tooltip="My app"
@@ -1523,7 +1523,7 @@ the pointer
 ```svelte
 <TrayIcon icon="app.ico" bind:menuAt>
   {#snippet menu({ close })}
-    <MenuFlyout open onClosed={close}>
+    <MenuFlyout open onclosed={close}>
       <MenuFlyoutItem onclick={showWindow}>Show</MenuFlyoutItem>
       <MenuFlyoutItem onclick={quit}>Quit</MenuFlyoutItem>
     </MenuFlyout>
@@ -1775,8 +1775,8 @@ not bundle it
 
 ```ts
 // A panel (StackPanel props) that is a form. Generic over the zod schema:
-// onSubmit's data is z.output<Schema>, or FormObject without a schema.
-<Form schema? noValidate? onSubmit? action? onInvalid? onReset? onCancel? onError? bind:handle />
+// onsubmit's data is z.output<Schema>, or FormObject without a schema.
+<Form schema? noValidate? onsubmit? action? oninvalid? onreset? oncancel? onerror? bind:handle />
 
 interface FormSubmission<Data> {
   data: Data;                       // the schema's output, else the entries as an object
@@ -1793,7 +1793,7 @@ interface FormHandle {
   field(name: string): FieldState | undefined;
   values(): FormValues;
   requestSubmit(options?: { submitter?: ButtonBinding | null }): Promise<boolean>;
-  submit(): Promise<void>;          // no validation, no onInvalid
+  submit(): Promise<void>;          // no validation, no oninvalid
   reset(): void;
   checkValidity(): boolean;         // shows nothing
   reportValidity(): boolean;        // shows the errors, focuses the first invalid field
@@ -1838,7 +1838,7 @@ interface Constraints {
   required?; minLength?; maxLength?; min?: number | Date; max?: number | Date;
   step?; pattern?: RegExp | string  /* a string is anchored, as HTML's */; type?: InputType;
 }
-// formButton({ kind?: ButtonKind.SUBMIT | RESET | BUTTON, form? }): on any control with onClick
+// formButton({ kind?: ButtonKind.SUBMIT | RESET | BUTTON, form? }): on any control with onclick
 ```
 
 - The check order of the message is custom error, value missing, bad input,
@@ -1876,9 +1876,9 @@ come from `winui-svelte/components` with WinUI's properties and events
 `BitmapImage` and `SvgImageSource` are components too, with all their
 properties (`decodePixelWidth`, `decodePixelHeight`, `decodePixelType`,
 `createOptions`, `autoPlay`, `rasterizePixelWidth`, `rasterizePixelHeight`,
-`uriSource`) and events (`onImageOpened` and `onImageFailed` on the `Image`;
-`onDownloadProgress` and `onImageOpened` on the bitmap; `onOpened` and
-`onOpenFailed` on the SVG)
+`uriSource`) and events (`onimageopened` and `onimagefailed` on the `Image`;
+`ondownloadprogress` and `onimageopened` on the bitmap; `onopened` and
+`onopenfailed` on the SVG)
 `WriteableBitmap` and `BitmapSource` have no component: the bindings
 hold no `WriteableBitmap`, and `BitmapSource` is abstract
 
@@ -1974,7 +1974,7 @@ restores it, `pnpm build` ships the library in `dist/bin/<architecture>`, and
 
 The four controls are components made from the metadata like the rest:
 `CanvasControl`, `CanvasAnimatedControl`, `CanvasVirtualControl` and
-`CanvasSwapChainPanel` (props, `onDraw`, `onCreateResources`, `onUpdate`)
+`CanvasSwapChainPanel` (props, `ondraw`, `oncreateresources`, `onupdate`)
 The
 rest of Win2D is its classes, used as they are, with the helpers below
 
@@ -1988,7 +1988,7 @@ and the control is invalidated
 Each call on `painter` is kept, and the Draw
 event replays them on the control's session
 `createResources` runs once the
-device exists; `onDrawn(count)` after each redraw; `dpi` is the screen's, and
+device exists; `ondrawn(count)` after each redraw; `dpi` is the screen's, and
 `dpiScale` (a `CanvasControl` prop) scales it
 A `Painter` is also made at once
 on a session with `drawingPainter(session)`, and the same calls exist as
@@ -2102,7 +2102,7 @@ Pointer events of the control reach the canvas as DOM events: `pointerdown`,
 `pointerType`, the modifier keys and, for `wheel`, `deltaX` and `deltaY`
 The positions are in canvas pixels, which are the control's device-independent
 pixels
-The handlers an app passes to `Canvas2D` (`onPointerPressed` and the others) are
+The handlers an app passes to `Canvas2D` (`onpointerpressed` and the others) are
 still called
 Not tried: the events need a real pointer, which a test must not inject
 
