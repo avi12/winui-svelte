@@ -13,8 +13,9 @@
   import type { DependencyObject } from "#winui/microsoft/ui/xaml/DependencyObject";
   import { VisualTreeHelper } from "#winui/microsoft/ui/xaml/media/VisualTreeHelper";
   import { unboxed } from "winui-svelte";
-  import { GridView, ListView, MoveDirection, Window } from "winui-svelte/components";
+  import { GridView, ListView, Window } from "winui-svelte/components";
   import type { Group, ListHandle } from "winui-svelte/components";
+  import { ListViewSelectionMode, MoveDirection } from "winui-svelte/enums";
   import { exitApplication } from "winui-svelte/window";
 
   const DEFAULT_ROWS = 1000;
@@ -233,7 +234,7 @@
         view = control;
       }}
       reorderable
-      selectionMode="Single"
+      selectionMode={ListViewSelectionMode.Single}
       bind:handle
       bind:selectedKey
     />
@@ -249,7 +250,7 @@
       }}
       onreorder={reorder}
       reorderable
-      selectionMode={host.options["selection"] === "single" ? "Single" : "None"}
+      selectionMode={host.options["selection"] === "single" ? ListViewSelectionMode.Single : ListViewSelectionMode.None}
       bind:handle
       bind:selectedKey
     />
