@@ -46,7 +46,6 @@ export interface ParsedMedia {
   readonly unknown: readonly string[];
 }
 
-const PIXELS_PER_REM = 16;
 const CHAIN_PARTS = 5;
 const COMPARISON_PARTS = 3;
 const CSS_DPI = 96;
@@ -449,8 +448,6 @@ function amountOf({ text, unit }: {
     ["dpcm", CM_PER_INCH / CSS_DPI]
   ] : [
     ["px", 1],
-    ["em", PIXELS_PER_REM],
-    ["rem", PIXELS_PER_REM],
     ["", 1]
   ]);
   const multiplier = unit === MediaUnit.number ? 1 : multipliers.get(suffix);

@@ -42,7 +42,8 @@ test("range syntax, legacy prefixes and units", () => {
   assert.equal(matches({ query: "(width > 800px)" }), false);
   assert.equal(matches({ query: "(400px <= width <= 900px)" }), true);
   assert.equal(matches({ query: "(900px < width)" }), false);
-  assert.equal(matches({ query: "(min-width: 50em)" }), true, "50em is 800px");
+  assert.equal(matches({ query: "(min-width: 800px)" }), true);
+  assert.equal(matches({ query: "(min-width: 50em)" }), false, "only px is a native length");
   assert.equal(matches({ query: "(max-width: 49.9rem)" }), false);
   assert.equal(matches({ query: "(min-resolution: 144dpi)" }), true, "1.5 dppx is 144 dpi");
   assert.equal(matches({ query: "(resolution >= 2x)" }), false);

@@ -9,7 +9,7 @@ test("a width query is read into bounds in px", () => {
     minHeight: null,
     maxHeight: null
   });
-  assert.deepEqual(parseMediaQuery("screen and (min-width: 40rem) and (max-width: 900px)"), {
+  assert.deepEqual(parseMediaQuery("screen and (min-width: 640px) and (max-width: 900px)"), {
     minWidth: 640,
     maxWidth: 900,
     minHeight: null,
@@ -21,6 +21,11 @@ test("a width query is read into bounds in px", () => {
     minHeight: null,
     maxHeight: 300
   });
+});
+
+test("a length in em or rem is not a media condition: only px is native", () => {
+  assert.equal(parseMediaQuery("(min-width: 40rem)"), null);
+  assert.equal(parseMediaQuery("(max-width: 40em)"), null);
 });
 
 test("the tighter of two bounds on one side wins", () => {

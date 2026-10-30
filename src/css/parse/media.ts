@@ -30,8 +30,7 @@ export interface Viewport {
   height: number;
 }
 
-const PIXELS_PER_REM = 16;
-const AMOUNT = String.raw`(?<amount>\d*\.?\d+)(?<unit>px|rem|em)`;
+const AMOUNT = String.raw`(?<amount>\d*\.?\d+)px`;
 const FEATURE = new RegExp(String.raw`^\(\s*(?<limit>min|max)-(?<axis>width|height)\s*:\s*${AMOUNT}\s*\)$`, "iu");
 const RANGE = new RegExp(String.raw`^\(\s*(?<axis>width|height)\s*(?<operator>>=|<=)\s*${AMOUNT}\s*\)$`, "iu");
 const MEDIA_TYPE = /^(?:only\s+)?(?:screen|all)\s+and\s+/iu;
@@ -52,7 +51,7 @@ function limitKey({ isMin, isWidth }: {
 
 function termOf(text: string) {
   const groups = FEATURE.exec(text)?.groups ?? RANGE.exec(text)?.groups;
-  const { limit, operator, axis = "", amount = "0", unit = "px" } = groups ?? {};
+  const { limit, operator, axis = "", amount = "0" } = groups ?? {};
   const isTermMissing = groups === undefined;
   if (isTermMissing) {
     return null;
@@ -67,7 +66,7 @@ function termOf(text: string) {
   return {
     key,
     isMin,
-    pixels: Number(amount) * (unit.toLowerCase() === "px" ? 1 : PIXELS_PER_REM)
+    pixels: Number(amount)
   };
 }
 
