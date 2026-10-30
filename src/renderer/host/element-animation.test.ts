@@ -32,7 +32,7 @@ const FAKE_ROW_HEIGHT = 20;
 // The fake line runs from (0, 0) to (30, 40), with a stroke 2 thick.
 const LINE_LENGTH = 50;
 const STROKE_THICKNESS = 2;
-const STATIC_PANELS = 3;
+const STATIC_PANELS = 5;
 
 interface Props {
   isShown: boolean;
@@ -42,7 +42,12 @@ interface Props {
   isBlurring: boolean;
   isDrawing: boolean;
   isOnTheLeft: boolean;
+  isLogged: boolean;
+  isNested: boolean;
+  isInner: boolean;
   ids: number[];
+  rows: number[];
+  log: (event: string) => void;
 }
 
 const hidden: Props = {
@@ -53,7 +58,12 @@ const hidden: Props = {
   isBlurring: false,
   isDrawing: false,
   isOnTheLeft: true,
-  ids: []
+  isLogged: false,
+  isNested: false,
+  isInner: true,
+  ids: [],
+  rows: [],
+  log() {}
 };
 
 function createClock() {
@@ -81,7 +91,9 @@ function createClock() {
 
 let isReduced = false;
 
-function mountFixture(overrides: Partial<Props> = {}) {
+function mountFixture({ intro: isIntro, ...overrides }: Partial<Props> & {
+  intro?: boolean;
+} = {}) {
   const clock = createClock();
   const warnings: string[] = [];
   const dashes: number[][] = [];
@@ -99,6 +111,9 @@ function mountFixture(overrides: Partial<Props> = {}) {
     props: {
       ...hidden,
       ...overrides
+    },
+    ...isIntro !== undefined && {
+      intro: isIntro
     }
   });
   const root: object = mounted.root;
@@ -123,10 +138,12 @@ function panelsOf(panel: FakeMotionPanel) {
 
 function staticPanelsOf(panel: FakeMotionPanel) {
   const panels = panel.children.items.filter(item => item instanceof FakeMotionPanel);
-  const [list, left, right] = panels.slice(-STATIC_PANELS);
-  assert.ok(list && left && right);
+  const [list, rows, nesting, left, right] = panels.slice(-STATIC_PANELS);
+  assert.ok(list && rows && nesting && left && right);
   return {
     list,
+    rows,
+    nesting,
     left,
     right
   };
@@ -335,6 +352,126 @@ test("animate:flip moves an element that changed place from where it was", () =>
   clock.advance(PAST_THE_END);
   assert.equal(third.translation.y, 0, "and it ends in its place");
   assert.equal(first.translation.y, 0);
+  finish();
+});
+
+test("animate:flip moves the siblings of a leaving element into place while it leaves", () => {
+  const { clock, root, mounted, finish } = mountFixture({
+    rows: [1, 2, 3]
+  });
+  const { rows } = staticPanelsOf(root);
+  const [leaving, second, third] = rows.children.items;
+  assert.ok(leaving instanceof FakeMotionPanel);
+  assert.ok(second instanceof FakeMotionPanel && third instanceof FakeMotionPanel);
+
+  mounted.set({ rows: [2, 3] });
+  assert.deepEqual(rows.children.items, [leaving, second, third], "the leaving element is still shown");
+  assert.equal(leaving.margin.bottom, -FAKE_ROW_HEIGHT, "but takes no room along the panel");
+  assert.equal(second.top, 0, "so the second is already where it will stay");
+  assert.equal(second.translation.y, FAKE_ROW_HEIGHT, "and starts a row below, as flip moves it");
+  assert.equal(third.translation.y, FAKE_ROW_HEIGHT);
+
+  clock.advance(FRAME * 3);
+  assert.ok(second.translation.y > 0 && second.translation.y < FAKE_ROW_HEIGHT, `${second.translation.y} on its way while the first fades`);
+  assert.ok(leaving.opacity < 1 && leaving.opacity > 0, `${leaving.opacity} fading`);
+
+  clock.advance(PAST_THE_END);
+  assert.deepEqual(rows.children.items, [second, third], "the leaving element is removed");
+  assert.equal(second.translation.y, 0, "and nothing jumps when it is");
+  finish();
+});
+
+test("a leaving element that comes back gives its room back", () => {
+  const { clock, root, mounted, finish } = mountFixture({
+    rows: [1, 2]
+  });
+  const { rows } = staticPanelsOf(root);
+  const [first, second] = rows.children.items;
+  assert.ok(first instanceof FakeMotionPanel && second instanceof FakeMotionPanel);
+
+  mounted.set({ rows: [2] });
+  assert.equal(first.margin.bottom, -FAKE_ROW_HEIGHT);
+  clock.advance(FRAME * 2);
+  mounted.set({ rows: [1, 2] });
+  assert.equal(first.margin.bottom, 0, "its own margin is back at once");
+  assert.equal(second.top, FAKE_ROW_HEIGHT);
+  clock.advance(PAST_THE_END);
+  assert.deepEqual(rows.children.items, [first, second]);
+  finish();
+});
+
+test("introstart, introend, outrostart and outroend reach the element's handlers", () => {
+  const events: string[] = [];
+  const { clock, mounted, finish } = mountFixture({
+    log: event => events.push(event)
+  });
+  mounted.set({ isLogged: true });
+  clock.advance(FRAME);
+  assert.deepEqual(events, ["introstart"], "once the intro begins");
+  clock.advance(PAST_THE_END);
+  assert.deepEqual(events, ["introstart", "introend"]);
+
+  mounted.set({ isLogged: false });
+  clock.advance(FRAME);
+  assert.deepEqual(events.slice(2), ["outrostart"]);
+  clock.advance(PAST_THE_END);
+  assert.deepEqual(events.slice(2), ["outrostart", "outroend"]);
+  finish();
+});
+
+test("{intro: false} keeps a global in: and transition: from playing on the first render, {intro: true} plays them", () => {
+  const waiting = mountFixture({
+    isLogged: true,
+    intro: false
+  });
+  const [still] = panelsOf(waiting.root);
+  assert.ok(still);
+  assert.deepEqual(still.opacities, [1], "no intro when told not to");
+  waiting.finish();
+
+  const byDefault = mountFixture({
+    isLogged: true
+  });
+  const [playing] = panelsOf(byDefault.root);
+  assert.equal(playing?.opacity, 0, "Svelte's default is to play it");
+  byDefault.finish();
+
+  const events: string[] = [];
+  const introduced = mountFixture({
+    isLogged: true,
+    log: event => events.push(event),
+    intro: true
+  });
+  const [fading] = panelsOf(introduced.root);
+  assert.ok(fading);
+  assert.equal(fading.opacity, 0, "the intro starts hidden");
+  introduced.clock.advance(FRAME);
+  assert.deepEqual(events, ["introstart"]);
+  introduced.clock.advance(PAST_THE_END);
+  assert.equal(fading.opacity, 1);
+  assert.deepEqual(events, ["introstart", "introend"]);
+  introduced.finish();
+});
+
+test("|local plays only when its own block comes in, |global whenever an ancestor does", () => {
+  const { clock, root, mounted, finish } = mountFixture();
+  const { nesting } = staticPanelsOf(root);
+
+  mounted.set({ isNested: true });
+  const [outer] = nesting.children.items;
+  assert.ok(outer instanceof FakeMotionPanel);
+  const [local, global] = outer.children.items;
+  assert.ok(local instanceof FakeMotionPanel && global instanceof FakeMotionPanel);
+  assert.deepEqual(local.opacities, [1], "the local one waits: its own block did not change");
+  assert.equal(global.opacity, 0, "the global one plays");
+  clock.advance(PAST_THE_END);
+
+  mounted.set({ isInner: false });
+  mounted.set({ isInner: true });
+  const [again] = outer.children.items;
+  assert.ok(again instanceof FakeMotionPanel);
+  assert.equal(again.opacity, 0, "and now its own block came in, the local one plays");
+  clock.advance(PAST_THE_END);
   finish();
 });
 

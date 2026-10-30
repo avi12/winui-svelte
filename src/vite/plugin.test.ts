@@ -75,7 +75,7 @@ test("Svelte's runtime is read with the event edits, and a changed Svelte is ref
   assert.throws(() => patchSvelteRuntime({
     filename,
     source: "function handle() {}"
-  }), /cannot read this Svelte/u);
+  }), /cannot read Svelte .*attributes.js/u);
   assert.equal(
     patchSvelteRuntime({
       filename: "/app/other.js",

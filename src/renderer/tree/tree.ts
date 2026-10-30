@@ -197,7 +197,14 @@ function clearParent<Native>({ host, parent }: {
   }
 }
 
-function listenersOf<Native>({ element, type }: {
+/**
+ * The handlers an element holds for an event type, by handler, each with what
+ * ends its subscription.
+ *
+ * @param options - The element and the event type.
+ * @returns The element's map for the type, made when it had none.
+ */
+export function listenersOf<Native>({ element, type }: {
   element: ElementNode<Native>;
   type: string;
 }) {

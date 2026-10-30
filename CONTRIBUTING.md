@@ -58,6 +58,7 @@ Build once before `pnpm check` or the examples
 | `pnpm bindings` | the WinUI bindings in `.winapp/bindings`: winapp's run, then WebView2's (`scripts/bindings/`) |
 | `pnpm test:windows` | the examples in real windows: `test/lists.test.ts`, `test/items.test.ts`, `test/web.test.ts` and `test/window.test.ts`. Needs an ordinary desktop session (see below) |
 | `pnpm gen:components` | regenerates `src/components/generated`, the class list in `package.json` and the tables in the README from WinUI's metadata. Never edit those files by hand |
+| `pnpm check:svelte-matrix` | runs the Svelte-facing tests against every release of the peer range (slow; see "Svelte versions") |
 | `pnpm check:package` | packs the tarball and runs publint and Are The Types Wrong on it |
 
 Examples and tests resolve `winui-svelte` the way a consumer does, through
@@ -152,19 +153,43 @@ To make your editor show what the checks see:
 
 ## The Svelte build
 
-winui-svelte runs on a published Svelte (the `svelte` devDependency is pinned
-to the version its peer range `~5.56.7` starts at)
+winui-svelte runs on a published Svelte (the `svelte` devDependency is the one
+the package is developed on, and the peer range `5.51.1 - 5.57.3` is the span
+the matrix below proves)
 It adds no compiler
 option: components compile with Svelte's own compiler, and the tree draws as a
 DOM (`src/renderer/tree/dom.ts`, `document.ts`)
-Three spots of Svelte's
+A few spots of Svelte's
 client runtime are read with edits (`src/vite/runtime-patch.ts`); each edit is
-an exact anchor, and a Svelte release that moves one makes the plugin and
-`svelteHooks()` throw, naming the file
+an anchor matched by its tokens (whitespace may differ), and a Svelte release
+that moves one makes the plugin and `svelteHooks()` throw, naming the file and
+the release
+An edit marked optional is for releases that still have its anchor
 
-To support a newer Svelte: install it, run `pnpm test`, fix the anchors in
-`runtime-patch.ts` if they moved (and the bundle test, which reads the one-Button
-size), and then widen the peer range and the devDependency together
+## Svelte versions
+
+`pnpm check:svelte-matrix` proves the peer range
+`scripts/svelte-matrix/versions.json` lists the releases, each with the
+integrity the npm registry publishes
+For each one it installs that exact release from the registry into
+`.verify/svelte-<version>` with its own `pnpm install --ignore-workspace
+--ignore-scripts` (the shared `node_modules` is never touched), checks the
+integrity, and runs the renderer, host, tree, blocks and transition tests, and
+the anchor test, with `WINUI_SVELTE_SVELTE_ROOT` pointing the loader (and the
+Svelte compiler) at that copy
+It takes about a minute, so `pnpm lint` does not run it; run it before a
+release and after any edit of `runtime-patch.ts`
+`pnpm check:svelte-matrix --version 5.57.3` runs one release
+
+To add a Svelte release
+- add it to `versions.json` with its integrity (`npm view svelte@<version>
+  dist.integrity`), in order, and run `pnpm check:svelte-matrix --version
+  <version>`
+- if an anchor moved, change `runtime-patch.ts` so one edit matches both
+  shapes, or mark the edit optional when the older releases alone have it
+- the peer range in `package.json` must read `<oldest> - <newest>` of the list
+  (`scripts/svelte-matrix/peer-range.test.ts` fails otherwise)
+- run `pnpm test` (the bundle test reads the one-Button size)
 
 ## Patches
 

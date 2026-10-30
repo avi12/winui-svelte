@@ -36,12 +36,14 @@ export interface Mounted<Props> {
 /**
  * Mounts a Svelte component on WinUI.
  *
- * @param options - The component to mount, and its props.
+ * @param options - The component to mount, its props, and `intro`: whether its
+ *   global `in:` and `transition:` directives play on this first render (Svelte's default: they do).
  * @returns The component's root control, and `set`, `onRootChange` and `unmount` to drive it.
  */
-export function mountControl<Props extends object>({ component, props: initial }: {
+export function mountControl<Props extends object>({ component, props: initial, intro: isIntro }: {
   component: Component<Props>;
   props: Props;
+  intro?: boolean | undefined;
 }) {
   const props = $state(initial);
   const fragment = renderer.createFragment();
@@ -49,7 +51,8 @@ export function mountControl<Props extends object>({ component, props: initial }
     component,
     renderer,
     target: fragment,
-    props
+    props,
+    intro: isIntro
   });
   flush();
   let root = rootControl(fragment);

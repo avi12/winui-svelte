@@ -78,7 +78,7 @@ written with it
 | OS | Windows 10 1809 (17763) or newer, Windows 11 |
 | Node | 24 or newer |
 | Windows App SDK runtime | 2.2, installed on the machine. A missing runtime makes `initWindowsAppSdk` throw `WindowsAppRuntimeMissing`; the package does not install it (your app ships the installer and offers it) |
-| Svelte | 5.56.7 or a later 5.56 release (the peer range is `~5.56.7`; the package edits three spots of Svelte's runtime and says so when a release no longer matches) |
+| Svelte | 5.51.1 to 5.57.3 (the peer range `5.51.1 - 5.57.3` is what `pnpm check:svelte-matrix` proves; the package edits a few spots of Svelte's runtime and says so, naming the file and the release, when one no longer matches) |
 | Vite | 8 (for the dev server and hot reload) |
 
 ## Install
@@ -1044,6 +1044,10 @@ elements of a component (`<border>`, `<text-block>`), with the functions of
 
 The Vite plugin turns the support on in each component that uses a directive or
 imports one of those modules; an app that uses none does not bundle any of it
+`onintrostart`, `onintroend`, `onoutrostart` and `onoutroend` work on any
+element, `|local` and `|global` as in Svelte, and `mountControl({ component,
+props, intro: false })` keeps the global `in:` and `transition:` directives
+from playing on the first render (they play by default, as in Svelte)
 The animation moves the control's `Opacity`, `Translation`, `Scale`,
 `Rotation`, size, margin, padding, border and a shape's stroke dashes
 See
@@ -1237,9 +1241,10 @@ Stated plainly, so nobody finds them by surprise:
   `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
   `window.systemBackdrop` reads null for them (the controller holds the
   material)
-- **Svelte is held to one minor.** The package reads three spots of Svelte's
-  runtime with edits, so the peer range is `~5.56.7` and widens only after a
-  release is checked
+- **Svelte is held to the releases checked.** The package reads a few spots of
+  Svelte's runtime with edits, so the peer range is the span of releases the
+  matrix (`pnpm check:svelte-matrix`) runs the tests against, and it widens
+  only after a release passes; 5.51.0 and older do not match an anchor
 - **Write an attribute on a raw element in kebab case** (`corner-radius="4"`)
   Svelte's compiler lowercases the names of static attributes, so
   `cornerRadius="4"` reaches the element as `cornerradius`
@@ -1259,8 +1264,12 @@ Stated plainly, so nobody finds them by surprise:
   Override the control's theme resources instead
 - **Transitions that WinUI cannot draw.** `blur` fades without blurring (no
   element blur in WinUI without Composition effects), `draw` cannot measure a
-  `path` (a geometry has no length), a directive goes on a raw element, and a
-  leaving element in a keyed `{#each}` stays in the layout until it is gone
+  `path` (a geometry has no length), and a directive goes on a raw element
+  (Svelte allows none on a component; wrap it in an element)
+- **A leaving element and its panel.** In a keyed `{#each}` with `animate:` the
+  siblings of a leaving element flip into place as it leaves when the panel has
+  an axis (a `StackPanel`); in a `Grid` or `Canvas` the element keeps its place
+  in the layout until it is gone
 - **Two controls are not components:** `SwapChainBackgroundPanel` (the UWP
   panel WinUI 3 keeps for compatibility: it refuses Opacity, Width, Height, the
   min and max sizes and Margin, and is allowed only as the application's root

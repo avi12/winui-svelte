@@ -120,7 +120,11 @@ interface Mounted<Props> {
   onRootChange(listener: (root: FrameworkElement) => void): void;
   unmount(): void;                       // Svelte's unmount (cleanups run), then releases the controls it made
 }
-function mountControl<Props extends object>(options: { component: Component<Props>; props: Props }): Mounted<Props>;
+function mountControl<Props extends object>(options: {
+  component: Component<Props>;
+  props: Props;
+  intro?: boolean; // play the global in: / transition: directives on this first render; Svelte's default is true
+}): Mounted<Props>;
 
 // The classes (and enums) a tag, an enum-valued attribute or an attached
 // property may name, by WinUI name: `registerControls(winui)` where `winui` is
@@ -193,7 +197,17 @@ It is idempotent, and an app that never uses a transition never bundles
 the module
 
 A directive goes on a raw element (`<border transition:fade>`), as Svelte does
-not allow one on a component
+not allow one on a component (`component_invalid_directive`); to move a
+component in and out, wrap it in a raw element that carries the directive
+(`<border transition:fade><Button /></border>`), or use the control's own
+`transitions` property (WinUI's entrance and exit transitions)
+
+`|global` and `|local` mean what they do in Svelte: a transition is local by
+default and plays only when the block it sits in comes or goes itself, a
+global one plays whenever any ancestor block does
+`mountControl({ component, props, intro: false })` keeps the global `in:` and
+`transition:` directives from playing on the first render (Svelte's `mount`
+plays them by default, and so does `intro: true`)
 
 ```ts
 function enableElementAnimation(options?: {
@@ -222,9 +236,13 @@ What it does:
   length in WinUI and throws
 - `animate:flip` reads each element's place from `TransformToVisual` after a
   layout pass
-  A leaving element in a keyed `{#each}` stays in the layout
-  while it leaves (WinUI cannot take it out of the flow), so its siblings
-  move when it is gone
+  A leaving element in a keyed `{#each}` inside a `StackPanel` (a panel with an
+  `Orientation`) gives its room back to the panel at once: its trailing margin
+  along the panel's axis is made as negative as its size, so it stays drawn
+  where it is while its siblings flip into place, and its own margin is back
+  if it returns
+  In a panel with no axis (a `Grid`, a `Canvas`) the element stays in the
+  layout while it leaves, and its siblings move when it is gone
 - A leaving element stays in its parent, out of reach (`IsHitTestVisible`
   false, Svelte's `inert`), until its outro has run, then Svelte removes it
 - `Tween`, `Spring` and a transition's `tick` step on `requestAnimationFrame`,
@@ -232,8 +250,9 @@ What it does:
   `prefersReducedMotion` matches nothing
 - A property WinUI cannot animate (`filter`, so `blur` only fades) is named
   once through `warn` and left out
-- `introstart`, `outroend` and the like are not WinUI events: an `onintrostart`
-  handler throws, and none of them are raised
+- `onintrostart`, `onintroend`, `onoutrostart` and `onoutroend` are Svelte's
+  events, not WinUI's: the element holds the handler (it is never given to the
+  control) and Svelte raises them as the transition begins and ends
 - `getComputedStyle` is defined as a global for WinUI's elements; any other
   argument goes to the one that was there, if any
 
@@ -300,7 +319,7 @@ function startModuleServer(options: {
 function createWindowModuleRunner(port: MessagePort): { runner: ModuleRunner; receive(): void };
 ```
 
-Svelte is a published release (peer range `~5.56.7`), compiled with its own
+Svelte is a published release (peer range `5.51.1 - 5.57.3`), compiled with its own
 compiler and run on its own client runtime
 The package owns the rest: the
 tree's nodes are shaped like DOM nodes (`src/renderer/tree/dom.ts`), and
@@ -308,12 +327,13 @@ tree's nodes are shaped like DOM nodes (`src/renderer/tree/dom.ts`), and
 `Node`, `Element`, `Text`, `Comment` and `DocumentFragment` the runtime reads
 A component's static markup is parsed once into inert nodes and cloned into
 the tree
-Three spots of the runtime are read with edits (`runtime-patch.ts`,
+A few spots of the runtime are read with edits (`runtime-patch.ts`,
 applied by the plugin and by `svelteHooks()`): a handler gets all of WinUI's
-arguments (sender and args), delegated events listen on their own control, and
-the root listener is off
-An edit whose anchor is missing throws, naming the
-file: it means a Svelte release outside the peer range
+arguments (sender and args), delegated events listen on their own control, the
+root listener is off, and an element is made without a namespace
+An anchor is matched by its tokens, whatever the whitespace between them
+An edit whose anchor is missing throws, naming the file and the Svelte
+release: it means a release outside the peer range
 
 Compile errors: a `.svelte` file that does not compile is printed on the host
 process's stderr as `file:line:column: message [code]` and its code frame (at

@@ -1,21 +1,10 @@
 import type { CompileOptions } from "./compile.ts";
 import { compileSvelte, isSvelteFile } from "./compile.ts";
 import { isPatchedRuntime, patchSvelteRuntime } from "./runtime-patch.ts";
+import { resolveSvelte } from "./svelte-resolve.ts";
 import { readFileSync } from "node:fs";
 import type { RegisterHooksOptions } from "node:module";
 import { fileURLToPath } from "node:url";
-
-const BROWSER_CONDITION = "browser";
-const SVELTE_SPECIFIER = "svelte";
-const svelteFolder = /[\\/]node_modules[\\/](?:svelte|esm-env)[\\/]/u;
-
-function isSvelteImport({ specifier, parentUrl }: {
-  specifier: string;
-  parentUrl: string | undefined;
-}) {
-  const isSveltePackage = specifier === SVELTE_SPECIFIER || specifier.startsWith(`${SVELTE_SPECIFIER}/`);
-  return isSveltePackage || svelteFolder.test(parentUrl ?? "");
-}
 
 /**
  * Node module hooks that run `.svelte` files from source: Svelte resolves to
@@ -28,20 +17,7 @@ function isSvelteImport({ specifier, parentUrl }: {
  */
 export function svelteHooks(options: CompileOptions = {}) {
   const hooks: RegisterHooksOptions = {
-    resolve(specifier, context, nextResolve) {
-      const isSvelte = isSvelteImport({
-        specifier,
-        parentUrl: context.parentURL
-      });
-      if (!isSvelte) {
-        return nextResolve(specifier, context);
-      }
-
-      return nextResolve(specifier, {
-        ...context,
-        conditions: [...context.conditions, BROWSER_CONDITION]
-      });
-    },
+    resolve: resolveSvelte,
     load(url, context, nextLoad) {
       if (!isSvelteFile(url)) {
         const loaded = nextLoad(url, context);

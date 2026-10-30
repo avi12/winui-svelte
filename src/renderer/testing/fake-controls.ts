@@ -117,6 +117,8 @@ export class FakeMotionPanel {
   };
 
   parent: FakeMotionPanel | null = null;
+  // WinUI's Orientation.Vertical, a StackPanel's default.
+  orientation = 0;
   translation = {
     x: 0,
     y: 0,
@@ -148,8 +150,20 @@ export class FakeMotionPanel {
     this.opacities.push(value);
   }
 
+  // Where a vertical panel puts it: after the slots (size and margins) of the children before it.
   get top() {
-    return (this.parent?.children.indexOf(this) ?? 0) * FAKE_ROW_HEIGHT;
+    const siblings = this.parent?.children.items ?? [this];
+    const before = siblings.slice(0, siblings.indexOf(this));
+    let top = this.margin.top;
+    for (const sibling of before) {
+      top += sibling instanceof FakeMotionPanel ? sibling.slot : FAKE_ROW_HEIGHT;
+    }
+
+    return top;
+  }
+
+  get slot() {
+    return this.actualSize.y + this.margin.top + this.margin.bottom;
   }
 
   updateLayout() {
