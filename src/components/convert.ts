@@ -37,10 +37,10 @@ import type {
   ResourceDictionary,
   UIElement
 } from "./generated/bindings.ts";
+import type { ThemeBrush } from "./generated/theme-brushes.ts";
 import { mediaSeam } from "./media-seam.ts";
 import type { ResourceRecordInput } from "./resource-record.ts";
 import { styleTarget } from "./style-targets.ts";
-import type { ThemeBrush } from "./generated/theme-brushes.ts";
 import type {
   AttachedInput,
   ColorInput,
@@ -166,6 +166,7 @@ export type GridLengthInput = number | GridLengthText | GridLengthValue;
  * prop takes their names too:
  * `declare module "winui-svelte/components" { interface AppBrushes { BrandBrush: true } }`.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- an app fills it by merging
 export interface AppBrushes {}
 
 /** A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush. */
@@ -288,11 +289,15 @@ export function enumValue<Table extends Record<string, number>>({ table, input }
   const members: NativeValue[] = Object.values(table);
   // The bindings type a flag enum as its single members, while WinUI takes
   // any combination of their bits.
-  const isValue = (value: NativeValue): value is Table[keyof Table] => members.includes(value) || isList(input);
+  function isValue(value: NativeValue): value is Table[keyof Table] {
+    return members.includes(value) || isList(input);
+  }
+
   let bits = 0;
   for (const part of isList(input) ? input : [input]) {
     const value = typeof part === "number" ? part : read(table, String(part));
-    if (!members.includes(value)) {
+    const isMember = members.includes(value);
+    if (!isMember) {
       throw new RangeError(`${String(part)} is not one of ${Object.keys(table).join(", ")}`);
     }
 
@@ -346,7 +351,7 @@ function nativeMember<Key extends string, Member>({ table, key }: {
  * A grid length prop as the bindings' `GridLength`; it also reads a track of
  * a Grid's `columns` or `rows` text, which `gridLengthParts` checks.
  */
-export function gridLengthOf(input: GridLengthInput | string) {
+export function gridLengthOf(input: number | string | GridLengthValue) {
   const isGridLength = typeof input === "object";
   if (isGridLength) {
     return input;

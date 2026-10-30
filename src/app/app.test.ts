@@ -1,6 +1,6 @@
+import type { Activation } from "./single-instance.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { Activation } from "./single-instance.ts";
 
 // The single-instance and notification logic on stand-ins for the platform:
 // who is primary, what a redirect carries, when the app registers, and what

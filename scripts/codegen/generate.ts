@@ -6,11 +6,11 @@ import {
   emitControlsTable,
   emitDeclaration,
   emitEnums,
-  emitThemeBrushes,
   emitIndex,
   emitLevel,
   emitMetadata,
-  emitStrictness
+  emitStrictness,
+  emitThemeBrushes
 } from "./emit.ts";
 import { bindingClasses, buildExtraModels, buildModel, requestedClasses } from "./model.ts";
 import type { Model } from "./model.ts";

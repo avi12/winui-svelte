@@ -7,7 +7,13 @@ import type {
   StackPanelComponentProps,
   WindowComponentProps
 } from "#src/components/index.js";
-import { AppBarClosedDisplayMode, Backdrop, Orientation, ThemeBrush, TrayBalloonIcon } from "#src/enums.js";
+import {
+  AppBarClosedDisplayMode,
+  Backdrop,
+  Orientation,
+  ThemeBrush,
+  TrayBalloonIcon
+} from "#src/enums.js";
 import type { BalloonOptions } from "#src/tray/index.js";
 
 // Never run: `pnpm check` (tsc) reads it. A prop that takes a closed set of
@@ -17,6 +23,7 @@ import type { BalloonOptions } from "#src/tray/index.js";
 
 declare module "#src/components/convert.js" {
   interface AppBrushes {
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- a resource key keeps its XAML case
     BrandBrush: true;
   }
 }
