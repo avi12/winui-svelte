@@ -795,6 +795,23 @@ its own class, when it is made, so an app bundles only the bindings it uses)
 Components are the supported way; see [API.md](API.md) for the raw forms and
 the renderer's functions
 
+## Media
+
+`Image`, `ImageBrush`, `ImageIcon`, `PathIcon`, `MediaPlayerElement` and
+`MediaTransportControls` keep WinUI's names, properties and events
+An image `source` is a URI, a file path, the bytes of a file, an
+`SvgImageSource`, or a snippet holding `<BitmapImage>` or `<SvgImageSource>`,
+as XAML writes `<Image.Source>`
+`winui-svelte/media` is opt-in and adds `bitmapImageOf` and `svgImageSourceOf`
+(decode options, SVG markup, `data:` URIs, bytes), and `createMediaPlayer`, a
+real `MediaPlayer` with no window for audio, with its position, duration and
+state as runes
+SVG is an `SvgImageSource` in an `Image`, `ImageBrush` or `ImageIcon` (static
+SVG: no scripts, no animation, limited CSS), or a path string in `PathIcon`;
+`ImageIcon` with `showAsMonochrome` takes its colour from `foreground`
+[API.md](API.md#media-winui-sveltemedia) has the formats WinUI decodes and the
+details, and `examples/media` the example
+
 ## Styling with CSS
 
 `<style>` blocks are translated at build time into WinUI `Style`s and applied
@@ -921,6 +938,7 @@ protocol and the tests
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/app` | single-instance handling and app notifications |
+| `winui-svelte/media` | `bitmapImageOf`, `svgImageSourceOf`, `createMediaPlayer`: image sources and a windowless `MediaPlayer` (opt-in; [`API.md`](API.md#media-winui-sveltemedia)) |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
 | `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
@@ -962,6 +980,15 @@ Stated plainly, so nobody finds them by surprise:
   the supported platforms; no entry point does work when imported
   The
   Windows App SDK runtime must be installed; the package does not install it
+- **MediaPlayer events do not reach JavaScript.** `MediaPlayer` raises all of
+  its events (`MediaOpened`, `MediaEnded`, `CurrentStateChanged`, ...) on a
+  thread of its own, and dynwinrt does not deliver a callback raised on another
+  thread
+  `createMediaPlayer` keeps a `state` that it reads again every 100 ms on the
+  UI thread (`playbackState`, `position`, `naturalDuration`, `isEnded`), which
+  is what an app relies on
+- **No `WriteableBitmap` component.** The bindings hold no `WriteableBitmap`;
+  `RenderTargetBitmap`, `SoftwareBitmapSource` and `BitmapImage` are there
 - **The tray icon hears the mouse by polling.** WinUI has no tray API, and
   dynwinrt cannot make a JavaScript function a native window procedure, so
   `winui-svelte/tray` reads the pointer and the buttons every 30 ms instead of
