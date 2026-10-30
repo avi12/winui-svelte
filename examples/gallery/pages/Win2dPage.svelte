@@ -8,8 +8,9 @@
   const SUN_RADIUS = 36;
   const MARGIN = 16;
   const MAX_SUN = 100;
+  const INITIAL_SUN = 50;
 
-  let sunAt = $state(50);
+  let sunAt = $state(INITIAL_SUN);
   const label = createTextFormat({ size: 18 });
 </script>
 
@@ -17,10 +18,9 @@
   caption="Win2D draws on a Canvas from a function. What the function reads is tracked, so moving the slider draws again."
   title="Win2D canvas"
 >
-  <Slider header="Sun position: {sunAt}" bind:value={sunAt} maximum={MAX_SUN} />
+  <Slider header="Sun position: {sunAt}" maximum={MAX_SUN} bind:value={sunAt} />
   <Canvas
     {@attach keyControl("win2d")}
-    height={CANVAS_HEIGHT}
     draw={({ painter, width, height, device }) => {
       painter.fillRectangle({
         x: 0,
@@ -63,5 +63,6 @@
         format: label
       });
     }}
+    height={CANVAS_HEIGHT}
   />
 </PageFrame>

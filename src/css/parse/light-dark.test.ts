@@ -24,7 +24,9 @@ test("each light-dark() becomes a var() and a pair", () => {
 });
 
 test("a value without light-dark(), or with a malformed one, is left as it is", () => {
-  const names = () => "--x";
+  function names() {
+    return "--x";
+  }
   assert.deepEqual(
     replaceLightDark({
       value: "red",

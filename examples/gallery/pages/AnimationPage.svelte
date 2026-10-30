@@ -8,6 +8,7 @@
   const FLY_DISTANCE = 32;
   const TRANSITION_MILLISECONDS = 300;
   const FLIP_MILLISECONDS = 250;
+  const HALF = 1 / 2;
 
   let isShown = $state(true);
   let tiles = $state([
@@ -26,7 +27,7 @@
   ]);
 
   function shuffle() {
-    tiles = tiles.toSorted(() => Math.random() - 0.5);
+    tiles = tiles.toSorted(() => Math.random() - HALF);
   }
 </script>
 
@@ -39,11 +40,16 @@
     {#if isShown}
       <border
         class="anim-card"
-        in:fly={{ y: FLY_DISTANCE, duration: TRANSITION_MILLISECONDS }}
-        out:fade={{ duration: TRANSITION_MILLISECONDS }}
         {@attach keyControl("animation")}
+        in:fly={{
+          y: FLY_DISTANCE,
+          duration: TRANSITION_MILLISECONDS
+        }}
+        out:fade={{
+          duration: TRANSITION_MILLISECONDS
+        }}
       >
-        <text-block text="Flies in, fades out" />
+        <text-block text="Flies in, fades out"></text-block>
       </border>
     {/if}
   </StackPanel>
@@ -51,7 +57,7 @@
   <StackPanel class="anim-row">
     {#each tiles as tile (tile.id)}
       <border class="anim-tile" animate:flip={{ duration: FLIP_MILLISECONDS }}>
-        <text-block text={tile.label} />
+        <text-block text={tile.label}></text-block>
       </border>
     {/each}
   </StackPanel>
@@ -76,20 +82,20 @@
   }
 
   @keyframes pulse {
-    from {
-      opacity: 1;
+    0% {
+      opacity: 100%;
     }
 
     50% {
-      opacity: 0.35;
+      opacity: 35%;
     }
 
-    to {
-      opacity: 1;
+    100% {
+      opacity: 100%;
     }
   }
 
   :global(.anim-pulse) {
-    animation: pulse 1.4s ease-in-out infinite;
+    animation: pulse 1400ms ease-in-out infinite;
   }
 </style>

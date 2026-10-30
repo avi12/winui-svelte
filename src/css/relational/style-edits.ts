@@ -62,7 +62,7 @@ function hoistEdits({ context, rule }: {
     return [];
   }
 
-  const at = absolute({
+  const position = absolute({
     context,
     offset: rule.start
   });
@@ -73,7 +73,7 @@ function hoistEdits({ context, rule }: {
         selector: resolveSelectorList({
           context,
           selectors: entry.selector,
-          at
+          at: position
         })
       })
     );
@@ -137,7 +137,7 @@ function scopeEdits({ context, block }: {
   context: Context;
   block: AtRuleBlock;
 }) {
-  const at = absolute({
+  const position = absolute({
     context,
     offset: block.start
   });
@@ -149,7 +149,7 @@ function scopeEdits({ context, block }: {
     report({
       context,
       message: "@scope must be written @scope (.root) or @scope (.root) to (.limit), and hold style rules only",
-      at
+      at: position
     });
     return [];
   }
@@ -165,12 +165,12 @@ function scopeEdits({ context, block }: {
         root: scope.root,
         selector: entry.selector
       }),
-      at,
+      at: position,
       limit: scope.limit
     })
   })).join("\n");
   return [{
-    start: at,
+    start: position,
     end: absolute({
       context,
       offset: block.end

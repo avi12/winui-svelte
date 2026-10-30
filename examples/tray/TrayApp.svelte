@@ -167,7 +167,7 @@
       open
     >
       <MenuFlyoutItem
-        onclick={() => {
+        onClick={() => {
           chosen++;
         }}>Show</MenuFlyoutItem>
       <MenuFlyoutItem>Quit</MenuFlyoutItem>

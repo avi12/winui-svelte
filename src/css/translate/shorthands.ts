@@ -238,6 +238,7 @@ function expandFont({ declaration, reader }: ExpansionInput) {
   return result;
 }
 
+/** Expands a shorthand of one or two values into its two longhands (the second defaults to the first). */
 export function expandPair({ declaration, reader, names }: {
   declaration: Declaration;
   reader: Reader;

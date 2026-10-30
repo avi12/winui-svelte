@@ -20,7 +20,7 @@
   caption="A notification-area icon, drawn by the shell. WinUI has no API for it, so the package talks to Shell_NotifyIcon. It stays out until you switch it on."
   title="Tray icon"
 >
-  <ToggleSwitch header="Show a tray icon" bind:isOn={isShown} {@attach keyControl("tray")} />
+  <ToggleSwitch {@attach keyControl("tray")} header="Show a tray icon" bind:isOn={isShown} />
   <TextBlock text={isShown ? "Look in the notification area" : "No icon yet"} />
   {#if isShown}
     <TrayIcon guid={GUID} icon={ICON} tooltip="winui-svelte gallery" />

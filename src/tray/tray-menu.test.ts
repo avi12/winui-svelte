@@ -94,7 +94,10 @@ test("the menu exists only between show and close, and a second show moves it", 
     x: 30,
     y: 40
   });
-  assert.deepEqual(heard.map(placement => placement && [placement.x, placement.y]), [[10, 20], [30, 40]]);
+  const positions = Array.from<MenuPlacement | null>(heard).map(placement => (
+    placement === null ? null : [placement.x, placement.y]
+  ));
+  assert.deepEqual(positions, [[10, 20], [30, 40]]);
   assert.deepEqual(asked, [{
     x: 10,
     y: 20

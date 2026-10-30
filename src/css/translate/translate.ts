@@ -140,7 +140,7 @@ function originalDeclaration({ translator, declaration }: {
   translator: Translator;
   declaration: Declaration;
 }) {
-  const at = translator.mapPosition(declaration.at);
+  const position = translator.mapPosition(declaration.at);
   const dynamic = dynamicPropertyOf(declaration.property);
   const isDynamic = dynamic !== null && isDynamicLength(declaration.value);
   const { value, pairs } = replaceLightDark({
@@ -153,13 +153,13 @@ function originalDeclaration({ translator, declaration }: {
         name,
         value: resolveModernColors({ value: light }),
         scheme: ColorScheme.LIGHT,
-        at
+        at: position
       },
       {
         name,
         value: resolveModernColors({ value: dark }),
         scheme: ColorScheme.DARK,
-        at
+        at: position
       }
     );
   }
@@ -168,7 +168,7 @@ function originalDeclaration({ translator, declaration }: {
     ...declaration,
     property: isDynamic ? dynamic : declaration.property,
     value,
-    at
+    at: position
   };
 }
 
@@ -542,7 +542,7 @@ function addLayer({ translator, block, scheme, media }: {
   withinLayer({
     order: translator.layers,
     name: names.join(""),
-    body: () => {
+    body() {
       addBlocks({
         translator,
         blocks: children,

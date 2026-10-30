@@ -1,5 +1,12 @@
 import type { PropertyGroup } from "./property-kit.ts";
-import { AXIS_SEPARATOR, DEFAULT_ORIGIN, ORIGIN_TARGET, pivotAbout, pivotRenderTransform, RENDER_ORIGIN_TARGET } from "./transform-origin.ts";
+import {
+  AXIS_SEPARATOR,
+  DEFAULT_ORIGIN,
+  ORIGIN_TARGET,
+  pivotAbout,
+  pivotRenderTransform,
+  RENDER_ORIGIN_TARGET
+} from "./transform-origin.ts";
 import type { Reader } from "#src/css/parse/reader.js";
 import { parseLength, parsePercent } from "#src/css/parse/values.js";
 

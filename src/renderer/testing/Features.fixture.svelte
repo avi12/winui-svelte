@@ -85,8 +85,8 @@
     <text-block>pending</text-block>
   {:then value}
     <text-block>then:{value}</text-block>
-  {:catch error}
-    <text-block>catch:{error}</text-block>
+  {:catch}
+    <text-block>catch:error</text-block>
   {/await}
   {@render label("snip")}
   {#if hasChild}
@@ -99,7 +99,7 @@
       })()}
     {/if}
     <text-block>ok</text-block>
-    {#snippet failed(error)}
+    {#snippet failed(_: unknown)}
       <text-block>failed</text-block>
     {/snippet}
   </svelte:boundary>

@@ -1,7 +1,7 @@
 import type { CssNative } from "./runtime.ts";
 import { installCssRuntime } from "./runtime.ts";
-import { XAML_NAMESPACES } from "#src/css/translate/cascade.js";
 import { gridLengthParts, GridUnit, trackListParts } from "#src/components/values.js";
+import { XAML_NAMESPACES } from "#src/css/translate/cascade.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 
 interface ProjectedType<Instance extends object> {
@@ -260,11 +260,15 @@ export function createCssNative(winui: CssWinui) {
     },
     setComposition({ control, property, value }) {
       const key = `${property.charAt(0).toLowerCase()}${property.slice(1)}`;
-      const [x = 0, y = 0, z = 0] = value.split(",").map(Number);
+      const [horizontal = 0, vertical = 0, depth = 0] = value.split(",").map(Number);
       const isRotation = property === "Rotation";
       const resting = property === "Scale" ? 1 : 0;
       let isPlaced = false;
-      function place(vector: { x: number; y: number; z: number }) {
+      function place(vector: {
+        x: number;
+        y: number;
+        z: number;
+      }) {
         Object.assign(control, { [key]: isRotation ? vector.x : vector });
         isPlaced = true;
       }
@@ -274,20 +278,33 @@ export function createCssNative(winui: CssWinui) {
         key: "isLoaded"
       }) === true;
       if (isLoaded) {
-        place({ x, y, z });
+        place({
+          x: horizontal,
+          y: vertical,
+          z: depth
+        });
       }
 
       const unsubscribe = isLoaded ? null : subscribeToEvent({
         control,
         event: "Loaded",
-        handler: () => {
-          place({ x, y, z });
+        handler() {
+          place({
+            x: horizontal,
+            y: vertical,
+            z: depth
+          });
         }
       });
       return () => {
         unsubscribe?.();
+
         if (isPlaced) {
-          place({ x: resting, y: resting, z: resting });
+          place({
+            x: resting,
+            y: resting,
+            z: resting
+          });
         }
       };
     },

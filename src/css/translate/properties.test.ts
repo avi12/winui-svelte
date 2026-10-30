@@ -63,8 +63,8 @@ function lower({ elementType, declarations }: {
     lowered.writes.filter(entry => !COMPOSITION_PROPERTIES.has(entry.target))
   ];
   messages.setters = [
-    ...lowered.setters.map(entry => [entry.property, entry.kind === "setter" ? entry.value : entry.xaml] as [string, string]),
-    ...composition.map(entry => [entry.target, entry.value] as [string, string])
+    ...lowered.setters.map<[string, string]>(entry => [entry.property, entry.kind === "setter" ? entry.value : entry.xaml]),
+    ...composition.map<[string, string]>(entry => [entry.target, entry.value])
   ];
   messages.writes = others.map(entry => [entry.target, entry.value]);
   messages.basedOn = lowered.basedOn;

@@ -61,7 +61,6 @@ function expandArea({ declaration, reader }: ExpansionInput) {
   }));
 }
 
-/** The logical properties (`margin-inline`, `padding-block-start`, `inline-size`...) the group rewrites to the physical ones. */
 const buildExpansions = new Map<string, Expansion>([...logicalExpansions, ["grid-area", expandArea]]);
 
 /**

@@ -1,5 +1,5 @@
-import type { ElementQueries } from "./queries.ts";
 import { parseInlineStyle } from "./inline.ts";
+import type { ElementQueries } from "./queries.ts";
 import type { Viewport } from "#src/css/parse/media.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 import type { RankedRule } from "#src/css/translate/cascade.js";

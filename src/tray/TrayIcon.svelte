@@ -1,9 +1,9 @@
 <script lang="ts">
   import { createTrayNative } from "./native.ts";
+  import type { TrayIconComponentProps } from "./tray-icon-props.ts";
   import { createTrayIcon } from "./tray-icon.ts";
   import { createTrayMenu } from "./tray-menu.ts";
   import type { MenuPlacement } from "./tray-menu.ts";
-  import type { TrayIconComponentProps } from "./TrayIcon.d.svelte.ts";
   import TrayMenuWindow from "./TrayMenuWindow.svelte";
   import { untrack } from "svelte";
 

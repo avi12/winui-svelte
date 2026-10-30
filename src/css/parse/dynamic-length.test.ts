@@ -25,10 +25,12 @@ test("a function of lengths with a %, viewport or container unit is dynamic", ()
 });
 
 test("each unit is that percent of its size, folded with the calc fold", () => {
-  const resolve = (expression: string) => resolveDynamicLength({
-    expression,
-    basis
-  });
+  function resolve(expression: string) {
+    return resolveDynamicLength({
+      expression,
+      basis
+    });
+  }
   assert.equal(resolve("calc(100% - 8px)"), 392);
   assert.equal(resolve("calc(50% + 10vw)"), 300);
   assert.equal(resolve("clamp(10px, 5vw, 40px)"), 40);

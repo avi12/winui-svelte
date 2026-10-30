@@ -10,11 +10,11 @@ import {
 } from "./runtime.ts";
 import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
-import { queryGroups } from "#src/css/translate/query-properties.js";
-import { effectGroups } from "#src/css/translate/effect-properties.js";
 import { containerGroups } from "#src/css/translate/container-properties.js";
 import { dynamicLengthGroups } from "#src/css/translate/dynamic-length-properties.js";
+import { effectGroups } from "#src/css/translate/effect-properties.js";
 import { focusGroups } from "#src/css/translate/focus-properties.js";
+import { queryGroups } from "#src/css/translate/query-properties.js";
 import { resourceGroups } from "#src/css/translate/resource-properties.js";
 import { transformGroups } from "#src/css/translate/transform-properties.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";

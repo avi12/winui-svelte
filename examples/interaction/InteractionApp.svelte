@@ -79,12 +79,14 @@
     return rounds * 2;
   }
 
+  type Word = string;
+
   function describe(error: unknown) {
     return error instanceof Error ? error.message : "?";
   }
 
   function newPromise() {
-    pending = new Promise<string>((resolve, reject) => {
+    pending = new Promise<string>((resolve, reject: (reason?: unknown) => void) => {
       settle = {
         resolve,
         reject
@@ -200,7 +202,7 @@
   host.onCommand(command => commands.get(String(command["cmd"]))?.(command));
 </script>
 
-{#snippet label(value: string)}
+{#snippet label(value: Word)}
   <TextBlock automationId="snippet">snippet {value}</TextBlock>
 {/snippet}
 
@@ -274,8 +276,8 @@
       <TextBlock automationId="await">pending</TextBlock>
     {:then value}
       <TextBlock automationId="await">then {value}</TextBlock>
-    {:catch error}
-      <TextBlock automationId="await">catch {error.message}</TextBlock>
+    {:catch}
+      <TextBlock automationId="await">catch rejected</TextBlock>
     {/await}
     {#key counterKey}
       <Counter />
@@ -302,9 +304,12 @@
       {#key isBombArmed}
         <Bomb isArmed={isBombArmed} />
       {/key}
-      {#snippet failed(error, reset)}
+      {#snippet failed(error: unknown, reset: () => void)}
         <TextBlock automationId="boundary">failed {describe(error)}</TextBlock>
-        <Button automationId="boundary-reset" onClick={reset}>reset</Button>
+        <Button
+          automationId="boundary-reset" onClick={() => {
+            reset();
+          }}>reset</Button>
       {/snippet}
     </svelte:boundary>
     {#if isLifecycleShown}

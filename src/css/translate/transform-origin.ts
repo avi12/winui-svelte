@@ -101,13 +101,15 @@ function pivot({ context, hasCenterPoint }: {
     });
     // WinUI refuses CenterPoint on an element whose RenderTransformOrigin is in use, so the
     // composition properties (scale, rotate) set the first and a RenderTransform the second.
-    native.assign(control, hasCenterPoint ? {
-      centerPoint: {
-        x: absolute.x,
-        y: absolute.y,
-        z: 0
-      }
-    } : { renderTransformOrigin: relative });
+    native.assign(
+      control, hasCenterPoint ? {
+        centerPoint: {
+          x: absolute.x,
+          y: absolute.y,
+          z: 0
+        }
+      } : { renderTransformOrigin: relative }
+    );
   }
 
   place();

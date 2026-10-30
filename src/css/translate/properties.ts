@@ -29,12 +29,7 @@ import {
   wrapKeywords
 } from "./text-properties.ts";
 import type { Declaration } from "./types.ts";
-import {
-  hitTesting,
-  opacity,
-  visibilities,
-  zIndex
-} from "./visual-properties.ts";
+import { hitTesting, opacity, visibilities, zIndex } from "./visual-properties.ts";
 import { NOT_A_NUMBER, Reader, UNBOUNDED } from "#src/css/parse/reader.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 
@@ -286,11 +281,10 @@ export function lowerDeclarations({ computed, options, extraGroups = [] }: {
   options: LowerOptions;
   extraGroups?: readonly PropertyGroup[];
 }) {
-  const isFallback = (group: PropertyGroup) => group.isFallback === true;
   const groups = [
-    ...extraGroups.filter(isFallback),
+    ...extraGroups.filter(group => group.isFallback === true),
     ...propertyGroups,
-    ...extraGroups.filter(group => !isFallback(group))
+    ...extraGroups.filter(group => group.isFallback !== true)
   ];
   const knownMembers = new Set(groups.flatMap(group => group.members));
   const outputs: Output[] = [];

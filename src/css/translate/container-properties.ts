@@ -1,4 +1,4 @@
-import type { Expansion, GroupInput, PropertyGroup } from "./property-kit.ts";
+import type { ExpansionInput, GroupInput, PropertyGroup } from "./property-kit.ts";
 import { longhand } from "./shorthands.ts";
 import { splitSlash, splitWords } from "#src/css/parse/values.js";
 import { registerContainer } from "#src/css/runtime/containers.js";
@@ -14,7 +14,7 @@ const CONTAINER_TYPES: ReadonlySet<string> = new Set(["size", "inline-size"]);
 export const CONTAINER_MEMBERS = [TYPE, NAME, SHORTHAND];
 
 // `container: name / type`, the type optional.
-const expandContainer: Expansion = ({ declaration, reader }) => {
+function expandContainer({ declaration, reader }: ExpansionInput) {
   const [names = "", type] = splitSlash(declaration.value);
   const parts = splitSlash(declaration.value);
   const isReadable = names !== "" && parts.length <= MAX_SHORTHAND_PARTS;
@@ -36,7 +36,7 @@ const expandContainer: Expansion = ({ declaration, reader }) => {
     }),
     ...typeDeclarations
   ];
-};
+}
 
 // A container is an element with a type: it is registered, with its names, for the
 // `@container` rules of the elements under it.

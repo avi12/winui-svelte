@@ -9,4 +9,4 @@ export { placeMenuWindow } from "./tray-menu.ts";
 export type { TrayWindow } from "./window-tray.ts";
 export { hideToTray, restoreFromTray, toggleInTray } from "./window-tray.ts";
 export { default as TrayIcon } from "./TrayIcon.svelte";
-export type { TrayIconComponentProps } from "./TrayIcon.d.svelte.ts";
+export type { TrayIconComponentProps } from "./tray-icon-props.ts";

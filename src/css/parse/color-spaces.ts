@@ -142,10 +142,10 @@ function fromPolar([lightness, chroma, hue]: Triple) {
   return [lightness, chroma * Math.cos(radians), chroma * Math.sin(radians)] as const;
 }
 
-function toPolar([lightness, a, b]: Triple) {
-  const chroma = Math.hypot(a, b);
+function toPolar([lightness, axisA, axisB]: Triple) {
+  const chroma = Math.hypot(axisA, axisB);
   const isGray = chroma < ACHROMATIC;
-  return [lightness, chroma, isGray ? 0 : toDegrees(Math.atan2(b, a))] as const;
+  return [lightness, chroma, isGray ? 0 : toDegrees(Math.atan2(axisB, axisA))] as const;
 }
 
 function hslToSrgb([hue, saturation, lightness]: Triple) {
@@ -198,16 +198,16 @@ function expandLab(value: number) {
   return isCubic ? value ** CUBE : (LAB_DIVISOR * value - LAB_OFFSET) / LAB_KAPPA;
 }
 
-function labToXyzD50([lightness, a, b]: Triple) {
-  const fy = (lightness + LAB_OFFSET) / LAB_DIVISOR;
-  const fx = a / A_DIVISOR + fy;
-  const fz = fy - b / B_DIVISOR;
+function labToXyzD50([lightness, axisA, axisB]: Triple) {
+  const scaledY = (lightness + LAB_OFFSET) / LAB_DIVISOR;
+  const scaledX = axisA / A_DIVISOR + scaledY;
+  const scaledZ = scaledY - axisB / B_DIVISOR;
   const isCubicLuminance = lightness > LAB_KAPPA * LAB_EPSILON;
   const white = matrices().d50White;
   return [
-    expandLab(fx) * white[0],
-    isCubicLuminance ? fy ** CUBE : lightness / LAB_KAPPA,
-    expandLab(fz) * white[2]
+    expandLab(scaledX) * white[0],
+    isCubicLuminance ? scaledY ** CUBE : lightness / LAB_KAPPA,
+    expandLab(scaledZ) * white[2]
   ] as const;
 }
 
@@ -218,10 +218,14 @@ function compressLab(value: number) {
 
 function xyzD50ToLab(xyz: Triple) {
   const white = matrices().d50White;
-  const fx = compressLab(xyz[0] / white[0]);
-  const fy = compressLab(xyz[1]);
-  const fz = compressLab(xyz[2] / white[2]);
-  return [LAB_DIVISOR * fy - LAB_OFFSET, A_DIVISOR * (fx - fy), B_DIVISOR * (fy - fz)] as const;
+  const scaledX = compressLab(xyz[0] / white[0]);
+  const scaledY = compressLab(xyz[1]);
+  const scaledZ = compressLab(xyz[2] / white[2]);
+  return [
+    LAB_DIVISOR * scaledY - LAB_OFFSET,
+    A_DIVISOR * (scaledX - scaledY),
+    B_DIVISOR * (scaledY - scaledZ)
+  ] as const;
 }
 
 function oklabToLinear(oklab: Triple) {
@@ -313,10 +317,13 @@ function fromLinear({ linear, space }: {
   linear: Triple;
   space: Space;
 }) {
-  const encoded = () => mapTriple({
-    triple: linear,
-    map: encode
-  });
+  function encoded() {
+    return mapTriple({
+      triple: linear,
+      map: encode
+    });
+  }
+
   const fromLinearByColorSpace = new Map<Space, () => Triple>([
     [Space.SRGB, encoded],
     [Space.SRGB_LINEAR, () => linear],

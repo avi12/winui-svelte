@@ -20,6 +20,7 @@
     "src/vite/loader.ts",
     "src/win2d/index.ts",
     "src/win2d/Canvas.d.svelte.ts",
+    "src/tray/TrayIcon.d.svelte.ts",
     "src/window/bootstrap.ts",
     "src/window/thread.ts",
     "src/window/index.ts",

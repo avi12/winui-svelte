@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
-    import type { StackPanel as StackPanelControl } from "#winui/microsoft/ui/xaml/controls/StackPanel";
+  import type { StackPanel as StackPanelControl } from "#winui/microsoft/ui/xaml/controls/StackPanel";
   import type { TextBlock as TextBlockControl } from "#winui/microsoft/ui/xaml/controls/TextBlock";
   import { fly } from "svelte/transition";
   import { control } from "winui-svelte";

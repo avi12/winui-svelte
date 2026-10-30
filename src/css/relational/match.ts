@@ -24,7 +24,7 @@ type Match =
   };
 
 const YES: Match = { kind: "yes" };
-const NO: Match = { kind: "no" };
+const NO_MATCH: Match = { kind: "no" };
 const RADIX = 10;
 const OFFSET_GROUP = 3;
 const NTH_PATTERN = /^\s*([+-]?\d*)n\s*(?:([+-])\s*(\d+))?\s*$/iu;
@@ -55,7 +55,7 @@ function allOf(matches: readonly Match[]) {
   for (const match of matches) {
     const isNo = match.kind === "no";
     if (isNo) {
-      return NO;
+      return NO_MATCH;
     }
 
     const isUncertain = match.kind === "maybe" && result.kind === "yes";
@@ -69,7 +69,7 @@ function allOf(matches: readonly Match[]) {
 
 // One match is enough: one yes is yes, else one maybe is maybe.
 function anyOf(matches: readonly Match[]) {
-  let result: Match = NO;
+  let result: Match = NO_MATCH;
   for (const match of matches) {
     const isYes = match.kind === "yes";
     if (isYes) {
@@ -86,7 +86,7 @@ function anyOf(matches: readonly Match[]) {
 }
 
 function matchOf(isMatch: boolean) {
-  return isMatch ? YES : NO;
+  return isMatch ? YES : NO_MATCH;
 }
 
 function stepOf(raw: string) {
@@ -156,7 +156,7 @@ function classMatch({ element, name }: {
 
   return element.hasDynamicClass ? maybe(
     `${describe(element)} has its class set by an expression, a class: directive or a spread, so .${name} cannot be told at build time`
-  ) : NO;
+  ) : NO_MATCH;
 }
 
 // Type and classes: what :is(), :where() and :not() may hold.
@@ -171,7 +171,7 @@ function simpleMatch({ element, compound }: {
 
   const isTypeMatch = compound.elementType === null || compound.elementType === element.name;
   if (!isTypeMatch) {
-    return NO;
+    return NO_MATCH;
   }
 
   return allOf(
@@ -290,7 +290,7 @@ function compoundMatch({ element, compound, isSubject }: {
 }) {
   const isTypeMatch = compound.elementType === null || compound.elementType === element.name;
   if (!isTypeMatch) {
-    return NO;
+    return NO_MATCH;
   }
 
   const classes = compound.classes.map(name => classMatch({
@@ -353,10 +353,10 @@ function relation({ element, combinator, earlier }: {
   });
   const isUnknown = related === null;
   if (isUnknown) {
-    return earlier.size === 0 ? NO : maybe(`${describe(element)} has siblings that depend on an {#if}, an {#each}, a component or a snippet, so what is next to it is not fixed: give it a class`);
+    return earlier.size === 0 ? NO_MATCH : maybe(`${describe(element)} has siblings that depend on an {#if}, an {#each}, a component or a snippet, so what is next to it is not fixed: give it a class`);
   }
 
-  return anyOf(related.map(candidate => earlier.get(candidate) ?? NO));
+  return anyOf(related.map(candidate => earlier.get(candidate) ?? NO_MATCH));
 }
 
 /**
