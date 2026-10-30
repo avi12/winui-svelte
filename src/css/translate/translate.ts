@@ -1,5 +1,6 @@
 import { tracksOf } from "./animation-tracks.ts";
 import { computeDeclarations } from "./cascade.ts";
+import { addDarkRules } from "./dark-rules.ts";
 import { dynamicPropertyOf } from "./dynamic-length-properties.ts";
 import { createLayerOrder, declareLayer, layerRank, withinLayer } from "./layers.ts";
 import type { LayerOrder } from "./layers.ts";
@@ -26,6 +27,7 @@ import type { Variable, VariableEntry } from "./variables.ts";
 import { parseMediaList } from "#src/css/media/query.js";
 import { evaluateCalc } from "#src/css/parse/calc.js";
 import { isDynamicLength } from "#src/css/parse/dynamic-length.js";
+import { replaceSafeAreaInsets } from "#src/css/parse/environment-variables.js";
 import { replaceLightDark } from "#src/css/parse/light-dark.js";
 import type { MediaCondition } from "#src/css/parse/media.js";
 import { parseContainerQuery, parseMediaQuery } from "#src/css/parse/media.js";
@@ -160,9 +162,10 @@ function originalDeclaration({ translator, declaration }: {
 }) {
   const position = translator.mapPosition(declaration.at);
   const dynamic = dynamicPropertyOf(declaration.property);
-  const isDynamic = dynamic !== null && isDynamicLength(declaration.value);
+  const withoutInsets = replaceSafeAreaInsets(declaration.value);
+  const isDynamic = dynamic !== null && isDynamicLength(withoutInsets);
   const { value, pairs } = replaceLightDark({
-    value: resolveModernColors({ value: declaration.value }),
+    value: resolveModernColors({ value: withoutInsets }),
     nameFor: () => `--light-dark-${translator.lightDarkCount++}`
   });
   for (const { name, light, dark } of pairs) {
@@ -1012,6 +1015,10 @@ export function translateStyleSheet(input: TranslateInput) {
   validateRules({
     translator,
     catalogue: input.resources.extend(translator.kinds)
+  });
+  addDarkRules({
+    rules: translator.rules,
+    variables: translator.variables
   });
   addReducedMotionRules(translator.rules);
   return {

@@ -109,7 +109,7 @@ test("custom properties on :root become explicit light, dark and high contrast d
     }
   );
   assert.deepEqual(diagnostics, []);
-  assert.deepEqual(sheet.rules.length, 1);
+  assert.deepEqual(sheet.rules.length, 2, "the rule and its copy for the dark theme");
   const xaml = sheet.resourcesXaml ?? "";
   assert.doesNotMatch(xaml, /x:Key="Default"/u);
   assert.match(xaml, /<ResourceDictionary x:Key="Light">/u);
@@ -617,14 +617,16 @@ test("@layer orders the cascade: a later layer beats an earlier one, and no laye
   assert.deepEqual(winners, ["0.3", "0.2", "0.1"]);
 });
 
-test("light-dark() becomes a custom property with a value per theme", () => {
+test("light-dark() is the light value of the rule and the dark value of a copy under prefers-color-scheme: dark", () => {
   const { sheet, diagnostics } = translateStyleSheet({
     file: "t.svelte",
     css: ".a { background-color: light-dark(#ffffff, #000000) }",
     resources
   });
   assert.deepEqual(diagnostics, []);
-  assert.equal(sheet.rules[0]?.declarations[0]?.value, "var(--light-dark-0)");
+  assert.equal(sheet.rules[0]?.declarations[0]?.value, "#ffffff");
+  assert.equal(sheet.rules[1]?.declarations[0]?.value, "#000000");
+  assert.equal(sheet.rules[1]?.media?.query, "(prefers-color-scheme: dark)");
   assert.match(sheet.resourcesXaml ?? "", /Light/u);
   assert.match(sheet.resourcesXaml ?? "", /Dark/u);
 });
@@ -713,4 +715,14 @@ test("color-scheme sets the element's RequestedTheme, and forced-color-adjust sa
   assert.deepEqual(diagnostics, []);
   assert.equal(sheet.rules.length, 1);
   assert.match(errors(".a { forced-color-adjust: none }").join(), /forced-color-adjust has no WinUI meaning|forced-color-adjust/u);
+});
+
+test("env() safe-area insets are zero and titlebar-area is a dynamic length", () => {
+  const { sheet, diagnostics } = translate({ css: ".a { width: calc(100% - env(safe-area-inset-left)); height: calc(100% - env(titlebar-area-height)) }" });
+  assert.deepEqual(diagnostics, []);
+  const declarations = (sheet.rules[0]?.declarations ?? []).map(declaration => `${declaration.property}: ${declaration.value}`);
+  assert.deepEqual(declarations, [
+    "-winui-dynamic-width: calc(100% - 0px)",
+    "-winui-dynamic-height: calc(100% - env(titlebar-area-height))"
+  ]);
 });
