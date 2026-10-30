@@ -400,14 +400,22 @@ test("introstart, introend, outrostart and outroend reach the element's handlers
   finish();
 });
 
-test("{intro: true} plays a global in: and transition: on the first render, and by default they wait", () => {
+test("{intro: false} keeps a global in: and transition: from playing on the first render, {intro: true} plays them", () => {
   const waiting = mountFixture({
-    isLogged: true
+    isLogged: true,
+    intro: false
   });
   const [still] = panelsOf(waiting.root);
   assert.ok(still);
-  assert.deepEqual(still.opacities, [1], "no intro without the option");
+  assert.deepEqual(still.opacities, [1], "no intro when told not to");
   waiting.finish();
+
+  const byDefault = mountFixture({
+    isLogged: true
+  });
+  const [playing] = panelsOf(byDefault.root);
+  assert.equal(playing?.opacity, 0, "Svelte's default is to play it");
+  byDefault.finish();
 
   const events: string[] = [];
   const introduced = mountFixture({

@@ -148,7 +148,7 @@ function installDom() {
  * installed and `renderer` active.
  *
  * @param options - The component, its props, the renderer, the fragment to build in,
- *   and `intro`: whether global transitions play on this first render (default false).
+ *   and `intro`: whether global transitions play on this first render (Svelte's default: they do).
  * @returns What Svelte's `mount` returns: the component's exports.
  */
 export function mountOnTree<Native, Props extends object>({
@@ -156,13 +156,13 @@ export function mountOnTree<Native, Props extends object>({
   props,
   renderer,
   target,
-  intro: isIntro = false
+  intro: isIntro
 }: {
   component: Component<Props>;
   props: Props;
   renderer: TreeRenderer<Native>;
   target: FragmentNode<Native>;
-  intro?: boolean;
+  intro?: boolean | undefined;
 }) {
   installDom();
   activateRenderer(renderer);
@@ -173,6 +173,8 @@ export function mountOnTree<Native, Props extends object>({
   return mount(component, {
     target: mountTarget,
     props,
-    intro: isIntro
+    ...isIntro !== undefined && {
+      intro: isIntro
+    }
   });
 }

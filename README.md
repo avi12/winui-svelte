@@ -872,8 +872,8 @@ The Vite plugin turns the support on in each component that uses a directive or
 imports one of those modules; an app that uses none does not bundle any of it
 `onintrostart`, `onintroend`, `onoutrostart` and `onoutroend` work on any
 element, `|local` and `|global` as in Svelte, and `mountControl({ component,
-props, intro: true })` plays the global `in:` and `transition:` directives on
-the first render
+props, intro: false })` keeps the global `in:` and `transition:` directives
+from playing on the first render (they play by default, as in Svelte)
 The animation moves the control's `Opacity`, `Translation`, `Scale`,
 `Rotation`, size, margin, padding, border and a shape's stroke dashes
 See

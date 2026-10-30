@@ -118,7 +118,7 @@ interface Mounted<Props> {
 function mountControl<Props extends object>(options: {
   component: Component<Props>;
   props: Props;
-  intro?: boolean; // play the global in: / transition: directives on this first render; default false
+  intro?: boolean; // play the global in: / transition: directives on this first render; Svelte's default is true
 }): Mounted<Props>;
 
 // The classes (and enums) a tag, an enum-valued attribute or an attached
@@ -200,8 +200,9 @@ component in and out, wrap it in a raw element that carries the directive
 `|global` and `|local` mean what they do in Svelte: a transition is local by
 default and plays only when the block it sits in comes or goes itself, a
 global one plays whenever any ancestor block does
-`mountControl({ component, props, intro: true })` (default false) plays the
-global `in:` and `transition:` directives on the first render
+`mountControl({ component, props, intro: false })` keeps the global `in:` and
+`transition:` directives from playing on the first render (Svelte's `mount`
+plays them by default, and so does `intro: true`)
 
 ```ts
 function enableElementAnimation(options?: {
