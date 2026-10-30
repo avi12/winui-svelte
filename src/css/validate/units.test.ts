@@ -133,7 +133,8 @@ test("every unit of the table is judged the same way in every position", () => {
         unit,
         position
       });
-      if (length === null) {
+      const isSkipped = length === null;
+      if (isSkipped) {
         continue;
       }
 
@@ -223,16 +224,23 @@ test("the preprocessor, stylelint and the Vite plugin report the same unit error
 
     assert.throws(() => Function.prototype.apply.call(plugin.load, context, [`${file}-winui-css.js`]), (error: unknown) => {
       assert.ok(error instanceof Error, position.name);
-      assert.ok(error.message.startsWith(formatValidation({
-        ...first,
-        filename: file
-      })), position.name);
+      assert.ok(
+        error.message.startsWith(
+          formatValidation({
+            ...first,
+            filename: file
+          })
+        ), position.name
+      );
       return true;
     });
 
     const warnings = await lintedWarnings(file);
     const lintedAt = warnings.map(warning => [warning.text, warning.line, warning.column]);
-    const expectedAt = position.isLinted ? all.map(diagnostic => [diagnostic.message, diagnostic.start.line, diagnostic.start.column + 1]) : [];
-    assert.deepEqual(lintedAt.map(([text, line, column]) => [String(text).replace(` (${ruleName})`, ""), line, column]), expectedAt, position.name);
+    const seenByLinter = position.isLinted ? all : [];
+    const expectedAt = seenByLinter.map(diagnostic => [diagnostic.message, diagnostic.start.line, diagnostic.start.column + 1]);
+    const suffix = ` (${ruleName})`;
+    const plainAt = lintedAt.map(([text, line, column]) => [String(text).replace(suffix, ""), line, column]);
+    assert.deepEqual(plainAt, expectedAt, position.name);
   }
 });

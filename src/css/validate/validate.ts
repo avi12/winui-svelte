@@ -1,5 +1,7 @@
 import { frameOf, positionAt, ValidationCode } from "./diagnostic.ts";
 import type { ValidationDiagnostic } from "./diagnostic.ts";
+import { markupDeclarations } from "./markup-declarations.ts";
+import type { Located } from "./markup-declarations.ts";
 import { BlockKind, parseCss } from "#src/css/parse/parser.js";
 import type { Block } from "#src/css/parse/parser.js";
 import { matchingParenthesis } from "#src/css/parse/split.js";
@@ -20,14 +22,6 @@ export interface ValidateInput {
   /** The name the translation gives the sheet; default `filename`. */
   sheetId?: string;
   compilerOptions?: CompileOptions | undefined;
-}
-
-interface Located {
-  property: string;
-  value: string;
-  /** Offsets in the file. */
-  start: number;
-  valueStart: number;
 }
 
 interface Finding {
@@ -142,92 +136,18 @@ function declarationsOf({ blocks, source }: {
       });
       located.push({
         property: `@${block.name}`,
-        value: source.slice(start, declarationEnd({
-          source,
-          start
-        })),
+        value: source.slice(
+          start, declarationEnd({
+            source,
+            start
+          })
+        ),
         start,
         valueStart: start
       });
     }
 
     pending.push(...(isRule ? block.nested : block.children ?? []));
-  }
-
-  return located;
-}
-
-interface MarkupNode {
-  type?: string;
-  name?: string;
-  start?: number;
-  end?: number;
-  data?: string;
-  value?: unknown;
-  [key: string]: unknown;
-}
-
-function isMarkupNode(value: unknown): value is MarkupNode {
-  return typeof value === "object" && value !== null;
-}
-
-function textsOf(value: unknown) {
-  const parts: unknown[] = Array.isArray(value) ? value : [];
-  return parts.filter(isMarkupNode).filter(part => part.type === "Text" && part.start !== undefined && part.data !== undefined);
-}
-
-// The declarations of every static style="..." attribute and style:name directive of the markup.
-function markupDeclarations(source: string) {
-  const located: Located[] = [];
-  let tree: unknown = null;
-  try {
-    tree = parse(source, { modern: true }).fragment;
-  } catch {
-    return located;
-  }
-
-  const pending: unknown[] = [tree];
-  const seen = new Set<unknown>();
-  for (const node of pending) {
-    const isNew = isMarkupNode(node) && !seen.has(node);
-    if (!isNew) {
-      continue;
-    }
-
-    seen.add(node);
-
-    const isStyleAttribute = node.type === "Attribute" && node.name === "style";
-    const isStyleDirective = node.type === "StyleDirective";
-    for (const text of textsOf(node.value)) {
-      const base = text.start ?? 0;
-      if (isStyleDirective) {
-        located.push({
-          property: node.name ?? "",
-          value: text.data ?? "",
-          start: node.start ?? base,
-          valueStart: base
-        });
-      }
-
-      const chunks = isStyleAttribute ? (text.data ?? "").split(";") : [];
-      let offset = base;
-      for (const chunk of chunks) {
-        const colon = chunk.indexOf(":");
-        const hasDeclaration = colon > 0;
-        if (hasDeclaration) {
-          located.push({
-            property: chunk.slice(0, colon).trim(),
-            value: chunk.slice(colon + 1),
-            start: offset,
-            valueStart: offset + colon + 1
-          });
-        }
-
-        offset += chunk.length + 1;
-      }
-    }
-
-    pending.push(...Object.values(node).flatMap(child => (Array.isArray(child) ? child : [child])));
   }
 
   return located;
@@ -275,7 +195,8 @@ function verdictOf({ unit, isInsideMath }: {
 
   const isNative = verdict.kind === LengthUnitKind.NATIVE;
   const isPlainPercent = unit === PERCENT && !isInsideMath;
-  if (isNative || isPlainPercent) {
+  const isAccepted = isNative || isPlainPercent;
+  if (isAccepted) {
     return null;
   }
 
@@ -295,7 +216,8 @@ function unitFindings(located: Located) {
       unit,
       isInsideMath
     });
-    if (verdict === null) {
+    const isAccepted = verdict === null;
+    if (isAccepted) {
       continue;
     }
 
@@ -446,7 +368,11 @@ export function validateComponent(input: ValidateInput) {
     return isExplaining ? isNeeded : true;
   });
   const explainedAt = new Set(own.map(item => item.declarationStart));
-  const remaining = fromTranslation.filter(item => !explainedAt.has(item.declarationStart) && !own.some(found => item.start <= found.start && found.end <= item.end));
+  const remaining = fromTranslation.filter(item => {
+    const isDeclarationExplained = explainedAt.has(item.declarationStart);
+    const isRangeExplained = own.some(found => item.start <= found.start && found.end <= item.end);
+    return !isDeclarationExplained && !isRangeExplained;
+  });
   return [...own, ...remaining]
     .sort((first, second) => first.start - second.start)
     .map(found => toDiagnostic({
