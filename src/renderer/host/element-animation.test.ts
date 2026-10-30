@@ -79,12 +79,15 @@ function createClock() {
   };
 }
 
+let isReduced = false;
+
 function mountFixture(overrides: Partial<Props> = {}) {
   const clock = createClock();
   const warnings: string[] = [];
   const dashes: number[][] = [];
   const disable = enableElementAnimation({
     clock,
+    isMotionReduced: () => isReduced,
     warn: message => warnings.push(message),
     createDashes(lengths) {
       dashes.push(lengths);
@@ -160,6 +163,22 @@ test("transition:fade fades in, and the element leaves only once its outro has r
   assert.deepEqual(panelsOf(root), [], "gone once the outro ended");
   assert.equal(shown.opacity, 0, "faded to nothing, not left half-visible");
   assert.equal(clock.isRunning, false);
+  finish();
+});
+
+test("reduced motion makes a transition skip to its end", () => {
+  isReduced = true;
+  const { clock, root, mounted, finish } = mountFixture();
+  mounted.set({ isShown: true });
+  const [shown] = panelsOf(root);
+  assert.ok(shown);
+  clock.advance(FRAME * 2);
+  assert.equal(shown.opacity, 1, "the intro is over within a frame");
+
+  mounted.set({ isShown: false });
+  clock.advance(FRAME * 2);
+  assert.deepEqual(panelsOf(root), [], "and so is the outro");
+  isReduced = false;
   finish();
 });
 

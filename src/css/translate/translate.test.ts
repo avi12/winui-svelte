@@ -143,9 +143,47 @@ test("@media (forced-colors: active) declares the high contrast values, over the
   assert.match(light, /<SolidColorBrush x:Key="ButtonBackground" Color="#112233"\/>/u);
 });
 
-test("a custom property only forced colors declare is an error, and so is a style rule there", () => {
+test("a custom property only forced colors declare is an error", () => {
   assert.match(errors("@media (forced-colors: active) { :root { --x: red } }").join(), /--x is declared for forced-colors only/u);
-  assert.match(errors("@media (forced-colors: active) { .a { color: red } }").join(), /color has no WinUI meaning here/u);
+});
+
+test("a style rule under a scheme or forced colors follows the environment at run time", () => {
+  for (const query of ["(forced-colors: active)", "(prefers-color-scheme: dark)", "(prefers-contrast: more)"]) {
+    const { sheet, diagnostics } = translate({ css: `@media ${query} { .a { color: red } }` });
+    assert.deepEqual(diagnostics, []);
+    const [rule] = sheet.rules;
+    assert.equal(rule?.media?.query, query);
+    assert.deepEqual(rule?.declarations.map(declaration => declaration.property), ["color"]);
+  }
+});
+
+test("a rule under reduced motion, reduced transparency or a boolean query keeps the query for the runtime", () => {
+  const queries = [
+    "(prefers-reduced-motion: reduce)",
+    "(prefers-reduced-transparency: reduce)",
+    "not (prefers-reduced-motion)",
+    "(min-width: 600px) and (prefers-contrast: more)",
+    "(400px <= width <= 700px) or (pointer: coarse)"
+  ];
+  for (const query of queries) {
+    const { sheet, diagnostics } = translate({ css: `@media ${query} { .a { color: red } }` });
+    assert.deepEqual(diagnostics, [], query);
+    assert.equal(sheet.rules[0]?.media?.query, query);
+  }
+});
+
+test("a pure size query keeps its bounds and no query", () => {
+  const { sheet } = translate({ css: "@media (min-width: 600px) { .a { color: red } }" });
+  assert.equal(sheet.rules[0]?.media?.minWidth, 600);
+  assert.equal(sheet.rules[0]?.media?.query, undefined);
+});
+
+test("a feature nothing can answer is an error that names it", () => {
+  assert.match(errors("@media (made-up: 1) { .a { color: red } }").join(), /@media \(made-up\) is not a media feature this library can answer/u);
+});
+
+test("a custom property of :root cannot depend on the environment beyond the scheme", () => {
+  assert.match(errors("@media (prefers-reduced-motion: reduce) { :root { --x: red } }").join(), /--x has no WinUI meaning here/u);
 });
 
 test("a custom property declared for light and dark both needs no default", () => {
@@ -254,12 +292,8 @@ test("descendant selectors, nested descendants and other @media are errors", () 
   assert.match(errors(".a .b { color: red }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
   assert.match(errors(".a { color: red; .b { color: blue } }").join(), /descendant, child and sibling selectors have no WinUI meaning/u);
   assert.match(errors(".a { @supports (color: red) { color: blue } }").join(), /@supports has no WinUI meaning/u);
-  assert.match(errors("@media (orientation: landscape) { .a { color: red } }").join(), /@media \(orientation: landscape\) has no WinUI meaning/u);
+  assert.match(errors("@media (min-width: 1px) { @media (min-width: 2px) { .a { color: red } } }").join(), /@media inside @media has no WinUI meaning/u);
   assert.match(errors("@import 'a.css';").join(), /@import has no WinUI meaning/u);
-});
-
-test("a style rule cannot change with the color scheme", () => {
-  assert.match(errors("@media (prefers-color-scheme: dark) { .a { color: red } }").join(), /color has no WinUI meaning here \(a Style cannot depend on the color scheme/u);
 });
 
 test(":root cannot style an element", () => {
@@ -654,4 +688,29 @@ test("@starting-style marks its rules, around a rule or inside one", () => {
   assert.deepEqual(diagnostics, []);
   assert.deepEqual(sheet.rules.map(rule => rule.startingStyle ?? false), [false, true, true]);
   assert.match(errors("@starting-style (min-width: 1px) { .a { opacity: 0 } }").join(), /@starting-style takes a block of rules/u);
+});
+
+test("a rule that transitions or animates is followed by one that stops both under reduced motion", () => {
+  const { sheet, diagnostics } = translate({ css: ".a { transition: opacity 200ms; animation: spin 1s }\n@keyframes spin { to { opacity: 0 } }" });
+  assert.deepEqual(diagnostics, []);
+  const [rule, reduced] = sheet.rules;
+  assert.equal(sheet.rules.length, 2);
+  assert.equal(reduced?.media?.query, "(prefers-reduced-motion: reduce)");
+  assert.deepEqual(reduced?.notClasses, ["winui-motion-always"]);
+  assert.deepEqual(reduced?.declarations.map(declaration => `${declaration.property}: ${declaration.value}`), ["transition: none", "animation: none"]);
+  assert.ok((reduced?.order ?? 0) > (rule?.order ?? 1), "it wins over the rule it follows");
+});
+
+test("a rule the author handled for reduced motion, or a plain one, gets no copy", () => {
+  const handled = translate({ css: "@media (prefers-reduced-motion: no-preference) { .a { transition: opacity 200ms } }" });
+  assert.deepEqual(handled.diagnostics, []);
+  assert.equal(handled.sheet.rules.length, 1);
+  assert.equal(translate({ css: ".a { opacity: 1 }" }).sheet.rules.length, 1);
+});
+
+test("color-scheme sets the element's RequestedTheme, and forced-color-adjust says what to write instead", () => {
+  const { sheet, diagnostics } = translate({ css: ".a { color-scheme: dark }" });
+  assert.deepEqual(diagnostics, []);
+  assert.equal(sheet.rules.length, 1);
+  assert.match(errors(".a { forced-color-adjust: none }").join(), /forced-color-adjust has no WinUI meaning|forced-color-adjust/u);
 });

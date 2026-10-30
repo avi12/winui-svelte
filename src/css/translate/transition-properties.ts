@@ -43,6 +43,11 @@ function transition(reader: Reader) {
   for (const entry of splitCommas(reader.declaration.value)) {
     const [property = "", time, ...rest] = splitWords(entry);
     const milliseconds = time === undefined ? null : parseMilliseconds(time);
+    const isNone = property.toLowerCase() === "none";
+    if (isNone) {
+      continue;
+    }
+
     const targets = TRANSITION_TARGETS.get(property.toLowerCase());
     const isTargetsMissing = targets === undefined;
     if (isTargetsMissing) {

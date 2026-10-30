@@ -111,6 +111,10 @@
       "types": "./dist/css/queries.d.ts",
       "default": "./dist/css/queries.js"
     },
+    "./css/environment": {
+      "types": "./dist/css/environment.d.ts",
+      "default": "./dist/css/environment.js"
+    },
     "./css/compat": {
       "types": "./dist/css/compat.d.ts",
       "default": "./dist/css/compat.js"

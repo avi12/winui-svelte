@@ -5,6 +5,7 @@ import { createLayerOrder, declareLayer, layerRank, withinLayer } from "./layers
 import type { LayerOrder } from "./layers.ts";
 import { BUILD_GROUPS, LAZY_GROUPS } from "./lazy-groups.ts";
 import { lowerDeclarations } from "./properties.ts";
+import { addReducedMotionRules } from "./reduced-motion.ts";
 import { expandDeclaration } from "./shorthands.ts";
 import { ColorScheme } from "./types.ts";
 import type {
@@ -22,6 +23,7 @@ import type {
 import { unsupportedAtRuleReason, unsupportedReason } from "./unsupported-properties.ts";
 import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
+import { parseMediaList } from "#src/css/media/query.js";
 import { evaluateCalc } from "#src/css/parse/calc.js";
 import { isDynamicLength } from "#src/css/parse/dynamic-length.js";
 import { replaceLightDark } from "#src/css/parse/light-dark.js";
@@ -60,8 +62,24 @@ export interface TranslateInput {
 const SCHEME_QUERIES: ReadonlyArray<[RegExp, ColorScheme]> = [
   [/^\(\s*prefers-color-scheme\s*:\s*dark\s*\)$/iu, ColorScheme.DARK],
   [/^\(\s*prefers-color-scheme\s*:\s*light\s*\)$/iu, ColorScheme.LIGHT],
-  [/^\(\s*forced-colors\s*:\s*active\s*\)$/iu, ColorScheme.HIGH_CONTRAST]
+  [/^\(\s*forced-colors\s*:\s*active\s*\)$/iu, ColorScheme.HIGH_CONTRAST],
+  [/^\(\s*prefers-contrast\s*:\s*more\s*\)$/iu, ColorScheme.HIGH_CONTRAST]
 ];
+
+// A query of the environment (preferences, display, input): the one evaluator reads it at run time.
+const NO_BOUNDS = {
+  minWidth: null,
+  maxWidth: null,
+  minHeight: null,
+  maxHeight: null
+} as const;
+
+function environmentQuery(prelude: string) {
+  return {
+    ...NO_BOUNDS,
+    query: prelude.trim()
+  } satisfies MediaCondition;
+}
 
 interface LocatedVariable extends Variable {
   at: SourcePosition;
@@ -125,7 +143,7 @@ function schemeOf({ translator, block }: {
     const advice = reason === "" ? "" : `; ${reason}`;
     reportError({
       translator,
-      message: `${what} has no WinUI meaning (only @media (min-width), (max-width), (min-height) and (max-height), which restyle as the window resizes, and, for custom properties, (prefers-color-scheme: dark), (prefers-color-scheme: light) and (forced-colors: active) do)${advice}`,
+      message: `${what} has no WinUI meaning (@media features restyle as the environment changes, and, for custom properties, only (prefers-color-scheme: dark), (prefers-color-scheme: light), (forced-colors: active) and (prefers-contrast: more) do)${advice}`,
       generatedAt: block.at
     });
     return null;
@@ -251,12 +269,12 @@ function addSelectorRule({ translator, block, selector, scheme, media }: {
   const customProperties = declarations.filter(declaration => declaration.property.startsWith("--"));
   const properties = declarations.filter(declaration => !declaration.property.startsWith("--"));
   if (selector.isRoot) {
-    const isSizeConditional = media !== null;
+    const isSizeConditional = media !== null && scheme === ColorScheme.DEFAULT;
     if (isSizeConditional) {
       reportDeclarations({
         translator,
         declarations,
-        message: "has no WinUI meaning here (a custom property of :root cannot depend on the window's size: put the query around a rule)"
+        message: "has no WinUI meaning here (a custom property of :root cannot depend on the window's size or the environment: put the query around a rule, or use (prefers-color-scheme), (forced-colors: active) or (prefers-contrast: more), which WinUI's theme dictionaries follow)"
       });
       return;
     }
@@ -293,11 +311,17 @@ function addSelectorRule({ translator, block, selector, scheme, media }: {
     scheme
   });
   const isSchemeConditional = scheme !== ColorScheme.DEFAULT;
-  if (isSchemeConditional) {
-    reportDeclarations({
+  const hasSchemeProperties = isSchemeConditional && properties.length > 0 && media !== null;
+  if (hasSchemeProperties) {
+    pushRule({
       translator,
-      declarations: properties,
-      message: "has no WinUI meaning here (a Style cannot depend on the color scheme: set the color through var(--a-winui-brush) or declare a custom property on :root in the @media block)"
+      rule: ruleOf({
+        translator,
+        selector,
+        declarations: properties,
+        media,
+        resourcesXaml: null
+      })
     });
   }
 
@@ -306,18 +330,44 @@ function addSelectorRule({ translator, block, selector, scheme, media }: {
     return;
   }
 
-  const rule: Rule = {
+  const hasOwnMedia = media !== null && !isSchemeConditional;
+  pushRule({
+    translator,
+    rule: ruleOf({
+      translator,
+      selector,
+      declarations: isSchemeConditional ? [] : properties,
+      media: hasOwnMedia ? media : null,
+      resourcesXaml
+    })
+  });
+}
+
+function ruleOf({ translator, selector, declarations, media, resourcesXaml }: {
+  translator: Translator;
+  selector: ParsedSelector;
+  declarations: Declaration[];
+  media: MediaCondition | null;
+  resourcesXaml: string | null;
+}) {
+  return {
     elementType: selector.elementType,
     classes: selector.classes,
     ...selector.notClasses.length === 0 ? {} : { notClasses: selector.notClasses },
     state: selector.state,
     specificity: selector.specificity,
     order: translator.nextOrder,
-    declarations: isSchemeConditional ? [] : properties,
+    declarations,
     ...media === null ? {} : { media },
     ...translator.isStartingStyle ? { startingStyle: true as const } : {},
     resourcesXaml
-  };
+  } satisfies Rule;
+}
+
+function pushRule({ translator, rule }: {
+  translator: Translator;
+  rule: Rule;
+}) {
   translator.rules.push(rule);
   const { current } = translator.layers;
   const isLayered = current !== null;
@@ -605,6 +655,63 @@ function sizeQueryOf(block: AtRuleBlock) {
   return queries.get(block.name)?.(block.prelude) ?? null;
 }
 
+// An @media of environment terms (not a scheme the theme dictionaries follow): the one evaluator reads it at run time.
+function environmentMedia({ translator, block }: {
+  translator: Translator;
+  block: AtRuleBlock;
+}) {
+  const isMedia = block.name === "media";
+  const isScheme = SCHEME_QUERIES.some(([query]) => query.test(block.prelude));
+  const isOther = !isMedia || isScheme;
+  if (isOther) {
+    return undefined;
+  }
+
+  const parsed = parseMediaList(block.prelude);
+  const [unknownFeature] = parsed.unknown;
+  const hasUnknownFeature = unknownFeature !== undefined;
+  if (hasUnknownFeature) {
+    reportError({
+      translator,
+      message: `@media (${unknownFeature}) is not a media feature this library can answer (see the table of media features in src/css/API.md)`,
+      generatedAt: block.at
+    });
+    return null;
+  }
+
+  return environmentQuery(block.prelude);
+}
+
+// Adds the rules of an @media of environment terms; false where the at-rule is another kind.
+function addEnvironmentBlock({ translator, block, scheme }: {
+  translator: Translator;
+  block: AtRuleBlock;
+  scheme: ColorScheme;
+}) {
+  const environment = environmentMedia({
+    translator,
+    block
+  });
+  const isReported = environment === null;
+  if (isReported) {
+    return true;
+  }
+
+  const { children } = block;
+  const isEnvironmentBlock = environment !== undefined && children !== null;
+  if (!isEnvironmentBlock) {
+    return false;
+  }
+
+  addBlocks({
+    translator,
+    blocks: children,
+    scheme,
+    media: environment
+  });
+  return true;
+}
+
 function addAtRule({ translator, block, scheme, media }: {
   translator: Translator;
   block: AtRuleBlock;
@@ -674,6 +781,15 @@ function addAtRule({ translator, block, scheme, media }: {
     return;
   }
 
+  const isEnvironmentHandled = addEnvironmentBlock({
+    translator,
+    block,
+    scheme
+  });
+  if (isEnvironmentHandled) {
+    return;
+  }
+
   const inner = schemeOf({
     translator,
     block
@@ -684,7 +800,7 @@ function addAtRule({ translator, block, scheme, media }: {
       translator,
       blocks: children,
       scheme: inner,
-      media
+      media: environmentQuery(block.prelude)
     });
   } else if (inner !== null) {
     reportError({
@@ -897,6 +1013,7 @@ export function translateStyleSheet(input: TranslateInput) {
     translator,
     catalogue: input.resources.extend(translator.kinds)
   });
+  addReducedMotionRules(translator.rules);
   return {
     sheet: {
       id: input.file,
