@@ -1,3 +1,4 @@
+import type { HexColor } from "#src/components/values.js";
 import { uiThreadDispatcher } from "#src/scheduling.js";
 import type { UIColorType } from "#src/winui.js";
 import { AccessibilitySettings, UIColorType as ColorKind, UISettings } from "#src/winui.js";
@@ -39,7 +40,7 @@ export interface SystemSettings {
    * The accent color the user picked, as `#rrggbb`: a value any color prop
    * takes.
    */
-  readonly accentColor: string;
+  readonly accentColor: HexColor;
 
   /** The text size scale from Settings, Accessibility, Text size: 1 is 100%, 1.5 is 150%. */
   readonly textScaleFactor: number;
@@ -58,7 +59,7 @@ function hexOf(channel: number) {
 // The text form colorOf reads back: #rrggbb, or #aarrggbb with transparency.
 function hexColorOf({ a, r, g, b }: Channels) {
   const alpha = a === OPAQUE ? "" : hexOf(a);
-  return `#${alpha}${hexOf(r)}${hexOf(g)}${hexOf(b)}`;
+  return `#${alpha}${hexOf(r)}${hexOf(g)}${hexOf(b)}` as const;
 }
 
 /**

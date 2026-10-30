@@ -1,6 +1,7 @@
 import type { ResourceRecordInput } from "./resource-record.ts";
 import { PRESENTATION_NAMESPACE } from "#src/css/translate/cascade.js";
 import { FONT_WEIGHTS } from "#src/css/translate/text-properties.js";
+import type { DurationType, RepeatBehaviorType } from "./generated/bindings.ts";
 import type { NativeValue } from "#src/native-value.js";
 
 // The plain values a component's props take, and how each is read: pure, so
@@ -63,8 +64,22 @@ export type CornerRadiusInput =
   | readonly [number, number, number, number]
   | CornerRadiusValue;
 
-/** "#rgb", "#rrggbb", "#aarrggbb", "transparent", or WinUI's own value. */
-export type ColorInput = string | ColorValue;
+/** The words a color prop takes besides hex text. */
+export const ColorKeyword = {
+  TRANSPARENT: "transparent"
+} as const;
+
+/** One of `ColorKeyword`'s values. */
+export type ColorKeyword = (typeof ColorKeyword)[keyof typeof ColorKeyword];
+
+/** Hex color text: "#rgb", "#rrggbb" or "#aarrggbb". */
+export type HexColor = `#${string}`;
+
+/** A color as text: hex, or a `ColorKeyword`. */
+export type ColorText = HexColor | ColorKeyword;
+
+/** A color as text, or WinUI's own value. */
+export type ColorInput = ColorText | ColorValue;
 
 /**
  * An object property such as a button's content: a string, number or boolean
@@ -91,10 +106,10 @@ export interface TimeSpanValue {
  */
 export type TimeSpanInput = number | string | TimeSpanValue;
 
-/** A duration as WinUI stores it: `type` is its DurationType. */
+/** A duration as WinUI stores it. */
 export interface DurationValue {
   timeSpan: TimeSpanValue;
-  type: number;
+  type: DurationType;
 }
 
 /**
@@ -111,11 +126,11 @@ export interface KeyTimeValue {
 /** When a key frame is reached, from the start: a time span (see `TimeSpanInput`) or WinUI's own value. */
 export type KeyTimeInput = number | string | KeyTimeValue;
 
-/** A repeat behavior as WinUI stores it: `type` is its RepeatBehaviorType. */
+/** A repeat behavior as WinUI stores it. */
 export interface RepeatBehaviorValue {
   count: number;
   duration: TimeSpanValue;
-  type: number;
+  type: RepeatBehaviorType;
 }
 
 /**
@@ -213,7 +228,6 @@ const SHORT_HEX_LENGTH = 3;
 const ALPHA_HEX_LENGTH = 8;
 const HEX_PAIR = /../gu;
 const COLOR_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/iu;
-const TRANSPARENT_NAME = "transparent";
 
 const TICKS_PER_MILLISECOND = 10_000;
 const MILLISECONDS_PER_SECOND = 1000;
@@ -353,6 +367,9 @@ export function cornerSides(input: CornerRadiusInput) {
   });
 }
 
+/** A grid length as XAML writes it: "Auto", "*", "2*", "120" or "120px". */
+export type GridLengthText = "Auto" | "*" | `${number}*` | `${number}` | `${number}px`;
+
 /** Pixels as a number, or "Auto", "*", "2*" or "120" as XAML writes them. */
 export function gridLengthParts(input: number | string) {
   const isNumber = typeof input === "number";
@@ -424,7 +441,7 @@ export function trackListParts(text: string) {
  */
 export function parseColor(text: string) {
   const name = text.trim().toLowerCase();
-  const isTransparent = name === TRANSPARENT_NAME;
+  const isTransparent = name === ColorKeyword.TRANSPARENT;
   if (isTransparent) {
     return {
       a: 0,
@@ -693,6 +710,11 @@ export function isSvgBytes(bytes: Uint8Array) {
 export function pathMarkup(data: string) {
   const escaped = data.replace(XML_SPECIALS, character => XML_ESCAPES.get(character) ?? character);
   return `<Path xmlns="${PRESENTATION_NAMESPACE}" Data="${escaped}"/>`;
+}
+
+/** Whether text is a color a color prop takes (hex or a `ColorKeyword`), for text read from loose data. */
+export function isColorText(text: string): text is ColorText {
+  return parseColor(text) !== null;
 }
 
 /** A color prop as the bindings' `Color`; throws a `TypeError` for text that is not a color. */

@@ -40,14 +40,17 @@ import type {
 import { mediaSeam } from "./media-seam.ts";
 import type { ResourceRecordInput } from "./resource-record.ts";
 import { styleTarget } from "./style-targets.ts";
+import type { ThemeBrush } from "./generated/theme-brushes.ts";
 import type {
   AttachedInput,
   ColorInput,
+  ColorText,
   CornerRadiusInput,
   DateInput,
   DateTimeValue,
   DurationInput,
   FontWeightInput,
+  GridLengthText,
   KeyTimeInput,
   MatrixInput,
   NumbersInput,
@@ -156,10 +159,17 @@ export interface GridLengthValue {
 }
 
 /** A grid length: pixels, "Auto", "*", "2*" as XAML writes them, or WinUI's own value. */
-export type GridLengthInput = number | string | GridLengthValue;
+export type GridLengthInput = number | GridLengthText | GridLengthValue;
 
-/** A color string (see `ColorInput`), a theme resource name, or a brush. */
-export type BrushInput = string | Brush;
+/**
+ * The brush resources an app defines itself, by key. Augment it so a brush
+ * prop takes their names too:
+ * `declare module "winui-svelte/components" { interface AppBrushes { BrandBrush: true } }`.
+ */
+export interface AppBrushes {}
+
+/** A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush. */
+export type BrushInput = ColorText | ThemeBrush | keyof AppBrushes | Brush;
 
 /**
  * A URI string (a `.svg` is an SVG image, any other a bitmap), an image source,
@@ -332,8 +342,11 @@ function nativeMember<Key extends string, Member>({ table, key }: {
   return member;
 }
 
-/** A grid length prop as the bindings' `GridLength`. */
-export function gridLengthOf(input: GridLengthInput) {
+/**
+ * A grid length prop as the bindings' `GridLength`; it also reads a track of
+ * a Grid's `columns` or `rows` text, which `gridLengthParts` checks.
+ */
+export function gridLengthOf(input: GridLengthInput | string) {
   const isGridLength = typeof input === "object";
   if (isGridLength) {
     return input;

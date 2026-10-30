@@ -277,7 +277,27 @@ export function emitEnums(model: Model) {
     lines.push(`export { ${type.name} } from "${bindingModule(type)}";`);
   }
 
+  lines.push("export { ThemeBrush } from \"./theme-brushes.ts\";");
   return `${lines.join("\n")}\n`;
+}
+
+// The brushes WinUI's theme defines (src/css/winui-resources.g.json, read
+// through the CSS layer's catalogue): a brush prop's named choices.
+export function emitThemeBrushes(keys: readonly string[]) {
+  const members = [...keys].sort().map(key => `  ${key}: "${key}"`);
+  return [
+    GENERATED_HEADER,
+    "",
+    "/**",
+    " * The brushes WinUI's theme defines, by resource key: the named choices a",
+    " * brush prop takes besides a color (`AcrylicBackgroundFillColorDefaultBrush`)",
+    " */",
+    `export const ThemeBrush = {\n${members.join(",\n")}\n} as const;`,
+    "",
+    "/** One of `ThemeBrush`'s keys */",
+    "export type ThemeBrush = (typeof ThemeBrush)[keyof typeof ThemeBrush];",
+    ""
+  ].join("\n");
 }
 
 function enumName({ enumType }: { enumType: TypeName | null }) {

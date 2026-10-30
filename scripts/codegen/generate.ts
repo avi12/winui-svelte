@@ -6,6 +6,7 @@ import {
   emitControlsTable,
   emitDeclaration,
   emitEnums,
+  emitThemeBrushes,
   emitIndex,
   emitLevel,
   emitMetadata,
@@ -15,6 +16,8 @@ import { bindingClasses, buildExtraModels, buildModel, requestedClasses } from "
 import type { Model } from "./model.ts";
 import type { TypeName } from "./winmd.ts";
 import { filesIn } from "#scripts/files-in.ts";
+import { ResourceKind } from "#src/css/runtime/resources.js";
+import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import {
   existsSync,
   mkdirSync,
@@ -129,6 +132,9 @@ function modelFiles(model: Model) {
     }, {
       file: path.join(folder, "enums.ts"),
       text: emitEnums(model)
+    }, {
+      file: path.join(folder, "theme-brushes.ts"),
+      text: emitThemeBrushes(loadWinuiCatalogue().keysOfKind(ResourceKind.BRUSH))
     });
   }
 
