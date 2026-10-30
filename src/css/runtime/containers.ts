@@ -37,7 +37,7 @@ function isWinuiProjection(value: object): value is WinuiProjection {
  * the native object into a new wrapper, so a control is known by the identity
  * of its native object.
  */
-export function identityOf(control: object) {
+function identityOf(control: object) {
   return isWinuiProjection(control) ? control._obj.identityRaw() : control;
 }
 
