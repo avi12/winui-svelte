@@ -79,3 +79,63 @@ export function ownWindow({ hwnd, owner }: {
 }) {
   setWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(OWNER_INDEX), DynWin32.i64(owner)]);
 }
+
+const EXTENDED_STYLE_INDEX = -20;
+const NO_STYLES = 0n;
+const VIRTUAL_SCREEN_LEFT = 76;
+const VIRTUAL_SCREEN_TOP = 77;
+const VIRTUAL_SCREEN_WIDTH = 78;
+const VIRTUAL_SCREEN_HEIGHT = 79;
+
+const getWindowLongPointer = DynWin32Unsafe.bind({
+  dll: "user32.dll",
+  entryPoint: "GetWindowLongPtrW",
+  parameters: [
+    {
+      type: "handle",
+      direction: "in"
+    },
+    {
+      type: "i32",
+      direction: "in"
+    }
+  ],
+  returnType: "i64"
+});
+
+const getSystemMetrics = DynWin32Unsafe.bind({
+  dll: "user32.dll",
+  entryPoint: "GetSystemMetrics",
+  parameters: [
+    {
+      type: "i32",
+      direction: "in"
+    }
+  ],
+  returnType: "i32"
+});
+
+function metricOf(index: number) {
+  const result = getSystemMetrics.invoke([DynWin32.i32(index)]).returnValue;
+  return result === null ? 0 : DynWin32.toNumber(result);
+}
+
+/** The rectangle that holds every display, in virtual-screen pixels. */
+export function virtualScreen() {
+  return {
+    left: metricOf(VIRTUAL_SCREEN_LEFT),
+    top: metricOf(VIRTUAL_SCREEN_TOP),
+    width: metricOf(VIRTUAL_SCREEN_WIDTH),
+    height: metricOf(VIRTUAL_SCREEN_HEIGHT)
+  };
+}
+
+/** Turns on the extended window style bits `styles` of the window `hwnd`, keeping the rest. */
+export function addExtendedStyles({ hwnd, styles }: {
+  hwnd: bigint;
+  styles: bigint;
+}) {
+  const current = getWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(EXTENDED_STYLE_INDEX)]).returnValue;
+  const held = current === null ? NO_STYLES : DynWin32.toBigint(current);
+  setWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(EXTENDED_STYLE_INDEX), DynWin32.i64(held | styles)]);
+}
