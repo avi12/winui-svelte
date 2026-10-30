@@ -1,5 +1,4 @@
 import { matchingParenthesis, splitCommas } from "./split.ts";
-import { BUILD_LENGTH as LENGTH_TOKEN, pixelsPerUnit } from "./units.ts";
 
 // `calc()` over lengths and numbers, folded to one value at build time. A
 // term in % or a custom property needs the parent's size or a runtime lookup,
@@ -8,6 +7,7 @@ import { BUILD_LENGTH as LENGTH_TOKEN, pixelsPerUnit } from "./units.ts";
 const CLAMP_ARGUMENTS = 3;
 const MATH_START = /(?<![\w-])(min|max|clamp)\(/giu;
 const HAS_MATH = /(?<![\w-])(min|max|clamp)\(/iu;
+const LENGTH_TOKEN = /^(-?(?:\d+\.?\d*|\.\d+))(px)?$/iu;
 const CALC = /^calc\((.*)\)$/isu;
 const TOKEN = /\s*([()+*/]|-(?=\s)|-?[^\s()+*/-][^\s()+*/]*)/gy;
 const PRECEDENCE = new Map([["+", 1], ["-", 1], ["*", 2], ["/", 2]]);
@@ -34,7 +34,7 @@ function operand(token: string) {
   const unit = (match[2] ?? "").toLowerCase();
   const amount = Number(match[1]);
   return {
-    value: amount * pixelsPerUnit(unit),
+    value: amount,
     isLength: unit !== ""
   } satisfies Quantity;
 }
@@ -214,7 +214,7 @@ function foldAllMath(token: string) {
 }
 
 /**
- * The pixels a `calc()`, `min()`, `max()` or `clamp()` of px and rem lengths and
+ * The pixels a `calc()`, `min()`, `max()` or `clamp()` of px lengths and
  * plain numbers comes to; null for anything else (a %, a var(), a length times
  * a length).
  */

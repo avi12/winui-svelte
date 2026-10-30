@@ -923,7 +923,7 @@ protocol and the tests
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
-| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
+| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/preprocess`, `winui-svelte/stylelint`, `winui-svelte/vscode-css-data.json` | the editor side of the CSS: a Svelte preprocessor, a stylelint rule and VS Code custom data, all from the same validator and tables, so the editor, the linter and the build say the same thing ([`src/css/API.md`](src/css/API.md#diagnostics-in-the-editor-the-linter-and-the-build)) |
 
@@ -1033,7 +1033,7 @@ Stated plainly, so nobody finds them by surprise:
   A Style cannot reach an element's parent, children or siblings, so these are
   build errors that say what to write instead: `float`, `position: sticky`,
   `right` and `bottom`, `flex-wrap` (WinUI has no wrapping panel), `aspect-ratio`, a % size other than
-  100%, `calc()` with a % or a variable, container style queries, `:has()`, `:focus-within`,
+  100%, `calc()` with a % or a variable, any unit but px, deg, s, ms and fr, container style queries, `:has()`, `:focus-within`,
   `box-shadow` (use `-winui-elevation`), `filter` and `mix-blend-mode`
   (Composition effects, which need `ElementCompositionPreview` and Win2D), `mask`
   and a `clip-path` other than `inset()`

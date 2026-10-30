@@ -98,7 +98,7 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | `winui-svelte/css/compat` | `text-transform`, `word-break`, `user-select`, `object-fit`, `line-clamp`, `box-sizing`, `cursor` (ignored) | Unsupported |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |
 
-`calc()`, `min()`, `max()` and `clamp()` of px and rem fold when the build
+`calc()`, `min()`, `max()` and `clamp()` of px fold when the build
 translates a `<style>` block, so a window carries no evaluator: in a `style`
 attribute they are not a length
 The logical properties (`margin-inline`,
@@ -149,7 +149,7 @@ What maps, and how:
 | CSS | WinUI |
 |---|---|
 | `linear-gradient(to <side or corner>, ...)` | `StartPoint` / `EndPoint` on the unit square: exact at every size (`to bottom right` puts the 50% line through the other two corners, as CSS does) |
-| `linear-gradient(<angle>, ...)` in `deg`, `grad`, `rad`, `turn` | the same line for a square element; exact for 0, 90, 180, 270 degrees; any other angle warns (the brush maps to the element's bounding box, so it skews on a non-square element) |
+| `linear-gradient(<angle>, ...)` in `deg` | the same line for a square element; exact for 0, 90, 180, 270 degrees; any other angle warns (the brush maps to the element's bounding box, so it skews on a non-square element) |
 | no direction | `to bottom` |
 | `radial-gradient([ellipse] [size] [at position], ...)` | `Center`, `GradientOrigin` (= center), `RadiusX`, `RadiusY` as fractions of the bounding box: exact at every size. `size` is `closest-side`, `farthest-side`, `closest-corner`, `farthest-corner` (default) or two percentages. `position` is keywords or percentages |
 | `radial-gradient(circle ...)` | the radii of the circle in a square box; warns (an ellipse on any other box) |
@@ -167,7 +167,7 @@ is WinUI's
 An error (with the declaration's line) for what a WinUI gradient cannot say:
 
 - `repeating-linear-gradient()`, `repeating-radial-gradient()`, `conic-gradient()`
-- a stop position or radius in `px`/`rem` (the brush maps to the element's size, so a length has no fixed place), a color hint (a lone percentage between stops), a stop outside 0% to 100%
+- a stop position or radius in `px` (the brush maps to the element's size, so a length has no fixed place), a color hint (a lone percentage between stops), a stop outside 0% to 100%
 - `var()` as a stop color (a declaration holds one resolved resource, and a stop needs a Color)
 - several comma-separated images, `url()`, `image-set()`: an image cannot be a Background in a Style, use an Image element
 
@@ -271,7 +271,7 @@ A third (z) value is an error
 `matrix()`, and sets the element's `RenderTransform` (a `TransformGroup` for a
 list, in the order CSS applies it: the last function acts on the element first)
 Lengths are `px` (a percentage needs the element's size and is an error), angles
-`deg`, `rad`, `turn` or `grad`. 3D functions are errors: a RenderTransform is 2D
+`deg`. 3D functions are errors: a RenderTransform is 2D
 
 The `origin` write above also sets `RenderTransformOrigin` (a fraction of the
 size, which is what WinUI wants here), so `scale`, `rotate` and `transform`
@@ -436,7 +436,7 @@ the panel; the CSS names what it does
 | `flex-wrap` | none | error: WinUI has no wrapping panel |
 | `align-self`, `justify-self`, `place-self` | `VerticalAlignment`, `HorizontalAlignment` (`start` is Top / Left) | on the child |
 | `align-items`, `justify-items`, `place-items`, `justify-content`, `align-content` | each child's `align-self` / `justify-self`, or spacer tracks | lowered into the children by the build (see Containers) |
-| `width`, `height` in px, rem, `calc()` of them, `auto`, `100%` | `Width`, `Height` (NaN for auto and 100%: a stretching element fills) | another % is an error: use a `*` track |
+| `width`, `height` in px, `calc()` of them, `auto`, `100%` | `Width`, `Height` (NaN for auto and 100%: a stretching element fills) | another % is an error: use a `*` track |
 | `min-*`, `max-*` | `MinWidth`... | |
 | `box-sizing: border-box` | nothing: WinUI's size includes padding and border | `content-box` is an error |
 | `overflow` on `<scroll-viewer>` | scroll bar visibility (`scroll` Visible, `auto` Auto, `hidden` Disabled) | on any other element an error: wrap the content in a `<scroll-viewer>` |
@@ -547,20 +547,11 @@ Offsets are lengths in px (or `auto`)
 
 ## Lengths that depend on the layout
 
-`calc()`, `min()`, `max()` and `clamp()` of px, rem and the other absolute units fold at build time
-With a
-percentage, a viewport unit (`vw`, `vh`, `vmin`, `vmax`) or a container unit
-(`cqw`, `cqh`, `cqi`, `cqb`, `cqmin`, `cqmax`) in `width`, `height`, `min-*` or `max-*`,
-the build renames the property and the opt-in `winui-svelte/css/dynamic-length`
-group evaluates it at run time, through the same fold: a % is of the parent's
-size along that axis (`calc(50% - 8px)`), a viewport unit of the window's content,
-a container unit of the nearest container
-The result is assigned to the control,
-and again when the parent, the window (`XamlRoot.Changed`) or the container
-(`SizeChanged`) resizes, and when the control is loaded
-It needs a component's
-`<style>` (a `style` attribute is not renamed by the build); an expression that
-is not a length is a build error
+There are none: WinUI has no percentage, viewport, container or font-relative lengths
+`calc()`, `min()`, `max()` and `clamp()` of px fold at build time; any other unit is an
+error that says what to write (see Length units)
+Size an element with a Grid `*` track, stretch alignment, a `@media` or
+`@container` rule, or compute the number in script
 
 ## Entrances: `@starting-style`
 
@@ -588,7 +579,7 @@ unit are not supported
 
 ## Window size: `@media`
 
-`@media (min-width: 600px)`, `(max-width)`, `(min-height)`, `(max-height)` (px, rem or em;
+`@media (min-width: 600px)`, `(max-width)`, `(min-height)`, `(max-height)` (px;
 `and` joins them, `(width >= 600px)` works, a leading `screen and` is ignored)
 around a rule make it apply while the window's content is inside the bounds
 Each rule keeps its `media` (`MediaCondition`), and an element that matches one
@@ -697,17 +688,47 @@ selectors; `@scope` holds style rules only
 
 ## Length units
 
-One table (`src/css/parse/units.ts`) says what WinUI makes of each unit, and the
-parser, the dynamic-length fold and the validator all read it
+WinUI measures in device-independent pixels, so the CSS writes what WinUI
+understands and nothing is converted
+One table (`src/css/parse/units.ts`) holds the verdict per unit, and the parser,
+the validator, the stylelint rule and the VS Code data all read it; adding a row
+updates every channel
 
-| Unit | WinUI |
-|---|---|
-| `px` | device-independent pixels |
-| `rem`, `em` | 16px: WinUI has no root or element font size |
-| `pt`, `pc`, `in`, `cm`, `mm`, `q` | converted to px at build time (96 px to the inch) |
-| `%`, `vw`, `vh`, `vmin`, `vmax`, `cqw`, `cqh`, `cqi`, `cqb`, `cqmin`, `cqmax` | resolved when the window is laid out, inside `calc()`, `min()`, `max()` or `clamp()` (see Lengths that depend on the layout) |
-| `ch`, `ex`, `cap`, `ic`, `lh`, `rlh` and the other font-metric units | error: WinUI has no font metrics; write px or rem |
-| `svw`, `svh`, `lvw`, `lvh`, `dvw`, `dvh`, `vi`, `vb` | error: WinUI has one window size; write `vw` or `vh` inside `calc()` |
+| Unit | Verdict | Why |
+|---|---|---|
+| `px` | native | WinUI lengths are device-independent pixels |
+| `deg` | native | WinUI rotates, skews and aims gradients in degrees |
+| `s`, `ms` | native | WinUI durations and delays are a TimeSpan |
+| `fr` | native | a grid track of a share of the rest, a star size |
+| a bare number | native | where WinUI takes a number: `opacity`, `flex` factors, `z-index`, `font-weight`, `letter-spacing` (thousandths of an em, WinUI's CharacterSpacing) |
+| `rem`, `em`, `ch`, `ex`, `cap`, `ic`, `lh`, `rlh`, `rch`, `rex`, `rcap`, `ric` | error | WinUI has no relative font units: write px |
+| `pt`, `pc`, `in`, `cm`, `mm`, `q` | error | WinUI measures only in px: write px |
+| `vw`, `vh`, `vmin`, `vmax`, `vi`, `vb` and the `sv`, `lv`, `dv` variants | error | WinUI has no viewport units: write px, or a Grid `*` track or stretch alignment |
+| `cqw`, `cqh`, `cqi`, `cqb`, `cqmin`, `cqmax` | error | WinUI has no container units: write px, or a Grid `*` track or stretch alignment |
+| `rad`, `grad`, `turn` | error | WinUI angles are degrees: write deg |
+| `dppx`, `dpi`, `dpcm`, `x` | error | a resolution is a media feature, not a length |
+| `%` inside `calc()`, `min()`, `max()`, `clamp()` | error | WinUI has no percentage lengths: write px, a Grid `*` track, or compute it in script |
+| any other unit | error | not a unit WinUI knows: write px, deg, s, ms or fr |
+
+A percentage that is not a length stays: `opacity: 70%`, gradient stops, colors,
+`transform-origin`, keyframe selectors, and `width: 100%` (a stretching element fills)
+
+### Where a unit is checked
+
+One validator reads every position, so the build, the preprocessor and
+stylelint report the same code, message, line and column
+A table-driven test (`src/css/validate/units.test.ts`) writes every unit of
+the table in every position through every channel
+
+| Position | Build (Vite plugin) | Preprocessor | stylelint |
+|---|---|---|---|
+| property values, shorthands, `calc()` operands, grid tracks, gradient stops, transforms, durations and delays | yes | yes | yes |
+| `@media`, `@container`, `@supports` conditions | yes | yes | yes |
+| custom property values | yes | yes | yes |
+| `style="..."` attributes | yes | yes | yes (postcss-html reads them) |
+| `style:name` directives | yes | yes | no: postcss-html does not read them |
+| `<style>` of plain `.css` files | not part of a component | n/a | yes |
+| `@keyframes` selectors | percentages are not lengths | n/a | n/a |
 
 ## Diagnostics in the editor, the linter and the build
 
@@ -753,7 +774,7 @@ The secondary option `{ "ignore": ["partial-support"] }` skips codes
 A diagnostic is `{ code, severity, message, filename, start, end, frame, suggestion }`
 with Svelte's position shape (`line` from 1, `column` from 0, `character`)
 The codes: `unsupported-property`, `unsupported-at-rule`, `unsupported-unit`,
-`unsupported-grid-track`, `runtime-unit`, `partial-support` (a warning) and
+`unsupported-grid-track`, `partial-support` (a warning) and
 `invalid-css`
 For example, `repeat(auto-fill, 100px)` is reported as `repeat(auto-fill, ...) has
 no WinUI equivalent: write explicit tracks, for example repeat(3, 1fr) or 1fr 1fr 1fr`

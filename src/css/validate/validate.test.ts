@@ -3,8 +3,6 @@ import { winuiPreprocess, WinuiStyleError } from "./preprocess.ts";
 import { rule, ruleName } from "./stylelint.ts";
 import { validateComponent } from "./validate.ts";
 import { vscodeCssData } from "./vscode-data.ts";
-import { isDynamicLength } from "#src/css/parse/dynamic-length.js";
-import { convertLength, LENGTH_UNITS, LengthUnitKind } from "#src/css/parse/units.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { BUILD_GROUPS, LAZY_GROUPS } from "#src/css/translate/lazy-groups.js";
 import { propertyGroups } from "#src/css/translate/properties.js";
@@ -36,51 +34,18 @@ function messages(style: string) {
   return validate(style).map(diagnostic => diagnostic.message);
 }
 
-test("units: the table converts at build time and the parser follows it", () => {
-  const converted = [
-    ["1in", 96],
-    ["72pt", 96],
-    ["6pc", 96],
-    ["2.54cm", 96],
-    ["25.4mm", 96],
-    ["101.6q", 96],
-    ["2rem", 32],
-    ["1em", 16]
-  ] as const;
-  for (const [token, pixels] of converted) {
-    assert.equal(Math.round(convertLength(token) ?? Number.NaN), pixels, token);
-  }
-
-  assert.equal(convertLength("2ch"), null);
-  assert.equal(convertLength("50vw"), null);
-  assert.equal(convertLength("12"), null);
-});
-
-test("units: every runtime unit is one the dynamic-length fold resolves", () => {
-  const runtime = [...LENGTH_UNITS].filter(([, unit]) => unit.kind === LengthUnitKind.RUNTIME).map(([name]) => name);
-  for (const unit of runtime) {
-    assert.equal(isDynamicLength(`calc(1${unit} + 1px)`), true, unit);
-  }
-});
-
 test("a unit WinUI has no meaning for is an error that says what to write", () => {
   const [diagnostic] = validate(".a {\n  width: 2ch;\n}");
   assert.equal(diagnostic?.code, "unsupported-unit");
-  assert.match(diagnostic?.message ?? "", /ch has no WinUI equivalent .*write px, or rem/u);
-  assert.equal(diagnostic?.suggestion, "write px, or rem (1rem is 16px)");
+  assert.match(diagnostic?.message ?? "", /ch has no WinUI equivalent .*WinUI has no ch unit: write px/u);
+  assert.equal(diagnostic?.suggestion, "WinUI has no ch unit: write px");
   assert.deepEqual([diagnostic?.start.line, diagnostic?.start.column, diagnostic?.end.column], [4, 9, 12]);
   assert.match(diagnostic?.frame ?? "", /\^\^\^/u);
 });
 
-test("units that convert, or resolve at layout inside calc(), are fine", () => {
-  assert.deepEqual(messages(".a { width: 1in; height: 2cm; padding: 12pt; margin: 1em }"), []);
-  assert.deepEqual(messages(".a { width: calc(50vw - 8px); height: calc(1in + 2pt) }"), []);
-});
-
-test("a runtime unit outside calc() is explained", () => {
-  assert.deepEqual(messages(".a { width: 50vw }"), [
-    "50vw is resolved when the window is laid out: write it inside calc(), min(), max() or clamp(), for example calc(50vw)"
-  ]);
+test("the native units are fine", () => {
+  assert.deepEqual(messages(".a { width: 10px; transform: rotate(45deg); transition: opacity 100ms; opacity: 0.5 }"), []);
+  assert.deepEqual(messages(".a { width: calc(10px + 2 * 4px) }"), []);
 });
 
 test("grid tracks: auto, px and fr mix, and repeat(N) expands", () => {
@@ -121,7 +86,7 @@ test("the -winui-* list is the properties the table handles, and the editor data
     assert.equal(members.has(name), true, name);
   }
 
-  const handled = [...members].filter(member => member.startsWith("-winui-") && !member.startsWith("-winui-dynamic-"));
+  const handled = [...members].filter(member => member.startsWith("-winui-"));
   assert.deepEqual(handled.sort(), [...documented].sort());
 
   const file = JSON.parse(readFileSync(new URL("vscode-css-data.json", import.meta.url), "utf8"));

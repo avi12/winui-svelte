@@ -163,7 +163,7 @@ export class Reader {
 
     const pixels = parseLength(token);
     return pixels === null ? this.expectedToken({
-      what: "a length in px (or rem, or 0)",
+      what: "a length in px (or 0)",
       token
     }) : String(pixels);
   }
@@ -171,7 +171,7 @@ export class Reader {
   pixels(token: string) {
     const pixels = parseLength(token);
     return pixels ?? this.expectedToken({
-      what: "a length in px (or rem, or 0)",
+      what: "a length in px (or 0)",
       token
     });
   }

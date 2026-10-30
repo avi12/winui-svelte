@@ -14,11 +14,11 @@ import {
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-test("lengths are px, rem (16px) or a bare zero", () => {
+test("lengths are px or a bare zero", () => {
   provideCalcFolding(evaluateCalc);
   assert.equal(parseLength("12px"), 12);
   assert.equal(parseLength("-4.5px"), -4.5);
-  assert.equal(parseLength("1.5rem"), 24);
+  assert.equal(parseLength("1.5rem"), null);
   assert.equal(parseLength("0"), 0);
   assert.equal(parseLength("12"), null);
   assert.equal(parseLength("50%"), null);

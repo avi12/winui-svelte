@@ -1,5 +1,7 @@
 import { frameOf, positionAt, ValidationCode } from "./diagnostic.ts";
 import type { ValidationDiagnostic } from "./diagnostic.ts";
+import { markupDeclarations } from "./markup-declarations.ts";
+import type { Located } from "./markup-declarations.ts";
 import { BlockKind, parseCss } from "#src/css/parse/parser.js";
 import type { Block } from "#src/css/parse/parser.js";
 import { matchingParenthesis } from "#src/css/parse/split.js";
@@ -22,14 +24,6 @@ export interface ValidateInput {
   compilerOptions?: CompileOptions | undefined;
 }
 
-interface Located {
-  property: string;
-  value: string;
-  /** Offsets in the file. */
-  start: number;
-  valueStart: number;
-}
-
 interface Finding {
   code: ValidationCode;
   severity: "error" | "warning";
@@ -46,12 +40,24 @@ interface Finding {
 
 const DYNAMIC_FUNCTION = /(?:calc|min|max|clamp)\(/giu;
 const NUMBER_WITH_UNIT = /(?<![\w#.-])(-?\d*\.?\d+)([a-z]+|%)(?![\w%-])/giu;
+const CONDITION_AT_RULES = new Set(["media", "container", "supports"]);
 const NO_MEANING = /has no WinUI meaning/u;
 const AT_RULE_MESSAGE = /^@/u;
 const DECLARATION_START = /^[\w-]+\s*:/u;
 const NOT_NEWLINE = /[^\n]/gu;
 
-function styleRange(source: string) {
+function styleRange({ source, filename }: {
+  source: string;
+  filename: string;
+}) {
+  const isStylesheet = filename.endsWith(".css");
+  if (isStylesheet) {
+    return {
+      start: 0,
+      end: source.length
+    };
+  }
+
   try {
     const content = parse(source, { modern: true }).css?.content;
     return content === undefined ? null : {
@@ -121,6 +127,26 @@ function declarationsOf({ blocks, source }: {
       });
     }
 
+    const isConditional = !isRule && CONDITION_AT_RULES.has(block.name);
+    if (isConditional) {
+      const start = offsetOf({
+        source,
+        line: block.at.line,
+        column: block.at.column
+      });
+      located.push({
+        property: `@${block.name}`,
+        value: source.slice(
+          start, declarationEnd({
+            source,
+            start
+          })
+        ),
+        start,
+        valueStart: start
+      });
+    }
+
     pending.push(...(isRule ? block.nested : block.children ?? []));
   }
 
@@ -151,50 +177,60 @@ function withoutDynamicFunctions(value: string) {
   return masked;
 }
 
+const PERCENT = "%";
+
+// What to say about one number with a unit, or null when WinUI reads it as it is written.
+function verdictOf({ unit, isInsideMath }: {
+  unit: string;
+  isInsideMath: boolean;
+}) {
+  const verdict = LENGTH_UNITS.get(unit);
+  const isUnknown = verdict === undefined;
+  if (isUnknown) {
+    return {
+      message: `the unit ${unit} is not a CSS unit WinUI knows`,
+      suggestion: "write px, deg, s, ms or fr"
+    };
+  }
+
+  const isNative = verdict.kind === LengthUnitKind.NATIVE;
+  const isPlainPercent = unit === PERCENT && !isInsideMath;
+  const isAccepted = isNative || isPlainPercent;
+  if (isAccepted) {
+    return null;
+  }
+
+  return {
+    message: `the unit ${unit} has no WinUI equivalent (${verdict.reason ?? ""}): ${verdict.advice ?? ""}`,
+    suggestion: verdict.advice ?? ""
+  };
+}
+
 function unitFindings(located: Located) {
   const findings: Finding[] = [];
   const masked = withoutDynamicFunctions(located.value);
   for (const match of located.value.matchAll(NUMBER_WITH_UNIT)) {
     const unit = (match[2] ?? "").toLowerCase();
-    const verdict = LENGTH_UNITS.get(unit);
-    const isUnknown = verdict === undefined;
-    if (isUnknown) {
+    const isInsideMath = masked.slice(match.index, match.index + match[0].length).trim() === "";
+    const verdict = verdictOf({
+      unit,
+      isInsideMath
+    });
+    const isAccepted = verdict === null;
+    if (isAccepted) {
       continue;
     }
 
-    const base = {
-      start: located.valueStart + match.index,
-      end: located.valueStart + match.index + match[0].length,
-      declarationStart: located.start
-    };
-    const isOutsideFunction = masked.slice(match.index, match.index + match[0].length).trim() !== "";
-    const isUnsupported = verdict.kind === LengthUnitKind.UNSUPPORTED;
-    if (isUnsupported) {
-      findings.push(
-        finding({
-          ...base,
-          code: ValidationCode.UNSUPPORTED_UNIT,
-          severity: "error",
-          message: `the unit ${unit} has no WinUI equivalent (${verdict.reason ?? ""}): ${verdict.advice ?? ""}`,
-          suggestion: verdict.advice ?? ""
-        })
-      );
-    }
-
-    const isRuntimeOutside = verdict.kind === LengthUnitKind.RUNTIME && isOutsideFunction;
-    if (isRuntimeOutside) {
-      const advice = `write it inside calc(), min(), max() or clamp(), for example calc(${match[0]})`;
-      findings.push(
-        finding({
-          ...base,
-          code: ValidationCode.RUNTIME_UNIT,
-          severity: "error",
-          message: `${match[0]} is resolved when the window is laid out: ${advice}`,
-          suggestion: advice,
-          isAdvice: true
-        })
-      );
-    }
+    findings.push(
+      finding({
+        ...verdict,
+        start: located.valueStart + match.index,
+        end: located.valueStart + match.index + match[0].length,
+        declarationStart: located.start,
+        code: ValidationCode.UNSUPPORTED_UNIT,
+        severity: "error"
+      })
+    );
   }
 
   return findings;
@@ -306,17 +342,19 @@ function toDiagnostic({ found, source, filename }: {
  */
 export function validateComponent(input: ValidateInput) {
   const { source, filename } = input;
-  const range = styleRange(source);
-  const isStyleMissing = range === null;
-  if (isStyleMissing) {
-    return [];
-  }
-
-  const padded = source.slice(0, range.start).replaceAll(NOT_NEWLINE, " ") + source.slice(range.start, range.end);
-  const located = declarationsOf({
-    blocks: parseCss(padded),
-    source: padded
+  const range = styleRange({
+    source,
+    filename
   });
+  const isStylesheet = filename.endsWith(".css");
+  const padded = range === null ? "" : source.slice(0, range.start).replaceAll(NOT_NEWLINE, " ") + source.slice(range.start, range.end);
+  const located = [
+    ...declarationsOf({
+      blocks: range === null ? [] : parseCss(padded),
+      source: padded
+    }),
+    ...isStylesheet ? [] : markupDeclarations(source)
+  ];
   const fromTranslation = translationOf(input).map(diagnostic => translated({
     diagnostic,
     source
@@ -330,7 +368,11 @@ export function validateComponent(input: ValidateInput) {
     return isExplaining ? isNeeded : true;
   });
   const explainedAt = new Set(own.map(item => item.declarationStart));
-  const remaining = fromTranslation.filter(item => !explainedAt.has(item.declarationStart));
+  const remaining = fromTranslation.filter(item => {
+    const isDeclarationExplained = explainedAt.has(item.declarationStart);
+    const isRangeExplained = own.some(found => item.start <= found.start && found.end <= item.end);
+    return !isDeclarationExplained && !isRangeExplained;
+  });
   return [...own, ...remaining]
     .sort((first, second) => first.start - second.start)
     .map(found => toDiagnostic({

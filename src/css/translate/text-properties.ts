@@ -3,9 +3,6 @@ import type { GroupInput } from "./property-kit.ts";
 import type { Reader } from "#src/css/parse/reader.js";
 import { parseNumber, splitCommas } from "#src/css/parse/values.js";
 
-/** WinUI's CharacterSpacing counts thousandths of an em. */
-const CHARACTER_SPACING_PER_EM = 1000;
-
 /** WinUI's FontWeights, by name and weight. */
 export const FONT_WEIGHTS = [
   {
@@ -207,7 +204,7 @@ export function lineHeight(input: GroupInput) {
     })];
 }
 
-/** `letter-spacing`: `normal`, or a size in em. */
+/** `letter-spacing`: `normal`, or WinUI's own CharacterSpacing, a unitless number of thousandths of an em. */
 export function letterSpacing(reader: Reader) {
   const word = reader.single();
   const isWordMissing = word === null;
@@ -220,11 +217,11 @@ export function letterSpacing(reader: Reader) {
     return "0";
   }
 
-  const match = /^(-?\d*\.?\d+)em$/iu.exec(word);
-  return match === null
+  const spacing = parseNumber(word);
+  return spacing === null
     ? reader.expectedToken({
-      what: "normal or a size in em (WinUI spaces by em)",
+      what: "normal or a unitless number of thousandths of an em (WinUI's CharacterSpacing)",
       token: word
     })
-    : String(Number(match[1]) * CHARACTER_SPACING_PER_EM);
+    : String(spacing);
 }

@@ -103,10 +103,6 @@
       "types": "./dist/css/focus.d.ts",
       "default": "./dist/css/focus.js"
     },
-    "./css/dynamic-length": {
-      "types": "./dist/css/dynamic-length.d.ts",
-      "default": "./dist/css/dynamic-length.js"
-    },
     "./css/container": {
       "types": "./dist/css/container.d.ts",
       "default": "./dist/css/container.js"

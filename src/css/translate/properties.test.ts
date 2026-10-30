@@ -185,7 +185,7 @@ test("sizes WinUI cannot say are build errors", () => {
   const cases: Array<[string, RegExp]> = [
     ["box-sizing: content-box", /content-box has no WinUI meaning/u],
     ["width: 50%", /width: expected a length in px/u],
-    ["width: calc(100% - 8px * 2px)", /expected a calc\(\), min\(\), max\(\) or clamp\(\) of lengths/u]
+    ["width: calc(100% - 8px * 2px)", /expected a length in px/u]
   ];
   for (const [declarations, pattern] of cases) {
     assert.match(
@@ -213,7 +213,7 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ["padding, three values", null, "padding: 1px 2px 3px", [["Padding", "2,1,2,3"]]],
   ["padding, four values", null, "padding: 1px 2px 3px 4px", [["Padding", "4,1,2,3"]]],
   ["padding, one side", null, "padding-left: 4px", [["Padding", "4,0,0,0"]]],
-  ["padding, rem is 16px", null, "padding: 0.5rem", [["Padding", "8,8,8,8"]]],
+  ["padding in px", null, "padding: 8px", [["Padding", "8,8,8,8"]]],
   ["gap on a vertical stack", "stack-panel", "gap: 6px", [["Spacing", "6"]]],
   ["gap on a horizontal stack takes the column gap", "stack-panel", "display: flex; gap: 2px 8px", [
     ["Orientation", "Horizontal"],
@@ -236,7 +236,7 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["VerticalAlignment", "Center"],
     ["HorizontalAlignment", "Left"]
   ]],
-  ["width, height", null, "width: 120px; height: 2rem", [
+  ["width, height", null, "width: 120px; height: 32px", [
     ["Width", "120"],
     ["Height", "32"]
   ]],
@@ -245,7 +245,7 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["Width", "NaN"],
     ["Height", "NaN"]
   ]],
-  ["calc of lengths", null, "width: calc(100px - 2 * 8px); min-height: calc(1rem + 4px)", [
+  ["calc of lengths", null, "width: calc(100px - 2 * 8px); min-height: calc(16px + 4px)", [
     ["Width", "84"],
     ["MinHeight", "20"]
   ]],
@@ -319,7 +319,7 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["LineStackingStrategy", "BlockLineHeight"],
     ["FontFamily", "Segoe UI"]
   ]],
-  ["letter-spacing in em", null, "letter-spacing: 0.05em", [["CharacterSpacing", "50"]]],
+  ["letter-spacing in thousandths of an em", null, "letter-spacing: 50", [["CharacterSpacing", "50"]]],
   ["text-align", null, "text-align: center", [["TextAlignment", "Center"]]],
   ["text-wrap", null, "text-wrap: nowrap", [["TextWrapping", "NoWrap"]]],
   ["white-space", null, "white-space: normal", [["TextWrapping", "Wrap"]]],
@@ -340,7 +340,7 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ["transform: translate", null, "transform: translate(10px, 4px)", [["RenderTransform", "<TranslateTransform X=\"10\" Y=\"4\"/>"]]],
   ["transform: translate with one length", null, "transform: translate(10px)", [["RenderTransform", "<TranslateTransform X=\"10\" Y=\"0\"/>"]]],
   ["transform: scale with one factor", null, "transform: scale(1.5)", [["RenderTransform", "<ScaleTransform ScaleX=\"1.5\" ScaleY=\"1.5\"/>"]]],
-  ["transform: skew in turns", null, "transform: skew(0.125turn, 5deg)", [["RenderTransform", "<SkewTransform AngleX=\"45\" AngleY=\"5\"/>"]]],
+  ["transform: skew in degrees", null, "transform: skew(45deg, 5deg)", [["RenderTransform", "<SkewTransform AngleX=\"45\" AngleY=\"5\"/>"]]],
   ["transform: matrix", null, "transform: matrix(1, 0, 0, 1, 20, 10)", [["RenderTransform", "<MatrixTransform Matrix=\"1,0,0,1,20,10\"/>"]]],
   ["transform: a list acts right to left", null, "transform: translate(10px, 0) rotate(90deg) scale(2)", [[
     "RenderTransform",
@@ -742,7 +742,7 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["auto-fill in a template", "grid", "grid-template-columns: repeat(auto-fill, 100px)", /repeat\(auto-fill, \.\.\.\) has no WinUI equivalent: write explicit tracks/u],
   ["minmax with a percentage", "grid", "grid-template-columns: minmax(10%, 1fr)", /found "10%"/u],
   ["overflow on a border", "border", "overflow: hidden", /overflow-x: hidden has no WinUI meaning on <border>/u],
-  ["letter spacing in px", null, "letter-spacing: 2px", /expected normal or a size in em/u],
+  ["letter spacing in px", null, "letter-spacing: 2px", /expected normal or a unitless number/u],
   ["a backdrop filter other than blur", null, "backdrop-filter: saturate(2)", /backdrop-filter: saturate\(2\) has no WinUI meaning \(only blur\(\) has/u],
   ["a blur radius that is not a length", null, "backdrop-filter: blur(big)", /backdrop-filter: expected a blur radius in px, found "big"/u],
   ["an elevation that is not a length", null, "-winui-elevation: high", /-winui-elevation: expected a length in px/u],
