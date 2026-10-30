@@ -17,7 +17,6 @@ import { addLine, fail, failElement, take } from "./container-run.ts";
 import type { Run } from "./container-run.ts";
 import { removeDeclaration } from "./declaration-ranges.ts";
 import type { FlexItem } from "./flex-values.ts";
-import type { Move } from "./reorder.ts";
 import { generatedName } from "./resolve-selector.ts";
 import type { Context } from "./resolve-selector.ts";
 import type { Edit } from "./style-edits.ts";
@@ -35,15 +34,6 @@ const WRAP = "flex-wrap";
 const HORIZONTAL = "Horizontal";
 const FLEX_DISPLAYS: ReadonlySet<string> = new Set(["flex", "inline-flex"]);
 const MEMBERS: ReadonlySet<string> = new Set([...CONTAINER_MEMBERS, ...CHILD_MEMBERS, ...KIND_MEMBERS]);
-
-/**
- * What a container's rules lower to in the markup: the declarations to take
- * out of the `<style>`, and the children to write in another order.
- */
-export interface ContainerLowering {
-  edits: Edit[];
-  moves: Move[];
-}
 
 type Mode = "stack" | "grid" | "grid-flex";
 
@@ -90,13 +80,13 @@ function isRowOf(declarations: readonly Declaration[]) {
   return (orientationOf(computed) ?? HORIZONTAL) === HORIZONTAL;
 }
 
-function lowerStack({ run, container, children, folded, declarations }: Lowering) {
-  const isRow = isRowOf(declarations);
-  keepAtStart({
-    run,
-    entry: folded.justifyContent,
-    reason: "a stack-panel lays its children from the start; write the container as a <grid> with display: flex, which spaces them"
-  });
+// The cross axis of a flex container: each child aligns itself on it.
+function alignCross({ run, folded, children, isRow }: {
+  run: Run;
+  folded: Folded;
+  children: readonly ChildFacts[];
+  isRow: boolean;
+}) {
   const cross = folded.alignItems;
   const hasCross = cross !== undefined;
   if (hasCross) {
@@ -107,6 +97,21 @@ function lowerStack({ run, container, children, folded, declarations }: Lowering
       children: children.map(({ element }) => element)
     });
   }
+}
+
+function lowerStack({ run, container, children, folded, declarations }: Lowering) {
+  const isRow = isRowOf(declarations);
+  keepAtStart({
+    run,
+    entry: folded.justifyContent,
+    reason: "a stack-panel lays its children from the start; write the container as a <grid> with display: flex, which spaces them"
+  });
+  alignCross({
+    run,
+    folded,
+    children,
+    isRow
+  });
 
   for (const child of children) {
     const { basis, grow } = child.flex;
@@ -249,16 +254,12 @@ function lowerGridFlex({ run, container, children, folded }: Lowering) {
     });
   }
 
-  const cross = folded.alignItems;
-  const hasCross = cross !== undefined;
-  if (hasCross) {
-    alignChildren({
-      run,
-      entry: cross,
-      property: isRow ? "align-self" : "justify-self",
-      children: children.map(({ element }) => element)
-    });
-  }
+  alignCross({
+    run,
+    folded,
+    children,
+    isRow
+  });
 }
 
 const LOWERINGS = new Map<Mode, (input: Lowering) => void>([
@@ -461,5 +462,5 @@ export function lowerContainers({ context, blocks }: {
   return {
     edits,
     moves: run.moves
-  } satisfies ContainerLowering;
+  };
 }
