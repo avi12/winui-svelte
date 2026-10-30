@@ -653,10 +653,14 @@ component takes content (its WinUI content property: `Content`, `Child`,
 
 How a value is written:
 
-- An enum prop takes the member's WinUI name (`horizontalAlignment="Center"`)
-  or its value (`HorizontalAlignment.Center` from `winui-svelte/enums`), and
-  nothing else, so the editor offers exactly the members; a flag enum also
+- An enum prop takes the member's value from `winui-svelte/enums`
+  (`horizontalAlignment={HorizontalAlignment.Center}`; the value and its type
+  share the name) or the member's WinUI name as text, and nothing else, so the
+  editor offers exactly the members; a flag enum also
   takes a list of names (`modifiers={["Control", "Shift"]}`)
+- Padding, margin, spacing, font size, colours and sizes are CSS, in the
+  `<style>` of the component (see Styling with CSS); the props of those names
+  exist as WinUI has them, and a prop beats a rule
 - A thickness takes `8`, `[8, 4]`, `[left, top, right, bottom]` or a CSS-order
   string; a corner radius a number or an array; a grid length `"Auto"`, `"*"`,
   `"2*"` or pixels
@@ -799,7 +803,7 @@ An app that does not import it does not bundle it
 [API.md](API.md) has the details, what is supported and what is not, and `examples/win2d` the example
 
 The raw elements the components are made of work too:
-`<stack-panel spacing={8}>`, `<text-block>`, `grid.column={1}` for an attached property; they need
+`<stack-panel>`, `<text-block>`, `grid.column={1}` for an attached property; they need
 `registerControls(...)` with the classes they name (a component registers only
 its own class, when it is made, so an app bundles only the bindings it uses)
 Components are the supported way; see [API.md](API.md) for the raw forms and
@@ -916,12 +920,12 @@ identity
 </script>
 
 <StackPanel>
-  <TextBlock text="Battery {power.hasBattery ? `${power.percent}%` : "none"}" />
+  <TextBlock>Battery {power.hasBattery ? `${power.percent}%` : "none"}</TextBlock>
   {#each speakers.devices.items as device (device.id)}
-    <TextBlock text={device.name} />
+    <TextBlock>{device.name}</TextBlock>
   {/each}
   {#each installed.printers as printer (printer.name)}
-    <TextBlock text="{printer.name}{printer.isOffline ? " (offline)" : ""}" />
+    <TextBlock>{printer.name}{printer.isOffline ? " (offline)" : ""}</TextBlock>
   {/each}
 </StackPanel>
 ```
@@ -964,6 +968,14 @@ build error with its file and line; nothing is silently ignored
 | `--name: value` on `:root`, or on a class | an app-wide resource, or one only the elements with that class (and their templates) see: `.danger { --button-background-pointer-over: red }` |
 | `.class`, `type`, `:hover`, `:focus`, `:active`, `:root`, `:where()` | class and type matching, the control's events, custom properties |
 
+A length is written in the units WinUI has: px, and deg, s, ms, fr, auto and
+unitless numbers where a property takes them; `padding: 8px`, `gap: 8px`,
+`font-size: 20px`
+Any other unit (`rem`, `em`, `pt`, `vw`, `cqw`, a percentage length and so on)
+is a compile error from both the compiler and stylelint, with the message
+saying what to write
+The table of every unit is in [`src/css/API.md`](src/css/API.md#length-units)
+
 ### Scoping
 
 A rule in a component's `<style>` reaches only the elements and the component
@@ -978,6 +990,8 @@ A class the parent scopes does not reach the elements inside a child component;
 a child that takes a `class` prop and puts it on its own root element receives
 the scope class with the value (an array or an object works, as `clsx` does)
 
+Style in CSS, as in the web: a class on the instance (`<Border class="card">`)
+and a rule in the scoped `<style>`
 A prop and a rule that set the same WinUI property both work, and the prop
 wins: `<TextBlock isTextSelectionEnabled={false}>` stays false under
 `user-select: text`, and a rule fills in where the prop is absent
@@ -987,8 +1001,8 @@ is the direct, local value
 An animation still overrides a local value while it runs, as on the web
 
 `style:` and `class:` directives work on component instances too
-`<TextBlock style:padding="{p}px" class:active={isActive}>` is rewritten at
-build time into a `style` string and a `class` array that stay reactive;
+`<TextBlock style:padding="{padding}px" class:active={isActive}>` is rewritten
+at build time into a `style` string and a `class` array that stay reactive;
 `null`, `undefined` and `false` leave a declaration out
 As they are CSS, an explicit prop wins over them as well
 
@@ -1045,10 +1059,16 @@ elements of a component (`<border>`, `<text-block>`), with the functions of
 </script>
 
 {#if isShown}
-  <border padding="16" transition:fly={{ y: 40, duration: 300 }}>
+  <border class="card" transition:fly={{ y: 40, duration: 300 }}>
     <text-block>Hello</text-block>
   </border>
 {/if}
+
+<style>
+  .card {
+    padding: 16px;
+  }
+</style>
 ```
 
 The Vite plugin turns the support on in each component that uses a directive or
@@ -1132,7 +1152,7 @@ the drag events with a `DragEvent` and a `dataTransfer`, files as `NativeFile`
   ondragover={(event: DragEvent) => event.preventDefault()}
   ondrop={async (event: DragEvent) => console.log(await event.dataTransfer.files[0]?.text())}
 >
-  <text-block text="Drop a text file"></text-block>
+  <text-block>Drop a text file</text-block>
 </border>
 
 <Button {@attach filePicker({ accept: "image/*", multiple: true, onPick: files => (names = files.map(file => file.name)) })}>
@@ -1300,7 +1320,6 @@ Stated plainly, so nobody finds them by surprise:
   overload from the argument count and JavaScript types, so
   `session.fillRectangle(x, y, w, h, brush)` calls the Color overload; the
   functions of `winui-svelte/win2d` find the overload by its parameter names
-- **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `box-shadow`
 - **CSS is WinUI's subset.** Layout follows the element's type (`src/css/API.md`
   has the table): `display: flex` is a `<stack-panel>`, `display: grid` a
   `<grid>` (tracks in `fr`, `px`, `auto`, `minmax()`), `position: absolute` a
@@ -1309,9 +1328,10 @@ Stated plainly, so nobody finds them by surprise:
   against the component's markup at build time
   A Style cannot reach an element's parent, children or siblings, so these are
   build errors that say what to write instead: `float`, `position: sticky`,
-  `right` and `bottom`, `flex-wrap` (WinUI has no wrapping panel), `aspect-ratio`, a % size other than
-  100%, `calc()` with a % or a variable, any unit but px, deg, s, ms and fr, container style queries, `:has()`, `:focus-within`,
-  `box-shadow` (use `-winui-elevation`), `clip-path` as
+  `right` and `bottom`, `flex-wrap` (WinUI has no wrapping panel), a % size other than
+  100%, `calc()` with a % or a variable, any unit but px, deg, s, ms, fr, auto and unitless numbers (the compiler and
+  stylelint both refuse it), container style queries, `:has()`, `:focus-within`,
+  `clip-path` as
   `rect()` or `xywh()`, `mask-position`, `mask-size`, `mask-repeat` and `url()`
   filters
   A container's `align-items`, `justify-content`, `place-items`, its children's
@@ -1357,7 +1377,10 @@ In this repository (run these at its root):
 | | |
 | --- | --- |
 | `pnpm test` | the unit tests, the generator's tests, and the mount test: every component made and linked in a real WinUI window that opens off screen and never takes focus |
-| `pnpm lint` | every check: oxlint, ESLint (Google TypeScript style), `tsc`, `svelte-check`, the editor check, fallow, the check that the generated files are current and the tarball check; `pnpm lint:summary` counts the violations per rule and folder |
+| `pnpm test:windows` | every test that opens real windows, one file at a time, in background windows (`WINUI_SVELTE_BACKGROUND=1`) at below-normal priority; the results are under `.verify/test-windows`; it needs an ordinary desktop session |
+| `pnpm lint` | every check: oxlint, ESLint (Google TypeScript style), stylelint, `tsc`, `svelte-check`, the editor check, WebStorm's inspections (`pnpm check:webstorm`, where WebStorm is installed), fallow, the check that the generated files are current and the tarball check; `pnpm lint:summary` counts the violations per rule and folder |
+| `pnpm lint:fix` | the fixes oxlint and ESLint can apply themselves, then oxlint again |
+| `pnpm fallow:audit` | the dead-code audit of what changed since `HEAD`; the pre-commit hook runs it |
 | `pnpm gen:components` | regenerates the components, their metadata, the class list the bindings are generated for and the tables and quick start in this README from WinUI's metadata (`pnpm restore` first) |
 | `pnpm bindings` | the WinUI bindings (winapp's run, then the WebView2 step); [CONTRIBUTING.md](CONTRIBUTING.md) says when |
 | `pnpm build` | `dist/`: what is published (`pnpm pack` shows the tarball) |
