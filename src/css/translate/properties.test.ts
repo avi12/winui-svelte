@@ -2,6 +2,7 @@ import { computeDeclarations, resolveBuiltVariable } from "./cascade.ts";
 import { loadWinuiCatalogue } from "./catalogue.ts";
 import { LAZY_GROUPS } from "./lazy-groups.ts";
 import { lowerDeclarations } from "./properties.ts";
+import { COMPOSITION_PROPERTIES } from "./property-kit.ts";
 import { formatDiagnostic, translateStyleSheet } from "./translate.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -56,8 +57,16 @@ function lower({ elementType, declarations }: {
     },
     extraGroups: LAZY_GROUPS.flatMap(lazy => lazy.groups())
   });
-  messages.setters = lowered.setters.map(entry => [entry.property, entry.kind === "setter" ? entry.value : entry.xaml]);
-  messages.writes = lowered.writes.map(entry => [entry.target, entry.value]);
+  // The composition properties are written once the element has loaded; here they read as setters.
+  const [composition, others] = [
+    lowered.writes.filter(entry => COMPOSITION_PROPERTIES.has(entry.target)),
+    lowered.writes.filter(entry => !COMPOSITION_PROPERTIES.has(entry.target))
+  ];
+  messages.setters = [
+    ...lowered.setters.map(entry => [entry.property, entry.kind === "setter" ? entry.value : entry.xaml] as [string, string]),
+    ...composition.map(entry => [entry.target, entry.value] as [string, string])
+  ];
+  messages.writes = others.map(entry => [entry.target, entry.value]);
   messages.basedOn = lowered.basedOn;
   return messages;
 }
@@ -524,7 +533,7 @@ test("a transform pivots about the centre, or transform-origin", () => {
     lower({
       elementType: null,
       declarations: "transform: rotate(10deg)"
-    }).writes, [["origin", "50%,50%"]]
+    }).writes, [["render-origin", "50%,50%"]]
   );
   assert.deepEqual(
     lower({

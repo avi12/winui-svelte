@@ -13,7 +13,7 @@ import {
 import type { LoweredStyle } from "#src/css/translate/properties.js";
 import { lowerDeclarations } from "#src/css/translate/properties.js";
 import type { PropertyGroup, WriteSeam } from "#src/css/translate/property-kit.js";
-import { RESOURCES_TARGET, XAML_SEPARATOR } from "#src/css/translate/property-kit.js";
+import { COMPOSITION_PROPERTIES, RESOURCES_TARGET, XAML_SEPARATOR } from "#src/css/translate/property-kit.js";
 import type { Declaration, Keyframes, Rule, StyleSheetData } from "#src/css/translate/types.js";
 import { PseudoState } from "#src/css/translate/types.js";
 import type { NativeValue } from "#src/native-value.js";
@@ -616,6 +616,15 @@ class ElementStyle implements StyledElement {
       if (isGrid) {
         currentNative.setGridDefinitions(this.control, target, value);
         return [];
+      }
+
+      const isComposition = COMPOSITION_PROPERTIES.has(target);
+      if (isComposition) {
+        return [currentNative.setComposition({
+          control: this.control,
+          property: target,
+          value
+        })];
       }
 
       const undo = writeHandler(target)?.({

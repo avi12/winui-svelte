@@ -35,6 +35,7 @@ interface FakeControl {
   styleChanges: number;
   columns: string | null;
   assigned: Record<string, unknown>;
+  composed: Record<string, string>;
   resources: string[];
   handlers: Map<string, () => void>;
   properties: Record<string, NativeValue>;
@@ -47,6 +48,7 @@ function control(properties: Record<string, NativeValue> = {}) {
     styleChanges: 0,
     columns: null,
     assigned: {},
+    composed: {},
     resources: [],
     handlers: new Map(),
     properties,
@@ -103,6 +105,10 @@ const fakeNative: CssNative = {
   },
   setGridDefinitions(target, kind, lengths) {
     fake(target).columns = `${kind}:${lengths}`;
+  },
+  setComposition({ control, property, value }) {
+    fake(control).composed[property] = value;
+    return () => delete fake(control).composed[property];
   },
   assign(target, values) {
     Object.assign(fake(target).assigned, values);
@@ -551,10 +557,6 @@ test("a scaled element pivots about its centre and follows its size", () => {
       x: 50,
       y: 20,
       z: 0
-    },
-    renderTransformOrigin: {
-      x: 0.5,
-      y: 0.5
     }
   });
 
@@ -572,10 +574,6 @@ test("a scaled element pivots about its centre and follows its size", () => {
       x: 200,
       y: 10,
       z: 0
-    },
-    renderTransformOrigin: {
-      x: 1,
-      y: 0.25
     }
   });
 

@@ -8,12 +8,11 @@ import {
   gridTemplate,
   overflow
 } from "./layout-properties.ts";
-import { rotation, scaling, translation } from "./motion-properties.ts";
 import {
   brushProperty,
+  COMPOSITION_PROPERTIES,
   keywordProperty,
   lengthProperty,
-  multiple,
   simple
 } from "./property-kit.ts";
 import type { GroupInput, Output, PropertyGroup } from "./property-kit.ts";
@@ -259,18 +258,6 @@ const propertyGroups: readonly PropertyGroup[] = [
     member: "z-index",
     property: "Canvas.ZIndex",
     parse: zIndex
-  }),
-  multiple({
-    member: "translate",
-    parse: translation
-  }),
-  multiple({
-    member: "scale",
-    parse: scaling
-  }),
-  multiple({
-    member: "rotate",
-    parse: rotation
   })
 ];
 
@@ -361,6 +348,13 @@ function collect(outputs: Output[]) {
       style.basedOn = output.key;
     } else if (output.kind === "write") {
       style.writes.push(output);
+    } else if (output.kind === "setter" && COMPOSITION_PROPERTIES.has(output.property)) {
+      style.writes = style.writes.filter(write => write.target !== output.property);
+      style.writes.push({
+        kind: "write",
+        target: output.property,
+        value: output.value
+      });
     } else {
       setters.delete(output.property);
       setters.set(output.property, output);

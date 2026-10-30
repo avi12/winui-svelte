@@ -52,6 +52,15 @@ export interface WriteSeam {
   mergeIntoControl(control: object, dictionary: object): () => void;
   /** A grid's columns or rows, from "Auto,*,2*,120" (empty clears them). */
   setGridDefinitions(control: object, target: "columns" | "rows", lengths: string): void;
+  /**
+   * Sets the composition property (`COMPOSITION_PROPERTIES`) from "x,y,z" (or the angle) once the
+   * control has loaded; returns what puts the property back.
+   */
+  setComposition(input: {
+    control: object;
+    property: string;
+    value: string;
+  }): () => void;
   /** Assigns properties of the control (`{ centerPoint: ... }`). */
   assign(control: object, values: Readonly<Record<string, unknown>>): void;
   /** Calls `handler` on a WinUI event (PointerEntered...); null if the control has no such event. */
@@ -120,6 +129,13 @@ export interface PropertyGroup {
   /** How the runtime applies the `write` outputs the group produces, by target. */
   writes?: Readonly<Record<string, WriteHandler>>;
 }
+
+/**
+ * The WinUI properties of the element's composition visual (a Vector3 or the
+ * rotation). A Style setter for one, applied before the element has loaded,
+ * hangs or crashes the window, so they are written to the element once it has.
+ */
+export const COMPOSITION_PROPERTIES: ReadonlySet<string> = new Set(["Translation", "Scale", "Rotation"]);
 
 /** The element types a layout property means something on. */
 export const ElementType = {

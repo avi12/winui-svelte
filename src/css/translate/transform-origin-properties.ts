@@ -1,5 +1,5 @@
 import type { PropertyGroup } from "./property-kit.ts";
-import { AXIS_SEPARATOR, DEFAULT_ORIGIN, ORIGIN_TARGET, pivotAbout } from "./transform-origin.ts";
+import { AXIS_SEPARATOR, DEFAULT_ORIGIN, ORIGIN_TARGET, pivotAbout, pivotRenderTransform, RENDER_ORIGIN_TARGET } from "./transform-origin.ts";
 import type { Reader } from "#src/css/parse/reader.js";
 import { parseLength, parsePercent } from "#src/css/parse/values.js";
 
@@ -104,20 +104,25 @@ function parseTransformOrigin(reader: Reader) {
   return `${horizontal}${AXIS_SEPARATOR}${vertical}`;
 }
 
-/** The group of `transform-origin`, written for the runtime as the `origin` write. */
+/**
+ * The group of `transform-origin`, written for the runtime as the `origin` write
+ * (CenterPoint), or the `render-origin` write where a `transform` is in use.
+ */
 export function transformOriginProperty() {
   return {
     members: [MEMBER],
     lower(input) {
       const value = parseTransformOrigin(input.reading(MEMBER));
+      const isRenderTransform = input.computed.has("transform") && !input.computed.has("scale") && !input.computed.has("rotate");
       return value === null ? [] : [{
         kind: "write",
-        target: ORIGIN_TARGET,
+        target: isRenderTransform ? RENDER_ORIGIN_TARGET : ORIGIN_TARGET,
         value
       } as const];
     },
     writes: {
-      [ORIGIN_TARGET]: pivotAbout
+      [ORIGIN_TARGET]: pivotAbout,
+      [RENDER_ORIGIN_TARGET]: pivotRenderTransform
     }
   } satisfies PropertyGroup;
 }

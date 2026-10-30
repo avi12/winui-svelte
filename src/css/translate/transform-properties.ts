@@ -1,7 +1,8 @@
-import { setter } from "./property-kit.ts";
+import { rotation, scaling, translation } from "./motion-properties.ts";
+import { multiple, setter } from "./property-kit.ts";
 import type { PropertyGroup } from "./property-kit.ts";
 import { defaultOriginProperty, transformOriginProperty } from "./transform-origin-properties.ts";
-import { DEFAULT_ORIGIN, ORIGIN_TARGET } from "./transform-origin.ts";
+import { DEFAULT_ORIGIN, ORIGIN_TARGET, RENDER_ORIGIN_TARGET } from "./transform-origin.ts";
 import { transitionProperty } from "./transition-properties.ts";
 import { parseDegrees } from "#src/css/parse/angles.js";
 import type { Reader } from "#src/css/parse/reader.js";
@@ -324,7 +325,7 @@ function transformProperty() {
       const isPivotWritten = ["transform-origin", "scale", "rotate"].some(member => input.computed.has(member));
       const pivot = isPivotWritten ? [] : [{
         kind: "write",
-        target: ORIGIN_TARGET,
+        target: implicit === null ? RENDER_ORIGIN_TARGET : ORIGIN_TARGET,
         value: DEFAULT_ORIGIN
       } as const];
       return [
@@ -340,13 +341,25 @@ function transformProperty() {
 }
 
 /**
- * The property groups of `transform`, `transform-origin` and `transition`.
+ * The property groups of `transform`, `translate`, `scale`, `rotate`, `transform-origin` and `transition`.
  * Apart from the built-in groups, as the gradients are: a sheet that uses one
  * registers them (`registerPropertyGroups`), so a window with none carries no
  * parser for them.
  */
 export function transformGroups() {
   return [
+    multiple({
+      member: "translate",
+      parse: translation
+    }),
+    multiple({
+      member: "scale",
+      parse: scaling
+    }),
+    multiple({
+      member: "rotate",
+      parse: rotation
+    }),
     transformProperty(),
     transformOriginProperty(),
     defaultOriginProperty(),

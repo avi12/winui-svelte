@@ -24,6 +24,7 @@
     <ToggleSwitch header="Dark" bind:isOn={isDark} />
     <TextBlock text="The panel is {theme.current ?? "..."}" />
     <Border class="theme-gradient" {@attach keyControl("theming")}><TextBlock text="A gradient from CSS" /></Border>
+    <Border class="theme-elevated"><TextBlock text="Lifted by a ThemeShadow" /></Border>
     <Button>Default button</Button>
     <Button class="theme-danger">Scoped override</Button>
     <TextBlock text="Accent {settings.accentColor}, high contrast {settings.isHighContrast ? "on" : "off"}" />
@@ -57,6 +58,11 @@
     padding: 16px;
     border-radius: 6px;
     background-image: linear-gradient(to right, #00e5ff, #06182b);
+  }
+
+  :global(.theme-elevated) {
+    padding: 16px;
+    -winui-elevation: 16px;
   }
 
   :global(.theme-danger) {

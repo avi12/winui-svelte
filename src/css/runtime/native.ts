@@ -70,6 +70,23 @@ export interface CssWinui {
 const BRUSH_COLOR_PATH = /^(\w)(\w*)\.\(SolidColorBrush\.Color\)$/u;
 const BRUSH_COLOR = "Color";
 
+function subscribeToEvent({ control, event, handler }: {
+  control: object;
+  event: string;
+  handler: () => void;
+}) {
+  const subscribe = readMember({
+    target: control,
+    key: `on${event}`
+  });
+  if (!isEventMethod(subscribe)) {
+    return null;
+  }
+
+  const unsubscribe = subscribe.call(control, handler);
+  return typeof unsubscribe === "function" ? () => unsubscribe() : null;
+}
+
 function isRecord(value: NativeValue): value is Record<string, NativeValue> {
   return (typeof value === "object" || typeof value === "function") && value !== null;
 }
@@ -241,21 +258,47 @@ export function createCssNative(winui: CssWinui) {
         definitions.append(definition);
       }
     },
+    setComposition({ control, property, value }) {
+      const key = `${property.charAt(0).toLowerCase()}${property.slice(1)}`;
+      const [x = 0, y = 0, z = 0] = value.split(",").map(Number);
+      const isRotation = property === "Rotation";
+      const resting = property === "Scale" ? 1 : 0;
+      let isPlaced = false;
+      function place(vector: { x: number; y: number; z: number }) {
+        Object.assign(control, { [key]: isRotation ? vector.x : vector });
+        isPlaced = true;
+      }
+
+      const isLoaded = readMember({
+        target: control,
+        key: "isLoaded"
+      }) === true;
+      if (isLoaded) {
+        place({ x, y, z });
+      }
+
+      const unsubscribe = isLoaded ? null : subscribeToEvent({
+        control,
+        event: "Loaded",
+        handler: () => {
+          place({ x, y, z });
+        }
+      });
+      return () => {
+        unsubscribe?.();
+        if (isPlaced) {
+          place({ x: resting, y: resting, z: resting });
+        }
+      };
+    },
     assign(control, values) {
       Object.assign(control, values);
     },
-    subscribe(control, event, handler) {
-      const subscribe = readMember({
-        target: control,
-        key: `on${event}`
-      });
-      if (!isEventMethod(subscribe)) {
-        return null;
-      }
-
-      const unsubscribe = subscribe.call(control, handler);
-      return typeof unsubscribe === "function" ? () => unsubscribe() : null;
-    },
+    subscribe: (control, event, handler) => subscribeToEvent({
+      control,
+      event,
+      handler
+    }),
     read: ({ control, property }) => readMember({
       target: control,
       key: property

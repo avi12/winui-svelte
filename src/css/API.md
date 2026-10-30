@@ -84,7 +84,7 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | Module | Properties | Section |
 |---|---|---|
 | `winui-svelte/css/gradients` | `background-image` | Gradients |
-| `winui-svelte/css/transform` | `transform`, `transform-origin`, `transition`, and the pivot of `scale` and `rotate` | Transforms |
+| `winui-svelte/css/transform` | `transform`, `translate`, `scale`, `rotate`, `transform-origin`, `transition` | Transforms |
 | `winui-svelte/css/animation` | `animation`, `animation-*`, `@keyframes` | Animations |
 | `winui-svelte/css/effects` | `clip-path: inset()`, `aspect-ratio` | Clip and aspect ratio |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
@@ -99,6 +99,13 @@ translates a `<style>` block, so a window carries no evaluator: in a `style`
 attribute they are not a length. The logical properties (`margin-inline`,
 `inline-size`...) and `grid-area` are shorthands only the build expands, for
 the same reason; write the physical longhands in a `style` attribute.
+
+`translate`, `scale`, `rotate` (and the Z lift of `-winui-elevation` and
+`position: relative`) set WinUI's Translation, Scale and Rotation. A Style
+setter for one, applied before the element has loaded, hangs the window, so the
+runtime writes them to the element once it has loaded (at once if it has).
+`transform` is a RenderTransform; WinUI refuses CenterPoint beside it, so its
+pivot is RenderTransformOrigin and `scale` and `rotate` pivot by CenterPoint.
 
 A group may also bring the shorthands it expands and the handlers of the
 `write` outputs it produces: a write is something set on the element itself
