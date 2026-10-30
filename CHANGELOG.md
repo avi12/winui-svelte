@@ -24,6 +24,11 @@ project adheres to [Semantic Versioning](https://semver.org/)
   pointer's position, balloons, a light and dark taskbar icon, `guid`, and
   `hideToTray` / `restoreFromTray` for a window, and a `menu` snippet whose
   flyout opens at the pointer from a one-pixel window
+- Devices: Windows device APIs as runes and typed functions
+  (`winui-svelte/devices`): `deviceWatcher` and `findAllDevices`, input
+  devices, Bluetooth LE scanning and GATT, radios, printers, battery, network,
+  displays, audio endpoints, gamepads and sensors; each area is an opt-in
+  subpath
 - Styling: CSS in `<style>` blocks compiled to WinUI Styles, with opt-in
   `transform`, `focus`, `surface` and `resources` groups
 - Motion: element animation and connected animation
