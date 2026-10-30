@@ -807,10 +807,6 @@ export const featureClasses: TypeName[] = [
     name: "AppNotificationTextProperties"
   },
   {
-    namespace: "Microsoft.Windows.AppLifecycle",
-    name: "AppInstance"
-  },
-  {
     namespace: "Microsoft.UI.Xaml.Media.Animation",
     name: "ConnectedAnimationService"
   },

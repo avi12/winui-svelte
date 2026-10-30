@@ -48,8 +48,6 @@ export { Window } from "#winui/microsoft/ui/xaml/Window";
 export { FocusState } from "#winui/microsoft/ui/xaml/FocusState";
 export { UISettings } from "#winui/windows/ui/view-management/UISettings";
 export { AccessibilitySettings } from "#winui/windows/ui/view-management/AccessibilitySettings";
-export { AppInstance } from "#winui/microsoft/windows/app-lifecycle/AppInstance";
-export { ExtendedActivationKind } from "#winui/microsoft/windows/app-lifecycle/ExtendedActivationKind";
 export { AppNotificationManager } from "#winui/microsoft/windows/app-notifications/AppNotificationManager";
 export { AppNotificationBuilder } from "#winui/microsoft/windows/app-notifications/builder/AppNotificationBuilder";
 export { UIColorType } from "#winui/windows/ui/view-management/UIColorType";
