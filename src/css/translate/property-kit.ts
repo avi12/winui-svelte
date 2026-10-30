@@ -104,6 +104,8 @@ export interface WriteContext {
   control: object;
   value: string;
   native: WriteSeam;
+  /** Writes the element's text again, through `textTransforms`, after a transform was set or removed. */
+  refreshText(): void;
 }
 
 /** Applies a `write` to a control; returns what undoes it when the write changes or the element goes. */

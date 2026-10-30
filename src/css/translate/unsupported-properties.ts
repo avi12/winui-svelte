@@ -41,7 +41,6 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["animation", `an animation ${OPT_IN}`],
   ["content", "WinUI has no generated content"],
   ["list-style", "WinUI has no lists to mark"],
-  ["text-transform", "WinUI draws a TextBlock's Text as written, so change the text"],
   ["text-indent", "WinUI has no text indent"],
   ["aspect-ratio", `a ratio ${OPT_IN}`],
   ["clip-path", `a clip ${OPT_IN}`],

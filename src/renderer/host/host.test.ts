@@ -1,4 +1,5 @@
 import { registerControls, setClassHandler } from "./host.ts";
+import { textTransforms } from "#src/css/index.js";
 import type { NativeValue } from "#src/native-value.js";
 import type { PlacedControl } from "#src/renderer/host/control.js";
 import {
@@ -170,6 +171,29 @@ test("text written as children is a text block's text, and follows what it shows
     count: 3
   });
   assert.deepEqual(textsOf(root), ["My app 0.3.0 is ready", "", "Saved 3 themes", WRAPPED_SENTENCE]);
+  mounted.unmount();
+});
+
+test("a text-transform shows the text changed and keeps the source text", () => {
+  const mounted = mountControl<TextProps>({
+    component: TextFixture,
+    props: {
+      version: "0.2.0",
+      status: "Saved",
+      count: 2
+    }
+  });
+  const root: object = mounted.root;
+  assert.ok(root instanceof FakePanel);
+  const [first] = root.children.items;
+  assert.ok(first instanceof FakeTextBlock);
+  textTransforms.set(first, text => text.toUpperCase());
+  mounted.set({ version: "0.3.0" });
+  assert.equal(first.text, "MY APP 0.3.0 IS READY");
+  assert.deepEqual(textsOf(root).slice(1, 2), ["Saved"]);
+  textTransforms.delete(first);
+  mounted.set({ version: "0.4.0" });
+  assert.equal(first.text, "My app 0.4.0 is ready");
   mounted.unmount();
 });
 

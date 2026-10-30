@@ -662,13 +662,30 @@ test("a box-shadow transition animates the Z of Translation, a shadow's depth", 
   assert.deepEqual(result.setters, [["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.150\"/>"]]);
 });
 
-test("a border-color transition has no WinUI counterpart", () => {
-  const result = lower({
-    elementType: null,
-    declarations: "transition: border-color 1s"
+test("text-transform writes the transform the runtime shows the text with", () => {
+  for (const word of ["uppercase", "lowercase", "capitalize"]) {
+    const result = lower({
+      elementType: "text-block",
+      declarations: `text-transform: ${word}`
+    });
+    assert.deepEqual(result.errors, []);
+    assert.deepEqual(result.writes, [["text-transform", word]]);
+  }
+
+  const none = lower({
+    elementType: "text-block",
+    declarations: "text-transform: none"
   });
-  assert.deepEqual(result.setters, []);
-  assert.match(result.warnings.join(), /border-color cannot be animated/u);
+  assert.deepEqual(none.writes, []);
+  assert.deepEqual(none.errors, []);
+});
+
+test("a text-transform WinUI cannot show is a build error", () => {
+  const result = lower({
+    elementType: "text-block",
+    declarations: "text-transform: full-width"
+  });
+  assert.match(result.errors.join(), /text-transform: expected none, uppercase, lowercase or capitalize/u);
 });
 
 const failures: Array<[string, string | null, string, RegExp]> = [
@@ -767,7 +784,7 @@ test("aspect-ratio becomes a write of the ratio", () => {
   );
 });
 
-test("filter, mix-blend-mode and text-transform fail the build with their reason", () => {
+test("filter and mix-blend-mode fail the build with their reason", () => {
   assert.match(
     lower({
       elementType: null,
@@ -779,11 +796,5 @@ test("filter, mix-blend-mode and text-transform fail the build with their reason
       elementType: null,
       declarations: "mix-blend-mode: multiply"
     }).errors.join(), /no blend modes/u
-  );
-  assert.match(
-    lower({
-      elementType: null,
-      declarations: "text-transform: uppercase"
-    }).errors.join(), /so change the text/u
   );
 });
