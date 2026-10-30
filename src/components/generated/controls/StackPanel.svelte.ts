@@ -24,8 +24,8 @@ export interface StackPanelProps extends PanelProps {
   orientation?: EnumInput<typeof Orientation>;
   padding?: ThicknessInput;
   spacing?: number;
-  onHorizontalSnapPointsChanged?: Parameters<StackPanel["onHorizontalSnapPointsChanged"]>[0];
-  onVerticalSnapPointsChanged?: Parameters<StackPanel["onVerticalSnapPointsChanged"]>[0];
+  onhorizontalsnappointschanged?: Parameters<StackPanel["onHorizontalSnapPointsChanged"]>[0];
+  onverticalsnappointschanged?: Parameters<StackPanel["onVerticalSnapPointsChanged"]>[0];
 }
 
 export type StackPanelBound = PanelBound;
@@ -87,12 +87,12 @@ export function linkStackPanel(
     }
   });
 
-  if ("onHorizontalSnapPointsChanged" in props) {
-    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onHorizontalSnapPointsChanged?.(...args)));
+  if ("onhorizontalsnappointschanged" in props) {
+    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onhorizontalsnappointschanged?.(...args)));
   }
 
-  if ("onVerticalSnapPointsChanged" in props) {
-    link.add(control.onVerticalSnapPointsChanged((...args) => props.onVerticalSnapPointsChanged?.(...args)));
+  if ("onverticalsnappointschanged" in props) {
+    link.add(control.onVerticalSnapPointsChanged((...args) => props.onverticalsnappointschanged?.(...args)));
   }
 }
 

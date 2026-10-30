@@ -29,9 +29,9 @@ export interface InfoBarProps extends ControlProps {
   message?: string;
   severity?: EnumInput<typeof InfoBarSeverity>;
   title?: string;
-  onCloseButtonClick?: Parameters<InfoBar["onCloseButtonClick"]>[0];
-  onClosed?: Parameters<InfoBar["onClosed"]>[0];
-  onClosing?: Parameters<InfoBar["onClosing"]>[0];
+  onclosebuttonclick?: Parameters<InfoBar["onCloseButtonClick"]>[0];
+  onclosed?: Parameters<InfoBar["onClosed"]>[0];
+  onclosing?: Parameters<InfoBar["onClosing"]>[0];
 }
 
 export type InfoBarBound = ControlBound & Pick<InfoBarProps, "isOpen">;
@@ -99,16 +99,16 @@ export function linkInfoBar(
     ]
   });
 
-  if ("onCloseButtonClick" in props) {
-    link.add(control.onCloseButtonClick((...args) => props.onCloseButtonClick?.(...args)));
+  if ("onclosebuttonclick" in props) {
+    link.add(control.onCloseButtonClick((...args) => props.onclosebuttonclick?.(...args)));
   }
 
-  if ("onClosed" in props) {
-    link.add(control.onClosed((...args) => props.onClosed?.(...args)));
+  if ("onclosed" in props) {
+    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
   }
 
-  if ("onClosing" in props) {
-    link.add(control.onClosing((...args) => props.onClosing?.(...args)));
+  if ("onclosing" in props) {
+    link.add(control.onClosing((...args) => props.onclosing?.(...args)));
   }
 }
 

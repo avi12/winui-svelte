@@ -11,7 +11,7 @@ export interface PickerFlyoutProps extends PickerFlyoutBaseProps {
   children?: Snippet;
   confirmationButtonsVisible?: boolean;
   content?: PickerFlyout["content"] | Snippet;
-  onConfirmed?: Parameters<PickerFlyout["onConfirmed"]>[0];
+  onconfirmed?: Parameters<PickerFlyout["onConfirmed"]>[0];
 }
 
 export type PickerFlyoutBound = PickerFlyoutBaseBound;
@@ -38,8 +38,8 @@ export function linkPickerFlyout(
     }
   });
 
-  if ("onConfirmed" in props) {
-    link.add(control.onConfirmed((...args) => props.onConfirmed?.(...args)));
+  if ("onconfirmed" in props) {
+    link.add(control.onConfirmed((...args) => props.onconfirmed?.(...args)));
   }
 }
 

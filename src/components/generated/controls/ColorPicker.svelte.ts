@@ -29,7 +29,7 @@ export interface ColorPickerProps extends ControlProps {
   minValue?: number;
   orientation?: EnumInput<typeof Orientation>;
   previousColor?: NullableColorInput;
-  onColorChanged?: Parameters<ColorPicker["onColorChanged"]>[0];
+  oncolorchanged?: Parameters<ColorPicker["onColorChanged"]>[0];
 }
 
 export type ColorPickerBound = ControlBound & Pick<ColorPickerProps, "color">;
@@ -90,8 +90,8 @@ export function linkColorPicker(
     ]
   });
 
-  if ("onColorChanged" in props) {
-    link.add(control.onColorChanged((...args) => props.onColorChanged?.(...args)));
+  if ("oncolorchanged" in props) {
+    link.add(control.onColorChanged((...args) => props.oncolorchanged?.(...args)));
   }
 }
 

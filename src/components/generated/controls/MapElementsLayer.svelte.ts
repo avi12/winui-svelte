@@ -9,7 +9,7 @@ import type { Snippet } from "svelte";
 
 export interface MapElementsLayerProps extends MapLayerProps {
   mapElements?: MapElementsLayer["mapElements"] | Snippet;
-  onMapElementClick?: Parameters<MapElementsLayer["onMapElementClick"]>[0];
+  onmapelementclick?: Parameters<MapElementsLayer["onMapElementClick"]>[0];
 }
 
 export type MapElementsLayerBound = MapLayerBound;
@@ -29,8 +29,8 @@ export function linkMapElementsLayer(
     keys: ["mapElements"]
   });
 
-  if ("onMapElementClick" in props) {
-    link.add(control.onMapElementClick((...args) => props.onMapElementClick?.(...args)));
+  if ("onmapelementclick" in props) {
+    link.add(control.onMapElementClick((...args) => props.onmapelementclick?.(...args)));
   }
 }
 

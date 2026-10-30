@@ -12,7 +12,7 @@ export interface SplitButtonProps extends ContentControlProps {
   command?: SplitButton["command"] | Snippet;
   commandParameter?: ObjectInput;
   flyout?: SplitButton["flyout"] | Snippet;
-  onClick?: Parameters<SplitButton["onClick"]>[0];
+  onclick?: Parameters<SplitButton["onClick"]>[0];
 }
 
 export type SplitButtonBound = ContentControlBound;
@@ -39,8 +39,8 @@ export function linkSplitButton(
     }
   });
 
-  if ("onClick" in props) {
-    link.add(control.onClick((...args) => props.onClick?.(...args)));
+  if ("onclick" in props) {
+    link.add(control.onClick((...args) => props.onclick?.(...args)));
   }
 }
 

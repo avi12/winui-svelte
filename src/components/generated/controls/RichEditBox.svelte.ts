@@ -48,18 +48,18 @@ export interface RichEditBoxProps extends ControlProps {
   textAlignment?: EnumInput<typeof TextAlignment>;
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textWrapping?: EnumInput<typeof TextWrapping>;
-  onCandidateWindowBoundsChanged?: Parameters<RichEditBox["onCandidateWindowBoundsChanged"]>[0];
-  onContextMenuOpening?: Parameters<RichEditBox["onContextMenuOpening"]>[0];
-  onCopyingToClipboard?: Parameters<RichEditBox["onCopyingToClipboard"]>[0];
-  onCuttingToClipboard?: Parameters<RichEditBox["onCuttingToClipboard"]>[0];
-  onPaste?: Parameters<RichEditBox["onPaste"]>[0];
-  onSelectionChanged?: Parameters<RichEditBox["onSelectionChanged"]>[0];
-  onSelectionChanging?: Parameters<RichEditBox["onSelectionChanging"]>[0];
-  onTextChanged?: Parameters<RichEditBox["onTextChanged"]>[0];
-  onTextChanging?: Parameters<RichEditBox["onTextChanging"]>[0];
-  onTextCompositionChanged?: Parameters<RichEditBox["onTextCompositionChanged"]>[0];
-  onTextCompositionEnded?: Parameters<RichEditBox["onTextCompositionEnded"]>[0];
-  onTextCompositionStarted?: Parameters<RichEditBox["onTextCompositionStarted"]>[0];
+  oncandidatewindowboundschanged?: Parameters<RichEditBox["onCandidateWindowBoundsChanged"]>[0];
+  oncontextmenuopening?: Parameters<RichEditBox["onContextMenuOpening"]>[0];
+  oncopyingtoclipboard?: Parameters<RichEditBox["onCopyingToClipboard"]>[0];
+  oncuttingtoclipboard?: Parameters<RichEditBox["onCuttingToClipboard"]>[0];
+  onpaste?: Parameters<RichEditBox["onPaste"]>[0];
+  onselectionchanged?: Parameters<RichEditBox["onSelectionChanged"]>[0];
+  onselectionchanging?: Parameters<RichEditBox["onSelectionChanging"]>[0];
+  ontextchanged?: Parameters<RichEditBox["onTextChanged"]>[0];
+  ontextchanging?: Parameters<RichEditBox["onTextChanging"]>[0];
+  ontextcompositionchanged?: Parameters<RichEditBox["onTextCompositionChanged"]>[0];
+  ontextcompositionended?: Parameters<RichEditBox["onTextCompositionEnded"]>[0];
+  ontextcompositionstarted?: Parameters<RichEditBox["onTextCompositionStarted"]>[0];
 }
 
 export type RichEditBoxBound = ControlBound;
@@ -163,52 +163,52 @@ export function linkRichEditBox(
     }
   });
 
-  if ("onCandidateWindowBoundsChanged" in props) {
-    link.add(control.onCandidateWindowBoundsChanged((...args) => props.onCandidateWindowBoundsChanged?.(...args)));
+  if ("oncandidatewindowboundschanged" in props) {
+    link.add(control.onCandidateWindowBoundsChanged((...args) => props.oncandidatewindowboundschanged?.(...args)));
   }
 
-  if ("onContextMenuOpening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.onContextMenuOpening?.(...args)));
+  if ("oncontextmenuopening" in props) {
+    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
   }
 
-  if ("onCopyingToClipboard" in props) {
-    link.add(control.onCopyingToClipboard((...args) => props.onCopyingToClipboard?.(...args)));
+  if ("oncopyingtoclipboard" in props) {
+    link.add(control.onCopyingToClipboard((...args) => props.oncopyingtoclipboard?.(...args)));
   }
 
-  if ("onCuttingToClipboard" in props) {
-    link.add(control.onCuttingToClipboard((...args) => props.onCuttingToClipboard?.(...args)));
+  if ("oncuttingtoclipboard" in props) {
+    link.add(control.onCuttingToClipboard((...args) => props.oncuttingtoclipboard?.(...args)));
   }
 
-  if ("onPaste" in props) {
-    link.add(control.onPaste((...args) => props.onPaste?.(...args)));
+  if ("onpaste" in props) {
+    link.add(control.onPaste((...args) => props.onpaste?.(...args)));
   }
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 
-  if ("onSelectionChanging" in props) {
-    link.add(control.onSelectionChanging((...args) => props.onSelectionChanging?.(...args)));
+  if ("onselectionchanging" in props) {
+    link.add(control.onSelectionChanging((...args) => props.onselectionchanging?.(...args)));
   }
 
-  if ("onTextChanged" in props) {
-    link.add(control.onTextChanged((...args) => props.onTextChanged?.(...args)));
+  if ("ontextchanged" in props) {
+    link.add(control.onTextChanged((...args) => props.ontextchanged?.(...args)));
   }
 
-  if ("onTextChanging" in props) {
-    link.add(control.onTextChanging((...args) => props.onTextChanging?.(...args)));
+  if ("ontextchanging" in props) {
+    link.add(control.onTextChanging((...args) => props.ontextchanging?.(...args)));
   }
 
-  if ("onTextCompositionChanged" in props) {
-    link.add(control.onTextCompositionChanged((...args) => props.onTextCompositionChanged?.(...args)));
+  if ("ontextcompositionchanged" in props) {
+    link.add(control.onTextCompositionChanged((...args) => props.ontextcompositionchanged?.(...args)));
   }
 
-  if ("onTextCompositionEnded" in props) {
-    link.add(control.onTextCompositionEnded((...args) => props.onTextCompositionEnded?.(...args)));
+  if ("ontextcompositionended" in props) {
+    link.add(control.onTextCompositionEnded((...args) => props.ontextcompositionended?.(...args)));
   }
 
-  if ("onTextCompositionStarted" in props) {
-    link.add(control.onTextCompositionStarted((...args) => props.onTextCompositionStarted?.(...args)));
+  if ("ontextcompositionstarted" in props) {
+    link.add(control.onTextCompositionStarted((...args) => props.ontextcompositionstarted?.(...args)));
   }
 }
 

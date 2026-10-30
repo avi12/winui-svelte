@@ -22,9 +22,9 @@ export interface AutoSuggestBoxProps extends ItemsControlProps {
   textBoxStyle?: StyleInput;
   textMemberPath?: string;
   updateTextOnSelect?: boolean;
-  onQuerySubmitted?: Parameters<AutoSuggestBox["onQuerySubmitted"]>[0];
-  onSuggestionChosen?: Parameters<AutoSuggestBox["onSuggestionChosen"]>[0];
-  onTextChanged?: Parameters<AutoSuggestBox["onTextChanged"]>[0];
+  onquerysubmitted?: Parameters<AutoSuggestBox["onQuerySubmitted"]>[0];
+  onsuggestionchosen?: Parameters<AutoSuggestBox["onSuggestionChosen"]>[0];
+  ontextchanged?: Parameters<AutoSuggestBox["onTextChanged"]>[0];
 }
 
 export type AutoSuggestBoxBound = ItemsControlBound & Pick<AutoSuggestBoxProps, "text">;
@@ -85,16 +85,16 @@ export function linkAutoSuggestBox(
     ]
   });
 
-  if ("onQuerySubmitted" in props) {
-    link.add(control.onQuerySubmitted((...args) => props.onQuerySubmitted?.(...args)));
+  if ("onquerysubmitted" in props) {
+    link.add(control.onQuerySubmitted((...args) => props.onquerysubmitted?.(...args)));
   }
 
-  if ("onSuggestionChosen" in props) {
-    link.add(control.onSuggestionChosen((...args) => props.onSuggestionChosen?.(...args)));
+  if ("onsuggestionchosen" in props) {
+    link.add(control.onSuggestionChosen((...args) => props.onsuggestionchosen?.(...args)));
   }
 
-  if ("onTextChanged" in props) {
-    link.add(control.onTextChanged((...args) => props.onTextChanged?.(...args)));
+  if ("ontextchanged" in props) {
+    link.add(control.onTextChanged((...args) => props.ontextchanged?.(...args)));
   }
 }
 

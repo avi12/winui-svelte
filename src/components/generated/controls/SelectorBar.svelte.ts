@@ -10,7 +10,7 @@ import type { Snippet } from "svelte";
 export interface SelectorBarProps extends ControlProps {
   items?: Snippet;
   selectedItem?: SelectorBar["selectedItem"] | undefined;
-  onSelectionChanged?: Parameters<SelectorBar["onSelectionChanged"]>[0];
+  onselectionchanged?: Parameters<SelectorBar["onSelectionChanged"]>[0];
 }
 
 export type SelectorBarBound = ControlBound & Pick<SelectorBarProps, "selectedItem">;
@@ -38,8 +38,8 @@ export function linkSelectorBar(
     ]
   });
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 }
 

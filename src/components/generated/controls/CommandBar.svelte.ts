@@ -16,7 +16,7 @@ export interface CommandBarProps extends AppBarProps {
   defaultLabelPosition?: EnumInput<typeof CommandBarDefaultLabelPosition>;
   isDynamicOverflowEnabled?: boolean;
   overflowButtonVisibility?: EnumInput<typeof CommandBarOverflowButtonVisibility>;
-  onDynamicOverflowItemsChanging?: Parameters<CommandBar["onDynamicOverflowItemsChanging"]>[0];
+  ondynamicoverflowitemschanging?: Parameters<CommandBar["onDynamicOverflowItemsChanging"]>[0];
 }
 
 export type CommandBarBound = AppBarBound;
@@ -57,8 +57,8 @@ export function linkCommandBar(
     }
   });
 
-  if ("onDynamicOverflowItemsChanging" in props) {
-    link.add(control.onDynamicOverflowItemsChanging((...args) => props.onDynamicOverflowItemsChanging?.(...args)));
+  if ("ondynamicoverflowitemschanging" in props) {
+    link.add(control.onDynamicOverflowItemsChanging((...args) => props.ondynamicoverflowitemschanging?.(...args)));
   }
 }
 

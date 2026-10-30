@@ -11,8 +11,8 @@ export interface AnnotatedScrollBarProps extends ControlProps {
   labels?: AnnotatedScrollBar["labels"];
   labelTemplate?: AnnotatedScrollBar["labelTemplate"];
   smallChange?: number;
-  onDetailLabelRequested?: Parameters<AnnotatedScrollBar["onDetailLabelRequested"]>[0];
-  onScrolling?: Parameters<AnnotatedScrollBar["onScrolling"]>[0];
+  ondetaillabelrequested?: Parameters<AnnotatedScrollBar["onDetailLabelRequested"]>[0];
+  onscrolling?: Parameters<AnnotatedScrollBar["onScrolling"]>[0];
 }
 
 export type AnnotatedScrollBarBound = ControlBound;
@@ -32,12 +32,12 @@ export function linkAnnotatedScrollBar(
     keys: ["detailLabelTemplate", "labels", "labelTemplate", "smallChange"]
   });
 
-  if ("onDetailLabelRequested" in props) {
-    link.add(control.onDetailLabelRequested((...args) => props.onDetailLabelRequested?.(...args)));
+  if ("ondetaillabelrequested" in props) {
+    link.add(control.onDetailLabelRequested((...args) => props.ondetaillabelrequested?.(...args)));
   }
 
-  if ("onScrolling" in props) {
-    link.add(control.onScrolling((...args) => props.onScrolling?.(...args)));
+  if ("onscrolling" in props) {
+    link.add(control.onScrolling((...args) => props.onscrolling?.(...args)));
   }
 }
 

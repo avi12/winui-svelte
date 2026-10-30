@@ -43,15 +43,15 @@ export interface ScrollViewProps extends ControlProps {
   verticalScrollRailMode?: EnumInput<typeof ScrollingRailMode>;
   zoomChainMode?: EnumInput<typeof ScrollingChainMode>;
   zoomMode?: EnumInput<typeof ScrollingZoomMode>;
-  onAnchorRequested?: Parameters<ScrollView["onAnchorRequested"]>[0];
-  onBringingIntoView?: Parameters<ScrollView["onBringingIntoView"]>[0];
-  onExtentChanged?: Parameters<ScrollView["onExtentChanged"]>[0];
-  onScrollAnimationStarting?: Parameters<ScrollView["onScrollAnimationStarting"]>[0];
-  onScrollCompleted?: Parameters<ScrollView["onScrollCompleted"]>[0];
-  onStateChanged?: Parameters<ScrollView["onStateChanged"]>[0];
-  onViewChanged?: Parameters<ScrollView["onViewChanged"]>[0];
-  onZoomAnimationStarting?: Parameters<ScrollView["onZoomAnimationStarting"]>[0];
-  onZoomCompleted?: Parameters<ScrollView["onZoomCompleted"]>[0];
+  onanchorrequested?: Parameters<ScrollView["onAnchorRequested"]>[0];
+  onbringingintoview?: Parameters<ScrollView["onBringingIntoView"]>[0];
+  onextentchanged?: Parameters<ScrollView["onExtentChanged"]>[0];
+  onscrollanimationstarting?: Parameters<ScrollView["onScrollAnimationStarting"]>[0];
+  onscrollcompleted?: Parameters<ScrollView["onScrollCompleted"]>[0];
+  onstatechanged?: Parameters<ScrollView["onStateChanged"]>[0];
+  onviewchanged?: Parameters<ScrollView["onViewChanged"]>[0];
+  onzoomanimationstarting?: Parameters<ScrollView["onZoomAnimationStarting"]>[0];
+  onzoomcompleted?: Parameters<ScrollView["onZoomCompleted"]>[0];
 }
 
 export type ScrollViewBound = ControlBound & Pick<ScrollViewProps, "extentHeight" | "extentWidth" | "horizontalOffset" | "state" | "verticalOffset" | "zoomFactor">;
@@ -209,40 +209,40 @@ export function linkScrollView(
     ]
   });
 
-  if ("onAnchorRequested" in props) {
-    link.add(control.onAnchorRequested((...args) => props.onAnchorRequested?.(...args)));
+  if ("onanchorrequested" in props) {
+    link.add(control.onAnchorRequested((...args) => props.onanchorrequested?.(...args)));
   }
 
-  if ("onBringingIntoView" in props) {
-    link.add(control.onBringingIntoView((...args) => props.onBringingIntoView?.(...args)));
+  if ("onbringingintoview" in props) {
+    link.add(control.onBringingIntoView((...args) => props.onbringingintoview?.(...args)));
   }
 
-  if ("onExtentChanged" in props) {
-    link.add(control.onExtentChanged((...args) => props.onExtentChanged?.(...args)));
+  if ("onextentchanged" in props) {
+    link.add(control.onExtentChanged((...args) => props.onextentchanged?.(...args)));
   }
 
-  if ("onScrollAnimationStarting" in props) {
-    link.add(control.onScrollAnimationStarting((...args) => props.onScrollAnimationStarting?.(...args)));
+  if ("onscrollanimationstarting" in props) {
+    link.add(control.onScrollAnimationStarting((...args) => props.onscrollanimationstarting?.(...args)));
   }
 
-  if ("onScrollCompleted" in props) {
-    link.add(control.onScrollCompleted((...args) => props.onScrollCompleted?.(...args)));
+  if ("onscrollcompleted" in props) {
+    link.add(control.onScrollCompleted((...args) => props.onscrollcompleted?.(...args)));
   }
 
-  if ("onStateChanged" in props) {
-    link.add(control.onStateChanged((...args) => props.onStateChanged?.(...args)));
+  if ("onstatechanged" in props) {
+    link.add(control.onStateChanged((...args) => props.onstatechanged?.(...args)));
   }
 
-  if ("onViewChanged" in props) {
-    link.add(control.onViewChanged((...args) => props.onViewChanged?.(...args)));
+  if ("onviewchanged" in props) {
+    link.add(control.onViewChanged((...args) => props.onviewchanged?.(...args)));
   }
 
-  if ("onZoomAnimationStarting" in props) {
-    link.add(control.onZoomAnimationStarting((...args) => props.onZoomAnimationStarting?.(...args)));
+  if ("onzoomanimationstarting" in props) {
+    link.add(control.onZoomAnimationStarting((...args) => props.onzoomanimationstarting?.(...args)));
   }
 
-  if ("onZoomCompleted" in props) {
-    link.add(control.onZoomCompleted((...args) => props.onZoomCompleted?.(...args)));
+  if ("onzoomcompleted" in props) {
+    link.add(control.onZoomCompleted((...args) => props.onzoomcompleted?.(...args)));
   }
 }
 

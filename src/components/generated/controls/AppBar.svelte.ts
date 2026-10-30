@@ -13,10 +13,10 @@ export interface AppBarProps extends ContentControlProps {
   closedDisplayMode?: EnumInput<typeof AppBarClosedDisplayMode>;
   isSticky?: boolean;
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
-  onClosed?: Parameters<AppBar["onClosed"]>[0];
-  onClosing?: Parameters<AppBar["onClosing"]>[0];
-  onOpened?: Parameters<AppBar["onOpened"]>[0];
-  onOpening?: Parameters<AppBar["onOpening"]>[0];
+  onclosed?: Parameters<AppBar["onClosed"]>[0];
+  onclosing?: Parameters<AppBar["onClosing"]>[0];
+  onopened?: Parameters<AppBar["onOpened"]>[0];
+  onopening?: Parameters<AppBar["onOpening"]>[0];
 }
 
 export type AppBarBound = ContentControlBound & Pick<AppBarProps, "isOpen">;
@@ -64,20 +64,20 @@ export function linkAppBar(
     ]
   });
 
-  if ("onClosed" in props) {
-    link.add(control.onClosed((...args) => props.onClosed?.(...args)));
+  if ("onclosed" in props) {
+    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
   }
 
-  if ("onClosing" in props) {
-    link.add(control.onClosing((...args) => props.onClosing?.(...args)));
+  if ("onclosing" in props) {
+    link.add(control.onClosing((...args) => props.onclosing?.(...args)));
   }
 
-  if ("onOpened" in props) {
-    link.add(control.onOpened((...args) => props.onOpened?.(...args)));
+  if ("onopened" in props) {
+    link.add(control.onOpened((...args) => props.onopened?.(...args)));
   }
 
-  if ("onOpening" in props) {
-    link.add(control.onOpening((...args) => props.onOpening?.(...args)));
+  if ("onopening" in props) {
+    link.add(control.onOpening((...args) => props.onopening?.(...args)));
   }
 }
 

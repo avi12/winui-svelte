@@ -16,9 +16,9 @@ export interface ItemsRepeaterProps extends FrameworkElementProps {
   itemTransitionProvider?: ItemsRepeater["itemTransitionProvider"];
   layout?: ItemsRepeater["layout"] | Snippet;
   verticalCacheLength?: number;
-  onElementClearing?: Parameters<ItemsRepeater["onElementClearing"]>[0];
-  onElementIndexChanged?: Parameters<ItemsRepeater["onElementIndexChanged"]>[0];
-  onElementPrepared?: Parameters<ItemsRepeater["onElementPrepared"]>[0];
+  onelementclearing?: Parameters<ItemsRepeater["onElementClearing"]>[0];
+  onelementindexchanged?: Parameters<ItemsRepeater["onElementIndexChanged"]>[0];
+  onelementprepared?: Parameters<ItemsRepeater["onElementPrepared"]>[0];
 }
 
 export type ItemsRepeaterBound = FrameworkElementBound;
@@ -59,16 +59,16 @@ export function linkItemsRepeater(
     }
   });
 
-  if ("onElementClearing" in props) {
-    link.add(control.onElementClearing((...args) => props.onElementClearing?.(...args)));
+  if ("onelementclearing" in props) {
+    link.add(control.onElementClearing((...args) => props.onelementclearing?.(...args)));
   }
 
-  if ("onElementIndexChanged" in props) {
-    link.add(control.onElementIndexChanged((...args) => props.onElementIndexChanged?.(...args)));
+  if ("onelementindexchanged" in props) {
+    link.add(control.onElementIndexChanged((...args) => props.onelementindexchanged?.(...args)));
   }
 
-  if ("onElementPrepared" in props) {
-    link.add(control.onElementPrepared((...args) => props.onElementPrepared?.(...args)));
+  if ("onelementprepared" in props) {
+    link.add(control.onElementPrepared((...args) => props.onelementprepared?.(...args)));
   }
 }
 

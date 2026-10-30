@@ -23,7 +23,7 @@ export interface RadioButtonsProps extends ControlProps {
   itemsSource?: CollectionInput;
   itemTemplate?: ObjectReferenceInput;
   maxColumns?: number;
-  onSelectionChanged?: Parameters<RadioButtons["onSelectionChanged"]>[0];
+  onselectionchanged?: Parameters<RadioButtons["onSelectionChanged"]>[0];
 }
 
 export type RadioButtonsBound = ControlBound & Pick<RadioButtonsProps, "selectedIndex" | "selectedItem">;
@@ -97,8 +97,8 @@ export function linkRadioButtons(
     ]
   });
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 }
 

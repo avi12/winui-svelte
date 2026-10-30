@@ -92,7 +92,7 @@ export const levels: Record<string, LevelMetadata> = {
   AnnotatedScrollBar: {
     parent: "Control",
     properties: ["detailLabelTemplate", "labels", "labelTemplate", "smallChange"],
-    events: ["onDetailLabelRequested", "onScrolling"],
+    events: ["ondetaillabelrequested", "onscrolling"],
     attached: {},
     bindables: [],
     observed: [],
@@ -104,7 +104,7 @@ export const levels: Record<string, LevelMetadata> = {
   AppBar: {
     parent: "ContentControl",
     properties: ["closedDisplayMode", "isOpen", "isSticky", "lightDismissOverlayMode"],
-    events: ["onClosed", "onClosing", "onOpened", "onOpening"],
+    events: ["onclosed", "onclosing", "onopened", "onopening"],
     attached: {},
     bindables: ["isOpen"],
     observed: [],
@@ -176,7 +176,7 @@ export const levels: Record<string, LevelMetadata> = {
   AutoSuggestBox: {
     parent: "ItemsControl",
     properties: ["autoMaximizeSuggestionArea", "description", "header", "isSuggestionListOpen", "lightDismissOverlayMode", "maxSuggestionListHeight", "placeholderText", "queryIcon", "text", "textBoxStyle", "textMemberPath", "updateTextOnSelect"],
-    events: ["onQuerySubmitted", "onSuggestionChosen", "onTextChanged"],
+    events: ["onquerysubmitted", "onsuggestionchosen", "ontextchanged"],
     attached: {},
     bindables: ["text"],
     observed: [],
@@ -248,7 +248,7 @@ export const levels: Record<string, LevelMetadata> = {
   BitmapImage: {
     parent: "BitmapSource",
     properties: ["autoPlay", "createOptions", "decodePixelHeight", "decodePixelType", "decodePixelWidth", "uriSource"],
-    events: ["onDownloadProgress", "onImageFailed", "onImageOpened"],
+    events: ["ondownloadprogress", "onimagefailed", "onimageopened"],
     attached: {},
     bindables: [],
     observed: [],
@@ -320,7 +320,7 @@ export const levels: Record<string, LevelMetadata> = {
   BreadcrumbBar: {
     parent: "Control",
     properties: ["itemsSource", "itemTemplate"],
-    events: ["onItemClicked"],
+    events: ["onitemclicked"],
     attached: {},
     bindables: [],
     observed: [],
@@ -368,7 +368,7 @@ export const levels: Record<string, LevelMetadata> = {
   ButtonBase: {
     parent: "ContentControl",
     properties: ["clickMode", "command", "commandParameter"],
-    events: ["onClick"],
+    events: ["onclick"],
     attached: {},
     bindables: [],
     observed: [],
@@ -392,7 +392,7 @@ export const levels: Record<string, LevelMetadata> = {
   CalendarDatePicker: {
     parent: "Control",
     properties: ["calendarIdentifier", "calendarViewStyle", "date", "dateFormat", "dayOfWeekFormat", "description", "displayMode", "firstDayOfWeek", "header", "headerTemplate", "isCalendarOpen", "isGroupLabelVisible", "isOutOfScopeEnabled", "isTodayHighlighted", "lightDismissOverlayMode", "maxDate", "minDate", "placeholderText"],
-    events: ["onCalendarViewDayItemChanging", "onClosed", "onDateChanged", "onOpened"],
+    events: ["oncalendarviewdayitemchanging", "onclosed", "ondatechanged", "onopened"],
     attached: {},
     bindables: ["date"],
     observed: [],
@@ -416,7 +416,7 @@ export const levels: Record<string, LevelMetadata> = {
   CalendarView: {
     parent: "Control",
     properties: ["blackoutBackground", "blackoutForeground", "blackoutStrikethroughBrush", "calendarIdentifier", "calendarItemBackground", "calendarItemBorderBrush", "calendarItemBorderThickness", "calendarItemCornerRadius", "calendarItemDisabledBackground", "calendarItemForeground", "calendarItemHoverBackground", "calendarItemPressedBackground", "calendarViewDayItemStyle", "dayItemFontFamily", "dayItemFontSize", "dayItemFontStyle", "dayItemFontWeight", "dayItemMargin", "dayOfWeekFormat", "disabledForeground", "displayMode", "firstDayOfWeek", "firstOfMonthLabelFontFamily", "firstOfMonthLabelFontSize", "firstOfMonthLabelFontStyle", "firstOfMonthLabelFontWeight", "firstOfMonthLabelMargin", "firstOfYearDecadeLabelFontFamily", "firstOfYearDecadeLabelFontSize", "firstOfYearDecadeLabelFontStyle", "firstOfYearDecadeLabelFontWeight", "firstOfYearDecadeLabelMargin", "focusBorderBrush", "horizontalDayItemAlignment", "horizontalFirstOfMonthLabelAlignment", "hoverBorderBrush", "isGroupLabelVisible", "isOutOfScopeEnabled", "isTodayHighlighted", "maxDate", "minDate", "monthYearItemFontFamily", "monthYearItemFontSize", "monthYearItemFontStyle", "monthYearItemFontWeight", "monthYearItemMargin", "numberOfWeeksInView", "outOfScopeBackground", "outOfScopeForeground", "outOfScopeHoverForeground", "outOfScopePressedForeground", "pressedBorderBrush", "pressedForeground", "selectedBorderBrush", "selectedDisabledBorderBrush", "selectedDisabledForeground", "selectedForeground", "selectedHoverBorderBrush", "selectedHoverForeground", "selectedPressedBorderBrush", "selectedPressedForeground", "selectionMode", "todayBackground", "todayBlackoutBackground", "todayBlackoutForeground", "todayDisabledBackground", "todayFontWeight", "todayForeground", "todayHoverBackground", "todayPressedBackground", "todaySelectedInnerBorderBrush", "verticalDayItemAlignment", "verticalFirstOfMonthLabelAlignment"],
-    events: ["onCalendarViewDayItemChanging", "onSelectedDatesChanged"],
+    events: ["oncalendarviewdayitemchanging", "onselecteddateschanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -452,7 +452,7 @@ export const levels: Record<string, LevelMetadata> = {
   CarouselPanel: {
     parent: "VirtualizingPanel",
     properties: ["canHorizontallyScroll", "canVerticallyScroll", "scrollOwner"],
-    events: ["onHorizontalSnapPointsChanged", "onVerticalSnapPointsChanged"],
+    events: ["onhorizontalsnappointschanged", "onverticalsnappointschanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -536,7 +536,7 @@ export const levels: Record<string, LevelMetadata> = {
   ColorPicker: {
     parent: "Control",
     properties: ["color", "colorSpectrumComponents", "colorSpectrumShape", "isAlphaEnabled", "isAlphaSliderVisible", "isAlphaTextInputVisible", "isColorChannelTextInputVisible", "isColorPreviewVisible", "isColorSliderVisible", "isColorSpectrumVisible", "isHexInputVisible", "isMoreButtonVisible", "maxHue", "maxSaturation", "maxValue", "minHue", "minSaturation", "minValue", "orientation", "previousColor"],
-    events: ["onColorChanged"],
+    events: ["oncolorchanged"],
     attached: {},
     bindables: ["color"],
     observed: [],
@@ -560,7 +560,7 @@ export const levels: Record<string, LevelMetadata> = {
   ColorSpectrum: {
     parent: "Control",
     properties: ["color", "components", "hsvColor", "maxHue", "maxSaturation", "maxValue", "minHue", "minSaturation", "minValue", "shape"],
-    events: ["onColorChanged"],
+    events: ["oncolorchanged"],
     attached: {},
     bindables: ["color"],
     observed: [],
@@ -584,7 +584,7 @@ export const levels: Record<string, LevelMetadata> = {
   ComboBox: {
     parent: "Selector",
     properties: ["description", "header", "headerTemplate", "isDropDownOpen", "isEditable", "isTextSearchEnabled", "lightDismissOverlayMode", "maxDropDownHeight", "placeholderForeground", "placeholderText", "selectionChangedTrigger", "text", "textBoxStyle"],
-    events: ["onDropDownClosed", "onDropDownOpened", "onTextSubmitted"],
+    events: ["ondropdownclosed", "ondropdownopened", "ontextsubmitted"],
     attached: {},
     bindables: ["isDropDownOpen"],
     observed: [],
@@ -608,7 +608,7 @@ export const levels: Record<string, LevelMetadata> = {
   CommandBar: {
     parent: "AppBar",
     properties: ["commandBarOverflowPresenterStyle", "defaultLabelPosition", "isDynamicOverflowEnabled", "overflowButtonVisibility"],
-    events: ["onDynamicOverflowItemsChanging"],
+    events: ["ondynamicoverflowitemschanging"],
     attached: {},
     bindables: [],
     observed: [],
@@ -704,7 +704,7 @@ export const levels: Record<string, LevelMetadata> = {
   ContentDialog: {
     parent: "ContentControl",
     properties: ["closeButtonCommand", "closeButtonCommandParameter", "closeButtonStyle", "closeButtonText", "defaultButton", "fullSizeDesired", "isPrimaryButtonEnabled", "isSecondaryButtonEnabled", "primaryButtonCommand", "primaryButtonCommandParameter", "primaryButtonStyle", "primaryButtonText", "secondaryButtonCommand", "secondaryButtonCommandParameter", "secondaryButtonStyle", "secondaryButtonText", "title", "titleTemplate"],
-    events: ["onCloseButtonClick", "onClosed", "onClosing", "onOpened", "onPrimaryButtonClick", "onSecondaryButtonClick"],
+    events: ["onclosebuttonclick", "onclosed", "onclosing", "onopened", "onprimarybuttonclick", "onsecondarybuttonclick"],
     attached: {},
     bindables: [],
     observed: [],
@@ -752,7 +752,7 @@ export const levels: Record<string, LevelMetadata> = {
   Control: {
     parent: "FrameworkElement",
     properties: ["background", "backgroundSizing", "borderBrush", "borderThickness", "characterSpacing", "cornerRadius", "defaultStyleResourceUri", "elementSoundMode", "fontFamily", "fontSize", "fontStretch", "fontStyle", "fontWeight", "foreground", "horizontalContentAlignment", "isEnabled", "isFocusEngaged", "isFocusEngagementEnabled", "isTextScaleFactorEnabled", "padding", "requiresPointer", "tabNavigation", "template", "verticalContentAlignment"],
-    events: ["onFocusDisengaged", "onFocusEngaged", "onIsEnabledChanged"],
+    events: ["onfocusdisengaged", "onfocusengaged", "onisenabledchanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -776,7 +776,7 @@ export const levels: Record<string, LevelMetadata> = {
   DatePicker: {
     parent: "Control",
     properties: ["calendarIdentifier", "date", "dayFormat", "dayVisible", "header", "headerTemplate", "lightDismissOverlayMode", "maxYear", "minYear", "monthFormat", "monthVisible", "orientation", "selectedDate", "yearFormat", "yearVisible"],
-    events: ["onDateChanged", "onSelectedDateChanged"],
+    events: ["ondatechanged", "onselecteddatechanged"],
     attached: {},
     bindables: ["date", "selectedDate"],
     observed: [],
@@ -788,7 +788,7 @@ export const levels: Record<string, LevelMetadata> = {
   DatePickerFlyout: {
     parent: "PickerFlyoutBase",
     properties: ["calendarIdentifier", "date", "dayFormat", "dayVisible", "maxYear", "minYear", "monthFormat", "monthVisible", "yearFormat", "yearVisible"],
-    events: ["onDatePicked"],
+    events: ["ondatepicked"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1100,7 +1100,7 @@ export const levels: Record<string, LevelMetadata> = {
   Expander: {
     parent: "ContentControl",
     properties: ["expandDirection", "header", "headerTemplate", "headerTemplateSelector", "isExpanded"],
-    events: ["onCollapsed", "onExpanding"],
+    events: ["oncollapsed", "onexpanding"],
     attached: {},
     bindables: ["isExpanded"],
     observed: [],
@@ -1184,7 +1184,7 @@ export const levels: Record<string, LevelMetadata> = {
   FlyoutBase: {
     parent: null,
     properties: ["allowFocusOnInteraction", "allowFocusWhenDisabled", "areOpenCloseAnimationsEnabled", "elementSoundMode", "lightDismissOverlayMode", "overlayInputPassThroughElement", "placement", "shouldConstrainToRootBounds", "showMode", "systemBackdrop", "xamlRoot"],
-    events: ["onClosed", "onClosing", "onOpened", "onOpening"],
+    events: ["onclosed", "onclosing", "onopened", "onopening"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1232,7 +1232,7 @@ export const levels: Record<string, LevelMetadata> = {
   Frame: {
     parent: "ContentControl",
     properties: ["cacheSize", "isNavigationStackEnabled", "sourcePageType"],
-    events: ["onNavigated", "onNavigating", "onNavigationFailed", "onNavigationStopped"],
+    events: ["onnavigated", "onnavigating", "onnavigationfailed", "onnavigationstopped"],
     attached: {},
     bindables: [],
     observed: ["backStackDepth", "canGoBack", "canGoForward"],
@@ -1244,7 +1244,7 @@ export const levels: Record<string, LevelMetadata> = {
   FrameworkElement: {
     parent: "UIElement",
     properties: ["allowFocusOnInteraction", "allowFocusWhenDisabled", "dataContext", "flowDirection", "focusVisualMargin", "focusVisualPrimaryBrush", "focusVisualPrimaryThickness", "focusVisualSecondaryBrush", "focusVisualSecondaryThickness", "height", "horizontalAlignment", "language", "margin", "maxHeight", "maxWidth", "minHeight", "minWidth", "name", "requestedTheme", "resources", "tag", "verticalAlignment", "width"],
-    events: ["onActualThemeChanged", "onDataContextChanged", "onEffectiveViewportChanged", "onLayoutUpdated", "onLoaded", "onLoading", "onSizeChanged", "onUnloaded"],
+    events: ["onactualthemechanged", "ondatacontextchanged", "oneffectiveviewportchanged", "onlayoutupdated", "onloaded", "onloading", "onsizechanged", "onunloaded"],
     attached: {
       gridRow: ["Grid", "setRow"],
       gridColumn: ["Grid", "setColumn"],
@@ -1393,7 +1393,7 @@ export const levels: Record<string, LevelMetadata> = {
   GroupStyle: {
     parent: null,
     properties: ["containerStyleSelector", "headerTemplate", "headerTemplateSelector", "hidesIfEmpty", "panel"],
-    events: ["onPropertyChanged"],
+    events: ["onpropertychanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1405,7 +1405,7 @@ export const levels: Record<string, LevelMetadata> = {
   Hub: {
     parent: "Control",
     properties: ["defaultSectionIndex", "header", "headerTemplate", "isActiveView", "isZoomedInView", "orientation", "semanticZoomOwner"],
-    events: ["onSectionHeaderClick", "onSectionsInViewChanged"],
+    events: ["onsectionheaderclick", "onsectionsinviewchanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1429,7 +1429,7 @@ export const levels: Record<string, LevelMetadata> = {
   Hyperlink: {
     parent: "Span",
     properties: ["elementSoundMode", "isTabStop", "navigateUri", "tabIndex", "underlineStyle", "xYFocusDown", "xYFocusDownNavigationStrategy", "xYFocusLeft", "xYFocusLeftNavigationStrategy", "xYFocusRight", "xYFocusRightNavigationStrategy", "xYFocusUp", "xYFocusUpNavigationStrategy"],
-    events: ["onClick", "onGotFocus", "onLostFocus"],
+    events: ["onclick", "ongotfocus", "onlostfocus"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1489,7 +1489,7 @@ export const levels: Record<string, LevelMetadata> = {
   Image: {
     parent: "FrameworkElement",
     properties: ["nineGrid", "source", "stretch"],
-    events: ["onImageFailed", "onImageOpened"],
+    events: ["onimagefailed", "onimageopened"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1501,7 +1501,7 @@ export const levels: Record<string, LevelMetadata> = {
   ImageBrush: {
     parent: "TileBrush",
     properties: ["imageSource"],
-    events: ["onImageFailed", "onImageOpened"],
+    events: ["onimagefailed", "onimageopened"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1561,7 +1561,7 @@ export const levels: Record<string, LevelMetadata> = {
   InfoBar: {
     parent: "Control",
     properties: ["actionButton", "closeButtonCommand", "closeButtonCommandParameter", "closeButtonStyle", "content", "contentTemplate", "iconSource", "isClosable", "isIconVisible", "isOpen", "message", "severity", "title"],
-    events: ["onCloseButtonClick", "onClosed", "onClosing"],
+    events: ["onclosebuttonclick", "onclosed", "onclosing"],
     attached: {},
     bindables: ["isOpen"],
     observed: [],
@@ -1645,7 +1645,7 @@ export const levels: Record<string, LevelMetadata> = {
   ItemsPresenter: {
     parent: "FrameworkElement",
     properties: ["footer", "footerTemplate", "header", "headerTemplate", "padding"],
-    events: ["onHorizontalSnapPointsChanged", "onVerticalSnapPointsChanged"],
+    events: ["onhorizontalsnappointschanged", "onverticalsnappointschanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1657,7 +1657,7 @@ export const levels: Record<string, LevelMetadata> = {
   ItemsRepeater: {
     parent: "FrameworkElement",
     properties: ["background", "horizontalCacheLength", "itemsSource", "itemTemplate", "itemTransitionProvider", "layout", "verticalCacheLength"],
-    events: ["onElementClearing", "onElementIndexChanged", "onElementPrepared"],
+    events: ["onelementclearing", "onelementindexchanged", "onelementprepared"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1693,7 +1693,7 @@ export const levels: Record<string, LevelMetadata> = {
   ItemsView: {
     parent: "Control",
     properties: ["isItemInvokedEnabled", "itemsSource", "itemTemplate", "itemTransitionProvider", "layout", "selectionMode", "verticalScrollController"],
-    events: ["onItemInvoked", "onSelectionChanged"],
+    events: ["oniteminvoked", "onselectionchanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1717,7 +1717,7 @@ export const levels: Record<string, LevelMetadata> = {
   KeyboardAccelerator: {
     parent: null,
     properties: ["isEnabled", "key", "modifiers", "scopeOwner"],
-    events: ["onInvoked"],
+    events: ["oninvoked"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1741,7 +1741,7 @@ export const levels: Record<string, LevelMetadata> = {
   Layout: {
     parent: null,
     properties: [],
-    events: ["onArrangeInvalidated", "onMeasureInvalidated"],
+    events: ["onarrangeinvalidated", "onmeasureinvalidated"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1825,7 +1825,7 @@ export const levels: Record<string, LevelMetadata> = {
   LinedFlowLayout: {
     parent: "VirtualizingLayout",
     properties: ["itemsJustification", "itemsStretch", "lineHeight", "lineSpacing", "minItemSpacing"],
-    events: ["onItemsInfoRequested", "onItemsUnlocked"],
+    events: ["onitemsinforequested", "onitemsunlocked"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1885,7 +1885,7 @@ export const levels: Record<string, LevelMetadata> = {
   ListPickerFlyout: {
     parent: "PickerFlyoutBase",
     properties: ["displayMemberPath", "itemsSource", "itemTemplate", "selectedIndex", "selectedItem", "selectedValue", "selectedValuePath", "selectionMode"],
-    events: ["onItemsPicked"],
+    events: ["onitemspicked"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1909,7 +1909,7 @@ export const levels: Record<string, LevelMetadata> = {
   ListViewBase: {
     parent: "Selector",
     properties: ["canDragItems", "canReorderItems", "dataFetchSize", "footer", "footerTemplate", "header", "headerTemplate", "incrementalLoadingThreshold", "incrementalLoadingTrigger", "isActiveView", "isItemClickEnabled", "isMultiSelectCheckBoxEnabled", "isSwipeEnabled", "isZoomedInView", "reorderMode", "selectionMode", "semanticZoomOwner", "showsScrollingPlaceholders", "singleSelectionFollowsFocus"],
-    events: ["onChoosingGroupHeaderContainer", "onChoosingItemContainer", "onContainerContentChanging", "onDragItemsCompleted", "onDragItemsStarting", "onItemClick"],
+    events: ["onchoosinggroupheadercontainer", "onchoosingitemcontainer", "oncontainercontentchanging", "ondragitemscompleted", "ondragitemsstarting", "onitemclick"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1969,7 +1969,7 @@ export const levels: Record<string, LevelMetadata> = {
   MapControl: {
     parent: "Control",
     properties: ["center", "interactiveControlsVisible", "layers", "mapServiceToken", "zoomLevel"],
-    events: ["onMapElementClick", "onMapServiceErrorOccurred"],
+    events: ["onmapelementclick", "onmapserviceerroroccurred"],
     attached: {},
     bindables: [],
     observed: [],
@@ -1993,7 +1993,7 @@ export const levels: Record<string, LevelMetadata> = {
   MapElementsLayer: {
     parent: "MapLayer",
     properties: ["mapElements"],
-    events: ["onMapElementClick"],
+    events: ["onmapelementclick"],
     attached: {},
     bindables: [],
     observed: [],
@@ -2077,7 +2077,7 @@ export const levels: Record<string, LevelMetadata> = {
   MediaTransportControls: {
     parent: "Control",
     properties: ["fastPlayFallbackBehaviour", "isCompact", "isFastForwardButtonVisible", "isFastForwardEnabled", "isFastRewindButtonVisible", "isFastRewindEnabled", "isNextTrackButtonVisible", "isPlaybackRateButtonVisible", "isPlaybackRateEnabled", "isPreviousTrackButtonVisible", "isRepeatButtonVisible", "isRepeatEnabled", "isSeekBarVisible", "isSeekEnabled", "isSkipBackwardButtonVisible", "isSkipBackwardEnabled", "isSkipForwardButtonVisible", "isSkipForwardEnabled", "isStopButtonVisible", "isStopEnabled", "isVolumeButtonVisible", "isVolumeEnabled", "isZoomButtonVisible", "isZoomEnabled", "showAndHideAutomatically"],
-    events: ["onThumbnailRequested"],
+    events: ["onthumbnailrequested"],
     attached: {},
     bindables: [],
     observed: [],
@@ -2137,7 +2137,7 @@ export const levels: Record<string, LevelMetadata> = {
   MenuFlyoutItem: {
     parent: "MenuFlyoutItemBase",
     properties: ["command", "commandParameter", "icon", "keyboardAcceleratorTextOverride", "text"],
-    events: ["onClick"],
+    events: ["onclick"],
     attached: {},
     bindables: [],
     observed: [],
@@ -2245,7 +2245,7 @@ export const levels: Record<string, LevelMetadata> = {
   NavigationView: {
     parent: "ContentControl",
     properties: ["alwaysShowHeader", "autoSuggestBox", "compactModeThresholdWidth", "compactPaneLength", "contentOverlay", "expandedModeThresholdWidth", "footerMenuItemsSource", "header", "headerTemplate", "isBackButtonVisible", "isBackEnabled", "isPaneOpen", "isPaneToggleButtonVisible", "isPaneVisible", "isSettingsVisible", "isTitleBarAutoPaddingEnabled", "menuItemContainerStyle", "menuItemContainerStyleSelector", "menuItemsSource", "menuItemTemplate", "menuItemTemplateSelector", "openPaneLength", "overflowLabelMode", "paneCustomContent", "paneDisplayMode", "paneFooter", "paneHeader", "paneTitle", "paneToggleButtonStyle", "selectedItem", "selectionFollowsFocus", "shoulderNavigationEnabled"],
-    events: ["onBackRequested", "onCollapsed", "onDisplayModeChanged", "onExpanding", "onItemInvoked", "onPaneClosed", "onPaneClosing", "onPaneOpened", "onPaneOpening", "onSelectionChanged"],
+    events: ["onbackrequested", "oncollapsed", "ondisplaymodechanged", "onexpanding", "oniteminvoked", "onpaneclosed", "onpaneclosing", "onpaneopened", "onpaneopening", "onselectionchanged"],
     attached: {},
     bindables: ["isPaneOpen", "selectedItem"],
     observed: ["displayMode"],
@@ -2329,7 +2329,7 @@ export const levels: Record<string, LevelMetadata> = {
   NumberBox: {
     parent: "Control",
     properties: ["acceptsExpression", "description", "header", "headerTemplate", "isWrapEnabled", "largeChange", "maximum", "minimum", "numberFormatter", "placeholderText", "preventKeyboardDisplayOnProgrammaticFocus", "selectionFlyout", "selectionHighlightColor", "smallChange", "spinButtonPlacementMode", "text", "textReadingOrder", "validationMode", "value"],
-    events: ["onValueChanged"],
+    events: ["onvaluechanged"],
     attached: {},
     bindables: ["value"],
     observed: [],
@@ -2365,7 +2365,7 @@ export const levels: Record<string, LevelMetadata> = {
   OrientedVirtualizingPanel: {
     parent: "VirtualizingPanel",
     properties: ["canHorizontallyScroll", "canVerticallyScroll", "scrollOwner"],
-    events: ["onHorizontalSnapPointsChanged", "onVerticalSnapPointsChanged"],
+    events: ["onhorizontalsnappointschanged", "onverticalsnappointschanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -2437,7 +2437,7 @@ export const levels: Record<string, LevelMetadata> = {
   PasswordBox: {
     parent: "Control",
     properties: ["description", "header", "headerTemplate", "inputScope", "isPasswordRevealButtonEnabled", "maxLength", "password", "passwordChar", "passwordRevealMode", "placeholderText", "preventKeyboardDisplayOnProgrammaticFocus", "selectionFlyout", "selectionHighlightColor", "textReadingOrder"],
-    events: ["onContextMenuOpening", "onPasswordChanged", "onPasswordChanging", "onPaste"],
+    events: ["oncontextmenuopening", "onpasswordchanged", "onpasswordchanging", "onpaste"],
     attached: {},
     bindables: ["password"],
     observed: [],
@@ -2545,7 +2545,7 @@ export const levels: Record<string, LevelMetadata> = {
   PickerFlyout: {
     parent: "PickerFlyoutBase",
     properties: ["confirmationButtonsVisible", "content"],
-    events: ["onConfirmed"],
+    events: ["onconfirmed"],
     attached: {},
     bindables: [],
     observed: [],
@@ -2569,7 +2569,7 @@ export const levels: Record<string, LevelMetadata> = {
   PipsPager: {
     parent: "Control",
     properties: ["maxVisiblePips", "nextButtonStyle", "nextButtonVisibility", "normalPipStyle", "numberOfPages", "orientation", "previousButtonStyle", "previousButtonVisibility", "selectedPageIndex", "selectedPipStyle", "wrapMode"],
-    events: ["onSelectedIndexChanged"],
+    events: ["onselectedindexchanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -2581,7 +2581,7 @@ export const levels: Record<string, LevelMetadata> = {
   Pivot: {
     parent: "ItemsControl",
     properties: ["headerFocusVisualPlacement", "headerTemplate", "isHeaderItemsCarouselEnabled", "isLocked", "leftHeader", "leftHeaderTemplate", "rightHeader", "rightHeaderTemplate", "selectedIndex", "selectedItem", "title", "titleTemplate"],
-    events: ["onPivotItemLoaded", "onPivotItemLoading", "onPivotItemUnloaded", "onPivotItemUnloading", "onSelectionChanged"],
+    events: ["onpivotitemloaded", "onpivotitemloading", "onpivotitemunloaded", "onpivotitemunloading", "onselectionchanged"],
     attached: {},
     bindables: ["selectedIndex", "selectedItem"],
     observed: [],
@@ -2617,7 +2617,7 @@ export const levels: Record<string, LevelMetadata> = {
   PivotPanel: {
     parent: "Panel",
     properties: [],
-    events: ["onHorizontalSnapPointsChanged", "onVerticalSnapPointsChanged"],
+    events: ["onhorizontalsnappointschanged", "onverticalsnappointschanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -2785,7 +2785,7 @@ export const levels: Record<string, LevelMetadata> = {
   Popup: {
     parent: "FrameworkElement",
     properties: ["child", "desiredPlacement", "horizontalOffset", "isLightDismissEnabled", "isOpen", "lightDismissOverlayMode", "placementTarget", "shouldConstrainToRootBounds", "systemBackdrop", "verticalOffset"],
-    events: ["onActualPlacementChanged", "onClosed", "onOpened"],
+    events: ["onactualplacementchanged", "onclosed", "onopened"],
     attached: {},
     bindables: ["isOpen"],
     observed: ["actualPlacement"],
@@ -2929,7 +2929,7 @@ export const levels: Record<string, LevelMetadata> = {
   RadioButtons: {
     parent: "Control",
     properties: ["header", "headerTemplate", "itemsSource", "itemTemplate", "maxColumns", "selectedIndex", "selectedItem"],
-    events: ["onSelectionChanged"],
+    events: ["onselectionchanged"],
     attached: {},
     bindables: ["selectedIndex", "selectedItem"],
     observed: [],
@@ -2953,7 +2953,7 @@ export const levels: Record<string, LevelMetadata> = {
   RangeBase: {
     parent: "Control",
     properties: ["largeChange", "maximum", "minimum", "smallChange", "value"],
-    events: ["onValueChanged"],
+    events: ["onvaluechanged"],
     attached: {},
     bindables: ["value"],
     observed: [],
@@ -2965,7 +2965,7 @@ export const levels: Record<string, LevelMetadata> = {
   RatingControl: {
     parent: "Control",
     properties: ["caption", "initialSetValue", "isClearEnabled", "isReadOnly", "itemInfo", "maxRating", "placeholderValue", "value"],
-    events: ["onValueChanged"],
+    events: ["onvaluechanged"],
     attached: {},
     bindables: ["value"],
     observed: [],
@@ -3037,7 +3037,7 @@ export const levels: Record<string, LevelMetadata> = {
   RefreshContainer: {
     parent: "ContentControl",
     properties: ["pullDirection", "visualizer"],
-    events: ["onRefreshRequested"],
+    events: ["onrefreshrequested"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3049,7 +3049,7 @@ export const levels: Record<string, LevelMetadata> = {
   RefreshVisualizer: {
     parent: "Control",
     properties: ["content", "orientation"],
-    events: ["onRefreshRequested", "onRefreshStateChanged"],
+    events: ["onrefreshrequested", "onrefreshstatechanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3145,7 +3145,7 @@ export const levels: Record<string, LevelMetadata> = {
   RichEditBox: {
     parent: "Control",
     properties: ["acceptsReturn", "characterCasing", "clipboardCopyFormat", "description", "desiredCandidateWindowAlignment", "disabledFormattingAccelerators", "header", "headerTemplate", "horizontalTextAlignment", "inputScope", "isColorFontEnabled", "isReadOnly", "isSpellCheckEnabled", "isTextPredictionEnabled", "maxLength", "placeholderText", "preventKeyboardDisplayOnProgrammaticFocus", "selectionFlyout", "selectionHighlightColor", "selectionHighlightColorWhenNotFocused", "textAlignment", "textReadingOrder", "textWrapping"],
-    events: ["onCandidateWindowBoundsChanged", "onContextMenuOpening", "onCopyingToClipboard", "onCuttingToClipboard", "onPaste", "onSelectionChanged", "onSelectionChanging", "onTextChanged", "onTextChanging", "onTextCompositionChanged", "onTextCompositionEnded", "onTextCompositionStarted"],
+    events: ["oncandidatewindowboundschanged", "oncontextmenuopening", "oncopyingtoclipboard", "oncuttingtoclipboard", "onpaste", "onselectionchanged", "onselectionchanging", "ontextchanged", "ontextchanging", "ontextcompositionchanged", "ontextcompositionended", "ontextcompositionstarted"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3157,7 +3157,7 @@ export const levels: Record<string, LevelMetadata> = {
   RichTextBlock: {
     parent: "FrameworkElement",
     properties: ["characterSpacing", "fontFamily", "fontSize", "fontStretch", "fontStyle", "fontWeight", "foreground", "horizontalTextAlignment", "isColorFontEnabled", "isTextScaleFactorEnabled", "isTextSelectionEnabled", "lineHeight", "lineStackingStrategy", "maxLines", "opticalMarginAlignment", "overflowContentTarget", "padding", "selectionFlyout", "selectionHighlightColor", "textAlignment", "textDecorations", "textIndent", "textLineBounds", "textReadingOrder", "textTrimming", "textWrapping"],
-    events: ["onContextMenuOpening", "onIsTextTrimmedChanged", "onSelectionChanged"],
+    events: ["oncontextmenuopening", "onistexttrimmedchanged", "onselectionchanged"],
     attached: {},
     bindables: [],
     observed: ["isTextTrimmed"],
@@ -3169,7 +3169,7 @@ export const levels: Record<string, LevelMetadata> = {
   RichTextBlockOverflow: {
     parent: "FrameworkElement",
     properties: ["maxLines", "overflowContentTarget", "padding"],
-    events: ["onIsTextTrimmedChanged"],
+    events: ["onistexttrimmedchanged"],
     attached: {},
     bindables: [],
     observed: ["isTextTrimmed"],
@@ -3217,7 +3217,7 @@ export const levels: Record<string, LevelMetadata> = {
   ScrollBar: {
     parent: "RangeBase",
     properties: ["indicatorMode", "orientation", "viewportSize"],
-    events: ["onScroll"],
+    events: ["onscroll"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3241,7 +3241,7 @@ export const levels: Record<string, LevelMetadata> = {
   ScrollPresenter: {
     parent: "FrameworkElement",
     properties: ["background", "content", "contentOrientation", "horizontalAnchorRatio", "horizontalScrollChainMode", "horizontalScrollController", "horizontalScrollMode", "horizontalScrollRailMode", "ignoredInputKinds", "maxZoomFactor", "minZoomFactor", "verticalAnchorRatio", "verticalScrollChainMode", "verticalScrollController", "verticalScrollMode", "verticalScrollRailMode", "zoomChainMode", "zoomMode"],
-    events: ["onAnchorRequested", "onBringingIntoView", "onExtentChanged", "onScrollAnimationStarting", "onScrollCompleted", "onStateChanged", "onViewChanged", "onZoomAnimationStarting", "onZoomCompleted"],
+    events: ["onanchorrequested", "onbringingintoview", "onextentchanged", "onscrollanimationstarting", "onscrollcompleted", "onstatechanged", "onviewchanged", "onzoomanimationstarting", "onzoomcompleted"],
     attached: {},
     bindables: [],
     observed: ["state"],
@@ -3253,7 +3253,7 @@ export const levels: Record<string, LevelMetadata> = {
   ScrollView: {
     parent: "Control",
     properties: ["content", "contentOrientation", "horizontalAnchorRatio", "horizontalScrollBarVisibility", "horizontalScrollChainMode", "horizontalScrollMode", "horizontalScrollRailMode", "ignoredInputKinds", "maxZoomFactor", "minZoomFactor", "verticalAnchorRatio", "verticalScrollBarVisibility", "verticalScrollChainMode", "verticalScrollMode", "verticalScrollRailMode", "zoomChainMode", "zoomMode"],
-    events: ["onAnchorRequested", "onBringingIntoView", "onExtentChanged", "onScrollAnimationStarting", "onScrollCompleted", "onStateChanged", "onViewChanged", "onZoomAnimationStarting", "onZoomCompleted"],
+    events: ["onanchorrequested", "onbringingintoview", "onextentchanged", "onscrollanimationstarting", "onscrollcompleted", "onstatechanged", "onviewchanged", "onzoomanimationstarting", "onzoomcompleted"],
     attached: {},
     bindables: [],
     observed: ["extentHeight", "extentWidth", "horizontalOffset", "state", "verticalOffset", "zoomFactor"],
@@ -3265,7 +3265,7 @@ export const levels: Record<string, LevelMetadata> = {
   ScrollViewer: {
     parent: "ContentControl",
     properties: ["bringIntoViewOnFocusChange", "canContentRenderOutsideBounds", "horizontalAnchorRatio", "horizontalScrollBarVisibility", "horizontalScrollMode", "horizontalSnapPointsAlignment", "horizontalSnapPointsType", "isDeferredScrollingEnabled", "isHorizontalRailEnabled", "isHorizontalScrollChainingEnabled", "isScrollInertiaEnabled", "isVerticalRailEnabled", "isVerticalScrollChainingEnabled", "isZoomChainingEnabled", "isZoomInertiaEnabled", "leftHeader", "maxZoomFactor", "minZoomFactor", "reduceViewportForCoreInputViewOcclusions", "topHeader", "topLeftHeader", "verticalAnchorRatio", "verticalScrollBarVisibility", "verticalScrollMode", "verticalSnapPointsAlignment", "verticalSnapPointsType", "zoomMode", "zoomSnapPointsType"],
-    events: ["onAnchorRequested", "onDirectManipulationCompleted", "onDirectManipulationStarted", "onViewChanged", "onViewChanging"],
+    events: ["onanchorrequested", "ondirectmanipulationcompleted", "ondirectmanipulationstarted", "onviewchanged", "onviewchanging"],
     attached: {},
     bindables: [],
     observed: ["horizontalOffset", "verticalOffset", "zoomFactor"],
@@ -3277,7 +3277,7 @@ export const levels: Record<string, LevelMetadata> = {
   Selector: {
     parent: "ItemsControl",
     properties: ["isSynchronizedWithCurrentItem", "selectedIndex", "selectedItem", "selectedValue", "selectedValuePath"],
-    events: ["onSelectionChanged"],
+    events: ["onselectionchanged"],
     attached: {},
     bindables: ["selectedIndex", "selectedItem", "selectedValue"],
     observed: [],
@@ -3289,7 +3289,7 @@ export const levels: Record<string, LevelMetadata> = {
   SelectorBar: {
     parent: "Control",
     properties: ["selectedItem"],
-    events: ["onSelectionChanged"],
+    events: ["onselectionchanged"],
     attached: {},
     bindables: ["selectedItem"],
     observed: [],
@@ -3325,7 +3325,7 @@ export const levels: Record<string, LevelMetadata> = {
   SemanticZoom: {
     parent: "Control",
     properties: ["canChangeViews", "isZoomedInViewActive", "isZoomOutButtonEnabled", "zoomedInView", "zoomedOutView"],
-    events: ["onViewChangeCompleted", "onViewChangeStarted"],
+    events: ["onviewchangecompleted", "onviewchangestarted"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3505,7 +3505,7 @@ export const levels: Record<string, LevelMetadata> = {
   SplitButton: {
     parent: "ContentControl",
     properties: ["command", "commandParameter", "flyout"],
-    events: ["onClick"],
+    events: ["onclick"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3553,7 +3553,7 @@ export const levels: Record<string, LevelMetadata> = {
   SplitView: {
     parent: "Control",
     properties: ["compactPaneLength", "content", "displayMode", "isPaneOpen", "lightDismissOverlayMode", "openPaneLength", "pane", "paneBackground", "panePlacement"],
-    events: ["onPaneClosed", "onPaneClosing", "onPaneOpened", "onPaneOpening"],
+    events: ["onpaneclosed", "onpaneclosing", "onpaneopened", "onpaneopening"],
     attached: {},
     bindables: ["isPaneOpen"],
     observed: [],
@@ -3577,7 +3577,7 @@ export const levels: Record<string, LevelMetadata> = {
   StackPanel: {
     parent: "Panel",
     properties: ["areScrollSnapPointsRegular", "backgroundSizing", "borderBrush", "borderThickness", "cornerRadius", "orientation", "padding", "spacing"],
-    events: ["onHorizontalSnapPointsChanged", "onVerticalSnapPointsChanged"],
+    events: ["onhorizontalsnappointschanged", "onverticalsnappointschanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3649,7 +3649,7 @@ export const levels: Record<string, LevelMetadata> = {
   SvgImageSource: {
     parent: "ImageSource",
     properties: ["rasterizePixelHeight", "rasterizePixelWidth", "uriSource"],
-    events: ["onOpened", "onOpenFailed"],
+    events: ["onopened", "onopenfailed"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3661,7 +3661,7 @@ export const levels: Record<string, LevelMetadata> = {
   SwapChainPanel: {
     parent: "Grid",
     properties: [],
-    events: ["onCompositionScaleChanged"],
+    events: ["oncompositionscalechanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3709,7 +3709,7 @@ export const levels: Record<string, LevelMetadata> = {
   SwipeItem: {
     parent: null,
     properties: ["background", "behaviorOnInvoked", "command", "commandParameter", "foreground", "iconSource", "text"],
-    events: ["onInvoked"],
+    events: ["oninvoked"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3781,7 +3781,7 @@ export const levels: Record<string, LevelMetadata> = {
   TabView: {
     parent: "Control",
     properties: ["addTabButtonCommand", "addTabButtonCommandParameter", "allowDropTabs", "canDragTabs", "canReorderTabs", "canTearOutTabs", "closeButtonOverlayMode", "isAddTabButtonVisible", "selectedIndex", "selectedItem", "tabItemsSource", "tabItemTemplate", "tabItemTemplateSelector", "tabStripFooter", "tabStripFooterTemplate", "tabStripHeader", "tabStripHeaderTemplate", "tabWidthMode"],
-    events: ["onAddTabButtonClick", "onExternalTornOutTabsDropped", "onExternalTornOutTabsDropping", "onSelectionChanged", "onTabCloseRequested", "onTabDragCompleted", "onTabDragStarting", "onTabDroppedOutside", "onTabItemsChanged", "onTabStripDragOver", "onTabStripDrop", "onTabTearOutRequested", "onTabTearOutWindowRequested"],
+    events: ["onaddtabbuttonclick", "onexternaltornouttabsdropped", "onexternaltornouttabsdropping", "onselectionchanged", "ontabcloserequested", "ontabdragcompleted", "ontabdragstarting", "ontabdroppedoutside", "ontabitemschanged", "ontabstripdragover", "ontabstripdrop", "ontabtearoutrequested", "ontabtearoutwindowrequested"],
     attached: {},
     bindables: ["selectedIndex", "selectedItem"],
     observed: [],
@@ -3793,7 +3793,7 @@ export const levels: Record<string, LevelMetadata> = {
   TabViewItem: {
     parent: "ListViewItem",
     properties: ["header", "headerTemplate", "iconSource", "isClosable"],
-    events: ["onCloseRequested"],
+    events: ["oncloserequested"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3817,7 +3817,7 @@ export const levels: Record<string, LevelMetadata> = {
   TeachingTip: {
     parent: "ContentControl",
     properties: ["actionButtonCommand", "actionButtonCommandParameter", "actionButtonContent", "actionButtonStyle", "closeButtonCommand", "closeButtonCommandParameter", "closeButtonContent", "closeButtonStyle", "heroContent", "heroContentPlacement", "iconSource", "isLightDismissEnabled", "isOpen", "placementMargin", "preferredPlacement", "shouldConstrainToRootBounds", "subtitle", "tailVisibility", "target", "title"],
-    events: ["onActionButtonClick", "onCloseButtonClick", "onClosed", "onClosing"],
+    events: ["onactionbuttonclick", "onclosebuttonclick", "onclosed", "onclosing"],
     attached: {},
     bindables: ["isOpen"],
     observed: [],
@@ -3829,7 +3829,7 @@ export const levels: Record<string, LevelMetadata> = {
   TextBlock: {
     parent: "FrameworkElement",
     properties: ["characterSpacing", "fontFamily", "fontSize", "fontStretch", "fontStyle", "fontWeight", "foreground", "horizontalTextAlignment", "isColorFontEnabled", "isTextScaleFactorEnabled", "isTextSelectionEnabled", "lineHeight", "lineStackingStrategy", "maxLines", "opticalMarginAlignment", "padding", "selectionFlyout", "selectionHighlightColor", "text", "textAlignment", "textDecorations", "textLineBounds", "textReadingOrder", "textTrimming", "textWrapping"],
-    events: ["onContextMenuOpening", "onIsTextTrimmedChanged", "onSelectionChanged"],
+    events: ["oncontextmenuopening", "onistexttrimmedchanged", "onselectionchanged"],
     attached: {},
     bindables: [],
     observed: ["isTextTrimmed"],
@@ -3841,7 +3841,7 @@ export const levels: Record<string, LevelMetadata> = {
   TextBox: {
     parent: "Control",
     properties: ["acceptsReturn", "characterCasing", "description", "desiredCandidateWindowAlignment", "header", "headerTemplate", "horizontalTextAlignment", "inputScope", "isColorFontEnabled", "isReadOnly", "isSpellCheckEnabled", "isTextPredictionEnabled", "maxLength", "placeholderForeground", "placeholderText", "preventKeyboardDisplayOnProgrammaticFocus", "selectedText", "selectionFlyout", "selectionHighlightColor", "selectionHighlightColorWhenNotFocused", "selectionLength", "selectionStart", "text", "textAlignment", "textReadingOrder", "textWrapping"],
-    events: ["onBeforeTextChanging", "onCandidateWindowBoundsChanged", "onContextMenuOpening", "onCopyingToClipboard", "onCuttingToClipboard", "onPaste", "onSelectionChanged", "onSelectionChanging", "onTextChanged", "onTextChanging", "onTextCompositionChanged", "onTextCompositionEnded", "onTextCompositionStarted"],
+    events: ["onbeforetextchanging", "oncandidatewindowboundschanged", "oncontextmenuopening", "oncopyingtoclipboard", "oncuttingtoclipboard", "onpaste", "onselectionchanged", "onselectionchanging", "ontextchanged", "ontextchanging", "ontextcompositionchanged", "ontextcompositionended", "ontextcompositionstarted"],
     attached: {},
     bindables: ["selectionLength", "selectionStart", "text"],
     observed: [],
@@ -3901,7 +3901,7 @@ export const levels: Record<string, LevelMetadata> = {
   Thumb: {
     parent: "Control",
     properties: [],
-    events: ["onDragCompleted", "onDragDelta", "onDragStarted"],
+    events: ["ondragcompleted", "ondragdelta", "ondragstarted"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3937,7 +3937,7 @@ export const levels: Record<string, LevelMetadata> = {
   Timeline: {
     parent: null,
     properties: ["autoReverse", "beginTime", "duration", "fillBehavior", "repeatBehavior", "speedRatio"],
-    events: ["onCompleted"],
+    events: ["oncompleted"],
     attached: {
       storyboardTargetProperty: ["Storyboard", "setTargetProperty"],
       storyboardTargetName: ["Storyboard", "setTargetName"],
@@ -3953,7 +3953,7 @@ export const levels: Record<string, LevelMetadata> = {
   TimePicker: {
     parent: "Control",
     properties: ["clockIdentifier", "header", "headerTemplate", "lightDismissOverlayMode", "minuteIncrement", "selectedTime", "time"],
-    events: ["onSelectedTimeChanged", "onTimeChanged"],
+    events: ["onselectedtimechanged", "ontimechanged"],
     attached: {},
     bindables: ["selectedTime", "time"],
     observed: [],
@@ -3965,7 +3965,7 @@ export const levels: Record<string, LevelMetadata> = {
   TimePickerFlyout: {
     parent: "PickerFlyoutBase",
     properties: ["clockIdentifier", "minuteIncrement", "time"],
-    events: ["onTimePicked"],
+    events: ["ontimepicked"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3977,7 +3977,7 @@ export const levels: Record<string, LevelMetadata> = {
   TitleBar: {
     parent: "Control",
     properties: ["autoRefreshDragRegions", "content", "iconSource", "isBackButtonEnabled", "isBackButtonVisible", "isPaneToggleButtonVisible", "leftHeader", "rightHeader", "subtitle", "title"],
-    events: ["onBackRequested", "onPaneToggleRequested"],
+    events: ["onbackrequested", "onpanetogglerequested"],
     attached: {},
     bindables: [],
     observed: [],
@@ -3989,7 +3989,7 @@ export const levels: Record<string, LevelMetadata> = {
   ToggleButton: {
     parent: "ButtonBase",
     properties: ["isChecked", "isThreeState"],
-    events: ["onChecked", "onIndeterminate", "onUnchecked"],
+    events: ["onchecked", "onindeterminate", "onunchecked"],
     attached: {},
     bindables: ["isChecked"],
     observed: [],
@@ -4013,7 +4013,7 @@ export const levels: Record<string, LevelMetadata> = {
   ToggleSplitButton: {
     parent: "SplitButton",
     properties: ["isChecked"],
-    events: ["onIsCheckedChanged"],
+    events: ["onischeckedchanged"],
     attached: {},
     bindables: ["isChecked"],
     observed: [],
@@ -4025,7 +4025,7 @@ export const levels: Record<string, LevelMetadata> = {
   ToggleSwitch: {
     parent: "Control",
     properties: ["header", "headerTemplate", "isOn", "offContent", "offContentTemplate", "onContent", "onContentTemplate"],
-    events: ["onToggled"],
+    events: ["ontoggled"],
     attached: {},
     bindables: ["isOn"],
     observed: [],
@@ -4037,7 +4037,7 @@ export const levels: Record<string, LevelMetadata> = {
   ToolTip: {
     parent: "ContentControl",
     properties: ["horizontalOffset", "isOpen", "placement", "placementRect", "placementTarget", "verticalOffset"],
-    events: ["onClosed", "onOpened"],
+    events: ["onclosed", "onopened"],
     attached: {},
     bindables: ["isOpen"],
     observed: [],
@@ -4109,7 +4109,7 @@ export const levels: Record<string, LevelMetadata> = {
   TreeView: {
     parent: "Control",
     properties: ["canDragItems", "canReorderItems", "itemContainerStyle", "itemContainerStyleSelector", "itemsSource", "itemTemplate", "itemTemplateSelector", "selectedItem", "selectedNode", "selectionMode"],
-    events: ["onCollapsed", "onDragItemsCompleted", "onDragItemsStarting", "onExpanding", "onItemInvoked", "onSelectionChanged"],
+    events: ["oncollapsed", "ondragitemscompleted", "ondragitemsstarting", "onexpanding", "oniteminvoked", "onselectionchanged"],
     attached: {},
     bindables: [],
     observed: [],
@@ -4157,7 +4157,7 @@ export const levels: Record<string, LevelMetadata> = {
   TwoPaneView: {
     parent: "Control",
     properties: ["minTallModeHeight", "minWideModeWidth", "pane1", "pane1Length", "pane2", "pane2Length", "panePriority", "tallModeConfiguration", "wideModeConfiguration"],
-    events: ["onModeChanged"],
+    events: ["onmodechanged"],
     attached: {},
     bindables: [],
     observed: ["mode"],
@@ -4169,7 +4169,7 @@ export const levels: Record<string, LevelMetadata> = {
   UIElement: {
     parent: null,
     properties: ["accessKey", "accessKeyScopeOwner", "allowDrop", "cacheMode", "canBeScrollAnchor", "canDrag", "centerPoint", "clip", "compositeMode", "contextFlyout", "exitDisplayModeOnAccessKeyInvoked", "highContrastAdjustment", "isAccessKeyScope", "isDoubleTapEnabled", "isHitTestVisible", "isHoldingEnabled", "isRightTapEnabled", "isTabStop", "isTapEnabled", "keyboardAcceleratorPlacementMode", "keyboardAcceleratorPlacementTarget", "keyTipHorizontalOffset", "keyTipPlacementMode", "keyTipTarget", "keyTipVerticalOffset", "manipulationMode", "opacity", "opacityTransition", "projection", "rasterizationScale", "renderTransform", "renderTransformOrigin", "rotation", "rotationAxis", "rotationTransition", "scale", "scaleTransition", "shadow", "tabFocusNavigation", "tabIndex", "transform3D", "transformMatrix", "translation", "translationTransition", "useLayoutRounding", "useSystemFocusVisuals", "visibility", "xamlRoot", "xYFocusDown", "xYFocusDownNavigationStrategy", "xYFocusKeyboardNavigation", "xYFocusLeft", "xYFocusLeftNavigationStrategy", "xYFocusRight", "xYFocusRightNavigationStrategy", "xYFocusUp", "xYFocusUpNavigationStrategy"],
-    events: ["onAccessKeyDisplayDismissed", "onAccessKeyDisplayRequested", "onAccessKeyInvoked", "onBringIntoViewRequested", "onCharacterReceived", "onContextCanceled", "onContextRequested", "onDoubleTapped", "onDragEnter", "onDragLeave", "onDragOver", "onDragStarting", "onDrop", "onDropCompleted", "onGettingFocus", "onGotFocus", "onHolding", "onKeyDown", "onKeyUp", "onLosingFocus", "onLostFocus", "onManipulationCompleted", "onManipulationDelta", "onManipulationInertiaStarting", "onManipulationStarted", "onManipulationStarting", "onNoFocusCandidateFound", "onPointerCanceled", "onPointerCaptureLost", "onPointerEntered", "onPointerExited", "onPointerMoved", "onPointerPressed", "onPointerReleased", "onPointerWheelChanged", "onPreviewKeyDown", "onPreviewKeyUp", "onProcessKeyboardAccelerators", "onRightTapped", "onTapped"],
+    events: ["onaccesskeydisplaydismissed", "onaccesskeydisplayrequested", "onaccesskeyinvoked", "onbringintoviewrequested", "oncharacterreceived", "oncontextcanceled", "oncontextrequested", "ondoubletapped", "ondragenter", "ondragleave", "ondragover", "ondragstarting", "ondrop", "ondropcompleted", "ongettingfocus", "ongotfocus", "onholding", "onkeydown", "onkeyup", "onlosingfocus", "onlostfocus", "onmanipulationcompleted", "onmanipulationdelta", "onmanipulationinertiastarting", "onmanipulationstarted", "onmanipulationstarting", "onnofocuscandidatefound", "onpointercanceled", "onpointercapturelost", "onpointerentered", "onpointerexited", "onpointermoved", "onpointerpressed", "onpointerreleased", "onpointerwheelchanged", "onpreviewkeydown", "onpreviewkeyup", "onprocesskeyboardaccelerators", "onrighttapped", "ontapped"],
     attached: {
       canvasLeft: ["Canvas", "setLeft"],
       canvasTop: ["Canvas", "setTop"],
@@ -4329,7 +4329,7 @@ export const levels: Record<string, LevelMetadata> = {
   VirtualizingStackPanel: {
     parent: "OrientedVirtualizingPanel",
     properties: ["areScrollSnapPointsRegular", "orientation"],
-    events: ["onCleanUpVirtualizedItemEvent"],
+    events: ["oncleanupvirtualizeditemevent"],
     attached: {},
     bindables: [],
     observed: [],
@@ -4353,7 +4353,7 @@ export const levels: Record<string, LevelMetadata> = {
   VisualStateGroup: {
     parent: null,
     properties: [],
-    events: ["onCurrentStateChanged", "onCurrentStateChanging"],
+    events: ["oncurrentstatechanged", "oncurrentstatechanging"],
     attached: {},
     bindables: [],
     observed: [],
@@ -4377,7 +4377,7 @@ export const levels: Record<string, LevelMetadata> = {
   WebView2: {
     parent: "FrameworkElement",
     properties: ["canGoBack", "canGoForward", "defaultBackgroundColor", "source"],
-    events: ["onCoreProcessFailed", "onCoreWebView2Initialized", "onNavigationCompleted", "onNavigationStarting", "onWebMessageReceived"],
+    events: ["oncoreprocessfailed", "oncorewebview2initialized", "onnavigationcompleted", "onnavigationstarting", "onwebmessagereceived"],
     attached: {},
     bindables: [],
     observed: [],
@@ -4413,7 +4413,7 @@ export const levels: Record<string, LevelMetadata> = {
   XamlUICommand: {
     parent: null,
     properties: ["accessKey", "command", "description", "iconSource", "label"],
-    events: ["onCanExecuteChanged", "onCanExecuteRequested", "onExecuteRequested"],
+    events: ["oncanexecutechanged", "oncanexecuterequested", "onexecuterequested"],
     attached: {},
     bindables: [],
     observed: [],

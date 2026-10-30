@@ -7,8 +7,8 @@ import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
 
 export interface PivotPanelProps extends PanelProps {
-  onHorizontalSnapPointsChanged?: Parameters<PivotPanel["onHorizontalSnapPointsChanged"]>[0];
-  onVerticalSnapPointsChanged?: Parameters<PivotPanel["onVerticalSnapPointsChanged"]>[0];
+  onhorizontalsnappointschanged?: Parameters<PivotPanel["onHorizontalSnapPointsChanged"]>[0];
+  onverticalsnappointschanged?: Parameters<PivotPanel["onVerticalSnapPointsChanged"]>[0];
 }
 
 export type PivotPanelBound = PanelBound;
@@ -23,12 +23,12 @@ export function linkPivotPanel(
 ) {
   linkPanel(control, props, bound, link);
 
-  if ("onHorizontalSnapPointsChanged" in props) {
-    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onHorizontalSnapPointsChanged?.(...args)));
+  if ("onhorizontalsnappointschanged" in props) {
+    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onhorizontalsnappointschanged?.(...args)));
   }
 
-  if ("onVerticalSnapPointsChanged" in props) {
-    link.add(control.onVerticalSnapPointsChanged((...args) => props.onVerticalSnapPointsChanged?.(...args)));
+  if ("onverticalsnappointschanged" in props) {
+    link.add(control.onVerticalSnapPointsChanged((...args) => props.onverticalsnappointschanged?.(...args)));
   }
 }
 

@@ -41,8 +41,8 @@ export interface DatePickerProps extends ControlProps {
   orientation?: EnumInput<typeof Orientation>;
   yearFormat?: string;
   yearVisible?: boolean;
-  onDateChanged?: Parameters<DatePicker["onDateChanged"]>[0];
-  onSelectedDateChanged?: Parameters<DatePicker["onSelectedDateChanged"]>[0];
+  ondatechanged?: Parameters<DatePicker["onDateChanged"]>[0];
+  onselecteddatechanged?: Parameters<DatePicker["onSelectedDateChanged"]>[0];
 }
 
 export type DatePickerBound = ControlBound & Pick<DatePickerProps, "date" | "selectedDate">;
@@ -130,12 +130,12 @@ export function linkDatePicker(
     ]
   });
 
-  if ("onDateChanged" in props) {
-    link.add(control.onDateChanged((...args) => props.onDateChanged?.(...args)));
+  if ("ondatechanged" in props) {
+    link.add(control.onDateChanged((...args) => props.ondatechanged?.(...args)));
   }
 
-  if ("onSelectedDateChanged" in props) {
-    link.add(control.onSelectedDateChanged((...args) => props.onSelectedDateChanged?.(...args)));
+  if ("onselecteddatechanged" in props) {
+    link.add(control.onSelectedDateChanged((...args) => props.onselecteddatechanged?.(...args)));
   }
 }
 

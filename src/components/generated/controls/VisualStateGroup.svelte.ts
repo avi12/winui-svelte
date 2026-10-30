@@ -10,8 +10,8 @@ import type { Snippet } from "svelte";
 export interface VisualStateGroupProps {
   children?: Snippet;
   transitions?: Snippet;
-  onCurrentStateChanged?: Parameters<VisualStateGroup["onCurrentStateChanged"]>[0];
-  onCurrentStateChanging?: Parameters<VisualStateGroup["onCurrentStateChanging"]>[0];
+  oncurrentstatechanged?: Parameters<VisualStateGroup["onCurrentStateChanged"]>[0];
+  oncurrentstatechanging?: Parameters<VisualStateGroup["onCurrentStateChanging"]>[0];
   attached?: AttachedInput;
 }
 
@@ -26,12 +26,12 @@ export function linkVisualStateGroup(
   link: Linker
 ) {
 
-  if ("onCurrentStateChanged" in props) {
-    link.add(control.onCurrentStateChanged((...args) => props.onCurrentStateChanged?.(...args)));
+  if ("oncurrentstatechanged" in props) {
+    link.add(control.onCurrentStateChanged((...args) => props.oncurrentstatechanged?.(...args)));
   }
 
-  if ("onCurrentStateChanging" in props) {
-    link.add(control.onCurrentStateChanging((...args) => props.onCurrentStateChanging?.(...args)));
+  if ("oncurrentstatechanging" in props) {
+    link.add(control.onCurrentStateChanging((...args) => props.oncurrentstatechanging?.(...args)));
   }
 
   link.property({

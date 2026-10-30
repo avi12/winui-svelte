@@ -65,9 +65,9 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textTrimming?: EnumInput<typeof TextTrimming>;
   textWrapping?: EnumInput<typeof TextWrapping>;
-  onContextMenuOpening?: Parameters<RichTextBlock["onContextMenuOpening"]>[0];
-  onIsTextTrimmedChanged?: Parameters<RichTextBlock["onIsTextTrimmedChanged"]>[0];
-  onSelectionChanged?: Parameters<RichTextBlock["onSelectionChanged"]>[0];
+  oncontextmenuopening?: Parameters<RichTextBlock["onContextMenuOpening"]>[0];
+  onistexttrimmedchanged?: Parameters<RichTextBlock["onIsTextTrimmedChanged"]>[0];
+  onselectionchanged?: Parameters<RichTextBlock["onSelectionChanged"]>[0];
 }
 
 export type RichTextBlockBound = FrameworkElementBound & Pick<RichTextBlockProps, "isTextTrimmed">;
@@ -201,16 +201,16 @@ export function linkRichTextBlock(
     ]
   });
 
-  if ("onContextMenuOpening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.onContextMenuOpening?.(...args)));
+  if ("oncontextmenuopening" in props) {
+    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
   }
 
-  if ("onIsTextTrimmedChanged" in props) {
-    link.add(control.onIsTextTrimmedChanged((...args) => props.onIsTextTrimmedChanged?.(...args)));
+  if ("onistexttrimmedchanged" in props) {
+    link.add(control.onIsTextTrimmedChanged((...args) => props.onistexttrimmedchanged?.(...args)));
   }
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 }
 

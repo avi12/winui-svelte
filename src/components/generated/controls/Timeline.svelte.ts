@@ -28,7 +28,7 @@ export interface TimelineProps {
   fillBehavior?: EnumInput<typeof FillBehavior>;
   repeatBehavior?: RepeatBehaviorInput;
   speedRatio?: number;
-  onCompleted?: Parameters<Timeline["onCompleted"]>[0];
+  oncompleted?: Parameters<Timeline["onCompleted"]>[0];
   attached?: AttachedInput;
 }
 
@@ -95,8 +95,8 @@ export function linkTimeline(
     }
   });
 
-  if ("onCompleted" in props) {
-    link.add(control.onCompleted((...args) => props.onCompleted?.(...args)));
+  if ("oncompleted" in props) {
+    link.add(control.onCompleted((...args) => props.oncompleted?.(...args)));
   }
 
   link.property({

@@ -11,7 +11,7 @@ export interface RangeBaseProps extends ControlProps {
   maximum?: number;
   minimum?: number;
   smallChange?: number;
-  onValueChanged?: Parameters<RangeBase["onValueChanged"]>[0];
+  onvaluechanged?: Parameters<RangeBase["onValueChanged"]>[0];
 }
 
 export type RangeBaseBound = ControlBound & Pick<RangeBaseProps, "value">;
@@ -42,7 +42,7 @@ export function linkRangeBase(
     ]
   });
 
-  if ("onValueChanged" in props) {
-    link.add(control.onValueChanged((...args) => props.onValueChanged?.(...args)));
+  if ("onvaluechanged" in props) {
+    link.add(control.onValueChanged((...args) => props.onvaluechanged?.(...args)));
   }
 }

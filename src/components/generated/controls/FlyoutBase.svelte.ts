@@ -19,10 +19,10 @@ export interface FlyoutBaseProps {
   showMode?: EnumInput<typeof FlyoutShowMode>;
   systemBackdrop?: FlyoutBase["systemBackdrop"] | Snippet;
   xamlRoot?: FlyoutBase["xamlRoot"];
-  onClosed?: Parameters<FlyoutBase["onClosed"]>[0];
-  onClosing?: Parameters<FlyoutBase["onClosing"]>[0];
-  onOpened?: Parameters<FlyoutBase["onOpened"]>[0];
-  onOpening?: Parameters<FlyoutBase["onOpening"]>[0];
+  onclosed?: Parameters<FlyoutBase["onClosed"]>[0];
+  onclosing?: Parameters<FlyoutBase["onClosing"]>[0];
+  onopened?: Parameters<FlyoutBase["onOpened"]>[0];
+  onopening?: Parameters<FlyoutBase["onOpening"]>[0];
   attached?: AttachedInput;
 }
 
@@ -68,20 +68,20 @@ export function linkFlyoutBase(
     }
   });
 
-  if ("onClosed" in props) {
-    link.add(control.onClosed((...args) => props.onClosed?.(...args)));
+  if ("onclosed" in props) {
+    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
   }
 
-  if ("onClosing" in props) {
-    link.add(control.onClosing((...args) => props.onClosing?.(...args)));
+  if ("onclosing" in props) {
+    link.add(control.onClosing((...args) => props.onclosing?.(...args)));
   }
 
-  if ("onOpened" in props) {
-    link.add(control.onOpened((...args) => props.onOpened?.(...args)));
+  if ("onopened" in props) {
+    link.add(control.onOpened((...args) => props.onopened?.(...args)));
   }
 
-  if ("onOpening" in props) {
-    link.add(control.onOpening((...args) => props.onOpening?.(...args)));
+  if ("onopening" in props) {
+    link.add(control.onOpening((...args) => props.onopening?.(...args)));
   }
 
   link.property({

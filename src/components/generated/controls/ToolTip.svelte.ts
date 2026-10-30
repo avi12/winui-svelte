@@ -15,8 +15,8 @@ export interface ToolTipProps extends ContentControlProps {
   placementRect?: NullableRectInput;
   placementTarget?: ToolTip["placementTarget"];
   verticalOffset?: number;
-  onClosed?: Parameters<ToolTip["onClosed"]>[0];
-  onOpened?: Parameters<ToolTip["onOpened"]>[0];
+  onclosed?: Parameters<ToolTip["onClosed"]>[0];
+  onopened?: Parameters<ToolTip["onOpened"]>[0];
 }
 
 export type ToolTipBound = ContentControlBound & Pick<ToolTipProps, "isOpen">;
@@ -64,12 +64,12 @@ export function linkToolTip(
     ]
   });
 
-  if ("onClosed" in props) {
-    link.add(control.onClosed((...args) => props.onClosed?.(...args)));
+  if ("onclosed" in props) {
+    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
   }
 
-  if ("onOpened" in props) {
-    link.add(control.onOpened((...args) => props.onOpened?.(...args)));
+  if ("onopened" in props) {
+    link.add(control.onOpened((...args) => props.onopened?.(...args)));
   }
 }
 

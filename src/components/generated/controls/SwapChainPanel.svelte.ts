@@ -7,7 +7,7 @@ import { linkGrid } from "./Grid.svelte.ts";
 import type { GridBound, GridProps } from "./Grid.svelte.ts";
 
 export interface SwapChainPanelProps extends GridProps {
-  onCompositionScaleChanged?: Parameters<SwapChainPanel["onCompositionScaleChanged"]>[0];
+  oncompositionscalechanged?: Parameters<SwapChainPanel["onCompositionScaleChanged"]>[0];
 }
 
 export type SwapChainPanelBound = GridBound;
@@ -22,8 +22,8 @@ export function linkSwapChainPanel(
 ) {
   linkGrid(control, props, bound, link);
 
-  if ("onCompositionScaleChanged" in props) {
-    link.add(control.onCompositionScaleChanged((...args) => props.onCompositionScaleChanged?.(...args)));
+  if ("oncompositionscalechanged" in props) {
+    link.add(control.onCompositionScaleChanged((...args) => props.oncompositionscalechanged?.(...args)));
   }
 }
 

@@ -23,7 +23,7 @@ export interface ListPickerFlyoutProps extends PickerFlyoutBaseProps {
   selectedValue?: ObjectInput;
   selectedValuePath?: string;
   selectionMode?: EnumInput<typeof ListPickerFlyoutSelectionMode>;
-  onItemsPicked?: Parameters<ListPickerFlyout["onItemsPicked"]>[0];
+  onitemspicked?: Parameters<ListPickerFlyout["onItemsPicked"]>[0];
 }
 
 export type ListPickerFlyoutBound = PickerFlyoutBaseBound;
@@ -78,8 +78,8 @@ export function linkListPickerFlyout(
     }
   });
 
-  if ("onItemsPicked" in props) {
-    link.add(control.onItemsPicked((...args) => props.onItemsPicked?.(...args)));
+  if ("onitemspicked" in props) {
+    link.add(control.onItemsPicked((...args) => props.onitemspicked?.(...args)));
   }
 }
 

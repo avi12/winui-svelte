@@ -11,8 +11,8 @@ export interface CarouselPanelProps extends VirtualizingPanelProps {
   canHorizontallyScroll?: boolean;
   canVerticallyScroll?: boolean;
   scrollOwner?: ObjectReferenceInput;
-  onHorizontalSnapPointsChanged?: Parameters<CarouselPanel["onHorizontalSnapPointsChanged"]>[0];
-  onVerticalSnapPointsChanged?: Parameters<CarouselPanel["onVerticalSnapPointsChanged"]>[0];
+  onhorizontalsnappointschanged?: Parameters<CarouselPanel["onHorizontalSnapPointsChanged"]>[0];
+  onverticalsnappointschanged?: Parameters<CarouselPanel["onVerticalSnapPointsChanged"]>[0];
 }
 
 export type CarouselPanelBound = VirtualizingPanelBound;
@@ -39,12 +39,12 @@ export function linkCarouselPanel(
     }
   });
 
-  if ("onHorizontalSnapPointsChanged" in props) {
-    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onHorizontalSnapPointsChanged?.(...args)));
+  if ("onhorizontalsnappointschanged" in props) {
+    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onhorizontalsnappointschanged?.(...args)));
   }
 
-  if ("onVerticalSnapPointsChanged" in props) {
-    link.add(control.onVerticalSnapPointsChanged((...args) => props.onVerticalSnapPointsChanged?.(...args)));
+  if ("onverticalsnappointschanged" in props) {
+    link.add(control.onVerticalSnapPointsChanged((...args) => props.onverticalsnappointschanged?.(...args)));
   }
 }
 

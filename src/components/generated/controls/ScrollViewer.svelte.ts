@@ -48,11 +48,11 @@ export interface ScrollViewerProps extends ContentControlProps {
   verticalSnapPointsType?: EnumInput<typeof SnapPointsType>;
   zoomMode?: EnumInput<typeof ZoomMode>;
   zoomSnapPointsType?: EnumInput<typeof SnapPointsType>;
-  onAnchorRequested?: Parameters<ScrollViewer["onAnchorRequested"]>[0];
-  onDirectManipulationCompleted?: Parameters<ScrollViewer["onDirectManipulationCompleted"]>[0];
-  onDirectManipulationStarted?: Parameters<ScrollViewer["onDirectManipulationStarted"]>[0];
-  onViewChanged?: Parameters<ScrollViewer["onViewChanged"]>[0];
-  onViewChanging?: Parameters<ScrollViewer["onViewChanging"]>[0];
+  onanchorrequested?: Parameters<ScrollViewer["onAnchorRequested"]>[0];
+  ondirectmanipulationcompleted?: Parameters<ScrollViewer["onDirectManipulationCompleted"]>[0];
+  ondirectmanipulationstarted?: Parameters<ScrollViewer["onDirectManipulationStarted"]>[0];
+  onviewchanged?: Parameters<ScrollViewer["onViewChanged"]>[0];
+  onviewchanging?: Parameters<ScrollViewer["onViewChanging"]>[0];
 }
 
 export type ScrollViewerBound = ContentControlBound & Pick<ScrollViewerProps, "horizontalOffset" | "verticalOffset" | "zoomFactor">;
@@ -169,24 +169,24 @@ export function linkScrollViewer(
     ]
   });
 
-  if ("onAnchorRequested" in props) {
-    link.add(control.onAnchorRequested((...args) => props.onAnchorRequested?.(...args)));
+  if ("onanchorrequested" in props) {
+    link.add(control.onAnchorRequested((...args) => props.onanchorrequested?.(...args)));
   }
 
-  if ("onDirectManipulationCompleted" in props) {
-    link.add(control.onDirectManipulationCompleted((...args) => props.onDirectManipulationCompleted?.(...args)));
+  if ("ondirectmanipulationcompleted" in props) {
+    link.add(control.onDirectManipulationCompleted((...args) => props.ondirectmanipulationcompleted?.(...args)));
   }
 
-  if ("onDirectManipulationStarted" in props) {
-    link.add(control.onDirectManipulationStarted((...args) => props.onDirectManipulationStarted?.(...args)));
+  if ("ondirectmanipulationstarted" in props) {
+    link.add(control.onDirectManipulationStarted((...args) => props.ondirectmanipulationstarted?.(...args)));
   }
 
-  if ("onViewChanged" in props) {
-    link.add(control.onViewChanged((...args) => props.onViewChanged?.(...args)));
+  if ("onviewchanged" in props) {
+    link.add(control.onViewChanged((...args) => props.onviewchanged?.(...args)));
   }
 
-  if ("onViewChanging" in props) {
-    link.add(control.onViewChanging((...args) => props.onViewChanging?.(...args)));
+  if ("onviewchanging" in props) {
+    link.add(control.onViewChanging((...args) => props.onviewchanging?.(...args)));
   }
 }
 

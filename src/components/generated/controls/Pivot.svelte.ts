@@ -22,11 +22,11 @@ export interface PivotProps extends ItemsControlProps {
   rightHeaderTemplate?: DataTemplateInput;
   title?: ObjectInput | Snippet;
   titleTemplate?: DataTemplateInput;
-  onPivotItemLoaded?: Parameters<Pivot["onPivotItemLoaded"]>[0];
-  onPivotItemLoading?: Parameters<Pivot["onPivotItemLoading"]>[0];
-  onPivotItemUnloaded?: Parameters<Pivot["onPivotItemUnloaded"]>[0];
-  onPivotItemUnloading?: Parameters<Pivot["onPivotItemUnloading"]>[0];
-  onSelectionChanged?: Parameters<Pivot["onSelectionChanged"]>[0];
+  onpivotitemloaded?: Parameters<Pivot["onPivotItemLoaded"]>[0];
+  onpivotitemloading?: Parameters<Pivot["onPivotItemLoading"]>[0];
+  onpivotitemunloaded?: Parameters<Pivot["onPivotItemUnloaded"]>[0];
+  onpivotitemunloading?: Parameters<Pivot["onPivotItemUnloading"]>[0];
+  onselectionchanged?: Parameters<Pivot["onSelectionChanged"]>[0];
 }
 
 export type PivotBound = ItemsControlBound & Pick<PivotProps, "selectedIndex" | "selectedItem">;
@@ -128,24 +128,24 @@ export function linkPivot(
     ]
   });
 
-  if ("onPivotItemLoaded" in props) {
-    link.add(control.onPivotItemLoaded((...args) => props.onPivotItemLoaded?.(...args)));
+  if ("onpivotitemloaded" in props) {
+    link.add(control.onPivotItemLoaded((...args) => props.onpivotitemloaded?.(...args)));
   }
 
-  if ("onPivotItemLoading" in props) {
-    link.add(control.onPivotItemLoading((...args) => props.onPivotItemLoading?.(...args)));
+  if ("onpivotitemloading" in props) {
+    link.add(control.onPivotItemLoading((...args) => props.onpivotitemloading?.(...args)));
   }
 
-  if ("onPivotItemUnloaded" in props) {
-    link.add(control.onPivotItemUnloaded((...args) => props.onPivotItemUnloaded?.(...args)));
+  if ("onpivotitemunloaded" in props) {
+    link.add(control.onPivotItemUnloaded((...args) => props.onpivotitemunloaded?.(...args)));
   }
 
-  if ("onPivotItemUnloading" in props) {
-    link.add(control.onPivotItemUnloading((...args) => props.onPivotItemUnloading?.(...args)));
+  if ("onpivotitemunloading" in props) {
+    link.add(control.onPivotItemUnloading((...args) => props.onpivotitemunloading?.(...args)));
   }
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 }
 

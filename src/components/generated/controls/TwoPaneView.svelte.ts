@@ -26,7 +26,7 @@ export interface TwoPaneViewProps extends ControlProps {
   panePriority?: EnumInput<typeof TwoPaneViewPriority>;
   tallModeConfiguration?: EnumInput<typeof TwoPaneViewTallModeConfiguration>;
   wideModeConfiguration?: EnumInput<typeof TwoPaneViewWideModeConfiguration>;
-  onModeChanged?: Parameters<TwoPaneView["onModeChanged"]>[0];
+  onmodechanged?: Parameters<TwoPaneView["onModeChanged"]>[0];
 }
 
 export type TwoPaneViewBound = ControlBound & Pick<TwoPaneViewProps, "mode">;
@@ -90,8 +90,8 @@ export function linkTwoPaneView(
     ]
   });
 
-  if ("onModeChanged" in props) {
-    link.add(control.onModeChanged((...args) => props.onModeChanged?.(...args)));
+  if ("onmodechanged" in props) {
+    link.add(control.onModeChanged((...args) => props.onmodechanged?.(...args)));
   }
 }
 

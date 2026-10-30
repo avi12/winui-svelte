@@ -10,8 +10,8 @@ import type { Snippet } from "svelte";
 
 export interface ImageBrushProps extends TileBrushProps {
   imageSource?: ImageSourceInput | Snippet;
-  onImageFailed?: Parameters<ImageBrush["onImageFailed"]>[0];
-  onImageOpened?: Parameters<ImageBrush["onImageOpened"]>[0];
+  onimagefailed?: Parameters<ImageBrush["onImageFailed"]>[0];
+  onimageopened?: Parameters<ImageBrush["onImageOpened"]>[0];
 }
 
 export type ImageBrushBound = TileBrushBound;
@@ -33,12 +33,12 @@ export function linkImageBrush(
     }
   });
 
-  if ("onImageFailed" in props) {
-    link.add(control.onImageFailed((...args) => props.onImageFailed?.(...args)));
+  if ("onimagefailed" in props) {
+    link.add(control.onImageFailed((...args) => props.onimagefailed?.(...args)));
   }
 
-  if ("onImageOpened" in props) {
-    link.add(control.onImageOpened((...args) => props.onImageOpened?.(...args)));
+  if ("onimageopened" in props) {
+    link.add(control.onImageOpened((...args) => props.onimageopened?.(...args)));
   }
 }
 

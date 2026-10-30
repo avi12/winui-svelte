@@ -11,8 +11,8 @@ export interface OrientedVirtualizingPanelProps extends VirtualizingPanelProps {
   canHorizontallyScroll?: boolean;
   canVerticallyScroll?: boolean;
   scrollOwner?: ObjectReferenceInput;
-  onHorizontalSnapPointsChanged?: Parameters<OrientedVirtualizingPanel["onHorizontalSnapPointsChanged"]>[0];
-  onVerticalSnapPointsChanged?: Parameters<OrientedVirtualizingPanel["onVerticalSnapPointsChanged"]>[0];
+  onhorizontalsnappointschanged?: Parameters<OrientedVirtualizingPanel["onHorizontalSnapPointsChanged"]>[0];
+  onverticalsnappointschanged?: Parameters<OrientedVirtualizingPanel["onVerticalSnapPointsChanged"]>[0];
 }
 
 export type OrientedVirtualizingPanelBound = VirtualizingPanelBound;
@@ -37,11 +37,11 @@ export function linkOrientedVirtualizingPanel(
     }
   });
 
-  if ("onHorizontalSnapPointsChanged" in props) {
-    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onHorizontalSnapPointsChanged?.(...args)));
+  if ("onhorizontalsnappointschanged" in props) {
+    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onhorizontalsnappointschanged?.(...args)));
   }
 
-  if ("onVerticalSnapPointsChanged" in props) {
-    link.add(control.onVerticalSnapPointsChanged((...args) => props.onVerticalSnapPointsChanged?.(...args)));
+  if ("onverticalsnappointschanged" in props) {
+    link.add(control.onVerticalSnapPointsChanged((...args) => props.onverticalsnappointschanged?.(...args)));
   }
 }

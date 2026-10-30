@@ -11,7 +11,7 @@ export interface KeyboardAcceleratorProps {
   key?: EnumInput<typeof VirtualKey>;
   modifiers?: FlagsInput<typeof VirtualKeyModifiers>;
   scopeOwner?: KeyboardAccelerator["scopeOwner"];
-  onInvoked?: Parameters<KeyboardAccelerator["onInvoked"]>[0];
+  oninvoked?: Parameters<KeyboardAccelerator["onInvoked"]>[0];
   attached?: AttachedInput;
 }
 
@@ -45,8 +45,8 @@ export function linkKeyboardAccelerator(
     }
   });
 
-  if ("onInvoked" in props) {
-    link.add(control.onInvoked((...args) => props.onInvoked?.(...args)));
+  if ("oninvoked" in props) {
+    link.add(control.onInvoked((...args) => props.oninvoked?.(...args)));
   }
 
   link.property({

@@ -61,9 +61,9 @@ export interface ControlProps extends FrameworkElementProps {
   tabNavigation?: EnumInput<typeof KeyboardNavigationMode>;
   template?: ControlTemplateInput;
   verticalContentAlignment?: EnumInput<typeof VerticalAlignment>;
-  onFocusDisengaged?: Parameters<Control["onFocusDisengaged"]>[0];
-  onFocusEngaged?: Parameters<Control["onFocusEngaged"]>[0];
-  onIsEnabledChanged?: Parameters<Control["onIsEnabledChanged"]>[0];
+  onfocusdisengaged?: Parameters<Control["onFocusDisengaged"]>[0];
+  onfocusengaged?: Parameters<Control["onFocusEngaged"]>[0];
+  onisenabledchanged?: Parameters<Control["onIsEnabledChanged"]>[0];
 }
 
 export type ControlBound = FrameworkElementBound;
@@ -207,15 +207,15 @@ export function linkControl(
     }
   });
 
-  if ("onFocusDisengaged" in props) {
-    link.add(control.onFocusDisengaged((...args) => props.onFocusDisengaged?.(...args)));
+  if ("onfocusdisengaged" in props) {
+    link.add(control.onFocusDisengaged((...args) => props.onfocusdisengaged?.(...args)));
   }
 
-  if ("onFocusEngaged" in props) {
-    link.add(control.onFocusEngaged((...args) => props.onFocusEngaged?.(...args)));
+  if ("onfocusengaged" in props) {
+    link.add(control.onFocusEngaged((...args) => props.onfocusengaged?.(...args)));
   }
 
-  if ("onIsEnabledChanged" in props) {
-    link.add(control.onIsEnabledChanged((...args) => props.onIsEnabledChanged?.(...args)));
+  if ("onisenabledchanged" in props) {
+    link.add(control.onIsEnabledChanged((...args) => props.onisenabledchanged?.(...args)));
   }
 }

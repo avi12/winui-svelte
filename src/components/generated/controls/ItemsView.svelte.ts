@@ -17,8 +17,8 @@ export interface ItemsViewProps extends ControlProps {
   layout?: ItemsView["layout"] | Snippet;
   selectionMode?: EnumInput<typeof ItemsViewSelectionMode>;
   verticalScrollController?: ItemsView["verticalScrollController"];
-  onItemInvoked?: Parameters<ItemsView["onItemInvoked"]>[0];
-  onSelectionChanged?: Parameters<ItemsView["onSelectionChanged"]>[0];
+  oniteminvoked?: Parameters<ItemsView["onItemInvoked"]>[0];
+  onselectionchanged?: Parameters<ItemsView["onSelectionChanged"]>[0];
 }
 
 export type ItemsViewBound = ControlBound;
@@ -52,12 +52,12 @@ export function linkItemsView(
     }
   });
 
-  if ("onItemInvoked" in props) {
-    link.add(control.onItemInvoked((...args) => props.onItemInvoked?.(...args)));
+  if ("oniteminvoked" in props) {
+    link.add(control.onItemInvoked((...args) => props.oniteminvoked?.(...args)));
   }
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 }
 

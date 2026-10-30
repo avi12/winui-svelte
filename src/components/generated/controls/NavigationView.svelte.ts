@@ -67,16 +67,16 @@ export interface NavigationViewProps extends ContentControlProps {
   paneToggleButtonStyle?: StyleInput;
   selectionFollowsFocus?: EnumInput<typeof NavigationViewSelectionFollowsFocus>;
   shoulderNavigationEnabled?: EnumInput<typeof NavigationViewShoulderNavigationEnabled>;
-  onBackRequested?: Parameters<NavigationView["onBackRequested"]>[0];
-  onCollapsed?: Parameters<NavigationView["onCollapsed"]>[0];
-  onDisplayModeChanged?: Parameters<NavigationView["onDisplayModeChanged"]>[0];
-  onExpanding?: Parameters<NavigationView["onExpanding"]>[0];
-  onItemInvoked?: Parameters<NavigationView["onItemInvoked"]>[0];
-  onPaneClosed?: Parameters<NavigationView["onPaneClosed"]>[0];
-  onPaneClosing?: Parameters<NavigationView["onPaneClosing"]>[0];
-  onPaneOpened?: Parameters<NavigationView["onPaneOpened"]>[0];
-  onPaneOpening?: Parameters<NavigationView["onPaneOpening"]>[0];
-  onSelectionChanged?: Parameters<NavigationView["onSelectionChanged"]>[0];
+  onbackrequested?: Parameters<NavigationView["onBackRequested"]>[0];
+  oncollapsed?: Parameters<NavigationView["onCollapsed"]>[0];
+  ondisplaymodechanged?: Parameters<NavigationView["onDisplayModeChanged"]>[0];
+  onexpanding?: Parameters<NavigationView["onExpanding"]>[0];
+  oniteminvoked?: Parameters<NavigationView["onItemInvoked"]>[0];
+  onpaneclosed?: Parameters<NavigationView["onPaneClosed"]>[0];
+  onpaneclosing?: Parameters<NavigationView["onPaneClosing"]>[0];
+  onpaneopened?: Parameters<NavigationView["onPaneOpened"]>[0];
+  onpaneopening?: Parameters<NavigationView["onPaneOpening"]>[0];
+  onselectionchanged?: Parameters<NavigationView["onSelectionChanged"]>[0];
 }
 
 export type NavigationViewBound = ContentControlBound & Pick<NavigationViewProps, "isPaneOpen" | "selectedItem" | "displayMode">;
@@ -216,44 +216,44 @@ export function linkNavigationView(
     ]
   });
 
-  if ("onBackRequested" in props) {
-    link.add(control.onBackRequested((...args) => props.onBackRequested?.(...args)));
+  if ("onbackrequested" in props) {
+    link.add(control.onBackRequested((...args) => props.onbackrequested?.(...args)));
   }
 
-  if ("onCollapsed" in props) {
-    link.add(control.onCollapsed((...args) => props.onCollapsed?.(...args)));
+  if ("oncollapsed" in props) {
+    link.add(control.onCollapsed((...args) => props.oncollapsed?.(...args)));
   }
 
-  if ("onDisplayModeChanged" in props) {
-    link.add(control.onDisplayModeChanged((...args) => props.onDisplayModeChanged?.(...args)));
+  if ("ondisplaymodechanged" in props) {
+    link.add(control.onDisplayModeChanged((...args) => props.ondisplaymodechanged?.(...args)));
   }
 
-  if ("onExpanding" in props) {
-    link.add(control.onExpanding((...args) => props.onExpanding?.(...args)));
+  if ("onexpanding" in props) {
+    link.add(control.onExpanding((...args) => props.onexpanding?.(...args)));
   }
 
-  if ("onItemInvoked" in props) {
-    link.add(control.onItemInvoked((...args) => props.onItemInvoked?.(...args)));
+  if ("oniteminvoked" in props) {
+    link.add(control.onItemInvoked((...args) => props.oniteminvoked?.(...args)));
   }
 
-  if ("onPaneClosed" in props) {
-    link.add(control.onPaneClosed((...args) => props.onPaneClosed?.(...args)));
+  if ("onpaneclosed" in props) {
+    link.add(control.onPaneClosed((...args) => props.onpaneclosed?.(...args)));
   }
 
-  if ("onPaneClosing" in props) {
-    link.add(control.onPaneClosing((...args) => props.onPaneClosing?.(...args)));
+  if ("onpaneclosing" in props) {
+    link.add(control.onPaneClosing((...args) => props.onpaneclosing?.(...args)));
   }
 
-  if ("onPaneOpened" in props) {
-    link.add(control.onPaneOpened((...args) => props.onPaneOpened?.(...args)));
+  if ("onpaneopened" in props) {
+    link.add(control.onPaneOpened((...args) => props.onpaneopened?.(...args)));
   }
 
-  if ("onPaneOpening" in props) {
-    link.add(control.onPaneOpening((...args) => props.onPaneOpening?.(...args)));
+  if ("onpaneopening" in props) {
+    link.add(control.onPaneOpening((...args) => props.onpaneopening?.(...args)));
   }
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 }
 

@@ -10,9 +10,9 @@ import type { ButtonBaseBound, ButtonBaseProps } from "./ButtonBase.svelte.ts";
 export interface ToggleButtonProps extends ButtonBaseProps {
   isChecked?: NullableBooleanInput | undefined;
   isThreeState?: boolean;
-  onChecked?: Parameters<ToggleButton["onChecked"]>[0];
-  onIndeterminate?: Parameters<ToggleButton["onIndeterminate"]>[0];
-  onUnchecked?: Parameters<ToggleButton["onUnchecked"]>[0];
+  onchecked?: Parameters<ToggleButton["onChecked"]>[0];
+  onindeterminate?: Parameters<ToggleButton["onIndeterminate"]>[0];
+  onunchecked?: Parameters<ToggleButton["onUnchecked"]>[0];
 }
 
 export type ToggleButtonBound = ButtonBaseBound & Pick<ToggleButtonProps, "isChecked">;
@@ -47,16 +47,16 @@ export function linkToggleButton(
     ]
   });
 
-  if ("onChecked" in props) {
-    link.add(control.onChecked((...args) => props.onChecked?.(...args)));
+  if ("onchecked" in props) {
+    link.add(control.onChecked((...args) => props.onchecked?.(...args)));
   }
 
-  if ("onIndeterminate" in props) {
-    link.add(control.onIndeterminate((...args) => props.onIndeterminate?.(...args)));
+  if ("onindeterminate" in props) {
+    link.add(control.onIndeterminate((...args) => props.onindeterminate?.(...args)));
   }
 
-  if ("onUnchecked" in props) {
-    link.add(control.onUnchecked((...args) => props.onUnchecked?.(...args)));
+  if ("onunchecked" in props) {
+    link.add(control.onUnchecked((...args) => props.onunchecked?.(...args)));
   }
 }
 

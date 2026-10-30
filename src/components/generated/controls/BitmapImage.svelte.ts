@@ -15,9 +15,9 @@ export interface BitmapImageProps extends BitmapSourceProps {
   decodePixelType?: EnumInput<typeof DecodePixelType>;
   decodePixelWidth?: number;
   uriSource?: UriInput;
-  onDownloadProgress?: Parameters<BitmapImage["onDownloadProgress"]>[0];
-  onImageFailed?: Parameters<BitmapImage["onImageFailed"]>[0];
-  onImageOpened?: Parameters<BitmapImage["onImageOpened"]>[0];
+  ondownloadprogress?: Parameters<BitmapImage["onDownloadProgress"]>[0];
+  onimagefailed?: Parameters<BitmapImage["onImageFailed"]>[0];
+  onimageopened?: Parameters<BitmapImage["onImageOpened"]>[0];
 }
 
 export type BitmapImageBound = BitmapSourceBound;
@@ -58,16 +58,16 @@ export function linkBitmapImage(
     }
   });
 
-  if ("onDownloadProgress" in props) {
-    link.add(control.onDownloadProgress((...args) => props.onDownloadProgress?.(...args)));
+  if ("ondownloadprogress" in props) {
+    link.add(control.onDownloadProgress((...args) => props.ondownloadprogress?.(...args)));
   }
 
-  if ("onImageFailed" in props) {
-    link.add(control.onImageFailed((...args) => props.onImageFailed?.(...args)));
+  if ("onimagefailed" in props) {
+    link.add(control.onImageFailed((...args) => props.onimagefailed?.(...args)));
   }
 
-  if ("onImageOpened" in props) {
-    link.add(control.onImageOpened((...args) => props.onImageOpened?.(...args)));
+  if ("onimageopened" in props) {
+    link.add(control.onImageOpened((...args) => props.onimageopened?.(...args)));
   }
 }
 

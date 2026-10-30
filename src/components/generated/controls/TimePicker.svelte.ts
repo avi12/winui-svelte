@@ -33,8 +33,8 @@ export interface TimePickerProps extends ControlProps {
   headerTemplate?: DataTemplateInput;
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   minuteIncrement?: number;
-  onSelectedTimeChanged?: Parameters<TimePicker["onSelectedTimeChanged"]>[0];
-  onTimeChanged?: Parameters<TimePicker["onTimeChanged"]>[0];
+  onselectedtimechanged?: Parameters<TimePicker["onSelectedTimeChanged"]>[0];
+  ontimechanged?: Parameters<TimePicker["onTimeChanged"]>[0];
 }
 
 export type TimePickerBound = ControlBound & Pick<TimePickerProps, "selectedTime" | "time">;
@@ -101,12 +101,12 @@ export function linkTimePicker(
     ]
   });
 
-  if ("onSelectedTimeChanged" in props) {
-    link.add(control.onSelectedTimeChanged((...args) => props.onSelectedTimeChanged?.(...args)));
+  if ("onselectedtimechanged" in props) {
+    link.add(control.onSelectedTimeChanged((...args) => props.onselectedtimechanged?.(...args)));
   }
 
-  if ("onTimeChanged" in props) {
-    link.add(control.onTimeChanged((...args) => props.onTimeChanged?.(...args)));
+  if ("ontimechanged" in props) {
+    link.add(control.onTimeChanged((...args) => props.ontimechanged?.(...args)));
   }
 }
 

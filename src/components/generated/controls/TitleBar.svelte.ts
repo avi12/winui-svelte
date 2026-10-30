@@ -18,8 +18,8 @@ export interface TitleBarProps extends ControlProps {
   rightHeader?: TitleBar["rightHeader"] | Snippet;
   subtitle?: string;
   title?: string;
-  onBackRequested?: Parameters<TitleBar["onBackRequested"]>[0];
-  onPaneToggleRequested?: Parameters<TitleBar["onPaneToggleRequested"]>[0];
+  onbackrequested?: Parameters<TitleBar["onBackRequested"]>[0];
+  onpanetogglerequested?: Parameters<TitleBar["onPaneToggleRequested"]>[0];
 }
 
 export type TitleBarBound = ControlBound;
@@ -39,12 +39,12 @@ export function linkTitleBar(
     keys: ["autoRefreshDragRegions", "content", "iconSource", "isBackButtonEnabled", "isBackButtonVisible", "isPaneToggleButtonVisible", "leftHeader", "rightHeader", "subtitle", "title"]
   });
 
-  if ("onBackRequested" in props) {
-    link.add(control.onBackRequested((...args) => props.onBackRequested?.(...args)));
+  if ("onbackrequested" in props) {
+    link.add(control.onBackRequested((...args) => props.onbackrequested?.(...args)));
   }
 
-  if ("onPaneToggleRequested" in props) {
-    link.add(control.onPaneToggleRequested((...args) => props.onPaneToggleRequested?.(...args)));
+  if ("onpanetogglerequested" in props) {
+    link.add(control.onPaneToggleRequested((...args) => props.onpanetogglerequested?.(...args)));
   }
 }
 

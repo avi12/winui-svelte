@@ -12,8 +12,8 @@ import type { Snippet } from "svelte";
 export interface RefreshVisualizerProps extends ControlProps {
   content?: RefreshVisualizer["content"] | Snippet;
   orientation?: EnumInput<typeof RefreshVisualizerOrientation>;
-  onRefreshRequested?: Parameters<RefreshVisualizer["onRefreshRequested"]>[0];
-  onRefreshStateChanged?: Parameters<RefreshVisualizer["onRefreshStateChanged"]>[0];
+  onrefreshrequested?: Parameters<RefreshVisualizer["onRefreshRequested"]>[0];
+  onrefreshstatechanged?: Parameters<RefreshVisualizer["onRefreshStateChanged"]>[0];
 }
 
 export type RefreshVisualizerBound = ControlBound;
@@ -40,12 +40,12 @@ export function linkRefreshVisualizer(
     }
   });
 
-  if ("onRefreshRequested" in props) {
-    link.add(control.onRefreshRequested((...args) => props.onRefreshRequested?.(...args)));
+  if ("onrefreshrequested" in props) {
+    link.add(control.onRefreshRequested((...args) => props.onrefreshrequested?.(...args)));
   }
 
-  if ("onRefreshStateChanged" in props) {
-    link.add(control.onRefreshStateChanged((...args) => props.onRefreshStateChanged?.(...args)));
+  if ("onrefreshstatechanged" in props) {
+    link.add(control.onRefreshStateChanged((...args) => props.onrefreshstatechanged?.(...args)));
   }
 }
 

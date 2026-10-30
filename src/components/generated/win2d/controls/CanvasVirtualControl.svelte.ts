@@ -13,8 +13,8 @@ export interface CanvasVirtualControlProps extends UserControlProps {
   dpiScale?: number;
   forceSoftwareRenderer?: boolean;
   useSharedDevice?: boolean;
-  onCreateResources?: Parameters<CanvasVirtualControl["onCreateResources"]>[0];
-  onRegionsInvalidated?: Parameters<CanvasVirtualControl["onRegionsInvalidated"]>[0];
+  oncreateresources?: Parameters<CanvasVirtualControl["onCreateResources"]>[0];
+  onregionsinvalidated?: Parameters<CanvasVirtualControl["onRegionsInvalidated"]>[0];
 }
 
 export type CanvasVirtualControlBound = UserControlBound;
@@ -41,12 +41,12 @@ export function linkCanvasVirtualControl(
     }
   });
 
-  if ("onCreateResources" in props) {
-    link.add(control.onCreateResources((...args) => props.onCreateResources?.(...args)));
+  if ("oncreateresources" in props) {
+    link.add(control.onCreateResources((...args) => props.oncreateresources?.(...args)));
   }
 
-  if ("onRegionsInvalidated" in props) {
-    link.add(control.onRegionsInvalidated((...args) => props.onRegionsInvalidated?.(...args)));
+  if ("onregionsinvalidated" in props) {
+    link.add(control.onRegionsInvalidated((...args) => props.onregionsinvalidated?.(...args)));
   }
 }
 

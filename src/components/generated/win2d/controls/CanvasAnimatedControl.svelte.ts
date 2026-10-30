@@ -17,11 +17,11 @@ export interface CanvasAnimatedControlProps extends UserControlProps {
   syncInterval?: number;
   targetElapsedTime?: TimeSpanInput;
   useSharedDevice?: boolean;
-  onCreateResources?: Parameters<CanvasAnimatedControl["onCreateResources"]>[0];
-  onDraw?: Parameters<CanvasAnimatedControl["onDraw"]>[0];
-  onGameLoopStarting?: Parameters<CanvasAnimatedControl["onGameLoopStarting"]>[0];
-  onGameLoopStopped?: Parameters<CanvasAnimatedControl["onGameLoopStopped"]>[0];
-  onUpdate?: Parameters<CanvasAnimatedControl["onUpdate"]>[0];
+  oncreateresources?: Parameters<CanvasAnimatedControl["onCreateResources"]>[0];
+  ondraw?: Parameters<CanvasAnimatedControl["onDraw"]>[0];
+  ongameloopstarting?: Parameters<CanvasAnimatedControl["onGameLoopStarting"]>[0];
+  ongameloopstopped?: Parameters<CanvasAnimatedControl["onGameLoopStopped"]>[0];
+  onupdate?: Parameters<CanvasAnimatedControl["onUpdate"]>[0];
 }
 
 export type CanvasAnimatedControlBound = UserControlBound;
@@ -55,24 +55,24 @@ export function linkCanvasAnimatedControl(
     }
   });
 
-  if ("onCreateResources" in props) {
-    link.add(control.onCreateResources((...args) => props.onCreateResources?.(...args)));
+  if ("oncreateresources" in props) {
+    link.add(control.onCreateResources((...args) => props.oncreateresources?.(...args)));
   }
 
-  if ("onDraw" in props) {
-    link.add(control.onDraw((...args) => props.onDraw?.(...args)));
+  if ("ondraw" in props) {
+    link.add(control.onDraw((...args) => props.ondraw?.(...args)));
   }
 
-  if ("onGameLoopStarting" in props) {
-    link.add(control.onGameLoopStarting((...args) => props.onGameLoopStarting?.(...args)));
+  if ("ongameloopstarting" in props) {
+    link.add(control.onGameLoopStarting((...args) => props.ongameloopstarting?.(...args)));
   }
 
-  if ("onGameLoopStopped" in props) {
-    link.add(control.onGameLoopStopped((...args) => props.onGameLoopStopped?.(...args)));
+  if ("ongameloopstopped" in props) {
+    link.add(control.onGameLoopStopped((...args) => props.ongameloopstopped?.(...args)));
   }
 
-  if ("onUpdate" in props) {
-    link.add(control.onUpdate((...args) => props.onUpdate?.(...args)));
+  if ("onupdate" in props) {
+    link.add(control.onUpdate((...args) => props.onupdate?.(...args)));
   }
 }
 

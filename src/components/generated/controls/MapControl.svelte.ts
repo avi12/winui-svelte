@@ -13,8 +13,8 @@ export interface MapControlProps extends ControlProps {
   layers?: MapControl["layers"] | Snippet;
   mapServiceToken?: string;
   zoomLevel?: number;
-  onMapElementClick?: Parameters<MapControl["onMapElementClick"]>[0];
-  onMapServiceErrorOccurred?: Parameters<MapControl["onMapServiceErrorOccurred"]>[0];
+  onmapelementclick?: Parameters<MapControl["onMapElementClick"]>[0];
+  onmapserviceerroroccurred?: Parameters<MapControl["onMapServiceErrorOccurred"]>[0];
 }
 
 export type MapControlBound = ControlBound;
@@ -34,12 +34,12 @@ export function linkMapControl(
     keys: ["center", "interactiveControlsVisible", "layers", "mapServiceToken", "zoomLevel"]
   });
 
-  if ("onMapElementClick" in props) {
-    link.add(control.onMapElementClick((...args) => props.onMapElementClick?.(...args)));
+  if ("onmapelementclick" in props) {
+    link.add(control.onMapElementClick((...args) => props.onmapelementclick?.(...args)));
   }
 
-  if ("onMapServiceErrorOccurred" in props) {
-    link.add(control.onMapServiceErrorOccurred((...args) => props.onMapServiceErrorOccurred?.(...args)));
+  if ("onmapserviceerroroccurred" in props) {
+    link.add(control.onMapServiceErrorOccurred((...args) => props.onmapserviceerroroccurred?.(...args)));
   }
 }
 

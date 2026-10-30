@@ -12,11 +12,11 @@ export interface WebView2Props extends FrameworkElementProps {
   canGoForward?: boolean;
   defaultBackgroundColor?: ColorInput;
   source?: UriInput;
-  onCoreProcessFailed?: Parameters<WebView2["onCoreProcessFailed"]>[0];
-  onCoreWebView2Initialized?: Parameters<WebView2["onCoreWebView2Initialized"]>[0];
-  onNavigationCompleted?: Parameters<WebView2["onNavigationCompleted"]>[0];
-  onNavigationStarting?: Parameters<WebView2["onNavigationStarting"]>[0];
-  onWebMessageReceived?: Parameters<WebView2["onWebMessageReceived"]>[0];
+  oncoreprocessfailed?: Parameters<WebView2["onCoreProcessFailed"]>[0];
+  oncorewebview2initialized?: Parameters<WebView2["onCoreWebView2Initialized"]>[0];
+  onnavigationcompleted?: Parameters<WebView2["onNavigationCompleted"]>[0];
+  onnavigationstarting?: Parameters<WebView2["onNavigationStarting"]>[0];
+  onwebmessagereceived?: Parameters<WebView2["onWebMessageReceived"]>[0];
 }
 
 export type WebView2Bound = FrameworkElementBound;
@@ -50,24 +50,24 @@ export function linkWebView2(
     }
   });
 
-  if ("onCoreProcessFailed" in props) {
-    link.add(control.onCoreProcessFailed((...args) => props.onCoreProcessFailed?.(...args)));
+  if ("oncoreprocessfailed" in props) {
+    link.add(control.onCoreProcessFailed((...args) => props.oncoreprocessfailed?.(...args)));
   }
 
-  if ("onCoreWebView2Initialized" in props) {
-    link.add(control.onCoreWebView2Initialized((...args) => props.onCoreWebView2Initialized?.(...args)));
+  if ("oncorewebview2initialized" in props) {
+    link.add(control.onCoreWebView2Initialized((...args) => props.oncorewebview2initialized?.(...args)));
   }
 
-  if ("onNavigationCompleted" in props) {
-    link.add(control.onNavigationCompleted((...args) => props.onNavigationCompleted?.(...args)));
+  if ("onnavigationcompleted" in props) {
+    link.add(control.onNavigationCompleted((...args) => props.onnavigationcompleted?.(...args)));
   }
 
-  if ("onNavigationStarting" in props) {
-    link.add(control.onNavigationStarting((...args) => props.onNavigationStarting?.(...args)));
+  if ("onnavigationstarting" in props) {
+    link.add(control.onNavigationStarting((...args) => props.onnavigationstarting?.(...args)));
   }
 
-  if ("onWebMessageReceived" in props) {
-    link.add(control.onWebMessageReceived((...args) => props.onWebMessageReceived?.(...args)));
+  if ("onwebmessagereceived" in props) {
+    link.add(control.onWebMessageReceived((...args) => props.onwebmessagereceived?.(...args)));
   }
 }
 

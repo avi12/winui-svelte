@@ -13,8 +13,8 @@ export interface CanvasControlProps extends UserControlProps {
   dpiScale?: number;
   forceSoftwareRenderer?: boolean;
   useSharedDevice?: boolean;
-  onCreateResources?: Parameters<CanvasControl["onCreateResources"]>[0];
-  onDraw?: Parameters<CanvasControl["onDraw"]>[0];
+  oncreateresources?: Parameters<CanvasControl["onCreateResources"]>[0];
+  ondraw?: Parameters<CanvasControl["onDraw"]>[0];
 }
 
 export type CanvasControlBound = UserControlBound;
@@ -41,12 +41,12 @@ export function linkCanvasControl(
     }
   });
 
-  if ("onCreateResources" in props) {
-    link.add(control.onCreateResources((...args) => props.onCreateResources?.(...args)));
+  if ("oncreateresources" in props) {
+    link.add(control.onCreateResources((...args) => props.oncreateresources?.(...args)));
   }
 
-  if ("onDraw" in props) {
-    link.add(control.onDraw((...args) => props.onDraw?.(...args)));
+  if ("ondraw" in props) {
+    link.add(control.onDraw((...args) => props.ondraw?.(...args)));
   }
 }
 

@@ -44,10 +44,10 @@ export interface CalendarDatePickerProps extends ControlProps {
   maxDate?: DateInput;
   minDate?: DateInput;
   placeholderText?: string;
-  onCalendarViewDayItemChanging?: Parameters<CalendarDatePicker["onCalendarViewDayItemChanging"]>[0];
-  onClosed?: Parameters<CalendarDatePicker["onClosed"]>[0];
-  onDateChanged?: Parameters<CalendarDatePicker["onDateChanged"]>[0];
-  onOpened?: Parameters<CalendarDatePicker["onOpened"]>[0];
+  oncalendarviewdayitemchanging?: Parameters<CalendarDatePicker["onCalendarViewDayItemChanging"]>[0];
+  onclosed?: Parameters<CalendarDatePicker["onClosed"]>[0];
+  ondatechanged?: Parameters<CalendarDatePicker["onDateChanged"]>[0];
+  onopened?: Parameters<CalendarDatePicker["onOpened"]>[0];
 }
 
 export type CalendarDatePickerBound = ControlBound & Pick<CalendarDatePickerProps, "date">;
@@ -143,20 +143,20 @@ export function linkCalendarDatePicker(
     ]
   });
 
-  if ("onCalendarViewDayItemChanging" in props) {
-    link.add(control.onCalendarViewDayItemChanging((...args) => props.onCalendarViewDayItemChanging?.(...args)));
+  if ("oncalendarviewdayitemchanging" in props) {
+    link.add(control.onCalendarViewDayItemChanging((...args) => props.oncalendarviewdayitemchanging?.(...args)));
   }
 
-  if ("onClosed" in props) {
-    link.add(control.onClosed((...args) => props.onClosed?.(...args)));
+  if ("onclosed" in props) {
+    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
   }
 
-  if ("onDateChanged" in props) {
-    link.add(control.onDateChanged((...args) => props.onDateChanged?.(...args)));
+  if ("ondatechanged" in props) {
+    link.add(control.onDateChanged((...args) => props.ondatechanged?.(...args)));
   }
 
-  if ("onOpened" in props) {
-    link.add(control.onOpened((...args) => props.onOpened?.(...args)));
+  if ("onopened" in props) {
+    link.add(control.onOpened((...args) => props.onopened?.(...args)));
   }
 }
 

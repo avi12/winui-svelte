@@ -13,7 +13,7 @@ export interface RichTextBlockOverflowProps extends FrameworkElementProps {
   maxLines?: number;
   overflowContentTarget?: RichTextBlockOverflow["overflowContentTarget"];
   padding?: ThicknessInput;
-  onIsTextTrimmedChanged?: Parameters<RichTextBlockOverflow["onIsTextTrimmedChanged"]>[0];
+  onistexttrimmedchanged?: Parameters<RichTextBlockOverflow["onIsTextTrimmedChanged"]>[0];
 }
 
 export type RichTextBlockOverflowBound = FrameworkElementBound & Pick<RichTextBlockOverflowProps, "isTextTrimmed">;
@@ -49,8 +49,8 @@ export function linkRichTextBlockOverflow(
     ]
   });
 
-  if ("onIsTextTrimmedChanged" in props) {
-    link.add(control.onIsTextTrimmedChanged((...args) => props.onIsTextTrimmedChanged?.(...args)));
+  if ("onistexttrimmedchanged" in props) {
+    link.add(control.onIsTextTrimmedChanged((...args) => props.onistexttrimmedchanged?.(...args)));
   }
 }
 

@@ -13,7 +13,7 @@ export interface SelectorProps extends ItemsControlProps {
   selectedIndex?: number | undefined;
   isSynchronizedWithCurrentItem?: NullableBooleanInput;
   selectedValuePath?: string;
-  onSelectionChanged?: Parameters<Selector["onSelectionChanged"]>[0];
+  onselectionchanged?: Parameters<Selector["onSelectionChanged"]>[0];
 }
 
 export type SelectorBound = ItemsControlBound & Pick<SelectorProps, "selectedIndex" | "selectedItem" | "selectedValue">;
@@ -77,7 +77,7 @@ export function linkSelector(
     ]
   });
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 }

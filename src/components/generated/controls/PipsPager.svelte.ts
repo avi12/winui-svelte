@@ -20,7 +20,7 @@ export interface PipsPagerProps extends ControlProps {
   selectedPageIndex?: number;
   selectedPipStyle?: StyleInput;
   wrapMode?: EnumInput<typeof PipsPagerWrapMode>;
-  onSelectedIndexChanged?: Parameters<PipsPager["onSelectedIndexChanged"]>[0];
+  onselectedindexchanged?: Parameters<PipsPager["onSelectedIndexChanged"]>[0];
 }
 
 export type PipsPagerBound = ControlBound;
@@ -96,8 +96,8 @@ export function linkPipsPager(
     }
   });
 
-  if ("onSelectedIndexChanged" in props) {
-    link.add(control.onSelectedIndexChanged((...args) => props.onSelectedIndexChanged?.(...args)));
+  if ("onselectedindexchanged" in props) {
+    link.add(control.onSelectedIndexChanged((...args) => props.onselectedindexchanged?.(...args)));
   }
 }
 

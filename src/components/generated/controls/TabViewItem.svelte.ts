@@ -13,7 +13,7 @@ export interface TabViewItemProps extends ListViewItemProps {
   headerTemplate?: DataTemplateInput;
   iconSource?: TabViewItem["iconSource"] | Snippet;
   isClosable?: boolean;
-  onCloseRequested?: Parameters<TabViewItem["onCloseRequested"]>[0];
+  oncloserequested?: Parameters<TabViewItem["onCloseRequested"]>[0];
 }
 
 export type TabViewItemBound = ListViewItemBound;
@@ -47,8 +47,8 @@ export function linkTabViewItem(
     }
   });
 
-  if ("onCloseRequested" in props) {
-    link.add(control.onCloseRequested((...args) => props.onCloseRequested?.(...args)));
+  if ("oncloserequested" in props) {
+    link.add(control.onCloseRequested((...args) => props.oncloserequested?.(...args)));
   }
 }
 

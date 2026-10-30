@@ -16,8 +16,8 @@ export interface ItemsPresenterProps extends FrameworkElementProps {
   header?: ObjectInput | Snippet;
   headerTemplate?: DataTemplateInput;
   padding?: ThicknessInput;
-  onHorizontalSnapPointsChanged?: Parameters<ItemsPresenter["onHorizontalSnapPointsChanged"]>[0];
-  onVerticalSnapPointsChanged?: Parameters<ItemsPresenter["onVerticalSnapPointsChanged"]>[0];
+  onhorizontalsnappointschanged?: Parameters<ItemsPresenter["onHorizontalSnapPointsChanged"]>[0];
+  onverticalsnappointschanged?: Parameters<ItemsPresenter["onVerticalSnapPointsChanged"]>[0];
 }
 
 export type ItemsPresenterBound = FrameworkElementBound;
@@ -67,12 +67,12 @@ export function linkItemsPresenter(
     }
   });
 
-  if ("onHorizontalSnapPointsChanged" in props) {
-    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onHorizontalSnapPointsChanged?.(...args)));
+  if ("onhorizontalsnappointschanged" in props) {
+    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onhorizontalsnappointschanged?.(...args)));
   }
 
-  if ("onVerticalSnapPointsChanged" in props) {
-    link.add(control.onVerticalSnapPointsChanged((...args) => props.onVerticalSnapPointsChanged?.(...args)));
+  if ("onverticalsnappointschanged" in props) {
+    link.add(control.onVerticalSnapPointsChanged((...args) => props.onverticalsnappointschanged?.(...args)));
   }
 }
 

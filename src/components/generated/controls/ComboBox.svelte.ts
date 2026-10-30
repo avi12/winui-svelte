@@ -36,9 +36,9 @@ export interface ComboBoxProps extends SelectorProps {
   selectionChangedTrigger?: EnumInput<typeof ComboBoxSelectionChangedTrigger>;
   text?: string;
   textBoxStyle?: StyleInput;
-  onDropDownClosed?: Parameters<ComboBox["onDropDownClosed"]>[0];
-  onDropDownOpened?: Parameters<ComboBox["onDropDownOpened"]>[0];
-  onTextSubmitted?: Parameters<ComboBox["onTextSubmitted"]>[0];
+  ondropdownclosed?: Parameters<ComboBox["onDropDownClosed"]>[0];
+  ondropdownopened?: Parameters<ComboBox["onDropDownOpened"]>[0];
+  ontextsubmitted?: Parameters<ComboBox["onTextSubmitted"]>[0];
 }
 
 export type ComboBoxBound = SelectorBound & Pick<ComboBoxProps, "isDropDownOpen">;
@@ -121,16 +121,16 @@ export function linkComboBox(
     ]
   });
 
-  if ("onDropDownClosed" in props) {
-    link.add(control.onDropDownClosed((...args) => props.onDropDownClosed?.(...args)));
+  if ("ondropdownclosed" in props) {
+    link.add(control.onDropDownClosed((...args) => props.ondropdownclosed?.(...args)));
   }
 
-  if ("onDropDownOpened" in props) {
-    link.add(control.onDropDownOpened((...args) => props.onDropDownOpened?.(...args)));
+  if ("ondropdownopened" in props) {
+    link.add(control.onDropDownOpened((...args) => props.ondropdownopened?.(...args)));
   }
 
-  if ("onTextSubmitted" in props) {
-    link.add(control.onTextSubmitted((...args) => props.onTextSubmitted?.(...args)));
+  if ("ontextsubmitted" in props) {
+    link.add(control.onTextSubmitted((...args) => props.ontextsubmitted?.(...args)));
   }
 }
 

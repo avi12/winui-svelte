@@ -29,7 +29,7 @@ export interface NumberBoxProps extends ControlProps {
   text?: string;
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   validationMode?: EnumInput<typeof NumberBoxValidationMode>;
-  onValueChanged?: Parameters<NumberBox["onValueChanged"]>[0];
+  onvaluechanged?: Parameters<NumberBox["onValueChanged"]>[0];
 }
 
 export type NumberBoxBound = ControlBound & Pick<NumberBoxProps, "value">;
@@ -104,8 +104,8 @@ export function linkNumberBox(
     ]
   });
 
-  if ("onValueChanged" in props) {
-    link.add(control.onValueChanged((...args) => props.onValueChanged?.(...args)));
+  if ("onvaluechanged" in props) {
+    link.add(control.onValueChanged((...args) => props.onvaluechanged?.(...args)));
   }
 }
 

@@ -14,8 +14,8 @@ export interface LinedFlowLayoutProps extends VirtualizingLayoutProps {
   lineHeight?: number;
   lineSpacing?: number;
   minItemSpacing?: number;
-  onItemsInfoRequested?: Parameters<LinedFlowLayout["onItemsInfoRequested"]>[0];
-  onItemsUnlocked?: Parameters<LinedFlowLayout["onItemsUnlocked"]>[0];
+  onitemsinforequested?: Parameters<LinedFlowLayout["onItemsInfoRequested"]>[0];
+  onitemsunlocked?: Parameters<LinedFlowLayout["onItemsUnlocked"]>[0];
 }
 
 export type LinedFlowLayoutBound = VirtualizingLayoutBound;
@@ -49,12 +49,12 @@ export function linkLinedFlowLayout(
     }
   });
 
-  if ("onItemsInfoRequested" in props) {
-    link.add(control.onItemsInfoRequested((...args) => props.onItemsInfoRequested?.(...args)));
+  if ("onitemsinforequested" in props) {
+    link.add(control.onItemsInfoRequested((...args) => props.onitemsinforequested?.(...args)));
   }
 
-  if ("onItemsUnlocked" in props) {
-    link.add(control.onItemsUnlocked((...args) => props.onItemsUnlocked?.(...args)));
+  if ("onitemsunlocked" in props) {
+    link.add(control.onItemsUnlocked((...args) => props.onitemsunlocked?.(...args)));
   }
 }
 

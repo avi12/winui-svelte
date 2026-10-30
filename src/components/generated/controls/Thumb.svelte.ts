@@ -7,9 +7,9 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
 export interface ThumbProps extends ControlProps {
-  onDragCompleted?: Parameters<Thumb["onDragCompleted"]>[0];
-  onDragDelta?: Parameters<Thumb["onDragDelta"]>[0];
-  onDragStarted?: Parameters<Thumb["onDragStarted"]>[0];
+  ondragcompleted?: Parameters<Thumb["onDragCompleted"]>[0];
+  ondragdelta?: Parameters<Thumb["onDragDelta"]>[0];
+  ondragstarted?: Parameters<Thumb["onDragStarted"]>[0];
 }
 
 export type ThumbBound = ControlBound;
@@ -24,16 +24,16 @@ export function linkThumb(
 ) {
   linkControl(control, props, bound, link);
 
-  if ("onDragCompleted" in props) {
-    link.add(control.onDragCompleted((...args) => props.onDragCompleted?.(...args)));
+  if ("ondragcompleted" in props) {
+    link.add(control.onDragCompleted((...args) => props.ondragcompleted?.(...args)));
   }
 
-  if ("onDragDelta" in props) {
-    link.add(control.onDragDelta((...args) => props.onDragDelta?.(...args)));
+  if ("ondragdelta" in props) {
+    link.add(control.onDragDelta((...args) => props.ondragdelta?.(...args)));
   }
 
-  if ("onDragStarted" in props) {
-    link.add(control.onDragStarted((...args) => props.onDragStarted?.(...args)));
+  if ("ondragstarted" in props) {
+    link.add(control.onDragStarted((...args) => props.ondragstarted?.(...args)));
   }
 }
 

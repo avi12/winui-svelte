@@ -41,19 +41,19 @@ export interface TabViewProps extends ControlProps {
   tabStripHeader?: ObjectInput | Snippet;
   tabStripHeaderTemplate?: DataTemplateInput;
   tabWidthMode?: EnumInput<typeof TabViewWidthMode>;
-  onAddTabButtonClick?: Parameters<TabView["onAddTabButtonClick"]>[0];
-  onExternalTornOutTabsDropped?: Parameters<TabView["onExternalTornOutTabsDropped"]>[0];
-  onExternalTornOutTabsDropping?: Parameters<TabView["onExternalTornOutTabsDropping"]>[0];
-  onSelectionChanged?: Parameters<TabView["onSelectionChanged"]>[0];
-  onTabCloseRequested?: Parameters<TabView["onTabCloseRequested"]>[0];
-  onTabDragCompleted?: Parameters<TabView["onTabDragCompleted"]>[0];
-  onTabDragStarting?: Parameters<TabView["onTabDragStarting"]>[0];
-  onTabDroppedOutside?: Parameters<TabView["onTabDroppedOutside"]>[0];
-  onTabItemsChanged?: Parameters<TabView["onTabItemsChanged"]>[0];
-  onTabStripDragOver?: Parameters<TabView["onTabStripDragOver"]>[0];
-  onTabStripDrop?: Parameters<TabView["onTabStripDrop"]>[0];
-  onTabTearOutRequested?: Parameters<TabView["onTabTearOutRequested"]>[0];
-  onTabTearOutWindowRequested?: Parameters<TabView["onTabTearOutWindowRequested"]>[0];
+  onaddtabbuttonclick?: Parameters<TabView["onAddTabButtonClick"]>[0];
+  onexternaltornouttabsdropped?: Parameters<TabView["onExternalTornOutTabsDropped"]>[0];
+  onexternaltornouttabsdropping?: Parameters<TabView["onExternalTornOutTabsDropping"]>[0];
+  onselectionchanged?: Parameters<TabView["onSelectionChanged"]>[0];
+  ontabcloserequested?: Parameters<TabView["onTabCloseRequested"]>[0];
+  ontabdragcompleted?: Parameters<TabView["onTabDragCompleted"]>[0];
+  ontabdragstarting?: Parameters<TabView["onTabDragStarting"]>[0];
+  ontabdroppedoutside?: Parameters<TabView["onTabDroppedOutside"]>[0];
+  ontabitemschanged?: Parameters<TabView["onTabItemsChanged"]>[0];
+  ontabstripdragover?: Parameters<TabView["onTabStripDragOver"]>[0];
+  ontabstripdrop?: Parameters<TabView["onTabStripDrop"]>[0];
+  ontabtearoutrequested?: Parameters<TabView["onTabTearOutRequested"]>[0];
+  ontabtearoutwindowrequested?: Parameters<TabView["onTabTearOutWindowRequested"]>[0];
 }
 
 export type TabViewBound = ControlBound & Pick<TabViewProps, "selectedIndex" | "selectedItem">;
@@ -162,56 +162,56 @@ export function linkTabView(
     ]
   });
 
-  if ("onAddTabButtonClick" in props) {
-    link.add(control.onAddTabButtonClick((...args) => props.onAddTabButtonClick?.(...args)));
+  if ("onaddtabbuttonclick" in props) {
+    link.add(control.onAddTabButtonClick((...args) => props.onaddtabbuttonclick?.(...args)));
   }
 
-  if ("onExternalTornOutTabsDropped" in props) {
-    link.add(control.onExternalTornOutTabsDropped((...args) => props.onExternalTornOutTabsDropped?.(...args)));
+  if ("onexternaltornouttabsdropped" in props) {
+    link.add(control.onExternalTornOutTabsDropped((...args) => props.onexternaltornouttabsdropped?.(...args)));
   }
 
-  if ("onExternalTornOutTabsDropping" in props) {
-    link.add(control.onExternalTornOutTabsDropping((...args) => props.onExternalTornOutTabsDropping?.(...args)));
+  if ("onexternaltornouttabsdropping" in props) {
+    link.add(control.onExternalTornOutTabsDropping((...args) => props.onexternaltornouttabsdropping?.(...args)));
   }
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 
-  if ("onTabCloseRequested" in props) {
-    link.add(control.onTabCloseRequested((...args) => props.onTabCloseRequested?.(...args)));
+  if ("ontabcloserequested" in props) {
+    link.add(control.onTabCloseRequested((...args) => props.ontabcloserequested?.(...args)));
   }
 
-  if ("onTabDragCompleted" in props) {
-    link.add(control.onTabDragCompleted((...args) => props.onTabDragCompleted?.(...args)));
+  if ("ontabdragcompleted" in props) {
+    link.add(control.onTabDragCompleted((...args) => props.ontabdragcompleted?.(...args)));
   }
 
-  if ("onTabDragStarting" in props) {
-    link.add(control.onTabDragStarting((...args) => props.onTabDragStarting?.(...args)));
+  if ("ontabdragstarting" in props) {
+    link.add(control.onTabDragStarting((...args) => props.ontabdragstarting?.(...args)));
   }
 
-  if ("onTabDroppedOutside" in props) {
-    link.add(control.onTabDroppedOutside((...args) => props.onTabDroppedOutside?.(...args)));
+  if ("ontabdroppedoutside" in props) {
+    link.add(control.onTabDroppedOutside((...args) => props.ontabdroppedoutside?.(...args)));
   }
 
-  if ("onTabItemsChanged" in props) {
-    link.add(control.onTabItemsChanged((...args) => props.onTabItemsChanged?.(...args)));
+  if ("ontabitemschanged" in props) {
+    link.add(control.onTabItemsChanged((...args) => props.ontabitemschanged?.(...args)));
   }
 
-  if ("onTabStripDragOver" in props) {
-    link.add(control.onTabStripDragOver((...args) => props.onTabStripDragOver?.(...args)));
+  if ("ontabstripdragover" in props) {
+    link.add(control.onTabStripDragOver((...args) => props.ontabstripdragover?.(...args)));
   }
 
-  if ("onTabStripDrop" in props) {
-    link.add(control.onTabStripDrop((...args) => props.onTabStripDrop?.(...args)));
+  if ("ontabstripdrop" in props) {
+    link.add(control.onTabStripDrop((...args) => props.ontabstripdrop?.(...args)));
   }
 
-  if ("onTabTearOutRequested" in props) {
-    link.add(control.onTabTearOutRequested((...args) => props.onTabTearOutRequested?.(...args)));
+  if ("ontabtearoutrequested" in props) {
+    link.add(control.onTabTearOutRequested((...args) => props.ontabtearoutrequested?.(...args)));
   }
 
-  if ("onTabTearOutWindowRequested" in props) {
-    link.add(control.onTabTearOutWindowRequested((...args) => props.onTabTearOutWindowRequested?.(...args)));
+  if ("ontabtearoutwindowrequested" in props) {
+    link.add(control.onTabTearOutWindowRequested((...args) => props.ontabtearoutwindowrequested?.(...args)));
   }
 }
 

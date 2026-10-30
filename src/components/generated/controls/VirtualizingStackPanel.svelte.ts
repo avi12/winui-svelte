@@ -14,7 +14,7 @@ import type {
 export interface VirtualizingStackPanelProps extends OrientedVirtualizingPanelProps {
   areScrollSnapPointsRegular?: boolean;
   orientation?: EnumInput<typeof Orientation>;
-  onCleanUpVirtualizedItemEvent?: Parameters<VirtualizingStackPanel["onCleanUpVirtualizedItemEvent"]>[0];
+  oncleanupvirtualizeditemevent?: Parameters<VirtualizingStackPanel["onCleanUpVirtualizedItemEvent"]>[0];
 }
 
 export type VirtualizingStackPanelBound = OrientedVirtualizingPanelBound;
@@ -41,8 +41,8 @@ export function linkVirtualizingStackPanel(
     }
   });
 
-  if ("onCleanUpVirtualizedItemEvent" in props) {
-    link.add(control.onCleanUpVirtualizedItemEvent((...args) => props.onCleanUpVirtualizedItemEvent?.(...args)));
+  if ("oncleanupvirtualizeditemevent" in props) {
+    link.add(control.onCleanUpVirtualizedItemEvent((...args) => props.oncleanupvirtualizeditemevent?.(...args)));
   }
 }
 

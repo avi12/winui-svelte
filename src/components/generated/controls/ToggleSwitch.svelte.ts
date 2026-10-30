@@ -17,7 +17,7 @@ export interface ToggleSwitchProps extends ControlProps {
   offContentTemplate?: DataTemplateInput;
   onContent?: ObjectInput | Snippet;
   onContentTemplate?: DataTemplateInput;
-  onToggled?: Parameters<ToggleSwitch["onToggled"]>[0];
+  ontoggled?: Parameters<ToggleSwitch["onToggled"]>[0];
 }
 
 export type ToggleSwitchBound = ControlBound & Pick<ToggleSwitchProps, "isOn">;
@@ -87,8 +87,8 @@ export function linkToggleSwitch(
     ]
   });
 
-  if ("onToggled" in props) {
-    link.add(control.onToggled((...args) => props.onToggled?.(...args)));
+  if ("ontoggled" in props) {
+    link.add(control.onToggled((...args) => props.ontoggled?.(...args)));
   }
 }
 

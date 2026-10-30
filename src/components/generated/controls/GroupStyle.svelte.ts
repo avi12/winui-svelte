@@ -11,7 +11,7 @@ export interface GroupStyleProps {
   headerTemplateSelector?: GroupStyle["headerTemplateSelector"];
   hidesIfEmpty?: boolean;
   panel?: ItemsPanelTemplateInput;
-  onPropertyChanged?: Parameters<GroupStyle["onPropertyChanged"]>[0];
+  onpropertychanged?: Parameters<GroupStyle["onPropertyChanged"]>[0];
   attached?: AttachedInput;
 }
 
@@ -45,8 +45,8 @@ export function linkGroupStyle(
     }
   });
 
-  if ("onPropertyChanged" in props) {
-    link.add(control.onPropertyChanged((...args) => props.onPropertyChanged?.(...args)));
+  if ("onpropertychanged" in props) {
+    link.add(control.onPropertyChanged((...args) => props.onpropertychanged?.(...args)));
   }
 
   link.property({

@@ -55,14 +55,14 @@ export interface FrameworkElementProps extends UIElementProps {
   tag?: ObjectInput;
   verticalAlignment?: EnumInput<typeof VerticalAlignment>;
   width?: number;
-  onActualThemeChanged?: Parameters<FrameworkElement["onActualThemeChanged"]>[0];
-  onDataContextChanged?: Parameters<FrameworkElement["onDataContextChanged"]>[0];
-  onEffectiveViewportChanged?: Parameters<FrameworkElement["onEffectiveViewportChanged"]>[0];
-  onLayoutUpdated?: Parameters<FrameworkElement["onLayoutUpdated"]>[0];
-  onLoaded?: Parameters<FrameworkElement["onLoaded"]>[0];
-  onLoading?: Parameters<FrameworkElement["onLoading"]>[0];
-  onSizeChanged?: Parameters<FrameworkElement["onSizeChanged"]>[0];
-  onUnloaded?: Parameters<FrameworkElement["onUnloaded"]>[0];
+  onactualthemechanged?: Parameters<FrameworkElement["onActualThemeChanged"]>[0];
+  ondatacontextchanged?: Parameters<FrameworkElement["onDataContextChanged"]>[0];
+  oneffectiveviewportchanged?: Parameters<FrameworkElement["onEffectiveViewportChanged"]>[0];
+  onlayoutupdated?: Parameters<FrameworkElement["onLayoutUpdated"]>[0];
+  onloaded?: Parameters<FrameworkElement["onLoaded"]>[0];
+  onloading?: Parameters<FrameworkElement["onLoading"]>[0];
+  onsizechanged?: Parameters<FrameworkElement["onSizeChanged"]>[0];
+  onunloaded?: Parameters<FrameworkElement["onUnloaded"]>[0];
 }
 
 export type FrameworkElementBound = UIElementBound;
@@ -199,35 +199,35 @@ export function linkFrameworkElement(
     }
   });
 
-  if ("onActualThemeChanged" in props) {
-    link.add(control.onActualThemeChanged((...args) => props.onActualThemeChanged?.(...args)));
+  if ("onactualthemechanged" in props) {
+    link.add(control.onActualThemeChanged((...args) => props.onactualthemechanged?.(...args)));
   }
 
-  if ("onDataContextChanged" in props) {
-    link.add(control.onDataContextChanged((...args) => props.onDataContextChanged?.(...args)));
+  if ("ondatacontextchanged" in props) {
+    link.add(control.onDataContextChanged((...args) => props.ondatacontextchanged?.(...args)));
   }
 
-  if ("onEffectiveViewportChanged" in props) {
-    link.add(control.onEffectiveViewportChanged((...args) => props.onEffectiveViewportChanged?.(...args)));
+  if ("oneffectiveviewportchanged" in props) {
+    link.add(control.onEffectiveViewportChanged((...args) => props.oneffectiveviewportchanged?.(...args)));
   }
 
-  if ("onLayoutUpdated" in props) {
-    link.add(control.onLayoutUpdated((...args) => props.onLayoutUpdated?.(...args)));
+  if ("onlayoutupdated" in props) {
+    link.add(control.onLayoutUpdated((...args) => props.onlayoutupdated?.(...args)));
   }
 
-  if ("onLoaded" in props) {
-    link.add(control.onLoaded((...args) => props.onLoaded?.(...args)));
+  if ("onloaded" in props) {
+    link.add(control.onLoaded((...args) => props.onloaded?.(...args)));
   }
 
-  if ("onLoading" in props) {
-    link.add(control.onLoading((...args) => props.onLoading?.(...args)));
+  if ("onloading" in props) {
+    link.add(control.onLoading((...args) => props.onloading?.(...args)));
   }
 
-  if ("onSizeChanged" in props) {
-    link.add(control.onSizeChanged((...args) => props.onSizeChanged?.(...args)));
+  if ("onsizechanged" in props) {
+    link.add(control.onSizeChanged((...args) => props.onsizechanged?.(...args)));
   }
 
-  if ("onUnloaded" in props) {
-    link.add(control.onUnloaded((...args) => props.onUnloaded?.(...args)));
+  if ("onunloaded" in props) {
+    link.add(control.onUnloaded((...args) => props.onunloaded?.(...args)));
   }
 }

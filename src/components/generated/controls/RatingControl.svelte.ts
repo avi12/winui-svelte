@@ -16,7 +16,7 @@ export interface RatingControlProps extends ControlProps {
   itemInfo?: RatingControl["itemInfo"] | Snippet;
   maxRating?: number;
   placeholderValue?: number;
-  onValueChanged?: Parameters<RatingControl["onValueChanged"]>[0];
+  onvaluechanged?: Parameters<RatingControl["onValueChanged"]>[0];
 }
 
 export type RatingControlBound = ControlBound & Pick<RatingControlProps, "value">;
@@ -49,8 +49,8 @@ export function linkRatingControl(
     ]
   });
 
-  if ("onValueChanged" in props) {
-    link.add(control.onValueChanged((...args) => props.onValueChanged?.(...args)));
+  if ("onvaluechanged" in props) {
+    link.add(control.onValueChanged((...args) => props.onvaluechanged?.(...args)));
   }
 }
 

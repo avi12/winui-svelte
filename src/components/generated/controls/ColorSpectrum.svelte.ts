@@ -19,7 +19,7 @@ export interface ColorSpectrumProps extends ControlProps {
   minSaturation?: number;
   minValue?: number;
   shape?: EnumInput<typeof ColorSpectrumShape>;
-  onColorChanged?: Parameters<ColorSpectrum["onColorChanged"]>[0];
+  oncolorchanged?: Parameters<ColorSpectrum["onColorChanged"]>[0];
 }
 
 export type ColorSpectrumBound = ControlBound & Pick<ColorSpectrumProps, "color">;
@@ -66,8 +66,8 @@ export function linkColorSpectrum(
     ]
   });
 
-  if ("onColorChanged" in props) {
-    link.add(control.onColorChanged((...args) => props.onColorChanged?.(...args)));
+  if ("oncolorchanged" in props) {
+    link.add(control.onColorChanged((...args) => props.oncolorchanged?.(...args)));
   }
 }
 

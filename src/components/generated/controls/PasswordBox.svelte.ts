@@ -30,10 +30,10 @@ export interface PasswordBoxProps extends ControlProps {
   selectionFlyout?: PasswordBox["selectionFlyout"] | Snippet;
   selectionHighlightColor?: PasswordBox["selectionHighlightColor"] | Snippet;
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
-  onContextMenuOpening?: Parameters<PasswordBox["onContextMenuOpening"]>[0];
-  onPasswordChanged?: Parameters<PasswordBox["onPasswordChanged"]>[0];
-  onPasswordChanging?: Parameters<PasswordBox["onPasswordChanging"]>[0];
-  onPaste?: Parameters<PasswordBox["onPaste"]>[0];
+  oncontextmenuopening?: Parameters<PasswordBox["onContextMenuOpening"]>[0];
+  onpasswordchanged?: Parameters<PasswordBox["onPasswordChanged"]>[0];
+  onpasswordchanging?: Parameters<PasswordBox["onPasswordChanging"]>[0];
+  onpaste?: Parameters<PasswordBox["onPaste"]>[0];
 }
 
 export type PasswordBoxBound = ControlBound & Pick<PasswordBoxProps, "password">;
@@ -108,20 +108,20 @@ export function linkPasswordBox(
     ]
   });
 
-  if ("onContextMenuOpening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.onContextMenuOpening?.(...args)));
+  if ("oncontextmenuopening" in props) {
+    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
   }
 
-  if ("onPasswordChanged" in props) {
-    link.add(control.onPasswordChanged((...args) => props.onPasswordChanged?.(...args)));
+  if ("onpasswordchanged" in props) {
+    link.add(control.onPasswordChanged((...args) => props.onpasswordchanged?.(...args)));
   }
 
-  if ("onPasswordChanging" in props) {
-    link.add(control.onPasswordChanging((...args) => props.onPasswordChanging?.(...args)));
+  if ("onpasswordchanging" in props) {
+    link.add(control.onPasswordChanging((...args) => props.onpasswordchanging?.(...args)));
   }
 
-  if ("onPaste" in props) {
-    link.add(control.onPaste((...args) => props.onPaste?.(...args)));
+  if ("onpaste" in props) {
+    link.add(control.onPaste((...args) => props.onpaste?.(...args)));
   }
 }
 

@@ -10,7 +10,7 @@ import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 export interface BreadcrumbBarProps extends ControlProps {
   itemsSource?: CollectionInput;
   itemTemplate?: ObjectReferenceInput;
-  onItemClicked?: Parameters<BreadcrumbBar["onItemClicked"]>[0];
+  onitemclicked?: Parameters<BreadcrumbBar["onItemClicked"]>[0];
 }
 
 export type BreadcrumbBarBound = ControlBound;
@@ -39,8 +39,8 @@ export function linkBreadcrumbBar(
     }
   });
 
-  if ("onItemClicked" in props) {
-    link.add(control.onItemClicked((...args) => props.onItemClicked?.(...args)));
+  if ("onitemclicked" in props) {
+    link.add(control.onItemClicked((...args) => props.onitemclicked?.(...args)));
   }
 }
 

@@ -12,7 +12,7 @@ import type { Snippet } from "svelte";
 export interface RefreshContainerProps extends ContentControlProps {
   pullDirection?: EnumInput<typeof RefreshPullDirection>;
   visualizer?: RefreshContainer["visualizer"] | Snippet;
-  onRefreshRequested?: Parameters<RefreshContainer["onRefreshRequested"]>[0];
+  onrefreshrequested?: Parameters<RefreshContainer["onRefreshRequested"]>[0];
 }
 
 export type RefreshContainerBound = ContentControlBound;
@@ -39,8 +39,8 @@ export function linkRefreshContainer(
     }
   });
 
-  if ("onRefreshRequested" in props) {
-    link.add(control.onRefreshRequested((...args) => props.onRefreshRequested?.(...args)));
+  if ("onrefreshrequested" in props) {
+    link.add(control.onRefreshRequested((...args) => props.onrefreshrequested?.(...args)));
   }
 }
 

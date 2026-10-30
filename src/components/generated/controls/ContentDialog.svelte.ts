@@ -34,12 +34,12 @@ export interface ContentDialogProps extends ContentControlProps {
   secondaryButtonText?: string;
   title?: ObjectInput | Snippet;
   titleTemplate?: DataTemplateInput;
-  onCloseButtonClick?: Parameters<ContentDialog["onCloseButtonClick"]>[0];
-  onClosed?: Parameters<ContentDialog["onClosed"]>[0];
-  onClosing?: Parameters<ContentDialog["onClosing"]>[0];
-  onOpened?: Parameters<ContentDialog["onOpened"]>[0];
-  onPrimaryButtonClick?: Parameters<ContentDialog["onPrimaryButtonClick"]>[0];
-  onSecondaryButtonClick?: Parameters<ContentDialog["onSecondaryButtonClick"]>[0];
+  onclosebuttonclick?: Parameters<ContentDialog["onCloseButtonClick"]>[0];
+  onclosed?: Parameters<ContentDialog["onClosed"]>[0];
+  onclosing?: Parameters<ContentDialog["onClosing"]>[0];
+  onopened?: Parameters<ContentDialog["onOpened"]>[0];
+  onprimarybuttonclick?: Parameters<ContentDialog["onPrimaryButtonClick"]>[0];
+  onsecondarybuttonclick?: Parameters<ContentDialog["onSecondaryButtonClick"]>[0];
 }
 
 export type ContentDialogBound = ContentControlBound;
@@ -122,28 +122,28 @@ export function linkContentDialog(
     }
   });
 
-  if ("onCloseButtonClick" in props) {
-    link.add(control.onCloseButtonClick((...args) => props.onCloseButtonClick?.(...args)));
+  if ("onclosebuttonclick" in props) {
+    link.add(control.onCloseButtonClick((...args) => props.onclosebuttonclick?.(...args)));
   }
 
-  if ("onClosed" in props) {
-    link.add(control.onClosed((...args) => props.onClosed?.(...args)));
+  if ("onclosed" in props) {
+    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
   }
 
-  if ("onClosing" in props) {
-    link.add(control.onClosing((...args) => props.onClosing?.(...args)));
+  if ("onclosing" in props) {
+    link.add(control.onClosing((...args) => props.onclosing?.(...args)));
   }
 
-  if ("onOpened" in props) {
-    link.add(control.onOpened((...args) => props.onOpened?.(...args)));
+  if ("onopened" in props) {
+    link.add(control.onOpened((...args) => props.onopened?.(...args)));
   }
 
-  if ("onPrimaryButtonClick" in props) {
-    link.add(control.onPrimaryButtonClick((...args) => props.onPrimaryButtonClick?.(...args)));
+  if ("onprimarybuttonclick" in props) {
+    link.add(control.onPrimaryButtonClick((...args) => props.onprimarybuttonclick?.(...args)));
   }
 
-  if ("onSecondaryButtonClick" in props) {
-    link.add(control.onSecondaryButtonClick((...args) => props.onSecondaryButtonClick?.(...args)));
+  if ("onsecondarybuttonclick" in props) {
+    link.add(control.onSecondaryButtonClick((...args) => props.onsecondarybuttonclick?.(...args)));
   }
 }
 

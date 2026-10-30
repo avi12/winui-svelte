@@ -13,7 +13,7 @@ export interface ButtonBaseProps extends ContentControlProps {
   clickMode?: EnumInput<typeof ClickMode>;
   command?: ButtonBase["command"] | Snippet;
   commandParameter?: ObjectInput;
-  onClick?: Parameters<ButtonBase["onClick"]>[0];
+  onclick?: Parameters<ButtonBase["onClick"]>[0];
 }
 
 export type ButtonBaseBound = ContentControlBound;
@@ -45,7 +45,7 @@ export function linkButtonBase(
     }
   });
 
-  if ("onClick" in props) {
-    link.add(control.onClick((...args) => props.onClick?.(...args)));
+  if ("onclick" in props) {
+    link.add(control.onClick((...args) => props.onclick?.(...args)));
   }
 }

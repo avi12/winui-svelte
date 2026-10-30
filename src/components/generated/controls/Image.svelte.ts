@@ -13,8 +13,8 @@ export interface ImageProps extends FrameworkElementProps {
   nineGrid?: ThicknessInput;
   source?: ImageSourceInput | Snippet;
   stretch?: EnumInput<typeof Stretch>;
-  onImageFailed?: Parameters<Image["onImageFailed"]>[0];
-  onImageOpened?: Parameters<Image["onImageOpened"]>[0];
+  onimagefailed?: Parameters<Image["onImageFailed"]>[0];
+  onimageopened?: Parameters<Image["onImageOpened"]>[0];
 }
 
 export type ImageBound = FrameworkElementBound;
@@ -50,12 +50,12 @@ export function linkImage(
     }
   });
 
-  if ("onImageFailed" in props) {
-    link.add(control.onImageFailed((...args) => props.onImageFailed?.(...args)));
+  if ("onimagefailed" in props) {
+    link.add(control.onImageFailed((...args) => props.onimagefailed?.(...args)));
   }
 
-  if ("onImageOpened" in props) {
-    link.add(control.onImageOpened((...args) => props.onImageOpened?.(...args)));
+  if ("onimageopened" in props) {
+    link.add(control.onImageOpened((...args) => props.onimageopened?.(...args)));
   }
 }
 

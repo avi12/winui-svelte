@@ -15,8 +15,8 @@ export interface ExpanderProps extends ContentControlProps {
   header?: ObjectInput | Snippet;
   headerTemplate?: DataTemplateInput;
   headerTemplateSelector?: Expander["headerTemplateSelector"];
-  onCollapsed?: Parameters<Expander["onCollapsed"]>[0];
-  onExpanding?: Parameters<Expander["onExpanding"]>[0];
+  oncollapsed?: Parameters<Expander["onCollapsed"]>[0];
+  onexpanding?: Parameters<Expander["onExpanding"]>[0];
 }
 
 export type ExpanderBound = ContentControlBound & Pick<ExpanderProps, "isExpanded">;
@@ -71,12 +71,12 @@ export function linkExpander(
     ]
   });
 
-  if ("onCollapsed" in props) {
-    link.add(control.onCollapsed((...args) => props.onCollapsed?.(...args)));
+  if ("oncollapsed" in props) {
+    link.add(control.onCollapsed((...args) => props.oncollapsed?.(...args)));
   }
 
-  if ("onExpanding" in props) {
-    link.add(control.onExpanding((...args) => props.onExpanding?.(...args)));
+  if ("onexpanding" in props) {
+    link.add(control.onExpanding((...args) => props.onexpanding?.(...args)));
   }
 }
 

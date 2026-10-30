@@ -18,8 +18,8 @@ export interface HubProps extends ControlProps {
   isZoomedInView?: boolean;
   orientation?: EnumInput<typeof Orientation>;
   semanticZoomOwner?: Hub["semanticZoomOwner"];
-  onSectionHeaderClick?: Parameters<Hub["onSectionHeaderClick"]>[0];
-  onSectionsInViewChanged?: Parameters<Hub["onSectionsInViewChanged"]>[0];
+  onsectionheaderclick?: Parameters<Hub["onSectionHeaderClick"]>[0];
+  onsectionsinviewchanged?: Parameters<Hub["onSectionsInViewChanged"]>[0];
 }
 
 export type HubBound = ControlBound;
@@ -60,12 +60,12 @@ export function linkHub(
     }
   });
 
-  if ("onSectionHeaderClick" in props) {
-    link.add(control.onSectionHeaderClick((...args) => props.onSectionHeaderClick?.(...args)));
+  if ("onsectionheaderclick" in props) {
+    link.add(control.onSectionHeaderClick((...args) => props.onsectionheaderclick?.(...args)));
   }
 
-  if ("onSectionsInViewChanged" in props) {
-    link.add(control.onSectionsInViewChanged((...args) => props.onSectionsInViewChanged?.(...args)));
+  if ("onsectionsinviewchanged" in props) {
+    link.add(control.onSectionsInViewChanged((...args) => props.onsectionsinviewchanged?.(...args)));
   }
 }
 

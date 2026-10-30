@@ -34,7 +34,7 @@ export interface MediaTransportControlsProps extends ControlProps {
   isZoomButtonVisible?: boolean;
   isZoomEnabled?: boolean;
   showAndHideAutomatically?: boolean;
-  onThumbnailRequested?: Parameters<MediaTransportControls["onThumbnailRequested"]>[0];
+  onthumbnailrequested?: Parameters<MediaTransportControls["onThumbnailRequested"]>[0];
 }
 
 export type MediaTransportControlsBound = ControlBound;
@@ -61,8 +61,8 @@ export function linkMediaTransportControls(
     }
   });
 
-  if ("onThumbnailRequested" in props) {
-    link.add(control.onThumbnailRequested((...args) => props.onThumbnailRequested?.(...args)));
+  if ("onthumbnailrequested" in props) {
+    link.add(control.onThumbnailRequested((...args) => props.onthumbnailrequested?.(...args)));
   }
 }
 

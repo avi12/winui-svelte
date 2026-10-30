@@ -12,7 +12,7 @@ export interface ScrollBarProps extends RangeBaseProps {
   indicatorMode?: EnumInput<typeof ScrollingIndicatorMode>;
   orientation?: EnumInput<typeof Orientation>;
   viewportSize?: number;
-  onScroll?: Parameters<ScrollBar["onScroll"]>[0];
+  onscroll?: Parameters<ScrollBar["onScroll"]>[0];
 }
 
 export type ScrollBarBound = RangeBaseBound;
@@ -46,8 +46,8 @@ export function linkScrollBar(
     }
   });
 
-  if ("onScroll" in props) {
-    link.add(control.onScroll((...args) => props.onScroll?.(...args)));
+  if ("onscroll" in props) {
+    link.add(control.onScroll((...args) => props.onscroll?.(...args)));
   }
 }
 

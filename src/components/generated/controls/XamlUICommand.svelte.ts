@@ -13,9 +13,9 @@ export interface XamlUICommandProps {
   description?: string;
   iconSource?: XamlUICommand["iconSource"] | Snippet;
   label?: string;
-  onCanExecuteChanged?: Parameters<XamlUICommand["onCanExecuteChanged"]>[0];
-  onCanExecuteRequested?: Parameters<XamlUICommand["onCanExecuteRequested"]>[0];
-  onExecuteRequested?: Parameters<XamlUICommand["onExecuteRequested"]>[0];
+  oncanexecutechanged?: Parameters<XamlUICommand["onCanExecuteChanged"]>[0];
+  oncanexecuterequested?: Parameters<XamlUICommand["onCanExecuteRequested"]>[0];
+  onexecuterequested?: Parameters<XamlUICommand["onExecuteRequested"]>[0];
   attached?: AttachedInput;
 }
 
@@ -35,16 +35,16 @@ export function linkXamlUICommand(
     keys: ["accessKey", "command", "description", "iconSource", "label"]
   });
 
-  if ("onCanExecuteChanged" in props) {
-    link.add(control.onCanExecuteChanged((...args) => props.onCanExecuteChanged?.(...args)));
+  if ("oncanexecutechanged" in props) {
+    link.add(control.onCanExecuteChanged((...args) => props.oncanexecutechanged?.(...args)));
   }
 
-  if ("onCanExecuteRequested" in props) {
-    link.add(control.onCanExecuteRequested((...args) => props.onCanExecuteRequested?.(...args)));
+  if ("oncanexecuterequested" in props) {
+    link.add(control.onCanExecuteRequested((...args) => props.oncanexecuterequested?.(...args)));
   }
 
-  if ("onExecuteRequested" in props) {
-    link.add(control.onExecuteRequested((...args) => props.onExecuteRequested?.(...args)));
+  if ("onexecuterequested" in props) {
+    link.add(control.onExecuteRequested((...args) => props.onexecuterequested?.(...args)));
   }
 
   link.property({

@@ -15,7 +15,7 @@ export interface MenuFlyoutItemProps extends MenuFlyoutItemBaseProps {
   icon?: MenuFlyoutItem["icon"] | Snippet;
   keyboardAcceleratorTextOverride?: string;
   text?: string;
-  onClick?: Parameters<MenuFlyoutItem["onClick"]>[0];
+  onclick?: Parameters<MenuFlyoutItem["onClick"]>[0];
 }
 
 export type MenuFlyoutItemBound = MenuFlyoutItemBaseBound;
@@ -49,8 +49,8 @@ export function linkMenuFlyoutItem(
     }
   });
 
-  if ("onClick" in props) {
-    link.add(control.onClick((...args) => props.onClick?.(...args)));
+  if ("onclick" in props) {
+    link.add(control.onClick((...args) => props.onclick?.(...args)));
   }
 }
 

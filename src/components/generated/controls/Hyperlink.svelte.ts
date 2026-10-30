@@ -22,9 +22,9 @@ export interface HyperlinkProps extends SpanProps {
   xYFocusRightNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
   xYFocusUp?: Hyperlink["xYFocusUp"];
   xYFocusUpNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
-  onClick?: Parameters<Hyperlink["onClick"]>[0];
-  onGotFocus?: Parameters<Hyperlink["onGotFocus"]>[0];
-  onLostFocus?: Parameters<Hyperlink["onLostFocus"]>[0];
+  onclick?: Parameters<Hyperlink["onClick"]>[0];
+  ongotfocus?: Parameters<Hyperlink["onGotFocus"]>[0];
+  onlostfocus?: Parameters<Hyperlink["onLostFocus"]>[0];
 }
 
 export type HyperlinkBound = SpanBound;
@@ -93,16 +93,16 @@ export function linkHyperlink(
     }
   });
 
-  if ("onClick" in props) {
-    link.add(control.onClick((...args) => props.onClick?.(...args)));
+  if ("onclick" in props) {
+    link.add(control.onClick((...args) => props.onclick?.(...args)));
   }
 
-  if ("onGotFocus" in props) {
-    link.add(control.onGotFocus((...args) => props.onGotFocus?.(...args)));
+  if ("ongotfocus" in props) {
+    link.add(control.onGotFocus((...args) => props.ongotfocus?.(...args)));
   }
 
-  if ("onLostFocus" in props) {
-    link.add(control.onLostFocus((...args) => props.onLostFocus?.(...args)));
+  if ("onlostfocus" in props) {
+    link.add(control.onLostFocus((...args) => props.onlostfocus?.(...args)));
   }
 }
 

@@ -109,8 +109,8 @@ export interface CalendarViewProps extends ControlProps {
   todaySelectedInnerBorderBrush?: BrushInput | Snippet;
   verticalDayItemAlignment?: EnumInput<typeof VerticalAlignment>;
   verticalFirstOfMonthLabelAlignment?: EnumInput<typeof VerticalAlignment>;
-  onCalendarViewDayItemChanging?: Parameters<CalendarView["onCalendarViewDayItemChanging"]>[0];
-  onSelectedDatesChanged?: Parameters<CalendarView["onSelectedDatesChanged"]>[0];
+  oncalendarviewdayitemchanging?: Parameters<CalendarView["onCalendarViewDayItemChanging"]>[0];
+  onselecteddateschanged?: Parameters<CalendarView["onSelectedDatesChanged"]>[0];
 }
 
 export type CalendarViewBound = ControlBound;
@@ -571,12 +571,12 @@ export function linkCalendarView(
     }
   });
 
-  if ("onCalendarViewDayItemChanging" in props) {
-    link.add(control.onCalendarViewDayItemChanging((...args) => props.onCalendarViewDayItemChanging?.(...args)));
+  if ("oncalendarviewdayitemchanging" in props) {
+    link.add(control.onCalendarViewDayItemChanging((...args) => props.oncalendarviewdayitemchanging?.(...args)));
   }
 
-  if ("onSelectedDatesChanged" in props) {
-    link.add(control.onSelectedDatesChanged((...args) => props.onSelectedDatesChanged?.(...args)));
+  if ("onselecteddateschanged" in props) {
+    link.add(control.onSelectedDatesChanged((...args) => props.onselecteddateschanged?.(...args)));
   }
 }
 

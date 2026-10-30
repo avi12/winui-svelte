@@ -20,10 +20,10 @@ export interface SplitViewProps extends ControlProps {
   pane?: SplitView["pane"] | Snippet;
   paneBackground?: BrushInput | Snippet;
   panePlacement?: EnumInput<typeof SplitViewPanePlacement>;
-  onPaneClosed?: Parameters<SplitView["onPaneClosed"]>[0];
-  onPaneClosing?: Parameters<SplitView["onPaneClosing"]>[0];
-  onPaneOpened?: Parameters<SplitView["onPaneOpened"]>[0];
-  onPaneOpening?: Parameters<SplitView["onPaneOpening"]>[0];
+  onpaneclosed?: Parameters<SplitView["onPaneClosed"]>[0];
+  onpaneclosing?: Parameters<SplitView["onPaneClosing"]>[0];
+  onpaneopened?: Parameters<SplitView["onPaneOpened"]>[0];
+  onpaneopening?: Parameters<SplitView["onPaneOpening"]>[0];
 }
 
 export type SplitViewBound = ControlBound & Pick<SplitViewProps, "isPaneOpen">;
@@ -92,20 +92,20 @@ export function linkSplitView(
     ]
   });
 
-  if ("onPaneClosed" in props) {
-    link.add(control.onPaneClosed((...args) => props.onPaneClosed?.(...args)));
+  if ("onpaneclosed" in props) {
+    link.add(control.onPaneClosed((...args) => props.onpaneclosed?.(...args)));
   }
 
-  if ("onPaneClosing" in props) {
-    link.add(control.onPaneClosing((...args) => props.onPaneClosing?.(...args)));
+  if ("onpaneclosing" in props) {
+    link.add(control.onPaneClosing((...args) => props.onpaneclosing?.(...args)));
   }
 
-  if ("onPaneOpened" in props) {
-    link.add(control.onPaneOpened((...args) => props.onPaneOpened?.(...args)));
+  if ("onpaneopened" in props) {
+    link.add(control.onPaneOpened((...args) => props.onpaneopened?.(...args)));
   }
 
-  if ("onPaneOpening" in props) {
-    link.add(control.onPaneOpening((...args) => props.onPaneOpening?.(...args)));
+  if ("onpaneopening" in props) {
+    link.add(control.onPaneOpening((...args) => props.onpaneopening?.(...args)));
   }
 }
 

@@ -169,46 +169,46 @@ export interface UIElementProps {
   xYFocusRightNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
   xYFocusUp?: UIElement["xYFocusUp"];
   xYFocusUpNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
-  onAccessKeyDisplayDismissed?: Parameters<UIElement["onAccessKeyDisplayDismissed"]>[0];
-  onAccessKeyDisplayRequested?: Parameters<UIElement["onAccessKeyDisplayRequested"]>[0];
-  onAccessKeyInvoked?: Parameters<UIElement["onAccessKeyInvoked"]>[0];
-  onBringIntoViewRequested?: Parameters<UIElement["onBringIntoViewRequested"]>[0];
-  onCharacterReceived?: Parameters<UIElement["onCharacterReceived"]>[0];
-  onContextCanceled?: Parameters<UIElement["onContextCanceled"]>[0];
-  onContextRequested?: Parameters<UIElement["onContextRequested"]>[0];
-  onDoubleTapped?: Parameters<UIElement["onDoubleTapped"]>[0];
-  onDragEnter?: Parameters<UIElement["onDragEnter"]>[0];
-  onDragLeave?: Parameters<UIElement["onDragLeave"]>[0];
-  onDragOver?: Parameters<UIElement["onDragOver"]>[0];
-  onDragStarting?: Parameters<UIElement["onDragStarting"]>[0];
-  onDrop?: Parameters<UIElement["onDrop"]>[0];
-  onDropCompleted?: Parameters<UIElement["onDropCompleted"]>[0];
-  onGettingFocus?: Parameters<UIElement["onGettingFocus"]>[0];
-  onGotFocus?: Parameters<UIElement["onGotFocus"]>[0];
-  onHolding?: Parameters<UIElement["onHolding"]>[0];
-  onKeyDown?: Parameters<UIElement["onKeyDown"]>[0];
-  onKeyUp?: Parameters<UIElement["onKeyUp"]>[0];
-  onLosingFocus?: Parameters<UIElement["onLosingFocus"]>[0];
-  onLostFocus?: Parameters<UIElement["onLostFocus"]>[0];
-  onManipulationCompleted?: Parameters<UIElement["onManipulationCompleted"]>[0];
-  onManipulationDelta?: Parameters<UIElement["onManipulationDelta"]>[0];
-  onManipulationInertiaStarting?: Parameters<UIElement["onManipulationInertiaStarting"]>[0];
-  onManipulationStarted?: Parameters<UIElement["onManipulationStarted"]>[0];
-  onManipulationStarting?: Parameters<UIElement["onManipulationStarting"]>[0];
-  onNoFocusCandidateFound?: Parameters<UIElement["onNoFocusCandidateFound"]>[0];
-  onPointerCanceled?: Parameters<UIElement["onPointerCanceled"]>[0];
-  onPointerCaptureLost?: Parameters<UIElement["onPointerCaptureLost"]>[0];
-  onPointerEntered?: Parameters<UIElement["onPointerEntered"]>[0];
-  onPointerExited?: Parameters<UIElement["onPointerExited"]>[0];
-  onPointerMoved?: Parameters<UIElement["onPointerMoved"]>[0];
-  onPointerPressed?: Parameters<UIElement["onPointerPressed"]>[0];
-  onPointerReleased?: Parameters<UIElement["onPointerReleased"]>[0];
-  onPointerWheelChanged?: Parameters<UIElement["onPointerWheelChanged"]>[0];
-  onPreviewKeyDown?: Parameters<UIElement["onPreviewKeyDown"]>[0];
-  onPreviewKeyUp?: Parameters<UIElement["onPreviewKeyUp"]>[0];
-  onProcessKeyboardAccelerators?: Parameters<UIElement["onProcessKeyboardAccelerators"]>[0];
-  onRightTapped?: Parameters<UIElement["onRightTapped"]>[0];
-  onTapped?: Parameters<UIElement["onTapped"]>[0];
+  onaccesskeydisplaydismissed?: Parameters<UIElement["onAccessKeyDisplayDismissed"]>[0];
+  onaccesskeydisplayrequested?: Parameters<UIElement["onAccessKeyDisplayRequested"]>[0];
+  onaccesskeyinvoked?: Parameters<UIElement["onAccessKeyInvoked"]>[0];
+  onbringintoviewrequested?: Parameters<UIElement["onBringIntoViewRequested"]>[0];
+  oncharacterreceived?: Parameters<UIElement["onCharacterReceived"]>[0];
+  oncontextcanceled?: Parameters<UIElement["onContextCanceled"]>[0];
+  oncontextrequested?: Parameters<UIElement["onContextRequested"]>[0];
+  ondoubletapped?: Parameters<UIElement["onDoubleTapped"]>[0];
+  ondragenter?: Parameters<UIElement["onDragEnter"]>[0];
+  ondragleave?: Parameters<UIElement["onDragLeave"]>[0];
+  ondragover?: Parameters<UIElement["onDragOver"]>[0];
+  ondragstarting?: Parameters<UIElement["onDragStarting"]>[0];
+  ondrop?: Parameters<UIElement["onDrop"]>[0];
+  ondropcompleted?: Parameters<UIElement["onDropCompleted"]>[0];
+  ongettingfocus?: Parameters<UIElement["onGettingFocus"]>[0];
+  ongotfocus?: Parameters<UIElement["onGotFocus"]>[0];
+  onholding?: Parameters<UIElement["onHolding"]>[0];
+  onkeydown?: Parameters<UIElement["onKeyDown"]>[0];
+  onkeyup?: Parameters<UIElement["onKeyUp"]>[0];
+  onlosingfocus?: Parameters<UIElement["onLosingFocus"]>[0];
+  onlostfocus?: Parameters<UIElement["onLostFocus"]>[0];
+  onmanipulationcompleted?: Parameters<UIElement["onManipulationCompleted"]>[0];
+  onmanipulationdelta?: Parameters<UIElement["onManipulationDelta"]>[0];
+  onmanipulationinertiastarting?: Parameters<UIElement["onManipulationInertiaStarting"]>[0];
+  onmanipulationstarted?: Parameters<UIElement["onManipulationStarted"]>[0];
+  onmanipulationstarting?: Parameters<UIElement["onManipulationStarting"]>[0];
+  onnofocuscandidatefound?: Parameters<UIElement["onNoFocusCandidateFound"]>[0];
+  onpointercanceled?: Parameters<UIElement["onPointerCanceled"]>[0];
+  onpointercapturelost?: Parameters<UIElement["onPointerCaptureLost"]>[0];
+  onpointerentered?: Parameters<UIElement["onPointerEntered"]>[0];
+  onpointerexited?: Parameters<UIElement["onPointerExited"]>[0];
+  onpointermoved?: Parameters<UIElement["onPointerMoved"]>[0];
+  onpointerpressed?: Parameters<UIElement["onPointerPressed"]>[0];
+  onpointerreleased?: Parameters<UIElement["onPointerReleased"]>[0];
+  onpointerwheelchanged?: Parameters<UIElement["onPointerWheelChanged"]>[0];
+  onpreviewkeydown?: Parameters<UIElement["onPreviewKeyDown"]>[0];
+  onpreviewkeyup?: Parameters<UIElement["onPreviewKeyUp"]>[0];
+  onprocesskeyboardaccelerators?: Parameters<UIElement["onProcessKeyboardAccelerators"]>[0];
+  onrighttapped?: Parameters<UIElement["onRightTapped"]>[0];
+  ontapped?: Parameters<UIElement["onTapped"]>[0];
   attached?: AttachedInput;
 }
 
@@ -786,164 +786,164 @@ export function linkUIElement(
     }
   });
 
-  if ("onAccessKeyDisplayDismissed" in props) {
-    link.add(control.onAccessKeyDisplayDismissed((...args) => props.onAccessKeyDisplayDismissed?.(...args)));
+  if ("onaccesskeydisplaydismissed" in props) {
+    link.add(control.onAccessKeyDisplayDismissed((...args) => props.onaccesskeydisplaydismissed?.(...args)));
   }
 
-  if ("onAccessKeyDisplayRequested" in props) {
-    link.add(control.onAccessKeyDisplayRequested((...args) => props.onAccessKeyDisplayRequested?.(...args)));
+  if ("onaccesskeydisplayrequested" in props) {
+    link.add(control.onAccessKeyDisplayRequested((...args) => props.onaccesskeydisplayrequested?.(...args)));
   }
 
-  if ("onAccessKeyInvoked" in props) {
-    link.add(control.onAccessKeyInvoked((...args) => props.onAccessKeyInvoked?.(...args)));
+  if ("onaccesskeyinvoked" in props) {
+    link.add(control.onAccessKeyInvoked((...args) => props.onaccesskeyinvoked?.(...args)));
   }
 
-  if ("onBringIntoViewRequested" in props) {
-    link.add(control.onBringIntoViewRequested((...args) => props.onBringIntoViewRequested?.(...args)));
+  if ("onbringintoviewrequested" in props) {
+    link.add(control.onBringIntoViewRequested((...args) => props.onbringintoviewrequested?.(...args)));
   }
 
-  if ("onCharacterReceived" in props) {
-    link.add(control.onCharacterReceived((...args) => props.onCharacterReceived?.(...args)));
+  if ("oncharacterreceived" in props) {
+    link.add(control.onCharacterReceived((...args) => props.oncharacterreceived?.(...args)));
   }
 
-  if ("onContextCanceled" in props) {
-    link.add(control.onContextCanceled((...args) => props.onContextCanceled?.(...args)));
+  if ("oncontextcanceled" in props) {
+    link.add(control.onContextCanceled((...args) => props.oncontextcanceled?.(...args)));
   }
 
-  if ("onContextRequested" in props) {
-    link.add(control.onContextRequested((...args) => props.onContextRequested?.(...args)));
+  if ("oncontextrequested" in props) {
+    link.add(control.onContextRequested((...args) => props.oncontextrequested?.(...args)));
   }
 
-  if ("onDoubleTapped" in props) {
-    link.add(control.onDoubleTapped((...args) => props.onDoubleTapped?.(...args)));
+  if ("ondoubletapped" in props) {
+    link.add(control.onDoubleTapped((...args) => props.ondoubletapped?.(...args)));
   }
 
-  if ("onDragEnter" in props) {
-    link.add(control.onDragEnter((...args) => props.onDragEnter?.(...args)));
+  if ("ondragenter" in props) {
+    link.add(control.onDragEnter((...args) => props.ondragenter?.(...args)));
   }
 
-  if ("onDragLeave" in props) {
-    link.add(control.onDragLeave((...args) => props.onDragLeave?.(...args)));
+  if ("ondragleave" in props) {
+    link.add(control.onDragLeave((...args) => props.ondragleave?.(...args)));
   }
 
-  if ("onDragOver" in props) {
-    link.add(control.onDragOver((...args) => props.onDragOver?.(...args)));
+  if ("ondragover" in props) {
+    link.add(control.onDragOver((...args) => props.ondragover?.(...args)));
   }
 
-  if ("onDragStarting" in props) {
-    link.add(control.onDragStarting((...args) => props.onDragStarting?.(...args)));
+  if ("ondragstarting" in props) {
+    link.add(control.onDragStarting((...args) => props.ondragstarting?.(...args)));
   }
 
-  if ("onDrop" in props) {
-    link.add(control.onDrop((...args) => props.onDrop?.(...args)));
+  if ("ondrop" in props) {
+    link.add(control.onDrop((...args) => props.ondrop?.(...args)));
   }
 
-  if ("onDropCompleted" in props) {
-    link.add(control.onDropCompleted((...args) => props.onDropCompleted?.(...args)));
+  if ("ondropcompleted" in props) {
+    link.add(control.onDropCompleted((...args) => props.ondropcompleted?.(...args)));
   }
 
-  if ("onGettingFocus" in props) {
-    link.add(control.onGettingFocus((...args) => props.onGettingFocus?.(...args)));
+  if ("ongettingfocus" in props) {
+    link.add(control.onGettingFocus((...args) => props.ongettingfocus?.(...args)));
   }
 
-  if ("onGotFocus" in props) {
-    link.add(control.onGotFocus((...args) => props.onGotFocus?.(...args)));
+  if ("ongotfocus" in props) {
+    link.add(control.onGotFocus((...args) => props.ongotfocus?.(...args)));
   }
 
-  if ("onHolding" in props) {
-    link.add(control.onHolding((...args) => props.onHolding?.(...args)));
+  if ("onholding" in props) {
+    link.add(control.onHolding((...args) => props.onholding?.(...args)));
   }
 
-  if ("onKeyDown" in props) {
-    link.add(control.onKeyDown((...args) => props.onKeyDown?.(...args)));
+  if ("onkeydown" in props) {
+    link.add(control.onKeyDown((...args) => props.onkeydown?.(...args)));
   }
 
-  if ("onKeyUp" in props) {
-    link.add(control.onKeyUp((...args) => props.onKeyUp?.(...args)));
+  if ("onkeyup" in props) {
+    link.add(control.onKeyUp((...args) => props.onkeyup?.(...args)));
   }
 
-  if ("onLosingFocus" in props) {
-    link.add(control.onLosingFocus((...args) => props.onLosingFocus?.(...args)));
+  if ("onlosingfocus" in props) {
+    link.add(control.onLosingFocus((...args) => props.onlosingfocus?.(...args)));
   }
 
-  if ("onLostFocus" in props) {
-    link.add(control.onLostFocus((...args) => props.onLostFocus?.(...args)));
+  if ("onlostfocus" in props) {
+    link.add(control.onLostFocus((...args) => props.onlostfocus?.(...args)));
   }
 
-  if ("onManipulationCompleted" in props) {
-    link.add(control.onManipulationCompleted((...args) => props.onManipulationCompleted?.(...args)));
+  if ("onmanipulationcompleted" in props) {
+    link.add(control.onManipulationCompleted((...args) => props.onmanipulationcompleted?.(...args)));
   }
 
-  if ("onManipulationDelta" in props) {
-    link.add(control.onManipulationDelta((...args) => props.onManipulationDelta?.(...args)));
+  if ("onmanipulationdelta" in props) {
+    link.add(control.onManipulationDelta((...args) => props.onmanipulationdelta?.(...args)));
   }
 
-  if ("onManipulationInertiaStarting" in props) {
-    link.add(control.onManipulationInertiaStarting((...args) => props.onManipulationInertiaStarting?.(...args)));
+  if ("onmanipulationinertiastarting" in props) {
+    link.add(control.onManipulationInertiaStarting((...args) => props.onmanipulationinertiastarting?.(...args)));
   }
 
-  if ("onManipulationStarted" in props) {
-    link.add(control.onManipulationStarted((...args) => props.onManipulationStarted?.(...args)));
+  if ("onmanipulationstarted" in props) {
+    link.add(control.onManipulationStarted((...args) => props.onmanipulationstarted?.(...args)));
   }
 
-  if ("onManipulationStarting" in props) {
-    link.add(control.onManipulationStarting((...args) => props.onManipulationStarting?.(...args)));
+  if ("onmanipulationstarting" in props) {
+    link.add(control.onManipulationStarting((...args) => props.onmanipulationstarting?.(...args)));
   }
 
-  if ("onNoFocusCandidateFound" in props) {
-    link.add(control.onNoFocusCandidateFound((...args) => props.onNoFocusCandidateFound?.(...args)));
+  if ("onnofocuscandidatefound" in props) {
+    link.add(control.onNoFocusCandidateFound((...args) => props.onnofocuscandidatefound?.(...args)));
   }
 
-  if ("onPointerCanceled" in props) {
-    link.add(control.onPointerCanceled((...args) => props.onPointerCanceled?.(...args)));
+  if ("onpointercanceled" in props) {
+    link.add(control.onPointerCanceled((...args) => props.onpointercanceled?.(...args)));
   }
 
-  if ("onPointerCaptureLost" in props) {
-    link.add(control.onPointerCaptureLost((...args) => props.onPointerCaptureLost?.(...args)));
+  if ("onpointercapturelost" in props) {
+    link.add(control.onPointerCaptureLost((...args) => props.onpointercapturelost?.(...args)));
   }
 
-  if ("onPointerEntered" in props) {
-    link.add(control.onPointerEntered((...args) => props.onPointerEntered?.(...args)));
+  if ("onpointerentered" in props) {
+    link.add(control.onPointerEntered((...args) => props.onpointerentered?.(...args)));
   }
 
-  if ("onPointerExited" in props) {
-    link.add(control.onPointerExited((...args) => props.onPointerExited?.(...args)));
+  if ("onpointerexited" in props) {
+    link.add(control.onPointerExited((...args) => props.onpointerexited?.(...args)));
   }
 
-  if ("onPointerMoved" in props) {
-    link.add(control.onPointerMoved((...args) => props.onPointerMoved?.(...args)));
+  if ("onpointermoved" in props) {
+    link.add(control.onPointerMoved((...args) => props.onpointermoved?.(...args)));
   }
 
-  if ("onPointerPressed" in props) {
-    link.add(control.onPointerPressed((...args) => props.onPointerPressed?.(...args)));
+  if ("onpointerpressed" in props) {
+    link.add(control.onPointerPressed((...args) => props.onpointerpressed?.(...args)));
   }
 
-  if ("onPointerReleased" in props) {
-    link.add(control.onPointerReleased((...args) => props.onPointerReleased?.(...args)));
+  if ("onpointerreleased" in props) {
+    link.add(control.onPointerReleased((...args) => props.onpointerreleased?.(...args)));
   }
 
-  if ("onPointerWheelChanged" in props) {
-    link.add(control.onPointerWheelChanged((...args) => props.onPointerWheelChanged?.(...args)));
+  if ("onpointerwheelchanged" in props) {
+    link.add(control.onPointerWheelChanged((...args) => props.onpointerwheelchanged?.(...args)));
   }
 
-  if ("onPreviewKeyDown" in props) {
-    link.add(control.onPreviewKeyDown((...args) => props.onPreviewKeyDown?.(...args)));
+  if ("onpreviewkeydown" in props) {
+    link.add(control.onPreviewKeyDown((...args) => props.onpreviewkeydown?.(...args)));
   }
 
-  if ("onPreviewKeyUp" in props) {
-    link.add(control.onPreviewKeyUp((...args) => props.onPreviewKeyUp?.(...args)));
+  if ("onpreviewkeyup" in props) {
+    link.add(control.onPreviewKeyUp((...args) => props.onpreviewkeyup?.(...args)));
   }
 
-  if ("onProcessKeyboardAccelerators" in props) {
-    link.add(control.onProcessKeyboardAccelerators((...args) => props.onProcessKeyboardAccelerators?.(...args)));
+  if ("onprocesskeyboardaccelerators" in props) {
+    link.add(control.onProcessKeyboardAccelerators((...args) => props.onprocesskeyboardaccelerators?.(...args)));
   }
 
-  if ("onRightTapped" in props) {
-    link.add(control.onRightTapped((...args) => props.onRightTapped?.(...args)));
+  if ("onrighttapped" in props) {
+    link.add(control.onRightTapped((...args) => props.onrighttapped?.(...args)));
   }
 
-  if ("onTapped" in props) {
-    link.add(control.onTapped((...args) => props.onTapped?.(...args)));
+  if ("ontapped" in props) {
+    link.add(control.onTapped((...args) => props.ontapped?.(...args)));
   }
 
   link.property({

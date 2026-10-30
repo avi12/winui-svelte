@@ -11,8 +11,8 @@ export interface SvgImageSourceProps extends ImageSourceProps {
   rasterizePixelHeight?: number;
   rasterizePixelWidth?: number;
   uriSource?: UriInput;
-  onOpened?: Parameters<SvgImageSource["onOpened"]>[0];
-  onOpenFailed?: Parameters<SvgImageSource["onOpenFailed"]>[0];
+  onopened?: Parameters<SvgImageSource["onOpened"]>[0];
+  onopenfailed?: Parameters<SvgImageSource["onOpenFailed"]>[0];
 }
 
 export type SvgImageSourceBound = ImageSourceBound;
@@ -39,12 +39,12 @@ export function linkSvgImageSource(
     }
   });
 
-  if ("onOpened" in props) {
-    link.add(control.onOpened((...args) => props.onOpened?.(...args)));
+  if ("onopened" in props) {
+    link.add(control.onOpened((...args) => props.onopened?.(...args)));
   }
 
-  if ("onOpenFailed" in props) {
-    link.add(control.onOpenFailed((...args) => props.onOpenFailed?.(...args)));
+  if ("onopenfailed" in props) {
+    link.add(control.onOpenFailed((...args) => props.onopenfailed?.(...args)));
   }
 }
 

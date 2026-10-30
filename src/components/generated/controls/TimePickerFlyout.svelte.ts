@@ -11,7 +11,7 @@ export interface TimePickerFlyoutProps extends PickerFlyoutBaseProps {
   clockIdentifier?: string;
   minuteIncrement?: number;
   time?: TimeSpanInput;
-  onTimePicked?: Parameters<TimePickerFlyout["onTimePicked"]>[0];
+  ontimepicked?: Parameters<TimePickerFlyout["onTimePicked"]>[0];
 }
 
 export type TimePickerFlyoutBound = PickerFlyoutBaseBound;
@@ -38,8 +38,8 @@ export function linkTimePickerFlyout(
     }
   });
 
-  if ("onTimePicked" in props) {
-    link.add(control.onTimePicked((...args) => props.onTimePicked?.(...args)));
+  if ("ontimepicked" in props) {
+    link.add(control.onTimePicked((...args) => props.ontimepicked?.(...args)));
   }
 }
 

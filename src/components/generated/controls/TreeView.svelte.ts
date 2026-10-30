@@ -36,12 +36,12 @@ export interface TreeViewProps extends ControlProps {
   selectedItem?: ObjectInput;
   selectedNode?: TreeView["selectedNode"] | Snippet;
   selectionMode?: EnumInput<typeof TreeViewSelectionMode>;
-  onCollapsed?: Parameters<TreeView["onCollapsed"]>[0];
-  onDragItemsCompleted?: Parameters<TreeView["onDragItemsCompleted"]>[0];
-  onDragItemsStarting?: Parameters<TreeView["onDragItemsStarting"]>[0];
-  onExpanding?: Parameters<TreeView["onExpanding"]>[0];
-  onItemInvoked?: Parameters<TreeView["onItemInvoked"]>[0];
-  onSelectionChanged?: Parameters<TreeView["onSelectionChanged"]>[0];
+  oncollapsed?: Parameters<TreeView["onCollapsed"]>[0];
+  ondragitemscompleted?: Parameters<TreeView["onDragItemsCompleted"]>[0];
+  ondragitemsstarting?: Parameters<TreeView["onDragItemsStarting"]>[0];
+  onexpanding?: Parameters<TreeView["onExpanding"]>[0];
+  oniteminvoked?: Parameters<TreeView["onItemInvoked"]>[0];
+  onselectionchanged?: Parameters<TreeView["onSelectionChanged"]>[0];
 }
 
 export type TreeViewBound = ControlBound;
@@ -96,28 +96,28 @@ export function linkTreeView(
     }
   });
 
-  if ("onCollapsed" in props) {
-    link.add(control.onCollapsed((...args) => props.onCollapsed?.(...args)));
+  if ("oncollapsed" in props) {
+    link.add(control.onCollapsed((...args) => props.oncollapsed?.(...args)));
   }
 
-  if ("onDragItemsCompleted" in props) {
-    link.add(control.onDragItemsCompleted((...args) => props.onDragItemsCompleted?.(...args)));
+  if ("ondragitemscompleted" in props) {
+    link.add(control.onDragItemsCompleted((...args) => props.ondragitemscompleted?.(...args)));
   }
 
-  if ("onDragItemsStarting" in props) {
-    link.add(control.onDragItemsStarting((...args) => props.onDragItemsStarting?.(...args)));
+  if ("ondragitemsstarting" in props) {
+    link.add(control.onDragItemsStarting((...args) => props.ondragitemsstarting?.(...args)));
   }
 
-  if ("onExpanding" in props) {
-    link.add(control.onExpanding((...args) => props.onExpanding?.(...args)));
+  if ("onexpanding" in props) {
+    link.add(control.onExpanding((...args) => props.onexpanding?.(...args)));
   }
 
-  if ("onItemInvoked" in props) {
-    link.add(control.onItemInvoked((...args) => props.onItemInvoked?.(...args)));
+  if ("oniteminvoked" in props) {
+    link.add(control.onItemInvoked((...args) => props.oniteminvoked?.(...args)));
   }
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 }
 

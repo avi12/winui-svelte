@@ -18,7 +18,7 @@ export interface DatePickerFlyoutProps extends PickerFlyoutBaseProps {
   monthVisible?: boolean;
   yearFormat?: string;
   yearVisible?: boolean;
-  onDatePicked?: Parameters<DatePickerFlyout["onDatePicked"]>[0];
+  ondatepicked?: Parameters<DatePickerFlyout["onDatePicked"]>[0];
 }
 
 export type DatePickerFlyoutBound = PickerFlyoutBaseBound;
@@ -59,8 +59,8 @@ export function linkDatePickerFlyout(
     }
   });
 
-  if ("onDatePicked" in props) {
-    link.add(control.onDatePicked((...args) => props.onDatePicked?.(...args)));
+  if ("ondatepicked" in props) {
+    link.add(control.onDatePicked((...args) => props.ondatepicked?.(...args)));
   }
 }
 

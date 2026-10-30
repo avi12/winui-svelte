@@ -21,7 +21,7 @@ export interface SwipeItemProps {
   foreground?: BrushInput | Snippet;
   iconSource?: SwipeItem["iconSource"] | Snippet;
   text?: string;
-  onInvoked?: Parameters<SwipeItem["onInvoked"]>[0];
+  oninvoked?: Parameters<SwipeItem["onInvoked"]>[0];
   attached?: AttachedInput;
 }
 
@@ -69,8 +69,8 @@ export function linkSwipeItem(
     }
   });
 
-  if ("onInvoked" in props) {
-    link.add(control.onInvoked((...args) => props.onInvoked?.(...args)));
+  if ("oninvoked" in props) {
+    link.add(control.onInvoked((...args) => props.oninvoked?.(...args)));
   }
 
   link.property({

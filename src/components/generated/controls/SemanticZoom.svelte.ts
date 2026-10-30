@@ -14,8 +14,8 @@ export interface SemanticZoomProps extends ControlProps {
   isZoomOutButtonEnabled?: boolean;
   zoomedInView?: SemanticZoom["zoomedInView"] | Snippet;
   zoomedOutView?: SemanticZoom["zoomedOutView"] | Snippet;
-  onViewChangeCompleted?: Parameters<SemanticZoom["onViewChangeCompleted"]>[0];
-  onViewChangeStarted?: Parameters<SemanticZoom["onViewChangeStarted"]>[0];
+  onviewchangecompleted?: Parameters<SemanticZoom["onViewChangeCompleted"]>[0];
+  onviewchangestarted?: Parameters<SemanticZoom["onViewChangeStarted"]>[0];
 }
 
 export type SemanticZoomBound = ControlBound;
@@ -42,12 +42,12 @@ export function linkSemanticZoom(
     }
   });
 
-  if ("onViewChangeCompleted" in props) {
-    link.add(control.onViewChangeCompleted((...args) => props.onViewChangeCompleted?.(...args)));
+  if ("onviewchangecompleted" in props) {
+    link.add(control.onViewChangeCompleted((...args) => props.onviewchangecompleted?.(...args)));
   }
 
-  if ("onViewChangeStarted" in props) {
-    link.add(control.onViewChangeStarted((...args) => props.onViewChangeStarted?.(...args)));
+  if ("onviewchangestarted" in props) {
+    link.add(control.onViewChangeStarted((...args) => props.onviewchangestarted?.(...args)));
   }
 }
 

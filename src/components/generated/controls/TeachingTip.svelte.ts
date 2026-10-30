@@ -40,10 +40,10 @@ export interface TeachingTipProps extends ContentControlProps {
   tailVisibility?: EnumInput<typeof TeachingTipTailVisibility>;
   target?: TeachingTip["target"];
   title?: string;
-  onActionButtonClick?: Parameters<TeachingTip["onActionButtonClick"]>[0];
-  onCloseButtonClick?: Parameters<TeachingTip["onCloseButtonClick"]>[0];
-  onClosed?: Parameters<TeachingTip["onClosed"]>[0];
-  onClosing?: Parameters<TeachingTip["onClosing"]>[0];
+  onactionbuttonclick?: Parameters<TeachingTip["onActionButtonClick"]>[0];
+  onclosebuttonclick?: Parameters<TeachingTip["onCloseButtonClick"]>[0];
+  onclosed?: Parameters<TeachingTip["onClosed"]>[0];
+  onclosing?: Parameters<TeachingTip["onClosing"]>[0];
 }
 
 export type TeachingTipBound = ContentControlBound & Pick<TeachingTipProps, "isOpen">;
@@ -146,20 +146,20 @@ export function linkTeachingTip(
     ]
   });
 
-  if ("onActionButtonClick" in props) {
-    link.add(control.onActionButtonClick((...args) => props.onActionButtonClick?.(...args)));
+  if ("onactionbuttonclick" in props) {
+    link.add(control.onActionButtonClick((...args) => props.onactionbuttonclick?.(...args)));
   }
 
-  if ("onCloseButtonClick" in props) {
-    link.add(control.onCloseButtonClick((...args) => props.onCloseButtonClick?.(...args)));
+  if ("onclosebuttonclick" in props) {
+    link.add(control.onCloseButtonClick((...args) => props.onclosebuttonclick?.(...args)));
   }
 
-  if ("onClosed" in props) {
-    link.add(control.onClosed((...args) => props.onClosed?.(...args)));
+  if ("onclosed" in props) {
+    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
   }
 
-  if ("onClosing" in props) {
-    link.add(control.onClosing((...args) => props.onClosing?.(...args)));
+  if ("onclosing" in props) {
+    link.add(control.onClosing((...args) => props.onclosing?.(...args)));
   }
 }
 

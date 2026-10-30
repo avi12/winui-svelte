@@ -14,10 +14,10 @@ export interface FrameProps extends ContentControlProps {
   cacheSize?: number;
   isNavigationStackEnabled?: boolean;
   sourcePageType?: Frame["sourcePageType"];
-  onNavigated?: Parameters<Frame["onNavigated"]>[0];
-  onNavigating?: Parameters<Frame["onNavigating"]>[0];
-  onNavigationFailed?: Parameters<Frame["onNavigationFailed"]>[0];
-  onNavigationStopped?: Parameters<Frame["onNavigationStopped"]>[0];
+  onnavigated?: Parameters<Frame["onNavigated"]>[0];
+  onnavigating?: Parameters<Frame["onNavigating"]>[0];
+  onnavigationfailed?: Parameters<Frame["onNavigationFailed"]>[0];
+  onnavigationstopped?: Parameters<Frame["onNavigationStopped"]>[0];
 }
 
 export type FrameBound = ContentControlBound & Pick<FrameProps, "backStackDepth" | "canGoBack" | "canGoForward">;
@@ -64,20 +64,20 @@ export function linkFrame(
     ]
   });
 
-  if ("onNavigated" in props) {
-    link.add(control.onNavigated((...args) => props.onNavigated?.(...args)));
+  if ("onnavigated" in props) {
+    link.add(control.onNavigated((...args) => props.onnavigated?.(...args)));
   }
 
-  if ("onNavigating" in props) {
-    link.add(control.onNavigating((...args) => props.onNavigating?.(...args)));
+  if ("onnavigating" in props) {
+    link.add(control.onNavigating((...args) => props.onnavigating?.(...args)));
   }
 
-  if ("onNavigationFailed" in props) {
-    link.add(control.onNavigationFailed((...args) => props.onNavigationFailed?.(...args)));
+  if ("onnavigationfailed" in props) {
+    link.add(control.onNavigationFailed((...args) => props.onnavigationfailed?.(...args)));
   }
 
-  if ("onNavigationStopped" in props) {
-    link.add(control.onNavigationStopped((...args) => props.onNavigationStopped?.(...args)));
+  if ("onnavigationstopped" in props) {
+    link.add(control.onNavigationStopped((...args) => props.onnavigationstopped?.(...args)));
   }
 }
 

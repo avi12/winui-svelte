@@ -55,19 +55,19 @@ export interface TextBoxProps extends ControlProps {
   textAlignment?: EnumInput<typeof TextAlignment>;
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textWrapping?: EnumInput<typeof TextWrapping>;
-  onBeforeTextChanging?: Parameters<TextBox["onBeforeTextChanging"]>[0];
-  onCandidateWindowBoundsChanged?: Parameters<TextBox["onCandidateWindowBoundsChanged"]>[0];
-  onContextMenuOpening?: Parameters<TextBox["onContextMenuOpening"]>[0];
-  onCopyingToClipboard?: Parameters<TextBox["onCopyingToClipboard"]>[0];
-  onCuttingToClipboard?: Parameters<TextBox["onCuttingToClipboard"]>[0];
-  onPaste?: Parameters<TextBox["onPaste"]>[0];
-  onSelectionChanged?: Parameters<TextBox["onSelectionChanged"]>[0];
-  onSelectionChanging?: Parameters<TextBox["onSelectionChanging"]>[0];
-  onTextChanged?: Parameters<TextBox["onTextChanged"]>[0];
-  onTextChanging?: Parameters<TextBox["onTextChanging"]>[0];
-  onTextCompositionChanged?: Parameters<TextBox["onTextCompositionChanged"]>[0];
-  onTextCompositionEnded?: Parameters<TextBox["onTextCompositionEnded"]>[0];
-  onTextCompositionStarted?: Parameters<TextBox["onTextCompositionStarted"]>[0];
+  onbeforetextchanging?: Parameters<TextBox["onBeforeTextChanging"]>[0];
+  oncandidatewindowboundschanged?: Parameters<TextBox["onCandidateWindowBoundsChanged"]>[0];
+  oncontextmenuopening?: Parameters<TextBox["onContextMenuOpening"]>[0];
+  oncopyingtoclipboard?: Parameters<TextBox["onCopyingToClipboard"]>[0];
+  oncuttingtoclipboard?: Parameters<TextBox["onCuttingToClipboard"]>[0];
+  onpaste?: Parameters<TextBox["onPaste"]>[0];
+  onselectionchanged?: Parameters<TextBox["onSelectionChanged"]>[0];
+  onselectionchanging?: Parameters<TextBox["onSelectionChanging"]>[0];
+  ontextchanged?: Parameters<TextBox["onTextChanged"]>[0];
+  ontextchanging?: Parameters<TextBox["onTextChanging"]>[0];
+  ontextcompositionchanged?: Parameters<TextBox["onTextCompositionChanged"]>[0];
+  ontextcompositionended?: Parameters<TextBox["onTextCompositionEnded"]>[0];
+  ontextcompositionstarted?: Parameters<TextBox["onTextCompositionStarted"]>[0];
 }
 
 export type TextBoxBound = ControlBound & Pick<TextBoxProps, "selectionLength" | "selectionStart" | "text">;
@@ -203,56 +203,56 @@ export function linkTextBox(
     ]
   });
 
-  if ("onBeforeTextChanging" in props) {
-    link.add(control.onBeforeTextChanging((...args) => props.onBeforeTextChanging?.(...args)));
+  if ("onbeforetextchanging" in props) {
+    link.add(control.onBeforeTextChanging((...args) => props.onbeforetextchanging?.(...args)));
   }
 
-  if ("onCandidateWindowBoundsChanged" in props) {
-    link.add(control.onCandidateWindowBoundsChanged((...args) => props.onCandidateWindowBoundsChanged?.(...args)));
+  if ("oncandidatewindowboundschanged" in props) {
+    link.add(control.onCandidateWindowBoundsChanged((...args) => props.oncandidatewindowboundschanged?.(...args)));
   }
 
-  if ("onContextMenuOpening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.onContextMenuOpening?.(...args)));
+  if ("oncontextmenuopening" in props) {
+    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
   }
 
-  if ("onCopyingToClipboard" in props) {
-    link.add(control.onCopyingToClipboard((...args) => props.onCopyingToClipboard?.(...args)));
+  if ("oncopyingtoclipboard" in props) {
+    link.add(control.onCopyingToClipboard((...args) => props.oncopyingtoclipboard?.(...args)));
   }
 
-  if ("onCuttingToClipboard" in props) {
-    link.add(control.onCuttingToClipboard((...args) => props.onCuttingToClipboard?.(...args)));
+  if ("oncuttingtoclipboard" in props) {
+    link.add(control.onCuttingToClipboard((...args) => props.oncuttingtoclipboard?.(...args)));
   }
 
-  if ("onPaste" in props) {
-    link.add(control.onPaste((...args) => props.onPaste?.(...args)));
+  if ("onpaste" in props) {
+    link.add(control.onPaste((...args) => props.onpaste?.(...args)));
   }
 
-  if ("onSelectionChanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onSelectionChanged?.(...args)));
+  if ("onselectionchanged" in props) {
+    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
   }
 
-  if ("onSelectionChanging" in props) {
-    link.add(control.onSelectionChanging((...args) => props.onSelectionChanging?.(...args)));
+  if ("onselectionchanging" in props) {
+    link.add(control.onSelectionChanging((...args) => props.onselectionchanging?.(...args)));
   }
 
-  if ("onTextChanged" in props) {
-    link.add(control.onTextChanged((...args) => props.onTextChanged?.(...args)));
+  if ("ontextchanged" in props) {
+    link.add(control.onTextChanged((...args) => props.ontextchanged?.(...args)));
   }
 
-  if ("onTextChanging" in props) {
-    link.add(control.onTextChanging((...args) => props.onTextChanging?.(...args)));
+  if ("ontextchanging" in props) {
+    link.add(control.onTextChanging((...args) => props.ontextchanging?.(...args)));
   }
 
-  if ("onTextCompositionChanged" in props) {
-    link.add(control.onTextCompositionChanged((...args) => props.onTextCompositionChanged?.(...args)));
+  if ("ontextcompositionchanged" in props) {
+    link.add(control.onTextCompositionChanged((...args) => props.ontextcompositionchanged?.(...args)));
   }
 
-  if ("onTextCompositionEnded" in props) {
-    link.add(control.onTextCompositionEnded((...args) => props.onTextCompositionEnded?.(...args)));
+  if ("ontextcompositionended" in props) {
+    link.add(control.onTextCompositionEnded((...args) => props.ontextcompositionended?.(...args)));
   }
 
-  if ("onTextCompositionStarted" in props) {
-    link.add(control.onTextCompositionStarted((...args) => props.onTextCompositionStarted?.(...args)));
+  if ("ontextcompositionstarted" in props) {
+    link.add(control.onTextCompositionStarted((...args) => props.ontextcompositionstarted?.(...args)));
   }
 }
 

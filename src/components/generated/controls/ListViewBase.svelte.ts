@@ -31,12 +31,12 @@ export interface ListViewBaseProps extends SelectorProps {
   semanticZoomOwner?: ListViewBase["semanticZoomOwner"];
   showsScrollingPlaceholders?: boolean;
   singleSelectionFollowsFocus?: boolean;
-  onChoosingGroupHeaderContainer?: Parameters<ListViewBase["onChoosingGroupHeaderContainer"]>[0];
-  onChoosingItemContainer?: Parameters<ListViewBase["onChoosingItemContainer"]>[0];
-  onContainerContentChanging?: Parameters<ListViewBase["onContainerContentChanging"]>[0];
-  onDragItemsCompleted?: Parameters<ListViewBase["onDragItemsCompleted"]>[0];
-  onDragItemsStarting?: Parameters<ListViewBase["onDragItemsStarting"]>[0];
-  onItemClick?: Parameters<ListViewBase["onItemClick"]>[0];
+  onchoosinggroupheadercontainer?: Parameters<ListViewBase["onChoosingGroupHeaderContainer"]>[0];
+  onchoosingitemcontainer?: Parameters<ListViewBase["onChoosingItemContainer"]>[0];
+  oncontainercontentchanging?: Parameters<ListViewBase["onContainerContentChanging"]>[0];
+  ondragitemscompleted?: Parameters<ListViewBase["onDragItemsCompleted"]>[0];
+  ondragitemsstarting?: Parameters<ListViewBase["onDragItemsStarting"]>[0];
+  onitemclick?: Parameters<ListViewBase["onItemClick"]>[0];
 }
 
 export type ListViewBaseBound = SelectorBound;
@@ -103,27 +103,27 @@ export function linkListViewBase(
     }
   });
 
-  if ("onChoosingGroupHeaderContainer" in props) {
-    link.add(control.onChoosingGroupHeaderContainer((...args) => props.onChoosingGroupHeaderContainer?.(...args)));
+  if ("onchoosinggroupheadercontainer" in props) {
+    link.add(control.onChoosingGroupHeaderContainer((...args) => props.onchoosinggroupheadercontainer?.(...args)));
   }
 
-  if ("onChoosingItemContainer" in props) {
-    link.add(control.onChoosingItemContainer((...args) => props.onChoosingItemContainer?.(...args)));
+  if ("onchoosingitemcontainer" in props) {
+    link.add(control.onChoosingItemContainer((...args) => props.onchoosingitemcontainer?.(...args)));
   }
 
-  if ("onContainerContentChanging" in props) {
-    link.add(control.onContainerContentChanging((...args) => props.onContainerContentChanging?.(...args)));
+  if ("oncontainercontentchanging" in props) {
+    link.add(control.onContainerContentChanging((...args) => props.oncontainercontentchanging?.(...args)));
   }
 
-  if ("onDragItemsCompleted" in props) {
-    link.add(control.onDragItemsCompleted((...args) => props.onDragItemsCompleted?.(...args)));
+  if ("ondragitemscompleted" in props) {
+    link.add(control.onDragItemsCompleted((...args) => props.ondragitemscompleted?.(...args)));
   }
 
-  if ("onDragItemsStarting" in props) {
-    link.add(control.onDragItemsStarting((...args) => props.onDragItemsStarting?.(...args)));
+  if ("ondragitemsstarting" in props) {
+    link.add(control.onDragItemsStarting((...args) => props.ondragitemsstarting?.(...args)));
   }
 
-  if ("onItemClick" in props) {
-    link.add(control.onItemClick((...args) => props.onItemClick?.(...args)));
+  if ("onitemclick" in props) {
+    link.add(control.onItemClick((...args) => props.onitemclick?.(...args)));
   }
 }

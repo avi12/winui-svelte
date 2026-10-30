@@ -6,8 +6,8 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { Layout } from "../bindings.ts";
 
 export interface LayoutProps {
-  onArrangeInvalidated?: Parameters<Layout["onArrangeInvalidated"]>[0];
-  onMeasureInvalidated?: Parameters<Layout["onMeasureInvalidated"]>[0];
+  onarrangeinvalidated?: Parameters<Layout["onArrangeInvalidated"]>[0];
+  onmeasureinvalidated?: Parameters<Layout["onMeasureInvalidated"]>[0];
   attached?: AttachedInput;
 }
 
@@ -20,12 +20,12 @@ export function linkLayout(
   link: Linker
 ) {
 
-  if ("onArrangeInvalidated" in props) {
-    link.add(control.onArrangeInvalidated((...args) => props.onArrangeInvalidated?.(...args)));
+  if ("onarrangeinvalidated" in props) {
+    link.add(control.onArrangeInvalidated((...args) => props.onarrangeinvalidated?.(...args)));
   }
 
-  if ("onMeasureInvalidated" in props) {
-    link.add(control.onMeasureInvalidated((...args) => props.onMeasureInvalidated?.(...args)));
+  if ("onmeasureinvalidated" in props) {
+    link.add(control.onMeasureInvalidated((...args) => props.onmeasureinvalidated?.(...args)));
   }
 
   link.property({

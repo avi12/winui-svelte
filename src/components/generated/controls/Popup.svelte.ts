@@ -24,9 +24,9 @@ export interface PopupProps extends FrameworkElementProps {
   shouldConstrainToRootBounds?: boolean;
   systemBackdrop?: Popup["systemBackdrop"] | Snippet;
   verticalOffset?: number;
-  onActualPlacementChanged?: Parameters<Popup["onActualPlacementChanged"]>[0];
-  onClosed?: Parameters<Popup["onClosed"]>[0];
-  onOpened?: Parameters<Popup["onOpened"]>[0];
+  onactualplacementchanged?: Parameters<Popup["onActualPlacementChanged"]>[0];
+  onclosed?: Parameters<Popup["onClosed"]>[0];
+  onopened?: Parameters<Popup["onOpened"]>[0];
 }
 
 export type PopupBound = FrameworkElementBound & Pick<PopupProps, "isOpen" | "actualPlacement">;
@@ -90,16 +90,16 @@ export function linkPopup(
     ]
   });
 
-  if ("onActualPlacementChanged" in props) {
-    link.add(control.onActualPlacementChanged((...args) => props.onActualPlacementChanged?.(...args)));
+  if ("onactualplacementchanged" in props) {
+    link.add(control.onActualPlacementChanged((...args) => props.onactualplacementchanged?.(...args)));
   }
 
-  if ("onClosed" in props) {
-    link.add(control.onClosed((...args) => props.onClosed?.(...args)));
+  if ("onclosed" in props) {
+    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
   }
 
-  if ("onOpened" in props) {
-    link.add(control.onOpened((...args) => props.onOpened?.(...args)));
+  if ("onopened" in props) {
+    link.add(control.onOpened((...args) => props.onopened?.(...args)));
   }
 }
 
