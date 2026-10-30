@@ -330,11 +330,13 @@
     "check:svelte-matrix": "node --disable-warning=ExperimentalWarning scripts/svelte-matrix/check.ts",
     "check:package": "node --disable-warning=ExperimentalWarning scripts/pack/check-package.ts",
     "fallow": "fallow",
+    "fallow:audit": "fallow audit --base HEAD",
     "gen:components": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts",
     "gen:css-data": "node --disable-warning=ExperimentalWarning scripts/css/export-vscode-css-data.ts",
     "gen:css-data:check": "node --disable-warning=ExperimentalWarning scripts/css/export-vscode-css-data.ts --check",
     "gen:components:check": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts --check",
     "lint": "node --disable-warning=ExperimentalWarning scripts/lint/lint.ts",
+    "lint:fix": "oxlint --type-aware --fix -c .oxlintrc.fix.json && eslint --concurrency auto --fix --no-warn-ignored && oxlint --type-aware",
     "lint:oxlint": "oxlint --type-aware",
     "lint:eslint": "eslint --concurrency auto --cache --cache-location .verify/eslint-cache .",
     "lint:eslint:full": "eslint --concurrency auto .",
@@ -342,7 +344,8 @@
     "lint:summary": "node --disable-warning=ExperimentalWarning scripts/lint/summary.ts",
     "test": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" test/mount-all.test.ts",
     "verify:electron": "node --disable-warning=ExperimentalWarning scripts/verify/electron-smoke.ts",
-    "test:windows": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-timeout=120000 test/app.test.ts test/lists.test.ts test/items.test.ts test/interaction.test.ts test/tree.test.ts test/navigation.test.ts test/overlays.test.ts test/services.test.ts test/data-transfer.test.ts test/transitions.test.ts test/web.test.ts test/win2d.test.ts test/effects.test.ts test/tray.test.ts test/examples.test.ts test/forms.test.ts test/window.test.ts test/media.test.ts test/media-elements.test.ts"
+    "test:windows": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --test-timeout=120000 test/app.test.ts test/lists.test.ts test/items.test.ts test/interaction.test.ts test/tree.test.ts test/navigation.test.ts test/overlays.test.ts test/services.test.ts test/data-transfer.test.ts test/transitions.test.ts test/web.test.ts test/win2d.test.ts test/effects.test.ts test/tray.test.ts test/examples.test.ts test/forms.test.ts test/window.test.ts test/media.test.ts test/media-elements.test.ts",
+    "prepare": "simple-git-hooks"
   },
   "dependencies": {
     "@microsoft/dynwinrt": "0.1.0-preview.23",
@@ -962,5 +965,8 @@
         }
       ]
     }
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
   }
 }
