@@ -33,6 +33,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
+| `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
 needs no build
@@ -1722,6 +1723,92 @@ name the events `enableDragEvents` adds
 takes drops, through the handlers a real drop reaches, and resolves with the
 operation the control accepted (`0` when it refused); it sends no input, so an
 app can test its drop handling in a real window
+
+## Forms (`winui-svelte/forms`)
+
+Opt-in: nothing in the core imports it, so an app that does not use it does
+not bundle it
+
+```ts
+// A panel (StackPanel props) that is a form. Generic over the zod schema:
+// onSubmit's data is z.output<Schema>, or FormObject without a schema.
+<Form schema? noValidate? onSubmit? action? onInvalid? onReset? onCancel? onError? bind:handle />
+
+interface FormSubmission<Data> {
+  data: Data;                       // the schema's output, else the entries as an object
+  formData: FormValues;             // the entries in field order, repeated names kept
+  event: { submitter: ButtonBinding | null };
+  signal: AbortSignal;              // aborted when the form is reset while the action runs
+}
+
+interface FormHandle {
+  readonly isPending: boolean;      // an async action runs (reactive)
+  readonly isSubmitted: boolean;    // a submit was tried since the form was made or reset
+  readonly isValid: boolean;
+  readonly fields: readonly FieldState[];
+  field(name: string): FieldState | undefined;
+  values(): FormValues;
+  requestSubmit(options?: { submitter?: ButtonBinding | null }): Promise<boolean>;
+  submit(): Promise<void>;          // no validation, no onInvalid
+  reset(): void;
+  checkValidity(): boolean;         // shows nothing
+  reportValidity(): boolean;        // shows the errors, focuses the first invalid field
+}
+
+class FieldState {                  // handle.field(name), all reactive
+  name; value; validity: ValidityState; message: string;
+  isTouched; isDirty; isRequired; isValid; isUserInvalid;
+  setCustomValidity(message: string): void;   // "" clears it
+  checkValidity(): boolean; reportValidity(): boolean; focus(): boolean;
+}
+```
+
+A control joins with an attachment (`{@attach textField({ name: "email" })}`),
+which reads the control's own property and change event, so `bind:` still
+works:
+
+| Attachment | Controls | Value |
+| --- | --- | --- |
+| `textField` | TextBox, AutoSuggestBox | `string` |
+| `passwordField` | PasswordBox | `string` |
+| `numberField` | NumberBox | `number`, `null` when empty |
+| `sliderField` | Slider | `number` |
+| `ratingField` | RatingControl | `number`, `null` for none |
+| `checkField` | CheckBox, ToggleButton | `boolean` |
+| `switchField` | ToggleSwitch | `boolean` |
+| `selectField` | ComboBox, RadioButtons | the item when text, number or boolean, else its index; `values` or `itemValue` say what it stands for |
+| `dateField` | DatePicker, CalendarDatePicker | `Date`, `null` for none |
+| `timeField` | TimePicker | `"HH:mm"` |
+| `colorField` | ColorPicker | `"#rrggbb"` |
+
+```ts
+interface FieldOptions extends Constraints {
+  name: string;
+  form?: FormHandle;                // a field outside the Form's subtree
+  messages?: Partial<Record<ValidityFlag, string>>;
+  label?: string;                   // the accessible name (UI Automation Name)
+  checkedValue?: FieldValue;        // check box or switch: collected as this when checked, left out when not
+  isErrorShown?: boolean;           // red border and help text on the control (default true)
+}
+interface Constraints {
+  required?; minLength?; maxLength?; min?: number | Date; max?: number | Date;
+  step?; pattern?: RegExp | string  /* a string is anchored, as HTML's */; type?: InputType;
+}
+// formButton({ kind?: ButtonKind.SUBMIT | RESET | BUTTON, form? }): on any control with onClick
+```
+
+- The check order of the message is custom error, value missing, bad input,
+  type mismatch, pattern, too short, too long, range, step; `DEFAULT_MESSAGES`
+  has the defaults and `messages` replaces them per field
+- `FormValues` is `FormData`-like: `append`, `set`, `get`, `getAll`, `has`,
+  `delete`, `keys`, `values`, `entries`, iteration, `toObject()` (an array for a
+  repeated name) and `toFormData()` (a web `FormData` of text for `fetch`)
+- A field disabled when the form is read is left out, as in HTML
+- `FormField` props: its panel's, `label`, `description`, `field` (the name whose
+  error it shows), `error` (an error of the app's own), `isRequired`
+- Pure parts (`validityOf`, `FormValues`, the adapters) run in plain Node; the
+  attachments need WinUI; `test/forms.test.ts` runs `examples/form` in a real
+  window
 
 ## Win2D (`winui-svelte/win2d`)
 

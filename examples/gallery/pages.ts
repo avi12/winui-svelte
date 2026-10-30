@@ -3,6 +3,7 @@ import AnimationPage from "./pages/AnimationPage.svelte";
 import CssLayoutPage from "./pages/CssLayoutPage.svelte";
 import DataPage from "./pages/DataPage.svelte";
 import FormsPage from "./pages/FormsPage.svelte";
+import FormSubmissionPage from "./pages/FormSubmissionPage.svelte";
 import InputPage from "./pages/InputPage.svelte";
 import LayoutPage from "./pages/LayoutPage.svelte";
 import ListsPage from "./pages/ListsPage.svelte";
@@ -35,6 +36,11 @@ export const GALLERY_PAGES: readonly GalleryPage[] = [
     key: "forms",
     title: "Forms and binding",
     page: FormsPage
+  },
+  {
+    key: "form-submission",
+    title: "Form submission",
+    page: FormSubmissionPage
   },
   {
     key: "layout",
