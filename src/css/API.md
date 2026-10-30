@@ -74,6 +74,49 @@ formatDiagnostic(diagnostic): string   // "file:line:column: <property> has no W
 `winui-resources.g.json`, exported from WinUI's generic.xaml by
 `scripts/css/export-winui-resources.ts`
 
+## Scoping
+
+A rule in a component's `<style>` reaches the elements and the component
+instances that component writes, and nothing else; `:global(...)` and
+`:global { }` escape the scope, as in Svelte 5
+Svelte's own compiler decides which rules match: each component instance is
+read as an element (`<winui-instance>`, with its `class` and spreads) for the
+sheet's compile, so `.title` and `.page .title` match instances, an unused
+rule is Svelte's `css_unused_selector` warning, and the selectors come out as
+`.title.svelte-<hash>`
+The component's own compile gets the instance's `class` with the scope class
+added (`class="title svelte-x"`, `class={[expr, "svelte-x"]}`; `scopeClassOf`
+and `scopedMarkup` in `runtime/sheet-module.ts`), so the Style registered
+under `.title.svelte-<hash>` matches only this component's `.title`
+The hash comes from the file's path, so an edit re-registers the sheet and
+re-scopes the markup with no stale class
+A parent's scope does not reach the inside of a child; a child that forwards
+its `class` prop to an element gets the scope class with the value, so
+`clsx`-style arrays and objects are the way to pass classes on
+With a spread and no `class` attribute the scope class goes before the spread,
+so a `class` inside the spread replaces it
+
+### Directives on components
+
+`style:name={value}`, `style:name="..."`, `style:--custom={value}`,
+`style:name|important` and `class:name={condition}` on a component instance
+are rewritten, in the same pass, into `style` (an expression that joins the
+`style` attribute and the declarations, later wins, `null`, `undefined` and
+`false` omitted) and `class` (a clsx array with the scope class and a
+condition object)
+Both stay reactive; positions in source maps follow the rewritten markup
+
+### A prop beats a rule
+
+A rule, the `style` text and the directives become a Style's setters; a prop is
+a local value, which WinUI ranks above them
+Both forms are allowed for `isTextSelectionEnabled` and `user-select`,
+`padding`, `spacing` and `gap`, `fontSize` and `font-size`; the prop wins,
+and removing it brings the rule's value back
+Properties the translation writes outside the Style (effects, grid tracks,
+dynamic lengths) have no prop to compete with
+An animation overrides either while it runs
+
 ## Opt-in groups
 
 Some properties cost a parser, and the window's bundle has a budget
