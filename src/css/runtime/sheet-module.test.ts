@@ -199,6 +199,9 @@ test("a container the build cannot lower is still the translator's error", () =>
   );
 });
 
+// WebStorm reads the component source below as Svelte, where `extra` and the
+// directives have no declaration.
+// noinspection JSUnresolvedReference
 const PARENT = `<script>
   import { TextBlock, StackPanel } from "winui-svelte/components";
   let { extra } = $props();
@@ -268,6 +271,7 @@ test("two components with the same class name register rules that do not collide
 });
 
 test("style: and class: directives on a component become reactive props", () => {
+  // noinspection JSUnresolvedReference
   const markup = scopedMarkup({
     source: "<TextBlock class=\"a\" style=\"color: red\" style:padding=\"{p}px\" style:--gap={gap} style:margin|important=\"1px\" class:on={isOn} class:big />",
     file: "t.svelte",
