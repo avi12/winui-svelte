@@ -74,7 +74,8 @@ function hoistEdits({ context, rule }: {
           context,
           selectors: entry.selector,
           at: position
-        })
+        }),
+        omitted: context.removed
       })
     );
   }
@@ -167,7 +168,8 @@ function scopeEdits({ context, block }: {
       }),
       at: position,
       limit: scope.limit
-    })
+    }),
+    omitted: context.removed
   })).join("\n");
   return [{
     start: position,

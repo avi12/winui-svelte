@@ -1,4 +1,7 @@
+import { lowerContainers } from "./containers.ts";
 import { UnresolvableSelector } from "./match.ts";
+import { applyMoves } from "./reorder.ts";
+import type { Move } from "./reorder.ts";
 import { positionOf } from "./resolve-selector.ts";
 import type { Context } from "./resolve-selector.ts";
 import { styleEdits } from "./style-edits.ts";
@@ -37,16 +40,46 @@ function classEdit({ element, names }: {
   } satisfies Edit;
 }
 
-function applyEdits({ source, edits }: {
+// An edit inside the range another one replaces is part of that one.
+function isInside({ edit, other }: {
+  edit: Edit;
+  other: Edit;
+}) {
+  const isEmpty = edit.start === edit.end;
+  const isInsideEmpty = other.start < edit.start && edit.end < other.end;
+  const isInsideRange = other.start <= edit.start && edit.end <= other.end;
+  const isWithin = isEmpty ? isInsideEmpty : isInsideRange;
+  return other !== edit && isWithin && other.end - other.start > edit.end - edit.start;
+}
+
+function applyEdits({ source, edits, moves }: {
   source: string;
   edits: readonly Edit[];
+  moves: readonly Move[];
 }) {
+  const applied = edits.filter(edit => !edits.some(other => isInside({
+    edit,
+    other
+  })));
   let text = source;
-  for (const edit of [...edits].sort((first, second) => second.start - first.start)) {
+  for (const edit of applied.toSorted((first, second) => second.start - first.start)) {
     text = text.slice(0, edit.start) + edit.text + text.slice(edit.end);
   }
 
-  return text;
+  const shift = (offset: number) => {
+    let shifted = offset;
+    for (const edit of applied) {
+      const isBefore = edit.end <= offset;
+      shifted += isBefore ? edit.text.length - (edit.end - edit.start) : 0;
+    }
+
+    return shifted;
+  };
+  return applyMoves({
+    text,
+    moves,
+    shift
+  });
 }
 
 function parseTemplate(source: string) {
@@ -140,12 +173,21 @@ export function resolveRelationalSelectors({ source, file }: {
     names: new Map(),
     given: new Map(),
     hoisted: [],
+    prelude: [],
+    removed: new Set(),
     diagnostics: []
   };
-  const edits = styleEdits({
+  const lowering = lowerContainers({
     context,
     blocks
   });
+  const edits = [
+    ...lowering.edits,
+    ...styleEdits({
+      context,
+      blocks
+    })
+  ];
   const hasErrors = context.diagnostics.length > 0;
   if (hasErrors) {
     return {
@@ -164,10 +206,16 @@ export function resolveRelationalSelectors({ source, file }: {
       end: style.end,
       text: `\n${context.hoisted.join("\n")}\n`
     } satisfies Edit];
+    const preludeEdits = context.prelude.length === 0 ? [] : [{
+      start: style.start,
+      end: style.start,
+      text: `\n${context.prelude.join("\n")}\n`
+    } satisfies Edit];
     return {
       source: applyEdits({
         source,
-        edits: [...edits, ...hoistedEdits, ...markupEdits]
+        edits: [...edits, ...hoistedEdits, ...markupEdits, ...preludeEdits],
+        moves: lowering.moves
       }),
       diagnostics: []
     };

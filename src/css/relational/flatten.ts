@@ -110,12 +110,15 @@ function declarationText(declaration: Declaration) {
 }
 
 /** A flat rule as CSS text, inside its at-rules. */
-export function serializeFlatRule({ rule, selector }: {
+export function serializeFlatRule({ rule, selector, omitted }: {
   rule: FlatRule;
   /** The selector to write: the rule's own, or what it was resolved to. */
   selector: string;
+  /** Declarations left out of the text. */
+  omitted: ReadonlySet<Declaration>;
 }) {
-  const body = `${selector} { ${rule.declarations.map(declarationText).join(" ")} }`;
+  const kept = rule.declarations.filter(declaration => !omitted.has(declaration));
+  const body = `${selector} { ${kept.map(declarationText).join(" ")} }`;
   let text = body;
   for (const wrapper of [...rule.wrappers].reverse()) {
     text = `${wrapper} { ${text} }`;
