@@ -368,16 +368,6 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["Shadow", "<ThemeShadow/>"],
     ["Translation", "4,8,32"]
   ]],
-  ["backdrop blur is an acrylic tinted by the background", null, "background-color: rgba(255, 0, 0, 0.5); backdrop-filter: blur(20px)", [[
-    "Background",
-    "<AcrylicBrush TintColor=\"#FF0000\" TintOpacity=\"0.502\" FallbackColor=\"#FF0000\"/>"
-  ]]],
-  ["backdrop blur of an opaque color", null, "background-color: #123456; backdrop-filter: blur(4px)", [[
-    "Background",
-    "<AcrylicBrush TintColor=\"#123456\" TintOpacity=\"1\" FallbackColor=\"#123456\"/>"
-  ]]],
-  ["backdrop blur with no color is an untinted acrylic", null, "backdrop-filter: blur(4px)", [["Background", "<AcrylicBrush/>"]]],
-  ["backdrop none sets nothing", null, "backdrop-filter: none", []],
   ["border without a width is CSS's medium", null, "border: solid red", [
     ["BorderThickness", "3,3,3,3"],
     ["BorderBrush", "#FF0000"]
@@ -556,12 +546,6 @@ test("elevation and a backdrop blur warn what WinUI cannot do", () => {
   });
   assert.deepEqual(elevation.errors, []);
   assert.match(elevation.warnings.join(" "), /-winui-elevation: a ThemeShadow draws with no receivers on Windows 11 and later/u);
-  const backdrop = lower({
-    elementType: null,
-    declarations: "backdrop-filter: blur(10px)"
-  });
-  assert.match(backdrop.warnings.join(" "), /the blur radius is ignored/u);
-  assert.match(backdrop.warnings.join(" "), /no literal background-color/u);
 });
 
 test("a transition on a transform WinUI cannot animate says so", () => {
@@ -700,8 +684,6 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["minmax with a percentage", "grid", "grid-template-columns: minmax(10%, 1fr)", /found "10%"/u],
   ["overflow on a border", "border", "overflow: hidden", /overflow-x: hidden has no WinUI meaning on <border>/u],
   ["letter spacing in px", null, "letter-spacing: 2px", /expected normal or a size in em/u],
-  ["a backdrop filter other than blur", null, "backdrop-filter: saturate(2)", /backdrop-filter: saturate\(2\) has no WinUI meaning \(only blur\(\) has/u],
-  ["a blur radius that is not a length", null, "backdrop-filter: blur(big)", /backdrop-filter: expected a blur radius in px, found "big"/u],
   ["an elevation that is not a length", null, "-winui-elevation: high", /-winui-elevation: expected a length in px/u],
   ["a 3D transform", null, "transform: rotateX(45deg)", /transform: rotateX\(45deg\) has no WinUI meaning \(a RenderTransform is two-dimensional/u],
   ["an unknown transform function", null, "transform: wobble(3)", /transform: wobble\(3\) has no WinUI meaning \(WinUI has no such transform/u],
@@ -724,26 +706,52 @@ for (const [name, elementType, declarations, pattern] of failures) {
   });
 }
 
-test("clip-path inset becomes a write of the four insets", () => {
+test("clip-path becomes a write of the shape, as JSON the window reads", () => {
   const result = lower({
     elementType: null,
-    declarations: "clip-path: inset(4px 10%)"
+    declarations: "clip-path: circle(40% at 10px 20px)"
   });
   assert.deepEqual(result.errors, []);
-  assert.deepEqual(result.writes, [["clip", "4px,10%,4px,10%"]]);
+  const [[target, value] = ["", ""]] = result.writes;
+  assert.equal(target, "clip-shape");
+  assert.deepEqual(JSON.parse(value), {
+    kind: "circle",
+    radius: {
+      value: 40,
+      isPercent: true
+    },
+    center: {
+      x: {
+        value: 10,
+        isPercent: false
+      },
+      y: {
+        value: 20,
+        isPercent: false
+      }
+    }
+  });
+  assert.deepEqual(
+    lower({
+      elementType: null,
+      declarations: "clip-path: none"
+    }).writes, []
+  );
 });
 
-test("a clip-path other than inset fails the build and says why", () => {
-  const circle = lower({
-    elementType: null,
-    declarations: "clip-path: circle(50%)"
-  });
-  assert.match(circle.errors.join(), /UIElement\.Clip is a RectangleGeometry: only inset\(\) has a WinUI meaning/u);
-  const rounded = lower({
-    elementType: null,
-    declarations: "clip-path: inset(0 round 8px)"
-  });
-  assert.match(rounded.errors.join(), /no round/u);
+test("a clip-path that is not a shape fails the build and says why", () => {
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "clip-path: rect(0 10px 10px 0)"
+    }).errors.join(), /rect\(\) has no WinUI meaning/u
+  );
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "clip-path: polygon(1px)"
+    }).errors.join(), /polygon\(\) takes/u
+  );
 });
 
 test("aspect-ratio becomes a write of the ratio", () => {
@@ -767,19 +775,47 @@ test("aspect-ratio becomes a write of the ratio", () => {
   );
 });
 
-test("filter, mix-blend-mode and text-transform fail the build with their reason", () => {
+test("filter, backdrop-filter, mix-blend-mode and mask become one write of the effect graph", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "filter: blur(4px) grayscale(1); backdrop-filter: blur(10px); mix-blend-mode: multiply; mask-image: linear-gradient(black, transparent)"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.writes.length, 1);
+  const [[target, value] = ["", ""]] = result.writes;
+  assert.equal(target, "visual-effects");
+  const effects = JSON.parse(value);
+  assert.deepEqual(effects.filter.map((step: { kind: string }) => step.kind), ["blur", "matrix"]);
+  assert.deepEqual(effects.backdrop, [{
+    kind: "blur",
+    radius: 10
+  }]);
+  assert.equal(effects.blend, "multiply");
+  assert.equal(effects.mask.kind, "gradient");
+});
+
+test("a filter, a blend mode or a mask that is not one fails the build and says why", () => {
   assert.match(
     lower({
       elementType: null,
-      declarations: "filter: blur(4px)"
-    }).errors.join(), /filter has no WinUI meaning \(WinUI has no filter/u
+      declarations: "filter: url(#blur)"
+    }).errors.join(), /filter: url\(#blur\) is not a filter function/u
   );
   assert.match(
     lower({
       elementType: null,
-      declarations: "mix-blend-mode: multiply"
-    }).errors.join(), /no blend modes/u
+      declarations: "mix-blend-mode: plus-lighter"
+    }).errors.join(), /is not a blend mode/u
   );
+  assert.match(
+    lower({
+      elementType: null,
+      declarations: "mask-image: conic-gradient(red, blue)"
+    }).errors.join(), /mask-image: conic-gradient/u
+  );
+});
+
+test("text-transform fails the build with its reason", () => {
   assert.match(
     lower({
       elementType: null,

@@ -69,16 +69,6 @@ export interface WriteSeam {
     control: object;
     property: string;
   }): NativeValue;
-  /** Sets the control's Clip to a rectangle (x, y, width, height), or removes it. */
-  clip(input: {
-    control: object;
-    rect: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    } | null;
-  }): void;
   /**
    * Begins Storyboards (XAML) on the control. `hasTransform` gives it a
    * CompositeTransform as RenderTransform, and each of `brushes` a SolidColorBrush

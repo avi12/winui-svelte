@@ -1,6 +1,7 @@
 import { ANIMATION_MEMBERS, animationGroups } from "./animation-properties.ts";
 import { gradientGroups } from "./background-properties.ts";
 import { buildShorthandGroups } from "./build-shorthands.ts";
+import { CLIP_MEMBERS, clipGroups } from "./clip-properties.ts";
 import { COMPAT_MEMBERS, compatGroups } from "./compat-properties.ts";
 import { CONTAINER_MEMBERS, containerGroups } from "./container-properties.ts";
 import { DYNAMIC_MEMBERS, dynamicLengthGroups } from "./dynamic-length-properties.ts";
@@ -13,6 +14,7 @@ import { resourceGroups } from "./resource-properties.ts";
 import { SURFACE_MEMBERS, surfaceGroups } from "./surface-properties.ts";
 import { transformGroups } from "./transform-properties.ts";
 import type { Rule } from "./types.ts";
+import { VISUAL_EFFECT_MEMBERS, visualEffectGroups } from "./visual-effect-properties.ts";
 
 /**
  * A set of property groups a sheet opts into, apart from the built-in ones, so
@@ -68,6 +70,18 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     subpath: "/effects",
     exportName: "effectGroups",
     groups: effectGroups
+  },
+  {
+    isNeededBy: usesProperties(VISUAL_EFFECT_MEMBERS),
+    subpath: "/filter",
+    exportName: "visualEffectGroups",
+    groups: visualEffectGroups
+  },
+  {
+    isNeededBy: usesProperties(CLIP_MEMBERS),
+    subpath: "/clip",
+    exportName: "clipGroups",
+    groups: clipGroups
   },
   {
     isNeededBy: usesProperties(POSITION_MEMBERS),

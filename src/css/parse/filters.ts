@@ -10,7 +10,7 @@ import { parseLength, parseNumber, parsePercent } from "./values.ts";
 // a shadow under the content. The build reads them; the window applies them.
 
 /** A 4 by 5 colour matrix, row by row: the rows give red, green, blue and alpha, the fifth column adds. */
-export type ColorMatrix = readonly number[];
+export type ColorMatrix = number[];
 
 /** One step of a filter list. */
 export type FilterStep =

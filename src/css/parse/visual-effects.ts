@@ -76,23 +76,23 @@ export type VisualEffects = z.infer<typeof VISUAL_EFFECTS>;
 /** What an element's `mask-image` draws its opacity from. */
 export type MaskSource = z.infer<typeof MASK>;
 
-/** The `mix-blend-mode` keywords other than `normal`, and the Win2D blend mode each is. */
-export const BLEND_MODES: ReadonlyMap<string, string> = new Map([
-  ["multiply", "Multiply"],
-  ["screen", "Screen"],
-  ["overlay", "Overlay"],
-  ["darken", "Darken"],
-  ["lighten", "Lighten"],
-  ["color-dodge", "ColorDodge"],
-  ["color-burn", "ColorBurn"],
-  ["hard-light", "HardLight"],
-  ["soft-light", "SoftLight"],
-  ["difference", "Difference"],
-  ["exclusion", "Exclusion"],
-  ["hue", "Hue"],
-  ["saturation", "Saturation"],
-  ["color", "Color"],
-  ["luminosity", "Luminosity"]
+/** The `mix-blend-mode` keywords other than `normal`. */
+export const BLEND_MODES: ReadonlySet<string> = new Set([
+  "multiply",
+  "screen",
+  "overlay",
+  "darken",
+  "lighten",
+  "color-dodge",
+  "color-burn",
+  "hard-light",
+  "soft-light",
+  "difference",
+  "exclusion",
+  "hue",
+  "saturation",
+  "color",
+  "luminosity"
 ]);
 
 const NORMAL = "normal";
