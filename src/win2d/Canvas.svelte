@@ -46,7 +46,11 @@
     Promise.resolve(createResources?.({ device: sender.device })).then(() => sender.invalidate());
   }}
   onDraw={(sender, args) => {
-    native = sender;
+    // Draw can fire inside another component's blocking WinRT call (a message
+    // pump), where writing state is an error: the control is stored a tick later.
+    queueMicrotask(() => {
+      native = sender;
+    });
     recording.replay(args.drawingSession);
     drawCount++;
     onDrawn?.(drawCount);
