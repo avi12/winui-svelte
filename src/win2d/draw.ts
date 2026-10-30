@@ -46,7 +46,7 @@ const colorSchema = z.looseObject({
 });
 
 /** Whether a paint is a Color rather than a brush. */
-export function isColor(paint: Paint) {
+export function isColor(paint: Paint): paint is Color {
   return colorSchema.safeParse(paint).success;
 }
 
