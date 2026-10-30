@@ -195,9 +195,9 @@ const FEATURE_CASES: ReadonlyArray<{
     feature: "any-pointer",
     inputs: {
       devices: () => ({
-        hasMouse: true,
-        hasTouch: true,
-        hasPen: false
+        canHover: true,
+        hasFinePointer: true,
+        hasCoarsePointer: true
       })
     },
     holds: "(any-pointer: fine) and (any-pointer: coarse)",

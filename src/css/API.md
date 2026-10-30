@@ -684,8 +684,8 @@ knows better supplies it (`installMatchMedia({ inputs: { devices: ... } })`)
 | `grid` | range | always 0: a window is a bitmap display |
 | `color-gamut` | keyword | srgb, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet |
 | `dynamic-range`, `video-dynamic-range` | keyword | standard, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet |
-| `hover`, `any-hover` | keyword | read from GetSystemMetrics (mouse present, digitizer touch and pen bits), asked again every two seconds while a query listens; hover is none for touch only |
-| `pointer`, `any-pointer` | keyword | read from GetSystemMetrics: fine for a mouse or pen, coarse when touch is the only pointer |
+| `hover`, `any-hover` | keyword | read from Windows.Devices.Input (`MouseCapabilities`, `TouchCapabilities`, `PointerDevice`) by the same reader as `winui-svelte/devices/input`, read again when an input device comes or goes; hover is none for touch only |
+| `pointer`, `any-pointer` | keyword | read from Windows.Devices.Input: fine for a mouse, touchpad or pen, coarse when touch is the only pointer |
 | `scan` | keyword | always progressive |
 | `update` | keyword | always fast |
 | `overflow-block`, `overflow-inline` | keyword | always scroll: a window has no pages |

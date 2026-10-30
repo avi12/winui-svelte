@@ -17,18 +17,6 @@ const getDpiForWindow = DynWin32Unsafe.bind({
   returnType: "u32"
 });
 
-const getSystemMetrics = DynWin32Unsafe.bind({
-  dll: "user32.dll",
-  entryPoint: "GetSystemMetrics",
-  parameters: [
-    {
-      type: "i32",
-      direction: "in"
-    }
-  ],
-  returnType: "i32"
-});
-
 const setAppUserModelId = DynWin32Unsafe.bind({
   dll: "shell32.dll",
   entryPoint: "SetCurrentProcessExplicitAppUserModelID",
@@ -60,18 +48,6 @@ const setWindowLongPointer = DynWin32Unsafe.bind({
   ],
   returnType: "i64"
 });
-
-/**
- * One of Windows' system metrics (`GetSystemMetrics`), such as whether a mouse
- * is present.
- *
- * @param index - The `SM_` constant.
- * @returns The metric; 0 where the call gives none.
- */
-export function systemMetric(index: number) {
-  const result = getSystemMetrics.invoke([DynWin32.i32(index)]).returnValue;
-  return result === null ? 0 : DynWin32.toNumber(result);
-}
 
 /**
  * Names the process for the taskbar and notifications: its windows then group

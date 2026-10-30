@@ -1,3 +1,5 @@
+import type { InputCapabilities } from "#src/devices/input-capabilities.js";
+
 // Every media feature the library can answer, in one table: what it measures,
 // how its value is written, where the answer comes from and which change of
 // the environment can flip it. The query evaluator (query.ts), the CSS runtime
@@ -29,12 +31,11 @@ export const ColorGamut = {
 /** One of `ColorGamut`'s values. */
 export type ColorGamut = (typeof ColorGamut)[keyof typeof ColorGamut];
 
-/** The input devices present. */
-export interface MediaDevices {
-  readonly hasMouse: boolean;
-  readonly hasTouch: boolean;
-  readonly hasPen: boolean;
-}
+/**
+ * What the pointing devices present can do: the part of the input reader
+ * (`readInputCapabilities`) that the `hover` and `pointer` features read.
+ */
+export type MediaDevices = Pick<InputCapabilities, "canHover" | "hasFinePointer" | "hasCoarsePointer">;
 
 /**
  * Where the answers come from. Each member reads live; the real one is built
@@ -146,12 +147,11 @@ function orientationOf(size: MediaSize | null) {
 
 function pointerOf(devices: MediaDevices) {
   const answers: string[] = [];
-  const hasFinePointer = devices.hasMouse || devices.hasPen;
-  if (hasFinePointer) {
+  if (devices.hasFinePointer) {
     answers.push("fine");
   }
 
-  if (devices.hasTouch) {
+  if (devices.hasCoarsePointer) {
     answers.push("coarse");
   }
 
@@ -160,8 +160,7 @@ function pointerOf(devices: MediaDevices) {
 }
 
 function hoverOf(devices: MediaDevices) {
-  const canHover = devices.hasMouse || devices.hasPen;
-  return canHover ? "hover" : NONE;
+  return devices.canHover ? "hover" : NONE;
 }
 
 function keyword({ answer, source }: {
@@ -338,19 +337,19 @@ export const MEDIA_FEATURES: ReadonlyMap<string, MediaFeature> = new Map<string,
   ["video-dynamic-range", dynamicRange("standard, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet")],
   ["hover", pointer({
     read: hoverOf,
-    source: "read from GetSystemMetrics (mouse present, digitizer touch and pen bits), asked again every two seconds while a query listens"
+    source: "read from Windows.Devices.Input (MouseCapabilities, TouchCapabilities, PointerDevice: a mouse, touchpad or pen can hover), read again when an input device comes or goes"
   })],
   ["any-hover", pointer({
     read: hoverOf,
-    source: "read from GetSystemMetrics (mouse present, digitizer touch and pen bits), asked again every two seconds while a query listens"
+    source: "read from Windows.Devices.Input (MouseCapabilities, TouchCapabilities, PointerDevice: a mouse, touchpad or pen can hover), read again when an input device comes or goes"
   })],
   ["pointer", pointer({
     read: devices => pointerOf(devices).slice(0, 1),
-    source: "read from GetSystemMetrics: fine for a mouse or pen, coarse when touch is the only pointer"
+    source: "read from Windows.Devices.Input: fine for a mouse, touchpad or pen, coarse when touch is the only pointer"
   })],
   ["any-pointer", pointer({
     read: pointerOf,
-    source: "read from GetSystemMetrics: fine for a mouse or pen, coarse when touch is the only pointer"
+    source: "read from Windows.Devices.Input: fine for a mouse, touchpad or pen, coarse when touch is the only pointer"
   })],
   ["scan", keyword({
     answer: "progressive",

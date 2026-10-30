@@ -1,8 +1,9 @@
-import { readPointerDevices, watchPointerDevices } from "./pointer-devices.ts";
 import type { SettingsStore } from "./settings-store.ts";
 import { isDarkTheme, systemSettingsStore } from "./settings-store.ts";
 import type { MediaChange, MediaInputs, MediaStore } from "#src/css/media/features.js";
 import { ColorGamut, MediaPresentation } from "#src/css/media/features.js";
+import { defaultDelivery } from "#src/devices/delivery.js";
+import { inputDeviceChanges, readInputCapabilities } from "#src/devices/input-capabilities.js";
 import { DisplayArea } from "#src/winui.js";
 
 /** What an app or a test supplies beyond the settings: other answers, and the events that flip them. */
@@ -29,6 +30,20 @@ function primaryDisplay() {
   }
 }
 
+function stopNothing() {}
+
+// The input devices coming and going, on the UI thread. Outside a packaged app
+// WinRT can refuse the watcher; the devices are then read without a change
+// notification.
+function watchInputDevices(callback: () => void) {
+  const deliver = defaultDelivery();
+  try {
+    return inputDeviceChanges()(() => deliver(callback));
+  } catch {
+    return stopNothing;
+  }
+}
+
 /**
  * Makes the media store over a settings store; `inputs` replace the defaults
  * for what Windows' settings do not tell (a window's own size, the devices).
@@ -47,7 +62,7 @@ function createMediaStore({ settings, inputs = {}, watch = {} }: MediaStoreOptio
     isAnimationEnabled: () => source.animationsEnabled,
     isTransparencyEnabled: () => source.advancedEffectsEnabled,
     presentation: () => MediaPresentation.windowed,
-    devices: readPointerDevices,
+    devices: () => readInputCapabilities(),
     isHdr: () => false,
     gamut: () => ColorGamut.srgb,
     isMetered: () => false
@@ -91,7 +106,7 @@ export function systemMediaStore({ watch, ...options }: Omit<MediaStoreOptions, 
   return createMediaStore({
     settings: systemSettingsStore(),
     watch: {
-      devices: watchPointerDevices,
+      devices: watchInputDevices,
       ...watch
     },
     ...options

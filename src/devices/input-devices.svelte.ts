@@ -1,9 +1,7 @@
 import type { Delivery } from "./delivery.ts";
-import { deviceChanges } from "./device-changes.ts";
 import type { DeviceChangesOptions } from "./device-changes.ts";
 import type { InputSource } from "./input-capabilities.ts";
-import { readInputCapabilities } from "./input-capabilities.ts";
-import { DeviceInterfaceClass, selectorOfInterfaceClasses } from "./interface-classes.ts";
+import { inputDeviceChanges, readInputCapabilities } from "./input-capabilities.ts";
 import { liveReader } from "./live.svelte.ts";
 
 /** What `inputDevices` takes. */
@@ -17,12 +15,6 @@ export interface InputDevicesOptions {
   /** Makes the watcher of input devices coming and going; a test stands in for it. */
   readonly createSource?: DeviceChangesOptions["createSource"];
 }
-
-const INPUT_CLASSES = [
-  DeviceInterfaceClass.mouse,
-  DeviceInterfaceClass.keyboard,
-  DeviceInterfaceClass.humanInterfaceDevice
-] as const;
 
 /**
  * The input devices on the machine, read live: a mouse, a keyboard, touch and
@@ -42,12 +34,7 @@ export function inputDevices(options: InputDevicesOptions = {}) {
   const { source, deliver, createSource } = options;
   const read = liveReader({
     read: () => readInputCapabilities(source),
-    subscriptions: [
-      deviceChanges({
-        selector: selectorOfInterfaceClasses(...INPUT_CLASSES),
-        ...createSource === undefined ? {} : { createSource }
-      })
-    ],
+    subscriptions: [inputDeviceChanges(createSource)],
     deliver
   });
   return {

@@ -5,6 +5,15 @@ import {
   PointerDeviceType,
   TouchCapabilities
 } from "./bindings.ts";
+import { deviceChanges } from "./device-changes.ts";
+import type { DeviceChangesOptions } from "./device-changes.ts";
+import { DeviceInterfaceClass, selectorOfInterfaceClasses } from "./interface-classes.ts";
+
+const INPUT_CLASSES = [
+  DeviceInterfaceClass.mouse,
+  DeviceInterfaceClass.keyboard,
+  DeviceInterfaceClass.humanInterfaceDevice
+] as const;
 
 /** One pointing device Windows knows (`PointerDevice`). */
 export interface PointerDeviceInfo {
@@ -127,4 +136,20 @@ export function readInputCapabilities(source: InputSource = windowsInputSource()
     hasFinePointer,
     hasCoarsePointer: touch.isPresent
   } satisfies InputCapabilities;
+}
+
+/**
+ * When to read the input capabilities again: Windows has no event for "a
+ * mouse appeared", so a watcher of the mouse, keyboard and HID device
+ * interfaces says when one comes or goes. The input runes and the `hover` and
+ * `pointer` media features both listen to it.
+ *
+ * @param createSource - Makes the watcher; a test stands in for it.
+ * @returns The subscription.
+ */
+export function inputDeviceChanges(createSource?: DeviceChangesOptions["createSource"]) {
+  return deviceChanges({
+    selector: selectorOfInterfaceClasses(...INPUT_CLASSES),
+    ...createSource === undefined ? {} : { createSource }
+  });
 }

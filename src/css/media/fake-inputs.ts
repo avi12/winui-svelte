@@ -28,9 +28,9 @@ export function fakeInputs(overrides: Partial<MediaInputs> = {}) {
     isTransparencyEnabled: () => true,
     presentation: () => MediaPresentation.windowed,
     devices: () => ({
-      hasMouse: true,
-      hasTouch: false,
-      hasPen: false
+      canHover: true,
+      hasFinePointer: true,
+      hasCoarsePointer: false
     }),
     isHdr: () => false,
     gamut: () => ColorGamut.srgb,
