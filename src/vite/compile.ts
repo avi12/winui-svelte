@@ -5,6 +5,7 @@ import { stripTypeScriptTypes } from "node:module";
 import path from "node:path";
 import type { CompileOptions as SvelteCompileOptions } from "svelte/compiler";
 import { compile, compileModule, parse } from "svelte/compiler";
+import { z } from "zod";
 
 const COMPONENT_EXTENSION = ".svelte";
 const RUNES_EXTENSION = ".svelte.ts";
@@ -41,7 +42,8 @@ export interface CompileOptions {
   animationRuntime?: string;
 }
 
-const ELEMENT_ANIMATION_DIRECTIVES = new Set(["TransitionDirective", "AnimateDirective"]);
+const ELEMENT_ANIMATION_DIRECTIVES = ["TransitionDirective", "AnimateDirective"] as const;
+const animationDirectiveSchema = z.looseObject({ type: z.enum(ELEMENT_ANIMATION_DIRECTIVES) });
 const ELEMENT_ANIMATION_IMPORT = /\bfrom\s*["']svelte\/(?:transition|animate|motion)["']/u;
 const ELEMENT_ANIMATION_RUNTIME = "winui-svelte/element-animation";
 const ELEMENT_ANIMATION_BINDING = "winuiEnableElementAnimation";
@@ -54,7 +56,7 @@ function hasDirective(root: unknown) {
       continue;
     }
 
-    const isDirective = "type" in node && typeof node.type === "string" && ELEMENT_ANIMATION_DIRECTIVES.has(node.type);
+    const isDirective = animationDirectiveSchema.safeParse(node).success;
     if (isDirective) {
       return true;
     }

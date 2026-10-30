@@ -6,6 +6,7 @@ import type { CanvasDrawingSession } from "#winui/microsoft/graphics/canvas/Canv
 import type { CanvasGeometry } from "#winui/microsoft/graphics/canvas/geometry/CanvasGeometry";
 import type { ICanvasImage } from "#winui/microsoft/graphics/canvas/ICanvasImage";
 import type { CanvasTextFormat } from "#winui/microsoft/graphics/canvas/text/CanvasTextFormat";
+import { z } from "zod";
 
 // Drawing on a CanvasDrawingSession with options objects. A paint is a Color
 // (channels 0 to 255) or any Win2D brush.
@@ -37,9 +38,16 @@ interface Box {
 
 const MAX_CHANNEL = 255;
 
+const colorSchema = z.looseObject({
+  a: z.number(),
+  r: z.number(),
+  g: z.number(),
+  b: z.number()
+});
+
 /** Whether a paint is a Color rather than a brush. */
 export function isColor(paint: Paint) {
-  return "a" in paint && "r" in paint && "g" in paint && "b" in paint;
+  return colorSchema.safeParse(paint).success;
 }
 
 function paintName(paint: Paint) {
