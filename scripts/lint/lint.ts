@@ -54,7 +54,7 @@ const STEPS: Step[] = [
   },
   {
     name: "lint:stylelint",
-    needs: []
+    needs: [BUILD]
   },
   {
     name: "fallow",
