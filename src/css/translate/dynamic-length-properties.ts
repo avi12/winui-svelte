@@ -49,12 +49,19 @@ function isLengthExpression(expression: string) {
     width: 1,
     height: 1
   };
+  const titleBar = {
+    x: 1,
+    y: 1,
+    width: 1,
+    height: 1
+  };
   return resolveDynamicLength({
     expression,
     basis: {
       percent: 1,
       viewport: unit,
-      container: unit
+      container: unit,
+      titleBar
     }
   }) !== null;
 }
@@ -136,6 +143,7 @@ function basisFor({ context, axis }: {
   });
   return {
     percent: axis === "width" ? parent?.width ?? null : parent?.height ?? null,
+    titleBar: native.titleBarOf?.(control) ?? null,
     viewport,
     container: container === null ? null : sizeOfContainer({
       container,

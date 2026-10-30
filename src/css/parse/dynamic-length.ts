@@ -12,6 +12,15 @@ const DYNAMIC_UNIT = /(\d|\.)(%|vw|vh|vmin|vmax|cqw|cqh|cqi|cqb|cqmin|cqmax)(?![
 const AMOUNT_WITH_UNIT = /(-?\d*\.?\d+)(%|vw|vh|vmin|vmax|cqw|cqh|cqi|cqb|cqmin|cqmax)(?![\w%])/giu;
 const PERCENT_SCALE = 100;
 const PIXEL_DIGITS = 4;
+const TITLE_BAR_UNIT = /env\(\s*titlebar-area-(?<field>x|y|width|height)\s*\)/giu;
+
+/** The custom title bar's rectangle in px: what `env(titlebar-area-x|y|width|height)` are. */
+export interface TitleBarArea {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 /** The sizes the units of a dynamic length are fractions of; null where it is unknown. */
 export interface LengthBasis {
@@ -19,12 +28,16 @@ export interface LengthBasis {
   percent: number | null;
   viewport: Viewport | null;
   container: Viewport | null;
+  /** The custom title bar of the window; null where it has none. */
+  titleBar: TitleBarArea | null;
 }
 
 /** Whether a value is a function of lengths that has a unit only the layout knows. */
 export function isDynamicLength(value: string) {
   const text = value.trim();
-  return FUNCTION_START.test(text) && DYNAMIC_UNIT.test(text);
+  const isFunction = FUNCTION_START.test(text);
+  const hasTitleBar = text.toLowerCase().includes("env(titlebar-area-");
+  return isFunction && (DYNAMIC_UNIT.test(text) || hasTitleBar);
 }
 
 function unitSize({ unit, basis }: {
@@ -58,7 +71,22 @@ export function resolveDynamicLength({ expression, basis }: {
   basis: LengthBasis;
 }) {
   let isKnown = true;
-  const pixels = expression.replaceAll(AMOUNT_WITH_UNIT, (_whole, amount: string, unit: string) => {
+  const { titleBar } = basis;
+  const withTitleBar = expression.replaceAll(TITLE_BAR_UNIT, (...match: unknown[]) => {
+    const groups = match.at(-1);
+    const hasField = typeof groups === "object" && groups !== null && "field" in groups;
+    const field = (hasField ? String(groups.field) : "").toLowerCase();
+    const sizes = new Map([
+      ["x", titleBar?.x],
+      ["y", titleBar?.y],
+      ["width", titleBar?.width],
+      ["height", titleBar?.height]
+    ]);
+    const value = sizes.get(field);
+    isKnown &&= value !== undefined;
+    return `${value ?? 0}px`;
+  });
+  const pixels = withTitleBar.replaceAll(AMOUNT_WITH_UNIT, (_whole, amount: string, unit: string) => {
     const size = unitSize({
       unit,
       basis

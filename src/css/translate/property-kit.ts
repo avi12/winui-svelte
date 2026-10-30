@@ -50,6 +50,13 @@ export interface WriteSeam {
   loadDictionary(xaml: string): object;
   /** Merges a dictionary into the control's own Resources (its template reads them); returns what undoes it. */
   mergeIntoControl(control: object, dictionary: object): () => void;
+  /** The custom title bar of the window the control is in, in px; null while it has none. */
+  titleBarOf?(control: object): {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null;
   /** A grid's columns or rows, from "Auto,*,2*,120" (empty clears them). */
   setGridDefinitions(control: object, target: "columns" | "rows", lengths: string): void;
   /**

@@ -11,6 +11,12 @@ const basis = {
   container: {
     width: 300,
     height: 200
+  },
+  titleBar: {
+    x: 8,
+    y: 0,
+    width: 900,
+    height: 32
   }
 };
 
@@ -46,6 +52,26 @@ test("a unit whose size is unknown makes the length unknown", () => {
       basis: {
         ...basis,
         percent: null
+      }
+    }), null
+  );
+});
+
+test("env(titlebar-area-*) is the custom title bar's rectangle, unknown without one", () => {
+  const expression = "calc(100% - env(titlebar-area-width) + env(titlebar-area-x))";
+  assert.equal(isDynamicLength(expression), true);
+  assert.equal(
+    resolveDynamicLength({
+      expression,
+      basis
+    }), -492
+  );
+  assert.equal(
+    resolveDynamicLength({
+      expression,
+      basis: {
+        ...basis,
+        titleBar: null
       }
     }), null
   );

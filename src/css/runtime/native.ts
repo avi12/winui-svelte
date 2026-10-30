@@ -54,6 +54,18 @@ export interface CssWinui {
   XamlReader: { load(xaml: string): BoxedValue };
   PropertyValue: { createString(value: string): BoxedValue };
   projectAs<Instance extends object>(value: BoxedValue, type: ProjectedType<Instance>): Instance;
+  AppWindow: {
+    getFromWindowId(id: BoxedValue): {
+      titleBar: {
+        height: number;
+        leftInset: number;
+        rightInset: number;
+      };
+      size: {
+        width: number;
+      };
+    };
+  };
   ColumnDefinition: new () => object;
   RowDefinition: new () => object;
   GridUnitType: {
@@ -180,6 +192,39 @@ export function createCssNative(winui: CssWinui) {
     },
     setStyle(control, style) {
       Object.assign(control, { style });
+    },
+    // The title bar the app drew itself: its height and the insets the caption buttons take.
+    titleBarOf(control) {
+      try {
+        const root = readMember({
+          target: control,
+          key: "xamlRoot"
+        });
+        const environment = readMember({
+          target: root,
+          key: "contentIslandEnvironment"
+        });
+        const id = readMember({
+          target: environment,
+          key: "appWindowId"
+        });
+        const { titleBar, size } = winui.AppWindow.getFromWindowId(id);
+        const scale = readMember({
+          target: root,
+          key: "rasterizationScale"
+        });
+        const isScaled = typeof scale === "number" && scale > 0;
+        const factor = isScaled ? scale : 1;
+        const isCustom = titleBar.height > 0;
+        return isCustom ? {
+          x: titleBar.leftInset / factor,
+          y: 0,
+          width: Math.max(0, size.width - titleBar.leftInset - titleBar.rightInset) / factor,
+          height: titleBar.height / factor
+        } : null;
+      } catch {
+        return null;
+      }
     },
     viewportOf(control) {
       const size = readMember({
