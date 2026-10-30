@@ -145,6 +145,11 @@ calls `flushSync`), and `hostState<T>()` / `send(action)` over a transport (type
 - Every generated component is mounted at least once in a real WinUI window
   run in the background (off screen, never activated), so a control the
   generator gets wrong fails a test
+- Every other window test (`pnpm test:windows`) also runs in the background:
+  `WINUI_SVELTE_BACKGROUND=1` makes `WindowHost` (and the mount test) open
+  each window left of the virtual screen, with no activation, no taskbar
+  button and no always-on-top; the runner takes one file at a time at
+  below-normal priority, so the desktop stays free to work on
 - Edge+'s window is checked pixel by pixel against its references after every
   change to the package (0 differing pixels)
 - `pnpm check:editor` opens every `.svelte` file of the package in the Svelte

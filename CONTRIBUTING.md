@@ -56,7 +56,7 @@ Build once before `pnpm check` or the examples
 | `pnpm lint:summary` | counts the violations per rule and per folder (`--folder src/css` lists one folder's files) |
 | `pnpm test` | build, then every unit test and the mount test (every component made in a real WinUI window that opens off screen and never takes focus) |
 | `pnpm bindings` | the WinUI bindings in `.winapp/bindings`: winapp's run, then WebView2's (`scripts/bindings/`) |
-| `pnpm test:windows` | the examples in real windows: `test/lists.test.ts`, `test/items.test.ts`, `test/web.test.ts` and `test/window.test.ts`. Needs an ordinary desktop session (see below) |
+| `pnpm test:windows` | every `test/*.test.ts` that opens real windows (all but the mount test), one file at a time, in the background (see below). Needs an ordinary desktop session |
 | `pnpm gen:components` | regenerates `src/components/generated`, the class list in `package.json` and the tables in the README from WinUI's metadata. Never edit those files by hand |
 | `pnpm check:package` | packs the tarball and runs publint and Are The Types Wrong on it |
 
@@ -66,9 +66,46 @@ changing `src/` and before running an example
 
 ## Tests that need a desktop session
 
-The mount test opens its window off screen, but WebView2 starts a real browser
-process, and the window tests drive real windows
-Run `pnpm test:windows` from
+Every test window runs in the background, so you can keep working on the same
+desktop while they run: `WINUI_SVELTE_BACKGROUND=1` (set by `pnpm test:windows`
+and by `test/example-process.ts`, read by `src/window/background-mode.ts`)
+makes each window open left of every display (computed from the virtual
+screen, never a fixed coordinate), never activate it, never keep it always on
+top and give it no taskbar button or Alt+Tab entry (`WS_EX_NOACTIVATE` and
+`WS_EX_TOOLWINDOW`); WinUI still lays out, paints and answers UI Automation
+Write a window test with `ExampleProcess` and it is in the background with no
+further work; a test that makes a `Window` of its own calls
+`backgroundPlacement` and `keepInBackground` (`src/window/background.ts`)
+
+What cannot be hidden:
+
+- A tray icon is in the real notification area while its test runs
+- WebView2 starts browser processes of its own (they end with the window)
+- `test/interaction.test.ts` drives controls through UI Automation, and
+  Windows gives the window the foreground when a pattern is invoked, whatever
+  its styles say; the window is off screen and has no taskbar button, but keys
+  typed meanwhile go to it, so run that file while you are not typing
+- A combo box's drop-down is a window of its own that WinUI keeps on the
+  nearest display, so it shows for a moment at the edge of the display next to
+  the off-screen window
+- Popups that can stay inside their window (flyouts, menus) are made to, in a
+  background run
+
+Start the whole run and read the result later:
+
+```sh
+pnpm test:windows
+cat .verify/test-windows.txt
+```
+
+`scripts/test-windows.ts` runs the files one at a time at below-normal
+priority, each with a timeout of ten minutes; `.verify/test-windows.txt` has a
+PASS, FAIL or TIMEOUT line per file, `.verify/test-windows/<name>.log` the spec
+output and `<name>.xml` the JUnit report; name files to run only those
+(`pnpm test:windows test/web.test.ts`)
+Run each file as its own scheduled task when the machine is shared
+
+WebView2 starts a real browser process, so run from
 an ordinary desktop session: a process a sandbox or a service started cannot
 launch the browser (WebView2 reports 0x8007139F), and the tests skip where the
 Windows App SDK was not restored or the WebView2 Runtime is not installed
