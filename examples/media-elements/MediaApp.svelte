@@ -175,14 +175,21 @@
   width={WINDOW_WIDTH}
 >
   <StackPanel>
-    <Image {@attach track("bytes")} height={IMAGE_SIZE} source={fromBytes} width={IMAGE_SIZE} {...imageEvents("bytes")} />
-    <Image {@attach track("dataUri")} height={IMAGE_SIZE} source={fromDataUri} width={IMAGE_SIZE} {...imageEvents("dataUri")} />
-    <Image {@attach track("svg")} height={IMAGE_SIZE} source={svg} width={IMAGE_SIZE} {...imageEvents("svg")} />
-    <Image {@attach track("broken")} height={IMAGE_SIZE} source={broken} width={IMAGE_SIZE} {...imageEvents("broken")} />
-    <Image {@attach track("file")} height={IMAGE_SIZE} width={IMAGE_SIZE} {...imageEvents("file")}>
+    <Image class="sample" {@attach track("bytes")} source={fromBytes} {...imageEvents("bytes")} />
+    <Image class="sample" {@attach track("dataUri")} source={fromDataUri} {...imageEvents("dataUri")} />
+    <Image class="sample" {@attach track("svg")} source={svg} {...imageEvents("svg")} />
+    <Image class="sample" {@attach track("broken")} source={broken} {...imageEvents("broken")} />
+    <Image class="sample" {@attach track("file")} {...imageEvents("file")}>
       {#snippet source()}
         <BitmapImage decodePixelWidth={IMAGE_SIZE} uriSource={PNG_PATH} />
       {/snippet}
     </Image>
   </StackPanel>
 </Window>
+
+<style>
+  .sample {
+    width: 16px;
+    height: 16px;
+  }
+</style>

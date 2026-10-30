@@ -105,24 +105,24 @@
 </Window>
 
 <style>
-  :global(.fx-stage) {
+  .fx-stage {
     width: 480px;
     height: 330px;
   }
 
-  :global(.fx-left) {
+  .fx-left {
     justify-self: start;
     width: 240px;
     background-color: #ff0000;
   }
 
-  :global(.fx-right) {
+  .fx-right {
     justify-self: end;
     width: 240px;
     background-color: #0000ff;
   }
 
-  :global(.fx-target) {
+  .fx-target {
     align-self: center;
     justify-self: center;
     width: 160px;
@@ -130,19 +130,19 @@
     background-color: #ffff00;
   }
 
-  :global(.fx-green) {
+  .fx-green {
     justify-self: start;
     width: 40px;
     background-color: #00aa00;
   }
 
-  :global(.fx-black) {
+  .fx-black {
     justify-self: end;
     width: 40px;
     background-color: #000000;
   }
 
-  :global(.fx-card) {
+  .fx-card {
     align-self: start;
     justify-self: start;
     width: 100px;
@@ -150,19 +150,19 @@
     margin: 16px;
   }
 
-  :global(.fx-white) {
+  .fx-white {
     justify-self: start;
     width: 50px;
     background-color: #ffffff;
   }
 
-  :global(.fx-ink) {
+  .fx-ink {
     justify-self: end;
     width: 50px;
     background-color: #000000;
   }
 
-  :global(.fx-line) {
+  .fx-line {
     align-self: end;
     justify-self: start;
     margin: 8px;
@@ -170,44 +170,44 @@
     stroke-width: 4px;
   }
 
-  :global(.fx-blur) {
+  .fx-target.fx-blur {
     filter: blur(6px);
   }
 
-  :global(.fx-gray) {
+  .fx-target.fx-gray {
     filter: grayscale(1);
   }
 
-  :global(.fx-shadow) {
+  .fx-target.fx-shadow {
     filter: drop-shadow(8px 8px 4px #000000);
   }
 
-  :global(.fx-multiply) {
+  .fx-target.fx-multiply {
     mix-blend-mode: multiply;
   }
 
-  :global(.fx-mask) {
+  .fx-target.fx-mask {
     mask-image: linear-gradient(to right, #000000, transparent);
   }
 
-  :global(.fx-backdrop) {
+  .fx-target.fx-backdrop {
     background-color: rgb(255 255 0 / 0.3);
     backdrop-filter: blur(8px);
   }
 
-  :global(.fx-circle) {
+  .fx-target.fx-circle {
     clip-path: circle(40px);
   }
 
-  :global(.fx-polygon) {
-    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  .fx-target.fx-polygon {
+    clip-path: polygon(80px 0, 160px 100px, 0 100px);
   }
 
-  :global(.fx-round) {
+  .fx-target.fx-round {
     clip-path: inset(10px round 30px);
   }
 
-  :global(.fx-blur-circle) {
+  .fx-target.fx-blur-circle {
     clip-path: circle(45px);
     filter: blur(3px);
   }

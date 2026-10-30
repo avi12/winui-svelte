@@ -34,7 +34,6 @@
   const WINDOW_WIDTH = 700;
   const INITIAL_SLIDER = 10;
   const INITIAL_NUMBER = 5;
-  const SPACING = 4;
 
   interface Props {
     host: ExampleHost;
@@ -220,7 +219,7 @@
   title="Interaction example"
   width={WINDOW_WIDTH}
 >
-  <StackPanel spacing={SPACING}>
+  <StackPanel class="page">
     <Button
       {@attach keep("click-component")}
       automationId="click-component"
@@ -270,7 +269,7 @@
         <TextBlock automationId={`item-${name}`}>{name}{i}</TextBlock>
       {/each}
     </StackPanel>
-    <grid columns="*" rows="Auto,Auto,Auto,Auto">
+    <grid class="rows">
       {#each names as name, i (name)}
         <text-block grid.row={i}>{name}@{i}</text-block>
       {/each}
@@ -321,6 +320,15 @@
 </Window>
 
 <style>
+  .page {
+    gap: 4px;
+  }
+
+  .rows {
+    grid-template-rows: auto auto auto auto;
+    grid-template-columns: 1fr;
+  }
+
   .hot {
     opacity: 0.25;
   }
