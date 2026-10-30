@@ -318,7 +318,7 @@
     "gen:components:check": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts --check",
     "lint": "node --disable-warning=ExperimentalWarning scripts/lint/lint.ts",
     "lint:oxlint": "oxlint --type-aware",
-    "lint:eslint": "eslint .",
+    "lint:eslint": "eslint --cache --cache-location .verify/eslint-cache .",
     "lint:stylelint": "stylelint \"**/*.svelte\" --ignore-pattern src/components/generated",
     "lint:summary": "node --disable-warning=ExperimentalWarning scripts/lint/summary.ts",
     "test": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" test/mount-all.test.ts",
