@@ -904,7 +904,7 @@ protocol and the tests
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
-| `winui-svelte/app` | single-instance handling and app notifications |
+| `winui-svelte/app` | single-instance handling over a named pipe, and app notifications |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
 | `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |

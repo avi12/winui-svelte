@@ -1,121 +1,134 @@
+import { currentUserSid, openPipe, pipeNameFor } from "./instance-pipe.ts";
+import type { PipeHandedOver, PipeServer } from "./instance-pipe.ts";
+import { decodeRedirect, encodeRedirect } from "./redirect.ts";
+import type { Activation } from "./redirect.ts";
+import type { Json } from "#src/messaging/json.js";
 import { uiThreadDispatcherIfReady } from "#src/scheduling.js";
-import { AppInstance, ExtendedActivationKind } from "#src/winui.js";
+import { createMessagePortTransport } from "#src/state/transports/message-port.js";
+import type { Transport } from "#src/state/transports/transport.js";
+import { startTimer } from "#src/window/timers.js";
 import { z } from "zod";
 
-type AppActivationArguments = ReturnType<AppInstance["getActivatedEventArgs"]>;
+const POLL_MILLISECONDS = 100;
 
-const kindNames = new Map<number, string>(
-  Object.entries(ExtendedActivationKind).map(([name, value]) => [value, name])
-);
+// What the worker posts for each line it read: the parsed JSON, or its failure.
+const pipeMessageSchema = z.object({ value: z.unknown() });
 
-// What an activation's data holds that an app reads: the command line of a
-// launch, from ILaunchActivatedEventArgs or ICommandLineActivatedEventArgs.
-const launchDataSchema = z.looseObject({
-  arguments: z.string().optional()
-});
-
-/** An activation that another copy of the app redirected to this one. */
-export interface Activation {
-  /** The `ExtendedActivationKind` member's name, such as `Launch` or `File`; `Unknown` if not known. */
-  readonly kind: string;
-
-  /** The command line the other copy was started with, when the activation carries one. */
-  readonly commandLine?: string;
-
-  /** The activation's own data, as WinRT gave it: a projected object, or `null`. */
-  readonly data: unknown;
-}
-
-/** One instance the platform holds for a key. */
-export interface RegisteredInstance {
-  readonly isCurrent: boolean;
-  redirectOwnActivation(): Promise<void>;
-  onActivated(callback: (activation: Activation) => void): () => void;
-}
-
-/** The part of `AppInstance` that `claimInstance` uses; a test stands in for it. */
-export interface InstanceSource {
-  register(key: string): RegisteredInstance;
-}
+export type { Activation } from "./redirect.ts";
 
 /** What `ensureSingleInstance` reports. */
 export interface SingleInstance {
   /**
    * True when this process is the first copy for the key and should go on.
-   * False when its activation was handed to the first copy: the app should
+   * False when its command line was handed to the first copy: the app should
    * exit without opening a window.
    */
   readonly isPrimary: boolean;
 
-  /** Stops delivering redirected activations. */
+  /** Stops listening for later copies and closes the pipe. */
   release(): void;
 }
 
 /** What `ensureSingleInstance` takes. */
 export interface SingleInstanceOptions {
-  /** A non-empty name for the app; copies that pass the same key are one app. */
+  /** A non-empty name for the app; copies of the same user that pass the same key are one app. */
   readonly key: string;
 
   /**
-   * Called in the first copy each time another copy starts and redirects to
-   * it, with what that copy was started with. Runs on the UI thread when the
-   * dispatcher queue exists (so call this after the first window, or hand
-   * work to the window yourself), and on the thread WinRT raises it on
-   * otherwise.
+   * Called in the first copy each time another copy starts, with the
+   * arguments and working directory it was started with. Runs on the UI
+   * thread.
    */
   readonly onRedirect: (activation: Activation) => void;
+
+  /**
+   * The app's window (a `WindowHandle`, say): it is brought to the front
+   * before `onRedirect` runs.
+   */
+  readonly window?: {
+    bringToFront(): void;
+  };
 }
 
-// WinRT drops the key's registration when the wrapper is collected, so the
-// primary's instance stays here until it is released.
-const heldInstances = new Set<RegisteredInstance>();
+/** The first copy's end of the link, as `claimInstance` uses it. */
+export interface InstanceServer {
+  readonly isPrimary: true;
+  readonly transport: Transport<Json>;
+  close(): void;
+}
 
-function activationOf(args: AppActivationArguments) {
-  const parsed = launchDataSchema.safeParse(args.data);
-  const commandLine = parsed.success ? parsed.data.arguments : undefined;
-  const base = {
-    kind: kindNames.get(args.kind) ?? "Unknown",
-    data: args.data
-  };
-  const hasCommandLine = commandLine !== undefined;
-  if (!hasCommandLine) {
-    return base satisfies Activation;
+/** What `claimInstance` asks of the link; a test stands in for it. */
+export interface InstanceSource {
+  /** Serves the key when no one does; otherwise delivers `activation` to whoever does. */
+  claim(options: {
+    key: string;
+    activation: Activation;
+  }): InstanceServer | PipeHandedOver;
+}
+
+function requireUiThread() {
+  const dispatcher = uiThreadDispatcherIfReady();
+  const isUnavailable = dispatcher === undefined;
+  if (isUnavailable) {
+    throw new Error("ensureSingleInstance in the first copy needs the UI thread's dispatcher queue: call it from runWindow's onStart or later");
   }
 
-  return {
-    ...base,
-    commandLine
-  } satisfies Activation;
+  return dispatcher;
 }
 
-function appInstanceSource() {
+function pipeSource() {
   return {
-    register(key) {
-      const instance = AppInstance.findOrRegisterForKey(key);
-      return {
-        isCurrent: instance.isCurrent,
-        redirectOwnActivation() {
-          return instance.redirectActivationToAsync(AppInstance.getCurrent().getActivatedEventArgs());
-        },
-        onActivated: callback => instance.onActivated((_sender, args) => {
-          callback(activationOf(args));
-        })
-      };
+    claim({ key, activation }) {
+      const pipeName = pipeNameFor({
+        key,
+        sid: currentUserSid()
+      });
+      const pipe = openPipe({
+        pipeName,
+        payload: encodeRedirect(activation)
+      });
+      if (!pipe.isPrimary) {
+        return pipe;
+      }
+
+      return serverOf(pipe);
     }
   } satisfies InstanceSource;
 }
 
+function serverOf(pipe: PipeServer) {
+  try {
+    requireUiThread();
+  } catch (error) {
+    pipe.close();
+    throw error;
+  }
+
+  return {
+    isPrimary: true,
+    close: () => pipe.close(),
+    transport: createMessagePortTransport<Json>({
+      port: pipe.port,
+      poll: drain => startTimer({
+        milliseconds: POLL_MILLISECONDS,
+        onTick: drain
+      })
+    })
+  } satisfies InstanceServer;
+}
+
 /**
- * Makes sure one copy of the app runs per key, over any source of instances:
- * `ensureSingleInstance` is this over `AppInstance`.
+ * Makes sure one copy of the app runs per key, over any source of the link:
+ * `ensureSingleInstance` is this over a named pipe.
  *
- * @param options - The key, what to do with a redirected activation, the
- *   source, and how to reach the UI thread.
+ * @param options - The key, what to do with a redirect, the link, this
+ *   copy's own activation, and how to reach the UI thread.
  * @returns Whether this copy is the first one, and how to stop listening.
  * @throws {Error} When `key` is empty.
  */
-export async function claimInstance({ key, onRedirect, source, runOnUiThread }: SingleInstanceOptions & {
+export function claimInstance({ key, onRedirect, window, source, activation, runOnUiThread }: SingleInstanceOptions & {
   source: InstanceSource;
+  activation: Activation;
   runOnUiThread: (work: () => void) => void;
 }) {
   const isKeyEmpty = key.length === 0;
@@ -123,54 +136,68 @@ export async function claimInstance({ key, onRedirect, source, runOnUiThread }: 
     throw new Error("ensureSingleInstance needs a non-empty key");
   }
 
-  const instance = source.register(key);
-  if (!instance.isCurrent) {
-    await instance.redirectOwnActivation();
+  const claim = source.claim({
+    key,
+    activation
+  });
+  if (!claim.isPrimary) {
     return {
       isPrimary: false,
       release() {}
     } satisfies SingleInstance;
   }
 
-  heldInstances.add(instance);
-  const stopListening = instance.onActivated(activation => {
-    runOnUiThread(() => {
-      onRedirect(activation);
-    });
+  const stopListening = claim.transport.listen({
+    message(value) {
+      const message = pipeMessageSchema.safeParse(value);
+      const redirect = decodeRedirect(message.success ? message.data.value : undefined);
+      const isIgnored = redirect === undefined;
+      if (isIgnored) {
+        return;
+      }
+
+      runOnUiThread(() => {
+        window?.bringToFront();
+        onRedirect(redirect);
+      });
+    },
+    malformed() {},
+    closed() {}
   });
   return {
     isPrimary: true,
     release() {
       stopListening();
-      heldInstances.delete(instance);
+      claim.close();
     }
   } satisfies SingleInstance;
 }
 
 /**
- * Keeps the app to one copy per key, over `Microsoft.Windows.AppLifecycle.
- * AppInstance`. The first copy to call this with a key is the primary; a later
- * copy has its activation handed to the primary (`onRedirect` runs there with
- * the later copy's command line) and gets `isPrimary: false`, on which it
- * should exit.
+ * Keeps the app to one copy per key, over a named pipe that only the current
+ * user can reach. The first copy to call this with a key is the primary and
+ * serves the pipe; a later copy sends its arguments and working directory
+ * (`onRedirect` runs in the primary with them) and gets `isPrimary: false`,
+ * on which it should exit.
  *
- * Call it first thing, before the window. It needs the Windows App SDK
- * runtime (`initWindowsAppSdk`), as the rest of the package does. Without
- * package identity the platform has no app identity to scope the key by, and
- * every Node-hosted app runs as `node.exe`: use a key no other app would, such
- * as a reverse-domain name. This is built on the documented API and checked
- * only against stand-ins here (`test/app.test.ts` starts a real second
- * process, for a desktop session to run).
+ * It works unpackaged and from `node.exe`, and needs no Windows App SDK
+ * call. The primary must call it where the UI thread has its dispatcher
+ * queue (`runWindow`'s `onStart` or later) because it polls for later copies
+ * on a dispatcher timer; a later copy may call it at any time. Use a key no
+ * other app would, such as a reverse-domain name.
  *
- * @param options - The key and the redirect handler.
+ * @param options - The key, the redirect handler and, optionally, a window to
+ *   bring to the front on a redirect.
  * @returns Whether this copy is the primary, and how to stop listening.
  */
 export function ensureSingleInstance(options: SingleInstanceOptions) {
   return claimInstance({
     ...options,
-    source: appInstanceSource(),
-    runOnUiThread: uiThreadDispatcherIfReady() ?? (work => {
-      work();
-    })
+    source: pipeSource(),
+    activation: {
+      arguments: process.argv.slice(2),
+      workingDirectory: process.cwd()
+    },
+    runOnUiThread: work => requireUiThread()(work)
   });
 }
