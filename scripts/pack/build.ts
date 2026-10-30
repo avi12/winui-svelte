@@ -2,6 +2,7 @@ import { extraPackages } from "#scripts/codegen/tables.ts";
 import { filesIn } from "#scripts/files-in.ts";
 import { WINAPP_BINARIES, WINAPP_BINDINGS } from "#scripts/winapp-paths.ts";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import {
   copyFileSync,
   cpSync,
@@ -10,6 +11,7 @@ import {
   readdirSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync
 } from "node:fs";
 import { createRequire } from "node:module";
@@ -184,6 +186,52 @@ function compile() {
   }
 }
 
+// What dist/ is made from: the sources, the bindings and libraries, and the
+// files that decide how they are compiled and copied (size and modification
+// time of each, so a checkout or an edit rebuilds). When it matches the stamp
+// of the last build and dist/ is still there, the build has nothing to do:
+// lint, test and the package check each ask for a build, and only one pays.
+const STAMP_FILE = path.join(PACKAGE_ROOT, ".verify", "build-stamp");
+const FORCE_FLAG = "--force";
+const BUILD_INPUTS = [
+  SOURCE_FOLDER,
+  GENERATED_BINDINGS,
+  RESTORED_BOOTSTRAPPERS,
+  path.join(PACKAGE_ROOT, "scripts", "pack", "build.ts"),
+  path.join(PACKAGE_ROOT, "scripts", "codegen", "tables.ts"),
+  path.join(PACKAGE_ROOT, "tsconfig.json"),
+  path.join(PACKAGE_ROOT, "tsconfig.build.json"),
+  path.join(PACKAGE_ROOT, "package.json")
+];
+
+function filesOf(input: string) {
+  const isFolder = statSync(input, { throwIfNoEntry: false })?.isDirectory() === true;
+  return isFolder ? filesIn(input) : [input];
+}
+
+function inputsStamp() {
+  const hash = createHash("sha256");
+  const typescriptVersion = createRequire(import.meta.url)("typescript/package.json").version;
+  hash.update(`${process.version} ${typescriptVersion}\n`);
+  for (const file of BUILD_INPUTS.flatMap(filesOf)) {
+    const stat = statSync(file, { throwIfNoEntry: false });
+    hash.update(`${file} ${stat?.size} ${stat?.mtimeMs}\n`);
+  }
+
+  return hash.digest("hex");
+}
+
+const STAMP = inputsStamp();
+const IS_UP_TO_DATE = !process.argv.includes(FORCE_FLAG)
+  && existsSync(path.join(OUTPUT_FOLDER, "index.js"))
+  && existsSync(STAMP_FILE)
+  && readFileSync(STAMP_FILE, "utf8") === STAMP;
+if (IS_UP_TO_DATE) {
+  process.stdout.write("dist: up to date (pnpm build --force rebuilds)\n");
+  process.exit(0);
+}
+
+rmSync(STAMP_FILE, { force: true });
 rmSync(OUTPUT_FOLDER, {
   recursive: true,
   force: true
@@ -193,4 +241,6 @@ compile();
 copyShipped();
 copyBootstrappers();
 resolveSourceAliases();
+mkdirSync(path.dirname(STAMP_FILE), { recursive: true });
+writeFileSync(STAMP_FILE, STAMP);
 process.stdout.write(`dist: ${filesIn(OUTPUT_FOLDER).length} files\n`);
