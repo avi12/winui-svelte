@@ -8,6 +8,7 @@
   import {
     DataTransfer,
     draggable,
+    DropEffect,
     dropzone,
     enableDragEvents,
     nativeFileAt,
@@ -151,11 +152,11 @@
       })}
       ondragover={(event: DragEvent) => {
         event.preventDefault();
-        event.dataTransfer.dropEffect = "link";
+        event.dataTransfer.dropEffect = DropEffect.link;
       }}
       ondrop={onDrop}
     >
-      <text-block text="A raw element"></text-block>
+      <text-block>A raw element</text-block>
     </border>
     <TextBlock
       {@attach control<TextBlockControl>(native => {
