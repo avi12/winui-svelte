@@ -1,4 +1,10 @@
-import { compileSheetModule, cssHash, scopeClassOf, scopedMarkup, SheetError } from "./sheet-module.ts";
+import {
+  compileSheetModule,
+  cssHash,
+  scopeClassOf,
+  scopedMarkup,
+  SheetError
+} from "./sheet-module.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";

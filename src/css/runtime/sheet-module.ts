@@ -70,11 +70,12 @@ let hashOfSvelte: ((text: string) => string) | null = null;
  * `cssHash` only while it compiles, so one probe component fetches it.
  */
 export function scopeClassOf(filename: string) {
-  if (hashOfSvelte === null) {
+  const isProbed = hashOfSvelte !== null;
+  if (!isProbed) {
     compile(PROBE, {
       filename: "probe.svelte",
       css: "external",
-      cssHash: ({ hash }) => {
+      cssHash({ hash }) {
         hashOfSvelte = hash;
         return "probe";
       }
@@ -155,7 +156,10 @@ function registrationCode({ sheet, runtimeModule }: {
 }
 
 // Svelte's own report of a rule that matches no element or component instance.
-function unusedSelectors(warnings: readonly Warning[], file: string) {
+function unusedSelectors({ warnings, file }: {
+  warnings: readonly Warning[];
+  file: string;
+}) {
   return warnings.map(({ message, start }) => ({
     severity: "warning" as const,
     message,
@@ -215,6 +219,9 @@ export function compileSheetModule(input: SheetModuleInput) {
       runtimeModule: input.runtimeModule
     })}${hot}\n`,
     sheet: translation.sheet,
-    diagnostics: [...unusedSelectors(result.warnings, input.sheetId), ...translation.diagnostics]
+    diagnostics: [...unusedSelectors({
+      warnings: result.warnings,
+      file: input.sheetId
+    }), ...translation.diagnostics]
   };
 }

@@ -71,10 +71,11 @@ function directivesOf(instance: Instance) {
 }
 
 function escapeTemplate(text: string) {
-  return text.replaceAll("\\", "\\\\").replaceAll("`", "\`").replaceAll("${", "\${");
+  return text.replaceAll("\\", "\\\\").replaceAll("`", "\\`").replaceAll("${", "\\${");
 }
 
-// An attribute's value as a JavaScript expression: one expression stays itself, text mixed with expressions becomes a template.
+// An attribute's value as a JavaScript expression: one expression stays itself,
+// text mixed with expressions becomes a template.
 function partsOf(value: AST.Attribute["value"]) {
   return value === true ? [] : [value].flat();
 }
@@ -94,7 +95,8 @@ function valueSource({ source, value }: {
   }
 
   const text = parts.map(part => {
-    if (part.type === "Text") {
+    const isText = part.type === "Text";
+    if (isText) {
       return escapeTemplate(part.data);
     }
 
@@ -119,7 +121,8 @@ function directiveExpression({ source, directive }: {
   source: string;
   directive: Directive;
 }) {
-  if (directive.type === "ClassDirective") {
+  const isClass = directive.type === "ClassDirective";
+  if (isClass) {
     return textOf({
       source,
       node: directive.expression
@@ -156,14 +159,16 @@ function replaceOrAdd({ instance, written, text }: {
 function styleEditsOf({ source, instance }: {
   source: string;
   instance: Instance;
-}): Edit[] {
+}) {
   const directives = directivesOf(instance).filter(directive => directive.type === "StyleDirective");
-  if (directives.length === 0) {
+  const hasNone = directives.length === 0;
+  if (hasNone) {
     return [];
   }
 
   const written = instance.attributes.find(attribute => attribute.type === "Attribute" && attribute.name === "style");
-  const existing = written?.type === "Attribute" && written.value !== true ? [valueSource({
+  const hasValue = written?.type === "Attribute" && written.value !== true;
+  const existing = hasValue ? [valueSource({
     source,
     value: written.value
   })] : [];
@@ -188,11 +193,12 @@ function classEditsOf({ source, instance, scope }: {
   source: string;
   instance: Instance;
   scope: string;
-}): Edit[] {
+}) {
   const directives = directivesOf(instance).filter(directive => directive.type === "ClassDirective");
   const written = instance.attributes.find(isClassAttribute);
   const hasScope = scope !== "";
-  if (directives.length === 0) {
+  const hasNone = directives.length === 0;
+  if (hasNone) {
     return hasScope ? addScopeClass({
       source,
       instance,
@@ -200,7 +206,8 @@ function classEditsOf({ source, instance, scope }: {
     }) : [];
   }
 
-  const existing = written?.type === "Attribute" && written.value !== true ? [valueSource({
+  const hasValue = written?.type === "Attribute" && written.value !== true;
+  const existing = hasValue ? [valueSource({
     source,
     value: written.value
   })] : [];
@@ -221,10 +228,11 @@ function addScopeClass({ source, instance, scope }: {
   source: string;
   instance: Instance;
   scope: string;
-}): Edit[] {
+}) {
   const attribute = instance.attributes.find(isClassAttribute);
   const nameEnd = instance.start + 1 + instance.name.length;
-  if (attribute === undefined || attribute.type !== "Attribute") {
+  const isMissing = attribute === undefined || attribute.type !== "Attribute";
+  if (isMissing) {
     return [{
       start: nameEnd,
       end: nameEnd,
@@ -235,11 +243,12 @@ function addScopeClass({ source, instance, scope }: {
   const isQuoted = QUOTES.has(source.charAt(attribute.end - 1));
   const hasText = attribute.value === true || isQuoted;
   if (hasText) {
-    const at = attribute.value === true ? attribute.end : attribute.end - 1;
+    const isFlag = attribute.value === true;
+    const position = isFlag ? attribute.end : attribute.end - 1;
     return [{
-      start: at,
-      end: at,
-      text: attribute.value === true ? `="${scope}"` : ` ${scope}`
+      start: position,
+      end: position,
+      text: isFlag ? `="${scope}"` : ` ${scope}`
     }];
   }
 
@@ -260,14 +269,28 @@ function addScopeClass({ source, instance, scope }: {
   }];
 }
 
+// Where `</Name>` starts when the instance has one.
+function closingTagStart({ source, instance }: {
+  source: string;
+  instance: Instance;
+}) {
+  const text = source.slice(instance.start, instance.end);
+  const index = text.lastIndexOf(`</${instance.name}`);
+  const isClosed = index > 0 && text.slice(index).trimEnd().endsWith(">");
+  return isClosed ? instance.start + index : null;
+}
+
 // A component instance written as an element that keeps only what selectors see.
 function standIn({ source, instance }: {
   source: string;
   instance: Instance;
-}): Edit[] {
+}) {
   const nameStart = instance.start + 1;
   const nameEnd = nameStart + instance.name.length;
-  const closing = new RegExp(`</${instance.name}\s*>$`, "u").exec(source.slice(instance.start, instance.end));
+  const closing = closingTagStart({
+    source,
+    instance
+  });
   const dropped = instance.attributes.filter(attribute => (
     !isClassAttribute(attribute) && attribute.type !== "SpreadAttribute" && attribute.type !== "ClassDirective"
   )).map(attribute => ({
@@ -280,8 +303,8 @@ function standIn({ source, instance }: {
     end: nameEnd,
     text: STAND_IN
   }, ...closing === null ? [] : [{
-    start: instance.start + closing.index + 2,
-    end: instance.start + closing.index + 2 + instance.name.length,
+    start: closing + 2,
+    end: closing + 2 + instance.name.length,
     text: STAND_IN
   }], ...dropped];
 }
@@ -297,7 +320,8 @@ export function withScopedInstances({ source, scope }: {
   scope: string;
 }) {
   const root = parsed(source);
-  if (root === null) {
+  const isUnreadable = root === null;
+  if (isUnreadable) {
     return source;
   }
 
@@ -321,7 +345,8 @@ export function withScopedInstances({ source, scope }: {
  */
 export function withInstancesAsElements(source: string) {
   const root = parsed(source);
-  if (root === null) {
+  const isUnreadable = root === null;
+  if (isUnreadable) {
     return source;
   }
 

@@ -137,11 +137,12 @@ function compileSource({ filename, source, options }: {
     });
   }
 
-  const { js } = compile(scopedMarkup({
+  const markup = scopedMarkup({
     source,
     file: filename,
     filename
-  }), {
+  });
+  const { js } = compile(markup, {
     ...WINUI_COMPILE_OPTIONS,
     filename,
     runes: true
