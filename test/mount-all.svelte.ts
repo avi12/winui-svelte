@@ -22,6 +22,7 @@ import { Window } from "#winui/microsoft/ui/xaml/Window";
 import assert from "node:assert/strict";
 import { appendFileSync } from "node:fs";
 import { flushSync } from "svelte";
+import { z } from "zod";
 
 // The inside of the mount test (mount-all.ts): on the UI thread, every
 // generated component is linked to a control it makes, first with no props
@@ -127,8 +128,13 @@ function isConstructor(value: NativeValue): value is new () => object {
   return typeof value === "function";
 }
 
+const elementSchema = z.looseObject({
+  opacity: z.number(),
+  margin: z.looseObject({})
+});
+
 function isElement(value: object): value is bindings.UIElement {
-  return "opacity" in value && "margin" in value;
+  return elementSchema.safeParse(value).success;
 }
 
 function isConnect(value: NativeValue): value is Connect {

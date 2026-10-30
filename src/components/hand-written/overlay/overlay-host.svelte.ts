@@ -51,8 +51,10 @@ export interface OverlayBound {
 
 function stopNothing() {}
 
+const LOADABLE_KEYS = ["isLoaded", "xamlRoot", "onceLoaded"] as const;
+
 function isLoadable<Root>(value: object | null | undefined): value is LoadableElement<Root> {
-  return value != null && "isLoaded" in value && "xamlRoot" in value && "onceLoaded" in value;
+  return value != null && LOADABLE_KEYS.every(key => key in value);
 }
 
 // The element the overlay opens next to: the app's `target`, else where the
