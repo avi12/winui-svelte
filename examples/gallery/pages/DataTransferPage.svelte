@@ -1,5 +1,6 @@
 <script lang="ts">
   import PageFrame from "#examples/gallery/PageFrame.svelte";
+  import { keyControl } from "#examples/harness/smoke.ts";
   import { Button, StackPanel, TextBlock } from "winui-svelte/components";
   import type { DragEvent, NativeFile } from "winui-svelte/data-transfer";
   import {
@@ -45,6 +46,7 @@
   <border
     class="drop-box"
     class:drag-over={isOver}
+    {@attach keyControl("data-transfer")}
     {@attach dropzone({
       accept: [".png", ".jpg", "image/*", "text/plain", "directory"],
       onDragStateChange: isEntering => (isOver = isEntering),
