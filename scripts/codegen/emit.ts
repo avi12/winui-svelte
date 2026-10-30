@@ -1455,7 +1455,10 @@ const WINUI_DOCS_URL = "https://learn.microsoft.com/windows/windows-app-sdk/api/
 const WIN2D_NAMESPACE = "Microsoft.Graphics.Canvas";
 const WIN2D_DOCS_URL = "https://microsoft.github.io/Win2D/WinUI3/html";
 
-function docsUrlOf(type: { namespace: string; name: string }) {
+function docsUrlOf(type: {
+  namespace: string;
+  name: string;
+}) {
   const isWin2d = type.namespace.startsWith(WIN2D_NAMESPACE);
   if (isWin2d) {
     return `${WIN2D_DOCS_URL}/T_${type.namespace.replaceAll(".", "_")}_${type.name}.htm`;
