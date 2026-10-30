@@ -5,6 +5,7 @@ import { shapeLength } from "./shape-length.ts";
 import { doubleCollection } from "./values.ts";
 import type { NativeValue } from "#src/native-value.js";
 import { ElementNode } from "#src/renderer/tree/dom.js";
+import { listenersOf } from "#src/renderer/tree/tree.js";
 import { flush } from "#src/scheduling.js";
 import { startTimer } from "#src/window/timers.js";
 
@@ -28,6 +29,27 @@ const REQUEST_FRAME = "requestAnimationFrame";
 const CANCEL_FRAME = "cancelAnimationFrame";
 const DASH_ARRAY_PROPERTY = "strokeDashArray";
 const DEFAULT_ORIGIN = 0.5;
+const STATIC_POSITION = "static";
+const ABSOLUTE_POSITION = "absolute";
+// WinUI's Orientation.Horizontal; Vertical is 0.
+const HORIZONTAL_ORIENTATION = 1;
+const TRANSITION_EVENTS = new Set(["introstart", "introend", "outrostart", "outroend"]);
+
+// The sides along a panel's main axis: a leaving element gives back the room
+// it takes there (its trailing margin is made as negative as its size and
+// leading margin are positive), so the panel lays out as without it.
+const FLOW_AXES = {
+  vertical: {
+    leading: "top",
+    trailing: PoseField.MARGIN_BOTTOM,
+    size: "y"
+  },
+  horizontal: {
+    leading: "left",
+    trailing: PoseField.MARGIN_RIGHT,
+    size: "x"
+  }
+} as const;
 
 const Fill = {
   FORWARDS: "forwards",
@@ -95,6 +117,9 @@ interface MotionControl {
 interface MotionNode {
   readonly name: string;
   readonly native: { readonly control: object | null };
+  readonly parent: {
+    readonly native?: { readonly control: object | null };
+  } | null;
 }
 
 interface Target {
@@ -113,7 +138,8 @@ interface FieldAccess {
 
 interface Layer {
   readonly fields: ReadonlySet<string>;
-  readonly animation: Handle;
+  // Null for a layer that holds a pose still (a leaving element's margin) and is no animation.
+  readonly animation: Handle | null;
   pose: Pose;
 }
 
@@ -127,6 +153,10 @@ interface MotionState {
   baseCenter: Vector | null;
   isInert: boolean;
   isHitTestVisibleBefore: boolean;
+  // The margin that gives a leaving element's room back to its panel, while it leaves.
+  flowLayer: Layer | null;
+  // What `style.position` was last set to, which Svelte's `animate:` uses to take an element out of the flow.
+  stylePosition: string;
 }
 
 function isMotionControl(value: NativeValue): value is MotionControl {
@@ -537,7 +567,9 @@ function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAn
       base: {},
       baseCenter: null,
       isInert: false,
-      isHitTestVisibleBefore: true
+      isHitTestVisibleBefore: true,
+      flowLayer: null,
+      stylePosition: ""
     };
     states.set(node, created);
     return created;
@@ -645,7 +677,88 @@ function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAn
   }
 
   function animations(node: MotionNode) {
-    return stateFor(node).layers.map(layer => layer.animation);
+    return stateFor(node).layers.flatMap(layer => layer.animation === null ? [] : [layer.animation]);
+  }
+
+  // The axis a panel lays its children out along, when it has one (a StackPanel).
+  function flowAxisOf(node: MotionNode) {
+    const orientation = numberOf(read(node.parent?.native?.control, "orientation"));
+    const isVertical = orientation === undefined;
+    if (isVertical) {
+      return null;
+    }
+
+    return orientation === HORIZONTAL_ORIENTATION ? FLOW_AXES.horizontal : FLOW_AXES.vertical;
+  }
+
+  // Svelte's `animate:` takes a leaving element out of the flow, so the
+  // elements around it move into place while it fades (WinUI has no absolute
+  // position outside a Canvas): its slot along the panel's axis shrinks to
+  // nothing, and it stays drawn where it is.
+  function leaveFlow(node: MotionNode) {
+    const state = stateFor(node);
+    const control = controlOf(state);
+    const axis = flowAxisOf(node);
+    const isMovable = control !== null && axis !== null && state.flowLayer === null;
+    if (!isMovable) {
+      return;
+    }
+
+    const leading = numberOf(read(read(control, "margin"), axis.leading)) ?? 0;
+    const layer: Layer = {
+      fields: new Set([axis.trailing]),
+      animation: null,
+      pose: {
+        [axis.trailing]: -(control.actualSize[axis.size] + leading)
+      }
+    };
+    addLayer({
+      state,
+      layer
+    });
+    state.flowLayer = layer;
+    render(state);
+  }
+
+  function rejoinFlow(node: MotionNode) {
+    const state = stateFor(node);
+    const { flowLayer } = state;
+    const isLeaving = flowLayer === null;
+    if (isLeaving) {
+      return;
+    }
+
+    state.flowLayer = null;
+    removeLayer({
+      state,
+      layer: flowLayer,
+      restoreLater
+    });
+    render(state);
+  }
+
+  // The element's `style`, with a `position` that takes it out of the flow, and back.
+  function styleOf({ node, base }: {
+    node: MotionNode;
+    base: object;
+  }) {
+    const state = stateFor(node);
+    const style = Object.create(base);
+    Object.defineProperty(style, "position", {
+      get: () => state.stylePosition,
+      set(position: string) {
+        state.stylePosition = position;
+
+        const isOutOfFlow = position === ABSOLUTE_POSITION;
+        if (isOutOfFlow) {
+          leaveFlow(node);
+          return;
+        }
+
+        rejoinFlow(node);
+      }
+    });
+    return style;
   }
 
   // A leaving element takes no input, as an inert one in the browser.
@@ -676,7 +789,9 @@ function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAn
   }
 
   function computedStyle(node: MotionNode) {
-    const control = controlOf(stateFor(node));
+    const state = stateFor(node);
+    const control = controlOf(state);
+    const isInFlow = state.flowLayer === null && flowAxisOf(node) !== null;
     const size = control?.actualSize ?? {
       x: 0,
       y: 0
@@ -688,9 +803,9 @@ function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAn
       transformOrigin: `${size.x / 2}px ${size.y / 2}px`,
       filter: NO_TRANSFORM,
       display: "block",
-      // WinUI cannot take an element out of the layout, so Svelte's `animate:`
-      // is told it already is (it would otherwise try to).
-      position: "absolute",
+      // Svelte's `animate:` takes an element it finds in the flow out of it
+      // (see leaveFlow); one WinUI cannot (outside a StackPanel) is told it already is.
+      position: isInFlow ? STATIC_POSITION : ABSOLUTE_POSITION,
       width: `${size.x}px`,
       height: `${size.y}px`,
       strokeWidth: `${thickness ?? 0}px`,
@@ -755,6 +870,7 @@ function createEngine({ clock, onFrame, warn, createDashes }: Required<ElementAn
     computedStyle,
     boundingRect,
     totalLength,
+    styleOf,
     requestFrame,
     cancelFrame: (id: number) => frameCallbacks.delete(id)
   };
@@ -795,7 +911,14 @@ function define({ target, name, descriptor }: {
 }
 
 // What the engine gives an element the way the DOM does: methods that use `this`.
-function elementMembers(engine: ReturnType<typeof createEngine>) {
+function elementMembers({ engine, original }: {
+  engine: ReturnType<typeof createEngine>;
+  original: {
+    style: (() => object) | undefined;
+    addEventListener: ElementNode<unknown>["addEventListener"];
+    removeEventListener: ElementNode<unknown>["removeEventListener"];
+  };
+}) {
   return {
     animate: {
       value(this: MotionNode, keyframes: Keyframe[], options: AnimateOptions) {
@@ -835,8 +958,43 @@ function elementMembers(engine: ReturnType<typeof createEngine>) {
         return engine.totalLength(this);
       }
     },
-    // Svelte announces `introstart` and the like; only handlers the tree
-    // already holds for the type are called (a WinUI control has no such event).
+    style: {
+      get(this: MotionNode) {
+        return engine.styleOf({
+          node: this,
+          base: original.style?.call(this) ?? {}
+        });
+      }
+    },
+    // `introstart` and the like are Svelte's, not WinUI's events: a handler
+    // for one is held by the element and never given to the control.
+    addEventListener: {
+      value(this: ElementNode<unknown>, type?: string, handler?: NativeValue) {
+        const isLifecycle = type !== undefined && TRANSITION_EVENTS.has(type);
+        if (!isLifecycle) {
+          original.addEventListener.call(this, type, handler);
+          return;
+        }
+
+        listenersOf({
+          element: this,
+          type
+        }).set(handler, () => {});
+      }
+    },
+    removeEventListener: {
+      value(this: ElementNode<unknown>, type?: string, handler?: NativeValue) {
+        const isLifecycle = type !== undefined && TRANSITION_EVENTS.has(type);
+        if (!isLifecycle) {
+          original.removeEventListener.call(this, type, handler);
+          return;
+        }
+
+        this.listeners.get(type)?.delete(handler);
+      }
+    },
+    // Svelte announces them with `dispatchEvent`; only handlers the element
+    // holds for the type are called.
     dispatchEvent: {
       value(this: ElementNode<unknown>, event: { type: string }) {
         for (const handler of this.listeners.get(event.type)?.keys() ?? []) {
@@ -909,7 +1067,15 @@ export function enableElementAnimation(options?: ElementAnimationOptions) {
     return previousComputedStyle.call(globalThis, node, ...rest);
   }
 
-  const members = elementMembers(engine);
+  const { prototype } = ElementNode;
+  const members = elementMembers({
+    engine,
+    original: {
+      style: Object.getOwnPropertyDescriptor(prototype, "style")?.get,
+      addEventListener: prototype.addEventListener,
+      removeEventListener: prototype.removeEventListener
+    }
+  });
   const undo = [
     ...Object.entries(members).map(([name, descriptor]) => define({
       target: ElementNode.prototype,

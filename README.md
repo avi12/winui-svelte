@@ -870,6 +870,10 @@ elements of a component (`<border>`, `<text-block>`), with the functions of
 
 The Vite plugin turns the support on in each component that uses a directive or
 imports one of those modules; an app that uses none does not bundle any of it
+`onintrostart`, `onintroend`, `onoutrostart` and `onoutroend` work on any
+element, `|local` and `|global` as in Svelte, and `mountControl({ component,
+props, intro: true })` plays the global `in:` and `transition:` directives on
+the first render
 The animation moves the control's `Opacity`, `Translation`, `Scale`,
 `Rotation`, size, margin, padding, border and a shape's stroke dashes
 See
@@ -985,8 +989,12 @@ Stated plainly, so nobody finds them by surprise:
   Override the control's theme resources instead
 - **Transitions that WinUI cannot draw.** `blur` fades without blurring (no
   element blur in WinUI without Composition effects), `draw` cannot measure a
-  `path` (a geometry has no length), a directive goes on a raw element, and a
-  leaving element in a keyed `{#each}` stays in the layout until it is gone
+  `path` (a geometry has no length), and a directive goes on a raw element
+  (Svelte allows none on a component; wrap it in an element)
+- **A leaving element and its panel.** In a keyed `{#each}` with `animate:` the
+  siblings of a leaving element flip into place as it leaves when the panel has
+  an axis (a `StackPanel`); in a `Grid` or `Canvas` the element keeps its place
+  in the layout until it is gone
 - **Two controls are not components:** `SwapChainBackgroundPanel` (the UWP
   panel WinUI 3 keeps for compatibility: it refuses Opacity, Width, Height, the
   min and max sizes and Margin, and is allowed only as the application's root

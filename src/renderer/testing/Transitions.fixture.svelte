@@ -31,7 +31,12 @@
     isBlurring: boolean;
     isDrawing: boolean;
     isOnTheLeft: boolean;
+    isLogged: boolean;
+    isNested: boolean;
+    isInner: boolean;
     ids: number[];
+    rows: number[];
+    log: (event: string) => void;
   }
 
   const props: Props = $props();
@@ -56,10 +61,34 @@
   {#if props.isDrawing}
     <line in:draw={fadeParams}></line>
   {/if}
+  {#if props.isLogged}
+    <fake-motion-panel
+      onintroend={() => props.log("introend")}
+      onintrostart={() => props.log("introstart")}
+      onoutroend={() => props.log("outroend")}
+      onoutrostart={() => props.log("outrostart")}
+      transition:fade|global={fadeParams}
+    ></fake-motion-panel>
+  {/if}
   <fake-motion-panel>
     {#each props.ids as id (id)}
       <fake-motion-panel animate:flip={fadeParams}></fake-motion-panel>
     {/each}
+  </fake-motion-panel>
+  <fake-motion-panel>
+    {#each props.rows as id (id)}
+      <fake-motion-panel out:fade={fadeParams} animate:flip={fadeParams}></fake-motion-panel>
+    {/each}
+  </fake-motion-panel>
+  <fake-motion-panel>
+    {#if props.isNested}
+      <fake-motion-panel>
+        {#if props.isInner}
+          <fake-motion-panel in:fade|local={fadeParams}></fake-motion-panel>
+          <fake-motion-panel in:fade|global={fadeParams}></fake-motion-panel>
+        {/if}
+      </fake-motion-panel>
+    {/if}
   </fake-motion-panel>
   <fake-motion-panel>
     {#if props.isOnTheLeft}
