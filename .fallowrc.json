@@ -38,6 +38,8 @@
     "scripts/lint/lint.ts",
     "scripts/lint/summary.ts",
     "scripts/pack/check-package.ts",
+    "scripts/svelte-matrix/check.ts",
+    "scripts/svelte-matrix/preload.ts",
     "scripts/pack/treeshake-app/main.ts",
     // Read by tsc only: it fails there on a component prop typed any or
     // unknown.
