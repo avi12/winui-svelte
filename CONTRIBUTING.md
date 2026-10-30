@@ -114,6 +114,10 @@ PASS, FAIL or TIMEOUT line per file, `.verify/test-windows/<name>.log` the spec
 output and `<name>.xml` the JUnit report; name files to run only those
 (`pnpm test:windows test/web.test.ts`)
 Run each file as its own scheduled task when the machine is shared
+Every scheduled task for a window test uses the action
+`conhost.exe --headless cmd.exe /c "<file>.cmd"`; a bare `.cmd` pops a
+visible console onto the desktop of whoever is working (the processes the
+scripts spawn pass `windowsHide`, so they show none)
 
 WebView2 starts a real browser process, so run from
 an ordinary desktop session: a process a sandbox or a service started cannot

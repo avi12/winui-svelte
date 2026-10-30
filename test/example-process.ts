@@ -65,7 +65,8 @@ export class ExampleProcess {
         ...backgroundEnvironment(),
         ...env
       },
-      stdio: ["pipe", "pipe", "inherit"]
+      stdio: ["pipe", "pipe", "inherit"],
+      windowsHide: true
     });
     return new ExampleProcess(child);
   }

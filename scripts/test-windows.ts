@@ -68,7 +68,8 @@ function runFile(file: string) {
     ], {
       cwd: PACKAGE_ROOT,
       env: backgroundEnvironment(),
-      stdio: "ignore"
+      stdio: "ignore",
+      windowsHide: true
     });
     let isTimedOut = false;
     const timer = setTimeout(() => {
