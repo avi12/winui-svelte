@@ -22,7 +22,7 @@ Then I stumbled upon [node-winui](https://github.com/microsoft/winappCli/blob/ma
 </script>
 
 <StackPanel padding={24} spacing={12}>
-  <TextBlock text="Hello from WinUI" fontSize={24} />
+  <TextBlock fontSize={24}>Hello from WinUI</TextBlock>
   <ToggleSwitch bind:isOn header="Lights" />
 </StackPanel>
 ```
@@ -863,7 +863,7 @@ elements of a component (`<border>`, `<text-block>`), with the functions of
 
 {#if isShown}
   <border padding="16" transition:fly={{ y: 40, duration: 300 }}>
-    <text-block text="Hello"></text-block>
+    <text-block>Hello</text-block>
   </border>
 {/if}
 ```

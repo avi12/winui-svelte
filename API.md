@@ -451,7 +451,7 @@ type of each kind come from the table in `scripts/codegen/emit.ts`
 
 <ListView items={rows} key={row => row.id} itemContainerStyle="row">
   {#snippet item(row)}
-    <TextBlock text={row.name} />
+    <TextBlock>{row.name}</TextBlock>
   {/snippet}
 </ListView>
 
