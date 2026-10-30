@@ -28,11 +28,22 @@ export type TrayScheduler = (options: {
   onTick: () => void;
 }) => () => void;
 
+/** The icon beside a balloon's title. */
+export const TrayBalloonIcon = {
+  NONE: "none",
+  INFO: "info",
+  WARNING: "warning",
+  ERROR: "error"
+} as const;
+
+/** One of `TrayBalloonIcon`'s values. */
+export type TrayBalloonIcon = (typeof TrayBalloonIcon)[keyof typeof TrayBalloonIcon];
+
 /** The text of a balloon `notify` shows. */
 export interface BalloonOptions {
   readonly title: string;
   readonly body?: string;
-  readonly icon?: "none" | "info" | "warning" | "error";
+  readonly icon?: TrayBalloonIcon;
   readonly isSilent?: boolean;
 }
 
@@ -93,10 +104,10 @@ interface CoreOptions extends TrayIconOptions {
 }
 
 const BALLOON_ICONS = {
-  none: BalloonIcon.none,
-  info: BalloonIcon.info,
-  warning: BalloonIcon.warning,
-  error: BalloonIcon.error
+  [TrayBalloonIcon.NONE]: BalloonIcon.none,
+  [TrayBalloonIcon.INFO]: BalloonIcon.info,
+  [TrayBalloonIcon.WARNING]: BalloonIcon.warning,
+  [TrayBalloonIcon.ERROR]: BalloonIcon.error
 } as const;
 
 let nextId = FIRST_ID;
@@ -326,7 +337,7 @@ export function createTrayIconWith(options: CoreOptions) {
         balloon: {
           title: balloon.title,
           body: balloon.body ?? "",
-          icon: BALLOON_ICONS[balloon.icon ?? "info"],
+          icon: BALLOON_ICONS[balloon.icon ?? TrayBalloonIcon.INFO],
           isSilent: balloon.isSilent ?? false
         }
       });

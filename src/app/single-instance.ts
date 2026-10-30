@@ -4,9 +4,19 @@ import { z } from "zod";
 
 type AppActivationArguments = ReturnType<AppInstance["getActivatedEventArgs"]>;
 
-const kindNames = new Map<number, string>(
-  Object.entries(ExtendedActivationKind).map(([name, value]) => [value, name])
-);
+const UNKNOWN_KIND = "Unknown";
+
+/** The name of an activation's `ExtendedActivationKind` member, or `Unknown`. */
+export type ActivationKindName = keyof typeof ExtendedActivationKind | typeof UNKNOWN_KIND;
+
+function isKindName(name: string): name is keyof typeof ExtendedActivationKind {
+  return Object.hasOwn(ExtendedActivationKind, name);
+}
+
+function kindNameOf(kind: number) {
+  const names = Object.keys(ExtendedActivationKind).filter(isKindName);
+  return names.find(name => ExtendedActivationKind[name] === kind) ?? UNKNOWN_KIND;
+}
 
 // What an activation's data holds that an app reads: the command line of a
 // launch, from ILaunchActivatedEventArgs or ICommandLineActivatedEventArgs.
@@ -17,7 +27,7 @@ const launchDataSchema = z.looseObject({
 /** An activation that another copy of the app redirected to this one. */
 export interface Activation {
   /** The `ExtendedActivationKind` member's name, such as `Launch` or `File`; `Unknown` if not known. */
-  readonly kind: string;
+  readonly kind: ActivationKindName;
 
   /** The command line the other copy was started with, when the activation carries one. */
   readonly commandLine?: string;
@@ -73,8 +83,8 @@ const heldInstances = new Set<RegisteredInstance>();
 function activationOf(args: AppActivationArguments) {
   const parsed = launchDataSchema.safeParse(args.data);
   const commandLine = parsed.success ? parsed.data.arguments : undefined;
-  const base = {
-    kind: kindNames.get(args.kind) ?? "Unknown",
+  const base: Activation = {
+    kind: kindNameOf(args.kind),
     data: args.data
   };
   const hasCommandLine = commandLine !== undefined;
