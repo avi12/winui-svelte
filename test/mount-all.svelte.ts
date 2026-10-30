@@ -689,11 +689,11 @@ function checkBehaviours({ connectors, failures }: {
   });
 
   check({
-    name: "an event prop is called (ToggleSwitch.onToggled)",
+    name: "an event prop is called (ToggleSwitch.ontoggled)",
     action() {
       const toggle = new bindings.ToggleSwitch();
       let calls = 0;
-      function onToggled() {
+      function ontoggled() {
         calls++;
       }
 
@@ -701,7 +701,7 @@ function checkBehaviours({ connectors, failures }: {
         connect: connectorFor("ToggleSwitch"),
         control: toggle,
         props: {
-          onToggled
+          ontoggled
         },
         bound: {}
       });
@@ -1078,7 +1078,7 @@ function checkComponentThroughRenderer(failures: Failure[]) {
       props: {
         isOn: true,
         header: "Hi",
-        onToggled() {
+        ontoggled() {
           toggles++;
         }
       }
@@ -1097,7 +1097,7 @@ function checkComponentThroughRenderer(failures: Failure[]) {
 
     const hasHandlerRun = toggles !== 0;
     if (!hasHandlerRun) {
-      throw new Error("onToggled was not called when the prop turned the switch off");
+      throw new Error("ontoggled was not called when the prop turned the switch off");
     }
   } catch (error) {
     failures.push({

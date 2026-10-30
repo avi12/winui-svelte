@@ -146,7 +146,7 @@
   <Navigator {@attach found("navigator")} bind:handle={navigator} />
   <Navigator
     {@attach found("readyNavigator")}
-    onReady={ready => ready.navigate({
+    onready={ready => ready.navigate({
       page: NavigationPage,
       params: {
         label: "Ready"
