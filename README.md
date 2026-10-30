@@ -903,6 +903,60 @@ which loads in plain Node
 [`src/state/README.md`](src/state/README.md) has the
 protocol and the tests
 
+## Drag and drop, pickers and the clipboard
+
+`winui-svelte/data-transfer` (opt-in) brings the web's data transfer to WinUI:
+the drag events with a `DragEvent` and a `dataTransfer`, files as `NativeFile`
+(like the web's `File`, read from the path with Node), an `accept` filter like
+`<input accept>`, file and folder dialogs, the clipboard and the launcher
+
+```svelte
+<script lang="ts">
+  import { clipboard, dropzone, enableDragEvents, filePicker, launchUri } from "winui-svelte/data-transfer";
+  import type { DragEvent } from "winui-svelte/data-transfer";
+  import { Border, Button, TextBlock } from "winui-svelte/components";
+
+  enableDragEvents();
+  let isOver = $state(false);
+  let names = $state<string[]>([]);
+</script>
+
+<!-- files dragged from Explorer, filtered by accept -->
+<Border
+  class={isOver ? "zone over" : "zone"}
+  {@attach dropzone({
+    accept: ".png,.jpg,image/*",
+    onDragStateChange: state => (isOver = state),
+    onDrop: event => (names = event.dataTransfer.files.map(file => file.name))
+  })}
+>
+  <TextBlock>Drop pictures here</TextBlock>
+</Border>
+
+<!-- the same events as HTML, on a raw element -->
+<border
+  ondragover={(event: DragEvent) => event.preventDefault()}
+  ondrop={async (event: DragEvent) => console.log(await event.dataTransfer.files[0]?.text())}
+>
+  <text-block text="Drop a text file"></text-block>
+</border>
+
+<Button {@attach filePicker({ accept: "image/*", multiple: true, onPick: files => (names = files.map(file => file.name)) })}>
+  Choose
+</Button>
+<Button onClick={() => clipboard.writeText("copied")}>Copy</Button>
+<Button onClick={() => launchUri("https://example.com")}>Open</Button>
+```
+
+Dragging out (`ondragstart`, `draggable({ files })`), the `drag` event, the
+clipboard's HTML, files and pictures, `pickSaveFile`, `revealInExplorer` and the
+share pane are in [API.md](API.md#data-transfer-winui-sveltedata-transfer)
+Unpackaged apps cannot open the share pane (it needs a package identity) and
+get no scheme handler list from the launcher; everything else on this page runs
+from `node.exe`
+Raw elements take the web names after `enableDragEvents()`; components take the
+attachments, because a component prop would pull this code into every app
+
 ## Entry points
 
 | Specifier | What |
@@ -921,6 +975,7 @@ protocol and the tests
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/app` | single-instance handling and app notifications |
+| `winui-svelte/data-transfer` | web-shaped drag and drop, `NativeFile`, pickers, the clipboard and the launcher (opt-in) |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
 | `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
@@ -962,6 +1017,16 @@ Stated plainly, so nobody finds them by surprise:
   the supported platforms; no entry point does work when imported
   The
   Windows App SDK runtime must be installed; the package does not install it
+- **Drag and drop has gaps WinUI leaves.** The `drag` event on a source is
+  emulated by a 50 ms timer that reads the cursor (WinUI has none), `setDragImage`
+  is accepted but WinUI draws its own preview of the data, `relatedTarget` is
+  always null, and a component takes the web names only through the
+  `dropzone` and `draggable` attachments (a raw element takes them after
+  `enableDragEvents()`)
+  The share pane needs a package identity, so `share` throws
+  `ShareUnavailableError` from a plain Node.js or Electron process, and the
+  clipboard and launcher calls run on the UI thread
+
 - **The tray icon hears the mouse by polling.** WinUI has no tray API, and
   dynwinrt cannot make a JavaScript function a native window procedure, so
   `winui-svelte/tray` reads the pointer and the buttons every 30 ms instead of

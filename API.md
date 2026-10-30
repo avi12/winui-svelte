@@ -29,6 +29,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
+| `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
 
@@ -1432,6 +1433,188 @@ would show, and this one lives and dies with the WinUI window's process
 
 The working example is `examples/services` (`test/services.test.ts` runs it in
 a real window; the dialogs themselves need a person and are not opened there)
+
+## Data transfer (`winui-svelte/data-transfer`)
+
+Drag and drop, file dialogs, the clipboard and the launcher, in the web's
+shapes, over `Windows.ApplicationModel.DataTransfer`, `Windows.Storage` and
+`Windows.System`
+Opt-in: nothing is bundled until an app imports it, and importing does no work
+Everything runs on the UI thread, from an unpackaged app
+
+### Files: `NativeFile`
+
+A dropped, picked or pasted file or folder is a `NativeFile`, shaped like the
+web's `File`: `path`, `name`, `size`, `type` (by extension), `lastModified`,
+`kind` (`FileKind.file` or `FileKind.directory`), `text()`, `bytes()`,
+`arrayBuffer()`, `stream()` and, for a folder, `entries()`
+It reads from the path with `node:fs`, so no WinRT stream is involved
+A picture from the clipboard is a `NativeFile` with an empty `path` and its
+bytes in memory
+`nativeFileAt(path)` makes one from a path
+
+### Drag events as on the web
+
+```svelte
+<script lang="ts">
+  import { enableDragEvents } from "winui-svelte/data-transfer";
+  import type { DragEvent } from "winui-svelte/data-transfer";
+
+  enableDragEvents();   // once, before the first window
+</script>
+
+<border
+  ondragover={(event: DragEvent) => {
+    event.preventDefault();               // accept, as on the web
+    event.dataTransfer.dropEffect = "copy";
+  }}
+  ondrop={async (event: DragEvent) => {
+    for (const file of event.dataTransfer.files) {
+      console.log(file.name, await file.text());
+    }
+  }}
+>
+  <text-block text="Drop here"></text-block>
+</border>
+
+<text-block
+  ondragstart={(event: DragEvent) => event.dataTransfer.setData("text/plain", "hello")}
+  ondrag={(event: DragEvent) => console.log(event.clientX, event.clientY)}
+  ondragend={(event: DragEvent) => console.log(event.dataTransfer.dropEffect)}
+  text="Drag me"
+></text-block>
+```
+
+`enableDragEvents()` adds the seven names to the renderer's event-alias table
+(`src/renderer/host/event-adapters.ts`, empty until then), so a raw element
+(`<border>`, `<text-block>`, any control) takes them
+A WinUI-named event on the same element (`ondragstarting`, `ondropcompleted`)
+keeps working and keeps WinUI's own arguments
+A handler for a drop event sets AllowDrop on the control, and one for
+`ondragstart` sets CanDrag; the control gives them back when the last handler
+goes
+Components (`<Border>`) take no `ondrop` prop; use the attachments below on a
+component
+
+| Web event | WinUI | Notes |
+|---|---|---|
+| `dragstart` | `DragStarting` | fills `dataTransfer` (`setData`, `items.add`, `files`); `preventDefault()` cancels; the handler may be async; the data package is built when it returns |
+| `drag` | none | emulated: every 50 ms from the start of the drag to its end, with the cursor read by `GetCursorPos` (read only) and converted to window coordinates |
+| `dragend` | `DropCompleted` | `dataTransfer.dropEffect` is what the target did, `none` when cancelled |
+| `dragenter`, `dragover` | `DragEnter`, `DragOver` | the cursor shows the effect; `types` is readable, the files and text are not yet, as on the web |
+| `dragleave` | `DragLeave` | |
+| `drop` | `Drop` | all data is read first (a deferral keeps the drop open); `files` are `NativeFile` |
+
+A target accepts a drag when a `dragenter` or `dragover` handler calls
+`event.preventDefault()`; with no such handler (only `ondrop`) every drag is
+accepted
+`dropEffect` starts as the source's preferred effect (copy, then move, then
+link) and the handler may change it; the cursor and the source's
+`DropCompleted` get that effect
+`event.setFeedback({ caption, isGlyphVisible, isContentVisible })` changes
+WinUI's drag visual while over a target
+
+`DragEvent` has `type`, `target`, `currentTarget`, `relatedTarget` (always
+null), `dataTransfer`, `clientX`/`clientY` (window content, in device-independent
+pixels), `offsetX`/`offsetY` (the control), `altKey`, `ctrlKey`, `shiftKey`,
+`defaultPrevented`, `preventDefault()` and `stopPropagation()`
+
+`DataTransfer` has `types`, `files`, `items` (`DataTransferItemList`: `length`,
+`at`, `add`, iteration; items have `kind`, `type`, `getAsString`, `getAsFile`),
+`getData(type)`, `setData(type, value)`, `clearData(type?)`, `effectAllowed`
+(`EffectAllowed`), `dropEffect` (`DropEffect`), `setDragImage` (accepted, WinUI
+draws its own preview) and `bitmap` (a picture to drag)
+The standard formats are `text/plain` (Text), `text/html` (the fragment of the
+HTML format), `text/uri-list` (Uri), `Files` (StorageItems) and, for a picture,
+a `NativeFile` in `files`; any other format id is a custom text format, listed
+in `types` and readable when named in `formats`
+
+### Attachments: `dropzone`, `draggable`, `filePicker`
+
+```svelte
+<Border {@attach dropzone({
+  accept: ".png,.jpg,image/*,directory",
+  isSingle: false,
+  onDragStateChange: isOver => (highlight = isOver),
+  onDrop: event => add(event.dataTransfer.files),
+  onReject: event => warn(event.dataTransfer.files)
+})}>
+
+<TextBlock {@attach draggable({ text: "hello", files: [file], effectAllowed: "copy" })}>
+<Button {@attach filePicker({ accept: "image/*", multiple: true, onPick: files => add(files) })}>
+```
+
+`dropzone(options)`: the simple form of a target, for components and elements
+`accept` is `<input accept>`'s grammar, as a string or a list: extensions
+(`.png`), media types (`image/*`, `text/plain`) and the kinds of `DataKind`
+(`file`, `directory`, `text`, `html`, `uri`, `bitmap`); empty accepts all
+A drag is judged by its kinds while over the zone (the cursor shows the
+forbidden sign for the rest) and the dropped files by name and type; those that
+fail go to `onReject`
+`isSingle` keeps the first passing file
+`formats` names custom text formats to read on the drop
+`onDragStateChange(isOver)` is the hook for a highlight (set a class from it)
+An element with no background gets a transparent one while it is a zone,
+because WinUI only hits painted areas; put `dropzone` on the root element of the
+window's content to take drops anywhere on the window
+`onDragEnter`, `onDragOver`, `onDragLeave` and `onDrop` take the same
+`DragEvent` as the web names
+
+`draggable(options)`: `text`, `html`, `uri`, `files`, `bitmap`, `effectAllowed`,
+and `onDragStart` / `onDrag` / `onDragEnd`
+Drag out to Explorer works with `files` (paths become `StorageFile` and
+`StorageFolder`)
+
+`filePicker(options)`: a click on the element opens `pickFiles` over its
+window and calls `onPick` with the files; not called on cancel
+
+### Pickers
+
+`pickFiles({ owner, accept, multiple, directory, title, commitButtonText,
+startIn, startFolder, settingsIdentifier })` returns `NativeFile[]` (empty on
+cancel); `pickSaveFile({ owner, accept, suggestedFileName, defaultFileExtension,
+... })` returns a path or null
+`owner` is a control (its window comes from its XamlRoot) or a `WindowHandle`
+`accept` gives the file type filter (media types become their extensions);
+`["directory"]` alone, or `directory: true`, picks a folder
+`startIn` is `PickerLocation` (the same table as `WindowHandle`'s dialogs; the
+picker code in `src/window/pickers.ts` is the one used)
+
+### Clipboard
+
+`clipboard.readText()`, `readHtml()`, `read({ formats })` (a `DataTransfer`),
+`types()`, `writeText(text)`, `write({ text, html, uri, files, bitmap, custom,
+shouldPersist })`, `clear()` and `onChange(callback)` (returns what stops it)
+`write` replaces the clipboard's whole content
+
+### Launcher and share
+
+`launchUri(url)`, `launchFile(path)`, `openFolder(path)` and
+`revealInExplorer(path)` (starts `explorer.exe /select`, because the Launcher
+cannot select an item)
+`share({ title, text, html, uri, files })` opens the share pane and throws
+`ShareUnavailableError` where Windows has none for the process
+
+What works from an unpackaged process (checked from `node.exe`): the drag and
+drop data mapping on real `DataPackage` objects (text, HTML, link, custom
+formats, files, folders, a picture), `Clipboard.GetContent` and the Launcher
+queries
+The share pane does not: `DataTransferManager.GetForCurrentView` fails with
+"cannot be called while the app is in the background" without a package
+identity (the interop call `GetForWindow` is not in the metadata, so the
+bindings cannot make it)
+The Launcher's `findUriSchemeHandlers` returns none without identity
+
+### Names and testing
+
+`FormatType` names the standard formats (`text/plain`, `text/html`,
+`text/uri-list`, `Files`, `image/png`); `DropEventType` (`dragenter`, `dragover`,
+`dragleave`, `drop`) and `DragSourceEventType` (`dragstart`, `drag`, `dragend`)
+name the events `enableDragEvents` adds
+`simulateDrop({ control, transfer })` drops a `DataTransfer` on a control that
+takes drops, through the handlers a real drop reaches, and resolves with the
+operation the control accepted (`0` when it refused); it sends no input, so an
+app can test its drop handling in a real window
 
 ## Win2D (`winui-svelte/win2d`)
 
