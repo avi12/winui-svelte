@@ -13,16 +13,20 @@ import {
 import { textTransforms } from "./text-transforms.ts";
 import { fakeInputs } from "#src/css/media/fake-inputs.js";
 import type { MediaChange, MediaInputs, MediaStore } from "#src/css/media/features.js";
+import type { ClipShape } from "#src/css/parse/clip-shapes.js";
+import { isNoEffect } from "#src/css/parse/visual-effects.js";
+import type { VisualEffects } from "#src/css/parse/visual-effects.js";
 import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import { clipGroups } from "#src/css/translate/clip-properties.js";
 import { compatGroups } from "#src/css/translate/compat-properties.js";
 import { containerGroups } from "#src/css/translate/container-properties.js";
-import { effectGroups } from "#src/css/translate/effect-properties.js";
 import { focusGroups } from "#src/css/translate/focus-properties.js";
 import { queryGroups } from "#src/css/translate/query-properties.js";
 import { resourceGroups } from "#src/css/translate/resource-properties.js";
 import { transformGroups } from "#src/css/translate/transform-properties.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
+import { visualEffectGroups } from "#src/css/translate/visual-effect-properties.js";
 import type { NativeValue } from "#src/native-value.js";
 import { read } from "#src/renderer/host/reflect.js";
 import assert from "node:assert/strict";
@@ -162,9 +166,6 @@ const fakeNative: CssNative = {
     return () => fakeControl.handlers.delete(event);
   },
   read: ({ control, property }) => fake(control).properties[property],
-  clip({ control, rect }) {
-    fake(control).assigned["clip"] = rect;
-  },
   animate({ control, storyboards, hasTransform, brushes }) {
     const { animations, brushes: animatedBrushes } = fake(control);
     animatedBrushes.push(...brushes.map(({ property, color }) => `${property}:${color}`));
@@ -806,31 +807,64 @@ test("an animation that names no @keyframes fails when the element is styled", (
   unregisterStyleSheet("missing.svelte");
 });
 
-test("a clip-path inset clips the element to its size and unclips with the class", () => {
-  registerPropertyGroups(effectGroups());
+// What a window would draw with, as the calls it was given.
+function recordingHost() {
+  const calls: string[] = [];
+  return {
+    calls,
+    host: {
+      setEffects({ effects }: {
+        control: object;
+        effects: VisualEffects;
+      }) {
+        calls.push(`effects ${isNoEffect(effects) ? "none" : JSON.stringify(effects.filter.map(step => step.kind))}`);
+      },
+      setClip({ shape }: {
+        control: object;
+        shape: ClipShape | null;
+      }) {
+        calls.push(`clip ${shape?.kind ?? "none"}`);
+      }
+    }
+  };
+}
+
+test("a clip-path shape clips the element with the class and unclips without it", () => {
+  const { calls, host } = recordingHost();
+  registerPropertyGroups(clipGroups(host));
   registerStyleSheet(
     sheet({
       id: "clip.svelte",
-      css: ".clipped { clip-path: inset(10px 5%) }"
+      css: ".clipped { clip-path: polygon(0 0, 100% 0, 50% 100%) }"
     })
   );
-  const target = control({
-    actualWidth: 200,
-    actualHeight: 100
-  });
   const element = styledElement({
-    control: target,
+    control: control(),
     elementType: "border"
   });
   element.setClasses("clipped");
-  assert.deepEqual(fake(target).assigned["clip"], {
-    x: 10,
-    y: 10,
-    width: 180,
-    height: 80
-  });
+  assert.deepEqual(calls, ["clip polygon"]);
   element.setClasses("");
-  assert.equal(fake(target).assigned["clip"], null);
+  assert.deepEqual(calls, ["clip polygon", "clip none"]);
+});
+
+test("filters, blend modes and masks are drawn as one graph, and taken off with the class", () => {
+  const { calls, host } = recordingHost();
+  registerPropertyGroups(visualEffectGroups(host));
+  registerStyleSheet(
+    sheet({
+      id: "filter.svelte",
+      css: ".soft { filter: blur(3px) sepia(1); mix-blend-mode: screen }"
+    })
+  );
+  const element = styledElement({
+    control: control(),
+    elementType: "border"
+  });
+  element.setClasses("soft");
+  assert.deepEqual(calls, ["effects [\"blur\",\"matrix\"]"]);
+  element.setClasses("");
+  assert.deepEqual(calls, ["effects [\"blur\",\"matrix\"]", "effects none"]);
 });
 
 test("a border-color transition animates the brush from the old color to the new one", () => {

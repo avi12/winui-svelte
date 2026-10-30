@@ -2,7 +2,6 @@ import * as bindings from "#src/components/generated/bindings.js";
 import { registerPropertyGroups, registerStyleSheet, styledElement } from "#src/css/index.js";
 import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
-import { effectGroups } from "#src/css/translate/effect-properties.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
 import { Window } from "#winui/microsoft/ui/xaml/Window";
 import assert from "node:assert/strict";
@@ -17,7 +16,6 @@ const SHEET = `
 @keyframes tint { from { background-color: #ff0000 } to { background-color: #0000ff } }
 .fade { animation: fade 400ms ease-in-out 100ms 2 alternate both }
 .spin { animation: spin 1s linear infinite }
-.clipped { clip-path: inset(2px 4px) }
 .tint { animation: tint 500ms steps(4, end) forwards }
 `;
 interface Checks {
@@ -60,7 +58,7 @@ export function checkCssEffects({ check }: Checks) {
     panel.children.append(control);
     return control;
   }
-  registerPropertyGroups([...animationGroups(), ...effectGroups()]);
+  registerPropertyGroups(animationGroups());
   registerStyleSheet(sheet());
 
   check({
@@ -102,21 +100,6 @@ export function checkCssEffects({ check }: Checks) {
         classNames: "tint"
       });
       assert.ok(border.background !== null, "the Background is not a brush of its own");
-      element.dispose();
-    }
-  });
-
-  check({
-    name: "clip-path inset sets a Clip and removes it with the class",
-    action() {
-      const border = hosted(new bindings.Border());
-      const element = styled({
-        control: border,
-        elementType: "border",
-        classNames: "clipped"
-      });
-      assert.ok(border.clip !== null, "the element has no Clip");
-      element.setClasses("");
       element.dispose();
     }
   });

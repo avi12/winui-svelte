@@ -32,8 +32,8 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["flex-wrap", "WinUI has no wrapping stack (WrapPanel is in the Community Toolkit)"],
   ["background-image", `a gradient ${OPT_IN}`],
   ["box-shadow", `a shadow ${OPT_IN}`],
-  ["filter", "WinUI has no filter: blur, grayscale, brightness and drop-shadow are Composition effects that need Win2D and ElementCompositionPreview, which the bindings lack; use backdrop-filter: blur() or an acrylic or Mica backdrop"],
-  ["backdrop-filter", `blur() ${OPT_IN}`],
+  ["filter", `a filter ${OPT_IN}`],
+  ["backdrop-filter", `a backdrop filter ${OPT_IN}`],
   ["transform", `a transform ${OPT_IN}`],
   ["transition", `a transition ${OPT_IN}`],
   ["animation", `an animation ${OPT_IN}`],
@@ -42,9 +42,9 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["text-indent", "WinUI has no text indent"],
   ["aspect-ratio", `a ratio ${OPT_IN}`],
   ["clip-path", `a clip ${OPT_IN}`],
-  ["mix-blend-mode", "WinUI has no blend modes: a Composition effect brush needs Win2D, which the bindings lack"],
-  ["mask", "WinUI has no opacity mask on an element: a Composition mask brush needs ElementCompositionPreview, which the bindings lack"],
-  ["mask-image", "WinUI has no opacity mask on an element: a Composition mask brush needs ElementCompositionPreview, which the bindings lack"]
+  ["mix-blend-mode", `a blend mode ${OPT_IN}`],
+  ["mask", `a mask ${OPT_IN}`],
+  ["mask-image", `a mask ${OPT_IN}`]
 ]);
 
 /** Why a property no group handles has no WinUI meaning, for the ones an author is likely to write. */

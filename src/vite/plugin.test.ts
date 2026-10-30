@@ -120,6 +120,17 @@ test("a component that imports svelte/motion turns it on, and one that uses neit
   assert.doesNotMatch(compiled("<border></border>\n"), /ElementAnimation/u);
 });
 
+test("a component that imports blur or draw turns the element effects on, and one that imports another transition does not", () => {
+  const effects = /import \{ enableElementEffects as winuiEnableElementEffects \} from "winui-svelte\/element-effects";\nwinuiEnableElementEffects\(\);/u;
+  for (const name of ["blur", "draw"]) {
+    const source = ["<script>", `  import { fade, ${name} } from "svelte/transition";`, "</script>", "<border transition:fade></border>", ""].join("\n");
+    assert.match(compiled(source), effects, name);
+  }
+
+  const fadeOnly = "<script>\n  import { fade } from \"svelte/transition\";\n</script>\n<border transition:fade></border>\n";
+  assert.doesNotMatch(compiled(fadeOnly), /ElementEffects/u);
+});
+
 test("svelte/motion's media query is read from the installed matchMedia, and loads before the DOM exists", () => {
   const patched = patchSvelteRuntime({
     filename: "/app/node_modules/svelte/src/reactivity/media-query.js",

@@ -49,7 +49,6 @@ export interface CssWinui {
     setTargetProperty(timeline: object, path: string): void;
   };
   CompositeTransform: new () => object;
-  RectangleGeometry: ProjectedType<object>;
   SolidColorBrush: ProjectedType<object>;
   XamlReader: { load(xaml: string): BoxedValue };
   PropertyValue: { createString(value: string): BoxedValue };
@@ -333,13 +332,6 @@ export function createCssNative(winui: CssWinui) {
       });
       const isParent = property === "parent" && typeof value === "object" && value !== null;
       return isParent ? asFrameworkElement(value) : value;
-    },
-    clip({ control, rect }) {
-      const geometry = rect === null ? null : winui.projectAs(
-        winui.XamlReader.load(`<RectangleGeometry ${XAML_NAMESPACES} Rect="${rect.x},${rect.y},${rect.width},${rect.height}"/>`),
-        winui.RectangleGeometry
-      );
-      Object.assign(control, { clip: geometry });
     },
     animate({ control, storyboards, hasTransform, brushes }) {
       const restores: Array<() => void> = [];

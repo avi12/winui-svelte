@@ -53,15 +53,20 @@ public static class ExampleWin {
   public static void Hide(IntPtr h) {
     SetWindowPos(h, IntPtr.Zero, -8000, 0, 0, 0, 0x0001 | 0x0004 | 0x0010);
   }
-  public static void Save(IntPtr h, string path) {
+  // The window as PrintWindow draws it, the frame and the caption included.
+  public static Bitmap Capture(IntPtr h) {
     RECT r;
     GetWindowRect(h, out r);
-    using (var b = new Bitmap(r.R - r.L, r.B - r.T)) {
-      using (var g = Graphics.FromImage(b)) {
-        var dc = g.GetHdc();
-        PrintWindow(h, dc, 2);
-        g.ReleaseHdc(dc);
-      }
+    var b = new Bitmap(r.R - r.L, r.B - r.T);
+    using (var g = Graphics.FromImage(b)) {
+      var dc = g.GetHdc();
+      PrintWindow(h, dc, 2);
+      g.ReleaseHdc(dc);
+    }
+    return b;
+  }
+  public static void Save(IntPtr h, string path) {
+    using (var b = Capture(h)) {
       b.Save(path, ImageFormat.Png);
     }
   }

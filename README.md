@@ -952,8 +952,10 @@ build error with its file and line; nothing is silently ignored
 | `display: none`, `visibility`, `pointer-events`, `z-index`, `overflow` | `Visibility`, `IsHitTestVisible`, `Canvas.ZIndex`, the scroll bar visibilities |
 | `outline`, `outline-offset` | the focus visual: `FocusVisualPrimaryBrush`, `FocusVisualPrimaryThickness`, `FocusVisualMargin` |
 | `animation`, `@keyframes` | `Storyboard`s of key frames (opacity, size, colors, translate, scale, rotate, transform), begun with the class |
-| `box-shadow`, `clip-path: inset()`, `aspect-ratio`, `user-select`, `object-fit`, `line-clamp`, `word-break` | a `ThemeShadow` of the blur's depth, `UIElement.Clip`, a Height that follows the Width, `IsTextSelectionEnabled`, `Stretch`, `MaxLines`, `TextWrapping` |
-| `-winui-elevation`, `backdrop-filter: blur()` | a `ThemeShadow` lifted by its depth; an `AcrylicBrush` Background (the blur radius is ignored) |
+| `box-shadow`, `aspect-ratio`, `user-select`, `object-fit`, `line-clamp`, `word-break` | a `ThemeShadow` of the blur's depth, a Height that follows the Width, `IsTextSelectionEnabled`, `Stretch`, `MaxLines`, `TextWrapping` |
+| `-winui-elevation` | a `ThemeShadow` lifted by its depth |
+| `filter`, `backdrop-filter`, `mix-blend-mode`, `mask-image` | an effect graph of Win2D effects (Gaussian blur, colour matrix, blend, alpha mask) that the element's Composition visual is drawn through; `backdrop-filter` samples a real backdrop brush |
+| `clip-path`: `inset()` (with `round`), `circle()`, `ellipse()`, `polygon()`, `path()` | a `CompositionGeometricClip` on the element's visual |
 | `translate`, `scale`, `rotate`, `transform-origin`, `transition`; `transform` (translate, scale, rotate, skew, matrix) | the UIElement transforms, their pivot (`CenterPoint`, 50% 50% as in CSS) and their implicit transitions |
 | `var(--card-background-fill-color-default)` | `{ThemeResource CardBackgroundFillColorDefault}`: WinUI's own resources, so light and dark follow Windows |
 | `--name: value` on `:root`, or on a class | an app-wide resource, or one only the elements with that class (and their templates) see: `.danger { --button-background-pointer-over: red }` |
@@ -1031,7 +1033,7 @@ what is not covered
 Svelte's own `transition:`, `in:`, `out:` and `animate:` work on the raw
 elements of a component (`<border>`, `<text-block>`), with the functions of
 `svelte/transition` (`fade`, `fly`, `slide`, `scale`, `draw`, `crossfade`;
-`blur` fades without blurring), `svelte/animate` (`flip`) and `svelte/motion`
+`blur` blurs the element for real), `svelte/animate` (`flip`) and `svelte/motion`
 (`Tween`, `Spring`):
 
 ```svelte
@@ -1163,6 +1165,7 @@ attachments, because a component prop would pull this code into every app
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
+| `winui-svelte/element-effects` | `enableElementEffects` (the Vite plugin calls it from a component that imports `blur` or `draw`): the blur transition blurs for real and `draw` measures a `path`, with Composition and Win2D |
 | `winui-svelte/app` | single-instance handling over a named pipe, and app notifications |
 | `winui-svelte/data-transfer` | web-shaped drag and drop, `NativeFile`, pickers, the clipboard and the launcher (opt-in) |
 | `winui-svelte/media` | `bitmapImageOf`, `svgImageSourceOf`, `createMediaPlayer`: image sources and a windowless `MediaPlayer` (opt-in; [`API.md`](API.md#media-winui-sveltemedia)) |
@@ -1170,7 +1173,7 @@ attachments, because a component prop would pull this code into every app
 | `winui-svelte/forms` | `Form`, `FormField` and the attachments that join a control to a form by name, with HTML's constraint validation and zod (opt-in; [`API.md`](API.md#forms-winui-svelteforms)) |
 | `winui-svelte/devices`, `/devices/enumeration`, `/devices/input`, `/devices/bluetooth`, `/devices/printers`, `/devices/power`, `/devices/network`, `/devices/audio`, `/devices/display`, `/devices/gamepad`, `/devices/sensors` | device enumeration, input devices, Bluetooth, printers, power, network, displays, audio, gamepads, sensors: Windows' own device APIs as runes (opt-in; [`API.md`](API.md#windows-devices-winui-sveltedevices)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
-| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/queries`, `/css/environment`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, media preferences and display features, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
+| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/filter`, `/css/clip`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/queries`, `/css/environment`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, aspect ratio, filters and masks, clip shapes, focus visuals, surfaces, position and inset, media and container queries, media preferences and display features, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/preprocess`, `winui-svelte/stylelint`, `winui-svelte/vscode-css-data.json` | the editor side of the CSS: a Svelte preprocessor, a stylelint rule and VS Code custom data, all from the same validator and tables, so the editor, the linter and the build say the same thing ([`src/css/API.md`](src/css/API.md#diagnostics-in-the-editor-the-linter-and-the-build)) |
 
@@ -1266,10 +1269,10 @@ Stated plainly, so nobody finds them by surprise:
   Button handles `PointerPressed`) never reports it, so `:active` does nothing
   there
   Override the control's theme resources instead
-- **Transitions that WinUI cannot draw.** `blur` fades without blurring (no
-  element blur in WinUI without Composition effects), `draw` cannot measure a
-  `path` (a geometry has no length), and a directive goes on a raw element
-  (Svelte allows none on a component; wrap it in an element)
+- **Transitions on a raw element.** `blur` and `draw` need
+  `winui-svelte/element-effects` (the Vite plugin turns it on for a component
+  that imports either), and without it `blur` only fades; a directive goes on a
+  raw element, and a `<path>` takes a `Geometry` (not path data) for `draw`
 - **A leaving element and its panel.** In a keyed `{#each}` with `animate:` the
   siblings of a leaving element flip into place as it leaves when the panel has
   an axis (a `StackPanel`); in a `Grid` or `Canvas` the element keeps its place
@@ -1305,9 +1308,9 @@ Stated plainly, so nobody finds them by surprise:
   build errors that say what to write instead: `float`, `position: sticky`,
   `right` and `bottom`, `flex-wrap` (WinUI has no wrapping panel), `aspect-ratio`, a % size other than
   100%, `calc()` with a % or a variable, any unit but px, deg, s, ms and fr, container style queries, `:has()`, `:focus-within`,
-  `box-shadow` (use `-winui-elevation`), `filter` and `mix-blend-mode`
-  (Composition effects, which need `ElementCompositionPreview` and Win2D), `mask`
-  and a `clip-path` other than `inset()`
+  `box-shadow` (use `-winui-elevation`), `clip-path` as
+  `rect()` or `xywh()`, `mask-position`, `mask-size`, `mask-repeat` and `url()`
+  filters
   A container's `align-items`, `justify-content`, `place-items`, its children's
   `flex-grow`, `flex-basis` and `order`, and `display: flex` on a `<grid>` are
   lowered at build time into generated classes on the children (and the
@@ -1323,8 +1326,11 @@ Stated plainly, so nobody finds them by surprise:
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can
   declare custom properties only (a Style cannot depend on the scheme)
 - **Some CSS is opt-in, and approximate.** `transform` is a 2D RenderTransform
-  that a transition animates only as translate, rotate and scale in that order; `backdrop-filter: blur()` is an acrylic
-  that ignores the radius; `-winui-elevation` is a `ThemeShadow`, which needs
+  that a transition animates only as translate, rotate and scale in that order;
+  `filter`, `backdrop-filter`, `mix-blend-mode` and `mask-image` draw the element
+  through a sprite in its parent's child visual slot, so an element with one
+  draws over the later siblings it overlaps, and one whose parent already holds a
+  Composition child visual of its own cannot take one; `-winui-elevation` is a `ThemeShadow`, which needs
   Windows 11 (or receivers a Style cannot set); `outline` is the control's focus
   visual
   A custom property on a class applies when the class is on the element

@@ -51,9 +51,11 @@ export function createEffectBrush({ compositor, effect, sources }: {
  * (the CSS `filter` case). It sizes the sprite to the element's size now; call
  * it again after a resize.
  *
- * An element cannot be its own source: its child visual would then be part of
- * what it samples. Put the content in one element, the effect over it in a
- * sibling, and name the first as the source.
+ * An element cannot be its own source here: its child visual would then be
+ * part of what it samples. `elementVisualOf` (and the CSS properties built on
+ * it) draws an element through an effect by hosting the sprite in its
+ * parent's child visual slot; here, put the content in one element, the
+ * effect over it in a sibling, and name the first as the source.
  *
  * @returns a function that removes the effect
  */
