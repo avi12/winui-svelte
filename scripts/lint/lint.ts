@@ -26,7 +26,7 @@ interface Step {
 const STEPS: Step[] = [
   {
     name: "check:webstorm",
-    needs: []
+    needs: [BUILD]
   },
   {
     name: BUILD,
