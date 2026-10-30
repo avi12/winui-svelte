@@ -72,7 +72,10 @@ function run({ command, args, cwd, env = {} }: {
 }) {
   return spawnSync(command, args, {
     cwd,
-    env: { ...process.env, ...env },
+    env: {
+      ...process.env,
+      ...env
+    },
     encoding: "utf8",
     shell: command === "pnpm",
     timeout: TIMEOUT_MILLISECONDS
@@ -81,7 +84,13 @@ function run({ command, args, cwd, env = {} }: {
 
 function installElectron() {
   mkdirSync(SMOKE_FOLDER, { recursive: true });
-  writeFileSync(path.join(SMOKE_FOLDER, "package.json"), JSON.stringify({ name: "electron-smoke", private: true, version: "0.0.0" }));
+  writeFileSync(
+    path.join(SMOKE_FOLDER, "package.json"), JSON.stringify({
+      name: "electron-smoke",
+      private: true,
+      version: "0.0.0"
+    })
+  );
   const isInstalled = existsSync(path.join(ELECTRON_FOLDER, "path.txt"));
   if (isInstalled) {
     return;
@@ -106,14 +115,14 @@ const check = run({
   args: ["--check", MAIN_FILE],
   cwd: SMOKE_FOLDER
 });
-const isSyntaxValid = check.status === 0;
-if (!isSyntaxValid) {
+const IS_SYNTAX_VALID = check.status === 0;
+if (!IS_SYNTAX_VALID) {
   throw new Error(`the Electron main file does not parse: ${check.stderr}`);
 }
 
-const electronPath = path.join(ELECTRON_FOLDER, "dist", "electron.exe");
+const ELECTRON_PATH = path.join(ELECTRON_FOLDER, "dist", "electron.exe");
 const result = run({
-  command: electronPath,
+  command: ELECTRON_PATH,
   args: [MAIN_FILE],
   cwd: PACKAGE_ROOT,
   env: {
@@ -124,5 +133,5 @@ const result = run({
 });
 process.stdout.write(result.stdout);
 process.stderr.write(`${result.stderr}${result.error ?? ""}`);
-const isWorking = result.status === 0 && result.stdout.includes(OK_MARKER);
-process.exitCode = isWorking ? 0 : 1;
+const IS_WORKING = result.status === 0 && result.stdout.includes(OK_MARKER);
+process.exitCode = IS_WORKING ? 0 : 1;

@@ -831,6 +831,6 @@ test("a calc of px reaches the sheet as the px it comes to", () => {
     css: ".t { width: calc(160px + 80px); height: 12px }",
     resources
   });
-  const declarations = translation.sheet.rules[0]?.declarations.map(declaration => [declaration.property, declaration.value]);
+  const declarations = translation.sheet.rules[0]?.declarations.map(({ property, value }) => [property, value]);
   assert.deepEqual(declarations, [["width", "240px"], ["height", "12px"]]);
 });

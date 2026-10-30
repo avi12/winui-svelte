@@ -163,11 +163,13 @@ function entryOutputs({ input, reader, entry }: {
   const milliseconds = time === undefined ? null : parseMilliseconds(time);
   const isBorderColor = name === BORDER_COLOR && milliseconds !== null;
   if (isBorderColor) {
-    outputs.push(...borderColorWrite({
-      input,
-      durationMs: milliseconds,
-      rest
-    }));
+    outputs.push(
+      ...borderColorWrite({
+        input,
+        durationMs: milliseconds,
+        rest
+      })
+    );
     return outputs;
   }
 

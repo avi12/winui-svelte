@@ -50,6 +50,7 @@ function endOf({ css, from }: {
       quote,
       character
     });
+
     if (isInString) {
       continue;
     }

@@ -1,7 +1,7 @@
 import * as bindings from "#src/components/generated/bindings.js";
 import { registerPropertyGroups, registerStyleSheet, styledElement } from "#src/css/index.js";
-import { compatGroups } from "#src/css/translate/compat-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import { compatGroups } from "#src/css/translate/compat-properties.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
 import assert from "node:assert/strict";
 

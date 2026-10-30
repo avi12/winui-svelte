@@ -2,8 +2,8 @@ import type { FrameworkElement, Window } from "#src/winui.js";
 import {
   DesktopAcrylicController,
   DesktopAcrylicKind,
-  ICompositionSupportsSystemBackdrop,
   ElementTheme,
+  ICompositionSupportsSystemBackdrop,
   SystemBackdropConfiguration,
   SystemBackdropTheme,
   WindowActivationState
@@ -46,9 +46,9 @@ export function attachAcrylic({ window, content, variant }: {
   controller.kind = variant;
   const configuration = new SystemBackdropConfiguration();
   configuration.isInputActive = true;
-  const followTheme = () => {
+  function followTheme() {
     configuration.theme = BACKDROP_THEMES.get(content.actualTheme) ?? SystemBackdropTheme.Default;
-  };
+  }
   followTheme();
   const unsubscribeTheme = content.onActualThemeChanged(followTheme);
   const target = window.as(ICompositionSupportsSystemBackdrop);

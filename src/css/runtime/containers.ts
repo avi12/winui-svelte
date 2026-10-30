@@ -1,5 +1,6 @@
 import type { Viewport } from "#src/css/parse/media.js";
 import type { NativeValue } from "#src/native-value.js";
+import { call, isRecord, read } from "#src/renderer/host/reflect.js";
 
 /** What finding and watching a container needs of WinUI: the seam's `read` and `subscribe`. */
 export interface ContainerNative {
@@ -22,14 +23,14 @@ function isObject(value: NativeValue): value is object {
   return typeof value === "object" && value !== null;
 }
 
-interface WinuiProjection {
-  readonly _obj: {
-    identityRaw(): number;
-  };
-}
+// dynwinrt keeps the native object of a projection in a member of this name.
+const NATIVE_OBJECT_KEY = "_obj";
 
-function isWinuiProjection(value: object): value is WinuiProjection {
-  return "_obj" in value && typeof value._obj === "object" && value._obj !== null && "identityRaw" in value._obj;
+// The native object's identity; null for a value that is not a projection.
+function nativeIdentityOf(value: object) {
+  const nativeObject = read(value, NATIVE_OBJECT_KEY);
+  const identity = isRecord(nativeObject) ? call(nativeObject, "identityRaw") : null;
+  return typeof identity === "number" ? identity : null;
 }
 
 /**
@@ -38,7 +39,7 @@ function isWinuiProjection(value: object): value is WinuiProjection {
  * of its native object.
  */
 function identityOf(control: object) {
-  return isWinuiProjection(control) ? control._obj.identityRaw() : control;
+  return nativeIdentityOf(control) ?? control;
 }
 
 /** Makes `control` a container under these names (space separated; empty for none); returns what undoes it. */
@@ -63,7 +64,11 @@ function isNamed({ names, name }: {
   return name === ANY_NAME || names.split(NAME_SEPARATOR).includes(name);
 }
 
-/** The nearest ancestor of `control` that is a container with this name (any container for an empty name), as the control that was registered: what `parent` reads is a bare DependencyObject. */
+/**
+ * The nearest ancestor of `control` that is a container with this name (any
+ * container for an empty name), as the control that was registered: what
+ * `parent` reads is a bare DependencyObject.
+ */
 function containerOf({ control, name, native }: {
   control: object;
   name: string;
@@ -177,7 +182,9 @@ export class ContainerWatch {
       native: this.native
     });
     const known = this.watched.get(name);
-    const isUnchanged = known !== undefined && container !== null && identityOf(known.container) === identityOf(container);
+    const isSameContainer = known !== undefined && container !== null
+      && identityOf(known.container) === identityOf(container);
+    const isUnchanged = isSameContainer;
     if (isUnchanged) {
       return;
     }
