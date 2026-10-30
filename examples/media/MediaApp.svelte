@@ -96,16 +96,16 @@
     await bitmap.renderAsync(native);
     const bytes = (await bitmap.getPixelsAsync()).toBuffer();
     const { pixelWidth, pixelHeight } = bitmap;
-    const at = (fraction: number) => {
+    function pixelAt(fraction: number) {
       const start = (Math.floor(pixelHeight / 2) * pixelWidth + Math.floor(pixelWidth * fraction)) * PIXEL_BYTES;
       const [blue = 0, green = 0, red = 0, alpha = 0] = bytes.subarray(start, start + PIXEL_BYTES);
       return [red, green, blue, alpha];
-    };
+    }
 
     return {
       width: pixelWidth,
-      left: at(LEFT_QUARTER),
-      right: at(RIGHT_QUARTER)
+      left: pixelAt(LEFT_QUARTER),
+      right: pixelAt(RIGHT_QUARTER)
     };
   }
 
@@ -144,9 +144,16 @@
     });
   }
 
+  function reportError(error: unknown) {
+    host.report({
+      kind: "error",
+      message: String(error)
+    });
+  }
+
   const commands = new Map<string, (command: ExampleCommand) => void>([
-    ["images", () => void reportImages()],
-    ["play", () => void playTone().then(reportAudio)],
+    ["images", () => reportImages().catch(reportError)],
+    ["play", () => playTone().then(reportAudio).catch(reportError)],
     ["audio", reportAudio],
     ["close", () => exitApplication()]
   ]);

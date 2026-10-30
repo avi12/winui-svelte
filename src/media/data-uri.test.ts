@@ -25,5 +25,5 @@ test("a data URI without a comma is refused", () => {
 test("only a data: scheme is a data URI", () => {
   assert.equal(isDataUri(" DATA:image/png;base64,AA=="), true);
   assert.equal(isDataUri("https://example.com/a.png"), false);
-  assert.equal(isDataUri("C:\images\a.png"), false);
+  assert.equal(isDataUri("C:\\images\\a.png"), false);
 });

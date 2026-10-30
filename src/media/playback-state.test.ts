@@ -127,7 +127,8 @@ test("volume and mute follow their own events", () => {
 
 test("a poll refreshes the state without an event, and stops with the state", () => {
   const player = new FakePlayer();
-  let tick = () => {};
+  function idle() {}
+  let tick = idle;
   let isPolling = false;
   const { state, stop } = observePlayback({
     player,

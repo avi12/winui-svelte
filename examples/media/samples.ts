@@ -104,23 +104,46 @@ export function sineWav(milliseconds: number) {
     pcm.writeInt16LE(Math.round(SINE_AMPLITUDE * Math.sin(angle)), i * WAV_BYTES_PER_SAMPLE);
   }
 
-  const field = (value: number, bytes: number) => littleEndian({
-    value,
-    bytes
-  });
   return new Uint8Array(Buffer.concat([
     Buffer.from("RIFF", "ascii"),
-    field(WAV_HEADER_AFTER_RIFF_BYTES + pcm.length, WORD_BYTES),
+    littleEndian({
+      value: WAV_HEADER_AFTER_RIFF_BYTES + pcm.length,
+      bytes: WORD_BYTES
+    }),
     Buffer.from("WAVEfmt ", "ascii"),
-    field(WAV_FORMAT_CHUNK_BYTES, WORD_BYTES),
-    field(WAV_FORMAT_PCM, HALF_WORD_BYTES),
-    field(1, HALF_WORD_BYTES),
-    field(WAV_RATE, WORD_BYTES),
-    field(WAV_RATE * WAV_BYTES_PER_SAMPLE, WORD_BYTES),
-    field(WAV_BYTES_PER_SAMPLE, HALF_WORD_BYTES),
-    field(WAV_BITS, HALF_WORD_BYTES),
+    littleEndian({
+      value: WAV_FORMAT_CHUNK_BYTES,
+      bytes: WORD_BYTES
+    }),
+    littleEndian({
+      value: WAV_FORMAT_PCM,
+      bytes: HALF_WORD_BYTES
+    }),
+    littleEndian({
+      value: 1,
+      bytes: HALF_WORD_BYTES
+    }),
+    littleEndian({
+      value: WAV_RATE,
+      bytes: WORD_BYTES
+    }),
+    littleEndian({
+      value: WAV_RATE * WAV_BYTES_PER_SAMPLE,
+      bytes: WORD_BYTES
+    }),
+    littleEndian({
+      value: WAV_BYTES_PER_SAMPLE,
+      bytes: HALF_WORD_BYTES
+    }),
+    littleEndian({
+      value: WAV_BITS,
+      bytes: HALF_WORD_BYTES
+    }),
     Buffer.from("data", "ascii"),
-    field(pcm.length, WORD_BYTES),
+    littleEndian({
+      value: pcm.length,
+      bytes: WORD_BYTES
+    }),
     pcm
   ]));
 }
