@@ -824,3 +824,13 @@ test("filter and mix-blend-mode fail the build with their reason", () => {
     }).errors.join(), /no blend modes/u
   );
 });
+
+test("a calc of px reaches the sheet as the px it comes to", () => {
+  const translation = translateStyleSheet({
+    file: "t.svelte",
+    css: ".t { width: calc(160px + 80px); height: 12px }",
+    resources
+  });
+  const declarations = translation.sheet.rules[0]?.declarations.map(declaration => [declaration.property, declaration.value]);
+  assert.deepEqual(declarations, [["width", "240px"], ["height", "12px"]]);
+});

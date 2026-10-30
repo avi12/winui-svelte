@@ -1,6 +1,6 @@
 import { AcrylicVariant, attachAcrylic } from "./acrylic-controller.ts";
 import { write } from "#src/renderer/host/reflect.js";
-import type { Window } from "#src/winui.js";
+import type { FrameworkElement, Window } from "#src/winui.js";
 import { DesktopAcrylicBackdrop, MicaBackdrop, MicaKind } from "#src/winui.js";
 
 /**
@@ -57,8 +57,9 @@ function releaseNothing() {
  * @returns What takes it away again (the controller of a controller backdrop
  * has to be closed; call it before applying another).
  */
-export function applyBackdrop({ window, backdrop }: {
+export function applyBackdrop({ window, content, backdrop }: {
   window: Window;
+  content: FrameworkElement;
   backdrop: Backdrop;
 }) {
   const variant = controllerVariants.get(backdrop);
@@ -76,6 +77,7 @@ export function applyBackdrop({ window, backdrop }: {
   if (isControlled) {
     return attachAcrylic({
       window,
+      content,
       variant
     });
   }

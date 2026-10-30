@@ -1,10 +1,9 @@
-import type { Window } from "#src/winui.js";
+import type { FrameworkElement, Window } from "#src/winui.js";
 import {
   DesktopAcrylicController,
   DesktopAcrylicKind,
-  ElementTheme,
-  FrameworkElement,
   ICompositionSupportsSystemBackdrop,
+  ElementTheme,
   SystemBackdropConfiguration,
   SystemBackdropTheme,
   WindowActivationState
@@ -25,51 +24,33 @@ export const AcrylicVariant = {
 /** One of `AcrylicVariant`'s values. */
 export type AcrylicVariant = (typeof AcrylicVariant)[keyof typeof AcrylicVariant];
 
-function followElementTheme({ element, configuration }: {
-  element: FrameworkElement;
-  configuration: SystemBackdropConfiguration;
-}) {
-  function apply() {
-    const isDark = element.actualTheme === ElementTheme.Dark;
-    configuration.theme = isDark ? SystemBackdropTheme.Dark : SystemBackdropTheme.Light;
-  }
-  apply();
-  return element.onActualThemeChanged(apply);
-}
-
-// The controller does not read the window's theme: it is told, and told again
-// when the content's actual theme changes (the system's, or a requested one).
-function followTheme({ window, configuration }: {
-  window: Window;
-  configuration: SystemBackdropConfiguration;
-}) {
-  const { content } = window;
-  const isThemed = content instanceof FrameworkElement;
-  if (isThemed) {
-    return followElementTheme({
-      element: content,
-      configuration
-    });
-  }
-
-  return () => {};
-}
+// The controller does not read the content's theme: it is told it, and told
+// again when the content's actual theme changes.
+const BACKDROP_THEMES = new Map<ElementTheme, SystemBackdropTheme>([
+  [ElementTheme.Light, SystemBackdropTheme.Light],
+  [ElementTheme.Dark, SystemBackdropTheme.Dark]
+]);
 
 /**
- * Puts the base or thin acrylic behind a window's content, light or dark as
- * the content is.
+ * Puts the base or thin acrylic behind a window's content, in the theme of
+ * `content`.
  *
  * @returns What takes the material away and lets the controller go.
  */
-export function attachAcrylic({ window, variant }: {
+export function attachAcrylic({ window, content, variant }: {
   window: Window;
+  content: FrameworkElement;
   variant: AcrylicVariant;
 }) {
   const controller = new DesktopAcrylicController();
   controller.kind = variant;
   const configuration = new SystemBackdropConfiguration();
   configuration.isInputActive = true;
-  configuration.theme = SystemBackdropTheme.Default;
+  const followTheme = () => {
+    configuration.theme = BACKDROP_THEMES.get(content.actualTheme) ?? SystemBackdropTheme.Default;
+  };
+  followTheme();
+  const unsubscribeTheme = content.onActualThemeChanged(followTheme);
   const target = window.as(ICompositionSupportsSystemBackdrop);
   const isAdded = controller.addSystemBackdropTarget(target);
   if (!isAdded) {
@@ -78,16 +59,12 @@ export function attachAcrylic({ window, variant }: {
   }
 
   controller.setSystemBackdropConfiguration(configuration);
-  const stopFollowing = followTheme({
-    window,
-    configuration
-  });
   const unsubscribe = window.onActivated((_sender, event) => {
     configuration.isInputActive = event.windowActivationState !== WindowActivationState.Deactivated;
   });
   return () => {
-    stopFollowing();
     unsubscribe();
+    unsubscribeTheme();
     controller.removeSystemBackdropTarget(target);
     controller.close();
   };

@@ -13,10 +13,32 @@ export interface ContainerNative {
 const NAME_SEPARATOR = " ";
 const ANY_NAME = "";
 // The elements whose style makes them a container (`container-type`), with their names.
-const containers = new WeakMap<object, string>();
+const containers = new Map<unknown, {
+  readonly control: object;
+  readonly names: string;
+}>();
 
 function isObject(value: NativeValue): value is object {
   return typeof value === "object" && value !== null;
+}
+
+interface WinuiProjection {
+  readonly _obj: {
+    identityRaw(): number;
+  };
+}
+
+function isWinuiProjection(value: object): value is WinuiProjection {
+  return "_obj" in value && typeof value._obj === "object" && value._obj !== null && "identityRaw" in value._obj;
+}
+
+/**
+ * What tells one WinUI control from another: every read of `parent` projects
+ * the native object into a new wrapper, so a control is known by the identity
+ * of its native object.
+ */
+export function identityOf(control: object) {
+  return isWinuiProjection(control) ? control._obj.identityRaw() : control;
 }
 
 /** Makes `control` a container under these names (space separated; empty for none); returns what undoes it. */
@@ -24,9 +46,13 @@ export function registerContainer({ control, names }: {
   control: object;
   names: string;
 }) {
-  containers.set(control, names);
+  const identity = identityOf(control);
+  containers.set(identity, {
+    control,
+    names
+  });
   return () => {
-    containers.delete(control);
+    containers.delete(identity);
   };
 }
 
@@ -37,7 +63,7 @@ function isNamed({ names, name }: {
   return name === ANY_NAME || names.split(NAME_SEPARATOR).includes(name);
 }
 
-/** The nearest ancestor of `control` that is a container with this name (any container for an empty name). */
+/** The nearest ancestor of `control` that is a container with this name (any container for an empty name), as the control that was registered: what `parent` reads is a bare DependencyObject. */
 function containerOf({ control, name, native }: {
   control: object;
   name: string;
@@ -48,13 +74,13 @@ function containerOf({ control, name, native }: {
     property: "parent"
   });
   while (isObject(ancestor)) {
-    const names = containers.get(ancestor);
-    const isMatch = names !== undefined && isNamed({
-      names,
+    const registered = containers.get(identityOf(ancestor));
+    const isMatch = registered !== undefined && isNamed({
+      names: registered.names,
       name
     });
     if (isMatch) {
-      return ancestor;
+      return registered.control;
     }
 
     ancestor = native.read({
@@ -151,7 +177,7 @@ export class ContainerWatch {
       native: this.native
     });
     const known = this.watched.get(name);
-    const isUnchanged = known?.container === container;
+    const isUnchanged = known !== undefined && container !== null && identityOf(known.container) === identityOf(container);
     if (isUnchanged) {
       return;
     }

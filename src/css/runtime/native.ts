@@ -53,7 +53,8 @@ export interface CssWinui {
   SolidColorBrush: ProjectedType<object>;
   XamlReader: { load(xaml: string): BoxedValue };
   PropertyValue: { createString(value: string): BoxedValue };
-  projectAs<Instance extends object>(value: BoxedValue, type: ProjectedType<Instance>): Instance;
+  projectAs<Instance extends object>(value: unknown, type: ProjectedType<Instance>): Instance;
+  FrameworkElement: ProjectedType<object>;
   ColumnDefinition: new () => object;
   RowDefinition: new () => object;
   GridUnitType: {
@@ -134,6 +135,15 @@ function gridLength({ winui, text }: {
  * replaced, and a control's event subscribed.
  */
 export function createCssNative(winui: CssWinui) {
+  // `parent` reads as a bare DependencyObject, which has no size and no Loaded or SizeChanged to listen to.
+  function asFrameworkElement(parent: object) {
+    try {
+      return winui.projectAs(parent, winui.FrameworkElement);
+    } catch {
+      return parent;
+    }
+  }
+
   const native: CssNative = {
     loadDictionary: xaml => winui.projectAs(winui.XamlReader.load(xaml), winui.ResourceDictionary),
     mergeIntoApplication(dictionary) {
@@ -316,10 +326,14 @@ export function createCssNative(winui: CssWinui) {
       event,
       handler
     }),
-    read: ({ control, property }) => readMember({
-      target: control,
-      key: property
-    }),
+    read({ control, property }) {
+      const value = readMember({
+        target: control,
+        key: property
+      });
+      const isParent = property === "parent" && typeof value === "object" && value !== null;
+      return isParent ? asFrameworkElement(value) : value;
+    },
     clip({ control, rect }) {
       const geometry = rect === null ? null : winui.projectAs(
         winui.XamlReader.load(`<RectangleGeometry ${XAML_NAMESPACES} Rect="${rect.x},${rect.y},${rect.width},${rect.height}"/>`),

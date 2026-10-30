@@ -58,7 +58,6 @@
   :global(.css-responsive) {
     padding: 8px;
     background-color: #d5e4f0;
-    color: #06182b;
   }
 
   @media (width >= 700px) {
@@ -76,7 +75,6 @@
   :global(.css-badge) {
     padding: 8px;
     background-color: #d5e4f0;
-    color: #06182b;
   }
 
   @container card (min-width: 500px) {

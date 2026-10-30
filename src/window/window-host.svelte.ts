@@ -284,6 +284,7 @@ class WindowHost {
       this.releaseBackdrop?.();
       this.releaseBackdrop = applyBackdrop({
         window: this.handle.window,
+        content: this.content,
         backdrop
       });
       this.appliedBackdrop = backdrop;
