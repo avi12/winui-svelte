@@ -1548,6 +1548,9 @@ entry point is named nowhere in the docs
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, and removal of a stylesheet |
 | `animationGroups`, `effectGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `dynamicLengthGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
+| `translateComponent` | `winui-svelte/css/sheet-module` | the build's translation of a component's `<style>`, which the validator and the Vite plugin share |
+| `winuiPreprocess`, `WinuiStyleError` | `winui-svelte/preprocess` | the Svelte preprocessor that marks a style WinUI cannot say in the editor and in `svelte-check`; the error it throws |
+| `rule`, `ruleName` | `winui-svelte/stylelint` | the stylelint rule `winui-svelte/no-unsupported-css`, over the same validator |
 | `WINDOW_ENVIRONMENT` | `winui-svelte/vite` | the Vite environment the window's modules load in |
 | `LOG_EVENT` | `winui-svelte/runner` | the event the window thread's log lines are sent under |
 | `WINUI_COMPILE_OPTIONS`, `isSvelteFile`, `withElementAnimation` | `winui-svelte/compile` | what every component is compiled with, whether a file is a component, and the registration appended to a module that uses a transition |
