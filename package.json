@@ -50,8 +50,8 @@
       "default": "./dist/components/index.js"
     },
     "./enums": {
-      "types": "./dist/components/generated/enums.d.ts",
-      "default": "./dist/components/generated/enums.js"
+      "types": "./dist/enums.d.ts",
+      "default": "./dist/enums.js"
     },
     "./state": {
       "types": "./dist/state/index.d.ts",
