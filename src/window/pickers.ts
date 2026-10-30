@@ -91,7 +91,7 @@ interface PickedPath {
   readonly path: string;
 }
 
-/** The part of `FileOpenPicker` that `pickFile` and `pickFiles` use. */
+/** The part of `FileOpenPicker` that `pickFile` and `pickFilePaths` use. */
 export interface OpenFilePicker extends Picker {
   readonly fileTypeFilter: {
     append(extension: string): void;
@@ -198,7 +198,7 @@ export async function pickFile({ picker, options }: {
  * @param options - The open-file picker, made for the window, and what to set on it.
  * @returns The files' paths in the order picked; empty when the user cancelled.
  */
-export async function pickFiles({ picker, options }: {
+export async function pickFilePaths({ picker, options }: {
   picker: OpenFilePicker;
   options: OpenFilePickerOptions;
 }) {

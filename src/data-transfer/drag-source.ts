@@ -19,7 +19,7 @@ export const DragSourceEventType = {
 export type DragSourceEventType = (typeof DragSourceEventType)[keyof typeof DragSourceEventType];
 
 /** The part of WinUI's `DragStartingEventArgs` the source uses. */
-export interface DragStartArgs {
+interface DragStartArgs {
   cancel: boolean;
   allowedOperations: number;
   readonly data: DataPackage;
@@ -29,7 +29,7 @@ export interface DragStartArgs {
 }
 
 /** The part of WinUI's `DropCompletedEventArgs` the source uses. */
-export interface DragEndArgs {
+interface DragEndArgs {
   readonly dropResult: number;
 }
 

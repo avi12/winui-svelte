@@ -76,7 +76,7 @@ function isCustomFormat(format: string) {
  * @param source - The package view.
  * @returns The web's names: media types, `Files`, the custom format ids.
  */
-export function typesOf(source: PackageSource) {
+function typesOf(source: PackageSource) {
   const standard: string[] = KINDS_BY_TYPE.filter(([kind]) => source.has(kind)).map(([, type]) => type);
   const hasFiles = source.has(Kinds.file);
   const custom = source.formats().filter(isCustomFormat);

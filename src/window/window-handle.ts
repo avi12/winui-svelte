@@ -1,6 +1,6 @@
 import { scaleOf } from "./native.ts";
 import type { OpenFilePickerOptions, PickerOptions, SaveFilePickerOptions } from "./pickers.ts";
-import { pickFile, pickFiles, pickFolder, saveFile } from "./pickers.ts";
+import { pickFile, pickFilePaths, pickFolder, saveFile } from "./pickers.ts";
 import type { Window } from "#src/winui.js";
 import {
   FileOpenPicker,
@@ -94,7 +94,7 @@ export class WindowHandle {
    * @returns The file paths in the order picked; empty when the user cancelled.
    */
   pickFiles(options: OpenFilePickerOptions = {}) {
-    return pickFiles({
+    return pickFilePaths({
       picker: new FileOpenPicker(this.appWindow.id),
       options
     });

@@ -4,7 +4,7 @@ import type { NativeFile } from "./native-file.ts";
 import { nativeFileAt } from "./native-file.ts";
 import { control } from "#src/renderer/host/control.js";
 import type { PickerOptions } from "#src/window/pickers.js";
-import { pickFolder as pickFolderPath, pickFiles as pickPaths, saveFile } from "#src/window/pickers.js";
+import { pickFilePaths, pickFolder as pickFolderPath, saveFile } from "#src/window/pickers.js";
 import { FileOpenPicker, FileSavePicker, FolderPicker } from "#src/winui.js";
 import type { WindowId } from "#winui/microsoft/ui/windowing/AppWindow";
 
@@ -104,7 +104,7 @@ export async function pickFiles(options: PickFilesOptions) {
   }
 
   const extensions = pickerExtensionsOf(options.accept);
-  const paths = await pickPaths({
+  const paths = await pickFilePaths({
     picker: new FileOpenPicker(windowId),
     options: {
       ...dialogOptions,

@@ -91,14 +91,3 @@ export function effectAllowedOf(operations: number) {
   const names = Object.values(EffectAllowed).filter(name => name !== EffectAllowed.uninitialized);
   return names.find(name => ALLOWED[name] === (operations & ALL_OPERATIONS)) ?? EffectAllowed.none;
 }
-
-/**
- * The effect a target gets when its handler accepted the drag without choosing
- * one: the preferred effect the source allows.
- *
- * @param allowedOperations - The `DataPackageOperation` flags the source allows.
- * @returns The effect, `none` when the source allows none.
- */
-export function defaultEffectOf(allowedOperations: number) {
-  return effectOf(allowedOperations);
-}

@@ -1,5 +1,5 @@
 import type { ClipboardContent } from "./clipboard.ts";
-import { DataTransfer, FormatType } from "./data-transfer.ts";
+import { dataTransferOf } from "./clipboard.ts";
 import { fillPackage } from "./package-io.ts";
 import { targetOf } from "./winrt-package.ts";
 import { DataTransferManager } from "#winui/windows/application-model/data-transfer/DataTransferManager";
@@ -40,23 +40,7 @@ export function share(content: ShareContent) {
   }
 
   const manager = managerOf();
-  const transfer = new DataTransfer();
-  const values = [
-    [FormatType.text, content.text],
-    [FormatType.html, content.html],
-    [FormatType.uri, content.uri]
-  ] as const;
-  for (const [type, value] of values) {
-    const hasValue = value !== undefined;
-    if (hasValue) {
-      transfer.setData(type, value);
-    }
-  }
-
-  for (const file of content.files ?? []) {
-    transfer.addFile(file);
-  }
-
+  const transfer = dataTransferOf(content);
   const stop = manager.onDataRequested(async (_sender, args) => {
     const { request } = args;
     const deferral = request.getDeferral();

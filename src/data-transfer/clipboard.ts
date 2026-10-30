@@ -32,7 +32,13 @@ function currentSource() {
   return sourceOf(Clipboard.getContent());
 }
 
-function dataTransferOf(content: ClipboardContent) {
+/**
+ * The data of a clipboard or share content, as a `DataTransfer`.
+ *
+ * @param content - What to put on the clipboard or share.
+ * @returns The transfer holding it.
+ */
+export function dataTransferOf(content: ClipboardContent) {
   const transfer = new DataTransfer();
   const values = [
     [FormatType.text, content.text],
