@@ -6,6 +6,7 @@
   import { MediaQuery } from "svelte/reactivity";
   import { control, elementTheme, flush } from "winui-svelte";
   import { Border, StackPanel, TextBlock, Window } from "winui-svelte/components";
+  import { ElementTheme } from "winui-svelte/enums";
   import {
     exitApplication,
     installMatchMedia,
@@ -16,7 +17,6 @@
 
   const WINDOW_HEIGHT = 360;
   const WINDOW_WIDTH = 480;
-  const CARD_HEIGHT = 10;
 
   interface Props {
     host: ExampleHost;
@@ -33,6 +33,15 @@
   const isMore = mediaQuery("(prefers-contrast: more)");
   const svelteDark = new MediaQuery("prefers-color-scheme: dark", false);
   const list = matchMedia("(prefers-color-scheme: dark)");
+
+  function requestedTheme() {
+    if (settings.isDarkTheme) {
+      return ElementTheme.Dark;
+    }
+
+    return ElementTheme.Light;
+  }
+
   let changes = $state(0);
   list.addEventListener("change", () => {
     changes++;
@@ -87,7 +96,7 @@
   title="Media example"
   width={WINDOW_WIDTH}
 >
-  <StackPanel {@attach theme.attach} requestedTheme={settings.isDarkTheme ? "Dark" : "Light"}>
+  <StackPanel {@attach theme.attach} requestedTheme={requestedTheme()}>
     <Border
       class="media-probe"
       {@attach control<BorderControl>(native => {
@@ -99,7 +108,6 @@
       {@attach control<BorderControl>(native => {
         card = native;
       })}
-      height={CARD_HEIGHT}
     />
     <TextBlock>Dark {isDark.matches}, reduced motion {isReduced.matches}, contrast {isMore.matches}</TextBlock>
     <TextBlock>Text scale {settings.textScaleFactor}, changes {changes}</TextBlock>
@@ -117,30 +125,31 @@
     }
   }
 
-  :global(.media-card) {
+  .media-card {
+    height: 10px;
     background-color: var(--media-card);
   }
 
-  :global(.media-probe) {
+  .media-probe {
     background-color: light-dark(#ffffff, #000000);
     opacity: 100%;
     transition: opacity 300ms;
   }
 
   @media (prefers-color-scheme: dark) {
-    :global(.media-probe) {
+    .media-probe {
       width: 111px;
     }
   }
 
   @media (forced-colors: active) {
-    :global(.media-probe) {
+    .media-probe {
       height: 77px;
     }
   }
 
   @media (prefers-reduced-transparency: reduce) {
-    :global(.media-probe) {
+    .media-probe {
       min-width: 55px;
     }
   }
