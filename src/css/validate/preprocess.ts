@@ -2,8 +2,9 @@ import { positionAt } from "./diagnostic.ts";
 import type { ValidationDiagnostic } from "./diagnostic.ts";
 import { validateComponent } from "./validate.ts";
 import type { ResourceCatalogue } from "#src/css/runtime/resources.js";
+import { unusedSelectorMessages } from "#src/css/runtime/sheet-module.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
-import type { PreprocessorGroup } from "svelte/compiler";
+import type { PreprocessorGroup, Warning } from "svelte/compiler";
 
 const PREPROCESSOR_NAME = "winui-svelte";
 
@@ -49,7 +50,14 @@ export class WinuiStyleError extends Error {
 export interface WinuiPreprocessOptions {
   /** The catalogue of WinUI's resources `var(--name)` is checked against; default the packaged one. */
   resources?: ResourceCatalogue;
+  /**
+   * Where each component's unused-selector messages are kept for
+   * `winuiWarningFilter`; `winuiDiagnostics` makes the pair.
+   */
+  unusedSelectors?: Map<string, readonly string[]>;
 }
+
+const UNUSED_SELECTOR = "css_unused_selector";
 
 /**
  * The Svelte preprocessor that makes WinUI's CSS dialect a language the
@@ -66,6 +74,12 @@ export function winuiPreprocess(options: WinuiPreprocessOptions = {}) {
   return {
     name: PREPROCESSOR_NAME,
     style({ content, markup, filename }) {
+      options.unusedSelectors?.set(
+        filename ?? "component.svelte", unusedSelectorMessages({
+          source: markup,
+          filename: filename ?? "component.svelte"
+        })
+      );
       const diagnostics = validateComponent({
         source: markup,
         filename: filename ?? "component.svelte",
@@ -86,4 +100,46 @@ export function winuiPreprocess(options: WinuiPreprocessOptions = {}) {
       return { code: content };
     }
   } satisfies PreprocessorGroup;
+}
+
+/**
+ * The `warningFilter` that drops Svelte's `css_unused_selector` for a rule
+ * that matches a component instance (`.title` for `<TextBlock class="title">`),
+ * which the plain compiler of `svelte-check` and the editor reads as an
+ * element-less rule; a rule that matches nothing, instances included, still
+ * warns. Pass the `unusedSelectors` the preprocessor of the same pair fills.
+ */
+export function winuiWarningFilter(unusedSelectors: ReadonlyMap<string, readonly string[]>) {
+  // Svelte keeps global state while it compiles, so nothing here may compile.
+  return ({ code, message, filename }: Warning) => {
+    const messages = filename === undefined ? undefined : unusedSelectors.get(filename);
+    const isUnknown = code !== UNUSED_SELECTOR || messages === undefined;
+    if (isUnknown) {
+      return true;
+    }
+
+    return messages.includes(message);
+  };
+}
+
+/**
+ * The two halves of the editor setup, sharing what they need: the preprocessor
+ * (WinUI CSS errors in the editor) and the `warningFilter` (no false unused
+ * selector for a component instance). One call in `svelte.config.js`:
+ *
+ *   const winui = winuiDiagnostics();
+ *   export default {
+ *     preprocess: [winui.preprocess, vitePreprocess()],
+ *     compilerOptions: { warningFilter: winui.warningFilter }
+ *   };
+ */
+export function winuiDiagnostics(options: Omit<WinuiPreprocessOptions, "unusedSelectors"> = {}) {
+  const unusedSelectors = new Map<string, readonly string[]>();
+  return {
+    preprocess: winuiPreprocess({
+      ...options,
+      unusedSelectors
+    }),
+    warningFilter: winuiWarningFilter(unusedSelectors)
+  };
 }

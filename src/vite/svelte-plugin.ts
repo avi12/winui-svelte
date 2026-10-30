@@ -1,6 +1,7 @@
 import { withElementAnimation } from "./compile.ts";
 import { isPatchedRuntime, patchSvelteRuntime } from "./runtime-patch.ts";
 import { scopedMarkup } from "#src/css/runtime/sheet-module.js";
+import { winuiDiagnostics } from "#src/css/validate/preprocess.js";
 import type { CompileOptions, ModuleCompileOptions } from "svelte/compiler";
 import { compile, compileModule } from "svelte/compiler";
 import type { Plugin, Rollup } from "vite";
@@ -224,13 +225,17 @@ export function svelteCompiler(options: CompileOptions) {
   } satisfies Plugin;
   // The Svelte language server (the editor, svelte-check) reads a project's
   // Svelte options from a Vite plugin of this name; without one it reports
-  // that the project has no Svelte configuration.
+  // that the project has no Svelte configuration. It also reads the preprocessor
+  // and the warning filter that make WinUI's CSS dialect a language to it.
+  const diagnostics = winuiDiagnostics();
   const editor = {
     name: EDITOR_PLUGIN_NAME,
     api: {
       options: {
+        preprocess: [diagnostics.preprocess],
         compilerOptions: {
-          css: "external"
+          css: "external",
+          warningFilter: diagnostics.warningFilter
         }
       }
     }
