@@ -1546,7 +1546,7 @@ entry point is named nowhere in the docs
 | `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed |
 | `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, and removal of a stylesheet |
-| `animationGroups`, `effectGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `dynamicLengthGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
+| `animationGroups`, `effectGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
 | `translateComponent` | `winui-svelte/css/sheet-module` | the build's translation of a component's `<style>`, which the validator and the Vite plugin share |
 | `winuiPreprocess`, `WinuiStyleError` | `winui-svelte/preprocess` | the Svelte preprocessor that marks a style WinUI cannot say in the editor and in `svelte-check`; the error it throws |
