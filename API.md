@@ -2412,7 +2412,9 @@ entry point is named nowhere in the docs
 | `animationGroups`, `effectGroups`, `visualEffectGroups`, `clipGroups`, `environmentGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
 | `translateComponent` | `winui-svelte/css/sheet-module` | the build's translation of a component's `<style>`, which the validator and the Vite plugin share |
-| `winuiPreprocess`, `WinuiStyleError` | `winui-svelte/preprocess` | the Svelte preprocessor that marks a style WinUI cannot say in the editor and in `svelte-check`; the error it throws |
+| `unusedSelectorMessages` | `winui-svelte/css/sheet-module` | the messages of Svelte's unused-selector warnings for a component read with its instances as elements, which `winuiWarningFilter` keeps |
+| `winuiPreprocess`, `WinuiStyleError` | `winui-svelte/preprocess` | the Svelte preprocessor that marks a style WinUI cannot say in the editor and in `svelte-check` (and lowers `style:` and `class:` on instances for it); the error it throws |
+| `winuiDiagnostics`, `winuiWarningFilter` | `winui-svelte/preprocess` | the preprocessor and the `warningFilter` as one pair for `svelte.config.js`; the filter drops `css_unused_selector` for a rule that matches a component instance |
 | `rule`, `ruleName` | `winui-svelte/stylelint` | the stylelint rule `winui-svelte/no-unsupported-css`, over the same validator |
 | `WINDOW_ENVIRONMENT` | `winui-svelte/vite` | the Vite environment the window's modules load in |
 | `LOG_EVENT` | `winui-svelte/runner` | the event the window thread's log lines are sent under |

@@ -128,6 +128,7 @@
   width={WINDOW_WIDTH}
 >
   <StackPanel orientation={Orientation.Horizontal}>
+    <!-- width and height are props: a CSS Style cannot target CanvasControl, XamlReader cannot create the type -->
     <Canvas
       draw={({ painter, width, height, device }) => {
         status.runs++;
