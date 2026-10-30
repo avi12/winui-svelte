@@ -51,8 +51,9 @@ Build once before `pnpm check` or the examples
 
 | Command | What it does |
 | --- | --- |
-| `pnpm build` | compiles `src` into `dist/` (what is published) |
-| `pnpm lint` | every check, one after another even when one fails: build, oxlint, ESLint (Google TypeScript style and the house rules in `CLAUDE.md`), stylelint, `tsc`, `svelte-check`, the editor checks (VS Code and WebStorm), fallow, the generated-files check and the tarball check |
+| `pnpm build` | compiles `src` into `dist/` (what is published); returns in about 2 seconds when nothing it reads changed since the last build (`pnpm build --force` rebuilds) |
+| `pnpm lint` | every check, side by side (at most 4 at once, the steps that read `dist/` after the build, each step's output printed whole when it ends) and all of them even when one fails: build, oxlint, ESLint (Google TypeScript style and the house rules in `CLAUDE.md`), stylelint, `tsc`, `svelte-check`, the editor checks (VS Code and WebStorm), fallow, the generated-files check and the tarball check |
+| `pnpm lint:eslint` | ESLint on all cores with a cache under `.verify`; the quick loop while editing (a cached type-aware result can lag a change in another file's types, so `pnpm lint` runs `lint:eslint:full`, uncached) |
 | `pnpm lint:summary` | counts the violations per rule and per folder (`--folder src/css` lists one folder's files) |
 | `pnpm test` | build, then every unit test and the mount test (every component made in a real WinUI window that opens off screen and never takes focus) |
 | `pnpm bindings` | the WinUI bindings in `.winapp/bindings`: winapp's run, then WebView2's (`scripts/bindings/`) |
