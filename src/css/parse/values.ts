@@ -4,9 +4,7 @@ export { matchingParenthesis, splitCommas, splitSlash, splitWords } from "./spli
 // returns null when the token is not that kind of value, so a property can
 // try the kinds it accepts and name the one it expected.
 
-// WinUI measures in device-independent pixels, which is what CSS's px is. A
-// rem is the browser's default root size; WinUI has no root font size.
-const PIXELS_PER_REM = 16;
+// WinUI measures in device-independent pixels, which is what CSS's px is.
 const MILLISECONDS_PER_SECOND = 1000;
 const PERCENT_SCALE = 100;
 
@@ -21,10 +19,10 @@ export function provideCalcFolding(fold: (token: string) => number | null) {
   foldCalc = fold;
 }
 
-const lengthPattern = /^(-?(?:\d+\.?\d*|\.\d+))(px|rem)?$/iu;
+const lengthPattern = /^(-?(?:\d+\.?\d*|\.\d+))(px)?$/iu;
 
 /**
- * A length in device-independent pixels: `px`, `rem` (1rem is 16px), a bare 0
+ * A length in device-independent pixels: `px`, a bare 0
  * or (once `provideCalcFolding` was called, as the build does) a `calc()` of
  * them; null for anything else.
  */
@@ -48,7 +46,7 @@ export function parseLength(token: string) {
     return amount === 0 ? 0 : null;
   }
 
-  return unit === "rem" ? amount * PIXELS_PER_REM : amount;
+  return amount;
 }
 
 /** A plain number, or null. */

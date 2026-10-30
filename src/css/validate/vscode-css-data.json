@@ -9,7 +9,7 @@
     {
       "name": "-winui-elevation",
       "syntax": "<length>",
-      "description": "The depth of the element's ThemeShadow, in px: a WinUI shadow that follows the theme. Units: Converted to px when building: px, rem, em, pt, pc, in, cm, mm, q. Resolved at layout, inside calc(), min(), max() or clamp(): %, vw, vh, vmin, vmax, cqw, cqh, cqi, cqb, cqmin, cqmax. No WinUI equivalent (an error): ch, ex, cap, ic, lh, rlh, rch, rex, rcap, ric, svw, svh, lvw, lvh, dvw, dvh, vi, vb."
+      "description": "The depth of the element's ThemeShadow, in px: a WinUI shadow that follows the theme. Units: Native, as written: px, deg, s, ms, fr. No WinUI equivalent (an error that says what to write): rem, em, ch, ex, cap, ic, lh, rlh, rch, rex, rcap, ric, pt, pc, in, cm, mm, q, vw, vh, vmin, vmax, vi, vb, svw, svh, svi, svb, lvw, lvh, lvi, lvb, dvw, dvh, dvi, dvb, cqw, cqh, cqi, cqb, cqmin, cqmax, rad, grad, turn, dppx, dpi, dpcm, x, %."
     },
     {
       "name": "grid-template-columns",

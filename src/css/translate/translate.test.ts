@@ -631,20 +631,6 @@ test("a container is made by container-type, with the shorthand's names", () => 
   ]);
 });
 
-test("a length that depends on the layout is renamed for the dynamic-length group", () => {
-  const { sheet, diagnostics } = translateStyleSheet({
-    file: "t.svelte",
-    css: ".a { width: calc(100% - 8px); height: 20px; min-width: clamp(10px, 5vw, 40px) }",
-    resources
-  });
-  assert.deepEqual(diagnostics, []);
-  assert.deepEqual(sheet.rules[0]?.declarations.map(declaration => declaration.property), [
-    "-winui-dynamic-width",
-    "height",
-    "-winui-dynamic-min-width"
-  ]);
-});
-
 test("@starting-style marks its rules, around a rule or inside one", () => {
   const { sheet, diagnostics } = translateStyleSheet({
     file: "t.svelte",

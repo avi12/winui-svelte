@@ -11,7 +11,6 @@ import {
 import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { containerGroups } from "#src/css/translate/container-properties.js";
-import { dynamicLengthGroups } from "#src/css/translate/dynamic-length-properties.js";
 import { effectGroups } from "#src/css/translate/effect-properties.js";
 import { focusGroups } from "#src/css/translate/focus-properties.js";
 import { queryGroups } from "#src/css/translate/query-properties.js";
@@ -331,35 +330,6 @@ test("an @container rule follows the nearest container's size, and listens only 
   assert.equal(host.handlers.has("SizeChanged"), false);
   element.dispose();
   hostElement.dispose();
-});
-
-test("a length with a % follows the parent's size", () => {
-  registerPropertyGroups(dynamicLengthGroups());
-  registerStyleSheet(
-    sheet({
-      id: "dynamic.svelte",
-      css: ".d.svelte-7 { width: calc(50% - 10px) }"
-    })
-  );
-  const parent = control({
-    actualWidth: 400,
-    actualHeight: 100
-  });
-  const target = control({
-    parent
-  });
-  const element = styledElement({
-    control: target,
-    elementType: "border"
-  });
-  element.setClasses("d svelte-7");
-  assert.equal(fake(target).assigned["width"], 190);
-
-  parent.properties["actualWidth"] = 600;
-  parent.handlers.get("SizeChanged")?.();
-  assert.equal(fake(target).assigned["width"], 290);
-  element.dispose();
-  assert.equal(parent.handlers.has("SizeChanged"), false);
 });
 
 test("@starting-style styles an element until it is loaded, then the normal style takes over", () => {

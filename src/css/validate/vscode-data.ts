@@ -19,9 +19,8 @@ const TRACK_DESCRIPTION = "WinUI: a track is auto, a length or an fr size, and t
  */
 export function vscodeCssData() {
   const units = [
-    `Converted to px when building: ${unitsOf(LengthUnitKind.BUILD).join(", ")}.`,
-    `Resolved at layout, inside calc(), min(), max() or clamp(): ${unitsOf(LengthUnitKind.RUNTIME).join(", ")}.`,
-    `No WinUI equivalent (an error): ${unitsOf(LengthUnitKind.UNSUPPORTED).join(", ")}.`
+    `Native, as written: ${unitsOf(LengthUnitKind.NATIVE).join(", ")}.`,
+    `No WinUI equivalent (an error that says what to write): ${unitsOf(LengthUnitKind.UNSUPPORTED).join(", ")}.`
   ].join(" ");
   return {
     version: CUSTOM_DATA_VERSION,

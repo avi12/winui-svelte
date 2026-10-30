@@ -78,8 +78,8 @@ test("linear: side keywords are exact", () => {
   }
 });
 
-test("linear: cardinal angles are exact, in every unit", () => {
-  for (const angle of ["0deg", "0", "360deg", "1turn", "400grad"]) {
+test("linear: cardinal angles are exact", () => {
+  for (const angle of ["0deg", "0", "360deg"]) {
     assert.deepEqual(
       lineOf(`linear-gradient(${angle}, red, blue)`), [
         {
@@ -115,7 +115,6 @@ test("linear: cardinal angles are exact, in every unit", () => {
       y: 1
     }
   ]);
-  assert.deepEqual(lineOf("linear-gradient(0.25turn, red, blue)"), lineOf("linear-gradient(90deg, red, blue)"));
 });
 
 test("linear: a diagonal angle is the corner-to-corner line of a square, with a warning", () => {

@@ -1,6 +1,5 @@
 import { tracksOf } from "./animation-tracks.ts";
 import { computeDeclarations } from "./cascade.ts";
-import { dynamicPropertyOf } from "./dynamic-length-properties.ts";
 import { gridTrackProblem } from "./grid-track-verdicts.ts";
 import { createLayerOrder, declareLayer, layerRank, withinLayer } from "./layers.ts";
 import type { LayerOrder } from "./layers.ts";
@@ -24,7 +23,6 @@ import { unsupportedAtRuleReason, unsupportedReason } from "./unsupported-proper
 import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
 import { evaluateCalc } from "#src/css/parse/calc.js";
-import { isDynamicLength } from "#src/css/parse/dynamic-length.js";
 import { replaceLightDark } from "#src/css/parse/light-dark.js";
 import type { MediaCondition } from "#src/css/parse/media.js";
 import { parseContainerQuery, parseMediaQuery } from "#src/css/parse/media.js";
@@ -37,7 +35,6 @@ import { flattenNestedSelector, parseSelectorList } from "#src/css/parse/selecto
 import type { PositionMapper, SourceMapV3 } from "#src/css/parse/source-map.js";
 import { createPositionMapper } from "#src/css/parse/source-map.js";
 import { splitCommas } from "#src/css/parse/split.js";
-import { convertLength } from "#src/css/parse/units.js";
 import { parsePercent, provideCalcFolding } from "#src/css/parse/values.js";
 import type { ResourceCatalogue, ResourceKind } from "#src/css/runtime/resources.js";
 import { hasStyle, resolveVariable } from "#src/css/runtime/resources.js";
@@ -143,8 +140,6 @@ function originalDeclaration({ translator, declaration }: {
   declaration: Declaration;
 }) {
   const position = translator.mapPosition(declaration.at);
-  const dynamic = dynamicPropertyOf(declaration.property);
-  const isDynamic = dynamic !== null && isDynamicLength(declaration.value);
   const { value, pairs } = replaceLightDark({
     value: resolveModernColors({ value: declaration.value }),
     nameFor: () => `--light-dark-${translator.lightDarkCount++}`
@@ -168,7 +163,7 @@ function originalDeclaration({ translator, declaration }: {
 
   return {
     ...declaration,
-    property: isDynamic ? dynamic : declaration.property,
+    property: declaration.property,
     value,
     at: position
   };
@@ -852,7 +847,7 @@ function validateRules({ translator, catalogue }: {
  * custom properties, and a diagnostic for everything WinUI cannot say.
  */
 export function translateStyleSheet(input: TranslateInput) {
-  provideCalcFolding(token => evaluateCalc(token) ?? convertLength(token));
+  provideCalcFolding(evaluateCalc);
   const translator: Translator = {
     input,
     mapPosition: createPositionMapper(input.map),

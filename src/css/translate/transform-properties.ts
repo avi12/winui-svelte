@@ -34,7 +34,7 @@ const NUMBER = {
 };
 const ANGLE = {
   parse: parseDegrees,
-  what: "an angle (deg, rad, turn or grad)"
+  what: "an angle in deg"
 };
 
 // Lengths and numbers default as CSS does: a missing second translation is 0,

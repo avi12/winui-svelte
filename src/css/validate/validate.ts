@@ -46,12 +46,24 @@ interface Finding {
 
 const DYNAMIC_FUNCTION = /(?:calc|min|max|clamp)\(/giu;
 const NUMBER_WITH_UNIT = /(?<![\w#.-])(-?\d*\.?\d+)([a-z]+|%)(?![\w%-])/giu;
+const CONDITION_AT_RULES = new Set(["media", "container", "supports"]);
 const NO_MEANING = /has no WinUI meaning/u;
 const AT_RULE_MESSAGE = /^@/u;
 const DECLARATION_START = /^[\w-]+\s*:/u;
 const NOT_NEWLINE = /[^\n]/gu;
 
-function styleRange(source: string) {
+function styleRange({ source, filename }: {
+  source: string;
+  filename: string;
+}) {
+  const isStylesheet = filename.endsWith(".css");
+  if (isStylesheet) {
+    return {
+      start: 0,
+      end: source.length
+    };
+  }
+
   try {
     const content = parse(source, { modern: true }).css?.content;
     return content === undefined ? null : {
@@ -121,7 +133,101 @@ function declarationsOf({ blocks, source }: {
       });
     }
 
+    const isConditional = !isRule && CONDITION_AT_RULES.has(block.name);
+    if (isConditional) {
+      const start = offsetOf({
+        source,
+        line: block.at.line,
+        column: block.at.column
+      });
+      located.push({
+        property: `@${block.name}`,
+        value: source.slice(start, declarationEnd({
+          source,
+          start
+        })),
+        start,
+        valueStart: start
+      });
+    }
+
     pending.push(...(isRule ? block.nested : block.children ?? []));
+  }
+
+  return located;
+}
+
+interface MarkupNode {
+  type?: string;
+  name?: string;
+  start?: number;
+  end?: number;
+  data?: string;
+  value?: unknown;
+  [key: string]: unknown;
+}
+
+function isMarkupNode(value: unknown): value is MarkupNode {
+  return typeof value === "object" && value !== null;
+}
+
+function textsOf(value: unknown) {
+  const parts: unknown[] = Array.isArray(value) ? value : [];
+  return parts.filter(isMarkupNode).filter(part => part.type === "Text" && part.start !== undefined && part.data !== undefined);
+}
+
+// The declarations of every static style="..." attribute and style:name directive of the markup.
+function markupDeclarations(source: string) {
+  const located: Located[] = [];
+  let tree: unknown = null;
+  try {
+    tree = parse(source, { modern: true }).fragment;
+  } catch {
+    return located;
+  }
+
+  const pending: unknown[] = [tree];
+  const seen = new Set<unknown>();
+  for (const node of pending) {
+    const isNew = isMarkupNode(node) && !seen.has(node);
+    if (!isNew) {
+      continue;
+    }
+
+    seen.add(node);
+
+    const isStyleAttribute = node.type === "Attribute" && node.name === "style";
+    const isStyleDirective = node.type === "StyleDirective";
+    for (const text of textsOf(node.value)) {
+      const base = text.start ?? 0;
+      if (isStyleDirective) {
+        located.push({
+          property: node.name ?? "",
+          value: text.data ?? "",
+          start: node.start ?? base,
+          valueStart: base
+        });
+      }
+
+      const chunks = isStyleAttribute ? (text.data ?? "").split(";") : [];
+      let offset = base;
+      for (const chunk of chunks) {
+        const colon = chunk.indexOf(":");
+        const hasDeclaration = colon > 0;
+        if (hasDeclaration) {
+          located.push({
+            property: chunk.slice(0, colon).trim(),
+            value: chunk.slice(colon + 1),
+            start: offset,
+            valueStart: offset + colon + 1
+          });
+        }
+
+        offset += chunk.length + 1;
+      }
+    }
+
+    pending.push(...Object.values(node).flatMap(child => (Array.isArray(child) ? child : [child])));
   }
 
   return located;
@@ -151,50 +257,58 @@ function withoutDynamicFunctions(value: string) {
   return masked;
 }
 
+const PERCENT = "%";
+
+// What to say about one number with a unit, or null when WinUI reads it as it is written.
+function verdictOf({ unit, isInsideMath }: {
+  unit: string;
+  isInsideMath: boolean;
+}) {
+  const verdict = LENGTH_UNITS.get(unit);
+  const isUnknown = verdict === undefined;
+  if (isUnknown) {
+    return {
+      message: `the unit ${unit} is not a CSS unit WinUI knows`,
+      suggestion: "write px, deg, s, ms or fr"
+    };
+  }
+
+  const isNative = verdict.kind === LengthUnitKind.NATIVE;
+  const isPlainPercent = unit === PERCENT && !isInsideMath;
+  if (isNative || isPlainPercent) {
+    return null;
+  }
+
+  return {
+    message: `the unit ${unit} has no WinUI equivalent (${verdict.reason ?? ""}): ${verdict.advice ?? ""}`,
+    suggestion: verdict.advice ?? ""
+  };
+}
+
 function unitFindings(located: Located) {
   const findings: Finding[] = [];
   const masked = withoutDynamicFunctions(located.value);
   for (const match of located.value.matchAll(NUMBER_WITH_UNIT)) {
     const unit = (match[2] ?? "").toLowerCase();
-    const verdict = LENGTH_UNITS.get(unit);
-    const isUnknown = verdict === undefined;
-    if (isUnknown) {
+    const isInsideMath = masked.slice(match.index, match.index + match[0].length).trim() === "";
+    const verdict = verdictOf({
+      unit,
+      isInsideMath
+    });
+    if (verdict === null) {
       continue;
     }
 
-    const base = {
-      start: located.valueStart + match.index,
-      end: located.valueStart + match.index + match[0].length,
-      declarationStart: located.start
-    };
-    const isOutsideFunction = masked.slice(match.index, match.index + match[0].length).trim() !== "";
-    const isUnsupported = verdict.kind === LengthUnitKind.UNSUPPORTED;
-    if (isUnsupported) {
-      findings.push(
-        finding({
-          ...base,
-          code: ValidationCode.UNSUPPORTED_UNIT,
-          severity: "error",
-          message: `the unit ${unit} has no WinUI equivalent (${verdict.reason ?? ""}): ${verdict.advice ?? ""}`,
-          suggestion: verdict.advice ?? ""
-        })
-      );
-    }
-
-    const isRuntimeOutside = verdict.kind === LengthUnitKind.RUNTIME && isOutsideFunction;
-    if (isRuntimeOutside) {
-      const advice = `write it inside calc(), min(), max() or clamp(), for example calc(${match[0]})`;
-      findings.push(
-        finding({
-          ...base,
-          code: ValidationCode.RUNTIME_UNIT,
-          severity: "error",
-          message: `${match[0]} is resolved when the window is laid out: ${advice}`,
-          suggestion: advice,
-          isAdvice: true
-        })
-      );
-    }
+    findings.push(
+      finding({
+        ...verdict,
+        start: located.valueStart + match.index,
+        end: located.valueStart + match.index + match[0].length,
+        declarationStart: located.start,
+        code: ValidationCode.UNSUPPORTED_UNIT,
+        severity: "error"
+      })
+    );
   }
 
   return findings;
@@ -306,17 +420,19 @@ function toDiagnostic({ found, source, filename }: {
  */
 export function validateComponent(input: ValidateInput) {
   const { source, filename } = input;
-  const range = styleRange(source);
-  const isStyleMissing = range === null;
-  if (isStyleMissing) {
-    return [];
-  }
-
-  const padded = source.slice(0, range.start).replaceAll(NOT_NEWLINE, " ") + source.slice(range.start, range.end);
-  const located = declarationsOf({
-    blocks: parseCss(padded),
-    source: padded
+  const range = styleRange({
+    source,
+    filename
   });
+  const isStylesheet = filename.endsWith(".css");
+  const padded = range === null ? "" : source.slice(0, range.start).replaceAll(NOT_NEWLINE, " ") + source.slice(range.start, range.end);
+  const located = [
+    ...declarationsOf({
+      blocks: range === null ? [] : parseCss(padded),
+      source: padded
+    }),
+    ...isStylesheet ? [] : markupDeclarations(source)
+  ];
   const fromTranslation = translationOf(input).map(diagnostic => translated({
     diagnostic,
     source
@@ -330,7 +446,7 @@ export function validateComponent(input: ValidateInput) {
     return isExplaining ? isNeeded : true;
   });
   const explainedAt = new Set(own.map(item => item.declarationStart));
-  const remaining = fromTranslation.filter(item => !explainedAt.has(item.declarationStart));
+  const remaining = fromTranslation.filter(item => !explainedAt.has(item.declarationStart) && !own.some(found => item.start <= found.start && found.end <= item.end));
   return [...own, ...remaining]
     .sort((first, second) => first.start - second.start)
     .map(found => toDiagnostic({

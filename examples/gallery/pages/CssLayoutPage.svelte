@@ -87,7 +87,7 @@
   }
 
   :global(.css-colours) {
-    width: calc(10rem + 80px);
+    width: calc(160px + 80px);
     padding: 12px;
     background-color: color-mix(in oklch, oklch(60% 0.2 30deg), oklch(60% 0.2 250deg));
   }

@@ -16,7 +16,6 @@ export const ValidationCode = {
   UNSUPPORTED_AT_RULE: "unsupported-at-rule",
   UNSUPPORTED_UNIT: "unsupported-unit",
   UNSUPPORTED_GRID_TRACK: "unsupported-grid-track",
-  RUNTIME_UNIT: "runtime-unit",
   PARTIAL_SUPPORT: "partial-support",
   INVALID_CSS: "invalid-css"
 } as const;
