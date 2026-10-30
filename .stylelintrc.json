@@ -1,7 +1,7 @@
 {
   "extends": ["stylelint-config-ccb"],
   "customSyntax": "postcss-html",
-  "ignoreFiles": ["node_modules/**", "dist/**", "src-tauri/**", ".winapp/**"],
+  "ignoreFiles": ["node_modules/**", "dist/**", "src-tauri/**", ".winapp/**", ".worktrees/**", ".verify/**"],
   "rules": {
     "plugin/stylelint-no-indistinguishable-colors": null,
     "color-format/format": null,

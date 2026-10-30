@@ -50,6 +50,8 @@
     "node_modules/**",
     "dist/**",
     "eslint-rules/**",
-    ".winapp/**"
+    ".winapp/**",
+    ".worktrees/**",
+    ".verify/**"
   ]
 }
