@@ -1606,6 +1606,8 @@ Windows lists no property names it was not asked for, so only `requestedProperti
 
 `DeviceInterfaceClass` names the device interface classes WinRT has no class for (`mouse`, `keyboard`, `humanInterfaceDevice`, `usb`, `serialPort`, `printer`), and `selectorOfInterfaceClasses(...classes)` builds the filter: this is how to list USB, HID and serial ports (names and ids only)
 
+`getDeviceAccess(deviceClass)` asks `DeviceAccessInformation` whether the user and the system let the app use a class of devices (the microphone, the camera, location): a `DeviceAccessStatus` (`allowed`, `deniedByUser`, `deniedBySystem`, `unspecified`) and whether the user would be prompted; listing devices needs no consent, opening them can
+
 `deviceChanges(query)` and `liveTracker({ subscriptions })` are the two building blocks the other runes use: a subscription to devices coming and going, and the glue that makes a getter re-run when native events fire
 
 ### Input devices

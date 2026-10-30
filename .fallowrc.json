@@ -129,7 +129,19 @@
     "addEventListener",
     "removeEventListener",
     "focus",
-    "value"
+    "value",
+    // What a stand-in for a WinRT DeviceInformation or DeviceWatcher has because
+    // the interface it implements needs it (src/devices/test-support).
+    "pairing",
+    "properties",
+    "update",
+    "start",
+    "stop",
+    "onAdded",
+    "onUpdated",
+    "onRemoved",
+    "onEnumerationCompleted",
+    "onStopped"
   ],
   "ignoreExports": [
     {
