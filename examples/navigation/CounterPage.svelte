@@ -26,5 +26,5 @@
 <StackPanel padding={PADDING}>
   <TextBlock text={props.title} />
   <TextBlock text="Required: the count survives leaving and coming back." />
-  <Button onClick={() => count++}>Clicked {count} times</Button>
+  <Button onclick={() => count++}>Clicked {count} times</Button>
 </StackPanel>

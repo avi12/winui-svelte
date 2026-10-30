@@ -43,15 +43,15 @@
 >
   <StackPanel class="state-block">
     <TextBlock text="$state, $derived and $effect" />
-    <Button {@attach keyControl("state")} onClick={() => count++}>Count {count}</Button>
+    <Button {@attach keyControl("state")} onclick={() => count++}>Count {count}</Button>
     <TextBlock text="doubled {doubled()}; an $effect saw {seen.join(", ")}" />
   </StackPanel>
   <StackPanel class="state-block">
     <TextBlock text="Host state: {tally.current?.clicks ?? "waiting"} clicks" />
     <TextBlock text="log: {tally.current?.log.join(", ") ?? ""}" />
-    <Button onClick={() => send({ kind: "click" })}>Host click</Button>
-    <Button onClick={() => send({ kind: "refuse" })}>Ask the host to refuse</Button>
-    <Button onClick={() => send({ kind: "reset" })}>Reset</Button>
+    <Button onclick={() => send({ kind: "click" })}>Host click</Button>
+    <Button onclick={() => send({ kind: "refuse" })}>Ask the host to refuse</Button>
+    <Button onclick={() => send({ kind: "reset" })}>Reset</Button>
     <TextBlock text="outcome: {outcome}" />
   </StackPanel>
 </PageFrame>

@@ -87,8 +87,8 @@
 
   function imageEvents(name: string) {
     return {
-      onImageOpened: () => opened.add(name),
-      onImageFailed: (...args: unknown[]) => failures.set(name, failureMessage(args))
+      onimageopened: () => opened.add(name),
+      onimagefailed: (...args: unknown[]) => failures.set(name, failureMessage(args))
     };
   }
 
@@ -170,7 +170,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="Media example"
   width={WINDOW_WIDTH}
 >

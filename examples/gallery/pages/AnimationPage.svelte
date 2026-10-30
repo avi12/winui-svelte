@@ -53,7 +53,7 @@
       </border>
     {/if}
   </StackPanel>
-  <Button onClick={shuffle}>Shuffle the tiles</Button>
+  <Button onclick={shuffle}>Shuffle the tiles</Button>
   <StackPanel class="anim-row">
     {#each tiles as tile (tile.id)}
       <border class="anim-tile" animate:flip={{ duration: FLIP_MILLISECONDS }}>

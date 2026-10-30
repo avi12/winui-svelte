@@ -9,7 +9,7 @@
   <TextBlock automationId="hot-label">hot version A count {count} tally {hotTally.value}</TextBlock>
   <Button
     automationId="hot-button"
-    onClick={() => {
+    onclick={() => {
       count++;
       hotTally.value++;
     }}

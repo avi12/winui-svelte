@@ -205,7 +205,7 @@
 {#snippet failedView(error: unknown, reset: () => void)}
   <TextBlock automationId="boundary">failed {describe(error)}</TextBlock>
   <Button
-    automationId="boundary-reset" onClick={() => {
+    automationId="boundary-reset" onclick={() => {
       reset();
     }}>reset</Button>
 {/snippet}
@@ -216,7 +216,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="Interaction example"
   width={WINDOW_WIDTH}
 >
@@ -224,7 +224,7 @@
     <Button
       {@attach keep("click-component")}
       automationId="click-component"
-      onClick={(sender: unknown, args: unknown) => {
+      onclick={(sender: unknown, args: unknown) => {
         componentClicks++;
         lastClick = `${typeof sender}:${typeof args}:${sender === handleOf("click-component")}`;
       }}
@@ -241,7 +241,7 @@
     <TextBox
       {@attach keep("text")}
       automationId="text"
-      onTextChanged={() => textChanges++}
+      ontextchanged={() => textChanges++}
       bind:text
     />
     <Slider {@attach keep("slider")} automationId="slider" bind:value={sliderValue} />
@@ -314,9 +314,9 @@
     {#if isHotPanelShown}
       <HotPanel />
     {/if}
-    <Button automationId="tab-1" onGotFocus={recordFocus("tab-1")}>tab 1</Button>
-    <TextBox automationId="tab-2" onGotFocus={recordFocus("tab-2")} />
-    <Button automationId="tab-3" onClick={() => enterPresses++} onGotFocus={recordFocus("tab-3")}>tab 3</Button>
+    <Button automationId="tab-1" ongotfocus={recordFocus("tab-1")}>tab 1</Button>
+    <TextBox automationId="tab-2" ongotfocus={recordFocus("tab-2")} />
+    <Button automationId="tab-3" onclick={() => enterPresses++} ongotfocus={recordFocus("tab-3")}>tab 3</Button>
   </StackPanel>
 </Window>
 

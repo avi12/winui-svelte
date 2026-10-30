@@ -95,7 +95,7 @@
       items={fruits}
       key={fruit => fruit.id}
       keyboardReorder
-      onReorder={reordered}
+      onreorder={reordered}
       reorderable
       bind:selectedKey
     >

@@ -35,16 +35,16 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="Web example"
   width={WINDOW_WIDTH}
 >
   <WebView2
-    onCoreWebView2Initialized={(_sender, args) => {
+    oncorewebview2initialized={(_sender, args) => {
       status.isInitialized = true;
       status.initializationResult = args.exception;
     }}
-    onNavigationCompleted={(_sender, args) => {
+    onnavigationcompleted={(_sender, args) => {
       status.isNavigated = true;
       status.isSuccess = args.isSuccess;
     }}

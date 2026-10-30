@@ -151,7 +151,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="App services example"
   width={WINDOW_WIDTH}
   bind:handle
@@ -168,9 +168,9 @@
     <TextBlock>Accent {settings.accentColor}, text {settings.textScaleFactor * PERCENT}%</TextBlock>
     <TextBlock>Animations {animationText()}, language {LANGUAGE}</TextBlock>
     <TextBlock>This page is {sizeText()}</TextBlock>
-    <Button {@attach pickButton.attach} onClick={pickFile}>Open a note</Button>
-    <Button onClick={pickFolder}>Choose a folder</Button>
-    <Button onClick={saveFile}>Save as</Button>
+    <Button {@attach pickButton.attach} onclick={pickFile}>Open a note</Button>
+    <Button onclick={pickFolder}>Choose a folder</Button>
+    <Button onclick={saveFile}>Save as</Button>
     <TextBlock>{picked}</TextBlock>
   </StackPanel>
 </Window>

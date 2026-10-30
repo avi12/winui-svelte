@@ -44,12 +44,12 @@
   title="App services"
 >
   <StackPanel class="services-block">
-    <Button {@attach keyControl("services")} onClick={pick}>Pick a file</Button>
-    <Button onClick={save}>Save as</Button>
+    <Button {@attach keyControl("services")} onclick={pick}>Pick a file</Button>
+    <Button onclick={save}>Save as</Button>
     <TextBlock text={picked} />
     <TextBlock text="Accent {settings.accentColor}, text scale {settings.textScaleFactor}" />
     <TextBlock text="Animations {settings.isAnimationEnabled ? "on" : "off"}, high contrast {settings.isHighContrast ? "on" : "off"}" />
-    <Button onClick={toast}>Notify</Button>
+    <Button onclick={toast}>Notify</Button>
     <TextBlock text={notice} />
   </StackPanel>
 </PageFrame>

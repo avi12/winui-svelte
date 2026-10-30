@@ -208,7 +208,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="Lists example"
   width={WINDOW_WIDTH}
 >
@@ -218,7 +218,7 @@
       itemName={row => row.name}
       items={rows}
       key={row => row.id}
-      onReorder={reorder}
+      onreorder={reorder}
       bind:handle
     />
   {:else if host.options["view"] === "groups"}
@@ -229,7 +229,7 @@
       itemName={row => row.name}
       items={rows}
       key={row => row.id}
-      onControl={control => {
+      oncontrol={control => {
         view = control;
       }}
       reorderable
@@ -244,10 +244,10 @@
       items={rows}
       key={row => row.id}
       keyboardReorder
-      onControl={control => {
+      oncontrol={control => {
         view = control;
       }}
-      onReorder={reorder}
+      onreorder={reorder}
       reorderable
       selectionMode={host.options["selection"] === "single" ? "Single" : "None"}
       bind:handle

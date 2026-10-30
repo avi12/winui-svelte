@@ -123,7 +123,7 @@
 <Window
   activate={false}
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   placement={{
     x: -8000,
     y: 0

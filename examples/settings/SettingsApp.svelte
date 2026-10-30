@@ -71,14 +71,14 @@
   <NavigationView
     isBackButtonVisible="Collapsed"
     isSettingsVisible={false}
-    onSelectionChanged={(_sender, args) => open(String(unboxed(args.selectedItemContainer.tag)))}
+    onselectionchanged={(_sender, args) => open(String(unboxed(args.selectedItemContainer.tag)))}
   >
     {#snippet menuItems()}
       {#each PAGES as route (route.key)}
         <NavigationViewItem content={route.title} isSelected={route.key === PAGES[0]?.key} tag={route.key} />
       {/each}
     {/snippet}
-    <Navigator onReady={() => open(PAGES[0]?.key ?? "")} bind:handle={navigator} />
+    <Navigator onready={() => open(PAGES[0]?.key ?? "")} bind:handle={navigator} />
   </NavigationView>
 </Window>
 

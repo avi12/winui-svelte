@@ -122,7 +122,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="Win2D example"
   width={WINDOW_WIDTH}
 >
@@ -192,7 +192,7 @@
         });
       }}
       height={PANEL_HEIGHT}
-      onDrawn={count => {
+      ondrawn={count => {
         status.redraws = count;
       }}
       width={PANEL_WIDTH}
@@ -209,7 +209,7 @@
         });
       }}
       height={PANEL_HEIGHT}
-      onDrawn={count => {
+      ondrawn={count => {
         status.chartRedraws = count;
       }}
       width={PANEL_WIDTH}

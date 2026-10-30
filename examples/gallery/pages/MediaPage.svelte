@@ -60,10 +60,10 @@
   <StackPanel class="media-block">
     {#if isDetail}
       <Image {@attach hero.attach} height={HERO_SIZE} source={BADGE} width={HERO_SIZE} />
-      <Button onClick={() => (isDetail = false)}>Back</Button>
+      <Button onclick={() => (isDetail = false)}>Back</Button>
     {:else}
       <Image {@attach thumbnail.attach} {@attach keyControl("media")} height={IMAGE_SIZE} source={BADGE} width={IMAGE_SIZE} />
-      <Button onClick={showDetail}>Open it large</Button>
+      <Button onclick={showDetail}>Open it large</Button>
     {/if}
     <TextBlock text="Connected animation: {outcome}" />
     <MediaPlayerElement areTransportControlsEnabled height={PLAYER_HEIGHT} />

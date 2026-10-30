@@ -41,7 +41,7 @@
     <Image height={ICON_SIZE} source={glyph} width={ICON_SIZE} />
     <Image height={ICON_SIZE} source={svgImageSourceOf({ source: DATA_URI })} width={ICON_SIZE} />
     <ImageIcon source={glyph} />
-    <Button onClick={play}>Play a tone</Button>
+    <Button onclick={play}>Play a tone</Button>
     <TextBlock text="Position {audio.state.position} of {audio.state.naturalDuration} ms" />
   </StackPanel>
 </PageFrame>

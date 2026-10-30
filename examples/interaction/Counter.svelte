@@ -6,4 +6,4 @@
   note("counter:created");
 </script>
 
-<Button automationId="keyed-button" onClick={() => count++}>keyed {count}</Button>
+<Button automationId="keyed-button" onclick={() => count++}>keyed {count}</Button>

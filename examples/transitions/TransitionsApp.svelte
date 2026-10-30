@@ -57,7 +57,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="Transitions example"
   width={WINDOW_WIDTH}
 >

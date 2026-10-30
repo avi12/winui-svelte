@@ -119,7 +119,7 @@
 <Window
   appUserModelId="winui-svelte.examples.tray"
   height={WINDOW_HEIGHT}
-  onClosed={() => exitApplication()}
+  onclosed={() => exitApplication()}
   title="Tray example"
   width={WINDOW_WIDTH}
   bind:handle
@@ -152,17 +152,17 @@
       {@attach () => () => {
         isFlyoutOpen = false;
       }}
-      onClosed={() => {
+      onclosed={() => {
         isFlyoutOpen = false;
         close();
       }}
-      onOpened={() => {
+      onopened={() => {
         isFlyoutOpen = true;
       }}
       open
     >
       <MenuFlyoutItem
-        onClick={() => {
+        onclick={() => {
           chosen++;
         }}>Show</MenuFlyoutItem>
       <MenuFlyoutItem>Quit</MenuFlyoutItem>

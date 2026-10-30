@@ -32,10 +32,10 @@
   title="Overlays"
 >
   <StackPanel class="overlay-block">
-    <Button {@attach keyControl("overlays")} onClick={askBoth}>Two dialogs</Button>
+    <Button {@attach keyControl("overlays")} onclick={askBoth}>Two dialogs</Button>
     <ContentDialog
       closeButtonText="Close"
-      onResult={result => answers.push(`first: ${result}`)}
+      onresult={result => answers.push(`first: ${result}`)}
       primaryButtonText="OK"
       title="First"
       bind:open={isFirstOpen}
@@ -44,14 +44,14 @@
     </ContentDialog>
     <ContentDialog
       closeButtonText="Close"
-      onResult={result => answers.push(`second: ${result}`)}
+      onresult={result => answers.push(`second: ${result}`)}
       title="Second"
       bind:open={isSecondOpen}
     >
       The second one waited for the first
     </ContentDialog>
     <TextBlock text="answers: {answers.join(", ")}" />
-    <Button onClick={() => (isFlyoutOpen = true)}>Flyout</Button>
+    <Button onclick={() => (isFlyoutOpen = true)}>Flyout</Button>
     <Flyout bind:open={isFlyoutOpen}>
       <TextBlock text="Opens beside the panel it is written in" />
     </Flyout>
@@ -64,7 +64,7 @@
         </MenuFlyout>
       {/snippet}
     </Button>
-    <Button onClick={() => (isTipOpen = true)}>Teaching tip</Button>
+    <Button onclick={() => (isTipOpen = true)}>Teaching tip</Button>
     <TeachingTip subtitle="A tip points at what it explains." title="Tip" bind:isOpen={isTipOpen} />
     <InfoBar message="Saved to disk" severity="Success" title="Done" bind:isOpen={isInfoOpen} />
   </StackPanel>

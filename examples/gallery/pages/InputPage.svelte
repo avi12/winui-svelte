@@ -34,20 +34,20 @@
   title="Input"
 >
   <StackPanel class="input-block">
-    <Button {@attach keyControl("input")} onClick={() => saves++}>
+    <Button {@attach keyControl("input")} onclick={() => saves++}>
       Save ({saves})
       {#snippet keyboardAccelerators()}
-        <KeyboardAccelerator key="S" modifiers="Control" onInvoked={() => saves++} />
+        <KeyboardAccelerator key="S" modifiers="Control" oninvoked={() => saves++} />
       {/snippet}
     </Button>
     <TextBlock text="Press Ctrl+S, or click the button" />
     <TextBox {@attach field.attach} header="Field" />
-    <Button onClick={focusField}>Focus the field</Button>
+    <Button onclick={focusField}>Focus the field</Button>
     <Border
       class="input-pad"
-      onPointerEntered={() => (pointer = "entered")}
-      onPointerExited={() => (pointer = "left")}
-      onPointerPressed={() => presses++}
+      onpointerentered={() => (pointer = "entered")}
+      onpointerexited={() => (pointer = "left")}
+      onpointerpressed={() => presses++}
     >
       <TextBlock text="Pointer: {pointer}, pressed {presses} times" />
     </Border>

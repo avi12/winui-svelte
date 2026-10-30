@@ -92,9 +92,9 @@
   <TextBlock>{picked}</TextBlock>
 
   <StackPanel orientation="Horizontal" spacing={BUTTON_SPACING}>
-    <Button onClick={copyAndRead}>Copy text and read it back</Button>
-    <Button onClick={() => launchUri("https://github.com/avi12/winui-svelte")}>Open the repository</Button>
-    <Button onClick={() => revealInExplorer(import.meta.filename)}>Show this page in Explorer</Button>
+    <Button onclick={copyAndRead}>Copy text and read it back</Button>
+    <Button onclick={() => launchUri("https://github.com/avi12/winui-svelte")}>Open the repository</Button>
+    <Button onclick={() => revealInExplorer(import.meta.filename)}>Show this page in Explorer</Button>
   </StackPanel>
   <TextBlock>{pasted}</TextBlock>
 </PageFrame>

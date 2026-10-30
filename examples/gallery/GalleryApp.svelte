@@ -55,8 +55,8 @@
 <Window
   backdrop={shell.backdrop}
   height={WINDOW_HEIGHT}
-  onClosed={() => host.report({ kind: "closed" })}
-  onClosing={() => shell.isCloseBlocked}
+  onclosed={() => host.report({ kind: "closed" })}
+  onclosing={() => shell.isCloseBlocked}
   presentation={shell.presentation}
   theme={shell.theme}
   title={shell.title}
@@ -67,7 +67,7 @@
     {@attach keyControl("gallery")}
     isBackButtonVisible="Collapsed"
     isSettingsVisible={false}
-    onSelectionChanged={(_sender, args) => {
+    onselectionchanged={(_sender, args) => {
       const key = unboxed(args.selectedItemContainer.tag);
       open(String(key));
     }}
@@ -77,7 +77,7 @@
         <NavigationViewItem content={route.title} isSelected={route.key === GALLERY_PAGES[0]?.key} tag={route.key} />
       {/each}
     {/snippet}
-    <Navigator onReady={() => open(GALLERY_PAGES[0]?.key ?? "")} bind:handle={navigator}>
+    <Navigator onready={() => open(GALLERY_PAGES[0]?.key ?? "")} bind:handle={navigator}>
       {#snippet transition()}
         <DrillInNavigationTransitionInfo />
       {/snippet}

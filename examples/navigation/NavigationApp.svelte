@@ -174,7 +174,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="Navigation example"
   width={WINDOW_WIDTH}
 >
@@ -185,15 +185,15 @@
     isBackButtonVisible="Visible"
     isBackEnabled={navigator?.canGoBack ?? false}
     isSettingsVisible={false}
-    onBackRequested={() => navigator?.goBack()}
-    onSelectionChanged={(_sender, args) => chosen(args.selectedItemContainer)}
+    onbackrequested={() => navigator?.goBack()}
+    onselectionchanged={(_sender, args) => chosen(args.selectedItemContainer)}
   >
     {#snippet menuItems()}
       <NavigationViewItem {@attach keep("home")} content="Home" tag="home" />
       <NavigationViewItem {@attach keep("counter")} content="Counter" tag="counter" />
       <NavigationViewItem {@attach keep("about")} content="About" tag="about" />
     {/snippet}
-    <Navigator onReady={ready => routes.get("home")?.open(ready)} bind:handle={navigator}>
+    <Navigator onready={ready => routes.get("home")?.open(ready)} bind:handle={navigator}>
       {#snippet transition()}
         <DrillInNavigationTransitionInfo />
       {/snippet}

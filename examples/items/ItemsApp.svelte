@@ -62,7 +62,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="Items example"
   width={WINDOW_WIDTH}
 >

@@ -237,24 +237,24 @@
   height={WINDOW_HEIGHT}
   isMaximizable={false}
   minWidth={WINDOW_MIN_WIDTH}
-  onActiveChanged={isActive => {
+  onactivechanged={isActive => {
     if (isActive) {
       activations++;
     }
   }}
-  onBoundsChanged={bounds => {
+  onboundschanged={bounds => {
     boundsReports++;
     lastBounds = bounds;
   }}
-  onClosed={() => {
+  onclosed={() => {
     closes++;
     exitApplication();
   }}
-  onClosing={() => {
+  onclosing={() => {
     closeRequests++;
     return isCloseBlocked;
   }}
-  onScaleChanged={() => {
+  onscalechanged={() => {
     scaleChanges++;
   }}
   {presentation}

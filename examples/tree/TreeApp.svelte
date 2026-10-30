@@ -214,7 +214,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="Tree example"
   width={WINDOW_WIDTH}
 >
@@ -224,7 +224,7 @@
     itemName={item => item.name}
     {items}
     key={item => item.id}
-    onControl={control => {
+    oncontrol={control => {
       view = control;
     }}
     selectionMode={host.options["selection"] === "multiple" ? "Multiple" : "Single"}

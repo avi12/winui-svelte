@@ -33,7 +33,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   placement={{
     x: -8000,
     y: 0
@@ -43,7 +43,7 @@
 >
   <StackPanel class="form-app">
     <SignupForm
-      onSubmitted={data => {
+      onsubmitted={data => {
         submitted++;
         last = JSON.stringify(data);
         snapshot("submitted");

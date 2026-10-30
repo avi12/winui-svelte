@@ -42,10 +42,10 @@
 
   function tally(name: string) {
     return {
-      onOpened() {
+      onopened() {
         opened[name] = (opened[name] ?? 0) + 1;
       },
-      onClosed() {
+      onclosed() {
         closed[name] = (closed[name] ?? 0) + 1;
       }
     };
@@ -110,7 +110,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="Overlays example"
   width={WINDOW_WIDTH}
 >
@@ -131,7 +131,7 @@
     <ContentDialog
       {@attach keep("first")}
       closeButtonText="Close"
-      onResult={result => results.push(`first:${result}`)}
+      onresult={result => results.push(`first:${result}`)}
       primaryButtonText="OK"
       title="First"
       bind:open={isFirstOpen}
@@ -142,7 +142,7 @@
     <ContentDialog
       {@attach keep("second")}
       closeButtonText="Close"
-      onResult={result => results.push(`second:${result}`)}
+      onresult={result => results.push(`second:${result}`)}
       title="Second"
       bind:open={isSecondOpen}
       {...tally("second")}

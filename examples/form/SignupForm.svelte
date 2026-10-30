@@ -79,7 +79,7 @@
   });
 
   interface Props {
-    onSubmitted?: ((data: z.output<typeof signupSchema>) => void) | undefined;
+    onsubmitted?: ((data: z.output<typeof signupSchema>) => void) | undefined;
   }
 
   const props: Props = $props();
@@ -109,15 +109,15 @@
 <Form
   class="signup-form"
   action={save}
-  onInvalid={fields => {
+  oninvalid={fields => {
     result = `Fix: ${fields.map(field => field.name).join(", ")}`;
   }}
-  onReset={() => {
+  onreset={() => {
     result = "Reset";
   }}
-  onSubmit={({ data }) => {
+  onsubmit={({ data }) => {
     result = `Submitted ${JSON.stringify(data)}`;
-    props.onSubmitted?.(data);
+    props.onsubmitted?.(data);
   }}
   schema={signupSchema}
   bind:handle

@@ -11,13 +11,13 @@
   <TextBlock text="Theme: {preferences.theme}" />
   <StackPanel class="settings-row" orientation="Horizontal">
     {#each Object.values(WindowTheme) as theme (theme)}
-      <Button onClick={() => (preferences.theme = theme)}>{theme}</Button>
+      <Button onclick={() => (preferences.theme = theme)}>{theme}</Button>
     {/each}
   </StackPanel>
   <TextBlock text="Material: {preferences.backdrop}" />
   <StackPanel class="settings-row" orientation="Horizontal">
     {#each Object.values(Backdrop) as backdrop (backdrop)}
-      <Button onClick={() => (preferences.backdrop = backdrop)}>{backdrop}</Button>
+      <Button onclick={() => (preferences.backdrop = backdrop)}>{backdrop}</Button>
     {/each}
   </StackPanel>
   <Slider

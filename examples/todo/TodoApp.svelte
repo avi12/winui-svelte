@@ -98,7 +98,7 @@
         placeholderText="What needs doing?"
         bind:text={title}
       />
-      <Button gridColumn={1} onClick={add}>Add</Button>
+      <Button gridColumn={1} onclick={add}>Add</Button>
     </Grid>
     {#if problem !== ""}
       <InfoBar isClosable={false} isOpen message={problem} severity="Warning" />
@@ -107,14 +107,14 @@
       {#snippet item(todo)}
         <Grid class="todo-row">
           <CheckBox
-            gridColumn={0} isChecked={todo.isDone} onClick={() => send({
+            gridColumn={0} isChecked={todo.isDone} onclick={() => send({
               kind: "toggle",
               id: todo.id
             })}>
             {todo.title}
           </CheckBox>
           <Button
-            gridColumn={1} onClick={() => send({
+            gridColumn={1} onclick={() => send({
               kind: "remove",
               id: todo.id
             })}>Remove</Button>
@@ -122,10 +122,10 @@
       {/snippet}
     </ListView>
     <TextBlock text="{todos.length} tasks, {tally.done} done" />
-    <Button isEnabled={tally.isAnyDone} onClick={() => (isClearOpen = true)}>Clear done</Button>
+    <Button isEnabled={tally.isAnyDone} onclick={() => (isClearOpen = true)}>Clear done</Button>
     <ContentDialog
       closeButtonText="Keep them"
-      onResult={result => result === ContentDialogResult.Primary && send({
+      onresult={result => result === ContentDialogResult.Primary && send({
         kind: "clear"
       })}
       primaryButtonText="Clear"

@@ -82,7 +82,7 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onClosed={exitApplication}
+  onclosed={exitApplication}
   title="App example"
   width={WINDOW_WIDTH}
 >

@@ -40,23 +40,23 @@
     <TextBlock text="Backdrop: {shell.backdrop}" />
     <StackPanel class="window-row" orientation="Horizontal">
       {#each Object.values(Backdrop) as backdrop (backdrop)}
-        <Button onClick={() => (shell.backdrop = backdrop)}>{backdrop}</Button>
+        <Button onclick={() => (shell.backdrop = backdrop)}>{backdrop}</Button>
       {/each}
     </StackPanel>
     <TextBlock text="Theme: {shell.theme}" />
     <StackPanel class="window-row" orientation="Horizontal">
       {#each Object.values(WindowTheme) as theme (theme)}
-        <Button onClick={() => (shell.theme = theme)}>{theme}</Button>
+        <Button onclick={() => (shell.theme = theme)}>{theme}</Button>
       {/each}
     </StackPanel>
     <TextBlock text="Presentation: {shell.presentation}" />
     <StackPanel class="window-row" orientation="Horizontal">
       {#each Object.values(WindowPresentation) as presentation (presentation)}
-        <Button onClick={() => (shell.presentation = presentation)}>{presentation}</Button>
+        <Button onclick={() => (shell.presentation = presentation)}>{presentation}</Button>
       {/each}
     </StackPanel>
-    <CheckBox bind:isChecked={shell.isCloseBlocked}>Refuse to close (onClosing returns true)</CheckBox>
-    <Button onClick={openSecond}>Open a second window</Button>
+    <CheckBox bind:isChecked={shell.isCloseBlocked}>Refuse to close (onclosing returns true)</CheckBox>
+    <Button onclick={openSecond}>Open a second window</Button>
   </StackPanel>
 </PageFrame>
 

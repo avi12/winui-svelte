@@ -66,7 +66,7 @@
     {#each wireless.radios as radio (radio.name)}
       <TextBlock text="Radio {radio.name}" />
     {/each}
-    <Button onClick={toggleScan}>{scanLabel()}</Button>
+    <Button onclick={toggleScan}>{scanLabel()}</Button>
     {#each scanner.advertisements.items as advertisement (advertisement.addressText)}
       <TextBlock text="{advertisement.localName || advertisement.addressText} {advertisement.rssi} dBm" />
     {/each}
