@@ -113,8 +113,8 @@ a local value, which WinUI ranks above them
 Both forms are allowed for `isTextSelectionEnabled` and `user-select`,
 `padding`, `spacing` and `gap`, `fontSize` and `font-size`; the prop wins,
 and removing it brings the rule's value back
-Properties the translation writes outside the Style (effects, grid tracks,
-dynamic lengths) have no prop to compete with
+Properties the translation writes outside the Style (effects, grid tracks)
+have no prop to compete with
 An animation overrides either while it runs
 
 ## Opt-in groups
@@ -722,7 +722,8 @@ that `matchMedia` and `mediaQuery` share with the stylesheet: media types
 (`all` and `screen` hold, `print`, `speech`, `tty` and `tv` parse and never hold),
 `not`, `only`, `and`, `or`, comma lists, parentheses, the `min-` and `max-` forms,
 the range syntax (`(400px <= width <= 700px)`), the boolean form
-(`(prefers-reduced-motion)`), and the units px, em, rem, dppx, x, dpi, dpcm and
+(`(prefers-reduced-motion)`), and the units px (any other length unit is a
+compile error, see Length units), dppx, x, dpi and dpcm for a resolution, and
 ratios
 A feature the table does not know is a build error that names it, and
 inside `matchMedia` a query that does not parse never holds
@@ -921,6 +922,9 @@ selectors; `@scope` holds style rules only
 
 WinUI measures in device-independent pixels, so the CSS writes what WinUI
 understands and nothing is converted
+Only the native units are CSS here: px, deg, s, ms, fr, auto and unitless
+numbers
+Any other unit is a compile error from both the compiler and stylelint
 One table (`src/css/parse/units.ts`) holds the verdict per unit, and the parser,
 the validator, the stylelint rule and the VS Code data all read it; adding a row
 updates every channel
