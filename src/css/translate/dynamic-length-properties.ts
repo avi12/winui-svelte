@@ -3,7 +3,7 @@ import type { GroupInput, PropertyGroup, WriteContext } from "./property-kit.ts"
 import { resolveDynamicLength } from "#src/css/parse/dynamic-length.js";
 import type { LengthBasis } from "#src/css/parse/dynamic-length.js";
 import type { Viewport } from "#src/css/parse/media.js";
-import { containerOf, sizeOfContainer } from "#src/css/runtime/containers.js";
+import { containerOf, identityOf, sizeOfContainer } from "#src/css/runtime/containers.js";
 import type { ContainerNative } from "#src/css/runtime/containers.js";
 import type { NativeValue } from "#src/native-value.js";
 
@@ -147,7 +147,61 @@ function basisFor({ context, axis }: {
 // Sets each property from its expression against the sizes now, and again when they change.
 function applyDynamicLengths(context: WriteContext) {
   const { control, native } = context;
+  // The nodes whose size the lengths read: found again each time, because the
+  // control may be styled before it is in the tree, and then has none.
+  const watched = new Map<string, {
+    identity: unknown;
+    unsubscribe: (() => void) | null;
+  }>();
+  function watch({ slot, node, event }: {
+    slot: string;
+    node: NativeValue;
+    event: string;
+  }) {
+    const identity = isRecordValue(node) ? identityOf(node) : null;
+    const known = watched.get(slot);
+    const isUnchanged = known !== undefined && known.identity === identity;
+    if (isUnchanged) {
+      return;
+    }
+
+    known?.unsubscribe?.();
+    watched.set(slot, {
+      identity,
+      unsubscribe: isRecordValue(node) ? native.subscribe(node, event, update) : null
+    });
+  }
+
+  function watchSources() {
+    watch({
+      slot: "parent",
+      node: native.read({
+        control,
+        property: "parent"
+      }),
+      event: "SizeChanged"
+    });
+    watch({
+      slot: "container",
+      node: containerOf({
+        control,
+        name: "",
+        native
+      }),
+      event: "SizeChanged"
+    });
+    watch({
+      slot: "root",
+      node: native.read({
+        control,
+        property: "xamlRoot"
+      }),
+      event: "Changed"
+    });
+  }
+
   function update() {
+    watchSources();
     for (const entry of context.value.split(XAML_SEPARATOR)) {
       const [property = "", expression = ""] = entry.split(ENTRY_SEPARATOR);
       const target = DYNAMIC_PROPERTIES.get(property);
@@ -166,24 +220,10 @@ function applyDynamicLengths(context: WriteContext) {
   }
 
   update();
-  const root = native.read({
-    control,
-    property: "xamlRoot"
-  });
-  const unsubscribers = [
-    native.subscribe(control, "Loaded", update),
-    ...[native.read({
-      control,
-      property: "parent"
-    }), containerOf({
-      control,
-      name: "",
-      native
-    })].map(node => (isRecordValue(node) ? native.subscribe(node, "SizeChanged", update) : null)),
-    isRecordValue(root) ? native.subscribe(root, "Changed", update) : null
-  ];
+  const unsubscribeLoaded = native.subscribe(control, "Loaded", update);
   return () => {
-    for (const unsubscribe of unsubscribers) {
+    unsubscribeLoaded?.();
+    for (const { unsubscribe } of watched.values()) {
       unsubscribe?.();
     }
   };
