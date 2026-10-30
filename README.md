@@ -21,11 +21,27 @@ Then I stumbled upon [node-winui](https://github.com/microsoft/winappCli/blob/ma
   let isOn = $state(true);
 </script>
 
-<StackPanel padding={24} spacing={12}>
-  <TextBlock fontSize={24}>Hello from WinUI</TextBlock>
+<StackPanel class="page">
+  <TextBlock class="title">Hello from WinUI</TextBlock>
   <ToggleSwitch bind:isOn header="Lights" />
 </StackPanel>
+
+<style>
+  /* Global: Svelte does not scope a class passed to a component */
+  :global(.page) {
+    gap: 12px;
+    padding: 24px;
+  }
+
+  :global(.title) {
+    font-size: 24px;
+  }
+</style>
 ```
+
+Layout and look are CSS: `padding`, `gap` (WinUI's `Spacing`), `margin`,
+`font-size` and the rest go in the `<style>` block; the components keep the
+matching props (`padding`, `spacing`, `fontSize`) for values that change at run time
 
 - **Every WinUI 3 control, and the value objects they take** (brushes,
   transforms, animations, layouts...: 295 components in the table below) are
