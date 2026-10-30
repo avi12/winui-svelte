@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import {
   mkdirSync,
   mkdtempSync,
@@ -9,6 +9,7 @@ import {
 } from "node:fs";
 import path from "node:path";
 import { gunzipSync } from "node:zlib";
+import { z } from "zod";
 
 // Packs the package with pnpm (what is published) and checks the tarball the
 // way a consumer meets it: publint for the manifest, @arethetypeswrong/cli for
@@ -48,6 +49,7 @@ const PREFIX_BYTES = 155;
 const OCTAL = 8;
 const BYTES_PER_KILOBYTE = 1024;
 const FORBIDDEN_LISTED = 20;
+const ATTW_PROCESSES = 8;
 
 function textAt({ block, offset, length }: {
   block: Buffer;
@@ -110,6 +112,45 @@ function run(args: string[]) {
   });
 }
 
+// pnpm exec, in the background: output is held and printed when it ends, so
+// the checks that run side by side do not interleave.
+function runAsync(args: string[]) {
+  const pnpmScript = process.env["npm_execpath"];
+  const isRunThroughPnpm = pnpmScript !== undefined;
+  if (!isRunThroughPnpm) {
+    throw new Error("Run this through pnpm: pnpm check:package");
+  }
+
+  const child = spawn(process.execPath, [pnpmScript, ...args], { cwd: PACKAGE_ROOT });
+  return new Promise<void>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    child.stdout.on("data", (chunk: Buffer) => chunks.push(chunk));
+    child.stderr.on("data", (chunk: Buffer) => chunks.push(chunk));
+    child.on("close", code => {
+      process.stdout.write(Buffer.concat(chunks));
+      if (code === 0) {
+        resolve();
+        return;
+      }
+
+      reject(new Error(`pnpm ${args.join(" ")} exited with ${code}`));
+    });
+  });
+}
+
+// The checker spends minutes creating a TypeScript program per entry point and
+// resolution mode, so the entry points are dealt out to a process each.
+function entryPointShards() {
+  const manifest: unknown = JSON.parse(readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8"));
+  const exportsMap = z.object({ exports: z.record(z.string(), z.unknown()) }).parse(manifest).exports;
+  const shards: string[][] = Array.from({ length: ATTW_PROCESSES }, () => []);
+  for (const [iEntry, entry] of Object.keys(exportsMap).entries()) {
+    shards[iEntry % ATTW_PROCESSES]?.push(entry);
+  }
+
+  return shards.filter(shard => shard.length > 0);
+}
+
 // Inside the repository (gitignored), so the check writes nowhere else.
 const SCRATCH_FOLDER = path.join(PACKAGE_ROOT, ".verify");
 mkdirSync(SCRATCH_FOLDER, { recursive: true });
@@ -132,18 +173,22 @@ try {
 
   const kilobytes = Math.round(statSync(tarball).size / BYTES_PER_KILOBYTE);
   console.log(`Tarball: ${files.length} files, ${kilobytes} kB packed`);
-  run(["exec", "publint", "run", tarball, "--strict"]);
   // The types import the bindings (#winui/*, dist/bindings) and what they
   // import (@microsoft/dynwinrt), which the checker's sandbox cannot resolve
   // from inside the tarball: that is its only complaint.
-  run([
-    "exec",
-    "attw",
-    tarball,
-    "--profile",
-    "esm-only",
-    "--ignore-rules",
-    "internal-resolution-error"
+  await Promise.all([
+    runAsync(["exec", "publint", "run", tarball, "--strict"]),
+    ...entryPointShards().map(entryPoints => runAsync([
+      "exec",
+      "attw",
+      tarball,
+      "--profile",
+      "esm-only",
+      "--ignore-rules",
+      "internal-resolution-error",
+      "--entrypoints",
+      ...entryPoints
+    ]))
   ]);
 } finally {
   rmSync(PACK_FOLDER, {
