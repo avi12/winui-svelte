@@ -2,6 +2,7 @@ import AnimationPage from "./pages/AnimationPage.svelte";
 import CssLayoutPage from "./pages/CssLayoutPage.svelte";
 import DataPage from "./pages/DataPage.svelte";
 import FormsPage from "./pages/FormsPage.svelte";
+import ImageSourcesPage from "./pages/ImageSourcesPage.svelte";
 import InputPage from "./pages/InputPage.svelte";
 import LayoutPage from "./pages/LayoutPage.svelte";
 import ListsPage from "./pages/ListsPage.svelte";
@@ -74,6 +75,11 @@ export const GALLERY_PAGES: readonly GalleryPage[] = [
     key: "media",
     title: "Media",
     page: MediaPage
+  },
+  {
+    key: "image-sources",
+    title: "Image sources and audio",
+    page: ImageSourcesPage
   },
   {
     key: "text",
