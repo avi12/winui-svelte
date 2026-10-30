@@ -37,17 +37,20 @@ import type {
   ResourceDictionary,
   UIElement
 } from "./generated/bindings.ts";
+import type { ThemeBrush } from "./generated/theme-brushes.ts";
 import { mediaSeam } from "./media-seam.ts";
 import type { ResourceRecordInput } from "./resource-record.ts";
 import { styleTarget } from "./style-targets.ts";
 import type {
   AttachedInput,
   ColorInput,
+  ColorText,
   CornerRadiusInput,
   DateInput,
   DateTimeValue,
   DurationInput,
   FontWeightInput,
+  GridLengthText,
   KeyTimeInput,
   MatrixInput,
   NumbersInput,
@@ -138,10 +141,16 @@ export interface ElementProps {
 }
 
 /**
- * A member of an enum by name or value. A flag enum also takes a combination
- * of its members' values.
+ * A member of an enum: its WinUI name (`"Compact"`) or its value
+ * (`AppBarClosedDisplayMode.Compact`), and nothing else.
  */
-export type EnumInput<Table extends Record<string, number>> = keyof Table | number;
+export type EnumInput<Table extends Record<string, number>> = keyof Table | Table[keyof Table];
+
+/**
+ * A member of a flag enum (one WinUI marks `[Flags]`), or a list of member
+ * names the prop combines (`["Control", "Shift"]`).
+ */
+export type FlagsInput<Table extends Record<string, number>> = EnumInput<Table> | ReadonlyArray<keyof Table>;
 
 /** A grid track's size as the bindings take it. */
 export interface GridLengthValue {
@@ -150,10 +159,18 @@ export interface GridLengthValue {
 }
 
 /** A grid length: pixels, "Auto", "*", "2*" as XAML writes them, or WinUI's own value. */
-export type GridLengthInput = number | string | GridLengthValue;
+export type GridLengthInput = number | GridLengthText | GridLengthValue;
 
-/** A color string (see `ColorInput`), a theme resource name, or a brush. */
-export type BrushInput = string | Brush;
+/**
+ * The brush resources an app defines itself, by key. Augment it so a brush
+ * prop takes their names too:
+ * `declare module "winui-svelte/components" { interface AppBrushes { BrandBrush: true } }`.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- an app fills it by merging
+export interface AppBrushes {}
+
+/** A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush. */
+export type BrushInput = ColorText | ThemeBrush | keyof AppBrushes | Brush;
 
 /**
  * A URI string (a `.svg` is an SVG image, any other a bitmap), an image source,
@@ -256,41 +273,42 @@ function repeatBehaviorTypes() {
   ]);
 }
 
-function isFlagMask(members: readonly number[]) {
-  const flags = members.filter(member => member !== 0);
-  const isEachABit = flags.every(member => (member & (member - 1)) === 0);
-  return flags.length > 1 && isEachABit;
+function isList<Table extends Record<string, number>>(input: FlagsInput<Table>): input is ReadonlyArray<keyof Table> {
+  return Array.isArray(input);
 }
 
-// A guard for the table's members: a number is one, or a combination of the
-// bits of a flag enum's members.
-function memberGuard<Table extends Record<string, number>>(table: Table) {
-  const members: number[] = Object.values(table);
-  let mask = 0;
-  for (const member of members) {
-    mask |= member;
-  }
-
-  const isFlagEnum = isFlagMask(members);
-  return (value: NativeValue): value is Table[keyof Table] => {
-    const isCombination = typeof value === "number" && isFlagEnum && (value & ~mask) === 0;
-    return members.some(member => member === value) || isCombination;
-  };
-}
-
-/** A member of the enum table by name or number; throws a `RangeError` naming the members when it is none. */
+/**
+ * A member of the enum table by name or value, or a flag enum's list of names
+ * as their bits combined; throws a `RangeError` naming the members for
+ * anything else.
+ */
 export function enumValue<Table extends Record<string, number>>({ table, input }: {
   table: Table;
-  input: EnumInput<Table>;
+  input: FlagsInput<Table>;
 }) {
-  const isNumber = typeof input === "number";
-  const value: NativeValue = isNumber ? input : read(table, String(input));
-  const isMember = memberGuard(table);
-  if (isMember(value)) {
-    return value;
+  const members: NativeValue[] = Object.values(table);
+  // The bindings type a flag enum as its single members, while WinUI takes
+  // any combination of their bits.
+  function isValue(value: NativeValue): value is Table[keyof Table] {
+    return members.includes(value) || isList(input);
   }
 
-  throw new RangeError(`${String(input)} is not one of ${Object.keys(table).join(", ")}`);
+  let bits = 0;
+  for (const part of isList(input) ? input : [input]) {
+    const value = typeof part === "number" ? part : read(table, String(part));
+    const isMember = members.includes(value);
+    if (!isMember) {
+      throw new RangeError(`${String(part)} is not one of ${Object.keys(table).join(", ")}`);
+    }
+
+    bits = (bits | Number(value)) >>> 0;
+  }
+
+  if (isValue(bits)) {
+    return bits;
+  }
+
+  throw new RangeError(String(input));
 }
 
 /** A thickness prop as the bindings' `Thickness`. */
@@ -329,8 +347,11 @@ function nativeMember<Key extends string, Member>({ table, key }: {
   return member;
 }
 
-/** A grid length prop as the bindings' `GridLength`. */
-export function gridLengthOf(input: GridLengthInput) {
+/**
+ * A grid length prop as the bindings' `GridLength`; it also reads a track of
+ * a Grid's `columns` or `rows` text, which `gridLengthParts` checks.
+ */
+export function gridLengthOf(input: number | string | GridLengthValue) {
   const isGridLength = typeof input === "object";
   if (isGridLength) {
     return input;

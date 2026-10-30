@@ -33,6 +33,14 @@ const inlayHintSchema = z.object({
 
 export type InlayHint = z.infer<typeof inlayHintSchema>;
 
+const completionItemSchema = z.object({ label: z.string() });
+
+// A completion answer: a list, or the items of a CompletionList.
+const completionSchema = z.union([
+  z.array(completionItemSchema),
+  z.object({ items: z.array(completionItemSchema) })
+]).nullable();
+
 const messageSchema = z.object({
   id: z.number().optional(),
   method: z.string().optional(),
@@ -133,7 +141,8 @@ export class LanguageServer {
       capabilities: {
         textDocument: {
           publishDiagnostics: {},
-          inlayHint: {}
+          inlayHint: {},
+          completion: {}
         },
         workspace: {
           configuration: true
@@ -215,6 +224,31 @@ export class LanguageServer {
       params
     });
     return z.array(inlayHintSchema).nullable().parse(hints) ?? [];
+  }
+
+  // The labels the editor offers at a position (zero-based line and character).
+  async completionsAt({ file, line, character }: {
+    file: string;
+    line: number;
+    character: number;
+  }) {
+    const params = {
+      textDocument: {
+        uri: pathToFileURL(file).href
+      },
+      position: {
+        line,
+        character
+      }
+    };
+    const answer = completionSchema.parse(
+      await this.request({
+        method: "textDocument/completion",
+        params
+      })
+    ) ?? [];
+    const items = Array.isArray(answer) ? answer : answer.items;
+    return items.map(item => item.label);
   }
 
   stop() {

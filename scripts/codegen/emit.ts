@@ -8,7 +8,7 @@ import type {
   PropertyModel,
   SlotModel
 } from "./model.ts";
-import { bindingClasses, SlotKind } from "./model.ts";
+import { bindingClasses, enumsOf, SlotKind } from "./model.ts";
 import {
   constructedClasses,
   extendedClasses,
@@ -261,6 +261,45 @@ export function emitBindings(model: Model) {
   return `${lines.join("\n")}\n`;
 }
 
+// The input type of an enum prop: one member by name or value, and for a flag
+// enum a list of names too.
+const enumInputTypes = new Map<PropertyKind, string>([
+  [PropertyKind.ENUM, "EnumInput"],
+  [PropertyKind.FLAGS, "FlagsInput"]
+]);
+
+// The public enum module (`winui-svelte/enums`): each enum a prop takes, re-exported
+// from its own bindings module, so it is one name for the value and its type
+// and an app bundles only the enums it imports.
+export function emitEnums(model: Model) {
+  const lines = [GENERATED_HEADER, ""];
+  for (const type of enumsOf(model)) {
+    lines.push(`export { ${type.name} } from "${bindingModule(type)}";`);
+  }
+
+  lines.push("export { ThemeBrush } from \"./theme-brushes.ts\";");
+  return `${lines.join("\n")}\n`;
+}
+
+// The brushes WinUI's theme defines (src/css/winui-resources.g.json, read
+// through the CSS layer's catalogue): a brush prop's named choices.
+export function emitThemeBrushes(keys: readonly string[]) {
+  const members = [...keys].sort().map(key => `  ${key}: "${key}"`);
+  return [
+    GENERATED_HEADER,
+    "",
+    "/**",
+    " * The brushes WinUI's theme defines, by resource key: the named choices a",
+    " * brush prop takes besides a color (`AcrylicBackgroundFillColorDefaultBrush`)",
+    " */",
+    `export const ThemeBrush = {\n${members.join(",\n")}\n} as const;`,
+    "",
+    "/** One of `ThemeBrush`'s keys */",
+    "export type ThemeBrush = (typeof ThemeBrush)[keyof typeof ThemeBrush];",
+    ""
+  ].join("\n");
+}
+
 function enumName({ enumType }: { enumType: TypeName | null }) {
   const isEnum = enumType !== null;
   if (!isEnum) {
@@ -310,9 +349,10 @@ function propertyType({ property, className }: {
   property: PropertyModel;
   className: string;
 }) {
-  const isEnum = property.kind === PropertyKind.ENUM;
+  const enumInput = enumInputTypes.get(property.kind);
+  const isEnum = enumInput !== undefined;
   if (isEnum) {
-    return `EnumInput<typeof ${enumName(property)}>`;
+    return `${enumInput}<typeof ${enumName(property)}>`;
   }
 
   const inputType = inputTypeOf(property);
@@ -350,7 +390,7 @@ function valueExpression({ kind, enumType, key }: {
   enumType: TypeName | null;
   key: string;
 }) {
-  const isEnum = kind === PropertyKind.ENUM;
+  const isEnum = enumInputTypes.has(kind);
   if (isEnum) {
     return `enumValue({ table: ${enumName({ enumType })}, input: value })`;
   }
@@ -369,9 +409,10 @@ function valueExpression({ kind, enumType, key }: {
 }
 
 function attachedType(attached: AttachedModel) {
-  const isEnum = attached.kind === PropertyKind.ENUM;
+  const enumInput = enumInputTypes.get(attached.kind);
+  const isEnum = enumInput !== undefined;
   if (isEnum) {
-    return `EnumInput<typeof ${enumName(attached)}>`;
+    return `${enumInput}<typeof ${enumName(attached)}>`;
   }
 
   const inputType = inputTypeOf(attached);
@@ -406,7 +447,7 @@ class LevelImports {
     key: string;
   }) {
     this.noteReadOnly(property);
-    const isEnum = property.kind === PropertyKind.ENUM;
+    const isEnum = enumInputTypes.has(property.kind);
     if (isEnum) {
       this.convert.add("enumValue");
       return;
@@ -426,10 +467,11 @@ class LevelImports {
     enumType: TypeName | null;
     key: string;
   }) {
-    const isEnum = kind === PropertyKind.ENUM;
+    const enumInput = enumInputTypes.get(kind);
+    const isEnum = enumInput !== undefined;
     if (isEnum) {
       this.bindingValues.add(enumName({ enumType }));
-      this.convertTypes.add("EnumInput");
+      this.convertTypes.add(enumInput);
       return;
     }
 

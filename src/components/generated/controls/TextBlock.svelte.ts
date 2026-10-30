@@ -11,6 +11,7 @@ import type {
   BrushInput,
   ElementProps,
   EnumInput,
+  FlagsInput,
   FontFamilyInput,
   FontWeightInput,
   ThicknessInput
@@ -58,7 +59,7 @@ export interface TextBlockProps extends FrameworkElementProps {
   selectionHighlightColor?: TextBlock["selectionHighlightColor"] | Snippet;
   text?: string;
   textAlignment?: EnumInput<typeof TextAlignment>;
-  textDecorations?: EnumInput<typeof TextDecorations>;
+  textDecorations?: FlagsInput<typeof TextDecorations>;
   textLineBounds?: EnumInput<typeof TextLineBounds>;
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textTrimming?: EnumInput<typeof TextTrimming>;

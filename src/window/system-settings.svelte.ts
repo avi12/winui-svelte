@@ -1,5 +1,6 @@
 import { createSettingsStore, isDarkTheme, systemSettingsStore } from "./settings-store.ts";
 import type { SettingsStore } from "./settings-store.ts";
+import type { HexColor } from "#src/components/values.js";
 import { UIColorType as ColorKind } from "#src/winui.js";
 import { createSubscriber } from "svelte/reactivity";
 
@@ -24,7 +25,7 @@ export interface SystemSettings {
    * The accent color the user picked, as `#rrggbb`: a value any color prop
    * takes.
    */
-  readonly accentColor: string;
+  readonly accentColor: HexColor;
 
   /** The text size scale from Settings, Accessibility, Text size: 1 is 100%, 1.5 is 150%. */
   readonly textScaleFactor: number;
@@ -49,7 +50,7 @@ function hexOf(channel: number) {
 // The text form colorOf reads back: #rrggbb, or #aarrggbb with transparency.
 function hexColorOf({ a, r, g, b }: Channels) {
   const alpha = a === OPAQUE ? "" : hexOf(a);
-  return `#${alpha}${hexOf(r)}${hexOf(g)}${hexOf(b)}`;
+  return `#${alpha}${hexOf(r)}${hexOf(g)}${hexOf(b)}` as const;
 }
 
 function readStore(store: SettingsStore) {

@@ -70,6 +70,7 @@ test("a color left out is not written unless the app had set it", () => {
 test("text that is not a color is refused with the same error as a color prop", () => {
   assert.throws(() => captionButtonChanges({
     colors: {
+      // @ts-expect-error the type refuses it too; the runtime check is what is tested
       background: "not-a-color"
     },
     applied: NOTHING_APPLIED

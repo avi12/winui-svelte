@@ -5,6 +5,7 @@ import type {
   DataTemplateInput,
   ElementProps,
   EnumInput,
+  FlagsInput,
   InputScopeInput,
   ObjectInput
 } from "../../convert.ts";
@@ -29,7 +30,7 @@ export interface RichEditBoxProps extends ControlProps {
   clipboardCopyFormat?: EnumInput<typeof RichEditClipboardFormat>;
   description?: ObjectInput | Snippet;
   desiredCandidateWindowAlignment?: EnumInput<typeof CandidateWindowAlignment>;
-  disabledFormattingAccelerators?: EnumInput<typeof DisabledFormattingAccelerators>;
+  disabledFormattingAccelerators?: FlagsInput<typeof DisabledFormattingAccelerators>;
   header?: ObjectInput | Snippet;
   headerTemplate?: DataTemplateInput;
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;

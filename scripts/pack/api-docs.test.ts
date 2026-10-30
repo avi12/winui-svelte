@@ -9,7 +9,7 @@ import typescript from "typescript";
 // the entry points that only re-export them are skipped.
 
 const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
-const DOCUMENTED_AS_FAMILY = new Set(["./components"]);
+const DOCUMENTED_AS_FAMILY = new Set(["./components", "./enums"]);
 const DOCS = ["API.md", "src/css/API.md", "src/state/README.md", "README.md"].map(file => readFileSync(path.join(PACKAGE_ROOT, file), "utf8")).join("\n");
 
 function exportedNames(entry: string) {

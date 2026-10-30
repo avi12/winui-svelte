@@ -648,13 +648,17 @@ component takes content (its WinUI content property: `Content`, `Child`,
 
 How a value is written:
 
-- An enum prop takes the member's name (`horizontalAlignment="Center"`) or its
-  number
+- An enum prop takes the member's WinUI name (`horizontalAlignment="Center"`)
+  or its value (`HorizontalAlignment.Center` from `winui-svelte/enums`), and
+  nothing else, so the editor offers exactly the members; a flag enum also
+  takes a list of names (`modifiers={["Control", "Shift"]}`)
 - A thickness takes `8`, `[8, 4]`, `[left, top, right, bottom]` or a CSS-order
   string; a corner radius a number or an array; a grid length `"Auto"`, `"*"`,
   `"2*"` or pixels
-- A brush takes a color string or a WinUI theme resource name, so light and dark
-  stay WinUI's
+- A brush takes a color (`"#0078d4"`, `"transparent"`), one of WinUI's theme
+  brushes by name (`"AcrylicBackgroundFillColorDefaultBrush"`, the `ThemeBrush`
+  set), so light and dark stay WinUI's, or a brush the app names in
+  `AppBrushes` (see API.md, Closed sets)
 - A time (`duration`, `beginTime`, a key frame's `keyTime`) takes milliseconds
   (`300`) or text with its unit (`"0.3s"`, `"2m"`) or as a clock
   (`"0:00:05"`); a `duration` also takes `"auto"` and `"forever"`, and a

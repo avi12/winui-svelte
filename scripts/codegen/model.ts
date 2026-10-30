@@ -58,6 +58,7 @@ const EVENT_PREFIX = "on";
 const FACTORY_PARAMETERS = 2;
 const targetTypes = new Set(["DependencyObject", "UIElement", "FrameworkElement", "Timeline"]);
 const ENUM_BASE = "Enum";
+const FLAGS_ATTRIBUTE = "System.FlagsAttribute";
 const NULLABLE_NAME = "IReference`1";
 const nullablePrimitiveKinds = new Map<string, PropertyKind>([
   ["Boolean", PropertyKind.NULLABLE_BOOLEAN],
@@ -302,11 +303,16 @@ class Builder {
         };
       }
 
-      const isEnum = signature.isValueType && isEnumType(this.index.find(signature.type));
+      const found = this.index.find(signature.type);
+      const isEnum = signature.isValueType && isEnumType(found);
       if (isEnum) {
         this.enums.set(fullName(signature.type), signature.type);
+        const isFlags = findAttribute({
+          attributes: found?.attributes ?? [],
+          name: FLAGS_ATTRIBUTE
+        }).length > 0;
         return {
-          kind: PropertyKind.ENUM,
+          kind: isFlags ? PropertyKind.FLAGS : PropertyKind.ENUM,
           enumType: signature.type
         };
       }
@@ -889,6 +895,12 @@ export function buildExtraModels(lockPath: string) {
       classes: model.classes.filter(level => level.folder === extra.folder)
     };
   });
+}
+
+/** The enums the props take and the hand-written conversions use, by name. */
+export function enumsOf(model: Model) {
+  const all = new Map([...model.enums, ...supportEnums].map(type => [fullName(type), type]));
+  return [...all.values()].sort((left, right) => left.name.localeCompare(right.name));
 }
 
 // Every class the bindings must hold for the model: the hierarchy, the

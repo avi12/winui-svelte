@@ -989,6 +989,8 @@ export const PropertyKind = {
   NUMBER: "number",
   STRING: "string",
   ENUM: "enum",
+  // An enum whose members are bits (FlagsAttribute): a list of names combines them.
+  FLAGS: "flags",
   THICKNESS: "thickness",
   CORNER_RADIUS: "cornerRadius",
   GRID_LENGTH: "gridLength",

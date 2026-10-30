@@ -1,3 +1,4 @@
+import type { Activation } from "./single-instance.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -15,10 +16,7 @@ function immediately(work: () => void) {
 
 class FakeInstance {
   redirects = 0;
-  private callback: ((activation: {
-    kind: string;
-    data: unknown;
-  }) => void) | undefined;
+  private callback: ((activation: Activation) => void) | undefined;
 
   readonly isCurrent: boolean;
 
@@ -35,21 +33,14 @@ class FakeInstance {
     return Promise.resolve();
   }
 
-  onActivated(callback: (activation: {
-    kind: string;
-    data: unknown;
-  }) => void) {
+  onActivated(callback: (activation: Activation) => void) {
     this.callback = callback;
     return () => {
       this.callback = undefined;
     };
   }
 
-  raise(activation: {
-    kind: string;
-    commandLine?: string;
-    data: unknown;
-  }) {
+  raise(activation: Activation) {
     this.callback?.(activation);
   }
 }

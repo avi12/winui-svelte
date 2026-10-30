@@ -53,6 +53,10 @@
       "svelte": "./dist/components/index.js",
       "default": "./dist/components/index.js"
     },
+    "./enums": {
+      "types": "./dist/enums.d.ts",
+      "default": "./dist/enums.js"
+    },
     "./state": {
       "types": "./dist/state/index.d.ts",
       "svelte": "./dist/state/index.js",

@@ -15,7 +15,7 @@
     TitleBarHeightOption
   } from "#src/winui.js";
   import { flush } from "winui-svelte";
-  import { Window } from "winui-svelte/components";
+  import { isColorText, Window } from "winui-svelte/components";
   import type { CaptionButtonColors, WindowBounds, WindowHandle, WindowRegion } from "winui-svelte/components";
   import { createWindow, exitApplication } from "winui-svelte/window";
   import { Backdrop, TitleBarHeight, WindowPresentation, WindowTheme } from "winui-svelte/window";
@@ -163,10 +163,13 @@
       report("titleBarHeight");
     }],
     ["captionButtons", command => {
-      captionButtons = command["value"] === null ? undefined : {
-        foreground: String(command["foreground"]),
-        hoverBackground: String(command["hoverBackground"])
-      };
+      const foreground = String(command["foreground"]);
+      const hoverBackground = String(command["hoverBackground"]);
+      const isSet = command["value"] !== null && isColorText(foreground) && isColorText(hoverBackground);
+      captionButtons = isSet ? {
+        foreground,
+        hoverBackground
+      } : undefined;
       report("captionButtons");
     }],
     ["dragRegions", command => {

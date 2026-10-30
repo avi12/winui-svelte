@@ -21,7 +21,9 @@ export type {
 } from "./hand-written/navigation/navigator-host.svelte.ts";
 export { NavigationCacheMode, NavigationMode } from "./hand-written/navigation/navigation-stack.ts";
 export { MoveDirection } from "./hand-written/items/reorder.ts";
-export { ticksDate, ticksMilliseconds } from "./values.ts";
+export { isColorText, ticksDate, ticksMilliseconds } from "./values.ts";
+export type { ColorInput, ColorKeyword, ColorText, GridLengthText, HexColor } from "./values.ts";
+export type { AppBrushes, BrushInput, EnumInput, FlagsInput, GridLengthInput } from "./convert.ts";
 export type { ResourceRecordInput, ResourceValueInput } from "./resource-record.ts";
 export { installMedia } from "./media.ts";
 export { goToState, installXaml, resourceDictionaryOf, xamlOf } from "./xaml.ts";

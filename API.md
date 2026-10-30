@@ -30,6 +30,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
+| `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
@@ -421,6 +422,60 @@ For an event
 argument, `ticksDate(ticks)` and `ticksMilliseconds(ticks)` from
 `winui-svelte/components` turn WinUI's ticks (`args.newDate.universalTime`,
 `args.newTime.duration`) into the same
+
+## Closed sets (`winui-svelte/enums`)
+
+Wherever a prop or an option takes only a set of values, its type is exactly
+that set, so the editor offers the members and refuses anything else, and the
+set is exported from `winui-svelte/enums` under one name for the value and the
+type, as the repository writes every closed set (an `as const` object and its
+union):
+
+```ts
+import { Backdrop, HorizontalAlignment, ThemeBrush } from "winui-svelte/enums";
+import type { Orientation } from "winui-svelte/enums";
+
+const backdrop: Backdrop = Backdrop.micaAlt;
+const vertical: Orientation = 1;
+```
+
+| Kind | Takes | Example |
+|---|---|---|
+| A WinUI enum (`EnumInput`) | the member's WinUI name or its value | `closedDisplayMode="Minimal"`, `AppBarClosedDisplayMode.Minimal` |
+| A flag enum WinUI marks `[Flags]` (`FlagsInput`) | the same, or a list of names it combines | `modifiers={["Control", "Shift"]}` |
+| A color (`ColorInput`) | hex text (`HexColor`), a `ColorKeyword`, or WinUI's own value | `"#0078d4"`, `"transparent"` |
+| A brush (`BrushInput`) | a color, a `ThemeBrush`, a key of `AppBrushes`, or a `Brush` | `"AcrylicBackgroundFillColorDefaultBrush"` |
+| A grid length (`GridLengthInput`) | pixels, or `GridLengthText` as XAML writes it | `"Auto"`, `"2*"`, `"120"` |
+| The package's own | `Backdrop`, `WindowTheme`, `TitleBarHeight`, `WindowPresentation`, `PickerLocation`, `NavigationCacheMode`, `NavigationMode`, `MoveDirection`, `XamlKind`, `FocusKind`, `TrayGesture`, `TrayBalloonIcon`, `ExtendedActivationKind` | `backdrop="mica"` |
+
+A WinUI enum's members keep WinUI's names and case (`"Minimal"`, not
+`"minimal"`), as the metadata and the docs have them; the package's own sets
+use lower camel case values (`"micaAlt"`)
+WinUI's enums come from the bindings, one module each, generated from the
+metadata into `src/components/generated/enums.ts`; `ThemeBrush` is generated
+from the brush keys of WinUI's theme (`src/css/winui-resources.g.json`)
+
+The entry only re-exports, so an app bundles the sets it imports and nothing
+more, and `import type` costs nothing; `scripts/pack/treeshake.test.ts` proves
+it on a bundle
+
+A brush the app defines itself (in `resources`, or the application's
+dictionary) is named once, then a brush prop takes it too:
+
+```ts
+declare module "winui-svelte/components" {
+  interface AppBrushes {
+    BrandBrush: true;
+  }
+}
+```
+
+Text read from loose data (a message, a file) is narrowed with
+`isColorText(text)` from `winui-svelte/components` before a color prop takes
+it
+Time spans, durations and repeat behaviors keep text forms (`"0.3s"`,
+`"3x"`) a template type cannot close without refusing valid text, so they stay
+`string` and are checked when written
 
 ## Templates, styles and resources (`winui-svelte/components`)
 

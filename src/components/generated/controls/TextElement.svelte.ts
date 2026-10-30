@@ -11,6 +11,7 @@ import type {
   AttachedInput,
   BrushInput,
   EnumInput,
+  FlagsInput,
   FontFamilyInput,
   FontWeightInput
 } from "../../convert.ts";
@@ -37,7 +38,7 @@ export interface TextElementProps {
   keyTipPlacementMode?: EnumInput<typeof KeyTipPlacementMode>;
   keyTipVerticalOffset?: number;
   language?: string;
-  textDecorations?: EnumInput<typeof TextDecorations>;
+  textDecorations?: FlagsInput<typeof TextDecorations>;
   xamlRoot?: TextElement["xamlRoot"];
   attached?: AttachedInput;
 }
