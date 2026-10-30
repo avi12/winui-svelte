@@ -1,8 +1,9 @@
-import { DisplayArea, DisplayMonitor, DisplayMonitorConnectionKind } from "./bindings.ts";
+import type { DisplayMonitorConnectionKind } from "./bindings.ts";
+import { DisplayArea, DisplayMonitor } from "./bindings.ts";
 import type { Delivery } from "./delivery.ts";
 import { findAllDevices } from "./find-devices.ts";
 import type { Subscription } from "./live.svelte.ts";
-import { liveTracker } from "./live.svelte.ts";
+import { liveReader } from "./live.svelte.ts";
 
 /** A rectangle in screen pixels. */
 export interface PixelRectangle {
@@ -84,14 +85,11 @@ export interface DisplaysOptions {
  */
 export function displays(options: DisplaysOptions = {}) {
   const source = options.source ?? windowsDisplaySource();
-  const track = liveTracker({
+  const read = liveReader({
+    read: () => source.list(),
     subscriptions: source.subscriptions,
-    ...options.deliver === undefined ? {} : { deliver: options.deliver }
+    deliver: options.deliver
   });
-  function read() {
-    track();
-    return source.list();
-  }
   return {
     get areas() {
       return read();
@@ -147,5 +145,3 @@ export async function getDisplayMonitors({ signal }: { signal?: AbortSignal } = 
     maxLuminanceInNits: monitor.maxLuminanceInNits
   } satisfies DisplayMonitorInfo));
 }
-
-export { DisplayMonitorConnectionKind };

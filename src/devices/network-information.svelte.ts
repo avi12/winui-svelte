@@ -1,7 +1,7 @@
 import { NetworkConnectivityLevel, NetworkCostType, NetworkInformation } from "./bindings.ts";
 import type { Delivery } from "./delivery.ts";
 import type { Subscription } from "./live.svelte.ts";
-import { liveTracker, subscriptionOfStaticEvent } from "./live.svelte.ts";
+import { liveReader, subscriptionOfStaticEvent } from "./live.svelte.ts";
 
 /** The connection the internet is reached by, at one moment. */
 export interface NetworkReading {
@@ -101,14 +101,11 @@ export interface NetworkInformationOptions {
  */
 export function networkInformation(options: NetworkInformationOptions = {}) {
   const source = options.source ?? windowsNetworkSource();
-  const track = liveTracker({
+  const read = liveReader({
+    read: () => source.read(),
     subscriptions: source.subscriptions,
-    ...options.deliver === undefined ? {} : { deliver: options.deliver }
+    deliver: options.deliver
   });
-  function read() {
-    track();
-    return source.read();
-  }
   return {
     get reading() {
       return read();

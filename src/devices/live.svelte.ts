@@ -53,7 +53,7 @@ function listenIfAllowed({ subscription, notify }: {
  */
 export function liveTracker({ subscriptions, deliver = defaultDelivery() }: {
   subscriptions: readonly Subscription[];
-  deliver?: Delivery;
+  deliver?: Delivery | undefined;
 }) {
   return createSubscriber(update => {
     function notify() {
@@ -84,4 +84,26 @@ export function pollingSubscription(milliseconds: number) {
     timer.unref();
     return () => clearInterval(timer);
   }) satisfies Subscription;
+}
+
+/**
+ * A read that is live: `liveTracker` and the read in one function. Call it in
+ * each getter of a rune.
+ *
+ * @param options - What to read, the events that change it, and how a change is delivered.
+ * @returns A function that tracks and then reads.
+ */
+export function liveReader<Reading>({ read, subscriptions, deliver }: {
+  read: () => Reading;
+  subscriptions: readonly Subscription[];
+  deliver?: Delivery | undefined;
+}) {
+  const track = liveTracker({
+    subscriptions,
+    deliver
+  });
+  return () => {
+    track();
+    return read();
+  };
 }

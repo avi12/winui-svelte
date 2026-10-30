@@ -2,7 +2,7 @@ import type { Delivery } from "./delivery.ts";
 import { deviceChanges } from "./device-changes.ts";
 import type { DeviceChangesOptions } from "./device-changes.ts";
 import { DeviceInterfaceClass, selectorOfInterfaceClasses } from "./interface-classes.ts";
-import { liveTracker, pollingSubscription } from "./live.svelte.ts";
+import { liveReader, pollingSubscription } from "./live.svelte.ts";
 import { windowsPrinterSource } from "./native.ts";
 import type { PrinterRecord, PrinterSource } from "./printer-source.ts";
 import { PrinterAttribute, PrinterStatus } from "./printer-source.ts";
@@ -96,7 +96,8 @@ export function printers(options: PrintersOptions = {}) {
   const source = options.source ?? windowsPrinterSource();
   const pollMilliseconds = options.pollMilliseconds ?? DEFAULT_POLL_MILLISECONDS;
   const isPolling = pollMilliseconds > 0;
-  const track = liveTracker({
+  const read = liveReader({
+    read: () => listPrinters({ source }),
     subscriptions: [
       deviceChanges({
         selector: selectorOfInterfaceClasses(DeviceInterfaceClass.printer),
@@ -104,12 +105,8 @@ export function printers(options: PrintersOptions = {}) {
       }),
       ...isPolling ? [pollingSubscription(pollMilliseconds)] : []
     ],
-    ...options.deliver === undefined ? {} : { deliver: options.deliver }
+    deliver: options.deliver
   });
-  function read() {
-    track();
-    return listPrinters({ source });
-  }
   return {
     get printers() {
       return read();

@@ -70,7 +70,7 @@ export function audioDevices(options: AudioDevicesOptions = {}) {
   };
   const track = liveTracker({
     subscriptions: defaults.subscriptions,
-    ...options.deliver === undefined ? {} : { deliver: options.deliver }
+    deliver: options.deliver
   });
   function read(role: AudioDeviceRole) {
     track();

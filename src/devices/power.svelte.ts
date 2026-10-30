@@ -7,7 +7,7 @@ import {
 } from "./bindings.ts";
 import type { Delivery } from "./delivery.ts";
 import type { Subscription } from "./live.svelte.ts";
-import { liveTracker, subscriptionOfStaticEvent } from "./live.svelte.ts";
+import { liveReader, subscriptionOfStaticEvent } from "./live.svelte.ts";
 
 const TICKS_PER_MILLISECOND = 10_000n;
 const UNKNOWN_DURATION = 9_223_372_036_854_775_807n;
@@ -108,14 +108,11 @@ export interface BatteryOptions {
  */
 export function battery(options: BatteryOptions = {}) {
   const source = options.source ?? windowsPowerSource();
-  const track = liveTracker({
+  const read = liveReader({
+    read: () => source.read(),
     subscriptions: source.subscriptions,
-    ...options.deliver === undefined ? {} : { deliver: options.deliver }
+    deliver: options.deliver
   });
-  function read() {
-    track();
-    return source.read();
-  }
   return {
     get reading() {
       return read();

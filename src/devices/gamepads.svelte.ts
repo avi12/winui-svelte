@@ -1,7 +1,7 @@
 import { Gamepad, GamepadButtons } from "./bindings.ts";
 import type { Delivery } from "./delivery.ts";
 import type { Subscription } from "./live.svelte.ts";
-import { liveTracker, subscriptionOfStaticEvent } from "./live.svelte.ts";
+import { liveReader, subscriptionOfStaticEvent } from "./live.svelte.ts";
 
 /** One reading of a gamepad: sticks from -1 to 1, triggers from 0 to 1. */
 export interface GamepadSample {
@@ -90,14 +90,14 @@ export interface GamepadsOptions {
  */
 export function gamepads(options: GamepadsOptions = {}) {
   const source = options.source ?? windowsGamepadSource();
-  const track = liveTracker({
+  const read = liveReader({
+    read: () => source.list(),
     subscriptions: source.subscriptions,
-    ...options.deliver === undefined ? {} : { deliver: options.deliver }
+    deliver: options.deliver
   });
   return {
     get gamepads() {
-      track();
-      return source.list();
+      return read();
     }
   };
 }

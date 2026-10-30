@@ -4,7 +4,7 @@ import type { DeviceChangesOptions } from "./device-changes.ts";
 import type { InputSource } from "./input-capabilities.ts";
 import { readInputCapabilities } from "./input-capabilities.ts";
 import { DeviceInterfaceClass, selectorOfInterfaceClasses } from "./interface-classes.ts";
-import { liveTracker } from "./live.svelte.ts";
+import { liveReader } from "./live.svelte.ts";
 
 /** What `inputDevices` takes. */
 export interface InputDevicesOptions {
@@ -40,19 +40,16 @@ const INPUT_CLASSES = [
  */
 export function inputDevices(options: InputDevicesOptions = {}) {
   const { source, deliver, createSource } = options;
-  const track = liveTracker({
+  const read = liveReader({
+    read: () => readInputCapabilities(source),
     subscriptions: [
       deviceChanges({
         selector: selectorOfInterfaceClasses(...INPUT_CLASSES),
         ...createSource === undefined ? {} : { createSource }
       })
     ],
-    ...deliver === undefined ? {} : { deliver }
+    deliver
   });
-  function read() {
-    track();
-    return readInputCapabilities(source);
-  }
   return {
     get capabilities() {
       return read();
