@@ -160,8 +160,7 @@ function compileSource({ filename, source, options }: {
 
   const markup = scopedMarkup({
     source,
-    file: filename,
-    filename
+    file: filename
   });
   const { js } = compile(markup, {
     ...WINUI_COMPILE_OPTIONS,

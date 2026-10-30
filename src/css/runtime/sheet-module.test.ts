@@ -7,12 +7,19 @@ import {
 } from "./sheet-module.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import assert from "node:assert/strict";
+import { tmpdir } from "node:os";
 import { test } from "node:test";
 import { compile } from "svelte/compiler";
 
 // Real Svelte compiles; the sheet must carry the class the elements get.
 
 const resources = loadWinuiCatalogue();
+
+function styleOf(source: string) {
+  const start = source.indexOf("<style>") + "<style>".length;
+  return source.slice(start, source.indexOf("</style>"));
+}
+
 const FILENAME = "C:/app/ui/card.svelte";
 
 // WebStorm reads this template as a Svelte file and parses the custom
@@ -217,7 +224,7 @@ const PARENT = `<script>
 
 test("a rule reaches the component instances of its own markup, and a global one stays unscoped", () => {
   const result = moduleFor(PARENT);
-  const scope = scopeClassOf(FILENAME);
+  const scope = scopeClassOf(styleOf(PARENT));
   assert.deepEqual(result?.sheet.rules.slice(0, 3).map(rule => rule.classes), [
     ["page", scope],
     ["title", scope],
@@ -228,11 +235,10 @@ test("a rule reaches the component instances of its own markup, and a global one
 });
 
 test("every instance of the component carries the scope class, in a string or an array", () => {
-  const scope = scopeClassOf(FILENAME);
+  const scope = scopeClassOf(styleOf(PARENT));
   const markup = scopedMarkup({
     source: PARENT,
-    file: "t.svelte",
-    filename: FILENAME
+    file: "t.svelte"
   });
   assert.match(markup, new RegExp(`<StackPanel class="page ${scope}">`, "u"));
   assert.match(markup, new RegExp(`<TextBlock class="title ${scope}">`, "u"));
@@ -240,29 +246,52 @@ test("every instance of the component carries the scope class, in a string or an
   assert.match(markup, new RegExp(`<TextBlock class="${scope}">y`, "u"));
 });
 
-test("two components with one class name get different scopes", () => {
-  assert.notEqual(scopeClassOf("/a/One.svelte"), scopeClassOf("/a/Two.svelte"));
+test("two components with different styles get different scopes, wherever the process runs from", () => {
+  assert.notEqual(scopeClassOf(".a { gap: 1px }"), scopeClassOf(".a { gap: 2px }"));
+  const here = process.cwd();
+  const scope = scopeClassOf(styleOf(PARENT));
+  process.chdir(tmpdir());
+  try {
+    assert.equal(scopeClassOf(styleOf(PARENT)), scope);
+    const markup = scopedMarkup({
+      source: PARENT,
+      file: "t.svelte"
+    });
+    const compiled = compile(markup, {
+      filename: "C:/elsewhere/page.svelte",
+      generate: "client",
+      css: "external",
+      cssHash,
+      runes: true
+    });
+    assert.ok(compiled.css?.code.includes(`.title.${scope}`));
+    assert.match(markup, new RegExp(`class="page ${scope}"`, "u"));
+  } finally {
+    process.chdir(here);
+  }
 });
 
 test("two components with the same class name register rules that do not collide", () => {
   const markup = "<StackPanel class=\"box\"><TextBlock class=\"title\"/></StackPanel>";
-  const sheets = [["/app/One.svelte", "12px"], ["/app/Two.svelte", "30px"]].map(([filename, gap]) => ({
-    filename: filename ?? "",
-    sheet: compileSheetModule({
-      filename: filename ?? "",
-      source: `${markup}<style>.box { gap: ${gap} } .title { font-size: ${gap} }</style>`,
-      sheetId: "t.svelte",
-      resources,
-      runtimeModule: "winui-svelte/css"
-    })?.sheet
-  }));
-  for (const { filename, sheet } of sheets) {
-    const scope = scopeClassOf(filename);
+  const sheets = ["12px", "30px"].map(gap => {
+    const source = `${markup}<style>.box { gap: ${gap} } .title { font-size: ${gap} }</style>`;
+    return {
+      source,
+      sheet: compileSheetModule({
+        filename: "/app/One.svelte",
+        source,
+        sheetId: "t.svelte",
+        resources,
+        runtimeModule: "winui-svelte/css"
+      })?.sheet
+    };
+  });
+  for (const { source, sheet } of sheets) {
+    const scope = scopeClassOf(styleOf(source));
     assert.ok(sheet?.rules.every(rule => rule.classes.includes(scope)));
     const compiled = scopedMarkup({
-      source: `${markup}<style>.box { gap: 1px }</style>`,
-      file: "t.svelte",
-      filename
+      source,
+      file: "t.svelte"
     });
     assert.ok(compiled.includes(`class="title ${scope}"`));
   }
@@ -274,8 +303,7 @@ test("style: and class: directives on a component become reactive props", () => 
   // noinspection JSUnresolvedReference
   const markup = scopedMarkup({
     source: "<TextBlock class=\"a\" style=\"color: red\" style:padding=\"{p}px\" style:--gap={gap} style:margin|important=\"1px\" class:on={isOn} class:big />",
-    file: "t.svelte",
-    filename: FILENAME
+    file: "t.svelte"
   });
   assert.ok(markup.includes("class={[`a`, {"));
   assert.ok(markup.includes("\"on\": isOn"));

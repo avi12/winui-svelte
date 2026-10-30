@@ -83,8 +83,7 @@ export function winuiPreprocess(options: WinuiPreprocessOptions = {}) {
       written.set(filename ?? "component.svelte", content);
       return {
         code: withScopedInstances({
-          source: content,
-          scope: ""
+          source: content
         })
       };
     },

@@ -314,10 +314,11 @@ function standIn({ source, instance }: {
  * writes (`<TextBlock class="title">` becomes `class="title svelte-x"`, an
  * expression becomes `[expr, "svelte-x"]`), so a rule in its `<style>` reaches
  * its own instances and only them. Svelte adds the class to the elements.
+ * `scopeOf` maps the style text to the class (none: no scope class, only the directives lowered).
  */
-export function withScopedInstances({ source, scope }: {
+export function withScopedInstances({ source, scopeOf = () => "" }: {
   source: string;
-  scope: string;
+  scopeOf?: (css: string) => string;
 }) {
   const root = parsed(source);
   const isUnreadable = root === null;
@@ -330,7 +331,7 @@ export function withScopedInstances({ source, scope }: {
     edits: instancesIn(root).flatMap(instance => [...classEditsOf({
       source,
       instance,
-      scope: root.css === null ? "" : scope
+      scope: root.css === null ? "" : scopeOf(root.css.content.styles)
     }), ...styleEditsOf({
       source,
       instance

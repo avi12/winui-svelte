@@ -51,25 +51,29 @@ export interface SheetModule {
 }
 
 /**
- * Svelte's `cssHash` option for the scoping class. Svelte's default depends
- * on its rootDir option; this one only on the file's path, so the
- * component's compile and the sheet's agree.
+ * Svelte's `cssHash` option for the scoping class: a hash of the component's
+ * style text. Svelte's default hashes the file's path relative to its
+ * `rootDir` (the working folder), which the sheet's compile and the markup
+ * rewrite cannot all know; the style text is the same for every one of them,
+ * so the component's compile, the sheet's and the instances' classes agree
+ * wherever the build runs from. Two components with the same style text share
+ * a class, and then share the same rules.
  */
-export function cssHash({ filename, hash }: {
-  filename: string;
+export function cssHash({ css, hash }: {
+  css: string;
   hash(text: string): string;
 }) {
-  return `svelte-${hash(filename.replaceAll("\\", "/"))}`;
+  return `svelte-${hash(css)}`;
 }
 
 let hashOfSvelte: ((text: string) => string) | null = null;
 
 /**
- * The scoping class Svelte gives the elements of the component at `filename`
- * (`svelte-` and a hash of the path). Svelte hands its hash function to
- * `cssHash` only while it compiles, so one probe component fetches it.
+ * The scoping class Svelte gives the elements of a component whose `<style>`
+ * content is `css` (`svelte-` and a hash of it). Svelte hands its hash
+ * function to `cssHash` only while it compiles, so one probe component fetches it.
  */
-export function scopeClassOf(filename: string) {
+export function scopeClassOf(css: string) {
   const isProbed = hashOfSvelte !== null;
   if (!isProbed) {
     compile(PROBE, {
@@ -83,7 +87,7 @@ export function scopeClassOf(filename: string) {
   }
 
   return cssHash({
-    filename,
+    css,
     hash: hashOfSvelte ?? String
   });
 }
@@ -93,17 +97,16 @@ export function scopeClassOf(filename: string) {
  * selectors resolved, and the scope class on every component instance, so the
  * sheet's scoped selectors match the elements and instances the markup writes.
  */
-export function scopedMarkup({ source, file, filename }: {
+export function scopedMarkup({ source, file }: {
   source: string;
   file: string;
-  filename: string;
 }) {
   return withScopedInstances({
     source: resolveRelationalSelectors({
       source,
       file
     }).source,
-    scope: scopeClassOf(filename)
+    scopeOf: scopeClassOf
   });
 }
 

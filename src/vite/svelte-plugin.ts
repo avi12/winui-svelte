@@ -155,8 +155,7 @@ export function svelteCompiler(options: CompileOptions) {
         const { js, warnings } = compile(
           scopedMarkup({
             source: code,
-            file: filename,
-            filename
+            file: filename
           }), {
             ...options,
             dev: isDevelopment,

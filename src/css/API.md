@@ -88,8 +88,9 @@ The component's own compile gets the instance's `class` with the scope class
 added (`class="title svelte-x"`, `class={[expr, "svelte-x"]}`; `scopeClassOf`
 and `scopedMarkup` in `runtime/sheet-module.ts`), so the Style registered
 under `.title.svelte-<hash>` matches only this component's `.title`
-The hash comes from the file's path, so an edit re-registers the sheet and
-re-scopes the markup with no stale class
+The hash comes from the component's `<style>` text (not its path, which Svelte
+reads relative to the working folder), so the build gives the same class from
+any folder, and an edit of the style re-registers the sheet and re-scopes the markup with no stale class
 A parent's scope does not reach the inside of a child; a child that forwards
 its `class` prop to an element gets the scope class with the value, so
 `clsx`-style arrays and objects are the way to pass classes on
