@@ -26,7 +26,9 @@ const manifestSchema = z.object({
   }),
   files: z.array(z.string()),
   sideEffects: z.literal(false),
-  license: z.literal("Apache-2.0")
+  license: z.literal("Apache-2.0"),
+  os: z.tuple([z.literal("win32")]),
+  cpu: z.tuple([z.literal("x64"), z.literal("arm64")])
 });
 
 function targetsOf(entry: Json) {
@@ -134,4 +136,9 @@ test("the README's entry point table names every exports subpath", () => {
     return !isNamedInFull && !isNamedShort;
   });
   assert.deepEqual(unlisted, []);
+});
+
+test("the package installs only where WinUI 3 runs: Windows on x64 or arm64", () => {
+  assert.deepEqual(manifest.os, ["win32"]);
+  assert.deepEqual(manifest.cpu, ["x64", "arm64"]);
 });
