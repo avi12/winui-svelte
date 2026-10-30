@@ -102,11 +102,11 @@
 <style>
   .drop-box {
     padding: 24px;
-    border: 2px dashed #808080;
+    border: 2px solid #808080;
   }
 
   .drag-over {
     border-color: rgb(0 120 212);
-    background: rgb(0 120 212 / 20%);
+    background: rgb(0 120 212 / 0.2);
   }
 </style>

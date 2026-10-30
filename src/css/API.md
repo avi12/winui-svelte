@@ -96,6 +96,36 @@ its `class` prop to an element gets the scope class with the value, so
 With a spread and no `class` attribute the scope class goes before the spread,
 so a `class` inside the spread replaces it
 
+### Scoped rules without false warnings
+
+`svelte-check`, the Svelte language server (VS Code) and WebStorm run Svelte's
+plain compiler, which reads `<TextBlock class="title">` as no element and warns
+`css_unused_selector` for `.title`
+`winuiDiagnostics()` from `winui-svelte/preprocess` returns the pair that
+removes exactly those warnings: `preprocess` reads each component with its
+instances as elements (the build's own reading) and keeps the selectors still
+unused; `warningFilter` drops every other `css_unused_selector`
+A rule that matches nothing, instances included, still warns
+
+```js
+// svelte.config.js
+import { winuiDiagnostics } from "winui-svelte/preprocess";
+
+const winui = winuiDiagnostics();
+
+export default {
+  preprocess: [winui.preprocess],
+  compilerOptions: {
+    warningFilter: winui.warningFilter
+  }
+};
+```
+
+The editor reads a `vite.config` before `svelte.config.js`, and `winuiSvelte()`
+carries the same pair for it, so a project with the plugin needs nothing more
+Put `vitePreprocess()` after `winui.preprocess` as before; the filter fills
+from the preprocessor of the same call, so use the two of one call
+
 ### Directives on components
 
 `style:name={value}`, `style:name="..."`, `style:--custom={value}`,
@@ -982,6 +1012,9 @@ import { winuiPreprocess } from "winui-svelte/preprocess";
 
 export default { preprocess: [winuiPreprocess()] };
 ```
+
+`winuiDiagnostics()` is that preprocessor plus the `warningFilter` for scoped
+rules on component instances ([Scoped rules without false warnings](#scoped-rules-without-false-warnings))
 
 The Svelte language server shows one error per file, the first, as a point in the
 `<style>`; fix it and the next shows

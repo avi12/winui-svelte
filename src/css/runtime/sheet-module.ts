@@ -172,6 +172,27 @@ function unusedSelectors({ warnings, file }: {
 }
 
 /**
+ * The messages of Svelte's `css_unused_selector` warnings for a component read
+ * with its instances as elements: what remains unused once a rule may match
+ * `<TextBlock class="title">`. The plain compiler, which `svelte-check` and the
+ * editor run, cannot see those instances and warns for every such rule.
+ */
+export function unusedSelectorMessages({ source, filename }: {
+  source: string;
+  filename: string;
+}) {
+  const result = compile(withInstancesAsElements(source), {
+    runes: true,
+    filename,
+    generate: "client",
+    css: "external",
+    cssHash,
+    warningFilter: ({ code }) => code === UNUSED_SELECTOR
+  });
+  return result.warnings.map(({ message }) => message);
+}
+
+/**
  * Translates a component's `<style>` the way the build does (relational
  * selectors resolved, Svelte compiling and scoping the CSS, then the
  * translation); null when the component has none. The one place the

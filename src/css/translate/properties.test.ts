@@ -265,6 +265,7 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["StrokeThickness", "2"]
   ]],
   ["background-color", null, "background-color: rgb(0 0 0 / 50%)", [["Background", "#80000000"]]],
+  ["a color alpha as a number", null, "background-color: rgb(0 0 0 / 0.5)", [["Background", "#80000000"]]],
   ["background to a brush", null, "background: transparent", [["Background", "#00FFFFFF"]]],
   ["background none", null, "background: none", [["Background", "#00FFFFFF"]]],
   ["background-image linear gradient", null, "background-image: linear-gradient(to right, #0af, transparent)", [[

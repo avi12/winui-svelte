@@ -90,7 +90,8 @@
     "examples/gallery/main.ts",
     "examples/todo/main.ts",
     "examples/settings/main.ts",
-    "eslint.config.js"
+    "eslint.config.js",
+    "svelte.config.js"
   ],
   // The bindings are reached through the #winui/* import map, the linters run
   // from package.json scripts, and the editor check starts the Svelte language

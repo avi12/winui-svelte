@@ -33,6 +33,7 @@
     "selector-max-attribute": null,
     "at-rule-allowed-list": null,
     "max-nesting-depth": [99, {}],
+    "alpha-value-notation": ["number", { "exceptProperties": [] }],
     "custom-property-empty-line-before": "never",
     "plugin/no-unsupported-browser-features": null,
     "@stylistic/linebreaks": null,

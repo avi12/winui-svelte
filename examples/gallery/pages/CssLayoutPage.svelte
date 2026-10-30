@@ -52,7 +52,7 @@
     top: 12px;
     left: 24px;
     padding: 8px;
-    background-color: rgb(from var(--css-base) r g b / 50%);
+    background-color: rgb(from var(--css-base) r g b / 0.5);
   }
 
   :global(.css-responsive) {

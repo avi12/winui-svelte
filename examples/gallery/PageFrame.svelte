@@ -31,6 +31,6 @@
   }
 
   :global(.gallery-caption) {
-    opacity: 70%;
+    opacity: 0.7;
   }
 </style>
