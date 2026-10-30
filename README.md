@@ -793,7 +793,9 @@ draws, and draws again when the state `draw` read changes; the Win2D effects
 (`GaussianBlurEffect`, `ColorMatrixEffect`, `BlendEffect`, `ShadowEffect`...) draw
 through `painter.drawImage`
 An app that does not import it does not bundle it
-[API.md](API.md) has the details and `examples/win2d` the example
+`winui-svelte/win2d/context-2d` (also opt-in) makes a canvas of it that a library written for an HTML canvas draws on:
+`createCanvas2D().getContext("2d")`, or `<Canvas2D bind:canvas />`, give a `CanvasRenderingContext2D` over Win2D
+[API.md](API.md) has the details, what is supported and what is not, and `examples/win2d` the example
 
 The raw elements the components are made of work too:
 `<stack-panel spacing={8}>`, `<text-block>`, `grid.column={1}` for an attached property; they need

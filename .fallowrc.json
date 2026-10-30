@@ -21,6 +21,8 @@
     "src/win2d/index.ts",
     "src/data-transfer/index.ts",
     "src/win2d/Canvas.d.svelte.ts",
+    "src/win2d/context-2d/index.ts",
+    "src/win2d/context-2d/Canvas2D.d.svelte.ts",
     "src/tray/TrayIcon.d.svelte.ts",
     "src/window/bootstrap.ts",
     "src/window/thread.ts",

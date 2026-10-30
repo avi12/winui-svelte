@@ -40,6 +40,12 @@ project adheres to [Semantic Versioning](https://semver.org/)
   helpers, and `applyEffect` to put a Win2D effect on an element through
   Composition
   Its NuGet package is restored by `winapp.yaml`
+- Canvas 2D (`winui-svelte/win2d/context-2d`, opt-in): the HTML Canvas 2D API
+  over Win2D (`Context2D`, `Path2D`, gradients, patterns, `ImageData`, text,
+  shadows, compositing, clipping), a `CanvasElement` that stands in for an HTML
+  canvas (`createCanvas2D` off screen, or the `Canvas2D` component with the
+  control's pointer events), so a drawing library written for a browser canvas
+  draws on it
 - Tooling: a Vite plugin with hot reload (it compiles with Svelte's own
   compiler; `@sveltejs/vite-plugin-svelte` is no longer a dependency), a test
   loader and a compile hook

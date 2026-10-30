@@ -33,6 +33,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
+| `winui-svelte/win2d/context-2d` | `src/win2d/context-2d/index.ts` | `Canvas2D`, `createCanvas2D`, `CanvasElement`, `Context2D`, `Path2D` and the rest of the HTML Canvas 2D API over Win2D (opt-in; see Canvas 2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
 | `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
 | `winui-svelte/devices` | `src/devices/index.ts` | device enumeration, input devices, Bluetooth, printers, power, network, display, audio, gamepads and sensors, each also at `winui-svelte/devices/<area>` (opt-in; see Windows devices) |
@@ -2055,6 +2056,123 @@ element hides itself ([`src/css/API.md`](src/css/API.md#filters-blends-and-masks
 The effect graph is checked on pixels without a window
 (`src/win2d/effect-graph.test.ts`), and the effects in a real window through
 `PrintWindow` (`test/effects.test.ts`, with `examples/effects`)
+
+### Canvas 2D (`winui-svelte/win2d/context-2d`)
+
+Opt-in, and a separate subpath: an app that imports only `winui-svelte/win2d`
+bundles none of it
+It makes a Win2D canvas usable as an HTML canvas, so a library written for a
+browser canvas (a chart, a game engine, d3's canvas code) draws on it unchanged
+
+```ts
+import { createCanvas2D } from "winui-svelte/win2d/context-2d";
+
+const canvas = createCanvas2D({ width: 300, height: 150 });
+const context = canvas.getContext("2d");
+context.fillStyle = "rgb(0, 128, 0)";
+context.fillRect(10, 10, 100, 50);
+```
+
+How a library gets the canvas:
+
+- `createCanvas2D({ width, height })` makes a `CanvasElement` that draws on a
+  render target of its own: no window needed (tests, `getImageData`,
+  `canvas.target` as an image for Win2D); call it after `initWindowsAppSdk`
+- `<Canvas2D bind:canvas draw={canvas => ...} />` shows a `CanvasElement` in a
+  `CanvasControl`; `draw` runs once the control has a size and again, on a
+  cleared canvas, when state it read changes or the control is resized
+  (`shouldFit`, on by default, gives the canvas the control's size); whatever is
+  drawn on the canvas, whenever, repaints the control
+  The component takes a `CanvasControl`'s props (`width`, `height`, `clearColor`
+  and so on), and pointer events as below
+
+A `CanvasElement` has `width` and `height` (setting either clears the canvas
+and resets the context, as in a browser), `getContext("2d")` (the same
+`Context2D` every time; any other kind gives `null`), `style` (`width`, `height`,
+`display` and any other property, with `setProperty`), `getBoundingClientRect()`,
+`clientWidth`, `clientHeight`, `offsetWidth`, `offsetHeight`, `addEventListener`,
+`removeEventListener` and `dispatchEvent`
+It has no document: there is no `ownerDocument` and no `toDataURL`, and
+`parentNode` is `null`
+
+Pointer events of the control reach the canvas as DOM events: `pointerdown`,
+`pointermove`, `pointerup`, `pointerenter`, `pointerleave`, `pointercancel`, the
+`mouse` twins of those, `click` (on every release) and `wheel`, each with
+`clientX`, `clientY`, `offsetX`, `offsetY`, `button`, `buttons`, `pointerId`,
+`pointerType`, the modifier keys and, for `wheel`, `deltaX` and `deltaY`
+The positions are in canvas pixels, which are the control's device-independent
+pixels
+The handlers an app passes to `Canvas2D` (`onPointerPressed` and the others) are
+still called
+Not tried: the events need a real pointer, which a test must not inject
+
+**Supported** (`Context2D`, all positional like the platform's):
+
+| Area | Members |
+| --- | --- |
+| State | `save`, `restore`, `reset`, `isContextLost`, `getContextAttributes`, `canvas`, `drawFocusIfNeeded` (a no-op: there is no element to focus) |
+| Styles | `fillStyle`, `strokeStyle` (any CSS color the CSS part reads, `CanvasGradient`, `CanvasPattern`), `globalAlpha`, `lineWidth`, `lineCap`, `lineJoin`, `miterLimit`, `setLineDash`, `getLineDash`, `lineDashOffset` |
+| Compositing | `globalCompositeOperation`: `source-over`, `source-in`, `source-out`, `source-atop`, `destination-over`, `destination-in`, `destination-out`, `destination-atop`, `lighter`, `copy`, `xor` |
+| Shadows | `shadowColor`, `shadowBlur`, `shadowOffsetX`, `shadowOffsetY` (a Win2D shadow effect of the drawing) |
+| Transforms | `scale`, `rotate`, `translate`, `transform`, `setTransform` (six numbers or a matrix object), `resetTransform`, `getTransform` |
+| Paths | `beginPath`, `closePath`, `moveTo`, `lineTo`, `bezierCurveTo`, `quadraticCurveTo`, `arc`, `arcTo`, `ellipse`, `rect`, `roundRect`, `fill` (`nonzero` or `evenodd`, current path or `Path2D`), `stroke`, `clip`, `isPointInPath`, `isPointInStroke` |
+| Rectangles | `fillRect`, `strokeRect`, `clearRect` |
+| Text | `fillText`, `strokeText` (with `maxWidth`), `measureText`, `font` (the CSS shorthand, read in house), `textAlign`, `textBaseline`, `direction` |
+| Images | `drawImage` (three, five and nine arguments) from a `CanvasBitmap` (made with `loadBitmap` or `bitmapFromColors`) or another canvas, itself included; `imageSmoothingEnabled`, `imageSmoothingQuality` |
+| Pixels | `getImageData`, `putImageData` (with a dirty rectangle), `createImageData`; `ImageData` is RGBA, not premultiplied |
+| Brushes | `createLinearGradient`, `createRadialGradient`, `createPattern` (`repeat`, `repeat-x`, `repeat-y`, `no-repeat`), `CanvasPattern.setTransform` |
+| Path2D | the path calls above, `addPath` with a matrix, and a constructor that takes another `Path2D` or an SVG path string (`M L H V C S Q T A Z`, relative and absolute) |
+
+**Different from a browser**, because Win2D works another way:
+
+- A pattern is a Win2D image brush; one that does not repeat is clipped to the
+  image
+- A radial gradient is one circle with an origin in Win2D, the canvas has two:
+  a start radius is exact only when both circles share their center
+- A compositing operation combines the drawing with the canvas inside the
+  bounds of what was drawn, not over the whole canvas, so `copy` leaves the
+  rest of the canvas alone; with a clip, `source-in`, `source-out`,
+  `destination-in`, `destination-atop` and `copy` also change what is outside
+  the clip (the clip is applied to the shape, because a Direct2D layer hides
+  the canvas from the operation)
+- The `hanging` and `ideographic` baselines are approximations (Win2D does not
+  expose the font's tables); `alphabetic`, `top`, `middle` and `bottom` follow
+  the line metrics
+- The boxes of `measureText` come from the Win2D layout (the advance for
+  `width`, the ink for `actualBoundingBox*`); the `emHeight*` members are the
+  line's ascent and descent
+- `drawImage` takes a rectangle with a negative size as it is given to Win2D:
+  mirroring is not promised
+- One canvas pixel is one device-independent pixel: on a scaled screen the
+  control stretches the canvas, and a library cannot read the scale from
+  `devicePixelRatio`
+- A new canvas (and the `width` setter) clears to transparent black
+  explicitly: Direct2D hands out surfaces with whatever the memory held
+- A call that throws in the platform throws the same class here (`RangeError`
+  for a negative radius, `SyntaxError` for a bad color stop); a bad value for a
+  property is ignored, as in a browser
+- A shape drawn with a pattern, a gradient, a shadow or a compositing operation
+  costs a Win2D brush, effect or command list per call, so a drawing of
+  thousands of shapes is slower than in a browser
+
+**Not supported:**
+
+| Member | Why |
+| --- | --- |
+| `createConicGradient` | Win2D has no conic gradient brush; it throws |
+| `globalCompositeOperation` of `multiply`, `screen`, `overlay`, `darken`, `lighten`, `color-dodge`, `color-burn`, `hard-light`, `soft-light`, `difference`, `exclusion`, `hue`, `saturation`, `color`, `luminosity` | Win2D blends an effect's inputs, not a shape with the canvas; the value is ignored |
+| `filter` | it is always `none`; use a Win2D effect on the image |
+| `letterSpacing`, `wordSpacing`, `fontKerning`, `fontStretch`, `fontVariantCaps`, `textRendering` | No Win2D equivalent set per draw call |
+| `drawImage` of an `HTMLImageElement`, `ImageBitmap`, `HTMLVideoElement` or `OffscreenCanvas` | There is no DOM; decode with `loadBitmap`, or draw another `CanvasElement` |
+| `toDataURL`, `toBlob`, `transferControlToOffscreen`, `captureStream` | No encoder is exposed on the canvas; `canvas.target.saveAsync` writes a PNG or JPEG file |
+| `getContext` of `webgl`, `webgl2`, `bitmaprenderer`; the `alpha`, `desynchronized` and `willReadFrequently` options | One 2D context, always with an alpha channel |
+| `scrollPathIntoView` | There is no element tree to scroll; the method is absent |
+| `requestAnimationFrame`, `devicePixelRatio`, `document`, `window`, `getComputedStyle` | Globals of a browser; a library that needs them gets them from its host (Node has none) |
+
+The working example is `examples/win2d`: `bar-chart.ts` draws a chart with
+nothing but the calls above, `Win2DApp.svelte` shows it in a `Canvas2D`, and
+`src/win2d/context-2d/context-2d.test.ts` draws the same chart on a render
+target and checks the pixels
 
 The working example is `examples/win2d` (`test/win2d.test.ts` runs it in a real
 window and checks the redraw; `src/win2d/win2d.test.ts` draws on a render

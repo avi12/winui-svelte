@@ -34,7 +34,7 @@ allowlist, and `pnpm pack --dry-run` must not list it)
 | Constants | `CONSTANT_CASE` | `SCREAMING_SNAKE_CASE` | Same thing |
 | Enums | `enum` allowed, no `const enum` | Strings are enums | A closed set of values is an `as const` object plus its union type (`export const X = { A: "a" } as const; export type X = typeof X[keyof typeof X]`): the package runs under Node's type stripping with `erasableSyntaxOnly`, which forbids `enum`. Never `const enum` |
 | Imports | Relative within the project, no deep `../../../` | `@` alias over `../` | Relative imports (`./x`, `../x`): the build compiles each file in place, and a path alias would need a second map for `dist`. The one subpath import is `#winui/*`, the bindings an app generates for itself. Keep `../` chains short by keeping folders shallow |
-| Parameters | n/a | 2+ parameters take one destructured object | Adopt it, public API included. Exempt: key/value accessors and callbacks whose signature WinUI or Svelte dictates |
+| Parameters | n/a | 2+ parameters take one destructured object | Adopt it, public API included. Exempt: key/value accessors and callbacks whose signature WinUI or Svelte dictates, and the classes that mirror the Canvas 2D API (`src/win2d/context-2d`: `Context2D`, `Path2D`, `CanvasElement`, `CanvasGradient`), whose methods are positional so that a library written for a browser canvas calls them unchanged |
 
 # Other languages
 Every file follows Google's guide for its language
