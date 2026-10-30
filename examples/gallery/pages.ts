@@ -2,6 +2,7 @@ import AccessibilityPage from "./pages/AccessibilityPage.svelte";
 import AnimationPage from "./pages/AnimationPage.svelte";
 import CssLayoutPage from "./pages/CssLayoutPage.svelte";
 import DataPage from "./pages/DataPage.svelte";
+import DataTransferPage from "./pages/DataTransferPage.svelte";
 import DevicesPage from "./pages/DevicesPage.svelte";
 import FormsPage from "./pages/FormsPage.svelte";
 import FormSubmissionPage from "./pages/FormSubmissionPage.svelte";
@@ -83,6 +84,11 @@ export const GALLERY_PAGES: readonly GalleryPage[] = [
     key: "services",
     title: "App services",
     page: ServicesPage
+  },
+  {
+    key: "data-transfer",
+    title: "Drag, drop and clipboard",
+    page: DataTransferPage
   },
   {
     key: "media",
