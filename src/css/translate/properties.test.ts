@@ -787,3 +787,13 @@ test("filter, mix-blend-mode and text-transform fail the build with their reason
     }).errors.join(), /so change the text/u
   );
 });
+
+test("a calc of px and rem reaches the sheet as the px it comes to", () => {
+  const translation = translateStyleSheet({
+    file: "t.svelte",
+    css: ".t { width: calc(10rem + 80px); height: 12px }",
+    resources
+  });
+  const declarations = translation.sheet.rules[0]?.declarations.map(declaration => [declaration.property, declaration.value]);
+  assert.deepEqual(declarations, [["width", "240px"], ["height", "12px"]]);
+});

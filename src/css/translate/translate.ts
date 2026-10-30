@@ -750,6 +750,23 @@ function resolveRelativeColors(translator: Translator) {
   }
 }
 
+const CALC_OF_LENGTHS = /^(?:calc|min|max|clamp)\(.*\d(?:px|rem)/iu;
+
+// A calc(), min(), max() or clamp() of px and rem is a plain length in the
+// sheet: the app carries no expression evaluator to fold it at run time.
+function foldStaticCalc(translator: Translator) {
+  for (const rule of translator.rules) {
+    for (const declaration of rule.declarations) {
+      const isCalcOfLengths = CALC_OF_LENGTHS.test(declaration.value);
+      const pixels = isCalcOfLengths ? evaluateCalc(declaration.value) : null;
+      const isFolded = pixels !== null;
+      if (isFolded) {
+        declaration.value = `${pixels}px`;
+      }
+    }
+  }
+}
+
 function buildVariableResources(translator: Translator) {
   const entries = translator.variables.flatMap(variable => variableEntries({
     variable,
@@ -891,6 +908,7 @@ export function translateStyleSheet(input: TranslateInput) {
   }
 
   resolveRelativeColors(translator);
+  foldStaticCalc(translator);
   const resourcesXaml = buildVariableResources(translator);
   validateKeyframes(translator);
   validateRules({
