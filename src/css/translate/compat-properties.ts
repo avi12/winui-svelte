@@ -90,7 +90,7 @@ function boxSizing(input: GroupInput) {
 
 const TEXT_TRANSFORM = "text-transform";
 const TEXT_TRANSFORM_TARGET = "text-transform";
-const WORD_START = /(^|[\s\-–—/([{"“])(\p{L})/gu;
+const WORD_START = /(^|[\s\p{Pd}\p{Ps}\p{Pi}"/])(\p{L})/gu;
 
 /** The changes `text-transform` names; `none` is no change, and `full-width` has no WinUI meaning. */
 const TEXT_TRANSFORMS: ReadonlyMap<string, (text: string) => string> = new Map([
@@ -155,8 +155,8 @@ const LINE_CLAMP = ["line-clamp", "-webkit-line-clamp"];
 export const COMPAT_MEMBERS = [TEXT_TRANSFORM, WORD_BREAK, USER_SELECT, OBJECT_FIT, CURSOR, BOX_SIZING, ...LINE_CLAMP];
 
 /**
- * `text-transform`, `word-break`, `user-select`, `object-fit`, `cursor` (ignored), `line-clamp` and `box-sizing`, which a stylesheet
- * written for browsers carries. They come before the built-in groups, so
+ * `text-transform`, `word-break`, `user-select`, `object-fit`, `cursor` (ignored), `line-clamp` and `box-sizing`,
+ * which a stylesheet written for browsers carries. They come before the built-in groups, so
  * `text-wrap` and `text-overflow` win where they are written too.
  */
 export function compatGroups() {
@@ -164,7 +164,9 @@ export function compatGroups() {
     {
       members: [TEXT_TRANSFORM],
       lower: textTransform,
-      writes: { [TEXT_TRANSFORM_TARGET]: applyTextTransform }
+      writes: {
+        [TEXT_TRANSFORM_TARGET]: applyTextTransform
+      }
     },
     {
       members: [BOX_SIZING],
@@ -181,7 +183,7 @@ export function compatGroups() {
     }),
     ignored({
       member: CURSOR,
-      why: "WinUI sets a cursor through the protected UIElement.ProtectedCursor and an InputSystemCursor, neither of which the bindings expose"
+      why: "IUIElementProtected.ProtectedCursor is in the bindings, but the only way to make the InputCursor it takes is Microsoft.UI.Input.InputSystemCursor.Create(InputSystemCursorShape), and the bindings lack both classes"
     }),
     keywordProperty({
       member: OBJECT_FIT,

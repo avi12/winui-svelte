@@ -8,9 +8,10 @@ import {
   styleOfClasses,
   unregisterStyleSheet
 } from "./runtime.ts";
-import { compatGroups } from "#src/css/translate/compat-properties.js";
+import { textTransforms } from "./text-transforms.ts";
 import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import { compatGroups } from "#src/css/translate/compat-properties.js";
 import { containerGroups } from "#src/css/translate/container-properties.js";
 import { dynamicLengthGroups } from "#src/css/translate/dynamic-length-properties.js";
 import { effectGroups } from "#src/css/translate/effect-properties.js";
@@ -21,7 +22,6 @@ import { transformGroups } from "#src/css/translate/transform-properties.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
 import type { NativeValue } from "#src/native-value.js";
 import { read } from "#src/renderer/host/reflect.js";
-import { textTransforms } from "./text-transforms.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 

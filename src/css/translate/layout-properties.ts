@@ -321,7 +321,8 @@ export function alignmentProperty({ member, property, startName, endName }: {
   });
 }
 
-function orientationOf(computed: ReadonlyMap<string, Declaration>) {
+/** The orientation a flex container lays out in, from its `flex-direction` and `display`; null when neither says. */
+export function orientationOf(computed: ReadonlyMap<string, Declaration>) {
   const direction = computed.get("flex-direction")?.value.toLowerCase();
   const isColumn = direction === "column";
   if (isColumn) {

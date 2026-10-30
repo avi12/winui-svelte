@@ -1,5 +1,5 @@
-import { AnimationDirection, AnimationFill, storyboardXaml } from "./animation-xaml.ts";
 import { TrackKind } from "./animation-tracks.ts";
+import { AnimationDirection, AnimationFill, storyboardXaml } from "./animation-xaml.ts";
 import { parseEasing } from "./easing.ts";
 import type { GroupInput, Output, PropertyGroup, WriteContext } from "./property-kit.ts";
 import { parseColor } from "#src/css/parse/colors.js";
@@ -150,7 +150,7 @@ function animateBorderColor({ control, value, native }: WriteContext) {
   });
 }
 
-/** `transition`: the implicit transition WinUI sets on each animatable property named, and a Storyboard for a border color. */
+/** `transition`: WinUI's implicit transition for each animatable property named, and a border color's Storyboard. */
 function transition(input: GroupInput) {
   const reader = input.reading("transition");
   const outputs: Output[] = [];
@@ -207,6 +207,8 @@ export function transitionProperty() {
   return {
     members: ["transition"],
     lower: transition,
-    writes: { [BORDER_COLOR_TARGET]: animateBorderColor }
+    writes: {
+      [BORDER_COLOR_TARGET]: animateBorderColor
+    }
   } satisfies PropertyGroup;
 }
