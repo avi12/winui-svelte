@@ -1451,6 +1451,18 @@ export function emitComponent(level: ClassModel) {
 
 const OWN_PROPERTY_LIMIT = 8;
 const NAMESPACE_PREFIX = "Microsoft.UI.Xaml.";
+const WINUI_DOCS_URL = "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt";
+const WIN2D_NAMESPACE = "Microsoft.Graphics.Canvas";
+const WIN2D_DOCS_URL = "https://microsoft.github.io/Win2D/WinUI3/html";
+
+function docsUrlOf(type: { namespace: string; name: string }) {
+  const isWin2d = type.namespace.startsWith(WIN2D_NAMESPACE);
+  if (isWin2d) {
+    return `${WIN2D_DOCS_URL}/T_${type.namespace.replaceAll(".", "_")}_${type.name}.htm`;
+  }
+
+  return `${WINUI_DOCS_URL}/${type.namespace}.${type.name}`.toLowerCase();
+}
 
 function codeList(names: string[]) {
   return names.map(name => `\`${name}\``).join(", ");
@@ -1468,7 +1480,7 @@ export function emitControlsTable(model: Model) {
     const category = level.type.namespace.replace(NAMESPACE_PREFIX, "");
     const hasContent = level.contentProperty !== null || holdsItems(level);
     const content = hasContent ? "yes" : "";
-    return `| \`${level.type.name}\` | ${category} | ${props} | ${codeList(componentBindableNames(level))} | ${content} |`;
+    return `| [\`${level.type.name}\`](${docsUrlOf(level.type)}) | ${category} | ${props} | ${codeList(componentBindableNames(level))} | ${content} |`;
   });
   return [
     "| Component | Namespace | Props it adds | Bindable | Children |",
