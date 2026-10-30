@@ -147,14 +147,22 @@ function installDom() {
  * Mounts a component into a fragment of `renderer`'s tree, with the DOM shim
  * installed and `renderer` active.
  *
- * @param options - The component, its props, the renderer, and the fragment to build in.
+ * @param options - The component, its props, the renderer, the fragment to build in,
+ *   and `intro`: whether global transitions play on this first render (default false).
  * @returns What Svelte's `mount` returns: the component's exports.
  */
-export function mountOnTree<Native, Props extends object>({ component, props, renderer, target }: {
+export function mountOnTree<Native, Props extends object>({
+  component,
+  props,
+  renderer,
+  target,
+  intro: isIntro = false
+}: {
   component: Component<Props>;
   props: Props;
   renderer: TreeRenderer<Native>;
   target: FragmentNode<Native>;
+  intro?: boolean;
 }) {
   installDom();
   activateRenderer(renderer);
@@ -164,6 +172,7 @@ export function mountOnTree<Native, Props extends object>({ component, props, re
   const mountTarget = target as unknown as Element;
   return mount(component, {
     target: mountTarget,
-    props
+    props,
+    intro: isIntro
   });
 }
