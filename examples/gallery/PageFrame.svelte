@@ -30,12 +30,7 @@
     font-size: 28px;
   }
 
-<<<<<<< HEAD
-  :global(.gallery-caption) {
-    opacity: 0.7;
-=======
   .gallery-caption {
-    opacity: 70%;
->>>>>>> conv/d
+    opacity: 0.7;
   }
 </style>
