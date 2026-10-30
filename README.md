@@ -795,6 +795,44 @@ its own class, when it is made, so an app bundles only the bindings it uses)
 Components are the supported way; see [API.md](API.md) for the raw forms and
 the renderer's functions
 
+## Windows devices
+
+Windows' own device APIs, kept under their Windows names and made reactive: a
+`DeviceWatcher` that fills an `{#each}`, the mouse and keyboard Windows
+sees, Bluetooth LE scanning and GATT, printers with their state, the battery,
+the network, displays, audio endpoints, gamepads and sensors
+Each area is an opt-in import, and works from `node.exe` with no package
+identity
+
+```svelte
+<script lang="ts">
+  import { StackPanel, TextBlock } from "winui-svelte/components";
+  import { DeviceClass, deviceWatcher } from "winui-svelte/devices/enumeration";
+  import { battery } from "winui-svelte/devices/power";
+  import { printers } from "winui-svelte/devices/printers";
+
+  const speakers = deviceWatcher({ deviceClass: DeviceClass.AudioRender });
+  const power = battery();
+  const installed = printers();
+</script>
+
+<StackPanel>
+  <TextBlock text="Battery {power.hasBattery ? `${power.percent}%` : "none"}" />
+  {#each speakers.devices.items as device (device.id)}
+    <TextBlock text={device.name} />
+  {/each}
+  {#each installed.printers as printer (printer.name)}
+    <TextBlock text="{printer.name}{printer.isOffline ? " (offline)" : ""}" />
+  {/each}
+</StackPanel>
+```
+
+Every list is a keyed collection, every value a getter that re-runs when
+Windows says it changed, and every watcher stops with its component
+What does not work unpackaged (`MouseDevice`, the print dialog of
+`PrintManager`, geolocation) and the failure modes are in
+[`API.md`](API.md#windows-devices-winui-sveltedevices)
+
 ## Styling with CSS
 
 `<style>` blocks are translated at build time into WinUI `Style`s and applied
@@ -922,6 +960,7 @@ protocol and the tests
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
+| `winui-svelte/devices`, `/devices/enumeration`, `/devices/input`, `/devices/bluetooth`, `/devices/printers`, `/devices/power`, `/devices/network`, `/devices/audio`, `/devices/display`, `/devices/gamepad`, `/devices/sensors` | device enumeration, input devices, Bluetooth, printers, power, network, displays, audio, gamepads, sensors: Windows' own device APIs as runes (opt-in; [`API.md`](API.md#windows-devices-winui-sveltedevices)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
 | `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |

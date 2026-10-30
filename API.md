@@ -31,6 +31,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
+| `winui-svelte/devices` | `src/devices/index.ts` | device enumeration, input devices, Bluetooth, printers, power, network, display, audio, gamepads and sensors, each also at `winui-svelte/devices/<area>` (opt-in; see Windows devices) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
 needs no build
@@ -1529,6 +1530,220 @@ Composition effect back without a screen capture
 The working example is `examples/win2d` (`test/win2d.test.ts` runs it in a real
 window and checks the redraw; `src/win2d/win2d.test.ts` draws on a render
 target and checks the pixels)
+
+## Windows devices (`winui-svelte/devices`)
+
+Windows' own device APIs (`Windows.Devices.*`, `Windows.System.Power`,
+`Windows.Networking.Connectivity`, `Windows.Media.Devices`,
+`Windows.Gaming.Input`) as small typed functions and Svelte runes
+The names are Windows' own (`DeviceWatcher`, `BluetoothLEAdvertisementWatcher`,
+`GattCharacteristic`), not the web's; what Svelte adds is reactivity and typed
+options
+Each area is an opt-in subpath, so an app that imports none of them bundles none
+
+| Specifier | What |
+|---|---|
+| `winui-svelte/devices` | everything below |
+| `winui-svelte/devices/enumeration` | `deviceWatcher`, `findAllDevices`, `DeviceInterfaceClass`, `deviceChanges`, `liveTracker` |
+| `winui-svelte/devices/input` | `inputDevices`, `readInputCapabilities` |
+| `winui-svelte/devices/bluetooth` | adapter, devices, `bluetoothScanner`, `scanBluetoothAdvertisements`, GATT, UUIDs, radios |
+| `winui-svelte/devices/printers` | `printers`, `listPrinters`, `printFile` |
+| `winui-svelte/devices/power` | `battery` |
+| `winui-svelte/devices/network` | `networkInformation` |
+| `winui-svelte/devices/audio` | `audioDevices` |
+| `winui-svelte/devices/display` | `displays`, `getDisplayMonitors` |
+| `winui-svelte/devices/gamepad` | `gamepads`, `pressedButtons` |
+| `winui-svelte/devices/sensors` | `lightSensor`, `accelerometer`, `inclinometer` |
+
+The bindings for these classes come from `pnpm bindings` (the classes are in
+`lateClasses` in `scripts/codegen/tables.ts`)
+Everything here was checked to work from `node.exe` with no package identity;
+"Failure modes" below lists what an unpackaged app cannot do
+
+### Conventions
+
+- A rune is called in a component script (or a `.svelte.ts` module) on the UI thread, and keeps its subscriptions only while an effect reads it: a getter read in markup, `$derived` or `$effect` listens, a read outside an effect only reads
+- A watcher-like rune (`deviceWatcher`, `bluetoothScanner`, `radios`) stops when its component is destroyed, when its `signal` aborts, or when `stop()` is called
+- Every rune takes `deliver`, how a native event reaches the UI thread; the default is the UI thread's dispatcher queue, so call the rune where there is one, or pass `deliver: deliverNow` in a program with no window
+- A fixed choice is an `as const` object with a type of the same name (`DeviceInterfaceClass`, `BluetoothTransport`, `NotificationMode`, `PrinterStatus`); WinRT's own enums are re-exported under their own names (`DeviceClass`, `RadioKind`, `GattCommunicationStatus`)
+- A list is a keyed reactive collection (`KeyedCollection`): `{#each collection.items as device (device.id)}`, with `get(key)`, `has(key)`, `keys` and `size`
+- A change makes a new snapshot object, so a keyed block redraws the row
+- Every rune reads through a `source` (or `defaults`, `list`, `createSource`) option whose default is the Windows end: `windowsInputSource`, `windowsPowerSource`, `windowsNetworkSource`, `windowsAudioDefaults`, `windowsDisplaySource`, `windowsGamepadSource` and `windowsPrinterSource` are those defaults, exported so a test or a wrapper can use or replace them
+- The WinRT enums the results are made of are re-exported under their own names: `AudioDeviceRole`, `BatteryStatus`, `BluetoothCacheMode`, `BluetoothLEScanningMode`, `DisplayMonitorConnectionKind`, `EnergySaverStatus`, `GamepadButtons`, `NetworkConnectivityLevel`, `NetworkCostType`, `PointerDeviceType`, `PowerSupplyStatus`, `RadioAccessStatus`, `RadioKind`, `RadioState`
+
+### Device enumeration
+
+```svelte
+<script lang="ts">
+  import { DeviceClass, deviceWatcher } from "winui-svelte/devices/enumeration";
+  import { StackPanel, TextBlock } from "winui-svelte/components";
+
+  const speakers = deviceWatcher({
+    deviceClass: DeviceClass.AudioRender,
+    requestedProperties: ["System.Devices.InterfaceEnabled"]
+  });
+</script>
+
+<StackPanel>
+  {#each speakers.devices.items as device (device.id)}
+    <TextBlock text={device.name} />
+  {/each}
+</StackPanel>
+```
+
+`deviceWatcher(options)` is WinRT's `DeviceWatcher` (its Added, Updated, Removed,
+EnumerationCompleted and Stopped events) over `DeviceInformation.CreateWatcher`
+The options are the query (`selector`, an Advanced Query Syntax filter;
+`deviceClass`, a `DeviceClass`; `kind`, a `DeviceInformationKind`;
+`requestedProperties`, canonical property names) plus `signal` and `deliver`
+It returns `devices` (the collection of `DeviceSnapshot`), `status`
+(`DeviceWatcherStatus`), `isEnumerationCompleted`, `error` and `stop()`
+
+`findAllDevices(options)` is the one-shot `DeviceInformation.FindAllAsync` with the same query, resolving to `DeviceSnapshot[]`
+
+A `DeviceSnapshot` is `id`, `name`, `kind`, `isEnabled`, `isDefault`, `properties` (a `Map` of the requested properties, unboxed to strings, numbers, booleans, `bigint`, `Date`, `Uint8Array` or string arrays) and `pairing`
+Windows lists no property names it was not asked for, so only `requestedProperties` appear
+
+`DeviceInterfaceClass` names the device interface classes WinRT has no class for (`mouse`, `keyboard`, `humanInterfaceDevice`, `usb`, `serialPort`, `printer`), and `selectorOfInterfaceClasses(...classes)` builds the filter: this is how to list USB, HID and serial ports (names and ids only)
+
+`deviceChanges(query)` and `liveTracker({ subscriptions })` are the two building blocks the other runes use: a subscription to devices coming and going, and the glue that makes a getter re-run when native events fire
+
+### Input devices
+
+```svelte
+<script lang="ts">
+  import { inputDevices } from "winui-svelte/devices/input";
+  const input = inputDevices();
+</script>
+
+<TextBlock text="Mouse {input.hasMouse ? `with ${input.mouseButtons} buttons` : "absent"}" />
+```
+
+`inputDevices()` reads `MouseCapabilities`, `KeyboardCapabilities`,
+`TouchCapabilities` and `PointerDevice.GetPointerDevices`, and reads them again
+when a mouse, keyboard or HID device (touch screens and pens included) is
+plugged in or removed: Windows has no event for the capabilities themselves,
+so a device watcher of the mouse, keyboard and HID interfaces says when to look
+It has `hasMouse`, `mouseButtons`, `hasWheel`, `hasKeyboard`, `hasTouch`,
+`touchContacts`, `hasPen`, `canHover` and `capabilities` (all of them in one object,
+with the pointer devices)
+
+`readInputCapabilities(source?)` is the same read without the reactivity, and it is
+the one reader the pointer media features (`hover`, `pointer`, `any-hover`,
+`any-pointer`) share: `canHover` is `any-hover: hover`, `hasFinePointer` is
+`any-pointer: fine` and `hasCoarsePointer` is `any-pointer: coarse`
+
+`MouseDevice` (relative mouse motion) is not offered: `GetForCurrentView` needs a
+`CoreWindow`, which a WinUI 3 desktop app does not have
+
+### Bluetooth
+
+| API | Windows |
+|---|---|
+| `getBluetoothAdapter()` | `BluetoothAdapter.GetDefaultAsync`: address, Low Energy, classic, central and peripheral support |
+| `radios()`, `getRadios()`, `requestRadioAccess()`, `setRadioState()` | `Windows.Devices.Radios.Radio` (Wi-Fi, Bluetooth, mobile broadband, FM) |
+| `bluetoothDevices({ transport, isPaired })`, `bluetoothDeviceSelector()` | the known classic or Low Energy devices, paired or not, as a `deviceWatcher` |
+| `getDevicePairing({ id })` | `DeviceInformationPairing`: `isPaired`, `canPair`, `protectionLevel` (read only) |
+| `bluetoothScanner(options)` | `BluetoothLEAdvertisementWatcher` as a keyed collection by address |
+| `scanBluetoothAdvertisements(options)` | the same scan as an async iterable |
+| `openBluetoothLEDevice({ address })`, `getGattServices()`, `getGattCharacteristics()` | `BluetoothLEDevice.FromBluetoothAddressAsync`, `GetGattServicesAsync`, `GetCharacteristicsAsync` |
+| `readCharacteristic()`, `writeCharacteristic()` | `ReadValueAsync`, `WriteValueAsync` with `Uint8Array` values |
+| `subscribeToCharacteristic()`, `characteristicValues()` | `ValueChanged` after writing the Client Characteristic Configuration descriptor, as a callback or an async iterable |
+| `uuidOf()`, `uuidOfShortId()`, `shortIdOfUuid()`, `isUuid()`, `GattServiceUuids`, `GattCharacteristicUuids` | `BluetoothUuidHelper` and the assigned numbers |
+| `addressText()`, `addressOfText()` | a 48-bit address and `AA:BB:CC:DD:EE:FF` |
+
+```svelte
+<script lang="ts">
+  import { bluetoothScanner } from "winui-svelte/devices/bluetooth";
+  const scanner = bluetoothScanner({ filter: { minimumRssi: -80 } });
+  scanner.start();
+</script>
+
+{#each scanner.advertisements.items as ad (ad.addressText)}
+  <TextBlock text="{ad.localName || ad.addressText}  {ad.rssi} dBm" />
+{/each}
+```
+
+An advertisement is `address`, `addressText`, `localName`, `serviceUuids`,
+`manufacturerData` (`companyId` and bytes), `dataSections`, `rssi`,
+`transmitPower`, `timestamp` and the flags (`isConnectable`, `isScannable`,
+`isDirected`, `isScanResponse`, `isAnonymous`)
+The `filter` (`localName`, `serviceUuids`, `companyId`, `minimumRssi`) runs on
+each advertisement received; the scan is passive unless
+`scanningMode: BluetoothLEScanningMode.Active`
+
+`BLUETOOTH_DEVICE_PROPERTIES` is the list of properties worth asking for when listing Bluetooth devices (address, connected, paired, signal strength)
+
+Nothing here pairs, connects or writes by itself: `getGattServices` and the
+reads connect, `writeCharacteristic` and `subscribeToCharacteristic` change the
+device, and they are the calls the app makes on purpose
+Close a device (`device.close()`) when done, or Windows keeps the connection
+
+### Printers
+
+`printers(options)` lists the installed printers from `EnumPrintersW`: `name`,
+`serverName`, `portName`, `driverName`, `location`, `jobCount`, the raw `status`
+(`PrinterStatus` flags) and `attributes` (`PrinterAttribute` flags), and the
+readings made from them: `isDefault`, `isOffline` (offline, or Use Printer
+Offline), `isPaused`, `hasError` (jam, no paper, no toner, door open, error),
+`isNetwork`, `isShared`
+Printers added and removed are noticed through a device watcher of the printer
+interface class; their state is read again every `pollMilliseconds` (5000, 0
+for never) while an effect reads, because Windows raises no event for a printer
+going offline
+A failed `printFile` throws `PrintFileError` with the shell's code
+`listPrinters()` is the one-shot read, and `deviceWatcher({ selector:
+selectorOfInterfaceClasses(DeviceInterfaceClass.printer) })` gives the WinRT
+device interface of each printer
+
+`printFile({ path, printerName? })` prints a file through the program
+registered for its type (`ShellExecuteW`, the `print` or `printto` verb): it
+sends a real print job, so nothing calls it for you
+
+Windows' own print dialog for an app (`PrintManagerInterop.ShowPrintUIForWindowAsync`)
+is not offered: it needs a `PrintTaskRequested` handler that hands Windows a
+`PrintDocument` built by XAML, which the bindings give an unpackaged app no way to
+build; print the document to a file and use `printFile`, or draw it with Win2D
+
+### Power, network, display, audio, gamepads and sensors
+
+| Rune | Reads | Fields |
+|---|---|---|
+| `battery()` | `Battery.AggregateBattery`, `PowerManager` | `hasBattery`, `percent`, `isCharging`, `isDischarging`, `isOnAcPower`, `isEnergySaverOn`, `remainingDischargeMilliseconds`, `healthPercent`, `reading` |
+| `networkInformation()` | `NetworkInformation` | `isOnline`, `connectivity`, `profileName`, `isMetered`, `isRoaming`, `isWifi`, `isMobile`, `signalBars`, `reading` (with every profile name) |
+| `displays()` | `DisplayArea` and its watcher | `areas` (bounds and work area), `primary`, `count`; needs the Windows App SDK, which a window has |
+| `getDisplayMonitors()` | `DisplayMonitor` | name, native resolution, physical size, DPI, luminance; needs no window |
+| `audioDevices()` | `DeviceClass.AudioRender` and `AudioCapture` watchers, `MediaDevice` | `outputs`, `inputs` (watchers), `defaultOutputId`, `defaultInputId`, and the communications ids |
+| `gamepads()` | `Gamepad` | `gamepads`, each with `isWireless` and `read()` for the sticks, triggers and buttons; `pressedButtons()` names the buttons |
+| `lightSensor()`, `accelerometer()`, `inclinometer()` | `Windows.Devices.Sensors` | `isAvailable`, `reading` (null when the machine has no such sensor) |
+
+### Failure modes
+
+- A watcher or scan the system stops (access denied, the service stopped, Bluetooth off, no adapter) ends with `status` `Aborted` and an `error` (`DeviceWatcherAbortedError`, `BluetoothScanAbortedError`); the entries found so far stay
+- A GATT call that does not succeed throws `BluetoothLowEnergyError` with the `GattCommunicationStatus` (`Unreachable`, `ProtocolError`, `AccessDenied`)
+- `getBluetoothAdapter()` resolves to `null` and `radios` is empty when the machine has no adapter
+- An event Windows refuses to an app without a package identity is left unsubscribed: the value is still read live, it only does not update by itself
+- A machine without a sensor, gamepad, battery or printer reports it (`isAvailable` false, an empty list, `hasBattery` false), never an error
+- The radio state, pairing prompts, Bluetooth consent and the microphone are the user's: reading a list needs no consent, using a device can
+
+### Known to work unpackaged, and what does not
+
+Works from `node.exe` without a package identity: device enumeration and watchers
+(audio, HID, USB, serial, printers, Bluetooth devices, radios), the mouse,
+keyboard, touch and pointer capabilities, Bluetooth LE advertisement scanning,
+GATT reads, writes and notifications on an open device, Bluetooth adapter and
+radios, battery and power, network status and its change event, display areas
+and monitors, default audio endpoints and their change events, gamepads and
+sensors (`getDefault`), Win32 printer enumeration and state
+
+Does not work or is not offered:
+
+- `MouseDevice` events: they need a `CoreWindow`
+- The print dialog of `PrintManager`: see Printers
+- Pairing and unpairing (`PairAsync`): they open system prompts the app must own; use the `DeviceInformationPairing` of a `DeviceInformation` directly
+- Geolocation: `Geolocator` needs the location consent and a capability an unpackaged app cannot declare; the bindings hold `Windows.Devices.Geolocation.Geopoint` for the values only
+- Gamepad input while the window is in the background: Windows delivers it to the focused window
+- Sensors on a desktop: there are none, so `isAvailable` is false
 
 ## Reference: the remaining exports
 

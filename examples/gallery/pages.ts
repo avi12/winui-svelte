@@ -1,6 +1,7 @@
 import AnimationPage from "./pages/AnimationPage.svelte";
 import CssLayoutPage from "./pages/CssLayoutPage.svelte";
 import DataPage from "./pages/DataPage.svelte";
+import DevicesPage from "./pages/DevicesPage.svelte";
 import FormsPage from "./pages/FormsPage.svelte";
 import InputPage from "./pages/InputPage.svelte";
 import LayoutPage from "./pages/LayoutPage.svelte";
@@ -104,6 +105,11 @@ export const GALLERY_PAGES: readonly GalleryPage[] = [
     key: "win2d",
     title: "Win2D canvas",
     page: Win2dPage
+  },
+  {
+    key: "devices",
+    title: "Devices",
+    page: DevicesPage
   },
   {
     key: "tray",
