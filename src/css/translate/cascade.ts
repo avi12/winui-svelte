@@ -1,7 +1,5 @@
 import type { LoweredStyle } from "./properties.ts";
 import type { Declaration, PseudoState, Rule } from "./types.ts";
-import { mediaMatches } from "#src/css/parse/media.js";
-import type { Viewport } from "#src/css/parse/media.js";
 
 /**
  * CSS's cascade for one element: which rules apply to it (its type, classes
@@ -23,8 +21,6 @@ export interface ElementFacts {
   states: ReadonlySet<PseudoState>;
   /** Whether the element is still in its starting state, which the `@starting-style` rules style. */
   isStarting?: boolean;
-  /** The window's content size, or null where it is unknown: a rule under an @media then does not apply. */
-  viewport?: Viewport | null;
 }
 
 /** The namespace XAML's controls, templates and styles are written in. */
@@ -58,10 +54,7 @@ function ruleApplies({ rule, facts, isStateIgnored, isMediaIgnored }: {
   const hasClasses = rule.classes.every(name => facts.classes.has(name));
   const hasNoExcluded = (rule.notClasses ?? []).every(name => !facts.classes.has(name));
   const isStateActive = rule.state === null || isStateIgnored || facts.states.has(rule.state);
-  const isMediaActive = rule.media === undefined || isMediaIgnored || mediaMatches({
-    media: rule.media,
-    viewport: facts.viewport ?? null
-  });
+  const isMediaActive = rule.media === undefined || isMediaIgnored;
   const isStartingActive = rule.startingStyle === undefined || facts.isStarting === true;
   return isTypeMatch && hasClasses && hasNoExcluded && isStateActive && isMediaActive && isStartingActive;
 }

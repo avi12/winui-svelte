@@ -1,7 +1,6 @@
 import { borderThickness, cornerRadius, thicknessGroup } from "./box-properties.ts";
 import {
   alignmentProperty,
-  boxSizing,
   display,
   flexDirections,
   gap,
@@ -12,7 +11,6 @@ import {
 import { rotation, scaling, translation } from "./motion-properties.ts";
 import {
   brushProperty,
-  ignored,
   keywordProperty,
   lengthProperty,
   multiple,
@@ -24,21 +22,16 @@ import {
   fontStyles,
   fontWeight,
   letterSpacing,
-  lineClamp,
   lineHeight,
   textAlignments,
   textDecorations,
   textOverflows,
-  textSelections,
   whiteSpaceKeywords,
-  wordBreaks,
   wrapKeywords
 } from "./text-properties.ts";
 import type { Declaration } from "./types.ts";
-import { unsupportedReason } from "./unsupported-properties.ts";
 import {
   hitTesting,
-  objectFits,
   opacity,
   visibilities,
   zIndex
@@ -84,7 +77,7 @@ function basedOn(input: GroupInput) {
 // its value is spelled. The groups are in precedence order: where two set the
 // same WinUI property, the later one wins (display none over visibility). A
 // property absent here has no WinUI meaning and fails the build;
-// `unsupportedReason` says why for the likely ones.
+// `explainUnsupported` (the build supplies it) says why for the likely ones.
 const propertyGroups: readonly PropertyGroup[] = [
   {
     members: [BASED_ON_PROPERTY],
@@ -135,10 +128,6 @@ const propertyGroups: readonly PropertyGroup[] = [
     property: "Height",
     extra: FILL_SIZES
   }),
-  {
-    members: ["box-sizing"],
-    lower: boxSizing
-  },
   lengthProperty({
     member: "min-width",
     property: "MinWidth",
@@ -191,15 +180,6 @@ const propertyGroups: readonly PropertyGroup[] = [
     member: "text-align",
     property: "TextAlignment",
     choices: textAlignments
-  }),
-  {
-    members: ["line-clamp", "-webkit-line-clamp"],
-    lower: lineClamp
-  },
-  keywordProperty({
-    member: "word-break",
-    property: "TextWrapping",
-    choices: wordBreaks
   }),
   keywordProperty({
     member: "text-wrap",
@@ -275,16 +255,6 @@ const propertyGroups: readonly PropertyGroup[] = [
     property: "IsHitTestVisible",
     choices: hitTesting
   }),
-  keywordProperty({
-    member: "user-select",
-    property: "IsTextSelectionEnabled",
-    choices: textSelections
-  }),
-  keywordProperty({
-    member: "object-fit",
-    property: "Stretch",
-    choices: objectFits
-  }),
   simple({
     member: "z-index",
     property: "Canvas.ZIndex",
@@ -301,10 +271,6 @@ const propertyGroups: readonly PropertyGroup[] = [
   multiple({
     member: "rotate",
     parse: rotation
-  }),
-  ignored({
-    member: "cursor",
-    why: "WinUI sets a cursor through the protected UIElement.ProtectedCursor and an InputSystemCursor, neither of which the bindings expose"
   })
 ];
 
@@ -333,7 +299,12 @@ export function lowerDeclarations({ computed, options, extraGroups = [] }: {
   options: LowerOptions;
   extraGroups?: readonly PropertyGroup[];
 }) {
-  const groups = [...propertyGroups, ...extraGroups];
+  const isFallback = (group: PropertyGroup) => group.isFallback === true;
+  const groups = [
+    ...extraGroups.filter(isFallback),
+    ...propertyGroups,
+    ...extraGroups.filter(group => !isFallback(group))
+  ];
   const knownMembers = new Set(groups.flatMap(group => group.members));
   const outputs: Output[] = [];
   for (const group of groups) {
@@ -367,7 +338,7 @@ export function lowerDeclarations({ computed, options, extraGroups = [] }: {
     if (isUnknown) {
       options.report({
         severity: "error",
-        message: `${declaration.property} has no WinUI meaning (${unsupportedReason(declaration.property)})`,
+        message: `${declaration.property} has no WinUI meaning (${options.explainUnsupported?.(declaration.property) ?? "no WinUI counterpart"})`,
         position: declaration.at
       });
     }

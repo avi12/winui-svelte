@@ -107,6 +107,14 @@
       "types": "./dist/css/container.d.ts",
       "default": "./dist/css/container.js"
     },
+    "./css/queries": {
+      "types": "./dist/css/queries.d.ts",
+      "default": "./dist/css/queries.js"
+    },
+    "./css/compat": {
+      "types": "./dist/css/compat.d.ts",
+      "default": "./dist/css/compat.js"
+    },
     "./css/position": {
       "types": "./dist/css/position.d.ts",
       "default": "./dist/css/position.js"

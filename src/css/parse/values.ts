@@ -1,5 +1,3 @@
-import { evaluateCalc } from "./calc.ts";
-
 export { matchingParenthesis, splitCommas, splitSlash, splitWords } from "./split.ts";
 
 // The values a declaration holds, read one token at a time. Each parser
@@ -12,14 +10,26 @@ const PIXELS_PER_REM = 16;
 const MILLISECONDS_PER_SECOND = 1000;
 const PERCENT_SCALE = 100;
 
+let foldCalc: ((token: string) => number | null) | null = null;
+
+/**
+ * Gives `parseLength` the way to fold `calc()`, `min()`, `max()` and `clamp()`.
+ * The build calls it, so the folded px reach a window as plain values and an
+ * app carries no expression evaluator.
+ */
+export function provideCalcFolding(fold: (token: string) => number | null) {
+  foldCalc = fold;
+}
+
 const lengthPattern = /^(-?(?:\d+\.?\d*|\.\d+))(px|rem)?$/iu;
 
 /**
  * A length in device-independent pixels: `px`, `rem` (1rem is 16px), a bare 0
- * or a `calc()` of them; null for anything else.
+ * or (once `provideCalcFolding` was called, as the build does) a `calc()` of
+ * them; null for anything else.
  */
 export function parseLength(token: string) {
-  const folded = evaluateCalc(token);
+  const folded = foldCalc?.(token) ?? null;
   const isCalc = folded !== null;
   if (isCalc) {
     return folded;

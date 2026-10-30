@@ -112,6 +112,8 @@ export type Expansion = (input: ExpansionInput) => Declaration[];
 /** The CSS properties that together set one WinUI property, and how they lower. */
 export interface PropertyGroup {
   members: readonly string[];
+  /** Whether the built-in groups win over this one where they set the same WinUI property (an opt-in group wins by default). */
+  isFallback?: boolean;
   lower(input: GroupInput): Output[];
   /** Shorthands whose longhands are among the members. */
   shorthands?: ReadonlyMap<string, Expansion>;

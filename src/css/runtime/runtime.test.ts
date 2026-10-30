@@ -10,6 +10,7 @@ import {
 } from "./runtime.ts";
 import { animationGroups } from "#src/css/translate/animation-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import { queryGroups } from "#src/css/translate/query-properties.js";
 import { effectGroups } from "#src/css/translate/effect-properties.js";
 import { containerGroups } from "#src/css/translate/container-properties.js";
 import { dynamicLengthGroups } from "#src/css/translate/dynamic-length-properties.js";
@@ -24,6 +25,8 @@ import { test } from "node:test";
 
 // The runtime against a fake WinUI: a "dictionary" is its XAML, a "style" is
 // the XAML of the dictionary it was looked up in.
+
+queryGroups();
 
 const resources = loadWinuiCatalogue();
 

@@ -1,11 +1,14 @@
 import { ANIMATION_MEMBERS, animationGroups } from "./animation-properties.ts";
 import { gradientGroups } from "./background-properties.ts";
-import { EFFECT_MEMBERS, effectGroups } from "./effect-properties.ts";
+import { buildShorthandGroups } from "./build-shorthands.ts";
+import { COMPAT_MEMBERS, compatGroups } from "./compat-properties.ts";
 import { CONTAINER_MEMBERS, containerGroups } from "./container-properties.ts";
 import { DYNAMIC_MEMBERS, dynamicLengthGroups } from "./dynamic-length-properties.ts";
+import { EFFECT_MEMBERS, effectGroups } from "./effect-properties.ts";
 import { focusGroups, OUTLINE_MEMBERS } from "./focus-properties.ts";
 import { POSITION_MEMBERS, positionGroups } from "./position-properties.ts";
 import type { PropertyGroup } from "./property-kit.ts";
+import { queryGroups } from "./query-properties.ts";
 import { resourceGroups } from "./resource-properties.ts";
 import { SURFACE_MEMBERS, surfaceGroups } from "./surface-properties.ts";
 import { transformGroups } from "./transform-properties.ts";
@@ -85,9 +88,24 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     groups: containerGroups
   },
   {
+    isNeededBy: usesProperties(COMPAT_MEMBERS),
+    subpath: "/compat",
+    exportName: "compatGroups",
+    groups: compatGroups
+  },
+  {
+    isNeededBy: rule => rule.media !== undefined || rule.startingStyle === true,
+    subpath: "/queries",
+    exportName: "queryGroups",
+    groups: queryGroups
+  },
+  {
     isNeededBy: rule => rule.resourcesXaml !== null,
     subpath: "/resources",
     exportName: "resourceGroups",
     groups: resourceGroups
   }
 ];
+
+/** The groups only the build uses: what a sheet's declarations are expanded and checked with, never a window. */
+export const BUILD_GROUPS: readonly (() => PropertyGroup[])[] = [buildShorthandGroups];

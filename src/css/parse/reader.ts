@@ -24,6 +24,11 @@ export interface LowerOptions {
   };
   /** Whether a style with this key already exists. */
   hasStyle(key: string): boolean;
+  /**
+   * Why a property has no WinUI meaning, with what to write instead. Only the
+   * build supplies it: its prose would otherwise ship in every app.
+   */
+  explainUnsupported?(property: string): string;
   /** Reports a problem at the declaration's source position. */
   report(input: {
     severity: Severity;

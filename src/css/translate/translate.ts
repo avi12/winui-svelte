@@ -3,7 +3,7 @@ import { computeDeclarations } from "./cascade.ts";
 import { dynamicPropertyOf } from "./dynamic-length-properties.ts";
 import { createLayerOrder, declareLayer, layerRank, withinLayer } from "./layers.ts";
 import type { LayerOrder } from "./layers.ts";
-import { LAZY_GROUPS } from "./lazy-groups.ts";
+import { BUILD_GROUPS, LAZY_GROUPS } from "./lazy-groups.ts";
 import { lowerDeclarations } from "./properties.ts";
 import { expandDeclaration } from "./shorthands.ts";
 import { ColorScheme } from "./types.ts";
@@ -19,9 +19,10 @@ import type {
   StyleSheetData,
   Translation
 } from "./types.ts";
-import { unsupportedAtRuleReason } from "./unsupported-properties.ts";
+import { unsupportedAtRuleReason, unsupportedReason } from "./unsupported-properties.ts";
 import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
+import { evaluateCalc } from "#src/css/parse/calc.js";
 import { isDynamicLength } from "#src/css/parse/dynamic-length.js";
 import { replaceLightDark } from "#src/css/parse/light-dark.js";
 import type { MediaCondition } from "#src/css/parse/media.js";
@@ -34,8 +35,8 @@ import type { ParsedSelector } from "#src/css/parse/selectors.js";
 import { flattenNestedSelector, parseSelectorList } from "#src/css/parse/selectors.js";
 import type { PositionMapper, SourceMapV3 } from "#src/css/parse/source-map.js";
 import { createPositionMapper } from "#src/css/parse/source-map.js";
-import { parsePercent } from "#src/css/parse/values.js";
 import { splitCommas } from "#src/css/parse/split.js";
+import { parsePercent, provideCalcFolding } from "#src/css/parse/values.js";
 import type { ResourceCatalogue, ResourceKind } from "#src/css/runtime/resources.js";
 import { hasStyle, resolveVariable } from "#src/css/runtime/resources.js";
 
@@ -793,7 +794,7 @@ function validateRules({ translator, catalogue }: {
   translator: Translator;
   catalogue: ResourceCatalogue;
 }) {
-  const groups = LAZY_GROUPS.flatMap(lazy => lazy.groups());
+  const groups = [...LAZY_GROUPS.flatMap(lazy => lazy.groups()), ...BUILD_GROUPS.flatMap(build => build())];
   const shorthands = new Map(groups.flatMap(group => [...group.shorthands ?? []]));
   for (const rule of translator.rules) {
     const options: LowerOptions = {
@@ -818,6 +819,7 @@ function validateRules({ translator, catalogue }: {
         catalogue,
         key
       }),
+      explainUnsupported: unsupportedReason,
       report: ({ severity, message, position }) => report({
         translator,
         severity,
@@ -847,6 +849,7 @@ function validateRules({ translator, catalogue }: {
  * custom properties, and a diagnostic for everything WinUI cannot say.
  */
 export function translateStyleSheet(input: TranslateInput) {
+  provideCalcFolding(evaluateCalc);
   const translator: Translator = {
     input,
     mapPosition: createPositionMapper(input.map),

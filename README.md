@@ -864,7 +864,7 @@ protocol and the tests.
 | `winui-svelte/app` | single-instance handling and app notifications |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
-| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, theme resources ([`src/css/API.md`](src/css/API.md)) |
+| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/dynamic-length`, `/css/queries`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, clip and aspect ratio, focus visuals, surfaces, position and inset, media and container queries, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
 
 The published package ships `dist/`: the TypeScript compiled with its

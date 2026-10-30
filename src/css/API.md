@@ -90,7 +90,15 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `backdrop-filter` | Elevation and backdrop |
 | `winui-svelte/css/position` | `position`, `top`, `left`, `right`, `bottom`, `inset` | Position |
+| `winui-svelte/css/queries` | `@media`, `@container` and `@starting-style` rules (a group with no property of its own) | Responsive rules |
+| `winui-svelte/css/compat` | `word-break`, `user-select`, `object-fit`, `line-clamp`, `box-sizing`, `cursor` (ignored) | Unsupported |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |
+
+`calc()`, `min()`, `max()` and `clamp()` of px and rem fold when the build
+translates a `<style>` block, so a window carries no evaluator: in a `style`
+attribute they are not a length. The logical properties (`margin-inline`,
+`inline-size`...) and `grid-area` are shorthands only the build expands, for
+the same reason; write the physical longhands in a `style` attribute.
 
 A group may also bring the shorthands it expands and the handlers of the
 `write` outputs it produces: a write is something set on the element itself

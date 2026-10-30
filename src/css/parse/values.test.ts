@@ -1,3 +1,4 @@
+import { evaluateCalc } from "./calc.ts";
 import { parseColor } from "./colors.ts";
 import {
   parseLength,
@@ -5,6 +6,7 @@ import {
   parseNumber,
   parsePercent,
   parseVariable,
+  provideCalcFolding,
   splitCommas,
   splitSlash,
   splitWords
@@ -13,6 +15,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 test("lengths are px, rem (16px) or a bare zero", () => {
+  provideCalcFolding(evaluateCalc);
   assert.equal(parseLength("12px"), 12);
   assert.equal(parseLength("-4.5px"), -4.5);
   assert.equal(parseLength("1.5rem"), 24);

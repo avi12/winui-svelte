@@ -82,7 +82,7 @@ function repeated(track: string) {
 const AUTO_TRACKS = new Set(["auto", "min-content", "max-content"]);
 const MINMAX = /^minmax\((.*)\)$/isu;
 const FIT_CONTENT = /^fit-content\((.*)\)$/isu;
-const TRACK_HINT = "an auto, a length in px, a size in fr, minmax(px, fr) or fit-content(px)";
+const TRACK_HINT = "auto, px, fr, minmax() or fit-content()";
 
 // A length of one bound: px, or null for the content-sized keywords.
 function trackBound({ bound, reader }: {
@@ -494,16 +494,4 @@ export function overflow(input: GroupInput) {
   }
 
   return outputs;
-}
-
-/** `box-sizing`: a WinUI Width and Height include padding and border, so border-box is the only kind. */
-export function boxSizing(input: GroupInput) {
-  const reader = input.reading("box-sizing");
-  const word = reader.single()?.toLowerCase();
-  const isContentBox = word === "content-box";
-  if (isContentBox) {
-    reader.error("box-sizing: content-box has no WinUI meaning (a WinUI Width and Height include the padding and border, as border-box does; add the padding to the width)");
-  }
-
-  return [];
 }

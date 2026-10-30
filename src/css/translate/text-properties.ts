@@ -89,23 +89,6 @@ export const whiteSpaceKeywords = enumMap([
   ["nowrap", "NoWrap"]
 ]);
 
-/** `word-break`: WinUI breaks inside a word only when it is wider than the line. */
-export const wordBreaks = enumMap([
-  ["normal", "WrapWholeWords"],
-  ["keep-all", "WrapWholeWords"],
-  ["break-all", "Wrap"],
-  ["break-word", "Wrap"]
-]);
-
-/** `user-select`, as IsTextSelectionEnabled. */
-export const textSelections = enumMap([
-  ["auto", "True"],
-  ["text", "True"],
-  ["all", "True"],
-  ["contain", "True"],
-  ["none", "False"]
-]);
-
 /** `text-overflow`. */
 export const textOverflows = enumMap([
   ["ellipsis", "CharacterEllipsis"],
@@ -222,54 +205,6 @@ export function lineHeight(input: GroupInput) {
       property: "LineStackingStrategy",
       value: "BlockLineHeight"
     })];
-}
-
-/**
- * `line-clamp` (and `-webkit-line-clamp`): a number of lines, or `none`. It sets
- * MaxLines, and wraps the text and trims with an ellipsis as the clamp implies;
- * `text-wrap` and `text-overflow` win where they are written too.
- */
-export function lineClamp(input: GroupInput) {
-  const member = input.computed.has("line-clamp") ? "line-clamp" : "-webkit-line-clamp";
-  const reader = input.reading(member);
-  const word = reader.single();
-  const isWordMissing = word === null;
-  if (isWordMissing) {
-    return [];
-  }
-
-  const isNone = word.toLowerCase() === "none";
-  if (isNone) {
-    return [setter({
-      property: "MaxLines",
-      value: "0"
-    })];
-  }
-
-  const lines = parseNumber(word);
-  const isCount = lines !== null && Number.isInteger(lines) && lines > 0;
-  if (!isCount) {
-    reader.expectedToken({
-      what: "none or a whole number of lines",
-      token: word
-    });
-    return [];
-  }
-
-  return [
-    setter({
-      property: "TextWrapping",
-      value: "Wrap"
-    }),
-    setter({
-      property: "TextTrimming",
-      value: "CharacterEllipsis"
-    }),
-    setter({
-      property: "MaxLines",
-      value: String(lines)
-    })
-  ];
 }
 
 /** `letter-spacing`: `normal`, or a size in em. */
