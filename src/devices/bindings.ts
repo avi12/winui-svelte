@@ -1,0 +1,61 @@
+// The WinRT types the winui-svelte/devices modules use, from the bindings the
+// app generated (`pnpm bindings`, which makes the classes of `lateClasses` in
+// scripts/codegen/tables.ts), reached through `#winui/*`. The one import site
+// of the bindings for the devices modules; they read nothing else.
+
+export { DeviceClass } from "#winui/windows/devices/enumeration/DeviceClass";
+export { DeviceInformation } from "#winui/windows/devices/enumeration/DeviceInformation";
+export { DeviceInformationKind } from "#winui/windows/devices/enumeration/DeviceInformationKind";
+export { DevicePairingProtectionLevel } from "#winui/windows/devices/enumeration/DevicePairingProtectionLevel";
+export { DeviceWatcherStatus } from "#winui/windows/devices/enumeration/DeviceWatcherStatus";
+export { DeviceAccessInformation } from "#winui/windows/devices/enumeration/DeviceAccessInformation";
+export { DeviceAccessStatus } from "#winui/windows/devices/enumeration/DeviceAccessStatus";
+export { IPropertyValue } from "#winui/windows/foundation/IPropertyValue";
+export { PropertyType } from "#winui/windows/foundation/PropertyType";
+export { CryptographicBuffer } from "#winui/windows/security/cryptography/CryptographicBuffer";
+export { MouseCapabilities } from "#winui/windows/devices/input/MouseCapabilities";
+export { KeyboardCapabilities } from "#winui/windows/devices/input/KeyboardCapabilities";
+export { TouchCapabilities } from "#winui/windows/devices/input/TouchCapabilities";
+export { PointerDevice } from "#winui/windows/devices/input/PointerDevice";
+export { PointerDeviceType } from "#winui/windows/devices/input/PointerDeviceType";
+export type { IBuffer } from "#winui/windows/storage/streams/IBuffer";
+export { BluetoothAdapter } from "#winui/windows/devices/bluetooth/BluetoothAdapter";
+export { BluetoothAddressType } from "#winui/windows/devices/bluetooth/BluetoothAddressType";
+export { BluetoothCacheMode } from "#winui/windows/devices/bluetooth/BluetoothCacheMode";
+export { BluetoothConnectionStatus } from "#winui/windows/devices/bluetooth/BluetoothConnectionStatus";
+export { BluetoothDevice } from "#winui/windows/devices/bluetooth/BluetoothDevice";
+export { BluetoothLEDevice } from "#winui/windows/devices/bluetooth/BluetoothLEDevice";
+export { BluetoothUuidHelper } from "#winui/windows/devices/bluetooth/BluetoothUuidHelper";
+export { BluetoothLEAdvertisementType } from "#winui/windows/devices/bluetooth/advertisement/BluetoothLEAdvertisementType";
+export { BluetoothLEAdvertisementWatcher } from "#winui/windows/devices/bluetooth/advertisement/BluetoothLEAdvertisementWatcher";
+export { BluetoothLEAdvertisementWatcherStatus } from "#winui/windows/devices/bluetooth/advertisement/BluetoothLEAdvertisementWatcherStatus";
+export { BluetoothLEScanningMode } from "#winui/windows/devices/bluetooth/advertisement/BluetoothLEScanningMode";
+export { GattCharacteristicUuids } from "#winui/windows/devices/bluetooth/generic-attribute-profile/GattCharacteristicUuids";
+export { GattClientCharacteristicConfigurationDescriptorValue } from "#winui/windows/devices/bluetooth/generic-attribute-profile/GattClientCharacteristicConfigurationDescriptorValue";
+export { GattCommunicationStatus } from "#winui/windows/devices/bluetooth/generic-attribute-profile/GattCommunicationStatus";
+export { GattServiceUuids } from "#winui/windows/devices/bluetooth/generic-attribute-profile/GattServiceUuids";
+export { GattWriteOption } from "#winui/windows/devices/bluetooth/generic-attribute-profile/GattWriteOption";
+export { Radio } from "#winui/windows/devices/radios/Radio";
+export { RadioAccessStatus } from "#winui/windows/devices/radios/RadioAccessStatus";
+export { RadioKind } from "#winui/windows/devices/radios/RadioKind";
+export { RadioState } from "#winui/windows/devices/radios/RadioState";
+export { GattCharacteristic } from "#winui/windows/devices/bluetooth/generic-attribute-profile/GattCharacteristic";
+export { GattDeviceService } from "#winui/windows/devices/bluetooth/generic-attribute-profile/GattDeviceService";
+export { Battery } from "#winui/windows/devices/power/Battery";
+export { BatteryStatus } from "#winui/windows/system/power/BatteryStatus";
+export { EnergySaverStatus } from "#winui/windows/system/power/EnergySaverStatus";
+export { PowerManager } from "#winui/windows/system/power/PowerManager";
+export { PowerSupplyStatus } from "#winui/windows/system/power/PowerSupplyStatus";
+export { NetworkConnectivityLevel } from "#winui/windows/networking/connectivity/NetworkConnectivityLevel";
+export { NetworkCostType } from "#winui/windows/networking/connectivity/NetworkCostType";
+export { NetworkInformation } from "#winui/windows/networking/connectivity/NetworkInformation";
+export { AudioDeviceRole } from "#winui/windows/media/devices/AudioDeviceRole";
+export { MediaDevice } from "#winui/windows/media/devices/MediaDevice";
+export { Gamepad } from "#winui/windows/gaming/input/Gamepad";
+export { GamepadButtons } from "#winui/windows/gaming/input/GamepadButtons";
+export { DisplayMonitor } from "#winui/windows/devices/display/DisplayMonitor";
+export { DisplayMonitorConnectionKind } from "#winui/windows/devices/display/DisplayMonitorConnectionKind";
+export { DisplayArea } from "#winui/microsoft/ui/windowing/DisplayArea";
+export { Accelerometer } from "#winui/windows/devices/sensors/Accelerometer";
+export { Inclinometer } from "#winui/windows/devices/sensors/Inclinometer";
+export { LightSensor } from "#winui/windows/devices/sensors/LightSensor";
