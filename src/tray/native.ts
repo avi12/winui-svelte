@@ -1,6 +1,14 @@
-import { addressOf, bind, numberOf, pointerOf, WIDE_CHAR_BYTES, wideMemory, withMemory } from "#src/win32-calls.js";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
+import {
+  addressOf,
+  bind,
+  numberOf,
+  pointerOf,
+  WIDE_CHAR_BYTES,
+  wideMemory,
+  withMemory
+} from "#src/win32-calls.js";
 
 /** The Shell_NotifyIcon operations. */
 export const NotifyOperation = {

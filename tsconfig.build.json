@@ -13,6 +13,7 @@
   "exclude": [
     "src/**/*.test.ts",
     "src/state/test-support/**",
+    "src/devices/test-support/**",
     "src/renderer/testing/fake-controls.ts",
     "src/renderer/testing/tree-probe.ts"
   ]
