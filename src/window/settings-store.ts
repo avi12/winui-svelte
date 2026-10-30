@@ -1,3 +1,4 @@
+import { FAKE_SETTINGS_VARIABLE, fakeSettingsSource } from "./fake-settings.ts";
 import { uiThreadDispatcher } from "#src/scheduling.js";
 import type { UIColorType } from "#src/winui.js";
 import { AccessibilitySettings, UIColorType as ColorKind, UISettings } from "#src/winui.js";
@@ -122,15 +123,26 @@ function createSystemStore() {
   });
 }
 
+function createStore() {
+  const fakePath = process.env[FAKE_SETTINGS_VARIABLE];
+  const isFake = fakePath !== undefined;
+  return isFake ? createSettingsStore({
+    source: fakeSettingsSource(fakePath),
+    runOnUiThread: uiThreadDispatcher()
+  }) : createSystemStore();
+}
+
 let shared: SettingsStore | null = null;
 
 /**
  * The store over the machine's `UISettings` and `AccessibilitySettings`,
- * made on first use on the UI thread and kept: every reader shares it.
+ * made on first use on the UI thread and kept: every reader shares it. When
+ * the environment variable WINUI_SVELTE_FAKE_SETTINGS names a JSON file, the
+ * store reads that file instead (a test drives the settings through it).
  *
  * @returns The shared store.
  */
 export function systemSettingsStore() {
-  shared ??= createSystemStore();
+  shared ??= createStore();
   return shared;
 }
