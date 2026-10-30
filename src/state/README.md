@@ -1,17 +1,20 @@
 # State
 
 Svelte's own state tools work unchanged in a WinUI window; this folder adds
-only what Svelte cannot know: state that lives in the host.
+only what Svelte cannot know: state that lives in the host
 
 ## Scheduling: nothing to do
 
-App code never calls `flushSync`. WinUI's loop must be started with
+App code never calls `flushSync`
+WinUI's loop must be started with
 `Application.startScheduled`; WinUI then calls back into JS with no script
 under it, Node drains microtasks when each callback returns, and Svelte's
-`queueMicrotask` flush runs. Proven for a control event, a dispatcher timer and
-a host message by `examples/scheduling/run.ps1`. A host message is taken off its
+`queueMicrotask` flush runs
+Proven for a control event, a dispatcher timer and
+a host message by `examples/scheduling/run.ps1`
+A host message is taken off its
 port by a timer (WinUI holds the thread, so port events never fire):
-`createMessagePortTransport({ port, poll })` takes that timer.
+`createMessagePortTransport({ port, poll })` takes that timer
 
 ## Svelte's tools here
 
@@ -22,11 +25,11 @@ port by a timer (WinUI holds the thread, so port events never fire):
 | context (`setContext`/`getContext`) | the channel and host state for a subtree | `examples/counter/App.svelte` and `HostButtons.svelte` |
 | stores | a store from a library, read with `fromStore(store).current` | `svelte-state.test.ts` |
 
-No store of our own is added: a `$state` object in a `.svelte.ts` is the store.
+No store of our own is added: a `$state` object in a `.svelte.ts` is the store
 
 ## Host state
 
-State the host owns (Rust, Electron, Node) is one reactive object in the window.
+State the host owns (Rust, Electron, Node) is one reactive object in the window
 
 ```ts
 const channel = createHostChannel({ transport: createStdioTransport() });
@@ -38,11 +41,12 @@ await channel.send({ kind: "toggle" });         // resolves when the host did it
 
 `State` and the channel's `Action` (`createHostChannel<Action>`) are the app's
 types (Edge+ generates them from Rust); the channel checks that a value is JSON
-and trusts the host for its shape.
+and trusts the host for its shape
 
 The channel is built on `messaging/` (typed messages after
 @webext-core/messaging): `StateProtocol` is its ProtocolMap, keyed by
-`MessageType`, and `channel.messaging` is the link itself. A host's own message
+`MessageType`, and `channel.messaging` is the link itself
+A host's own message
 types are further handlers on it, with the app's protocol as the second type
 parameter:
 
@@ -54,9 +58,10 @@ await channel.messaging.sendMessage(NoticeType.place, 2);
 
 ### Wire protocol
 
-One JSON value per message, ordered, on any transport (`transports/`). On
+One JSON value per message, ordered, on any transport (`transports/`)
+On
 stdio it is one line each, and stdout carries nothing else: call
-`reserveStdout()` first so `console.log` goes to stderr.
+`reserveStdout()` first so `console.log` goes to stderr
 
 Every message is a request frame and is answered by a response frame
 (`messaging/`):
@@ -74,8 +79,8 @@ response  {id, response}  or  {id, error}
 
 A host written in JavaScript uses `defineMessaging<StateProtocol>({ transport })`
 from `winui-svelte/messaging` and registers `onMessage(MessageType.action, ...)`
-(a thrown error is the refusal); a Rust host reads and writes the frames.
-Ids are the sender's own counter, and a response carries the id of its request.
+(a thrown error is the refusal); a Rust host reads and writes the frames
+Ids are the sender's own counter, and a response carries the id of its request
 
 Patch operations (paths are arrays of keys and indices; an empty path is the
 root):
@@ -86,13 +91,16 @@ root):
 - `{op:"splice", path, start, deleteCount, items}` changes a range of an array
 
 A patch is applied property by property to the existing reactive object, so a
-binding re-runs only when what it read changed. Send the patches of a change
-before the action's answer: when `send` resolves, the state already shows the result.
+binding re-runs only when what it read changed
+Send the patches of a change
+before the action's answer: when `send` resolves, the state already shows the result
 `diff({ previous, next })` makes the operations for a JavaScript host; a Rust host
-sends the same shapes. A malformed message, a patch before its snapshot, a path
+sends the same shapes
+A malformed message, a patch before its snapshot, a path
 that does not exist or a `type` nobody handles is reported to `onError` (stderr
-by default) and answered with an error; the remedy is a new snapshot. When the
-link closes, waiting and later `send`s reject with `HostClosedError`.
+by default) and answered with an error; the remedy is a new snapshot
+When the
+link closes, waiting and later `send`s reject with `HostClosedError`
 
 ## Running
 
@@ -101,4 +109,4 @@ pnpm test
 ```
 
 The state tests run with the rest of the package's (`src/state/**/*.test.ts`);
-`pnpm check` type-checks them.
+`pnpm check` type-checks them

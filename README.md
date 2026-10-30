@@ -1,10 +1,12 @@
 # winui-svelte
 
 WinUI 3 controls as Svelte components: native Windows apps written in Svelte,
-the way React Native writes native apps in React. Every control is WinUI's own,
+the way React Native writes native apps in React
+Every control is WinUI's own,
 so the app looks and behaves like Windows: light and dark follow Windows, the
 controls animate and are accessible as WinUI makes them, and acrylic is a real
-backdrop. No browser engine is involved; there is no DOM.
+backdrop
+No browser engine is involved; there is no DOM
 
 ## Why
 
@@ -28,27 +30,31 @@ Then I stumbled upon [node-winui](https://github.com/microsoft/winappCli/blob/ma
 - **Every WinUI 3 control, and the value objects they take** (brushes,
   transforms, animations, layouts...: 295 components in the table below) are
   generated from WinUI's own metadata, with typed props, typed events and
-  `bind:`-able properties. The package follows WinUI instead of a hand-picked
-  subset; lists (`ListView`, `GridView`...) are generated too.
+  `bind:`-able properties
+  The package follows WinUI instead of a hand-picked
+  subset; lists (`ListView`, `GridView`...) are generated too
 - **Svelte's own compiler and runtime**, a published release (the package
-  draws into a small DOM it provides). Runes, context, `{#if}`, `{#each}`, snippets, `svelte/reactivity` and stores
-  work as they do on the web.
+  draws into a small DOM it provides)
+  Runes, context, `{#if}`, `{#each}`, snippets, `svelte/reactivity` and stores
+  work as they do on the web
 - **Hot reload** while you develop: save a `.svelte` file and the open window
-  changes in place.
+  changes in place
 - **Framework-agnostic.** The window runs in a Node process (with a worker for
   WinUI's UI thread) that something else starts: a Tauri core, an Electron
-  main process, or you from a terminal. The host and the window talk in JSON
-  lines (or a `MessagePort` in-process).
+  main process, or you from a terminal
+  The host and the window talk in JSON
+  lines (or a `MessagePort` in-process)
 - **Windows only.** Windows 10 version 1809 (build 17763) and Windows 11, on
   the Windows App SDK (WinUI 3) through
-  [dynwinrt](https://github.com/microsoft/dynwinrt).
+  [dynwinrt](https://github.com/microsoft/dynwinrt)
 
 Built for [Edge+](https://github.com/avi12/edge-plus), whose settings panel is
-written with it.
+written with it
 
 > **Status: pre-release.** What is described here is what the repository's
-> tests and the [hello example](examples/hello) run. See
-> [CHANGELOG.md](CHANGELOG.md).
+> tests and the [hello example](examples/hello) run
+> See
+> [CHANGELOG.md](CHANGELOG.md)
 
 ## Requirements
 
@@ -67,13 +73,13 @@ pnpm add winui-svelte
 ```
 
 The WinUI bindings, the Windows App SDK bootstrapper and the Vite plugin come
-with it.
+with it
 
 ## Quick start
 
 The files below are the [hello example](examples/hello), run for real by
 `examples/hello/run.ps1` (it flips the switch through UI Automation and edits
-`App.svelte` to check hot reload).
+`App.svelte` to check hot reload)
 
 `vite.config.ts` is one line of plugin:
 
@@ -90,7 +96,8 @@ export default defineConfig({
 
 <!-- hello/vite.config.ts:end -->
 
-`App.svelte` is the window's content. `bind:isOn` works on the component like
+`App.svelte` is the window's content
+`bind:isOn` works on the component like
 any Svelte binding:
 
 <!-- hello/App.svelte:start -->
@@ -129,9 +136,11 @@ any Svelte binding:
 
 <!-- hello/App.svelte:end -->
 
-`window.ts` runs on the UI thread. WinUI's message loop never gives its thread
+`window.ts` runs on the UI thread
+WinUI's message loop never gives its thread
 back, so `runOnUiThread` (the package's `/thread` entry) is a worker's first
-call: it enters the apartment before anything creates a WinRT object. The
+call: it enters the apartment before anything creates a WinRT object
+The
 window's modules come from the host's dev server through the module runner, and
 a timer takes the server's hot updates in (Node's own timers never fire while
 WinUI holds the thread):
@@ -234,61 +243,70 @@ worker.on("exit", code => {
 node main.ts
 ```
 
-Edit the text in `App.svelte` and save: the window follows within a moment.
+Edit the text in `App.svelte` and save: the window follows within a moment
 Set `WINUI_SVELTE_BACKGROUND=1` to open the window without taking focus (for
-scripts and captures).
+scripts and captures)
 
 State changes need no `flushSync`: the window's loop is started with
 `Application.startScheduled`, so Node drains microtasks after each WinUI
 callback and Svelte's own flush runs
-([experiment](examples/scheduling/README.md)).
+([experiment](examples/scheduling/README.md))
 
 ## Host integration
 
-The window is a process (or a worker) that something else owns. What the host
+The window is a process (or a worker) that something else owns
+What the host
 sends and receives is the same everywhere: JSON values, one per line on stdio,
-or the same objects through a `MessagePort`. State the host owns reaches the
+or the same objects through a `MessagePort`
+State the host owns reaches the
 window as one deeply reactive object, and the window answers with actions; see
 [`src/state/README.md`](src/state/README.md) for the wire protocol, `hostState`
-and `send`.
+and `send`
 
-**Tauri** (what [Edge+](https://github.com/avi12/edge-plus) does). The Rust
+**Tauri** (what [Edge+](https://github.com/avi12/edge-plus) does)
+The Rust
 core starts the window as a child process
 (a sidecar: your `main.ts`, or a bundled executable with Node inside) with its
 stdin and stdout piped, writes request lines
 (`{"id":1,"type":"snapshot","data":{"name":"view","value":{...}},"timestamp":...}`)
 and later `patch` ones, and reads `action` requests back, answering each with a
-response line (`{"id":1,"response":null}` or `{"id":1,"error":"..."}`). In the
+response line (`{"id":1,"response":null}` or `{"id":1,"error":"..."}`)
+In the
 window, `createStdioTransport()` and `reserveStdout()` (so a
 stray `console.log` goes to stderr and cannot corrupt the protocol) are the
-other end. Edge+'s `app/panel-tauri` (`ui/main.ts`, with the core in
-`src-tauri`) is the working example.
+other end
+Edge+'s `app/panel-tauri` (`ui/main.ts`, with the core in
+`src-tauri`) is the working example
 
 **Electron.** The main process starts the window with
 `utilityProcess.fork("main.js")` (or `child_process.spawn` of Node) and speaks
 the same messages over the process's stdio or a `MessagePort`; the main
 process is where the state lives and where `diff(previous, next)` from
-`winui-svelte/state/host` makes the patches. The Windows App SDK is started by
-the window's own process, so the Electron renderer is not involved.
+`winui-svelte/state/host` makes the patches
+The Windows App SDK is started by
+the window's own process, so the Electron renderer is not involved
 This path has the same protocol as Tauri's but has not been run in this
-repository.
+repository
 
 **Node.** The simplest host is your own script: it starts the Windows App SDK
-and the window as `main.ts` above does, and keeps its state in plain objects.
+and the window as `main.ts` above does, and keeps its state in plain objects
 `examples/counter` is a host in Node that owns `{ count, history }`, sends it
 with `diff()`, and answers the window's actions over a `MessagePort`
-(`examples/counter/run.ps1` clicks its buttons through UI Automation).
+(`examples/counter/run.ps1` clicks its buttons through UI Automation)
 
 ## Controls
 
 Every concrete WinUI 3 control, and every value object a property can take, is
-a component in `winui-svelte/components`. A component has the properties of its
+a component in `winui-svelte/components`
+A component has the properties of its
 WinUI class and of every class it inherits from, as camelCase props (`isOn`,
 `horizontalAlignment`), its events as `on...` props (`onToggled`), and `bind:`
-on a property that has a matching change event. The table shows what each class
-adds; `Bindable` includes the inherited bindables. `Children` says the
+on a property that has a matching change event
+The table shows what each class
+adds; `Bindable` includes the inherited bindables
+`Children` says the
 component takes content (its WinUI content property: `Content`, `Child`,
-`Children`, `Items`...) as children.
+`Children`, `Items`...) as children
 
 <!-- controls:start -->
 
@@ -616,45 +634,49 @@ component takes content (its WinUI content property: `Content`, `Child`,
 How a value is written:
 
 - An enum prop takes the member's name (`horizontalAlignment="Center"`) or its
-  number.
+  number
 - A thickness takes `8`, `[8, 4]`, `[left, top, right, bottom]` or a CSS-order
   string; a corner radius a number or an array; a grid length `"Auto"`, `"*"`,
-  `"2*"` or pixels.
+  `"2*"` or pixels
 - A brush takes a color string or a WinUI theme resource name, so light and dark
-  stay WinUI's.
+  stay WinUI's
 - A time (`duration`, `beginTime`, a key frame's `keyTime`) takes milliseconds
   (`300`) or text with its unit (`"0.3s"`, `"2m"`) or as a clock
   (`"0:00:05"`); a `duration` also takes `"auto"` and `"forever"`, and a
-  `repeatBehavior` a count (`3`, `"3x"`), a length of time or `"forever"`.
+  `repeatBehavior` a count (`3`, `"3x"`), a length of time or `"forever"`
 - A date (`DatePicker.date`, `CalendarDatePicker.minDate`) takes a `Date`,
-  milliseconds since 1970 or an ISO string, and `null` where WinUI allows none.
-  A bound date or time reads back as a `Date` or as milliseconds.
+  milliseconds since 1970 or an ISO string, and `null` where WinUI allows none
+  A bound date or time reads back as a `Date` or as milliseconds
 - A `fontWeight` takes a name (`"bold"`, `"semiBold"`) or a number from 1 to
-  999.
+  999
 - A point, size, rect, matrix or vector takes an array (`[x, y]`,
   `[width, height]`, `[x, y, width, height]`, `[x, y, z]`) or WinUI's own
-  object. A list of points (`points` of a `Polygon`) takes points or text
+  object
+  A list of points (`points` of a `Polygon`) takes points or text
   (`"0,0 10,0 10,10"`); a list of numbers (`strokeDashArray`) takes numbers or
-  text (`"4 2"`).
+  text (`"4 2"`)
 - A geometry prop (`Path.data`, `PathIcon.data`) takes path data as XAML writes
-  it (`"M0,0 L10,10"`).
+  it (`"M0,0 L10,10"`)
 - An image source takes a URI (one ending in `.svg` is drawn as an SVG) or the
-  bytes of an image file (`Uint8Array`, `ArrayBuffer`). A `MediaPlayerElement`'s
-  `source` takes a URI.
+  bytes of an image file (`Uint8Array`, `ArrayBuffer`)
+  A `MediaPlayerElement`'s
+  `source` takes a URI
 - An `itemsSource` takes an array, which becomes the collection WinUI reads; an
-  `inputScope` takes a name (`"Url"`) or a list of names.
+  `inputScope` takes a name (`"Url"`) or a list of names
 - A property that takes any object (`header`, `content`) takes a string, which
-  is boxed for it, or a control.
+  is boxed for it, or a control
 - Attached properties are plain props: `gridRow`, `gridColumn`, `gridRowSpan`,
   `gridColumnSpan`, `canvasLeft`, `canvasTop`, `canvasZIndex`,
-  `automationName`, `automationHelpText`, `toolTip`. Any other:
-  `attached={[Owner, "Property", value]}`.
+  `automationName`, `automationHelpText`, `toolTip`
+  Any other:
+  `attached={[Owner, "Property", value]}`
 - A `ref` to the native control: `{@attach control(native => ...)}` from
   `winui-svelte` hands your code the WinUI object (typed from your bindings);
-  `withControl(StackPanel, panel => ...)` checks its class first.
+  `withControl(StackPanel, panel => ...)` checks its class first
 
 A property that holds a control or a value object is a snippet prop, so markup
-fills it the way XAML does. A brush, geometry, transform, transition,
+fills it the way XAML does
+A brush, geometry, transform, transition,
 animation, layout, command, keyboard accelerator, backdrop, icon or image
 source, shadow or projection is a component, and the snippet it is written in
 names the property:
@@ -674,9 +696,10 @@ The transitions an element plays are the same: `transitions`,
 `childrenTransitions` (a panel), `childTransitions` (a `Border`, a `Popup`),
 `contentTransitions`, `itemContainerTransitions`, `headerTransitions` and
 `footerTransitions` are snippets that hold transition components
-(`EntranceThemeTransition`, `RepositionThemeTransition`...). WinUI leaves
+(`EntranceThemeTransition`, `RepositionThemeTransition`...)
+WinUI leaves
 these collections null; the renderer makes the `TransitionCollection` when the
-snippet has a transition in it.
+snippet has a transition in it
 
 ```svelte
 <StackPanel>
@@ -689,21 +712,25 @@ snippet has a transition in it.
 
 One written directly among an element's children (a `Storyboard`) is made but
 placed nowhere; reach it with
-`{@attach control(storyboard => storyboard.begin())}`.
+`{@attach control(storyboard => storyboard.begin())}`
 
-Items come in two forms. `ListView`, `GridView`, `ItemsRepeater`, `ItemsView`,
+Items come in two forms
+`ListView`, `GridView`, `ItemsRepeater`, `ItemsView`,
 `BreadcrumbBar` and `TreeView` take `items`, `key` and an `item` snippet, and
 keep a row only for each item the control has realized; a `TreeView` also takes
 `children` (the items under an item) and `bind:expandedKeys`, and a `ListView`
-or `GridView` can show its items in groups (`groupBy`, `groupHeader`). A
+or `GridView` can show its items in groups (`groupBy`, `groupHeader`)
+A
 control whose items are controls takes them as Svelte's own blocks: `{#each}`
 in the children of `ComboBox`, `FlipView` and `ListBox`, or in the snippet of
 `NavigationView` (`menuItems`), `TabView` (`tabItems`) and `RadioButtons`
-(`items`). [API.md](API.md) has the details.
+(`items`)
+[API.md](API.md) has the details
 
 Pages are Svelte components: `Navigator` shows one in a content control and
 keeps the back and forward history (`Frame` needs a page type XAML
-registered, which a Node host cannot give it). A page's props are the params
+registered, which a Node host cannot give it)
+A page's props are the params
 it was navigated to with, and its `NavigationCacheMode` says whether it stays
 mounted, with its state, while the user is elsewhere:
 
@@ -728,33 +755,38 @@ mounted, with its state, while the user is elsewhere:
 
 `handle.goBack()`, `goForward()`, `canGoBack`, `canGoForward` and `current`
 complete it; [API.md](API.md) has the details, and `examples/navigation` ties
-it to a `NavigationView`.
+it to a `NavigationView`
 
-`WebView2` is a component like the rest. Its native libraries ship with the
+`WebView2` is a component like the rest
+Its native libraries ship with the
 package and `initWindowsAppSdk` makes them findable; the browser starts in an
-ordinary desktop session, not in a sandboxed process. A `data:` URL is blocked
-as the top frame, as WebView2 does.
+ordinary desktop session, not in a sandboxed process
+A `data:` URL is blocked
+as the top frame, as WebView2 does
 
 Win2D is opt-in: `import { Canvas } from "winui-svelte/win2d"`, and
 `<Canvas draw={({ painter }) => painter.fillCircle({ x: 50, y: 50, radius: 40, paint: { a: 255, r: 255, g: 0, b: 0 } })} />`
 draws, and draws again when the state `draw` read changes; the Win2D effects
 (`GaussianBlurEffect`, `ColorMatrixEffect`, `BlendEffect`, `ShadowEffect`...) draw
-through `painter.drawImage`. An app that does not import it does not bundle it.
-[API.md](API.md) has the details and `examples/win2d` the example.
+through `painter.drawImage`
+An app that does not import it does not bundle it
+[API.md](API.md) has the details and `examples/win2d` the example
 
 The raw elements the components are made of work too:
 `<stack-panel spacing={8}>`, `<text-block>`, `grid.column={1}` for an attached property; they need
 `registerControls(...)` with the classes they name (a component registers only
-its own class, when it is made, so an app bundles only the bindings it uses).
+its own class, when it is made, so an app bundles only the bindings it uses)
 Components are the supported way; see [API.md](API.md) for the raw forms and
-the renderer's functions.
+the renderer's functions
 
 ## Styling with CSS
 
 `<style>` blocks are translated at build time into WinUI `Style`s and applied
-by class, so a card is `class="card"` and a rule, as on the web. Layout
-properties map onto WinUI's panels. A declaration with no WinUI meaning is a
-build error with its file and line; nothing is silently ignored.
+by class, so a card is `class="card"` and a rule, as on the web
+Layout
+properties map onto WinUI's panels
+A declaration with no WinUI meaning is a
+build error with its file and line; nothing is silently ignored
 [`src/css/API.md`](src/css/API.md) is the interface; what maps:
 
 | CSS | WinUI |
@@ -781,8 +813,9 @@ build error with its file and line; nothing is silently ignored.
 
 Props typed with a WinUI template take XAML text, so a control is restyled
 without leaving Svelte; a `*Style` prop takes the CSS classes whose rules make
-its Style; `resources` takes a record of theme keys. WinUI's own objects are
-accepted too, and `xamlOf` loads text once for several props.
+its Style; `resources` takes a record of theme keys
+WinUI's own objects are
+accepted too, and `xamlOf` loads text once for several props
 
 ```svelte
 <script lang="ts">
@@ -805,14 +838,15 @@ accepted too, and `xamlOf` loads text once for several props.
 ```
 
 As for any class passed to a component, Svelte does not scope it: write the
-rule `:global(.row)`. A root element without `xmlns` gets WinUI's, and the wrong
-root for the prop (a `DataTemplate` for `template`) is an error that names both.
+rule `:global(.row)`
+A root element without `xmlns` gets WinUI's, and the wrong
+root for the prop (a `DataTemplate` for `template`) is an error that names both
 A key of `resources` is a custom property's name, as in a stylesheet, or the
 resource's own (`ButtonBackground`); a color or length keeps the kind its key
-has in WinUI (`ButtonBackground` is a brush, `ButtonPadding` a thickness).
-`goToState({ control, name })` enters a state the control's template defines.
+has in WinUI (`ButtonBackground` is a brush, `ButtonPadding` a thickness)
+`goToState({ control, name })` enters a state the control's template defines
 [API.md](API.md) has the rest: what each `*Style` prop styles, `xamlOf`, and
-what is not covered.
+what is not covered
 
 ## Transitions
 
@@ -835,20 +869,23 @@ elements of a component (`<border>`, `<text-block>`), with the functions of
 ```
 
 The Vite plugin turns the support on in each component that uses a directive or
-imports one of those modules; an app that uses none does not bundle any of it.
+imports one of those modules; an app that uses none does not bundle any of it
 The animation moves the control's `Opacity`, `Translation`, `Scale`,
-`Rotation`, size, margin, padding, border and a shape's stroke dashes. See
-[API.md](API.md) for the details and what WinUI cannot do.
+`Rotation`, size, margin, padding, border and a shape's stroke dashes
+See
+[API.md](API.md) for the details and what WinUI cannot do
 
 ## State
 
-Svelte's own state tools work unchanged (runes, context, `SvelteMap`, stores).
+Svelte's own state tools work unchanged (runes, context, `SvelteMap`, stores)
 The package adds `winui-svelte/state`: `createHostChannel(transport)`,
 `hostState<View>(channel, "view")` and `channel.send(action)`, for state a Tauri
-core, an Electron main process or a script owns. A host written in JavaScript
+core, an Electron main process or a script owns
+A host written in JavaScript
 imports `winui-svelte/state/host` (`diff`, the transports, the message types),
-which loads in plain Node. [`src/state/README.md`](src/state/README.md) has the
-protocol and the tests.
+which loads in plain Node
+[`src/state/README.md`](src/state/README.md) has the
+protocol and the tests
 
 ## Entry points
 
@@ -875,7 +912,7 @@ protocol and the tests.
 
 The published package ships `dist/`: the TypeScript compiled with its
 declarations, and the Svelte files as source (with `types` and `svelte`
-conditions on `exports`), which your Vite compiles (`winuiSvelte()`).
+conditions on `exports`), which your Vite compiles (`winuiSvelte()`)
 
 ### Source maps
 
@@ -883,89 +920,99 @@ Every compiled file ships with its source map, and the TypeScript they point at
 is in the package (`node_modules/winui-svelte/src`), so your IDE opens the
 implementation instead of the declaration: Go to Definition on a
 `.d.ts` lands in the `.ts` (declaration maps), and the debugger and your
-bundler's production source maps step through the original code. In a Node
+bundler's production source maps step through the original code
+In a Node
 process that runs the compiled files, start Node with `--enable-source-maps` so
-stack traces name the TypeScript lines. The dev server maps the components it
+stack traces name the TypeScript lines
+The dev server maps the components it
 compiles for you; a component compiled through `compileSvelte` (tests,
-`winui-svelte/compile`) ends with an inline map of its own.
+`winui-svelte/compile`) ends with an inline map of its own
 
 ## Size
 
 An app with one `Button` bundles to under 123,000 bytes (the budget the
 bundle test enforces; `pnpm test` fails when it grows), because the package is
 tree-shakeable: a consumer that imports `Button` does not bundle
-`NavigationView`.
+`NavigationView`
 
 ## Limitations
 
 Stated plainly, so nobody finds them by surprise:
 
-- **Windows only**, and only Windows 10 1809 and newer. Importing an entry
+- **Windows only**, and only Windows 10 1809 and newer
+  Importing an entry
   point that loads WinRT on another system fails with dynwinrt's "Cannot find
   native binding" error, and `initWindowsAppSdk` throws a plain error naming
-  the supported platforms; no entry point does work when imported. The
-  Windows App SDK runtime must be installed; the package does not install it.
+  the supported platforms; no entry point does work when imported
+  The
+  Windows App SDK runtime must be installed; the package does not install it
 - **The tray icon hears the mouse by polling.** WinUI has no tray API, and
   dynwinrt cannot make a JavaScript function a native window procedure, so
   `winui-svelte/tray` reads the pointer and the buttons every 30 ms instead of
-  receiving the shell's callback. Clicks, double clicks, middle clicks and
+  receiving the shell's callback
+  Clicks, double clicks, middle clicks and
   right clicks (with their position) work; keyboard activation, touch, and a
   click on a balloon cannot be heard (nothing says which icon has keyboard
-  focus, so Enter and Space on it are lost too). The `menu` snippet opens its
-  flyout from a one-pixel window made on the right click. A Tauri or Electron
-  host that already has a tray should keep using it.
+  focus, so Enter and Space on it are lost too)
+  The `menu` snippet opens its
+  flyout from a one-pixel window made on the right click
+  A Tauri or Electron
+  host that already has a tray should keep using it
 - **Base and thin acrylic are controller backdrops.** `acrylicBase` and
   `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
   `window.systemBackdrop` reads null for them (the controller holds the
-  material).
+  material)
 - **Svelte is held to one minor.** The package reads three spots of Svelte's
   runtime with edits, so the peer range is `~5.56.7` and widens only after a
-  release is checked.
-- **Write an attribute on a raw element in kebab case** (`corner-radius="4"`).
+  release is checked
+- **Write an attribute on a raw element in kebab case** (`corner-radius="4"`)
   Svelte's compiler lowercases the names of static attributes, so
-  `cornerRadius="4"` reaches the element as `cornerradius`.
+  `cornerRadius="4"` reaches the element as `cornerradius`
 - **`bind:` works on components, not on raw elements.**
-  `<ToggleSwitch bind:isOn>` is supported; `<toggle-switch bind:is-on>` is not. Use the component, or
-  `{@attach control(...)}` and subscribe to the control's event yourself.
+  `<ToggleSwitch bind:isOn>` is supported; `<toggle-switch bind:is-on>` is not
+  Use the component, or
+  `{@attach control(...)}` and subscribe to the control's event yourself
 - **A property whose name starts with "on"** (`ToggleSwitch.OnContent`) is a
   prop on components, but on a raw element Svelte takes the attribute for an
-  event: write it as `On-content="On"` or `on-content={() => "On"}`.
+  event: write it as `On-content="On"` or `on-content={() => "On"}`
 - **No `:hover` or `:active` miracles on templated controls.** A pseudo-class
   applies a Style when the control reports the event, but WinUI's own template
   states (a Button's pointer-over and pressed brushes) take over from a Style's
   setters while they are active, and a control that handles an event itself (a
   Button handles `PointerPressed`) never reports it, so `:active` does nothing
-  there. Override the control's theme resources instead.
+  there
+  Override the control's theme resources instead
 - **Transitions that WinUI cannot draw.** `blur` fades without blurring (no
   element blur in WinUI without Composition effects), `draw` cannot measure a
   `path` (a geometry has no length), a directive goes on a raw element, and a
-  leaving element in a keyed `{#each}` stays in the layout until it is gone.
+  leaving element in a keyed `{#each}` stays in the layout until it is gone
 - **Two controls are not components:** `SwapChainBackgroundPanel` (the UWP
   panel WinUI 3 keeps for compatibility: it refuses Opacity, Width, Height, the
   min and max sizes and Margin, and is allowed only as the application's root
   visual or inside a Page, so it cannot go in a panel;
   `SwapChainPanel` replaces it) and `PivotHeaderItem` (WinUI makes it only
   inside a `Pivot`; style a header with the `header` snippet of `PivotItem`,
-  which takes any element).
+  which takes any element)
 - **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
   service started cannot launch the browser (error 0x8007139F), and a `data:`
-  URL cannot be the top frame.
+  URL cannot be the top frame
 - **Win2D effects on an element are built, not seen.** `applyEffect` puts a
   Win2D effect on an element as a Composition effect brush, but nothing reads
   pixels back from Composition without a screen capture, so only the drawing
-  (`Canvas`, render targets) is proved by pixels. An element cannot be its own
-  effect source: its child visual would be part of what it samples.
+  (`Canvas`, render targets) is proved by pixels
+  An element cannot be its own
+  effect source: its child visual would be part of what it samples
 - **Win2D's overloads need the package's helpers.** The bindings pick an
   overload from the argument count and JavaScript types, so
   `session.fillRectangle(x, y, w, h, brush)` calls the Color overload; the
-  functions of `winui-svelte/win2d` find the overload by its parameter names.
+  functions of `winui-svelte/win2d` find the overload by its parameter names
 - **CSS is WinUI's subset.** No `position`, `float`, `flex-grow`, `box-shadow`
 - **CSS is WinUI's subset.** Layout follows the element's type (`src/css/API.md`
   has the table): `display: flex` is a `<stack-panel>`, `display: grid` a
   `<grid>` (tracks in `fr`, `px`, `auto`, `minmax()`), `position: absolute` a
   `<canvas>` child, `@media (min-width...)` restyles as the window resizes, and descendant, child
   and sibling selectors, `:first-child`, `:nth-child()` and `:is()` are resolved
-  against the component's markup at build time.
+  against the component's markup at build time
   A Style cannot reach an element's parent, children or siblings, so these are
   build errors that say what to write instead: `float`, `position: sticky`,
   `right` and `bottom`, `flex-grow` and `flex-wrap` (use `fr` tracks; WinUI has
@@ -974,26 +1021,31 @@ Stated plainly, so nobody finds them by surprise:
   100%, `calc()` with a % or a variable, container style queries, `:has()`, `:focus-within`,
   `box-shadow` (use `-winui-elevation`), `filter` and `mix-blend-mode`
   (Composition effects, which need `ElementCompositionPreview` and Win2D), `mask`,
-  `text-transform` and a `clip-path` other than `inset()`. `cursor` is ignored
-  with a warning (`ProtectedCursor` is not exposed). Gradients are `linear-gradient()` and `radial-gradient()` only
-  (no repeating or conic ones, no stop in `px`), and replace `background-color`.
+  `text-transform` and a `clip-path` other than `inset()`
+  `cursor` is ignored
+  with a warning (`ProtectedCursor` is not exposed)
+  Gradients are `linear-gradient()` and `radial-gradient()` only
+  (no repeating or conic ones, no stop in `px`), and replace `background-color`
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can
-  declare custom properties only (a Style cannot depend on the scheme).
+  declare custom properties only (a Style cannot depend on the scheme)
 - **Some CSS is opt-in, and approximate.** `transform` is a 2D RenderTransform
   that a transition animates only as translate, rotate and scale in that order; `backdrop-filter: blur()` is an acrylic
   that ignores the radius; `-winui-elevation` is a `ThemeShadow`, which needs
   Windows 11 (or receivers a Style cannot set); `outline` is the control's focus
-  visual. A custom property on a class applies when the class is on the element
-  as it is created: WinUI reads a theme resource again only on a theme change.
+  visual
+  A custom property on a class applies when the class is on the element
+  as it is created: WinUI reads a theme resource again only on a theme change
 - **A hot update to a component that is not self-contained** (a changed `.ts`
   module no component accepts) cannot be applied in place; the dev server says
-  so and the window must be restarted. A hot update that cannot compile is
-  reported and the window keeps its code.
+  so and the window must be restarted
+  A hot update that cannot compile is
+  reported and the window keeps its code
 - **A component's new root control after a hot update** replaces the old one in
-  a panel's children, a border's child or a content control's content. A host
+  a panel's children, a border's child or a content control's content
+  A host
   that holds the root somewhere else must listen with `mounted.onRootChange`
-  (`createWindow` does).
-- **Electron is untested** here (the protocol is shared with Tauri's, which is).
+  (`createWindow` does)
+- **Electron is untested** here (the protocol is shared with Tauri's, which is)
 
 ## Development
 
@@ -1008,10 +1060,12 @@ In this repository (run these at its root):
 | `pnpm build` | `dist/`: what is published (`pnpm pack` shows the tarball) |
 | `pwsh examples/hello/run.ps1` | the hello example in a background window, checked through UI Automation (`-Edit` also checks hot reload) |
 
-[DESIGN.md](DESIGN.md) is the architecture and [API.md](API.md) the core API.
+[DESIGN.md](DESIGN.md) is the architecture and [API.md](API.md) the core API
 
 ## License
 
-[Apache-2.0](LICENSE). Copyright 2026 [Avi](https://avi12.com). Copies and forks
+[Apache-2.0](LICENSE)
+Copyright 2026 [Avi](https://avi12.com)
+Copies and forks
 must keep the `LICENSE` and the `NOTICE` file, which carries this credit
-(Apache-2.0, section 4), so it travels with the code.
+(Apache-2.0, section 4), so it travels with the code

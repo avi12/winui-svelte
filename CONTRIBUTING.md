@@ -2,10 +2,12 @@
 
 Windows only (the package draws WinUI 3 windows), Node 24 or newer, and **pnpm**
 (the version in `package.json`'s `packageManager`; `corepack enable` picks it
-up). No npm, no yarn, no second lockfile.
+up)
+No npm, no yarn, no second lockfile
 
 The coding rules are in [CLAUDE.md](CLAUDE.md): Google's TypeScript style guide,
-plus the house rules that sit on top of it. Read it before sending code.
+plus the house rules that sit on top of it
+Read it before sending code
 
 ## Set up
 
@@ -16,28 +18,34 @@ pnpm bindings     # generates the WinUI bindings, then WebView2's
 ```
 
 `pnpm restore` reads `winapp.yaml` and writes `.winapp/`, which is not
-committed. `pnpm bindings` reads `package.json`'s `winapp.jsBindings` (the list
+committed
+`pnpm bindings` reads `package.json`'s `winapp.jsBindings` (the list
 of WinUI classes) and writes `.winapp/bindings` in two steps: `winapp node
 generate-bindings`, then `scripts/bindings/after-winapp.ts`. The second exists
 because winapp gives the code generator no `Microsoft.Web.WebView2.Core`
 metadata (so WebView2's events cannot be bound in its run) and trips over
-`SwapChainPanel`'s two `PointerEventArgs`. Those classes are in
+`SwapChainPanel`'s two `PointerEventArgs`
+Those classes are in
 `bindingsAfterWinapp` in `scripts/codegen/tables.ts`, which keeps them out of the
 list winapp is given; the step runs the generator for them alone, adds
 the files winapp's run did not make, and restores `Microsoft.Web.WebView2.Core.dll`
-beside the bootstrappers. The same step does it for every package of
+beside the bootstrappers
+The same step does it for every package of
 `extraPackages` (Win2D, whose winmd it generates whole) and for `lateClasses`
 (single Windows App SDK classes the Win2D helpers need), so a class of those
-lists is added by running `pnpm bindings:after-winapp`, not the full run. The first run downloads the SDK and takes about ten
-minutes; it is a cache after that. Run `pnpm bindings` again when the class
-list changes (`pnpm gen:components` rewrites it).
+lists is added by running `pnpm bindings:after-winapp`, not the full run
+The first run downloads the SDK and takes about ten
+minutes; it is a cache after that
+Run `pnpm bindings` again when the class
+list changes (`pnpm gen:components` rewrites it)
 
 The components import the bindings as `#winui/*`, which `package.json`'s
 `imports` map to `dist/bindings`: `pnpm build` copies `.winapp/bindings` there,
 along with the native libraries in `dist/bin/<architecture>` (the Windows App
 SDK bootstrapper, `WebView2Loader.dll` and `Microsoft.Web.WebView2.Core.dll`),
 so the published package carries them all and an app installs only
-`winui-svelte`. Build once before `pnpm check` or the examples.
+`winui-svelte`
+Build once before `pnpm check` or the examples
 
 ## Everyday commands
 
@@ -54,45 +62,51 @@ so the published package carries them all and an app installs only
 
 Examples and tests resolve `winui-svelte` the way a consumer does, through
 `package.json`'s `exports`, which point at `dist/`: run `pnpm build` after
-changing `src/` and before running an example.
+changing `src/` and before running an example
 
 ## Tests that need a desktop session
 
 The mount test opens its window off screen, but WebView2 starts a real browser
-process, and the window tests drive real windows. Run `pnpm test:windows` from
+process, and the window tests drive real windows
+Run `pnpm test:windows` from
 an ordinary desktop session: a process a sandbox or a service started cannot
 launch the browser (WebView2 reports 0x8007139F), and the tests skip where the
-Windows App SDK was not restored or the WebView2 Runtime is not installed.
+Windows App SDK was not restored or the WebView2 Runtime is not installed
 
 Tests must never inject real input into the desktop of whoever runs them: no
 `SetCursorPos`, `mouse_event`, `SendInput`, `keybd_event`, no clicks on the
 taskbar or the notification area, and no messages posted to windows the test
-did not create. Check what a window shows by asking WinUI or the shell
+did not create
+Check what a window shows by asking WinUI or the shell
 (`Shell_NotifyIconGetRect` for a tray icon), and drive the code under test
-through its own commands or a fake of the Win32 layer.
+through its own commands or a fake of the Win32 layer
 
 ## Changing what is generated
 
 Everything the generator decides by hand is a table in
-`scripts/codegen/tables.ts`; nothing else decides it.
+`scripts/codegen/tables.ts`; nothing else decides it
 
 - **A new family of value objects or controls:** add its abstract base to
-  `rootClasses`. Every concrete class below a root becomes a component, and a
-  property typed as one becomes a snippet prop. A class WinUI activates but the
+  `rootClasses`
+  Every concrete class below a root becomes a component, and a
+  property typed as one becomes a snippet prop
+  A class WinUI activates but the
   generator must leave out goes in `nonConstructible` with the reason (the mount
-  test finds them).
+  test finds them)
 - **A control that shows its items by snippet:** add it to `itemsHosted` with
   the host that fits (`list` for a `ListViewBase`, `repeater` for an
-  `ItemsRepeater`, `itemContainer` for an `ItemContainer` root). The hosts are
+  `ItemsRepeater`, `itemContainer` for an `ItemContainer` root)
+  The hosts are
   in `src/components/hand-written/items`; the component then takes `items`,
-  `key` and `item` in place of its children and items source.
+  `key` and `item` in place of its children and items source
 - Then run `pnpm gen:components` (it rewrites the components, the class list in
   `package.json` and the README tables), `pnpm bindings` (the new classes need
-  bindings) and `pnpm test`. Put what the new components must do in
+  bindings) and `pnpm test`
+  Put what the new components must do in
   `test/Slots.fixture.svelte` and its expectations in `test/mount-all.svelte.ts`
   (a value object in a property, items written with `{#each}`), and an emission
   test beside the generator when the output's shape changes
-  (`scripts/codegen/emit-hosted.test.ts`).
+  (`scripts/codegen/emit-hosted.test.ts`)
 
 ## Coverage of WinUI's classes
 
@@ -100,9 +114,11 @@ Everything the generator decides by hand is a table in
 fails for one that is not a component, hand-written, non-constructible, an
 abstract base, or in `scripts/codegen/not-components.ts` with a reason (a
 single entry, a name pattern, or `knownGaps` for what should become a
-component). A WinUI update that adds a class fails it until the class is
-sorted. The counts and the gaps are committed in
-`scripts/codegen/coverage.json`; `UPDATE_COVERAGE=1` rewrites it.
+component)
+A WinUI update that adds a class fails it until the class is
+sorted
+The counts and the gaps are committed in
+`scripts/codegen/coverage.json`; `UPDATE_COVERAGE=1` rewrites it
 
 ## Editor integration
 
@@ -115,47 +131,55 @@ editor is clean too:
 | `pnpm check:webstorm` | WebStorm's own command-line inspections | runs where WebStorm is installed (`WEBSTORM_HOME`, the per-user install, the Toolbox, Program Files) and the Svelte plugin is in its config; elsewhere it skips and passes. About a minute; `--require` makes a missing WebStorm a failure |
 
 `check:webstorm` starts a WebStorm of its own, isolated under `.verify/webstorm`,
-so it is safe to run while WebStorm is open on this project. Its checks are
-listed in `scripts/editor/webstorm/profile.xml`.
+so it is safe to run while WebStorm is open on this project
+Its checks are
+listed in `scripts/editor/webstorm/profile.xml`
 
 To make your editor show what the checks see:
 
-- **VS Code**: install the Svelte extension. Its server uses the workspace's
+- **VS Code**: install the Svelte extension
+  Its server uses the workspace's
   TypeScript and Svelte; the `svelte.language-server.ls-path` user setting can
   point it at this repo's `node_modules/svelte-language-server/bin/server.js`,
-  the pinned and patched server the check runs.
-- **WebStorm**: install the Svelte plugin (Settings, Plugins, Marketplace). Under
+  the pinned and patched server the check runs
+- **WebStorm**: install the Svelte plugin (Settings, Plugins, Marketplace)
+  Under
   Settings, Languages & Frameworks, TypeScript, leave the language service on and
   choose this repo's TypeScript (`node_modules/typescript/lib`); under
-  Svelte, use this repo's `svelte` package. The `#src/*`, `#scripts/*` and
-  `#examples/*` imports are read from `package.json`.
+  Svelte, use this repo's `svelte` package
+  The `#src/*`, `#scripts/*` and
+  `#examples/*` imports are read from `package.json`
 
 ## The Svelte build
 
 winui-svelte runs on a published Svelte (the `svelte` devDependency is pinned
-to the version its peer range `~5.56.7` starts at). It adds no compiler
+to the version its peer range `~5.56.7` starts at)
+It adds no compiler
 option: components compile with Svelte's own compiler, and the tree draws as a
-DOM (`src/renderer/tree/dom.ts`, `document.ts`). Three spots of Svelte's
+DOM (`src/renderer/tree/dom.ts`, `document.ts`)
+Three spots of Svelte's
 client runtime are read with edits (`src/vite/runtime-patch.ts`); each edit is
 an exact anchor, and a Svelte release that moves one makes the plugin and
-`svelteHooks()` throw, naming the file.
+`svelteHooks()` throw, naming the file
 
 To support a newer Svelte: install it, run `pnpm test`, fix the anchors in
 `runtime-patch.ts` if they moved (and the bundle test, which reads the one-Button
-size), and then widen the peer range and the devDependency together.
+size), and then widen the peer range and the devDependency together
 
 ## Patches
 
 `patches/svelte-language-server@0.18.5.patch` (applied by pnpm through
 `patchedDependencies` in `pnpm-workspace.yaml`) stops the editor check from
-reporting the inlay hints svelte2tsx writes for a component's content snippet.
-It affects only `pnpm check:editor`, never the published package. Drop it when
-a language-server release fixes the hint.
+reporting the inlay hints svelte2tsx writes for a component's content snippet
+It affects only `pnpm check:editor`, never the published package
+Drop it when
+a language-server release fixes the hint
 
 ## Releasing
 
 Releases go out only when the maintainer asks: bump `version`, `pnpm lint`,
 `pnpm test`, commit, tag `vX.Y.Z` and push; the publish workflow runs
-`pnpm publish --provenance`. `pnpm pack --dry-run` shows what will ship, which
+`pnpm publish --provenance`
+`pnpm pack --dry-run` shows what will ship, which
 must never include `CLAUDE.md`, the tests or the test support; it does include
-`dist` with its source maps and the `src` TypeScript they point at.
+`dist` with its source maps and the `src` TypeScript they point at

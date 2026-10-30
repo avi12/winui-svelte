@@ -1,10 +1,12 @@
 # Examples
 
-Small apps that show how to use the library. They live in the repository only:
+Small apps that show how to use the library
+They live in the repository only:
 `package.json` `files` is an allowlist and `scripts/pack/check-package.ts`
-fails if `examples/` reaches the tarball. They import the package the way a
+fails if `examples/` reaches the tarball
+They import the package the way a
 consumer does (`winui-svelte`, `winui-svelte/components`, `winui-svelte/state`,
-...).
+...)
 
 ## Run one
 
@@ -15,10 +17,12 @@ node --disable-warning=ExperimentalWarning --enable-source-maps \
   examples/harness/launch.ts examples/gallery/main.ts
 ```
 
-Swap `gallery` for any app below. The harness serves the app's modules through
-Vite, opens the window and prints what the app reports as JSON lines. Add
+Swap `gallery` for any app below
+The harness serves the app's modules through
+Vite, opens the window and prints what the app reports as JSON lines
+Add
 `--background yes` to keep the window off screen and unactivated (what the
-tests do), and `--file <path>` where an app saves something.
+tests do), and `--file <path>` where an app saves something
 
 ## The apps
 
@@ -31,19 +35,21 @@ tests do), and `--file <path>` where an app saves something.
 
 `test/examples.test.ts` mounts the gallery, todo and settings in a real window
 and checks that every page shows its key control and that the app closes
-cleanly. It is part of `pnpm test:windows`.
+cleanly
+It is part of `pnpm test:windows`
 
 ## Shared by the apps
 
 - `harness/smoke.ts`: `windowDefaults` (off screen for a test), `keyControl`
   (an attachment that lists a control as on screen) and `serveExample` (the
-  `stats` and `close` commands).
+  `stats` and `close` commands)
 - `harness/memory-host.ts`: a host that owns a named state in the same
-  process, over an in-memory link, with a reducer for the actions.
+  process, over an in-memory link, with a reducer for the actions
 
 ## Adding a gallery page
 
 A page is a component in `gallery/pages`, a row in `gallery/pages.ts` and a
-`keyControl` on its main control; the test then visits it by itself. Write it
+`keyControl` on its main control; the test then visits it by itself
+Write it
 with what `API.md` documents, run `node --test test/examples.test.ts`, and add
-its area to the table above.
+its area to the table above

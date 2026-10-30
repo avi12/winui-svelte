@@ -1,10 +1,12 @@
 # winui-svelte: the core's public API
 
-What `src/renderer`, `src/vite` and `src/window` export. Names are fixed once
-this file lands; the other parts code against them. Everything is TypeScript
+What `src/renderer`, `src/vite` and `src/window` export
+Names are fixed once
+this file lands; the other parts code against them
+Everything is TypeScript
 source: `package.json` `exports` point at `.ts` files, so an app in the
 monorepo needs no build step (the repository is a pnpm workspace, see
-`pnpm-workspace.yaml`).
+`pnpm-workspace.yaml`)
 
 ## Entry points
 
@@ -31,22 +33,27 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
-needs no build. `pnpm build` compiles them to `dist/` and `publishConfig`
+needs no build
+`pnpm build` compiles them to `dist/` and `publishConfig`
 (which pnpm applies when it packs) points `exports` there, with a
-`types` and a `svelte` condition on each.
+`types` and a `svelte` condition on each
 
 ### The bindings are the package's
 
 The package imports `#winui/*`, which its `package.json` maps to
 `dist/bindings`: the WinUI bindings `winapp node generate-bindings` writes,
-copied there by `pnpm build` and published whole. They declare
+copied there by `pnpm build` and published whole
+They declare
 `"sideEffects": false`, and the Vite plugin tells the bundler so, so an app
-bundles only the controls it uses. `src/winui.ts` is the package's one import
+bundles only the controls it uses
+`src/winui.ts` is the package's one import
 site; the vite server loads it, and the bindings, through Node (they are
-CommonJS). The Windows App SDK bootstrapper ships in `dist/bin/<arch>` (with
+CommonJS)
+The Windows App SDK bootstrapper ships in `dist/bin/<arch>` (with
 WebView2's native libraries), which `initWindowsAppSdk()` finds without
-arguments. `pnpm bindings` makes the bindings: winapp's run, then WebView2's
-(see below).
+arguments
+`pnpm bindings` makes the bindings: winapp's run, then WebView2's
+(see below)
 
 ## Renderer (`winui-svelte`)
 
@@ -137,46 +144,51 @@ function pixelLength(value: number): GridLength;
 ```
 
 A removed subtree ends its event subscriptions and lets go of its controls
-(`<host element={control}>` controls live on and can be placed again at once).
+(`<host element={control}>` controls live on and can be placed again at once)
 
 Raw kebab elements: tag = WinUI class, kebab attribute = camelCase property,
 `grid.column={1}` = attached property, `columns` / `rows` on a grid,
 `<host element={control} />` places a control made elsewhere,
-`ontoggled={handler}` = the event `Toggled`.
+`ontoggled={handler}` = the event `Toggled`
 
 `<property name="childrenTransitions" collection="transition-collection">`
 fills a property WinUI leaves null with a collection: when the property holds
 none and the element has a control in it, the renderer makes the class the
 `collection` tag names (registered through `registerControls`, as the
-transition components do) and sets it, then fills it as any collection. The
+transition components do) and sets it, then fills it as any collection
+The
 generated components write this for `transitions`, `childrenTransitions`,
 `childTransitions`, `contentTransitions`, `itemContainerTransitions`,
 `headerTransitions` and `footerTransitions` (`createdCollections` in
 `scripts/codegen/tables.ts`), which are snippet props in place of the
-properties, and each transition component registers `TransitionCollection`.
+properties, and each transition component registers `TransitionCollection`
 
 A property whose name starts with "on" (ToggleSwitch.OnContent) on a raw
 element: Svelte takes any attribute starting with lower-case "on" for an event
 (`on-content="x"` is a compile error; `on-content={value}` hands the host a
-wrapper that cannot be read). Two forms work: `On-content="On"` (a capital O is
+wrapper that cannot be read)
+Two forms work: `On-content="On"` (a capital O is
 not Svelte's event rule), and `on-content={() => "On"}` (an inline function is
-handed over as it is and read once, when the element is made). A property that
-changes is set through `{@attach control(...)}`, as components do.
+handed over as it is and read once, when the element is made)
+A property that
+changes is set through `{@attach control(...)}`, as components do
 
 ## Transitions (`winui-svelte/element-animation`)
 
 Svelte's `transition:`, `in:`, `out:` and `animate:` run unchanged: Svelte's
 runtime asks its elements for `animate()`, `getComputedStyle`,
 `getBoundingClientRect`, `inert` and `requestAnimationFrame`, and
-`enableElementAnimation` answers for WinUI's controls. The Vite plugin (and the
+`enableElementAnimation` answers for WinUI's controls
+The Vite plugin (and the
 Node loader) appends the call to every component that has a directive or
 imports `svelte/transition`, `svelte/animate` or `svelte/motion`, so you call
 it yourself only to give another clock (a test) or when you do not use the
-plugin. It is idempotent, and an app that never uses a transition never bundles
-the module.
+plugin
+It is idempotent, and an app that never uses a transition never bundles
+the module
 
 A directive goes on a raw element (`<border transition:fade>`), as Svelte does
-not allow one on a component.
+not allow one on a component
 
 ```ts
 function enableElementAnimation(options?: {
@@ -194,27 +206,31 @@ What it does:
   `rotate`, `transform` with those functions, `transform-origin` as fractions
   or keywords), `Width`, `Height`, `Margin`, `Padding` and `BorderThickness`
   (by side) and a shape's `StrokeDashArray` and `StrokeDashOffset`
-  (`stroke-dasharray`, `stroke-dashoffset`). Its values are applied about every
-  16 ms, and the control's own come back when the animation ends.
+  (`stroke-dasharray`, `stroke-dashoffset`)
+  Its values are applied about every
+  16 ms, and the control's own come back when the animation ends
 - `fade`, `fly`, `scale`, `slide` (the height, margin, padding and border
   collapse, the layout clips what overflows), `crossfade` (pairs by key; the
-  incoming element scales from its corner) and `draw` work. `draw` measures a
+  incoming element scales from its corner) and `draw` work
+  `draw` measures a
   `line`, `polyline`, `polygon`, `ellipse` or `rectangle`; a `path` has no
-  length in WinUI and throws.
+  length in WinUI and throws
 - `animate:flip` reads each element's place from `TransformToVisual` after a
-  layout pass. A leaving element in a keyed `{#each}` stays in the layout
+  layout pass
+  A leaving element in a keyed `{#each}` stays in the layout
   while it leaves (WinUI cannot take it out of the flow), so its siblings
-  move when it is gone.
+  move when it is gone
 - A leaving element stays in its parent, out of reach (`IsHitTestVisible`
-  false, Svelte's `inert`), until its outro has run, then Svelte removes it.
+  false, Svelte's `inert`), until its outro has run, then Svelte removes it
 - `Tween`, `Spring` and a transition's `tick` step on `requestAnimationFrame`,
-  which is the same clock. `prefersReducedMotion` matches nothing.
+  which is the same clock
+  `prefersReducedMotion` matches nothing
 - A property WinUI cannot animate (`filter`, so `blur` only fades) is named
-  once through `warn` and left out.
+  once through `warn` and left out
 - `introstart`, `outroend` and the like are not WinUI events: an `onintrostart`
-  handler throws, and none of them are raised.
+  handler throws, and none of them are raised
 - `getComputedStyle` is defined as a global for WinUI's elements; any other
-  argument goes to the one that was there, if any.
+  argument goes to the one that was there, if any
 
 ## Connected animation (`winui-svelte/connected-animation`)
 
@@ -222,7 +238,8 @@ What it does:
 connected animation, just before navigating; `startConnected({ key, element })`
 on the next page plays it from there to the new element and returns whether one
 was prepared under the key (WinUI forgets it after a few seconds, and plays it
-once). Both take the current view's service unless a `host` is given.
+once)
+Both take the current view's service unless a `host` is given
 
 ```ts
 import { connectElement, startConnected } from "winui-svelte/connected-animation";
@@ -279,23 +296,26 @@ function createWindowModuleRunner(port: MessagePort): { runner: ModuleRunner; re
 ```
 
 Svelte is a published release (peer range `~5.56.7`), compiled with its own
-compiler and run on its own client runtime. The package owns the rest: the
+compiler and run on its own client runtime
+The package owns the rest: the
 tree's nodes are shaped like DOM nodes (`src/renderer/tree/dom.ts`), and
 `installDom()` (`document.ts`, called by `mountControl`) defines the `document`,
-`Node`, `Element`, `Text`, `Comment` and `DocumentFragment` the runtime reads.
+`Node`, `Element`, `Text`, `Comment` and `DocumentFragment` the runtime reads
 A component's static markup is parsed once into inert nodes and cloned into
-the tree. Three spots of the runtime are read with edits (`runtime-patch.ts`,
+the tree
+Three spots of the runtime are read with edits (`runtime-patch.ts`,
 applied by the plugin and by `svelteHooks()`): a handler gets all of WinUI's
 arguments (sender and args), delegated events listen on their own control, and
-the root listener is off. An edit whose anchor is missing throws, naming the
-file: it means a Svelte release outside the peer range.
+the root listener is off
+An edit whose anchor is missing throws, naming the
+file: it means a Svelte release outside the peer range
 
 Compile errors: a `.svelte` file that does not compile is printed on the host
 process's stderr as `file:line:column: message [code]` and its code frame (at
 start, the process then ends with that as its reason; on a hot update, the
-window keeps running with the code it has, and the next good save applies).
+window keeps running with the code it has, and the next good save applies)
 `describeError()` / `compileDiagnostic()` / `formatDiagnostic()` are exported
-for tools; `compileSvelte()` throws an `Error` with that message.
+for tools; `compileSvelte()` throws an `Error` with that message
 
 ## Window (`winui-svelte/bootstrap`, `/thread`, `/window`)
 
@@ -351,21 +371,25 @@ interface AppWindow<Props> {
 Who starts the process is the app's business (Tauri sidecar, Electron utility
 process, plain Node): its main thread calls `initWindowsAppSdk`, starts a
 worker whose file calls `runOnUiThread(() => ...)`, which loads the app and
-calls `runWindow`. A transport (JSON lines on stdio, a MessagePort) is not in
+calls `runWindow`
+A transport (JSON lines on stdio, a MessagePort) is not in
 these files: it is `src/state`'s, which uses `dispatch` to put host messages
-on the UI thread. `examples/counter` is the working example (its `launch.ts`
-is the host, its `window.ts` the UI-thread worker).
+on the UI thread
+`examples/counter` is the working example (its `launch.ts`
+is the host, its `window.ts` the UI-thread worker)
 
 ## Value props (`winui-svelte/components`)
 
 A prop whose WinUI type is a value struct or a collection of them takes an
 input a person writes, and the component converts it
 (`src/components/convert.ts`, parsed by `src/components/values.ts`, which
-needs no WinUI). WinUI's own value is always accepted as well, so a value read
-from a control can be written back. Which converter a type gets is the table
+needs no WinUI)
+WinUI's own value is always accepted as well, so a value read
+from a control can be written back
+Which converter a type gets is the table
 `kindOfType` in `scripts/codegen/tables.ts` (`nullableKindOfType` for
 `IReference<T>`); the emitter reads the converter, input type and read-back of
-each kind from one table in `scripts/codegen/emit.ts`.
+each kind from one table in `scripts/codegen/emit.ts`
 
 | WinUI type | Input type | Written as |
 |---|---|---|
@@ -385,24 +409,29 @@ each kind from one table in `scripts/codegen/emit.ts`.
 
 Image bytes and media URIs go through streams and `MediaSource`, which a bundle
 of one Button does not carry: `runWindow` installs them, and an app that starts
-WinUI another way calls `installMedia()`. Bytes are written to an in-memory
+WinUI another way calls `installMedia()`
+Bytes are written to an in-memory
 stream and the image fills itself when it is ready; a bad image raises the
-image's own `ImageFailed` event.
+image's own `ImageFailed` event
 
-The nullable ones (`beginTime`, `selectedDate`, ...) take `null` as well. A
-bindable `date` or time reads back as a `Date` or as milliseconds. For an event
+The nullable ones (`beginTime`, `selectedDate`, ...) take `null` as well
+A
+bindable `date` or time reads back as a `Date` or as milliseconds
+For an event
 argument, `ticksDate(ticks)` and `ticksMilliseconds(ticks)` from
 `winui-svelte/components` turn WinUI's ticks (`args.newDate.universalTime`,
-`args.newTime.duration`) into the same.
+`args.newTime.duration`) into the same
 
 ## Templates, styles and resources (`winui-svelte/components`)
 
 A prop typed with a WinUI template takes XAML text; a `*Style` prop takes CSS
-class names; `resources` takes a record. Each also takes WinUI's own object
+class names; `resources` takes a record
+Each also takes WinUI's own object
 (a `ControlTemplate`, a `Style`, a `ResourceDictionary`), so a value read
-from a control can be written back. The kind of each prop is read from its type
+from a control can be written back
+The kind of each prop is read from its type
 (`kindOfType` in `scripts/codegen/tables.ts`), and the converter and input
-type of each kind come from the table in `scripts/codegen/emit.ts`.
+type of each kind come from the table in `scripts/codegen/emit.ts`
 
 | WinUI type | Props | Input type | Written as |
 |---|---|---|---|
@@ -433,7 +462,7 @@ type of each kind come from the table in `scripts/codegen/emit.ts`.
 
 `ListView`, `GridView`, `ItemsRepeater`, `BreadcrumbBar` and `ItemsView` show
 their items by a snippet and own their item template; the other items
-controls (`ItemsControl`, `ComboBox`, `TreeView`, ...) take `itemTemplate`.
+controls (`ItemsControl`, `ComboBox`, `TreeView`, ...) take `itemTemplate`
 
 ```ts
 xamlOf({ kind: XamlKind, xaml }): ControlTemplate | DataTemplate | ...
@@ -445,60 +474,77 @@ resourceDictionaryOf(record: ResourceRecordInput): ResourceDictionary
 - **`xamlOf`** loads XAML text through `XamlReader` as the kind named by
   `XamlKind` (`controlTemplate`, `dataTemplate`, `itemsPanelTemplate`,
   `style`, `resourceDictionary`) and returns the class, to keep and give to
-  several props. The root element must be the kind's (a `RangeError` names the
+  several props
+  The root element must be the kind's (a `RangeError` names the
   kinds, a `TypeError` the root it found), and a root that declares no
-  `xmlns` or `xmlns:x` gets WinUI's, so a template is written without them.
-  `src/components/xaml-source.ts` checks the text and needs no WinUI.
-- **A prop given XAML text** loads it the same way. The components reach the
+  `xmlns` or `xmlns:x` gets WinUI's, so a template is written without them
+  `src/components/xaml-source.ts` checks the text and needs no WinUI
+- **A prop given XAML text** loads it the same way
+  The components reach the
   reader through a seam (`src/components/xaml-seam.ts`), so an app that
   writes no template does not bundle `XamlReader` or the template classes:
   `runWindow` installs it when the application starts, and a host of one's own
-  (a test that creates the application itself) calls `installXaml()` once.
-  Without it a string throws, saying so.
+  (a test that creates the application itself) calls `installXaml()` once
+  Without it a string throws, saying so
 - **A `*Style` prop given class names** gets the Style the `<style>` rules
   for those classes make for the element the prop styles
-  (`styleOfClasses` in [`src/css/API.md`](src/css/API.md)). WinUI does not say
+  (`styleOfClasses` in [`src/css/API.md`](src/css/API.md))
+  WinUI does not say
   which element that is, so `src/components/style-targets.ts` does: the button
   of `closeButtonStyle`, the `TextBox` of `textBoxStyle`, and for
   `itemContainerStyle` the container of the control (`ListViewItem` for a
   `ListView`, `GridViewItem`, `ComboBoxItem`, `FlipViewItem`,
-  `TreeViewItem`; a control not listed takes a `Style` object). The
-  generator refuses a Style prop that table lacks. The rule is written
-  `:global(.row)`, since Svelte scopes no class passed to a component. The Style is built when the
+  `TreeViewItem`; a control not listed takes a `Style` object)
+  The
+  generator refuses a Style prop that table lacks
+  The rule is written
+  `:global(.row)`, since Svelte scopes no class passed to a component
+  The Style is built when the
   prop is set and states are ignored; a class no rule matches, or one that
   sets what only an element holds (a grid's columns, the focus ring, a custom
-  property), throws. `FrameworkElement.Style` stays skipped: `style` is the CSS
-  string of the element.
-- **A `resources` record** maps resource keys to values. A key is a custom
+  property), throws
+  `FrameworkElement.Style` stays skipped: `style` is the CSS
+  string of the element
+- **A `resources` record** maps resource keys to values
+  A key is a custom
   property's name (`"--button-background"`, the form a stylesheet uses) or the
-  resource's own (`ButtonBackground`).
+  resource's own (`ButtonBackground`)
   A color or a length keeps the kind its key has in WinUI, by the rule CSS
   custom properties follow (`entriesForKey`, `src/css/translate/variables.ts`): a
   Brush key such as `ButtonBackground` gets a `SolidColorBrush`, a Thickness
   key (`ButtonPadding`) one length on every side, a CornerRadius key a
   `CornerRadius`, any other number a `Double`; a key WinUI does not define
-  is a `Color` with a `Brush` of the same name plus `Brush`. A key is
-  spelled as WinUI spells it whatever case it is written in. Text for a text or
+  is a `Color` with a `Brush` of the same name plus `Brush`
+  A key is
+  spelled as WinUI spells it whatever case it is written in
+  Text for a text or
   font family key, a boolean, and a WinRT object (a brush, a style) are put in
-  as they are. A value of another kind than its key's throws with the key and
-  its kind. The record becomes the element's whole `Resources` (as
+  as they are
+  A value of another kind than its key's throws with the key and
+  its kind
+  The record becomes the element's whole `Resources` (as
   `<Button.Resources>` does); the kinds come from `winui-resources.g.json`,
-  read the first time a record is given. The prop does not combine with a class
-  whose custom properties are merged into the same element's resources.
+  read the first time a record is given
+  The prop does not combine with a class
+  whose custom properties are merged into the same element's resources
 - **`goToState`** is `VisualStateManager.GoToState`: it enters a state the
   control's template defines (`Pressed`, `PointerOver`) and returns whether
-  it did. The template must be applied (`control.applyTemplate()`, or the
-  control shown).
+  it did
+  The template must be applied (`control.applyTemplate()`, or the
+  control shown)
 
 ### Visual states
 
 `VisualStateGroup`, `VisualState`, `VisualTransition`, `Setter`,
-`AdaptiveTrigger` and `StateTrigger` are components. A group holds states
+`AdaptiveTrigger` and `StateTrigger` are components
+A group holds states
 (its children), a state holds its `setters` and `stateTriggers` (snippets)
-and a storyboard (its children or the `storyboard` snippet). `VisualStateGroups`
+and a storyboard (its children or the `storyboard` snippet)
+`VisualStateGroups`
 puts the groups in the element it sits in: WinUI's
 `VisualStateManager.VisualStateGroups` has a getter and no setter, so no
-snippet can fill it. It is no element, so the panel lays out its siblings only:
+snippet can fill it
+It is no element, so the panel lays out its siblings only:
 
 ```svelte
 <UserControl>
@@ -525,40 +571,50 @@ Three things WinUI forces, each read once, when the control is made (see
 them only when XAML makes them, so the component makes them through
 `XamlReader`), and `target` and `path` of a `Setter` (a visual state refuses a
 setter that has no target, so mount it where the element it changes exists,
-inside an `{#if}`). `path` is a property path as XAML writes it (`Opacity`,
-`(Grid.Row)`); `value` is boxed like any object prop. The triggers act on a
+inside an `{#if}`)
+`path` is a property path as XAML writes it (`Opacity`,
+`(Grid.Row)`); `value` is boxed like any object prop
+The triggers act on a
 control's template root, so put the groups in the root of a `UserControl` (or a
-`Page`), not under a window's bare content; `goToState` enters a state by name.
+`Page`), not under a window's bare content; `goToState` enters a state by name
 
 ## Components that show items (`winui-svelte/components`)
 
 A control that shows its items from a data source is generated like the rest,
 with `items`, `key` and `item` in place of its children and items source: the
 table `itemsHosted` in `scripts/codegen/tables.ts` names them and the host each
-uses (`src/components/hand-written/items`). They are `ListView`, `GridView`,
-`ItemsRepeater`, `ItemsView`, `BreadcrumbBar` and `TreeView`. `ListView` and
+uses (`src/components/hand-written/items`)
+They are `ListView`, `GridView`,
+`ItemsRepeater`, `ItemsView`, `BreadcrumbBar` and `TreeView`
+`ListView` and
 `GridView` report their containers (and take the list props below); `TreeView`
 reports the containers of the list inside it (and takes the tree props below);
 the other three keep their items in an `ItemsRepeater`, whose elements the host
-fills, and take `items`, `key` and `item` only. Every other property, event and snippet slot
-of the control is the generated component's. `Window` is not a control (it is
+fills, and take `items`, `key` and `item` only
+Every other property, event and snippet slot
+of the control is the generated component's
+`Window` is not a control (it is
 no UIElement), so it is the one component only in `hand-written/` and
-`components/index.ts`.
+`components/index.ts`
 
 A control whose items are controls takes them as Svelte's own blocks, which are
 its item template: `{#each rows as row (row.id)}<ComboBoxItem content={row.name} />{/each}`
-keeps, adds, moves and removes items as the array changes. They are the
+keeps, adds, moves and removes items as the array changes
+They are the
 children of `ComboBox`, `FlipView` and `ListBox`, and the snippet that names
 the property in `NavigationView` (`menuItems`, `footerMenuItems`), `TabView`
-(`tabItems`) and `RadioButtons` (`items`). A `TreeView` takes its items by
-`items` and `children` instead (below), not as `TreeViewNode` blocks.
+(`tabItems`) and `RadioButtons` (`items`)
+A `TreeView` takes its items by
+`items` and `children` instead (below), not as `TreeViewNode` blocks
 
-Value objects are components too, and fill the property they are written in.
+Value objects are components too, and fill the property they are written in
 They are the brushes, geometry, transforms, transitions, animations (with key
 frames and easing), layouts, commands, keyboard accelerators, backdrops, icon
 and image sources, shadows, projections and tree nodes: the roots in
-`rootClasses` in `scripts/codegen/tables.ts`, each with every class below it. A
-root that can be made is a component itself (`GradientStop`). A snippet takes
+`rootClasses` in `scripts/codegen/tables.ts`, each with every class below it
+A
+root that can be made is a component itself (`GradientStop`)
+A snippet takes
 the property's name:
 
 ```svelte
@@ -574,28 +630,33 @@ the property's name:
 
 One written directly among the children of an element (a `Storyboard`) is made
 and kept by its component but placed nowhere; reach it with
-`{@attach control(storyboard => storyboard.begin())}`.
+`{@attach control(storyboard => storyboard.begin())}`
 
 A gradient background can also be written in CSS (`background-image:
 linear-gradient(...)` in a `<style>`), which the build turns into the same
-brushes; see "Gradients" in `src/css/API.md`.
+brushes; see "Gradients" in `src/css/API.md`
 
 ### WebView2
 
 `<WebView2 source="https://..." onNavigationCompleted={...} />` is generated
-like the rest. Its bindings are made by `pnpm bindings` after winapp's run
+like the rest
+Its bindings are made by `pnpm bindings` after winapp's run
 (`scripts/bindings/after-winapp.ts`), since winapp gives the code generator no
-WebView2 Core metadata (about 3 MB of bindings). That step also restores
+WebView2 Core metadata (about 3 MB of bindings)
+That step also restores
 `Microsoft.Web.WebView2.Core.dll`, and the build ships it with
 `WebView2Loader.dll` in `dist/bin/<arch>`: `initWindowsAppSdk` puts that
 folder on `PATH`, since the control loads both by name and node.exe's own folder
-has neither. It also points `WEBVIEW2_USER_DATA_FOLDER` at
+has neither
+It also points `WEBVIEW2_USER_DATA_FOLDER` at
 `%LOCALAPPDATA%\winui-svelte\<main script>\WebView2` (the `webViewUserDataFolder` option; a
 variable already set wins), because the default folder is beside node.exe in Program Files,
-which is not writable, and the browser would not start. A page loads as it
+which is not writable, and the browser would not start
+A page loads as it
 does in any WinUI app, except that WebView2 blocks a `data:` URL as the top
-frame. `test/web.test.ts` loads one in a real window; it needs an ordinary
-desktop session (a sandboxed process cannot launch the browser, 0x8007139F).
+frame
+`test/web.test.ts` loads one in a real window; it needs an ordinary
+desktop session (a sandboxed process cannot launch the browser, 0x8007139F)
 
 ### ListView and GridView
 
@@ -630,22 +691,25 @@ components (`selectionMode`, `itemContainerStyle`, `onDragItemsCompleted`, ...);
 `selectedIndex` is an index into `items` and is as good as a key, but the
 control's `selectedItem` and `selectedValue` hold the **boxed key**, not the
 item (read one with `unboxed`; setting them does not select, use
-`selectedKey`).
-`itemsSource`, `itemTemplate`, `items` and `children` are the component's.
-`ItemsView` has no `selectedKey` yet.
+`selectedKey`)
+`itemsSource`, `itemTemplate`, `items` and `children` are the component's
+`ItemsView` has no `selectedKey` yet
 
 How it works: the control's items are a vector of **boxed keys** (the
 control's drag reorder only commits a move to a list of plain values, not of
 rows), its item template is a `ContentControl` slot, and each time a container
 reports the key it shows (`ContainerContentChanging`) the `item` snippet is
 mounted into the slot (`mountControl`); a container going to the recycle queue
-ends its row. So a 1000 item list holds the rows of the containers WinUI has
+ends its row
+So a 1000 item list holds the rows of the containers WinUI has
 realized (a screenful and its cache, about 76 for a 640 pixel window), not
-1000, and nothing leaks (`test/lists.test.ts` counts rows made and ended). Rows
+1000, and nothing leaks (`test/lists.test.ts` counts rows made and ended)
+Rows
 are mounted outside the list's own component tree: they do not see its Svelte
-context. The key sync touches only keys that came, went or moved (an empty
+context
+The key sync touches only keys that came, went or moved (an empty
 list is filled in one reset), so the control's item transitions play for
-exactly those.
+exactly those
 
 #### Groups
 
@@ -657,20 +721,24 @@ exactly those.
 ```
 
 `groupBy` arranges the items by a group key: groups follow each other in the
-order their first item appears, each group's items in the order of `items`.
+order their first item appears, each group's items in the order of `items`
 The list uses WinUI's own grouping: a `CollectionViewSource` with
 `IsSourceGrouped` over groups that hold the items, so each header sticks to the
 top of the list while its group is in view, and the control's items are the
-items only (no header among them). The `groupHeader` snippet is the row of a
-header. A header is not an item: it cannot be selected, and `reorderable` and
-`keyboardReorder` are ignored in a grouped list. `selectedKey`, `onReorder`'s
-keys and `itemName` only ever hold items. Groups and items that come or go
-change the live view in place.
+items only (no header among them)
+The `groupHeader` snippet is the row of a
+header
+A header is not an item: it cannot be selected, and `reorderable` and
+`keyboardReorder` are ignored in a grouped list
+`selectedKey`, `onReorder`'s
+keys and `itemName` only ever hold items
+Groups and items that come or go
+change the live view in place
 
 WinUI never asks a JavaScript object for `ICollectionViewGroup`, so the group
 objects are `ItemsControl`s (WinUI reads their `Items` through `ItemsPath`) and
 the header containers are made on `ChoosingGroupHeaderContainer`, where the
-group's place in the list gives its key.
+group's place in the list gives its key
 
 ### TreeView
 
@@ -697,34 +765,41 @@ group's place in the list gives its key.
 | `onControl` | `(view) => void \| cleanup`: the `TreeView` itself |
 
 Every other property and event of the control is a prop as on the generated
-components. `rootNodes`, `selectedNode`, `selectedNodes`, `selectedItem`,
+components
+`rootNodes`, `selectedNode`, `selectedNodes`, `selectedItem`,
 `itemsSource` and `itemTemplate` are the component's, and so is `children`
-(which is not Svelte's snippet here). The control's own drag reorder is not
-supported: a move it makes is undone by the next sync of `items`.
+(which is not Svelte's snippet here)
+The control's own drag reorder is not
+supported: a move it makes is undone by the next sync of `items`
 
 How it works: the control's nodes are `TreeViewNode`s whose content is the
 item's **boxed key**, so every node a tree needs is made from the items, not
-by the app. A node's children are made only when the node is expanded (its key
+by the app
+A node's children are made only when the node is expanded (its key
 is in `expandedKeys`) or already were: a collapsed node with children says it
 has some it has not made (`hasUnrealizedChildren`) and `children(item)` is
 called to know it, and the control's `Expanding` event, which it raises for the
 user's click and for the app's `isExpanded` alike, has them made while it
-asks. So a tree that is mostly closed holds nodes for what is open, and a
+asks
+So a tree that is mostly closed holds nodes for what is open, and a
 node that is closed after it was open keeps its children, in step with the
-items. A node is kept for as long as its item stays under the same parent, so
+items
+A node is kept for as long as its item stays under the same parent, so
 a reorder, an insertion or a removal changes exactly those nodes (an item that
 moves to another parent is a new node, and keeps its expanded state through
-its key). Rows work as in the list: the control draws its nodes in a
+its key)
+Rows work as in the list: the control draws its nodes in a
 `ListView` of its own (the part `ListControl`), which reports each container it
 realizes, and the `item` snippet is mounted into that container's slot and
 ends when the container is recycled (`test/tree.test.ts`: 2000 roots hold the
-rows of about 90 containers).
+rows of about 90 containers)
 
 Selecting is by key as in the list, with one difference: only the items whose
 node is made can be selected, so a key whose parent was never opened is not a
 selection and is dropped from `selectedKey`; put its ancestors in
-`expandedKeys` first. `selectedItem` is not bindable on a `TreeView`: it holds
-the control's own nodes, and binding it undoes the key selection.
+`expandedKeys` first
+`selectedItem` is not bindable on a `TreeView`: it holds
+the control's own nodes, and binding it undoes the key selection
 
 ### Window
 
@@ -742,68 +817,84 @@ the control's own nodes, and binding it undoes the key selection.
 ```
 
 Mount it as the app's root (`mountControl({ component: App, props })` inside `runWindow`'s
-`onStart`): the component is the window. `backdrop` is `"acrylic"`, `"acrylicBase"`,
+`onStart`): the component is the window
+`backdrop` is `"acrylic"`, `"acrylicBase"`,
 `"acrylicThin"`, `"mica"`, `"micaAlt"` or `"none"` (`Backdrop`, also taken by `createWindow`); it can
-change while the window is open. WinUI itself shows the theme's solid color
+change while the window is open
+WinUI itself shows the theme's solid color
 in place of the material while the window is inactive, and restores it on
-activation; nothing needs wiring. `"acrylicBase"` and `"acrylicThin"` are
+activation; nothing needs wiring
+`"acrylicBase"` and `"acrylicThin"` are
 the other two acrylic variants: XAML's `DesktopAcrylicBackdrop` has no kind, so
 the window takes `DesktopAcrylicController` as a target instead
 (`window.systemBackdrop` reads null; the controller is closed when the backdrop
-changes or the window closes). A `titleBar` snippet is shown above the content
+changes or the window closes)
+A `titleBar` snippet is shown above the content
 and set as the window's title bar (`setTitleBar`, so it is the drag region and
 the controls in it still click); it makes `extendsIntoTitleBar` true unless
-given. Sizes are in device-independent pixels (the window's DPI applied);
+given
+Sizes are in device-independent pixels (the window's DPI applied);
 `placement` is in device pixels (a position, and optionally a size) and wins over
-centering, which is the default. `activate={false}` shows the window without
-taking focus. `onBoundsChanged` hears the bounds the window opened with and
+centering, which is the default
+`activate={false}` shows the window without
+taking focus
+`onBoundsChanged` hears the bounds the window opened with and
 then every move or resize (device pixels), so an app that reopens the window
-where it was has them before the user touches it.
+where it was has them before the user touches it
 `onClosing` runs when the window is asked to close (the close button, Alt+F4,
 `handle.close()`): returning `true` keeps it open (ask the user, then close it
-again from code); `onClosed` follows a close that went through.
+again from code); `onClosed` follows a close that went through
 `onScaleChanged(scale)` hears a DPI change (the window moved to another
 display, or the user changed the display scale); the size limits and regions,
-which WinUI takes in device pixels, are set again for it.
+which WinUI takes in device pixels, are set again for it
 
 `theme` is `"light"`, `"dark"` or `"system"` (the default): it sets the
-content's requested theme and the caption buttons'. `titleBarHeight` is
+content's requested theme and the caption buttons'
+`titleBarHeight` is
 `"standard"` or `"tall"` (for a title bar that holds a search box or tabs; it
-applies when the content extends into the title bar). `captionButtons` sets
+applies when the content extends into the title bar)
+`captionButtons` sets
 the colors of the minimize, maximize and close buttons: `foreground`,
 `background`, `hover*`, `pressed*` and `inactive*` (each `Foreground` or
 `Background`), as `"#rgb"`, `"#rrggbb"`, `"#aarrggbb"` or `"transparent"` (the
-parser a color prop uses; other text throws a `TypeError`). A color left out,
-or dropped later, is the system's.
+parser a color prop uses; other text throws a `TypeError`)
+A color left out,
+or dropped later, is the system's
 
 `dragRegions` and `passthroughRegions` are rectangles (`{ x, y, width, height }`
 in device-independent pixels from the window's top-left corner) that set
 InputNonClientPointerSource's caption and passthrough regions: where a press
 drags the window, and the parts of it (a search box) that take the pointer
-themselves. Without `dragRegions` the `titleBar` snippet is the drag area.
+themselves
+Without `dragRegions` the `titleBar` snippet is the drag area
 
 `presentation` is `"windowed"` (the default), `"fullScreen"` or
-`"compactOverlay"` (a small always-on-top window). The size limits and
+`"compactOverlay"` (a small always-on-top window)
+The size limits and
 `isAlwaysOnTop` are the windowed presentation's, and are set again when the
-window returns to it. `owner` (another window's `WindowHandle`) and `isModal`
+window returns to it
+`owner` (another window's `WindowHandle`) and `isModal`
 (blocks the owner until this window closes) are read once, before the window
-opens; `createWindow` takes them too. The `owner` link is a Win32 call
-(`SetWindowLongPtrW`) in `native.ts`.
+opens; `createWindow` takes them too
+The `owner` link is a Win32 call
+(`SetWindowLongPtrW`) in `native.ts`
 
 `bind:handle` gives a `WindowHandle`: `window`, `appWindow`,
 `presenter`, `scale`, `close()`, `restore()`, `minimize()`, `maximize()`,
 `bringToFront()`, and the file dialogs `pickFile()`, `pickFiles()`,
-`pickFolder()` and `saveFile()` (see App services). `appUserModelId` names the
+`pickFolder()` and `saveFile()` (see App services)
+`appUserModelId` names the
 process for the taskbar (it is process-wide: read once, before the window
-opens).
+opens)
 
 ## Page navigation (`winui-svelte/components`)
 
 `Frame.SourcePageType` takes a page type XAML registered, which a Node host
-cannot give it. `Navigator` (`src/components/hand-written/navigation`) does
+cannot give it
+`Navigator` (`src/components/hand-written/navigation`) does
 what a `Frame` does with Svelte components as the pages: it mounts the page
 into a `ContentControl`, keeps the back and forward history, and lets the
-control's navigation transition play when the page changes.
+control's navigation transition play when the page changes
 
 ```svelte
 <script lang="ts">
@@ -846,33 +937,36 @@ interface NavigatorHandle {
   `DefaultNavigationTransitionInfo` of the control's `NavigationThemeTransition`;
   `SuppressNavigationTransitionInfo` plays none); and the props of
   `ContentControl`, except those the navigator owns (`content`,
-  `contentTransitions`, `contentTemplate`).
-- A page is a plain component; its props are the `params`. It is made when
+  `contentTransitions`, `contentTemplate`)
+- A page is a plain component; its props are the `params`
+  It is made when
   the user goes to it and ends (its effects and controls) when the cache lets
-  it go, as an items row does.
+  it go, as an items row does
 - `NavigationCacheMode` is WinUI's: `DISABLED` (the default) ends the page
   when the user leaves it, so going back makes a new one; `ENABLED` keeps it
   mounted, with its state, while it is among the `cacheSize` most recently
   shown enabled pages; `REQUIRED` keeps it for as long as the history holds
-  it. A page keeps its place in the history by entry, not by component:
+  it
+  A page keeps its place in the history by entry, not by component:
   navigating to the same component twice makes two entries, each with its own
-  page.
+  page
 - A new `navigate` after `goBack` drops the pages that were forward, and ends
-  the ones of them that were kept.
+  the ones of them that were kept
 - With a `NavigationView`, put the navigator in the view's content, go to the
   page of the chosen item in `onSelectionChanged`, go back in
   `onBackRequested`, and select the item of `handle.current` when the history
-  moves; `examples/navigation` does this.
+  moves; `examples/navigation` does this
 
 ## Overlays (`winui-svelte/components`)
 
 A control that opens over the window takes `open` and `target` (and a dialog
 `onResult`) besides its own props; the table `overlayHosted` in
 `scripts/codegen/tables.ts` names them and the host each uses
-(`src/components/hand-written/overlay`). They are `ContentDialog`, and the
+(`src/components/hand-written/overlay`)
+They are `ContentDialog`, and the
 flyouts: `Flyout`, `MenuFlyout`, `MenuBarItemFlyout`, `CommandBarFlyout`,
 `TextCommandBarFlyout`, `DatePickerFlyout`, `TimePickerFlyout`,
-`PickerFlyout` and `ListPickerFlyout`.
+`PickerFlyout` and `ListPickerFlyout`
 
 ```svelte
 <Button>
@@ -896,34 +990,43 @@ flyouts: `Flyout`, `MenuFlyout`, `MenuBarItemFlyout`, `CommandBarFlyout`,
 </StackPanel>
 ```
 
-- `open` (`bind:open`) is `true` while the control is open. Setting it opens
+- `open` (`bind:open`) is `true` while the control is open
+  Setting it opens
   or closes the control; the user closing it (light dismiss, Escape, a choice,
-  the dialog's buttons) sets it back to `false`. Left unset, nothing opens.
+  the dialog's buttons) sets it back to `false`
+  Left unset, nothing opens
 - `target` is the element the control opens next to: a flyout through
-  `ShowAt`, a dialog in that element's window (its `XamlRoot`). It defaults to
+  `ShowAt`, a dialog in that element's window (its `XamlRoot`)
+  It defaults to
   the element the control is written in (`placedControl`): the `Button` whose
-  `flyout` snippet holds it, or the panel it is a child of. A control written
+  `flyout` snippet holds it, or the panel it is a child of
+  A control written
   directly in the window's content has no element above it, so give it
-  `target`. A flyout is no element, so a panel leaves it out of its children.
+  `target`
+  A flyout is no element, so a panel leaves it out of its children
 - An overlay asked to open before its element is on screen opens when the
-  element loads, and not at all when closed first. One still open when its
-  component goes is closed.
+  element loads, and not at all when closed first
+  One still open when its
+  component goes is closed
 - `onResult(result)` of a `ContentDialog` gets the button the user chose
   (`ContentDialogResult.Primary`, `Secondary`) and `None` for the close
-  button, Escape and `open = false`. `onClosed` and the control's other events
-  are the generated ones.
+  button, Escape and `open = false`
+  `onClosed` and the control's other events
+  are the generated ones
 - WinUI shows one `ContentDialog` at a time (a second `ShowAsync` fails with
-  0x80000019). Dialogs asked for together open in the order asked, each when
+  0x80000019)
+  Dialogs asked for together open in the order asked, each when
   the one before has closed; `open` stays `true` while one waits, and setting it
-  to `false` first removes it from the line. The line is one for the thread, so
-  a dialog of a second window also waits.
-- `Flyout`'s content is a control: write `<TextBlock>` in it, not bare text.
+  to `false` first removes it from the line
+  The line is one for the thread, so
+  a dialog of a second window also waits
+- `Flyout`'s content is a control: write `<TextBlock>` in it, not bare text
 
 ## Value objects, attached slots and observed state (`winui-svelte/components`)
 
 ### Value objects
 
-Classes that are no element but hold what an element shows are components too.
+Classes that are no element but hold what an element shows are components too
 Each is a root of the generator (`rootClasses` in `scripts/codegen/tables.ts`),
 and the property that holds it takes a snippet of that name:
 
@@ -954,48 +1057,54 @@ and the property that holds it takes a snippet of that name:
 
 - A class that is a collection of controls itself (`SwipeItems`) takes them as
   its children: the renderer puts the children of a control that has
-  `insertAt` and no other place for them into it.
+  `insertAt` and no other place for them into it
 - `TextHighlighter.ranges` is hand-written
   (`src/components/extensions/text-highlighter.ts`): WinUI's `Ranges` is a
-  read-only collection of structs. The array replaces the ranges it holds.
+  read-only collection of structs
+  The array replaces the ranges it holds
 - `MapControl.layers` is settable, so the snippet fills the collection the map
-  holds when it holds one.
+  holds when it holds one
 
 Not components, on purpose: the scroll snap points (`ScrollSnapPoint`,
 `RepeatedScrollSnapPoint`, ...: their factories take arguments, so none has a
-default constructor). `scripts/codegen/not-components.ts` lists every class of
+default constructor)
+`scripts/codegen/not-components.ts` lists every class of
 WinUI's metadata that is not a component, with the reason, and
-`scripts/codegen/coverage.test.ts` fails for one that is not sorted.
+`scripts/codegen/coverage.test.ts` fails for one that is not sorted
 
 ### Attached slots
 
 An attached property whose value is a control takes a snippet as well
 (`slots` of `attachedOwners`):
 
-- `toolTip` (every element): `{#snippet toolTip()}<TextBlock>Save</TextBlock>{/snippet}`.
-  A string, number or boolean prop works as before.
+- `toolTip` (every element): `{#snippet toolTip()}<TextBlock>Save</TextBlock>{/snippet}`
+  A string, number or boolean prop works as before
 
 The component renders a `<property name="tool-tip-service.tool-tip">`
 element; a property element named `owner.property` fills the attached property
 through the owner's `set<Property>`, as the attribute of that name does, and
-gives it back (`null`) when it goes. The component registers the owner, so no
-app code does.
+gives it back (`null`) when it goes
+The component registers the owner, so no
+app code does
 
 `FlyoutBase.AttachedFlyout` has no prop of its own: a prop of every framework
 element would add `FlyoutBase` (a binding module) and a snippet block to every
-component, more than the one-Button bundle budget allows. Use the `attached`
-prop: `attached={[FlyoutBase, "AttachedFlyout", flyout]}`.
+component, more than the one-Button bundle budget allows
+Use the `attached`
+prop: `attached={[FlyoutBase, "AttachedFlyout", flyout]}`
 
 The animation target is attached on every timeline: `storyboardTarget`,
 `storyboardTargetName` and `storyboardTargetProperty` call
-`Storyboard.SetTarget`, `SetTargetName` and `SetTargetProperty`.
+`Storyboard.SetTarget`, `SetTargetName` and `SetTargetProperty`
 
 ### Observed state
 
 Read-only state WinUI reports by an event is a bindable prop the control
-writes and the app only reads. It holds the control's value as soon as the
+writes and the app only reads
+It holds the control's value as soon as the
 control is made, and follows each time the event is raised; what the prop is
-given is never written to the control. The table is `observedProperties` in
+given is never written to the control
+The table is `observedProperties` in
 `scripts/codegen/tables.ts`, `Class.Property` with the events that say it
 changed:
 
@@ -1018,7 +1127,7 @@ changed:
 ```
 
 Not observed: the properties of `FrameworkElement` (`actualWidth`,
-`actualTheme`, `isLoaded`), which would put a subscription in every component.
+`actualTheme`, `isLoaded`), which would put a subscription in every component
 
 ### Bindings for the next features
 
@@ -1028,13 +1137,14 @@ makes though nothing in `src/` imports them yet: `FullScreenPresenter`,
 `SystemBackdropConfiguration`, the Windows App SDK `FileSavePicker`,
 `AppNotificationManager`, `AppNotification` and its builders, `AppInstance`,
 `ConnectedAnimationService`, `InMemoryRandomAccessStream`, `DataWriter` and
-`MediaSource`.
+`MediaSource`
 
 ## App services (`winui-svelte`, `winui-svelte/window`)
 
-What an app reads from Windows and asks of it, beyond controls. All of it
+What an app reads from Windows and asks of it, beyond controls
+All of it
 runs on the UI thread, unpackaged (started from `node.exe`), except what the
-last two lists say.
+last two lists say
 
 ### Reactive readers of an element (`winui-svelte`)
 
@@ -1062,8 +1172,9 @@ function focusElement(options: {
 ```
 
 The control for `focusElement` comes from `elementRef().current` or
-`@attach control(...)`. Focus lands only once the control is shown, in an
-active window: a call earlier returns `false`.
+`@attach control(...)`
+Focus lands only once the control is shown, in an
+active window: a call earlier returns `false`
 
 ### System settings (`winui-svelte/window`)
 
@@ -1075,13 +1186,15 @@ settings.isAnimationEnabled;
 settings.isHighContrast;    // a contrast theme is on
 ```
 
-Over `Windows.UI.ViewManagement.UISettings`. Each field is read live and is
+Over `Windows.UI.ViewManagement.UISettings`
+Each field is read live and is
 reactive: it updates on `ColorValuesChanged`, `TextScaleFactorChanged` and
 `AnimationsEnabledChanged` (and `HighContrastChanged` of
 `Windows.UI.ViewManagement.AccessibilitySettings`, for `isHighContrast`), and
 the subscription lasts only while an effect
-reads it. `UISettings` raises its events off the UI thread, so the change is
-handed to it through a dispatcher captured when `systemSettings()` is called.
+reads it
+`UISettings` raises its events off the UI thread, so the change is
+handed to it through a dispatcher captured when `systemSettings()` is called
 
 ### File and folder dialogs (`WindowHandle`)
 
@@ -1103,14 +1216,18 @@ const target = await handle.saveFile({
 
 They wrap the Windows App SDK pickers (`Microsoft.Windows.Storage.Pickers`:
 `FileOpenPicker`, `FileSavePicker`, `FolderPicker`), which take the window's
-`WindowId` (`appWindow.id`) so the dialog opens over that window. The older
+`WindowId` (`appWindow.id`) so the dialog opens over that window
+The older
 `Windows.Storage.Pickers` classes need an `IInitializeWithWindow` call and are
-not used. All take `PickerOptions`: `title`, `commitButtonText`, `startIn`
+not used
+All take `PickerOptions`: `title`, `commitButtonText`, `startIn`
 (`documents`, `computer`, `desktop`, `downloads`, `music`, `pictures`,
 `videos`), `startFolder` (a path, wins over `startIn`) and `settingsIdentifier`
-(dialogs sharing it open where the user last chose). The dialog is modal to
-its window; the promise settles when it closes. A path is all that comes back:
-read and write the file with `node:fs`.
+(dialogs sharing it open where the user last chose)
+The dialog is modal to
+its window; the promise settles when it closes
+A path is all that comes back:
+read and write the file with `node:fs`
 
 ### App lifecycle (`winui-svelte/app`)
 
@@ -1136,38 +1253,46 @@ notify({
 });
 ```
 
-An opt-in subpath: an app that does not import it does not bundle it.
+An opt-in subpath: an app that does not import it does not bundle it
 
 - `ensureSingleInstance` is `AppInstance.FindOrRegisterForKey`: the first copy
   to register the key is the primary and listens to `Activated`; a later copy
   calls `RedirectActivationToAsync` with its own activation arguments and
-  resolves with `isPrimary: false`. `onRedirect` gets `kind`, `commandLine`
-  (when the activation has one) and the raw `data`. Call it before the first
-  window; it needs `initWindowsAppSdk`. Every Node-hosted app is `node.exe`, so
-  pick a key nobody else would. Measured from `node.exe` in a real session:
+  resolves with `isPrimary: false`
+  `onRedirect` gets `kind`, `commandLine`
+  (when the activation has one) and the raw `data`
+  Call it before the first
+  window; it needs `initWindowsAppSdk`
+  Every Node-hosted app is `node.exe`, so
+  pick a key nobody else would
+  Measured from `node.exe` in a real session:
   the later copy detects the first (`isPrimary: false`), its redirect completes
   and it exits, but the first copy's `Activated` handler never runs, so
-  `onRedirect` is not called there. Treat the redirect as unavailable; the
-  single-instance check itself works.
-- `notify` is `AppNotificationBuilder` and `AppNotificationManager.Show`.
+  `onRedirect` is not called there
+  Treat the redirect as unavailable; the
+  single-instance check itself works
+- `notify` is `AppNotificationBuilder` and `AppNotificationManager.Show`
   Unpackaged apps must register first: the first call does, with
   `displayName` and `iconPath` (both or neither), and listens for clicks with
-  that call's `onInvoked`. `appUserModelId` is the window's `appUserModelId`
-  (`joinAppUserModel`): give both the same id.
+  that call's `onInvoked`
+  `appUserModelId` is the window's `appUserModelId`
+  (`joinAppUserModel`): give both the same id
 - **What works from `node.exe` is not known.** Both are written to Microsoft's
   documented unpackaged path and unit-tested on stand-ins; neither was run
   against a real second process or a real toast, and the platform may refuse a
   process with no package identity (no notification, or a click that cannot
-  start the app once it has exited). `test/app.test.ts` starts a second copy
+  start the app once it has exited)
+  `test/app.test.ts` starts a second copy
   and reports what `notify` did; run it in a desktop session before relying on
-  either. With package identity (an MSIX or sparse package) both are the
-  supported case.
+  either
+  With package identity (an MSIX or sparse package) both are the
+  supported case
 
 ### System tray (`winui-svelte/tray`)
 
 WinUI and the Windows App SDK have no notification-area API (apps call
-`Shell_NotifyIconW`), so this opt-in entry point talks to the shell itself.
-An app that does not import it does not bundle it.
+`Shell_NotifyIconW`), so this opt-in entry point talks to the shell itself
+An app that does not import it does not bundle it
 
 ```svelte
 <script lang="ts">
@@ -1191,37 +1316,47 @@ An app that does not import it does not bundle it.
 - `<TrayIcon>` props: `icon` (an `.ico` path, or `{ forLightTaskbar,
   forDarkTaskbar }`, swapped when the taskbar theme changes), `tooltip`,
   `isVisible` (default true), `guid`, `onclick`, `ondoubleclick`,
-  `oncontextmenu`, `onmiddleclick`, and `bind:handle`. The icon exists while
-  the component does and is removed when it unmounts.
+  `oncontextmenu`, `onmiddleclick`, and `bind:handle`
+  The icon exists while
+  the component does and is removed when it unmounts
 - Each handler gets `{ gesture, x, y }`, the pointer in screen pixels: where to
-  put a menu. A double click is the second `onclick` and then `ondoubleclick`.
+  put a menu
+  A double click is the second `onclick` and then `ondoubleclick`
 - `createTrayIcon(options)` is the same without a component and returns the
   handle: `update({ icon, tooltip, isVisible })`, `notify({ title, body,
   icon, isSilent })` (a balloon), `bounds()` (where the shell drew the icon,
-  from `Shell_NotifyIconGetRect`), `isRegistered`, `remove()`. Call it on the
-  UI thread. `removeAllTrayIcons()` runs at process exit, so none stays as a
-  ghost.
+  from `Shell_NotifyIconGetRect`), `isRegistered`, `remove()`
+  Call it on the
+  UI thread
+  `removeAllTrayIcons()` runs at process exit, so none stays as a
+  ghost
 - `guid` (a GUID of your own that never changes) is `NIF_GUID`: the shell keeps
-  the icon's place and the user's "always show" choice. It ties the GUID to the
-  program's path, so a moved or unsigned build can lose it. Without it the
-  icon is identified by the hidden owner window and an id.
+  the icon's place and the user's "always show" choice
+  It ties the GUID to the
+  program's path, so a moved or unsigned build can lose it
+  Without it the
+  icon is identified by the hidden owner window and an id
 - `hideToTray(handle)` hides a `WindowHandle`'s window and its taskbar button
   (`AppWindow.IsShownInSwitchers`), `restoreFromTray(handle)` undoes both and
-  brings it to the front, `toggleInTray(handle)` picks by visibility.
+  brings it to the front, `toggleInTray(handle)` picks by visibility
 - The icon is registered again by itself when explorer restarts (no
   `TaskbarCreated` window message is heard; the icon is checked about once a
   second), is reloaded at the system DPI's small-icon size, and swaps on a
-  light or dark taskbar.
+  light or dark taskbar
 
 How clicks are heard, and what that cannot do: dynwinrt (0.1.0-preview.23)
 binds Win32 functions to call, but offers no way to turn a JavaScript function
 into a native function pointer (a window procedure, a hook, `SetWindowSubclass`):
 in a probe, the table of a COM object it made ended after the three `IUnknown`
-entries, and a COM thunk needs its own object as `this`. So the shell's callback message
-(`NIF_MESSAGE`) cannot be received. The tray polls every 30 ms instead:
+entries, and a COM thunk needs its own object as `this`
+So the shell's callback message
+(`NIF_MESSAGE`) cannot be received
+The tray polls every 30 ms instead:
 `GetCursorPos`, `GetAsyncKeyState` and `Shell_NotifyIconGetRect`, and a click
 is a press and a release both over the icon while the pointer is on the taskbar
-or the overflow flyout. It reads input; it never sends any. What this means:
+or the overflow flyout
+It reads input; it never sends any
+What this means:
 
 | Works | Cannot be heard |
 |---|---|
@@ -1229,7 +1364,7 @@ or the overflow flyout. It reads input; it never sends any. What this means:
 | icon swap on theme and DPI, restart of explorer, update, hide | clicks on an icon the user has moved into the hidden overflow flyout while it is closed |
 
 Menus: write the flyout in the `menu` snippet and a right click opens it at
-the pointer.
+the pointer
 
 ```svelte
 <TrayIcon icon="app.ico" bind:menuAt>
@@ -1246,87 +1381,106 @@ A flyout needs an element in a live window, and a tray-only app has none, so
 the component opens a one-pixel window for it: borderless, no taskbar button,
 always on top, at the pointer moved inside the work area of the monitor under
 it (a point on the taskbar lands on the work area's edge, and the flyout opens
-away from it). It is made on the first right click and closed with the menu: by
+away from it)
+It is made on the first right click and closed with the menu: by
 `close()`, by a choice, or by the user clicking away (the window losing the
-foreground). The window takes the foreground when it opens, which a plain
+foreground)
+The window takes the foreground when it opens, which a plain
 `SetForegroundWindow` is refused for a click the process only polled; the tray
-joins the foreground thread's input state for the call (`AttachThreadInput`).
-That sends no input. The menu follows the system's light or dark theme like any
+joins the foreground thread's input state for the call (`AttachThreadInput`)
+That sends no input
+The menu follows the system's light or dark theme like any
 window, and `menuAt` (`bind:menuAt`, a screen point or null) opens or closes
-it from code. `shouldActivateMenu={false}` opens it without taking focus, for
-tests. Any flyout or `CommandBarFlyout` works; the snippet's content is a
-window's content.
+it from code
+`shouldActivateMenu={false}` opens it without taking focus, for
+tests
+Any flyout or `CommandBarFlyout` works; the snippet's content is a
+window's content
 
 A Tauri or Electron host that already has a tray should keep it: two icons
-would show, and this one lives and dies with the WinUI window's process.
+would show, and this one lives and dies with the WinUI window's process
 
 ### Localization: what works unpackaged
 
 - **`Intl` and your own string tables work everywhere.**
   `new Intl.DateTimeFormat().resolvedOptions().locale` is the user's locale
   and needs nothing from Windows; a table keyed by language is the portable
-  way to translate an app hosted from `node.exe`.
+  way to translate an app hosted from `node.exe`
 - **WinUI's `ResourceLoader` (`.resw` / `resources.pri`) is not wired up, and
   by default will not find your strings.** An unpackaged app's default
   resource file is `resources.pri` next to the running `.exe` (Microsoft's
   documentation, for apps without package identity: build it with `makepri`
-  without a packaging section and copy it beside the program). Hosted from
-  Node, that program is `node.exe`, in Node's folder, not yours. Its bindings
+  without a packaging section and copy it beside the program)
+  Hosted from
+  Node, that program is `node.exe`, in Node's folder, not yours
+  Its bindings
   have a constructor that takes a `.pri` path (`new ResourceLoader(fileName)`),
   which would sidestep this; it is not exercised by any test here, so treat it
-  as untried. Without package identity the loader also follows the system
-  display language, not the user's preferred-language list.
-- **XAML's `x:Uid` does not apply**: components are Svelte, not XAML.
+  as untried
+  Without package identity the loader also follows the system
+  display language, not the user's preferred-language list
+- **XAML's `x:Uid` does not apply**: components are Svelte, not XAML
 - **Package identity** (an MSIX, or a sparse package) is what unlocks the
   rest of Windows' app model: the per-package resource lookup above, toast
   notifications that survive the app closing, and `AppInstance` redirection
-  by package. Nothing in this section needs it.
+  by package
+  Nothing in this section needs it
 
 ### Planned, not in the package yet
 
-- A `ResourceLoader` wrapper that finds a `.pri` beside the app.
+- A `ResourceLoader` wrapper that finds a `.pri` beside the app
 
 The working example is `examples/services` (`test/services.test.ts` runs it in
-a real window; the dialogs themselves need a person and are not opened there).
+a real window; the dialogs themselves need a person and are not opened there)
 
 ## Win2D (`winui-svelte/win2d`)
 
 Opt-in: an app that does not import it bundles none of it and never loads
-`Microsoft.Graphics.Canvas.dll`. Win2D is the NuGet package
+`Microsoft.Graphics.Canvas.dll`
+Win2D is the NuGet package
 `Microsoft.Graphics.Win2D` (the WinUI 3 build, MIT, Microsoft); `winapp.yaml`
 restores it, `pnpm build` ships the library in `dist/bin/<architecture>`, and
-`initWindowsAppSdk` puts that folder on `PATH`.
+`initWindowsAppSdk` puts that folder on `PATH`
 
 The four controls are components made from the metadata like the rest:
 `CanvasControl`, `CanvasAnimatedControl`, `CanvasVirtualControl` and
-`CanvasSwapChainPanel` (props, `onDraw`, `onCreateResources`, `onUpdate`). The
-rest of Win2D is its classes, used as they are, with the helpers below.
+`CanvasSwapChainPanel` (props, `onDraw`, `onCreateResources`, `onUpdate`)
+The
+rest of Win2D is its classes, used as they are, with the helpers below
 
 ### Canvas
 
 `<Canvas draw={({ painter, width, height, dpi, device }) => { ... }} />` is a
-`CanvasControl` you draw on with a function. `draw` runs in an `$effect`: what it
+`CanvasControl` you draw on with a function
+`draw` runs in an `$effect`: what it
 reads is tracked, and when it changes, or the control is resized, it runs again
-and the control is invalidated. Each call on `painter` is kept, and the Draw
-event replays them on the control's session. `createResources` runs once the
+and the control is invalidated
+Each call on `painter` is kept, and the Draw
+event replays them on the control's session
+`createResources` runs once the
 device exists; `onDrawn(count)` after each redraw; `dpi` is the screen's, and
-`dpiScale` (a `CanvasControl` prop) scales it. A `Painter` is also made at once
+`dpiScale` (a `CanvasControl` prop) scales it
+A `Painter` is also made at once
 on a session with `drawingPainter(session)`, and the same calls exist as
 functions on a session: `clear`, `fillRectangle`, `drawRectangle`,
 `fillRoundedRectangle`, `fillEllipse`, `drawEllipse`, `fillCircle`, `drawCircle`,
 `drawLine`, `drawText`, `fillGeometry`, `drawGeometry`, `drawImage`, `drawBitmap`,
-`setTransform`. A `Paint` is a `Color` (`{ a, r, g, b }`, 0 to 255) or any brush
-(`isColor` tells them apart). `painter.transformed({ matrix, draw })` scopes a
+`setTransform`
+A `Paint` is a `Color` (`{ a, r, g, b }`, 0 to 255) or any brush
+(`isColor` tells them apart)
+`painter.transformed({ matrix, draw })` scopes a
 transform; `IDENTITY`, `translation`, `scaling`, `rotation` and `multiply` build
-the `Matrix3x2`. `Recording` and `Command` are what `Canvas` keeps the calls in;
+the `Matrix3x2`
+`Recording` and `Command` are what `Canvas` keeps the calls in;
 `CanvasFrame` and `CanvasProps` type the component; `TextOptions` and `Figure`
-type the helpers.
+type the helpers
 
 The bindings choose an overload from the argument count and JavaScript types
 alone, so `session.fillRectangle(x, y, w, h, brush)` calls the Color overload and
-`session.clear(color)` the Vector4 one. The functions above find the right
+`session.clear(color)` the Vector4 one
+The functions above find the right
 overload by its parameter names; for another Win2D method with overloads of one
-arity, check the pixels.
+arity, check the pixels
 
 ### Resources
 
@@ -1335,45 +1489,52 @@ off-screen surface: no window needed), `readPixels(surface)` and
 `pixelAt({ pixels, x, y })` (BGRA bytes), `loadBitmap({ creator, source })` (the
 bytes of a PNG or JPEG, a URI or a file path), `bitmapFromColors`,
 `createTextFormat`, `polylineGeometry`, `roundedRectangleGeometry` and
-`circleGeometry`.
+`circleGeometry`
 
 ### Classes and effects
 
-The classes a draw function uses are re-exported from the bindings: `CanvasDevice`, `CanvasBitmap`, `CanvasRenderTarget`, `CanvasCommandList`, `CanvasAlphaMode`, `CanvasImageInterpolation`, `CanvasComposite`, `CanvasBlend`, `CanvasDpiRounding`, `CanvasSolidColorBrush`, `CanvasLinearGradientBrush`, `CanvasRadialGradientBrush`, `CanvasImageBrush`, `CanvasGeometry`, `CanvasPathBuilder`, `CanvasStrokeStyle`, `CanvasCapStyle`, `CanvasLineJoin`, `CanvasDashStyle`, `CanvasFigureLoop`, `CanvasFigureFill`, `CanvasTextFormat`, `CanvasTextLayout`, `CanvasHorizontalAlignment`, `CanvasVerticalAlignment`, `CanvasWordWrapping`.
-Effects are ICanvasImage: set `source` and draw one with `drawImage`.
-Re-exported: `GaussianBlurEffect`, `DirectionalBlurEffect`, `ColorMatrixEffect`, `BlendEffect`, `BlendEffectMode`, `ShadowEffect`, `SaturationEffect`, `GrayscaleEffect`, `BrightnessEffect`, `ContrastEffect`, `HueRotationEffect`, `InvertEffect`, `SepiaEffect`, `OpacityEffect`, `CompositeEffect`, `ArithmeticCompositeEffect`, `CropEffect`, `ScaleEffect`, `BorderEffect`, `MorphologyEffect`, `EmbossEffect`, `SharpenEffect`, `Transform2DEffect`, `TintEffect`, `ExposureEffect`. Any other class is
-imported from `#winui/microsoft/graphics/canvas/...`. The types `Color`, `Matrix3x2`, `Rect`,
+The classes a draw function uses are re-exported from the bindings: `CanvasDevice`, `CanvasBitmap`, `CanvasRenderTarget`, `CanvasCommandList`, `CanvasAlphaMode`, `CanvasImageInterpolation`, `CanvasComposite`, `CanvasBlend`, `CanvasDpiRounding`, `CanvasSolidColorBrush`, `CanvasLinearGradientBrush`, `CanvasRadialGradientBrush`, `CanvasImageBrush`, `CanvasGeometry`, `CanvasPathBuilder`, `CanvasStrokeStyle`, `CanvasCapStyle`, `CanvasLineJoin`, `CanvasDashStyle`, `CanvasFigureLoop`, `CanvasFigureFill`, `CanvasTextFormat`, `CanvasTextLayout`, `CanvasHorizontalAlignment`, `CanvasVerticalAlignment`, `CanvasWordWrapping`
+Effects are ICanvasImage: set `source` and draw one with `drawImage`
+Re-exported: `GaussianBlurEffect`, `DirectionalBlurEffect`, `ColorMatrixEffect`, `BlendEffect`, `BlendEffectMode`, `ShadowEffect`, `SaturationEffect`, `GrayscaleEffect`, `BrightnessEffect`, `ContrastEffect`, `HueRotationEffect`, `InvertEffect`, `SepiaEffect`, `OpacityEffect`, `CompositeEffect`, `ArithmeticCompositeEffect`, `CropEffect`, `ScaleEffect`, `BorderEffect`, `MorphologyEffect`, `EmbossEffect`, `SharpenEffect`, `Transform2DEffect`, `TintEffect`, `ExposureEffect`
+Any other class is
+imported from `#winui/microsoft/graphics/canvas/...`
+The types `Color`, `Matrix3x2`, `Rect`,
 `Vector2`, `Vector4`, `CanvasDrawingSession`, `ICanvasImage` and `ICanvasBrush`
-are re-exported too.
+are re-exported too
 
 ### Effects on elements (the CSS bridge)
 
 A Win2D effect graph is a Composition effect: `createEffectBrush({ compositor,
 effect, sources })` builds the `CompositionEffectBrush`, where `effectSource(name)`
 (a `CompositionEffectSourceParameter`, `ELEMENT_SOURCE` by default) stands for the
-pixels that go in. `applyEffect({ element, effect, source })` puts it on an
+pixels that go in
+`applyEffect({ element, effect, source })` puts it on an
 element as a child sprite visual and returns a function that removes it;
 `source` is `BACKDROP` (what is behind the element: `backdrop-filter`, a blend) or
 another element (its own pixels: `filter: blur()`, `drop-shadow()`,
-`grayscale()`, `mix-blend-mode`). An element cannot be its own source (its child
+`grayscale()`, `mix-blend-mode`)
+An element cannot be its own source (its child
 visual would be part of what it samples): put the content in one element and
-the effect in a sibling over it. CSS `filter` and `mix-blend-mode` stay build
+the effect in a sibling over it
+CSS `filter` and `mix-blend-mode` stay build
 errors, for two reasons a Style cannot get around: the effect is a Composition
 visual attached to the element through `applyEffect`, not a property a Style
 can set, and a CSS rule on an element cannot name the sibling that must hold
-the effect. Call `applyEffect` from an attachment instead. It was built and
+the effect
+Call `applyEffect` from an attachment instead
+It was built and
 type-checked but not looked at on screen: nothing reads the pixels of a
-Composition effect back without a screen capture.
+Composition effect back without a screen capture
 
 The working example is `examples/win2d` (`test/win2d.test.ts` runs it in a real
 window and checks the redraw; `src/win2d/win2d.test.ts` draws on a render
-target and checks the pixels).
+target and checks the pixels)
 
 ## Reference: the remaining exports
 
-Exports that other sections do not need to name; each has JSDoc in its source.
+Exports that other sections do not need to name; each has JSDoc in its source
 A test (`scripts/pack/api-docs.test.ts`) fails when a value exported by an
-entry point is named nowhere in the docs.
+entry point is named nowhere in the docs
 
 | Export | Entry point | What |
 | --- | --- | --- |

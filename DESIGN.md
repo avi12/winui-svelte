@@ -3,9 +3,10 @@
 Svelte for native Windows apps, the way React Native is React for native
 mobile apps: an app imports WinUI 3's controls as ordinary Svelte components,
 styles them with CSS in `<style>` blocks, keeps its state in runes, and gets
-Vite hot reload while it develops. Every control is WinUI's own, so the app
+Vite hot reload while it develops
+Every control is WinUI's own, so the app
 looks and behaves like Windows (light and dark follow Windows live, acrylic
-and Mica are real backdrops, accessibility is UI Automation's).
+and Mica are real backdrops, accessibility is UI Automation's)
 
 ```svelte
 <script lang="ts">
@@ -28,19 +29,21 @@ and Mica are real backdrops, accessibility is UI Automation's).
 ## Requirements
 
 - **Windows 10 (17763+) and 11 only.** It runs on the Windows App SDK
-  (WinUI 3), through dynwinrt.
+  (WinUI 3), through dynwinrt
 - **No app framework assumed.** It works under Tauri, Electron and plain
   Node: the window runs in a Node process (or worker) that the host starts,
-  and talks to the host in JSON lines (or a MessagePort in-process).
+  and talks to the host in JSON lines (or a MessagePort in-process)
 - **Every WinUI 3 control** is a component, generated from WinUI's metadata
   (WinMD), with typed props, events and bindable properties, so the library
-  follows the framework as it is, not a hand-picked subset.
-- **Svelte's own compiler and runtime**, a published release. The tree
+  follows the framework as it is, not a hand-picked subset
+- **Svelte's own compiler and runtime**, a published release
+  The tree
   presents itself as a DOM (the globals Svelte's client runtime reads), and
-  three spots of the runtime are read with edits. Nothing Svelte does is
-  re-implemented.
+  three spots of the runtime are read with edits
+  Nothing Svelte does is
+  re-implemented
 - Generic: nothing in the package knows about any app ([Edge+](https://github.com/avi12/edge-plus)
-  is its first user and its proving ground).
+  is its first user and its proving ground)
 
 ## Layout
 
@@ -62,86 +65,98 @@ class in kebab case (`<toggle-switch>`), and talks to its control directly
 through an attachment the renderer provides:
 
 - `{@attach control(handler)}`: `handler(control)` gets the element's native
-  control (typed, from the bindings) and may return a cleanup. Generated
+  control (typed, from the bindings) and may return a cleanup
+  Generated
   components set properties and subscribe to events in it, typed against the
-  bindings, so no property or event name goes through string mapping.
+  bindings, so no property or event name goes through string mapping
   Properties use `$effect`s inside the attachment so each re-runs only when its
-  prop changes.
+  prop changes
 - Children: `{@render children?.()}` inside the element; the renderer places
   child controls where the control holds them (Panel.Children, Border.Child,
   ContentControl.Content, ItemsControl.Items, a TextBlock's Inlines/Text), as
-  the WinUI content property names it. Child text reads as a browser shows
+  the WinUI content property names it
+  Child text reads as a browser shows
   it (`white-space: normal`): runs of whitespace collapse to one space and
-  the ends are trimmed, so a sentence can wrap over indented source lines.
+  the ends are trimmed, so a sentence can wrap over indented source lines
 - `class` and `style` on a component are passed to the element unchanged; the
-  renderer hands them to the CSS runtime (below).
+  renderer hands them to the CSS runtime (below)
 - `{@attach ...}` on a component reaches its element, as on the web: Svelte
   hands a component its attachments as symbol-keyed props, and every
-  component spreads them onto its element (`attachmentsOf(rest)`). That is how
+  component spreads them onto its element (`attachmentsOf(rest)`)
+  That is how
   `elementRef` holds a component's control, for `automationLabeledBy` to name
-  the visible label rather than repeat its text.
+  the visible label rather than repeat its text
 
 ### Props
 
 - Every dependency property of the class and its bases, as camelCase
-  (`isOn`, `horizontalAlignment`, `onContent`). An enum prop takes the member
-  name (`"Center"`) or the value. A Thickness takes `8`, `[8, 4]`,
-  `[left, top, right, bottom]` or a CSS-order string. Brushes take a theme
-  resource name or a color.
+  (`isOn`, `horizontalAlignment`, `onContent`)
+  An enum prop takes the member
+  name (`"Center"`) or the value
+  A Thickness takes `8`, `[8, 4]`,
+  `[left, top, right, bottom]` or a CSS-order string
+  Brushes take a theme
+  resource name or a color
 - A property with a matching change event (`IsOn`/`Toggled`,
   `Text`/`TextChanged`, `SelectedIndex`/`SelectionChanged`, `Value`/
-  `ValueChanged`, …) is `$bindable()`.
-- Events as `onToggled={(sender, args) => …}`, typed. A property whose name
+  `ValueChanged`, …) is `$bindable()`
+- Events as `onToggled={(sender, args) => …}`, typed
+  A property whose name
   starts with "on" (ToggleSwitch.OnContent) stays a property: components are
-  not raw elements, so Svelte's `on*` rule for elements does not apply.
+  not raw elements, so Svelte's `on*` rule for elements does not apply
 - Attached properties of the common owners as plain props:
   `gridRow`, `gridColumn`, `gridRowSpan`, `gridColumnSpan`, `canvasLeft`,
   `canvasTop`, `canvasZIndex`, `automationName`, `automationHelpText`,
-  `toolTip`; anything else through `attached={[Owner, "Property", value]}`.
+  `toolTip`; anything else through `attached={[Owner, "Property", value]}`
 
 - A grid's `columns="Auto,*,Auto"` and `rows="Auto,Auto"` (lengths separated
   by commas) are hand-written props: WinUI's definition collections are
   read-only, so `src/components/extensions/grid.ts` adds them and the
-  generator mixes them in (`extendedClasses` in `scripts/codegen/tables.ts`).
+  generator mixes them in (`extendedClasses` in `scripts/codegen/tables.ts`)
 
 ### CSS
 
 The Vite plugin compiles each component's `<style>` (Svelte scopes it) into
 WinUI Styles: one per (element type, class combination), with
-`{ThemeResource}` setters for `var(--name)` so light and dark stay WinUI's.
+`{ThemeResource}` setters for `var(--name)` so light and dark stay WinUI's
 The runtime registers them and the renderer applies the Style when an
-element's classes change. A Style that names no `-winui-based-on` builds on
+element's classes change
+A Style that names no `-winui-based-on` builds on
 the control's `Default<Type>Style` where WinUI has one, since a Style set on a
-control replaces the implicit one that gives it its Fluent look. Layout properties map to WinUI's panels (gap to
-Spacing, grid-template-columns to ColumnDefinitions, …). A declaration with no
-WinUI meaning fails the build with its line.
+control replaces the implicit one that gives it its Fluent look
+Layout properties map to WinUI's panels (gap to
+Spacing, grid-template-columns to ColumnDefinitions, …)
+A declaration with no
+WinUI meaning fails the build with its line
 
 ### State
 
-Svelte's runes, context, `svelte/reactivity` and stores work unchanged. The
+Svelte's runes, context, `svelte/reactivity` and stores work unchanged
+The
 package adds: updates scheduled on WinUI's DispatcherQueue (app code never
 calls `flushSync`), and `hostState<T>()` / `send(action)` over a transport (typed messages, `src/messaging/`)
 (JSON lines on stdio by default), so state the host owns appears as one
-`$state` object in the window.
+`$state` object in the window
 
 ## Testing
 
 - Pure parts (tree, CSS translation, codegen tables, state channel) run under
-  `node --test` without WinUI.
+  `node --test` without WinUI
 - Every generated component is mounted at least once in a real WinUI window
   run in the background (off screen, never activated), so a control the
-  generator gets wrong fails a test.
+  generator gets wrong fails a test
 - Edge+'s window is checked pixel by pixel against its references after every
-  change to the package (0 differing pixels).
+  change to the package (0 differing pixels)
 - `pnpm check:editor` opens every `.svelte` file of the package in the Svelte
   language server VS Code runs (pinned, with
   `patches/svelte-language-server@0.18.5.patch`, which hides the `: any` hint
   it shows on every component tag for the content snippet it generates) and
   fails on any diagnostic or any inlay hint typed `any`: what the editor
   underlines, svelte-check can miss (a file no tsconfig includes is parsed by
-  the server's own Svelte 4).
+  the server's own Svelte 4)
 - `generated/props-strictness.ts` puts every component's props through
   `StrictProps` (`src/components/strictness.ts`): `tsc` fails on a prop typed
-  `any` or `unknown`. A WinUI property typed Object takes `ObjectInput` (a
+  `any` or `unknown`
+  A WinUI property typed Object takes `ObjectInput` (a
   string, number or boolean, boxed, or an object), or a narrower input from
-  `narrowedObjectInputs` in `scripts/codegen/tables.ts`.
+  `narrowedObjectInputs` in `scripts/codegen/tables.ts`
