@@ -19,6 +19,23 @@ function offsetOf({ css, at }: {
   return offset + at.column - 1;
 }
 
+// What an end character adds to its offset: a `;` is part of the declaration, the `}` closes the rule.
+const END_OFFSETS: ReadonlyMap<string, number> = new Map([[STATEMENT_END, 1], [BLOCK_END, 0]]);
+const DEPTH_STEPS: ReadonlyMap<string, number> = new Map([["(", 1], [")", -1]]);
+
+// The string quote open after `character`: a quote opens one, the same quote closes it.
+function quoteAfter({ quote, character }: {
+  quote: string;
+  character: string;
+}) {
+  const isInString = quote !== "";
+  if (isInString) {
+    return character === quote ? "" : quote;
+  }
+
+  return QUOTES.has(character) ? character : "";
+}
+
 // The end of the declaration that starts at `from`: after its `;`, or before the `}` that closes the rule.
 function endOf({ css, from }: {
   css: string;
@@ -29,26 +46,19 @@ function endOf({ css, from }: {
   for (let i = from; i < css.length; i++) {
     const character = css.charAt(i);
     const isInString = quote !== "";
+    quote = quoteAfter({
+      quote,
+      character
+    });
     if (isInString) {
-      quote = character === quote ? "" : quote;
       continue;
     }
 
-    if (QUOTES.has(character)) {
-      quote = character;
-    }
-
-    depth += character === "(" ? 1 : 0;
-    depth -= character === ")" ? 1 : 0;
-    const isOutside = depth <= 0;
-    const isStatementEnd = isOutside && character === STATEMENT_END;
-    if (isStatementEnd) {
-      return i + 1;
-    }
-
-    const isBlockEnd = isOutside && character === BLOCK_END;
-    if (isBlockEnd) {
-      return i;
+    depth += DEPTH_STEPS.get(character) ?? 0;
+    const endOffset = END_OFFSETS.get(character);
+    const isEnd = depth <= 0 && endOffset !== undefined;
+    if (isEnd) {
+      return i + endOffset;
     }
   }
 
