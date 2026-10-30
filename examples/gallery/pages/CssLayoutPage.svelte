@@ -12,19 +12,19 @@
 >
   <StackPanel class="css-flex" {@attach keyControl("css-layout")}>
     {#each CHIPS as chip (chip)}
-      <Border class="css-chip"><TextBlock text={chip} /></Border>
+      <Border class="css-chip"><TextBlock>{chip}</TextBlock></Border>
     {/each}
   </StackPanel>
   <Canvas class="css-stage">
-    <Border class="css-pin"><TextBlock text="position: absolute" /></Border>
+    <Border class="css-pin"><TextBlock>position: absolute</TextBlock></Border>
   </Canvas>
   <StackPanel class="css-responsive">
-    <TextBlock text="Wider than 700 px: more padding and a new colour" />
+    <TextBlock>Wider than 700 px: more padding and a new colour</TextBlock>
   </StackPanel>
   <StackPanel class="css-card-host">
-    <Border class="css-badge"><TextBlock text="A container query decides this badge" /></Border>
+    <Border class="css-badge"><TextBlock>A container query decides this badge</TextBlock></Border>
   </StackPanel>
-  <Border class="css-colours"><TextBlock text="oklch, color-mix and relative colour" /></Border>
+  <Border class="css-colours"><TextBlock>oklch, color-mix and relative colour</TextBlock></Border>
 </PageFrame>
 
 <style>
@@ -32,22 +32,22 @@
     --css-base: oklch(70% 0.15 200deg);
   }
 
-  :global(.css-flex) {
+  .css-flex {
     display: flex;
     gap: 8px;
   }
 
-  :global(.css-chip) {
+  .css-chip {
     padding: 8px 12px;
     border-radius: 6px;
     background-color: color-mix(in oklch, oklch(70% 0.15 200deg) 40%, #ffffff);
   }
 
-  :global(.css-stage) {
+  .css-stage {
     height: 64px;
   }
 
-  :global(.css-pin) {
+  .css-pin {
     position: absolute;
     top: 12px;
     left: 24px;
@@ -55,36 +55,36 @@
     background-color: rgb(from var(--css-base) r g b / 50%);
   }
 
-  :global(.css-responsive) {
+  .css-responsive {
     padding: 8px;
     background-color: #d5e4f0;
   }
 
   @media (width >= 700px) {
-    :global(.css-responsive) {
+    .css-responsive {
       padding: 24px;
       background-color: oklch(85% 0.1 150deg);
     }
   }
 
-  :global(.css-card-host) {
+  .css-card-host {
     container-name: card;
     container-type: inline-size;
   }
 
-  :global(.css-badge) {
+  .css-badge {
     padding: 8px;
     background-color: #d5e4f0;
   }
 
   @container card (min-width: 500px) {
-    :global(.css-badge) {
+    .css-badge {
       padding: 20px;
       background-color: oklch(80% 0.12 60deg);
     }
   }
 
-  :global(.css-colours) {
+  .css-colours {
     width: calc(160px + 80px);
     padding: 12px;
     background-color: color-mix(in oklch, oklch(60% 0.2 30deg), oklch(60% 0.2 250deg));

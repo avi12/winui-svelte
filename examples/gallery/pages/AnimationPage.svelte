@@ -49,7 +49,7 @@
           duration: TRANSITION_MILLISECONDS
         }}
       >
-        <text-block text="Flies in, fades out"></text-block>
+        <text-block>Flies in, fades out</text-block>
       </border>
     {/if}
   </StackPanel>
@@ -57,26 +57,26 @@
   <StackPanel class="anim-row">
     {#each tiles as tile (tile.id)}
       <border class="anim-tile" animate:flip={{ duration: FLIP_MILLISECONDS }}>
-        <text-block text={tile.label}></text-block>
+        <text-block>{tile.label}</text-block>
       </border>
     {/each}
   </StackPanel>
-  <TextBlock class="anim-pulse" text="A CSS keyframes animation" />
+  <TextBlock class="anim-pulse">A CSS keyframes animation</TextBlock>
 </PageFrame>
 
 <style>
-  :global(.anim-stage) {
+  .anim-stage {
     min-height: 56px;
   }
 
-  :global(.anim-card),
-  :global(.anim-tile) {
+  .anim-card,
+  .anim-tile {
     padding: 12px;
     border-radius: 6px;
     background-color: #00e5ff;
   }
 
-  :global(.anim-row) {
+  .anim-row {
     display: flex;
     gap: 8px;
   }
@@ -95,7 +95,7 @@
     }
   }
 
-  :global(.anim-pulse) {
+  .anim-pulse {
     animation: pulse 1400ms ease-in-out infinite;
   }
 </style>

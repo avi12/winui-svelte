@@ -11,13 +11,13 @@
   } from "winui-svelte/components";
   import { createMediaPlayer, mediaSourceOfBytes, svgImageSourceOf } from "winui-svelte/media";
 
-  const ICON_SIZE = 32;
+  const RASTER_SIZE = 64;
   const TONE_MILLISECONDS = 1000;
   const GLYPH = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\"><path d=\"M12 2 L22 22 L2 22 Z\" fill=\"#000\"/></svg>";
   const glyph = svgImageSourceOf({
     source: GLYPH,
-    rasterizePixelWidth: ICON_SIZE * 2,
-    rasterizePixelHeight: ICON_SIZE * 2
+    rasterizePixelWidth: RASTER_SIZE,
+    rasterizePixelHeight: RASTER_SIZE
   });
   const DATA_URI = `data:image/svg+xml;utf8,${encodeURIComponent(GLYPH)}`;
   const audio = createMediaPlayer({ volume: 0.2 });
@@ -38,10 +38,17 @@
   title="Image sources and audio"
 >
   <StackPanel {@attach keyControl("image-sources")}>
-    <Image height={ICON_SIZE} source={glyph} width={ICON_SIZE} />
-    <Image height={ICON_SIZE} source={svgImageSourceOf({ source: DATA_URI })} width={ICON_SIZE} />
+    <Image class="image-icon" source={glyph} />
+    <Image class="image-icon" source={svgImageSourceOf({ source: DATA_URI })} />
     <ImageIcon source={glyph} />
     <Button onclick={play}>Play a tone</Button>
-    <TextBlock text="Position {audio.state.position} of {audio.state.naturalDuration} ms" />
+    <TextBlock>Position {audio.state.position} of {audio.state.naturalDuration} ms</TextBlock>
   </StackPanel>
 </PageFrame>
+
+<style>
+  .image-icon {
+    width: 32px;
+    height: 32px;
+  }
+</style>

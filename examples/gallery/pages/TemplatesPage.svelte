@@ -39,15 +39,16 @@
         <ComboBoxItem content={name} />
       {/each}
     </ComboBox>
-    <TextBlock text="The class template-row is a rule below" />
+    <TextBlock>The class template-row is a rule below</TextBlock>
   </StackPanel>
 </PageFrame>
 
 <style>
-  :global(.template-block) {
+  .template-block {
     gap: 8px;
   }
 
+  /* itemContainerStyle takes the class name as text, so no element in this file carries it */
   :global(.template-row) {
     padding: 12px;
     background-color: #123456;

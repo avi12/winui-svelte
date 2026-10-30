@@ -4,7 +4,6 @@
   import { Slider } from "winui-svelte/components";
   import { Canvas, CanvasLinearGradientBrush, createTextFormat } from "winui-svelte/win2d";
 
-  const CANVAS_HEIGHT = 200;
   const SUN_RADIUS = 36;
   const MARGIN = 16;
   const MAX_SUN = 100;
@@ -20,6 +19,7 @@
 >
   <Slider header="Sun position: {sunAt}" maximum={MAX_SUN} bind:value={sunAt} />
   <Canvas
+    class="win2d-canvas"
     {@attach keyControl("win2d")}
     draw={({ painter, width, height, device }) => {
       painter.fillRectangle({
@@ -63,6 +63,11 @@
         format: label
       });
     }}
-    height={CANVAS_HEIGHT}
   />
 </PageFrame>
+
+<style>
+  .win2d-canvas {
+    height: 200px;
+  }
+</style>

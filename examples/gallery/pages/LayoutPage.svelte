@@ -16,19 +16,12 @@
     TextBlock,
     UniformGridLayout
   } from "winui-svelte/components";
+  import { SplitViewDisplayMode } from "winui-svelte/enums";
 
   const TILES = Array.from({ length: 12 }, (_unused, i) => ({
     id: String(i),
     label: `Tile ${i + 1}`
   }));
-  const FIRST = {
-    left: 20,
-    top: 10
-  };
-  const SECOND = {
-    left: 140,
-    top: 40
-  };
   const TILE = {
     width: 90,
     height: 40
@@ -43,46 +36,51 @@
   caption="Panels place their children. The grid is written in CSS; the canvas and the relative panel take attached properties as plain props."
   title="Layout"
 >
-  <StackPanel class="layout-demo" orientation="Horizontal">
-    <TextBlock {@attach keyControl("layout")} text="StackPanel" />
-    <TextBlock text="spaced by the CSS gap" />
+  <StackPanel class="layout-demo">
+    <TextBlock {@attach keyControl("layout")}>StackPanel</TextBlock>
+    <TextBlock>spaced by the CSS gap</TextBlock>
   </StackPanel>
   <Grid class="layout-grid">
-    <Border class="layout-cell wide" gridColumn={0} gridColumnSpan={2}><TextBlock text="spans two columns" /></Border>
-    <Border class="layout-cell" gridColumn={2}><TextBlock text="star" /></Border>
-    <Border class="layout-cell" gridRow={1}><TextBlock text="row 2" /></Border>
+    <Border class="layout-cell wide"><TextBlock>spans two columns</TextBlock></Border>
+    <Border class="layout-cell third"><TextBlock>star</TextBlock></Border>
+    <Border class="layout-cell lower"><TextBlock>row 2</TextBlock></Border>
   </Grid>
   <Canvas class="layout-canvas">
-    <Border class="layout-cell" canvasLeft={FIRST.left} canvasTop={FIRST.top}>
-      <TextBlock text="left 20, top 10" />
+    <Border class="layout-cell first">
+      <TextBlock>left 20, top 10</TextBlock>
     </Border>
-    <Border class="layout-cell" canvasLeft={SECOND.left} canvasTop={SECOND.top} canvasZIndex={1}>
-      <TextBlock text="on top" />
+    <Border class="layout-cell second">
+      <TextBlock>on top</TextBlock>
     </Border>
   </Canvas>
   <RelativePanel class="layout-relative">
     <Border class="layout-cell" {@attach anchor.attach} relativePanelAlignLeftWithPanel>
-      <TextBlock text="anchor" />
+      <TextBlock>anchor</TextBlock>
     </Border>
     {#if anchor.current !== undefined}
       <Border class="layout-cell" relativePanelRightOf={anchor.current}>
-        <TextBlock text="right of the anchor" />
+        <TextBlock>right of the anchor</TextBlock>
       </Border>
     {/if}
   </RelativePanel>
-  <SplitView class="layout-split" displayMode="Inline" openPaneLength={PANE_LENGTH} bind:isPaneOpen>
+  <SplitView
+    class="layout-split"
+    displayMode={SplitViewDisplayMode.Inline}
+    openPaneLength={PANE_LENGTH}
+    bind:isPaneOpen
+  >
     {#snippet pane()}
-      <TextBlock text="the pane" />
+      <TextBlock>the pane</TextBlock>
     {/snippet}
-    <TextBlock text="the content, beside the pane" />
+    <TextBlock>the content, beside the pane</TextBlock>
   </SplitView>
-  <ScrollViewer class="layout-scroll" horizontalScrollBarVisibility="Auto" verticalScrollBarVisibility="Auto">
+  <ScrollViewer class="layout-scroll scrolls">
     <ItemsRepeater items={TILES} key={tile => tile.id}>
       {#snippet layout()}
         <UniformGridLayout minItemHeight={TILE.height} minItemWidth={TILE.width} />
       {/snippet}
       {#snippet item(tile)}
-        <Border class="layout-cell"><TextBlock text={tile.label} /></Border>
+        <Border class="layout-cell"><TextBlock>{tile.label}</TextBlock></Border>
       {/snippet}
     </ItemsRepeater>
   </ScrollViewer>
@@ -92,41 +90,71 @@
         <StackLayout spacing={ROW_SPACING} />
       {/snippet}
       {#snippet item(tile)}
-        <TextBlock text={tile.label} />
+        <TextBlock>{tile.label}</TextBlock>
       {/snippet}
     </ItemsRepeater>
   </ScrollViewer>
 </PageFrame>
 
 <style>
-  :global(.layout-demo) {
+  .layout-demo {
+    display: flex;
     gap: 16px;
   }
 
-  :global(.layout-grid) {
+  .layout-grid {
     grid-template-rows: 40px 40px;
     grid-template-columns: 120px 120px 1fr;
     gap: 6px;
   }
 
-  :global(.layout-cell) {
+  .layout-cell {
     padding: 8px;
     background-color: #0a84a8;
   }
 
-  :global(.layout-canvas) {
+  .wide {
+    grid-column: 1 / span 2;
+  }
+
+  .third {
+    grid-column: 3;
+  }
+
+  .lower {
+    grid-row: 2;
+  }
+
+  .first {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+  }
+
+  .second {
+    position: absolute;
+    top: 40px;
+    left: 140px;
+    z-index: 1;
+  }
+
+  .scrolls {
+    overflow: auto;
+  }
+
+  .layout-canvas {
     height: 90px;
   }
 
-  :global(.layout-relative) {
+  .layout-relative {
     height: 50px;
   }
 
-  :global(.layout-split) {
+  .layout-split {
     height: 80px;
   }
 
-  :global(.layout-scroll) {
+  .layout-scroll {
     height: 120px;
   }
 </style>
