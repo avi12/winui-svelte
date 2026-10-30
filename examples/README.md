@@ -21,8 +21,8 @@ Swap `gallery` for any app below
 The harness serves the app's modules through
 Vite, opens the window and prints what the app reports as JSON lines
 Add
-`--background yes` to keep the window off screen and unactivated (what the
-tests do), and `--file <path>` where an app saves something
+`--file <path>` where an app saves something; set `WINUI_SVELTE_BACKGROUND=1`
+to keep every window off screen and unactivated (what the tests do)
 
 ## The apps
 
@@ -40,7 +40,7 @@ It is part of `pnpm test:windows`
 
 ## Shared by the apps
 
-- `harness/smoke.ts`: `windowDefaults` (off screen for a test), `keyControl`
+- `harness/smoke.ts`: `keyControl`
   (an attachment that lists a control as on screen) and `serveExample` (the
   `stats` and `close` commands)
 - `harness/memory-host.ts`: a host that owns a named state in the same

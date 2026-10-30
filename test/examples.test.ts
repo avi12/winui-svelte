@@ -11,7 +11,6 @@ import { test } from "node:test";
 // Skipped where the Windows App SDK was not restored.
 
 const TIMEOUT_MILLISECONDS = 300_000;
-const BACKGROUND_FLAGS = ["--background", "yes"];
 
 function presentIn(report: Report) {
   const present = report["present"];
@@ -29,7 +28,7 @@ test("the gallery shows each of its pages", {
 }, async () => {
   const example = ExampleProcess.start({
     entry: "examples/gallery/main.ts",
-    flags: BACKGROUND_FLAGS
+    flags: []
   });
   try {
     const pages = await example.ask({
@@ -69,7 +68,7 @@ for (const name of SINGLE_WINDOW_APPS) {
   }, async () => {
     const example = ExampleProcess.start({
       entry: `examples/${name}/main.ts`,
-      flags: [...BACKGROUND_FLAGS, "--file", path.join(tmpdir(), `winui-svelte-${name}-test.json`)]
+      flags: ["--file", path.join(tmpdir(), `winui-svelte-${name}-test.json`)]
     });
     try {
       const shown = await example.settled({
@@ -94,7 +93,7 @@ test("a task added in the todo app is saved to its file", {
   rmSync(file, { force: true });
   const example = ExampleProcess.start({
     entry: "examples/todo/main.ts",
-    flags: [...BACKGROUND_FLAGS, "--file", file]
+    flags: ["--file", file]
   });
   try {
     await example.ask({

@@ -227,7 +227,6 @@
 </script>
 
 <Window
-  activate={false}
   appUserModelId="winui-svelte.examples.window"
   {backdrop}
   {captionButtons}
@@ -254,10 +253,6 @@
   }}
   onScaleChanged={() => {
     scaleChanges++;
-  }}
-  placement={{
-    x: -8000,
-    y: 0
   }}
   {presentation}
   {theme}

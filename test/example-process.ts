@@ -1,4 +1,5 @@
 import { jsonSchema } from "#src/messaging/json.js";
+import { backgroundEnvironment } from "#src/window/background-mode.js";
 import { spawn } from "node:child_process";
 import type { ChildProcessByStdio } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -8,8 +9,8 @@ import type { Readable, Writable } from "node:stream";
 import { z } from "zod";
 
 // An example (examples/harness/launch.ts) run as a process, for tests: its
-// window is off screen and never activated, its reports come back as objects,
-// and it is driven by commands. Only the process this started is ever ended.
+// windows run in the background (off screen, never activated, no taskbar
+// button), its reports come back as objects, and it is driven by commands. Only the process this started is ever ended.
 
 const PACKAGE_ROOT = path.join(import.meta.dirname, "..");
 const LAUNCHER = path.join(PACKAGE_ROOT, "examples", "harness", "launch.ts");
@@ -59,6 +60,7 @@ export class ExampleProcess {
   }) {
     const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "--enable-source-maps", LAUNCHER, entry, ...flags], {
       cwd: PACKAGE_ROOT,
+      env: backgroundEnvironment(),
       stdio: ["pipe", "pipe", "inherit"]
     });
     return new ExampleProcess(child);

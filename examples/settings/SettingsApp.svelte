@@ -4,7 +4,7 @@
   import GeneralPage from "./GeneralPage.svelte";
   import { preferences } from "./preferences.svelte.ts";
   import type { ExampleHost } from "#examples/harness/contract.ts";
-  import { serveExample, windowDefaults } from "#examples/harness/smoke.ts";
+  import { serveExample } from "#examples/harness/smoke.ts";
   import { unboxed } from "winui-svelte";
   import type { NavigatorHandle } from "winui-svelte/components";
   import {
@@ -58,7 +58,6 @@
 </script>
 
 <Window
-  {...windowDefaults(host)}
   backdrop={preferences.backdrop}
   extendsIntoTitleBar
   height={WINDOW_HEIGHT}
