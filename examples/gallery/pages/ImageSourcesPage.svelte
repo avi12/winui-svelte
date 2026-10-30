@@ -1,7 +1,7 @@
 <script lang="ts">
   import PageFrame from "#examples/gallery/PageFrame.svelte";
   import { keyControl } from "#examples/harness/smoke.ts";
-  import { sineWav } from "#examples/media/samples.ts";
+  import { sineWav } from "#examples/media-elements/samples.ts";
   import {
     Button,
     Image,

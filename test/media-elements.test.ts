@@ -2,7 +2,7 @@ import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED } from "./example-process.t
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-// The media example (examples/media) in a real WinUI window, off screen and
+// The media example (examples/media-elements) in a real WinUI window, off screen and
 // never activated: Images made from bytes, a data URI, a file path and SVG
 // markup show the pixels they were made from, a bad image raises ImageFailed,
 // and a MediaPlayer with no window plays a generated WAV to its end.
@@ -60,7 +60,7 @@ test("images made from bytes, a data URI, a file and SVG show their pixels", {
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
   timeout: TIMEOUT_MILLISECONDS
 }, async () => {
-  const example = ExampleProcess.start({ entry: "examples/media/main.ts" });
+  const example = ExampleProcess.start({ entry: "examples/media-elements/main.ts" });
   try {
     await example.ask({
       command: {
@@ -119,7 +119,7 @@ test("a MediaPlayer with no window plays a WAV: state and position advance to th
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
   timeout: TIMEOUT_MILLISECONDS
 }, async () => {
-  const example = ExampleProcess.start({ entry: "examples/media/main.ts" });
+  const example = ExampleProcess.start({ entry: "examples/media-elements/main.ts" });
   try {
     let report = await example.ask({
       command: {
