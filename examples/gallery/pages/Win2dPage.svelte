@@ -8,6 +8,8 @@
   const MARGIN = 16;
   const MAX_SUN = 100;
   const INITIAL_SUN = 50;
+  // A prop, not CSS: a Style cannot target CanvasControl, XamlReader cannot create the type
+  const CANVAS_HEIGHT = 200;
 
   let sunAt = $state(INITIAL_SUN);
   const label = createTextFormat({ size: 18 });
@@ -19,7 +21,6 @@
 >
   <Slider header="Sun position: {sunAt}" maximum={MAX_SUN} bind:value={sunAt} />
   <Canvas
-    class="win2d-canvas"
     {@attach keyControl("win2d")}
     draw={({ painter, width, height, device }) => {
       painter.fillRectangle({
@@ -63,11 +64,6 @@
         format: label
       });
     }}
+    height={CANVAS_HEIGHT}
   />
 </PageFrame>
-
-<style>
-  .win2d-canvas {
-    height: 200px;
-  }
-</style>
