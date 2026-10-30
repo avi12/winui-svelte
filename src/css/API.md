@@ -1034,7 +1034,6 @@ Declarations like these fail the build with it:
 | Property | Why |
 |---|---|
 | `position`, `top`, `left`, `right`, `bottom`, `inset` in a style attribute | they are read from a component's `<style>` block (see Position); `right`, `bottom` and `position: sticky` have no WinUI counterpart |
-| `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color: use `-winui-elevation` |
 | `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` in a style attribute | they are read from a component's `<style>` block, which opts the window into `winui-svelte/css/filter` (see Filters, blends and masks); `url()` filters, `mask-position`, `mask-size`, `mask-repeat` and `mask-mode` have no counterpart |
 | `clip-path` as `rect()`, `xywh()` or `url()` | `inset()`, `circle()`, `ellipse()`, `polygon()` and `path()` have one (see Clip shapes) |
 | `cursor` | accepted and ignored with a warning: `IUIElementProtected.ProtectedCursor` is in the bindings, but the `InputCursor` it takes can only be made by `Microsoft.UI.Input.InputSystemCursor.Create(InputSystemCursorShape)`, and the bindings have neither `InputSystemCursor` nor `InputSystemCursorShape` (add them to the bindings and it becomes a write like the others) |
