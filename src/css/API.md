@@ -285,8 +285,9 @@ order (WinUI's own order of applying them) is set as those three properties and
 the transition animates it
 Any other list (a `skew()`, a `matrix()`, another
 order) stays a RenderTransform, and the transition warns that it does nothing
-A transition on `box-shadow` or `-winui-elevation` animates the shadow's depth,
-the Z of `Translation`
+A transition on `box-shadow` or `-winui-elevation` sets a Vector3Transition on
+`Translation`, but a real window draws the ThemeShadow at its new depth at once
+(sampled by pixels), though a plain `translate` does animate
 A transition on `border-color` warns and is dropped:
 WinUI has no brush transition for the border
 

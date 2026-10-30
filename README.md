@@ -285,8 +285,12 @@ process is where the state lives and where `diff(previous, next)` from
 `winui-svelte/state/host` makes the patches
 The Windows App SDK is started by
 the window's own process, so the Electron renderer is not involved
-This path has the same protocol as Tauri's but has not been run in this
-repository
+This path was run with Electron 45 (Node 24): its main process spawned
+Node, which opened the window and answered `info` and `close` over stdio
+(`pnpm verify:electron` repeats it in a throwaway install under `.verify`)
+The window cannot start inside Electron's own Node (`ELECTRON_RUN_AS_NODE`,
+and so `utilityProcess`): the system denies the Windows App SDK there (0x80070005),
+so spawn a Node process
 
 **Node.** The simplest host is your own script: it starts the Windows App SDK
 and the window as `main.ts` above does, and keeps its state in plain objects
@@ -1045,7 +1049,7 @@ Stated plainly, so nobody finds them by surprise:
   A host
   that holds the root somewhere else must listen with `mounted.onRootChange`
   (`createWindow` does)
-- **Electron is untested** here (the protocol is shared with Tauri's, which is)
+- **Electron**: tested with a main process that spawns Node; not supported with the window inside Electron's own Node (access denied)
 
 ## Development
 
