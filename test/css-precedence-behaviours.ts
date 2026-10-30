@@ -1,5 +1,6 @@
 import * as bindings from "#src/components/generated/bindings.js";
-import { registerStyleSheet, styledElement } from "#src/css/index.js";
+import { registerPropertyGroups, registerStyleSheet, styledElement } from "#src/css/index.js";
+import { compatGroups } from "#src/css/translate/compat-properties.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
 import assert from "node:assert/strict";
@@ -8,7 +9,7 @@ import assert from "node:assert/strict";
 // it) is a Style setter: WinUI lets the local value win, and the rule fills in
 // where the prop is absent.
 
-const SHEET = ".t { user-select: text; padding: 7px; gap: 9px }";
+const SHEET = ".text { user-select: text; padding: 7px } .stack { gap: 9px }";
 const RULE_PADDING = 7;
 const RULE_SPACING = 9;
 const PROP_PADDING = 2;
@@ -21,15 +22,16 @@ interface Checks {
   }): void;
 }
 
-function restyle({ control, elementType }: {
+function restyle({ control, elementType, className }: {
   control: object;
   elementType: string;
+  className: string;
 }) {
   styledElement({
     control,
     elementType,
     refreshText: () => undefined
-  }).setClasses("t");
+  }).setClasses(className);
 }
 
 /** Registers the checks of "a prop overrides CSS" with the mount test's runner. */
@@ -40,6 +42,7 @@ export function checkCssPrecedence({ check }: Checks) {
     resources: loadWinuiCatalogue()
   });
   assert.deepEqual(translation.diagnostics.filter(diagnostic => diagnostic.severity === "error"), []);
+  registerPropertyGroups(compatGroups());
   registerStyleSheet(translation.sheet);
 
   check({
@@ -55,7 +58,8 @@ export function checkCssPrecedence({ check }: Checks) {
       };
       restyle({
         control: withProps,
-        elementType: "text-block"
+        elementType: "text-block",
+        className: "text"
       });
       assert.equal(withProps.isTextSelectionEnabled, false);
       assert.equal(withProps.padding.left, PROP_PADDING);
@@ -63,7 +67,8 @@ export function checkCssPrecedence({ check }: Checks) {
       const withoutProps = new bindings.TextBlock();
       restyle({
         control: withoutProps,
-        elementType: "text-block"
+        elementType: "text-block",
+        className: "text"
       });
       assert.equal(withoutProps.isTextSelectionEnabled, true);
       assert.equal(withoutProps.padding.left, RULE_PADDING);
@@ -77,14 +82,16 @@ export function checkCssPrecedence({ check }: Checks) {
       withProp.spacing = PROP_SPACING;
       restyle({
         control: withProp,
-        elementType: "stack-panel"
+        elementType: "stack-panel",
+        className: "stack"
       });
       assert.equal(withProp.spacing, PROP_SPACING);
 
       const withoutProp = new bindings.StackPanel();
       restyle({
         control: withoutProp,
-        elementType: "stack-panel"
+        elementType: "stack-panel",
+        className: "stack"
       });
       assert.equal(withoutProp.spacing, RULE_SPACING);
     }
