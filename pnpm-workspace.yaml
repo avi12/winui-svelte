@@ -3,5 +3,7 @@ allowBuilds:
   "@microsoft/winappcli": false
   # Installs its platform binary, which the tree-shaking test's bundler needs.
   esbuild: true
+  # Its postinstall installs the hook; the prepare script does that, once.
+  simple-git-hooks: false
 patchedDependencies:
   svelte-language-server@0.18.5: patches/svelte-language-server@0.18.5.patch

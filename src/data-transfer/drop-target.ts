@@ -249,7 +249,7 @@ class DropBinding {
       this.setOver(true);
     }
 
-    this.dispatch({
+    void this.dispatch({
       type,
       event
     });
@@ -270,7 +270,7 @@ class DropBinding {
     }
 
     const transfer = previewOf(this.sourceFor(args.dataView));
-    this.dispatch({
+    void this.dispatch({
       type: DropEventType.dragleave,
       event: this.makeEvent({
         type: DropEventType.dragleave,
