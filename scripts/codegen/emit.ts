@@ -428,7 +428,7 @@ function eventType({ event, className }: {
   event: EventModel;
   className: string;
 }) {
-  return `Parameters<${className}["${event.key}"]>[0]`;
+  return `Parameters<${className}["on${event.winName}"]>[0]`;
 }
 
 class LevelImports {
@@ -630,7 +630,7 @@ function emitEvent(event: EventModel) {
   return [
     "",
     `  if ("${event.key}" in props) {`,
-    `    link.add(control.${event.key}((...args) => props.${event.key}?.(...args)));`,
+    `    link.add(control.on${event.winName}((...args) => props.${event.key}?.(...args)));`,
     "  }"
   ];
 }

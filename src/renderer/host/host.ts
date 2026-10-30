@@ -18,7 +18,7 @@ import { styledElement, textTransforms } from "#src/css/index.js";
 import type { NativeValue } from "#src/native-value.js";
 import type { KeyedItems } from "#src/renderer/list/keyed-list.js";
 import { syncKeyed } from "#src/renderer/list/keyed-list.js";
-import type { GridLength } from "#src/renderer/tree/markup.js";
+import { EVENT_PREFIX, eventPropName, type GridLength } from "#src/renderer/tree/markup.js";
 import {
   camelCase,
   gridLength,
@@ -837,9 +837,12 @@ function eventMethod({ control, type }: {
   control: UIElement;
   type: string;
 }) {
-  const wanted = `on${type}`.toLowerCase();
+  const wanted = eventPropName(type);
   for (let prototype: NativeValue = control; isRecord(prototype); prototype = Object.getPrototypeOf(prototype)) {
-    const name = Object.getOwnPropertyNames(prototype).find(key => key.toLowerCase() === wanted);
+    const name = Object.getOwnPropertyNames(prototype).find(key => {
+      const isEventMethod = key.startsWith(EVENT_PREFIX);
+      return isEventMethod && eventPropName(key.slice(EVENT_PREFIX.length)) === wanted;
+    });
     const isEventFound = name !== undefined;
     if (isEventFound) {
       return name;

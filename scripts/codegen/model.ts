@@ -36,7 +36,7 @@ import type {
 } from "./winmd.ts";
 import { fullName, TypeAttribute, TypeIndex, WinMdFile } from "./winmd.ts";
 import { hasStyleTarget } from "#src/components/style-targets.js";
-import { camelCase, kebabCase } from "#src/renderer/tree/markup.js";
+import { camelCase, eventPropName, kebabCase } from "#src/renderer/tree/markup.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
@@ -54,7 +54,6 @@ const ATTACHED_SETTER_PREFIX = "Set";
 const ATTACHED_SEPARATOR = ".";
 const ATTACHED_SETTER_PARAMETERS = 2;
 const CHANGED_SUFFIX = "Changed";
-const EVENT_PREFIX = "on";
 const FACTORY_PARAMETERS = 2;
 const targetTypes = new Set(["DependencyObject", "UIElement", "FrameworkElement", "Timeline"]);
 const ENUM_BASE = "Enum";
@@ -496,19 +495,35 @@ class Builder {
       seenProperties
     });
 
-    const seenEvents = new Set<string>(unimplementedEvents.get(fullName(model.type)));
-    for (const member of interfaces.flatMap(entry => entry.events)) {
-      if (!seenEvents.has(member.name)) {
-        seenEvents.add(member.name);
-        model.events.push({
-          winName: member.name,
-          key: `${EVENT_PREFIX}${member.name}`
-        });
-      }
-    }
+    this.fillEvents({
+      model,
+      type
+    });
 
     model.properties.sort((left, right) => left.key.localeCompare(right.key));
     model.events.sort((left, right) => left.key.localeCompare(right.key));
+  }
+
+  private fillEvents({ model, type }: {
+    model: ClassModel;
+    type: TypeInfo;
+  }) {
+    const seenEvents = new Set<string>(unimplementedEvents.get(fullName(model.type)));
+    for (const member of this.instanceInterfaces(type).flatMap(entry => entry.events)) {
+      if (!seenEvents.has(member.name)) {
+        seenEvents.add(member.name);
+        const key = eventPropName(member.name);
+        const clash = model.events.find(event => event.key === key);
+        if (clash) {
+          throw new Error(`${model.type.name} has events ${clash.winName} and ${member.name}, which are both ${key} in lowercase`);
+        }
+
+        model.events.push({
+          winName: member.name,
+          key
+        });
+      }
+    }
   }
 
   // The read-only properties the control reports changes of

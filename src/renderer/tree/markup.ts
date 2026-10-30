@@ -45,6 +45,21 @@ export function camelCase(name: string) {
   return `${pascal.charAt(0).toLowerCase()}${pascal.slice(1)}`;
 }
 
+/** What every event prop name starts with. */
+export const EVENT_PREFIX = "on";
+
+/**
+ * The prop that carries a WinUI event, spelled like the DOM's: `Toggled` is
+ * `ontoggled`. The one place the name is made; the generator and the renderer
+ * both read it.
+ *
+ * @param winName - The WinUI event name, such as `SelectionChanged`.
+ * @returns The lowercase prop name.
+ */
+export function eventPropName(winName: string) {
+  return `${EVENT_PREFIX}${winName.toLowerCase()}`;
+}
+
 /**
  * A class name as its tag: `TextBlock` is `<text-block>`, and an acronym is
  * one word (`InlineUIContainer` is `<inline-ui-container>`). A tag, or a
