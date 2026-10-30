@@ -64,37 +64,22 @@ const VIRTUAL_SCREEN_TOP = 77;
 const VIRTUAL_SCREEN_WIDTH = 78;
 const VIRTUAL_SCREEN_HEIGHT = 79;
 
-const getWindowLongPointer = DynWin32Unsafe.bind({
+const getWindowLongPointer = bind({
   dll: "user32.dll",
   entryPoint: "GetWindowLongPtrW",
-  parameters: [
-    {
-      type: "handle",
-      direction: "in"
-    },
-    {
-      type: "i32",
-      direction: "in"
-    }
-  ],
+  parameters: ["handle", "i32"],
   returnType: "i64"
 });
 
-const getSystemMetrics = DynWin32Unsafe.bind({
+const getSystemMetrics = bind({
   dll: "user32.dll",
   entryPoint: "GetSystemMetrics",
-  parameters: [
-    {
-      type: "i32",
-      direction: "in"
-    }
-  ],
+  parameters: ["i32"],
   returnType: "i32"
 });
 
 function metricOf(index: number) {
-  const result = getSystemMetrics.invoke([DynWin32.i32(index)]).returnValue;
-  return result === null ? 0 : DynWin32.toNumber(result);
+  return numberOf(getSystemMetrics.invoke([DynWin32.i32(index)]).returnValue);
 }
 
 /** The rectangle that holds every display, in virtual-screen pixels. */
