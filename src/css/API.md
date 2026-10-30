@@ -38,10 +38,9 @@ registered before it is merged by it
 
 ```ts
 import { winuiCss } from "winui-svelte/css/vite";
-import { cssHash } from "winui-svelte/css/sheet-module";
 
-svelte({ compilerOptions: { cssHash, ...theRest } })   // the SAME options below
-winuiCss({ root, compilerOptions: { cssHash, ...theRest }, runtimeModule: "winui-svelte/css" })
+svelte({ compilerOptions })   // the SAME options below
+winuiCss({ root, compilerOptions, runtimeModule: "winui-svelte/css" })
 ```
 
 The plugin adds `import ".../Card.svelte-winui-css.js"` to each compiled
@@ -56,8 +55,9 @@ if (import.meta.hot) { import.meta.hot.accept(); }
 
 `registerStyleSheet` with an id it has already seen replaces the sheet, keeps
 its place in the cascade, and re-applies the classes of every live element
-`cssHash` is exported because Svelte's default scoping class depends on
-`rootDir`; the component and its sheet must agree on it
+Svelte's default scoping class depends on `rootDir`; the component and its
+sheet read it from the same `compilerOptions`, and the markup's instances get
+the class out of a Svelte compile of the same file, never a hash of our own
 
 Without Vite (tests, the window kit), `compileSheetModule({ filename, source,
 sheetId, resources, runtimeModule })` returns the module's code (or null for no
@@ -88,9 +88,8 @@ The component's own compile gets the instance's `class` with the scope class
 added (`class="title svelte-x"`, `class={[expr, "svelte-x"]}`; `scopeClassOf`
 and `scopedMarkup` in `runtime/sheet-module.ts`), so the Style registered
 under `.title.svelte-<hash>` matches only this component's `.title`
-The hash comes from the component's `<style>` text (not its path, which Svelte
-reads relative to the working folder), so the build gives the same class from
-any folder, and an edit of the style re-registers the sheet and re-scopes the markup with no stale class
+The hash is Svelte's own, of the file's path, so an edit re-registers the sheet
+and re-scopes the markup with no stale class
 A parent's scope does not reach the inside of a child; a child that forwards
 its `class` prop to an element gets the scope class with the value, so
 `clsx`-style arrays and objects are the way to pass classes on

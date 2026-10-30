@@ -1,7 +1,6 @@
 import { compileSvelte } from "./compile.ts";
 import { WINDOW_ENVIRONMENT, windowConfig, winuiPluginOptions, winuiSvelte } from "./plugin.ts";
 import { patchSvelteRuntime } from "./runtime-patch.ts";
-import { cssHash } from "#src/css/runtime/sheet-module.js";
 import assert from "node:assert/strict";
 import path from "node:path";
 import { test } from "node:test";
@@ -13,7 +12,6 @@ import { z } from "zod";
 test("components compile for the client, with the stock Svelte compiler", () => {
   const { compile } = winuiPluginOptions();
   assert.equal(compile.generate, "client");
-  assert.equal(compile.cssHash, cssHash);
   assert.equal(compile.experimental, undefined);
 });
 

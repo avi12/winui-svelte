@@ -49,11 +49,10 @@ function isSheetId(id: string) {
  * reloads that module as well (`hotUpdate`), so the open window restyles in
  * place.
  *
- * `compilerOptions` must be the ones the component is compiled with, and its
- * `cssHash` the one exported from `sheet-module.ts`, so the scoping class the
- * sheet's selectors carry is the one the elements get:
+ * `compilerOptions` must be the ones the component is compiled with (its
+ * `rootDir` sets the scoping class both agree on):
  *
- *   plugins: [svelte({ compilerOptions: { cssHash } }), winuiCss({ root, compilerOptions })]
+ *   plugins: [svelte({ compilerOptions }), winuiCss({ root, compilerOptions })]
  */
 export function winuiCss(options: WinuiCssOptions) {
   const resources = loadWinuiCatalogue();

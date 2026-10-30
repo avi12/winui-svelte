@@ -50,46 +50,37 @@ export interface SheetModule {
   diagnostics: Diagnostic[];
 }
 
+const probed = new Map<string, string>();
+
 /**
- * Svelte's `cssHash` option for the scoping class: a hash of the component's
- * style text. Svelte's default hashes the file's path relative to its
- * `rootDir` (the working folder), which the sheet's compile and the markup
- * rewrite cannot all know; the style text is the same for every one of them,
- * so the component's compile, the sheet's and the instances' classes agree
- * wherever the build runs from. Two components with the same style text share
- * a class, and then share the same rules.
+ * The scoping class Svelte gives the elements of the component at `filename`
+ * (`svelte-` and a hash its compiler makes of the path relative to
+ * `rootDir`, the working folder by default). It is read out of a compile of a
+ * probe component with the same `filename` and `rootDir` and Svelte's own
+ * default `cssHash`, so the class on a component instance is the class Svelte
+ * puts on the style rule, whatever the working folder.
  */
-export function cssHash({ css, hash }: {
-  css: string;
-  hash(text: string): string;
+export function scopeClassOf({ filename, rootDir }: {
+  filename: string;
+  rootDir?: string | undefined;
 }) {
-  return `svelte-${hash(css)}`;
-}
-
-let hashOfSvelte: ((text: string) => string) | null = null;
-
-/**
- * The scoping class Svelte gives the elements of a component whose `<style>`
- * content is `css` (`svelte-` and a hash of it). Svelte hands its hash
- * function to `cssHash` only while it compiles, so one probe component fetches it.
- */
-export function scopeClassOf(css: string) {
-  const isProbed = hashOfSvelte !== null;
-  if (!isProbed) {
-    compile(PROBE, {
-      filename: "probe.svelte",
-      css: "external",
-      cssHash({ hash }) {
-        hashOfSvelte = hash;
-        return "probe";
-      }
-    });
+  const key = [process.cwd(), rootDir, filename].join("|");
+  const known = probed.get(key);
+  const hasKnown = known !== undefined;
+  if (hasKnown) {
+    return known;
   }
 
-  return cssHash({
-    css,
-    hash: hashOfSvelte ?? String
+  const { css } = compile(PROBE, {
+    filename,
+    css: "external",
+    ...rootDir !== undefined && {
+      rootDir
+    }
   });
+  const found = /svelte-[a-z0-9]+/u.exec(css?.code ?? "")?.[0] ?? "";
+  probed.set(key, found);
+  return found;
 }
 
 /**
@@ -97,16 +88,21 @@ export function scopeClassOf(css: string) {
  * selectors resolved, and the scope class on every component instance, so the
  * sheet's scoped selectors match the elements and instances the markup writes.
  */
-export function scopedMarkup({ source, file }: {
+export function scopedMarkup({ source, file, filename, rootDir }: {
   source: string;
   file: string;
+  filename: string;
+  rootDir?: string | undefined;
 }) {
   return withScopedInstances({
     source: resolveRelationalSelectors({
       source,
       file
     }).source,
-    scopeOf: scopeClassOf
+    scopeOf: () => scopeClassOf({
+      filename,
+      rootDir
+    })
   });
 }
 
@@ -189,7 +185,6 @@ export function unusedSelectorMessages({ source, filename }: {
     filename,
     generate: "client",
     css: "external",
-    cssHash,
     warningFilter: ({ code }) => code === UNUSED_SELECTOR
   });
   return result.warnings.map(({ message }) => message);
@@ -220,7 +215,6 @@ export function translateComponent(input: Omit<SheetModuleInput, "isHot" | "runt
     filename: input.filename,
     generate: "client",
     css: "external",
-    cssHash,
     warningFilter: ({ code }) => code === UNUSED_SELECTOR
   });
   const css = result.css;

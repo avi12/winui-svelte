@@ -1,5 +1,5 @@
 import { describeError, errorOf } from "./diagnostics.ts";
-import { compileSheetModule, cssHash, scopedMarkup, SheetError } from "#src/css/runtime/sheet-module.js";
+import { compileSheetModule, scopedMarkup, SheetError } from "#src/css/runtime/sheet-module.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { stripTypeScriptTypes } from "node:module";
 import path from "node:path";
@@ -23,7 +23,6 @@ const HTML_ONLY_WARNING = /^(?:a11y_|element_invalid_self_closing_tag$|attribute
  */
 export const WINUI_COMPILE_OPTIONS = {
   generate: "client",
-  cssHash,
   warningFilter: ({ code }) => !HTML_ONLY_WARNING.test(code)
 } satisfies SvelteCompileOptions;
 
@@ -160,7 +159,8 @@ function compileSource({ filename, source, options }: {
 
   const markup = scopedMarkup({
     source,
-    file: filename
+    file: filename,
+    filename
   });
   const { js } = compile(markup, {
     ...WINUI_COMPILE_OPTIONS,
