@@ -1,5 +1,6 @@
 <script lang="ts">
   import { pageStats } from "./page-stats.ts";
+  import { StackPanel, TextBlock } from "winui-svelte/components";
 
   pageStats.home.created++;
   $effect(() => () => {
@@ -7,10 +8,10 @@
   });
 </script>
 
-<stack-panel class="page">
-  <text-block>Home</text-block>
-  <text-block>Not cached: this page ends when you leave it.</text-block>
-</stack-panel>
+<StackPanel class="page">
+  <TextBlock>Home</TextBlock>
+  <TextBlock>Not cached: this page ends when you leave it.</TextBlock>
+</StackPanel>
 
 <style>
   .page {

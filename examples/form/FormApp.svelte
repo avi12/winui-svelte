@@ -1,7 +1,7 @@
 <script lang="ts">
   import SignupForm from "./SignupForm.svelte";
   import type { ExampleHost } from "#examples/harness/contract.ts";
-  import { Window } from "winui-svelte/components";
+  import { StackPanel, Window } from "winui-svelte/components";
   import { exitApplication } from "winui-svelte/window";
 
   const WINDOW_HEIGHT = 760;
@@ -41,7 +41,7 @@
   title="Form example"
   width={WINDOW_WIDTH}
 >
-  <stack-panel class="app">
+  <StackPanel class="app">
     <SignupForm
       onsubmitted={data => {
         submitted++;
@@ -49,7 +49,7 @@
         snapshot("submitted");
       }}
     />
-  </stack-panel>
+  </StackPanel>
 </Window>
 
 <style>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { pageStats } from "./page-stats.ts";
+  import { StackPanel, TextBlock } from "winui-svelte/components";
 
   interface Props {
     version: string;
@@ -13,10 +14,10 @@
   });
 </script>
 
-<stack-panel class="page">
-  <text-block>About</text-block>
-  <text-block>Version {props.version}</text-block>
-</stack-panel>
+<StackPanel class="page">
+  <TextBlock>About</TextBlock>
+  <TextBlock>Version {props.version}</TextBlock>
+</StackPanel>
 
 <style>
   .page {

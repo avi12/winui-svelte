@@ -9,8 +9,10 @@
     Button,
     CheckBox,
     ContentDialog,
+    Grid,
     InfoBar,
     ListView,
+    StackPanel,
     TextBlock,
     TextBox,
     Window
@@ -87,22 +89,22 @@
 </script>
 
 <Window height={WINDOW_HEIGHT} title="Todo" width={WINDOW_WIDTH}>
-  <stack-panel class="todo">
-    <text-block class="title">Todo</text-block>
-    <grid class="add">
+  <StackPanel class="todo">
+    <TextBlock class="title">Todo</TextBlock>
+    <Grid class="add">
       <TextBox
         {@attach keyControl("todo")}
         placeholderText="What needs doing?"
         bind:text={title}
       />
-      <button class="add-button" onclick={add}>Add</button>
-    </grid>
+      <Button class="add-button" onclick={add}>Add</Button>
+    </Grid>
     {#if problem !== ""}
       <InfoBar isClosable={false} isOpen message={problem} severity={InfoBarSeverity.Warning} />
     {/if}
     <ListView class="todo-list" items={todos} key={byKey} bind:selectedKey>
       {#snippet item(todo)}
-        <grid class="row">
+        <Grid class="row">
           <CheckBox
             isChecked={todo.isDone} onclick={() => send({
               kind: "toggle",
@@ -110,12 +112,12 @@
             })}>
             {todo.title}
           </CheckBox>
-          <button
+          <Button
             class="row-remove" onclick={() => send({
               kind: "remove",
               id: todo.id
-            })}>Remove</button>
-        </grid>
+            })}>Remove</Button>
+        </Grid>
       {/snippet}
     </ListView>
     <TextBlock>{todos.length} tasks, {tally.done} done</TextBlock>
@@ -131,7 +133,7 @@
     >
       {tally.done} finished tasks will be removed.
     </ContentDialog>
-  </stack-panel>
+  </StackPanel>
 </Window>
 
 <style>
@@ -157,7 +159,7 @@
   }
 
   /* ListView is a component: svelte-check cannot see a scoped class on an instance */
-  :global(.todo-list) {
+  .todo-list {
     height: 280px;
   }
 </style>

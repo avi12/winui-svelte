@@ -4,7 +4,7 @@
   import type { TextBlock as TextBlockControl } from "#winui/microsoft/ui/xaml/controls/TextBlock";
   import { fly } from "svelte/transition";
   import { control } from "winui-svelte";
-  import { Window } from "winui-svelte/components";
+  import { StackPanel, TextBlock, Window } from "winui-svelte/components";
   import { exitApplication } from "winui-svelte/window";
 
   const WINDOW_HEIGHT = 320;
@@ -59,14 +59,15 @@
   title="Transitions example"
   width={WINDOW_WIDTH}
 >
-  <stack-panel
+  <StackPanel
     class="panel"
     {@attach control<StackPanelControl>(native => {
       panel = native;
     })}
   >
-    <text-block>A card flies in and out</text-block>
+    <TextBlock>A card flies in and out</TextBlock>
     {#if isShown}
+      <!-- Svelte transitions run on raw elements, not on component instances -->
       <text-block
         {@attach control<TextBlockControl>(native => {
           card = native;
@@ -74,7 +75,7 @@
         transition:fly={flyParams}
       >Hello</text-block>
     {/if}
-  </stack-panel>
+  </StackPanel>
 </Window>
 
 <style>

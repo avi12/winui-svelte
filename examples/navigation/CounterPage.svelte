@@ -1,5 +1,6 @@
 <script lang="ts">
   import { pageStats } from "./page-stats.ts";
+  import { Button, StackPanel, TextBlock } from "winui-svelte/components";
 
   interface Props {
     title: string;
@@ -20,11 +21,11 @@
   });
 </script>
 
-<stack-panel class="page">
-  <text-block>{props.title}</text-block>
-  <text-block>Required: the count survives leaving and coming back.</text-block>
-  <button onclick={() => count++}>Clicked {count} times</button>
-</stack-panel>
+<StackPanel class="page">
+  <TextBlock>{props.title}</TextBlock>
+  <TextBlock>Required: the count survives leaving and coming back.</TextBlock>
+  <Button onclick={() => count++}>Clicked {count} times</Button>
+</StackPanel>
 
 <style>
   .page {

@@ -7,7 +7,13 @@
   import { serveExample } from "#examples/harness/smoke.ts";
   import { unboxed } from "winui-svelte";
   import type { NavigatorHandle } from "winui-svelte/components";
-  import { NavigationView, NavigationViewItem, Navigator, Window } from "winui-svelte/components";
+  import {
+    NavigationView,
+    NavigationViewItem,
+    Navigator,
+    TextBlock,
+    Window
+  } from "winui-svelte/components";
   import { NavigationViewBackButtonVisible } from "winui-svelte/enums";
 
   const WINDOW_HEIGHT = 520;
@@ -61,7 +67,7 @@
   width={WINDOW_WIDTH}
 >
   {#snippet titleBar()}
-    <text-block class="title">Settings</text-block>
+    <TextBlock class="title">Settings</TextBlock>
   {/snippet}
   <NavigationView
     isBackButtonVisible={NavigationViewBackButtonVisible.Collapsed}

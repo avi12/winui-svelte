@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
+  import { StackPanel } from "winui-svelte/components";
 
   interface Props {
     children: Snippet;
@@ -8,9 +9,9 @@
   const { children }: Props = $props();
 </script>
 
-<stack-panel class="page">
+<StackPanel class="page">
   {@render children()}
-</stack-panel>
+</StackPanel>
 
 <style>
   .page {

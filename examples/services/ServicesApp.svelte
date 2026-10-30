@@ -13,7 +13,13 @@
     focusElement,
     FocusKind
   } from "winui-svelte";
-  import { Button, StackPanel, TextBlock, Window } from "winui-svelte/components";
+  import {
+    Border,
+    Button,
+    StackPanel,
+    TextBlock,
+    Window
+  } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
   import { exitApplication, PickerLocation, systemSettings } from "winui-svelte/window";
 
@@ -150,13 +156,13 @@
   bind:handle
 >
   <StackPanel {@attach size.attach} {@attach theme.attach}>
-    <border
+    <Border
       style:background={settings.accentColor}
       class="swatch"
       {@attach control<BorderControl>(native => {
         swatch = native;
       })}
-    ></border>
+    ></Border>
     <TextBlock>Accent {settings.accentColor}, text {settings.textScaleFactor * PERCENT}%</TextBlock>
     <TextBlock>Animations {animationText()}, language {LANGUAGE}</TextBlock>
     <TextBlock>This page is {sizeText()}</TextBlock>

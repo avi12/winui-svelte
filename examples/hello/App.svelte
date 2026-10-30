@@ -1,20 +1,20 @@
 <script lang="ts">
-  import { ToggleSwitch } from "winui-svelte/components";
+  import { StackPanel, TextBlock, ToggleSwitch } from "winui-svelte/components";
 
   let isOn = $state(true);
 </script>
 
-<stack-panel class="hello">
-  <text-block class="title">Hello from WinUI</text-block>
+<StackPanel class="hello">
+  <TextBlock class="title">Hello from WinUI</TextBlock>
   <ToggleSwitch header="Lights" bind:isOn />
-  <text-block>
+  <TextBlock>
     {#if isOn}
       The lights are on
     {:else}
       The lights are off
     {/if}
-  </text-block>
-</stack-panel>
+  </TextBlock>
+</StackPanel>
 
 <style>
   .hello {
