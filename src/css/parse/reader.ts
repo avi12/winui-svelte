@@ -29,6 +29,8 @@ export interface LowerOptions {
    * build supplies it: its prose would otherwise ship in every app.
    */
   explainUnsupported?(property: string): string;
+  /** Why a grid track has no WinUI equivalent, or null; only the build supplies it, for the same reason. */
+  explainGridTrack?(track: string): string | null;
   /** Reports a problem at the declaration's source position. */
   report(input: {
     severity: Severity;

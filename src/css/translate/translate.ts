@@ -1,6 +1,7 @@
 import { tracksOf } from "./animation-tracks.ts";
 import { computeDeclarations } from "./cascade.ts";
 import { dynamicPropertyOf } from "./dynamic-length-properties.ts";
+import { gridTrackProblem } from "./grid-track-verdicts.ts";
 import { createLayerOrder, declareLayer, layerRank, withinLayer } from "./layers.ts";
 import type { LayerOrder } from "./layers.ts";
 import { BUILD_GROUPS, LAZY_GROUPS } from "./lazy-groups.ts";
@@ -36,6 +37,7 @@ import { flattenNestedSelector, parseSelectorList } from "#src/css/parse/selecto
 import type { PositionMapper, SourceMapV3 } from "#src/css/parse/source-map.js";
 import { createPositionMapper } from "#src/css/parse/source-map.js";
 import { splitCommas } from "#src/css/parse/split.js";
+import { convertLength } from "#src/css/parse/units.js";
 import { parsePercent, provideCalcFolding } from "#src/css/parse/values.js";
 import type { ResourceCatalogue, ResourceKind } from "#src/css/runtime/resources.js";
 import { hasStyle, resolveVariable } from "#src/css/runtime/resources.js";
@@ -820,6 +822,7 @@ function validateRules({ translator, catalogue }: {
         key
       }),
       explainUnsupported: unsupportedReason,
+      explainGridTrack: gridTrackProblem,
       report: ({ severity, message, position }) => report({
         translator,
         severity,
@@ -849,7 +852,7 @@ function validateRules({ translator, catalogue }: {
  * custom properties, and a diagnostic for everything WinUI cannot say.
  */
 export function translateStyleSheet(input: TranslateInput) {
-  provideCalcFolding(evaluateCalc);
+  provideCalcFolding(token => evaluateCalc(token) ?? convertLength(token));
   const translator: Translator = {
     input,
     mapPosition: createPositionMapper(input.map),

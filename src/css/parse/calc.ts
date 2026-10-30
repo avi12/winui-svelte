@@ -1,11 +1,10 @@
 import { matchingParenthesis, splitCommas } from "./split.ts";
+import { BUILD_LENGTH as LENGTH_TOKEN, pixelsPerUnit } from "./units.ts";
 
 // `calc()` over lengths and numbers, folded to one value at build time. A
 // term in % or a custom property needs the parent's size or a runtime lookup,
 // which a Style cannot hold, so the whole expression is null.
 
-const LENGTH_TOKEN = /^(-?(?:\d+\.?\d*|\.\d+))(px|rem)?$/iu;
-const PIXELS_PER_REM = 16;
 const CLAMP_ARGUMENTS = 3;
 const MATH_START = /(?<![\w-])(min|max|clamp)\(/giu;
 const HAS_MATH = /(?<![\w-])(min|max|clamp)\(/iu;
@@ -35,7 +34,7 @@ function operand(token: string) {
   const unit = (match[2] ?? "").toLowerCase();
   const amount = Number(match[1]);
   return {
-    value: unit === "rem" ? amount * PIXELS_PER_REM : amount,
+    value: amount * pixelsPerUnit(unit),
     isLength: unit !== ""
   } satisfies Quantity;
 }
