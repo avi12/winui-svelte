@@ -20,6 +20,7 @@
     Navigator,
     Window
   } from "winui-svelte/components";
+  import { NavigationViewBackButtonVisible } from "winui-svelte/enums";
   import { exitApplication } from "winui-svelte/window";
 
   const WINDOW_HEIGHT = 480;
@@ -182,16 +183,16 @@
     {@attach control((native: NavigationViewControl) => {
       view = native;
     })}
-    isBackButtonVisible="Visible"
+    isBackButtonVisible={NavigationViewBackButtonVisible.Visible}
     isBackEnabled={navigator?.canGoBack ?? false}
     isSettingsVisible={false}
     onbackrequested={() => navigator?.goBack()}
     onselectionchanged={(_sender, args) => chosen(args.selectedItemContainer)}
   >
     {#snippet menuItems()}
-      <NavigationViewItem {@attach keep("home")} content="Home" tag="home" />
-      <NavigationViewItem {@attach keep("counter")} content="Counter" tag="counter" />
-      <NavigationViewItem {@attach keep("about")} content="About" tag="about" />
+      <NavigationViewItem {@attach keep("home")} tag="home">Home</NavigationViewItem>
+      <NavigationViewItem {@attach keep("counter")} tag="counter">Counter</NavigationViewItem>
+      <NavigationViewItem {@attach keep("about")} tag="about">About</NavigationViewItem>
     {/snippet}
     <Navigator onready={ready => routes.get("home")?.open(ready)} bind:handle={navigator}>
       {#snippet transition()}

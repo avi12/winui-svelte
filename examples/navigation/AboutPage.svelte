@@ -1,12 +1,9 @@
 <script lang="ts">
   import { pageStats } from "./page-stats.ts";
-  import { StackPanel, TextBlock } from "winui-svelte/components";
 
   interface Props {
     version: string;
   }
-
-  const PADDING = 24;
 
   const props: Props = $props();
 
@@ -16,7 +13,13 @@
   });
 </script>
 
-<StackPanel padding={PADDING}>
-  <TextBlock text="About" />
-  <TextBlock text={`Version ${props.version}`} />
-</StackPanel>
+<stack-panel class="page">
+  <text-block>About</text-block>
+  <text-block>Version {props.version}</text-block>
+</stack-panel>
+
+<style>
+  .page {
+    padding: 24px;
+  }
+</style>
