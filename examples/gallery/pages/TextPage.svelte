@@ -14,7 +14,6 @@
     TextHighlighter
   } from "winui-svelte/components";
 
-  const EDITOR_HEIGHT = 120;
   const SENTENCE = "Find the needle in the haystack";
   let query = $state("needle");
   function highlightRanges() {
@@ -38,21 +37,25 @@
   <StackPanel class="text-block-demo">
     <RichTextBlock {@attach keyControl("text")}>
       <Paragraph>
-        Plain, <Bold>bold</Bold>, a <Run text="run" /> and a <Hyperlink navigateUri="https://github.com">link</Hyperlink>.
+        Plain, <Bold>bold</Bold>, a <Run>run</Run> and a <Hyperlink navigateUri="https://github.com">link</Hyperlink>.
       </Paragraph>
     </RichTextBlock>
     <TextBox header="Highlight" bind:text={query} />
-    <TextBlock text={SENTENCE}>
+    <TextBlock>{SENTENCE}
       {#snippet textHighlighters()}
         <TextHighlighter background="#ffee00" ranges={highlightRanges()} />
       {/snippet}
     </TextBlock>
-    <RichEditBox header="Document" height={EDITOR_HEIGHT} />
+    <RichEditBox class="text-editor" header="Document" />
   </StackPanel>
 </PageFrame>
 
 <style>
-  :global(.text-block-demo) {
+  .text-block-demo {
     gap: 8px;
+  }
+
+  .text-editor {
+    height: 120px;
   }
 </style>

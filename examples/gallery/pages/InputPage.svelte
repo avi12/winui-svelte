@@ -11,6 +11,7 @@
     TextBlock,
     TextBox
   } from "winui-svelte/components";
+  import { VirtualKey, VirtualKeyModifiers } from "winui-svelte/enums";
 
   const field = elementRef<Focusable>();
   let saves = $state(0);
@@ -37,10 +38,10 @@
     <Button {@attach keyControl("input")} onclick={() => saves++}>
       Save ({saves})
       {#snippet keyboardAccelerators()}
-        <KeyboardAccelerator key="S" modifiers="Control" oninvoked={() => saves++} />
+        <KeyboardAccelerator key={VirtualKey.S} modifiers={VirtualKeyModifiers.Control} oninvoked={() => saves++} />
       {/snippet}
     </Button>
-    <TextBlock text="Press Ctrl+S, or click the button" />
+    <TextBlock>Press Ctrl+S, or click the button</TextBlock>
     <TextBox {@attach field.attach} header="Field" />
     <Button onclick={focusField}>Focus the field</Button>
     <Border
@@ -49,17 +50,17 @@
       onpointerexited={() => (pointer = "left")}
       onpointerpressed={() => presses++}
     >
-      <TextBlock text="Pointer: {pointer}, pressed {presses} times" />
+      <TextBlock>Pointer: {pointer}, pressed {presses} times</TextBlock>
     </Border>
   </StackPanel>
 </PageFrame>
 
 <style>
-  :global(.input-block) {
+  .input-block {
     gap: 8px;
   }
 
-  :global(.input-pad) {
+  .input-pad {
     padding: 24px;
     background-color: #0a84a8;
   }

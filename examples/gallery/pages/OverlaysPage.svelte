@@ -12,6 +12,7 @@
     TeachingTip,
     TextBlock
   } from "winui-svelte/components";
+  import { InfoBarSeverity } from "winui-svelte/enums";
 
   let isFirstOpen = $state(false);
   let isSecondOpen = $state(false);
@@ -50,28 +51,28 @@
     >
       The second one waited for the first
     </ContentDialog>
-    <TextBlock text="answers: {answers.join(", ")}" />
+    <TextBlock>answers: {answers.join(", ")}</TextBlock>
     <Button onclick={() => (isFlyoutOpen = true)}>Flyout</Button>
     <Flyout bind:open={isFlyoutOpen}>
-      <TextBlock text="Opens beside the panel it is written in" />
+      <TextBlock>Opens beside the panel it is written in</TextBlock>
     </Flyout>
     <Button>
       Menu
       {#snippet flyout()}
         <MenuFlyout bind:open={isMenuOpen}>
-          <MenuFlyoutItem text="Copy" />
-          <MenuFlyoutItem text="Paste" />
+          <MenuFlyoutItem>Copy</MenuFlyoutItem>
+          <MenuFlyoutItem>Paste</MenuFlyoutItem>
         </MenuFlyout>
       {/snippet}
     </Button>
     <Button onclick={() => (isTipOpen = true)}>Teaching tip</Button>
     <TeachingTip subtitle="A tip points at what it explains." title="Tip" bind:isOpen={isTipOpen} />
-    <InfoBar message="Saved to disk" severity="Success" title="Done" bind:isOpen={isInfoOpen} />
+    <InfoBar message="Saved to disk" severity={InfoBarSeverity.Success} title="Done" bind:isOpen={isInfoOpen} />
   </StackPanel>
 </PageFrame>
 
 <style>
-  :global(.overlay-block) {
+  .overlay-block {
     gap: 8px;
   }
 </style>

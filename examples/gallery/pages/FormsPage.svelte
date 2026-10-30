@@ -19,6 +19,7 @@
     TimePicker,
     ToggleSwitch
   } from "winui-svelte/components";
+  import { NumberBoxSpinButtonPlacementMode } from "winui-svelte/enums";
   import { z } from "zod";
 
   const MINIMUM_NAME = 2;
@@ -60,7 +61,13 @@
       accepted: isAccepted
     })
   );
-  const problems = $derived(result.success ? [] : result.error.issues.map(issue => issue.message));
+  function summary() {
+    if (result.success) {
+      return "The form is valid";
+    }
+
+    return result.error.issues.map(issue => issue.message).join(" / ");
+  }
 </script>
 
 <PageFrame
@@ -70,9 +77,14 @@
   <StackPanel class="form-block">
     <TextBox {@attach keyControl("forms")} header="Name" bind:text={name} />
     <PasswordBox header="Password" bind:password />
-    <NumberBox header="Age" minimum={0} spinButtonPlacementMode="Inline" bind:value={age} />
+    <NumberBox
+      header="Age"
+      minimum={0}
+      spinButtonPlacementMode={NumberBoxSpinButtonPlacementMode.Inline}
+      bind:value={age}
+    />
     <CheckBox bind:isChecked={isAccepted}>I accept the terms</CheckBox>
-    <TextBlock text={problems.length === 0 ? "The form is valid" : problems.join(" / ")} />
+    <TextBlock>{summary()}</TextBlock>
   </StackPanel>
   <StackPanel class="form-block">
     <ToggleSwitch header="Notifications" bind:isOn />
@@ -80,7 +92,7 @@
     <RadioButtons header="Plan" bind:selectedIndex={plan}>
       {#snippet items()}
         {#each PLANS as label (label)}
-          <TextBlock text={label} />
+          <TextBlock>{label}</TextBlock>
         {/each}
       {/snippet}
     </RadioButtons>
@@ -96,12 +108,12 @@
     <DatePicker header="Birthday" bind:date={birthday} />
     <CalendarDatePicker header="Appointment" bind:date={appointment} />
     <TimePicker header="Wake up" bind:time={wake} />
-    <TextBlock text="{PLANS[plan]}, {CITIES[city]}, {rating} stars, {volume}% volume, search '{search}'" />
+    <TextBlock>{PLANS[plan]}, {CITIES[city]}, {rating} stars, {volume}% volume, search '{search}'</TextBlock>
   </StackPanel>
 </PageFrame>
 
 <style>
-  :global(.form-block) {
+  .form-block {
     gap: 8px;
     max-width: 420px;
   }

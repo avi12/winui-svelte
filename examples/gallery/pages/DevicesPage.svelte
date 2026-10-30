@@ -41,9 +41,9 @@
   title="Devices"
 >
   <StackPanel class="devices-block">
-    <TextBlock {@attach keyControl("devices")} text={inputSummary(input)} />
-    <TextBlock text={batterySummary(power)} />
-    <TextBlock text={networkSummary(network)} />
+    <TextBlock {@attach keyControl("devices")}>{inputSummary(input)}</TextBlock>
+    <TextBlock>{batterySummary(power)}</TextBlock>
+    <TextBlock>{networkSummary(network)}</TextBlock>
     {#each audio.outputs.devices.items as device (device.id)}
       <TextBlock
         text={marked({
@@ -64,17 +64,17 @@
         })} />
     {/each}
     {#each wireless.radios as radio (radio.name)}
-      <TextBlock text="Radio {radio.name}" />
+      <TextBlock>Radio {radio.name}</TextBlock>
     {/each}
     <Button onclick={toggleScan}>{scanLabel()}</Button>
     {#each scanner.advertisements.items as advertisement (advertisement.addressText)}
-      <TextBlock text="{advertisement.localName || advertisement.addressText} {advertisement.rssi} dBm" />
+      <TextBlock>{advertisement.localName || advertisement.addressText} {advertisement.rssi} dBm</TextBlock>
     {/each}
   </StackPanel>
 </PageFrame>
 
 <style>
-  :global(.devices-block) {
+  .devices-block {
     gap: 6px;
   }
 </style>
