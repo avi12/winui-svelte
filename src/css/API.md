@@ -571,7 +571,7 @@ handles. Declarations like these fail the build with it:
 |---|---|
 | `position`, `top`, `left`, `right`, `bottom`, `inset` in a style attribute | they are read from a component's `<style>` block (see Position); `right`, `bottom` and `position: sticky` have no WinUI counterpart |
 | `box-shadow` | `ThemeShadow` takes no blur, offset, spread or color: use `-winui-elevation` |
-| `filter`, `mix-blend-mode`, `mask`, `mask-image` | blur, grayscale, brightness, drop-shadow, blend modes and opacity masks are Composition effect and mask brushes, which need `ElementCompositionPreview` (to attach a SpriteVisual to the element) and Win2D's effect classes. Use `backdrop-filter: blur()` or an acrylic or Mica backdrop |
+| `filter`, `mix-blend-mode`, `mask`, `mask-image` | blur, grayscale, brightness, drop-shadow, blend modes and opacity masks are Composition effects on a visual over the element, which a Style cannot attach or aim at a sibling. Call `applyEffect` of `winui-svelte/win2d` from an attachment (see Win2D in the API), or use `backdrop-filter: blur()` or an acrylic or Mica backdrop |
 | `clip-path` other than `inset()` (circle, ellipse, polygon, path), `inset(... round ...)` | `UIElement.Clip` is a `RectangleGeometry` with square corners |
 | `cursor` | accepted and ignored with a warning: the cursor is `UIElement.ProtectedCursor`, a protected property set to an `InputSystemCursor`, and the bindings have neither a public setter nor `InputSystemCursor` |
 | `text-transform` | a `TextBlock` draws its `Text` as written |

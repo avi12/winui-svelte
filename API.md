@@ -1357,9 +1357,13 @@ element as a child sprite visual and returns a function that removes it;
 another element (its own pixels: `filter: blur()`, `drop-shadow()`,
 `grayscale()`, `mix-blend-mode`). An element cannot be its own source (its child
 visual would be part of what it samples): put the content in one element and
-the effect in a sibling over it. The CSS `filter` property will map onto
-this; today CSS `filter` is still a build error, and `applyEffect` was built and
-type-checked but not looked at on screen.
+the effect in a sibling over it. CSS `filter` and `mix-blend-mode` stay build
+errors, for two reasons a Style cannot get around: the effect is a Composition
+visual attached to the element through `applyEffect`, not a property a Style
+can set, and a CSS rule on an element cannot name the sibling that must hold
+the effect. Call `applyEffect` from an attachment instead. It was built and
+type-checked but not looked at on screen: nothing reads the pixels of a
+Composition effect back without a screen capture.
 
 The working example is `examples/win2d` (`test/win2d.test.ts` runs it in a real
 window and checks the redraw; `src/win2d/win2d.test.ts` draws on a render
