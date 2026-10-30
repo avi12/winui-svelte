@@ -575,10 +575,10 @@ knows better supplies it (`installMatchMedia({ inputs: { devices: ... } })`)
 | `color-index` | range | always 0: no display uses an indexed palette |
 | `monochrome` | range | always 0: the display is a color one |
 | `grid` | range | always 0: a window is a bitmap display |
-| `color-gamut` | keyword | srgb, or what the app supplies (AdvancedColorInfo has no binding yet) |
-| `dynamic-range`, `video-dynamic-range` | keyword | standard, or what the app supplies (AdvancedColorInfo has no binding yet) |
-| `hover`, `any-hover` | keyword | a mouse is assumed, or the devices the app supplies (the input capability classes have no binding yet) |
-| `pointer`, `any-pointer` | keyword | a mouse is assumed (fine), or the devices the app supplies |
+| `color-gamut` | keyword | srgb, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet |
+| `dynamic-range`, `video-dynamic-range` | keyword | standard, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet |
+| `hover`, `any-hover` | keyword | read from GetSystemMetrics (mouse present, digitizer touch and pen bits), asked again every two seconds while a query listens; hover is none for touch only |
+| `pointer`, `any-pointer` | keyword | read from GetSystemMetrics: fine for a mouse or pen, coarse when touch is the only pointer |
 | `scan` | keyword | always progressive |
 | `update` | keyword | always fast |
 | `overflow-block`, `overflow-inline` | keyword | always scroll: a window has no pages |
@@ -588,15 +588,20 @@ knows better supplies it (`installMatchMedia({ inputs: { devices: ... } })`)
 | `prefers-reduced-motion` | keyword | UISettings.AnimationsEnabled |
 | `prefers-reduced-transparency` | keyword | UISettings.AdvancedEffectsEnabled (Transparency effects) |
 | `forced-colors` | keyword | AccessibilitySettings.HighContrast |
-| `prefers-reduced-data` | keyword | no-preference, or what the app supplies (NetworkInformation has no binding yet) |
+| `prefers-reduced-data` | keyword | no-preference, or what the app supplies: Windows.Networking.Connectivity.NetworkInformation is not in the generated bindings (only ConnectionCost is) |
 | `inverted-colors` | keyword | always none: Windows tells apps of no color inversion |
 | `light-level` | keyword | always normal: no ambient light sensor is read |
 | `nav-controls` | keyword | always back |
 | `horizontal-viewport-segments`, `vertical-viewport-segments` | range | always 1: a window is one segment |
 | `device-posture` | keyword | always continuous: no fold is reported |
 
-`env(safe-area-inset-*)` and `env(titlebar-area-*)` are not translated yet: a
-window has no inset, and the title bar rectangle needs the window
+`env(safe-area-inset-top|right|bottom|left)` is `0px` (a window has no notch),
+and `env(titlebar-area-x|y|width|height)` in a `width`, `height`, `min-` or `max-`
+length (alone or in `calc()`, `min()`, `max()`, `clamp()`) is the rectangle of the
+custom title bar from `AppWindow.TitleBar` (the left inset of the caption
+buttons, its height, the width between the insets), read when the window is laid
+out and again when it resizes; a window without a custom title bar leaves the
+property alone
 
 ### Preferences, in short
 
@@ -611,6 +616,26 @@ window has no inset, and the title bar rectangle needs the window
 `forced-color-adjust` has no WinUI meaning (WinUI's contrast theme recolors
 controls through theme resources an element cannot opt out of) and is a build
 error that says what to write instead
+
+### Dark values follow the element's theme
+
+A declaration that reads a custom property with a dark value, or `light-dark()`,
+is written out for both themes: the rule keeps the light value and a copy under
+`prefers-color-scheme: dark` has the dark one
+WinUI does not read a Style's theme resource again when the theme of the element
+changes (a `RequestedTheme` above it), while a rule under a media query
+restyles live from `ActualThemeChanged`, so the color follows the theme as it
+changes
+The dictionaries stay for the controls' own templates
+
+### Testing against fake settings
+
+When the environment variable `WINUI_SVELTE_FAKE_SETTINGS` names a JSON file
+(`isDark`, `isHighContrast`, `isAnimationEnabled`, `isTransparencyEnabled`
+booleans and `textScaleFactor`, each optional), the settings store reads that file
+instead of Windows' settings and notices a rewrite within a tenth of a second
+Nothing is read when the variable is not set; `test/media.test.ts` drives a real
+window through it
 
 ### Reduced motion is automatic
 

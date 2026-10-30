@@ -53,12 +53,17 @@ export class ExampleProcess {
     });
   }
 
-  static start({ entry, flags = [] }: {
+  static start({ entry, flags = [], env = {} }: {
     entry: string;
     flags?: string[];
+    env?: Record<string, string>;
   }) {
     const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "--enable-source-maps", LAUNCHER, entry, ...flags], {
       cwd: PACKAGE_ROOT,
+      env: {
+        ...process.env,
+        ...env
+      },
       stdio: ["pipe", "pipe", "inherit"]
     });
     return new ExampleProcess(child);

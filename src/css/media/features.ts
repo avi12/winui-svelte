@@ -332,25 +332,25 @@ export const MEDIA_FEATURES: ReadonlyMap<string, MediaFeature> = new Map<string,
     order: Object.values(ColorGamut),
     read: inputs => inputs.gamut(),
     changes: ["dynamicRange"],
-    source: "srgb, or what the app supplies (AdvancedColorInfo has no binding yet)"
+    source: "srgb, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet"
   }],
-  ["dynamic-range", dynamicRange("standard, or what the app supplies (AdvancedColorInfo has no binding yet)")],
-  ["video-dynamic-range", dynamicRange("standard, or what the app supplies (AdvancedColorInfo has no binding yet)")],
+  ["dynamic-range", dynamicRange("standard, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet")],
+  ["video-dynamic-range", dynamicRange("standard, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet")],
   ["hover", pointer({
     read: hoverOf,
-    source: "a mouse is assumed, or the devices the app supplies (the input capability classes have no binding yet)"
+    source: "read from GetSystemMetrics (mouse present, digitizer touch and pen bits), asked again every two seconds while a query listens"
   })],
   ["any-hover", pointer({
     read: hoverOf,
-    source: "a mouse is assumed, or the devices the app supplies (the input capability classes have no binding yet)"
+    source: "read from GetSystemMetrics (mouse present, digitizer touch and pen bits), asked again every two seconds while a query listens"
   })],
   ["pointer", pointer({
     read: devices => pointerOf(devices).slice(0, 1),
-    source: "a mouse is assumed (fine), or the devices the app supplies"
+    source: "read from GetSystemMetrics: fine for a mouse or pen, coarse when touch is the only pointer"
   })],
   ["any-pointer", pointer({
     read: pointerOf,
-    source: "a mouse is assumed (fine), or the devices the app supplies"
+    source: "read from GetSystemMetrics: fine for a mouse or pen, coarse when touch is the only pointer"
   })],
   ["scan", keyword({
     answer: "progressive",
@@ -402,7 +402,7 @@ export const MEDIA_FEATURES: ReadonlyMap<string, MediaFeature> = new Map<string,
     falseKeyword: NO_PREFERENCE,
     read: inputs => (inputs.isMetered() ? REDUCE : NO_PREFERENCE),
     changes: ["connection"],
-    source: "no-preference, or what the app supplies (NetworkInformation has no binding yet)"
+    source: "no-preference, or what the app supplies: Windows.Networking.Connectivity.NetworkInformation is not in the generated bindings (only ConnectionCost is)"
   }],
   ["inverted-colors", keyword({
     answer: NONE,
