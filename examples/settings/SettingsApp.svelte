@@ -7,13 +7,8 @@
   import { serveExample } from "#examples/harness/smoke.ts";
   import { unboxed } from "winui-svelte";
   import type { NavigatorHandle } from "winui-svelte/components";
-  import {
-    NavigationView,
-    NavigationViewItem,
-    Navigator,
-    TextBlock,
-    Window
-  } from "winui-svelte/components";
+  import { NavigationView, NavigationViewItem, Navigator, Window } from "winui-svelte/components";
+  import { NavigationViewBackButtonVisible } from "winui-svelte/enums";
 
   const WINDOW_HEIGHT = 520;
   const WINDOW_WIDTH = 760;
@@ -66,16 +61,16 @@
   width={WINDOW_WIDTH}
 >
   {#snippet titleBar()}
-    <TextBlock class="settings-title" text="Settings" />
+    <text-block class="title">Settings</text-block>
   {/snippet}
   <NavigationView
-    isBackButtonVisible="Collapsed"
+    isBackButtonVisible={NavigationViewBackButtonVisible.Collapsed}
     isSettingsVisible={false}
     onselectionchanged={(_sender, args) => open(String(unboxed(args.selectedItemContainer.tag)))}
   >
     {#snippet menuItems()}
       {#each PAGES as route (route.key)}
-        <NavigationViewItem content={route.title} isSelected={route.key === PAGES[0]?.key} tag={route.key} />
+        <NavigationViewItem isSelected={route.key === PAGES[0]?.key} tag={route.key}>{route.title}</NavigationViewItem>
       {/each}
     {/snippet}
     <Navigator onready={() => open(PAGES[0]?.key ?? "")} bind:handle={navigator} />
@@ -83,17 +78,7 @@
 </Window>
 
 <style>
-  :global(.settings-title) {
+  .title {
     padding: 8px 16px;
-  }
-
-  :global(.settings-page) {
-    gap: 12px;
-    max-width: 420px;
-    padding: 24px;
-  }
-
-  :global(.settings-row) {
-    gap: 6px;
   }
 </style>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { LANGUAGES, preferences } from "./preferences.svelte.ts";
-  import { StackPanel, TextBlock } from "winui-svelte/components";
+  import SettingsPage from "./SettingsPage.svelte";
+  import { TextBlock } from "winui-svelte/components";
 
   function greeting() {
     const isNameMissing = preferences.userName === "";
@@ -8,9 +9,9 @@
   }
 </script>
 
-<StackPanel class="settings-page">
-  <TextBlock text="winui-svelte settings example" />
-  <TextBlock text={greeting()} />
-  <TextBlock text="Language {LANGUAGES[preferences.language]}, theme {preferences.theme}" />
-  <TextBlock text="Material {preferences.backdrop}" />
-</StackPanel>
+<SettingsPage>
+  <TextBlock>winui-svelte settings example</TextBlock>
+  <TextBlock>{greeting()}</TextBlock>
+  <TextBlock>Language {LANGUAGES[preferences.language]}, theme {preferences.theme}</TextBlock>
+  <TextBlock>Material {preferences.backdrop}</TextBlock>
+</SettingsPage>

@@ -1,4 +1,4 @@
-import type { Backdrop, WindowTheme } from "winui-svelte/window";
+import { Backdrop, WindowTheme } from "winui-svelte/enums";
 
 const DEFAULT_TEXT_SIZE = 14;
 export const LANGUAGES = ["English", "Hebrew", "French"] as const;
@@ -11,8 +11,8 @@ class Preferences {
   language = $state(0);
   isStartupEnabled = $state(false);
   isTelemetryEnabled = $state(true);
-  theme = $state<WindowTheme>("system");
-  backdrop = $state<Backdrop>("mica");
+  theme = $state<WindowTheme>(WindowTheme.system);
+  backdrop = $state<Backdrop>(Backdrop.mica);
   textSize = $state(DEFAULT_TEXT_SIZE);
   userName = $state("");
 }
