@@ -210,7 +210,6 @@ export class FormController implements FormHandle {
   private readonly options: FormOptions;
   private abort = new AbortController();
   private schemaMessages = new SvelteMap<string, string>();
-  private formMessage = "";
 
   constructor(options: FormOptions) {
     this.options = options;
@@ -218,11 +217,6 @@ export class FormController implements FormHandle {
 
   get isValid() {
     return this.fields.every(field => field.isValid);
-  }
-
-  /** The message of a schema issue that names no field (reactive-free: read after a submit). */
-  get formError() {
-    return this.formMessage;
   }
 
   field(name: string) {
@@ -273,7 +267,6 @@ export class FormController implements FormHandle {
 
   private checkSchema(object: FormObject) {
     this.schemaMessages = new SvelteMap();
-    this.formMessage = "";
     const { schema } = this.options;
     const hasSchema = schema !== undefined;
     if (!hasSchema) {
@@ -290,7 +283,6 @@ export class FormController implements FormHandle {
       const name = typeof first === "string" ? first : undefined;
       const isFormLevel = name === undefined;
       if (isFormLevel) {
-        this.formMessage ||= issue.message;
         continue;
       }
 

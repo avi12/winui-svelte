@@ -173,16 +173,10 @@ export type ItemValue = (selection: {
   index: number;
 }) => FieldValue;
 
-/**
- * The value of an item that is text, a number or a boolean as it is. WinUI
- * hands any other item (a ComboBoxItem) over as an opaque object that cannot
- * be read, so the value is where it is in the list; the `values` of the field
- * say what it stands for.
- *
- * @param selection - The selected item and its index.
- * @returns The value the form collects.
- */
-export function defaultItemValue({ item, index }: {
+// An item that is text, a number or a boolean is its own value. WinUI hands any
+// other item (a ComboBoxItem) over as an opaque object that cannot be read, so
+// the value is its index; the field's `values` say what it stands for.
+function defaultItemValue({ item, index }: {
   item: unknown;
   index: number;
 }) {

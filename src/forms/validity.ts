@@ -114,14 +114,8 @@ export const VALID_STATE: ValidityState = {
   valid: true
 };
 
-/**
- * Whether a value counts as nothing filled in: null, an empty string, or an
- * unchecked box.
- *
- * @param value - The collected value.
- * @returns True when `required` would fail.
- */
-export function isEmptyValue(value: FieldValue) {
+// Nothing filled in: null, an empty string, NaN or an unchecked box.
+function isEmptyValue(value: FieldValue) {
   const isBlank = value === null || value === "" || value === false;
   const isNotANumber = typeof value === "number" && Number.isNaN(value);
   return isBlank || isNotANumber;
