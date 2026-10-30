@@ -707,6 +707,6 @@ test("env() safe-area insets are zero and titlebar-area is an error", () => {
   const { sheet, diagnostics } = translate({ css: ".a { width: calc(100px - env(safe-area-inset-left)) }" });
   assert.deepEqual(diagnostics, []);
   const declarations = (sheet.rules[0]?.declarations ?? []).map(declaration => `${declaration.property}: ${declaration.value}`);
-  assert.deepEqual(declarations, ["width: calc(100px - 0px)"]);
+  assert.deepEqual(declarations, ["width: 100px"]);
   assert.match(errors(".a { height: calc(100px - env(titlebar-area-height)) }").join(), /height: expected a length/u);
 });
