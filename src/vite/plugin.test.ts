@@ -120,10 +120,10 @@ test("a component that imports svelte/motion turns it on, and one that uses neit
   assert.doesNotMatch(compiled("<border></border>\n"), /ElementAnimation/u);
 });
 
-test("svelte/motion's media query is read so that it loads before the DOM exists", () => {
+test("svelte/motion's media query is read from the installed matchMedia, and loads before the DOM exists", () => {
   const patched = patchSvelteRuntime({
     filename: "/app/node_modules/svelte/src/reactivity/media-query.js",
     source: "const q = window.matchMedia(final_query);"
   });
-  assert.match(patched, /globalThis[.]window[?][.]matchMedia/u);
+  assert.match(patched, /globalThis[.]matchMedia [?][?] globalThis[.]window[?][.]matchMedia/u);
 });
