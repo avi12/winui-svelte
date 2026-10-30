@@ -5,7 +5,6 @@
     ComboBox,
     ComboBoxItem,
     NumberBox,
-    StackPanel,
     TextBlock,
     TextBox,
     ToggleSwitch
@@ -148,20 +147,23 @@
       I accept the terms
     </CheckBox>
   </FormField>
-  <StackPanel class="signup-actions" orientation="Horizontal">
+  <stack-panel class="actions">
     <Button {@attach formButton()} automationId="submit">Sign up</Button>
     <Button {@attach formButton(RESET_BUTTON)} automationId="reset">Reset</Button>
-  </StackPanel>
+  </stack-panel>
   <TextBlock automationId="result">{statusText()}</TextBlock>
 </Form>
 
 <style>
+  /* Form is a component: svelte-check cannot see a scoped class on an instance */
   :global(.signup-form) {
     gap: 12px;
     max-width: 420px;
   }
 
-  :global(.signup-actions) {
+  .actions {
+    display: flex;
+    flex-direction: row;
     gap: 12px;
   }
 </style>
