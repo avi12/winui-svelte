@@ -102,6 +102,6 @@ export const LENGTH_UNITS: ReadonlyMap<string, LengthUnit> = new Map<string, Len
   unsupported({
     unit: "%",
     reason: "WinUI has no percentage lengths",
-    advice: "WinUI has no % unit in a length: write px, or use a Grid star track or stretch alignment, or compute it in script"
+    advice: "WinUI has no % unit: write px, or use a Grid star track or stretch alignment, or compute it in script"
   })
 ]);
