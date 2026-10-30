@@ -32,17 +32,6 @@ export type FilterStep =
     readonly color: string;
   };
 
-/** What reading a filter list gives: its steps, or why it is not one. */
-export type FilterResult =
-  | {
-    readonly isValid: true;
-    readonly steps: readonly FilterStep[];
-  }
-  | {
-    readonly isValid: false;
-    readonly reason: string;
-  };
-
 const FILTER_FUNCTION = /^([a-z-]+)\((.*)\)$/isu;
 const MATRIX_ROWS = 4;
 const MATRIX_COLUMNS = 5;
@@ -71,7 +60,7 @@ export const IDENTITY_MATRIX: ColorMatrix = Array.from({ length: MATRIX_ROWS * M
   return isDiagonal ? 1 : 0;
 });
 
-function at({ values, row, column }: {
+function entryAt({ values, row, column }: {
   values: ColorMatrix;
   row: number;
   column: number;
@@ -91,17 +80,17 @@ export function multiplyMatrices({ first, second }: {
     const row = Math.floor(i / MATRIX_COLUMNS);
     const column = i % MATRIX_COLUMNS;
     const isOffsetColumn = column === OFFSET_COLUMN;
-    let sum = isOffsetColumn ? at({
+    let sum = isOffsetColumn ? entryAt({
       values: second,
       row,
       column: OFFSET_COLUMN
     }) : 0;
     for (let iChannel = 0; iChannel < MATRIX_ROWS; iChannel++) {
-      sum += at({
+      sum += entryAt({
         values: second,
         row,
         column: iChannel
-      }) * at({
+      }) * entryAt({
         values: first,
         row: iChannel,
         column
@@ -148,7 +137,7 @@ function mixWithIdentity({ target, amount }: {
 }
 
 /** `grayscale(amount)`, amount from 0 to 1. */
-export function grayscaleMatrix(amount: number) {
+function grayscaleMatrix(amount: number) {
   return mixWithIdentity({
     target: repeatRow(LUMA),
     amount
@@ -156,7 +145,7 @@ export function grayscaleMatrix(amount: number) {
 }
 
 /** `sepia(amount)`, amount from 0 to 1. */
-export function sepiaMatrix(amount: number) {
+function sepiaMatrix(amount: number) {
   return mixWithIdentity({
     target: SEPIA,
     amount
@@ -164,14 +153,14 @@ export function sepiaMatrix(amount: number) {
 }
 
 /** `saturate(amount)`: 1 changes nothing, 0 is gray, above 1 oversaturates. */
-export function saturateMatrix(amount: number) {
+function saturateMatrix(amount: number) {
   const gray = repeatRow(SATURATE_LUMA);
   const identity = identityRows();
   return fromColorRows(identity.map((own, i) => own * amount + (gray[i] ?? 0) * (1 - amount)));
 }
 
 /** `hue-rotate(angle)`, the angle in degrees. */
-export function hueRotateMatrix(degrees: number) {
+function hueRotateMatrix(degrees: number) {
   const radians = degrees * Math.PI / HALF_TURN_DEGREES;
   const [cosine, sine] = [Math.cos(radians), Math.sin(radians)];
   const gray = repeatRow(SATURATE_LUMA);
@@ -206,7 +195,7 @@ function diagonalMatrix({ scale, offset }: {
 }
 
 /** `invert(amount)`, amount from 0 to 1. */
-export function invertMatrix(amount: number) {
+function invertMatrix(amount: number) {
   return diagonalMatrix({
     scale: 1 - 2 * amount,
     offset: amount
@@ -214,7 +203,7 @@ export function invertMatrix(amount: number) {
 }
 
 /** `brightness(amount)`: a factor on the colour channels. */
-export function brightnessMatrix(amount: number) {
+function brightnessMatrix(amount: number) {
   return diagonalMatrix({
     scale: amount,
     offset: 0
@@ -222,7 +211,7 @@ export function brightnessMatrix(amount: number) {
 }
 
 /** `contrast(amount)`: a factor around middle gray. */
-export function contrastMatrix(amount: number) {
+function contrastMatrix(amount: number) {
   return diagonalMatrix({
     scale: amount,
     offset: HALF - HALF * amount
@@ -230,7 +219,7 @@ export function contrastMatrix(amount: number) {
 }
 
 /** `opacity(amount)`, amount from 0 to 1: a factor on alpha. */
-export function opacityMatrix(amount: number) {
+function opacityMatrix(amount: number) {
   return Array.from({ length: MATRIX_ROWS * MATRIX_COLUMNS }, (_unused, i) => {
     const row = Math.floor(i / MATRIX_COLUMNS);
     const column = i % MATRIX_COLUMNS;

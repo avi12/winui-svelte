@@ -34,20 +34,23 @@ function roundedCommands({ x, y, width, height, radii }: {
   const [topLeft, topRight, bottomRight, bottomLeft] = radii;
   const right = x + width;
   const bottom = y + height;
-  const arc = ({ corner, endX, endY }: {
+  function arc({ corner, endX, endY }: {
     corner: Corner | undefined;
     endX: number;
     endY: number;
-  }) => ({
-    kind: "arc",
-    radiusX: corner?.x ?? 0,
-    radiusY: corner?.y ?? 0,
-    rotation: 0,
-    isLarge: false,
-    isSweep: true,
-    x: endX,
-    y: endY
-  }) as const satisfies PathCommand;
+  }) {
+    return {
+      kind: "arc",
+      radiusX: corner?.x ?? 0,
+      radiusY: corner?.y ?? 0,
+      rotation: 0,
+      isLarge: false,
+      isSweep: true,
+      x: endX,
+      y: endY
+    } as const satisfies PathCommand;
+  }
+
   return [
     {
       kind: "move",
@@ -233,10 +236,13 @@ function shifted({ shape, offset }: {
   shape: ResolvedClip;
   offset: ClipOffset;
 }) {
-  const move = (point: ClipOffset) => ({
-    x: point.x + offset.x,
-    y: point.y + offset.y
-  });
+  function move(point: ClipOffset) {
+    return {
+      x: point.x + offset.x,
+      y: point.y + offset.y
+    };
+  }
+
   const isPolygon = shape.kind === "polygon";
   if (isPolygon) {
     return {

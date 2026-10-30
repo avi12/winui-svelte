@@ -35,7 +35,7 @@ export function clipGroups(host?: VisualHost) {
     members: [CLIP_PATH],
     lower: lowerClipPath,
     writes: {
-      [CLIP_TARGET]: ({ control, value }) => {
+      [CLIP_TARGET]({ control, value }) {
         const isHostMissing = host === undefined;
         if (isHostMissing) {
           return null;

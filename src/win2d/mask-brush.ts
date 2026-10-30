@@ -39,19 +39,22 @@ function graphicsDeviceOf(compositor: Compositor) {
  * Lays a gradient mask over the element's area: the gradient's points are
  * fractions of the element, and the sprite is `margin` larger on each side.
  */
-export function createGradientBrush({ compositor, gradient, area }: {
+function createGradientBrush({ compositor, gradient, area }: {
   compositor: Compositor;
   gradient: Gradient;
   area: MaskArea;
 }) {
   const { width, height, margin } = area;
-  const place = (point: {
+  function place(point: {
     x: number;
     y: number;
-  }) => ({
-    x: margin + point.x * width,
-    y: margin + point.y * height
-  });
+  }) {
+    return {
+      x: margin + point.x * width,
+      y: margin + point.y * height
+    };
+  }
+
   const stops = gradient.stops.map(stop => compositor.createColorGradientStop(stop.offset, colorOfArgb(stop.color)));
   const isLinear = gradient.kind === "linear";
   if (isLinear) {
@@ -86,7 +89,7 @@ export function createGradientBrush({ compositor, gradient, area }: {
  *
  * @throws {Error} when the image cannot be loaded
  */
-export async function createImageBrush({ compositor, url }: {
+async function createImageBrush({ compositor, url }: {
   compositor: Compositor;
   url: string;
 }) {

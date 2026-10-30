@@ -97,7 +97,7 @@ export type ResolvedClip =
   };
 
 /** What reading a `clip-path` gives: the shape (null for `none`), or why it is not one. */
-export type ClipResult =
+type ClipResult =
   | {
     readonly isValid: true;
     readonly shape: ClipShape | null;

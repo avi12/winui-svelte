@@ -18,7 +18,7 @@ import type { IGraphicsEffectSource } from "#winui/windows/graphics/effects/IGra
 // effect source parameters, a test gives it bitmaps and draws the result.
 
 /** The name of the blur that a transition animates: the property is `BLUR_PROPERTY`. */
-export const BLUR_NAME = "Blur";
+const BLUR_NAME = "Blur";
 
 /** The property path of the animatable blur of an effect brush. */
 export const BLUR_PROPERTY = `${BLUR_NAME}.BlurAmount`;
@@ -50,9 +50,7 @@ export interface GraphSources {
   }): IGraphicsEffectSource;
 }
 
-const MATRIX_ROWS = 4;
 const MATRIX_COLUMNS = 5;
-const OFFSET_COLUMN = 4;
 const SHADOW_DEVIATION_PER_RADIUS = 2;
 const BYTE_MAX = 255;
 
@@ -79,58 +77,127 @@ export function drawableBlendModes() {
   return [...BLEND_ENUM.keys()].filter(mode => BLEND_MODES.has(mode));
 }
 
-// The CSS matrix (rows are the output channels) as Win2D's: its rows are the inputs.
+// The entry of the CSS matrix (its rows are the output channels, its columns the inputs).
+function cell({ values, input, output }: {
+  values: readonly number[];
+  input: number;
+  output: number;
+}) {
+  return values[output * MATRIX_COLUMNS + input] ?? 0;
+}
+
+// The CSS matrix as Win2D's, whose rows are the inputs (and the fifth the offsets).
 function win2dMatrix(values: readonly number[]) {
-  const at = ({ row, column }: {
-    row: number;
-    column: number;
-  }) => values[row * MATRIX_COLUMNS + column] ?? 0;
-  const input = (column: number) => ({
-    red: at({
-      row: 0,
-      column
-    }),
-    green: at({
-      row: 1,
-      column
-    }),
-    blue: at({
-      row: 2,
-      column
-    }),
-    alpha: at({
-      row: MATRIX_ROWS - 1,
-      column
-    })
-  });
-  const [red, green, blue, alpha, one] = [input(0), input(1), input(2), input(MATRIX_ROWS - 1), input(OFFSET_COLUMN)];
   return {
-    m11: red.red,
-    m12: red.green,
-    m13: red.blue,
-    m14: red.alpha,
-    m21: green.red,
-    m22: green.green,
-    m23: green.blue,
-    m24: green.alpha,
-    m31: blue.red,
-    m32: blue.green,
-    m33: blue.blue,
-    m34: blue.alpha,
-    m41: alpha.red,
-    m42: alpha.green,
-    m43: alpha.blue,
-    m44: alpha.alpha,
-    m51: one.red,
-    m52: one.green,
-    m53: one.blue,
-    m54: one.alpha
+    m11: cell({
+      values,
+      input: 0,
+      output: 0
+    }),
+    m12: cell({
+      values,
+      input: 0,
+      output: 1
+    }),
+    m13: cell({
+      values,
+      input: 0,
+      output: 2
+    }),
+    m14: cell({
+      values,
+      input: 0,
+      output: 3
+    }),
+    m21: cell({
+      values,
+      input: 1,
+      output: 0
+    }),
+    m22: cell({
+      values,
+      input: 1,
+      output: 1
+    }),
+    m23: cell({
+      values,
+      input: 1,
+      output: 2
+    }),
+    m24: cell({
+      values,
+      input: 1,
+      output: 3
+    }),
+    m31: cell({
+      values,
+      input: 2,
+      output: 0
+    }),
+    m32: cell({
+      values,
+      input: 2,
+      output: 1
+    }),
+    m33: cell({
+      values,
+      input: 2,
+      output: 2
+    }),
+    m34: cell({
+      values,
+      input: 2,
+      output: 3
+    }),
+    m41: cell({
+      values,
+      input: 3,
+      output: 0
+    }),
+    m42: cell({
+      values,
+      input: 3,
+      output: 1
+    }),
+    m43: cell({
+      values,
+      input: 3,
+      output: 2
+    }),
+    m44: cell({
+      values,
+      input: 3,
+      output: 3
+    }),
+    m51: cell({
+      values,
+      input: 4,
+      output: 0
+    }),
+    m52: cell({
+      values,
+      input: 4,
+      output: 1
+    }),
+    m53: cell({
+      values,
+      input: 4,
+      output: 2
+    }),
+    m54: cell({
+      values,
+      input: 4,
+      output: 3
+    })
   };
 }
 
 // The pixel as a flat colour with the pixel's alpha (Composition has no ShadowEffect, so a shadow is made of this).
+function unit(channel: number) {
+  return channel / BYTE_MAX;
+}
+
 function shadowMatrix(color: Color) {
-  const unit = (channel: number) => channel / BYTE_MAX;
   return win2dMatrix([
     0, 0, 0, 0, unit(color.r),
     0, 0, 0, 0, unit(color.g),

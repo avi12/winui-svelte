@@ -41,7 +41,7 @@ interface Color {
   b: number;
 }
 
-function solid({ r, g, b, a = 255 }: {
+function solid(color: {
   r: number;
   g: number;
   b: number;
@@ -50,10 +50,8 @@ function solid({ r, g, b, a = 255 }: {
   return bitmapFromColors({
     creator: sharedDevice(),
     colors: Array.from({ length: SIZE * SIZE }, () => ({
-      a,
-      r,
-      g,
-      b
+      a: 255,
+      ...color
     })),
     width: SIZE,
     height: SIZE
@@ -90,11 +88,12 @@ function graphOf({ filter = "none", backdropFilter = "none", blend = null, hasMa
     mask: ReturnType<typeof solid>;
   };
 }) {
-  const read = (text: string) => {
+  function read(text: string) {
     const result = parseFilterList(text);
     assert.ok(result.isValid, text);
     return result.steps;
-  };
+  }
+
   const effects: VisualEffects = {
     ...NO_EFFECTS,
     filter: [...read(filter)],
@@ -109,7 +108,7 @@ function graphOf({ filter = "none", backdropFilter = "none", blend = null, hasMa
     effects,
     sources: {
       ...images,
-      shifted: ({ x, y }) => {
+      shifted({ x, y }) {
         const moved = new Transform2DEffect();
         moved.source = images.source;
         moved.transformMatrix = {
@@ -274,13 +273,16 @@ test("blur softens the edge between two colours", { skip: !IS_AVAILABLE }, () =>
       }
     })
   );
-  const at = (pixels: ReturnType<typeof readPixels>) => pixelAt({
-    pixels,
-    x: HALF - 1,
-    y: HALF
-  });
-  assert.equal(at(sharp).b, 0);
-  assert.ok(at(soft).b > 0 && at(soft).r < RED.r, `the edge is still sharp: ${JSON.stringify(at(soft))}`);
+  function edgeOf(pixels: ReturnType<typeof readPixels>) {
+    return pixelAt({
+      pixels,
+      x: HALF - 1,
+      y: HALF
+    });
+  }
+
+  assert.equal(edgeOf(sharp).b, 0);
+  assert.ok(edgeOf(soft).b > 0 && edgeOf(soft).r < RED.r, `the edge is still sharp: ${JSON.stringify(edgeOf(soft))}`);
 });
 
 test("drop-shadow puts a copy of the alpha below the pixel, offset", { skip: !IS_AVAILABLE }, () => {

@@ -89,7 +89,10 @@ function readMask(input: GroupInput) {
 }
 
 function lowerEffects(input: GroupInput) {
-  const has = (member: string) => input.computed.has(member);
+  function has(member: string) {
+    return input.computed.has(member);
+  }
+
   const hasMask = has(MASK) || has(MASK_IMAGE);
   const effects = {
     filter: has(FILTER) ? readFilter({

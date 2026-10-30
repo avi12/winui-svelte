@@ -215,10 +215,11 @@ function verticalTo({ pen, values: [y = 0], isRelative }: Step) {
   } as const;
 }
 
-function cubicTo({ pen, values: [x1 = 0, y1 = 0, x2 = 0, y2 = 0, x = 0, y = 0], origin }: Step) {
+function cubicTo({ pen, values, origin }: Step) {
+  const [firstX = 0, firstY = 0, secondX = 0, secondY = 0, x = 0, y = 0] = values;
   const second = {
-    x: origin.x + x2,
-    y: origin.y + y2
+    x: origin.x + secondX,
+    y: origin.y + secondY
   };
   pen.cubic = second;
   pen.current = {
@@ -227,22 +228,23 @@ function cubicTo({ pen, values: [x1 = 0, y1 = 0, x2 = 0, y2 = 0, x = 0, y = 0], 
   };
   return {
     kind: "cubic",
-    x1: origin.x + x1,
-    y1: origin.y + y1,
+    x1: origin.x + firstX,
+    y1: origin.y + firstY,
     x2: second.x,
     y2: second.y,
     ...pen.current
   } as const;
 }
 
-function smoothCubicTo({ pen, values: [x2 = 0, y2 = 0, x = 0, y = 0], origin }: Step) {
+function smoothCubicTo({ pen, values, origin }: Step) {
+  const [secondX = 0, secondY = 0, x = 0, y = 0] = values;
   const first = reflected({
     control: pen.cubic,
     around: pen.current
   });
   const second = {
-    x: origin.x + x2,
-    y: origin.y + y2
+    x: origin.x + secondX,
+    y: origin.y + secondY
   };
   pen.cubic = second;
   pen.current = {
@@ -259,10 +261,11 @@ function smoothCubicTo({ pen, values: [x2 = 0, y2 = 0, x = 0, y = 0], origin }: 
   } as const;
 }
 
-function quadraticTo({ pen, values: [x1 = 0, y1 = 0, x = 0, y = 0], origin }: Step) {
+function quadraticTo({ pen, values, origin }: Step) {
+  const [controlX = 0, controlY = 0, x = 0, y = 0] = values;
   const control = {
-    x: origin.x + x1,
-    y: origin.y + y1
+    x: origin.x + controlX,
+    y: origin.y + controlY
   };
   pen.quadratic = control;
   pen.current = {
@@ -344,6 +347,42 @@ function keepReflection({ pen, letter }: {
   pen.quadratic = isQuadratic ? pen.quadratic : null;
 }
 
+// Draws the command the letter names with the numbers that follow, and says which letter a repeat of it takes.
+function drawNext({ scanner, pen, letter }: {
+  scanner: Scanner;
+  pen: Pen;
+  letter: string;
+}) {
+  const values = readArguments({
+    scanner,
+    letter
+  });
+  const draw = DRAWERS.get(letter.toLowerCase());
+  const isUnreadable = values === null || draw === undefined;
+  if (isUnreadable) {
+    return failure(`expected the numbers of ${letter === "" ? "a command" : letter} at position ${scanner.position}`);
+  }
+
+  const isRelative = letter === letter.toLowerCase();
+  const command = draw({
+    pen,
+    values,
+    origin: isRelative ? pen.current : ORIGIN,
+    isRelative
+  });
+  keepReflection({
+    pen,
+    letter
+  });
+  const isMove = command.kind === "move";
+  const repeat = isRelative ? "l" : "L";
+  return {
+    isValid: true,
+    command,
+    letter: isMove ? repeat : letter
+  } as const;
+}
+
 /**
  * Reads SVG path data into absolute commands. The data must start with a move;
  * a number list after `M` is lines (as SVG says), and a repeated command may
@@ -383,32 +422,17 @@ export function parsePathData(text: string) {
       continue;
     }
 
-    const values = readArguments({
+    const drawn = drawNext({
       scanner,
+      pen,
       letter
     });
-    const draw = DRAWERS.get(letter.toLowerCase());
-    const isUnreadable = values === null || draw === undefined;
-    if (isUnreadable) {
-      return failure(`expected the numbers of ${letter === "" ? "a command" : letter} at position ${scanner.position}`);
+    if (!drawn.isValid) {
+      return drawn;
     }
 
-    const isRelative = letter === letter.toLowerCase();
-    const command = draw({
-      pen,
-      values,
-      origin: isRelative ? pen.current : ORIGIN,
-      isRelative
-    });
-    keepReflection({
-      pen,
-      letter
-    });
-    commands.push(command);
-    const isMove = command.kind === "move";
-    if (isMove) {
-      letter = isRelative ? "l" : "L";
-    }
+    commands.push(drawn.command);
+    letter = drawn.letter;
   }
 
   const isEmpty = commands.length === 0;
