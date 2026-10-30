@@ -3,8 +3,18 @@ import type { NativeValue } from "#src/native-value.js";
 
 // `draw` from svelte/transition asks an SVG shape for `getTotalLength()`. A
 // WinUI shape has no such method, so the length is worked out from what the
-// shape holds. A `Path` has none: its geometry is WinUI's, with no way to
-// measure it.
+// shape holds. A `Path` holds a geometry, which only Win2D can measure: the
+// length of one comes from `winui-svelte/element-effects`.
+
+/** Measures the outline of a `Path`'s geometry, in pixels. */
+export type PathMeasure = (control: object) => number;
+
+const provided: { path: PathMeasure | null } = { path: null };
+
+/** Tells `draw` how to measure a `Path`, which `winui-svelte/element-effects` does with Win2D. */
+export function provideShapeLength(measure: PathMeasure) {
+  provided.path = measure;
+}
 
 // The constants of Ramanujan's approximation of an ellipse's perimeter.
 const RAMANUJAN_THREE = 3;
@@ -128,7 +138,18 @@ function rectangleLength(control: NativeValue) {
   return 2 * (width + height);
 }
 
+function pathLength(control: NativeValue) {
+  const measure = provided.path;
+  const isMeasurable = measure !== null && isRecord(control);
+  if (!isMeasurable) {
+    throw new Error("draw cannot measure a <path> without winui-svelte/element-effects (import it, or draw with the Vite plugin, which does)");
+  }
+
+  return measure(control);
+}
+
 const measures = new Map<string, (control: NativeValue) => number>([
+  ["path", pathLength],
   ["line", lineLength],
   ["polyline", control => polylineLength({
     control,
@@ -145,9 +166,9 @@ const measures = new Map<string, (control: NativeValue) => number>([
 /**
  * The length of a shape's outline, in pixels.
  *
- * @param options - The shape's tag (`line`, `polyline`, `polygon`, `ellipse`, `rectangle`) and its control.
+ * @param options - The shape's tag (`line`, `polyline`, `polygon`, `ellipse`, `rectangle`, `path`) and its control.
  * @returns The length.
- * @throws {Error} When the shape cannot be measured (a `path`: WinUI gives a geometry no length).
+ * @throws {Error} When the shape cannot be measured (a `path`, before `winui-svelte/element-effects` is in use).
  */
 export function shapeLength({ name, control }: {
   name: string;
@@ -156,7 +177,7 @@ export function shapeLength({ name, control }: {
   const measure = measures.get(name);
   const isMeasurable = measure !== undefined && isRecord(control);
   if (!isMeasurable) {
-    throw new Error(`draw cannot measure a <${name}>: only a line, polyline, polygon, ellipse or rectangle has a length to draw`);
+    throw new Error(`draw cannot measure a <${name}>: only a line, polyline, polygon, ellipse, rectangle or path has a length to draw`);
   }
 
   return measure(control);
