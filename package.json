@@ -189,6 +189,61 @@
       "svelte": "./dist/window/index.js",
       "default": "./dist/window/index.js"
     },
+    "./devices": {
+      "types": "./dist/devices/index.d.ts",
+      "svelte": "./dist/devices/index.js",
+      "default": "./dist/devices/index.js"
+    },
+    "./devices/enumeration": {
+      "types": "./dist/devices/enumeration.d.ts",
+      "svelte": "./dist/devices/enumeration.js",
+      "default": "./dist/devices/enumeration.js"
+    },
+    "./devices/input": {
+      "types": "./dist/devices/input.d.ts",
+      "svelte": "./dist/devices/input.js",
+      "default": "./dist/devices/input.js"
+    },
+    "./devices/bluetooth": {
+      "types": "./dist/devices/bluetooth.d.ts",
+      "svelte": "./dist/devices/bluetooth.js",
+      "default": "./dist/devices/bluetooth.js"
+    },
+    "./devices/printers": {
+      "types": "./dist/devices/printers.d.ts",
+      "svelte": "./dist/devices/printers.js",
+      "default": "./dist/devices/printers.js"
+    },
+    "./devices/power": {
+      "types": "./dist/devices/power.d.ts",
+      "svelte": "./dist/devices/power.js",
+      "default": "./dist/devices/power.js"
+    },
+    "./devices/network": {
+      "types": "./dist/devices/network.d.ts",
+      "svelte": "./dist/devices/network.js",
+      "default": "./dist/devices/network.js"
+    },
+    "./devices/audio": {
+      "types": "./dist/devices/audio.d.ts",
+      "svelte": "./dist/devices/audio.js",
+      "default": "./dist/devices/audio.js"
+    },
+    "./devices/display": {
+      "types": "./dist/devices/display.d.ts",
+      "svelte": "./dist/devices/display.js",
+      "default": "./dist/devices/display.js"
+    },
+    "./devices/gamepad": {
+      "types": "./dist/devices/gamepad.d.ts",
+      "svelte": "./dist/devices/gamepad.js",
+      "default": "./dist/devices/gamepad.js"
+    },
+    "./devices/sensors": {
+      "types": "./dist/devices/sensors.d.ts",
+      "svelte": "./dist/devices/sensors.js",
+      "default": "./dist/devices/sensors.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
@@ -208,6 +263,7 @@
     "src/**/*.ts",
     "!src/**/*.test.ts",
     "!src/state/test-support",
+    "!src/devices/test-support",
     "!src/renderer/testing/fake-controls.ts",
     "!src/renderer/testing/tree-probe.ts",
     "README.md",
