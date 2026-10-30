@@ -372,6 +372,21 @@ export const lateClasses = [
     classes: ["CompositionEffectSourceParameter"]
   },
   {
+    winmd: "Windows.Foundation.UniversalApiContract.winmd",
+    namespace: "Windows.ApplicationModel.DataTransfer",
+    classes: ["Clipboard", "DataTransferManager"]
+  },
+  {
+    winmd: "Windows.Foundation.UniversalApiContract.winmd",
+    namespace: "Windows.System",
+    classes: ["Launcher"]
+  },
+  {
+    winmd: "Windows.Foundation.UniversalApiContract.winmd",
+    namespace: "Windows.Storage.Streams",
+    classes: ["DataReader"]
+  },
+  {
     winmd: COMPONENT_WINMD,
     namespace: "Microsoft.UI.Xaml.Hosting",
     classes: ["ElementCompositionPreview"]
@@ -825,6 +840,38 @@ export const featureClasses: TypeName[] = [
   {
     namespace: "Windows.Media.Core",
     name: "MediaSource"
+  },
+  {
+    namespace: "Windows.ApplicationModel.DataTransfer",
+    name: "Clipboard"
+  },
+  {
+    namespace: "Windows.ApplicationModel.DataTransfer",
+    name: "DataPackage"
+  },
+  {
+    namespace: "Windows.ApplicationModel.DataTransfer",
+    name: "DataTransferManager"
+  },
+  {
+    namespace: "Windows.System",
+    name: "Launcher"
+  },
+  {
+    namespace: "Windows.Storage",
+    name: "StorageFile"
+  },
+  {
+    namespace: "Windows.Storage",
+    name: "StorageFolder"
+  },
+  {
+    namespace: "Windows.Storage.Streams",
+    name: "RandomAccessStreamReference"
+  },
+  {
+    namespace: "Windows.Storage.Streams",
+    name: "DataReader"
   }
 ];
 

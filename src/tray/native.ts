@@ -205,6 +205,28 @@ function bind({ dll, entryPoint, parameters, returnType }: BindOptions) {
   });
 }
 
+/**
+ * Starts reading the cursor position, read only: the reader gives screen
+ * pixels. The data transfer's `drag` event is made from it, because WinUI has
+ * no such event.
+ */
+export function createCursorReader() {
+  const getCursorPosition = bind({
+    dll: "user32.dll",
+    entryPoint: "GetCursorPos",
+    parameters: ["pointer"],
+    returnType: "i32"
+  });
+  const point = DynComRawMemory.allocate(POINT_BYTES, DWORD_BYTES);
+  return () => {
+    getCursorPosition.invoke([pointerOf(point)]);
+    return {
+      x: point.readI32(0),
+      y: point.readI32(DWORD_BYTES)
+    };
+  };
+}
+
 function pointerOf(memory: DynComRawMemory | null) {
   return DynWin32Unsafe.pointer(memory === null ? null : memory.pointer().address);
 }

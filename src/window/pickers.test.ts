@@ -1,7 +1,7 @@
 import {
   PickerLocation,
   pickFile,
-  pickFiles,
+  pickFilePaths,
   pickFolder,
   saveFile
 } from "./pickers.ts";
@@ -114,7 +114,7 @@ test("a cancelled picker gives null, or no paths", async () => {
     }), null
   );
   assert.deepEqual(
-    await pickFiles({
+    await pickFilePaths({
       picker: new FakePicker(),
       options: {}
     }), []
@@ -134,7 +134,7 @@ test("a cancelled picker gives null, or no paths", async () => {
 });
 
 test("several files come back in the order picked", async () => {
-  const paths = await pickFiles({
+  const paths = await pickFilePaths({
     picker: new FakePicker(["C:\\b.png", "C:\\a.png"]),
     options: {
       fileTypes: [".png"]
