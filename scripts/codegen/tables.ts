@@ -359,9 +359,13 @@ export const bindingsAfterWinapp = new Set([
   "Microsoft.UI.Xaml.Controls.WebView2"
 ]);
 
+// The Windows metadata the winui-svelte/devices classes are in.
+const DEVICES_WINMD = "Windows.Foundation.UniversalApiContract.winmd";
+
 /**
  * Classes of the Windows App SDK that the helpers of winui-svelte/win2d need
- * and the components do not: scripts/bindings/after-winapp.ts makes their
+ * and the components do not, and the Windows classes of winui-svelte/devices
+ * (Bluetooth, radios, power, input, network, audio, gamepads, sensors): scripts/bindings/after-winapp.ts makes their
  * bindings after winapp's run, so a full `pnpm bindings` (about twelve
  * minutes) is not needed to add one.
  */
@@ -390,6 +394,86 @@ export const lateClasses = [
     winmd: COMPONENT_WINMD,
     namespace: "Microsoft.UI.Xaml.Hosting",
     classes: ["ElementCompositionPreview"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Foundation",
+    classes: ["IPropertyValue"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Enumeration",
+    classes: ["DeviceAccessInformation", "DeviceAccessStatus"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Input",
+    classes: ["MouseCapabilities", "KeyboardCapabilities", "TouchCapabilities"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Radios",
+    classes: ["Radio"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Bluetooth",
+    classes: ["BluetoothAdapter", "BluetoothDevice", "BluetoothLEDevice", "BluetoothUuidHelper"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Bluetooth.Advertisement",
+    classes: ["BluetoothLEAdvertisementWatcher", "BluetoothLEAdvertisementReceivedEventArgs", "BluetoothLEAdvertisement", "BluetoothLEAdvertisementDataSection", "BluetoothLEManufacturerData"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Bluetooth.GenericAttributeProfile",
+    classes: ["GattDeviceService", "GattCharacteristic", "GattDeviceServicesResult", "GattCharacteristicsResult", "GattReadResult", "GattWriteResult", "GattValueChangedEventArgs", "GattCharacteristicUuids", "GattServiceUuids"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Power",
+    classes: ["Battery", "BatteryReport"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.System.Power",
+    classes: ["PowerManager"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Display",
+    classes: ["DisplayMonitor"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Sensors",
+    classes: ["Accelerometer", "LightSensor", "Inclinometer"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Networking.Connectivity",
+    classes: ["NetworkInformation"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Media.Devices",
+    classes: ["MediaDevice"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Gaming.Input",
+    classes: ["Gamepad"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Storage.Streams",
+    classes: ["DataReader"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Security.Cryptography",
+    classes: ["CryptographicBuffer"]
   }
 ];
 

@@ -1,6 +1,14 @@
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
-import type { DynWin32Value } from "@microsoft/dynwinrt/win32/unsafe";
+import {
+  addressOf,
+  bind,
+  numberOf,
+  pointerOf,
+  WIDE_CHAR_BYTES,
+  wideMemory,
+  withMemory
+} from "#src/win32-calls.js";
 
 /** The Shell_NotifyIcon operations. */
 export const NotifyOperation = {
@@ -121,7 +129,6 @@ export interface TrayNative {
 const NOTIFY_ICON_DATA_SIZE = 976;
 const ICON_IDENTIFIER_SIZE = 40;
 const RECT_SIZE = 16;
-const WIDE_CHAR_BYTES = 2;
 const TOOLTIP_CHARS = 128;
 const BALLOON_BODY_CHARS = 256;
 const BALLOON_TITLE_CHARS = 64;
@@ -139,7 +146,6 @@ const OFFSET_TITLE = 820;
 const OFFSET_BALLOON_FLAGS = 948;
 const OFFSET_GUID = 952;
 const GUID_BYTES = 16;
-const NO_ADDRESS = 0n;
 const GUID_FIRST_FIELD_END = 4;
 const GUID_SECOND_FIELD_END = 6;
 const GUID_THIRD_FIELD_END = 8;
@@ -185,26 +191,6 @@ const TRAY_WINDOW_CLASSES: ReadonlySet<string> = new Set([
 const PERSONALIZE_KEY = String.raw`Software\Microsoft\Windows\CurrentVersion\Themes\Personalize`;
 const LIGHT_THEME_VALUE = "SystemUsesLightTheme";
 
-interface BindOptions {
-  dll: string;
-  entryPoint: string;
-  parameters: string[];
-  returnType: string;
-}
-
-function bind({ dll, entryPoint, parameters, returnType }: BindOptions) {
-  return DynWin32Unsafe.bind({
-    dll,
-    entryPoint,
-    parameters: parameters.map(type => ({
-      type,
-      direction: "in",
-      nullable: type === "pointer"
-    })),
-    returnType
-  });
-}
-
 /**
  * Starts reading the cursor position, read only: the reader gives screen
  * pixels. The data transfer's `drag` event is made from it, because WinUI has
@@ -227,25 +213,6 @@ export function createCursorReader() {
   };
 }
 
-function pointerOf(memory: DynComRawMemory | null) {
-  return DynWin32Unsafe.pointer(memory === null ? null : memory.pointer().address);
-}
-
-function wideMemory(text: string) {
-  const bytes = Buffer.from(`${text}\0`, "utf16le");
-  const memory = DynComRawMemory.allocate(bytes.length, WIDE_CHAR_BYTES);
-  memory.writeBytes(0, bytes);
-  return memory;
-}
-
-function numberOf(value: DynWin32Value | null) {
-  return value === null ? 0 : DynWin32.toNumber(value);
-}
-
-function addressOf(value: DynWin32Value | null) {
-  return value === null ? NO_ADDRESS : DynWin32Unsafe.pointerAddress(value);
-}
-
 // A fixed-size UTF-16 field, cut to leave room for the terminator.
 function writeWide({ memory, offset, text, chars }: {
   memory: DynComRawMemory;
@@ -266,19 +233,6 @@ function guidBytes(guid: string) {
     Buffer.from(hex.subarray(GUID_SECOND_FIELD_END, GUID_THIRD_FIELD_END)).reverse(),
     hex.subarray(GUID_THIRD_FIELD_END, GUID_BYTES)
   ]);
-}
-
-function withMemory<T>({ size, alignment, use }: {
-  size: number;
-  alignment: number;
-  use: (memory: DynComRawMemory) => T;
-}) {
-  const memory = DynComRawMemory.allocate(size, alignment);
-  try {
-    return use(memory);
-  } finally {
-    memory.release();
-  }
 }
 
 // NOTIFYICONDATAW (the version 4 layout) for one call.

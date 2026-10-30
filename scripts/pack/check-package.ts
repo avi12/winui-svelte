@@ -20,6 +20,7 @@ const forbiddenInTarball = [
   /^package\/CONTRIBUTING\.md$/u,
   /^package\/src\/.*\.(test\.ts|fixture\.svelte)$/u,
   /^package\/src\/state\/test-support\//u,
+  /^package\/src\/devices\/test-support\//u,
   /^package\/src\/renderer\/testing\/(fake-controls|tree-probe)\.ts$/u,
   /^package\/scripts\//u,
   /^package\/test\//u,

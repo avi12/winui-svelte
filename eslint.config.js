@@ -220,8 +220,9 @@ const tsStyleRules = {
   "local/expand-nested-type-literal": "error",
   "local/multiline-arg-paren-newline": "error",
   "local/no-padded-tag": "error",
-  // Flat Win32 calls are bound in the native.ts files only (src/window/native.ts
-  // and src/tray/native.ts, exempt below), as a WinUI app keeps every
+  // Flat Win32 calls are bound in the native.ts files only (src/window/native.ts,
+  // src/tray/native.ts and src/devices/native.ts, and the shared src/win32-calls.ts,
+  // exempt below), as a WinUI app keeps every
   // [DllImport] in its Native folder.
   "no-restricted-imports": [
     "error",
@@ -237,11 +238,11 @@ const tsStyleRules = {
       paths: [
         {
           name: "@microsoft/dynwinrt/win32/unsafe",
-          message: "Flat Win32 calls are bound in src/window/native.ts and src/tray/native.ts only."
+          message: "Flat Win32 calls are bound in the native.ts files (and src/win32-calls.ts) only."
         },
         {
           name: "@microsoft/dynwinrt/win32",
-          message: "Flat Win32 calls are bound in src/window/native.ts and src/tray/native.ts only."
+          message: "Flat Win32 calls are bound in the native.ts files (and src/win32-calls.ts) only."
         }
       ]
     }
@@ -280,7 +281,14 @@ const typeAwareParserOptions = {
   tsconfigRootDir: import.meta.dirname
 };
 
-const testFiles = ["**/*.test.ts", "test/**", "**/*.fixture.svelte", "src/state/test-support/**", "src/renderer/testing/**"];
+const testFiles = [
+  "**/*.test.ts",
+  "test/**",
+  "**/*.fixture.svelte",
+  "src/state/test-support/**",
+  "src/devices/test-support/**",
+  "src/renderer/testing/**"
+];
 const sourceFiles = ["src/**/*.ts", "src/**/*.svelte"];
 // What runs on import by design: a command-line entry or a worker's first line.
 const entryFiles = ["src/cli/main.ts", "src/window/bootstrap.ts", "src/window/thread.ts"];
@@ -368,7 +376,7 @@ export default [
   },
   {
     // The files that bind Win32 exports.
-    files: ["src/window/native.ts", "src/tray/native.ts"],
+    files: ["src/window/native.ts", "src/tray/native.ts", "src/devices/native.ts", "src/win32-calls.ts"],
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [
