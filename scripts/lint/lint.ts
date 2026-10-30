@@ -19,14 +19,18 @@ interface StepResult {
 interface Step {
   name: string;
   needs: string[];
+  isAlone?: true;
 }
 
+// `isAlone`: WebStorm resolves types under a timeout, so a loaded machine makes
+// it underline code that is fine; it runs last, with nothing beside it.
 // Longest first, so the slow ones start while the short ones fill the gaps.
 // Those that import `winui-svelte` read dist/, so they wait for the build.
 const STEPS: Step[] = [
   {
     name: "check:webstorm",
-    needs: [BUILD]
+    needs: [BUILD],
+    isAlone: true
   },
   {
     name: BUILD,
@@ -108,7 +112,8 @@ async function main() {
 
       for (const step of STEPS) {
         const isWaiting = step.needs.some(need => !finished.has(need));
-        const isStartable = !started.has(step.name) && !isWaiting && running < MAX_PARALLEL;
+        const isWaitingForTheRest = step.isAlone === true && (running > 0 || finished.size < STEPS.length - 1);
+        const isStartable = !started.has(step.name) && !isWaiting && !isWaitingForTheRest && running < MAX_PARALLEL;
         if (isStartable) {
           void start(step.name);
         }
