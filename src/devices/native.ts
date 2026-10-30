@@ -6,6 +6,7 @@ import {
   bind,
   numberOf,
   pointerOf,
+  WIDE_CHAR_BYTES,
   wideMemory,
   withMemory
 } from "#src/win32-calls.js";
@@ -22,7 +23,6 @@ const INFO_SIZE = 136;
 const DWORD_BYTES = 4;
 const POINTER_BYTES = 8;
 const NAME_CHARS = 260;
-const WIDE_CHAR_BYTES = 2;
 const OFFSET_SERVER = 0;
 const OFFSET_NAME = 8;
 const OFFSET_SHARE = 16;

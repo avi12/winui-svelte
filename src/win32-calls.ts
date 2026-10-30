@@ -3,8 +3,8 @@ import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 import type { DynWin32Value } from "@microsoft/dynwinrt/win32/unsafe";
 
 // The pieces every Win32 call of the package is made of: binding a function
-// of a DLL, passing a pointer or a wide string, reading a result. The tray and
-// the printers use them; neither binds anything when its module loads.
+// of a DLL, passing a pointer or a wide string, reading a result. The tray,
+// the printers, the drag cursor and the window use them.
 
 /** The size of a UTF-16 code unit, in bytes. */
 export const WIDE_CHAR_BYTES = 2;

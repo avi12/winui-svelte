@@ -1,51 +1,29 @@
-import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
+import { DynWin32 } from "@microsoft/dynwinrt/win32/unsafe";
+import { bind, numberOf } from "#src/win32-calls.js";
 
 // The window's only flat Win32 calls: the rest is WinUI's own API.
 
 const BASE_DPI = 96;
 const OWNER_INDEX = -8;
 
-const getDpiForWindow = DynWin32Unsafe.bind({
+const getDpiForWindow = bind({
   dll: "user32.dll",
   entryPoint: "GetDpiForWindow",
-  parameters: [
-    {
-      type: "handle",
-      direction: "in"
-    }
-  ],
+  parameters: ["handle"],
   returnType: "u32"
 });
 
-const setAppUserModelId = DynWin32Unsafe.bind({
+const setAppUserModelId = bind({
   dll: "shell32.dll",
   entryPoint: "SetCurrentProcessExplicitAppUserModelID",
-  parameters: [
-    {
-      type: "pointer",
-      direction: "in"
-    }
-  ],
+  parameters: ["pointer"],
   returnType: "i32"
 });
 
-const setWindowLongPointer = DynWin32Unsafe.bind({
+const setWindowLongPointer = bind({
   dll: "user32.dll",
   entryPoint: "SetWindowLongPtrW",
-  parameters: [
-    {
-      type: "handle",
-      direction: "in"
-    },
-    {
-      type: "i32",
-      direction: "in"
-    },
-    {
-      type: "i64",
-      direction: "in"
-    }
-  ],
+  parameters: ["handle", "i32", "i64"],
   returnType: "i64"
 });
 
@@ -64,8 +42,7 @@ export function joinAppUserModel(appId: string) {
  * loaded, when XamlRoot's scale is not yet known.
  */
 export function scaleOf(hwnd: bigint) {
-  const result = getDpiForWindow.invoke([DynWin32.handle(hwnd)]).returnValue;
-  const dpi = result === null ? BASE_DPI : DynWin32.toNumber(result);
+  const dpi = numberOf(getDpiForWindow.invoke([DynWin32.handle(hwnd)]).returnValue);
   return dpi > 0 ? dpi / BASE_DPI : 1;
 }
 
