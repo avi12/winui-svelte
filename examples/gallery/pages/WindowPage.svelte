@@ -37,20 +37,20 @@
 >
   <StackPanel class="window-block">
     <TextBox {@attach keyControl("window")} header="Title" bind:text={shell.title} />
-    <TextBlock text="Backdrop: {shell.backdrop}" />
-    <StackPanel class="window-row" orientation="Horizontal">
+    <TextBlock>Backdrop: {shell.backdrop}</TextBlock>
+    <StackPanel class="window-row">
       {#each Object.values(Backdrop) as backdrop (backdrop)}
         <Button onclick={() => (shell.backdrop = backdrop)}>{backdrop}</Button>
       {/each}
     </StackPanel>
-    <TextBlock text="Theme: {shell.theme}" />
-    <StackPanel class="window-row" orientation="Horizontal">
+    <TextBlock>Theme: {shell.theme}</TextBlock>
+    <StackPanel class="window-row">
       {#each Object.values(WindowTheme) as theme (theme)}
         <Button onclick={() => (shell.theme = theme)}>{theme}</Button>
       {/each}
     </StackPanel>
-    <TextBlock text="Presentation: {shell.presentation}" />
-    <StackPanel class="window-row" orientation="Horizontal">
+    <TextBlock>Presentation: {shell.presentation}</TextBlock>
+    <StackPanel class="window-row">
       {#each Object.values(WindowPresentation) as presentation (presentation)}
         <Button onclick={() => (shell.presentation = presentation)}>{presentation}</Button>
       {/each}
@@ -61,11 +61,12 @@
 </PageFrame>
 
 <style>
-  :global(.window-block) {
+  .window-block {
     gap: 8px;
   }
 
-  :global(.window-row) {
+  .window-row {
+    display: flex;
     gap: 6px;
   }
 </style>

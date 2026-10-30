@@ -15,8 +15,6 @@
 
   enableDragEvents();
 
-  const BUTTON_SPACING = 8;
-
   let isOver = $state(false);
   let received = $state("Nothing dropped yet");
   let picked = $state("Nothing picked yet");
@@ -53,7 +51,7 @@
       onDrop: drop
     })}
   >
-    <text-block text="Drop images, folders or text here"></text-block>
+    <text-block>Drop images, folders or text here</text-block>
   </border>
   <TextBlock>{received}</TextBlock>
 
@@ -66,7 +64,7 @@
     }}
     ondrop={(event: DragEvent) => (received = `Linked: ${describe(event.dataTransfer.files)}`)}
   >
-    <text-block text="A raw element with ondragover and ondrop"></text-block>
+    <text-block>A raw element with ondragover and ondrop</text-block>
   </border>
 
   <TextBlock
@@ -91,7 +89,7 @@
   </Button>
   <TextBlock>{picked}</TextBlock>
 
-  <StackPanel orientation="Horizontal" spacing={BUTTON_SPACING}>
+  <StackPanel class="transfer-row">
     <Button onclick={copyAndRead}>Copy text and read it back</Button>
     <Button onclick={() => launchUri("https://github.com/avi12/winui-svelte")}>Open the repository</Button>
     <Button onclick={() => revealInExplorer(import.meta.filename)}>Show this page in Explorer</Button>
@@ -103,6 +101,11 @@
   .drop-box {
     padding: 24px;
     border: 2px dashed #808080;
+  }
+
+  .transfer-row {
+    display: flex;
+    gap: 8px;
   }
 
   .drag-over {
