@@ -1,3 +1,4 @@
+import { eventAdapters } from "./event-adapters.ts";
 import {
   call,
   isRecord,
@@ -1071,6 +1072,14 @@ function subscribe({ control, type, handler }: {
   const isHandler = typeof handler === "function";
   if (!isHandler) {
     return null;
+  }
+
+  const adapter = eventAdapters.get(type);
+  if (adapter) {
+    return adapter.subscribe({
+      control,
+      handler
+    });
   }
 
   const unsubscribe = call(
