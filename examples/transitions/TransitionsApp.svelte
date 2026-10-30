@@ -4,15 +4,13 @@
   import type { TextBlock as TextBlockControl } from "#winui/microsoft/ui/xaml/controls/TextBlock";
   import { fly } from "svelte/transition";
   import { control } from "winui-svelte";
-  import { StackPanel, TextBlock, Window } from "winui-svelte/components";
+  import { Window } from "winui-svelte/components";
   import { exitApplication } from "winui-svelte/window";
 
   const WINDOW_HEIGHT = 320;
   const WINDOW_WIDTH = 420;
   const TRANSITION_MILLISECONDS = 600;
   const FLY_DISTANCE = 40;
-  const PADDING = 16;
-  const SPACING = 8;
 
   interface Props {
     // The harness's, handed over once: it never changes.
@@ -61,22 +59,27 @@
   title="Transitions example"
   width={WINDOW_WIDTH}
 >
-  <StackPanel
+  <stack-panel
+    class="panel"
     {@attach control<StackPanelControl>(native => {
       panel = native;
     })}
-    padding={PADDING}
-    spacing={SPACING}
   >
-    <TextBlock text="A card flies in and out" />
+    <text-block>A card flies in and out</text-block>
     {#if isShown}
       <text-block
         {@attach control<TextBlockControl>(native => {
           card = native;
         })}
-        text="Hello"
         transition:fly={flyParams}
-      ></text-block>
+      >Hello</text-block>
     {/if}
-  </StackPanel>
+  </stack-panel>
 </Window>
+
+<style>
+  .panel {
+    gap: 8px;
+    padding: 16px;
+  }
+</style>
