@@ -3,21 +3,19 @@
   import { startTodoHost, TODO_NAME } from "./todo-host.ts";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import { keyControl, serveExample } from "#examples/harness/smoke.ts";
-  import { ContentDialogResult } from "#winui/microsoft/ui/xaml/controls/ContentDialogResult";
   import { tmpdir } from "node:os";
   import { join } from "node:path";
   import {
     Button,
     CheckBox,
     ContentDialog,
-    Grid,
     InfoBar,
     ListView,
-    StackPanel,
     TextBlock,
     TextBox,
     Window
   } from "winui-svelte/components";
+  import { ContentDialogResult, InfoBarSeverity } from "winui-svelte/enums";
   import { createHostChannel, hostState } from "winui-svelte/state";
 
   const WINDOW_HEIGHT = 560;
@@ -89,39 +87,38 @@
 </script>
 
 <Window height={WINDOW_HEIGHT} title="Todo" width={WINDOW_WIDTH}>
-  <StackPanel class="todo">
-    <TextBlock class="todo-title" text="Todo" />
-    <Grid class="todo-add">
+  <stack-panel class="todo">
+    <text-block class="title">Todo</text-block>
+    <grid class="add">
       <TextBox
         {@attach keyControl("todo")}
-        gridColumn={0}
         placeholderText="What needs doing?"
         bind:text={title}
       />
-      <Button gridColumn={1} onclick={add}>Add</Button>
-    </Grid>
+      <button class="add-button" onclick={add}>Add</button>
+    </grid>
     {#if problem !== ""}
-      <InfoBar isClosable={false} isOpen message={problem} severity="Warning" />
+      <InfoBar isClosable={false} isOpen message={problem} severity={InfoBarSeverity.Warning} />
     {/if}
     <ListView class="todo-list" items={todos} key={byKey} bind:selectedKey>
       {#snippet item(todo)}
-        <Grid class="todo-row">
+        <grid class="row">
           <CheckBox
-            gridColumn={0} isChecked={todo.isDone} onclick={() => send({
+            isChecked={todo.isDone} onclick={() => send({
               kind: "toggle",
               id: todo.id
             })}>
             {todo.title}
           </CheckBox>
-          <Button
-            gridColumn={1} onclick={() => send({
+          <button
+            class="row-remove" onclick={() => send({
               kind: "remove",
               id: todo.id
-            })}>Remove</Button>
-        </Grid>
+            })}>Remove</button>
+        </grid>
       {/snippet}
     </ListView>
-    <TextBlock text="{todos.length} tasks, {tally.done} done" />
+    <TextBlock>{todos.length} tasks, {tally.done} done</TextBlock>
     <Button isEnabled={tally.isAnyDone} onclick={() => (isClearOpen = true)}>Clear done</Button>
     <ContentDialog
       closeButtonText="Keep them"
@@ -134,30 +131,32 @@
     >
       {tally.done} finished tasks will be removed.
     </ContentDialog>
-  </StackPanel>
+  </stack-panel>
 </Window>
 
 <style>
-  :global(.todo) {
+  .todo {
     gap: 8px;
     padding: 16px;
   }
 
-  :global(.todo-title) {
+  .title {
     font-weight: 600;
     font-size: 28px;
   }
 
-  :global(.todo-add) {
+  .add,
+  .row {
     grid-template-columns: 1fr auto;
     column-gap: 8px;
   }
 
-  :global(.todo-row) {
-    grid-template-columns: 1fr auto;
-    column-gap: 8px;
+  .add-button,
+  .row-remove {
+    grid-column: 2;
   }
 
+  /* ListView is a component: svelte-check cannot see a scoped class on an instance */
   :global(.todo-list) {
     height: 280px;
   }
