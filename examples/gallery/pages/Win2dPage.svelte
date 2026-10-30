@@ -1,0 +1,67 @@
+<script lang="ts">
+  import PageFrame from "#examples/gallery/PageFrame.svelte";
+  import { keyControl } from "#examples/harness/smoke.ts";
+  import { Slider } from "winui-svelte/components";
+  import { Canvas, CanvasLinearGradientBrush, createTextFormat } from "winui-svelte/win2d";
+
+  const CANVAS_HEIGHT = 200;
+  const SUN_RADIUS = 36;
+  const MARGIN = 16;
+  const MAX_SUN = 100;
+
+  let sunAt = $state(50);
+  const label = createTextFormat({ size: 18 });
+</script>
+
+<PageFrame
+  caption="Win2D draws on a Canvas from a function. What the function reads is tracked, so moving the slider draws again."
+  title="Win2D canvas"
+>
+  <Slider header="Sun position: {sunAt}" bind:value={sunAt} maximum={MAX_SUN} />
+  <Canvas
+    {@attach keyControl("win2d")}
+    height={CANVAS_HEIGHT}
+    draw={({ painter, width, height, device }) => {
+      painter.fillRectangle({
+        x: 0,
+        y: 0,
+        width,
+        height,
+        paint: new CanvasLinearGradientBrush(device, {
+          a: 255,
+          r: 10,
+          g: 20,
+          b: 60
+        }, {
+          a: 255,
+          r: 120,
+          g: 40,
+          b: 160
+        })
+      });
+      painter.fillCircle({
+        x: MARGIN + (width - 2 * MARGIN) * sunAt / MAX_SUN,
+        y: height / 2,
+        radius: SUN_RADIUS,
+        paint: {
+          a: 255,
+          r: 255,
+          g: 220,
+          b: 120
+        }
+      });
+      painter.drawText({
+        text: "Win2D from Svelte",
+        x: MARGIN,
+        y: MARGIN,
+        paint: {
+          a: 255,
+          r: 255,
+          g: 255,
+          b: 255
+        },
+        format: label
+      });
+    }}
+  />
+</PageFrame>

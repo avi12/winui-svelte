@@ -1,3 +1,5 @@
+import AnimationPage from "./pages/AnimationPage.svelte";
+import CssLayoutPage from "./pages/CssLayoutPage.svelte";
 import DataPage from "./pages/DataPage.svelte";
 import FormsPage from "./pages/FormsPage.svelte";
 import InputPage from "./pages/InputPage.svelte";
@@ -10,6 +12,8 @@ import StatePage from "./pages/StatePage.svelte";
 import TemplatesPage from "./pages/TemplatesPage.svelte";
 import TextPage from "./pages/TextPage.svelte";
 import ThemingPage from "./pages/ThemingPage.svelte";
+import TrayPage from "./pages/TrayPage.svelte";
+import Win2dPage from "./pages/Win2dPage.svelte";
 import WindowPage from "./pages/WindowPage.svelte";
 import type { Component } from "svelte";
 
@@ -85,5 +89,25 @@ export const GALLERY_PAGES: readonly GalleryPage[] = [
     key: "data",
     title: "Data",
     page: DataPage
+  },
+  {
+    key: "animation",
+    title: "Animation and transitions",
+    page: AnimationPage
+  },
+  {
+    key: "css-layout",
+    title: "CSS layout",
+    page: CssLayoutPage
+  },
+  {
+    key: "win2d",
+    title: "Win2D canvas",
+    page: Win2dPage
+  },
+  {
+    key: "tray",
+    title: "Tray icon",
+    page: TrayPage
   }
 ];

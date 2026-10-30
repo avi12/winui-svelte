@@ -24,7 +24,7 @@ tests do), and `--file <path>` where an app saves something.
 
 | App | What it shows |
 |---|---|
-| `gallery` | A NavigationView with a page per area: state, forms, layout, lists, overlays, theming, templates, window, services, media, text, input, data |
+| `gallery` | A NavigationView with a page per area: state, forms, layout, lists, overlays, theming, templates, window, services, media, text, input, data, animation, CSS layout, Win2D, tray |
 | `todo` | A real app: host state saved to a file, a keyed ListView, a confirm dialog and an InfoBar |
 | `settings` | App structure: NavigationView pages, forms, a theme switch, a window with its own title bar |
 | `counter`, `hello`, `lists`, ... | The focused examples the tests drive |
@@ -41,20 +41,9 @@ cleanly. It is part of `pnpm test:windows`.
 - `harness/memory-host.ts`: a host that owns a named state in the same
   process, over an in-memory link, with a reducer for the actions.
 
-## Pages still to add to the gallery
+## Adding a gallery page
 
 A page is a component in `gallery/pages`, a row in `gallery/pages.ts` and a
-`keyControl` on its main control; the test then visits it by itself. Two pages
-wait for features that are not on `main` yet. Add each when its branch merges,
-and use only what `API.md` then documents.
-
-- [ ] Animation and transitions: `transition:`, `in:`, `out:` and `animate:`
-  directives, and CSS `animation` with `@keyframes`. Today the package refuses
-  the directives at compile time and offers the `winui-svelte/element-animation`
-  attachments instead.
-- [ ] CSS layout: `display: flex` with its alignment and wrapping, `position`
-  with `top`, `left` and the rest, and media queries on size.
-
-For each: write the page, list it in `pages.ts`, run
-`node --test test/examples.test.ts`, and move the line from this list to the
-table above.
+`keyControl` on its main control; the test then visits it by itself. Write it
+with what `API.md` documents, run `node --test test/examples.test.ts`, and add
+its area to the table above.
