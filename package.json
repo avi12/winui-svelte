@@ -53,6 +53,11 @@
       "svelte": "./dist/components/index.js",
       "default": "./dist/components/index.js"
     },
+    "./forms": {
+      "types": "./dist/forms/index.d.ts",
+      "svelte": "./dist/forms/index.js",
+      "default": "./dist/forms/index.js"
+    },
     "./state": {
       "types": "./dist/state/index.d.ts",
       "svelte": "./dist/state/index.js",
