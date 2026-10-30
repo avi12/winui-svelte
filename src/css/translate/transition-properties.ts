@@ -3,6 +3,7 @@ import { AnimationDirection, AnimationFill, storyboardXaml } from "./animation-x
 import { parseEasing } from "./easing.ts";
 import type { GroupInput, Output, PropertyGroup, WriteContext } from "./property-kit.ts";
 import { parseColor } from "#src/css/parse/colors.js";
+import type { Reader } from "#src/css/parse/reader.js";
 import { parseMilliseconds, splitCommas, splitWords } from "#src/css/parse/values.js";
 
 const BORDER_COLOR = "border-color";
@@ -150,61 +151,68 @@ function animateBorderColor({ control, value, native }: WriteContext) {
   });
 }
 
-/** `transition`: WinUI's implicit transition for each animatable property named, and a border color's Storyboard. */
-function transition(input: GroupInput) {
-  const reader = input.reading("transition");
+// One entry of a `transition` list (`property duration ...`) as its writes.
+function entryOutputs({ input, reader, entry }: {
+  input: GroupInput;
+  reader: Reader;
+  entry: string;
+}) {
   const outputs: Output[] = [];
-  for (const entry of splitCommas(reader.declaration.value)) {
-    const [property = "", time, ...rest] = splitWords(entry);
-    const milliseconds = time === undefined ? null : parseMilliseconds(time);
-    const isNone = property.toLowerCase() === "none";
-    if (isNone) {
-      continue;
-    }
+  const [property = "", time, ...rest] = splitWords(entry);
+  const name = property.toLowerCase();
+  const milliseconds = time === undefined ? null : parseMilliseconds(time);
+  const isBorderColor = name === BORDER_COLOR && milliseconds !== null;
+  if (isBorderColor) {
+    outputs.push(...borderColorWrite({
+      input,
+      durationMs: milliseconds,
+      rest
+    }));
+    return outputs;
+  }
 
-    const isBorderColor = property.toLowerCase() === BORDER_COLOR && milliseconds !== null;
-    if (isBorderColor) {
-      outputs.push(
-        ...borderColorWrite({
-          input,
-          durationMs: milliseconds,
-          rest
-        })
-      );
-      continue;
-    }
+  const targets = TRANSITION_TARGETS.get(name);
+  const isTargetsMissing = targets === undefined;
+  if (isTargetsMissing) {
+    reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background, border-color and a shadow's depth); ignored`);
+    return outputs;
+  }
 
-    const targets = TRANSITION_TARGETS.get(property.toLowerCase());
-    const isTargetsMissing = targets === undefined;
-    if (isTargetsMissing) {
-      reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background, border-color and a shadow's depth); ignored`);
-      continue;
-    }
+  const isMillisecondsMissing = milliseconds === null;
+  if (isMillisecondsMissing) {
+    reader.expectedToken({
+      what: "`property duration`",
+      token: entry
+    });
+    return outputs;
+  }
 
-    const isMillisecondsMissing = milliseconds === null;
-    if (isMillisecondsMissing) {
-      reader.expectedToken({
-        what: "`property duration`",
-        token: entry
-      });
-      continue;
-    }
+  const hasRestItems = rest.length > 0;
+  if (hasRestItems) {
+    reader.warn(`transition: "${rest.join(" ")}" ignored (WinUI's implicit transitions take a duration only)`);
+  }
 
-    const hasRestItems = rest.length > 0;
-    if (hasRestItems) {
-      reader.warn(`transition: "${rest.join(" ")}" ignored (WinUI's implicit transitions take a duration only)`);
-    }
-
-    for (const [name, type] of targets) {
-      outputs.push({
-        kind: "content",
-        property: name,
-        xaml: `<${type} Duration="${duration(milliseconds)}"/>`
-      });
-    }
+  for (const [target, type] of targets) {
+    outputs.push({
+      kind: "content",
+      property: target,
+      xaml: `<${type} Duration="${duration(milliseconds)}"/>`
+    });
   }
 
   return outputs;
+}
+
+/** `transition`: WinUI's implicit transition for each animatable property named, and a border color's Storyboard. */
+function transition(input: GroupInput) {
+  const reader = input.reading("transition");
+  return splitCommas(reader.declaration.value)
+    .filter(entry => (splitWords(entry)[0] ?? "").toLowerCase() !== "none")
+    .flatMap(entry => entryOutputs({
+      input,
+      reader,
+      entry
+    }));
 }
 
 /** The group of `transition`: WinUI's implicit transitions, and a border color's Storyboard. */
