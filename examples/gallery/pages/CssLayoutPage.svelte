@@ -40,7 +40,7 @@
   :global(.css-chip) {
     padding: 8px 12px;
     border-radius: 6px;
-    background-color: color-mix(in oklch, var(--css-base) 40%, #ffffff);
+    background-color: color-mix(in oklch, oklch(70% 0.15 200deg) 40%, #ffffff);
   }
 
   :global(.css-stage) {
@@ -58,7 +58,6 @@
   :global(.css-responsive) {
     padding: 8px;
     background-color: #d5e4f0;
-    color: #06182b;
   }
 
   @media (width >= 700px) {
@@ -76,7 +75,6 @@
   :global(.css-badge) {
     padding: 8px;
     background-color: #d5e4f0;
-    color: #06182b;
   }
 
   @container card (min-width: 500px) {
