@@ -14,6 +14,7 @@
   import { BitmapImage, Image, StackPanel, Window } from "winui-svelte/components";
   import { bitmapImageOf, createMediaPlayer, mediaSourceOfBytes, svgImageSourceOf } from "winui-svelte/media";
   import { exitApplication } from "winui-svelte/window";
+  import { z } from "zod";
 
   const WINDOW_HEIGHT = 420;
   const WINDOW_WIDTH = 360;
@@ -78,10 +79,17 @@
     });
   }
 
+  const failureSchema = z.tuple([z.unknown(), z.object({ errorMessage: z.string() })]);
+
+  function failureMessage(args: unknown[]) {
+    const parsed = failureSchema.safeParse(args);
+    return parsed.success ? parsed.data[1].errorMessage : "unknown";
+  }
+
   function imageEvents(name: string) {
     return {
       onImageOpened: () => opened.add(name),
-      onImageFailed: (_sender: unknown, args: { errorMessage: string }) => failures.set(name, args.errorMessage)
+      onImageFailed: (...args: unknown[]) => failures.set(name, failureMessage(args))
     };
   }
 

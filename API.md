@@ -1889,8 +1889,8 @@ Set `rasterizePixelWidth` and `rasterizePixelHeight` to the displayed size
 times the screen's `RasterizationScale`
 
 Colouring an SVG icon: an `SvgImageSource` keeps the colours it is drawn in
-`ImageIcon` with `showAsMonochrome` paints the image's alpha channel in the
-icon's `foreground`, so a black glyph takes any colour
+`ImageIcon` has no `showAsMonochrome` (`BitmapIcon` does, over a bitmap's alpha
+channel, with `foreground` as the colour)
 For a glyph that is only a path, use `PathIcon` (`data="M12 2 L22 22 L2 22 Z"`)
 or a `Path`, whose `fill` is a brush
 

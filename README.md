@@ -887,7 +887,7 @@ real `MediaPlayer` with no window for audio, with its position, duration and
 state as runes
 SVG is an `SvgImageSource` in an `Image`, `ImageBrush` or `ImageIcon` (static
 SVG: no scripts, no animation, limited CSS), or a path string in `PathIcon`;
-`ImageIcon` with `showAsMonochrome` takes its colour from `foreground`
+`BitmapIcon` with `showAsMonochrome` takes its colour from `foreground`
 [API.md](API.md#media-winui-sveltemedia) has the formats WinUI decodes and the
 details, and `examples/media-elements` the example
 
