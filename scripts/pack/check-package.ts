@@ -34,7 +34,10 @@ const forbiddenInTarball = [
 const requiredInTarball = [
   "package/dist/index.js.map",
   "package/dist/index.d.ts.map",
-  "package/src/index.ts"
+  "package/src/index.ts",
+  "package/dist/css/validate/preprocess.js",
+  "package/dist/css/validate/stylelint.js",
+  "package/dist/css/validate/vscode-css-data.json"
 ];
 
 // A tar archive is 512-byte blocks: a header (name at 0, size in octal at 124,

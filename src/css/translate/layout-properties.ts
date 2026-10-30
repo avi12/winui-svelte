@@ -1,7 +1,7 @@
 import { ElementType, enumMap, setter, simple } from "./property-kit.ts";
 import type { GroupInput, Output, PropertyGroup } from "./property-kit.ts";
 import type { Declaration } from "./types.ts";
-import type { Reader } from "#src/css/parse/reader.js";
+import type { LowerOptions, Reader } from "#src/css/parse/reader.js";
 import { parseLength, parseNumber, splitCommas, splitWords } from "#src/css/parse/values.js";
 
 const GRID_LINES = new Map<string, [string, string]>([
@@ -47,7 +47,8 @@ export function gridTemplate({ target, member }: {
       const tracks = splitWords(reader.declaration.value).flatMap(repeated);
       const lengths = tracks.map(track => gridLength({
         track,
-        reader
+        reader,
+        explain: input.options.explainGridTrack
       }));
       const isNone = reader.declaration.value.toLowerCase() === "none";
       const isUnusable = isNone || lengths.includes(null);
@@ -148,9 +149,10 @@ function minMaxTrack({ args, reader }: {
   });
 }
 
-function gridLength({ track, reader }: {
+function gridLength({ track, reader, explain }: {
   track: string;
   reader: Reader;
+  explain: LowerOptions["explainGridTrack"];
 }) {
   const lower = track.toLowerCase();
   const isAuto = AUTO_TRACKS.has(lower);
@@ -190,6 +192,12 @@ function gridLength({ track, reader }: {
   const hasPixels = pixels !== null;
   if (hasPixels) {
     return String(pixels);
+  }
+
+  const problem = explain?.(track) ?? null;
+  const hasProblem = problem !== null;
+  if (hasProblem) {
+    return reader.error(`${reader.declaration.property}: ${problem}`);
   }
 
   const isRepeating = lower.startsWith("repeat(");

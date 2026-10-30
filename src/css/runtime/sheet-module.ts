@@ -108,18 +108,22 @@ function registrationCode({ sheet, runtimeModule }: {
 }
 
 /**
- * Compiles a component's `<style>` into its registration module; null when
- * the component has no `<style>`. Throws SheetError when the CSS has
- * something WinUI cannot say.
+ * Translates a component's `<style>` the way the build does (relational
+ * selectors resolved, Svelte compiling and scoping the CSS, then the
+ * translation); null when the component has none. The one place the
+ * validator and the build share, so they cannot disagree.
  */
-export function compileSheetModule(input: SheetModuleInput) {
+export function translateComponent(input: Omit<SheetModuleInput, "isHot" | "runtimeModule">) {
   const relational = resolveRelationalSelectors({
     source: input.source,
     file: input.sheetId
   });
   const hasRelationalErrors = relational.diagnostics.length > 0;
   if (hasRelationalErrors) {
-    throw new SheetError(relational.diagnostics);
+    return {
+      sheet: null,
+      diagnostics: relational.diagnostics
+    };
   }
 
   const result = compile(relational.source, {
@@ -136,13 +140,32 @@ export function compileSheetModule(input: SheetModuleInput) {
     return null;
   }
 
-  const translation = translateStyleSheet({
+  return translateStyleSheet({
     file: input.sheetId,
     css: css.code,
     map: css.map,
     resources: input.resources
   });
-  const hasErrors = errorsOf(translation).length > 0;
+}
+
+/**
+ * Compiles a component's `<style>` into its registration module; null when
+ * the component has no `<style>`. Throws SheetError when the CSS has
+ * something WinUI cannot say.
+ */
+export function compileSheetModule(input: SheetModuleInput) {
+  const translation = translateComponent(input);
+  const isStyleMissing = translation === null;
+  if (isStyleMissing) {
+    return null;
+  }
+
+  const sheet = translation.sheet;
+  const isSheetMissing = sheet === null;
+  const hasErrors = isSheetMissing || errorsOf({
+    sheet,
+    diagnostics: translation.diagnostics
+  }).length > 0;
   if (hasErrors) {
     throw new SheetError(translation.diagnostics);
   }
@@ -150,10 +173,10 @@ export function compileSheetModule(input: SheetModuleInput) {
   const hot = input.isHot === true ? "\nif (import.meta.hot) {\n  import.meta.hot.accept();\n}" : "";
   return {
     code: `${registrationCode({
-      sheet: translation.sheet,
+      sheet,
       runtimeModule: input.runtimeModule
     })}${hot}\n`,
-    sheet: translation.sheet,
+    sheet,
     diagnostics: translation.diagnostics
   };
 }

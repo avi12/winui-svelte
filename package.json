@@ -151,6 +151,15 @@
       "types": "./dist/css/runtime/sheet-module.d.ts",
       "default": "./dist/css/runtime/sheet-module.js"
     },
+    "./preprocess": {
+      "types": "./dist/css/validate/preprocess.d.ts",
+      "default": "./dist/css/validate/preprocess.js"
+    },
+    "./stylelint": {
+      "types": "./dist/css/validate/stylelint.d.ts",
+      "default": "./dist/css/validate/stylelint.js"
+    },
+    "./vscode-css-data.json": "./dist/css/validate/vscode-css-data.json",
     "./vite": {
       "types": "./dist/vite/index.d.ts",
       "default": "./dist/vite/index.js"
@@ -229,6 +238,8 @@
     "check:package": "node --disable-warning=ExperimentalWarning scripts/pack/check-package.ts",
     "fallow": "fallow",
     "gen:components": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts",
+    "gen:css-data": "node --disable-warning=ExperimentalWarning scripts/css/export-vscode-css-data.ts",
+    "gen:css-data:check": "node --disable-warning=ExperimentalWarning scripts/css/export-vscode-css-data.ts --check",
     "gen:components:check": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts --check",
     "lint": "node --disable-warning=ExperimentalWarning scripts/lint/lint.ts",
     "lint:oxlint": "oxlint --type-aware",
@@ -243,8 +254,14 @@
     "zod": "^4.6.7"
   },
   "peerDependencies": {
+    "stylelint": ">=16",
     "svelte": "~5.56.7",
     "vite": "8.x"
+  },
+  "peerDependenciesMeta": {
+    "stylelint": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",

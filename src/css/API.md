@@ -517,13 +517,14 @@ Tracks are written to the grid's definitions (a Style cannot hold them), as the
 
 | CSS track | WinUI |
 |---|---|
-| `auto`, `min-content`, `max-content` | `Auto` |
+| `auto` | `Auto` |
+| `min-content`, `max-content` | `Auto`, with a warning: WinUI sizes to the content, it does not measure the minimum or maximum |
 | `120px` | 120 pixels |
 | `1fr`, `2fr` | `*`, `2*` |
 | `minmax(100px, 1fr)` | `*` with MinWidth (MinHeight) 100 |
 | `minmax(50px, 300px)`, `fit-content(200px)` | `Auto` with MinWidth 50 and MaxWidth 300 (200) |
 | `repeat(3, 1fr)` | three tracks |
-| `repeat(auto-fill, ...)`, `auto-fit`, a % | error: a grid has a fixed set of tracks |
+| `repeat(auto-fill, ...)`, `auto-fit`, `subgrid`, `masonry`, a named line (`[side]`), a % track | error: a grid has a fixed set of tracks; the message says what to write instead |
 
 A bound is written after colons in the prop too: `columns="*:100:,Auto::300"`
 
@@ -546,7 +547,7 @@ Offsets are lengths in px (or `auto`)
 
 ## Lengths that depend on the layout
 
-`calc()`, `min()`, `max()` and `clamp()` of px and rem fold at build time
+`calc()`, `min()`, `max()` and `clamp()` of px, rem and the other absolute units fold at build time
 With a
 percentage, a viewport unit (`vw`, `vh`, `vmin`, `vmax`) or a container unit
 (`cqw`, `cqh`, `cqi`, `cqb`, `cqmin`, `cqmax`) in `width`, `height`, `min-*` or `max-*`,
@@ -693,6 +694,75 @@ same way: `:scope` and `&` are the root, other selectors are under it, and an
 element at or under the limit is left out
 The root and the limit are
 selectors; `@scope` holds style rules only
+
+## Length units
+
+One table (`src/css/parse/units.ts`) says what WinUI makes of each unit, and the
+parser, the dynamic-length fold and the validator all read it
+
+| Unit | WinUI |
+|---|---|
+| `px` | device-independent pixels |
+| `rem`, `em` | 16px: WinUI has no root or element font size |
+| `pt`, `pc`, `in`, `cm`, `mm`, `q` | converted to px at build time (96 px to the inch) |
+| `%`, `vw`, `vh`, `vmin`, `vmax`, `cqw`, `cqh`, `cqi`, `cqb`, `cqmin`, `cqmax` | resolved when the window is laid out, inside `calc()`, `min()`, `max()` or `clamp()` (see Lengths that depend on the layout) |
+| `ch`, `ex`, `cap`, `ic`, `lh`, `rlh` and the other font-metric units | error: WinUI has no font metrics; write px or rem |
+| `svw`, `svh`, `lvw`, `lvh`, `dvw`, `dvh`, `vi`, `vb` | error: WinUI has one window size; write `vw` or `vh` inside `calc()` |
+
+## Diagnostics in the editor, the linter and the build
+
+WinUI's CSS is a dialect, the way `:global(...)` is Svelte's: some of it is not
+valid CSS to an editor, and a misuse is a compile error to the build
+Four channels read one validator (`src/css/validate/validate.ts`), which runs the
+build's own translation and adds the explanations the tables hold, so a hand-coder
+and an agent get the same message and the same position everywhere:
+
+| Channel | How | What you see |
+|---|---|---|
+| Svelte language server and `svelte-check` | `winui-svelte/preprocess` in `svelte.config.js` | the declaration marked in the editor; `svelte-check` prints `file:line:column` and the message |
+| Vite and the build | `winuiCss` and `winuiSvelte` | the same message with the frame of code around it and a `[winui-svelte/<code>]` suffix |
+| stylelint | `winui-svelte/stylelint` | the rule `winui-svelte/no-unsupported-css`, which marks the exact range |
+| VS Code's own CSS checker | `winui-svelte/vscode-css-data.json` | no false warning on `-winui-*` properties; completions and hovers say what WinUI allows |
+
+```js
+// svelte.config.js
+import { winuiPreprocess } from "winui-svelte/preprocess";
+
+export default { preprocess: [winuiPreprocess()] };
+```
+
+The Svelte language server shows one error per file, the first, as a point in the
+`<style>`; fix it and the next shows
+stylelint and the build list them all
+
+```json
+{
+  "plugins": ["winui-svelte/stylelint"],
+  "rules": { "winui-svelte/no-unsupported-css": true }
+}
+```
+
+The secondary option `{ "ignore": ["partial-support"] }` skips codes
+
+```json
+{
+  "css.customData": ["./node_modules/winui-svelte/vscode-css-data.json"]
+}
+```
+
+A diagnostic is `{ code, severity, message, filename, start, end, frame, suggestion }`
+with Svelte's position shape (`line` from 1, `column` from 0, `character`)
+The codes: `unsupported-property`, `unsupported-at-rule`, `unsupported-unit`,
+`unsupported-grid-track`, `runtime-unit`, `partial-support` (a warning) and
+`invalid-css`
+For example, `repeat(auto-fill, 100px)` is reported as `repeat(auto-fill, ...) has
+no WinUI equivalent: write explicit tracks, for example repeat(3, 1fr) or 1fr 1fr 1fr`
+
+`vscode-css-data.json` is generated from the same tables by
+`pnpm gen:css-data`, and `pnpm gen:css-data:check` (part of `pnpm lint`) fails when
+it is stale
+These modules run in the editor and the build only; an app's window bundle never
+imports them
 
 ## At-rules without a WinUI meaning
 

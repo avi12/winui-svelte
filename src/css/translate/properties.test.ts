@@ -739,7 +739,7 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["gap on a border", "border", "gap: 4px", /gap has no WinUI meaning on <border>/u],
   ["display flex on a grid", "grid", "display: flex", /display: flex has no WinUI meaning on <grid>/u],
   ["display grid on a stack", "stack-panel", "display: grid", /display: grid has no WinUI meaning on <stack-panel>/u],
-  ["auto-fill in a template", "grid", "grid-template-columns: repeat(auto-fill, 100px)", /auto-fill and auto-fit have no WinUI meaning/u],
+  ["auto-fill in a template", "grid", "grid-template-columns: repeat(auto-fill, 100px)", /repeat\(auto-fill, \.\.\.\) has no WinUI equivalent: write explicit tracks/u],
   ["minmax with a percentage", "grid", "grid-template-columns: minmax(10%, 1fr)", /found "10%"/u],
   ["overflow on a border", "border", "overflow: hidden", /overflow-x: hidden has no WinUI meaning on <border>/u],
   ["letter spacing in px", null, "letter-spacing: 2px", /expected normal or a size in em/u],

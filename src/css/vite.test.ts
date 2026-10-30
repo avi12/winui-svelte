@@ -209,7 +209,7 @@ test("a sheet with an error fails the load with its line", () => {
   assert.throws(() => run({
     name: "load",
     values: [`${BROKEN}-winui-css.js`]
-  }), /^Error: broken\.svelte:3:8: float has no WinUI meaning/u);
+  }), /^Error: .*broken\.svelte:3:8: float has no WinUI meaning/u);
 });
 
 test.after(() => {

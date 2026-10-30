@@ -68,6 +68,11 @@ test("every export has types, and a default that is JavaScript", () => {
       continue;
     }
 
+    const isDataFile = typeof entry === "string" && entry.endsWith(".json");
+    if (isDataFile) {
+      continue;
+    }
+
     const conditions = exportsSchema.parse(entry);
     assert.ok(typeof conditions["types"] === "string", `${name} has no types`);
     assert.ok(String(conditions["default"]).endsWith(".js"), `${name} has no JavaScript default`);

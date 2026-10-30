@@ -16,6 +16,7 @@ const STEPS = [
   "check:webstorm",
   "fallow",
   "gen:components:check",
+  "gen:css-data:check",
   "check:package"
 ];
 

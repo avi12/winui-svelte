@@ -40,7 +40,7 @@
   :global(.css-chip) {
     padding: 8px 12px;
     border-radius: 6px;
-    background-color: color-mix(in oklch, var(--css-base) 40%, #ffffff);
+    background-color: color-mix(in oklch, oklch(70% 0.15 200deg) 40%, #ffffff);
   }
 
   :global(.css-stage) {
