@@ -128,7 +128,9 @@ function runAsync(args: string[]) {
     child.stderr.on("data", (chunk: Buffer) => chunks.push(chunk));
     child.on("close", code => {
       process.stdout.write(Buffer.concat(chunks));
-      if (code === 0) {
+
+      const isSuccess = code === 0;
+      if (isSuccess) {
         resolve();
         return;
       }

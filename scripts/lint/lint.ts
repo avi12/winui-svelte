@@ -11,6 +11,11 @@ const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const MAX_PARALLEL = 4;
 const BUILD = "build";
 
+interface StepResult {
+  isOk: boolean;
+  output: string;
+}
+
 interface Step {
   name: string;
   needs: string[];
@@ -70,7 +75,7 @@ function runStep(name: string) {
       cwd: PACKAGE_ROOT,
       shell: true
     });
-  return new Promise<{ isOk: boolean; output: string }>(resolve => {
+  return new Promise<StepResult>(resolve => {
     const chunks: Buffer[] = [];
     child.stdout.on("data", (chunk: Buffer) => chunks.push(chunk));
     child.stderr.on("data", (chunk: Buffer) => chunks.push(chunk));
@@ -91,7 +96,8 @@ async function main() {
   await new Promise<void>(done => {
     function schedule() {
       const isAllStarted = started.size === STEPS.length;
-      if (isAllStarted && running === 0) {
+      const isFinished = isAllStarted && running === 0;
+      if (isFinished) {
         done();
         return;
       }
@@ -111,6 +117,7 @@ async function main() {
       console.log(`==> pnpm ${name}`);
       const { isOk, output } = await runStep(name);
       process.stdout.write(`\n==> pnpm ${name}: ${isOk ? "passed" : "FAILED"}\n${output}`);
+
       if (!isOk) {
         failed.push(name);
       }

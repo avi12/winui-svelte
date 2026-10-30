@@ -2,6 +2,7 @@ import { extraPackages } from "#scripts/codegen/tables.ts";
 import { filesIn } from "#scripts/files-in.ts";
 import { WINAPP_BINARIES, WINAPP_BINDINGS } from "#scripts/winapp-paths.ts";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import {
   copyFileSync,
   cpSync,
@@ -13,7 +14,6 @@ import {
   statSync,
   writeFileSync
 } from "node:fs";
-import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
 import path from "node:path";
 
@@ -221,12 +221,12 @@ function inputsStamp() {
   return hash.digest("hex");
 }
 
-const stamp = inputsStamp();
-const isUpToDate = !process.argv.includes(FORCE_FLAG)
+const STAMP = inputsStamp();
+const IS_UP_TO_DATE = !process.argv.includes(FORCE_FLAG)
   && existsSync(path.join(OUTPUT_FOLDER, "index.js"))
   && existsSync(STAMP_FILE)
-  && readFileSync(STAMP_FILE, "utf8") === stamp;
-if (isUpToDate) {
+  && readFileSync(STAMP_FILE, "utf8") === STAMP;
+if (IS_UP_TO_DATE) {
   process.stdout.write("dist: up to date (pnpm build --force rebuilds)\n");
   process.exit(0);
 }
@@ -242,5 +242,5 @@ copyShipped();
 copyBootstrappers();
 resolveSourceAliases();
 mkdirSync(path.dirname(STAMP_FILE), { recursive: true });
-writeFileSync(STAMP_FILE, stamp);
+writeFileSync(STAMP_FILE, STAMP);
 process.stdout.write(`dist: ${filesIn(OUTPUT_FOLDER).length} files\n`);
