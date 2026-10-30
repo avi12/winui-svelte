@@ -6,6 +6,7 @@
   import { liveRows, rowStats } from "#examples/lists/row-stats.ts";
   import { unboxed } from "winui-svelte";
   import { TreeView, Window } from "winui-svelte/components";
+  import { TreeViewSelectionMode } from "winui-svelte/enums";
   import { exitApplication } from "winui-svelte/window";
 
   const DEFAULT_ROOTS = 3;
@@ -227,7 +228,7 @@
     oncontrol={control => {
       view = control;
     }}
-    selectionMode={host.options["selection"] === "multiple" ? "Multiple" : "Single"}
+    selectionMode={host.options["selection"] === "multiple" ? TreeViewSelectionMode.Multiple : TreeViewSelectionMode.Single}
     bind:expandedKeys
     bind:selectedKey
     bind:selectedKeys
