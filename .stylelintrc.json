@@ -38,7 +38,6 @@
     "@stylistic/linebreaks": null,
     "no-unknown-animations": null,
     "plugin/no-low-performance-animation-properties": null,
-    "value-keyword-case": null,
     "font-family-no-missing-generic-family-keyword": null,
     "a11y/font-size-is-readable": null
   }
