@@ -144,6 +144,7 @@
     >
       <TextBlock>Drop text files here</TextBlock>
     </Border>
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <border
       {@attach control<BorderControl>(native => {
         rawZone = native;

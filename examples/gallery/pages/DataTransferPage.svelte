@@ -1,6 +1,6 @@
 <script lang="ts">
   import PageFrame from "#examples/gallery/PageFrame.svelte";
-  import { Border, Button, StackPanel, TextBlock } from "winui-svelte/components";
+  import { Button, StackPanel, TextBlock } from "winui-svelte/components";
   import type { DragEvent, NativeFile } from "winui-svelte/data-transfer";
   import {
     clipboard,
@@ -42,18 +42,20 @@
   caption="Drag files onto the box, drag the text out to another app, pick files with a dialog, and use the clipboard. The events are the web's: ondragover, ondrop, ondragstart."
   title="Data transfer"
 >
-  <Border
-    class={isOver ? "drop-box drag-over" : "drop-box"}
+  <border
+    class="drop-box"
+    class:drag-over={isOver}
     {@attach dropzone({
       accept: [".png", ".jpg", "image/*", "text/plain", "directory"],
       onDragStateChange: isEntering => (isOver = isEntering),
       onDrop: drop
     })}
   >
-    <TextBlock>Drop images, folders or text here</TextBlock>
-  </Border>
+    <text-block text="Drop images, folders or text here"></text-block>
+  </border>
   <TextBlock>{received}</TextBlock>
 
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <border
     class="drop-box"
     ondragover={(event: DragEvent) => {
@@ -98,11 +100,11 @@
 <style>
   .drop-box {
     padding: 24px;
-    border: 2px dashed gray;
+    border: 2px dashed #808080;
   }
 
   .drag-over {
-    background: rgb(0 120 212 / 20%);
     border-color: rgb(0 120 212);
+    background: rgb(0 120 212 / 20%);
   }
 </style>
