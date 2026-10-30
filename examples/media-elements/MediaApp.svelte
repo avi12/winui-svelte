@@ -1,7 +1,6 @@
 <script lang="ts">
   import { sineWav, twoColorPng, twoColorSvg } from "./samples.ts";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
-  import { windowDefaults } from "#examples/harness/smoke.ts";
   import { projectAs } from "#src/winui.js";
   import type { Image as ImageControl } from "#winui/microsoft/ui/xaml/controls/Image";
   import { BitmapImage as BitmapImageSource } from "#winui/microsoft/ui/xaml/media/imaging/BitmapImage";
@@ -170,7 +169,6 @@
 </script>
 
 <Window
-  {...windowDefaults(host)}
   height={WINDOW_HEIGHT}
   onClosed={exitApplication}
   title="Media example"

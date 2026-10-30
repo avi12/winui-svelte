@@ -36,7 +36,7 @@ async function offeredAt(prop: string) {
 }
 
 before(async () => {
-  await server.start(PACKAGE_FOLDER);
+  await server.start([PACKAGE_FOLDER]);
   server.open(FIXTURE);
   await server.settle([FIXTURE]);
 }, { timeout: SERVER_TIMEOUT_MILLISECONDS });

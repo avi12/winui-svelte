@@ -5,8 +5,19 @@
 import type { Json } from "#src/messaging/json.js";
 import { jsonSchema } from "#src/messaging/json.js";
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
-import { readFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmdirSync,
+  symlinkSync,
+  unlinkSync
+} from "node:fs";
 import { createRequire } from "node:module";
+import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
 
@@ -59,6 +70,13 @@ const configurationRequestSchema = z.object({
   items: z.array(z.object({ section: z.string().optional() }))
 });
 
+// The server crawls its workspace for configs and watches it, and under the
+// package that is .worktrees (dozens of other checkouts), .verify and
+// the rest, which never settles. So it is started on a scratch workspace that
+// links in only what the editor would show, not these (dist stays: the package
+// imports itself through its exports, which point there).
+const WORKSPACE_FOLDER = path.resolve(import.meta.dirname, "../../.verify/editor-workspace");
+const UNSEEN_ENTRIES = new Set([".worktrees", ".verify", ".git", ".idea", ".claude", ".fallow", ".winapp", "target"]);
 const HEADER_SEPARATOR = "\r\n\r\n";
 const contentLengthPattern = /Content-Length: (\d+)/i;
 // The server publishes a file's diagnostics more than once (Svelte's first,
@@ -102,6 +120,41 @@ function uriKey(uri: string) {
   return decodeURIComponent(uri).toLowerCase();
 }
 
+// Removes a folder of links and copies without touching what the links point at.
+function clearFolder(folder: string) {
+  for (const entry of readdirSync(folder)) {
+    const entryPath = path.join(folder, entry);
+    const stats = lstatSync(entryPath);
+    if (stats.isDirectory()) {
+      clearFolder(entryPath);
+      rmdirSync(entryPath);
+    } else {
+      unlinkSync(entryPath);
+    }
+  }
+}
+
+// A folder that mirrors `source` for the server: its folders as junctions, its
+// files (tsconfig.json, package.json) as copies, minus UNSEEN_ENTRIES.
+function mirror({ source, target }: {
+  source: string;
+  target: string;
+}) {
+  mkdirSync(target, { recursive: true });
+  for (const entry of readdirSync(source, { withFileTypes: true })) {
+    const isSeen = !UNSEEN_ENTRIES.has(entry.name);
+    const entryPath = path.join(source, entry.name);
+    const entryTarget = path.join(target, entry.name);
+    const isLinked = isSeen && entry.isDirectory();
+    const isCopied = isSeen && entry.isFile();
+    if (isLinked) {
+      symlinkSync(entryPath, entryTarget, "junction");
+    } else if (isCopied) {
+      copyFileSync(entryPath, entryTarget);
+    }
+  }
+}
+
 function sleep(milliseconds: number) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
@@ -114,6 +167,7 @@ export class LanguageServer {
   private buffer = Buffer.alloc(0);
   private lastPublish = Date.now();
   private exitCode: number | null | undefined;
+  private readonly mirrors = new Map<string, string>();
 
   constructor(fromFolder: string) {
     const serverPath = createRequire(pathToFileURL(`${fromFolder}/`)).resolve("svelte-language-server/bin/server.js");
@@ -129,8 +183,25 @@ export class LanguageServer {
     });
   }
 
-  async start(rootFolder: string) {
-    const rootUri = pathToFileURL(rootFolder).href;
+  /**
+   * Starts the server on a scratch workspace that mirrors each of `folders`;
+   * the methods below take the real paths and map them in.
+   */
+  async start(folders: string[]) {
+    if (existsSync(WORKSPACE_FOLDER)) {
+      clearFolder(WORKSPACE_FOLDER);
+    }
+
+    for (const [iFolder, folder] of folders.entries()) {
+      const mirrored = path.join(WORKSPACE_FOLDER, `${iFolder}-${path.basename(folder)}`);
+      mirror({
+        source: folder,
+        target: mirrored
+      });
+      this.mirrors.set(folder, mirrored);
+    }
+
+    const rootUri = pathToFileURL(WORKSPACE_FOLDER).href;
     const params = {
       processId: process.pid,
       rootUri,
@@ -162,10 +233,23 @@ export class LanguageServer {
     });
   }
 
+  // The scratch path the server knows a real file by.
+  private inWorkspace(file: string) {
+    for (const [folder, mirrored] of this.mirrors) {
+      const relative = path.relative(folder, file);
+      const isInside = !relative.startsWith("..") && !path.isAbsolute(relative);
+      if (isInside) {
+        return path.join(mirrored, relative);
+      }
+    }
+
+    throw new Error(`${file} is in none of the folders the server was started on.`);
+  }
+
   open(file: string) {
     const params = {
       textDocument: {
-        uri: pathToFileURL(file).href,
+        uri: pathToFileURL(this.inWorkspace(file)).href,
         languageId: "svelte",
         version: 1,
         text: readFileSync(file, "utf8")
@@ -186,7 +270,7 @@ export class LanguageServer {
         throw new Error(`The Svelte language server exited (${String(this.exitCode)}).`);
       }
 
-      const hasEveryFile = files.every(file => this.diagnostics.has(fileKey(file)));
+      const hasEveryFile = files.every(file => this.diagnostics.has(fileKey(this.inWorkspace(file))));
       const isSettled = hasEveryFile && Date.now() - this.lastPublish > SETTLE_MILLISECONDS;
       if (isSettled) {
         return;
@@ -199,14 +283,14 @@ export class LanguageServer {
   }
 
   diagnosticsOf(file: string) {
-    return this.diagnostics.get(fileKey(file)) ?? [];
+    return this.diagnostics.get(fileKey(this.inWorkspace(file))) ?? [];
   }
 
   async inlayHintsOf(file: string) {
     const lineCount = readFileSync(file, "utf8").split("\n").length;
     const params = {
       textDocument: {
-        uri: pathToFileURL(file).href
+        uri: pathToFileURL(this.inWorkspace(file)).href
       },
       range: {
         start: {
@@ -234,7 +318,7 @@ export class LanguageServer {
   }) {
     const params = {
       textDocument: {
-        uri: pathToFileURL(file).href
+        uri: pathToFileURL(this.inWorkspace(file)).href
       },
       position: {
         line,
