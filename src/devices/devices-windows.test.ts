@@ -1,4 +1,5 @@
 import { DeviceClass, DeviceInformationKind, DeviceWatcherStatus, RadioKind } from "./bindings.ts";
+import { DeviceAccessStatus, getDeviceAccess } from "./device-access.ts";
 import { findAllDevices } from "./find-devices.ts";
 import { readInputCapabilities } from "./input-capabilities.ts";
 import { DeviceInterfaceClass, selectorOfInterfaceClasses } from "./interface-classes.ts";
@@ -64,6 +65,12 @@ test("the interface class selector names each class and requires it enabled", ()
   const selector = selectorOfInterfaceClasses(DeviceInterfaceClass.mouse, DeviceInterfaceClass.keyboard);
   assert.match(selector, /^\(System\.Devices\.InterfaceClassGuid:="\{378de44c-.*\}" OR System\.Devices\.InterfaceClassGuid:="\{884b96c3-.*\}"\) AND /u);
   assert.match(selector, /InterfaceEnabled/u);
+});
+
+test("the access to a class of devices is a status and a prompt flag", () => {
+  const access = getDeviceAccess(DeviceClass.AudioCapture);
+  assert.ok(Object.values(DeviceAccessStatus).includes(access.status));
+  assert.equal(typeof access.isPromptRequired, "boolean");
 });
 
 test("the audio render devices are listed with their ids, names and properties", async () => {

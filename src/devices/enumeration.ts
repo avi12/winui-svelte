@@ -1,5 +1,6 @@
 export type { Delivery } from "./delivery.ts";
 export { deliverNow } from "./delivery.ts";
+export { DeviceAccessStatus, getDeviceAccess } from "./device-access.ts";
 export type { DeviceChangesOptions } from "./device-changes.ts";
 export { deviceChanges } from "./device-changes.ts";
 export type { DeviceQuery, ResolvedDeviceQuery } from "./device-query.ts";

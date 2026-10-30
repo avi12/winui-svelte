@@ -9,7 +9,6 @@ export { DeviceInformationKind } from "#winui/windows/devices/enumeration/Device
 export { DevicePairingProtectionLevel } from "#winui/windows/devices/enumeration/DevicePairingProtectionLevel";
 export { DeviceWatcherStatus } from "#winui/windows/devices/enumeration/DeviceWatcherStatus";
 export { DeviceAccessInformation } from "#winui/windows/devices/enumeration/DeviceAccessInformation";
-export { DeviceAccessStatus } from "#winui/windows/devices/enumeration/DeviceAccessStatus";
 export { IPropertyValue } from "#winui/windows/foundation/IPropertyValue";
 export { PropertyType } from "#winui/windows/foundation/PropertyType";
 export { CryptographicBuffer } from "#winui/windows/security/cryptography/CryptographicBuffer";
@@ -20,9 +19,7 @@ export { PointerDevice } from "#winui/windows/devices/input/PointerDevice";
 export { PointerDeviceType } from "#winui/windows/devices/input/PointerDeviceType";
 export type { IBuffer } from "#winui/windows/storage/streams/IBuffer";
 export { BluetoothAdapter } from "#winui/windows/devices/bluetooth/BluetoothAdapter";
-export { BluetoothAddressType } from "#winui/windows/devices/bluetooth/BluetoothAddressType";
 export { BluetoothCacheMode } from "#winui/windows/devices/bluetooth/BluetoothCacheMode";
-export { BluetoothConnectionStatus } from "#winui/windows/devices/bluetooth/BluetoothConnectionStatus";
 export { BluetoothDevice } from "#winui/windows/devices/bluetooth/BluetoothDevice";
 export { BluetoothLEDevice } from "#winui/windows/devices/bluetooth/BluetoothLEDevice";
 export { BluetoothUuidHelper } from "#winui/windows/devices/bluetooth/BluetoothUuidHelper";
