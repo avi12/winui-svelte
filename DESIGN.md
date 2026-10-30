@@ -15,7 +15,7 @@ and Mica are real backdrops, accessibility is UI Automation's)
 </script>
 
 <StackPanel class="card">
-  <TextBlock text="Split into any grid" />
+  <TextBlock>Split into any grid</TextBlock>
   <ToggleSwitch bind:isOn />
 </StackPanel>
 
