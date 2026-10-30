@@ -175,21 +175,14 @@
   width={WINDOW_WIDTH}
 >
   <StackPanel>
-    <Image class="sample" {@attach track("bytes")} source={fromBytes} {...imageEvents("bytes")} />
-    <Image class="sample" {@attach track("dataUri")} source={fromDataUri} {...imageEvents("dataUri")} />
-    <Image class="sample" {@attach track("svg")} source={svg} {...imageEvents("svg")} />
-    <Image class="sample" {@attach track("broken")} source={broken} {...imageEvents("broken")} />
-    <Image class="sample" {@attach track("file")} {...imageEvents("file")}>
+    <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("bytes")} source={fromBytes} {...imageEvents("bytes")} />
+    <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("dataUri")} source={fromDataUri} {...imageEvents("dataUri")} />
+    <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("svg")} source={svg} {...imageEvents("svg")} />
+    <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("broken")} source={broken} {...imageEvents("broken")} />
+    <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("file")} {...imageEvents("file")}>
       {#snippet source()}
         <BitmapImage decodePixelWidth={IMAGE_SIZE} uriSource={PNG_PATH} />
       {/snippet}
     </Image>
   </StackPanel>
 </Window>
-
-<style>
-  .sample {
-    width: 16px;
-    height: 16px;
-  }
-</style>
