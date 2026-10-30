@@ -32,6 +32,8 @@ export interface UiaRequest {
 function run({ pid, action, id = "", name = "", value = "", item = "" }: UiaRequest) {
   const result = spawnSync("powershell.exe", [
     "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
     "-File",
     SCRIPT,
     "-ProcessId",
