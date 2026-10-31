@@ -318,6 +318,10 @@
       "types": "./dist/web-apis/battery.d.ts",
       "default": "./dist/web-apis/battery.js"
     },
+    "./web-apis/bluetooth": {
+      "types": "./dist/web-apis/bluetooth.d.ts",
+      "default": "./dist/web-apis/bluetooth.js"
+    },
     "./web-apis/clipboard": {
       "types": "./dist/web-apis/clipboard.d.ts",
       "default": "./dist/web-apis/clipboard.js"
@@ -333,6 +337,14 @@
     "./web-apis/geolocation": {
       "types": "./dist/web-apis/geolocation.d.ts",
       "default": "./dist/web-apis/geolocation.js"
+    },
+    "./web-apis/hid": {
+      "types": "./dist/web-apis/hid.d.ts",
+      "default": "./dist/web-apis/hid.js"
+    },
+    "./web-apis/idle": {
+      "types": "./dist/web-apis/idle.d.ts",
+      "default": "./dist/web-apis/idle.js"
     },
     "./web-apis/launch": {
       "types": "./dist/web-apis/launch.d.ts",
@@ -374,6 +386,10 @@
       "types": "./dist/web-apis/sensors.d.ts",
       "default": "./dist/web-apis/sensors.js"
     },
+    "./web-apis/serial": {
+      "types": "./dist/web-apis/serial.d.ts",
+      "default": "./dist/web-apis/serial.js"
+    },
     "./web-apis/share": {
       "types": "./dist/web-apis/share.d.ts",
       "default": "./dist/web-apis/share.js"
@@ -389,6 +405,14 @@
     "./web-apis/timing": {
       "types": "./dist/web-apis/timing.d.ts",
       "default": "./dist/web-apis/timing.js"
+    },
+    "./web-apis/usb": {
+      "types": "./dist/web-apis/usb.d.ts",
+      "default": "./dist/web-apis/usb.js"
+    },
+    "./web-apis/wake-lock": {
+      "types": "./dist/web-apis/wake-lock.d.ts",
+      "default": "./dist/web-apis/wake-lock.js"
     },
     "./web-apis/web-storage": {
       "types": "./dist/web-apis/web-storage.d.ts",

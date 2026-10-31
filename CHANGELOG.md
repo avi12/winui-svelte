@@ -52,6 +52,12 @@ project adheres to [Semantic Versioning](https://semver.org/)
   (`winui-svelte/web-apis/speech`), and `navigator.mediaSession`
   (`winui-svelte/web-apis/media-session`)
 
+- Web APIs for hardware: `navigator.bluetooth`, `navigator.usb`,
+  `navigator.hid` and `navigator.serial` (the app gives the chooser a browser
+  would show), `navigator.wakeLock` and `IdleDetector`
+  (`winui-svelte/web-apis/bluetooth`, `usb`, `hid`, `serial`, `wake-lock`,
+  `idle`)
+
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support
 - Renderer: a tree that Svelte draws into as if it were the DOM, creating and

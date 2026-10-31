@@ -243,12 +243,6 @@ function luidAt({ memory, offset }: {
  *
  * @returns Reads of the primary monitor's target and color state.
  */
-/**
- * The display configuration source over `QueryDisplayConfig` and
- * `DisplayConfigGetDeviceInfo`.
- *
- * @returns Reads of the primary monitor's target and color state.
- */
 export function windowsDisplayConfig() {
   const getSizes = bind({
     dll: "user32.dll",
@@ -397,4 +391,67 @@ export function windowsDisplayConfig() {
       });
     }
   } satisfies DisplayConfigSource;
+}
+
+const LAST_INPUT_BYTES = 8;
+const DESKTOP_SWITCHDESKTOP = 0x100;
+
+/**
+ * Reads how long the session has had no input (`GetLastInputInfo` against
+ * `GetTickCount`) and whether it is locked (`OpenInputDesktop` fails while the
+ * secure desktop is up). Reads only; the functions are bound when this is
+ * called.
+ *
+ * @returns `read()`, the idle milliseconds and the lock state.
+ */
+export function createIdleReader() {
+  const getLastInput = bind({
+    dll: "user32.dll",
+    entryPoint: "GetLastInputInfo",
+    parameters: ["pointer"],
+    returnType: "i32"
+  });
+  const getTickCount = bind({
+    dll: "kernel32.dll",
+    entryPoint: "GetTickCount",
+    parameters: [],
+    returnType: "u32"
+  });
+  const openInputDesktop = bind({
+    dll: "user32.dll",
+    entryPoint: "OpenInputDesktop",
+    parameters: ["u32", "i32", "u32"],
+    returnType: "pointer"
+  });
+  const closeDesktop = bind({
+    dll: "user32.dll",
+    entryPoint: "CloseDesktop",
+    parameters: ["pointer"],
+    returnType: "i32"
+  });
+  return function read() {
+    return withMemory({
+      size: LAST_INPUT_BYTES,
+      alignment: DWORD_BYTES,
+      use(info) {
+        const header = Buffer.alloc(DWORD_BYTES);
+        header.writeUInt32LE(LAST_INPUT_BYTES);
+        info.writeBytes(0, header);
+        getLastInput.invoke([pointerOf(info)]);
+        const lastInput = info.readU32(DWORD_BYTES);
+        const now = numberOf(getTickCount.invoke([]).returnValue);
+        const opened = openInputDesktop.invoke([DynWin32.u32(0), DynWin32.i32(0), DynWin32.u32(DESKTOP_SWITCHDESKTOP)]);
+        const desktop = addressOf(opened.returnValue);
+        const isLocked = desktop === NULL_ADDRESS;
+        if (!isLocked) {
+          closeDesktop.invoke([DynWin32Unsafe.pointer(desktop)]);
+        }
+
+        return {
+          idleMilliseconds: (now - lastInput) >>> 0,
+          isLocked
+        };
+      }
+    });
+  };
 }

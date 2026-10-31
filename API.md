@@ -2304,6 +2304,152 @@ silent one)
   not deliver them, the overlay shows the state and its buttons do not reach
   the page
 
+### Hardware access (`winui-svelte/web-apis/bluetooth`, `usb`, `hid`, `serial`, `wake-lock`, `idle`)
+
+Each is `install<Name>()` with a `backend` option the tests replace, and each
+lists devices without opening them; the real-device tests only list and read
+
+#### The chooser
+
+A browser shows a dialog in `requestDevice` and `requestPort`; this package
+shows none, so the app gives the picker, once at install or on one call:
+
+```ts
+installUsb({
+  chooser: async ({ candidates, signal }) => [await showMyPickerDialog(candidates)]
+});
+
+const device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x1234 }] });
+```
+
+- A chooser gets the candidates that passed the filters and answers with the
+  ones the user wants (HID may take several, the others take the first); an
+  empty answer is `NotFoundError`, and without a chooser the request is
+  `NotAllowedError`
+- What the user picked is allowed for this run: `getDevices()` and `getPorts()`
+  list the allowed devices that are plugged in, and `forget()` takes one back
+- `connect` and `disconnect` fire for allowed devices only, from a device
+  watcher that starts with the first listener
+- Every candidate is the backend's own record (`BluetoothCandidate`,
+  `UsbDeviceInfo`, `HidDeviceInfo`, `SerialPortInfo`), so a dialog can show
+  names, ids and signal strength
+
+#### Bluetooth
+
+`installBluetooth({ chooser, backend })` defines `navigator.bluetooth` and
+`BluetoothUUID` over `src/devices/bluetooth`, and answers the `bluetooth`
+permission (`prompt` until a device is picked)
+
+- `requestDevice` scans for 5 seconds, filters by `services`, `name`,
+  `namePrefix` and `manufacturerData` (with `exclusionFilters` and
+  `acceptAllDevices`), then asks the chooser; the options rules of the spec
+  throw `TypeError`
+- `BluetoothDevice` has `gatt`, `watchAdvertisements({ signal })` with
+  `advertisementreceived` (`BluetoothAdvertisingEvent`), `forget()` and
+  `gattserverdisconnected`; the same object comes back for the same device
+- `gatt.connect()` shares one attempt; services outside `filters` and
+  `optionalServices` are `SecurityError`, absent ones `NotFoundError`, a
+  closed link `NetworkError`
+- Characteristics read, write (with or without response), notify
+  (`characteristicvaluechanged` on the characteristic, its service and the
+  device) and list descriptors; `value` is a `DataView`
+- Names such as `battery_service` are not resolved: use the number
+  (`0x180F`), the 4 or 8 digit hex or the full UUID
+- Not built: `availabilitychanged`, `serviceData` filters, `appearance`
+- Extras: `requestDevice({ chooser, scanMilliseconds, signal })`,
+  `BluetoothDevice.address`, `BluetoothValueChangedEvent.characteristic`
+
+#### USB
+
+`installUsb({ chooser, backend })` defines `navigator.usb` over
+`Windows.Devices.Usb`; only devices with the WinUSB driver exist for it
+
+- `requestDevice({ filters })` (an empty list matches every device) and
+  `getDevices()`; `USBDevice` has `open`, `close`, `forget`,
+  `selectConfiguration`, `claimInterface`, `releaseInterface`,
+  `selectAlternateInterface`, `controlTransferIn` and `Out`, `transferIn` and
+  `Out` (bulk and interrupt endpoints), `clearHalt`, with the state rules of the
+  spec (`InvalidStateError` before `open`, `NotFoundError` for an unclaimed
+  endpoint)
+- Listing reads the device interface only, so `configurations` are filled
+  after `open()`; Windows has one configuration per WinUSB device, so
+  `selectConfiguration` only accepts it
+- `reset()` and isochronous transfers have no WinRT call and reject with
+  `NotSupportedError`
+- Extras: `requestDevice({ chooser, signal })`, `USBDevice.interfacePath`
+
+#### HID
+
+`installHid({ chooser, backend })` defines `navigator.hid` over
+`Windows.Devices.HumanInterfaceDevice`
+
+- `requestDevice({ filters, exclusionFilters })` filters by `vendorId`,
+  `productId`, `usagePage` and `usage`, and returns an array
+- `HIDDevice.open()` turns on `inputreport` (`HIDInputReportEvent` with
+  `reportId` and `data`); `sendReport`, `sendFeatureReport` and
+  `receiveFeatureReport` take the report id and the bytes without it
+- `collections` holds the top-level collection only: WinRT does not give the
+  report descriptor
+- Extras: `requestDevice({ chooser, signal })`, `HIDDevice.interfacePath`
+
+#### Serial
+
+`installSerial({ chooser, backend })` defines `navigator.serial` over
+`Windows.Devices.SerialCommunication`
+
+- `requestPort({ filters })` filters by `usbVendorId` and `usbProductId`;
+  `SerialPort.open({ baudRate, dataBits, stopBits, parity, bufferSize,
+  flowControl })` checks its options (`TypeError`) and fails with
+  `NetworkError` when the port is busy
+- `readable` and `writable` are byte streams; a framing, parity or overrun
+  error on the line errors the readable with a `DOMException` of that name and
+  a new `readable` takes its place; `close()` needs both streams unlocked
+- `getSignals()` and `setSignals({ dataTerminalReady, requestToSend, break })`
+  map the control lines (`ringIndicator` is always false: WinRT has none)
+- Extras: `requestPort({ chooser, signal })`, `SerialPort.portName`,
+  `SerialPort.interfacePath`, `SerialPort.connected`
+
+#### Screen wake lock
+
+`installWakeLock({ visibility })` defines `navigator.wakeLock` and
+`WakeLockSentinel` over `DisplayRequest` (one request per sentinel, which
+needs a single-threaded apartment: the window thread has one)
+
+- `request("screen")` gives a sentinel with `release()` and `release` event;
+  any other type is `TypeError`; the `screen-wake-lock` permission is granted
+- A hidden page releases every lock and refuses a new one (`NotAllowedError`);
+  until the page API exists, `visibility` is the seam (`isVisible()` and
+  `onChange(callback)`), and without it the page counts as always visible
+- Extra: `navigator.wakeLock.activeCount`
+
+#### Idle detection
+
+`installIdleDetector({ permission })` defines `IdleDetector` over
+`GetLastInputInfo` (user state) and whether the input desktop can be opened
+(screen lock), polled once a second
+
+- `IdleDetector.requestPermission()` grants, as Windows asks nothing (pass
+  `permission: "denied"` to refuse); `start({ threshold, signal })` needs it
+  (`NotAllowedError`), takes a threshold of at least 60000 (`TypeError`) and
+  resolves with `userState` (`active` or `idle`) and `screenState` (`locked` or
+  `unlocked`) set; `change` fires when either moves
+- Extra: `idleMilliseconds`, the time since the last input at the last reading
+
+#### Other exports
+
+- Bluetooth: `BluetoothRemoteGATTServer`, `BluetoothRemoteGATTService`,
+  `BluetoothRemoteGATTCharacteristic`, `BluetoothRemoteGATTDescriptor`, and
+  what a backend throws: `BluetoothFailure` with a `BluetoothFailureKind`
+- USB: `USBInTransferResult`, `USBOutTransferResult`, `USBConnectionEvent`,
+  and for a backend `UsbFailure`, `UsbDirection`, `UsbEndpointType`,
+  `UsbRecipient`, `UsbRequestType`, `UsbTransferStatus`
+- HID: `HIDConnectionEvent`, and `HidFailure` for a backend
+- Serial: `SerialConnectionEvent`, and for a backend `SerialFailure`,
+  `SerialFlowControlName`, `SerialLineError`, `SerialParityName`
+- Wake lock: `WakeLock` (the `navigator.wakeLock` class) and
+  `windowsWakeLockBackend`
+- Idle: `UserIdleState`, `ScreenIdleState` and `windowsIdleBackend`
+
 ## Forms (`winui-svelte/forms`)
 
 Opt-in: nothing in the core imports it, so an app that does not use it does
