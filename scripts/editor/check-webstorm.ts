@@ -23,6 +23,12 @@ import { parseArgs } from "node:util";
 
 const PROFILE_PATH = path.join(import.meta.dirname, "webstorm", "profile.xml");
 const MILLISECONDS_PER_SECOND = 1000;
+// The IDE sometimes fails to resolve the ambient rune declarations ($props and
+// the like) on a run, a few problems that the next run does not report, and
+// nothing in the tree changed. A real finding is reported by every run, so the
+// check passes only when one of these runs is clean, and prints the last one.
+const MAX_ATTEMPTS = 3;
+const ATTEMPTS = Array.from({ length: MAX_ATTEMPTS }, (_unused, iAttempt) => iAttempt + 1);
 
 function skip({ reason, isRequired }: {
   reason: string;
@@ -31,6 +37,29 @@ function skip({ reason, isRequired }: {
   const verdict = isRequired ? "FAILED (--require)" : "skipped";
   console.log(`WebStorm check ${verdict}: ${reason}`);
   process.exitCode = isRequired ? 1 : 0;
+}
+
+async function inspectOnce({ ideHome, sveltePlugin, isUsingIdeTypes }: {
+  ideHome: string;
+  sveltePlugin: string;
+  isUsingIdeTypes: boolean;
+}) {
+  prepareIsolation({ sveltePlugin });
+  const exitCode = await runInspection({
+    ideHome,
+    projectFolder: syncShadowProject({ isUsingIdeTypes }),
+    profilePath: PROFILE_PATH
+  });
+  const isFinished = exitCode === 0;
+  if (!isFinished) {
+    console.error(`WebStorm check FAILED: the inspection did not finish (exit ${exitCode ?? "killed after the timeout"}); see .verify/webstorm/log/idea.log.`);
+    return undefined;
+  }
+
+  return readProblems({
+    resultsFolder: RESULTS_FOLDER,
+    inspections: enabledInspections(readFileSync(PROFILE_PATH, "utf8"))
+  });
 }
 
 async function main() {
@@ -68,23 +97,28 @@ async function main() {
   }
 
   const startedAt = Date.now();
-  prepareIsolation({ sveltePlugin });
-  const exitCode = await runInspection({
-    ideHome,
-    projectFolder: syncShadowProject({ isUsingIdeTypes: values["ide-types"] }),
-    profilePath: PROFILE_PATH
-  });
-  const isFinished = exitCode === 0;
-  if (!isFinished) {
-    console.error(`WebStorm check FAILED: the inspection did not finish (exit ${exitCode ?? "killed after the timeout"}); see .verify/webstorm/log/idea.log.`);
-    process.exitCode = 1;
-    return;
+  let problems: ReturnType<typeof readProblems> = [];
+  for (const attempt of ATTEMPTS) {
+    const found = await inspectOnce({
+      ideHome,
+      sveltePlugin,
+      isUsingIdeTypes: values["ide-types"]
+    });
+    const isFinished = found !== undefined;
+    if (!isFinished) {
+      process.exitCode = 1;
+      return;
+    }
+
+    problems = found;
+    const isClean = problems.length === 0;
+    if (isClean) {
+      break;
+    }
+
+    console.error(`WebStorm check: attempt ${attempt} of ${ATTEMPTS.length} reported ${problems.length} problems`);
   }
 
-  const problems = readProblems({
-    resultsFolder: RESULTS_FOLDER,
-    inspections: enabledInspections(readFileSync(PROFILE_PATH, "utf8"))
-  });
   for (const problem of problems) {
     console.error(`${problem.file}:${problem.line}:${problem.column} ${problem.message} (${problem.severity} ${problem.inspection})`);
   }
