@@ -94,10 +94,9 @@ import { xamlSeam } from "./xaml-seam.ts";
 import { styleOfClasses } from "#src/css/index.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
-import { tagOf } from "#src/renderer/host/host.js";
+import { classNameOf } from "#src/renderer/host/host.js";
 import { read, write } from "#src/renderer/host/reflect.js";
 import { boxed, doubleCollection } from "#src/renderer/host/values.js";
-import { pascalCase } from "#src/renderer/tree/markup.js";
 import type { IMediaPlaybackSource } from "#winui/windows/media/playback/IMediaPlaybackSource";
 import type { ClassValue } from "svelte/elements";
 
@@ -812,7 +811,7 @@ export function styleOf({ input, owner, property }: {
   const style = styleOfClasses({
     elementType: styleTarget({
       property,
-      owner: pascalCase(tagOf(owner))
+      owner: classNameOf(owner)
     }),
     classNames: input
   });

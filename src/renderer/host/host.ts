@@ -167,23 +167,17 @@ export function setClassHandler(handler: ClassHandler | null) {
 }
 
 /**
- * The tag the renderer knows a control's class by (`list-view`), found in what
- * the app registered rather than from the class's own name, which a minifier
- * renames. A class nobody registered is named by its own name.
+ * The class name of a control as the bindings name it (`ListView`), from the
+ * tag the app registered its class under rather than the class's own name,
+ * which a minifier renames; a class nobody registered keeps its own name.
  *
  * @param control - A control or any other projected object.
- * @returns The tag.
+ * @returns The name.
  */
-export function tagOf(control: object) {
+export function classNameOf(control: object) {
   const constructor = read(Object.getPrototypeOf(control), "constructor");
-  const registered = [...controls].find(([, value]) => value === constructor);
-  const isRegistered = registered !== undefined;
-  if (isRegistered) {
-    return registered[0];
-  }
-
-  const name = read(constructor, "name");
-  return typeof name === "string" ? kebabCase(name) : "";
+  const [tag] = [...controls].find(([, value]) => value === constructor) ?? [];
+  return pascalCase(tag ?? String(read(constructor, "name")));
 }
 
 function isControlClass(value: NativeValue): value is new () => UIElement {
@@ -269,7 +263,7 @@ function elementType({ element, control }: {
   control: UIElement;
 }) {
   const isHost = element.name === HOST_TAG;
-  return isHost ? tagOf(control) : element.name;
+  return isHost ? kebabCase(control.constructor.name) : element.name;
 }
 
 function stylingOf({ element, control }: {
