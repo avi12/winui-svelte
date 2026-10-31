@@ -1767,6 +1767,87 @@ takes drops, through the handlers a real drop reaches, and resolves with the
 operation the control accepted (`0` when it refused); it sends no input, so an
 app can test its drop handling in a real window
 
+## Web APIs (`winui-svelte/web-apis`)
+
+The standard Web APIs over WinRT and Win32, installed on demand; the package
+adds no bespoke API for a feature the web already names
+
+### Installing
+
+- `installWebApis({ apis })` runs the listed installers and returns one
+  uninstall; `runWindow({ webApis })` does it on the window thread before
+  `onStart`
+- Each API exports `install<Name>()` returning an uninstall function: it
+  defines the global (or a `navigator` property), with `Symbol.toStringTag`
+  and the spec's `EventTarget` inheritance, and a test can put it away again
+- Nothing is defined at import time; `defineProperty` and
+  `defineNavigatorProperty` are the helpers an installer uses
+- The realm is the window thread (a worker); the host's main thread has no
+  window, so install there only what needs none
+- `domException` and `DomErrorName` give the errors the specs name
+  (`NotAllowedError`, `NotSupportedError`, `SecurityError`, `InvalidStateError`,
+  `NotFoundError`)
+- `HandlerEventTarget` is the `EventTarget` with `onclick`-style properties
+
+### Permissions
+
+`installPermissions()` defines `navigator.permissions`; `Permissions`,
+`PermissionStatus` (an `EventTarget` with `change`) and `PermissionStateName`
+(`granted`, `denied`, `prompt`) are the spec's; an API registers its permission
+with `registerPermission({ name, provider })` and calls
+`announcePermissionChange(name)` when it moves, so open statuses fire `change`
+
+### The three kinds and the extras convention
+
+1. **Web**: standard behaviour only
+2. **Web plus extras**: every extra is an optional lowerCamelCase member of the
+   API's own options or objects, documented as WinUI-only and ignored anywhere
+   else, and typed by declaration merging that ships with the subpath
+   (`NotificationExtras` merges into the global `NotificationOptions`); with no
+   extra used the behaviour is the spec's
+3. **As is**: no Web counterpart; use the WinRT class through the bindings
+   (`#winui/windows/...`), whose names mirror WinRT: async operations are
+   promises, events are `onX(callback)` returning an unsubscribe function,
+   vectors iterate, properties are accessors, `default` and `arguments` get a
+   trailing underscore; bind a class that is missing by adding it to
+   `lateClasses` and running `pnpm bindings:after-winapp`
+
+### Notification (`winui-svelte/web-apis/notification`)
+
+`installNotification({ identity, appUserModelId })` defines
+`globalThis.Notification` over `AppNotificationManager`
+
+- `Notification.permission` (one of the `NotificationPermission` values) is `default` until `requestPermission()`, which
+  registers the process: `granted` when it works and Windows has notifications
+  on for the app, `denied` when it throws (an unpackaged app without a name and
+  an icon, no support) or the user or policy turned them off
+- `new Notification(title, options)` takes the standard `body`, `tag`,
+  `icon` (app logo), `image`, `data`, `silent`, `requireInteraction`
+  (means `scenario: "reminder"`), `timestamp`, `renotify`, `actions` (up to
+  `Notification.maxActions`); with no permission it fires `error` and shows
+  nothing; `show` fires after the toast is handed to Windows
+- A second notification with the same `tag` (and `group`) replaces the first,
+  which fires `close`; `close()` removes the toast; Windows reports no
+  dismissal by the user, so `close` fires for those two only
+- `click` is a `NotificationClickEvent`: the standard `notification`, plus
+  `action` (the clicked button's `action`, empty for the body) and `userInput`
+  (text and selection values by input `id`)
+- Extras (all optional, WinUI-only): `buttons` (`type` of `button`, `text-input`
+  or `selection`, with `style`, `tooltip`, `icon`, `inputId`), `progress`
+  (`title`, `status`, `value`, `valueStringOverride`) changed later with
+  `await notification.update({ progress })`, `scenario` (`reminder`, `alarm`,
+  `incomingCall`, `urgent`), `expiration`, `group`, `hero`, `audio` (`default`,
+  `im`, `mail`, `reminder`, `sms`, `alarm` to `alarm10`, `call` to `call10`),
+  `attribution`
+- Package identity: not needed to show; an unpackaged app registers with
+  `identity` (name and icon file) and `appUserModelId`; the `urgent` scenario
+  and tooltips need a recent Windows build; a click after the process has gone
+  starts nothing unpackaged; `useButtonStyle` has no call in the builder, so
+  it is not exposed
+- `NotificationBackend` is the one interface the real manager and the tests
+  implement; `notify` shares it, so `scenario`, `controls` and `progress` are
+  available there too
+
 ## Forms (`winui-svelte/forms`)
 
 Opt-in: nothing in the core imports it, so an app that does not use it does

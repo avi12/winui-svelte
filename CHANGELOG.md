@@ -16,6 +16,12 @@ project adheres to [Semantic Versioning](https://semver.org/)
 
 ### Added
 
+- Web APIs (`winui-svelte/web-apis`): opt-in installers that define the
+  standard Web APIs over WinRT and Win32, a `runWindow` `webApis` option,
+  `navigator.permissions`, and `Notification` over app notifications with
+  WinUI extras (buttons, inputs, progress, scenario, sound and more)
+  (`winui-svelte/web-apis/notification`)
+
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support
 - Renderer: a tree that Svelte draws into as if it were the DOM, creating and

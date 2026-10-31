@@ -266,6 +266,71 @@ State changes need no `flushSync`: the window's loop is started with
 callback and Svelte's own flush runs
 ([experiment](examples/scheduling/README.md))
 
+## Web APIs
+
+Features beyond the controls come through the web's own APIs, wired to
+WinRT and Win32, so web libraries and web knowledge work unchanged:
+`Notification`, `navigator.permissions`, and the rest of the survey as they
+land; nothing is a bespoke API
+Each API is opt-in and installed by an explicit call, on the thread your
+app's code runs on (the window thread); an app that imports none pays nothing
+
+```ts
+import { runWindow } from "winui-svelte/window";
+import { installPermissions } from "winui-svelte/web-apis";
+import { installNotification } from "winui-svelte/web-apis/notification";
+
+await runWindow({
+  webApis: [
+    installPermissions,
+    () => installNotification({
+      identity: { displayName: "Notes", iconPath: "C:\\notes\\icon.png" },
+      appUserModelId: "dev.example.notes"
+    })
+  ],
+  onStart() {
+    // Notification and navigator.permissions exist from here on
+  }
+});
+
+if (await Notification.requestPermission() === "granted") {
+  new Notification("Saved", { body: "note.txt", tag: "save" });
+}
+```
+
+Feature detection is the browser's: `"Notification" in globalThis` is false
+until installed, and an API the OS cannot back is simply not defined
+Where Windows refuses (an unpackaged app without an identity, notifications
+switched off), the API reports `denied` or rejects with the spec's own error
+(`NotAllowedError`, `NotSupportedError`)
+
+Every feature falls in one of three kinds, decided in this order
+
+- **Web**: a standard Web API exists; it behaves as the spec says, byte for
+  byte, and nothing else is added
+- **Web plus extras**: a standard Web API exists and WinRT can do more; the
+  extras are optional, lowerCamelCase members of the API's own option
+  dictionaries and objects (`new Notification(title, { progress, scenario })`,
+  `event.userInput`, `notification.update()`), never a second entry point; code
+  written for browsers never passes them and behaves the same, and they are
+  typed by declaration merging that ships with the opt-in subpath, so they
+  autocomplete only where you import it
+- **As is**: no Web API exists (credential vault, sockets, background
+  transfer, imaging, on-device AI); the WinRT class itself is used with the
+  names and semantics of the bindings, fully typed: async operations are
+  promises (with an optional `AbortSignal`), events are `onX(callback)`
+  returning an unsubscribe function, vectors iterate, properties are
+  accessors; the import path mirrors the namespace
+  (`#winui/windows/storage/StorageFolder`); a class not yet bound is added to
+  `lateClasses` in `scripts/codegen/tables.ts` and bound with
+  `pnpm bindings:after-winapp`; nothing wraps what needs no wrapping
+
+| Web API | Subpath | State |
+| --- | --- | --- |
+| `Notification` (with buttons, inputs, progress, scenario and more) | `winui-svelte/web-apis/notification` | done |
+| `navigator.permissions`, `PermissionStatus` | `winui-svelte/web-apis` | done |
+| geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
+
 ## Host integration
 
 The window is a process (or a worker) that something else owns
@@ -1212,6 +1277,7 @@ attachments, because a component prop would pull this code into every app
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/element-effects` | `enableElementEffects` (the Vite plugin calls it from a component that imports `blur` or `draw`): the blur transition blurs for real and `draw` measures a `path`, with Composition and Win2D |
 | `winui-svelte/app` | single-instance handling over a named pipe, and app notifications |
+| `winui-svelte/web-apis`, `/web-apis/notification` | `installWebApis`, `installPermissions` and the Web APIs as opt-in installers: `Notification` over app notifications (opt-in; [`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
 | `winui-svelte/data-transfer` | web-shaped drag and drop, `NativeFile`, pickers, the clipboard and the launcher (opt-in) |
 | `winui-svelte/media` | `bitmapImageOf`, `svgImageSourceOf`, `createMediaPlayer`: image sources and a windowless `MediaPlayer` (opt-in; [`API.md`](API.md#media-winui-sveltemedia)) |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
