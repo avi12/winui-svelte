@@ -614,7 +614,7 @@ function emitAttached({ attached, imports, isSlot }: {
 
   const enumNames = attachedOwnerExports(attached);
   return {
-    member: `  ${attached.key}?: ${isSlot ? `${type} | Snippet` : type};`,
+    member: `  ${attached.key}?: ${isSlot ? `${type} | Snippet` : type} | undefined;`,
     owner: attached.owner.name,
     setter: [
       `      ${attached.key}({ ${enumNames.join(", ")} }, value) {`,

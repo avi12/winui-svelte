@@ -16,10 +16,10 @@ import type { UIElementBound, UIElementProps } from "./UIElement.svelte.ts";
 import type { Snippet } from "svelte";
 
 export interface FrameworkElementProps extends UIElementProps {
-  gridRow?: number;
-  gridColumn?: number;
-  gridRowSpan?: number;
-  gridColumnSpan?: number;
+  gridRow?: number | undefined;
+  gridColumn?: number | undefined;
+  gridRowSpan?: number | undefined;
+  gridColumnSpan?: number | undefined;
   allowFocusOnInteraction?: boolean;
   allowFocusWhenDisabled?: boolean;
   dataContext?: ObjectInput;

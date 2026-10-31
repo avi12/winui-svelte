@@ -13,9 +13,9 @@ import { FillBehavior } from "../bindings.ts";
 import type { Storyboard, Timeline } from "../bindings.ts";
 
 export interface TimelineProps {
-  storyboardTargetProperty?: string;
-  storyboardTargetName?: string;
-  storyboardTarget?: Parameters<typeof Storyboard.setTarget>[1];
+  storyboardTargetProperty?: string | undefined;
+  storyboardTargetName?: string | undefined;
+  storyboardTarget?: Parameters<typeof Storyboard.setTarget>[1] | undefined;
   autoReverse?: boolean;
   beginTime?: NullableTimeSpanInput;
   duration?: DurationInput;
