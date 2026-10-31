@@ -66,6 +66,17 @@ export class PlaybackState {
   }
 }
 
+// While the media is still opening (state Opening, duration 0), Media Foundation
+// answers BufferingProgress with E_NOINTERFACE for a moment; the next read
+// works. A throw here would end the poll tick and, uncaught, the process.
+function bufferingProgressOf(session: ObservedPlayer["playbackSession"]) {
+  try {
+    return session.bufferingProgress;
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Fills a {@link PlaybackState} from a player now, and again each time the
  * player says a value changed, and on each tick of `poll`. The polling is
@@ -85,7 +96,7 @@ export function observePlayback({ player, poll }: {
     state.playbackState = session.playbackState;
     state.position = milliseconds(session.position);
     state.naturalDuration = milliseconds(session.naturalDuration);
-    state.bufferingProgress = session.bufferingProgress;
+    state.bufferingProgress = bufferingProgressOf(session) ?? state.bufferingProgress;
     state.canSeek = session.canSeek;
     state.volume = player.volume;
     state.isMuted = player.isMuted;

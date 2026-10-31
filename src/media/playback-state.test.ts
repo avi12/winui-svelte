@@ -24,7 +24,13 @@ function makeSession(owner: FakePlayer) {
     get naturalDuration() {
       return { duration: owner.naturalDuration };
     },
-    bufferingProgress: 0,
+    get bufferingProgress() {
+      if (owner.isBufferingUnavailable) {
+        throw new Error("0x80004002: No such interface supported");
+      }
+
+      return owner.bufferingProgress;
+    },
     canSeek: true,
     onPlaybackStateChanged: (callback: Listener) => owner.listen({
       name: "state",
@@ -50,6 +56,8 @@ class FakePlayer implements ObservedPlayer {
   volume = 1;
   isMuted = false;
   position = 0n;
+  bufferingProgress = 0;
+  isBufferingUnavailable = false;
   naturalDuration = 0n;
   playbackState: MediaPlaybackState = 0;
   readonly listeners = new Map<string, Set<Listener>>();
@@ -148,4 +156,17 @@ test("a poll refreshes the state without an event, and stops with the state", ()
   assert.equal(state.isEnded, true, "paused at the end of a known duration");
   stop();
   assert.equal(isPolling, false);
+});
+
+test("a read of the buffering progress that fails keeps the last value and the others still update", () => {
+  const player = new FakePlayer();
+  player.bufferingProgress = 0.5;
+  const { state, stop } = observePlayback({ player });
+  assert.equal(state.bufferingProgress, 0.5);
+  player.isBufferingUnavailable = true;
+  player.playbackState = PAUSED;
+  player.raise("state");
+  assert.equal(state.bufferingProgress, 0.5);
+  assert.equal(state.playbackState, PAUSED);
+  stop();
 });
