@@ -309,6 +309,10 @@
       "types": "./dist/web-apis/battery.d.ts",
       "default": "./dist/web-apis/battery.js"
     },
+    "./web-apis/network": {
+      "types": "./dist/web-apis/network.d.ts",
+      "default": "./dist/web-apis/network.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
