@@ -1,4 +1,4 @@
-import { stopAllTimers } from "./timers.ts";
+import { stopAllTimers, useDispatcherTimers } from "./timers.ts";
 import { installMedia } from "#src/components/media.js";
 import { installXaml } from "#src/components/xaml.js";
 import { installCss } from "#src/css/index.js";
@@ -26,14 +26,19 @@ export interface RunWindowOptions {
  * that script on the stack for good, and no `await` ever resumes.
  */
 export async function runWindow(options: RunWindowOptions) {
-  await Application.startScheduled(() => {
-    Application.create(() => {
-      installCss(winui);
-      installXaml();
-      installMedia();
-      options.onStart();
+  try {
+    await Application.startScheduled(() => {
+      Application.create(() => {
+        useDispatcherTimers();
+        installCss(winui);
+        installXaml();
+        installMedia();
+        options.onStart();
+      });
     });
-  });
+  } finally {
+    stopAllTimers();
+  }
 }
 
 /** Stops the timers and ends the application: `runWindow`'s promise settles. */

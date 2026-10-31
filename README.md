@@ -156,8 +156,8 @@ back, so `runOnUiThread` (the package's `/thread` entry) is a worker's first
 call: it enters the apartment before anything creates a WinRT object
 The
 window's modules come from the host's dev server through the module runner, and
-a timer takes the server's hot updates in (Node's own timers never fire while
-WinUI holds the thread):
+a timer takes the server's hot updates in (`setInterval` and `startTimer` both
+run on the UI thread; see [Timers and I/O](API.md#timers-and-io)):
 
 <!-- hello/window.ts:start -->
 

@@ -13,7 +13,7 @@ under it, Node drains microtasks when each callback returns, and Svelte's
 Proven for a control event, a dispatcher timer and
 a host message by `examples/scheduling/run.ps1`
 A host message is taken off its
-port by a timer (WinUI holds the thread, so port events never fire):
+port by a timer (port events never fire on the UI thread, see Timers and I/O in API.md):
 `createMessagePortTransport({ port, poll })` takes that timer
 
 ## Svelte's tools here
