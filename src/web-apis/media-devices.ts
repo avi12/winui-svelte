@@ -1031,3 +1031,15 @@ export function installMediaDevices(options: MediaDevicesInstallOptions = {}) {
     }
   };
 }
+
+export type {
+  MediaRecorderBackend,
+  MediaRecorderExtras,
+  MediaRecorderInstallOptions,
+  MediaRecorderOptions,
+  RecordingHandle,
+  RecordingQuality,
+  RecordingRequest,
+  RecordingState
+} from "./media-recorder.ts";
+export { BlobEvent, installMediaRecorder, MediaRecorder, MediaRecorderErrorEvent } from "./media-recorder.ts";
