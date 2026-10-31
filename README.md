@@ -363,6 +363,11 @@ Every feature falls in one of three kinds, decided in this order
 | `element.animate()`, `Animation`, `KeyframeEffect` | `winui-svelte/web-apis/animations` | done |
 | geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
 
+| `navigator.mediaDevices` (`getUserMedia`, `getDisplayMedia`, `enumerateDevices`), `MediaStream`, `MediaRecorder` (with camera zoom, exposure and focus, sharing mode, capture profiles) | `winui-svelte/web-apis/media-devices` | done (a screen capture delivers no frames yet) |
+| `speechSynthesis`, `SpeechSynthesisUtterance`, `SpeechRecognition` (with SSML, silences, scenario and phrases) | `winui-svelte/web-apis/speech` | done |
+| `navigator.mediaSession`, `MediaMetadata` (with media type, album fields, shuffle and repeat) | `winui-svelte/web-apis/media-session` | done |
+| geolocation, clipboard, share, file pickers, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
+
 ## Host integration
 
 The window is a process (or a worker) that something else owns
@@ -1322,7 +1327,7 @@ attachments, because a component prop would pull this code into every app
 | `winui-svelte/element-effects` | `enableElementEffects` (the Vite plugin calls it from a component that imports `blur` or `draw`): the blur transition blurs for real and `draw` measures a `path`, with Composition and Win2D |
 | `winui-svelte/app` | single-instance handling over a named pipe, and app notifications |
 | `winui-svelte/bindings/*` | Every bound WinRT and Windows App SDK class as it is named there, for the as-is kind (`winui-svelte/bindings/windows/storage/StorageFolder`) |
-| `winui-svelte/web-apis`, `/web-apis/notification` | `installWebApis`, `installPermissions` and the Web APIs as opt-in installers: `Notification` over app notifications (opt-in; [`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
+| `winui-svelte/web-apis`, `/web-apis/notification`, `/web-apis/media-devices`, `/web-apis/speech`, `/web-apis/media-session` | `installWebApis`, `installPermissions` and the Web APIs as opt-in installers: `Notification` over app notifications, media devices, speech and the media session (opt-in; [`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
 | `winui-svelte/data-transfer` | web-shaped drag and drop, `NativeFile`, pickers, the clipboard and the launcher (opt-in) |
 | `winui-svelte/media` | `bitmapImageOf`, `svgImageSourceOf`, `createMediaPlayer`: image sources and a windowless `MediaPlayer` (opt-in; [`API.md`](API.md#media-winui-sveltemedia)) |
 | `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |

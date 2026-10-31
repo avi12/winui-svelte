@@ -45,6 +45,13 @@ project adheres to [Semantic Versioning](https://semver.org/)
   (`/web-apis/animations`); element animations now pause, seek, reverse and
   honour delay, iterations, direction, easing and fill
 
+- Web APIs: `navigator.mediaDevices`, `getUserMedia`, `getDisplayMedia`,
+  `MediaStream` and `MediaRecorder` with camera controls
+  (`winui-svelte/web-apis/media-devices`), `speechSynthesis` and
+  `SpeechRecognition` with SSML and phrase lists
+  (`winui-svelte/web-apis/speech`), and `navigator.mediaSession`
+  (`winui-svelte/web-apis/media-session`)
+
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support
 - Renderer: a tree that Svelte draws into as if it were the DOM, creating and

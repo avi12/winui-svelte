@@ -338,6 +338,14 @@
       "types": "./dist/web-apis/launch.d.ts",
       "default": "./dist/web-apis/launch.js"
     },
+    "./web-apis/media-devices": {
+      "types": "./dist/web-apis/media-devices.d.ts",
+      "default": "./dist/web-apis/media-devices.js"
+    },
+    "./web-apis/media-session": {
+      "types": "./dist/web-apis/media-session.d.ts",
+      "default": "./dist/web-apis/media-session.js"
+    },
     "./web-apis/network": {
       "types": "./dist/web-apis/network.d.ts",
       "default": "./dist/web-apis/network.js"
@@ -369,6 +377,10 @@
     "./web-apis/share": {
       "types": "./dist/web-apis/share.d.ts",
       "default": "./dist/web-apis/share.js"
+    },
+    "./web-apis/speech": {
+      "types": "./dist/web-apis/speech.d.ts",
+      "default": "./dist/web-apis/speech.js"
     },
     "./web-apis/storage": {
       "types": "./dist/web-apis/storage.d.ts",

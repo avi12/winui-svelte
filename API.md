@@ -2190,6 +2190,120 @@ tree's elements `animate()` and `getAnimations()`, and the global scope
   implicit animations are the CSS `transition:` the translator already maps to
   `OpacityTransition` and its siblings
 
+### Media devices (`winui-svelte/web-apis/media-devices`)
+
+`installMediaDevices()` defines `navigator.mediaDevices` (`enumerateDevices`,
+`getUserMedia`, `getDisplayMedia`, `getSupportedConstraints`, `devicechange`),
+`MediaStream`, `MediaStreamTrack`, `MediaDeviceInfo` and
+`OverconstrainedError` over `DeviceInformation` and `MediaCapture`, and answers
+the Permissions API's `camera` and `microphone` from the Windows privacy
+switches (`DeviceAccessInformation`); `installMediaRecorder()` defines
+`MediaRecorder` and `BlobEvent`
+
+- The classes are `MediaDevices`, `MediaStream`, `MediaStreamTrack`,
+  `MediaDeviceInfo`, `OverconstrainedError`, `MediaRecorder`, `BlobEvent` and
+  `MediaRecorderErrorEvent`; `CAMERA_AXES` lists the names of a camera's axes
+- `enumerateDevices()` lists inputs and outputs; until the camera or
+  microphone may be used it lists one blank entry per kind, as browsers do
+- `getUserMedia({ audio, video })` opens one `MediaCapture` for the camera and
+  the microphone together; `width`, `height`, `frameRate`, `deviceId` and
+  `facingMode` (the camera's panel) choose the device and the format, the
+  formats being read from the camera's capture profiles (a camera without
+  profiles offers 640 by 480 at 30); an `exact` that nothing meets is an
+  `OverconstrainedError` naming the constraint
+- Errors are the spec's: `TypeError` for no audio and no video,
+  `NotAllowedError` for a privacy switch that is off, `NotFoundError` for no
+  such device, `NotReadableError` for a device another app holds
+- `track.applyConstraints()` changes the camera's format; stopping the last
+  track of a capture releases the device; a device that fails ends its tracks
+  with `ended`
+- `getDisplayMedia()` shows the Windows picker (`GraphicsCapturePicker`); a
+  canceled picker is `NotAllowedError`; the stream carries the chosen surface
+  and its size, and no frames yet
+- `MediaRecorder` records a `getUserMedia` stream into MP4 (H.264 and AAC), M4A,
+  MP3 or WAV in memory; the recording arrives as one `dataavailable` when it
+  stops, and `timeslice` and `requestData` do not cut it earlier
+- Extras (WinUI-only, optional): `getUserMedia({ sharingMode: "exclusive" })`,
+  `video: { profileId }` (a capture profile), `stream.mediaCapture` (the
+  `MediaCapture` underneath), `track.camera` with `zoom`, `exposure`, `focus`,
+  `whiteBalance`, `brightness`, `contrast`, `hue`, `backlightCompensation`,
+  `pan`, `tilt` and `roll`, each with `isSupported`, `min`, `max`, `step`,
+  `value`, `isAuto`, `setValue()` and `setAuto()`, `track.captureItem` (the
+  `GraphicsCaptureItem` of a screen), `getDisplayMedia({ cursor })`,
+  `MediaDeviceInfo.isDefault` and `panel`, and `videoQuality` in the options of
+  `new MediaRecorder`
+- Windows raises `MediaCapture` events on a thread of its own; where the
+  bindings do not deliver one, a track does not hear that its device went away
+- Tests give `installMediaDevices({ backend })` and
+  `installMediaRecorder({ backend })` a stand-in, so they need no camera
+
+### Speech (`winui-svelte/web-apis/speech`)
+
+`installSpeechSynthesis()` defines `speechSynthesis`,
+`SpeechSynthesisUtterance`, `SpeechSynthesisVoice` and the event classes over
+`SpeechSynthesizer`; `installSpeechRecognition()` defines `SpeechRecognition`
+and `webkitSpeechRecognition` over `SpeechRecognizer`; `installSpeech()`
+installs both
+
+- The classes are `SpeechSynthesis`, `SpeechSynthesisUtterance`,
+  `SpeechSynthesisVoice`, `SpeechSynthesisEvent`, `SpeechSynthesisErrorEvent`
+  (with `SpeechSynthesisErrorCode`), `SpeechRecognition`,
+  `SpeechRecognitionEvent`, `SpeechRecognitionErrorEvent` (with
+  `SpeechRecognitionErrorCode`), `SpeechRecognitionResultList`,
+  `SpeechRecognitionResult`, `SpeechRecognitionAlternative` and
+  `SpeechGrammarList`
+- `speechSynthesis.speak()` queues; each utterance is synthesized into a
+  `SpeechSynthesisStream` and played by a `MediaPlayer`; `cancel()`, `pause()`,
+  `resume()`, `getVoices()`, `speaking`, `pending`, `paused` and `voiceschanged`
+  are the spec's; `rate`, `pitch` and `volume` map to `speakingRate`,
+  `audioPitch` and `audioVolume`
+- `start`, `end`, `pause`, `resume`, `error` and `boundary` events fire in the
+  spec's order; `boundary` carries `charIndex`, `charLength` and `name`
+  (`word` or `sentence`) from the stream's `SpeechWord` and `SpeechSentence`
+  tracks, the nth cue being the nth word or sentence of the text
+- `SpeechRecognition` takes `lang`, `continuous`, `interimResults` and
+  `maxAlternatives`, and fires `start`, `audiostart`, `soundstart`,
+  `speechstart`, `result`, `nomatch`, `speechend`, `soundend`, `audioend`,
+  `error` and `end`; a phrase uses `recognizeAsync`, `continuous` uses a
+  continuous session; the errors are the spec's, from the recognition status
+  (`audio-capture` for no microphone, `network`, `language-not-supported`,
+  `bad-grammar`, `no-speech`, `service-not-allowed` when the online speech
+  recognition privacy setting is off, `not-allowed` for a denied microphone)
+- Extras (WinUI-only, optional): `utterance.isSsml`,
+  `utterance.punctuationSilence` and `utterance.appendedSilence` (`default` or
+  `minimal`), `voice.gender` and `voice.description`,
+  `recognition.scenario` (`dictation`, `web-search`, `form-filling`) and
+  `recognition.phrases` (a list the speech must be one of), and
+  `renderSpeech(request)`, which synthesizes without playing and returns the
+  boundaries with their times, the media type and the size
+- `SpeechCue` is not bound, so an SSML `<bookmark>` raises `mark` only for a
+  voice that reports it, and the installed Microsoft voices do not
+- Recognition events and the hypotheses of `interimResults` are raised by
+  `SpeechRecognizer` on a thread of its own; where the bindings do not deliver
+  them, only the single phrase is complete
+
+### Media session (`winui-svelte/web-apis/media-session`)
+
+`installMediaSession({ player })` defines `navigator.mediaSession`,
+`MediaSession` and `MediaMetadata` over the `SystemMediaTransportControls` of a
+`MediaPlayer` (pass the one `createMediaPlayer` made, or let the session own a
+silent one)
+
+- `MediaSessionAction` names the actions the overlay can raise
+- `metadata` (also when its fields change later), `playbackState`,
+  `setActionHandler()` and `setPositionState()` work as the spec says; a
+  handler enables the matching overlay button: `play`, `pause`, `stop`,
+  `previoustrack`, `nexttrack`, `seekbackward`, `seekforward` and `seekto`;
+  other standard actions are accepted and have no button
+- Extras (WinUI-only, optional): `mediaType`, `albumArtist`, `trackNumber`,
+  `albumTrackCount`, `genres` and `subtitle` in the init of `new MediaMetadata`,
+  and on the session `isShuffleEnabled` and `autoRepeatMode` (set them, then
+  call `update()`) with the `shufflechange` and `repeatchange` events for the
+  overlay's buttons
+- The overlay's events are raised on a thread of its own; where the bindings do
+  not deliver them, the overlay shows the state and its buttons do not reach
+  the page
+
 ## Forms (`winui-svelte/forms`)
 
 Opt-in: nothing in the core imports it, so an app that does not use it does
