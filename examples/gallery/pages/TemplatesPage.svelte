@@ -48,8 +48,7 @@
     gap: 8px;
   }
 
-  /* itemContainerStyle takes the class name as text, so no element in this file carries it */
-  :global(.template-row) {
+  .template-row {
     padding: 12px;
     background-color: #123456;
   }

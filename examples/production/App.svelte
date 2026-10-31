@@ -36,7 +36,7 @@
     padding: 16px;
   }
 
-  :global(.production-row) {
+  .production-row {
     padding: 12px;
   }
 </style>

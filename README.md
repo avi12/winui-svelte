@@ -565,6 +565,8 @@ No `:global` is needed for that
 The scope is added at build time (the scope class is part of the `class` value
 the instance receives), so the window pays nothing for it at run time
 `:global(.x)` and `:global { }` escape the scope, as in Svelte
+A class given to a `*Style` prop reaches the rules of the component that
+writes the prop (see Templates, styles and resources below)
 A class the parent scopes does not reach the elements inside a child component;
 a child that takes a `class` prop and puts it on its own root element receives
 the scope class with the value (an array or an object works, as `clsx` does)
@@ -633,12 +635,14 @@ accepted too, and `xamlOf` loads text once for several props
   <TextBlock Text='{Binding}'/></DataTemplate>" />
 
 <style>
-  :global(.row) { padding: 8px; background-color: #123456 }
+  .row { padding: 8px; background-color: #123456 }
 </style>
 ```
 
-`itemContainerStyle="row"` names a class and no element of the component,
-so the rule that styles it is written `:global(.row)`
+`itemContainerStyle="row"` names a class and no element of the component;
+the build adds the component's scope class to the value (text, an expression
+or a conditional), so `.row` in the same `<style>` styles it, scoped, and a
+`.row` in another component does not collide with it; `:global(.row)` works too
 A root element without `xmlns` gets WinUI's, and the wrong
 root for the prop (a `DataTemplate` for `template`) is an error that names both
 A key of `resources` is a custom property's name, as in a stylesheet, or the

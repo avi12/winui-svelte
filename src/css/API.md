@@ -84,6 +84,11 @@ read as an element (`<winui-instance>`, with its `class` and spreads) for the
 sheet's compile, so `.title` and `.page .title` match instances, an unused
 rule is Svelte's `css_unused_selector` warning, and the selectors come out as
 `.title.svelte-<hash>`
+A class given to a `*Style` prop (`itemContainerStyle="row"`) names no element
+of the component, so the build gives the prop's value the scope class too
+(`"row svelte-<hash>"`, or `[value, "svelte-<hash>"]` for an expression), the
+stand-in element holds the class so Svelte counts the rule as used, and
+`styleOfClasses` matches the scoped rule
 The component's own compile gets the instance's `class` with the scope class
 added (`class="title svelte-x"`, `class={[expr, "svelte-x"]}`; `scopeClassOf`
 and `scopedMarkup` in `runtime/sheet-module.ts`), so the Style registered

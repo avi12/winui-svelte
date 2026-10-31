@@ -1161,8 +1161,10 @@ resourceDictionaryOf(record: ResourceRecordInput): ResourceDictionary
   `TreeViewItem`; a control not listed takes a `Style` object)
   The
   generator refuses a Style prop that table lacks
-  The rule is written
-  `:global(.row)`, since Svelte scopes no class passed to a component
+  The rule is written in the component's own `<style>`, scoped: the build
+  adds the component's scope class to the prop's value (text, an expression
+  as `[value, scope]`), and `styleOf` matches `.row.svelte-<hash>`; `:global(.row)`
+  works too
   The Style is built when the
   prop is set and states are ignored; a class no rule matches, or one that
   sets what only an element holds (a grid's columns, the focus ring, a custom
