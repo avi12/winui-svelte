@@ -99,16 +99,22 @@ function createElement(name: string) {
   return name === TEMPLATE_TAG ? new TemplateElement() : activeRenderer().createElement(name);
 }
 
+// What web-apis/page put on the global `document` stays reachable through the prototype.
+const NO_LISTENERS = {
+  addEventListener() {},
+  removeEventListener() {}
+};
+
 function createDocument() {
-  return {
+  const document = {
     createElement,
     createTextNode: (data: string) => activeRenderer().createTextNode(data),
     createComment: (data: string) => activeRenderer().createComment(data),
     createDocumentFragment: () => activeRenderer().createFragment(),
-    importNode: (node: { cloneNode(isDeep: boolean): unknown }, isDeep: boolean) => node.cloneNode(isDeep),
-    addEventListener() {},
-    removeEventListener() {}
+    importNode: (node: { cloneNode(isDeep: boolean): unknown }, isDeep: boolean) => node.cloneNode(isDeep)
   };
+  Object.setPrototypeOf(document, globalThis.document ?? NO_LISTENERS);
+  return document;
 }
 
 let isInstalled = false;

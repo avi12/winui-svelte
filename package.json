@@ -301,6 +301,10 @@
       "types": "./dist/web-apis/notification.d.ts",
       "default": "./dist/web-apis/notification.js"
     },
+    "./web-apis/page": {
+      "types": "./dist/web-apis/page.d.ts",
+      "default": "./dist/web-apis/page.js"
+    },
     "./web-apis/animations": {
       "types": "./dist/web-apis/animations.d.ts",
       "default": "./dist/web-apis/animations.js"
