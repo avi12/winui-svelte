@@ -1,5 +1,5 @@
-import type { MessageSource } from "./message-pump.ts";
-import { Dispatched } from "./message-pump.ts";
+import type { MessageQueue, MessageSource } from "./message-pump.ts";
+import { dispatchNextMessage } from "./message-pump.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { DynWin32 } from "@microsoft/dynwinrt/win32/unsafe";
 import { bind, numberOf, pointerOf } from "#src/win32-calls.js";
@@ -114,8 +114,9 @@ const QS_ALLINPUT = 0x4ff;
 const MWMO_INPUTAVAILABLE = 4;
 const TIMER_PERIOD_MILLISECONDS = 1;
 
-// WinUI's own loop also offers each message to ContentPreTranslateMessage
-// first; a flat call binds only System32 DLLs and cannot reach it.
+// ContentPreTranslateMessage is exported by the Windows App SDK's
+// Microsoft.UI.Windowing.Core.dll, which the bootstrapper put in the process's
+// package graph: the bare name binds it, like a System32 DLL.
 /** This thread's Win32 message queue, for the message pump; call it on the thread whose queue it is. */
 export function createMessageSource() {
   const peekMessage = bind({
@@ -142,6 +143,12 @@ export function createMessageSource() {
     parameters: ["u32", "pointer", "u32", "u32", "u32"],
     returnType: "u32"
   });
+  const preTranslateMessage = bind({
+    dll: "Microsoft.UI.Windowing.Core.dll",
+    entryPoint: "ContentPreTranslateMessage",
+    parameters: ["pointer"],
+    returnType: "i32"
+  });
   const message = DynComRawMemory.allocate(MESSAGE_BYTES, MESSAGE_ALIGNMENT);
   const messagePointer = pointerOf(message);
   const noPointer = pointerOf(null);
@@ -149,22 +156,25 @@ export function createMessageSource() {
   const removeFromQueue = DynWin32.u32(PM_REMOVE);
   const anyInput = DynWin32.u32(QS_ALLINPUT);
   const inputAvailable = DynWin32.u32(MWMO_INPUTAVAILABLE);
-  return {
-    dispatchNext() {
+  const queue = {
+    take() {
       const found = peekMessage.invoke([messagePointer, noPointer, none, none, removeFromQueue]).returnValue;
-      const isEmpty = numberOf(found) === 0;
-      if (isEmpty) {
-        return Dispatched.NOTHING;
-      }
-
-      const isQuit = message.readI32(MESSAGE_ID_OFFSET) === WM_QUIT;
-      if (isQuit) {
-        return Dispatched.QUIT;
-      }
-
+      return numberOf(found) !== 0;
+    },
+    isQuit() {
+      return message.readI32(MESSAGE_ID_OFFSET) === WM_QUIT;
+    },
+    isConsumedByContent() {
+      return numberOf(preTranslateMessage.invoke([messagePointer]).returnValue) !== 0;
+    },
+    deliver() {
       translateMessage.invoke([messagePointer]);
       dispatchMessage.invoke([messagePointer]);
-      return Dispatched.MESSAGE;
+    }
+  } satisfies MessageQueue;
+  return {
+    dispatchNext() {
+      return dispatchNextMessage(queue);
     },
     wait(milliseconds: number) {
       waitForMessage.invoke([none, noPointer, DynWin32.u32(milliseconds), anyInput, inputAvailable]);

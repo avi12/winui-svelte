@@ -2469,7 +2469,10 @@ Pending sockets, files and timers never keep the process alive after
 included), and `runOnUiThread` ends the process
 `startTimer` is kept as `setInterval` that returns its stop function
 A handler that throws does not stop the pump
-What the pump leaves out of WinUI's own loop is the first look each message
-gets from `ContentPreTranslateMessage` (a flat Win32 call binds only System32
-DLLs and cannot reach it); work that takes the UI thread, such as starting a
-child process (about 100 ms), shows as a gap in the animation
+Like WinUI's own loop, the pump offers each message to
+`ContentPreTranslateMessage` (exported by `Microsoft.UI.Windowing.Core.dll`)
+before `TranslateMessage` and `DispatchMessage`, so accelerators, access keys,
+Tab and arrow focus navigation and text input (the Text Services Framework)
+work as under `Application.Start`
+Work that takes the UI thread, such as starting a child process (about
+100 ms), shows as a gap in the animation

@@ -1,4 +1,4 @@
-import { createMessagePump, Dispatched } from "./message-pump.ts";
+import { createMessagePump, Dispatched, dispatchNextMessage } from "./message-pump.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -158,4 +158,59 @@ test("a slice that throws is followed by another", () => {
   assert.throws(() => fakes.pump.start(), /a handler failed/u);
   fakes.turns(2);
   assert.equal(fakes.log.length, 2, "the pump kept going");
+});
+
+function createQueue({ isWaiting, isQuit = false, isConsumed = false }: {
+  isWaiting: boolean;
+  isQuit?: boolean;
+  isConsumed?: boolean;
+}) {
+  const calls: string[] = [];
+  return {
+    calls,
+    queue: {
+      take() {
+        calls.push("take");
+        return isWaiting;
+      },
+      isQuit() {
+        calls.push("isQuit");
+        return isQuit;
+      },
+      isConsumedByContent() {
+        calls.push("content");
+        return isConsumed;
+      },
+      deliver() {
+        calls.push("deliver");
+      }
+    }
+  };
+}
+
+test("a message is offered to the content first, then translated and dispatched", () => {
+  const { queue, calls } = createQueue({ isWaiting: true });
+  assert.equal(dispatchNextMessage(queue), Dispatched.MESSAGE);
+  assert.deepEqual(calls, ["take", "isQuit", "content", "deliver"]);
+});
+
+test("a message the content consumed is neither translated nor dispatched", () => {
+  const { queue, calls } = createQueue({
+    isWaiting: true,
+    isConsumed: true
+  });
+  assert.equal(dispatchNextMessage(queue), Dispatched.MESSAGE);
+  assert.deepEqual(calls, ["take", "isQuit", "content"]);
+});
+
+test("an empty queue and the quit message reach neither the content nor the window", () => {
+  const empty = createQueue({ isWaiting: false });
+  assert.equal(dispatchNextMessage(empty.queue), Dispatched.NOTHING);
+  assert.deepEqual(empty.calls, ["take"]);
+  const quit = createQueue({
+    isWaiting: true,
+    isQuit: true
+  });
+  assert.equal(dispatchNextMessage(quit.queue), Dispatched.QUIT);
+  assert.deepEqual(quit.calls, ["take", "isQuit"]);
 });

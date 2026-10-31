@@ -4,8 +4,9 @@
 // slice dispatches one message, then hands the thread back to libuv for a turn
 // (an immediate), and so on. One message per slice, so the promise
 // continuations a handler queued run before the next message is handled, as
-// they do for a browser's events. When no message is waiting the slice sleeps
-// in the message wait, which ends the moment one arrives: the sleep doubles
+// they do for a browser's events. A message is first offered to the content
+// that owns the keyboard (`dispatchNextMessage`), as WinUI's own loop does.
+// When no message is waiting the slice sleeps in the message wait, which ends the moment one arrives: the sleep doubles
 // from one millisecond to a cap while nothing happens, so libuv's answers (a
 // socket, a file read, a child process) are late by the cap at most, and an
 // idle window costs a wake-up every cap milliseconds. libuv cannot be asked
@@ -33,6 +34,48 @@ export interface MessageSource {
 
   /** Blocks until a message is waiting or `milliseconds` have passed. */
   wait(milliseconds: number): void;
+}
+
+/** The thread's Win32 queue, one message at a time. */
+export interface MessageQueue {
+  /** Removes the next message from the queue into the buffer the other methods read; false when none is waiting. */
+  take(): boolean;
+
+  /** Whether the message taken is the quit message. */
+  isQuit(): boolean;
+
+  /**
+   * Offers the message taken to the content that owns the keyboard
+   * (`ContentPreTranslateMessage`): accelerators, access keys, focus
+   * navigation and the Text Services Framework are handled there. True when
+   * it consumed the message.
+   */
+  isConsumedByContent(): boolean;
+
+  /** `TranslateMessage` then `DispatchMessage` for the message taken. */
+  deliver(): void;
+}
+
+/**
+ * Handles the next message of `queue` the way WinUI's own loop does: the
+ * content sees it first, and only a message it left alone is translated
+ * (WM_KEYDOWN to WM_CHAR) and dispatched.
+ */
+export function dispatchNextMessage(queue: MessageQueue) {
+  const isEmpty = !queue.take();
+  if (isEmpty) {
+    return Dispatched.NOTHING;
+  }
+
+  if (queue.isQuit()) {
+    return Dispatched.QUIT;
+  }
+
+  if (!queue.isConsumedByContent()) {
+    queue.deliver();
+  }
+
+  return Dispatched.MESSAGE;
 }
 
 /** What `createMessagePump` is made of. */

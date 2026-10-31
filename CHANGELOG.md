@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/)
 
 ### Changed
 
+- Window: the message pump offers every message to
+  `ContentPreTranslateMessage` first, as WinUI's own loop does, so keyboard
+  accelerators, access keys, focus navigation and text input work while
+  libuv turns on the UI thread
+
 - Breaking: event props are the WinUI event name in lowercase, like the DOM's
   (`ontoggled`, `onselectionchanged`, `ondraw`, `onclosed`), not `onToggled`;
   the camel-case spelling is an unknown prop and fails `svelte-check`
