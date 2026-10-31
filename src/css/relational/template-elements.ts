@@ -31,6 +31,8 @@ export interface Level {
   items: Array<TemplateElement | null>;
   /** Whether the items are all there is: no block or component among them, and a known parent. */
   isStatic: boolean;
+  /** Whether the elements and component instances among them are in a fixed order: what a sibling combinator needs. */
+  isOrdered: boolean;
   /** Whether an `{#if}`, `{#each}`, `{#key}` or `{#await}` is among them: the number of elements depends on data. */
   hasBlock: boolean;
   /** Whether a component, a snippet render or other markup that is not an element is among them. */
@@ -44,6 +46,8 @@ interface Walk {
   elements: TemplateElement[];
 }
 
+// A component instance is an element to a selector, as the stand-in the build gives Svelte's matcher.
+const ELEMENT_TYPES: ReadonlySet<string> = new Set(["RegularElement", "Component", "SvelteComponent", "SvelteSelf"]);
 const QUOTES: ReadonlySet<string> = new Set(["\"", "'"]);
 
 type AttributeValue = AST.Attribute["value"];
@@ -57,8 +61,10 @@ function valueParts(value: AttributeValue) {
   return [value].flat();
 }
 
+type ElementLike = AST.RegularElement | AST.Component | AST.SvelteComponent | AST.SvelteSelf;
+
 function classFacts({ element, source }: {
-  element: AST.RegularElement;
+  element: ElementLike;
   source: string;
 }) {
   const classes: string[] = [];
@@ -101,13 +107,14 @@ function classFacts({ element, source }: {
 
 function addElement({ walk, node, parent, level }: {
   walk: Walk;
-  node: AST.RegularElement;
+  node: ElementLike;
   parent: TemplateElement | null;
   level: Level;
 }) {
   const childLevel: Level = {
     items: [],
     isStatic: true,
+    isOrdered: true,
     hasBlock: false,
     hasOpaque: false
   };
@@ -126,6 +133,12 @@ function addElement({ walk, node, parent, level }: {
   };
   level.items.push(element);
   walk.elements.push(element);
+  const isInstance = node.type !== "RegularElement";
+  if (isInstance) {
+    level.isStatic = false;
+    level.hasOpaque = true;
+  }
+
   addNodes({
     walk,
     nodes: node.fragment.nodes,
@@ -157,7 +170,7 @@ function addNodes({ walk, nodes, parent, level }: {
   level: Level;
 }) {
   for (const node of nodes) {
-    const isElement = node.type === "RegularElement";
+    const isElement = ELEMENT_TYPES.has(node.type);
     if (isElement) {
       addElement({
         walk,
@@ -177,6 +190,7 @@ function addNodes({ walk, nodes, parent, level }: {
 
     level.items.push(null);
     level.isStatic = false;
+    level.isOrdered = false;
     level.hasBlock ||= isBlock;
     level.hasOpaque ||= !isBlock;
     for (const fragment of isBlock ? fragments : []) {
@@ -187,6 +201,7 @@ function addNodes({ walk, nodes, parent, level }: {
         level: {
           items: [],
           isStatic: false,
+          isOrdered: false,
           hasBlock: false,
           hasOpaque: false
         }
@@ -211,6 +226,7 @@ export function templateElements({ root, source }: {
     level: {
       items: [],
       isStatic: false,
+      isOrdered: false,
       hasBlock: false,
       hasOpaque: false
     }

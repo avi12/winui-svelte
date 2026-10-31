@@ -176,18 +176,26 @@ function unusedSelectors({ warnings, file }: {
  * `<TextBlock class="title">`. The plain compiler, which `svelte-check` and the
  * editor run, cannot see those instances and warns for every such rule.
  */
-export function unusedSelectorMessages({ source, filename }: {
+export function unusedSelectorMessages(input: {
   source: string;
   filename: string;
 }) {
-  const result = compile(withInstancesAsElements(source), {
+  return unusedWarnings(input).map(({ message }) => message);
+}
+
+// Svelte's verdict on the component as the author wrote it, instances read as elements: the
+// selectors are the author's own, never the generated classes the relational pass puts in their place.
+function unusedWarnings({ source, filename }: {
+  source: string;
+  filename: string;
+}) {
+  return compile(withInstancesAsElements(source), {
     runes: true,
     filename,
     generate: "client",
     css: "external",
     warningFilter: ({ code }) => code === UNUSED_SELECTOR
-  });
-  return result.warnings.map(({ message }) => message);
+  }).warnings;
 }
 
 /**
@@ -232,7 +240,10 @@ export function translateComponent(input: Omit<SheetModuleInput, "isHot" | "runt
   return {
     ...translation,
     diagnostics: [...unusedSelectors({
-      warnings: result.warnings,
+      warnings: unusedWarnings({
+        source: input.source,
+        filename: input.filename
+      }),
       file: input.sheetId
     }), ...translation.diagnostics]
   };

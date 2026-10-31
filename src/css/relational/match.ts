@@ -332,7 +332,7 @@ function relatives({ element, combinator }: {
   }
 
   const { level } = element;
-  if (!level.isStatic) {
+  if (!level.isOrdered) {
     return null;
   }
 
