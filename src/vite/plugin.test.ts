@@ -136,3 +136,11 @@ test("svelte/motion's media query is read from the installed matchMedia, and loa
   });
   assert.match(patched, /globalThis[.]matchMedia [?][?] globalThis[.]window[?][.]matchMedia/u);
 });
+
+test("a runes module the package ships as JavaScript is compiled, not left with its runes", () => {
+  const compiled = compileSvelte({
+    filename: path.join(import.meta.dirname, "counter.svelte.js"),
+    source: "export const counter = $state({ count: 0 });\n"
+  });
+  assert.ok(!compiled.includes("$state("));
+});

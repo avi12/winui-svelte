@@ -94,9 +94,11 @@ import { xamlSeam } from "./xaml-seam.ts";
 import { styleOfClasses } from "#src/css/index.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
-import { classNameOf, read, write } from "#src/renderer/host/reflect.js";
+import { classNameOf } from "#src/renderer/host/host.js";
+import { read, write } from "#src/renderer/host/reflect.js";
 import { boxed, doubleCollection } from "#src/renderer/host/values.js";
 import type { IMediaPlaybackSource } from "#winui/windows/media/playback/IMediaPlaybackSource";
+import type { ClassValue } from "svelte/elements";
 
 // A prop's value as the bindings take it: the generated components call these
 // where a prop is not already the bindings' own type.
@@ -134,7 +136,7 @@ export type ElementReferenceInput = string | UIElement;
  * itself gets them (the CSS runtime reads them).
  */
 export interface ElementProps {
-  class?: string;
+  class?: ClassValue;
   style?: string;
   // An `@attach` on the component, handed on to its element.
   [attachment: symbol]: NodeAttachment;

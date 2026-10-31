@@ -1,4 +1,4 @@
-import { registerControls, setClassHandler } from "./host.ts";
+import { classNameOf, registerControls, setClassHandler } from "./host.ts";
 import { textTransforms } from "#src/css/index.js";
 import type { NativeValue } from "#src/native-value.js";
 import type { PlacedControl } from "#src/renderer/host/control.js";
@@ -409,4 +409,11 @@ test("a <property> element naming a collection class that was not registered say
     }),
     /no-such-collection/u
   );
+});
+
+class RenamedByMinifier {}
+
+test("a control is known by the tag it was registered under, not by its class's own name", () => {
+  registerControls({ "list-view": RenamedByMinifier });
+  assert.equal(classNameOf(new RenamedByMinifier()), "ListView");
 });

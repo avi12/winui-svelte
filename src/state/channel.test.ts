@@ -344,3 +344,26 @@ test("two names are two independent states", async () => {
   assert.equal(left.isReady, false);
   assert.deepEqual(right.current, [1]);
 });
+
+// The app's state as an interface, which TypeScript does not take for JSON.
+interface CardList {
+  title: string;
+  cards: Array<{
+    title: string;
+    isOn: boolean;
+  }>;
+}
+
+test("state typed as an interface is read like any other", async () => {
+  const { channel, host } = setup();
+  const view = hostState<CardList>({
+    channel,
+    name: "view"
+  });
+  void host.sendMessage(MessageType.snapshot, {
+    name: "view",
+    value: initial
+  });
+  const ready = await view.ready;
+  assert.equal(ready.cards[1]?.title, "theme");
+});

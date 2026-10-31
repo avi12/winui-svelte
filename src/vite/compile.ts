@@ -9,7 +9,8 @@ import { compile, compileModule, parse } from "svelte/compiler";
 import { z } from "zod";
 
 const COMPONENT_EXTENSION = ".svelte";
-const RUNES_EXTENSION = ".svelte.ts";
+const TYPESCRIPT_RUNES_EXTENSION = ".svelte.ts";
+const RUNES_MODULE = /\.svelte\.[jt]s$/u;
 const WINUI_CSS_RUNTIME = "winui-svelte/css";
 const resources = loadWinuiCatalogue();
 // What Svelte warns about markup written for HTML: WinUI's tags are not
@@ -119,7 +120,7 @@ export function withElementAnimation({
 
 /** Whether a file is a component or a runes module. */
 export function isSvelteFile(filename: string) {
-  return filename.endsWith(COMPONENT_EXTENSION) || filename.endsWith(RUNES_EXTENSION);
+  return filename.endsWith(COMPONENT_EXTENSION) || RUNES_MODULE.test(filename);
 }
 
 const SOURCE_MAP_PREFIX = "//# sourceMappingURL=data:application/json;base64,";
@@ -139,8 +140,9 @@ function compileSource({ filename, source, options }: {
   source: string;
   options: CompileOptions;
 }) {
-  if (filename.endsWith(RUNES_EXTENSION)) {
-    const { js } = compileModule(stripTypeScriptTypes(source), {
+  if (RUNES_MODULE.test(filename)) {
+    const isTypeScript = filename.endsWith(TYPESCRIPT_RUNES_EXTENSION);
+    const { js } = compileModule(isTypeScript ? stripTypeScriptTypes(source) : source, {
       filename,
       generate: "client"
     });

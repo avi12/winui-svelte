@@ -32,7 +32,7 @@ No store of our own is added: a `$state` object in a `.svelte.ts` is the store
 State the host owns (Rust, Electron, Node) is one reactive object in the window
 
 ```ts
-const channel = createHostChannel({ transport: createStdioTransport() });
+const channel = createHostChannel({ transport: createMessagePortTransport({ port }) });
 const view = hostState<View>({ channel, name: "view" });   // View: the app's own type
 view.current?.cards[0].title;                    // reactive, undefined before the snapshot
 await view.ready;                                // the first snapshot has arrived
@@ -40,8 +40,14 @@ await channel.send({ kind: "toggle" });         // resolves when the host did it
 ```
 
 `State` and the channel's `Action` (`createHostChannel<Action>`) are the app's
-types (Edge+ generates them from Rust); the channel checks that a value is JSON
-and trusts the host for its shape
+types (Edge+ generates them from Rust); `State` may be an `interface`
+The channel checks that a value is JSON and trusts the host for its shape
+
+The window runs on a worker, whose `process.stdin` and `process.stdout` are not
+the process's pipes, so a host that speaks stdio (a Tauri sidecar) reads them on
+its main thread (`createStdioTransport()`, after `reserveStdout()`) and relays each
+value over a `MessageChannel` to the window's `createMessagePortTransport`;
+`examples/sidecar/main.ts` is that relay
 
 The channel is built on `messaging/` (typed messages after
 @webext-core/messaging): `StateProtocol` is its ProtocolMap, keyed by

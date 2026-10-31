@@ -1,5 +1,6 @@
+import type { Holder } from "./patch.ts";
 import { applyOps } from "./patch.ts";
-import type { Json, StateProtocol } from "./protocol.ts";
+import type { Json, StateProtocol, StateShape } from "./protocol.ts";
 import { MessageType, patchDataSchema, PatchOperation, snapshotDataSchema } from "./protocol.ts";
 import type { Transport } from "./transports/transport.ts";
 import { defineMessaging, MessagingClosedError } from "#src/messaging/index.js";
@@ -27,7 +28,7 @@ export class HostClosedError extends Error {
 }
 
 /** One named state the host owns, as the window sees it. */
-export interface HostState<State extends Json> {
+export interface HostState<State extends StateShape> {
   /** The host's value, deeply reactive; undefined until the first snapshot. */
   readonly current: State | undefined;
 
@@ -60,7 +61,7 @@ export interface HostChannelSetup extends ChannelOptions {
  */
 export interface HostChannel<Action extends Json = Json, Extra extends object = object> {
   /** The state the host owns under `name`: reactive, and empty until its snapshot arrives. */
-  state<State extends Json>(name: string): HostState<State>;
+  state<State extends StateShape>(name: string): HostState<State>;
 
   /**
    * Sends an action. Resolves when the host did it; rejects with `HostError`
@@ -76,15 +77,15 @@ export interface HostChannel<Action extends Json = Json, Extra extends object = 
   dispose(): void;
 }
 
-class StateSlot<State extends Json> implements HostState<State> {
+class StateSlot<State extends StateShape> implements HostState<State> {
   // The cell is the deep proxy; the root sits in it so a snapshot of a
   // different shape can still replace it.
-  readonly cell: { current: State | undefined } = $state({ current: undefined });
+  readonly cell: Holder = $state({ current: undefined });
   private hasSnapshot = $state(false);
   private readonly settled = Promise.withResolvers<State>();
 
   get current() {
-    return this.cell.current;
+    return this.root();
   }
 
   get isReady() {
@@ -93,6 +94,12 @@ class StateSlot<State extends Json> implements HostState<State> {
 
   get ready() {
     return this.settled.promise;
+  }
+
+  // The one place the app's State meets the wire.
+  private root() {
+    // oxlint-disable-next-line typescript/consistent-type-assertions -- the host is trusted to send State
+    return this.cell.current as State | undefined;
   }
 
   receiveSnapshot(value: Json) {
@@ -108,7 +115,7 @@ class StateSlot<State extends Json> implements HostState<State> {
     });
     this.hasSnapshot = true;
 
-    const { current } = this.cell;
+    const current = this.root();
     const hasValue = current !== undefined;
     if (hasValue) {
       this.settled.resolve(current);
@@ -144,11 +151,11 @@ class Channel<Action extends Json, Extra extends object> implements HostChannel<
     this.own.onMessage(MessageType.patch, message => this.receivePatch(message.data));
   }
 
-  state<State extends Json>(name: string) {
+  state<State extends StateShape>(name: string) {
     return this.slotFor<State>(name);
   }
 
-  private slotFor<State extends Json>(name: string) {
+  private slotFor<State extends StateShape>(name: string) {
     const existing = this.slots.get(name);
     const isExisting = existing instanceof StateSlot;
     if (isExisting) {
@@ -227,7 +234,7 @@ export function createHostChannel<Action extends Json = Json, Extra extends obje
  * The state the host owns under `name`: one reactive object, empty until the
  * host's first snapshot. `State` is the app's own type for it.
  */
-export function hostState<State extends Json>({ channel, name }: {
+export function hostState<State extends StateShape>({ channel, name }: {
   channel: HostChannel<never, object>;
   name: string;
 }) {

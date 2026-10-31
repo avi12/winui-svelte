@@ -166,6 +166,20 @@ export function setClassHandler(handler: ClassHandler | null) {
   classHandler = handler;
 }
 
+/**
+ * The class name of a control as the bindings name it (`ListView`), from the
+ * tag the app registered its class under rather than the class's own name,
+ * which a minifier renames; a class nobody registered keeps its own name.
+ *
+ * @param control - A control or any other projected object.
+ * @returns The name.
+ */
+export function classNameOf(control: object) {
+  const constructor = read(Object.getPrototypeOf(control), "constructor");
+  const [tag] = [...controls].find(([, value]) => value === constructor) ?? [];
+  return pascalCase(tag ?? String(read(constructor, "name")));
+}
+
 function isControlClass(value: NativeValue): value is new () => UIElement {
   return typeof value === "function" && "prototype" in value;
 }

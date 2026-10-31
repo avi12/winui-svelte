@@ -301,6 +301,56 @@ to its handler with no JavaScript under it, so Node drains microtasks after
 each one and Svelte's own flush runs
 ([experiment](https://github.com/avi12/winui-svelte/blob/main/examples/scheduling/README.md))
 
+## Production build
+
+The Quick start serves the window's modules from a Vite dev server, so Vite and
+Svelte's compiler run at every start
+A shipped app runs on plain Node from files built ahead of time:
+`buildApp` (from `winui-svelte/vite`) compiles the components and the
+package's own rune modules, bundles Svelte's browser runtime and the
+package, and writes one self-contained file per entry
+
+```ts
+import path from "node:path";
+import { buildApp } from "winui-svelte/vite";
+
+await buildApp({
+  root: import.meta.dirname,
+  entries: {
+    main: path.join(import.meta.dirname, "main.ts"),
+    window: path.join(import.meta.dirname, "window.ts")
+  },
+  outDirectory: path.join(import.meta.dirname, "dist-app")
+});
+```
+
+```sh
+node dist-app/main.js
+```
+
+- The entries are the host's main thread and the UI thread's worker file; each
+  is a file of its own because the two are separate JavaScript realms
+  The host starts the worker from the built file next to it:
+  `new Worker(path.join(import.meta.dirname, "window.js"))`
+- In the built `window.ts` the app's modules are plain imports
+  (`await import("./App.svelte")` inside `runOnUiThread`, after the apartment
+  is entered); there is no module runner and no timer for hot updates
+- `@microsoft/dynwinrt`, the native module, stays an import: ship
+  `node_modules/@microsoft/dynwinrt` with the app, and the Windows App SDK
+  bootstrapper (`dist/bin/<arch>` of this package) in a folder you hand to
+  `initWindowsAppSdk({ folders })`
+- `isMinified: true` is safe for the controls (a control is known by the tag
+  it was registered under, not by its class name); leave it off for an app
+  that draws with Win2D, whose overloads are found by parameter name, or
+  that places a control with the raw `<host>` tag, which takes its type from
+  the class's own name
+- `config` is merged over the Vite settings, for an `alias` or a plugin of
+  your own
+
+[`examples/production`](examples/production) is a host and a window built
+this way, and `test/production-build.test.ts` builds it, plain and minified,
+and runs it on a hidden desktop
+
 ## Web APIs
 
 Features beyond the controls come through the web's own APIs, wired to
@@ -422,15 +472,27 @@ and `send`
 **Tauri** (what [Edge+](https://github.com/avi12/edge-plus) does)
 The Rust
 core starts the window as a child process
-(a sidecar: your `main.ts`, or a bundled executable with Node inside) with its
+(a sidecar: your `main.ts`, or the bundle `buildApp` writes, run by a Node
+that ships with the app; see [Production build](#production-build)) with its
 stdin and stdout piped, writes request lines
 (`{"id":1,"type":"snapshot","data":{"name":"view","value":{...}},"timestamp":...}`)
 and later `patch` ones, and reads `action` requests back, answering each with a
 response line (`{"id":1,"response":null}` or `{"id":1,"error":"..."}`)
-In the
-window, `createStdioTransport()` and `reserveStdout()` (so a
-stray `console.log` goes to stderr and cannot corrupt the protocol) are the
-other end
+The names are fixed: `snapshot` carries `{name, value}`, the whole value of
+one named state; `patch` carries `{name, ops}`; a window reads the state it
+names with `hostState({ channel, name })`
+A core that already sends the whole state under another request type (a
+`view` request, say) renames that one frame to `snapshot` with the state's
+name in `data.name`, in the core or in a small adapter between the pipes
+Do not call `createStdioTransport()` in the window: the window runs on a
+worker (the UI thread), and a worker's `process.stdin` and `process.stdout` are
+not the process's pipes
+The sidecar's main thread owns the pipes: it calls `reserveStdout()` (so a
+stray `console.log` goes to stderr and cannot corrupt the protocol), makes the
+stdio transport, and relays every value, unread, to the window over a
+`MessageChannel`; the window makes `createMessagePortTransport({ port })` on
+its end and builds its channel from that
+[`examples/sidecar/main.ts`](examples/sidecar/main.ts) is the relay, about 30 lines
 Edge+'s `app/panel-tauri` (`ui/main.ts`, with the core in
 `src-tauri`) is the working example
 
@@ -1282,8 +1344,8 @@ Node, on the DOM shim
 Two things to know: a `readable` that ticks starts its timer with
 `startTimer` from `winui-svelte/window`, because Node's `setInterval` never
 fires on the UI thread, and `MediaQuery` needs `installMatchMedia()` first
-The package adds `winui-svelte/state`: `createHostChannel(transport)`,
-`hostState<View>(channel, "view")` and `channel.send(action)`, for state a Tauri
+The package adds `winui-svelte/state`: `createHostChannel({ transport })`,
+`hostState<View>({ channel, name: "view" })` and `channel.send(action)`, for state a Tauri
 core, an Electron main process or a script owns
 A host written in JavaScript
 imports `winui-svelte/state/host` (`diff`, the transports, the message types),
@@ -1355,7 +1417,7 @@ attachments, because a component prop would pull this code into every app
 | `winui-svelte/state` | the window's side of host state |
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
 | `winui-svelte/messaging` | `defineMessaging`: typed request and response messages over a transport, loadable in plain Node |
-| `winui-svelte/vite` | `winuiSvelte()` for `vite.config.ts`; `startModuleServer()` for hot reload |
+| `winui-svelte/vite` | `winuiSvelte()` for `vite.config.ts`; `startModuleServer()` for hot reload; `buildApp()` for the production bundle |
 | `winui-svelte/runner` | `createWindowModuleRunner()`, the window thread's side of the module server |
 | `winui-svelte/window` | `runWindow`, `createWindow`, `startTimer`, `exitApplication`, `systemSettings` |
 | `winui-svelte/thread` | `runOnUiThread`, the first call of the UI thread's worker |

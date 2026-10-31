@@ -99,3 +99,10 @@ export interface StateProtocol<Action extends Json = Json> {
 export function isJsonObject(value: Json | undefined): value is Record<string, Json> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
+
+/**
+ * The type of a state the host owns: a JSON value, or an object type such as
+ * an `interface`, which TypeScript does not take for JSON because it has no
+ * index signature. The channel checks the value is JSON when it arrives.
+ */
+export type StateShape = Json | object;

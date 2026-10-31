@@ -29,6 +29,8 @@ export interface Exchange {
   command: Report;
   kind: string;
   timeoutMilliseconds?: number;
+  // A further condition a report of that kind must meet.
+  isWanted?(report: Report): boolean;
 }
 
 export class ExampleProcess {
@@ -60,7 +62,31 @@ export class ExampleProcess {
     flags?: string[];
     env?: Record<string, string>;
   }) {
-    const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "--enable-source-maps", LAUNCHER, entry, ...flags], {
+    return ExampleProcess.spawnNode({
+      script: LAUNCHER,
+      args: [entry, ...flags],
+      env
+    });
+  }
+
+  // Runs a built bundle (a file of JavaScript) under plain Node, as a shipped app runs.
+  static startBundle({ file, env = {} }: {
+    file: string;
+    env?: Record<string, string>;
+  }) {
+    return ExampleProcess.spawnNode({
+      script: file,
+      args: [],
+      env
+    });
+  }
+
+  private static spawnNode({ script, args, env }: {
+    script: string;
+    args: string[];
+    env: Record<string, string>;
+  }) {
+    const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "--enable-source-maps", script, ...args], {
       cwd: PACKAGE_ROOT,
       env: {
         ...backgroundEnvironment(),
@@ -78,12 +104,12 @@ export class ExampleProcess {
 
   // Sends `command` and resolves with the next report of `kind`. The first
   // command also waits for the window to load, which takes a while.
-  async ask({ command, kind, timeoutMilliseconds = START_MILLISECONDS }: Exchange) {
+  async ask({ command, kind, timeoutMilliseconds = START_MILLISECONDS, isWanted = () => true }: Exchange) {
     const from = this.reports.length;
     this.send(command);
     const deadline = Date.now() + timeoutMilliseconds;
     while (Date.now() < deadline) {
-      const found = this.reports.slice(from).find(report => report["kind"] === kind);
+      const found = this.reports.slice(from).find(report => report["kind"] === kind && isWanted(report));
       const isFound = found !== undefined;
       if (isFound) {
         return found;
