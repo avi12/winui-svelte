@@ -89,11 +89,12 @@ further work; a test that makes a `Window` of its own calls
 
 What cannot be hidden:
 
-- A tray icon is in the real notification area while its test runs
-  (`test/tray.test.ts` stays on the default desktop, see below)
-- WebView2 starts browser processes of its own (they end with the window), and
-  its browser does not start on another desktop, so `test/web.test.ts` stays
-  on the default desktop
+- A tray icon is in the real notification area while `test/tray-shell.test.ts`
+  runs (the only test on the default desktop, see below); the rest of the tray
+  is `test/tray.test.ts`, which runs hidden
+- WebView2 starts browser processes of its own (they end with the window); they
+  start on the desktop of the test, and `test/web.test.ts` gives each run a
+  profile folder of its own
 - A combo box's drop-down is a window of its own that WinUI keeps on the
   nearest display, so it shows for a moment at the edge of the display next to
   the off-screen window
@@ -109,10 +110,25 @@ So `scripts/test-windows.ts` starts each file on a desktop object of its own
 with that desktop; every process the test starts, the examples and the
 UI Automation scripts, inherits it), and a window there can
 never take the foreground; UI Automation, WinUI and Win2D work on it
-Two files cannot run there and stay on the default desktop, where they were
-measured not to take the foreground (`DEFAULT_DESKTOP_TESTS` in the script):
-`tray.test.ts` (the notification area is the shell's) and `web.test.ts`
-(WebView2's browser does not start)
+One file cannot run there and stays on the default desktop
+(`DEFAULT_DESKTOP_TESTS` in the script): `tray-shell.test.ts`, because the
+notification area is the shell's; it asks the shell only whether it accepts,
+draws and forgets the icon, hides the window to the tray and back, sends no
+input, opens no menu, and ends the example through its own close so the
+example's exit hook removes the icon even after a failed assertion (a killed
+example would leave a ghost icon)
+Where each file runs:
+
+| File | Desktop | Why |
+|---|---|---|
+| `tray-shell.test.ts` | default | the shell's notification area and taskbar |
+| `tray.test.ts` | hidden | the shell refuses the icon there, and the props, balloon call, menu and removal are checked without it |
+| `web.test.ts` | hidden | WebView2's browser starts there when the profile folder is the run's own; the shared per-app folder answered 0x800700AA (ERROR_BUSY) when another run held it |
+| every other file | hidden | no shell needed |
+
+On the hidden desktop a WebView2 window closes but its process does not leave
+(the worker thread that ran it does not finish), so `web.test.ts` ends at the
+window's close and kills the example it started
 Set `WINUI_SVELTE_TEST_DESKTOP=default` to run every file on the default
 desktop instead; a file run with `node --test` directly is not on its own
 desktop either, so run it through the script

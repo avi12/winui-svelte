@@ -30,8 +30,7 @@ const DESKTOP_RUNNER = path.join(PACKAGE_ROOT, "scripts", "desktop", "run-on-des
 // What cannot run on a desktop of its own, and why: these stay on the default
 // one, where they never take the foreground (measured, .verify/focus-steal.md).
 const DEFAULT_DESKTOP_TESTS = new Map([
-  ["tray.test.ts", "the notification area belongs to the shell, on the default desktop"],
-  ["web.test.ts", "WebView2 does not start its browser on another desktop"]
+  ["tray-shell.test.ts", "the notification area belongs to the shell, on the default desktop"]
 ]);
 // The mount test is `pnpm test`'s; every other test/*.test.ts opens windows.
 const NOT_WINDOW_TESTS = new Set(["mount-all.test.ts"]);

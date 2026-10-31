@@ -3,15 +3,16 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 // The tray example (examples/tray) in a real WinUI window, off screen and
-// never activated. It sends no input to the desktop: the icon is checked by
-// asking the shell where it drew it (Shell_NotifyIconGetRect), and the example
-// is driven only by its own commands. Tests must never inject real input
-// (mouse, keyboard, clicks on the taskbar) into the user's desktop. Skipped
-// where the Windows App SDK was not restored, and for the shell part where the
-// session has no notification area.
+// never activated, on a desktop of its own: there is no notification area
+// there, so the shell refuses the icon (Shell_NotifyIcon fails, which the tray
+// must survive), and what is left is everything that does not need the shell:
+// the props, the balloon call, the menu and its flyout, removing the icon, and the example's leaving. What the
+// shell itself answers is tray-shell.test.ts, on the default desktop. It sends
+// no input and is driven only by the example's own commands. Tests must never
+// inject real input (mouse, keyboard, clicks on the taskbar) into the user's
+// desktop. Skipped where the Windows App SDK was not restored.
 
 const TIMEOUT_MILLISECONDS = 300_000;
-const ICON_WIDTH_MINIMUM = 8;
 const WAIT_MILLISECONDS = 20_000;
 const POLL_MILLISECONDS = 300;
 
@@ -38,7 +39,7 @@ async function untilFlyout({ example, isOpen }: {
   }
 }
 
-test("a tray icon is added, follows its props, and leaves nothing behind", {
+test("the tray follows its props, opens its menu and leaves, with or without a shell", {
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
   timeout: TIMEOUT_MILLISECONDS
 }, async () => {
@@ -50,29 +51,7 @@ test("a tray icon is added, follows its props, and leaves nothing behind", {
       },
       kind: "info"
     });
-    assert.equal(opened["isRegistered"], true, "the shell accepted the icon");
-    const hasNotificationArea = opened["hasBounds"] === true;
-    if (!hasNotificationArea) {
-      return;
-    }
-
-    assert.ok(Number(opened["width"]) >= ICON_WIDTH_MINIMUM, "the shell drew the icon with a size");
-    const hidden = await example.ask({
-      command: {
-        cmd: "visible",
-        value: false
-      },
-      kind: "visible"
-    });
-    assert.equal(hidden["hasBounds"], false, "a hidden icon is gone from the shell");
-    const shown = await example.ask({
-      command: {
-        cmd: "visible",
-        value: true
-      },
-      kind: "visible"
-    });
-    assert.equal(shown["hasBounds"], true, "shown again, it is back");
+    assert.equal(opened["kind"], "info", "the example started although the shell refused the icon");
     const retitled = await example.ask({
       command: {
         cmd: "tooltip",
@@ -81,30 +60,13 @@ test("a tray icon is added, follows its props, and leaves nothing behind", {
       kind: "tooltip"
     });
     assert.equal(retitled["tooltip"], "Changed");
-    assert.equal(retitled["hasBounds"], true);
     const ballooned = await example.ask({
       command: {
         cmd: "balloon"
       },
       kind: "balloon"
     });
-    assert.equal(ballooned["hasBounds"], true, "a balloon leaves the icon in place");
-    const hiddenToTray = await example.ask({
-      command: {
-        cmd: "hideToTray"
-      },
-      kind: "hideToTray"
-    });
-    assert.equal(hiddenToTray["isWindowVisible"], false);
-    assert.equal(hiddenToTray["isShownInSwitchers"], false, "no taskbar button while hidden to the tray");
-    const restored = await example.ask({
-      command: {
-        cmd: "restore"
-      },
-      kind: "restore"
-    });
-    assert.equal(restored["isWindowVisible"], true);
-    assert.equal(restored["isShownInSwitchers"], true);
+    assert.equal(ballooned["kind"], "balloon", "a balloon the shell cannot show does not throw");
     const menuPoint = {
       x: 400,
       y: 300
@@ -140,8 +102,9 @@ test("a tray icon is added, follows its props, and leaves nothing behind", {
       },
       kind: "remove"
     });
-    assert.equal(removed["hasBounds"], false, "removed, the icon is gone from the shell");
+    assert.equal(removed["hasBounds"], false, "removed, the icon has no place in the shell");
+    assert.equal(await example.stop(), true, "the example left through its own close");
   } finally {
-    example.kill();
+    await example.stop();
   }
 });
