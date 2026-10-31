@@ -1982,6 +1982,21 @@ needs a single-threaded apartment: the window thread has one)
   `unlocked`) set; `change` fires when either moves
 - Extra: `idleMilliseconds`, the time since the last input at the last reading
 
+#### Other exports
+
+- Bluetooth: `BluetoothRemoteGATTServer`, `BluetoothRemoteGATTService`,
+  `BluetoothRemoteGATTCharacteristic`, `BluetoothRemoteGATTDescriptor`, and
+  what a backend throws: `BluetoothFailure` with a `BluetoothFailureKind`
+- USB: `USBInTransferResult`, `USBOutTransferResult`, `USBConnectionEvent`,
+  and for a backend `UsbFailure`, `UsbDirection`, `UsbEndpointType`,
+  `UsbRecipient`, `UsbRequestType`, `UsbTransferStatus`
+- HID: `HIDConnectionEvent`, and `HidFailure` for a backend
+- Serial: `SerialConnectionEvent`, and for a backend `SerialFailure`,
+  `SerialFlowControlName`, `SerialLineError`, `SerialParityName`
+- Wake lock: `WakeLock` (the `navigator.wakeLock` class) and
+  `windowsWakeLockBackend`
+- Idle: `UserIdleState`, `ScreenIdleState` and `windowsIdleBackend`
+
 ## Forms (`winui-svelte/forms`)
 
 Opt-in: nothing in the core imports it, so an app that does not use it does
