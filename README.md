@@ -340,74 +340,8 @@ Where Windows refuses (an unpackaged app without an identity, notifications
 switched off), the API reports `denied` or rejects with the spec's own error
 (`NotAllowedError`, `NotSupportedError`)
 
-Every feature falls in one of three kinds, decided in this order
-
-- **Web**: a standard Web API exists; it behaves as the spec says, byte for
-  byte, and nothing else is added
-- **Web plus extras**: a standard Web API exists and WinRT can do more; the
-  extras are optional, lowerCamelCase members of the API's own option
-  dictionaries and objects (`new Notification(title, { progress, scenario })`,
-  `event.userInput`, `notification.update()`), never a second entry point; code
-  written for browsers never passes them and behaves the same, and they are
-  typed by declaration merging that ships with the opt-in subpath, so they
-  autocomplete only where you import it
-- **As is**: no Web API exists (credential vault, sockets, background
-  transfer, imaging, on-device AI); the WinRT class itself is used with the
-  names and semantics of the bindings, fully typed: async operations are
-  promises (with an optional `AbortSignal`), events are `onX(callback)`
-  returning an unsubscribe function, vectors iterate, properties are
-  accessors; the import path mirrors the namespace and the class name is
-  WinRT's own, so every bound class is one import away with nothing to
-  generate:
-
-  ```ts
-  import { PasswordCredential } from "winui-svelte/bindings/windows/security/credentials/PasswordCredential";
-  ```
-
-  (`#winui/*` is the route for the classes an app generates for itself); a
-  class not yet bound is added to `lateClasses` in
-  `scripts/codegen/tables.ts` and bound with `pnpm bindings:after-winapp`;
-  nothing wraps what needs no wrapping
-
-| Web API | Subpath | Kind | Identity needed | State |
-| --- | --- | --- | --- | --- |
-| `navigator.permissions`, `PermissionStatus` | `winui-svelte/web-apis` | web | none | done |
-| `Notification` (buttons, inputs, progress, scenario) | `winui-svelte/web-apis/notification` | web plus extras | optional: an unpackaged app registers an `identity` and an `appUserModelId` | done |
-| `PushManager`, `PushSubscription` (`remoteId`) | `winui-svelte/web-apis/push` | web plus extras | package identity or a registered AppUserModelId | done |
-| `navigator.setAppBadge`, `clearAppBadge` (status glyphs) | `winui-svelte/web-apis/badging` | web plus extras | package identity or a registered AppUserModelId | done |
-| `launchQueue` (files and protocol addresses) | `winui-svelte/web-apis/launch` | web plus extras | none | done |
-| `navigator.geolocation` (position source, civic address) | `winui-svelte/web-apis/geolocation` | web plus extras | none | done |
-| `navigator.getBattery()` (capacity, charge rate) | `winui-svelte/web-apis/battery` | web plus extras | none | done |
-| `navigator.connection`, `online`, `offline` (cost, signal) | `winui-svelte/web-apis/network` | web plus extras | none | done |
-| `navigator.getGamepads()`, `GamepadHapticActuator` (trigger rumble) | `winui-svelte/web-apis/gamepad` | web plus extras | none | done |
-| `Accelerometer`, `Gyroscope`, `Magnetometer`, orientation and ambient light sensors (barometer, altimeter, compass) | `winui-svelte/web-apis/sensors` | web plus extras | none | done |
-| `screen`, `devicePixelRatio`, `getScreenDetails()` (monitor EDID data) | `winui-svelte/web-apis/screen` | web plus extras | none | done |
-| `navigator.clipboard`, `ClipboardItem`, `clipboardchange` (files, custom formats, history) | `winui-svelte/web-apis/clipboard` | web plus extras | none | done |
-| `navigator.share`, `navigator.canShare` | `winui-svelte/web-apis/share` | web plus extras | package identity, or a `window` to share from | done |
-| `showOpenFilePicker`, `showSaveFilePicker`, `showDirectoryPicker`, `FileSystem*Handle` | `winui-svelte/web-apis/file-system` | web plus extras | none | done |
-| `navigator.storage` (`estimate`, `persist`, origin private file system) | `winui-svelte/web-apis/storage` | web plus extras | none | done |
-| `localStorage`, `sessionStorage`, `StorageEvent` | `winui-svelte/web-apis/web-storage` | web plus extras | none | done |
-| `document.visibilityState`, focus, Fullscreen API, `document.title`, `window.close()` | `winui-svelte/web-apis/page` | web plus extras | none | done |
-| `requestAnimationFrame`, `requestIdleCallback` | `winui-svelte/web-apis/timing` | web | none | done |
-| `ResizeObserver`, `IntersectionObserver`, `MutationObserver` | `winui-svelte/web-apis/observers` | web plus extras | none | done |
-| `element.animate()`, `Animation`, `KeyframeEffect` | `winui-svelte/web-apis/animations` | web plus extras | none | done |
-| `navigator.mediaDevices` (`getUserMedia`, `getDisplayMedia`, `enumerateDevices`), `MediaStream`, `MediaRecorder` | `winui-svelte/web-apis/media-devices` | web plus extras | none (a camera or microphone needs the Windows privacy switch on) | done |
-| `speechSynthesis`, `SpeechSynthesisUtterance`, `SpeechRecognition` (SSML, silences, scenario, phrases) | `winui-svelte/web-apis/speech` | web plus extras | none | done |
-| `navigator.mediaSession`, `MediaMetadata` | `winui-svelte/web-apis/media-session` | web plus extras | none | done |
-| `navigator.bluetooth` (your own chooser, GATT, notifications, advertisements) | `winui-svelte/web-apis/bluetooth` | web plus extras | none | done |
-| `navigator.usb` (WinUSB devices) | `winui-svelte/web-apis/usb` | web plus extras | none | done |
-| `navigator.hid` (input, output and feature reports) | `winui-svelte/web-apis/hid` | web plus extras | none | done |
-| `navigator.serial` (byte streams, control signals) | `winui-svelte/web-apis/serial` | web plus extras | none | done |
-| `navigator.wakeLock` (screen) | `winui-svelte/web-apis/wake-lock` | web plus extras | none | done |
-| `IdleDetector` (user and screen state) | `winui-svelte/web-apis/idle` | web plus extras | none | done |
-| `navigator.credentials`, `PasswordCredential`, `PublicKeyCredential` (Windows Hello) | `winui-svelte/web-apis/credentials` | web plus extras | none | done |
-| `EyeDropper` | `winui-svelte/web-apis/eye-dropper` | web plus extras | none | done |
-| `navigator.contacts` (Contact Picker) | `winui-svelte/web-apis/contacts` | web plus extras | for most apps, package identity | done |
-
-Every row is built and tested; the timers (`setTimeout`, `setInterval`,
-`setImmediate`) and `fetch` need no install, because the window thread has them
-from `runWindow` (see [Timers and I/O](https://github.com/avi12/winui-svelte/blob/main/API.md#timers-and-io))
-An "As is" class needs no row: every bound WinRT class is one import away
+Every feature is one of three kinds: **web** (the spec, byte for byte), **web plus extras** (the spec, and optional lowerCamelCase members for what WinRT adds) or **as is** (no Web API exists, so the WinRT class itself, one import away)
+[API.md](https://github.com/avi12/winui-svelte/blob/main/API.md#web-apis-winui-svelteweb-apis) has the kinds in full, and [the table of every API](https://github.com/avi12/winui-svelte/blob/main/API.md#every-api-and-its-subpath) its subpath, kind and the identity it needs
 
 ## Host integration
 
@@ -655,53 +589,11 @@ the renderer's functions
 </Form>
 ```
 
-- A control joins the form above it through an attachment named for its kind:
-  `textField` (TextBox, AutoSuggestBox), `passwordField`, `numberField`,
-  `sliderField`, `ratingField`, `checkField` (CheckBox, ToggleButton),
-  `switchField`, `selectField` (ComboBox, RadioButtons), `dateField`
-  (DatePicker, CalendarDatePicker), `timeField`, `colorField`
-- WinUI components have no `name` prop (a prop on 600 generated components
-  would be a second state beside `bind:`), so the attachment carries it; the
-  control keeps its own value, `bind:text` still works, and the form reads
-  the control through its property and change event
-- The HTML attributes are typed options: `required`, `minLength`, `maxLength`,
-  `min`, `max`, `step`, `pattern` and `type` (`email`, `url`, `number`, and so
-  on); each field has a `ValidityState` (`valueMissing`, `typeMismatch`,
-  `patternMismatch`, `tooShort`, `tooLong`, `rangeUnderflow`, `rangeOverflow`,
-  `stepMismatch`, `badInput`, `customError`, `valid`) and `setCustomValidity`
-- `schema` is a zod schema: its issues become field errors by path, and its
-  output types `data`, so `onsubmit({ data })` is the schema's inferred type
-  (without a schema, `data` is the entries as an object, and `formData` is a
-  `FormValues`, a `FormData` for numbers, booleans and dates that
-  `Object.fromEntries` reads)
-- `bind:handle` gives `requestSubmit()` (validates, then submits), `submit()`
-  (no validation), `reset()`, `checkValidity()`, `reportValidity()`, `values()`,
-  `field(name)`, and the reactive `isPending`, `isSubmitted` and `isValid`
-- `action` is an async function that runs after `onsubmit`; while it runs the
-  controls and buttons are disabled and `isPending` is true
-- An invalid control gets a red border and its accessible help text; the
-  first invalid control takes focus; the error shows once the user has left the
-  field or tried to submit (HTML's `:user-invalid`), then follows each change;
-  `FormField` shows it under the control in a polite live region, so a screen
-  reader announces it
-- Enter in a single-line field clicks the first submit button (or submits when
-  the form has one text field and no button); Escape calls `oncancel`;
-  `formButton({ kind: "reset" })` resets, `"button"` does nothing to the form
-- `noValidate` skips validation on submit, and a field or button outside the
-  `Form` joins it with `form: handle`
-- A selected ComboBoxItem reaches JavaScript as an opaque object, so a
-  `selectField` collects the item itself when it is text, a number or a
-  boolean, else its index; `values: ["Free", "Pro"]` (one per item) or
-  `itemValue` says what it stands for
-- Limits: WinUI has no `:invalid` or `:required` visual states for the style
-  sheet to match, so the form states live on `handle.field(name)`
-  (`isUserInvalid`, `isTouched`, `isDirty`, `validity`) for a component to
-  bind a class or a property to; there is no HTTP `method` or `action` URL
-  (submitting is your callback); a schema with an async refinement is not run
-
-`examples/form` is the working example (`test/forms.test.ts` fills it in
+Each control joins by an attachment named for its kind (`textField`, `numberField`, `selectField` and the rest), with HTML's constraint validation and a zod `schema`
+[API.md](https://github.com/avi12/winui-svelte/blob/main/API.md#forms-winui-svelteforms) has the attachments, `FormHandle` and how a form behaves; `examples/form` is the working example (`test/forms.test.ts` fills it in
 through UI Automation and reads back the errors and the submitted data); the
 gallery's Form submission page shows it
+
 ## Media
 
 `Image`, `ImageBrush`, `ImageIcon`, `PathIcon`, `MediaPlayerElement` and
