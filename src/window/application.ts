@@ -43,9 +43,9 @@ export async function runWindow(options: RunWindowOptions) {
         for (const install of options.webApis ?? []) {
           install();
         }
+
         options.onStart();
       });
-      options.onStart();
     });
   } finally {
     stopAllTimers();
