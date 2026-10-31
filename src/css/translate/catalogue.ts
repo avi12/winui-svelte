@@ -1,9 +1,8 @@
 import { createCatalogue } from "#src/css/runtime/resources.js";
 import type { NativeValue } from "#src/native-value.js";
 import { isRecord } from "#src/renderer/host/reflect.js";
+import { catalogueFile } from "#src/runtime-files.js";
 import { readFileSync } from "node:fs";
-
-const catalogueFile = new URL("../winui-resources.g.json", import.meta.url);
 
 function isNameList(value: NativeValue): value is string[] {
   return Array.isArray(value) && value.every(name => typeof name === "string");
@@ -17,9 +16,10 @@ function isNameList(value: NativeValue): value is string[] {
  * with a schema, since the window carries this module.
  */
 export function loadWinuiCatalogue() {
-  const catalogue: NativeValue = JSON.parse(readFileSync(catalogueFile, "utf8"));
+  const file = catalogueFile();
+  const catalogue: NativeValue = JSON.parse(readFileSync(file, "utf8"));
   if (!isRecord(catalogue)) {
-    throw new TypeError(`${catalogueFile.pathname} is not a resource catalogue`);
+    throw new TypeError(`${file} is not a resource catalogue`);
   }
 
   // A kind whose keys are not a list of strings is left out.

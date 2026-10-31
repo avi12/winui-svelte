@@ -69,7 +69,7 @@ export class ExampleProcess {
     });
   }
 
-  // Runs a built bundle (a file of JavaScript) under plain Node, as a shipped app runs.
+  // Runs a built bundle (a file of JavaScript) under plain Node, as a shipped app runs: from its own folder.
   static startBundle({ file, env = {} }: {
     file: string;
     env?: Record<string, string>;
@@ -77,17 +77,19 @@ export class ExampleProcess {
     return ExampleProcess.spawnNode({
       script: file,
       args: [],
-      env
+      env,
+      folder: path.dirname(file)
     });
   }
 
-  private static spawnNode({ script, args, env }: {
+  private static spawnNode({ script, args, env, folder = PACKAGE_ROOT }: {
     script: string;
     args: string[];
     env: Record<string, string>;
+    folder?: string;
   }) {
     const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", "--enable-source-maps", script, ...args], {
-      cwd: PACKAGE_ROOT,
+      cwd: folder,
       env: {
         ...backgroundEnvironment(),
         ...env

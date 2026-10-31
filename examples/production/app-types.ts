@@ -8,4 +8,5 @@ export interface ViewReport {
   kind: "view";
   count: number | null;
   isLabelled: boolean;
+  isResourceApplied: boolean;
 }

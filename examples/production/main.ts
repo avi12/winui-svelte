@@ -1,8 +1,8 @@
 import { VIEW_NAME } from "./app-types.ts";
-import { startWindowsAppSdk } from "#examples/bootstrap.ts";
 import path from "node:path";
 import { createInterface } from "node:readline";
 import { MessageChannel, Worker } from "node:worker_threads";
+import { initWindowsAppSdk } from "winui-svelte/bootstrap";
 import { defineMessaging } from "winui-svelte/messaging";
 import { createMessagePortTransport, diff, MessageType } from "winui-svelte/state/host";
 import type { StateProtocol } from "winui-svelte/state/host";
@@ -16,7 +16,7 @@ import { z } from "zod";
 const commandSchema = z.object({ cmd: z.string() });
 const INCREMENT_COMMAND = "increment";
 
-startWindowsAppSdk();
+initWindowsAppSdk();
 process.stdout.write(`pid ${process.pid}\n`);
 
 const link = new MessageChannel();

@@ -353,7 +353,9 @@ function startModuleServer(options: {
 // The production build: one Vite SSR build per entry, each written as a single
 // self-contained file (`<name>.js`) that runs on plain Node. Components and
 // the package's .svelte.js rune modules are compiled for the client, Svelte
-// resolves to its browser build, and @microsoft/dynwinrt stays an import.
+// resolves to its browser build, and the files the app reads at run time (the
+// native module, the bootstrapper, the resource catalogue) are written beside
+// the bundles, so the folder runs without node_modules.
 function buildApp(options: {
   root: string;                            // the app's folder
   entries: Record<string, string>;         // output name to source file: { main, window }

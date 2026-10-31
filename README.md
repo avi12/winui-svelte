@@ -340,10 +340,17 @@ node dist-app/main.js
 - In the built `window.ts` the app's modules are plain imports
   (`await import("./App.svelte")` inside `runOnUiThread`, after the apartment
   is entered); there is no module runner and no timer for hot updates
-- `@microsoft/dynwinrt`, the native module, stays an import: ship
-  `node_modules/@microsoft/dynwinrt` with the app, and the Windows App SDK
-  bootstrapper (`dist/bin/<arch>` of this package) in a folder you hand to
-  `initWindowsAppSdk({ folders })`
+- The output folder is self-contained: `buildApp` writes beside the bundles
+  what the app reads at run time, so `node dist-app/main.js` needs no
+  `node_modules`, no copy of this package and no `@microsoft/dynwinrt` in your
+  own dependencies; copy the whole folder to ship, and build on the
+  architecture you ship for; a file that is not there is an error that names it
+  - `node_modules/@microsoft/dynwinrt`: the native module, its JavaScript and
+    the `.node` file of the architecture that builds, with `vcruntime140.dll`
+    beside it
+  - `bin/<arch>`: the Windows App SDK bootstrapper and the libraries WebView2
+    and Win2D load by name; `initWindowsAppSdk()` finds them with no argument
+  - `css/winui-resources.g.json`: the catalogue every `resources` prop reads
 - `isMinified: true` is safe for the controls (a control is known by the tag
   it was registered under, not by its class name); leave it off for an app
   that draws with Win2D, whose overloads are found by parameter name, or

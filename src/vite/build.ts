@@ -1,4 +1,5 @@
 import { windowConfig, winuiSvelte } from "./plugin.ts";
+import { writeRuntimeKit } from "./runtime-kit.ts";
 import type { InlineConfig } from "vite";
 import { build, mergeConfig } from "vite";
 
@@ -21,8 +22,9 @@ export interface BuildAppOptions {
   config?: InlineConfig;
 }
 
-// The native module is loaded by Node, from node_modules beside the bundle.
-const NATIVE_PACKAGES = ["@microsoft/dynwinrt"];
+// The native module is loaded by Node, from the node_modules the build writes
+// beside the bundle (runtime-kit.ts); its subpaths are imports too.
+const NATIVE_MODULE = /^@microsoft\/dynwinrt(?:\/|$)/u;
 
 // One build per entry, each a single file: the host's main thread and the UI
 // thread's worker are separate JavaScript realms and cannot share a module, and
@@ -48,7 +50,6 @@ function configOf({ root, name, file, outDirectory, isMinified, isFirst }: {
     },
     ssr: {
       noExternal: true,
-      external: NATIVE_PACKAGES,
       resolve: {
         conditions
       }
@@ -60,6 +61,7 @@ function configOf({ root, name, file, outDirectory, isMinified, isFirst }: {
       minify: isMinified,
       target: "node24",
       rollupOptions: {
+        external: [NATIVE_MODULE],
         input: {
           [name]: file
         },
@@ -80,8 +82,12 @@ function configOf({ root, name, file, outDirectory, isMinified, isFirst }: {
  * entry, so `node main.js` starts the app with no Vite dev server and no
  * Svelte compiler. The components and the package's rune modules are compiled
  * for the client (the renderer draws through the tree), Svelte resolves to
- * its browser build (the one that mounts), and `@microsoft/dynwinrt`, the
- * native module, stays an import Node resolves from `node_modules`.
+ * its browser build (the one that mounts). What the app reads at run time is
+ * written beside the bundle, so the output folder runs on its own, with no
+ * `node_modules` of the app and no copy of this package: `@microsoft/dynwinrt`,
+ * the native module (an import Node resolves from the `node_modules` in that
+ * folder), the Windows App SDK bootstrapper in `bin/<arch>` and the resource
+ * catalogue in `css`. They are for the architecture of the machine that builds.
  *
  * @param options - The app's folder, entries and output.
  * @returns The names of the files written, relative to `outDirectory`.
@@ -105,5 +111,6 @@ export async function buildApp({ root, entries, outDirectory, isMinified = false
     files.push(...outputs.flatMap(output => "output" in output ? output.output.map(item => item.fileName) : []));
   }
 
+  writeRuntimeKit(outDirectory);
   return files;
 }

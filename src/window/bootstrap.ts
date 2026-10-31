@@ -1,8 +1,8 @@
 import { initWinappsdk } from "@microsoft/dynwinrt";
+import { BOOTSTRAPPER_NAME, bootstrapperFolders } from "#src/runtime-files.js";
 import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 // The Windows App SDK (WinUI 3) comes first, before any WinRT object: its
 // bootstrapper finds the runtime packages installed for the user. The folder the
@@ -11,18 +11,11 @@ import { fileURLToPath } from "node:url";
 // would not be found beside node.exe.
 
 const BOOTSTRAP_VARIABLE = "WINAPPSDK_BOOTSTRAP_DLL_PATH";
-const BOOTSTRAP_NAME = "Microsoft.WindowsAppRuntime.Bootstrap.dll";
 const USER_DATA_VARIABLE = "WEBVIEW2_USER_DATA_FOLDER";
 const DEFAULT_APP_NAME = "app";
 // The runtime the package is built against.
 const WINDOWS_APP_SDK_MAJOR = 2;
 const WINDOWS_APP_SDK_MINOR = 2;
-// Where the bootstrapper is: dist/bin/<arch> in the published package (copied
-// there by the build), .winapp/bin/<arch> in this repository (`winapp restore`).
-const bundledFolders = [
-  new URL(`../bin/${process.arch}`, import.meta.url),
-  new URL(`../../.winapp/bin/${process.arch}`, import.meta.url)
-].map(folder => fileURLToPath(folder));
 
 /** Which Windows App SDK runtime to start, and where its bootstrapper may be. */
 export interface WindowsAppSdkOptions {
@@ -78,7 +71,7 @@ function putOnPath(folder: string) {
 }
 
 function bootstrapPath(folders: string[]) {
-  return folders.map(folder => path.join(folder, BOOTSTRAP_NAME)).find(candidate => existsSync(candidate));
+  return folders.map(folder => path.join(folder, BOOTSTRAPPER_NAME)).find(candidate => existsSync(candidate));
 }
 
 /**
@@ -100,11 +93,18 @@ export function initWindowsAppSdk(options: WindowsAppSdkOptions = {}) {
     webViewUserDataFolder
   } = options;
   process.env[USER_DATA_VARIABLE] = webViewUserDataFolder ?? process.env[USER_DATA_VARIABLE] ?? defaultUserDataFolder();
-  const found = bootstrapPath([...folders, ...bundledFolders]);
+  const found = bootstrapPath([...folders, ...bootstrapperFolders()]);
   const isFound = found !== undefined;
   if (isFound) {
     process.env[BOOTSTRAP_VARIABLE] ??= found;
     putOnPath(path.dirname(found));
+  }
+
+  const isNamed = process.env[BOOTSTRAP_VARIABLE] !== undefined;
+  const isMissing = !isFound && !isNamed;
+  if (isMissing) {
+    const tried = [...folders, ...bootstrapperFolders()].join(", ");
+    throw new WindowsAppRuntimeMissing(`${BOOTSTRAPPER_NAME} not found in ${tried}: buildApp writes it into the output folder, or name its folder in the folders option`);
   }
 
   try {
