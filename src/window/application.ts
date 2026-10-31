@@ -1,3 +1,4 @@
+import { stopAllTimers } from "./timers.ts";
 import { installMedia } from "#src/components/media.js";
 import { installXaml } from "#src/components/xaml.js";
 import { installCss } from "#src/css/index.js";
@@ -35,7 +36,8 @@ export async function runWindow(options: RunWindowOptions) {
   });
 }
 
-/** Ends the application: `runWindow`'s promise settles. */
+/** Stops the timers and ends the application: `runWindow`'s promise settles. */
 export function exitApplication() {
+  stopAllTimers();
   Application.current.exit();
 }
