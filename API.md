@@ -428,6 +428,337 @@ on the UI thread
 `examples/counter` is the working example (its `launch.ts`
 is the host, its `window.ts` the UI-thread worker)
 
+## Controls (`winui-svelte/components`)
+
+One row for each component, with a link to the WinUI docs of its class
+The table shows the props a class adds (the rest come from the classes it
+inherits from); `Bindable` includes the inherited bindables, and `Children`
+says the component takes content (its WinUI content property: `Content`,
+`Child`, `Children`, `Items`...) as children
+
+<!-- controls:start -->
+
+| Component | Namespace | Props it adds | Bindable | Children |
+| --- | --- | --- | --- | --- |
+| [`AcrylicBrush`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush) | Media | `alwaysUseFallback`, `tintColor`, `tintLuminosityOpacity`, `tintOpacity`, `tintTransitionDuration` |  |  |
+| [`AdaptiveTrigger`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.adaptivetrigger) | Microsoft.UI.Xaml | `minWindowHeight`, `minWindowWidth` |  |  |
+| [`AddDeleteThemeTransition`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.adddeletethemetransition) | Media.Animation |  |  |  |
+| [`AnimatedIcon`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedicon) | Controls | `fallbackIconSource`, `mirroredWhenRightToLeft`, `source` |  |  |
+| [`AnimatedIconSource`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatediconsource) | Controls | `fallbackIconSource`, `mirroredWhenRightToLeft`, `source` |  |  |
+| [`AnimatedVisualPlayer`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer) | Controls | `animationOptimization`, `autoPlay`, `fallbackContent`, `playbackRate`, `source`, `stretch` |  |  |
+| [`AnnotatedScrollBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.annotatedscrollbar) | Controls | `detailLabelTemplate`, `labels`, `labelTemplate`, `smallChange` |  |  |
+| [`AppBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar) | Controls | `closedDisplayMode`, `isOpen`, `isSticky`, `lightDismissOverlayMode` | `isOpen` | yes |
+| [`AppBarButton`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton) | Controls | `dynamicOverflowOrder`, `icon`, `isCompact`, `keyboardAcceleratorTextOverride`, `label`, `labelPosition` |  | yes |
+| [`AppBarElementContainer`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarelementcontainer) | Controls | `dynamicOverflowOrder`, `isCompact` |  | yes |
+| [`AppBarSeparator`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarseparator) | Controls | `dynamicOverflowOrder`, `isCompact` |  |  |
+| [`AppBarToggleButton`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton) | Controls | `dynamicOverflowOrder`, `icon`, `isCompact`, `keyboardAcceleratorTextOverride`, `label`, `labelPosition` | `isChecked` | yes |
+| [`ArcSegment`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment) | Media | `isLargeArc`, `point`, `rotationAngle`, `size`, `sweepDirection` |  |  |
+| [`AutoSuggestBox`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox) | Controls | `autoMaximizeSuggestionArea`, `description`, `header`, `isSuggestionListOpen`, `lightDismissOverlayMode`, `maxSuggestionListHeight`, `placeholderText`, `queryIcon`, +4 more | `text` | yes |
+| [`BackEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.backease) | Media.Animation | `amplitude` |  |  |
+| [`BezierSegment`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.beziersegment) | Media | `point1`, `point2`, `point3` |  |  |
+| [`BitmapCache`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.bitmapcache) | Media |  |  |  |
+| [`BitmapIcon`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapicon) | Controls | `showAsMonochrome`, `uriSource` |  |  |
+| [`BitmapIconSource`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapiconsource) | Controls | `showAsMonochrome`, `uriSource` |  |  |
+| [`BitmapImage`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage) | Media.Imaging | `autoPlay`, `createOptions`, `decodePixelHeight`, `decodePixelType`, `decodePixelWidth`, `uriSource` |  |  |
+| [`Bold`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.bold) | Documents |  |  | yes |
+| [`Border`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border) | Controls | `background`, `backgroundSizing`, `backgroundTransition`, `borderBrush`, `borderThickness`, `child`, `cornerRadius`, `padding` |  | yes |
+| [`BounceEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.bounceease) | Media.Animation | `bounces`, `bounciness` |  |  |
+| [`BreadcrumbBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar) | Controls | `itemsSource`, `itemTemplate` |  |  |
+| [`BreadcrumbBarItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbaritem) | Controls |  |  | yes |
+| [`Button`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.button) | Controls | `flyout` |  | yes |
+| [`CalendarDatePicker`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker) | Controls | `calendarIdentifier`, `calendarViewStyle`, `date`, `dateFormat`, `dayOfWeekFormat`, `description`, `displayMode`, `firstDayOfWeek`, +10 more | `date` |  |
+| [`CalendarPanel`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.calendarpanel) | Controls.Primitives |  |  | yes |
+| [`CalendarView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview) | Controls | `blackoutBackground`, `blackoutForeground`, `blackoutStrikethroughBrush`, `calendarIdentifier`, `calendarItemBackground`, `calendarItemBorderBrush`, `calendarItemBorderThickness`, `calendarItemCornerRadius`, +65 more |  |  |
+| [`CalendarViewDayItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarviewdayitem) | Controls | `isBlackout` |  |  |
+| [`Canvas`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.canvas) | Controls |  |  | yes |
+| [`CarouselPanel`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel) | Controls.Primitives | `canHorizontallyScroll`, `canVerticallyScroll`, `scrollOwner` |  | yes |
+| [`CheckBox`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.checkbox) | Controls |  | `isChecked` | yes |
+| [`CircleEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.circleease) | Media.Animation |  |  |  |
+| [`CollectionViewSource`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource) | Data | `isSourceGrouped`, `itemsPath`, `source` |  |  |
+| [`ColorAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation) | Media.Animation | `by`, `easingFunction`, `enableDependentAnimation`, `from`, `to` |  |  |
+| [`ColorAnimationUsingKeyFrames`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimationusingkeyframes) | Media.Animation | `enableDependentAnimation` |  | yes |
+| [`ColorPicker`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker) | Controls | `color`, `colorSpectrumComponents`, `colorSpectrumShape`, `isAlphaEnabled`, `isAlphaSliderVisible`, `isAlphaTextInputVisible`, `isColorChannelTextInputVisible`, `isColorPreviewVisible`, +12 more | `color` |  |
+| [`ColorPickerSlider`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorpickerslider) | Controls.Primitives | `colorChannel` | `value` |  |
+| [`ColorSpectrum`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum) | Controls.Primitives | `color`, `components`, `hsvColor`, `maxHue`, `maxSaturation`, `maxValue`, `minHue`, `minSaturation`, +2 more | `color` |  |
+| [`ColumnMajorUniformToLargestGridLayout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout) | Controls.Primitives | `columnSpacing`, `maxColumns`, `rowSpacing` |  |  |
+| [`ComboBox`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox) | Controls | `description`, `header`, `headerTemplate`, `isDropDownOpen`, `isEditable`, `isTextSearchEnabled`, `lightDismissOverlayMode`, `maxDropDownHeight`, +5 more | `selectedIndex`, `selectedItem`, `selectedValue`, `isDropDownOpen` | yes |
+| [`ComboBoxItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.comboboxitem) | Controls |  |  | yes |
+| [`CommandBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar) | Controls | `commandBarOverflowPresenterStyle`, `defaultLabelPosition`, `isDynamicOverflowEnabled`, `overflowButtonVisibility` | `isOpen` | yes |
+| [`CommandBarFlyout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbarflyout) | Controls | `alwaysExpanded` | `open` |  |
+| [`CommandBarFlyoutCommandBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.commandbarflyoutcommandbar) | Controls.Primitives | `systemBackdrop` | `isOpen` | yes |
+| [`CommandBarOverflowPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbaroverflowpresenter) | Controls |  |  | yes |
+| [`CommonNavigationTransitionInfo`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.commonnavigationtransitioninfo) | Media.Animation | `isStaggeringEnabled` |  |  |
+| [`CompositeTransform`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform) | Media | `centerX`, `centerY`, `rotation`, `scaleX`, `scaleY`, `skewX`, `skewY`, `translateX`, +1 more |  |  |
+| [`CompositeTransform3D`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d) | Media.Media3D | `centerX`, `centerY`, `centerZ`, `rotationX`, `rotationY`, `rotationZ`, `scaleX`, `scaleY`, +4 more |  |  |
+| [`ContentControl`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol) | Controls | `content`, `contentTemplate`, `contentTemplateSelector` |  | yes |
+| [`ContentDialog`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog) | Controls | `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonStyle`, `closeButtonText`, `defaultButton`, `fullSizeDesired`, `isPrimaryButtonEnabled`, `isSecondaryButtonEnabled`, +10 more | `open` | yes |
+| [`ContentPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter) | Controls | `background`, `backgroundSizing`, `backgroundTransition`, `borderBrush`, `borderThickness`, `characterSpacing`, `content`, `contentTemplate`, +18 more |  | yes |
+| [`ContentThemeTransition`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.contentthemetransition) | Media.Animation | `horizontalOffset`, `verticalOffset` |  |  |
+| [`ContinuumNavigationTransitionInfo`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.continuumnavigationtransitioninfo) | Media.Animation | `exitElement` |  |  |
+| [`CubicEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.cubicease) | Media.Animation |  |  |  |
+| [`DatePicker`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker) | Controls | `calendarIdentifier`, `date`, `dayFormat`, `dayVisible`, `header`, `headerTemplate`, `lightDismissOverlayMode`, `maxYear`, +7 more | `date`, `selectedDate` | yes |
+| [`DatePickerFlyout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout) | Controls | `calendarIdentifier`, `date`, `dayFormat`, `dayVisible`, `maxYear`, `minYear`, `monthFormat`, `monthVisible`, +2 more | `open` |  |
+| [`DesktopAcrylicBackdrop`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.desktopacrylicbackdrop) | Media |  |  |  |
+| [`DiscreteColorKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.discretecolorkeyframe) | Media.Animation |  |  |  |
+| [`DiscreteDoubleKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.discretedoublekeyframe) | Media.Animation |  |  |  |
+| [`DiscreteObjectKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.discreteobjectkeyframe) | Media.Animation |  |  |  |
+| [`DiscretePointKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.discretepointkeyframe) | Media.Animation |  |  |  |
+| [`DoubleAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation) | Media.Animation | `by`, `easingFunction`, `enableDependentAnimation`, `from`, `to` |  |  |
+| [`DoubleAnimationUsingKeyFrames`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimationusingkeyframes) | Media.Animation | `enableDependentAnimation` |  | yes |
+| [`DragItemThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragitemthemeanimation) | Media.Animation | `targetName` |  |  |
+| [`DragOverThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragoverthemeanimation) | Media.Animation | `direction`, `targetName`, `toOffset` |  |  |
+| [`DrillInNavigationTransitionInfo`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drillinnavigationtransitioninfo) | Media.Animation |  |  |  |
+| [`DrillInThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drillinthemeanimation) | Media.Animation | `entranceTarget`, `entranceTargetName`, `exitTarget`, `exitTargetName` |  |  |
+| [`DrillOutThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation) | Media.Animation | `entranceTarget`, `entranceTargetName`, `exitTarget`, `exitTargetName` |  |  |
+| [`DropDownButton`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.dropdownbutton) | Controls |  |  | yes |
+| [`DropTargetItemThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.droptargetitemthemeanimation) | Media.Animation | `targetName` |  |  |
+| [`EasingColorKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingcolorkeyframe) | Media.Animation | `easingFunction` |  |  |
+| [`EasingDoubleKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingdoublekeyframe) | Media.Animation | `easingFunction` |  |  |
+| [`EasingPointKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingpointkeyframe) | Media.Animation | `easingFunction` |  |  |
+| [`EdgeUIThemeTransition`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.edgeuithemetransition) | Media.Animation | `edge` |  |  |
+| [`ElasticEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.elasticease) | Media.Animation | `oscillations`, `springiness` |  |  |
+| [`Ellipse`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.ellipse) | Shapes |  |  |  |
+| [`EllipseGeometry`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry) | Media | `center`, `radiusX`, `radiusY` |  |  |
+| [`EntranceNavigationTransitionInfo`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancenavigationtransitioninfo) | Media.Animation |  |  |  |
+| [`EntranceThemeTransition`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancethemetransition) | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `isStaggeringEnabled` |  |  |
+| [`Expander`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander) | Controls | `expandDirection`, `header`, `headerTemplate`, `headerTemplateSelector`, `isExpanded` | `isExpanded` | yes |
+| [`ExponentialEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.exponentialease) | Media.Animation | `exponent` |  |  |
+| [`FadeInThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.fadeinthemeanimation) | Media.Animation | `targetName` |  |  |
+| [`FadeOutThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.fadeoutthemeanimation) | Media.Animation | `targetName` |  |  |
+| [`FlipView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flipview) | Controls | `useTouchAnimationsForAllNavigation` | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
+| [`FlipViewItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flipviewitem) | Controls |  |  | yes |
+| [`Flyout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout) | Controls | `content`, `flyoutPresenterStyle` | `open` | yes |
+| [`FlyoutPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyoutpresenter) | Controls | `isDefaultShadowEnabled` |  | yes |
+| [`FontIcon`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon) | Controls | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `glyph`, `isTextScaleFactorEnabled`, `mirroredWhenRightToLeft` |  |  |
+| [`FontIconSource`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource) | Controls | `fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `glyph`, `isTextScaleFactorEnabled`, `mirroredWhenRightToLeft` |  |  |
+| [`Frame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame) | Controls | `cacheSize`, `isNavigationStackEnabled`, `sourcePageType` | `backStackDepth`, `canGoBack`, `canGoForward` | yes |
+| [`GeometryGroup`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.geometrygroup) | Media | `fillRule` |  | yes |
+| [`Glyphs`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs) | Documents | `colorFontPaletteIndex`, `fill`, `fontRenderingEmSize`, `fontUri`, `indices`, `isColorFontEnabled`, `originX`, `originY`, +2 more |  |  |
+| [`GradientStop`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop) | Media | `color`, `offset` |  | yes |
+| [`Grid`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid) | Controls | `backgroundSizing`, `borderBrush`, `borderThickness`, `columnSpacing`, `cornerRadius`, `padding`, `rowSpacing` |  | yes |
+| [`GridView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.gridview) | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue`, `selectedKey`, `selectedKeys` | yes |
+| [`GridViewHeaderItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.gridviewheaderitem) | Controls |  |  | yes |
+| [`GridViewItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.gridviewitem) | Controls |  |  | yes |
+| [`GridViewItemPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter) | Controls.Primitives | `checkBrush`, `checkHintBrush`, `checkSelectingBrush`, `contentMargin`, `disabledOpacity`, `dragBackground`, `dragForeground`, `dragOpacity`, +14 more |  | yes |
+| [`GroupItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupitem) | Controls |  |  | yes |
+| [`GroupStyle`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle) | Controls | `containerStyleSelector`, `headerTemplate`, `headerTemplateSelector`, `hidesIfEmpty`, `panel` |  |  |
+| [`Hub`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub) | Controls | `defaultSectionIndex`, `header`, `headerTemplate`, `isActiveView`, `isZoomedInView`, `orientation`, `semanticZoomOwner` |  | yes |
+| [`HubSection`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection) | Controls | `contentTemplate`, `header`, `headerTemplate`, `isHeaderInteractive` |  | yes |
+| [`Hyperlink`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink) | Documents | `elementSoundMode`, `isTabStop`, `navigateUri`, `tabIndex`, `underlineStyle`, `xYFocusDown`, `xYFocusDownNavigationStrategy`, `xYFocusLeft`, +5 more |  | yes |
+| [`HyperlinkButton`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hyperlinkbutton) | Controls | `navigateUri` |  | yes |
+| [`IconSourceElement`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsourceelement) | Controls | `iconSource` |  | yes |
+| [`Image`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.image) | Controls | `nineGrid`, `source`, `stretch` |  |  |
+| [`ImageBrush`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush) | Media | `imageSource` |  |  |
+| [`ImageIcon`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.imageicon) | Controls | `source` |  |  |
+| [`ImageIconSource`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.imageiconsource) | Controls | `imageSource` |  |  |
+| [`InfoBadge`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobadge) | Controls | `iconSource`, `value` |  |  |
+| [`InfoBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar) | Controls | `actionButton`, `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonStyle`, `content`, `contentTemplate`, `iconSource`, `isClosable`, +5 more | `isOpen` |  |
+| [`InfoBarPanel`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.infobarpanel) | Controls.Primitives | `horizontalOrientationPadding`, `verticalOrientationPadding` |  | yes |
+| [`InlineUIContainer`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.inlineuicontainer) | Documents | `child` |  | yes |
+| [`Italic`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.italic) | Documents |  |  | yes |
+| [`ItemContainer`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemcontainer) | Controls | `child`, `isSelected` |  |  |
+| [`ItemsControl`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol) | Controls | `displayMemberPath`, `groupStyleSelector`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemsPanel`, `itemsSource`, `itemTemplate`, `itemTemplateSelector` |  | yes |
+| [`ItemsPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter) | Controls | `footer`, `footerTemplate`, `header`, `headerTemplate`, `padding` |  |  |
+| [`ItemsRepeater`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater) | Controls | `background`, `horizontalCacheLength`, `itemsSource`, `itemTemplate`, `itemTransitionProvider`, `layout`, `verticalCacheLength` |  |  |
+| [`ItemsRepeaterScrollHost`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost) | Controls | `horizontalAnchorRatio`, `scrollViewer`, `verticalAnchorRatio` |  |  |
+| [`ItemsStackPanel`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel) | Controls | `areStickyGroupHeadersEnabled`, `cacheLength`, `groupHeaderPlacement`, `groupPadding`, `itemsUpdatingScrollMode`, `orientation` |  | yes |
+| [`ItemsView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview) | Controls | `isItemInvokedEnabled`, `itemsSource`, `itemTemplate`, `itemTransitionProvider`, `layout`, `selectionMode`, `verticalScrollController` |  |  |
+| [`ItemsWrapGrid`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid) | Controls | `areStickyGroupHeadersEnabled`, `cacheLength`, `groupHeaderPlacement`, `groupPadding`, `itemHeight`, `itemWidth`, `maximumRowsOrColumns`, `orientation` |  | yes |
+| [`KeyboardAccelerator`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator) | Input | `isEnabled`, `key`, `modifiers`, `scopeOwner` |  |  |
+| [`KeySpline`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline) | Media.Animation | `controlPoint1`, `controlPoint2` |  |  |
+| [`Line`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line) | Shapes | `x1`, `x2`, `y1`, `y2` |  |  |
+| [`LinearColorKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.linearcolorkeyframe) | Media.Animation |  |  |  |
+| [`LinearDoubleKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.lineardoublekeyframe) | Media.Animation |  |  |  |
+| [`LinearGradientBrush`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.lineargradientbrush) | Media | `endPoint`, `startPoint` |  | yes |
+| [`LinearPointKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.linearpointkeyframe) | Media.Animation |  |  |  |
+| [`LineBreak`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.linebreak) | Documents |  |  |  |
+| [`LinedFlowLayout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout) | Controls | `itemsJustification`, `itemsStretch`, `lineHeight`, `lineSpacing`, `minItemSpacing` |  |  |
+| [`LineGeometry`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linegeometry) | Media | `endPoint`, `startPoint` |  |  |
+| [`LineSegment`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linesegment) | Media | `point` |  |  |
+| [`ListBox`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listbox) | Controls | `selectionMode`, `singleSelectionFollowsFocus` | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
+| [`ListBoxItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listboxitem) | Controls |  |  | yes |
+| [`ListPickerFlyout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout) | Controls | `displayMemberPath`, `itemsSource`, `itemTemplate`, `selectedIndex`, `selectedItem`, `selectedValue`, `selectedValuePath`, `selectionMode` | `open` |  |
+| [`ListView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listview) | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue`, `selectedKey`, `selectedKeys` | yes |
+| [`ListViewHeaderItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewheaderitem) | Controls |  |  | yes |
+| [`ListViewItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewitem) | Controls |  |  | yes |
+| [`ListViewItemPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter) | Controls.Primitives | `checkBoxBorderBrush`, `checkBoxBrush`, `checkBoxCornerRadius`, `checkBoxDisabledBorderBrush`, `checkBoxDisabledBrush`, `checkBoxPointerOverBorderBrush`, `checkBoxPointerOverBrush`, `checkBoxPressedBorderBrush`, +51 more |  | yes |
+| [`MapControl`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol) | Controls | `center`, `interactiveControlsVisible`, `layers`, `mapServiceToken`, `zoomLevel` |  |  |
+| [`MapElementsLayer`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapelementslayer) | Controls | `mapElements` |  |  |
+| [`MapIcon`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapicon) | Controls | `location` |  |  |
+| [`Matrix3DProjection`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrix3dprojection) | Media | `projectionMatrix` |  | yes |
+| [`MatrixTransform`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrixtransform) | Media | `matrix` |  |  |
+| [`MediaPlayerElement`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement) | Controls | `areTransportControlsEnabled`, `autoPlay`, `isFullWindow`, `posterSource`, `source`, `stretch`, `transportControls` |  |  |
+| [`MediaPlayerPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerpresenter) | Controls | `isFullWindow`, `mediaPlayer`, `stretch` |  |  |
+| [`MediaTransportControls`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols) | Controls | `fastPlayFallbackBehaviour`, `isCompact`, `isFastForwardButtonVisible`, `isFastForwardEnabled`, `isFastRewindButtonVisible`, `isFastRewindEnabled`, `isNextTrackButtonVisible`, `isPlaybackRateButtonVisible`, +17 more |  |  |
+| [`MenuBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubar) | Controls |  |  |  |
+| [`MenuBarItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubaritem) | Controls | `title` |  |  |
+| [`MenuBarItemFlyout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubaritemflyout) | Controls |  | `open` | yes |
+| [`MenuFlyout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyout) | Controls | `menuFlyoutPresenterStyle` | `open` | yes |
+| [`MenuFlyoutItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem) | Controls | `command`, `commandParameter`, `icon`, `keyboardAcceleratorTextOverride`, `text` |  | yes |
+| [`MenuFlyoutPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutpresenter) | Controls | `isDefaultShadowEnabled`, `systemBackdrop` |  | yes |
+| [`MenuFlyoutSeparator`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutseparator) | Controls |  |  |  |
+| [`MenuFlyoutSubItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem) | Controls | `icon`, `text` |  | yes |
+| [`MicaBackdrop`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.micabackdrop) | Media | `kind` |  |  |
+| [`MonochromaticOverlayPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.monochromaticoverlaypresenter) | Controls.Primitives | `replacementColor`, `sourceElement` |  | yes |
+| [`NavigationThemeTransition`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.navigationthemetransition) | Media.Animation | `defaultNavigationTransitionInfo` |  | yes |
+| [`NavigationView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview) | Controls | `alwaysShowHeader`, `autoSuggestBox`, `compactModeThresholdWidth`, `compactPaneLength`, `contentOverlay`, `expandedModeThresholdWidth`, `footerMenuItemsSource`, `header`, +24 more | `isPaneOpen`, `selectedItem`, `displayMode` | yes |
+| [`NavigationViewItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem) | Controls | `hasUnrealizedChildren`, `icon`, `infoBadge`, `isChildSelected`, `isExpanded`, `menuItemsSource`, `selectsOnInvoked` |  | yes |
+| [`NavigationViewItemHeader`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitemheader) | Controls |  |  | yes |
+| [`NavigationViewItemPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.navigationviewitempresenter) | Controls.Primitives | `icon`, `infoBadge` |  | yes |
+| [`NavigationViewItemSeparator`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitemseparator) | Controls |  |  | yes |
+| [`NonVirtualizingLayout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.nonvirtualizinglayout) | Controls |  |  |  |
+| [`NumberBox`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox) | Controls | `acceptsExpression`, `description`, `header`, `headerTemplate`, `isWrapEnabled`, `largeChange`, `maximum`, `minimum`, +11 more | `value` |  |
+| [`ObjectAnimationUsingKeyFrames`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectanimationusingkeyframes) | Media.Animation | `enableDependentAnimation` |  | yes |
+| [`Page`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page) | Controls | `bottomAppBar`, `navigationCacheMode`, `topAppBar` |  | yes |
+| [`PaneThemeTransition`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.panethemetransition) | Media.Animation | `edge` |  |  |
+| [`Paragraph`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.paragraph) | Documents | `textIndent` |  | yes |
+| [`ParallaxView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview) | Controls | `child`, `horizontalShift`, `horizontalSourceEndOffset`, `horizontalSourceOffsetKind`, `horizontalSourceStartOffset`, `isHorizontalShiftClamped`, `isVerticalShiftClamped`, `maxHorizontalShiftRatio`, +6 more |  |  |
+| [`PasswordBox`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox) | Controls | `description`, `header`, `headerTemplate`, `inputScope`, `isPasswordRevealButtonEnabled`, `maxLength`, `password`, `passwordChar`, +6 more | `password` |  |
+| [`Path`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.path) | Shapes | `data` |  |  |
+| [`PathFigure`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure) | Media | `isClosed`, `isFilled`, `segments`, `startPoint` |  | yes |
+| [`PathGeometry`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry) | Media | `figures`, `fillRule` |  | yes |
+| [`PathIcon`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pathicon) | Controls | `data` |  |  |
+| [`PathIconSource`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pathiconsource) | Controls | `data` |  |  |
+| [`PersonPicture`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture) | Controls | `badgeGlyph`, `badgeImageSource`, `badgeNumber`, `badgeText`, `contact`, `displayName`, `initials`, `isGroup`, +2 more |  |  |
+| [`PerspectiveTransform3D`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.perspectivetransform3d) | Media.Media3D | `depth`, `offsetX`, `offsetY` |  |  |
+| [`PickerFlyout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout) | Controls | `confirmationButtonsVisible`, `content` | `open` | yes |
+| [`PipsPager`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager) | Controls | `maxVisiblePips`, `nextButtonStyle`, `nextButtonVisibility`, `normalPipStyle`, `numberOfPages`, `orientation`, `previousButtonStyle`, `previousButtonVisibility`, +3 more |  |  |
+| [`Pivot`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot) | Controls | `headerFocusVisualPlacement`, `headerTemplate`, `isHeaderItemsCarouselEnabled`, `isLocked`, `leftHeader`, `leftHeaderTemplate`, `rightHeader`, `rightHeaderTemplate`, +4 more | `selectedIndex`, `selectedItem` | yes |
+| [`PivotHeaderPanel`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.pivotheaderpanel) | Controls.Primitives |  |  | yes |
+| [`PivotItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivotitem) | Controls | `header` |  | yes |
+| [`PivotPanel`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.pivotpanel) | Controls.Primitives |  |  | yes |
+| [`PlaneProjection`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection) | Media | `centerOfRotationX`, `centerOfRotationY`, `centerOfRotationZ`, `globalOffsetX`, `globalOffsetY`, `globalOffsetZ`, `localOffsetX`, `localOffsetY`, +4 more |  |  |
+| [`PointAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation) | Media.Animation | `by`, `easingFunction`, `enableDependentAnimation`, `from`, `to` |  |  |
+| [`PointAnimationUsingKeyFrames`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimationusingkeyframes) | Media.Animation | `enableDependentAnimation` |  | yes |
+| [`PointerDownThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointerdownthemeanimation) | Media.Animation | `targetName` |  |  |
+| [`PointerUpThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointerupthemeanimation) | Media.Animation | `targetName` |  |  |
+| [`PolyBezierSegment`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polybeziersegment) | Media | `points` |  | yes |
+| [`Polygon`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polygon) | Shapes | `fillRule`, `points` |  |  |
+| [`Polyline`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline) | Shapes | `fillRule`, `points` |  |  |
+| [`PolyLineSegment`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polylinesegment) | Media | `points` |  | yes |
+| [`PolyQuadraticBezierSegment`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polyquadraticbeziersegment) | Media | `points` |  | yes |
+| [`PopInThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popinthemeanimation) | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
+| [`PopOutThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popoutthemeanimation) | Media.Animation | `targetName` |  |  |
+| [`Popup`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup) | Controls.Primitives | `child`, `desiredPlacement`, `horizontalOffset`, `isLightDismissEnabled`, `isOpen`, `lightDismissOverlayMode`, `placementTarget`, `shouldConstrainToRootBounds`, +2 more | `isOpen`, `actualPlacement` | yes |
+| [`PopupThemeTransition`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popupthemetransition) | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset` |  |  |
+| [`PowerEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.powerease) | Media.Animation | `power` |  |  |
+| [`ProgressBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar) | Controls | `isIndeterminate`, `showError`, `showPaused` | `value` |  |
+| [`ProgressRing`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring) | Controls | `isActive`, `isIndeterminate`, `maximum`, `minimum`, `value` |  |  |
+| [`QuadraticBezierSegment`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.quadraticbeziersegment) | Media | `point1`, `point2` |  |  |
+| [`QuadraticEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.quadraticease) | Media.Animation |  |  |  |
+| [`QuarticEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.quarticease) | Media.Animation |  |  |  |
+| [`QuinticEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.quinticease) | Media.Animation |  |  |  |
+| [`RadialGradientBrush`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush) | Media | `center`, `gradientOrigin`, `interpolationSpace`, `mappingMode`, `radiusX`, `radiusY`, `spreadMethod` |  |  |
+| [`RadioButton`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobutton) | Controls | `groupName` | `isChecked` | yes |
+| [`RadioButtons`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons) | Controls | `header`, `headerTemplate`, `itemsSource`, `itemTemplate`, `maxColumns`, `selectedIndex`, `selectedItem` | `selectedIndex`, `selectedItem` |  |
+| [`RadioMenuFlyoutItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiomenuflyoutitem) | Controls | `groupName`, `isChecked` |  | yes |
+| [`RatingControl`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol) | Controls | `caption`, `initialSetValue`, `isClearEnabled`, `isReadOnly`, `itemInfo`, `maxRating`, `placeholderValue`, `value` | `value` |  |
+| [`RatingItemFontInfo`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo) | Controls | `disabledGlyph`, `glyph`, `placeholderGlyph`, `pointerOverGlyph`, `pointerOverPlaceholderGlyph`, `unsetGlyph` |  |  |
+| [`RatingItemImageInfo`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemimageinfo) | Controls | `disabledImage`, `image`, `placeholderImage`, `pointerOverImage`, `pointerOverPlaceholderImage`, `unsetImage` |  |  |
+| [`RatingItemInfo`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingiteminfo) | Controls |  |  |  |
+| [`Rectangle`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.rectangle) | Shapes | `radiusX`, `radiusY` |  |  |
+| [`RectangleGeometry`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rectanglegeometry) | Media | `rect` |  |  |
+| [`RefreshContainer`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshcontainer) | Controls | `pullDirection`, `visualizer` |  | yes |
+| [`RefreshVisualizer`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer) | Controls | `content`, `orientation` |  |  |
+| [`RelativePanel`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.relativepanel) | Controls | `backgroundSizing`, `borderBrush`, `borderThickness`, `cornerRadius`, `padding` |  | yes |
+| [`RenderTargetBitmap`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.rendertargetbitmap) | Media.Imaging |  |  |  |
+| [`ReorderThemeTransition`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.reorderthemetransition) | Media.Animation |  |  |  |
+| [`RepeatButton`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.repeatbutton) | Controls.Primitives | `delay`, `interval` |  | yes |
+| [`RepositionThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemeanimation) | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
+| [`RepositionThemeTransition`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemetransition) | Media.Animation | `isStaggeringEnabled` |  |  |
+| [`RevealListViewItemPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.reveallistviewitempresenter) | Controls |  |  | yes |
+| [`RichEditBox`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox) | Controls | `acceptsReturn`, `characterCasing`, `clipboardCopyFormat`, `description`, `desiredCandidateWindowAlignment`, `disabledFormattingAccelerators`, `header`, `headerTemplate`, +15 more |  |  |
+| [`RichTextBlock`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock) | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +18 more | `isTextTrimmed` | yes |
+| [`RichTextBlockOverflow`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow) | Controls | `maxLines`, `overflowContentTarget`, `padding` | `isTextTrimmed` |  |
+| [`RotateTransform`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rotatetransform) | Media | `angle`, `centerX`, `centerY` |  |  |
+| [`Run`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.run) | Documents | `flowDirection`, `text` |  | yes |
+| [`ScaleTransform`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform) | Media | `centerX`, `centerY`, `scaleX`, `scaleY` |  |  |
+| [`ScrollBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar) | Controls.Primitives | `indicatorMode`, `orientation`, `viewportSize` | `value` |  |
+| [`ScrollContentPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter) | Controls | `canContentRenderOutsideBounds`, `canHorizontallyScroll`, `canVerticallyScroll`, `scrollOwner`, `sizesContentToTemplatedParent` |  | yes |
+| [`ScrollPresenter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter) | Controls.Primitives | `background`, `content`, `contentOrientation`, `horizontalAnchorRatio`, `horizontalScrollChainMode`, `horizontalScrollController`, `horizontalScrollMode`, `horizontalScrollRailMode`, +10 more | `state` |  |
+| [`ScrollView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview) | Controls | `content`, `contentOrientation`, `horizontalAnchorRatio`, `horizontalScrollBarVisibility`, `horizontalScrollChainMode`, `horizontalScrollMode`, `horizontalScrollRailMode`, `ignoredInputKinds`, +9 more | `extentHeight`, `extentWidth`, `horizontalOffset`, `state`, `verticalOffset`, `zoomFactor` |  |
+| [`ScrollViewer`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer) | Controls | `bringIntoViewOnFocusChange`, `canContentRenderOutsideBounds`, `horizontalAnchorRatio`, `horizontalScrollBarVisibility`, `horizontalScrollMode`, `horizontalSnapPointsAlignment`, `horizontalSnapPointsType`, `isDeferredScrollingEnabled`, +20 more | `horizontalOffset`, `verticalOffset`, `zoomFactor` | yes |
+| [`SelectorBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar) | Controls | `selectedItem` | `selectedItem` |  |
+| [`SelectorBarItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbaritem) | Controls | `icon`, `text` |  |  |
+| [`SemanticZoom`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom) | Controls | `canChangeViews`, `isZoomedInViewActive`, `isZoomOutButtonEnabled`, `zoomedInView`, `zoomedOutView` |  | yes |
+| [`Setter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.setter) | Microsoft.UI.Xaml | `value` |  |  |
+| [`SineEase`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.sineease) | Media.Animation |  |  |  |
+| [`SkewTransform`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform) | Media | `angleX`, `angleY`, `centerX`, `centerY` |  |  |
+| [`SlideNavigationTransitionInfo`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.slidenavigationtransitioninfo) | Media.Animation | `effect` |  |  |
+| [`Slider`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider) | Controls | `header`, `headerTemplate`, `intermediateValue`, `isDirectionReversed`, `isThumbToolTipEnabled`, `orientation`, `snapsTo`, `stepFrequency`, +3 more | `value` |  |
+| [`SoftwareBitmapSource`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.softwarebitmapsource) | Media.Imaging |  |  |  |
+| [`SolidColorBrush`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.solidcolorbrush) | Media | `color` |  | yes |
+| [`Span`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.span) | Documents | `inlines` |  | yes |
+| [`SplineColorKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinecolorkeyframe) | Media.Animation | `keySpline` |  |  |
+| [`SplineDoubleKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinedoublekeyframe) | Media.Animation | `keySpline` |  |  |
+| [`SplinePointKeyFrame`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinepointkeyframe) | Media.Animation | `keySpline` |  |  |
+| [`SplitButton`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton) | Controls | `command`, `commandParameter`, `flyout` |  | yes |
+| [`SplitCloseThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation) | Media.Animation | `closedLength`, `closedTarget`, `closedTargetName`, `contentTarget`, `contentTargetName`, `contentTranslationDirection`, `contentTranslationOffset`, `offsetFromCenter`, +3 more |  |  |
+| [`SplitMenuFlyoutItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitmenuflyoutitem) | Controls | `subMenuItemStyle`, `subMenuPresenterStyle` |  | yes |
+| [`SplitOpenThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitopenthemeanimation) | Media.Animation | `closedLength`, `closedTarget`, `closedTargetName`, `contentTarget`, `contentTargetName`, `contentTranslationDirection`, `contentTranslationOffset`, `offsetFromCenter`, +3 more |  |  |
+| [`SplitView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview) | Controls | `compactPaneLength`, `content`, `displayMode`, `isPaneOpen`, `lightDismissOverlayMode`, `openPaneLength`, `pane`, `paneBackground`, +1 more | `isPaneOpen` | yes |
+| [`StackLayout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stacklayout) | Controls | `orientation`, `spacing` |  |  |
+| [`StackPanel`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel) | Controls | `areScrollSnapPointsRegular`, `backgroundSizing`, `borderBrush`, `borderThickness`, `cornerRadius`, `orientation`, `padding`, `spacing` |  | yes |
+| [`StandardUICommand`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.standarduicommand) | Input | `kind` |  |  |
+| [`StateTrigger`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.statetrigger) | Microsoft.UI.Xaml | `isActive` |  |  |
+| [`Storyboard`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.storyboard) | Media.Animation |  |  | yes |
+| [`SuppressNavigationTransitionInfo`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.suppressnavigationtransitioninfo) | Media.Animation |  |  |  |
+| [`SvgImageSource`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.svgimagesource) | Media.Imaging | `rasterizePixelHeight`, `rasterizePixelWidth`, `uriSource` |  |  |
+| [`SwapChainPanel`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swapchainpanel) | Controls |  |  | yes |
+| [`SwipeBackThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.swipebackthemeanimation) | Media.Animation | `fromHorizontalOffset`, `fromVerticalOffset`, `targetName` |  |  |
+| [`SwipeControl`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol) | Controls | `bottomItems`, `leftItems`, `rightItems`, `topItems` |  | yes |
+| [`SwipeHintThemeAnimation`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.swipehintthemeanimation) | Media.Animation | `targetName`, `toHorizontalOffset`, `toVerticalOffset` |  |  |
+| [`SwipeItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem) | Controls | `background`, `behaviorOnInvoked`, `command`, `commandParameter`, `foreground`, `iconSource`, `text` |  |  |
+| [`SwipeItems`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitems) | Controls | `mode` |  | yes |
+| [`SymbolIcon`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symbolicon) | Controls | `symbol` |  |  |
+| [`SymbolIconSource`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symboliconsource) | Controls | `symbol` |  |  |
+| [`SystemBackdropElement`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.systembackdropelement) | Controls | `cornerRadius`, `systemBackdrop` |  |  |
+| [`TabView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview) | Controls | `addTabButtonCommand`, `addTabButtonCommandParameter`, `allowDropTabs`, `canDragTabs`, `canReorderTabs`, `canTearOutTabs`, `closeButtonOverlayMode`, `isAddTabButtonVisible`, +10 more | `selectedIndex`, `selectedItem` |  |
+| [`TabViewItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem) | Controls | `header`, `headerTemplate`, `iconSource`, `isClosable` |  | yes |
+| [`TabViewListView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.tabviewlistview) | Controls.Primitives |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
+| [`TeachingTip`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip) | Controls | `actionButtonCommand`, `actionButtonCommandParameter`, `actionButtonContent`, `actionButtonStyle`, `closeButtonCommand`, `closeButtonCommandParameter`, `closeButtonContent`, `closeButtonStyle`, +12 more | `isOpen` | yes |
+| [`TextBlock`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock) | Controls | `characterSpacing`, `fontFamily`, `fontSize`, `fontStretch`, `fontStyle`, `fontWeight`, `foreground`, `horizontalTextAlignment`, +17 more | `isTextTrimmed` | yes |
+| [`TextBox`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox) | Controls | `acceptsReturn`, `characterCasing`, `description`, `desiredCandidateWindowAlignment`, `header`, `headerTemplate`, `horizontalTextAlignment`, `inputScope`, +18 more | `selectionLength`, `selectionStart`, `text` |  |
+| [`TextCommandBarFlyout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textcommandbarflyout) | Controls |  | `open` |  |
+| [`TextHighlighter`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter) | Documents | `background`, `foreground` |  |  |
+| [`ThemeShadow`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.themeshadow) | Media |  |  |  |
+| [`Thumb`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb) | Controls.Primitives |  |  |  |
+| [`TickBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.tickbar) | Controls.Primitives | `fill` |  |  |
+| [`TimePicker`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepicker) | Controls | `clockIdentifier`, `header`, `headerTemplate`, `lightDismissOverlayMode`, `minuteIncrement`, `selectedTime`, `time` | `selectedTime`, `time` | yes |
+| [`TimePickerFlyout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepickerflyout) | Controls | `clockIdentifier`, `minuteIncrement`, `time` | `open` |  |
+| [`TitleBar`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar) | Controls | `autoRefreshDragRegions`, `content`, `iconSource`, `isBackButtonEnabled`, `isBackButtonVisible`, `isPaneToggleButtonVisible`, `leftHeader`, `rightHeader`, +2 more |  |  |
+| [`ToggleButton`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton) | Controls.Primitives | `isChecked`, `isThreeState` | `isChecked` | yes |
+| [`ToggleMenuFlyoutItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglemenuflyoutitem) | Controls | `isChecked` |  | yes |
+| [`ToggleSplitButton`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglesplitbutton) | Controls | `isChecked` | `isChecked` | yes |
+| [`ToggleSwitch`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch) | Controls | `header`, `headerTemplate`, `isOn`, `offContent`, `offContentTemplate`, `onContent`, `onContentTemplate` | `isOn` | yes |
+| [`ToolTip`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip) | Controls | `horizontalOffset`, `isOpen`, `placement`, `placementRect`, `placementTarget`, `verticalOffset` | `isOpen` | yes |
+| [`TransformGroup`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.transformgroup) | Media |  |  | yes |
+| [`TranslateTransform`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.translatetransform) | Media | `x`, `y` |  |  |
+| [`TreeView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview) | Controls | `canDragItems`, `canReorderItems`, `itemContainerStyle`, `itemContainerStyleSelector`, `itemsSource`, `itemTemplate`, `itemTemplateSelector`, `selectedItem`, +2 more | `selectedKey`, `selectedKeys`, `expandedKeys` |  |
+| [`TreeViewItem`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem) | Controls | `collapsedGlyph`, `expandedGlyph`, `glyphBrush`, `glyphOpacity`, `glyphSize`, `hasUnrealizedChildren`, `isExpanded`, `itemsSource` |  | yes |
+| [`TreeViewList`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewlist) | Controls |  | `selectedIndex`, `selectedItem`, `selectedValue` | yes |
+| [`TreeViewNode`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode) | Controls | `content`, `hasUnrealizedChildren`, `isExpanded` |  |  |
+| [`TwoPaneView`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview) | Controls | `minTallModeHeight`, `minWideModeWidth`, `pane1`, `pane1Length`, `pane2`, `pane2Length`, `panePriority`, `tallModeConfiguration`, +1 more | `mode` |  |
+| [`Underline`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.underline) | Documents |  |  | yes |
+| [`UniformGridLayout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout) | Controls | `itemsJustification`, `itemsStretch`, `maximumRowsOrColumns`, `minColumnSpacing`, `minItemHeight`, `minItemWidth`, `minRowSpacing`, `orientation` |  |  |
+| [`UserControl`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.usercontrol) | Controls | `content` |  | yes |
+| [`VariableSizedWrapGrid`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid) | Controls | `horizontalChildrenAlignment`, `itemHeight`, `itemWidth`, `maximumRowsOrColumns`, `orientation`, `verticalChildrenAlignment` |  | yes |
+| [`Viewbox`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox) | Controls | `child`, `stretch`, `stretchDirection` |  | yes |
+| [`VirtualizingLayout`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizinglayout) | Controls |  |  |  |
+| [`VirtualizingStackPanel`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel) | Controls | `areScrollSnapPointsRegular`, `orientation` |  | yes |
+| [`VisualState`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstate) | Microsoft.UI.Xaml | `storyboard` |  | yes |
+| [`VisualStateGroup`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup) | Microsoft.UI.Xaml |  |  | yes |
+| [`VisualTransition`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualtransition) | Microsoft.UI.Xaml | `from`, `generatedDuration`, `generatedEasingFunction`, `storyboard`, `to` |  | yes |
+| [`WebView2`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2) | Controls | `canGoBack`, `canGoForward`, `defaultBackgroundColor`, `source` |  |  |
+| [`WrapGrid`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid) | Controls | `horizontalChildrenAlignment`, `itemHeight`, `itemWidth`, `maximumRowsOrColumns`, `orientation`, `verticalChildrenAlignment` |  | yes |
+| [`XamlUICommand`](https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand) | Input | `accessKey`, `command`, `description`, `iconSource`, `label` |  |  |
+| [`CanvasAnimatedControl`](https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl.htm) | Microsoft.Graphics.Canvas.UI.Xaml | `clearColor`, `customDevice`, `dpiScale`, `forceSoftwareRenderer`, `isFixedTimeStep`, `paused`, `syncInterval`, `targetElapsedTime`, +1 more |  | yes |
+| [`CanvasControl`](https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasControl.htm) | Microsoft.Graphics.Canvas.UI.Xaml | `clearColor`, `customDevice`, `dpiScale`, `forceSoftwareRenderer`, `useSharedDevice` |  | yes |
+| [`CanvasSwapChainPanel`](https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasSwapChainPanel.htm) | Microsoft.Graphics.Canvas.UI.Xaml | `swapChain` |  | yes |
+| [`CanvasVirtualControl`](https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl.htm) | Microsoft.Graphics.Canvas.UI.Xaml | `clearColor`, `customDevice`, `dpiScale`, `forceSoftwareRenderer`, `useSharedDevice` |  | yes |
+
+<!-- controls:end -->
+
 ## Value props (`winui-svelte/components`)
 
 A prop whose WinUI type is a value struct or a collection of them takes an
@@ -1791,7 +2122,7 @@ app can test its drop handling in a real window
 
 The standard Web APIs over WinRT and Win32, installed on demand; the package
 adds no bespoke API for a feature the web already names
-The README's Web APIs table lists every API with its subpath, kind and the
+The Web APIs table in the README lists every API with its subpath, kind and the
 identity it needs
 
 ### Installing

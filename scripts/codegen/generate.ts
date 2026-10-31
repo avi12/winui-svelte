@@ -62,9 +62,9 @@ function updatedPackageJson({ packagePath, wanted }: {
   };
 }
 
-// What the README holds that comes from elsewhere, between a pair of markers
-// each: `<!-- controls:start -->` ... `<!-- controls:end -->`.
-interface ReadmeBlock {
+// What a Markdown document holds that comes from elsewhere, between a pair of
+// markers each: `<!-- controls:start -->` ... `<!-- controls:end -->`.
+interface DocumentBlock {
   name: string;
   body: string;
 }
@@ -81,9 +81,12 @@ function exampleBlock(name: string) {
   };
 }
 
-// README.md with each block's body between its markers.
-function updatedReadme(blocks: ReadmeBlock[]) {
-  const file = path.join(PACKAGE_FOLDER, "README.md");
+// A document of the package with each block's body between its markers.
+function updatedDocument({ fileName, blocks }: {
+  fileName: string;
+  blocks: DocumentBlock[];
+}) {
+  const file = path.join(PACKAGE_FOLDER, fileName);
   const original = readFileSync(file, "utf8");
   let text = normalized(original);
   for (const block of blocks) {
@@ -176,16 +179,22 @@ function generatedFiles(project: string) {
   const extraModels = buildExtraModels(lockPath);
   const output = [model, ...extraModels].flatMap(modelFiles);
   output.push(
-    updatedReadme([
-      {
-        name: "controls",
-        body: emitControlsTable({
-          ...model,
-          classes: [...model.classes, ...extraModels.flatMap(extra => extra.classes)]
-        })
-      },
-      ...quickStartFiles.map(exampleBlock)
-    ])
+    updatedDocument({
+      fileName: "API.md",
+      blocks: [
+        {
+          name: "controls",
+          body: emitControlsTable({
+            ...model,
+            classes: [...model.classes, ...extraModels.flatMap(extra => extra.classes)]
+          })
+        }
+      ]
+    }),
+    updatedDocument({
+      fileName: "README.md",
+      blocks: quickStartFiles.map(exampleBlock)
+    })
   );
   output.push(
     updatedPackageJson({
