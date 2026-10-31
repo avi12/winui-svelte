@@ -305,6 +305,10 @@
       "types": "./dist/web-apis/clipboard.d.ts",
       "default": "./dist/web-apis/clipboard.js"
     },
+    "./web-apis/share": {
+      "types": "./dist/web-apis/share.d.ts",
+      "default": "./dist/web-apis/share.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
