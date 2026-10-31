@@ -528,7 +528,11 @@ describe("keyboard", { skip: !IS_WINDOWS_APP_SDK_RESTORED }, () => {
       },
       kind: "stats"
     });
-    const focusOrder = String(report["log"]).split("|").filter(line => line.startsWith("focus:"));
+    // The window's first activation (on a desktop of its own, the first
+    // focus call is it) reports the control that already has focus again.
+    const focusOrder = String(report["log"])
+      .split("|")
+      .filter((line, i, lines) => line.startsWith("focus:") && line !== lines[i - 1]);
     assert.deepEqual(focusOrder, ["focus:tab-1", "focus:tab-2", "focus:tab-3"]);
     assert.equal(report["enterPresses"], 1);
   });
