@@ -99,16 +99,14 @@ function createElement(name: string) {
   return name === TEMPLATE_TAG ? new TemplateElement() : activeRenderer().createElement(name);
 }
 
-// What web-apis/page put on the global `document` stays reachable through the prototype.
-const NO_LISTENERS = {
-  addEventListener() {},
-  removeEventListener() {}
-};
-
 function createDocument() {
   return {
+    // What web-apis/page put on the global `document` stays reachable through the prototype.
     // eslint-disable-next-line @typescript-eslint/naming-convention -- the literal's prototype
-    __proto__: globalThis.document ?? NO_LISTENERS,
+    __proto__: globalThis.document ?? {
+      addEventListener() {},
+      removeEventListener() {}
+    },
     createElement,
     createTextNode: (data: string) => activeRenderer().createTextNode(data),
     createComment: (data: string) => activeRenderer().createComment(data),
