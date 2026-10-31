@@ -4,7 +4,7 @@ import { addDarkRules } from "./dark-rules.ts";
 import { gridTrackProblem } from "./grid-track-verdicts.ts";
 import { createLayerOrder, declareLayer, layerRank, withinLayer } from "./layers.ts";
 import type { LayerOrder } from "./layers.ts";
-import { BUILD_GROUPS, LAZY_GROUPS } from "./lazy-groups.ts";
+import { buildTimeGroups } from "./lazy-groups.ts";
 import { lowerDeclarations } from "./properties.ts";
 import { addReducedMotionRules } from "./reduced-motion.ts";
 import { expandDeclaration } from "./shorthands.ts";
@@ -960,7 +960,7 @@ function validateRules({ translator, catalogue }: {
   translator: Translator;
   catalogue: ResourceCatalogue;
 }) {
-  const groups = [...LAZY_GROUPS.flatMap(lazy => lazy.groups()), ...BUILD_GROUPS.flatMap(build => build())];
+  const groups = buildTimeGroups();
   const shorthands = new Map(groups.flatMap(group => [...group.shorthands ?? []]));
   for (const rule of translator.rules) {
     const options: LowerOptions = {

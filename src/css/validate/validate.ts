@@ -1,5 +1,6 @@
 import { frameOf, positionAt, ValidationCode } from "./diagnostic.ts";
 import type { ValidationDiagnostic } from "./diagnostic.ts";
+import { elementPropertyDiagnostics } from "./element-properties.ts";
 import { markupDeclarations } from "./markup-declarations.ts";
 import type { Located } from "./markup-declarations.ts";
 import { BlockKind, parseCss } from "#src/css/parse/parser.js";
@@ -263,9 +264,10 @@ function codeOf(message: string) {
   return NO_MEANING.test(message) ? ValidationCode.UNSUPPORTED_PROPERTY : ValidationCode.INVALID_CSS;
 }
 
-function translated({ diagnostic, source }: {
+function translated({ diagnostic, source, code = codeOf(diagnostic.message) }: {
   diagnostic: Diagnostic;
   source: string;
+  code?: ValidationCode;
 }) {
   const start = offsetOf({
     source,
@@ -278,7 +280,7 @@ function translated({ diagnostic, source }: {
     start
   });
   return finding({
-    code: codeOf(diagnostic.message),
+    code,
     severity: diagnostic.severity,
     message: diagnostic.message,
     suggestion: "",
@@ -297,10 +299,35 @@ function translationOf(input: ValidateInput) {
       sheetId: input.sheetId ?? input.filename,
       resources: input.resources,
       compilerOptions: input.compilerOptions
-    })?.diagnostics ?? [];
+    });
   } catch {
+    return null;
+  }
+}
+
+// What the rules set that the element types they style cannot take: the errors WinUI would raise as the window opens.
+function onElements({ translation, source, filename }: {
+  translation: ReturnType<typeof translationOf>;
+  source: string;
+  filename: string;
+}) {
+  const sheet = translation?.sheet ?? null;
+  const isMarkup = sheet !== null && translation !== null && !filename.endsWith(".css");
+  if (!isMarkup) {
     return [];
   }
+
+  return elementPropertyDiagnostics({
+    markup: translation.markup,
+    source,
+    filename,
+    rules: sheet.rules,
+    keyframes: sheet.keyframes
+  }).map(diagnostic => translated({
+    diagnostic,
+    source,
+    code: ValidationCode.UNSUPPORTED_ON_ELEMENT
+  }));
 }
 
 function toDiagnostic({ found, source, filename }: {
@@ -355,7 +382,8 @@ export function validateComponent(input: ValidateInput) {
     }),
     ...isStylesheet ? [] : markupDeclarations(source)
   ];
-  const fromTranslation = translationOf(input).map(diagnostic => translated({
+  const translation = translationOf(input);
+  const fromTranslation = (translation?.diagnostics ?? []).map(diagnostic => translated({
     diagnostic,
     source
   }));
@@ -373,7 +401,12 @@ export function validateComponent(input: ValidateInput) {
     const isRangeExplained = own.some(found => item.start <= found.start && found.end <= item.end);
     return !isDeclarationExplained && !isRangeExplained;
   });
-  return [...own, ...remaining]
+  const unsupportedOnElements = onElements({
+    translation,
+    source,
+    filename
+  });
+  return [...own, ...remaining, ...unsupportedOnElements]
     .sort((first, second) => first.start - second.start)
     .map(found => toDiagnostic({
       found,

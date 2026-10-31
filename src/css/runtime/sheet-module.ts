@@ -272,7 +272,8 @@ function unusedWarnings({ source, filename }: {
  * Translates a component's `<style>` the way the build does (relational
  * selectors resolved, Svelte compiling and scoping the CSS, then the
  * translation); null when the component has none. The one place the
- * validator and the build share, so they cannot disagree.
+ * validator and the build share, so they cannot disagree. `markup` is the
+ * component as the translation read it, relational selectors resolved.
  */
 export function translateComponent(input: Omit<SheetModuleInput, "isHot" | "runtimeModule">) {
   const key = [input.filename, input.sheetId, input.source].join("|");
@@ -306,6 +307,7 @@ function translateUncached(input: Omit<SheetModuleInput, "isHot" | "runtimeModul
   if (hasRelationalErrors) {
     return {
       sheet: null,
+      markup: input.source,
       diagnostics: relational.diagnostics
     };
   }
@@ -332,6 +334,7 @@ function translateUncached(input: Omit<SheetModuleInput, "isHot" | "runtimeModul
   });
   return {
     ...translation,
+    markup: relational.source,
     diagnostics: [...unusedSelectors({
       warnings: unusedWarnings({
         source: input.source,
