@@ -18,6 +18,7 @@ const BOOTSTRAP_PATH = path.join(PACKAGE_ROOT, ".winapp", "bin", process.arch, "
 export const IS_WINDOWS_APP_SDK_RESTORED = existsSync(BOOTSTRAP_PATH);
 const START_MILLISECONDS = 90_000;
 const LAYOUT_MILLISECONDS = 900;
+const STOP_MILLISECONDS = 15_000;
 
 const reportSchema = z.record(z.string(), jsonSchema);
 
@@ -116,6 +117,30 @@ export class ExampleProcess {
   // For a test that failed: end this process, and only it.
   kill() {
     this.child.kill();
+  }
+
+  // Asks the example to close its window and waits for the process to leave on
+  // its own, so what it registered with the shell (a tray icon) is removed by
+  // its exit hooks; only a process that does not leave in time is killed,
+  // which skips them. Resolves with whether it left by itself.
+  async stop() {
+    const hasExited = this.child.exitCode !== null;
+    if (hasExited) {
+      return true;
+    }
+
+    this.send({ cmd: "close" });
+    const timeout = Symbol("timeout");
+    const outcome = await Promise.race([
+      this.exited,
+      new Promise<typeof timeout>(resolve => setTimeout(() => resolve(timeout), STOP_MILLISECONDS))
+    ]);
+    const isLeft = outcome !== timeout;
+    if (!isLeft) {
+      this.kill();
+    }
+
+    return isLeft;
   }
 }
 

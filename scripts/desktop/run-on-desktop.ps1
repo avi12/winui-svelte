@@ -7,8 +7,8 @@
 #   powershell -NoProfile -File run-on-desktop.ps1 `
 #     -CommandLine '"C:\node.exe" test.js' -WorkingDirectory C:\work
 #
-# Not everything lives on such a desktop: the shell's notification area (a
-# tray icon) and a WebView2 browser do not work there.
+# Only the shell's notification area (a tray icon) does not work there: it
+# belongs to the shell on the default desktop.
 param(
   [Parameter(Mandatory)][string]$CommandLine,
   [Parameter(Mandatory)][string]$WorkingDirectory
