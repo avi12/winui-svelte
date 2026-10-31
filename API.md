@@ -1866,6 +1866,41 @@ with `registerPermission({ name, provider })` and calls
   implement; `notify` shares it, so `scenario`, `controls` and `progress` are
   available there too
 
+### Push, badging and launch (`winui-svelte/web-apis/push`, `/badging`, `/launch`)
+
+Push and badges need an app with package identity (or a registered
+AppUserModelId); an unpackaged process gets `NotSupportedError` rather than a
+silent failure
+
+- `installPush({ remoteId, backend })` defines `PushManager`,
+  `PushSubscription`, `PushSubscriptionOptions`, `PushMessageData`, `PushEvent`
+  and `navigator.pushManager` over `PushNotificationManager`
+  `subscribe({ userVisibleOnly, applicationServerKey })` opens a WNS channel
+  and the subscription's `endpoint` is the channel URI; `getSubscription()`,
+  `unsubscribe()` (closes the channel), `permissionState()` and `toJSON()` are
+  the spec's; `getKey()` is `null`
+  The `push` permission is `granted` when Windows supports push for the
+  process, `denied` otherwise; a message fires `push` on
+  `navigator.pushManager` with `event.data` (`text()`, `json()`, `bytes()`)
+  WinUI-only: `remoteId`, the Azure app id WNS knows the app by (here or at
+  install; without it `subscribe` rejects with `NotSupportedError`)
+- `installBadging({ backend })` defines `navigator.setAppBadge(count)` (a
+  count, no argument for the attention glyph, zero clears),
+  `clearAppBadge()` over `BadgeNotificationManager`; a non-integer or negative
+  count is a `TypeError`
+  WinUI-only: `navigator.setAppBadgeGlyph(glyph)` with a `BadgeGlyph`
+  (`alert`, `available`, `away`, `busy`, `newMessage` and so on)
+  The unpackaged fallback (an overlay icon through `ITaskbarList3`) is not
+  built; without identity Windows refuses and the call rejects
+- `installLaunch({ initialArguments })` defines `launchQueue` (a `LaunchQueue`) with `setConsumer`
+  The start's command line is the first launch; each later copy's is handed
+  over with `launchQueue.enqueueActivation(activation)` (WinUI-only), which
+  takes what `ensureSingleInstance`'s `onRedirect` receives
+  `LaunchParams.targetURL` is the first `scheme:` argument, `files` are the
+  existing paths, as handles with `name`, `getFile()` and the WinUI-only `path`
+  Launches wait for the consumer; registering the protocol or file type with
+  Windows is the installer's job
+
 ## Forms (`winui-svelte/forms`)
 
 Opt-in: nothing in the core imports it, so an app that does not use it does
