@@ -40,14 +40,14 @@ export const RESULTS_FOLDER = path.join(ISOLATED_FOLDER, "results");
 const VM_OPTIONS_FILE = path.join(ISOLATED_FOLDER, "vmoptions.txt");
 const SVELTE_PLUGIN_FOLDER = "svelte";
 const DEPENDENCIES_FOLDER = "node_modules";
-const KEPT_IN_SHADOW = [".idea", DEPENDENCIES_FOLDER];
-// The generated WinUI bindings are a link out of node_modules to a folder
-// of the repo, which the IDE does not look inside, and linked in as a folder
-// of their own they would be inspected too (some three thousand findings in
-// code that is not ours). So the shadow holds a real copy of their
-// declarations, 1 MB of the 100, as the dependency they are.
-const BINDINGS_SCOPE = "@winapp";
-const BINDINGS_PACKAGE = "bindings";
+const BUILT_FOLDER = "dist";
+const KEPT_IN_SHADOW = [".idea", DEPENDENCIES_FOLDER, BUILT_FOLDER];
+// The generated WinUI bindings are reached through #winui/*, which package.json
+// maps to dist/bindings, a folder git ignores and so the copy lacks. Copied in
+// whole they would be inspected too (some three thousand findings in code that
+// is not ours), so the shadow holds a real copy of their declarations only, 1
+// MB of the 100, as the dependency they are.
+const BUILT_BINDINGS = path.join(BUILT_FOLDER, "bindings");
 const DECLARATION_SUFFIX = ".d.ts";
 const PACKAGE_MANIFEST = "package.json";
 const IDEA_FOLDER = ".idea";
@@ -211,17 +211,17 @@ function linkDependencies() {
   for (const entry of readdirSync(source, { withFileTypes: true })) {
     const link = path.join(target, entry.name);
     const isLinkable = entry.isDirectory() || entry.isSymbolicLink();
-    const isLinkNeeded = isLinkable && entry.name !== BINDINGS_SCOPE && !existsSync(link);
+    const isLinkNeeded = isLinkable && !existsSync(link);
     if (isLinkNeeded) {
       symlinkSync(realpathSync(path.join(source, entry.name)), link, "junction");
     }
   }
 
-  const bindings = path.join(source, BINDINGS_SCOPE, BINDINGS_PACKAGE);
+  const bindings = path.join(REPO_ROOT, BUILT_BINDINGS);
   if (existsSync(bindings)) {
     copyBindingDeclarations({
-      source: realpathSync(bindings),
-      target: path.join(target, BINDINGS_SCOPE, BINDINGS_PACKAGE)
+      source: bindings,
+      target: path.join(SHADOW_FOLDER, BUILT_BINDINGS)
     });
   }
 }
