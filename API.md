@@ -229,6 +229,11 @@ function enableElementAnimation(options?: {
 
 What it does:
 
+- An animation it returns has a `PlayState` (`idle`, `running`, `paused`,
+  `finished`), and can be paused, resumed, reversed, finished, cancelled and
+  seeked, with the web's `delay`, `endDelay`, `iterations`, `direction`,
+  `easing` and `fill`; `winui-svelte/web-apis/animations` wraps it in the web's
+  `Animation`
 - A keyframe is read with the CSS value parsers into the control's `Opacity`,
   `Translation`, `Scale`, `Rotation` (`opacity`, `translate`, `scale`,
   `rotate`, `transform` with those functions, `transform-origin` as fractions
@@ -1873,13 +1878,16 @@ that `usePageWindow(handle)` is given (`bind:handle` on `<Window>`)
   `fullscreenchange` and `fullscreenerror`; the whole window goes fullscreen
   (`FullScreenPresenter`), whichever element asked
 - `document.title` reads and sets the window's title
-- Extras (WinUI only): `document.windowState` (`normal`, `minimized`,
-  `maximized`, `fullscreen`, `compact-overlay`) and
+- Extras (WinUI only): `document.windowState` (a `WindowState`: `normal`,
+  `minimized`, `maximized`, `fullscreen` or `compact-overlay`) and
   `document.requestWindowState(state)`, which reaches the compact overlay
   (Windows' picture in picture); the types merge into `Document` where this
   module is imported
 - An app that installs this before its first component mounts keeps it: the DOM
   shim puts the `document` it makes in front of the one there is
+- `installPage({ backend })` takes a stand-in window for a test; the real one,
+  `WindowPageBackend`, follows a `PageWindow` (the part of a `WindowHandle` it
+  uses)
 
 #### Timing (`winui-svelte/web-apis/timing`)
 
@@ -1897,15 +1905,18 @@ that engine's own on the same timer
 `MutationObserver` over the tree's elements (what `bind:this` and `@attach`
 give) or a control; entries arrive after the current event, on the dispatcher
 
-- `ResizeObserver`: the control's `SizeChanged`; `content-box` and `border-box`
-  are both `ActualWidth` by `ActualHeight`, `device-pixel-content-box` uses the
-  rasterization scale; extra: `entry.rasterizationScale`
+- `ResizeObserver`: the control's `SizeChanged`; the `box` option
+  (`ResizeObserverBox`) `content-box` and `border-box` are both `ActualWidth` by
+  `ActualHeight`, `device-pixel-content-box` uses the rasterization scale; the
+  `ResizeObserverEntry` has the standard sizes, and the extra
+  `rasterizationScale`
 - `IntersectionObserver`: against the window, the effective viewport of the
   scrolling ancestors (`EffectiveViewportChanged`) or a `root` element, with
-  `rootMargin` (px and %) and `threshold`
+  `rootMargin` (px and %) and `threshold`, reporting `IntersectionObserverEntry`
 - `MutationObserver`: children, attributes (with `attributeFilter` and
-  `attributeOldValue`) and text of the renderer's tree, with `subtree`; the tree
-  is hooked only while an observer watches
+  `attributeOldValue`) and text of the renderer's tree, with `subtree`; a record's
+  `type` is a `MutationRecordType` (`childList`, `attributes`,
+  `characterData`); the tree is hooked only while an observer watches
 - Not covered: `IntersectionObserver` `delay` and `trackVisibility`
 
 #### Animations (`winui-svelte/web-apis/animations`)

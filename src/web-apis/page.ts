@@ -5,13 +5,7 @@ import { launchUri } from "#src/data-transfer/launcher.js";
 import { ElementNode } from "#src/renderer/tree/dom.js";
 import { flush } from "#src/scheduling.js";
 import type { WindowHandle } from "#src/window/window-handle.js";
-import {
-  AppWindowPresenterKind,
-  OverlappedPresenter,
-  OverlappedPresenterState,
-  projectAs,
-  WindowActivationState
-} from "#src/winui.js";
+import { AppWindowPresenterKind, OverlappedPresenter, projectAs, WindowActivationState } from "#src/winui.js";
 
 /** The states a window can be in: the web's fullscreen and Picture-in-Picture, and the overlapped window's. */
 export const WindowState = {
@@ -81,6 +75,9 @@ declare global {
   }
 }
 
+// Microsoft.UI.Windowing.OverlappedPresenterState: Maximized 0, Minimized 1, Restored 2.
+const OVERLAPPED_MAXIMIZED = 0;
+const OVERLAPPED_MINIMIZED = 1;
 const VISIBLE = "visible";
 const HIDDEN = "hidden";
 const EVENT_VISIBILITY = "visibilitychange";
@@ -136,12 +133,12 @@ function stateOf(handle: PageWindow) {
   }
 
   const overlapped = projectAs(presenter, OverlappedPresenter);
-  const isMinimized = overlapped.state === OverlappedPresenterState.Minimized;
+  const isMinimized = overlapped.state === OVERLAPPED_MINIMIZED;
   if (isMinimized) {
     return WindowState.MINIMIZED;
   }
 
-  const isMaximized = overlapped.state === OverlappedPresenterState.Maximized;
+  const isMaximized = overlapped.state === OVERLAPPED_MAXIMIZED;
   return isMaximized ? WindowState.MAXIMIZED : WindowState.NORMAL;
 }
 

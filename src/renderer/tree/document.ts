@@ -106,15 +106,15 @@ const NO_LISTENERS = {
 };
 
 function createDocument() {
-  const document = {
+  return {
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- the literal's prototype
+    __proto__: globalThis.document ?? NO_LISTENERS,
     createElement,
     createTextNode: (data: string) => activeRenderer().createTextNode(data),
     createComment: (data: string) => activeRenderer().createComment(data),
     createDocumentFragment: () => activeRenderer().createFragment(),
     importNode: (node: { cloneNode(isDeep: boolean): unknown }, isDeep: boolean) => node.cloneNode(isDeep)
   };
-  Object.setPrototypeOf(document, globalThis.document ?? NO_LISTENERS);
-  return document;
 }
 
 let isInstalled = false;
