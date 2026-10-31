@@ -35,7 +35,10 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onclosed={exitApplication}
+  onclosed={() => {
+    host.report({ kind: "closed" });
+    exitApplication();
+  }}
   title="Web example"
   width={WINDOW_WIDTH}
 >
