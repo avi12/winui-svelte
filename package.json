@@ -309,6 +309,10 @@
       "types": "./dist/web-apis/speech.d.ts",
       "default": "./dist/web-apis/speech.js"
     },
+    "./web-apis/media-devices": {
+      "types": "./dist/web-apis/media-devices.d.ts",
+      "default": "./dist/web-apis/media-devices.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
