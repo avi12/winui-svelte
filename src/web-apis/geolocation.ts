@@ -1,9 +1,8 @@
 import { defineNavigatorProperty, defineProperty } from "./install.ts";
-import { announcePermissionChange, PermissionStateName, registerPermission } from "./permissions.ts";
+import { announcePermissionChange, PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 import { dateOfWindowsTime } from "#src/devices/property-value.js";
 import { Geolocator } from "#winui/windows/devices/geolocation/Geolocator";
 
-const PERMISSION_NAME = "geolocation";
 const HIGH_ACCURACY_METERS = 10;
 const ACCESS_DENIED_PATTERN = /0x80070005|access is denied/iu;
 const TIMEOUT_PATTERN = /0x800705b4|timed out|timeout/iu;
@@ -592,7 +591,7 @@ export function installGeolocation(options: GeolocationInstallOptions = {}) {
       access = latest;
 
       if (hasChanged) {
-        announcePermissionChange(PERMISSION_NAME);
+        announcePermissionChange(PermissionName.GEOLOCATION);
       }
     }
   });
@@ -618,7 +617,7 @@ export function installGeolocation(options: GeolocationInstallOptions = {}) {
       value: GeolocationPositionError
     }),
     registerPermission({
-      name: PERMISSION_NAME,
+      name: PermissionName.GEOLOCATION,
       provider: {
         state() {
           return PERMISSION_BY_ACCESS.get(access) ?? PermissionStateName.PROMPT;

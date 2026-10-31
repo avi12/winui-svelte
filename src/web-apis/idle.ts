@@ -1,10 +1,9 @@
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineProperty } from "./install.ts";
-import { announcePermissionChange, PermissionStateName, registerPermission } from "./permissions.ts";
+import { announcePermissionChange, PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 import { createIdleReader } from "#src/devices/native.js";
 
-const PERMISSION_NAME = "idle-detection";
 const MINIMUM_THRESHOLD = 60_000;
 const POLL_MILLISECONDS = 1000;
 
@@ -131,7 +130,7 @@ export class IdleDetector extends HandlerEventTarget {
     const isUndecided = known.permission === PermissionStateName.PROMPT;
     if (isUndecided) {
       known.permission = known.answer;
-      announcePermissionChange(PERMISSION_NAME);
+      announcePermissionChange(PermissionName.IDLE_DETECTION);
     }
 
     return known.permission === PermissionStateName.GRANTED ? "granted" : "denied";
@@ -217,7 +216,7 @@ export function installIdleDetector(options: IdleInstallOptions = {}) {
     value: IdleDetector
   });
   const unregister = registerPermission({
-    name: PERMISSION_NAME,
+    name: PermissionName.IDLE_DETECTION,
     provider: {
       state: () => installed.permission
     }

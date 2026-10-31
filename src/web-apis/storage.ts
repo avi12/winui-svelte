@@ -3,11 +3,10 @@ import { appDataFolder, AppDataLocation } from "./app-data-folder.ts";
 import type { FileSystemDirectoryHandle } from "./file-system.ts";
 import { directoryHandleAt } from "./file-system.ts";
 import { defineNavigatorProperty } from "./install.ts";
-import { PermissionStateName, registerPermission } from "./permissions.ts";
+import { PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 import { mkdirSync, readdirSync, statfsSync, statSync } from "node:fs";
 import path from "node:path";
 
-const PERMISSION_NAME = "persistent-storage";
 const ORIGIN_FOLDER = "origin-private-file-system";
 
 /** What `navigator.storage.estimate()` resolves to. */
@@ -140,7 +139,7 @@ export function installStorage(options: StorageInstallOptions = {}) {
       value: manager
     }),
     registerPermission({
-      name: PERMISSION_NAME,
+      name: PermissionName.PERSISTENT_STORAGE,
       provider: {
         state: () => PermissionStateName.GRANTED
       }

@@ -2,9 +2,8 @@ import { DomErrorName, domException } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { DisplayRequest } from "./hardware-bindings.ts";
 import { defineNavigatorProperty, defineProperty } from "./install.ts";
-import { PermissionStateName, registerPermission } from "./permissions.ts";
+import { PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 
-const PERMISSION_NAME = "screen-wake-lock";
 const SCREEN_TYPE = "screen";
 
 /** What keeps the display on: `acquire` starts one hold and returns how to end it. */
@@ -206,7 +205,7 @@ export function installWakeLock(options: WakeLockInstallOptions = {}) {
     value: WakeLockSentinel
   });
   const unregister = registerPermission({
-    name: PERMISSION_NAME,
+    name: PermissionName.SCREEN_WAKE_LOCK,
     provider: {
       state: () => PermissionStateName.GRANTED
     }

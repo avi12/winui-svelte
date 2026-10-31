@@ -14,7 +14,7 @@ import type { DeviceChooser, DeviceGrants } from "./device-grants.ts";
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineNavigatorProperty, defineProperty } from "./install.ts";
-import { announcePermissionChange, PermissionStateName, registerPermission } from "./permissions.ts";
+import { announcePermissionChange, PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 import type { BluetoothAdvertisement } from "#src/devices/bluetooth.js";
 import { uuidOf } from "#src/devices/bluetooth.js";
 
@@ -30,7 +30,6 @@ export type {
 export type { DeviceChooser } from "./device-grants.ts";
 export { BluetoothFailure, BluetoothFailureKind } from "./bluetooth-backend.ts";
 
-const PERMISSION_NAME = "bluetooth";
 const DEFAULT_SCAN_MILLISECONDS = 5000;
 const FULL_MASK = 0xFF;
 const BASE_UUID_SUFFIX = "-0000-1000-8000-00805f9b34fb";
@@ -899,7 +898,7 @@ export class BluetoothDevice extends HandlerEventTarget {
     this.gatt.disconnect();
     this.known.grants.forget(this.id);
     this.known.devices.delete(this.id);
-    announcePermissionChange(PERMISSION_NAME);
+    announcePermissionChange(PermissionName.BLUETOOTH);
   }
 
   get [Symbol.toStringTag]() {
@@ -1022,7 +1021,7 @@ export class Bluetooth {
     }
 
     known.grants.grant(record);
-    announcePermissionChange(PERMISSION_NAME);
+    announcePermissionChange(PermissionName.BLUETOOTH);
     return deviceOf({
       known,
       record
@@ -1061,7 +1060,7 @@ export function installBluetooth(options: BluetoothInstallOptions = {}) {
     value: BluetoothUUID
   });
   const unregister = registerPermission({
-    name: PERMISSION_NAME,
+    name: PermissionName.BLUETOOTH,
     provider: {
       state: () => installed.grants.hasAny ? PermissionStateName.GRANTED : PermissionStateName.PROMPT
     }

@@ -6,6 +6,7 @@ export type { PermissionProvider } from "./permissions.ts";
 export {
   announcePermissionChange,
   installPermissions,
+  PermissionName,
   Permissions,
   PermissionStateName,
   PermissionStatus,

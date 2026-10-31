@@ -1,7 +1,7 @@
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineNavigatorProperty, defineProperty } from "./install.ts";
-import { PermissionStateName, registerPermission } from "./permissions.ts";
+import { PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 import type { ClipboardContent, ClipboardReadOptions } from "#src/data-transfer/clipboard.js";
 import { clipboard } from "#src/data-transfer/clipboard.js";
 import { DataTransfer, FormatType } from "#src/data-transfer/data-transfer.js";
@@ -10,8 +10,6 @@ import { snapshotOf } from "#src/data-transfer/package-io.js";
 import { sourceOf } from "#src/data-transfer/winrt-package.js";
 import { Clipboard as WindowsClipboard } from "#winui/windows/application-model/data-transfer/Clipboard";
 
-const READ_PERMISSION = "clipboard-read";
-const WRITE_PERMISSION = "clipboard-write";
 const CHANGE_EVENT = "clipboardchange";
 const IMAGE_PREFIX = "image/";
 const IMAGE_NAME = "image.png";
@@ -332,7 +330,7 @@ export function installClipboard(options: ClipboardInstallOptions = {}) {
       name: "ClipboardItem",
       value: ClipboardItem
     }),
-    ...[READ_PERMISSION, WRITE_PERMISSION].map(name => registerPermission({
+    ...[PermissionName.CLIPBOARD_READ, PermissionName.CLIPBOARD_WRITE].map(name => registerPermission({
       name,
       provider: {
         state: () => PermissionStateName.GRANTED

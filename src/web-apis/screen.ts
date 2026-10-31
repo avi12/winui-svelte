@@ -1,7 +1,7 @@
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineProperty } from "./install.ts";
-import { PermissionStateName, registerPermission } from "./permissions.ts";
+import { PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 import { listenToSource } from "./source-events.ts";
 import type { Delivery } from "#src/devices/delivery.js";
 import type { DisplayAreaInfo, DisplayMonitorInfo, DisplaySource } from "#src/devices/display.js";
@@ -10,7 +10,6 @@ import { bind, numberOf } from "#src/win32-calls.js";
 
 const BASE_DPI = 96;
 const COLOR_DEPTH = 24;
-const PERMISSION_NAME = "window-management";
 
 /** The `type` of a `ScreenOrientation`. */
 export const OrientationType = {
@@ -462,7 +461,7 @@ export function installScreen(options: ScreenInstallOptions = {}) {
       value: ScreenDetailed
     }),
     registerPermission({
-      name: PERMISSION_NAME,
+      name: PermissionName.WINDOW_MANAGEMENT,
       provider: {
         state: () => PermissionStateName.GRANTED
       }

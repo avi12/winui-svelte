@@ -1812,7 +1812,7 @@ adds no bespoke API for a feature the web already names
 ### Permissions
 
 `installPermissions()` defines `navigator.permissions`; `Permissions`,
-`PermissionStatus` (an `EventTarget` with `change`) and `PermissionStateName`
+`PermissionStatus` (an `EventTarget` with `change`) and `PermissionName`, `PermissionStateName`
 (`granted`, `denied`, `prompt`) are the spec's; an API registers its permission
 with `registerPermission({ name, provider })` and calls
 `announcePermissionChange(name)` when it moves, so open statuses fire `change`

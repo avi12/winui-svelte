@@ -1,7 +1,7 @@
 import { DomErrorName } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineProperty } from "./install.ts";
-import { PermissionStateName, registerPermission } from "./permissions.ts";
+import { PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 import { listenToSource } from "./source-events.ts";
 import type { Delivery } from "#src/devices/delivery.js";
 import type { SensorLike } from "#src/devices/sensors.js";
@@ -691,10 +691,10 @@ const CLASSES = [
 ] as const;
 
 const PERMISSIONS = [
-  [SensorKind.ACCELEROMETER, "accelerometer"],
-  [SensorKind.GYROSCOPE, "gyroscope"],
-  [SensorKind.MAGNETOMETER, "magnetometer"],
-  [SensorKind.AMBIENT_LIGHT, "ambient-light-sensor"]
+  [SensorKind.ACCELEROMETER, PermissionName.ACCELEROMETER],
+  [SensorKind.GYROSCOPE, PermissionName.GYROSCOPE],
+  [SensorKind.MAGNETOMETER, PermissionName.MAGNETOMETER],
+  [SensorKind.AMBIENT_LIGHT, PermissionName.AMBIENT_LIGHT_SENSOR]
 ] as const;
 
 /**

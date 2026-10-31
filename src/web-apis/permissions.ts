@@ -10,6 +10,28 @@ export const PermissionStateName = {
 /** One of the values of `PermissionStateName`. */
 export type PermissionStateName = (typeof PermissionStateName)[keyof typeof PermissionStateName];
 
+/** The permissions the Web APIs register with the Permissions API. */
+export const PermissionName = {
+  ACCELEROMETER: "accelerometer",
+  AMBIENT_LIGHT_SENSOR: "ambient-light-sensor",
+  BLUETOOTH: "bluetooth",
+  CAMERA: "camera",
+  CLIPBOARD_READ: "clipboard-read",
+  CLIPBOARD_WRITE: "clipboard-write",
+  GEOLOCATION: "geolocation",
+  GYROSCOPE: "gyroscope",
+  IDLE_DETECTION: "idle-detection",
+  MAGNETOMETER: "magnetometer",
+  MICROPHONE: "microphone",
+  NOTIFICATIONS: "notifications",
+  PERSISTENT_STORAGE: "persistent-storage",
+  PUSH: "push",
+  SCREEN_WAKE_LOCK: "screen-wake-lock",
+  WINDOW_MANAGEMENT: "window-management"
+} as const;
+/** One of the values of `PermissionName`. */
+export type PermissionName = (typeof PermissionName)[keyof typeof PermissionName];
+
 /** What answers `navigator.permissions.query({ name })` for one permission. */
 export interface PermissionProvider {
   state(): PermissionStateName;
@@ -56,7 +78,7 @@ export class PermissionStatus extends HandlerEventTarget {
  * @returns The function that unregisters it.
  */
 export function registerPermission({ name, provider }: {
-  name: string;
+  name: PermissionName;
   provider: PermissionProvider;
 }) {
   providers.set(name, provider);
@@ -71,7 +93,7 @@ export function registerPermission({ name, provider }: {
  *
  * @param name - The permission's name.
  */
-export function announcePermissionChange(name: string) {
+export function announcePermissionChange(name: PermissionName) {
   const provider = providers.get(name);
   const statuses = liveStatuses.get(name);
   const isUnknown = provider === undefined || statuses === undefined;

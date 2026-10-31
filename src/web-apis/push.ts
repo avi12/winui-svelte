@@ -1,13 +1,12 @@
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineNavigatorProperty, defineProperty } from "./install.ts";
-import { PermissionStateName, registerPermission } from "./permissions.ts";
+import { PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 import {
   PushNotificationChannelStatus
 } from "#winui/microsoft/windows/push-notifications/PushNotificationChannelStatus";
 import { PushNotificationManager } from "#winui/microsoft/windows/push-notifications/PushNotificationManager";
 
-const PERMISSION_NAME = "push";
 const WINDOWS_EPOCH_OFFSET_MILLISECONDS = 11_644_473_600_000;
 const TICKS_PER_MILLISECOND = 10_000;
 const HEX_RADIX = 16;
@@ -405,7 +404,7 @@ export function installPush(options: PushInstallOptions = {}) {
       value: new PushManager()
     }),
     registerPermission({
-      name: PERMISSION_NAME,
+      name: PermissionName.PUSH,
       provider: {
         state: () => stateOf(installed)
       }

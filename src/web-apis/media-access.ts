@@ -1,11 +1,11 @@
-import { PermissionStateName } from "./permissions.ts";
+import { PermissionName, PermissionStateName } from "./permissions.ts";
 import { DeviceClass } from "#src/devices/bindings.js";
 import { DeviceAccessStatus, getDeviceAccess } from "#src/devices/device-access.js";
 
 /** The two capture permissions of the Permissions API that Windows gates with privacy switches. */
 export const MediaPermission = {
-  CAMERA: "camera",
-  MICROPHONE: "microphone"
+  CAMERA: PermissionName.CAMERA,
+  MICROPHONE: PermissionName.MICROPHONE
 } as const;
 /** One of the values of `MediaPermission`. */
 export type MediaPermission = (typeof MediaPermission)[keyof typeof MediaPermission];

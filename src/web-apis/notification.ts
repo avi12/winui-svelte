@@ -1,7 +1,7 @@
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineProperty } from "./install.ts";
-import { announcePermissionChange, PermissionStateName, registerPermission } from "./permissions.ts";
+import { announcePermissionChange, PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 import { windowsNotificationSource } from "#src/app/notification-source.js";
 import { notifierState, registerNotifier, showNotification } from "#src/app/notify.js";
 import type {
@@ -19,7 +19,6 @@ import { joinAppUserModel } from "#src/window/native.js";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-const PERMISSION_NAME = "notifications";
 const TOKEN_ARGUMENT = "webNotification";
 const ACTION_ARGUMENT = "action";
 const DEFAULT_GROUP = "web";
@@ -243,7 +242,7 @@ async function resolvePermission(known: NotificationContext) {
     }
   }
 
-  announcePermissionChange(PERMISSION_NAME);
+  announcePermissionChange(PermissionName.NOTIFICATIONS);
   return known.permission;
 }
 
@@ -696,7 +695,7 @@ export function installNotification(options: NotificationInstallOptions = {}) {
     value: Notification
   });
   const unregister = registerPermission({
-    name: PERMISSION_NAME,
+    name: PermissionName.NOTIFICATIONS,
     provider: {
       state() {
         const permission = currentPermission(installed);
