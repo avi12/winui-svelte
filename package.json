@@ -301,6 +301,10 @@
       "types": "./dist/web-apis/notification.d.ts",
       "default": "./dist/web-apis/notification.js"
     },
+    "./web-apis/geolocation": {
+      "types": "./dist/web-apis/geolocation.d.ts",
+      "default": "./dist/web-apis/geolocation.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
