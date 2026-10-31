@@ -11,7 +11,7 @@ No browser engine is involved; there is no DOM
 ## Using it, at a glance
 
 Everything an app needs, in the order a new project hits it
-Each point links to the section with the detail, and [API.md](https://unpkg.com/winui-svelte/API.md) has every
+Each point links to the section with the detail, and [API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) has every
 signature
 
 - **Setup:** `pnpm add winui-svelte`, one `winuiSvelte()` plugin in
@@ -104,9 +104,9 @@ Built for [Edge+](https://github.com/avi12/edge-plus), whose settings panel is
 written with it
 
 > **Status: pre-release.** What is described here is what the repository's
-> tests and the [hello example](examples/hello) run
+> tests and the [hello example](https://github.com/avi12/winui-svelte/tree/main/examples/hello) run
 > See
-> [CHANGELOG.md](CHANGELOG.md)
+> [CHANGELOG.md](https://github.com/avi12/winui-svelte/blob/main/CHANGELOG.md)
 
 ## Requirements
 
@@ -129,7 +129,7 @@ with it
 
 ## Quick start
 
-The files below are the [hello example](examples/hello), run for real by
+The files below are the [hello example](https://github.com/avi12/winui-svelte/tree/main/examples/hello), run for real by
 `examples/hello/run.ps1` (it flips the switch through UI Automation and edits
 `App.svelte` to check hot reload)
 
@@ -194,7 +194,7 @@ The
 window's modules come from the host's dev server through the module runner, and
 a timer takes the server's hot updates in (the thread's libuv turns between
 WinUI's messages, so `fs`, sockets, `fetch`, `WebSocket` and worker messages
-all complete there too; see [Timers and I/O](API.md#timers-and-io)):
+all complete there too; see [Timers and I/O](https://github.com/avi12/winui-svelte/blob/main/API.md#timers-and-io)):
 
 <!-- hello/window.ts:start -->
 
@@ -301,7 +301,7 @@ scripts and captures)
 State changes need no `flushSync`: the window's loop hands each WinUI message
 to its handler with no JavaScript under it, so Node drains microtasks after
 each one and Svelte's own flush runs
-([experiment](examples/scheduling/README.md))
+([experiment](https://github.com/avi12/winui-svelte/blob/main/examples/scheduling/README.md))
 
 ## Web APIs
 
@@ -407,7 +407,7 @@ Every feature falls in one of three kinds, decided in this order
 
 Every row is built and tested; the timers (`setTimeout`, `setInterval`,
 `setImmediate`) and `fetch` need no install, because the window thread has them
-from `runWindow` (see [Timers and I/O](API.md#timers-and-io))
+from `runWindow` (see [Timers and I/O](https://github.com/avi12/winui-svelte/blob/main/API.md#timers-and-io))
 An "As is" class needs no row: every bound WinRT class is one import away
 
 ## Host integration
@@ -418,7 +418,7 @@ sends and receives is the same everywhere: JSON values, one per line on stdio,
 or the same objects through a `MessagePort`
 State the host owns reaches the
 window as one deeply reactive object, and the window answers with actions; see
-[`src/state/README.md`](src/state/README.md) for the wire protocol, `hostState`
+[`src/state/README.md`](https://github.com/avi12/winui-svelte/blob/main/src/state/README.md) for the wire protocol, `hostState`
 and `send`
 
 **Tauri** (what [Edge+](https://github.com/avi12/edge-plus) does)
@@ -896,7 +896,7 @@ control whose items are controls takes them as Svelte's own blocks: `{#each}`
 in the children of `ComboBox`, `FlipView` and `ListBox`, or in the snippet of
 `NavigationView` (`menuItems`), `TabView` (`tabItems`) and `RadioButtons`
 (`items`)
-[API.md](API.md) has the details
+[API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) has the details
 
 Pages are Svelte components: `Navigator` shows one in a content control and
 keeps the back and forward history (`Frame` needs a page type XAML
@@ -925,7 +925,7 @@ mounted, with its state, while the user is elsewhere:
 ```
 
 `handle.goBack()`, `goForward()`, `canGoBack`, `canGoForward` and `current`
-complete it; [API.md](API.md) has the details, and `examples/navigation` ties
+complete it; [API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) has the details, and `examples/navigation` ties
 it to a `NavigationView`
 
 `WebView2` is a component like the rest
@@ -943,13 +943,13 @@ through `painter.drawImage`
 An app that does not import it does not bundle it
 `winui-svelte/win2d/context-2d` (also opt-in) makes a canvas of it that a library written for an HTML canvas draws on:
 `createCanvas2D().getContext("2d")`, or `<Canvas2D bind:canvas />`, give a `CanvasRenderingContext2D` over Win2D
-[API.md](API.md) has the details, what is supported and what is not, and `examples/win2d` the example
+[API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) has the details, what is supported and what is not, and `examples/win2d` the example
 
 The raw elements the components are made of work too:
 `<stack-panel>`, `<text-block>`, `grid.column={1}` for an attached property; they need
 `registerControls(...)` with the classes they name (a component registers only
 its own class, when it is made, so an app bundles only the bindings it uses)
-Components are the supported way; see [API.md](API.md) for the raw forms and
+Components are the supported way; see [API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) for the raw forms and
 the renderer's functions
 
 ## Forms
@@ -1038,7 +1038,7 @@ state as runes
 SVG is an `SvgImageSource` in an `Image`, `ImageBrush` or `ImageIcon` (static
 SVG: no scripts, no animation, limited CSS), or a path string in `PathIcon`;
 `BitmapIcon` with `showAsMonochrome` takes its colour from `foreground`
-[API.md](API.md#media-winui-sveltemedia) has the formats WinUI decodes and the
+[API.md](https://github.com/avi12/winui-svelte/blob/main/API.md#media-winui-sveltemedia) has the formats WinUI decodes and the
 details, and `examples/media-elements` the example
 
 ## Windows devices
@@ -1077,7 +1077,7 @@ Every list is a keyed collection, every value a getter that re-runs when
 Windows says it changed, and every watcher stops with its component
 What does not work unpackaged (`MouseDevice`, the print dialog of
 `PrintManager`, geolocation) and the failure modes are in
-[`API.md`](API.md#windows-devices-winui-sveltedevices)
+[`API.md`](https://github.com/avi12/winui-svelte/blob/main/API.md#windows-devices-winui-sveltedevices)
 
 ## Styling with CSS
 
@@ -1087,7 +1087,7 @@ Layout
 properties map onto WinUI's panels
 A declaration with no WinUI meaning is a
 build error with its file and line; nothing is silently ignored
-[`src/css/API.md`](src/css/API.md) is the interface; what maps:
+[`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md) is the interface; what maps:
 
 | CSS | WinUI |
 | `margin`, `padding`, `border-width`, `border-color`, `border-radius` | `Margin`, `Padding`, `BorderThickness`, `BorderBrush`, `CornerRadius` |
@@ -1116,7 +1116,7 @@ unitless numbers where a property takes them; `padding: 8px`, `gap: 8px`,
 Any other unit (`rem`, `em`, `pt`, `vw`, `cqw`, a percentage length and so on)
 is a compile error from both the compiler and stylelint, with the message
 saying what to write
-The table of every unit is in [`src/css/API.md`](src/css/API.md#length-units)
+The table of every unit is in [`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md#length-units)
 
 ### Scoping
 
@@ -1205,7 +1205,7 @@ A key of `resources` is a custom property's name, as in a stylesheet, or the
 resource's own (`ButtonBackground`); a color or length keeps the kind its key
 has in WinUI (`ButtonBackground` is a brush, `ButtonPadding` a thickness)
 `goToState({ control, name })` enters a state the control's template defines
-[API.md](API.md) has the rest: what each `*Style` prop styles, `xamlOf`, and
+[API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) has the rest: what each `*Style` prop styles, `xamlOf`, and
 what is not covered
 
 ## Transitions
@@ -1243,7 +1243,7 @@ from playing on the first render (they play by default, as in Svelte)
 The animation moves the control's `Opacity`, `Translation`, `Scale`,
 `Rotation`, size, margin, padding, border and a shape's stroke dashes
 See
-[API.md](API.md) for the details and what WinUI cannot do
+[API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) for the details and what WinUI cannot do
 
 ## Accessibility and theming
 
@@ -1265,7 +1265,7 @@ and in script `mediaQuery("(prefers-reduced-motion: reduce)").matches` is a
 reactive boolean, `systemSettings()` has `isDarkTheme`, `isHighContrast`,
 `isAnimationEnabled`, `isTransparencyEnabled` and `textScaleFactor`, and
 `installMatchMedia()` gives libraries the web's `matchMedia`
-See [API.md](API.md) and [src/css/API.md](src/css/API.md) for every media
+See [API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) and [src/css/API.md](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md) for every media
 feature and what each one is answered from
 
 ## State
@@ -1290,7 +1290,7 @@ core, an Electron main process or a script owns
 A host written in JavaScript
 imports `winui-svelte/state/host` (`diff`, the transports, the message types),
 which loads in plain Node
-[`src/state/README.md`](src/state/README.md) has the
+[`src/state/README.md`](https://github.com/avi12/winui-svelte/blob/main/src/state/README.md) has the
 protocol and the tests
 
 ## Drag and drop, pickers and the clipboard
@@ -1340,7 +1340,7 @@ the drag events with a `DragEvent` and a `dataTransfer`, files as `NativeFile`
 
 Dragging out (`ondragstart`, `draggable({ files })`), the `drag` event, the
 clipboard's HTML, files and pictures, `pickSaveFile`, `revealInExplorer` and the
-share pane are in [API.md](API.md#data-transfer-winui-sveltedata-transfer)
+share pane are in [API.md](https://github.com/avi12/winui-svelte/blob/main/API.md#data-transfer-winui-sveltedata-transfer)
 Unpackaged apps cannot open the share pane (it needs a package identity) and
 get no scheme handler list from the launcher; everything else on this page runs
 from `node.exe`
@@ -1352,7 +1352,7 @@ attachments, because a component prop would pull this code into every app
 | Specifier | What |
 | `winui-svelte` | `control`, `withControl`, `mountControl`, `registerControls`, `dispatch` / `flush`, the value helpers |
 | `winui-svelte/components` | every control as a component, and its props type; `xamlOf`, `goToState`, `installXaml` |
-| `winui-svelte/enums` | every closed set a prop or option takes (`HorizontalAlignment`, `Backdrop`, `ThemeBrush`...), each a value and a type of one name ([`API.md`](API.md#closed-sets-winui-svelteenums)) |
+| `winui-svelte/enums` | every closed set a prop or option takes (`HorizontalAlignment`, `Backdrop`, `ThemeBrush`...), each a value and a type of one name ([`API.md`](https://github.com/avi12/winui-svelte/blob/main/API.md#closed-sets-winui-svelteenums)) |
 | `winui-svelte/win2d`, `/win2d/context-2d` | `Canvas` and the Win2D helpers; `createCanvas2D` and `Canvas2D`, a `CanvasRenderingContext2D` over Win2D (both opt-in) |
 | `winui-svelte/state` | the window's side of host state |
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
@@ -1369,16 +1369,16 @@ attachments, because a component prop would pull this code into every app
 | `winui-svelte/element-effects` | `enableElementEffects` (the Vite plugin calls it from a component that imports `blur` or `draw`): the blur transition blurs for real and `draw` measures a `path`, with Composition and Win2D |
 | `winui-svelte/app` | single-instance handling over a named pipe, and app notifications |
 | `winui-svelte/bindings/*` | Every bound WinRT and Windows App SDK class as it is named there, for the as-is kind (`winui-svelte/bindings/windows/storage/StorageFolder`) |
-| `winui-svelte/web-apis`, `/web-apis/notification`, `/web-apis/media-devices`, `/web-apis/speech`, `/web-apis/media-session` | `installWebApis`, `installPermissions` and the Web APIs as opt-in installers: `Notification` over app notifications, media devices, speech and the media session (opt-in; [`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
+| `winui-svelte/web-apis`, `/web-apis/notification`, `/web-apis/media-devices`, `/web-apis/speech`, `/web-apis/media-session` | `installWebApis`, `installPermissions` and the Web APIs as opt-in installers: `Notification` over app notifications, media devices, speech and the media session (opt-in; [`API.md`](https://github.com/avi12/winui-svelte/blob/main/API.md#web-apis-winui-svelteweb-apis)) |
 | `winui-svelte/data-transfer` | web-shaped drag and drop, `NativeFile`, pickers, the clipboard and the launcher (opt-in) |
-| `winui-svelte/media` | `bitmapImageOf`, `svgImageSourceOf`, `createMediaPlayer`: image sources and a windowless `MediaPlayer` (opt-in; [`API.md`](API.md#media-winui-sveltemedia)) |
-| `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](API.md#system-tray-winui-sveltetray)) |
-| `winui-svelte/forms` | `Form`, `FormField` and the attachments that join a control to a form by name, with HTML's constraint validation and zod (opt-in; [`API.md`](API.md#forms-winui-svelteforms)) |
-| `winui-svelte/devices`, `/devices/enumeration`, `/devices/input`, `/devices/bluetooth`, `/devices/printers`, `/devices/power`, `/devices/network`, `/devices/audio`, `/devices/display`, `/devices/gamepad`, `/devices/sensors` | device enumeration, input devices, Bluetooth, printers, power, network, displays, audio, gamepads, sensors: Windows' own device APIs as runes (opt-in; [`API.md`](API.md#windows-devices-winui-sveltedevices)) |
+| `winui-svelte/media` | `bitmapImageOf`, `svgImageSourceOf`, `createMediaPlayer`: image sources and a windowless `MediaPlayer` (opt-in; [`API.md`](https://github.com/avi12/winui-svelte/blob/main/API.md#media-winui-sveltemedia)) |
+| `winui-svelte/tray` | `TrayIcon`, `createTrayIcon`, `hideToTray`: a notification-area icon (opt-in; [`API.md`](https://github.com/avi12/winui-svelte/blob/main/API.md#system-tray-winui-sveltetray)) |
+| `winui-svelte/forms` | `Form`, `FormField` and the attachments that join a control to a form by name, with HTML's constraint validation and zod (opt-in; [`API.md`](https://github.com/avi12/winui-svelte/blob/main/API.md#forms-winui-svelteforms)) |
+| `winui-svelte/devices`, `/devices/enumeration`, `/devices/input`, `/devices/bluetooth`, `/devices/printers`, `/devices/power`, `/devices/network`, `/devices/audio`, `/devices/display`, `/devices/gamepad`, `/devices/sensors` | device enumeration, input devices, Bluetooth, printers, power, network, displays, audio, gamepads, sensors: Windows' own device APIs as runes (opt-in; [`API.md`](https://github.com/avi12/winui-svelte/blob/main/API.md#windows-devices-winui-sveltedevices)) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
-| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/filter`, `/css/clip`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/queries`, `/css/environment`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, aspect ratio, filters and masks, clip shapes, focus visuals, surfaces, position and inset, media and container queries, media preferences and display features, browser-stylesheet properties, theme resources ([`src/css/API.md`](src/css/API.md)) |
-| `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](src/css/API.md)) |
-| `winui-svelte/preprocess`, `winui-svelte/stylelint`, `winui-svelte/vscode-css-data.json` | the editor side of the CSS: a Svelte preprocessor, a stylelint rule and VS Code custom data, all from the same validator and tables, so the editor, the linter and the build say the same thing ([`src/css/API.md`](src/css/API.md#diagnostics-in-the-editor-the-linter-and-the-build)) |
+| `winui-svelte/css/transform`, `/css/animation`, `/css/effects`, `/css/filter`, `/css/clip`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/queries`, `/css/environment`, `/css/compat`, `/css/resources` | the opt-in CSS groups: 2D transform, animations, aspect ratio, filters and masks, clip shapes, focus visuals, surfaces, position and inset, media and container queries, media preferences and display features, browser-stylesheet properties, theme resources ([`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md)) |
+| `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients` | the CSS runtime, its Vite plugin, the sheet module compiler and the gradient parser a sheet with a gradient imports ([`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md)) |
+| `winui-svelte/preprocess`, `winui-svelte/stylelint`, `winui-svelte/vscode-css-data.json` | the editor side of the CSS: a Svelte preprocessor, a stylelint rule and VS Code custom data, all from the same validator and tables, so the editor, the linter and the build say the same thing ([`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md#diagnostics-in-the-editor-the-linter-and-the-build)) |
 
 The published package ships `dist/`: the TypeScript compiled with its
 declarations, and the Svelte files as source (with `types` and `svelte`
@@ -1561,15 +1561,15 @@ In this repository (run these at its root):
 | `pnpm lint:fix` | the fixes oxlint and ESLint can apply themselves, then oxlint again |
 | `pnpm fallow:audit` | the dead-code audit of what changed since `HEAD`; the pre-commit hook runs it |
 | `pnpm gen:components` | regenerates the components, their metadata, the class list the bindings are generated for and the tables and quick start in this README from WinUI's metadata (`pnpm restore` first) |
-| `pnpm bindings` | the WinUI bindings (winapp's run, then the WebView2 step); [CONTRIBUTING.md](CONTRIBUTING.md) says when |
+| `pnpm bindings` | the WinUI bindings (winapp's run, then the WebView2 step); [CONTRIBUTING.md](https://github.com/avi12/winui-svelte/blob/main/CONTRIBUTING.md) says when |
 | `pnpm build` | `dist/`: what is published (`pnpm pack` shows the tarball) |
 | `pwsh examples/hello/run.ps1` | the hello example in a background window, checked through UI Automation (`-Edit` also checks hot reload) |
 
-[DESIGN.md](DESIGN.md) is the architecture and [API.md](API.md) the core API
+[DESIGN.md](https://github.com/avi12/winui-svelte/blob/main/DESIGN.md) is the architecture and [API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) the core API
 
 ## License
 
-[Apache-2.0](LICENSE)
+[Apache-2.0](https://github.com/avi12/winui-svelte/blob/main/LICENSE)
 Copyright 2026 [Avi](https://avi12.com)
 Copies and forks
 must keep the `LICENSE` and the `NOTICE` file, which carries this credit
