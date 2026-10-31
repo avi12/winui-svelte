@@ -3,7 +3,6 @@
 import {
   collectionOf,
   dataTemplateOf,
-  enumValue,
   objectInputOf,
   objectOf,
   styleOf
@@ -95,6 +94,11 @@ export function linkNavigationView(
     control,
     keys: ["alwaysShowHeader", "autoSuggestBox", "compactModeThresholdWidth", "compactPaneLength", "contentOverlay", "expandedModeThresholdWidth", "isBackEnabled", "isPaneToggleButtonVisible", "isPaneVisible", "isSettingsVisible", "isTitleBarAutoPaddingEnabled", "menuItemContainerStyleSelector", "menuItemTemplateSelector", "openPaneLength", "paneCustomContent", "paneFooter", "paneHeader", "paneTitle"]
   });
+  link.enums({
+    props,
+    control,
+    tables: { isBackButtonVisible: NavigationViewBackButtonVisible, overflowLabelMode: NavigationViewOverflowLabelMode, paneDisplayMode: NavigationViewPaneDisplayMode, selectionFollowsFocus: NavigationViewSelectionFollowsFocus, shoulderNavigationEnabled: NavigationViewShoulderNavigationEnabled }
+  });
   link.property({
     props,
     key: "footerMenuItemsSource",
@@ -114,13 +118,6 @@ export function linkNavigationView(
     key: "headerTemplate",
     apply(value) {
       control.headerTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "isBackButtonVisible",
-    apply(value) {
-      control.isBackButtonVisible = enumValue({ table: NavigationViewBackButtonVisible, input: value });
     }
   });
   link.property({
@@ -146,37 +143,9 @@ export function linkNavigationView(
   });
   link.property({
     props,
-    key: "overflowLabelMode",
-    apply(value) {
-      control.overflowLabelMode = enumValue({ table: NavigationViewOverflowLabelMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "paneDisplayMode",
-    apply(value) {
-      control.paneDisplayMode = enumValue({ table: NavigationViewPaneDisplayMode, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "paneToggleButtonStyle",
     apply(value) {
       control.paneToggleButtonStyle = styleOf({ input: value, owner: control, property: "paneToggleButtonStyle" });
-    }
-  });
-  link.property({
-    props,
-    key: "selectionFollowsFocus",
-    apply(value) {
-      control.selectionFollowsFocus = enumValue({ table: NavigationViewSelectionFollowsFocus, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "shoulderNavigationEnabled",
-    apply(value) {
-      control.shoulderNavigationEnabled = enumValue({ table: NavigationViewShoulderNavigationEnabled, input: value });
     }
   });
   link.bindable({

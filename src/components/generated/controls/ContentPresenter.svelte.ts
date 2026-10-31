@@ -4,7 +4,6 @@ import {
   brushOf,
   cornerRadiusOf,
   dataTemplateOf,
-  enumValue,
   fontFamilyOf,
   fontWeightOf,
   objectOf,
@@ -85,18 +84,16 @@ export function linkContentPresenter(
     control,
     keys: ["backgroundTransition", "characterSpacing", "contentTemplateSelector", "fontSize", "isTextScaleFactorEnabled", "lineHeight", "maxLines"]
   });
+  link.enums({
+    props,
+    control,
+    tables: { backgroundSizing: BackgroundSizing, fontStretch: FontStretch, fontStyle: FontStyle, horizontalContentAlignment: HorizontalAlignment, lineStackingStrategy: LineStackingStrategy, opticalMarginAlignment: OpticalMarginAlignment, textLineBounds: TextLineBounds, textWrapping: TextWrapping, verticalContentAlignment: VerticalAlignment }
+  });
   link.property({
     props,
     key: "background",
     apply(value) {
       control.background = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "backgroundSizing",
-    apply(value) {
-      control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
     }
   });
   link.property({
@@ -143,20 +140,6 @@ export function linkContentPresenter(
   });
   link.property({
     props,
-    key: "fontStretch",
-    apply(value) {
-      control.fontStretch = enumValue({ table: FontStretch, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "fontStyle",
-    apply(value) {
-      control.fontStyle = enumValue({ table: FontStyle, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "fontWeight",
     apply(value) {
       control.fontWeight = fontWeightOf(value);
@@ -171,51 +154,9 @@ export function linkContentPresenter(
   });
   link.property({
     props,
-    key: "horizontalContentAlignment",
-    apply(value) {
-      control.horizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "lineStackingStrategy",
-    apply(value) {
-      control.lineStackingStrategy = enumValue({ table: LineStackingStrategy, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "opticalMarginAlignment",
-    apply(value) {
-      control.opticalMarginAlignment = enumValue({ table: OpticalMarginAlignment, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "padding",
     apply(value) {
       control.padding = thicknessOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "textLineBounds",
-    apply(value) {
-      control.textLineBounds = enumValue({ table: TextLineBounds, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "textWrapping",
-    apply(value) {
-      control.textWrapping = enumValue({ table: TextWrapping, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "verticalContentAlignment",
-    apply(value) {
-      control.verticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
     }
   });
 }

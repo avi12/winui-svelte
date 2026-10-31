@@ -34,7 +34,7 @@ import type { ElementNode, FragmentNode, NativeHost, TreeNode } from "#src/rende
 import { createTreeRenderer, NodeType, parentElement } from "#src/renderer/tree/tree.js";
 import { isBackgroundRun } from "#src/window/background-mode.js";
 import type { FrameworkElement, UIElement } from "#src/winui.js";
-import { ColumnDefinition, Grid, RowDefinition, Run } from "#src/winui.js";
+import { Run } from "#src/winui.js";
 
 // The renderer for WinUI: a .svelte component's elements are
 // WinUI's own controls, named in kebab case (<stack-panel>, <text-block>), so
@@ -303,12 +303,17 @@ function disposeStyling(element: WinuiElement) {
 
 // A grid's columns or rows, each length a new definition; set again, they
 // replace the ones before.
-function definitionsHandler({ type, collectionName, sizeName }: {
-  type: new () => object;
+function definitionsHandler({ typeTag, collectionName, sizeName }: {
+  typeTag: string;
   collectionName: string;
   sizeName: string;
 }) {
   return (({ control, value }) => {
+    const type = controls.get(typeTag);
+    if (!isControlClass(type)) {
+      throw new Error(`${collectionName} needs ${typeTag} (registerControls was not given it)`);
+    }
+
     const collection = read(control, collectionName);
     call(collection, "clear");
     for (const length of splitList(String(value))) {
@@ -343,12 +348,12 @@ const elementAttributes = new Map<string, ElementAttributeHandler>([
 
 const namedAttributes = new Map<string, AttributeHandler>([
   ["columns", definitionsHandler({
-    type: ColumnDefinition,
+    typeTag: "column-definition",
     collectionName: "columnDefinitions",
     sizeName: "width"
   })],
   ["rows", definitionsHandler({
-    type: RowDefinition,
+    typeTag: "row-definition",
     collectionName: "rowDefinitions",
     sizeName: "height"
   })]
@@ -1218,8 +1223,12 @@ function replaceInParent({ previous, next }: Replacement) {
     return;
   }
 
-  for (const placement of gridPlacements) {
-    call(Grid, `set${placement}`, next, call(Grid, `get${placement}`, previous));
+  const grid = controls.get("grid");
+  const isGridKnown = grid !== undefined;
+  if (isGridKnown) {
+    for (const placement of gridPlacements) {
+      call(grid, `set${placement}`, next, call(grid, `get${placement}`, previous));
+    }
   }
 
   slot[1]({

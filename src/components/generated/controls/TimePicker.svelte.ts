@@ -2,7 +2,6 @@
 
 import {
   dataTemplateOf,
-  enumValue,
   nullableTimeSpanInputOf,
   nullableTimeSpanOf,
   objectOf,
@@ -53,6 +52,11 @@ export function linkTimePicker(
     control,
     keys: ["clockIdentifier", "minuteIncrement"]
   });
+  link.enums({
+    props,
+    control,
+    tables: { lightDismissOverlayMode: LightDismissOverlayMode }
+  });
   link.contentProperty({
     props,
     key: "header",
@@ -65,13 +69,6 @@ export function linkTimePicker(
     key: "headerTemplate",
     apply(value) {
       control.headerTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "lightDismissOverlayMode",
-    apply(value) {
-      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
     }
   });
   link.bindable({

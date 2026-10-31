@@ -261,6 +261,34 @@ export function emitBindings(model: Model) {
   return `${lines.join("\n")}\n`;
 }
 
+// The modules the attached properties are written through, one per owner
+// (attachedOwners in tables.ts): a component imports its owner's module when
+// an attached prop is first given, so the owner's bindings and the enums its
+// setters take load only for an app that sets them.
+export function emitAttachedOwners(model: Model) {
+  const owners = new Map<string, Map<string, TypeName>>();
+  for (const attached of model.classes.flatMap(level => level.attached)) {
+    const owner = new Map<string, TypeName>([[attached.owner.name, attached.owner]]);
+    const exported = owners.get(attached.owner.name) ?? owner;
+    const isEnum = enumInputTypes.has(attached.kind);
+    if (isEnum) {
+      exported.set(enumName(attached), attached.enumType ?? attached.owner);
+    }
+
+    owners.set(attached.owner.name, exported);
+  }
+
+  return [...owners].map(([owner, exported]) => ({
+    owner,
+    text: [
+      GENERATED_HEADER,
+      "",
+      ...[...exported].map(([name, type]) => `export { ${name} } from "${bindingModule(type)}";`),
+      ""
+    ].join("\n")
+  }));
+}
+
 // The input type of an enum prop: one member by name or value, and for a flag
 // enum a list of names too.
 const enumInputTypes = new Map<PropertyKind, string>([
@@ -433,6 +461,7 @@ function eventType({ event, className }: {
 
 class LevelImports {
   readonly bindingValues = new Set<string>();
+  readonly bindingTypes = new Set<string>();
   readonly convert = new Set<string>();
   readonly convertTypes = new Set<string>();
   readonly values = new Set<string>();
@@ -457,6 +486,25 @@ class LevelImports {
     const hasConverter = converter !== undefined;
     if (hasConverter) {
       this.convert.add(converter.convert);
+    }
+  }
+
+  // An attached property the component writes in a module of its own: the
+  // enum its value is converted through is named by type only.
+  noteLazy(attached: AttachedModel) {
+    const isEnum = enumInputTypes.has(attached.kind);
+    if (!isEnum) {
+      this.note(attached);
+      return;
+    }
+
+    const name = enumName(attached);
+    const isValueAlready = this.bindingValues.has(name);
+    this.note(attached);
+    this.bindingTypes.add(name);
+
+    if (!isValueAlready) {
+      this.bindingValues.delete(name);
     }
   }
 
@@ -500,6 +548,8 @@ function emitProperty({ property, className, imports, isSlot }: {
   imports.note(property);
   const method = property.isContent ? "contentProperty" : "property";
   const isPlain = isPlainProperty(property);
+  const isEnum = enumInputTypes.has(property.kind) && !property.isContent;
+  const isGrouped = isPlain || isEnum;
   return {
     member: `  ${property.key}?: ${memberType({
       property,
@@ -507,7 +557,8 @@ function emitProperty({ property, className, imports, isSlot }: {
       isSlot
     })};`,
     plainKey: isPlain ? property.key : null,
-    body: isPlain ? [] : [
+    enumTable: isEnum ? `${property.key}: ${enumName(property)}` : null,
+    body: isGrouped ? [] : [
       `  link.${method}({`,
       "    props,",
       `    key: "${property.key}",`,
@@ -519,26 +570,53 @@ function emitProperty({ property, className, imports, isSlot }: {
   };
 }
 
+// What a setter's apply reads from its owner's module: the owner, and the
+// enum its value is converted through.
+function attachedOwnerExports(attached: AttachedModel) {
+  const isEnum = enumInputTypes.has(attached.kind);
+  return isEnum ? [attached.owner.name, enumName(attached)] : [attached.owner.name];
+}
+
 function emitAttached({ attached, imports, isSlot }: {
   attached: AttachedModel;
   imports: LevelImports;
   isSlot: boolean;
 }) {
-  imports.note(attached);
-  imports.bindingValues.add(attached.owner.name);
+  imports.noteLazy(attached);
   const type = attachedType(attached);
+  const isOwnerTyped = type.includes(`typeof ${attached.owner.name}.`);
+  if (isOwnerTyped) {
+    imports.bindingTypes.add(attached.owner.name);
+  }
+
+  const enumNames = attachedOwnerExports(attached);
   return {
     member: `  ${attached.key}?: ${isSlot ? `${type} | Snippet` : type};`,
-    body: [
-      "  link.property({",
-      "    props,",
-      `    key: "${attached.key}",`,
-      "    apply(value) {",
-      `      ${attached.owner.name}.${attached.setter}(control, ${valueExpression(attached)});`,
-      "    }",
-      "  });"
+    owner: attached.owner.name,
+    setter: [
+      `      ${attached.key}({ ${enumNames.join(", ")} }, value) {`,
+      `        ${attached.owner.name}.${attached.setter}(control, ${valueExpression(attached)});`,
+      "      }"
     ]
   };
+}
+
+// One link per owner: its module is imported once, when a prop of it is first
+// given, and each prop's setter runs on it.
+function attachedBody({ entries, root }: {
+  entries: Array<ReturnType<typeof emitAttached>>;
+  root: string;
+}) {
+  const owners = new Set(entries.map(entry => entry.owner));
+  return [...owners].flatMap(owner => [
+    "  link.attached({",
+    "    props,",
+    `    owner: () => import("${root}../attached/${owner}.ts"),`,
+    "    setters: {",
+    entries.filter(entry => entry.owner === owner).map(entry => entry.setter.join("\n")).join(",\n"),
+    "    }",
+    "  });"
+  ]);
 }
 
 // What a bindable prop reads the control's value through: the bindings read an
@@ -761,9 +839,21 @@ function emitPropertyBody({ level, imports }: {
     `    keys: [${plainKeys.map(key => `"${key}"`).join(", ")}]`,
     "  });"
   ] : [];
+  const enumTables = properties.flatMap(entry => entry.enumTable === null ? [] : [entry.enumTable]);
+  const hasEnums = enumTables.length > 0;
+  const enums = hasEnums ? [
+    "  link.enums({",
+    "    props,",
+    "    control,",
+    `    tables: { ${enumTables.join(", ")} }`,
+    "  });"
+  ] : [];
   return {
     members: [...attached, ...properties].map(entry => entry.member),
-    body: [...plain, ...attached.flatMap(entry => entry.body), ...properties.flatMap(entry => entry.body)]
+    body: [...plain, ...enums, ...attachedBody({
+      entries: attached,
+      root: sharedRoot(level)
+    }), ...properties.flatMap(entry => entry.body)]
   };
 }
 
@@ -864,6 +954,20 @@ function emitLevelBody({ level, imports }: {
     level,
     kind: SlotKind.COLLECTION
   })].map(key => `  ${key}?: Snippet;`);
+  const body = [
+    ...properties.body,
+    ...bindables.body,
+    ...observed.flatMap(part => part.body),
+    ...events.body,
+    ...attached.flatMap(part => part.body)
+  ];
+  // The enum props are set through one table call; the converter stays only
+  // where an expression still calls it.
+  const isEnumValueUsed = body.some(line => line.includes("enumValue("));
+  if (!isEnumValueUsed) {
+    imports.convert.delete("enumValue");
+  }
+
   return {
     // The bindables come first among the members, as they do in the component.
     members: [
@@ -875,13 +979,7 @@ function emitLevelBody({ level, imports }: {
       ...events.members,
       ...attached.flatMap(part => part.members)
     ],
-    body: [
-      ...properties.body,
-      ...bindables.body,
-      ...observed.flatMap(part => part.body),
-      ...events.body,
-      ...attached.flatMap(part => part.body)
-    ]
+    body
   };
 }
 
@@ -950,7 +1048,7 @@ function emitLevelImports({ level, imports }: {
       from: "../bindings.ts"
     }),
     ...importLine({
-      names: [name],
+      names: [name, ...imports.bindingTypes],
       from: "../bindings.ts",
       isType: true
     })

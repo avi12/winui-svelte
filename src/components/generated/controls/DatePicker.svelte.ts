@@ -4,7 +4,6 @@ import {
   dataTemplateOf,
   dateInputOf,
   dateTimeOf,
-  enumValue,
   nullableDateInputOf,
   nullableDateTimeOf,
   objectOf
@@ -61,6 +60,11 @@ export function linkDatePicker(
     control,
     keys: ["calendarIdentifier", "dayFormat", "dayVisible", "monthFormat", "monthVisible", "yearFormat", "yearVisible"]
   });
+  link.enums({
+    props,
+    control,
+    tables: { lightDismissOverlayMode: LightDismissOverlayMode, orientation: Orientation }
+  });
   link.contentProperty({
     props,
     key: "header",
@@ -77,13 +81,6 @@ export function linkDatePicker(
   });
   link.property({
     props,
-    key: "lightDismissOverlayMode",
-    apply(value) {
-      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "maxYear",
     apply(value) {
       control.maxYear = dateTimeOf(value);
@@ -94,13 +91,6 @@ export function linkDatePicker(
     key: "minYear",
     apply(value) {
       control.minYear = dateTimeOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "orientation",
-    apply(value) {
-      control.orientation = enumValue({ table: Orientation, input: value });
     }
   });
   link.bindable({

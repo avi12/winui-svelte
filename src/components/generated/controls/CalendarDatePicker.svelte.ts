@@ -3,7 +3,6 @@
 import {
   dataTemplateOf,
   dateTimeOf,
-  enumValue,
   nullableDateInputOf,
   nullableDateTimeOf,
   objectOf,
@@ -66,6 +65,11 @@ export function linkCalendarDatePicker(
     control,
     keys: ["calendarIdentifier", "dateFormat", "dayOfWeekFormat", "isCalendarOpen", "isGroupLabelVisible", "isOutOfScopeEnabled", "isTodayHighlighted", "placeholderText"]
   });
+  link.enums({
+    props,
+    control,
+    tables: { displayMode: CalendarViewDisplayMode, firstDayOfWeek: DayOfWeek, lightDismissOverlayMode: LightDismissOverlayMode }
+  });
   link.property({
     props,
     key: "calendarViewStyle",
@@ -82,20 +86,6 @@ export function linkCalendarDatePicker(
   });
   link.property({
     props,
-    key: "displayMode",
-    apply(value) {
-      control.displayMode = enumValue({ table: CalendarViewDisplayMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "firstDayOfWeek",
-    apply(value) {
-      control.firstDayOfWeek = enumValue({ table: DayOfWeek, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "header",
     apply(value) {
       control.header = objectOf(value);
@@ -106,13 +96,6 @@ export function linkCalendarDatePicker(
     key: "headerTemplate",
     apply(value) {
       control.headerTemplate = dataTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "lightDismissOverlayMode",
-    apply(value) {
-      control.lightDismissOverlayMode = enumValue({ table: LightDismissOverlayMode, input: value });
     }
   });
   link.property({

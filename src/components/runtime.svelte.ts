@@ -1,3 +1,5 @@
+import { enumValue } from "./convert.ts";
+import type { FlagsInput } from "./convert.ts";
 import type { Snippet } from "svelte";
 
 // What a generated component links its control to its props with. A prop
@@ -7,6 +9,21 @@ import type { Snippet } from "svelte";
 
 type Unsubscribe = () => void;
 type Subscribe = (handler: () => void) => Unsubscribe;
+
+type EnumTable = Record<string, number>;
+
+function isEnumTable(table: object | undefined): table is EnumTable {
+  return table !== undefined && Object.values(table).every(member => typeof member === "number");
+}
+
+function isEnumInput(value: unknown): value is FlagsInput<EnumTable> {
+  return typeof value === "string" || typeof value === "number" || Array.isArray(value);
+}
+
+// eslint-disable-next-line no-restricted-syntax -- a type predicate cannot destructure its subject
+function isKeyOf<Target extends object>(target: Target, key: PropertyKey): key is keyof Target {
+  return key in target;
+}
 
 // A value a prop can hold once `undefined` (the prop was not given) is out:
 // what `value !== undefined` narrows to. (`NonNullable<unknown>` is `{}`.)
@@ -88,6 +105,111 @@ export class Linker {
         isBlocked: () => false
       });
     }
+  }
+
+  /**
+   * Props that take an enum's member by name or value (or, for flags, a list
+   * of names), each written to the property of its name through the enum's
+   * table: one call for the enum props of a class, not a function apiece.
+   */
+  enums<Props extends object, Target extends object>({ props, control, tables }: {
+    props: Props;
+    control: Target;
+    tables: { [Key in keyof Props & keyof Target]?: Readonly<Record<string, Target[Key]>> };
+  }) {
+    for (const key of Object.keys(tables)) {
+      const isTabled = isKeyOf(tables, key);
+      if (isTabled) {
+        this.followEnum({
+          props,
+          control,
+          key,
+          table: tables[key]
+        });
+      }
+    }
+  }
+
+  private followEnum<
+    Props extends object,
+    Target extends object,
+    Key extends keyof Props & keyof Target
+  >({ props, control, key, table }: {
+    props: Props;
+    control: Target;
+    key: Key;
+    table: Readonly<Record<string, Target[Key]>> | undefined;
+  }) {
+    this.follow({
+      props,
+      key,
+      apply(input) {
+        const isConvertible = isEnumInput(input) && isEnumTable(table);
+        if (isConvertible) {
+          Object.assign(control, {
+            [key]: enumValue<EnumTable>({
+              table,
+              input
+            })
+          });
+        }
+      },
+      isBlocked: () => false
+    });
+  }
+
+  /**
+   * The attached properties of one owner, each written through the module
+   * `owner` imports. The module is imported when a control first gives one
+   * of the props, so an app that never sets an owner's attached properties
+   * never loads its bindings; the value is written once the import settles.
+   */
+  attached<Props extends object, Owner>({ props, owner, setters }: {
+    props: Props;
+    owner: () => Promise<Owner>;
+    setters: { [Key in keyof Props]?: (owner: Owner, value: Written<Props[Key]>) => void };
+  }) {
+    let isDisposed = false;
+    this.add(() => {
+      isDisposed = true;
+    });
+    for (const key of Object.keys(setters)) {
+      const isSetter = isKeyOf(setters, key);
+      if (isSetter) {
+        this.followAttached({
+          props,
+          key,
+          owner,
+          apply: setters[key],
+          isDisposed: () => isDisposed
+        });
+      }
+    }
+  }
+
+  private followAttached<
+    Props extends object,
+    Key extends keyof Props,
+    Owner
+  >({ props, key, owner, apply, isDisposed }: {
+    props: Props;
+    key: Key;
+    owner: () => Promise<Owner>;
+    apply: ((owner: Owner, value: Written<Props[Key]>) => void) | undefined;
+    isDisposed: () => boolean;
+  }) {
+    this.follow({
+      props,
+      key,
+      apply(value) {
+        void owner().then(loaded => {
+          if (!isDisposed()) {
+            apply?.(loaded, value);
+          }
+        });
+      },
+      isBlocked: () => false
+    });
   }
 
   /** The property the children are: a child, when there is one, is the value. */
