@@ -1,4 +1,10 @@
-import { compileSheetModule, scopeClassOf, scopedMarkup, SheetError } from "./sheet-module.ts";
+import {
+  compileSheetModule,
+  scopeClassOf,
+  scopedMarkup,
+  SheetError,
+  translateComponent
+} from "./sheet-module.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import assert from "node:assert/strict";
 import { tmpdir } from "node:os";
@@ -309,4 +315,20 @@ test("the scope class of an instance is the class Svelte puts on the rule, from 
   } finally {
     process.chdir(here);
   }
+});
+
+test("an unchanged <style> is translated once, and an edit translates it again", () => {
+  const input = {
+    filename: FILENAME,
+    source: "<border class=\"a\"></border>\n<style>\n  .a { padding: 4px }\n</style>\n",
+    sheetId: "card.svelte",
+    resources
+  };
+  const first = translateComponent(input);
+  assert.equal(translateComponent({ ...input }), first);
+  const edited = translateComponent({
+    ...input,
+    source: input.source.replace("4px", "8px")
+  });
+  assert.notEqual(edited, first);
 });

@@ -51,6 +51,15 @@ export interface SheetModule {
 }
 
 const probed = new Map<string, string>();
+const TRANSLATION_CACHE_SIZE = 64;
+
+interface CachedTranslation {
+  resources: ResourceCatalogue;
+  compilerOptions: CompileOptions | undefined;
+  translation: ReturnType<typeof translateUncached>;
+}
+
+const translations = new Map<string, CachedTranslation>();
 
 /**
  * The scoping class Svelte gives the elements of the component at `filename`
@@ -205,6 +214,29 @@ function unusedWarnings({ source, filename }: {
  * validator and the build share, so they cannot disagree.
  */
 export function translateComponent(input: Omit<SheetModuleInput, "isHot" | "runtimeModule">) {
+  const key = [input.filename, input.sheetId, input.source].join("|");
+  const cached = translations.get(key);
+  const isCached = cached?.resources === input.resources && cached.compilerOptions === input.compilerOptions;
+  if (isCached) {
+    return cached.translation;
+  }
+
+  const translation = translateUncached(input);
+  translations.delete(key);
+  translations.set(key, {
+    resources: input.resources,
+    compilerOptions: input.compilerOptions,
+    translation
+  });
+  const isFull = translations.size > TRANSLATION_CACHE_SIZE;
+  if (isFull) {
+    translations.delete(translations.keys().next().value ?? key);
+  }
+
+  return translation;
+}
+
+function translateUncached(input: Omit<SheetModuleInput, "isHot" | "runtimeModule">) {
   const relational = resolveRelationalSelectors({
     source: input.source,
     file: input.sheetId
