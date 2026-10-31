@@ -8,6 +8,8 @@ controls animate and are accessible as WinUI makes them, and acrylic is a real
 backdrop
 No browser engine is involved; there is no DOM
 
+Agents: see [AGENTS.md](AGENTS.md)
+
 ## Why
 
 When you make a C# app that uses WinUI 3, every little change to the code or UI requires recompilation and relaunch, which really disrupts the flow in my opinion
