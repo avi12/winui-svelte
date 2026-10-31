@@ -1805,8 +1805,11 @@ with `registerPermission({ name, provider })` and calls
    else, and typed by declaration merging that ships with the subpath
    (`NotificationExtras` merges into the global `NotificationOptions`); with no
    extra used the behaviour is the spec's
-3. **As is**: no Web counterpart; use the WinRT class through the bindings
-   (`#winui/windows/...`), whose names mirror WinRT: async operations are
+3. **As is**: no Web counterpart; use the WinRT class through the shipped
+   bindings (`winui-svelte/bindings/windows/security/credentials/PasswordCredential`:
+   the namespace lowercased and hyphenated per segment, then the class name as
+   WinRT spells it; the `.d.ts` ships beside it; `#winui/*` is the app's own
+   route for classes it generates itself), whose names mirror WinRT: async operations are
    promises, events are `onX(callback)` returning an unsubscribe function,
    vectors iterate, properties are accessors, `default` and `arguments` get a
    trailing underscore; bind a class that is missing by adding it to

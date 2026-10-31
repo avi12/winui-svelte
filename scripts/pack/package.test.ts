@@ -81,7 +81,18 @@ test("every export has types, and a default that is JavaScript", () => {
 
 test("every export is a file of dist once it is built", { skip: !IS_BUILT }, () => {
   for (const target of Object.values(manifest.exports).flatMap(targetsOf)) {
-    assert.ok(existsSync(path.join(PACKAGE_ROOT, target)), `${target} is missing: pnpm build did not make it`);
+    const isPattern = target.includes("*");
+    const shipped = isPattern ? target.slice(0, target.indexOf("*")) : target;
+    assert.ok(existsSync(path.join(PACKAGE_ROOT, shipped)), `${target} is missing: pnpm build did not make it`);
+  }
+});
+
+test("any bound class is importable as winui-svelte/bindings/<namespace>/<Class>", { skip: !IS_BUILT }, () => {
+  const entry = exportsSchema.parse(manifest.exports["./bindings/*"]);
+  const subpath = "windows/security/credentials/PasswordCredential";
+  for (const condition of ["types", "default"]) {
+    const target = String(entry[condition]).replace("*", subpath);
+    assert.ok(existsSync(path.join(PACKAGE_ROOT, target)), `${target} is missing`);
   }
 });
 

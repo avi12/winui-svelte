@@ -320,10 +320,18 @@ Every feature falls in one of three kinds, decided in this order
   names and semantics of the bindings, fully typed: async operations are
   promises (with an optional `AbortSignal`), events are `onX(callback)`
   returning an unsubscribe function, vectors iterate, properties are
-  accessors; the import path mirrors the namespace
-  (`#winui/windows/storage/StorageFolder`); a class not yet bound is added to
-  `lateClasses` in `scripts/codegen/tables.ts` and bound with
-  `pnpm bindings:after-winapp`; nothing wraps what needs no wrapping
+  accessors; the import path mirrors the namespace and the class name is
+  WinRT's own, so every bound class is one import away with nothing to
+  generate:
+
+  ```ts
+  import { PasswordCredential } from "winui-svelte/bindings/windows/security/credentials/PasswordCredential";
+  ```
+
+  (`#winui/*` is the route for the classes an app generates for itself); a
+  class not yet bound is added to `lateClasses` in
+  `scripts/codegen/tables.ts` and bound with `pnpm bindings:after-winapp`;
+  nothing wraps what needs no wrapping
 
 | Web API | Subpath | State |
 | --- | --- | --- |
@@ -1277,6 +1285,7 @@ attachments, because a component prop would pull this code into every app
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/element-effects` | `enableElementEffects` (the Vite plugin calls it from a component that imports `blur` or `draw`): the blur transition blurs for real and `draw` measures a `path`, with Composition and Win2D |
 | `winui-svelte/app` | single-instance handling over a named pipe, and app notifications |
+| `winui-svelte/bindings/*` | Every bound WinRT and Windows App SDK class as it is named there, for the as-is kind (`winui-svelte/bindings/windows/storage/StorageFolder`) |
 | `winui-svelte/web-apis`, `/web-apis/notification` | `installWebApis`, `installPermissions` and the Web APIs as opt-in installers: `Notification` over app notifications (opt-in; [`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
 | `winui-svelte/data-transfer` | web-shaped drag and drop, `NativeFile`, pickers, the clipboard and the launcher (opt-in) |
 | `winui-svelte/media` | `bitmapImageOf`, `svgImageSourceOf`, `createMediaPlayer`: image sources and a windowless `MediaPlayer` (opt-in; [`API.md`](API.md#media-winui-sveltemedia)) |
