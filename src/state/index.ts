@@ -9,7 +9,8 @@ export type {
   PatchOp,
   PathSegment,
   SnapshotData,
-  StateProtocol
+  StateProtocol,
+  StateShape
 } from "./protocol.ts";
 export { MessageType, patchDataSchema, PatchOperation, snapshotDataSchema } from "./protocol.ts";
 export { MemoryEnd } from "./transports/memory.ts";
