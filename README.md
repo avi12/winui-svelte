@@ -1243,10 +1243,11 @@ compiles for you; a component compiled through `compileSvelte` (tests,
 
 ## Size
 
-An app with one `Button` bundles to under 123,000 bytes (the budget the
-bundle test enforces; `pnpm test` fails when it grows), because the package is
-tree-shakeable: a consumer that imports `Button` does not bundle
-`NavigationView`
+An app with one `Button` bundles to under the byte budget of the bundle test
+(`scripts/pack/treeshake.test.ts`, the one place the number lives; it is
+lowered as the package shrinks and never raised, and `pnpm test` fails when the
+bundle grows past it), because the package is tree-shakeable: a consumer that
+imports `Button` does not bundle `NavigationView`
 
 ## Limitations
 
