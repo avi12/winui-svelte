@@ -739,10 +739,22 @@ function checkBehaviours({ connectors, failures }: {
       assert.ok(border.cornerRadius.topLeft === BORDER_CORNER_RADIUS, "cornerRadius 6 is not 6 on every corner");
       assert.ok(border.horizontalAlignment === HORIZONTAL_ALIGNMENT_CENTER, "horizontalAlignment Center is not 1");
       assert.ok(border.width === BORDER_WIDTH, "width was not written");
-      assert.ok(bindings.Grid.getRow(border) === BORDER_GRID_ROW, "gridRow 2 did not reach Grid.Row");
       assert.ok(bindings.Canvas.getLeft(border) === BORDER_CANVAS_LEFT, "attached Canvas.Left 7 did not reach Canvas.Left");
       assert.ok(border.background !== null, "the background color made no brush");
-      close();
+      // A prop of an attached property is written once its owner's module is
+      // imported (the app loaded it before the window opened).
+      setTimeout(() => {
+        const isRowWritten = bindings.Grid.getRow(border) === BORDER_GRID_ROW;
+        if (!isRowWritten) {
+          failures.push({
+            name: "behaviour: conversions build what WinUI takes (Border)",
+            step: "check",
+            message: "gridRow 2 did not reach Grid.Row"
+          });
+        }
+
+        close();
+      }, 0);
     }
   });
 
@@ -1440,6 +1452,7 @@ function checkSlotsThroughRenderer(failures: Failure[]) {
 export async function run(report: (result: Report) => void) {
   trace("loading");
   const connectors = await loadConnectors();
+  await import("#src/components/generated/attached/Grid.js");
   trace("loaded");
   await Application.startScheduled(() => {
     Application.create(() => {
