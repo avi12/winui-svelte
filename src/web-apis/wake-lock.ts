@@ -13,8 +13,8 @@ export interface WakeLockBackend {
 
 /**
  * Whether the page is visible, and when that changes. A wake lock is
- * released when the page is hidden; the page-visibility API of the Web APIs
- * (`web-apis/page`) can stand behind this, and a test gives its own.
+ * released when the page is hidden; by default this is the page module's
+ * document (`web-apis/page`), and a test gives its own.
  */
 export interface WakeLockVisibility {
   isVisible(): boolean;
@@ -26,7 +26,11 @@ export interface WakeLockInstallOptions {
   /** Stands in for `DisplayRequest`; the tests give one. */
   readonly backend?: WakeLockBackend;
 
-  /** The page's visibility; without one the page counts as always visible. */
+  /**
+   * The page's visibility; by default the page module's `document.hidden` and
+   * `visibilitychange` (install `web-apis/page` first), and without a
+   * document the page counts as always visible.
+   */
   readonly visibility?: WakeLockVisibility;
 }
 
@@ -38,10 +42,26 @@ declare global {
   }
 }
 
-const ALWAYS_VISIBLE = {
-  isVisible: () => true,
-  onChange: () => () => undefined
-} satisfies WakeLockVisibility;
+const VISIBILITY_CHANGE = "visibilitychange";
+
+function pageVisibility() {
+  return {
+    isVisible() {
+      const hasDocument = typeof globalThis.document === "object";
+      return !hasDocument || !globalThis.document.hidden;
+    },
+    onChange(callback: () => void) {
+      const hasDocument = typeof globalThis.document === "object";
+      if (!hasDocument) {
+        return () => undefined;
+      }
+
+      const { document } = globalThis;
+      document.addEventListener(VISIBILITY_CHANGE, callback);
+      return () => document.removeEventListener(VISIBILITY_CHANGE, callback);
+    }
+  } satisfies WakeLockVisibility;
+}
 
 /**
  * The real backend: one `DisplayRequest` per hold
@@ -186,7 +206,7 @@ export class WakeLock {
  * @returns The function that releases every lock and takes the API away again.
  */
 export function installWakeLock(options: WakeLockInstallOptions = {}) {
-  const visibility = options.visibility ?? ALWAYS_VISIBLE;
+  const visibility = options.visibility ?? pageVisibility();
   const wakeLock = new WakeLock({
     backend: options.backend ?? windowsWakeLockBackend(),
     visibility

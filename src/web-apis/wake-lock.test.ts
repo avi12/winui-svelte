@@ -1,3 +1,4 @@
+import type { PageListener, PageSnapshot } from "./page.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -7,6 +8,7 @@ import { test } from "node:test";
 
 const { installWakeLock, WakeLockSentinel } = await import("./wake-lock.ts");
 const { installPermissions } = await import("./permissions.ts");
+const { installPage } = await import("./page.ts");
 
 function fakeBackend() {
   const log: string[] = [];
@@ -117,4 +119,48 @@ test("the Permissions API says granted", async () => {
   assert.equal(status.state, "granted");
   uninstall();
   uninstallPermissions();
+});
+
+test("with the page module installed, minimizing the window releases the locks", async () => {
+  const fake = fakeBackend();
+  let snapshot: PageSnapshot = {
+    isVisible: true,
+    isFocused: true,
+    state: "normal",
+    title: "Window",
+    isClosed: false
+  };
+  let listener: PageListener | undefined;
+  const uninstallPage = installPage({
+    backend: {
+      read: () => snapshot,
+      subscribe(next) {
+        listener = next;
+        return () => {
+          listener = undefined;
+        };
+      },
+      setState() {},
+      setTitle() {},
+      close() {},
+      open() {}
+    }
+  });
+  const uninstall = installWakeLock({ backend: fake.backend });
+  try {
+    const sentinel = await navigator.wakeLock.request("screen");
+    snapshot = {
+      ...snapshot,
+      isVisible: false
+    };
+    listener?.changed();
+    await new Promise<void>(resolve => {
+      setImmediate(resolve);
+    });
+    assert.equal(sentinel.released, true);
+    await assert.rejects(navigator.wakeLock.request("screen"), error => error instanceof DOMException && error.name === "NotAllowedError");
+  } finally {
+    uninstall();
+    uninstallPage();
+  }
 });
