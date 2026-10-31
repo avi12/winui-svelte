@@ -58,6 +58,11 @@ project adheres to [Semantic Versioning](https://semver.org/)
   (`winui-svelte/web-apis/bluetooth`, `usb`, `hid`, `serial`, `wake-lock`,
   `idle`)
 
+- Web APIs: `navigator.credentials` with `PasswordCredential` and WebAuthn over
+  the PasswordVault and Windows Hello (`winui-svelte/web-apis/credentials`),
+  `EyeDropper` (`winui-svelte/web-apis/eye-dropper`) and `navigator.contacts`
+  (`winui-svelte/web-apis/contacts`)
+
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support
 - Renderer: a tree that Svelte draws into as if it were the DOM, creating and

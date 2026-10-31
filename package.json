@@ -326,6 +326,18 @@
       "types": "./dist/web-apis/clipboard.d.ts",
       "default": "./dist/web-apis/clipboard.js"
     },
+    "./web-apis/contacts": {
+      "types": "./dist/web-apis/contacts.d.ts",
+      "default": "./dist/web-apis/contacts.js"
+    },
+    "./web-apis/credentials": {
+      "types": "./dist/web-apis/credentials.d.ts",
+      "default": "./dist/web-apis/credentials.js"
+    },
+    "./web-apis/eye-dropper": {
+      "types": "./dist/web-apis/eye-dropper.d.ts",
+      "default": "./dist/web-apis/eye-dropper.js"
+    },
     "./web-apis/file-system": {
       "types": "./dist/web-apis/file-system.d.ts",
       "default": "./dist/web-apis/file-system.js"
