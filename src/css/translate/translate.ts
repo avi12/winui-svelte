@@ -31,6 +31,7 @@ import { replaceLightDark } from "#src/css/parse/light-dark.js";
 import type { MediaCondition } from "#src/css/parse/media.js";
 import { parseContainerQuery, parseMediaQuery } from "#src/css/parse/media.js";
 import { resolveModernColors } from "#src/css/parse/modern-colors.js";
+import { NOTATIONS } from "#src/css/parse/notation.js";
 import type { AtRuleBlock, Block, RuleBlock } from "#src/css/parse/parser.js";
 import { BlockKind, CssSyntaxError, parseCss } from "#src/css/parse/parser.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
@@ -464,7 +465,7 @@ function keyframeSteps({ translator, blocks }: {
     if (!isValid) {
       reportError({
         translator,
-        message: "@keyframes holds from, to and percentage keyframes only",
+        message: `@keyframes holds from, to and percentage keyframes only: ${NOTATIONS.keyframeSelector.advice}`,
         generatedAt: block.at
       });
       continue;

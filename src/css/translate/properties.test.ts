@@ -257,14 +257,14 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["MaxHeight", "300"]
   ]],
   ["opacity", null, "opacity: 0.5", [["Opacity", "0.5"]]],
-  ["opacity as a percentage", null, "opacity: 40%", [["Opacity", "0.4"]]],
+  ["opacity as a number", null, "opacity: 0.4", [["Opacity", "0.4"]]],
   ["color to Foreground", null, "color: #0af", [["Foreground", "#00AAFF"]]],
   ["color from a WinUI brush", null, "color: var(--text-fill-color-secondary)", [["Foreground", "{ThemeResource TextFillColorSecondaryBrush}"]]],
   ["stroke and stroke-width on a shape", "rectangle", "stroke: var(--accent-fill-color-default); stroke-width: 2px", [
     ["Stroke", "{ThemeResource AccentFillColorDefaultBrush}"],
     ["StrokeThickness", "2"]
   ]],
-  ["background-color", null, "background-color: rgb(0 0 0 / 50%)", [["Background", "#80000000"]]],
+  ["background-color", null, "background-color: rgb(0 0 0 / 0.5)", [["Background", "#80000000"]]],
   ["a color alpha as a number", null, "background-color: rgb(0 0 0 / 0.5)", [["Background", "#80000000"]]],
   ["background to a brush", null, "background: transparent", [["Background", "#00FFFFFF"]]],
   ["background none", null, "background: none", [["Background", "#00FFFFFF"]]],
@@ -717,7 +717,7 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["a repeating gradient", null, "background-image: repeating-linear-gradient(red, blue 10%)", /background-image: repeating-linear-gradient has no WinUI meaning/u],
   ["layered images", null, "background-image: linear-gradient(red, blue), linear-gradient(blue, red)", /background-image: several images have no WinUI meaning/u],
   ["a unitless line height", null, "line-height: 1.5", /a multiple of the font size has no WinUI meaning/u],
-  ["opacity out of range", null, "opacity: 2", /opacity: expected a number or percentage from 0 to 1/u],
+  ["opacity out of range", null, "opacity: 2", /opacity: expected a number from 0 to 1/u],
   ["a dashed border", null, "border: 1px dashed red", /border: dashed has no WinUI meaning \(WinUI draws solid lines only/u],
   ["border without a style", null, "border: 1px red", /border: expected a style/u],
   ["elliptical corners", null, "border-radius: 10px / 20px", /elliptical corners/u],

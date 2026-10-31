@@ -34,6 +34,8 @@
     "at-rule-allowed-list": null,
     "max-nesting-depth": [99, {}],
     "alpha-value-notation": ["number", { "exceptProperties": [] }],
+    "lightness-notation": "number",
+    "keyframe-selector-notation": "percentage-unless-within-keyword-only-block",
     "custom-property-empty-line-before": "never",
     "plugin/no-unsupported-browser-features": null,
     "@stylistic/linebreaks": null,

@@ -21,6 +21,8 @@ interface FunctionSpec {
   scales: Triple;
   /** How many CSS units one natural unit of each channel is (rgb is 0 to 255, hsl's s and l are 0 to 100). */
   units: Triple;
+  /** Whether the first channel is a lightness, which is written as a number. */
+  isLightnessFirst: boolean;
 }
 
 const MAX_CHANNEL = 255;
@@ -40,43 +42,50 @@ const SPECS = new Map<string, FunctionSpec>([
     space: Space.SRGB,
     keywords: ["r", "g", "b"],
     scales: [MAX_CHANNEL, MAX_CHANNEL, MAX_CHANNEL],
-    units: [MAX_CHANNEL, MAX_CHANNEL, MAX_CHANNEL]
+    units: [MAX_CHANNEL, MAX_CHANNEL, MAX_CHANNEL],
+    isLightnessFirst: false
   }],
   ["hsl", {
     space: Space.HSL,
     keywords: ["h", "s", "l"],
     scales: [FULL_TURN, PERCENT, PERCENT],
-    units: [1, PERCENT, PERCENT]
+    units: [1, PERCENT, PERCENT],
+    isLightnessFirst: false
   }],
   ["hwb", {
     space: Space.HWB,
     keywords: ["h", "w", "b"],
     scales: [FULL_TURN, PERCENT, PERCENT],
-    units: [1, PERCENT, PERCENT]
+    units: [1, PERCENT, PERCENT],
+    isLightnessFirst: false
   }],
   ["lab", {
     space: Space.LAB,
     keywords: ["l", "a", "b"],
     scales: [PERCENT, LAB_AB_RANGE, LAB_AB_RANGE],
-    units: [1, 1, 1]
+    units: [1, 1, 1],
+    isLightnessFirst: true
   }],
   ["lch", {
     space: Space.LCH,
     keywords: ["l", "c", "h"],
     scales: [PERCENT, LCH_CHROMA_RANGE, FULL_TURN],
-    units: [1, 1, 1]
+    units: [1, 1, 1],
+    isLightnessFirst: true
   }],
   ["oklab", {
     space: Space.OKLAB,
     keywords: ["l", "a", "b"],
     scales: [1, OKLAB_AB_RANGE, OKLAB_AB_RANGE],
-    units: [1, 1, 1]
+    units: [1, 1, 1],
+    isLightnessFirst: true
   }],
   ["oklch", {
     space: Space.OKLCH,
     keywords: ["l", "c", "h"],
     scales: [1, OKLAB_AB_RANGE, FULL_TURN],
-    units: [1, 1, 1]
+    units: [1, 1, 1],
+    isLightnessFirst: true
   }]
 ]);
 const MIX_SPACES = new Map<string, Space>([
@@ -172,20 +181,35 @@ function channelValue({ text, scale, known }: {
   return isCalc ? evaluateNumberCalc(substituted) : null;
 }
 
+// A value read as a number or a keyword, never as a share of a scale.
+function unscaledValue({ text, known }: {
+  text: string;
+  known: ReadonlyMap<string, number>;
+}) {
+  const isPercent = parsePercent(text.trim()) !== null;
+  return isPercent ? null : channelValue({
+    text,
+    scale: 1,
+    known
+  });
+}
+
 function colorFromChannels({ spec, texts, alphaText, known }: {
   spec: FunctionSpec;
   texts: readonly string[];
   alphaText: string | undefined;
   known: ReadonlyMap<string, number>;
 }) {
-  const values = texts.map((text, index) => channelValue({
-    text,
-    scale: spec.scales[index] ?? 1,
-    known
-  }));
-  const alpha = alphaText === undefined ? 1 : channelValue({
+  const values = texts.map((text, index) => {
+    const isPercentLightness = index === 0 && spec.isLightnessFirst && parsePercent(text.trim()) !== null;
+    return isPercentLightness ? null : channelValue({
+      text,
+      scale: spec.scales[index] ?? 1,
+      known
+    });
+  });
+  const alpha = alphaText === undefined ? 1 : unscaledValue({
     text: alphaText,
-    scale: 1,
     known
   });
   const [first, second, third] = values;
@@ -437,7 +461,7 @@ function colorOf({ token, resolver }: {
  * A color as XAML spells it, for the CSS Color 4 functions (`oklch()`, `oklab()`,
  * `lab()`, `lch()`, `hwb()`), `color-mix()` in any of srgb, srgb-linear, xyz,
  * lab, lch, oklab, oklch, hsl and hwb (with a hue interpolation method), and
- * relative colors (`rgb(from var(--c) r g b / 50%)`), whose origin is a color or
+ * relative colors (`rgb(from var(--c) r g b / 0.5)`), whose origin is a color or
  * a `var()` of `lookup`; and for every color `parseColor` reads. Null when the
  * token is none of them or cannot be read.
  */

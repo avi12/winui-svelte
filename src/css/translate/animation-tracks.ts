@@ -2,13 +2,8 @@ import { parseEasing } from "./easing.ts";
 import type { Declaration, Keyframes, KeyframeStep, SourcePosition } from "./types.ts";
 import { parseDegrees } from "#src/css/parse/angles.js";
 import { parseColor } from "#src/css/parse/colors.js";
-import {
-  parseLength,
-  parseNumber,
-  parsePercent,
-  splitCommas,
-  splitWords
-} from "#src/css/parse/values.js";
+import { NOTATIONS } from "#src/css/parse/notation.js";
+import { parseLength, parseNumber, splitCommas, splitWords } from "#src/css/parse/values.js";
 
 /** The kinds of value WinUI animates: a Double, or a Color of a brush. */
 export const TrackKind = {
@@ -277,13 +272,13 @@ function rotationValues({ declaration, fail }: Reading) {
 
 function opacityValues({ declaration, fail }: Reading) {
   const word = declaration.value.trim();
-  const amount = parseNumber(word) ?? parsePercent(word);
+  const amount = parseNumber(word);
   const isAmount = amount !== null;
   return isAmount ? [doubleValue({
     key: "Opacity",
     target: "Opacity",
     value: amount
-  })] : fail(`opacity: expected a number or percentage, found "${word}"`);
+  })] : fail(`opacity: expected a number, found "${word}": ${NOTATIONS.alpha.advice}`);
 }
 
 function sizeValues({ target, reading }: {

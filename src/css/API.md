@@ -413,7 +413,7 @@ from the element's own value, and with more than one iteration the later
 iterations start from where the last one ended
 
 ```css
-@keyframes pulse { from { opacity: 1 } 50% { opacity: 0.4 } to { opacity: 1 } }
+@keyframes pulse { 0% { opacity: 1 } 50% { opacity: 0.4 } 100% { opacity: 1 } }
 .badge { animation: pulse 1.2s ease-in-out infinite }
 ```
 
@@ -880,7 +880,7 @@ so the window carries no parser for them (out-of-gamut colors are clipped)
   works in srgb, srgb-linear, xyz (xyz-d65), xyz-d50, lab, lch, oklab, oklch, hsl
   and hwb, interpolating premultiplied by alpha, with the hue method for the
   polar spaces
-- `rgb(from <origin> r g b / 50%)`, and `hsl`, `hwb`, `lab`, `lch`, `oklab`, `oklch`
+- `rgb(from <origin> r g b / 0.5)`, and `hsl`, `hwb`, `lab`, `lch`, `oklab`, `oklch`
   the same way: the origin's channels are keywords (`r g b`, `h s l`, `h w b`,
   `l a b`, `l c h`, `alpha`), written as they are or in a `calc()` of plain numbers
   (`calc(h + 120)`)
@@ -975,8 +975,26 @@ updates every channel
 | `%` inside `calc()`, `min()`, `max()`, `clamp()` | error | WinUI has no percentage lengths: write px, a Grid `*` track, or compute it in script |
 | any other unit | error | not a unit WinUI knows: write px, deg, s, ms or fr |
 
-A percentage that is not a length stays: `opacity: 70%`, gradient stops, colors,
-`transform-origin`, keyframe selectors, and `width: 100%` (a stretching element fills)
+A percentage that is not a length stays: gradient stops, color channels and
+`color-mix()` weights, `transform-origin`, keyframe selectors, and
+`width: 100%` (a stretching element fills)
+
+### Number or percentage
+
+CSS writes three values either way; the CSS layer takes one form, and
+`.stylelintrc.json` sets the same one, so the editor and the build never
+disagree (`src/css/parse/notation.ts` is the table; a test in
+`src/css/validate/notation.test.ts` runs stylelint and the compiler over the
+same CSS)
+
+| Value | Written | Rejected | stylelint rule |
+|---|---|---|---|
+| `opacity` and the alpha of a color | a number: `opacity: 0.5`, `rgb(0 0 0 / 0.5)` | `50%` | `alpha-value-notation: number` |
+| the lightness of `lab()`, `lch()`, `oklab()`, `oklch()` | a number: `oklch(0.7 0.15 200deg)` | `70%` | `lightness-notation: number` |
+| a keyframe selector | `from`, `to` or a percentage: `50%` is a share of the animation, not a length | any other word or a bare number | `keyframe-selector-notation: percentage-unless-within-keyword-only-block` |
+
+A block that mixes `from` or `to` with percentages is valid CSS and builds;
+stylelint asks for `0%` and `100%` there, so write the percentages
 
 ### Where a unit is checked
 
