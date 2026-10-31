@@ -46,7 +46,13 @@
   }
 
   // svelte-ignore state_referenced_locally
-  host.onCommand(() => {
+  host.onCommand(command => {
+    const isClose = command["cmd"] === "close";
+    if (isClose) {
+      exitApplication();
+      return;
+    }
+
     host.report({
       kind: "stats",
       clickedOpen: isClickedOpen,

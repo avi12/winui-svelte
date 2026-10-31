@@ -75,6 +75,10 @@ for (const { name, view } of VIEWS) {
       });
       assert.equal(native["nativeOpen"], true);
       assert.equal(native["nativeShown"], 1);
+
+      // Quit with the flyout still open: it must not hold the process.
+      assert.equal(await example.stop(), true, "the app did not leave while a flyout was open");
+      assert.equal(await example.exited, 0);
     } finally {
       example.kill();
     }
