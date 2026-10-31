@@ -63,3 +63,27 @@ test("a second copy redirects to the first, which hears it", {
     second?.kill();
   }
 });
+
+test("the application ends cleanly when its last window closes, with its timers running", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const example = ExampleProcess.start({
+    entry: "examples/app/main.ts",
+    flags: ["--key", `dev.winui-svelte.test.${randomUUID()}`]
+  });
+  try {
+    const stats = await example.settled({
+      command: {
+        cmd: "stats"
+      },
+      kind: "stats"
+    });
+    assert.equal(stats["isPrimary"], true, "the single-instance poll timer is running");
+
+    example.send({ cmd: "closeWindowOnly" });
+    assert.equal(await example.exited, 0, "no tick reads a control that is gone");
+  } finally {
+    example.kill();
+  }
+});

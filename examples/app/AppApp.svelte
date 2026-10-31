@@ -3,6 +3,7 @@
   import { flush } from "winui-svelte";
   import { ensureSingleInstance, notify } from "winui-svelte/app";
   import { StackPanel, TextBlock, Window } from "winui-svelte/components";
+  import type { WindowHandle } from "winui-svelte/components";
   import { exitApplication, systemSettings } from "winui-svelte/window";
 
   const WINDOW_HEIGHT = 240;
@@ -20,6 +21,8 @@
   let isPrimary: boolean | undefined = $state();
   let redirects = $state(0);
   let lastArguments = $state("");
+  let handle: WindowHandle | undefined = $state();
+  let isExitOnClose = true;
 
   function claim() {
     const single = ensureSingleInstance({
@@ -60,6 +63,13 @@
     }
   }
 
+  // The application ends because its last window closed, not because the app
+  // asked it to.
+  function closeWindowOnly() {
+    isExitOnClose = false;
+    handle?.close();
+  }
+
   function report() {
     flush();
     host.report({
@@ -74,7 +84,8 @@
   const commands = new Map<string, (command: ExampleCommand) => void>([
     ["stats", report],
     ["notify", showNotification],
-    ["close", () => exitApplication()]
+    ["close", () => exitApplication()],
+    ["closeWindowOnly", closeWindowOnly]
   ]);
   // svelte-ignore state_referenced_locally
   host.onCommand(command => commands.get(String(command["cmd"]))?.(command));
@@ -82,9 +93,10 @@
 
 <Window
   height={WINDOW_HEIGHT}
-  onclosed={exitApplication}
+  onclosed={() => isExitOnClose && exitApplication()}
   title="App example"
   width={WINDOW_WIDTH}
+  bind:handle
 >
   <StackPanel>
     <TextBlock>Primary copy: {isPrimary}</TextBlock>
