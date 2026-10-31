@@ -258,7 +258,7 @@ export function clipToRoundedRectangle({ hwnd, width, height, radius }: {
   }
 
   // The system owns the region once it is set.
-  const region = DynWin32Unsafe.pointer(DynWin32.toBigint(created));
+  const region = DynWin32Unsafe.pointer(BigInt.asUintN(UNSIGNED_BITS, DynWin32.toBigint(created)));
   setWindowRegion.invoke([DynWin32.handle(hwnd), region, DynWin32.i32(REDRAW)]);
 }
 

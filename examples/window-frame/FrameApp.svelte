@@ -107,10 +107,11 @@
 
   function refuseClose() {
     closeRequests++;
-    const isOpen = handle !== undefined;
+    const opened = handle;
+    const isOpen = opened !== undefined;
     const isHiding = isTrayOnClose && isOpen;
     if (isHiding) {
-      hideToTray(handle);
+      hideToTray(opened);
     }
 
     return isHiding;
@@ -141,9 +142,10 @@
       report("closeTried");
     }],
     ["restore", () => {
-      const isOpen = handle !== undefined;
+      const opened = handle;
+      const isOpen = opened !== undefined;
       if (isOpen) {
-        restoreFromTray(handle);
+        restoreFromTray(opened);
       }
 
       report("restored");
@@ -157,8 +159,16 @@
 </script>
 
 <Window
-  {...frame}
   activate={false}
+  cornerRadius={frame.cornerRadius}
+  isActivatable={frame.isActivatable}
+  isAlwaysOnTop={frame.isAlwaysOnTop}
+  isBorderless={frame.isBorderless}
+  isClickThrough={frame.isClickThrough}
+  isExcludedFromCapture={frame.isExcludedFromCapture}
+  isHidden={frame.isHidden}
+  isShownInSwitchers={frame.isShownInSwitchers}
+  isToolWindow={frame.isToolWindow}
   onclosed={() => exitApplication()}
   onclosing={refuseClose}
   title="Window frame example"
