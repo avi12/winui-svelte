@@ -213,7 +213,7 @@ Everything the generator decides by hand is a table in
   in `src/components/hand-written/items`; the component then takes `items`,
   `key` and `item` in place of its children and items source
 - Then run `pnpm gen:components` (it rewrites the components, the class list in
-  `package.json` and the README tables), `pnpm bindings` (the new classes need
+  `package.json`, the components table in API.md and the quick start in the README), `pnpm bindings` (the new classes need
   bindings) and `pnpm test`
   Put what the new components must do in
   `test/Slots.fixture.svelte` and its expectations in `test/mount-all.svelte.ts`

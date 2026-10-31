@@ -141,9 +141,9 @@ test("every source map points at TypeScript the package ships", { skip: !IS_BUIL
   }
 });
 
-test("the README's entry point table names every exports subpath", () => {
+test("the README and API.md between them name every exports subpath", () => {
   const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8")));
-  const readme = readFileSync(path.join(PACKAGE_ROOT, "README.md"), "utf8");
+  const readme = ["README.md", "API.md"].map(file => readFileSync(path.join(PACKAGE_ROOT, file), "utf8")).join("\n");
   const subpaths = Object.keys(manifest.exports).filter(key => key !== "." && key !== "./package.json");
   const unlisted = subpaths.filter(key => {
     const name = key.slice(2);
