@@ -37,6 +37,14 @@ project adheres to [Semantic Versioning](https://semver.org/)
   origin private file system) and `localStorage` / `sessionStorage`, each at
   `winui-svelte/web-apis/<name>` with WinUI extras
 
+- Web APIs for the page, timing, observers and animations: `document.visibilityState`,
+  the Fullscreen API and window events (`/web-apis/page`), `requestAnimationFrame`
+  and `requestIdleCallback` (`/web-apis/timing`), `ResizeObserver`,
+  `IntersectionObserver` and `MutationObserver` (`/web-apis/observers`), and
+  `element.animate()` with `Animation` and `KeyframeEffect`
+  (`/web-apis/animations`); element animations now pause, seek, reverse and
+  honour delay, iterations, direction, easing and fill
+
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support
 - Renderer: a tree that Svelte draws into as if it were the DOM, creating and

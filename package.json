@@ -306,6 +306,10 @@
       "types": "./dist/web-apis/index.d.ts",
       "default": "./dist/web-apis/index.js"
     },
+    "./web-apis/animations": {
+      "types": "./dist/web-apis/animations.d.ts",
+      "default": "./dist/web-apis/animations.js"
+    },
     "./web-apis/badging": {
       "types": "./dist/web-apis/badging.d.ts",
       "default": "./dist/web-apis/badging.js"
@@ -342,6 +346,14 @@
       "types": "./dist/web-apis/notification.d.ts",
       "default": "./dist/web-apis/notification.js"
     },
+    "./web-apis/observers": {
+      "types": "./dist/web-apis/observers.d.ts",
+      "default": "./dist/web-apis/observers.js"
+    },
+    "./web-apis/page": {
+      "types": "./dist/web-apis/page.d.ts",
+      "default": "./dist/web-apis/page.js"
+    },
     "./web-apis/push": {
       "types": "./dist/web-apis/push.d.ts",
       "default": "./dist/web-apis/push.js"
@@ -361,6 +373,10 @@
     "./web-apis/storage": {
       "types": "./dist/web-apis/storage.d.ts",
       "default": "./dist/web-apis/storage.js"
+    },
+    "./web-apis/timing": {
+      "types": "./dist/web-apis/timing.d.ts",
+      "default": "./dist/web-apis/timing.js"
     },
     "./web-apis/web-storage": {
       "types": "./dist/web-apis/web-storage.d.ts",
