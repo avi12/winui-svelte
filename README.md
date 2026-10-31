@@ -270,8 +270,8 @@ callback and Svelte's own flush runs
 
 Features beyond the controls come through the web's own APIs, wired to
 WinRT and Win32, so web libraries and web knowledge work unchanged:
-`Notification`, `navigator.permissions`, and the rest of the survey as they
-land; nothing is a bespoke API
+`Notification`, `navigator.permissions`, geolocation, the clipboard, media
+devices, Bluetooth and the rest of the table below; nothing is a bespoke API
 Each API is opt-in and installed by an explicit call, on the thread your
 app's code runs on (the window thread); an app that imports none pays nothing
 
@@ -333,53 +333,45 @@ Every feature falls in one of three kinds, decided in this order
   `scripts/codegen/tables.ts` and bound with `pnpm bindings:after-winapp`;
   nothing wraps what needs no wrapping
 
-| Web API | Subpath | State |
-| --- | --- | --- |
-| `Notification` (with buttons, inputs, progress, scenario and more) | `winui-svelte/web-apis/notification` | done |
-| `navigator.permissions`, `PermissionStatus` | `winui-svelte/web-apis` | done |
-| `PushManager`, `PushSubscription` (push events, `remoteId`) | `winui-svelte/web-apis/push` | done |
-| `navigator.setAppBadge`, `clearAppBadge` (status glyphs) | `winui-svelte/web-apis/badging` | done |
-| `launchQueue` (Launch Handler: files and protocol addresses) | `winui-svelte/web-apis/launch` | done |
-| geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
+| Web API | Subpath | Kind | Identity needed | State |
+| --- | --- | --- | --- | --- |
+| `navigator.permissions`, `PermissionStatus` | `winui-svelte/web-apis` | web | none | done |
+| `Notification` (buttons, inputs, progress, scenario) | `winui-svelte/web-apis/notification` | web plus extras | optional: an unpackaged app registers an `identity` and an `appUserModelId` | done |
+| `PushManager`, `PushSubscription` (`remoteId`) | `winui-svelte/web-apis/push` | web plus extras | package identity or a registered AppUserModelId | done |
+| `navigator.setAppBadge`, `clearAppBadge` (status glyphs) | `winui-svelte/web-apis/badging` | web plus extras | package identity or a registered AppUserModelId | done |
+| `launchQueue` (files and protocol addresses) | `winui-svelte/web-apis/launch` | web plus extras | none | done |
+| `navigator.geolocation` (position source, civic address) | `winui-svelte/web-apis/geolocation` | web plus extras | none | done |
+| `navigator.getBattery()` (capacity, charge rate) | `winui-svelte/web-apis/battery` | web plus extras | none | done |
+| `navigator.connection`, `online`, `offline` (cost, signal) | `winui-svelte/web-apis/network` | web plus extras | none | done |
+| `navigator.getGamepads()`, `GamepadHapticActuator` (trigger rumble) | `winui-svelte/web-apis/gamepad` | web plus extras | none | done |
+| `Accelerometer`, `Gyroscope`, `Magnetometer`, orientation and ambient light sensors (barometer, altimeter, compass) | `winui-svelte/web-apis/sensors` | web plus extras | none | done |
+| `screen`, `devicePixelRatio`, `getScreenDetails()` (monitor EDID data) | `winui-svelte/web-apis/screen` | web plus extras | none | done |
+| `navigator.clipboard`, `ClipboardItem`, `clipboardchange` (files, custom formats, history) | `winui-svelte/web-apis/clipboard` | web plus extras | none | done |
+| `navigator.share`, `navigator.canShare` | `winui-svelte/web-apis/share` | web plus extras | package identity, or a `window` to share from | done |
+| `showOpenFilePicker`, `showSaveFilePicker`, `showDirectoryPicker`, `FileSystem*Handle` | `winui-svelte/web-apis/file-system` | web plus extras | none | done |
+| `navigator.storage` (`estimate`, `persist`, origin private file system) | `winui-svelte/web-apis/storage` | web plus extras | none | done |
+| `localStorage`, `sessionStorage`, `StorageEvent` | `winui-svelte/web-apis/web-storage` | web plus extras | none | done |
+| `document.visibilityState`, focus, Fullscreen API, `document.title`, `window.close()` | `winui-svelte/web-apis/page` | web plus extras | none | done |
+| `requestAnimationFrame`, `requestIdleCallback` | `winui-svelte/web-apis/timing` | web | none | done |
+| `ResizeObserver`, `IntersectionObserver`, `MutationObserver` | `winui-svelte/web-apis/observers` | web plus extras | none | done |
+| `element.animate()`, `Animation`, `KeyframeEffect` | `winui-svelte/web-apis/animations` | web plus extras | none | done |
+| `navigator.mediaDevices` (`getUserMedia`, `getDisplayMedia`, `enumerateDevices`), `MediaStream`, `MediaRecorder` | `winui-svelte/web-apis/media-devices` | web plus extras | none (a camera or microphone needs the Windows privacy switch on) | done |
+| `speechSynthesis`, `SpeechSynthesisUtterance`, `SpeechRecognition` (SSML, silences, scenario, phrases) | `winui-svelte/web-apis/speech` | web plus extras | none | done |
+| `navigator.mediaSession`, `MediaMetadata` | `winui-svelte/web-apis/media-session` | web plus extras | none | done |
+| `navigator.bluetooth` (your own chooser, GATT, notifications, advertisements) | `winui-svelte/web-apis/bluetooth` | web plus extras | none | done |
+| `navigator.usb` (WinUSB devices) | `winui-svelte/web-apis/usb` | web plus extras | none | done |
+| `navigator.hid` (input, output and feature reports) | `winui-svelte/web-apis/hid` | web plus extras | none | done |
+| `navigator.serial` (byte streams, control signals) | `winui-svelte/web-apis/serial` | web plus extras | none | done |
+| `navigator.wakeLock` (screen) | `winui-svelte/web-apis/wake-lock` | web plus extras | none | done |
+| `IdleDetector` (user and screen state) | `winui-svelte/web-apis/idle` | web plus extras | none | done |
+| `navigator.credentials`, `PasswordCredential`, `PublicKeyCredential` (Windows Hello) | `winui-svelte/web-apis/credentials` | web plus extras | none | done |
+| `EyeDropper` | `winui-svelte/web-apis/eye-dropper` | web plus extras | none | done |
+| `navigator.contacts` (Contact Picker) | `winui-svelte/web-apis/contacts` | web plus extras | for most apps, package identity | done |
 
-| `navigator.geolocation` (with position source and civic address) | `winui-svelte/web-apis/geolocation` | done |
-| `navigator.getBattery()` (with capacity and charge rate) | `winui-svelte/web-apis/battery` | done |
-| `navigator.connection`, `onLine`, `online` and `offline` (with cost and signal) | `winui-svelte/web-apis/network` | done |
-| `navigator.getGamepads()`, `GamepadHapticActuator` (with trigger rumble) | `winui-svelte/web-apis/gamepad` | done |
-| `Accelerometer`, `Gyroscope`, `Magnetometer`, orientation and ambient light sensors (with barometer, altimeter, compass) | `winui-svelte/web-apis/sensors` | done |
-| `screen`, `devicePixelRatio`, `getScreenDetails()` (with monitor EDID data) | `winui-svelte/web-apis/screen` | done |
-| clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
-
-| `navigator.clipboard`, `ClipboardItem`, `clipboardchange` (with files, custom formats and history) | `winui-svelte/web-apis/clipboard` | done |
-| `navigator.share`, `navigator.canShare` (needs a package identity) | `winui-svelte/web-apis/share` | done |
-| `showOpenFilePicker`, `showSaveFilePicker`, `showDirectoryPicker`, `FileSystem*Handle` | `winui-svelte/web-apis/file-system` | done |
-| `navigator.storage` (`estimate`, `persist`, origin private file system) | `winui-svelte/web-apis/storage` | done |
-| `localStorage`, `sessionStorage`, `StorageEvent` | `winui-svelte/web-apis/web-storage` | done |
-| geolocation, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
-
-| `document.visibilityState`, focus, Fullscreen API, `document.title`, `window.close()` | `winui-svelte/web-apis/page` | done |
-| `requestAnimationFrame`, `requestIdleCallback` | `winui-svelte/web-apis/timing` | done |
-| `ResizeObserver`, `IntersectionObserver`, `MutationObserver` | `winui-svelte/web-apis/observers` | done |
-| `element.animate()`, `Animation`, `KeyframeEffect` | `winui-svelte/web-apis/animations` | done |
-| geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
-
-| `navigator.mediaDevices` (`getUserMedia`, `getDisplayMedia`, `enumerateDevices`), `MediaStream`, `MediaRecorder` (with camera zoom, exposure and focus, sharing mode, capture profiles) | `winui-svelte/web-apis/media-devices` | done (a screen capture delivers no frames yet) |
-| `speechSynthesis`, `SpeechSynthesisUtterance`, `SpeechRecognition` (with SSML, silences, scenario and phrases) | `winui-svelte/web-apis/speech` | done |
-| `navigator.mediaSession`, `MediaMetadata` (with media type, album fields, shuffle and repeat) | `winui-svelte/web-apis/media-session` | done |
-| geolocation, clipboard, share, file pickers, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
-
-| `navigator.bluetooth` (`requestDevice` through your own chooser, GATT, notifications, advertisements) | `winui-svelte/web-apis/bluetooth` | done |
-| `navigator.usb` (WinUSB devices) | `winui-svelte/web-apis/usb` | done |
-| `navigator.hid` (input reports, output and feature reports) | `winui-svelte/web-apis/hid` | done |
-| `navigator.serial` (byte streams, control signals) | `winui-svelte/web-apis/serial` | done |
-| `navigator.wakeLock` (screen) | `winui-svelte/web-apis/wake-lock` | done |
-| `IdleDetector` (user and screen state) | `winui-svelte/web-apis/idle` | done |
-| geolocation, clipboard, share, file pickers, media devices, speech, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
-
-| `navigator.credentials`, `PasswordCredential` (PasswordVault), WebAuthn `PublicKeyCredential` (Windows Hello) | `winui-svelte/web-apis/credentials` | done |
-| `EyeDropper` | `winui-svelte/web-apis/eye-dropper` | done |
-| `navigator.contacts` (Contact Picker) | `winui-svelte/web-apis/contacts` | done |
-| geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
+Every row is built and tested; the timers (`setTimeout`, `setInterval`,
+`setImmediate`) and `fetch` need no install, because the window thread has them
+from `runWindow` (see [Timers and I/O](API.md#timers-and-io))
+An "As is" class needs no row: every bound WinRT class is one import away
 
 ## Host integration
 

@@ -1791,6 +1791,8 @@ app can test its drop handling in a real window
 
 The standard Web APIs over WinRT and Win32, installed on demand; the package
 adds no bespoke API for a feature the web already names
+The README's Web APIs table lists every API with its subpath, kind and the
+identity it needs
 
 ### Installing
 
@@ -1806,14 +1808,17 @@ adds no bespoke API for a feature the web already names
   window, so install there only what needs none
 - `domException` and `DomErrorName` give the errors the specs name
   (`NotAllowedError`, `NotSupportedError`, `SecurityError`, `InvalidStateError`,
-  `NotFoundError`)
+  `NotFoundError`, `NotReadableError`, `QuotaExceededError` and the rest of
+  the closed set); a new API adds its name there, not as a local string
 - `HandlerEventTarget` is the `EventTarget` with `onclick`-style properties
 
 ### Permissions
 
 `installPermissions()` defines `navigator.permissions`; `Permissions`,
-`PermissionStatus` (an `EventTarget` with `change`) and `PermissionName`, `PermissionStateName`
-(`granted`, `denied`, `prompt`) are the spec's; an API registers its permission
+`PermissionStatus` (an `EventTarget` with `change`), `PermissionName` (the
+names the APIs register: `geolocation`, `accelerometer`, `screen-wake-lock`
+and so on) and `PermissionStateName` (`granted`, `denied`, `prompt`) are the
+spec's; an API registers its permission
 with `registerPermission({ name, provider })` and calls
 `announcePermissionChange(name)` when it moves, so open statuses fire `change`
 
@@ -2059,7 +2064,8 @@ Each is `install<Name>()` from its own subpath and takes an optional `backend`
   `windowsClipboardBackend()` is the real backend, for a test to wrap
 - `winui-svelte/web-apis/share`: `installShare()` defines `navigator.share`
   and `navigator.canShare` over the share pane
-  An app without a package identity rejects with `NotAllowedError`; `File`
+  An app without a package identity rejects with `NotAllowedError` unless
+  `installShare({ window })` gives the window to open the pane from; `File`
   objects are copied to a temporary folder first
   Extras on `ShareData`: `description`, `html`, `bitmap`, `custom`,
   `nativeFiles`
@@ -2924,7 +2930,7 @@ Not tried: the events need a real pointer, which a test must not inject
 | `toDataURL`, `toBlob`, `transferControlToOffscreen`, `captureStream` | No encoder is exposed on the canvas; `canvas.target.saveAsync` writes a PNG or JPEG file |
 | `getContext` of `webgl`, `webgl2`, `bitmaprenderer`; the `alpha`, `desynchronized` and `willReadFrequently` options | One 2D context, always with an alpha channel |
 | `scrollPathIntoView` | There is no element tree to scroll; the method is absent |
-| `requestAnimationFrame`, `devicePixelRatio`, `document`, `window`, `getComputedStyle` | Globals of a browser; a library that needs them gets them from its host (Node has none) |
+| `requestAnimationFrame`, `devicePixelRatio`, `document`, `window` | Globals of a browser, defined by the opt-in `winui-svelte/web-apis/timing`, `/screen` and `/page`; `getComputedStyle` has no counterpart |
 
 The working example is `examples/win2d`: `bar-chart.ts` draws a chart with
 nothing but the calls above, `Win2DApp.svelte` shows it in a `Canvas2D`, and
