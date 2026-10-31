@@ -1,9 +1,11 @@
+import { brushOf } from "#src/components/convert.js";
 import * as bindings from "#src/components/generated/bindings.js";
 import { XamlKind } from "#src/components/xaml-source.js";
 import { goToState, xamlOf } from "#src/components/xaml.js";
 import { registerStyleSheet } from "#src/css/index.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
+import { ThemeBrush } from "#src/enums.js";
 import { boxed } from "#src/renderer/host/values.js";
 import assert from "node:assert/strict";
 
@@ -27,6 +29,8 @@ const ROW_SHEET = ".row { padding: 8px; background-color: #123456 }";
 const ROW_SETTERS = 2;
 const CUSTOM_PADDING = 20;
 const DEFAULT_THEME = "Default";
+const ACCENT_RED = 255;
+const ACCENT_BLUE = 170;
 
 interface Checks {
   check(check: {
@@ -106,6 +110,35 @@ export function checkXamlBehaviours({ check, checkProps }: Checks) {
     },
     verify() {
       assert.ok(kept.template !== null, "the template object was not written");
+    }
+  });
+
+  check({
+    name: "a ThemeBrush key is a brush",
+    action() {
+      const brush = brushOf(ThemeBrush.TextFillColorSecondaryBrush);
+      assert.ok(brush instanceof bindings.Brush, "the theme brush is not a Brush");
+    }
+  });
+
+  check({
+    name: "overriding the accent reaches the controls' aliases of it (:root --accent-fill-color-default)",
+    action() {
+      const accent = translateStyleSheet({
+        file: "accent.svelte",
+        css: ":root { --accent-fill-color-default: #ff00aa }",
+        resources: loadWinuiCatalogue()
+      });
+      assert.deepEqual(accent.diagnostics, []);
+      registerStyleSheet(accent.sheet);
+      // The aliases are what the controls read; WinUI may keep answering the
+      // overridden key itself from what it cached before.
+      for (const key of ["ToggleSwitchFillOn", "RadioButtonOuterEllipseCheckedFill", "AccentButtonBackground"]) {
+        const found = bindings.Application.current.resources.lookup(boxed(key));
+        const brush = bindings.projectAs(found, bindings.SolidColorBrush);
+        const { r, g, b } = brush.color;
+        assert.deepEqual([r, g, b], [ACCENT_RED, 0, ACCENT_BLUE], `${key} did not follow the override`);
+      }
     }
   });
 

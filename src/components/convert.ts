@@ -397,13 +397,28 @@ export function brushOf(input: BrushInput) {
     throw new TypeError(`"${input}" is neither a color nor a resource the application holds`);
   }
 
-  const found = resources.lookup(key);
-  const isBrushResource = typeof found === "object" && found !== null && isBrush(found);
-  if (!isBrushResource) {
-    throw new TypeError(`the resource "${input}" is not a brush`);
+  return brushResource({
+    found: resources.lookup(key),
+    name: input
+  });
+}
+
+// A dictionary hands a resource back as a bare WinRT object, whatever it is
+// (a ThemeBrush key included): it is a brush when it answers as one.
+function brushResource({ found, name }: {
+  found: unknown;
+  name: string;
+}) {
+  const isProjected = typeof found === "object" && found !== null && isBrush(found);
+  if (isProjected) {
+    return found;
   }
 
-  return found;
+  try {
+    return projectAs(found, Brush);
+  } catch (error) {
+    throw new TypeError(`the resource "${name}" is not a brush`, { cause: error });
+  }
 }
 
 /** A time span prop as the bindings' `TimeSpan`; throws a `TypeError` for text that is not one. */

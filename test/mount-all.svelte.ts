@@ -550,6 +550,7 @@ function checkBehaviours({ connectors, failures }: {
     action: () => void;
   }) {
     count++;
+    trace(`behaviour ${name}`);
     try {
       action();
     } catch (error) {
