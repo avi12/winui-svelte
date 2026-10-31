@@ -391,6 +391,16 @@ export const lateClasses = [
     classes: ["DataReader"]
   },
   {
+    winmd: "Microsoft.UI.winmd",
+    namespace: "Microsoft.UI.Input",
+    classes: ["InputSystemCursor"]
+  },
+  {
+    winmd: COMPONENT_WINMD,
+    namespace: "Microsoft.UI.Xaml.Media.Imaging",
+    classes: ["WriteableBitmap"]
+  },
+  {
     winmd: COMPONENT_WINMD,
     namespace: "Microsoft.UI.Xaml.Hosting",
     classes: ["ElementCompositionPreview"]
