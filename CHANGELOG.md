@@ -26,6 +26,12 @@ project adheres to [Semantic Versioning](https://semver.org/)
   and the Launch Handler `launchQueue` over the start and the single-instance
   redirects (`winui-svelte/web-apis/push`, `/badging`, `/launch`)
 
+- Web APIs for location and device state: `navigator.geolocation`,
+  `navigator.getBattery()`, `navigator.connection` with `online` and
+  `offline`, `navigator.getGamepads()`, the Generic Sensor classes, and
+  `screen` with `getScreenDetails()`, each its own subpath under
+  `winui-svelte/web-apis/` with WinUI extras
+
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support
 - Renderer: a tree that Svelte draws into as if it were the DOM, creating and

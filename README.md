@@ -342,6 +342,14 @@ Every feature falls in one of three kinds, decided in this order
 | `launchQueue` (Launch Handler: files and protocol addresses) | `winui-svelte/web-apis/launch` | done |
 | geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
 
+| `navigator.geolocation` (with position source and civic address) | `winui-svelte/web-apis/geolocation` | done |
+| `navigator.getBattery()` (with capacity and charge rate) | `winui-svelte/web-apis/battery` | done |
+| `navigator.connection`, `onLine`, `online` and `offline` (with cost and signal) | `winui-svelte/web-apis/network` | done |
+| `navigator.getGamepads()`, `GamepadHapticActuator` (with trigger rumble) | `winui-svelte/web-apis/gamepad` | done |
+| `Accelerometer`, `Gyroscope`, `Magnetometer`, orientation and ambient light sensors (with barometer, altimeter, compass) | `winui-svelte/web-apis/sensors` | done |
+| `screen`, `devicePixelRatio`, `getScreenDetails()` (with monitor EDID data) | `winui-svelte/web-apis/screen` | done |
+| clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
+
 ## Host integration
 
 The window is a process (or a worker) that something else owns
@@ -1022,7 +1030,6 @@ build error with its file and line; nothing is silently ignored
 [`src/css/API.md`](src/css/API.md) is the interface; what maps:
 
 | CSS | WinUI |
-| --- | --- |
 | `margin`, `padding`, `border-width`, `border-color`, `border-radius` | `Margin`, `Padding`, `BorderThickness`, `BorderBrush`, `CornerRadius` |
 | `color`, `background-color`, `opacity` | `Foreground`, `Background`, `Opacity` |
 | `background-image` or `background` with `linear-gradient()` or `radial-gradient()` | a `LinearGradientBrush` or `RadialGradientBrush` Background (a sheet that uses one carries the parser; one that does not, does not) |
@@ -1283,7 +1290,6 @@ attachments, because a component prop would pull this code into every app
 ## Entry points
 
 | Specifier | What |
-| --- | --- |
 | `winui-svelte` | `control`, `withControl`, `mountControl`, `registerControls`, `dispatch` / `flush`, the value helpers |
 | `winui-svelte/components` | every control as a component, and its props type; `xamlOf`, `goToState`, `installXaml` |
 | `winui-svelte/enums` | every closed set a prop or option takes (`HorizontalAlignment`, `Backdrop`, `ThemeBrush`...), each a value and a type of one name ([`API.md`](API.md#closed-sets-winui-svelteenums)) |
@@ -1489,8 +1495,6 @@ Stated plainly, so nobody finds them by surprise:
 
 In this repository (run these at its root):
 
-| | |
-| --- | --- |
 | `pnpm test` | the unit tests, the generator's tests, and the mount test: every component made and linked in a real WinUI window that opens off screen and never takes focus |
 | `pnpm test:windows` | every test that opens real windows, one file at a time, in background windows (`WINUI_SVELTE_BACKGROUND=1`) at below-normal priority; the results are under `.verify/test-windows`; it needs an ordinary desktop session |
 | `pnpm lint` | every check: oxlint, ESLint (Google TypeScript style), stylelint, `tsc`, `svelte-check`, the editor check, WebStorm's inspections (`pnpm check:webstorm`, where WebStorm is installed), fallow, the check that the generated files are current and the tarball check; `pnpm lint:summary` counts the violations per rule and folder |

@@ -306,25 +306,45 @@
       "types": "./dist/web-apis/index.d.ts",
       "default": "./dist/web-apis/index.js"
     },
-    "./web-apis/notification": {
-      "types": "./dist/web-apis/notification.d.ts",
-      "default": "./dist/web-apis/notification.js"
-    },
     "./web-apis/badging": {
       "types": "./dist/web-apis/badging.d.ts",
       "default": "./dist/web-apis/badging.js"
     },
-    "./web-apis/push": {
-      "types": "./dist/web-apis/push.d.ts",
-      "default": "./dist/web-apis/push.js"
+    "./web-apis/battery": {
+      "types": "./dist/web-apis/battery.d.ts",
+      "default": "./dist/web-apis/battery.js"
     },
-    "./web-apis/push": {
-      "types": "./dist/web-apis/push.d.ts",
-      "default": "./dist/web-apis/push.js"
+    "./web-apis/gamepad": {
+      "types": "./dist/web-apis/gamepad.d.ts",
+      "default": "./dist/web-apis/gamepad.js"
+    },
+    "./web-apis/geolocation": {
+      "types": "./dist/web-apis/geolocation.d.ts",
+      "default": "./dist/web-apis/geolocation.js"
     },
     "./web-apis/launch": {
       "types": "./dist/web-apis/launch.d.ts",
       "default": "./dist/web-apis/launch.js"
+    },
+    "./web-apis/network": {
+      "types": "./dist/web-apis/network.d.ts",
+      "default": "./dist/web-apis/network.js"
+    },
+    "./web-apis/notification": {
+      "types": "./dist/web-apis/notification.d.ts",
+      "default": "./dist/web-apis/notification.js"
+    },
+    "./web-apis/push": {
+      "types": "./dist/web-apis/push.d.ts",
+      "default": "./dist/web-apis/push.js"
+    },
+    "./web-apis/screen": {
+      "types": "./dist/web-apis/screen.d.ts",
+      "default": "./dist/web-apis/screen.js"
+    },
+    "./web-apis/sensors": {
+      "types": "./dist/web-apis/sensors.d.ts",
+      "default": "./dist/web-apis/sensors.js"
     },
     "./package.json": "./package.json"
   },
