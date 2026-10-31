@@ -60,3 +60,9 @@ project adheres to [Semantic Versioning](https://semver.org/)
   primary monitor in HDR), `color-gamut` (the monitor's EDID primaries) and
   `prefers-reduced-data` (a metered connection) are read from Windows, not
   constants
+- Media: `writeableBitmapOf` and `setBitmapPixels` (`winui-svelte/media`) make
+  an image source from raw RGBA pixels
+- Share: `share` takes the `window` to share from and works without a package
+  identity, through `IDataTransferManagerInterop`
+- CSS: `cursor` (`winui-svelte/css/cursor`) sets the element's cursor to a
+  system cursor shape

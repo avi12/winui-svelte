@@ -1749,17 +1749,23 @@ shouldPersist })`, `clear()` and `onChange(callback)` (returns what stops it)
 `launchUri(url)`, `launchFile(path)`, `openFolder(path)` and
 `revealInExplorer(path)` (starts `explorer.exe /select`, because the Launcher
 cannot select an item)
-`share({ title, text, html, uri, files })` opens the share pane and throws
-`ShareUnavailableError` where Windows has none for the process
+`share({ title, text, html, uri, files, window })` opens the share pane from
+`window` (a `WindowHandle` or the native `Window`) and throws
+`ShareUnavailableError` where Windows has none; without `window` it needs a
+package identity
 
 What works from an unpackaged process (checked from `node.exe`): the drag and
 drop data mapping on real `DataPackage` objects (text, HTML, link, custom
 formats, files, folders, a picture), `Clipboard.GetContent` and the Launcher
 queries
-The share pane does not: `DataTransferManager.GetForCurrentView` fails with
-"cannot be called while the app is in the background" without a package
-identity (the interop call `GetForWindow` is not in the metadata, so the
-bindings cannot make it)
+The share pane needs a window there: `DataTransferManager.GetForCurrentView`
+fails with "cannot be called while the app is in the background" without a
+package identity, so `share({ window })` calls `IDataTransferManagerInterop`
+(`GetForWindow`, then `ShowShareUIForWindow`), which is in shobjidl_core.h and
+not in the metadata: its two methods are declared by hand at the slots after
+`IUnknown`'s (it does not derive from `IInspectable`)
+`GetForWindow` is checked from `node.exe`; `ShowShareUIForWindow` is not, because
+it would open the real pane
 The Launcher's `findUriSchemeHandlers` returns none without identity
 
 ### Names and testing

@@ -19,5 +19,5 @@ export { FileKind, NativeFile, nativeFileAt } from "./native-file.ts";
 export type { FilePickerOptions, PickerOwner, PickFilesOptions, PickSaveFileOptions } from "./pickers.ts";
 export { filePicker, pickFiles, pickSaveFile } from "./pickers.ts";
 export { PickerLocation } from "#src/window/pickers.js";
-export type { ShareContent } from "./share.ts";
+export type { ShareContent, ShareWindow } from "./share.ts";
 export { share, ShareUnavailableError } from "./share.ts";

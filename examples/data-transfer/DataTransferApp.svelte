@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
+  import { dataTransferManagerOf } from "#src/data-transfer/share-interop.js";
   import type { Border as BorderControl } from "#winui/microsoft/ui/xaml/controls/Border";
   import type { TextBlock as TextBlockControl } from "#winui/microsoft/ui/xaml/controls/TextBlock";
   import { control, flush } from "winui-svelte";
@@ -14,10 +15,12 @@
     nativeFileAt,
     simulateDrop
   } from "winui-svelte/data-transfer";
+  import type { WindowHandle } from "winui-svelte/window";
   import { exitApplication } from "winui-svelte/window";
 
   const WINDOW_HEIGHT = 360;
   const WINDOW_WIDTH = 480;
+  const NO_WINDOW = BigInt(0);
 
   interface Props {
     host: ExampleHost;
@@ -27,6 +30,7 @@
 
   enableDragEvents();
 
+  let handle = $state<WindowHandle>();
   let zone: BorderControl | undefined;
   let rawZone: BorderControl | undefined;
   let source: TextBlockControl | undefined;
@@ -115,6 +119,24 @@
         message: String(error)
       }));
     }],
+    ["shareManager", () => {
+      // GetForWindow only: ShowShareUIForWindow would open the real pane.
+      try {
+        const hwnd = handle?.appWindow.id.value ?? NO_WINDOW;
+        const manager = dataTransferManagerOf(hwnd);
+        const stop = manager.onDataRequested(() => undefined);
+        stop();
+        host.report({
+          kind: "shareManager",
+          isManager: typeof manager.onDataRequested === "function"
+        });
+      } catch (error) {
+        host.report({
+          kind: "shareManager",
+          error: String(error)
+        });
+      }
+    }],
     ["close", () => exitApplication()]
   ]);
   // svelte-ignore state_referenced_locally
@@ -131,6 +153,7 @@
   }}
   title="Data transfer example"
   width={WINDOW_WIDTH}
+  bind:handle
 >
   <StackPanel>
     <Border
