@@ -23,6 +23,16 @@ test("a bare Window with a title bar opens with no control registered by hand", 
       kind: "info"
     });
     assert.equal(opened["isOpen"], true);
+    const elementHeight = numberOf({
+      report: opened,
+      field: "elementHeight"
+    });
+    const desiredHeight = numberOf({
+      report: opened,
+      field: "desiredHeight"
+    });
+    assert.ok(desiredHeight > 0, "the content asks for a height");
+    assert.ok(desiredHeight < elementHeight, "a stretched element is as tall as its space; desiredHeight is what its content asks for");
     assert.equal(
       numberOf({
         report: opened,

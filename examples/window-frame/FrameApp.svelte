@@ -4,7 +4,7 @@
   import { clipSizeOf, ExtendedStyle, hasExtendedStyles, isExcludedFromCapture } from "#src/window/native.js";
   import type { WindowProps } from "#src/window/window-host.svelte.js";
   import { Grid, projectAs } from "#src/winui.js";
-  import { flush } from "winui-svelte";
+  import { elementSize, flush } from "winui-svelte";
   import { TextBlock, Window } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
   import { hideToTray, restoreFromTray } from "winui-svelte/tray";
@@ -28,6 +28,7 @@
   // svelte-ignore state_referenced_locally
   let frame = $state<WindowFrame>({ isHidden: host.options["hidden"] === "true" ? true : undefined });
   let handle: WindowHandle | undefined = $state();
+  const size = elementSize();
   let isTrayOnClose = false;
   let closeRequests = 0;
 
@@ -86,6 +87,8 @@
       rowCount: isOpen ? projectAs(content, Grid).rowDefinitions.size : 0,
       isVisible: handle?.appWindow.isVisible,
       scale: handle?.scale,
+      elementHeight: size.height,
+      desiredHeight: size.desiredHeight,
       ...frameReadback(),
       closeRequests
     });
@@ -153,7 +156,7 @@
   {#snippet titleBar()}
     <TextBlock>Window frame example</TextBlock>
   {/snippet}
-  <grid class="content">
+  <grid class="content" {@attach size.attach}>
     <TextBlock>Rows and columns of a grid, with nothing registered by hand.</TextBlock>
   </grid>
 </Window>

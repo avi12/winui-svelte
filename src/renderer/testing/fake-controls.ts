@@ -227,15 +227,20 @@ export class FakeElement {
   readonly margin = null;
   actualWidth = 0;
   actualHeight = 0;
+  desiredSize = {
+    width: 0,
+    height: 0
+  };
   actualTheme = 1;
   // The FocusState each Focus call was given, in order.
   readonly focusCalls: number[] = [];
   isFocusable = true;
   private readonly sizeListeners = new Set<() => void>();
+  private readonly layoutListeners = new Set<() => void>();
   private readonly themeListeners = new Set<() => void>();
 
   get listenerCount() {
-    return this.sizeListeners.size + this.themeListeners.size;
+    return this.sizeListeners.size + this.layoutListeners.size + this.themeListeners.size;
   }
 
   onSizeChanged(listener: () => void) {
@@ -243,6 +248,28 @@ export class FakeElement {
     return () => {
       this.sizeListeners.delete(listener);
     };
+  }
+
+  onLayoutUpdated(listener: () => void) {
+    this.layoutListeners.add(listener);
+    return () => {
+      this.layoutListeners.delete(listener);
+    };
+  }
+
+  // The content asks for another size while the element keeps its own (a
+  // stretched panel): only a layout pass is raised.
+  relayout({ width, height }: {
+    width: number;
+    height: number;
+  }) {
+    this.desiredSize = {
+      width,
+      height
+    };
+    for (const listener of this.layoutListeners) {
+      listener();
+    }
   }
 
   onActualThemeChanged(listener: () => void) {
