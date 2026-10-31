@@ -165,7 +165,7 @@ test("a listener's preventDefault marks the WinUI event handled", { skip: !IS_AV
   const { handlers, canvas } = setup();
   canvas.addEventListener("wheel", event => event.preventDefault());
   const prevented = {
-    ...fakeArguments({
+    ...plainArguments({
       updateKind: InputPointerUpdateKind.Other,
       wheel: WHEEL_DELTA
     }),
@@ -174,7 +174,7 @@ test("a listener's preventDefault marks the WinUI event handled", { skip: !IS_AV
   handlers.onpointerwheelchanged(SENDER, asPointerArguments(prevented));
   assert.equal(prevented.handled, true);
   const allowed = {
-    ...fakeArguments({
+    ...plainArguments({
       updateKind: InputPointerUpdateKind.LeftButtonPressed,
       isLeft: true
     }),

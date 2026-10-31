@@ -1113,9 +1113,9 @@ function emitLevelImports({ level, imports }: {
       from: "../bindings.ts",
       isType: true
     }),
-    ...[...imports.eventArguments].sort().flatMap(([argument, module]) => importLine({
+    ...sorted(imports.eventArguments.keys()).flatMap(argument => importLine({
       names: [argument],
-      from: module,
+      from: imports.eventArguments.get(argument) ?? "",
       isType: true
     }))
   ];

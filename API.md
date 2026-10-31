@@ -162,6 +162,18 @@ Raw kebab elements: tag = WinUI class, kebab attribute = camelCase property,
 `<host element={control} />` places a control made elsewhere,
 `ontoggled={handler}` = the event `Toggled`
 
+A component's event prop is `(sender, args) => void`
+The sender is the control that raised the event, as its class
+(`sender.isOn` on a `ToggleSwitch`); WinUI itself passes a bare object
+The arguments of an event whose delegate is a named one (`RoutedEventHandler`,
+`PointerEventHandler`, `KeyEventHandler`) are also a bare object, typed
+`EventArguments<RoutedEventArgs>`: `projectAs(args, RoutedEventArgs)` reads
+them as the class the type names (the import of the class is the app's, so an
+app that never reads the arguments carries none of it)
+An event of a `TypedEventHandler` gets both as their classes
+An exception a handler throws is written to stderr with its stack and handed
+to `runWindow`'s `onerror`; the application goes on
+
 `<property name="childrenTransitions" collection="transition-collection">`
 fills a property WinUI leaves null with a collection: when the property holds
 none and the element has a control in it, the renderer makes the class the
