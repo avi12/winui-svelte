@@ -321,6 +321,10 @@
       "types": "./dist/web-apis/sensors.d.ts",
       "default": "./dist/web-apis/sensors.js"
     },
+    "./web-apis/screen": {
+      "types": "./dist/web-apis/screen.d.ts",
+      "default": "./dist/web-apis/screen.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
