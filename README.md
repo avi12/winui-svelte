@@ -105,8 +105,6 @@ written with it
 
 > **Status: pre-release.** What is described here is what the repository's
 > tests and the [hello example](https://github.com/avi12/winui-svelte/tree/main/examples/hello) run
-> See
-> [CHANGELOG.md](https://github.com/avi12/winui-svelte/blob/main/CHANGELOG.md)
 
 ## Requirements
 
