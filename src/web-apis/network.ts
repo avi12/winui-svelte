@@ -1,6 +1,7 @@
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineNavigatorProperty, defineProperty } from "./install.ts";
 import { listenToSource } from "./source-events.ts";
+import { windowEvents } from "./window-events.ts";
 import type { Delivery } from "#src/devices/delivery.js";
 import type { NetworkReading, NetworkSource } from "#src/devices/network.js";
 import { NetworkConnectivityLevel, NetworkCostType, windowsNetworkSource } from "#src/devices/network.js";
@@ -241,47 +242,6 @@ export interface NetworkInstallOptions {
 
   /** How a change reaches the thread the app runs on; the default is the UI thread's dispatcher queue. */
   readonly deliver?: Delivery;
-}
-
-interface WindowEvents {
-  readonly dispatch: (event: Event) => void;
-  readonly uninstall: () => void;
-}
-
-// A runtime with no window gets just enough of one for `online` and `offline`;
-// one that has an event target (another install defined it) is used as it is.
-function windowEvents() {
-  const hasEventTarget = typeof globalThis.dispatchEvent === "function";
-  if (hasEventTarget) {
-    return {
-      dispatch: event => globalThis.dispatchEvent(event),
-      uninstall() {}
-    } satisfies WindowEvents;
-  }
-
-  const target = new HandlerEventTarget();
-  const uninstalls = [
-    defineProperty({
-      name: "addEventListener",
-      value: target.addEventListener.bind(target)
-    }),
-    defineProperty({
-      name: "removeEventListener",
-      value: target.removeEventListener.bind(target)
-    }),
-    defineProperty({
-      name: "dispatchEvent",
-      value: target.dispatchEvent.bind(target)
-    })
-  ];
-  return {
-    dispatch: event => target.dispatchEvent(event),
-    uninstall() {
-      for (const uninstall of uninstalls) {
-        uninstall();
-      }
-    }
-  } satisfies WindowEvents;
 }
 
 /**
