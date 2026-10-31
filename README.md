@@ -43,7 +43,8 @@ signature
   the app goes on ([API.md](https://github.com/avi12/winui-svelte/blob/main/API.md))
 - **Shipping:** `buildApp` from `winui-svelte/vite` builds one file per entry
   that plain Node runs; minify is off unless you pass `isMinified: true`, and
-  stays off for an app that draws with Win2D ([Entry points](#entry-points))
+  stays off for an app that draws with Win2D ([Production build](#production-build));
+  a tray app starts hidden with `<Window isHidden>`, which never shows the window
 - **Testing:** run a window test on a hidden desktop where you can; never inject
   real mouse or keyboard input
 - **Not a browser:** there is no DOM, no `document`, no `%` layout; anything in
@@ -356,6 +357,16 @@ node dist-app/main.js
   that draws with Win2D, whose overloads are found by parameter name, or
   that places a control with the raw `<host>` tag, which takes its type from
   the class's own name
+- Minify is off by default because of what the saving costs: the production
+  example's `window.js` is 20.7 MB plain and 10.8 MB minified, but removing
+  whitespace and dead code without renaming leaves 17.5 MB, so the saving is
+  the renaming, and renaming is what breaks a Win2D overload (found by the
+  names of its parameters in the bindings' source) and the raw `<host>` tag
+  (typed by the class's own name); an app that uses neither can turn it on
+- A tray app that starts with no window uses `<Window isHidden>`: the window
+  is created and never shown (the first show honors the prop), so there is no
+  flash to hide afterwards; show it later with `restoreFromTray(handle)`, and
+  hide it again with `hideToTray(handle)`
 - `config` is merged over the Vite settings, for an `alias` or a plugin of
   your own
 
