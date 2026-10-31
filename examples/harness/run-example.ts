@@ -9,8 +9,7 @@ import { receiveMessageOnPort } from "node:worker_threads";
 
 // Loaded through the module server, like an app's own modules: the example's
 // start() runs on the UI thread once WinUI is up, and the host's commands are
-// taken off the port by a dispatcher timer (WinUI holds the thread, so the
-// port's events never fire).
+// taken off the port by a dispatcher timer.
 
 const COMMAND_MILLISECONDS = 30;
 const ticksPerMillisecond = 10_000n;

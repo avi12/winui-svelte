@@ -5,8 +5,8 @@ import { createInterface } from "node:readline";
 import { parseArgs } from "node:util";
 import { MessageChannel, Worker } from "node:worker_threads";
 
-// Runs an example in a real WinUI window, on a worker (WinUI's loop never
-// gives its thread back), its modules served by Vite.
+// Runs an example in a real WinUI window, on a worker (the window's thread
+// is the worker's, not the main thread's), its modules served by Vite.
 //
 //   node --disable-warning=ExperimentalWarning --enable-source-maps \
 //     examples/harness/launch.ts <entry> [--name value ...]

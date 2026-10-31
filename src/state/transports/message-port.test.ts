@@ -29,24 +29,3 @@ test("messages cross a port by its events", async () => {
     n: 1
   }]);
 });
-
-test("with `poll`, nothing arrives until the app's timer drains the port", async () => {
-  const { port1, port2 } = new MessageChannel();
-  const seen: Json[] = [];
-  const drainer = { drain() {} };
-  createMessagePortTransport({
-    port: port1,
-    poll(next) {
-      drainer.drain = next;
-      return () => {};
-    }
-  }).listen(listenerInto(seen));
-  port2.postMessage({ n: 1 });
-  port2.postMessage({ n: 2 });
-  await new Promise(resolve => setTimeout(resolve, 20));
-  assert.deepEqual(seen, []);
-  drainer.drain();
-  assert.deepEqual(seen, [{ n: 1 }, { n: 2 }]);
-  port1.close();
-  port2.close();
-});

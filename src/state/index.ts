@@ -13,7 +13,7 @@ export type {
 } from "./protocol.ts";
 export { MessageType, patchDataSchema, PatchOperation, snapshotDataSchema } from "./protocol.ts";
 export { MemoryEnd } from "./transports/memory.ts";
-export type { MessagePortOptions, MessagePortSetup } from "./transports/message-port.ts";
+export type { MessagePortSetup } from "./transports/message-port.ts";
 export { createMessagePortTransport } from "./transports/message-port.ts";
 export type { StdioStreams } from "./transports/stdio.ts";
 export { createStdioTransport, reserveStdout } from "./transports/stdio.ts";

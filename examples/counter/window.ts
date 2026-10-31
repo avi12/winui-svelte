@@ -5,10 +5,8 @@ import { runOnUiThread } from "winui-svelte/thread";
 import { z } from "zod";
 
 // The counter example's UI thread: the package's window start around its state
-// layer. The host's messages come in through a MessagePort drained by a
-// DispatcherQueue timer, and no code here calls flushSync.
-
-const POLL_MILLISECONDS = 30;
+// layer. The host's messages come in through a MessagePort, by its own events,
+// and no code here calls flushSync.
 
 const workerDataSchema = z.object({ port: z.instanceof(MessagePort) });
 
@@ -26,22 +24,14 @@ await runOnUiThread(async () => {
   registerHooks(svelteHooks());
   // Registers every WinUI control with the renderer, for the raw tags app.svelte uses.
   await import("winui-svelte/components");
-  const { createWindow, runWindow, startTimer } = await import("winui-svelte/window");
+  const { createWindow, runWindow } = await import("winui-svelte/window");
   const { createHostChannel, createMessagePortTransport } = await import("winui-svelte/state");
   const { default: appComponent } = await import("./App.svelte");
   const port = portFrom(workerData);
   await runWindow({
     onStart() {
       const channel = createHostChannel({
-        transport: createMessagePortTransport({
-          port,
-          poll(drain) {
-            return startTimer({
-              milliseconds: POLL_MILLISECONDS,
-              onTick: drain
-            });
-          }
-        })
+        transport: createMessagePortTransport({ port })
       });
       createWindow({
         component: appComponent,

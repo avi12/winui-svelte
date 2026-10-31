@@ -4,7 +4,7 @@ import { svelteHooks } from "winui-svelte/testing";
 import { runOnUiThread } from "winui-svelte/thread";
 
 // The UI thread of the scheduling experiment: the package's window start
-// (startScheduled, then Application.create), a window holding probe.svelte, and
+// (runWindow), a window holding probe.svelte, and
 // three ways to change its state from outside Svelte.
 
 const TIMER_TRIGGER_MILLISECONDS = 1000;

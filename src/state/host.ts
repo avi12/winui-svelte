@@ -13,7 +13,7 @@ export type {
   StateProtocol
 } from "./protocol.ts";
 export { isJsonObject, MessageType, PatchOperation } from "./protocol.ts";
-export type { MessagePortOptions, MessagePortSetup } from "./transports/message-port.ts";
+export type { MessagePortSetup } from "./transports/message-port.ts";
 export { createMessagePortTransport } from "./transports/message-port.ts";
 export type { StdioStreams } from "./transports/stdio.ts";
 export { createStdioTransport, reserveStdout } from "./transports/stdio.ts";

@@ -13,8 +13,8 @@ Node drains microtasks when each callback returns, and Svelte's
 Proven for a control event, a dispatcher timer and
 a host message by `examples/scheduling/run.ps1`
 A host message arrives on its port as any `MessagePort` event does, since the
-thread's libuv turns between WinUI's messages; `createMessagePortTransport`'s
-`poll` option, which takes the port off on a timer, is no longer needed there
+thread's libuv turns between WinUI's messages (`createMessagePortTransport` uses
+the port's events)
 
 ## Svelte's tools here
 

@@ -24,15 +24,14 @@ export interface WindowModuleRunner {
 
 /**
  * The event HMR's lines are sent under, for the server to print: this
- * thread's own stderr is written by its event loop, which WinUI holds, so all
- * but the first line would wait for the window to close. (Nor do they go to
- * stdout, which is often the host's channel, as Edge+'s core reads it line by
- * line.)
+ * worker's own stderr is written through the main thread, which may be busy
+ * or gone when the window closes, so the lines go to the server to print.
+ * (Nor do they go to stdout, which is often the host's channel, as Edge+'s
+ * core reads it line by line.)
  */
 export const LOG_EVENT = "winui:log";
 
-// An invoke that times out uses a Node timer, which never fires while WinUI
-// holds the thread; a reply always comes.
+// The module server always answers, so an invoke waits without a deadline.
 const NO_TIMEOUT = 0;
 const FULL_RELOAD = "full-reload";
 

@@ -12,15 +12,12 @@ import * as bindings from "#src/components/generated/bindings.js";
 import type { LevelMetadata } from "#src/components/generated/metadata.js";
 import { levels } from "#src/components/generated/metadata.js";
 import ToggleSwitch from "#src/components/generated/ToggleSwitch.svelte";
-import { installMedia } from "#src/components/media.js";
 import { ticksDate } from "#src/components/values.js";
-import { installXaml } from "#src/components/xaml.js";
-import { installCss } from "#src/css/index.js";
 import type { NativeValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
 import { call, isRecord, read, vectorOf } from "#src/renderer/host/reflect.js";
 import { backgroundPlacement, keepInBackground } from "#src/window/background.js";
-import * as winui from "#src/winui.js";
+import { runWindow } from "#src/window/index.js";
 import { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
 import { Application } from "#winui/microsoft/ui/xaml/Application";
 import { Window } from "#winui/microsoft/ui/xaml/Window";
@@ -1530,16 +1527,13 @@ export async function run(report: (result: Report) => void) {
   const connectors = await loadConnectors();
   await preloadAttachedOwners(Object.keys(attachedOwners).filter(isUnnamedByFixture));
   trace("loaded");
-  await Application.startScheduled(() => {
-    Application.create(() => {
-      installCss(winui);
-      installXaml();
-      installMedia();
+  await runWindow({
+    onStart() {
       launch({
         connectors,
         report,
         throughRenderer: [checkComponentThroughRenderer, checkSlotsThroughRenderer]
       });
-    });
+    }
   });
 }

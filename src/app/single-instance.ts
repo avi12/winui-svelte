@@ -6,10 +6,7 @@ import type { Json } from "#src/messaging/json.js";
 import { uiThreadDispatcherIfReady } from "#src/scheduling.js";
 import { createMessagePortTransport } from "#src/state/transports/message-port.js";
 import type { Transport } from "#src/state/transports/transport.js";
-import { startTimer } from "#src/window/timers.js";
 import { z } from "zod";
-
-const POLL_MILLISECONDS = 100;
 
 // What the worker posts for each line it read: the parsed JSON, or its failure.
 const pipeMessageSchema = z.object({ value: z.unknown() });
@@ -107,13 +104,7 @@ function serverOf(pipe: PipeServer) {
   return {
     isPrimary: true,
     close: () => pipe.close(),
-    transport: createMessagePortTransport<Json>({
-      port: pipe.port,
-      poll: drain => startTimer({
-        milliseconds: POLL_MILLISECONDS,
-        onTick: drain
-      })
-    })
+    transport: createMessagePortTransport<Json>({ port: pipe.port })
   } satisfies InstanceServer;
 }
 

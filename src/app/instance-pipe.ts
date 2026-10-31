@@ -7,10 +7,9 @@ import { MessageChannel, receiveMessageOnPort, Worker } from "node:worker_thread
 import type { MessagePort } from "node:worker_threads";
 
 // The single-instance link: a named pipe per key and user, served from a
-// worker thread. The UI thread's own Node loop never turns (WinUI holds it),
-// so a pipe opened there would never accept; the worker's loop is free. The
-// UI thread waits on shared memory for the one answer (am I first?), then
-// drains the worker's port on a timer of its own.
+// worker thread. The pipe lives off the UI thread so that a busy window never delays an
+// accept. The UI thread waits on shared memory for the one answer (am I
+// first?), then takes the worker's messages from its port.
 
 const PIPE_PREFIX = "\\\\.\\pipe\\winui-svelte-";
 const HASH_LENGTH = 32;
