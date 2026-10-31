@@ -293,6 +293,10 @@
       "types": "./dist/web-apis/index.d.ts",
       "default": "./dist/web-apis/index.js"
     },
+    "./web-apis/notification": {
+      "types": "./dist/web-apis/notification.d.ts",
+      "default": "./dist/web-apis/notification.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
