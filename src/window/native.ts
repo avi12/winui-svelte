@@ -1,8 +1,8 @@
 import type { MessageQueue, MessageSource } from "./message-pump.ts";
 import { dispatchNextMessage } from "./message-pump.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
-import { DynWin32 } from "@microsoft/dynwinrt/win32/unsafe";
-import { bind, numberOf, pointerOf } from "#src/win32-calls.js";
+import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
+import { bind, numberOf, pointerOf, withMemory } from "#src/win32-calls.js";
 
 // The window's only flat Win32 calls: the rest is WinUI's own API.
 
@@ -62,6 +62,7 @@ export function ownWindow({ hwnd, owner }: {
 
 const EXTENDED_STYLE_INDEX = -20;
 const NO_STYLES = 0n;
+const UNSIGNED_BITS = 64;
 const VIRTUAL_SCREEN_LEFT = 76;
 const VIRTUAL_SCREEN_TOP = 77;
 const VIRTUAL_SCREEN_WIDTH = 78;
@@ -112,6 +113,14 @@ function extendedStylesOf(hwnd: bigint) {
   return current === null ? NO_STYLES : DynWin32.toBigint(current);
 }
 
+/** Whether the window `hwnd` has every extended style bit of `styles` on. */
+export function hasExtendedStyles({ hwnd, styles }: {
+  hwnd: bigint;
+  styles: bigint;
+}) {
+  return (extendedStylesOf(hwnd) & styles) === styles;
+}
+
 /** Turns the extended window style bits `styles` of the window `hwnd` on or off, keeping the rest. */
 export function changeExtendedStyles({ hwnd, styles, isOn }: {
   hwnd: bigint;
@@ -119,8 +128,163 @@ export function changeExtendedStyles({ hwnd, styles, isOn }: {
   isOn: boolean;
 }) {
   const held = extendedStylesOf(hwnd);
-  const changed = isOn ? held | styles : held & ~styles;
+  const changed = isOn ? held | styles : BigInt.asUintN(UNSIGNED_BITS, held & ~styles);
   setWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(EXTENDED_STYLE_INDEX), DynWin32.i64(changed)]);
+}
+
+const WDA_NONE = 0;
+const WDA_EXCLUDEFROMCAPTURE = 0x11;
+const LWA_ALPHA = 2;
+const OPAQUE = 255;
+const NO_COLOR_KEY = 0;
+const REDRAW = 1;
+const DISPLAY_AFFINITY_BYTES = 4;
+const DISPLAY_AFFINITY_ALIGNMENT = 4;
+const RECT_BYTES = 16;
+const RECT_LEFT_OFFSET = 0;
+const RECT_TOP_OFFSET = 4;
+const RECT_RIGHT_OFFSET = 8;
+const RECT_BOTTOM_OFFSET = 12;
+const RECT_ALIGNMENT = 4;
+
+const setWindowDisplayAffinity = bind({
+  dll: "user32.dll",
+  entryPoint: "SetWindowDisplayAffinity",
+  parameters: ["handle", "u32"],
+  returnType: "i32"
+});
+
+const getWindowDisplayAffinity = bind({
+  dll: "user32.dll",
+  entryPoint: "GetWindowDisplayAffinity",
+  parameters: ["handle", "pointer"],
+  returnType: "i32"
+});
+
+const setLayeredWindowAttributes = bind({
+  dll: "user32.dll",
+  entryPoint: "SetLayeredWindowAttributes",
+  parameters: ["handle", "u32", "u32", "u32"],
+  returnType: "i32"
+});
+
+const createRoundRectRegion = bind({
+  dll: "gdi32.dll",
+  entryPoint: "CreateRoundRectRgn",
+  parameters: ["i32", "i32", "i32", "i32", "i32", "i32"],
+  returnType: "i64"
+});
+
+const setWindowRegion = bind({
+  dll: "user32.dll",
+  entryPoint: "SetWindowRgn",
+  parameters: ["handle", "pointer", "i32"],
+  returnType: "i32"
+});
+
+const getWindowRegionBox = bind({
+  dll: "user32.dll",
+  entryPoint: "GetWindowRgnBox",
+  parameters: ["handle", "pointer"],
+  returnType: "i32"
+});
+
+/**
+ * Keeps the window `hwnd` out of screenshots, screen recordings and screen
+ * sharing (it shows as black or not at all there), or puts it back in.
+ */
+export function excludeFromCapture({ hwnd, isExcluded }: {
+  hwnd: bigint;
+  isExcluded: boolean;
+}) {
+  const affinity = isExcluded ? WDA_EXCLUDEFROMCAPTURE : WDA_NONE;
+  setWindowDisplayAffinity.invoke([DynWin32.handle(hwnd), DynWin32.u32(affinity)]);
+}
+
+/** Whether the window `hwnd` is kept out of screen capture. */
+export function isExcludedFromCapture(hwnd: bigint) {
+  return withMemory({
+    size: DISPLAY_AFFINITY_BYTES,
+    alignment: DISPLAY_AFFINITY_ALIGNMENT,
+    use(memory) {
+      getWindowDisplayAffinity.invoke([DynWin32.handle(hwnd), pointerOf(memory)]);
+      return memory.readU32(0) === WDA_EXCLUDEFROMCAPTURE;
+    }
+  });
+}
+
+/**
+ * Makes the window `hwnd` a layered window that is fully opaque: what a
+ * click-through window needs, since the transparent style lets clicks pass
+ * only for a layered window.
+ */
+export function makeLayeredOpaque(hwnd: bigint) {
+  changeExtendedStyles({
+    hwnd,
+    styles: ExtendedStyle.layered,
+    isOn: true
+  });
+  setLayeredWindowAttributes.invoke([
+    DynWin32.handle(hwnd),
+    DynWin32.u32(NO_COLOR_KEY),
+    DynWin32.u32(OPAQUE),
+    DynWin32.u32(LWA_ALPHA)
+  ]);
+}
+
+/**
+ * Clips the window `hwnd` to a rounded rectangle of `width` by `height` device
+ * pixels with corners of `radius`; what is outside shows the desktop and takes
+ * no clicks. The edge is not anti-aliased.
+ */
+export function clipToRoundedRectangle({ hwnd, width, height, radius }: {
+  hwnd: bigint;
+  width: number;
+  height: number;
+  radius: number;
+}) {
+  const diameter = radius * 2;
+  const created = createRoundRectRegion.invoke([
+    DynWin32.i32(0),
+    DynWin32.i32(0),
+    DynWin32.i32(width + 1),
+    DynWin32.i32(height + 1),
+    DynWin32.i32(diameter),
+    DynWin32.i32(diameter)
+  ]).returnValue;
+  const isCreated = created !== null;
+  if (!isCreated) {
+    return;
+  }
+
+  // The system owns the region once it is set.
+  const region = DynWin32Unsafe.pointer(DynWin32.toBigint(created));
+  setWindowRegion.invoke([DynWin32.handle(hwnd), region, DynWin32.i32(REDRAW)]);
+}
+
+/** Takes the clip of `clipToRoundedRectangle` away: the window is whole again. */
+export function clearWindowClip(hwnd: bigint) {
+  setWindowRegion.invoke([DynWin32.handle(hwnd), DynWin32Unsafe.pointer(null), DynWin32.i32(REDRAW)]);
+}
+
+/** The size of the window `hwnd`'s clip in device pixels; null when it has none. */
+export function clipSizeOf(hwnd: bigint) {
+  return withMemory({
+    size: RECT_BYTES,
+    alignment: RECT_ALIGNMENT,
+    use(memory) {
+      const kind = numberOf(getWindowRegionBox.invoke([DynWin32.handle(hwnd), pointerOf(memory)]).returnValue);
+      const isClipped = kind > 0;
+      if (!isClipped) {
+        return null;
+      }
+
+      return {
+        width: memory.readI32(RECT_RIGHT_OFFSET) - memory.readI32(RECT_LEFT_OFFSET),
+        height: memory.readI32(RECT_BOTTOM_OFFSET) - memory.readI32(RECT_TOP_OFFSET)
+      };
+    }
+  });
 }
 
 const MESSAGE_BYTES = 48;

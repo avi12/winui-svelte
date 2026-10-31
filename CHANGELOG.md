@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/)
 
 ### Changed
 
+- Window: a bare `Window` and `Grid` register the row and column definitions
+  they set (a title bar no longer throws `rowDefinitions needs row-definition`)
+- Window: `hideToTray`, `restoreFromTray` and the new `setShownInSwitchers` do
+  not throw `SetShownInSwitchers failed 0x80004001` for a window with no
+  taskbar button
+
 - Window: the message pump offers every message to
   `ContentPreTranslateMessage` first, as WinUI's own loop does, so keyboard
   accelerators, access keys, focus navigation and text input work while
@@ -21,6 +27,11 @@ project adheres to [Semantic Versioning](https://semver.org/)
 
 ### Added
 
+- Window: frame props for windows that are not windows: `isBorderless`,
+  `isShownInSwitchers`, `isToolWindow`, `isActivatable`, `isClickThrough`,
+  `isExcludedFromCapture`, `isHidden` and `cornerRadius`, also on
+  `createWindow`; `isAlwaysOnTop` now applies in a background run too, and
+  dropping it puts the window back
 - Web APIs (`winui-svelte/web-apis`): opt-in installers that define the
   standard Web APIs over WinRT and Win32, a `runWindow` `webApis` option,
   `navigator.permissions`, and `Notification` over app notifications with

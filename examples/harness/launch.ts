@@ -40,6 +40,9 @@ const { values, positionals } = parseArgs({
     },
     file: {
       type: "string"
+    },
+    hidden: {
+      type: "string"
     }
   }
 });
