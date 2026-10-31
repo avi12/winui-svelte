@@ -39,7 +39,7 @@ test("speechSynthesis lists the installed voices", context => {
     assert.ok(voice);
     assert.ok(voice.name.length > 0);
     assert.ok(voice.lang.length > 0);
-    assert.ok(["male", "female"].includes(voice.gender));
+    assert.match(String(voice.gender), /^(male|female)$/u);
     assert.equal(voices.filter(candidate => candidate.default).length, 1);
     context.diagnostic(`${voices.length} voices, first: ${voice.name} (${voice.lang})`);
   } finally {
