@@ -123,6 +123,7 @@
     "examples/navigation/main.ts",
     "examples/tree/main.ts",
     "examples/overlays/main.ts",
+    "examples/flyout-click/main.ts",
     "examples/services/main.ts",
     "examples/media/main.ts",
     "examples/media-elements/main.ts",
