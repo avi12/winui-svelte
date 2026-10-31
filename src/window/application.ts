@@ -1,5 +1,6 @@
 import { createMessagePump } from "./message-pump.ts";
 import { createMessageSource, requestFineTimerResolution } from "./native.ts";
+import { runTeardown } from "./teardown.ts";
 import { stopAllTimers, useDispatcherTimers } from "./timers.ts";
 import { uiTimers } from "./ui-timers.ts";
 import { startXamlThread } from "./xaml-thread.ts";
@@ -100,8 +101,8 @@ export async function runWindow(options: RunWindowOptions) {
     stopListening?.();
     restoreTimerResolution();
     stopAllTimers();
-    held.manager.release();
-    held.controller.release();
+    runTeardown();
+    held.release();
   }
 }
 

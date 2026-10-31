@@ -1,3 +1,4 @@
+import { onTeardown } from "./teardown.ts";
 import { uiTimers } from "./ui-timers.ts";
 import type { TimerBackend } from "./ui-timers.ts";
 import { DispatcherQueue } from "#src/winui.js";
@@ -54,7 +55,8 @@ function createDispatcherBackend(fire: () => void) {
  */
 export function useDispatcherTimers() {
   uiTimers().useBackend(createDispatcherBackend);
-  DispatcherQueue.getForCurrentThread().onceShutdownStarting(stopAllTimers);
+  const stopListening = DispatcherQueue.getForCurrentThread().onceShutdownStarting(stopAllTimers);
+  onTeardown(stopListening);
 }
 
 /**

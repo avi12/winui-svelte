@@ -1,4 +1,5 @@
 import { DynWinRtMethodSig, DynWinRtType, DynWinRtValue, WinGuid } from "@microsoft/dynwinrt";
+import { reportUiError } from "#src/ui-errors.js";
 
 // What `Application.Start` does before its loop, done by hand because the
 // loop is ours (message-pump.ts): a dispatcher queue on this thread, then the
@@ -16,6 +17,9 @@ const MANAGER_CLASS = "Microsoft.UI.Xaml.Hosting.WindowsXamlManager";
 const MANAGER_STATICS_IID = "56cb591d-de97-539f-881d-8ccdc44fa6c4";
 const MANAGER_IID = "85a2e562-7e8f-5333-a104-a3e672a2ffee";
 const INITIALIZE_FOR_CURRENT_THREAD_SLOT = 6;
+// IClosable.Close, the first method after IInspectable's.
+const CLOSABLE_IID = "30d5a829-7fa4-4026-83bb-d75bae4ea99e";
+const CLOSE_SLOT = 6;
 
 function createOnCurrentThread() {
   const controller = DynWinRtType.runtimeClass(CONTROLLER_CLASS, DynWinRtType.interface(WinGuid.parse(CONTROLLER_IID)));
@@ -34,19 +38,39 @@ function initializeForCurrentThread() {
   return statics.method(INITIALIZE_FOR_CURRENT_THREAD_SLOT).invoke(factory, []);
 }
 
+function closeManager(manager: ReturnType<typeof initializeForCurrentThread>) {
+  const closable = DynWinRtType.registerInterface("IClosable", WinGuid.parse(CLOSABLE_IID))
+    .addMethod("Close", new DynWinRtMethodSig());
+  closable.method(CLOSE_SLOT).invoke(manager.cast(WinGuid.parse(CLOSABLE_IID)), []);
+}
+
 /**
  * Gives this thread a dispatcher queue and the XAML framework on it, with
  * `createApplication` run in between: the application must exist before the
  * framework is initialized (the other order fails with a catastrophic error),
  * and the queue before both. Returns what keeps them alive, which the caller
- * holds until the application has ended.
+ * holds until the application has ended, and releases with `release`.
  */
 export function startXamlThread(createApplication: () => void) {
   const controller = createOnCurrentThread();
   createApplication();
   const manager = initializeForCurrentThread();
   return {
-    controller,
-    manager
+    // The manager is closed, not just released: closing is what shuts XAML
+    // down, here, while the Node environment can still take the callbacks it
+    // raises; released alone it is shut down when the thread is torn down.
+    release() {
+      try {
+        closeManager(manager);
+      } catch (error) {
+        reportUiError({
+          error,
+          origin: "closing XAML"
+        });
+      }
+
+      manager.release();
+      controller.release();
+    }
   };
 }

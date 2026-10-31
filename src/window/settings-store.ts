@@ -1,4 +1,5 @@
 import { FAKE_SETTINGS_VARIABLE, fakeSettingsSource } from "./fake-settings.ts";
+import { onTeardown } from "./teardown.ts";
 import { uiThreadDispatcher } from "#src/scheduling.js";
 import type { UIColorType } from "#src/winui.js";
 import { AccessibilitySettings, UIColorType as ColorKind, UISettings } from "#src/winui.js";
@@ -76,10 +77,17 @@ export function createSettingsStore({ source, runOnUiThread }: {
         source.onAdvancedEffectsEnabledChanged(notify),
         source.onHighContrastChanged(notify)
       ];
-      return () => {
-        for (const stop of stops) {
+      // The system raises these on threads of its own, so they end with the application.
+      const forget = onTeardown(stopAll);
+      function stopAll() {
+        for (const stop of stops.splice(0)) {
           stop();
         }
+      }
+
+      return () => {
+        forget();
+        stopAll();
       };
     }
   } satisfies SettingsStore;

@@ -22,6 +22,7 @@ import {
   ownWindow
 } from "./native.ts";
 import { createScaleTracker } from "./scale.ts";
+import { onTeardown } from "./teardown.ts";
 import { WindowHandle } from "./window-handle.ts";
 import type { FrameworkElement } from "#src/winui.js";
 import {
@@ -331,6 +332,7 @@ class WindowHost {
       unsubscribe();
     }
 
+    this.handle.guardClose(() => false);
     this.handle.close();
   }
 
@@ -849,9 +851,14 @@ class WindowHost {
  */
 export function attachWindow(options: AttachOptions) {
   const host = new WindowHost(options);
+  const forget = onTeardown(() => host.dispose());
+  host.handle.window.onClosed(forget);
   return {
     handle: host.handle,
-    dispose: () => host.dispose()
+    dispose() {
+      forget();
+      host.dispose();
+    }
   };
 }
 
