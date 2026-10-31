@@ -11,8 +11,6 @@ import type { MediaCapture } from "#winui/windows/media/capture/MediaCapture";
 
 const ID_PENALTY = 4;
 const FACING_PENALTY = 2;
-const NOT_READABLE = "NotReadableError";
-const OVERCONSTRAINED = "OverconstrainedError";
 
 export type { MediaTrackConstraints, MediaTrackConstraintSet, VideoMode } from "./media-constraints.ts";
 
@@ -153,7 +151,7 @@ export class OverconstrainedError extends DOMException {
   readonly constraint: string;
 
   constructor(constraint: string, message = "") {
-    super(message, OVERCONSTRAINED);
+    super(message, DomErrorName.OVERCONSTRAINED);
     this.constraint = constraint;
   }
 }
@@ -180,7 +178,7 @@ function facingSettingsOf(panel: CameraPanel) {
 }
 
 function notReadable(message: string) {
-  return new DOMException(message, NOT_READABLE);
+  return new DOMException(message, DomErrorName.NOT_READABLE);
 }
 
 /** The standard `MediaDeviceInfo`. */

@@ -1,5 +1,6 @@
 import { appDataFolder, AppDataLocation } from "./app-data-folder.ts";
 import type { AppDataEnvironment } from "./app-data-folder.ts";
+import { DomErrorName } from "./dom-exception.ts";
 import { defineProperty } from "./install.ts";
 import { startTimer } from "#src/window/timers.js";
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
@@ -12,7 +13,6 @@ const MAXIMUM_WAIT_MILLISECONDS = 2000;
 const BYTES_PER_MEBIBYTE = 1_048_576;
 const QUOTA_MEBIBYTES = 5;
 const QUOTA_CHARACTERS = QUOTA_MEBIBYTES * BYTES_PER_MEBIBYTE;
-const QUOTA_EXCEEDED = "QuotaExceededError";
 const STORAGE_EVENT = "storage";
 
 const storedItems = z.record(z.string(), z.string());
@@ -195,7 +195,7 @@ export class Storage {
     const growth = name.length + text.length - (oldValue === null ? 0 : name.length + oldValue.length);
     const isOverQuota = sizeOf(items) + growth > hooks.quotaCharacters;
     if (isOverQuota) {
-      throw new DOMException(`Failed to execute 'setItem' on 'Storage': Setting the value of '${name}' exceeded the quota.`, QUOTA_EXCEEDED);
+      throw new DOMException(`Failed to execute 'setItem' on 'Storage': Setting the value of '${name}' exceeded the quota.`, DomErrorName.QUOTA_EXCEEDED);
     }
 
     items.set(name, text);

@@ -26,9 +26,6 @@ import {
 } from "node:fs";
 import path from "node:path";
 
-const TYPE_MISMATCH = "TypeMismatchError";
-const INVALID_MODIFICATION = "InvalidModificationError";
-const NO_MODIFICATION_ALLOWED = "NoModificationAllowedError";
 const PERMISSION_GRANTED = "granted";
 const SWAP_SUFFIX = ".swap";
 const PARENT_ENTRY = "..";
@@ -65,7 +62,7 @@ function translated(error: unknown) {
   const isOccupied = code === "EEXIST" || code === "ENOTEMPTY";
   if (isOccupied) {
     return fileSystemError({
-      name: INVALID_MODIFICATION,
+      name: DomErrorName.INVALID_MODIFICATION,
       message
     });
   }
@@ -73,7 +70,7 @@ function translated(error: unknown) {
   const isDenied = code === "EACCES" || code === "EPERM" || code === "EBUSY";
   if (isDenied) {
     return fileSystemError({
-      name: NO_MODIFICATION_ALLOWED,
+      name: DomErrorName.NO_MODIFICATION_ALLOWED,
       message
     });
   }
@@ -497,7 +494,7 @@ export class FileSystemDirectoryHandle extends FileSystemHandle {
     const isMatch = isDirectory === (kind === "directory");
     if (!isMatch) {
       throw fileSystemError({
-        name: TYPE_MISMATCH,
+        name: DomErrorName.TYPE_MISMATCH,
         message: `The path supplied exists, but was not an entry of requested type: ${path.basename(location)}`
       });
     }

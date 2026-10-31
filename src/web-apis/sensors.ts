@@ -1,3 +1,4 @@
+import { DomErrorName } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineProperty } from "./install.ts";
 import { PermissionStateName, registerPermission } from "./permissions.ts";
@@ -19,7 +20,6 @@ const HALF_TURN_DEGREES = 180;
 const RADIANS_PER_DEGREE = Math.PI / HALF_TURN_DEGREES;
 const MILLISECONDS_PER_SECOND = 1000;
 const MATRIX_SIZE = 16;
-const NOT_READABLE_ERROR = "NotReadableError";
 
 /** The sensors this module offers; the last three are not in the Generic Sensor API and are WinUI-only. */
 export const SensorKind = {
@@ -450,7 +450,7 @@ export class Sensor<Kind extends SensorKind = SensorKind> extends HandlerEventTa
   }
 
   private fail(message: string) {
-    this.dispatchEvent(new SensorErrorEvent("error", { error: new DOMException(message, NOT_READABLE_ERROR) }));
+    this.dispatchEvent(new SensorErrorEvent("error", { error: new DOMException(message, DomErrorName.NOT_READABLE) }));
   }
 }
 
@@ -547,7 +547,7 @@ class OrientationBase<Kind extends "absolute-orientation" | "relative-orientatio
 
     const matrix = this.value?.matrix;
     if (!matrix) {
-      throw new DOMException("The sensor has no reading yet", NOT_READABLE_ERROR);
+      throw new DOMException("The sensor has no reading yet", DomErrorName.NOT_READABLE);
     }
 
     const [m11 = 0, m12 = 0, m13 = 0, m21 = 0, m22 = 0, m23 = 0, m31 = 0, m32 = 0, m33 = 0] = matrix;

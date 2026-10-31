@@ -6,7 +6,14 @@ export const DomErrorName = {
   INVALID_STATE: "InvalidStateError",
   ABORT: "AbortError",
   NOT_FOUND: "NotFoundError",
-  NETWORK: "NetworkError"
+  NETWORK: "NetworkError",
+  NOT_READABLE: "NotReadableError",
+  OVERCONSTRAINED: "OverconstrainedError",
+  SYNTAX: "SyntaxError",
+  QUOTA_EXCEEDED: "QuotaExceededError",
+  TYPE_MISMATCH: "TypeMismatchError",
+  INVALID_MODIFICATION: "InvalidModificationError",
+  NO_MODIFICATION_ALLOWED: "NoModificationAllowedError"
 } as const;
 /** One of the values of `DomErrorName`. */
 export type DomErrorName = (typeof DomErrorName)[keyof typeof DomErrorName];

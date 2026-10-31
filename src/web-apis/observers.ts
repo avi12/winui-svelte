@@ -1,3 +1,4 @@
+import { DomErrorName } from "./dom-exception.ts";
 import { defineProperty } from "./install.ts";
 import type { NativeValue } from "#src/native-value.js";
 import { isRecord, read } from "#src/renderer/host/reflect.js";
@@ -11,7 +12,6 @@ import type {
 } from "#src/renderer/tree/dom.js";
 import { dispatch } from "#src/scheduling.js";
 
-const SYNTAX_ERROR = "SyntaxError";
 const MAX_MARGIN_VALUES = 4;
 const PERCENT = 100;
 const MARGIN_VALUE = /^(-?\d+(?:\.\d+)?)(px|%)$/u;
@@ -322,7 +322,7 @@ function parseMargin(text: string) {
   const values = parts.map(part => MARGIN_VALUE.exec(part));
   const isInvalid = parts.length > MAX_MARGIN_VALUES || values.some(match => match === null);
   if (isInvalid) {
-    throw new DOMException(`"${text}" is not a root margin: use up to four lengths in px or %`, SYNTAX_ERROR);
+    throw new DOMException(`"${text}" is not a root margin: use up to four lengths in px or %`, DomErrorName.SYNTAX);
   }
 
   const [top, right = top, bottom = top, left = right] = values.map(match => ({
