@@ -786,8 +786,8 @@ knows better supplies it (`installMatchMedia({ inputs: { devices: ... } })`)
 | `color-index` | range | always 0: no display uses an indexed palette |
 | `monochrome` | range | always 0: the display is a color one |
 | `grid` | range | always 0: a window is a bitmap display |
-| `color-gamut` | keyword | srgb, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet |
-| `dynamic-range`, `video-dynamic-range` | keyword | standard, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet |
+| `color-gamut` | keyword | the primary monitor's EDID primaries (DisplayMonitor.RedPrimary, GreenPrimary, BluePrimary): srgb, p3 when their triangle is 1.25 times sRGB's, rec2020 at 1.75 times; srgb until the monitor has been opened |
+| `dynamic-range`, `video-dynamic-range` | keyword | high when Windows shows the primary monitor in HDR (QueryDisplayConfig and DisplayConfigGetDeviceInfo with DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO), read again when the displays change; standard otherwise |
 | `hover`, `any-hover` | keyword | read from Windows.Devices.Input (`MouseCapabilities`, `TouchCapabilities`, `PointerDevice`) by the same reader as `winui-svelte/devices/input`, read again when an input device comes or goes; hover is none for touch only |
 | `pointer`, `any-pointer` | keyword | read from Windows.Devices.Input: fine for a mouse, touchpad or pen, coarse when touch is the only pointer |
 | `scan` | keyword | always progressive |
@@ -799,7 +799,7 @@ knows better supplies it (`installMatchMedia({ inputs: { devices: ... } })`)
 | `prefers-reduced-motion` | keyword | UISettings.AnimationsEnabled |
 | `prefers-reduced-transparency` | keyword | UISettings.AdvancedEffectsEnabled (Transparency effects) |
 | `forced-colors` | keyword | AccessibilitySettings.HighContrast |
-| `prefers-reduced-data` | keyword | no-preference, or what the app supplies: Windows.Networking.Connectivity.NetworkInformation is not in the generated bindings (only ConnectionCost is) |
+| `prefers-reduced-data` | keyword | reduce on a metered connection (NetworkInformation.GetInternetConnectionProfile().GetConnectionCost(): a Fixed or Variable cost), read again on NetworkStatusChanged |
 | `inverted-colors` | keyword | always none: Windows tells apps of no color inversion |
 | `light-level` | keyword | always normal: no ambient light sensor is read |
 | `nav-controls` | keyword | always back |

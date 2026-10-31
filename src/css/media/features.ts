@@ -126,6 +126,7 @@ const REDUCE = "reduce";
 const SCROLL = "scroll";
 const SINGLE_SEGMENT = 1;
 const COLOR_BITS = 8;
+const HDR_SOURCE = "high when Windows shows the primary monitor in HDR (QueryDisplayConfig and DisplayConfigGetDeviceInfo with DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO), read again when the displays change; standard otherwise";
 const DISPLAY_SOURCE = "the primary monitor (DisplayArea), in device pixels";
 const VIEWPORT_SOURCE = "the window's client area in a stylesheet; in matchMedia the size the app supplies (the primary monitor otherwise)";
 const SCALE_SOURCE = "the element's XamlRoot.RasterizationScale in a stylesheet; in matchMedia the scale the app supplies (1 otherwise)";
@@ -331,10 +332,10 @@ export const MEDIA_FEATURES: ReadonlyMap<string, MediaFeature> = new Map<string,
     order: Object.values(ColorGamut),
     read: inputs => inputs.gamut(),
     changes: ["dynamicRange"],
-    source: "srgb, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet"
+    source: "the primary monitor's EDID primaries (DisplayMonitor.RedPrimary, GreenPrimary, BluePrimary): srgb, p3 when their triangle is 1.25 times sRGB's, rec2020 at 1.75 times; srgb until the monitor has been opened"
   }],
-  ["dynamic-range", dynamicRange("standard, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet")],
-  ["video-dynamic-range", dynamicRange("standard, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet")],
+  ["dynamic-range", dynamicRange(HDR_SOURCE)],
+  ["video-dynamic-range", dynamicRange(HDR_SOURCE)],
   ["hover", pointer({
     read: hoverOf,
     source: "read from Windows.Devices.Input (MouseCapabilities, TouchCapabilities, PointerDevice: a mouse, touchpad or pen can hover), read again when an input device comes or goes"
@@ -401,7 +402,7 @@ export const MEDIA_FEATURES: ReadonlyMap<string, MediaFeature> = new Map<string,
     falseKeyword: NO_PREFERENCE,
     read: inputs => (inputs.isMetered() ? REDUCE : NO_PREFERENCE),
     changes: ["connection"],
-    source: "no-preference, or what the app supplies: Windows.Networking.Connectivity.NetworkInformation is not in the generated bindings (only ConnectionCost is)"
+    source: "reduce on a metered connection (NetworkInformation.GetInternetConnectionProfile().GetConnectionCost(): a Fixed or Variable cost), read again on NetworkStatusChanged"
   }],
   ["inverted-colors", keyword({
     answer: NONE,

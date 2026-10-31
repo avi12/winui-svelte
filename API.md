@@ -1322,7 +1322,7 @@ Libraries that call `window.matchMedia`, such as Svelte's `MediaQuery` from
 `svelte/reactivity`, work once it is installed: the Vite plugin makes that class
 read the installed `matchMedia` when it is made (before it, it holds nothing)
 
-Pointing devices are read from Windows.Devices.Input, by the reader `winui-svelte/devices/input` shares (`readInputCapabilities`); where Windows does not tell, the answers are defaults an app can replace:
+Pointing devices are read from Windows.Devices.Input, by the reader `winui-svelte/devices/input` shares (`readInputCapabilities`); HDR and the colour gamut from the display configuration and the monitor's EDID, the metered connection from `NetworkInformation`; where Windows does not tell, the answers are defaults an app can replace:
 `installMatchMedia({ inputs: { viewport, scale, devices, presentation, isHdr,
 gamut, isMetered }, watch })` takes the readers (and, in `watch`, the events that
 flip them)

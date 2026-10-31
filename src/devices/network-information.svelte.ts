@@ -29,6 +29,17 @@ export interface NetworkSource {
   subscriptions: readonly Subscription[];
 }
 
+/**
+ * Whether a connection cost counts as metered: a fixed data plan, or a
+ * variable one that charges by use.
+ *
+ * @param costType - The connection's `NetworkCostType`.
+ * @returns True for `Fixed` and `Variable`.
+ */
+export function isMeteredCost(costType: NetworkCostType) {
+  return costType === NetworkCostType.Fixed || costType === NetworkCostType.Variable;
+}
+
 const DISCONNECTED = {
   connectivity: NetworkConnectivityLevel.None,
   profileName: "",
@@ -120,8 +131,7 @@ export function networkInformation(options: NetworkInformationOptions = {}) {
       return read().profileName;
     },
     get isMetered() {
-      const { costType } = read();
-      return costType === NetworkCostType.Fixed || costType === NetworkCostType.Variable;
+      return isMeteredCost(read().costType);
     },
     get isRoaming() {
       return read().isRoaming;
