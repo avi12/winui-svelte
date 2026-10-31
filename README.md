@@ -37,8 +37,12 @@ signature
 - **Web APIs** (`Notification`, `navigator.geolocation`, the clipboard and the
   rest) are the browser's own, backed by Windows; call them as on the web
   ([Web APIs](#web-apis))
+- **Errors** thrown in an event handler or a prop are caught on the UI thread,
+  written to stderr with their stack and handed to `runWindow({ onerror })`;
+  the app goes on ([API.md](https://github.com/avi12/winui-svelte/blob/main/API.md))
 - **Shipping:** `buildApp` from `winui-svelte/vite` builds one file per entry
-  that plain Node runs; leave minify off ([Entry points](#entry-points))
+  that plain Node runs; minify is off unless you pass `isMinified: true`, and
+  stays off for an app that draws with Win2D ([Entry points](#entry-points))
 - **Testing:** run a window test on a hidden desktop where you can; never inject
   real mouse or keyboard input
 - **Not a browser:** there is no DOM, no `document`, no `%` layout; anything in
