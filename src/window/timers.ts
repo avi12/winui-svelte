@@ -2,9 +2,8 @@ import { uiTimers } from "./ui-timers.ts";
 import type { TimerBackend } from "./ui-timers.ts";
 import { DispatcherQueue } from "#src/winui.js";
 
-// WinUI holds this thread, so Node's own timers never fire here (see
-// ui-timers.ts). Every timer on the thread, `setTimeout` included, runs on
-// one DispatcherQueue timer and the dispatcher's queue.
+// Every timer on the thread, `setTimeout` included, runs on one
+// DispatcherQueue timer and the dispatcher's queue (see ui-timers.ts).
 
 const TICKS_PER_MILLISECOND = 10_000n;
 

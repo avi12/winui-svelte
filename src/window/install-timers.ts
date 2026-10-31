@@ -8,9 +8,9 @@ let isInstalled = false;
 /**
  * Replaces the thread's `setTimeout`, `setInterval`, `setImmediate` and their
  * `clear` functions with the UI thread's scheduler, in the globals and in
- * `node:timers` and `node:timers/promises`. Node's own never fire once WinUI's
- * message loop runs (see `uiTimers`). `runOnUiThread` calls it first; calling
- * it again does nothing.
+ * `node:timers` and `node:timers/promises`, so they run on the dispatcher
+ * once the window's loop starts (see `uiTimers`). `runOnUiThread` calls it
+ * first; calling it again does nothing.
  */
 export function installUiTimers() {
   if (isInstalled) {
