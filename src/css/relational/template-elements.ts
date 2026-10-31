@@ -9,9 +9,13 @@ import type { AST } from "svelte/compiler";
  */
 export interface TemplateElement {
   name: string;
+  /** Whether it is a component instance: matched by selectors, but never lowered as a container or a child of one. */
+  isInstance: boolean;
   /** The classes the markup writes, in `class="..."`. */
   classes: readonly string[];
-  /** Whether the class is also set by an expression, a `class:` directive or a spread: what it has cannot be told. */
+  /** The classes `class:name={...}` directives add when their condition holds. */
+  conditionalClasses: readonly string[];
+  /** Whether the class is also set by an expression or a spread: what it has cannot be told. */
   hasDynamicClass: boolean;
   /** Where the opening tag's name ends in the source: a class goes here when there is no class attribute. */
   nameEnd: number;
@@ -68,6 +72,7 @@ function classFacts({ element, source }: {
   source: string;
 }) {
   const classes: string[] = [];
+  const conditionalClasses: string[] = [];
   let hasDynamicClass = false;
   let classEnd: number | null = null;
   for (const attribute of element.attributes) {
@@ -75,7 +80,11 @@ function classFacts({ element, source }: {
     const isDirective = attribute.type === "ClassDirective";
     const isClassAttribute = attribute.type === "Attribute" && attribute.name === "class";
 
-    hasDynamicClass ||= isSpread || isDirective;
+    hasDynamicClass ||= isSpread;
+
+    if (isDirective) {
+      conditionalClasses.push(attribute.name);
+    }
 
     if (!isClassAttribute) {
       continue;
@@ -100,6 +109,7 @@ function classFacts({ element, source }: {
 
   return {
     classes,
+    conditionalClasses,
     hasDynamicClass,
     classEnd
   };
@@ -120,6 +130,7 @@ function addElement({ walk, node, parent, level }: {
   };
   const element: TemplateElement = {
     name: node.name.toLowerCase(),
+    isInstance: node.type !== "RegularElement",
     ...classFacts({
       element: node,
       source: walk.source
@@ -133,8 +144,8 @@ function addElement({ walk, node, parent, level }: {
   };
   level.items.push(element);
   walk.elements.push(element);
-  const isInstance = node.type !== "RegularElement";
-  if (isInstance) {
+
+  if (element.isInstance) {
     level.isStatic = false;
     level.hasOpaque = true;
   }
@@ -163,6 +174,10 @@ function blockFragments(node: TemplateNode) {
   }
 }
 
+function isElementLike(node: TemplateNode): node is ElementLike {
+  return ELEMENT_TYPES.has(node.type);
+}
+
 function addNodes({ walk, nodes, parent, level }: {
   walk: Walk;
   nodes: readonly TemplateNode[];
@@ -170,8 +185,7 @@ function addNodes({ walk, nodes, parent, level }: {
   level: Level;
 }) {
   for (const node of nodes) {
-    const isElement = ELEMENT_TYPES.has(node.type);
-    if (isElement) {
+    if (isElementLike(node)) {
       addElement({
         walk,
         node,

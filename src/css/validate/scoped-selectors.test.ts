@@ -1,9 +1,11 @@
 import { validateComponent } from "./validate.ts";
 import { resolveRelationalSelectors } from "#src/css/relational/relational.js";
-import { unusedSelectorMessages } from "#src/css/runtime/sheet-module.js";
+import { withInstancesAsElements } from "#src/css/relational/scope.js";
+import { scopeClassOf, unusedSelectorMessages } from "#src/css/runtime/sheet-module.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { compile } from "svelte/compiler";
 
 const resources = loadWinuiCatalogue();
 const FILE = "C:/project/card.svelte";
@@ -91,3 +93,13 @@ for (const { selector, isUsed } of CASES) {
     assert.equal(isGiven, isUsed);
   });
 }
+
+test("the scope class on an instance is the class Svelte puts on the rule", () => {
+  const source = component(".page .title");
+  const { css } = compile(withInstancesAsElements(source), {
+    filename: FILE,
+    css: "external"
+  });
+  const compiled = /svelte-[a-z0-9]+/u.exec(css?.code ?? "")?.[0];
+  assert.equal(scopeClassOf({ filename: FILE }), compiled);
+});
