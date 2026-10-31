@@ -2,7 +2,7 @@ import { InputStreamOptions, UsbControlRequestType, UsbDevice, UsbSetupPacket } 
 import { bufferOf, bytesOf } from "#src/devices/buffers.js";
 import { deviceChanges, findAllDevices } from "#src/devices/enumeration.js";
 
-const WINUSB_INTERFACE_CLASS = "{dee824ef-729b-4a0e-9c14-b7117d33a817}";
+const WINUSB_INTERFACE_CLASS = "dee824ef-729b-4a0e-9c14-b7117d33a817";
 const BULK_IN_DIRECTION_BIT = 0x80;
 const REQUEST_TYPE_SHIFT = 5;
 const DIRECTION_SHIFT = 7;
