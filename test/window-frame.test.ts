@@ -1,5 +1,6 @@
 import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED, numberOf } from "./example-process.ts";
 import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
 import { test } from "node:test";
 
 // The window frame example (examples/window-frame) in a real WinUI window, off
@@ -9,6 +10,7 @@ import { test } from "node:test";
 const TIMEOUT_MILLISECONDS = 300_000;
 const ROWS_WITH_TITLE_BAR = 2;
 const CORNER_RADIUS = 12;
+const HOST_GONE_MILLISECONDS = 30_000;
 
 test("a bare Window with a title bar opens with no control registered by hand", {
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
@@ -158,6 +160,36 @@ test("a window opens hidden, and the frame props set what Windows holds for it",
     example.send({ cmd: "close" });
     assert.equal(await example.exited, 0, "closing the window ends the example");
   } finally {
+    example.kill();
+  }
+});
+
+test("a window process ends when the host process that started it is gone", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const host = spawn(process.execPath, ["-e", "setInterval(() => {}, 1000)"], { stdio: "ignore" });
+  const example = ExampleProcess.start({
+    entry: "examples/window-frame/main.ts",
+    flags: ["--host-process", String(host.pid)]
+  });
+  try {
+    const opened = await example.ask({
+      command: {
+        cmd: "info"
+      },
+      kind: "info"
+    });
+    assert.equal(opened["isOpen"], true);
+
+    host.kill();
+    const left = await Promise.race([
+      example.exited,
+      new Promise<string>(resolve => setTimeout(() => resolve("still running"), HOST_GONE_MILLISECONDS))
+    ]);
+    assert.equal(left, 0, "the window process exits by itself, with no command and no input closing");
+  } finally {
+    host.kill();
     example.kill();
   }
 });

@@ -27,6 +27,12 @@ project adheres to [Semantic Versioning](https://semver.org/)
 
 ### Added
 
+- `exitWhenHostEnds` (`winui-svelte/window`) ends a window process when its
+  host link closes or the host process is gone; `HostChannel.onClosed`;
+  `Messaging.notify` sends without waiting and never leaves an unhandled
+  `MessagingClosedError`; a send on a closed link rejects at once
+- `elementSize()` gives `desiredWidth` and `desiredHeight`, the size the
+  content asks for (a stretched root panel reports its window's size)
 - Window: frame props for windows that are not windows: `isBorderless`,
   `isShownInSwitchers`, `isToolWindow`, `isActivatable`, `isClickThrough`,
   `isExcludedFromCapture`, `isHidden` and `cornerRadius`, also on

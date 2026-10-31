@@ -43,6 +43,9 @@ const { values, positionals } = parseArgs({
     },
     hidden: {
       type: "string"
+    },
+    "host-process": {
+      type: "string"
     }
   }
 });

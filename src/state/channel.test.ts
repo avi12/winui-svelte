@@ -344,3 +344,19 @@ test("two names are two independent states", async () => {
   assert.equal(left.isReady, false);
   assert.deepEqual(right.current, [1]);
 });
+
+test("onClosed tells the app the host is gone, and at once when it already is", async () => {
+  const { channel, hostEnd } = setup();
+  let closes = 0;
+  channel.onClosed(() => {
+    closes += 1;
+  });
+  assert.equal(closes, 0);
+  hostEnd.close();
+  await settle();
+  assert.equal(closes, 1);
+  channel.onClosed(() => {
+    closes += 1;
+  });
+  assert.equal(closes, 2, "a listener added after the close is called at once");
+});

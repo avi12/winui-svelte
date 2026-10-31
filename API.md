@@ -1271,7 +1271,11 @@ last two lists say
 // Put `.attach` after @attach on the element; read the rest where needed.
 // All reactive, and reset when the element goes.
 const size = elementSize();     // size.width, size.height: ActualWidth/Height,
-                                // device-independent pixels, 0 before layout
+                                // device-independent pixels, 0 before layout;
+                                // size.desiredWidth, size.desiredHeight: what
+                                // the content asks for (a stretched root panel
+                                // is as tall as its window, so a window sized
+                                // from its content reads these)
 const theme = elementTheme();   // theme.current: ElementTheme.Light | Dark,
                                 // undefined before the element is made
 
@@ -3185,7 +3189,8 @@ entry point is named nowhere in the docs
 | `isJsonObject` | `winui-svelte/state/host` | whether a value is a JSON object |
 | `MemoryEnd` | `winui-svelte/state` | one end of an in-memory transport; `MemoryEnd.pair()` makes both |
 | `requestFrameSchema`, `responseFrameSchema` | `winui-svelte/messaging` | the wire shapes of a request and its answer |
-| `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed |
+| `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed (`notify` sends without waiting and never rejects for it) |
+| `exitWhenHostEnds`, `HostLink`, `HostEndOptions` | `winui-svelte/window` | ends the window process when the host's link closes or the host process is gone (see `src/state/README.md`) |
 | `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet`, `textTransforms` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, removal of a stylesheet, and the text each element's `text-transform` shows (the renderer reads it) |
 | `animationGroups`, `effectGroups`, `visualEffectGroups`, `clipGroups`, `cursorGroups`, `environmentGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |

@@ -8,7 +8,7 @@
   import { TextBlock, Window } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
   import { hideToTray, restoreFromTray } from "winui-svelte/tray";
-  import { exitApplication } from "winui-svelte/window";
+  import { exitApplication, exitWhenHostEnds } from "winui-svelte/window";
 
   type WindowFrame = Pick<
     WindowProps,
@@ -24,6 +24,17 @@
   >;
 
   const { host }: { host: ExampleHost } = $props();
+
+  // The process the test stands in for the host with: when it ends, so does this one.
+  function watchHostProcess() {
+    const hostProcessId = Number(host.options["host-process"]);
+    const hasHostProcess = Number.isInteger(hostProcessId);
+    if (hasHostProcess) {
+      exitWhenHostEnds({ hostProcessId });
+    }
+  }
+
+  watchHostProcess();
 
   // svelte-ignore state_referenced_locally
   let frame = $state<WindowFrame>({ isHidden: host.options["hidden"] === "true" ? true : undefined });

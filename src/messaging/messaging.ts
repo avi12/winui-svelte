@@ -38,6 +38,9 @@ export interface MessagingOptions {
 
   /** The current time for a request's timestamp. */
   now?(): number;
+
+  /** The link closed: nothing more arrives, and what was waiting has been rejected. */
+  onClosed?(): void;
 }
 
 /** One end of a link: the link's transport, and how that end reacts. */
@@ -64,6 +67,16 @@ export interface Messaging<TProtocolMap> {
     handler: MessageHandler<TProtocolMap, TType>
   ): RemoveListener;
 
+  /**
+   * Sends a message and does not wait for the answer. A link that is closed,
+   * or closes before the other end answers, is no error: the other end is
+   * gone and there is no one to tell, so nothing is left to reject unhandled.
+   * Any other failure goes to `onError`.
+   */
+  notify<TType extends keyof TProtocolMap & string>(
+    ...parameters: SendArguments<TProtocolMap, TType>
+  ): void;
+
   /** Removes every handler, leaving the link open. */
   removeAllListeners(): void;
 
@@ -88,11 +101,13 @@ export function defineMessaging<TProtocolMap>({
   now = Date.now,
   onError = () => {},
   onUnhandled = () => {},
+  onClosed = () => {},
   timeoutMilliseconds
 }: MessagingSetup) {
   const pending = new Map<number, Pending>();
   const handlers = new Map<string, (frame: RequestFrame) => WireValue | Promise<WireValue>>();
   let nextIdentifier = 0;
+  let isClosed = false;
 
   function respond(frame: ResponseFrame) {
     transport.send(frame);
@@ -177,13 +192,19 @@ export function defineMessaging<TProtocolMap>({
       onError(new MessagingError(reason));
     },
     closed() {
+      isClosed = true;
       rejectAll(new MessagingClosedError());
+      onClosed();
     }
   });
 
   const messaging: Messaging<TProtocolMap> = {
     sendMessage(...parameters) {
       const [type, data] = parameters;
+      if (isClosed) {
+        return Promise.reject(new MessagingClosedError());
+      }
+
       nextIdentifier += 1;
       const id = nextIdentifier;
       return new Promise((resolve, reject) => {
@@ -209,6 +230,16 @@ export function defineMessaging<TProtocolMap>({
         });
       });
     },
+    notify(...parameters) {
+      void messaging.sendMessage(...parameters).catch((error: unknown) => {
+        const isLinkClosed = error instanceof MessagingClosedError;
+        if (isLinkClosed) {
+          return;
+        }
+
+        onError(error instanceof Error ? error : new MessagingError(String(error)));
+      });
+    },
     onMessage(type, handler) {
       const hasHandler = handlers.has(type);
       if (hasHandler) {
@@ -227,6 +258,7 @@ export function defineMessaging<TProtocolMap>({
       handlers.clear();
     },
     close() {
+      isClosed = true;
       stop();
       handlers.clear();
       rejectAll(new MessagingClosedError());
