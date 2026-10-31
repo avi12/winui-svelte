@@ -1857,8 +1857,10 @@ with `registerPermission({ name, provider })` and calls
 
 `installCredentials({ origin, windowHandle, chooseAccount })` defines
 `navigator.credentials` (`get`, `store`, `create`, `preventSilentAccess`) and
-the classes `Credential`, `PasswordCredential`, `PublicKeyCredential` and the
-`AuthenticatorResponse` family
+the classes `Credential`, `CredentialsContainer`, `PasswordCredential`,
+`PublicKeyCredential` and the `AuthenticatorResponse` family
+(`AuthenticatorAttestationResponse` for `create`, `AuthenticatorAssertionResponse`
+for `get`)
 
 - **Passwords**: `create({ password })` makes a `PasswordCredential`, `store`
   keeps it in the Windows PasswordVault under the origin, `get({ password:
@@ -1902,12 +1904,14 @@ anywhere on the screen
 - The click is not swallowed: it reaches the window under the cursor; there is
   no magnifier
 - Extra: the result also has `position` (`x`, `y` in screen pixels)
-- `ScreenPicker` is the one interface the polling picker and the tests implement
+- `ScreenPicker` is the one interface the polling picker (`windowsScreenPicker`)
+  and the tests implement
 
 #### Contacts (`winui-svelte/web-apis/contacts`)
 
-`installContacts()` defines `navigator.contacts` with `getProperties()` and
-`select(properties, { multiple })`
+`installContacts()` defines `navigator.contacts` (a `ContactsManager`) with
+`getProperties()` and `select(properties, { multiple })`; `ContactProperty` names
+the five properties
 
 - Resolves with one object per contact holding only the requested properties,
   each a list (`name`, `email`, `tel`, `address`); a cancelled picker gives an
@@ -1917,7 +1921,8 @@ anywhere on the screen
   and, for most apps, package identity; where Windows refuses, `select` rejects
   with `NotSupportedError`; `icon` returns an empty list
 - Extra: `commitButtonText` in the options
-- `ContactChooser` is the one interface the real picker and the tests implement
+- `ContactChooser` is the one interface the real picker (`windowsContactChooser`)
+  and the tests implement
 
 ## Forms (`winui-svelte/forms`)
 
