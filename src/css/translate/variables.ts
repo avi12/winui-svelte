@@ -33,8 +33,9 @@ function entryFor({ scheme, key, xaml, kind }: {
 }
 
 /**
- * A color value: written out (`#FF0000`), or a system color WinUI keeps current
- * as the user's contrast theme changes (`SystemColorWindowTextColor`).
+ * A color value: written out (`#FF0000`), or a color resource WinUI keeps
+ * current as the theme changes (`SystemColorWindowTextColor`,
+ * `SystemAccentColor`).
  */
 type ColorValue =
   | {
@@ -42,7 +43,7 @@ type ColorValue =
     color: string;
   }
   | {
-    kind: "system";
+    kind: "resource";
     key: string;
   };
 
@@ -57,10 +58,10 @@ const SYSTEM_COLOR_KEYWORDS = new Map([
   ["highlighttext", "SystemColorHighlightTextColor"],
   ["linktext", "SystemColorHotlightColor"]
 ]);
-const SYSTEM_COLOR_PREFIX = "SystemColor";
 
-// `var(--system-color-window-text-color)` or a CSS system color such as CanvasText.
-function systemColorKey({ value, catalogue }: {
+// `var(--system-accent-color)` (any Color resource WinUI defines) or a CSS
+// system color such as CanvasText.
+function colorResourceKey({ value, catalogue }: {
   value: string;
   catalogue: ResourceCatalogue;
 }) {
@@ -77,12 +78,12 @@ function systemColorKey({ value, catalogue }: {
   }
 
   const key = catalogue.keyOf(resourceNameOf(reference.name));
-  const isSystemColor = key?.startsWith(SYSTEM_COLOR_PREFIX) === true && catalogue.kindOf(key) === ResourceKind.COLOR;
-  return isSystemColor ? key : null;
+  const isColorResource = key !== undefined && catalogue.kindOf(key) === ResourceKind.COLOR;
+  return isColorResource ? key : null;
 }
 
 function brushColor(value: ColorValue) {
-  return value.kind === "system" ? `{ThemeResource ${value.key}}` : value.color;
+  return value.kind === "resource" ? `{ThemeResource ${value.key}}` : value.color;
 }
 
 // WinUI's templates read these as brushes, so a known brush (or an alias, which
@@ -104,8 +105,8 @@ function colorEntries({ variable, key, known, value }: {
     })];
   }
 
-  const colorXaml = value.kind === "system" ? `<StaticResource x:Key="${key}" ResourceKey="${value.key}"/>` : `<Color x:Key="${key}">${value.color}</Color>`;
-  const brushSource = value.kind === "system" ? brushColor(value) : `{StaticResource ${key}}`;
+  const colorXaml = value.kind === "resource" ? `<StaticResource x:Key="${key}" ResourceKey="${value.key}"/>` : `<Color x:Key="${key}">${value.color}</Color>`;
+  const brushSource = value.kind === "resource" ? brushColor(value) : `{StaticResource ${key}}`;
   return [
     entryFor({
       scheme,
@@ -171,15 +172,15 @@ function colorValueOf({ text, catalogue }: {
   text: string;
   catalogue: ResourceCatalogue;
 }) {
-  const system = systemColorKey({
+  const resource = colorResourceKey({
     value: text,
     catalogue
   });
-  const isSystem = system !== null;
-  if (isSystem) {
+  const isResource = resource !== null;
+  if (isResource) {
     return {
-      kind: "system",
-      key: system
+      kind: "resource",
+      key: resource
     } as const;
   }
 
@@ -190,20 +191,56 @@ function colorValueOf({ text, catalogue }: {
   } as const;
 }
 
+const MAXIMUM_REFERENCE_DEPTH = 8;
+
+/**
+ * A value that is `var(--name)` of a custom property the sheet declares, as
+ * that property's own value (and so on, up to a few levels); any other value
+ * as it is. A reference to a WinUI resource is left for the entries to make a
+ * resource reference of, and a loop is left as it is, which no color or
+ * length parses.
+ */
+function resolveDeclaredReference({ value, declared }: {
+  value: string;
+  declared: ReadonlyMap<string, string>;
+}) {
+  let current = value;
+  for (let depth = 0; depth < MAXIMUM_REFERENCE_DEPTH; depth++) {
+    const reference = parseVariable(current);
+    const next = reference === null ? undefined : declared.get(reference.name);
+    const isDeclared = next !== undefined;
+    if (!isDeclared) {
+      return current;
+    }
+
+    current = next;
+  }
+
+  return current;
+}
+
 /**
  * The resources a custom property defines. A key WinUI defines keeps WinUI's
  * spelling and kind (`--button-background-pointer-over` is a Brush, so it gets
  * a SolidColorBrush: a template that reads a brush gets no Color); any other is
  * a Color with a Brush of the same name plus `Brush`, or a Double.
  */
-export function variableEntries({ variable, catalogue, reportProblem }: {
+export function variableEntries({ variable, catalogue, declared, reportProblem }: {
   variable: Variable;
   catalogue: ResourceCatalogue;
+  /** The custom properties the sheet declares, by name and value: `var()` of one stands for its value. */
+  declared: ReadonlyMap<string, string>;
   reportProblem(message: string): void;
 }) {
   const name = resourceNameOf(variable.name);
   return entriesForKey({
-    variable,
+    variable: {
+      ...variable,
+      value: resolveDeclaredReference({
+        value: variable.value,
+        declared
+      })
+    },
     key: catalogue.keyOf(name) ?? name,
     catalogue,
     reportProblem
@@ -257,6 +294,27 @@ export function entriesForKey({ variable, key, catalogue, reportProblem }: {
 
   reportProblem(`${variable.name}: expected a color or a length in px, found "${variable.value}"`);
   return [];
+}
+
+/**
+ * The aliases of WinUI's own dictionaries for the keys `entries` define, each
+ * as a `StaticResource` of the same scheme that points at the key. WinUI binds
+ * `ToggleSwitchFillOn` to `AccentFillColorDefaultBrush` when it loads its
+ * dictionary, so a new `AccentFillColorDefaultBrush` in the app's dictionary
+ * does not reach the toggle; its own alias to the new one does. Put these
+ * after the entries (a `StaticResource` names a key defined above it); an
+ * alias the sheet sets itself is left out, so the sheet's own wins.
+ */
+export function aliasEntries({ entries, catalogue }: {
+  entries: readonly ResourceEntry[];
+  catalogue: ResourceCatalogue;
+}) {
+  const own = new Set(entries.map(entry => `${entry.scheme}:${entry.key}`));
+  return entries.flatMap(entry => catalogue.aliasesOf(entry.key).map(alias => ({
+    scheme: entry.scheme,
+    key: alias,
+    xaml: `<StaticResource x:Key="${alias}" ResourceKey="${entry.key}"/>`
+  } satisfies ResourceEntry))).filter(alias => !own.has(`${alias.scheme}:${alias.key}`));
 }
 
 const THEMES = [ColorScheme.LIGHT, ColorScheme.DARK, ColorScheme.HIGH_CONTRAST];

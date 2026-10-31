@@ -1,7 +1,7 @@
 import type { ResourceCatalogue } from "#src/css/runtime/resources.js";
 import { ResourceKind, resourceNameOf } from "#src/css/runtime/resources.js";
 import { ColorScheme } from "#src/css/translate/types.js";
-import { entriesForKey, resourceDictionaryXaml } from "#src/css/translate/variables.js";
+import { aliasEntries, entriesForKey, resourceDictionaryXaml } from "#src/css/translate/variables.js";
 
 // A record of resources (the `resources` prop) split into the part XAML says
 // and the part is handed to the dictionary as it is. Pure: the catalogue is
@@ -130,7 +130,10 @@ export function resourceParts({ record, catalogue }: {
   const entries = parts.flatMap(part => part.entries);
   const hasEntries = entries.length > 0;
   return {
-    xaml: hasEntries ? resourceDictionaryXaml(entries) : null,
+    xaml: hasEntries ? resourceDictionaryXaml([...entries, ...aliasEntries({
+      entries,
+      catalogue
+    })]) : null,
     direct: parts.flatMap(part => part.direct === null ? [] : [part.direct])
   };
 }

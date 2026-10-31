@@ -113,6 +113,26 @@ for (const match of XAML.matchAll(/<([\w:]+)\s+x:Key="([^"]+)"/gu)) {
   }
 }
 
+// What each alias points at, read from the light and dark dictionaries (the
+// high contrast one points elsewhere on purpose). An alias is bound when
+// WinUI loads its dictionary, so a resource an app overrides does not reach
+// the aliases that stand for it; the CSS translation overrides those too.
+const THEME_DICTIONARY = /^ {8}<ResourceDictionary x:Key="(\w+)">/u;
+const ALIAS = /<StaticResource x:Key="([^"]+)"\s+ResourceKey="([^"]+)"/u;
+const ALIAS_THEMES = new Set(["Default", "Light"]);
+const aliases = new Map<string, string>();
+let theme = "";
+for (const line of XAML.split("\n")) {
+  theme = THEME_DICTIONARY.exec(line)?.[1] ?? theme;
+  const alias = ALIAS_THEMES.has(theme) ? ALIAS.exec(line) : null;
+  const key = alias?.[1];
+  const target = alias?.[2];
+  const isAlias = key !== undefined && target !== undefined;
+  if (isAlias) {
+    aliases.set(key, target);
+  }
+}
+
 const colors = byKind.get(ResourceKind.COLOR) ?? new Set<string>();
 for (const color of frameworkColors) {
   colors.add(color);
@@ -133,7 +153,13 @@ const output = Object.fromEntries(
 writeFileSync(
   OUTPUT_FILE, `${JSON.stringify({
     source: `${WINUI_PACKAGE} ${/([\d.]+)[\\/]lib[\\/]/u.exec(XAML_FILE)?.[1] ?? "?"}`,
-    ...output
+    ...output,
+    aliases: Object.fromEntries(
+      [...aliases].sort((left, right) => compareKeys({
+        left: left[0],
+        right: right[0]
+      }))
+    )
   })}\n`
 );
 process.stdout.write(`${[...byKind].map(([kind, keys]) => `${kind} ${keys.size}`).join(", ")}\n`);

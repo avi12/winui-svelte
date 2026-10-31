@@ -157,6 +157,9 @@ A style
 attribute works with them only once some sheet of the app has registered them,
 and the `outline` shorthand does not work there: write `outline-width`,
 `outline-style` and `outline-color`
+The build also registers the groups a component's markup names: a
+`style:clip-path={shape}` directive (or a static `style` attribute) opts the
+window in, with or without a `<style>` that uses the property
 
 | Module | Properties | Section |
 |---|---|---|
@@ -311,6 +314,35 @@ not take), a `Thickness` or `CornerRadius` key takes one length, and a value of
 the wrong kind is a build error
 Any other name is a `Color` with a `Brush` of
 the same name plus `Brush`, or a number (`x:Double`)
+
+A custom property can be `var()` of another: of one the sheet declares (its
+value stands in, a few levels deep, so a scoped override can name the accent
+the `:root` rule sets), or of a `Color` resource WinUI defines
+(`--accent-fill-color-default: var(--system-accent-color)` follows the theme)
+
+### Overriding the accent
+
+WinUI's templates do not read `AccentFillColorDefaultBrush` themselves: the
+toggle reads `ToggleSwitchFillOn`, a radio button
+`RadioButtonOuterEllipseCheckedFill`, and WinUI's own dictionary binds each of
+these aliases to the accent brush when it loads, so a new
+`AccentFillColorDefaultBrush` in the app does not reach them
+The translation therefore also writes, next to a key it overrides, an alias for
+every alias WinUI's dictionaries have of it, pointing at your key (43 of them
+for the accent brush: the checked check box, the slider, the progress bar, the
+selection indicators and so on), unless the sheet sets that key itself
+
+```css
+:root { --accent-fill-color-default: #22d3ee }   /* toggles, radios, sliders... */
+```
+
+Limits: a control that is already on screen keeps what it read, so declare it
+in a sheet that loads before the window opens; `SystemAccentColor` and its
+Light/Dark tints are the system's and are not what the templates read, so
+override `--accent-fill-color-default` and the other `*-fill-color-*` keys
+(`secondary`, `tertiary`, `disabled`) the control states use; the high contrast
+theme is left to the system, aliases are taken from WinUI's light and dark
+dictionaries only
 
 ## Transforms: `translate`, `scale`, `rotate`, `transform-origin`
 
