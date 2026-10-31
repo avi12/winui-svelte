@@ -385,9 +385,9 @@ function runOnUiThread(main: () => Promise<void>): Promise<never>;
 function runWindow(options: { onStart: () => void }): Promise<void>;
 function exitApplication(): void;
 
-// A DispatcherQueue timer on the UI thread (WinUI holds the thread, so Node's
-// timers and a port's events never fire there): what takes a host's messages
-// or the module server's hot updates in. Returns what stops it.
+// `setInterval` (or `setTimeout` when isRepeating is false) with the stop
+// handed back as a function; the same scheduler as the standard timers
+// (see Timers and I/O). Returns what stops it.
 function startTimer(options: { milliseconds: number; onTick: () => void; isRepeating?: boolean }): () => void;
 
 // A window around a component (mounted: props can change, it can be
@@ -2420,3 +2420,27 @@ entry point is named nowhere in the docs
 | `LOG_EVENT` | `winui-svelte/runner` | the event the window thread's log lines are sent under |
 | `WINUI_COMPILE_OPTIONS`, `isSvelteFile`, `withElementAnimation` | `winui-svelte/compile` | what every component is compiled with, whether a file is a component, and the registration appended to a module that uses a transition |
 | `TitleBarHeight`, `WindowPresentation`, `WindowTheme` | `winui-svelte/window` | the title bar height, presentation and theme choices of a window |
+
+## Timers and I/O
+
+WinUI's message loop runs inside the callback libuv gave the UI thread, so
+the thread's libuv loop never turns again once `runWindow` starts: Node's own
+timers, immediates, `fs` and `net` callbacks and `MessagePort` events never fire
+there (measured: `setTimeout`, `setInterval`, `setImmediate`, an `fs.readFile`
+callback, a `fetch` and a port `message` event all stayed silent for four seconds)
+
+`runOnUiThread` therefore installs, before anything else runs, one scheduler on
+the dispatcher (`installUiTimers`) and a `fetch` that runs in a helper thread:
+
+| API | On the UI thread |
+|---|---|
+| `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval` | Works; `Timeout` has `ref`, `unref`, `hasRef`, `refresh`, `close`, and converts to its id; extra arguments and `this` as in Node; 4 ms clamp once nested deeper than 5, as in browsers; accuracy is the Windows timer tick (about 15 ms) |
+| `setImmediate`, `clearImmediate` | Works (dispatcher queue) |
+| `node:timers`, `node:timers/promises` (`AbortSignal`, `setInterval` iterator, `scheduler.wait`) | Works |
+| `queueMicrotask`, `process.nextTick`, promises, `await` | Work (unchanged) |
+| `fetch` | Works, streaming responses; `blob:` URLs and streamed request bodies do not |
+| `fs` callbacks and `fs.promises`, `net`, `http`, `child_process`, `WebSocket`, `MessagePort` events | Do not fire; use the synchronous `fs` calls, do the work on another thread, and read its answers with `receiveMessageOnPort` on a timer |
+
+Pending timers never keep the process alive; `exitApplication` and the end of
+`runWindow` stop all of them, `startTimer` ones included
+`startTimer` is kept as `setInterval` that returns its stop function
