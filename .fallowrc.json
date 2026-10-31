@@ -30,6 +30,7 @@
     "src/app/index.ts",
     "src/web-apis/index.ts",
     "src/web-apis/notification.ts",
+    "src/web-apis/web-storage.ts",
     "src/web-apis/storage.ts",
     "src/web-apis/file-system.ts",
     "src/web-apis/share.ts",
