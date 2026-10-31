@@ -106,6 +106,7 @@
     "examples/win2d/main.ts",
     "examples/data-transfer/main.ts",
     "examples/effects/main.ts",
+    "test/scoped-styles/main.ts",
     "examples/stores/main.ts",
     "examples/timers/main.ts",
     "examples/loop/main.ts",

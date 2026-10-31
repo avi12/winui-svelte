@@ -57,7 +57,7 @@ test("without a style block no scope class is added", () => {
 
 test("the stand-in carries the Style prop's classes with the instance's own", () => {
   const code = withInstancesAsElements("<ListView class=\"list\" itemContainerStyle=\"row\" />");
-  assert.match(code, /<winui-instance class="list row" \/>/u);
+  assert.match(code, /<winui-instance class="list row"\s+\/>/u);
 });
 
 test("a rule for a class only a Style prop names is used, text or expression", () => {
