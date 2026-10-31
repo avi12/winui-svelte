@@ -1313,7 +1313,7 @@ function overlayOf(name: string) {
 }
 
 // What the component binds, the one list the props, the bag, the declaration
-// and the README read: the control's bindables, what its items host owns
+// and the docs read: the control's bindables, what its items host owns
 // (`selectedKey`), and `open` for an overlay.
 function componentBindableNames(level: ClassModel) {
   const name = level.type.name;
@@ -1628,7 +1628,7 @@ function codeList(names: string[]) {
   return names.map(name => `\`${name}\``).join(", ");
 }
 
-// The README's table of the components: one row for each, with the props its
+// API.md's table of the components: one row for each, with the props its
 // class adds (the rest come from the classes it inherits from) and the
 // bindables it has, inherited ones included.
 export function emitControlsTable(model: Model) {
