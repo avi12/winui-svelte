@@ -2,6 +2,7 @@ import { compileSheetModule, SHEET_SUFFIX, SheetError } from "./runtime/sheet-mo
 import { loadWinuiCatalogue } from "./translate/catalogue.ts";
 import { formatDiagnostic } from "./translate/translate.ts";
 import { formatValidation } from "./validate/diagnostic.ts";
+import { markupStyleProperties } from "./validate/markup-declarations.ts";
 import { validateComponent } from "./validate/validate.ts";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -83,7 +84,7 @@ export function winuiCss(options: WinuiCssOptions) {
 
       const source = readFileSync(id, "utf8");
       withoutStyles.set(id, withoutStyle(source));
-      const hasStyle = source.includes(STYLE_OPENING);
+      const hasStyle = source.includes(STYLE_OPENING) || markupStyleProperties(source).length > 0;
       if (!hasStyle) {
         return null;
       }
