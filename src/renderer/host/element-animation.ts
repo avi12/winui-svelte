@@ -1,3 +1,7 @@
+import type { EffectTiming, EffectTimingInput } from "./animation-timing.ts";
+import { endTime, progressAt, resolveTiming } from "./animation-timing.ts";
+import type { AnimationClock } from "./frame-clock.ts";
+import { dispatcherClock } from "./frame-clock.ts";
 import type { Keyframe, Pose, PoseValue, Vector } from "./keyframes.ts";
 import { poseAt, PoseField, readKeyframe, touchedFields } from "./keyframes.ts";
 import { isRecord, read, write } from "./reflect.ts";
@@ -9,7 +13,6 @@ import { ElementNode } from "#src/renderer/tree/dom.js";
 import { listenersOf } from "#src/renderer/tree/tree.js";
 import { flush } from "#src/scheduling.js";
 import { systemSettingsStore } from "#src/window/settings-store.js";
-import { startTimer } from "#src/window/timers.js";
 
 // The Web Animations a stock Svelte asks its elements for, on WinUI's
 // controls. Svelte's `transition:`, `in:`, `out:` and `animate:` call
@@ -24,7 +27,6 @@ import { startTimer } from "#src/window/timers.js";
 // on. The Vite plugin calls it from a component that uses them, so an app
 // that does not never bundles any of it.
 
-const FRAME_MILLISECONDS = 16;
 const NO_TRANSFORM = "none";
 const GET_COMPUTED_STYLE = "getComputedStyle";
 const REQUEST_FRAME = "requestAnimationFrame";
@@ -53,29 +55,16 @@ const FLOW_AXES = {
   }
 } as const;
 
-const Fill = {
-  FORWARDS: "forwards",
-  BOTH: "both"
-} as const;
-
-const PlayState = {
+/** The states of an animation. */
+export const PlayState = {
   IDLE: "idle",
   RUNNING: "running",
+  PAUSED: "paused",
   FINISHED: "finished"
 } as const;
 
-type PlayState = typeof PlayState[keyof typeof PlayState];
-
-const keptFills = new Set<string>(Object.values(Fill));
-
-/** What drives the animations: a time that only moves forward, and a ticking frame. */
-export interface AnimationClock {
-  /** Milliseconds on a clock that only moves forward. */
-  now(): number;
-
-  /** Calls `onFrame` about every frame until the returned function is called. */
-  every(onFrame: () => void): () => void;
-}
+/** One of the values of `PlayState`. */
+export type PlayState = typeof PlayState[keyof typeof PlayState];
 
 /** What `enableElementAnimation` can be told. */
 export interface ElementAnimationOptions {
@@ -127,17 +116,27 @@ export function provideElementBlur(setBlur: BlurSetter) {
   provided.blur = setBlur;
 }
 
-interface Handle {
+/**
+ * The animation `element.animate()` gives back: a clock-driven handle over the
+ * control's properties. `winui-svelte/web-apis/animations` wraps it in the web's
+ * `Animation`.
+ */
+export interface ElementAnimationHandle {
   onfinish: (() => void) | null;
+  oncancel: (() => void) | null;
   readonly playState: PlayState;
-  readonly currentTime: number | null;
+  currentTime: number | null;
+  playbackRate: number;
+  readonly timing: EffectTiming;
+  play(): void;
+  pause(): void;
+  finish(): void;
   cancel(): void;
+  reverse(): void;
+  updateTiming(input: EffectTimingInput): void;
 }
 
-interface AnimateOptions {
-  duration: number;
-  fill: string;
-}
+type AnimateOptions = EffectTimingInput;
 
 interface Point {
   x: number;
@@ -177,7 +176,7 @@ interface FieldAccess {
 interface Layer {
   readonly fields: ReadonlySet<string>;
   // Null for a layer that holds a pose still (a leaving element's margin) and is no animation.
-  readonly animation: Handle | null;
+  readonly animation: ElementAnimationHandle | null;
   pose: Pose;
 }
 
@@ -689,18 +688,187 @@ function createEngine({ clock, onFrame, warn, createDashes, isMotionReduced, set
     warnOnce(readings.flatMap(reading => reading.unsupported));
     const poses = readings.map(reading => reading.pose);
     const isSkipped = isMotionReduced() && !keepsMotion(node);
-    const duration = isSkipped ? 0 : options.duration;
-    const isKept = keptFills.has(options.fill);
-    let playState: PlayState = PlayState.IDLE;
-    let startedAt = 0;
+    function resolve(input: AnimateOptions) {
+      const resolved = resolveTiming(input);
+      return isSkipped ? {
+        ...resolved,
+        duration: 0,
+        delay: 0,
+        endDelay: 0
+      } : resolved;
+    }
 
-    const animation: Handle = {
+    let timing = resolve(options);
+    let playState: PlayState = PlayState.IDLE;
+    let rate = 1;
+    // The animation's time while it is paused or finished; running, it is the anchor plus what the clock has moved.
+    let held: number | null = null;
+    let anchorTime = 0;
+    let anchorAt = 0;
+
+    function timeNow() {
+      return held ?? anchorTime + (clock.now() - anchorAt) * rate;
+    }
+
+    function isAtEnd(time: number) {
+      return rate > 0 ? time >= endTime(timing) : rate < 0 && time <= 0;
+    }
+
+    function show(time: number) {
+      const progress = progressAt({
+        timing,
+        time
+      });
+      layer.pose = progress === null ? {} : poseAt({
+        poses,
+        progress
+      });
+      render(state);
+    }
+
+    function run(time: number) {
+      held = null;
+      anchorTime = time;
+      anchorAt = clock.now();
+      playState = PlayState.RUNNING;
+      const isLayered = state.layers.includes(layer);
+      if (!isLayered) {
+        addLayer({
+          state,
+          layer
+        });
+      }
+
+      steps.add(step);
+      ensureClock();
+      show(time);
+    }
+
+    function hold({ time, next }: {
+      time: number;
+      next: PlayState;
+    }) {
+      held = time;
+      playState = next;
+      steps.delete(step);
+      const isActive = progressAt({
+        timing,
+        time
+      }) !== null;
+      if (isActive) {
+        show(time);
+        return;
+      }
+
+      removeLayer({
+        state,
+        layer,
+        restoreLater
+      });
+    }
+
+    function settle() {
+      hold({
+        time: rate > 0 ? endTime(timing) : 0,
+        next: PlayState.FINISHED
+      });
+      animation.onfinish?.();
+    }
+
+    function step() {
+      const time = timeNow();
+      const isDone = isAtEnd(time);
+      if (isDone) {
+        settle();
+        return;
+      }
+
+      show(time);
+    }
+
+    function startTime() {
+      return rate < 0 ? endTime(timing) : 0;
+    }
+
+    function playFrom(time: number) {
+      const isRestart = isAtEnd(time);
+      run(isRestart ? startTime() : time);
+    }
+
+    const animation: ElementAnimationHandle = {
       onfinish: null,
+      oncancel: null,
       get playState() {
         return playState;
       },
       get currentTime() {
-        return playState === PlayState.IDLE ? null : Math.min(clock.now() - startedAt, duration);
+        return playState === PlayState.IDLE ? null : timeNow();
+      },
+      set currentTime(time: number | null) {
+        const isUnset = time === null || playState === PlayState.IDLE;
+        if (isUnset) {
+          return;
+        }
+
+        const isRunning = playState === PlayState.RUNNING;
+        if (isRunning) {
+          run(time);
+          return;
+        }
+
+        hold({
+          time,
+          next: PlayState.PAUSED
+        });
+      },
+      get playbackRate() {
+        return rate;
+      },
+      set playbackRate(next: number) {
+        const isRunning = playState === PlayState.RUNNING;
+        if (isRunning) {
+          anchorTime = timeNow();
+          anchorAt = clock.now();
+        }
+
+        rate = next;
+      },
+      get timing() {
+        return timing;
+      },
+      play() {
+        const isRunning = playState === PlayState.RUNNING && !isAtEnd(timeNow());
+        if (isRunning) {
+          return;
+        }
+
+        playFrom(playState === PlayState.IDLE ? startTime() : held ?? timeNow());
+      },
+      pause() {
+        const isIdle = playState === PlayState.IDLE;
+        const isPaused = playState === PlayState.PAUSED;
+        if (isPaused) {
+          return;
+        }
+
+        if (isIdle) {
+          run(startTime());
+        }
+
+        hold({
+          time: timeNow(),
+          next: PlayState.PAUSED
+        });
+      },
+      finish() {
+        const isIdle = playState === PlayState.IDLE;
+        const isFinished = playState === PlayState.FINISHED;
+        const isStuck = rate === 0 || isIdle || isFinished;
+        if (isStuck) {
+          return;
+        }
+
+        settle();
       },
       cancel() {
         const isIdle = playState === PlayState.IDLE;
@@ -709,12 +877,28 @@ function createEngine({ clock, onFrame, warn, createDashes, isMotionReduced, set
         }
 
         playState = PlayState.IDLE;
+        held = null;
         steps.delete(step);
         removeLayer({
           state,
           layer,
           restoreLater
         });
+        animation.oncancel?.();
+      },
+      reverse() {
+        animation.playbackRate = -rate;
+        animation.play();
+      },
+      updateTiming(input) {
+        timing = resolve({
+          ...timing,
+          ...input
+        });
+        const isShown = playState !== PlayState.IDLE;
+        if (isShown) {
+          show(timeNow());
+        }
       }
     };
     const layer: Layer = {
@@ -723,47 +907,7 @@ function createEngine({ clock, onFrame, warn, createDashes, isMotionReduced, set
       pose: {}
     };
 
-    function show(elapsed: number) {
-      layer.pose = poseAt({
-        poses,
-        progress: duration > 0 ? elapsed / duration : 1
-      });
-      render(state);
-    }
-
-    function step(now: number) {
-      const elapsed = now - startedAt;
-      const isDone = elapsed >= duration;
-      if (!isDone) {
-        show(elapsed);
-        return;
-      }
-
-      playState = PlayState.FINISHED;
-      steps.delete(step);
-
-      if (isKept) {
-        show(duration);
-      } else {
-        removeLayer({
-          state,
-          layer,
-          restoreLater
-        });
-      }
-
-      animation.onfinish?.();
-    }
-
-    playState = PlayState.RUNNING;
-    startedAt = clock.now();
-    addLayer({
-      state,
-      layer
-    });
-    steps.add(step);
-    ensureClock();
-    show(0);
+    animation.play();
     return animation;
   }
 
@@ -967,14 +1111,6 @@ function createEngine({ clock, onFrame, warn, createDashes, isMotionReduced, set
   };
 }
 
-const dispatcherClock = {
-  now: () => performance.now(),
-  every: (onFrame: () => void) => startTimer({
-    milliseconds: FRAME_MILLISECONDS,
-    onTick: onFrame
-  })
-} satisfies AnimationClock;
-
 let disableCurrent: (() => void) | null = null;
 
 // Defines `name` on `target` and returns what puts it back as it was.
@@ -1012,11 +1148,13 @@ function elementMembers({ engine, original }: {
 }) {
   return {
     animate: {
-      value(this: MotionNode, keyframes: Keyframe[], options: AnimateOptions) {
+      value(this: MotionNode, keyframes: Keyframe[], options: AnimateOptions | number = {}) {
         return engine.animate({
           node: this,
           keyframes,
-          options
+          options: typeof options === "number" ? {
+            duration: options
+          } : options
         });
       }
     },
