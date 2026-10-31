@@ -2,6 +2,7 @@
   import { drawBarChart } from "./bar-chart.ts";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import { NetworkInformation } from "#winui/windows/networking/connectivity/NetworkInformation";
+  import { flushSync } from "svelte";
   import { StackPanel, Window } from "winui-svelte/components";
   import { Orientation } from "winui-svelte/enums";
   import {
@@ -62,7 +63,9 @@
   });
 
   // A blocking WinRT call pumps the window's messages, so a pending Draw event
-  // runs inside it; read from a $derived, that is where writing state is an error.
+  // may run inside it; read from a $derived, that is where writing state is an
+  // error. Whether the pump dispatches the Draw is up to Windows, so the probe
+  // proves the invariant (no throw, the canvases paint on) and only counts.
   let pumpTick = $state(0);
 
   function drawsDuringCalls() {
@@ -92,14 +95,16 @@
       chartValues = String(command["values"]).split(",").map(Number);
     }],
     ["pump", () => {
-      // Draws are pending once the state change has invalidated both canvases.
-      blurAmount = PUMP_BLUR;
-      chartValues = chartValues.toReversed();
       startTimer({
         milliseconds: PUMP_DELAY,
         isRepeating: false,
         onTick() {
           try {
+            // The effects run now, so both canvases are invalidated and their
+            // Draw events pending when the blocking calls start.
+            blurAmount = PUMP_BLUR;
+            chartValues = chartValues.toReversed();
+            flushSync();
             pumpTick++;
             host.report({
               kind: "pumped",

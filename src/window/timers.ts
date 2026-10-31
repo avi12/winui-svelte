@@ -36,3 +36,16 @@ export function startTimer(options: TimerOptions) {
     heldTimers.delete(timer);
   };
 }
+
+/**
+ * Stops every timer still running. The application calls it as it exits: a
+ * tick that fires while the windows are being torn down reads controls that
+ * are already gone, and the process ends with a failure code.
+ */
+export function stopAllTimers() {
+  for (const timer of heldTimers) {
+    timer.stop();
+  }
+
+  heldTimers.clear();
+}
