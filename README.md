@@ -151,13 +151,13 @@ any Svelte binding:
 <!-- hello/App.svelte:end -->
 
 `window.ts` runs on the UI thread
-WinUI's message loop never gives its thread
-back, so `runOnUiThread` (the package's `/thread` entry) is a worker's first
-call: it enters the apartment before anything creates a WinRT object
+`runOnUiThread` (the package's `/thread` entry) is a worker's first call: it
+enters the apartment before anything creates a WinRT object
 The
 window's modules come from the host's dev server through the module runner, and
-a timer takes the server's hot updates in (`setInterval` and `startTimer` both
-run on the UI thread; see [Timers and I/O](API.md#timers-and-io)):
+a timer takes the server's hot updates in (the thread's libuv turns between
+WinUI's messages, so `fs`, sockets, `fetch`, `WebSocket` and worker messages
+all complete there too; see [Timers and I/O](API.md#timers-and-io)):
 
 <!-- hello/window.ts:start -->
 
@@ -261,9 +261,9 @@ Edit the text in `App.svelte` and save: the window follows within a moment
 Set `WINUI_SVELTE_BACKGROUND=1` to open the window without taking focus (for
 scripts and captures)
 
-State changes need no `flushSync`: the window's loop is started with
-`Application.startScheduled`, so Node drains microtasks after each WinUI
-callback and Svelte's own flush runs
+State changes need no `flushSync`: the window's loop hands each WinUI message
+to its handler with no JavaScript under it, so Node drains microtasks after
+each one and Svelte's own flush runs
 ([experiment](examples/scheduling/README.md))
 
 ## Host integration
