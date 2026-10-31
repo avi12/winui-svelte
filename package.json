@@ -309,6 +309,10 @@
       "types": "./dist/web-apis/eye-dropper.d.ts",
       "default": "./dist/web-apis/eye-dropper.js"
     },
+    "./web-apis/contacts": {
+      "types": "./dist/web-apis/contacts.d.ts",
+      "default": "./dist/web-apis/contacts.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
