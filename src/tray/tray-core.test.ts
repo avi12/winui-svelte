@@ -125,15 +125,19 @@ function start(options: Partial<TrayIconOptions> = {}) {
   const native = new FakeNative();
   let tick = noop;
   let isStopped = false;
+  const intervals: number[] = [];
+  let stops = 0;
   const handle = createTrayIconWith({
     icon: "a.ico",
     ...options,
     native,
     now: () => 0,
-    schedule({ onTick }) {
+    schedule({ onTick, milliseconds }) {
       tick = onTick;
+      intervals.push(milliseconds);
       return () => {
         isStopped = true;
+        stops += 1;
       };
     }
   });
@@ -141,7 +145,9 @@ function start(options: Partial<TrayIconOptions> = {}) {
     native,
     handle,
     tick: () => tick(),
-    isStopped: () => isStopped
+    isStopped: () => isStopped,
+    intervals,
+    stops: () => stops
   };
 }
 
@@ -241,6 +247,42 @@ test("a click over the icon reaches onclick with the pointer's coordinates", () 
     y: 112
   }]);
   handle.remove();
+});
+
+test("the pointer is read slowly away from the tray and fast over it, one timer at a time", () => {
+  const { native, tick, handle, intervals, stops } = start();
+  assert.deepEqual(intervals, [250]);
+  tick();
+  assert.deepEqual(intervals, [250], "away from the tray the pace stays");
+  native.pointer = {
+    ...native.pointer,
+    isOnTray: true
+  };
+  tick();
+  assert.deepEqual(intervals, [250, 30]);
+  assert.equal(stops(), 1, "the slow timer was stopped");
+  tick();
+  assert.deepEqual(intervals, [250, 30], "over the tray the pace stays");
+  native.pointer = {
+    ...native.pointer,
+    isOnTray: false
+  };
+  tick();
+  assert.deepEqual(intervals, [250, 30, 250]);
+  assert.equal(stops(), 2);
+  handle.remove();
+  assert.equal(stops(), 3, "remove stops the timer in use");
+});
+
+test("a hidden icon does not read the pointer: its timer runs only while it is shown", () => {
+  const { handle, intervals, stops } = start({ isVisible: false });
+  assert.deepEqual(intervals, [], "no timer for an icon that starts hidden");
+  handle.update({ isVisible: true });
+  assert.deepEqual(intervals, [250]);
+  handle.update({ isVisible: false });
+  assert.equal(stops(), 1, "hiding stops the timer");
+  handle.remove();
+  assert.equal(stops(), 1, "and remove has none left to stop");
 });
 
 test("a click away from the tray is not asked for the icon's place and is ignored", () => {

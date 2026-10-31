@@ -1,14 +1,26 @@
 import { createClickDetector } from "./click-detector.ts";
 import type { TrayPointerEvent } from "./click-detector.ts";
 import { BalloonIcon, NotifyOperation } from "./native.ts";
-import type { Balloon, ScreenRect, TrayIdentity, TrayNative } from "./native.ts";
+import type {
+  Balloon,
+  PointerSample,
+  ScreenRect,
+  TrayIdentity,
+  TrayNative
+} from "./native.ts";
 import { z } from "zod";
 
 const GUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu;
 const guidSchema = z.string().regex(GUID_PATTERN, "a tray icon GUID looks like 12345678-1234-1234-1234-123456789abc");
 
-const POLL_MILLISECONDS = 30;
-const MAINTENANCE_TICKS = 33;
+// The pointer is read fast while it is over the taskbar, where an icon can be
+// clicked, and slowly elsewhere: a click needs the pointer to arrive first, and
+// a press that happened between two slow reads is still reported by the next
+// (ButtonSample.wasPressed). A timer that wakes the thread 33 times a second
+// costs about 2% of a core.
+const FAST_POLL_MILLISECONDS = 30;
+const SLOW_POLL_MILLISECONDS = 250;
+const MAINTENANCE_MILLISECONDS = 1000;
 const DOUBLE_CLICK_MILLISECONDS = 500;
 const NO_ICON = 0n;
 const FIRST_ID = 1;
@@ -155,6 +167,7 @@ export function createTrayIconWith(options: CoreOptions) {
   let isRegistered = false;
   let isRemoved = false;
   let tick = 0;
+  let pollMilliseconds = SLOW_POLL_MILLISECONDS;
   const detector = createClickDetector({
     now: options.now,
     doubleClickMilliseconds: DOUBLE_CLICK_MILLISECONDS,
@@ -249,9 +262,23 @@ export function createTrayIconWith(options: CoreOptions) {
     }
   }
 
+  function pace(sample: PointerSample) {
+    const isButtonHeld = sample.left.isDown || sample.right.isDown || sample.middle.isDown;
+    const isActive = sample.isOnTray || isButtonHeld;
+    const wanted = isActive ? FAST_POLL_MILLISECONDS : SLOW_POLL_MILLISECONDS;
+    const isChanged = wanted !== pollMilliseconds;
+    if (!isChanged) {
+      return;
+    }
+
+    pollMilliseconds = wanted;
+    stopTimer();
+    stopTimer = startTimer();
+  }
+
   function poll() {
     tick++;
-    const isMaintenanceTick = tick % MAINTENANCE_TICKS === 0;
+    const isMaintenanceTick = tick % Math.ceil(MAINTENANCE_MILLISECONDS / pollMilliseconds) === 0;
     if (isMaintenanceTick) {
       maintain();
     }
@@ -262,6 +289,7 @@ export function createTrayIconWith(options: CoreOptions) {
       sample,
       rect: isLookingForIcon ? native.iconRect(identity) : null
     });
+    pace(sample);
   }
 
   function remove() {
@@ -270,7 +298,7 @@ export function createTrayIconWith(options: CoreOptions) {
     }
 
     isRemoved = true;
-    stop();
+    stopTimer();
     liveIcons.delete(remove);
 
     if (isRegistered) {
@@ -289,10 +317,16 @@ export function createTrayIconWith(options: CoreOptions) {
     add();
   }
 
-  const stop = options.schedule({
-    milliseconds: POLL_MILLISECONDS,
-    onTick: poll
-  });
+  function noStop() {}
+
+  function startTimer() {
+    return options.schedule({
+      milliseconds: pollMilliseconds,
+      onTick: poll
+    });
+  }
+
+  let stopTimer = isVisible ? startTimer() : noStop;
   liveIcons.add(remove);
   const handle: TrayIconHandle = {
     update(changes) {
@@ -310,8 +344,11 @@ export function createTrayIconWith(options: CoreOptions) {
       if (isVisibilityChanged) {
         if (isVisible) {
           add();
+          stopTimer = startTimer();
         } else {
           take();
+          stopTimer();
+          stopTimer = noStop;
         }
 
         return;
