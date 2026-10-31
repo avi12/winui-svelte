@@ -1,11 +1,16 @@
 import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED } from "./example-process.ts";
+import { roInitialize } from "@microsoft/dynwinrt";
+import { DeviceClass } from "#src/devices/bindings.js";
+import { findAllDevices } from "#src/devices/find-devices.js";
+import { initWindowsAppSdk } from "#src/window/bootstrap.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
 // The media example (examples/media-elements) in a real WinUI window, off screen and
 // never activated: Images made from bytes, a data URI, a file path, SVG
 // markup and raw pixels (a WriteableBitmap) show the pixels they were made from, a bad image raises ImageFailed,
-// and a MediaPlayer with no window plays a generated WAV to its end.
+// and a MediaPlayer with no window plays a generated WAV to its end (skipped
+// where Windows lists no audio render device, such as a desktop of its own).
 
 const TIMEOUT_MILLISECONDS = 300_000;
 const IMAGE_SIZE = 4;
@@ -14,6 +19,20 @@ const LOAD_MILLISECONDS = 1500;
 const ENDED_WAIT_MILLISECONDS = 15_000;
 const POLL_MILLISECONDS = 250;
 const PLAYING = 3;
+const NO_AUDIO_OUTPUT = "this desktop has no audio render device to play the WAV on";
+
+async function hasAudioOutput() {
+  if (!IS_WINDOWS_APP_SDK_RESTORED) {
+    return false;
+  }
+
+  initWindowsAppSdk();
+  roInitialize();
+  const outputs = await findAllDevices({ deviceClass: DeviceClass.AudioRender });
+  return outputs.length > 0;
+}
+
+const CAN_PLAY_AUDIO = await hasAudioOutput();
 
 function isNear({ actual, expected }: {
   actual: unknown;
@@ -137,7 +156,7 @@ test("images made from bytes, a data URI, a file and SVG show their pixels", {
 });
 
 test("a MediaPlayer with no window plays a WAV: state and position advance to the end", {
-  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  skip: CAN_PLAY_AUDIO ? false : NO_AUDIO_OUTPUT,
   timeout: TIMEOUT_MILLISECONDS
 }, async () => {
   const example = ExampleProcess.start({ entry: "examples/media-elements/main.ts" });
