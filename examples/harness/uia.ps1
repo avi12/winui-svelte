@@ -31,7 +31,12 @@ $pauseMilliseconds = 150
 function Find-Window {
   $condition = New-Object System.Windows.Automation.PropertyCondition(
     $automation::ProcessIdProperty, $ProcessId)
-  $window = $automation::RootElement.FindFirst('Children', $condition)
+  # A TextBox makes Windows add a text input indicator window to the process,
+  # which can be listed first: the example's own window is the WinUI one.
+  $windows = $automation::RootElement.FindAll('Children', $condition)
+  $window = $windows | Where-Object {
+    $_.Current.ClassName -eq 'WinUIDesktopWin32WindowClass' } |
+    Select-Object -First 1
   if ($null -eq $window) { throw 'the example has no window' }
   $window
 }
