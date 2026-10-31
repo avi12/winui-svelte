@@ -1,4 +1,5 @@
 import { installUiTimers } from "./install-timers.ts";
+import { installUiFetch } from "./ui-fetch.ts";
 import { roInitialize } from "@microsoft/dynwinrt";
 
 // The UI thread: a worker, because WinUI's message loop never gives its
@@ -21,6 +22,7 @@ const SINGLE_THREADED_APARTMENT = 0;
  */
 export async function runOnUiThread(main: () => Promise<void>) {
   installUiTimers();
+  installUiFetch();
   roInitialize(SINGLE_THREADED_APARTMENT);
   try {
     await main();
