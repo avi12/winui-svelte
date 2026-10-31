@@ -2,11 +2,11 @@
 export interface TrayWindow {
   readonly appWindow: {
     readonly isVisible: boolean;
-    isShownInSwitchers: boolean;
     hide(): void;
     show(): void;
   };
   bringToFront(): void;
+  setShownInSwitchers(isShown: boolean): void;
 }
 
 /**
@@ -14,13 +14,13 @@ export interface TrayWindow {
  * window keeps running; `restoreFromTray` brings it back.
  */
 export function hideToTray(window: TrayWindow) {
-  window.appWindow.isShownInSwitchers = false;
+  window.setShownInSwitchers(false);
   window.appWindow.hide();
 }
 
 /** Undoes `hideToTray`: the taskbar button, the window, in front and focused. */
 export function restoreFromTray(window: TrayWindow) {
-  window.appWindow.isShownInSwitchers = true;
+  window.setShownInSwitchers(true);
   window.appWindow.show();
   window.bringToFront();
 }

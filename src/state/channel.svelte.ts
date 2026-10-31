@@ -42,6 +42,13 @@ export interface HostState<State extends StateShape> {
 /** How a channel reacts to what it cannot use. */
 export interface ChannelOptions {
   /**
+   * The link to the host closed: the host is gone, or ended it. A window
+   * process that has nothing to show without the host exits here
+   * (`exitWhenHostEnds` in `winui-svelte/window`).
+   */
+  onClosed?(): void;
+
+  /**
    * Anything wrong with what the host sent or with applying it, or a message
    * type nobody handles; the host's remedy is a new snapshot. Defaults to a
    * line on stderr (never stdout).
@@ -72,6 +79,9 @@ export interface HostChannel<Action extends Json = Json, Extra extends object = 
 
   /** The typed link underneath, for message types of the app's own. */
   readonly messaging: Messaging<StateProtocol<Action> & Extra>;
+
+  /** Calls `listener` once the link to the host has closed (at once if it already has). */
+  onClosed(listener: () => void): void;
 
   /** Closes the link; what is still waiting rejects. */
   dispose(): void;
@@ -139,11 +149,19 @@ class Channel<Action extends Json, Extra extends object> implements HostChannel<
   // meets the wire (an `instanceof` hands the slot back as that State).
   private readonly slots = new Map<string, object>();
   private isClosed = false;
+  private readonly closedListeners: Array<() => void> = [];
 
-  constructor({ transport, onError = writeToStderr }: HostChannelSetup) {
+  constructor({ transport, onError = writeToStderr, onClosed }: HostChannelSetup) {
     this.messaging = defineMessaging<StateProtocol<Action> & Extra>({
       transport,
       onError,
+      onClosed: () => {
+        this.isClosed = true;
+        onClosed?.();
+        for (const listener of this.closedListeners.splice(0)) {
+          listener();
+        }
+      },
       onUnhandled: frame => onError(new Error(`no handler for message "${frame.type}"`))
     });
     this.own = this.messaging;
@@ -184,6 +202,15 @@ class Channel<Action extends Json, Extra extends object> implements HostChannel<
 
       throw new HostError(error instanceof Error ? error.message : String(error));
     }
+  }
+
+  onClosed(listener: () => void) {
+    if (this.isClosed) {
+      listener();
+      return;
+    }
+
+    this.closedListeners.push(listener);
   }
 
   dispose() {

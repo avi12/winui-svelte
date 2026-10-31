@@ -7,7 +7,6 @@ function fakeWindow() {
   const window = {
     appWindow: {
       isVisible: true,
-      isShownInSwitchers: true,
       hide() {
         calls.push("hide");
         window.appWindow.isVisible = false;
@@ -16,6 +15,10 @@ function fakeWindow() {
         calls.push("show");
         window.appWindow.isVisible = true;
       }
+    },
+    isShownInSwitchers: true,
+    setShownInSwitchers(isShown: boolean) {
+      window.isShownInSwitchers = isShown;
     },
     bringToFront() {
       calls.push("bringToFront");
@@ -31,10 +34,10 @@ test("hideToTray hides the window and its taskbar button, restoreFromTray undoes
   const { window, calls } = fakeWindow();
   hideToTray(window);
   assert.equal(window.appWindow.isVisible, false);
-  assert.equal(window.appWindow.isShownInSwitchers, false);
+  assert.equal(window.isShownInSwitchers, false);
   restoreFromTray(window);
   assert.equal(window.appWindow.isVisible, true);
-  assert.equal(window.appWindow.isShownInSwitchers, true);
+  assert.equal(window.isShownInSwitchers, true);
   assert.deepEqual(calls, ["hide", "show", "bringToFront"]);
 });
 

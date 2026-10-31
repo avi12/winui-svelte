@@ -14,7 +14,7 @@
   const theme = elementTheme();
 
   $effect(() => {
-    props.report(`size ${size.width}x${size.height}`);
+    props.report(`size ${size.width}x${size.height} wants ${size.desiredWidth}x${size.desiredHeight}`);
   });
   $effect(() => {
     props.report(`theme ${theme.current}`);

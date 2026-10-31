@@ -1,3 +1,4 @@
+import { applyShownInSwitchers } from "./apply-chrome.ts";
 import { scaleOf } from "./native.ts";
 import type { OpenFilePickerOptions, PickerOptions, SaveFilePickerOptions } from "./pickers.ts";
 import { pickFile, pickFilePaths, pickFolder, saveFile } from "./pickers.ts";
@@ -44,6 +45,18 @@ export class WindowHandle {
    */
   get presenter() {
     return projectAs(this.appWindow.presenter, OverlappedPresenter);
+  }
+
+  /**
+   * Shows or hides the window's taskbar button and Alt+Tab entry. Unlike
+   * `appWindow.isShownInSwitchers`, it does not throw for a window that has no
+   * button to hide.
+   */
+  setShownInSwitchers(isShown: boolean) {
+    applyShownInSwitchers({
+      appWindow: this.appWindow,
+      isShown
+    });
   }
 
   /** Shows the window and gives it focus. */

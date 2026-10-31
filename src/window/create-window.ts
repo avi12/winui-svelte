@@ -6,7 +6,23 @@ import { Grid } from "#src/winui.js";
 import type { FrameworkElement, Window } from "#src/winui.js";
 import type { Component } from "svelte";
 
-interface WindowChrome extends Pick<WindowProps, "backdrop" | "extendsIntoTitleBar" | "isModal" | "owner" | "title"> {
+interface WindowChrome extends Pick<
+  WindowProps,
+  | "backdrop"
+  | "cornerRadius"
+  | "extendsIntoTitleBar"
+  | "isActivatable"
+  | "isAlwaysOnTop"
+  | "isBorderless"
+  | "isClickThrough"
+  | "isExcludedFromCapture"
+  | "isHidden"
+  | "isModal"
+  | "isShownInSwitchers"
+  | "isToolWindow"
+  | "owner"
+  | "title"
+> {
   /** In device pixels. */
   size?: WindowSize;
 
@@ -98,7 +114,16 @@ export function createWindow<Props extends object>(options: WindowOptions<Props>
       activate: options.isBackground !== true,
       isCentered: false,
       owner: options.owner,
-      isModal: options.isModal
+      isModal: options.isModal,
+      cornerRadius: options.cornerRadius,
+      isActivatable: options.isActivatable,
+      isAlwaysOnTop: options.isAlwaysOnTop,
+      isBorderless: options.isBorderless,
+      isClickThrough: options.isClickThrough,
+      isExcludedFromCapture: options.isExcludedFromCapture,
+      isHidden: options.isHidden,
+      isShownInSwitchers: options.isShownInSwitchers,
+      isToolWindow: options.isToolWindow
     },
     titleBar: () => null,
     size: options.size

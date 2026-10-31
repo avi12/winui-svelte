@@ -25,13 +25,7 @@
     }
 
     opened.presenter.setBorderAndTitleBar(false, false);
-    // A desktop with no taskbar (the hidden one the window tests run on)
-    // answers E_NOTIMPL: there is no button to hide
-    try {
-      opened.appWindow.isShownInSwitchers = false;
-    } catch {
-    // nothing to hide
-    }
+    opened.setShownInSwitchers(false);
 
     const isFocusing = props.activation === "focus";
     if (isFocusing) {

@@ -2,16 +2,25 @@ import {
   applyCaptionButtonColors,
   applyPresentation,
   applyRegions,
+  applyShownInSwitchers,
   applyTheme,
   applyTitleBarHeight
 } from "./apply-chrome.ts";
+import { applyFrameStyle } from "./apply-frame.ts";
 import type { Backdrop } from "./backdrop.ts";
 import { applyBackdrop, Backdrop as BackdropKind } from "./backdrop.ts";
 import { isBackgroundRun } from "./background-mode.ts";
 import { backgroundPlacement, keepInBackground } from "./background.ts";
 import type { CaptionButtonColors, CaptionButtonProperty, TitleBarHeight, WindowRegion } from "./chrome.ts";
 import { TitleBarHeight as TitleBarHeightKind, WindowPresentation, WindowTheme } from "./chrome.ts";
-import { joinAppUserModel, ownWindow } from "./native.ts";
+import {
+  clearWindowClip,
+  clipToRoundedRectangle,
+  excludeFromCapture,
+  ExtendedStyle,
+  joinAppUserModel,
+  ownWindow
+} from "./native.ts";
 import { createScaleTracker } from "./scale.ts";
 import { WindowHandle } from "./window-handle.ts";
 import type { FrameworkElement } from "#src/winui.js";
@@ -107,6 +116,53 @@ export interface WindowProps {
   /** The most the user can resize to, in device-independent pixels. */
   maxWidth?: number;
   maxHeight?: number;
+
+  /**
+   * No frame and no title bar: the window is only its content, as a pill, a
+   * toast or a splash screen is. Windowed presentation only.
+   */
+  isBorderless?: boolean | undefined;
+
+  /**
+   * The taskbar button and the Alt+Tab entry. false hides both (the window
+   * keeps running); the default shows them.
+   */
+  isShownInSwitchers?: boolean | undefined;
+
+  /**
+   * A tool window: no taskbar button and no Alt+Tab entry, from the first
+   * frame. The same effect as `isShownInSwitchers={false}`, as a window style.
+   */
+  isToolWindow?: boolean | undefined;
+
+  /**
+   * false: a click never activates the window, and it never takes focus from
+   * what the user is typing in (an overlay, a pill). The default activates.
+   */
+  isActivatable?: boolean | undefined;
+
+  /** Clicks go to whatever is behind the window. */
+  isClickThrough?: boolean | undefined;
+
+  /**
+   * Screenshots, screen recordings and screen sharing show the window black
+   * (or not at all).
+   */
+  isExcludedFromCapture?: boolean | undefined;
+
+  /**
+   * true opens the window without showing it, and hides it later; false (the
+   * default) shows it. Showing it again gives it focus unless `activate` is
+   * false.
+   */
+  isHidden?: boolean | undefined;
+
+  /**
+   * Clips the window to a rounded rectangle with this corner radius in
+   * device-independent pixels: what is outside the corners shows the desktop.
+   * The edge is not anti-aliased.
+   */
+  cornerRadius?: number | undefined;
 
   /** The window stays above the other windows. Windowed presentation only. */
   isAlwaysOnTop?: boolean | undefined;
@@ -212,6 +268,13 @@ class WindowHost {
   private appliedHeight: TitleBarHeight | null = null;
   private appliedCaptionButtons: ReadonlySet<CaptionButtonProperty> = new Set();
   private readonly appliedRegions = new Set<NonClientRegionKind>();
+  private readonly appliedStyles = new Set<bigint>();
+  private isBorderApplied = false;
+  private isCaptureApplied = false;
+  private isSwitcherApplied = false;
+  private isClipApplied = false;
+  private isTopApplied = false;
+  private hasShown = false;
   private readonly openSize: WindowSize | undefined;
   private appliedSize: {
     width: number | undefined;
@@ -250,12 +313,15 @@ class WindowHost {
     this.keepInLine(() => this.syncRegions());
     this.keepInLine(() => this.syncPresentation());
     this.keepInLine(() => this.syncLimits());
+    this.keepInLine(() => this.syncFrame());
+    this.keepInLine(() => this.syncShape());
     this.placeFirst();
     $effect(() => this.syncSize());
     this.syncOwner();
     this.listen();
     this.watchScale();
     this.show();
+    $effect(() => this.syncVisibility());
   }
 
   dispose() {
@@ -417,9 +483,10 @@ class WindowHost {
     const { isAlwaysOnTop, isResizable, isMaximizable, isMinimizable } = this.props;
     const { minWidth, minHeight, maxWidth, maxHeight } = this.props;
     const { presenter, scale } = this.handle;
-    const isTopAllowed = isGiven(isAlwaysOnTop) && !isBackgroundRun();
-    if (isTopAllowed) {
-      presenter.isAlwaysOnTop = isAlwaysOnTop;
+    const isTopChanged = isGiven(isAlwaysOnTop) || this.isTopApplied;
+    if (isTopChanged) {
+      presenter.isAlwaysOnTop = isAlwaysOnTop ?? false;
+      this.isTopApplied = isGiven(isAlwaysOnTop);
     }
 
     if (isGiven(isResizable)) {
@@ -460,6 +527,130 @@ class WindowHost {
         value: maxHeight,
         scale
       });
+    }
+  }
+
+  // The window styles, the borderless presenter and the capture affinity: all
+  // left alone until the app names them.
+  private syncFrame() {
+    const hwnd = this.handle.appWindow.id.value;
+    const { isActivatable, isToolWindow, isClickThrough, isExcludedFromCapture, isShownInSwitchers } = this.props;
+    const hasActivatable = isGiven(isActivatable);
+    const frameStyles = [
+      {
+        style: {
+          styles: ExtendedStyle.noActivate,
+          isKeptInBackground: true
+        },
+        isOn: hasActivatable ? !isActivatable : undefined
+      },
+      {
+        style: {
+          styles: ExtendedStyle.toolWindow,
+          isKeptInBackground: true
+        },
+        isOn: isToolWindow
+      },
+      {
+        style: {
+          styles: ExtendedStyle.transparent,
+          isLayered: true
+        },
+        isOn: isClickThrough
+      }
+    ];
+    for (const { style, isOn } of frameStyles) {
+      applyFrameStyle({
+        hwnd,
+        style,
+        isOn,
+        applied: this.appliedStyles
+      });
+    }
+
+    const isCaptureGiven = isGiven(isExcludedFromCapture);
+    const isCaptureChanged = isCaptureGiven || this.isCaptureApplied;
+    if (isCaptureChanged) {
+      excludeFromCapture({
+        hwnd,
+        isExcluded: isExcludedFromCapture === true
+      });
+      this.isCaptureApplied = isCaptureGiven;
+    }
+
+    const isSwitcherGiven = isGiven(isShownInSwitchers);
+    const isSwitcherChanged = isSwitcherGiven || this.isSwitcherApplied;
+    if (isSwitcherChanged) {
+      applyShownInSwitchers({
+        appWindow: this.handle.appWindow,
+        isShown: isShownInSwitchers ?? true
+      });
+      this.isSwitcherApplied = isSwitcherGiven;
+    }
+
+    this.syncBorder();
+  }
+
+  private syncBorder() {
+    const { isBorderless } = this.props;
+    const isGivenNow = isGiven(isBorderless);
+    const isChanged = this.isWindowed && (isGivenNow || this.isBorderApplied);
+    if (!isChanged) {
+      return;
+    }
+
+    const hasFrame = isBorderless !== true;
+    this.handle.presenter.setBorderAndTitleBar(hasFrame, hasFrame);
+    this.isBorderApplied = isGivenNow;
+  }
+
+  // Clipped to its rounded rectangle; again whenever the size or the scale
+  // changes, since the clip is in pixels.
+  private syncShape() {
+    const { cornerRadius } = this.props;
+    const isRounded = isGiven(cornerRadius);
+    const isChanged = isRounded || this.isClipApplied;
+    if (!isChanged) {
+      return;
+    }
+
+    const hwnd = this.handle.appWindow.id.value;
+    this.isClipApplied = isRounded;
+
+    if (!isRounded) {
+      clearWindowClip(hwnd);
+      return;
+    }
+
+    const { width, height } = this.handle.appWindow.size;
+    clipToRoundedRectangle({
+      hwnd,
+      width,
+      height,
+      radius: round({
+        value: cornerRadius,
+        scale: this.handle.scale
+      })
+    });
+  }
+
+  // A window that is hidden stays so until the prop changes; the first show
+  // (show()) already honors it.
+  private syncVisibility() {
+    const isHidden = this.props.isHidden === true;
+    if (!this.hasShown) {
+      return;
+    }
+
+    const { appWindow } = this.handle;
+    if (isHidden) {
+      appWindow.hide();
+      return;
+    }
+
+    const isHiddenNow = !appWindow.isVisible;
+    if (isHiddenNow) {
+      this.showWindow();
     }
   }
 
@@ -591,6 +782,10 @@ class WindowHost {
         if (isMoved) {
           this.reportBounds();
         }
+
+        if (event.didSizeChange) {
+          this.syncShape();
+        }
       })
     );
   }
@@ -602,6 +797,7 @@ class WindowHost {
       onChange: scale => {
         this.syncLimits();
         this.syncRegions();
+        this.syncShape();
         this.props.onscalechanged?.(scale);
       }
     });
@@ -625,6 +821,17 @@ class WindowHost {
   // Shown, and then the bounds it opened with are reported: an app that keeps
   // them (to reopen where the window was) needs them before the user moves it.
   private show() {
+    const isHidden = this.props.isHidden === true;
+    if (!isHidden) {
+      this.showWindow();
+    }
+
+    this.hasShown = true;
+    this.syncShape();
+    this.reportBounds();
+  }
+
+  private showWindow() {
     const { window } = this.handle;
     const isBackground = this.props.activate === false || isBackgroundRun();
     if (isBackground) {
@@ -632,8 +839,6 @@ class WindowHost {
     } else {
       window.activate();
     }
-
-    this.reportBounds();
   }
 }
 

@@ -108,6 +108,28 @@ by default) and answered with an error; the remedy is a new snapshot
 When the
 link closes, waiting and later `send`s reject with `HostClosedError`
 
+### When the host goes away
+
+`channel.onClosed(listener)` (and the `onClosed` option of `createHostChannel`)
+tell the window process the link closed
+A window process that has nothing to show without its host ends with it:
+
+```ts
+runWindow({
+  onStart() {
+    exitWhenHostEnds({ link: channel, hostProcessId: Number(process.env["HOST_PID"]) })
+  }
+})
+```
+
+`exitWhenHostEnds` (`winui-svelte/window`) ends the application when the link
+closes, or when the host process is gone, which also covers a host that died
+while a child still held the pipe open
+A message the app does not need answered goes with `channel.messaging.notify`,
+which neither rejects nor reports when the link is closed or closes first,
+where an unawaited `sendMessage` would end the process with an unhandled
+`MessagingClosedError`
+
 ## Running
 
 ```

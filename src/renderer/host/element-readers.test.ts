@@ -14,6 +14,10 @@ const WIDE = {
   width: 640,
   height: 480
 } as const;
+const CONTENT = {
+  width: 200,
+  height: 120
+} as const;
 const NARROW = {
   width: 320,
   height: 480
@@ -46,23 +50,28 @@ test("size and theme follow the element, and let go when it goes", () => {
     }
   });
   const element = elementOf(mounted.root);
-  assert.deepEqual(lines, ["size 0x0", `theme ${LIGHT}`], "the element's own size and theme are read when it is attached");
-  assert.equal(element.listenerCount, 2);
+  assert.deepEqual(lines, ["size 0x0 wants 0x0", `theme ${LIGHT}`], "the element's own size and theme are read when it is attached");
+  assert.equal(element.listenerCount, 3);
 
   lines.length = 0;
   element.resize(WIDE);
   mounted.set({});
-  assert.deepEqual(lines, ["size 640x480"]);
+  assert.deepEqual(lines, ["size 640x480 wants 0x0"]);
+
+  lines.length = 0;
+  element.relayout(CONTENT);
+  mounted.set({});
+  assert.deepEqual(lines, ["size 640x480 wants 200x120"], "the size the content asks for follows a layout pass, though the element keeps its own");
 
   lines.length = 0;
   element.resize(NARROW);
   element.retheme(DARK);
   mounted.set({});
-  assert.deepEqual(lines.toSorted(), [`size 320x480`, `theme ${DARK}`].toSorted());
+  assert.deepEqual(lines.toSorted(), [`size 320x480 wants 200x120`, `theme ${DARK}`].toSorted());
 
   lines.length = 0;
   mounted.set({ isShown: false });
   assert.equal(element.listenerCount, 0, "the events are unsubscribed");
-  assert.deepEqual(lines.toSorted(), ["size 0x0", "theme undefined"].toSorted());
+  assert.deepEqual(lines.toSorted(), ["size 0x0 wants 0x0", "theme undefined"].toSorted());
   mounted.unmount();
 });

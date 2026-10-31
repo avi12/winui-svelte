@@ -1,3 +1,4 @@
+import { isBackgroundRun } from "./background-mode.ts";
 import type { CaptionButtonColors, CaptionButtonProperty } from "./chrome.ts";
 import {
   captionButtonChanges,
@@ -7,6 +8,7 @@ import {
   WindowTheme
 } from "./chrome.ts";
 import type { WindowRegion } from "./chrome.ts";
+import { changeExtendedStyles, ExtendedStyle } from "./native.ts";
 import type { AppWindow, FrameworkElement, NonClientRegionKind } from "#src/winui.js";
 import {
   AppWindowPresenterKind,
@@ -122,4 +124,26 @@ export function applyRegions({ appWindow, kind, regions, scale }: {
       scale
     }))
   );
+}
+
+/**
+ * Shows or hides the window's taskbar button and Alt+Tab entry. A window that
+ * has no button to hide (a tool window, such as a background one) makes WinUI
+ * answer "not implemented" (0x80004001); the tool window style then does the
+ * same job, so the call never throws for it (a background window keeps the
+ * style it was given).
+ */
+export function applyShownInSwitchers({ appWindow, isShown }: {
+  appWindow: AppWindow;
+  isShown: boolean;
+}) {
+  try {
+    appWindow.isShownInSwitchers = isShown;
+  } catch {
+    changeExtendedStyles({
+      hwnd: appWindow.id.value,
+      styles: ExtendedStyle.toolWindow,
+      isOn: !isShown || isBackgroundRun()
+    });
+  }
 }

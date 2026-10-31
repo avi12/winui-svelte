@@ -989,6 +989,21 @@ Without `dragRegions` the `titleBar` snippet is the drag area
 The size limits and
 `isAlwaysOnTop` are the windowed presentation's, and are set again when the
 window returns to it
+A window that is only its content (a pill, an overlay, a splash screen) is made
+of the frame props: `isBorderless` (no frame, no title bar),
+`isShownInSwitchers` and `isToolWindow` (no taskbar button or Alt+Tab entry),
+`isActivatable={false}` (a click never takes focus), `isClickThrough`,
+`isExcludedFromCapture` (black in screenshots and screen sharing),
+`isHidden` (opens hidden, hides and shows later) and `cornerRadius` (clips the
+window to a rounded rectangle; the edge is not anti-aliased)
+A prop left out leaves the window as it is, and dropped again it puts the
+window back
+`createWindow` takes them too
+`handle.setShownInSwitchers(isShown)` does not throw for a window that has no
+taskbar button (WinUI answers 0x80004001 there); `hideToTray` uses it
+A window with a transparent background (per-pixel alpha) is not offered:
+WinUI 3 has no transparent backdrop in the bindings
+
 `owner` (another window's `WindowHandle`) and `isModal`
 (blocks the owner until this window closes) are read once, before the window
 opens; `createWindow` takes them too
@@ -1268,7 +1283,11 @@ last two lists say
 // Put `.attach` after @attach on the element; read the rest where needed.
 // All reactive, and reset when the element goes.
 const size = elementSize();     // size.width, size.height: ActualWidth/Height,
-                                // device-independent pixels, 0 before layout
+                                // device-independent pixels, 0 before layout;
+                                // size.desiredWidth, size.desiredHeight: what
+                                // the content asks for (a stretched root panel
+                                // is as tall as its window, so a window sized
+                                // from its content reads these)
 const theme = elementTheme();   // theme.current: ElementTheme.Light | Dark,
                                 // undefined before the element is made
 
@@ -3182,7 +3201,8 @@ entry point is named nowhere in the docs
 | `isJsonObject` | `winui-svelte/state/host` | whether a value is a JSON object |
 | `MemoryEnd` | `winui-svelte/state` | one end of an in-memory transport; `MemoryEnd.pair()` makes both |
 | `requestFrameSchema`, `responseFrameSchema` | `winui-svelte/messaging` | the wire shapes of a request and its answer |
-| `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed |
+| `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed (`notify` sends without waiting and never rejects for it) |
+| `exitWhenHostEnds`, `HostLink`, `HostEndOptions` | `winui-svelte/window` | ends the window process when the host's link closes or the host process is gone (see `src/state/README.md`) |
 | `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
 | `classNameOf` | `winui-svelte/host` | the class name (`ListView`) of a control, from the tag it was registered under, so it holds when a minifier renames classes |
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet`, `textTransforms` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, removal of a stylesheet, and the text each element's `text-transform` shows (the renderer reads it) |

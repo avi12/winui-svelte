@@ -35,6 +35,7 @@ export async function runExample({ entry, link, options, receive }: ExampleRun) 
   }
 
   const { start } = parsedExample.data;
+  const isBare = parsedExample.data.IS_BARE === true;
   const handlers: Array<(command: ExampleCommand) => void> = [];
   const host: ExampleHost = {
     report: message => link.postMessage(message),
@@ -45,7 +46,10 @@ export async function runExample({ entry, link, options, receive }: ExampleRun) 
   };
   await runWindow({
     onStart() {
-      registerControls(bindings);
+      if (!isBare) {
+        registerControls(bindings);
+      }
+
       start(host);
       const timer = DispatcherQueue.getForCurrentThread().createTimer();
       timer.interval = { duration: BigInt(COMMAND_MILLISECONDS) * ticksPerMillisecond };

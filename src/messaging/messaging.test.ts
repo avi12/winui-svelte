@@ -138,3 +138,46 @@ test("a stray frame is reported, not thrown", async () => {
   await new Promise(resolve => setTimeout(resolve, 5));
   assert.equal(reported.length, 1);
 });
+
+test("a send after the link closed rejects at once, without writing to it", async () => {
+  const { right, caller } = pair();
+  right.close();
+  await new Promise(resolve => setTimeout(resolve, 5));
+  await assert.rejects(caller.sendMessage(PingType.refresh), MessagingClosedError);
+});
+
+test("onClosed hears the link close", async () => {
+  const [left, right] = MemoryEnd.pair();
+  let closes = 0;
+  defineMessaging<PingProtocol>({
+    transport: left,
+    onClosed() {
+      closes += 1;
+    }
+  });
+  right.close();
+  await new Promise(resolve => setTimeout(resolve, 5));
+  assert.equal(closes, 1);
+});
+
+test("notify leaves nothing unhandled when the link is closed or closes first", async () => {
+  const reported: string[] = [];
+  const { right, caller } = pair(error => reported.push(error.message));
+  caller.notify(PingType.refresh);
+  right.close();
+  await new Promise(resolve => setTimeout(resolve, 5));
+  caller.notify(PingType.refresh);
+  await new Promise(resolve => setTimeout(resolve, 5));
+  assert.deepEqual(reported, [], "a closed link is no error to report");
+});
+
+test("notify reports the other end's failure instead of leaving it unhandled", async () => {
+  const reported: string[] = [];
+  const { caller, callee } = pair(error => reported.push(error.message));
+  callee.onMessage(PingType.fail, () => {
+    throw new Error("nope");
+  });
+  caller.notify(PingType.fail);
+  await new Promise(resolve => setTimeout(resolve, 5));
+  assert.ok(reported.includes("nope"));
+});

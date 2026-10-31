@@ -1,7 +1,5 @@
-import { addExtendedStyles, virtualScreen } from "./native.ts";
+import { changeExtendedStyles, ExtendedStyle, virtualScreen } from "./native.ts";
 
-const WS_EX_TOOLWINDOW = 0x80n;
-const WS_EX_NOACTIVATE = 0x08000000n;
 // Clear of every display, however they are arranged: left of the rectangle
 // that holds them all.
 const CLEARANCE = 2000;
@@ -29,8 +27,9 @@ export function backgroundPlacement(size: {
  * first show.
  */
 export function keepInBackground(hwnd: bigint) {
-  addExtendedStyles({
+  changeExtendedStyles({
     hwnd,
-    styles: WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE
+    styles: ExtendedStyle.toolWindow | ExtendedStyle.noActivate,
+    isOn: true
   });
 }
