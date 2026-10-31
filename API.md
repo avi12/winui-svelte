@@ -2418,8 +2418,9 @@ needs a single-threaded apartment: the window thread has one)
 - `request("screen")` gives a sentinel with `release()` and `release` event;
   any other type is `TypeError`; the `screen-wake-lock` permission is granted
 - A hidden page releases every lock and refuses a new one (`NotAllowedError`);
-  until the page API exists, `visibility` is the seam (`isVisible()` and
-  `onChange(callback)`), and without it the page counts as always visible
+  by default the page is the page module's `document` (install
+  `web-apis/page` first); `visibility` (`isVisible()` and `onChange(callback)`)
+  replaces it, and without a document the page counts as always visible
 - Extra: `navigator.wakeLock.activeCount`
 
 #### Idle detection
