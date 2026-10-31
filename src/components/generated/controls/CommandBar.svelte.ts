@@ -48,9 +48,13 @@ export function linkCommandBar(
     }
   });
 
-  if ("ondynamicoverflowitemschanging" in props) {
-    link.add(control.onDynamicOverflowItemsChanging((...args) => props.ondynamicoverflowitemschanging?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "DynamicOverflowItemsChanging"
+    ]
+  });
 }
 
 export function connectCommandBar(

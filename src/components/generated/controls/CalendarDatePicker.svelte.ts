@@ -13,6 +13,7 @@ import type {
   DateInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   NullableDateInput,
   ObjectInput,
   StyleInput
@@ -20,6 +21,9 @@ import type {
 import { Linker } from "../../runtime.svelte.ts";
 import { CalendarViewDisplayMode, DayOfWeek, LightDismissOverlayMode } from "../bindings.ts";
 import type { CalendarDatePicker } from "../bindings.ts";
+import type {
+  CalendarViewDayItemChangingEventArgs
+} from "#winui/microsoft/ui/xaml/controls/CalendarViewDayItemChangingEventArgs";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
@@ -43,7 +47,7 @@ export interface CalendarDatePickerProps extends ControlProps {
   maxDate?: DateInput;
   minDate?: DateInput;
   placeholderText?: string;
-  oncalendarviewdayitemchanging?: Parameters<CalendarDatePicker["onCalendarViewDayItemChanging"]>[0];
+  oncalendarviewdayitemchanging?: (sender: CalendarDatePicker, args: EventArguments<CalendarViewDayItemChangingEventArgs>) => void;
   onclosed?: Parameters<CalendarDatePicker["onClosed"]>[0];
   ondatechanged?: Parameters<CalendarDatePicker["onDateChanged"]>[0];
   onopened?: Parameters<CalendarDatePicker["onOpened"]>[0];
@@ -126,21 +130,18 @@ export function linkCalendarDatePicker(
     ]
   });
 
-  if ("oncalendarviewdayitemchanging" in props) {
-    link.add(control.onCalendarViewDayItemChanging((...args) => props.oncalendarviewdayitemchanging?.(...args)));
-  }
-
-  if ("onclosed" in props) {
-    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
-  }
-
-  if ("ondatechanged" in props) {
-    link.add(control.onDateChanged((...args) => props.ondatechanged?.(...args)));
-  }
-
-  if ("onopened" in props) {
-    link.add(control.onOpened((...args) => props.onopened?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    names: [
+      "CalendarViewDayItemChanging"
+    ],
+    raw: [
+      "Closed",
+      "DateChanged",
+      "Opened"
+    ]
+  });
 }
 
 export function connectCalendarDatePicker(

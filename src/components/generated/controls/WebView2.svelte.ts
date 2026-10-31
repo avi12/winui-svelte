@@ -50,25 +50,17 @@ export function linkWebView2(
     }
   });
 
-  if ("oncoreprocessfailed" in props) {
-    link.add(control.onCoreProcessFailed((...args) => props.oncoreprocessfailed?.(...args)));
-  }
-
-  if ("oncorewebview2initialized" in props) {
-    link.add(control.onCoreWebView2Initialized((...args) => props.oncorewebview2initialized?.(...args)));
-  }
-
-  if ("onnavigationcompleted" in props) {
-    link.add(control.onNavigationCompleted((...args) => props.onnavigationcompleted?.(...args)));
-  }
-
-  if ("onnavigationstarting" in props) {
-    link.add(control.onNavigationStarting((...args) => props.onnavigationstarting?.(...args)));
-  }
-
-  if ("onwebmessagereceived" in props) {
-    link.add(control.onWebMessageReceived((...args) => props.onwebmessagereceived?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "CoreProcessFailed",
+      "CoreWebView2Initialized",
+      "NavigationCompleted",
+      "NavigationStarting",
+      "WebMessageReceived"
+    ]
+  });
 }
 
 export function connectWebView2(

@@ -73,9 +73,13 @@ export function linkPipsPager(
     }
   });
 
-  if ("onselectedindexchanged" in props) {
-    link.add(control.onSelectedIndexChanged((...args) => props.onselectedindexchanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "SelectedIndexChanged"
+    ]
+  });
 }
 
 export function connectPipsPager(

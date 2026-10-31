@@ -19,6 +19,7 @@ interface MarkupNode {
 }
 
 const DECLARATION_SEPARATOR = ";";
+const STYLE_MENTION = /\bstyle[:=]/u;
 
 function isMarkupNode(value: unknown): value is MarkupNode {
   return typeof value === "object" && value !== null;
@@ -79,8 +80,8 @@ function declarationsOfNode(node: MarkupNode) {
   });
 }
 
-/** The declarations of every static `style="..."` attribute and `style:name` directive of the markup. */
-export function markupDeclarations(source: string) {
+// Every node of the markup's tree, the root first; none when it does not parse.
+function markupNodes(source: string) {
   let tree: unknown = null;
   try {
     tree = parse(source, { modern: true }).fragment;
@@ -88,7 +89,7 @@ export function markupDeclarations(source: string) {
     return [];
   }
 
-  const located: Located[] = [];
+  const nodes: MarkupNode[] = [];
   const pending: unknown[] = [tree];
   const seen = new Set<unknown>();
   for (const node of pending) {
@@ -98,9 +99,38 @@ export function markupDeclarations(source: string) {
     }
 
     seen.add(node);
-    located.push(...declarationsOfNode(node));
+    nodes.push(node);
     pending.push(...childrenOf(node));
   }
 
-  return located;
+  return nodes;
+}
+
+/** The declarations of every static `style="..."` attribute and `style:name` directive of the markup. */
+export function markupDeclarations(source: string) {
+  return markupNodes(source).flatMap(declarationsOfNode);
+}
+
+function propertiesOfNode(node: MarkupNode) {
+  const isStyleDirective = node.type === "StyleDirective";
+  if (isStyleDirective) {
+    return [node.name ?? ""];
+  }
+
+  return declarationsOfNode(node).map(located => located.property);
+}
+
+/**
+ * The properties the markup sets on elements: every `style:name` directive,
+ * whatever its value (an expression included), and the declarations of every
+ * static `style="..."` attribute. A `style={expression}` attribute names
+ * none, which only the running app knows.
+ */
+export function markupStyleProperties(source: string) {
+  const isStyled = STYLE_MENTION.test(source);
+  if (!isStyled) {
+    return [];
+  }
+
+  return [...new Set(markupNodes(source).flatMap(propertiesOfNode))];
 }

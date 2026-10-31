@@ -22,9 +22,13 @@ export function linkSwapChainPanel(
 ) {
   linkGrid(control, props, bound, link);
 
-  if ("oncompositionscalechanged" in props) {
-    link.add(control.onCompositionScaleChanged((...args) => props.oncompositionscalechanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "CompositionScaleChanged"
+    ]
+  });
 }
 
 export function connectSwapChainPanel(

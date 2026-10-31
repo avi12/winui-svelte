@@ -5,6 +5,7 @@ import type {
   BrushInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   FlagsInput,
   FontFamilyInput,
   FontWeightInput,
@@ -25,6 +26,8 @@ import {
   TextWrapping
 } from "../bindings.ts";
 import type { TextBlock } from "../bindings.ts";
+import type { ContextMenuEventArgs } from "#winui/microsoft/ui/xaml/controls/ContextMenuEventArgs";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
@@ -58,9 +61,9 @@ export interface TextBlockProps extends FrameworkElementProps {
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textTrimming?: EnumInput<typeof TextTrimming>;
   textWrapping?: EnumInput<typeof TextWrapping>;
-  oncontextmenuopening?: Parameters<TextBlock["onContextMenuOpening"]>[0];
+  oncontextmenuopening?: (sender: TextBlock, args: EventArguments<ContextMenuEventArgs>) => void;
   onistexttrimmedchanged?: Parameters<TextBlock["onIsTextTrimmedChanged"]>[0];
-  onselectionchanged?: Parameters<TextBlock["onSelectionChanged"]>[0];
+  onselectionchanged?: (sender: TextBlock, args: EventArguments<RoutedEventArgs>) => void;
 }
 
 export type TextBlockBound = FrameworkElementBound & Pick<TextBlockProps, "isTextTrimmed">;
@@ -122,17 +125,17 @@ export function linkTextBlock(
     ]
   });
 
-  if ("oncontextmenuopening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
-  }
-
-  if ("onistexttrimmedchanged" in props) {
-    link.add(control.onIsTextTrimmedChanged((...args) => props.onistexttrimmedchanged?.(...args)));
-  }
-
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    names: [
+      "ContextMenuOpening",
+      "SelectionChanged"
+    ],
+    raw: [
+      "IsTextTrimmedChanged"
+    ]
+  });
 }
 
 export function connectTextBlock(

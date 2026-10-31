@@ -49,9 +49,13 @@ export function linkRichTextBlockOverflow(
     ]
   });
 
-  if ("onistexttrimmedchanged" in props) {
-    link.add(control.onIsTextTrimmedChanged((...args) => props.onistexttrimmedchanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "IsTextTrimmedChanged"
+    ]
+  });
 }
 
 export function connectRichTextBlockOverflow(

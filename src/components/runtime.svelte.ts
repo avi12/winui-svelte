@@ -1,6 +1,8 @@
 import { enumValue } from "./convert.ts";
 import type { FlagsInput } from "./convert.ts";
 import type { AttachedModules } from "./generated/attached/owners.ts";
+import { eventPropName } from "#src/renderer/tree/markup.js";
+import { guarded, reportUiError } from "#src/ui-errors.js";
 import type { Snippet } from "svelte";
 
 // What a generated component links its control to its props with. A prop
@@ -19,6 +21,10 @@ function isEnumTable(table: object | undefined): table is EnumTable {
 
 function isEnumInput(value: unknown): value is FlagsInput<EnumTable> {
   return typeof value === "string" || typeof value === "number" || Array.isArray(value);
+}
+
+function isCallable(value: unknown): value is (...args: unknown[]) => unknown {
+  return typeof value === "function";
 }
 
 // eslint-disable-next-line no-restricted-syntax -- a type predicate cannot destructure its subject
@@ -164,13 +170,78 @@ export class Linker {
           Object.assign(control, {
             [key]: enumValue<EnumTable>({
               table,
-              input
+              input,
+              prop: String(key)
             })
           });
         }
       },
       isBlocked: () => false
     });
+  }
+
+  /**
+   * The event props of a control, by WinUI event name (`KeyDown`): the handler
+   * the app gave is called for every raise of its event, for the control's
+   * life. A name in `names` hands the handler the control as its first
+   * argument (WinUI passes the sender as a bare object, on which `sender.isOn`
+   * is undefined, and the control raises every XAML event); one in `raw` gets
+   * what WinUI passed. What a handler throws is reported (ui-errors.ts) and
+   * does not reach WinUI.
+   */
+  events<Props extends object, Target extends object>({ props, control, names = [], raw = [] }: {
+    props: Props;
+    control: Target;
+    names?: readonly string[];
+    raw?: readonly string[];
+  }) {
+    for (const name of names) {
+      this.subscribeEvent({
+        props,
+        control,
+        name,
+        isSender: true
+      });
+    }
+
+    for (const name of raw) {
+      this.subscribeEvent({
+        props,
+        control,
+        name,
+        isSender: false
+      });
+    }
+  }
+
+  private subscribeEvent<Props extends object, Target extends object>({ props, control, name, isSender }: {
+    props: Props;
+    control: Target;
+    name: string;
+    isSender: boolean;
+  }) {
+    const key = eventPropName(name);
+    const method = `on${name}`;
+    const isSubscribable = key in props && isKeyOf(control, method);
+    if (!isSubscribable) {
+      return;
+    }
+
+    const subscribe = control[method];
+    const unsubscribe: unknown = isCallable(subscribe) ? subscribe.call(
+      control, guarded({
+        origin: `event "${key}"`,
+        callback(...args: unknown[]) {
+          const handler: unknown = isKeyOf(props, key) ? props[key] : undefined;
+          if (isCallable(handler)) {
+            handler(...isSender ? [control, ...args.slice(1)] : args);
+          }
+        }
+      })
+    ) : undefined;
+    if (isCallable(unsubscribe)) {
+      this.add(() => unsubscribe());
+    }
   }
 
   /**
@@ -253,7 +324,10 @@ export class Linker {
         const value = props[key];
         const isWritable = isValue(value) && value !== undefined && !isBlocked();
         if (isWritable) {
-          this.write(() => apply(value));
+          this.write({
+            origin: `prop "${String(key)}"`,
+            action: () => apply(value)
+          });
         }
       });
     }
@@ -273,16 +347,24 @@ export class Linker {
       const value = bound[key];
       const isSet = value !== undefined;
       if (isSet) {
-        this.write(() => access.write(value));
+        this.write({
+          origin: `bound prop "${String(key)}"`,
+          action: () => access.write(value)
+        });
       }
     });
     for (const subscribe of subscribers) {
       this.add(
-        subscribe(() => this.changedByUser({
-          bound,
-          key,
-          read: access.read
-        }))
+        subscribe(
+          guarded({
+            origin: `change of bound prop "${String(key)}"`,
+            callback: () => this.changedByUser({
+              bound,
+              key,
+              read: access.read
+            })
+          })
+        )
       );
     }
   }
@@ -303,11 +385,21 @@ export class Linker {
     }
   }
 
-  private write(action: () => void) {
+  // A property the control refuses is reported, not thrown: the effect that
+  // writes it runs inside a flush that native code is waiting on.
+  private write({ origin, action }: {
+    origin: string;
+    action: () => void;
+  }) {
     const isAlreadyWriting = this.isWriting;
     this.isWriting = true;
     try {
       action();
+    } catch (error) {
+      reportUiError({
+        error,
+        origin
+      });
     } finally {
       this.isWriting = isAlreadyWriting;
     }

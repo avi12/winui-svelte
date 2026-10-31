@@ -88,9 +88,13 @@ export function linkNumberBox(
     ]
   });
 
-  if ("onvaluechanged" in props) {
-    link.add(control.onValueChanged((...args) => props.onvaluechanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "ValueChanged"
+    ]
+  });
 }
 
 export function connectNumberBox(

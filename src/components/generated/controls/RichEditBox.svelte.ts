@@ -5,6 +5,7 @@ import type {
   DataTemplateInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   FlagsInput,
   InputScopeInput,
   ObjectInput
@@ -20,6 +21,9 @@ import {
   TextWrapping
 } from "../bindings.ts";
 import type { RichEditBox } from "../bindings.ts";
+import type { ContextMenuEventArgs } from "#winui/microsoft/ui/xaml/controls/ContextMenuEventArgs";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
+import type { TextControlPasteEventArgs } from "#winui/microsoft/ui/xaml/controls/TextControlPasteEventArgs";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
@@ -49,13 +53,13 @@ export interface RichEditBoxProps extends ControlProps {
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textWrapping?: EnumInput<typeof TextWrapping>;
   oncandidatewindowboundschanged?: Parameters<RichEditBox["onCandidateWindowBoundsChanged"]>[0];
-  oncontextmenuopening?: Parameters<RichEditBox["onContextMenuOpening"]>[0];
+  oncontextmenuopening?: (sender: RichEditBox, args: EventArguments<ContextMenuEventArgs>) => void;
   oncopyingtoclipboard?: Parameters<RichEditBox["onCopyingToClipboard"]>[0];
   oncuttingtoclipboard?: Parameters<RichEditBox["onCuttingToClipboard"]>[0];
-  onpaste?: Parameters<RichEditBox["onPaste"]>[0];
-  onselectionchanged?: Parameters<RichEditBox["onSelectionChanged"]>[0];
+  onpaste?: (sender: RichEditBox, args: EventArguments<TextControlPasteEventArgs>) => void;
+  onselectionchanged?: (sender: RichEditBox, args: EventArguments<RoutedEventArgs>) => void;
   onselectionchanging?: Parameters<RichEditBox["onSelectionChanging"]>[0];
-  ontextchanged?: Parameters<RichEditBox["onTextChanged"]>[0];
+  ontextchanged?: (sender: RichEditBox, args: EventArguments<RoutedEventArgs>) => void;
   ontextchanging?: Parameters<RichEditBox["onTextChanging"]>[0];
   ontextcompositionchanged?: Parameters<RichEditBox["onTextCompositionChanged"]>[0];
   ontextcompositionended?: Parameters<RichEditBox["onTextCompositionEnded"]>[0];
@@ -112,53 +116,26 @@ export function linkRichEditBox(
     }
   });
 
-  if ("oncandidatewindowboundschanged" in props) {
-    link.add(control.onCandidateWindowBoundsChanged((...args) => props.oncandidatewindowboundschanged?.(...args)));
-  }
-
-  if ("oncontextmenuopening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
-  }
-
-  if ("oncopyingtoclipboard" in props) {
-    link.add(control.onCopyingToClipboard((...args) => props.oncopyingtoclipboard?.(...args)));
-  }
-
-  if ("oncuttingtoclipboard" in props) {
-    link.add(control.onCuttingToClipboard((...args) => props.oncuttingtoclipboard?.(...args)));
-  }
-
-  if ("onpaste" in props) {
-    link.add(control.onPaste((...args) => props.onpaste?.(...args)));
-  }
-
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
-
-  if ("onselectionchanging" in props) {
-    link.add(control.onSelectionChanging((...args) => props.onselectionchanging?.(...args)));
-  }
-
-  if ("ontextchanged" in props) {
-    link.add(control.onTextChanged((...args) => props.ontextchanged?.(...args)));
-  }
-
-  if ("ontextchanging" in props) {
-    link.add(control.onTextChanging((...args) => props.ontextchanging?.(...args)));
-  }
-
-  if ("ontextcompositionchanged" in props) {
-    link.add(control.onTextCompositionChanged((...args) => props.ontextcompositionchanged?.(...args)));
-  }
-
-  if ("ontextcompositionended" in props) {
-    link.add(control.onTextCompositionEnded((...args) => props.ontextcompositionended?.(...args)));
-  }
-
-  if ("ontextcompositionstarted" in props) {
-    link.add(control.onTextCompositionStarted((...args) => props.ontextcompositionstarted?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    names: [
+      "ContextMenuOpening",
+      "Paste",
+      "SelectionChanged",
+      "TextChanged"
+    ],
+    raw: [
+      "CandidateWindowBoundsChanged",
+      "CopyingToClipboard",
+      "CuttingToClipboard",
+      "SelectionChanging",
+      "TextChanging",
+      "TextCompositionChanged",
+      "TextCompositionEnded",
+      "TextCompositionStarted"
+    ]
+  });
 }
 
 export function connectRichEditBox(

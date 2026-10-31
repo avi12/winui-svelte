@@ -83,17 +83,15 @@ export function linkAutoSuggestBox(
     ]
   });
 
-  if ("onquerysubmitted" in props) {
-    link.add(control.onQuerySubmitted((...args) => props.onquerysubmitted?.(...args)));
-  }
-
-  if ("onsuggestionchosen" in props) {
-    link.add(control.onSuggestionChosen((...args) => props.onsuggestionchosen?.(...args)));
-  }
-
-  if ("ontextchanged" in props) {
-    link.add(control.onTextChanged((...args) => props.ontextchanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "QuerySubmitted",
+      "SuggestionChosen",
+      "TextChanged"
+    ]
+  });
 }
 
 export function connectAutoSuggestBox(

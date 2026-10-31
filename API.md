@@ -162,6 +162,18 @@ Raw kebab elements: tag = WinUI class, kebab attribute = camelCase property,
 `<host element={control} />` places a control made elsewhere,
 `ontoggled={handler}` = the event `Toggled`
 
+A component's event prop is `(sender, args) => void`
+The sender is the control that raised the event, as its class
+(`sender.isOn` on a `ToggleSwitch`); WinUI itself passes a bare object
+The arguments of an event whose delegate is a named one (`RoutedEventHandler`,
+`PointerEventHandler`, `KeyEventHandler`) are also a bare object, typed
+`EventArguments<RoutedEventArgs>`: `projectAs(args, RoutedEventArgs)` reads
+them as the class the type names (the import of the class is the app's, so an
+app that never reads the arguments carries none of it)
+An event of a `TypedEventHandler` gets both as their classes
+An exception a handler throws is written to stderr with its stack and handed
+to `runWindow`'s `onerror`; the application goes on
+
 `<property name="childrenTransitions" collection="transition-collection">`
 fills a property WinUI leaves null with a collection: when the property holds
 none and the element has a control in it, the renderer makes the class the
@@ -402,8 +414,21 @@ function runOnUiThread(main: () => Promise<void>): Promise<never>;
 
 // window: starts WinUI on this thread: Application (WinUI's own resources
 // installed), then `onStart` on the UI thread. Settles when the app exits.
-function runWindow(options: { onStart: () => void }): Promise<void>;
+function runWindow(options: { onStart: () => void; onerror?: UiErrorListener }): Promise<void>;
 function exitApplication(): void;
+
+// Errors on the UI thread. An exception app code throws where WinUI calls it
+// (an event handler, a prop the control refuses, a dispatcher callback,
+// onStart) is caught there, written to stderr as
+// `[winui-svelte] event "ontoggled": Error: ...` with its stack, and handed to
+// the listeners; the application goes on. runWindow's `onerror` is the
+// `window.onerror` of the app; onUiError adds listeners and returns the
+// function that removes one; reportUiError sends an error of your own the
+// same way.
+interface UiErrorReport { readonly error: unknown; readonly origin: string }
+type UiErrorListener = (report: UiErrorReport) => void;
+function onUiError(listener: UiErrorListener): () => void;
+function reportUiError(report: UiErrorReport): void;
 
 // `setInterval` (or `setTimeout` when isRepeating is false) with the stop
 // handed back as a function; the same scheduler as the standard timers

@@ -345,6 +345,8 @@ export interface PropertyInfo {
 /** An event of a type. */
 export interface EventInfo {
   name: string;
+  /** The delegate type the event raises: a named delegate, or a generic instance (`TypedEventHandler<A, B>`). */
+  handler: TypeSignature | null;
 }
 
 /** A method of a type with its signature. */
@@ -1325,6 +1327,13 @@ export class WinMdFile {
             table: TABLE_ID.EVENT,
             row: event,
             column: 1
+          })
+        ),
+        handler: this.typeSignatureOf(
+          this.cell({
+            table: TABLE_ID.EVENT,
+            row: event,
+            column: 2
           })
         )
       });

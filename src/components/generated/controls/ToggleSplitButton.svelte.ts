@@ -36,9 +36,13 @@ export function linkToggleSplitButton(
     ]
   });
 
-  if ("onischeckedchanged" in props) {
-    link.add(control.onIsCheckedChanged((...args) => props.onischeckedchanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "IsCheckedChanged"
+    ]
+  });
 }
 
 export function connectToggleSplitButton(

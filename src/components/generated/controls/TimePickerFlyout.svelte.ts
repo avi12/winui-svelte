@@ -38,9 +38,13 @@ export function linkTimePickerFlyout(
     }
   });
 
-  if ("ontimepicked" in props) {
-    link.add(control.onTimePicked((...args) => props.ontimepicked?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "TimePicked"
+    ]
+  });
 }
 
 export function connectTimePickerFlyout(

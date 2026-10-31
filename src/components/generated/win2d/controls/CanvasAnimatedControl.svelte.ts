@@ -55,25 +55,17 @@ export function linkCanvasAnimatedControl(
     }
   });
 
-  if ("oncreateresources" in props) {
-    link.add(control.onCreateResources((...args) => props.oncreateresources?.(...args)));
-  }
-
-  if ("ondraw" in props) {
-    link.add(control.onDraw((...args) => props.ondraw?.(...args)));
-  }
-
-  if ("ongameloopstarting" in props) {
-    link.add(control.onGameLoopStarting((...args) => props.ongameloopstarting?.(...args)));
-  }
-
-  if ("ongameloopstopped" in props) {
-    link.add(control.onGameLoopStopped((...args) => props.ongameloopstopped?.(...args)));
-  }
-
-  if ("onupdate" in props) {
-    link.add(control.onUpdate((...args) => props.onupdate?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "CreateResources",
+      "Draw",
+      "GameLoopStarting",
+      "GameLoopStopped",
+      "Update"
+    ]
+  });
 }
 
 export function connectCanvasAnimatedControl(

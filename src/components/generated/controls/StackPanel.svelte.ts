@@ -78,13 +78,14 @@ export function linkStackPanel(
     }
   });
 
-  if ("onhorizontalsnappointschanged" in props) {
-    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onhorizontalsnappointschanged?.(...args)));
-  }
-
-  if ("onverticalsnappointschanged" in props) {
-    link.add(control.onVerticalSnapPointsChanged((...args) => props.onverticalsnappointschanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "HorizontalSnapPointsChanged",
+      "VerticalSnapPointsChanged"
+    ]
+  });
 }
 
 export function connectStackPanel(

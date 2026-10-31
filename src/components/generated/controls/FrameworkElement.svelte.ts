@@ -4,6 +4,7 @@ import { brushOf, objectOf, resourcesOf, thicknessOf } from "../../convert.ts";
 import type {
   BrushInput,
   EnumInput,
+  EventArguments,
   ObjectInput,
   ResourcesInput,
   ThicknessInput
@@ -11,6 +12,8 @@ import type {
 import { Linker } from "../../runtime.svelte.ts";
 import { ElementTheme, FlowDirection, HorizontalAlignment, VerticalAlignment } from "../bindings.ts";
 import type { FrameworkElement } from "../bindings.ts";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
+import type { SizeChangedEventArgs } from "#winui/microsoft/ui/xaml/SizeChangedEventArgs";
 import { linkUIElement } from "./UIElement.svelte.ts";
 import type { UIElementBound, UIElementProps } from "./UIElement.svelte.ts";
 import type { Snippet } from "svelte";
@@ -47,10 +50,10 @@ export interface FrameworkElementProps extends UIElementProps {
   ondatacontextchanged?: Parameters<FrameworkElement["onDataContextChanged"]>[0];
   oneffectiveviewportchanged?: Parameters<FrameworkElement["onEffectiveViewportChanged"]>[0];
   onlayoutupdated?: Parameters<FrameworkElement["onLayoutUpdated"]>[0];
-  onloaded?: Parameters<FrameworkElement["onLoaded"]>[0];
+  onloaded?: (sender: FrameworkElement, args: EventArguments<RoutedEventArgs>) => void;
   onloading?: Parameters<FrameworkElement["onLoading"]>[0];
-  onsizechanged?: Parameters<FrameworkElement["onSizeChanged"]>[0];
-  onunloaded?: Parameters<FrameworkElement["onUnloaded"]>[0];
+  onsizechanged?: (sender: FrameworkElement, args: EventArguments<SizeChangedEventArgs>) => void;
+  onunloaded?: (sender: FrameworkElement, args: EventArguments<RoutedEventArgs>) => void;
 }
 
 export type FrameworkElementBound = UIElementBound;
@@ -154,35 +157,20 @@ export function linkFrameworkElement(
     }
   });
 
-  if ("onactualthemechanged" in props) {
-    link.add(control.onActualThemeChanged((...args) => props.onactualthemechanged?.(...args)));
-  }
-
-  if ("ondatacontextchanged" in props) {
-    link.add(control.onDataContextChanged((...args) => props.ondatacontextchanged?.(...args)));
-  }
-
-  if ("oneffectiveviewportchanged" in props) {
-    link.add(control.onEffectiveViewportChanged((...args) => props.oneffectiveviewportchanged?.(...args)));
-  }
-
-  if ("onlayoutupdated" in props) {
-    link.add(control.onLayoutUpdated((...args) => props.onlayoutupdated?.(...args)));
-  }
-
-  if ("onloaded" in props) {
-    link.add(control.onLoaded((...args) => props.onloaded?.(...args)));
-  }
-
-  if ("onloading" in props) {
-    link.add(control.onLoading((...args) => props.onloading?.(...args)));
-  }
-
-  if ("onsizechanged" in props) {
-    link.add(control.onSizeChanged((...args) => props.onsizechanged?.(...args)));
-  }
-
-  if ("onunloaded" in props) {
-    link.add(control.onUnloaded((...args) => props.onunloaded?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    names: [
+      "Loaded",
+      "SizeChanged",
+      "Unloaded"
+    ],
+    raw: [
+      "ActualThemeChanged",
+      "DataContextChanged",
+      "EffectiveViewportChanged",
+      "LayoutUpdated",
+      "Loading"
+    ]
+  });
 }

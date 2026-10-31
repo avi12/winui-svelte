@@ -30,5 +30,20 @@ export function loadWinuiCatalogue() {
     }
   }
 
-  return createCatalogue({ groups });
+  const aliases: Record<string, string> = {};
+  const listed = catalogue["aliases"];
+  const hasAliases = isRecord(listed);
+  if (hasAliases) {
+    for (const [alias, target] of Object.entries(listed)) {
+      const isTarget = typeof target === "string";
+      if (isTarget) {
+        aliases[alias] = target;
+      }
+    }
+  }
+
+  return createCatalogue({
+    groups,
+    aliases
+  });
 }

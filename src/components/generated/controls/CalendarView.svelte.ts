@@ -498,13 +498,14 @@ export function linkCalendarView(
     }
   });
 
-  if ("oncalendarviewdayitemchanging" in props) {
-    link.add(control.onCalendarViewDayItemChanging((...args) => props.oncalendarviewdayitemchanging?.(...args)));
-  }
-
-  if ("onselecteddateschanged" in props) {
-    link.add(control.onSelectedDatesChanged((...args) => props.onselecteddateschanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "CalendarViewDayItemChanging",
+      "SelectedDatesChanged"
+    ]
+  });
 }
 
 export function connectCalendarView(

@@ -2,6 +2,7 @@ import { compileSheetModule, SHEET_SUFFIX, SheetError } from "./runtime/sheet-mo
 import { loadWinuiCatalogue } from "./translate/catalogue.ts";
 import { formatDiagnostic } from "./translate/translate.ts";
 import { formatValidation } from "./validate/diagnostic.ts";
+import { markupStyleProperties } from "./validate/markup-declarations.ts";
 import { validateComponent } from "./validate/validate.ts";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -16,10 +17,12 @@ export interface WinuiCssOptions {
   /** The module that exports registerStyleSheet, as the window imports it. */
   runtimeModule?: string;
   /**
-   * What a `<style>` WinUI cannot say does: "fail" the load, or "report" the
-   * line on stderr and register nothing, so an open window stays up (dev).
+   * What a `<style>` WinUI cannot say does: "fail" the load; "report" the
+   * line on stderr and register nothing, so an open window stays up (dev); or
+   * "report-when-serving", which reports under the dev server and fails a
+   * build, so a shipped window never lacks its styles.
    */
-  onError?: "fail" | "report";
+  onError?: "fail" | "report" | "report-when-serving";
 }
 
 const PLUGIN_NAME = "winui-svelte:css";
@@ -58,6 +61,13 @@ export function winuiCss(options: WinuiCssOptions) {
   const resources = loadWinuiCatalogue();
   const runtimeModule = options.runtimeModule ?? DEFAULT_RUNTIME_MODULE;
   let root = options.root ?? "";
+  let isServing = false;
+  function isReported() {
+    const isAlwaysReported = options.onError === "report";
+    const isReportedWhenServing = options.onError === "report-when-serving" && isServing;
+    return isAlwaysReported || isReportedWhenServing;
+  }
+
   // Each component as last compiled, less its <style> blocks.
   const withoutStyles = new Map<string, string>();
   return {
@@ -65,6 +75,7 @@ export function winuiCss(options: WinuiCssOptions) {
     enforce: "post",
     configResolved(config) {
       root = options.root ?? config.root;
+      isServing = config.command === "serve";
     },
     transform(code, id) {
       if (!isComponentId(id)) {
@@ -73,7 +84,7 @@ export function winuiCss(options: WinuiCssOptions) {
 
       const source = readFileSync(id, "utf8");
       withoutStyles.set(id, withoutStyle(source));
-      const hasStyle = source.includes(STYLE_OPENING);
+      const hasStyle = source.includes(STYLE_OPENING) || markupStyleProperties(source).length > 0;
       if (!hasStyle) {
         return null;
       }
@@ -138,8 +149,7 @@ export function winuiCss(options: WinuiCssOptions) {
         const hasErrors = errors.length > 0;
         if (hasErrors) {
           const report = errors.map(formatValidation).join("\n");
-          const isReported = options.onError === "report";
-          if (isReported) {
+          if (isReported()) {
             process.stderr.write(`${report}\n`);
             return "export default null;";
           }
@@ -162,8 +172,8 @@ export function winuiCss(options: WinuiCssOptions) {
 
         return module === null ? "export default null;" : module.code;
       } catch (error) {
-        const isReported = error instanceof SheetError && options.onError === "report";
-        if (isReported) {
+        const isReportedSheet = error instanceof SheetError && isReported();
+        if (isReportedSheet) {
           process.stderr.write(`${error.message}\n`);
           return "export default null;";
         }

@@ -5,6 +5,7 @@ import type {
   BrushInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   FlagsInput,
   FontFamilyInput,
   FontWeightInput,
@@ -25,6 +26,8 @@ import {
   TextWrapping
 } from "../bindings.ts";
 import type { RichTextBlock } from "../bindings.ts";
+import type { ContextMenuEventArgs } from "#winui/microsoft/ui/xaml/controls/ContextMenuEventArgs";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
@@ -59,9 +62,9 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textTrimming?: EnumInput<typeof TextTrimming>;
   textWrapping?: EnumInput<typeof TextWrapping>;
-  oncontextmenuopening?: Parameters<RichTextBlock["onContextMenuOpening"]>[0];
+  oncontextmenuopening?: (sender: RichTextBlock, args: EventArguments<ContextMenuEventArgs>) => void;
   onistexttrimmedchanged?: Parameters<RichTextBlock["onIsTextTrimmedChanged"]>[0];
-  onselectionchanged?: Parameters<RichTextBlock["onSelectionChanged"]>[0];
+  onselectionchanged?: (sender: RichTextBlock, args: EventArguments<RoutedEventArgs>) => void;
 }
 
 export type RichTextBlockBound = FrameworkElementBound & Pick<RichTextBlockProps, "isTextTrimmed">;
@@ -123,17 +126,17 @@ export function linkRichTextBlock(
     ]
   });
 
-  if ("oncontextmenuopening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
-  }
-
-  if ("onistexttrimmedchanged" in props) {
-    link.add(control.onIsTextTrimmedChanged((...args) => props.onistexttrimmedchanged?.(...args)));
-  }
-
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    names: [
+      "ContextMenuOpening",
+      "SelectionChanged"
+    ],
+    raw: [
+      "IsTextTrimmedChanged"
+    ]
+  });
 }
 
 export function connectRichTextBlock(

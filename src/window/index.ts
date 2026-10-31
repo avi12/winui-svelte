@@ -17,3 +17,5 @@ export type { SystemSettings } from "./system-settings.svelte.ts";
 export { systemSettings } from "./system-settings.svelte.ts";
 export type { OpenFilePickerOptions, PickerOptions, SaveFilePickerOptions } from "./pickers.ts";
 export { PickerLocation } from "./pickers.ts";
+export type { UiErrorListener, UiErrorReport } from "#src/ui-errors.js";
+export { onUiError, reportUiError } from "#src/ui-errors.js";

@@ -332,3 +332,14 @@ test("an unchanged <style> is translated once, and an edit translates it again",
   });
   assert.notEqual(edited, first);
 });
+
+test("a style directive opts the window into the groups its property needs, with or without a <style>", () => {
+  const dynamic = "<script>let shape = \"circle(50%)\";</script>\n<border style:clip-path={shape} />\n";
+  const withoutStyle = moduleFor(dynamic);
+  assert.match(withoutStyle?.code ?? "", /import \{ clipGroups as winuiLazyGroups0 \} from "winui-svelte\/css\/clip";/u);
+  assert.doesNotMatch(withoutStyle?.code ?? "", /registerWinuiSheet/u);
+  const withStyle = moduleFor(`${dynamic}<style>.a { padding: 4px }</style>\n`);
+  assert.match(withStyle?.code ?? "", /clipGroups/u);
+  assert.match(withStyle?.code ?? "", /registerWinuiSheet\(/u);
+  assert.equal(moduleFor("<border style:padding=\"4px\" />\n"), null, "a property with no opt-in group needs no module");
+});

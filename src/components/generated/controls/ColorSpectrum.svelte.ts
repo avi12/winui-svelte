@@ -57,9 +57,13 @@ export function linkColorSpectrum(
     ]
   });
 
-  if ("oncolorchanged" in props) {
-    link.add(control.onColorChanged((...args) => props.oncolorchanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "ColorChanged"
+    ]
+  });
 }
 
 export function connectColorSpectrum(

@@ -130,21 +130,16 @@ export function linkTeachingTip(
     ]
   });
 
-  if ("onactionbuttonclick" in props) {
-    link.add(control.onActionButtonClick((...args) => props.onactionbuttonclick?.(...args)));
-  }
-
-  if ("onclosebuttonclick" in props) {
-    link.add(control.onCloseButtonClick((...args) => props.onclosebuttonclick?.(...args)));
-  }
-
-  if ("onclosed" in props) {
-    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
-  }
-
-  if ("onclosing" in props) {
-    link.add(control.onClosing((...args) => props.onclosing?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "ActionButtonClick",
+      "CloseButtonClick",
+      "Closed",
+      "Closing"
+    ]
+  });
 }
 
 export function connectTeachingTip(

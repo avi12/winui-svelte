@@ -76,9 +76,13 @@ export function linkListPickerFlyout(
     }
   });
 
-  if ("onitemspicked" in props) {
-    link.add(control.onItemsPicked((...args) => props.onitemspicked?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "ItemsPicked"
+    ]
+  });
 }
 
 export function connectListPickerFlyout(

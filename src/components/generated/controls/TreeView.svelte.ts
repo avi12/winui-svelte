@@ -88,29 +88,18 @@ export function linkTreeView(
     }
   });
 
-  if ("oncollapsed" in props) {
-    link.add(control.onCollapsed((...args) => props.oncollapsed?.(...args)));
-  }
-
-  if ("ondragitemscompleted" in props) {
-    link.add(control.onDragItemsCompleted((...args) => props.ondragitemscompleted?.(...args)));
-  }
-
-  if ("ondragitemsstarting" in props) {
-    link.add(control.onDragItemsStarting((...args) => props.ondragitemsstarting?.(...args)));
-  }
-
-  if ("onexpanding" in props) {
-    link.add(control.onExpanding((...args) => props.onexpanding?.(...args)));
-  }
-
-  if ("oniteminvoked" in props) {
-    link.add(control.onItemInvoked((...args) => props.oniteminvoked?.(...args)));
-  }
-
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "Collapsed",
+      "DragItemsCompleted",
+      "DragItemsStarting",
+      "Expanding",
+      "ItemInvoked",
+      "SelectionChanged"
+    ]
+  });
 }
 
 export function connectTreeView(

@@ -120,29 +120,18 @@ export function linkContentDialog(
     }
   });
 
-  if ("onclosebuttonclick" in props) {
-    link.add(control.onCloseButtonClick((...args) => props.onclosebuttonclick?.(...args)));
-  }
-
-  if ("onclosed" in props) {
-    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
-  }
-
-  if ("onclosing" in props) {
-    link.add(control.onClosing((...args) => props.onclosing?.(...args)));
-  }
-
-  if ("onopened" in props) {
-    link.add(control.onOpened((...args) => props.onopened?.(...args)));
-  }
-
-  if ("onprimarybuttonclick" in props) {
-    link.add(control.onPrimaryButtonClick((...args) => props.onprimarybuttonclick?.(...args)));
-  }
-
-  if ("onsecondarybuttonclick" in props) {
-    link.add(control.onSecondaryButtonClick((...args) => props.onsecondarybuttonclick?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "CloseButtonClick",
+      "Closed",
+      "Closing",
+      "Opened",
+      "PrimaryButtonClick",
+      "SecondaryButtonClick"
+    ]
+  });
 }
 
 export function connectContentDialog(

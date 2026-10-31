@@ -39,9 +39,13 @@ export function linkSplitButton(
     }
   });
 
-  if ("onclick" in props) {
-    link.add(control.onClick((...args) => props.onclick?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "Click"
+    ]
+  });
 }
 
 export function connectSplitButton(

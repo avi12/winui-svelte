@@ -20,13 +20,14 @@ export function linkLayout(
   link: Linker
 ) {
 
-  if ("onarrangeinvalidated" in props) {
-    link.add(control.onArrangeInvalidated((...args) => props.onarrangeinvalidated?.(...args)));
-  }
-
-  if ("onmeasureinvalidated" in props) {
-    link.add(control.onMeasureInvalidated((...args) => props.onmeasureinvalidated?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "ArrangeInvalidated",
+      "MeasureInvalidated"
+    ]
+  });
 
   link.property({
     props,

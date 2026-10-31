@@ -95,7 +95,7 @@ import { styleOfClasses } from "#src/css/index.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
 import { classNameOf } from "#src/renderer/host/host.js";
-import { read, write } from "#src/renderer/host/reflect.js";
+import { call, read, write } from "#src/renderer/host/reflect.js";
 import { boxed, doubleCollection } from "#src/renderer/host/values.js";
 import type { IMediaPlaybackSource } from "#winui/windows/media/playback/IMediaPlaybackSource";
 import type { ClassValue } from "svelte/elements";
@@ -170,6 +170,18 @@ export type GridLengthInput = number | GridLengthText | GridLengthValue;
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- an app fills it by merging
 export interface AppBrushes {}
+
+declare const projection: unique symbol;
+
+/**
+ * The arguments of an event as WinUI hands them to a handler: a bare WinRT
+ * object, not yet the class (`RoutedEventArgs`, `KeyRoutedEventArgs`) its
+ * event is documented with. `Projection` names that class:
+ * `projectAs(args, KeyRoutedEventArgs)` reads the arguments as one.
+ */
+export type EventArguments<Projection extends object> = object & {
+  readonly [projection]?: Projection;
+};
 
 /** A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush. */
 export type BrushInput = ColorText | ThemeBrush | keyof AppBrushes | Brush;
@@ -284,9 +296,11 @@ function isList<Table extends Record<string, number>>(input: FlagsInput<Table>):
  * as their bits combined; throws a `RangeError` naming the members for
  * anything else.
  */
-export function enumValue<Table extends Record<string, number>>({ table, input }: {
+export function enumValue<Table extends Record<string, number>>({ table, input, prop }: {
   table: Table;
   input: FlagsInput<Table>;
+  /** The prop that holds the value, named in the error. */
+  prop?: string;
 }) {
   const members: NativeValue[] = Object.values(table);
   // The bindings type a flag enum as its single members, while WinUI takes
@@ -300,7 +314,8 @@ export function enumValue<Table extends Record<string, number>>({ table, input }
     const value = typeof part === "number" ? part : read(table, String(part));
     const isMember = members.includes(value);
     if (!isMember) {
-      throw new RangeError(`${String(part)} is not one of ${Object.keys(table).join(", ")}`);
+      const subject = prop === undefined ? "" : `${prop}: `;
+      throw new RangeError(`${subject}${JSON.stringify(part)} is not one of ${Object.keys(table).join(", ")}`);
     }
 
     bits = (bits | Number(value)) >>> 0;
@@ -396,13 +411,43 @@ export function brushOf(input: BrushInput) {
     throw new TypeError(`"${input}" is neither a color nor a resource the application holds`);
   }
 
-  const found = resources.lookup(key);
-  const isBrushResource = typeof found === "object" && found !== null && isBrush(found);
-  if (!isBrushResource) {
-    throw new TypeError(`the resource "${input}" is not a brush`);
+  return brushResource({
+    found: resources.lookup(key),
+    name: input
+  });
+}
+
+// What `projectAs` calls on the class, reached from the class itself: an
+// import of projectAs would add a module to every app that sets a brush.
+const PROJECT_BORROWED = "_fromNativeBorrowed";
+
+// A dictionary hands a resource back as a bare WinRT object, whatever it is
+// (a ThemeBrush key included): it is a brush when it answers as one.
+function brushResource({ found, name }: {
+  found: unknown;
+  name: string;
+}) {
+  const isObject = typeof found === "object" && found !== null;
+  if (!isObject) {
+    throw new TypeError(`the resource "${name}" is not a brush`);
   }
 
-  return found;
+  const isProjected = isBrush(found);
+  if (isProjected) {
+    return found;
+  }
+
+  try {
+    const projected = call(Brush, PROJECT_BORROWED, found);
+    const isBrushProjection = typeof projected === "object" && projected !== null && isBrush(projected);
+    if (isBrushProjection) {
+      return projected;
+    }
+  } catch (error) {
+    throw new TypeError(`the resource "${name}" is not a brush`, { cause: error });
+  }
+
+  throw new TypeError(`the resource "${name}" is not a brush`);
 }
 
 /** A time span prop as the bindings' `TimeSpan`; throws a `TypeError` for text that is not one. */

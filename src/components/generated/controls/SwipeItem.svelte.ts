@@ -67,9 +67,13 @@ export function linkSwipeItem(
     }
   });
 
-  if ("oninvoked" in props) {
-    link.add(control.onInvoked((...args) => props.oninvoked?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "Invoked"
+    ]
+  });
 
   link.property({
     props,

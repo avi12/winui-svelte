@@ -5,6 +5,7 @@ import { roInitialize } from "@microsoft/dynwinrt";
 import { initWindowsAppSdk } from "#src/window/bootstrap.js";
 import { InputPointerDeviceType } from "#winui/microsoft/ui/input/PointerDeviceType";
 import { InputPointerUpdateKind } from "#winui/microsoft/ui/input/PointerUpdateKind";
+import type { PointerRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/PointerRoutedEventArgs";
 import type { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
 import { VirtualKeyModifiers } from "#winui/windows/system/VirtualKeyModifiers";
 import assert from "node:assert/strict";
@@ -27,7 +28,20 @@ const WHEEL_DELTA = 120;if (IS_AVAILABLE) {
   initWindowsAppSdk();
 }
 
-function fakeArguments({ updateKind, isLeft = false, wheel = 0, isHorizontal = false }: {
+const fakeSender = {} satisfies Partial<UIElement>;
+// oxlint-disable-next-line -- a fake stands for the WinUI class: the handlers read only what it carries
+const SENDER = fakeSender as UIElement;
+
+function asPointerArguments(fake: object) {
+  // oxlint-disable-next-line -- the same fake, for the arguments
+  return fake as PointerRoutedEventArgs;
+}
+
+function fakeArguments(options: Parameters<typeof plainArguments>[0]) {
+  return asPointerArguments(plainArguments(options));
+}
+
+function plainArguments({ updateKind, isLeft = false, wheel = 0, isHorizontal = false }: {
   updateKind: number;
   isLeft?: boolean;
   wheel?: number;
@@ -88,7 +102,7 @@ function setup() {
 test("a pressed pointer reaches listeners as pointerdown and mousedown with DOM fields", { skip: !IS_AVAILABLE }, () => {
   const { handlers, received, calls } = setup();
   handlers.onpointerpressed(
-    {}, fakeArguments({
+    SENDER, fakeArguments({
       updateKind: InputPointerUpdateKind.LeftButtonPressed,
       isLeft: true
     })
@@ -109,7 +123,7 @@ test("a pressed pointer reaches listeners as pointerdown and mousedown with DOM 
 test("a release names the released button and also raises click", { skip: !IS_AVAILABLE }, () => {
   const { handlers, received } = setup();
   handlers.onpointerreleased(
-    {}, fakeArguments({
+    SENDER, fakeArguments({
       updateKind: InputPointerUpdateKind.LeftButtonReleased
     })
   );
@@ -121,7 +135,7 @@ test("a release names the released button and also raises click", { skip: !IS_AV
 test("the wheel reaches listeners with deltaY pointing the DOM way", { skip: !IS_AVAILABLE }, () => {
   const { handlers, received } = setup();
   handlers.onpointerwheelchanged(
-    {}, fakeArguments({
+    SENDER, fakeArguments({
       updateKind: InputPointerUpdateKind.Other,
       wheel: WHEEL_DELTA
     })
@@ -130,7 +144,7 @@ test("the wheel reaches listeners with deltaY pointing the DOM way", { skip: !IS
   assert.equal(received[0]?.["deltaY"], -WHEEL_DELTA);
   assert.equal(received[0]?.["deltaX"], 0);
   handlers.onpointerwheelchanged(
-    {}, fakeArguments({
+    SENDER, fakeArguments({
       updateKind: InputPointerUpdateKind.Other,
       wheel: WHEEL_DELTA,
       isHorizontal: true
@@ -151,28 +165,28 @@ test("a listener's preventDefault marks the WinUI event handled", { skip: !IS_AV
   const { handlers, canvas } = setup();
   canvas.addEventListener("wheel", event => event.preventDefault());
   const prevented = {
-    ...fakeArguments({
+    ...plainArguments({
       updateKind: InputPointerUpdateKind.Other,
       wheel: WHEEL_DELTA
     }),
     handled: false
   };
-  handlers.onpointerwheelchanged({}, prevented);
+  handlers.onpointerwheelchanged(SENDER, asPointerArguments(prevented));
   assert.equal(prevented.handled, true);
   const allowed = {
-    ...fakeArguments({
+    ...plainArguments({
       updateKind: InputPointerUpdateKind.LeftButtonPressed,
       isLeft: true
     }),
     handled: false
   };
-  handlers.onpointerpressed({}, allowed);
+  handlers.onpointerpressed(SENDER, asPointerArguments(allowed));
   assert.equal(allowed.handled, false, "no listener prevented the press");
 });
 
 test("arguments that are not pointer data raise no DOM event but still call the app's handler", { skip: !IS_AVAILABLE }, () => {
   const { handlers, received, calls } = setup();
-  handlers.onpointerpressed({}, {});
+  handlers.onpointerpressed(SENDER, asPointerArguments({}));
   assert.equal(received.length, 0);
   assert.deepEqual(calls, ["user"]);
 });

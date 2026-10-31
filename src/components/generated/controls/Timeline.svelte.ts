@@ -81,9 +81,13 @@ export function linkTimeline(
     }
   });
 
-  if ("oncompleted" in props) {
-    link.add(control.onCompleted((...args) => props.oncompleted?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "Completed"
+    ]
+  });
 
   link.property({
     props,

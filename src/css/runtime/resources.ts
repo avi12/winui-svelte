@@ -85,12 +85,44 @@ function editDistance({ from, to }: {
   return previous[to.length] ?? 0;
 }
 
+const MAXIMUM_ALIAS_DEPTH = 8;
+
+// Every alias that reaches `key` in a few hops: the aliases of the aliases too.
+function aliasesOf({ key, aliases }: {
+  key: string;
+  aliases: Readonly<Record<string, string>>;
+}) {
+  const found = new Set<string>();
+  let targets = new Set([key]);
+  for (let depth = 0; depth < MAXIMUM_ALIAS_DEPTH && targets.size > 0; depth++) {
+    const next = new Set<string>();
+    for (const [alias, target] of Object.entries(aliases)) {
+      const isNew = targets.has(target) && !found.has(alias);
+      if (isNew) {
+        found.add(alias);
+        next.add(alias);
+      }
+    }
+
+    targets = next;
+  }
+
+  return [...found];
+}
+
 /** The resources WinUI defines, and the ones a stylesheet adds. */
 export interface ResourceCatalogue {
   kindOf(key: string): ResourceKind | undefined;
   /** The key spelled as WinUI spells it, found by its lower-case form. */
   keyOf(name: string): string | undefined;
   keysOfKind(kind: ResourceKind): string[];
+  /**
+   * The resources of WinUI's own dictionaries that stand for `key`, directly
+   * or through other aliases (`ToggleSwitchFillOn` for
+   * `AccentFillColorDefaultBrush`). WinUI binds an alias when it loads its
+   * dictionary, so overriding `key` leaves them as they were.
+   */
+  aliasesOf(key: string): string[];
   /** The nearest names to a mistyped one, as `--custom-properties`. */
   suggest(input: {
     name: string;
@@ -104,8 +136,10 @@ export interface ResourceCatalogue {
  * A catalogue over `groups` (a kind mapped to the keys of that kind) and
  * `extra`, which adds resources a stylesheet defines itself.
  */
-export function createCatalogue({ groups, extra = new Map() }: {
+export function createCatalogue({ groups, aliases = {}, extra = new Map() }: {
   groups: Readonly<Record<string, readonly string[]>>;
+  /** An alias and the key it stands for. */
+  aliases?: Readonly<Record<string, string>>;
   extra?: ReadonlyMap<string, ResourceKind>;
 }) {
   const kinds = new Map<string, ResourceKind>();
@@ -125,9 +159,14 @@ export function createCatalogue({ groups, extra = new Map() }: {
   const catalogue: ResourceCatalogue = {
     extend: more => createCatalogue({
       groups,
+      aliases,
       extra: new Map([...extra, ...more])
     }),
     kindOf: key => kinds.get(key),
+    aliasesOf: key => aliasesOf({
+      key,
+      aliases
+    }),
     keyOf: name => byLowerCase.get(name.toLowerCase()),
     keysOfKind: kind => [...kinds].filter(([, candidate]) => isUsableAs({
       candidate,

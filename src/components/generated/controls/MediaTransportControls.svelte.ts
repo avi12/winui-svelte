@@ -58,9 +58,13 @@ export function linkMediaTransportControls(
     tables: { fastPlayFallbackBehaviour: FastPlayFallbackBehaviour }
   });
 
-  if ("onthumbnailrequested" in props) {
-    link.add(control.onThumbnailRequested((...args) => props.onthumbnailrequested?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "ThumbnailRequested"
+    ]
+  });
 }
 
 export function connectMediaTransportControls(

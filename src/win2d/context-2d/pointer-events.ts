@@ -1,4 +1,5 @@
 import type { CanvasElement } from "./canvas-element.ts";
+import type { EventArguments } from "#src/components/convert.js";
 import type { CanvasControlComponentProps } from "#src/components/generated/win2d/index.js";
 import { InputPointerDeviceType } from "#winui/microsoft/ui/input/PointerDeviceType";
 import { InputPointerUpdateKind } from "#winui/microsoft/ui/input/PointerUpdateKind";
@@ -39,14 +40,12 @@ const POINTER_TYPES = new Map<number, string>([
 /** The handler props of the control that the canvas listens through. */
 export type PointerHandlerName = "onpointerpressed" | "onpointermoved" | "onpointerreleased" | "onpointerentered" | "onpointerexited" | "onpointercanceled" | "onpointerwheelchanged";
 
-type PointerHandler = (...args: unknown[]) => void;
+type PointerHandlers = Pick<CanvasControlComponentProps, PointerHandlerName>;
 
 /** The pointer handlers an app passed to the component, each optional. */
 export type UserPointerHandlers = {
-  [Name in PointerHandlerName]?: PointerHandler | undefined;
+  [Name in PointerHandlerName]?: PointerHandlers[Name] | undefined;
 };
-
-type PointerHandlers = Pick<CanvasControlComponentProps, PointerHandlerName>;
 
 // What each WinUI event is called in the DOM; a pointer event also has its mouse twin.
 const EVENT_TYPES: Record<PointerHandlerName, string[]> = {
@@ -142,9 +141,8 @@ function forward({ name, canvas, element, user }: {
   element: () => UIElement | undefined;
   user: UserPointerHandlers;
 }) {
-  return (...args: unknown[]) => {
+  return (sender: UIElement, pointerArguments: EventArguments<PointerRoutedEventArgs>) => {
     const target = element();
-    const [, pointerArguments] = args;
     const isPointer = target !== undefined && isPointerArguments(pointerArguments);
     if (isPointer) {
       const fields = eventFields({
@@ -165,7 +163,7 @@ function forward({ name, canvas, element, user }: {
       }
     }
 
-    user[name]?.(...args);
+    user[name]?.(sender, pointerArguments);
   };
 }
 

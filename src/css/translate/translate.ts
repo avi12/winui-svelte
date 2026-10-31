@@ -22,7 +22,7 @@ import type {
   Translation
 } from "./types.ts";
 import { unsupportedAtRuleReason, unsupportedReason } from "./unsupported-properties.ts";
-import { resourceDictionaryXaml, variableEntries } from "./variables.ts";
+import { aliasEntries, resourceDictionaryXaml, variableEntries } from "./variables.ts";
 import type { Variable, VariableEntry } from "./variables.ts";
 import { parseMediaList } from "#src/css/media/query.js";
 import { evaluateCalc } from "#src/css/parse/calc.js";
@@ -219,12 +219,35 @@ function reportDeclarationProblem({ translator, at, message }: {
   });
 }
 
+function dictionaryWithAliases({ entries, catalogue }: {
+  entries: ResourceEntry[];
+  catalogue: ResourceCatalogue;
+}) {
+  return resourceDictionaryXaml([...entries, ...aliasEntries({
+    entries,
+    catalogue
+  })]);
+}
+
+// Name to value of the custom properties declared so far, a later one winning:
+// what `var(--name)` in another custom property stands for.
+function declaredValues(variables: ReadonlyArray<Pick<Variable, "name" | "value">>) {
+  return new Map(variables.map(variable => [variable.name, variable.value] as const));
+}
+
 // The resources a rule's custom properties define on each element it matches.
 function scopedResources({ translator, customProperties, scheme }: {
   translator: Translator;
   customProperties: Declaration[];
   scheme: ColorScheme;
 }) {
+  const declared = declaredValues([
+    ...translator.variables,
+    ...customProperties.map(custom => ({
+      name: custom.property,
+      value: custom.value
+    }))
+  ]);
   const entries = customProperties.flatMap(custom => variableEntries({
     variable: {
       name: custom.property,
@@ -232,6 +255,7 @@ function scopedResources({ translator, customProperties, scheme }: {
       scheme
     },
     catalogue: translator.input.resources,
+    declared,
     reportProblem: message => reportDeclarationProblem({
       translator,
       at: custom.at,
@@ -242,7 +266,10 @@ function scopedResources({ translator, customProperties, scheme }: {
     translator.kinds.set(entry.key, entry.kind);
   }
 
-  return entries.length === 0 ? null : resourceDictionaryXaml(entries.map(entryOf));
+  return entries.length === 0 ? null : dictionaryWithAliases({
+    entries: entries.map(entryOf),
+    catalogue: translator.input.resources
+  });
 }
 
 function entryOf({ scheme, key, xaml }: VariableEntry) {
@@ -885,9 +912,11 @@ function foldStaticCalc(translator: Translator) {
 }
 
 function buildVariableResources(translator: Translator) {
+  const declared = declaredValues(translator.variables);
   const entries = translator.variables.flatMap(variable => variableEntries({
     variable,
     catalogue: translator.input.resources,
+    declared,
     reportProblem: message => reportDeclarationProblem({
       translator,
       at: variable.at,
@@ -905,7 +934,10 @@ function buildVariableResources(translator: Translator) {
     return null;
   }
 
-  return resourceDictionaryXaml(entries.map(entryOf));
+  return dictionaryWithAliases({
+    entries: entries.map(entryOf),
+    catalogue: translator.input.resources
+  });
 }
 
 // Every keyframe property must be one WinUI animates, found now rather than when the animation runs.

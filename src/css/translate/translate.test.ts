@@ -218,6 +218,43 @@ test("a custom property of a class can differ by color scheme, and :root stays t
   assert.match(dark ?? "", /Color="#EEEEEE"/u);
 });
 
+test("a custom property can be var() of another one the sheet declares, in a class or on :root", () => {
+  const scoped = translate({ css: ":root { --neon: #22d3ee }\n.a { --accent-fill-color-default: var(--neon); --tone: var(--tone-base); --tone-base: #112233 }" });
+  assert.deepEqual(scoped.diagnostics, []);
+  const xaml = scoped.sheet.rules[0]?.resourcesXaml ?? "";
+  assert.match(xaml, /x:Key="AccentFillColorDefault\w*"[^>]*(Color="#22D3EE"|>#22D3EE)/u);
+  assert.match(xaml, /<Color x:Key="Tone">#112233<\/Color>/u);
+  const root = translate({ css: ":root { --neon: #22d3ee; --tone: var(--neon) }" });
+  assert.deepEqual(root.diagnostics, []);
+  assert.match(root.sheet.resourcesXaml ?? "", /<Color x:Key="Tone">#22D3EE<\/Color>/u);
+});
+
+test("a custom property can be var() of a Color resource WinUI defines, and follows the theme", () => {
+  const { sheet, diagnostics } = translate({ css: ".a { --accent-fill-color-default: var(--system-accent-color) }" });
+  assert.deepEqual(diagnostics, []);
+  assert.match(sheet.rules[0]?.resourcesXaml ?? "", /\{ThemeResource SystemAccentColor\}|ResourceKey="SystemAccentColor"/u);
+});
+
+test("overriding a resource WinUI's own aliases stand for overrides the aliases too", () => {
+  const { sheet, diagnostics } = translate({ css: ":root { --accent-fill-color-default: #22d3ee }" });
+  assert.deepEqual(diagnostics, []);
+  const xaml = sheet.resourcesXaml ?? "";
+  assert.match(xaml, /<StaticResource x:Key="ToggleSwitchFillOn" ResourceKey="AccentFillColorDefaultBrush"\/>/u);
+  assert.match(xaml, /<StaticResource x:Key="RadioButtonOuterEllipseCheckedFill" ResourceKey="AccentFillColorDefaultBrush"\/>/u);
+  assert.ok(xaml.indexOf("ToggleSwitchFillOn") > xaml.indexOf("AccentFillColorDefaultBrush\" Color"), "an alias names a key defined above it");
+});
+
+test("a key the sheet sets itself is not replaced by the alias of another", () => {
+  const { sheet } = translate({ css: ":root { --accent-fill-color-default: #22d3ee; --toggle-switch-fill-on: #ff0000 }" });
+  const xaml = sheet.resourcesXaml ?? "";
+  assert.match(xaml, /<SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#FF0000"\/>/u);
+  assert.doesNotMatch(xaml, /<StaticResource x:Key="ToggleSwitchFillOn"/u);
+});
+
+test("a custom property that is var() of itself is an error, not a loop", () => {
+  assert.match(errors(".a { --x: var(--y); --y: var(--x) }").join(), /--x: expected a color or a length in px/u);
+});
+
 test("a custom property on a state rule is an error that names the resource to override", () => {
   assert.match(errors(".a:hover { --x: red }").join(), /--x has no WinUI meaning in a :hover rule/u);
 });

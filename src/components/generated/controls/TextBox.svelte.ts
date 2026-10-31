@@ -6,6 +6,7 @@ import type {
   DataTemplateInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   InputScopeInput,
   ObjectInput
 } from "../../convert.ts";
@@ -18,6 +19,10 @@ import {
   TextWrapping
 } from "../bindings.ts";
 import type { TextBox } from "../bindings.ts";
+import type { ContextMenuEventArgs } from "#winui/microsoft/ui/xaml/controls/ContextMenuEventArgs";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
+import type { TextChangedEventArgs } from "#winui/microsoft/ui/xaml/controls/TextChangedEventArgs";
+import type { TextControlPasteEventArgs } from "#winui/microsoft/ui/xaml/controls/TextControlPasteEventArgs";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
@@ -51,13 +56,13 @@ export interface TextBoxProps extends ControlProps {
   textWrapping?: EnumInput<typeof TextWrapping>;
   onbeforetextchanging?: Parameters<TextBox["onBeforeTextChanging"]>[0];
   oncandidatewindowboundschanged?: Parameters<TextBox["onCandidateWindowBoundsChanged"]>[0];
-  oncontextmenuopening?: Parameters<TextBox["onContextMenuOpening"]>[0];
+  oncontextmenuopening?: (sender: TextBox, args: EventArguments<ContextMenuEventArgs>) => void;
   oncopyingtoclipboard?: Parameters<TextBox["onCopyingToClipboard"]>[0];
   oncuttingtoclipboard?: Parameters<TextBox["onCuttingToClipboard"]>[0];
-  onpaste?: Parameters<TextBox["onPaste"]>[0];
-  onselectionchanged?: Parameters<TextBox["onSelectionChanged"]>[0];
+  onpaste?: (sender: TextBox, args: EventArguments<TextControlPasteEventArgs>) => void;
+  onselectionchanged?: (sender: TextBox, args: EventArguments<RoutedEventArgs>) => void;
   onselectionchanging?: Parameters<TextBox["onSelectionChanging"]>[0];
-  ontextchanged?: Parameters<TextBox["onTextChanged"]>[0];
+  ontextchanged?: (sender: TextBox, args: EventArguments<TextChangedEventArgs>) => void;
   ontextchanging?: Parameters<TextBox["onTextChanging"]>[0];
   ontextcompositionchanged?: Parameters<TextBox["onTextCompositionChanged"]>[0];
   ontextcompositionended?: Parameters<TextBox["onTextCompositionEnded"]>[0];
@@ -160,57 +165,27 @@ export function linkTextBox(
     ]
   });
 
-  if ("onbeforetextchanging" in props) {
-    link.add(control.onBeforeTextChanging((...args) => props.onbeforetextchanging?.(...args)));
-  }
-
-  if ("oncandidatewindowboundschanged" in props) {
-    link.add(control.onCandidateWindowBoundsChanged((...args) => props.oncandidatewindowboundschanged?.(...args)));
-  }
-
-  if ("oncontextmenuopening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
-  }
-
-  if ("oncopyingtoclipboard" in props) {
-    link.add(control.onCopyingToClipboard((...args) => props.oncopyingtoclipboard?.(...args)));
-  }
-
-  if ("oncuttingtoclipboard" in props) {
-    link.add(control.onCuttingToClipboard((...args) => props.oncuttingtoclipboard?.(...args)));
-  }
-
-  if ("onpaste" in props) {
-    link.add(control.onPaste((...args) => props.onpaste?.(...args)));
-  }
-
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
-
-  if ("onselectionchanging" in props) {
-    link.add(control.onSelectionChanging((...args) => props.onselectionchanging?.(...args)));
-  }
-
-  if ("ontextchanged" in props) {
-    link.add(control.onTextChanged((...args) => props.ontextchanged?.(...args)));
-  }
-
-  if ("ontextchanging" in props) {
-    link.add(control.onTextChanging((...args) => props.ontextchanging?.(...args)));
-  }
-
-  if ("ontextcompositionchanged" in props) {
-    link.add(control.onTextCompositionChanged((...args) => props.ontextcompositionchanged?.(...args)));
-  }
-
-  if ("ontextcompositionended" in props) {
-    link.add(control.onTextCompositionEnded((...args) => props.ontextcompositionended?.(...args)));
-  }
-
-  if ("ontextcompositionstarted" in props) {
-    link.add(control.onTextCompositionStarted((...args) => props.ontextcompositionstarted?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    names: [
+      "ContextMenuOpening",
+      "Paste",
+      "SelectionChanged",
+      "TextChanged"
+    ],
+    raw: [
+      "BeforeTextChanging",
+      "CandidateWindowBoundsChanged",
+      "CopyingToClipboard",
+      "CuttingToClipboard",
+      "SelectionChanging",
+      "TextChanging",
+      "TextCompositionChanged",
+      "TextCompositionEnded",
+      "TextCompositionStarted"
+    ]
+  });
 }
 
 export function connectTextBox(

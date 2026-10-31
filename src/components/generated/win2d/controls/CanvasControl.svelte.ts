@@ -41,13 +41,14 @@ export function linkCanvasControl(
     }
   });
 
-  if ("oncreateresources" in props) {
-    link.add(control.onCreateResources((...args) => props.oncreateresources?.(...args)));
-  }
-
-  if ("ondraw" in props) {
-    link.add(control.onDraw((...args) => props.ondraw?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "CreateResources",
+      "Draw"
+    ]
+  });
 }
 
 export function connectCanvasControl(

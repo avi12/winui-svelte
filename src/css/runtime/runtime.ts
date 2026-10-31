@@ -394,6 +394,25 @@ function lowerOptions({ elementType, problems }: {
   return options;
 }
 
+const SCOPE_CLASS = /^svelte-/u;
+
+// A rule as an author wrote it, for an error: the sheet's file and line, the
+// selector, and the properties it sets.
+function describeRule(ranked: RankedRule) {
+  const { rule } = ranked;
+  const file = ranked.id.slice(0, ranked.id.lastIndexOf(ID_SEPARATOR));
+  const line = rule.declarations[0]?.at.line ?? 0;
+  const classes = rule.classes.filter(name => !SCOPE_CLASS.test(name)).map(name => `.${name}`);
+  const state = rule.state === null ? "" : `:${rule.state}`;
+  const selector = `${rule.elementType ?? ""}${classes.join("")}${state}`;
+  const properties = rule.declarations.map(declaration => declaration.property).join(", ");
+  return `${file}:${line} ${selector === "" ? "*" : selector} { ${properties} }`;
+}
+
+function describeRules(matched: readonly RankedRule[]) {
+  return matched.length === 0 ? "its style attribute" : matched.map(describeRule).join("; ");
+}
+
 function buildStyle({ elementType, matched, inline }: {
   elementType: string;
   matched: RankedRule[];
@@ -419,8 +438,7 @@ function buildStyle({ elementType, matched, inline }: {
   });
   const hasProblems = problems.length > 0;
   if (hasProblems) {
-    const where = matched.map(ranked => ranked.id).join(", ");
-    throw new Error(`<${elementType}> cannot take the style of ${where === "" ? "its style attribute" : where}: ${problems.join("; ")}`);
+    throw new Error(`<${elementType}> cannot take the style of ${describeRules(matched)}: ${problems.join("; ")}`);
   }
 
   const isEmpty = lowered.setters.length === 0 && lowered.basedOn === null;
@@ -454,12 +472,33 @@ function buildStyle({ elementType, matched, inline }: {
     };
   }
 
-  const style = currentNative.lookupStyle(currentNative.loadDictionary(xaml), STYLE_RESOURCE_KEY);
+  const style = styleOfXaml({
+    currentNative,
+    xaml,
+    elementType,
+    matched
+  });
   stylesByXaml.set(xaml, style);
   return {
     style,
     writes: lowered.writes
   };
+}
+
+// WinUI refuses a Style whose property the element's type lacks (a font-size
+// on a path-icon) with a message that names neither file nor rule.
+function styleOfXaml({ currentNative, xaml, elementType, matched }: {
+  currentNative: CssNative;
+  xaml: string;
+  elementType: string;
+  matched: readonly RankedRule[];
+}) {
+  try {
+    return currentNative.lookupStyle(currentNative.loadDictionary(xaml), STYLE_RESOURCE_KEY);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`<${elementType}> cannot take the style of ${describeRules(matched)}: ${reason} (a class used on elements of different types needs a rule per type)`, { cause: error });
+  }
 }
 
 function builtFor({ key, elementType, matched, inline }: {

@@ -3,7 +3,8 @@ import { resolveRelationalSelectors } from "#src/css/relational/relational.js";
 import { withInstancesAsElements, withScopedInstances } from "#src/css/relational/scope.js";
 import { LAZY_GROUPS } from "#src/css/translate/lazy-groups.js";
 import { errorsOf, formatDiagnostic, translateStyleSheet } from "#src/css/translate/translate.js";
-import type { Diagnostic, StyleSheetData } from "#src/css/translate/types.js";
+import type { Diagnostic, Rule, StyleSheetData } from "#src/css/translate/types.js";
+import { markupStyleProperties } from "#src/css/validate/markup-declarations.js";
 import type { CompileOptions, Warning } from "svelte/compiler";
 import { compile } from "svelte/compiler";
 
@@ -126,11 +127,12 @@ export class SheetError extends Error {
 }
 
 // The imports and calls that register the opt-in groups the sheet's properties need.
-function groupRegistration({ sheet, runtimeModule }: {
+function groupRegistration({ sheet, markupRules, runtimeModule }: {
   sheet: StyleSheetData;
+  markupRules: readonly Rule[];
   runtimeModule: string;
 }) {
-  const used = LAZY_GROUPS.filter(lazy => sheet.rules.some(lazy.isNeededBy));
+  const used = LAZY_GROUPS.filter(lazy => sheet.rules.some(lazy.isNeededBy) || markupRules.some(lazy.isNeededBy));
   const hasUsed = used.length > 0;
   if (!hasUsed) {
     return [];
@@ -149,18 +151,77 @@ function groupRegistration({ sheet, runtimeModule }: {
 
 // The statements that register a sheet. They name nothing a component might
 // (the import is aliased), so they can be appended to a compiled component.
-function registrationCode({ sheet, runtimeModule }: {
+function registrationCode({ sheet, markupRules, runtimeModule }: {
   sheet: StyleSheetData;
+  markupRules: readonly Rule[];
   runtimeModule: string;
 }) {
   return [
     `import { registerStyleSheet as ${REGISTER_ALIAS} } from ${JSON.stringify(runtimeModule)};`,
     ...groupRegistration({
       sheet,
+      markupRules,
       runtimeModule
     }),
     `${REGISTER_ALIAS}(${JSON.stringify(sheet)});`
   ].join("\n");
+}
+
+// The properties a component's markup sets (`style:clip-path={shape}`) as
+// rules, so the opt-in groups they need are registered as they are for a
+// `<style>`: a window that never reads a clip in a stylesheet still parses
+// one a directive gives.
+function markupRulesOf(source: string) {
+  const properties = markupStyleProperties(source);
+  const hasProperties = properties.length > 0;
+  if (!hasProperties) {
+    return [];
+  }
+
+  const rule: Rule = {
+    elementType: null,
+    classes: [],
+    state: null,
+    specificity: 0,
+    order: 0,
+    resourcesXaml: null,
+    declarations: properties.map(property => ({
+      property,
+      value: "",
+      isImportant: false,
+      at: {
+        line: 1,
+        column: 1
+      }
+    }))
+  };
+  return [rule];
+}
+
+// A component with no `<style>` whose markup needs opt-in groups: the module
+// registers them and no sheet.
+function markupOnlyModule(input: SheetModuleInput) {
+  const sheet: StyleSheetData = {
+    id: input.sheetId,
+    rules: [],
+    keyframes: [],
+    resourcesXaml: null
+  };
+  const groups = groupRegistration({
+    sheet,
+    markupRules: markupRulesOf(input.source),
+    runtimeModule: input.runtimeModule
+  });
+  const hasGroups = groups.length > 0;
+  if (!hasGroups) {
+    return null;
+  }
+
+  return {
+    code: `${groups.join("\n")}\n`,
+    sheet,
+    diagnostics: []
+  };
 }
 
 // Svelte's own report of a rule that matches no element or component instance.
@@ -290,7 +351,7 @@ export function compileSheetModule(input: SheetModuleInput) {
   const translation = translateComponent(input);
   const isStyleMissing = translation === null;
   if (isStyleMissing) {
-    return null;
+    return markupOnlyModule(input);
   }
 
   const sheet = translation.sheet;
@@ -307,6 +368,7 @@ export function compileSheetModule(input: SheetModuleInput) {
   return {
     code: `${registrationCode({
       sheet,
+      markupRules: markupRulesOf(input.source),
       runtimeModule: input.runtimeModule
     })}${hot}\n`,
     sheet,

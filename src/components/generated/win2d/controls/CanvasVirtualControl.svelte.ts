@@ -41,13 +41,14 @@ export function linkCanvasVirtualControl(
     }
   });
 
-  if ("oncreateresources" in props) {
-    link.add(control.onCreateResources((...args) => props.oncreateresources?.(...args)));
-  }
-
-  if ("onregionsinvalidated" in props) {
-    link.add(control.onRegionsInvalidated((...args) => props.onregionsinvalidated?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "CreateResources",
+      "RegionsInvalidated"
+    ]
+  });
 }
 
 export function connectCanvasVirtualControl(

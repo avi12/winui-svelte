@@ -29,9 +29,13 @@ export function linkMapElementsLayer(
     keys: ["mapElements"]
   });
 
-  if ("onmapelementclick" in props) {
-    link.add(control.onMapElementClick((...args) => props.onmapelementclick?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "MapElementClick"
+    ]
+  });
 }
 
 export function connectMapElementsLayer(

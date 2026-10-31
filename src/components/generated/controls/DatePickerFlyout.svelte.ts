@@ -59,9 +59,13 @@ export function linkDatePickerFlyout(
     }
   });
 
-  if ("ondatepicked" in props) {
-    link.add(control.onDatePicked((...args) => props.ondatepicked?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "DatePicked"
+    ]
+  });
 }
 
 export function connectDatePickerFlyout(

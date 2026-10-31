@@ -106,17 +106,15 @@ export function linkComboBox(
     ]
   });
 
-  if ("ondropdownclosed" in props) {
-    link.add(control.onDropDownClosed((...args) => props.ondropdownclosed?.(...args)));
-  }
-
-  if ("ondropdownopened" in props) {
-    link.add(control.onDropDownOpened((...args) => props.ondropdownopened?.(...args)));
-  }
-
-  if ("ontextsubmitted" in props) {
-    link.add(control.onTextSubmitted((...args) => props.ontextsubmitted?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "DropDownClosed",
+      "DropDownOpened",
+      "TextSubmitted"
+    ]
+  });
 }
 
 export function connectComboBox(

@@ -59,17 +59,15 @@ export function linkItemsRepeater(
     }
   });
 
-  if ("onelementclearing" in props) {
-    link.add(control.onElementClearing((...args) => props.onelementclearing?.(...args)));
-  }
-
-  if ("onelementindexchanged" in props) {
-    link.add(control.onElementIndexChanged((...args) => props.onelementindexchanged?.(...args)));
-  }
-
-  if ("onelementprepared" in props) {
-    link.add(control.onElementPrepared((...args) => props.onelementprepared?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "ElementClearing",
+      "ElementIndexChanged",
+      "ElementPrepared"
+    ]
+  });
 }
 
 export function connectItemsRepeater(

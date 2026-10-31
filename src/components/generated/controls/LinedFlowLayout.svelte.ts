@@ -39,13 +39,14 @@ export function linkLinedFlowLayout(
     tables: { itemsJustification: LinedFlowLayoutItemsJustification, itemsStretch: LinedFlowLayoutItemsStretch }
   });
 
-  if ("onitemsinforequested" in props) {
-    link.add(control.onItemsInfoRequested((...args) => props.onitemsinforequested?.(...args)));
-  }
-
-  if ("onitemsunlocked" in props) {
-    link.add(control.onItemsUnlocked((...args) => props.onitemsunlocked?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "ItemsInfoRequested",
+      "ItemsUnlocked"
+    ]
+  });
 }
 
 export function connectLinedFlowLayout(

@@ -38,9 +38,13 @@ export function linkSelectorBar(
     ]
   });
 
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "SelectionChanged"
+    ]
+  });
 }
 
 export function connectSelectorBar(

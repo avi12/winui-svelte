@@ -185,45 +185,22 @@ export function linkNavigationView(
     ]
   });
 
-  if ("onbackrequested" in props) {
-    link.add(control.onBackRequested((...args) => props.onbackrequested?.(...args)));
-  }
-
-  if ("oncollapsed" in props) {
-    link.add(control.onCollapsed((...args) => props.oncollapsed?.(...args)));
-  }
-
-  if ("ondisplaymodechanged" in props) {
-    link.add(control.onDisplayModeChanged((...args) => props.ondisplaymodechanged?.(...args)));
-  }
-
-  if ("onexpanding" in props) {
-    link.add(control.onExpanding((...args) => props.onexpanding?.(...args)));
-  }
-
-  if ("oniteminvoked" in props) {
-    link.add(control.onItemInvoked((...args) => props.oniteminvoked?.(...args)));
-  }
-
-  if ("onpaneclosed" in props) {
-    link.add(control.onPaneClosed((...args) => props.onpaneclosed?.(...args)));
-  }
-
-  if ("onpaneclosing" in props) {
-    link.add(control.onPaneClosing((...args) => props.onpaneclosing?.(...args)));
-  }
-
-  if ("onpaneopened" in props) {
-    link.add(control.onPaneOpened((...args) => props.onpaneopened?.(...args)));
-  }
-
-  if ("onpaneopening" in props) {
-    link.add(control.onPaneOpening((...args) => props.onpaneopening?.(...args)));
-  }
-
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.events({
+    props,
+    control,
+    raw: [
+      "BackRequested",
+      "Collapsed",
+      "DisplayModeChanged",
+      "Expanding",
+      "ItemInvoked",
+      "PaneClosed",
+      "PaneClosing",
+      "PaneOpened",
+      "PaneOpening",
+      "SelectionChanged"
+    ]
+  });
 }
 
 export function connectNavigationView(
