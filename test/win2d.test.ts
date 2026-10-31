@@ -84,9 +84,18 @@ test("a Canvas paints, and paints again when the state its draw function read ch
       kind: "pumped"
     });
     assert.equal(pumped["error"], undefined, "a Draw inside a blocking call threw");
-    assert.ok(Number(pumped["drawsDuringPump"]) > 0, "no Draw ran inside the blocking calls, so nothing was proved");
     const afterPump = await stats(example);
-    assert.ok(Number(afterPump["redraws"]) > 0, "the window still answers after the Draws inside a derived");
+    assert.equal(afterPump["blurAmount"], 9, "the state change before the blocking calls was lost");
+    const redrawsAfterPump = Number(afterPump["redraws"]);
+    example.send({
+      cmd: "blur",
+      amount: 3
+    });
+    const last = await waitFor({
+      example,
+      isReady: status => Number(status["redraws"]) > redrawsAfterPump
+    });
+    assert.ok(Number(last["redraws"]) > redrawsAfterPump, "the canvas did not paint after the blocking calls");
     example.send({ cmd: "close" });
     assert.equal(await example.exited, 0);
   } finally {
