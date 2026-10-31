@@ -125,6 +125,10 @@ runWindow({
 `exitWhenHostEnds` (`winui-svelte/window`) ends the application when the link
 closes, or when the host process is gone, which also covers a host that died
 while a child still held the pipe open
+A host that relays stdio to the window may call `process.exit` when the
+core's pipes close: `initWindowsAppSdk` makes that safe by asking the window to
+quit first (otherwise WinUI's thread is still delivering callbacks into a
+closing Node environment, and the process can end with 0xC000027B)
 A message the app does not need answered goes with `channel.messaging.notify`,
 which neither rejects nor reports when the link is closed or closes first,
 where an unawaited `sendMessage` would end the process with an unhandled

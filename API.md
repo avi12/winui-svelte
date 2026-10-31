@@ -2105,10 +2105,13 @@ callback messages of the icon's window, delivered to its window procedure like
 the mouse ones; reading them takes a procedure, and the polled substitutes do
 not exist for a key (`GetAsyncKeyState` says a key is down, not that the shell
 sent the icon an activation, and which icon has focus is not readable)
-The tray polls every 30 ms instead:
-`GetCursorPos`, `GetAsyncKeyState` and `Shell_NotifyIconGetRect`, and a click
-is a press and a release both over the icon while the pointer is on the taskbar
-or the overflow flyout
+The tray polls instead: every 30 ms while the pointer is on the taskbar or
+the overflow flyout (or a button is down), every 250 ms elsewhere, and not at
+all while the icon is hidden, because a timer that wakes the thread 33 times a
+second costs about 2 % of a core in an idle window
+It reads `GetCursorPos`, `GetAsyncKeyState` and `Shell_NotifyIconGetRect`, and
+a click is a press and a release both over the icon (a press between two slow
+reads is still reported by the next one)
 It reads input; it never sends any
 What this means:
 
@@ -3883,6 +3886,11 @@ event announces, such as an unreferenced timer) and uses next to no CPU
 The one thing nobody can ask libuv from outside is when its next timer fires:
 while Node itself holds a timer (a socket timeout) the pump wakes every 16 ms
 The timers an app makes go through the scheduler, which the dispatcher drives
+A host that calls `process.exit` while the window runs would end the process
+under WinUI's thread (a delegate then finds the Node environment closing, and
+the process can end with 0xC000027B); `initWindowsAppSdk` therefore installs
+an exit hook on the host's main thread that asks the window's loop to quit and
+waits for it, five seconds at most (`src/window/host-exit.ts`)
 If the completion port cannot be found the pump polls instead, sleeping from
 1 ms to 8 ms, and an idle window costs about 2 % of a core
 While it runs the pump asks Windows for 1 ms timer ticks (`timeBeginPeriod`),

@@ -1,4 +1,4 @@
-import { createWakeEvent, findLoopCompletionPort } from "./native.ts";
+import { createNamedEvent, findLoopCompletionPort } from "./native.ts";
 import { createRequire } from "node:module";
 import { Worker } from "node:worker_threads";
 
@@ -188,7 +188,11 @@ export function startLibuvWake() {
     return undefined;
   }
 
-  const event = createWakeEvent();
+  const event = createNamedEvent({
+    name: null,
+    isSet: false,
+    isAutoReset: true
+  });
   const mode = new Int32Array(new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT));
   const resolve = createRequire(import.meta.url).resolve;
   const data: WatcherData = {

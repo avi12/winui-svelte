@@ -1,3 +1,4 @@
+import type { HostExitRequest } from "./host-exit.ts";
 import type { LibuvWake } from "./libuv-wake.ts";
 import type { MessageQueue, MessageSource } from "./message-pump.ts";
 import { dispatchNextMessage } from "./message-pump.ts";
@@ -8,6 +9,7 @@ import {
   bind,
   numberOf,
   pointerOf,
+  wideMemory,
   withMemory
 } from "#src/win32-calls.js";
 
@@ -303,13 +305,17 @@ const QS_ALLINPUT = 0x4ff;
 const MWMO_INPUTAVAILABLE = 4;
 const HANDLE_BYTES = 8;
 const WAIT_FAILED = 0xffffffff;
+const WAIT_OBJECT_0 = 0;
 const TIMER_PERIOD_MILLISECONDS = 1;
 
 // ContentPreTranslateMessage is exported by the Windows App SDK's
 // Microsoft.UI.Windowing.Core.dll, which the bootstrapper put in the process's
 // package graph: the bare name binds it, like a System32 DLL.
 /** This thread's Win32 message queue, for the message pump; call it on the thread whose queue it is. */
-export function createMessageSource(wake?: LibuvWake) {
+export function createMessageSource({ wake, hostExit }: {
+  wake?: LibuvWake | undefined;
+  hostExit?: HostExitRequest | undefined;
+} = {}) {
   const peekMessage = bind({
     dll: "user32.dll",
     entryPoint: "PeekMessageW",
@@ -347,13 +353,15 @@ export function createMessageSource(wake?: LibuvWake) {
   const removeFromQueue = DynWin32.u32(PM_REMOVE);
   const anyInput = DynWin32.u32(QS_ALLINPUT);
   const inputAvailable = DynWin32.u32(MWMO_INPUTAVAILABLE);
-  const wakeHandles = DynComRawMemory.allocate(HANDLE_BYTES, HANDLE_BYTES);
-  const hasWake = wake !== undefined;
-  if (hasWake) {
-    wakeHandles.writeU64(0, wake.event);
+  const events = [wake?.event, hostExit?.event].filter(event => event !== undefined);
+  const wakeHandles = DynComRawMemory.allocate(HANDLE_BYTES * 2, HANDLE_BYTES);
+  for (const [iEvent, event] of events.entries()) {
+    wakeHandles.writeU64(iEvent * HANDLE_BYTES, event);
   }
 
-  const handleCount = DynWin32.u32(hasWake ? 1 : 0);
+  const hasEvents = events.length > 0;
+  const handleCount = DynWin32.u32(events.length);
+  const hostExitResult = (wake === undefined ? 0 : 1) + WAIT_OBJECT_0;
   const queue = {
     take() {
       const found = peekMessage.invoke([messagePointer, noPointer, none, none, removeFromQueue]).returnValue;
@@ -377,15 +385,20 @@ export function createMessageSource(wake?: LibuvWake) {
     wait(milliseconds: number) {
       wake?.arm();
       // Read through the closure on every call: the memory is freed when its wrapper is collected.
-      const handlesPointer = hasWake ? pointerOf(wakeHandles) : noPointer;
+      const handlesPointer = hasEvents ? pointerOf(wakeHandles) : noPointer;
       const timeout = DynWin32.u32(milliseconds);
       const result = waitForMessage.invoke([handleCount, handlesPointer, timeout, anyInput, inputAvailable]);
-      const hasFailed = numberOf(result.returnValue) === WAIT_FAILED;
+      const waited = numberOf(result.returnValue);
+      const hasFailed = waited === WAIT_FAILED;
       if (hasFailed) {
         waitForMessage.invoke([none, noPointer, timeout, anyInput, inputAvailable]);
       }
 
       wake?.disarm();
+      const isExitRequested = hostExit !== undefined && waited === hostExitResult;
+      if (isExitRequested) {
+        hostExit.onRequest();
+      }
     },
     idleMilliseconds: wake?.idleMilliseconds
   } satisfies MessageSource;
@@ -424,21 +437,6 @@ const OBJECT_TYPE_NAME_LENGTH_OFFSET = 0;
 const OBJECT_TYPE_NAME_POINTER_OFFSET = 8;
 const OBJECT_TYPE_INFORMATION = 2;
 const IO_COMPLETION_TYPE = "IoCompletion";
-
-/**
- * An auto-reset event, signalled by the helper thread of libuv-wake.ts and
- * waited on by the message wait. It lives as long as the process.
- */
-export function createWakeEvent() {
-  const createEvent = bind({
-    dll: "kernel32.dll",
-    entryPoint: "CreateEventW",
-    parameters: ["pointer", "i32", "i32", "pointer"],
-    returnType: "pointer"
-  });
-  const created = createEvent.invoke([pointerOf(null), DynWin32.i32(0), DynWin32.i32(0), pointerOf(null)]).returnValue;
-  return addressOf(created);
-}
 
 function readPointer({ address, scratch, copyMemory }: {
   address: bigint;
@@ -545,4 +543,81 @@ function reportedHandleAddress(report: unknown) {
   const libuv: unknown = hasLibuv ? report.libuv : undefined;
   const handles: unknown[] = Array.isArray(libuv) ? libuv : [];
   return handles.find(isReportedHandle)?.address;
+}
+
+const EVENT_ALL_ACCESS = 0x1f0003;
+
+/**
+ * An event of this process, manual-reset unless `isAutoReset`; named, it is
+ * visible to every thread by that name, and unnamed (`name` null) only by the
+ * handle. Lives as long as the process.
+ */
+export function createNamedEvent({ name, isSet, isAutoReset }: {
+  name: string | null;
+  isSet: boolean;
+  isAutoReset: boolean;
+}) {
+  const create = bind({
+    dll: "kernel32.dll",
+    entryPoint: "CreateEventW",
+    parameters: ["pointer", "i32", "i32", "pointer"],
+    returnType: "pointer"
+  });
+  const text = name === null ? null : wideMemory(name);
+  try {
+    const created = create.invoke([
+      pointerOf(null),
+      DynWin32.i32(isAutoReset ? 0 : 1),
+      DynWin32.i32(isSet ? 1 : 0),
+      pointerOf(text)
+    ]).returnValue;
+    return addressOf(created);
+  } finally {
+    text?.release();
+  }
+}
+
+/** The named event `name` if some thread of this process made it; 0n when none did. */
+export function openNamedEvent(name: string) {
+  const open = bind({
+    dll: "kernel32.dll",
+    entryPoint: "OpenEventW",
+    parameters: ["u32", "i32", "pointer"],
+    returnType: "pointer"
+  });
+  const text = wideMemory(name);
+  try {
+    return addressOf(open.invoke([DynWin32.u32(EVENT_ALL_ACCESS), DynWin32.i32(0), pointerOf(text)]).returnValue);
+  } finally {
+    text.release();
+  }
+}
+
+/** Signals (`isSet`) or clears the event. */
+export function changeEvent({ event, isSet }: {
+  event: bigint;
+  isSet: boolean;
+}) {
+  const change = bind({
+    dll: "kernel32.dll",
+    entryPoint: isSet ? "SetEvent" : "ResetEvent",
+    parameters: ["pointer"],
+    returnType: "i32"
+  });
+  change.invoke([DynWin32Unsafe.pointer(event)]);
+}
+
+/** Waits for the event; true when it is signalled. */
+export function waitForEvent({ event, milliseconds }: {
+  event: bigint;
+  milliseconds: number;
+}) {
+  const wait = bind({
+    dll: "kernel32.dll",
+    entryPoint: "WaitForSingleObject",
+    parameters: ["pointer", "u32"],
+    returnType: "u32"
+  });
+  const result = wait.invoke([DynWin32Unsafe.pointer(event), DynWin32.u32(milliseconds)]).returnValue;
+  return numberOf(result) === WAIT_OBJECT_0;
 }

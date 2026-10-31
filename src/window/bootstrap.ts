@@ -1,3 +1,4 @@
+import { guardProcessExit } from "./host-exit.ts";
 import { initWinappsdk } from "@microsoft/dynwinrt";
 import { BOOTSTRAPPER_NAME, bootstrapperFolders } from "#src/runtime-files.js";
 import { existsSync } from "node:fs";
@@ -112,4 +113,6 @@ export function initWindowsAppSdk(options: WindowsAppSdkOptions = {}) {
   } catch (error) {
     throw new WindowsAppRuntimeMissing(String(error), { cause: error });
   }
+
+  guardProcessExit();
 }
