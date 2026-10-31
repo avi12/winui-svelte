@@ -21,6 +21,11 @@ project adheres to [Semantic Versioning](https://semver.org/)
   `navigator.permissions`, and `Notification` over app notifications with
   WinUI extras (buttons, inputs, progress, scenario, sound and more)
   (`winui-svelte/web-apis/notification`)
+- Web APIs for hardware: `navigator.bluetooth`, `navigator.usb`,
+  `navigator.hid` and `navigator.serial` (the app gives the chooser a browser
+  would show), `navigator.wakeLock` and `IdleDetector`
+  (`winui-svelte/web-apis/bluetooth`, `usb`, `hid`, `serial`, `wake-lock`,
+  `idle`)
 
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support
