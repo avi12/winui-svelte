@@ -2,7 +2,7 @@ import { DomErrorName, domException } from "./dom-exception.ts";
 import { defineNavigatorProperty } from "./install.ts";
 import type { NativeFile } from "#src/data-transfer/native-file.js";
 import { nativeFileAt } from "#src/data-transfer/native-file.js";
-import type { ShareContent } from "#src/data-transfer/share.js";
+import type { ShareContent, ShareWindow } from "#src/data-transfer/share.js";
 import { share, ShareUnavailableError } from "#src/data-transfer/share.js";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -17,16 +17,24 @@ export interface ShareBackend {
 }
 
 /**
- * The Windows share pane, over `share` of `data-transfer`. It needs a package
- * identity; without one `show` rejects with a `ShareUnavailableError`.
+ * The Windows share pane, over `share` of `data-transfer`. Given a window it
+ * opens the pane from it, which an unpackaged process can do too; without one
+ * it needs a package identity, and without that `show` rejects with a
+ * `ShareUnavailableError`.
  *
+ * @param window - The window to share from, if any.
  * @returns The backend the real install uses.
  */
-export function windowsShareBackend() {
+export function windowsShareBackend(window?: ShareWindow) {
   return {
     isSupported: () => true,
     show(content) {
-      share(content);
+      share(
+        window ? {
+          ...content,
+          window
+        } : content
+      );
       return Promise.resolve();
     }
   } satisfies ShareBackend;
@@ -185,6 +193,12 @@ export class Sharer {
 
 /** What `installShare` takes. */
 export interface ShareInstallOptions {
+  /**
+   * The window the share pane opens from (a `WindowHandle` or the native
+   * `Window`); with one, an app without a package identity can share.
+   */
+  readonly window?: ShareWindow;
+
   /** Stands in for the Windows share pane; the tests give one. */
   readonly backend?: ShareBackend;
 
@@ -198,16 +212,17 @@ function newTemporaryFolder() {
 
 /**
  * Defines `navigator.share` and `navigator.canShare` over the Windows share
- * pane. Windows shows it only to an app with a package identity: an
- * unpackaged one gets a `NotAllowedError`, and `canShare` stays true because
- * the identity is known only when the pane opens.
+ * pane. Windows shows it to an app with a package identity, or to any app
+ * that gives the `window` to open it from; otherwise it gets a
+ * `NotAllowedError`, and `canShare` stays true because the identity is known
+ * only when the pane opens.
  *
  * @param options - The backend and the temporary folder, for tests.
  * @returns The function that takes them away again.
  */
 export function installShare(options: ShareInstallOptions = {}) {
   const sharer = new Sharer({
-    backend: options.backend ?? windowsShareBackend(),
+    backend: options.backend ?? windowsShareBackend(options.window),
     temporaryFolder: options.temporaryFolder ?? newTemporaryFolder
   });
   const uninstalls = [
