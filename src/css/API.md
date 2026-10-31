@@ -1125,8 +1125,17 @@ The secondary option `{ "ignore": ["partial-support"] }` skips codes
 A diagnostic is `{ code, severity, message, filename, start, end, frame, suggestion }`
 with Svelte's position shape (`line` from 1, `column` from 0, `character`)
 The codes: `unsupported-property`, `unsupported-at-rule`, `unsupported-unit`,
-`unsupported-grid-track`, `partial-support` (a warning) and
-`invalid-css`
+`unsupported-on-element`, `unsupported-grid-track`, `partial-support` (a warning)
+and `invalid-css`
+A rule that sets a property the element it styles lacks is `unsupported-on-element`:
+`.icon { font-size: 16px }` on a `<PathIcon class="icon">` is reported at the rule as
+`property font-size is not supported on <path-icon> (WinUI's PathIcon has no FontSize) (used by .icon on <path-icon> at Icon.svelte:4)`,
+an error in the build and in the editor, instead of a failure when the window opens
+It checks every WinUI element or imported component that statically carries the
+class (a class shared by a `TextBlock` and a `PathIcon` is checked against both),
+against the properties of the element and its parents; an attached property is
+valid, and a class set by an expression or on a component of the app's own is
+never guessed
 For example, `repeat(auto-fill, 100px)` is reported as `repeat(auto-fill, ...) has
 no WinUI equivalent: write explicit tracks, for example repeat(3, 1fr) or 1fr 1fr 1fr`
 

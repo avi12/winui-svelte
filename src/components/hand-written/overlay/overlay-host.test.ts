@@ -57,6 +57,7 @@ class FakeAnchor implements LoadableElement<string> {
 
 class FakeFlyout implements FlyoutControl {
   isOpen = false;
+  hidden = 0;
   shownAt: LoadableElement<unknown> | null = null;
   private readonly opened = new Handlers();
   private readonly closed = new Handlers();
@@ -68,6 +69,7 @@ class FakeFlyout implements FlyoutControl {
   }
 
   hide() {
+    this.hidden++;
     this.isOpen = false;
     this.closed.fire();
   }
@@ -173,6 +175,20 @@ test("a flyout the user closes sets open back to false, and one that opens by it
 
   flyout.showAt(anchor);
   assert.equal(state.open, true, "a click on the button that owns it reached open");
+  stop();
+});
+
+test("open turning true while the flyout is already open leaves it open: a button that opens its own flyout on click", () => {
+  const anchor = new FakeAnchor({ name: "button" });
+  const { flyout, state, stop } = flyoutIn(anchor);
+  // The button opened its flyout before the Opened event reached open.
+  flyout.isOpen = true;
+
+  state.open = true;
+  flushSync();
+  assert.equal(flyout.hidden, 0, "the flyout was closed and opened again");
+  assert.equal(flyout.isOpen, true);
+  assert.equal(state.open, true);
   stop();
 });
 

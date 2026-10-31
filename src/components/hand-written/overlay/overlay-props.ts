@@ -8,8 +8,10 @@ export interface FlyoutOverlayProps {
   /**
    * Whether the flyout is open (`bind:open`). Setting it opens or closes the
    * flyout; the user closing it (light dismiss, Escape, a choice) sets it
-   * back to false. A flyout asked to open before its target is on screen
-   * opens once the target loads.
+   * back to false. Setting it to true for a flyout that is already open
+   * leaves it open (a button opens the flyout in its `flyout` property on
+   * click). A flyout asked to open before its target is on screen opens once
+   * the target loads.
    */
   open?: boolean | undefined;
   /**

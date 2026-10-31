@@ -13,6 +13,7 @@ export interface ValidationPosition {
 /** The kinds of problem the validator finds; each is a stylelint rule `winui-svelte/<code>` too. */
 export const ValidationCode = {
   UNSUPPORTED_PROPERTY: "unsupported-property",
+  UNSUPPORTED_ON_ELEMENT: "unsupported-on-element",
   UNSUPPORTED_AT_RULE: "unsupported-at-rule",
   UNSUPPORTED_UNIT: "unsupported-unit",
   UNSUPPORTED_GRID_TRACK: "unsupported-grid-track",

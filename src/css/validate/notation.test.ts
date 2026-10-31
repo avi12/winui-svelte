@@ -77,7 +77,7 @@ const FORMS: readonly Form[] = [
 ];
 
 function component(css: string) {
-  return `<border class="a"></border>\n<style>\n${css}\n</style>\n`;
+  return `<text-block class="a"></text-block>\n<style>\n${css}\n</style>\n`;
 }
 
 function configuredRules() {
