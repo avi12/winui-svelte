@@ -233,6 +233,22 @@ that moves one makes the plugin and `svelteHooks()` throw, naming the file and
 the release
 An edit marked optional is for releases that still have its anchor
 
+## The fast loop
+
+The dev server (`src/vite`) is what an app author waits on
+Cold start of `examples/hello` (the window is up) went from about 9 s to
+about 3 s, and a saved edit shows in about 0.25 s with the window's state kept
+- A named import from `winui-svelte/components` is rewritten, in `serve`
+  only, to imports of the modules that declare the names
+  (`src/vite/barrel.ts`); the window then fetches the controls it uses, not
+  all six hundred
+  A new barrel the package exports goes in `BARRELS`
+- A `<style>` is translated once per content: the validator and the sheet
+  module share one translation (`translateComponent`), and an edit that
+  leaves the style alone translates nothing
+- A component is parsed for animation directives only when its source writes
+  one
+
 ## Svelte versions
 
 `pnpm check:svelte-matrix` proves the peer range
