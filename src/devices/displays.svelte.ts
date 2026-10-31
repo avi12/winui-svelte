@@ -120,19 +120,31 @@ export interface DisplayMonitorInfo {
 }
 
 /**
+ * Opens the physical monitors Windows knows, with what their EDID says.
+ * Needs no window.
+ *
+ * @param options - A `signal`.
+ * @returns The monitors Windows could open.
+ */
+export async function openDisplayMonitors({ signal }: { signal?: AbortSignal } = {}) {
+  const found = await findAllDevices({
+    selector: DisplayMonitor.getDeviceSelector(),
+    ...signal === undefined ? {} : { signal }
+  });
+  const monitors = await Promise.all(found.map(device => DisplayMonitor.fromInterfaceIdAsync(device.id, signal)));
+  return monitors.filter(monitor => monitor != null);
+}
+
+/**
  * Lists the physical monitors with what their EDID says: name, native
  * resolution, physical size and brightness. Needs no window.
  *
  * @param options - A `signal`.
  * @returns A record per monitor that Windows could open.
  */
-export async function getDisplayMonitors({ signal }: { signal?: AbortSignal } = {}) {
-  const found = await findAllDevices({
-    selector: DisplayMonitor.getDeviceSelector(),
-    ...signal === undefined ? {} : { signal }
-  });
-  const monitors = await Promise.all(found.map(device => DisplayMonitor.fromInterfaceIdAsync(device.id, signal)));
-  return monitors.filter(monitor => monitor != null).map(monitor => ({
+export async function getDisplayMonitors(options: { signal?: AbortSignal } = {}) {
+  const monitors = await openDisplayMonitors(options);
+  return monitors.map(monitor => ({
     id: monitor.deviceId,
     name: monitor.displayName,
     connectionKind: monitor.connectionKind,

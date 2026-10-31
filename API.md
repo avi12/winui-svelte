@@ -1323,7 +1323,7 @@ Libraries that call `window.matchMedia`, such as Svelte's `MediaQuery` from
 `svelte/reactivity`, work once it is installed: the Vite plugin makes that class
 read the installed `matchMedia` when it is made (before it, it holds nothing)
 
-Pointing devices are read from Windows.Devices.Input, by the reader `winui-svelte/devices/input` shares (`readInputCapabilities`); where Windows does not tell, the answers are defaults an app can replace:
+Pointing devices are read from Windows.Devices.Input, by the reader `winui-svelte/devices/input` shares (`readInputCapabilities`); HDR and the colour gamut from the display configuration and the monitor's EDID, the metered connection from `NetworkInformation`; where Windows does not tell, the answers are defaults an app can replace:
 `installMatchMedia({ inputs: { viewport, scale, devices, presentation, isHdr,
 gamut, isMetered }, watch })` takes the readers (and, in `watch`, the events that
 flip them)
@@ -1506,6 +1506,12 @@ in a probe, the table of a COM object it made ended after the three `IUnknown`
 entries, and a COM thunk needs its own object as `this`
 So the shell's callback message
 (`NIF_MESSAGE`) cannot be received
+That includes the keyboard ones: `NIN_KEYSELECT` and `NIN_SELECT` (Enter and
+Space on a focused icon; `NOTIFYICON_VERSION_4` makes the shell send them) are
+callback messages of the icon's window, delivered to its window procedure like
+the mouse ones; reading them takes a procedure, and the polled substitutes do
+not exist for a key (`GetAsyncKeyState` says a key is down, not that the shell
+sent the icon an activation, and which icon has focus is not readable)
 The tray polls every 30 ms instead:
 `GetCursorPos`, `GetAsyncKeyState` and `Shell_NotifyIconGetRect`, and a click
 is a press and a release both over the icon while the pointer is on the taskbar
@@ -1744,17 +1750,23 @@ shouldPersist })`, `clear()` and `onChange(callback)` (returns what stops it)
 `launchUri(url)`, `launchFile(path)`, `openFolder(path)` and
 `revealInExplorer(path)` (starts `explorer.exe /select`, because the Launcher
 cannot select an item)
-`share({ title, text, html, uri, files })` opens the share pane and throws
-`ShareUnavailableError` where Windows has none for the process
+`share({ title, text, html, uri, files, window })` opens the share pane from
+`window` (a `WindowHandle` or the native `Window`) and throws
+`ShareUnavailableError` where Windows has none; without `window` it needs a
+package identity
 
 What works from an unpackaged process (checked from `node.exe`): the drag and
 drop data mapping on real `DataPackage` objects (text, HTML, link, custom
 formats, files, folders, a picture), `Clipboard.GetContent` and the Launcher
 queries
-The share pane does not: `DataTransferManager.GetForCurrentView` fails with
-"cannot be called while the app is in the background" without a package
-identity (the interop call `GetForWindow` is not in the metadata, so the
-bindings cannot make it)
+The share pane needs a window there: `DataTransferManager.GetForCurrentView`
+fails with "cannot be called while the app is in the background" without a
+package identity, so `share({ window })` calls `IDataTransferManagerInterop`
+(`GetForWindow`, then `ShowShareUIForWindow`), which is in shobjidl_core.h and
+not in the metadata: its two methods are declared by hand at the slots after
+`IUnknown`'s (it does not derive from `IInspectable`)
+`GetForWindow` is checked from `node.exe`; `ShowShareUIForWindow` is not, because
+it would open the real pane
 The Launcher's `findUriSchemeHandlers` returns none without identity
 
 ### Names and testing
@@ -1879,11 +1891,12 @@ properties (`decodePixelWidth`, `decodePixelHeight`, `decodePixelType`,
 `uriSource`) and events (`onimageopened` and `onimagefailed` on the `Image`;
 `ondownloadprogress` and `onimageopened` on the bitmap; `onopened` and
 `onopenfailed` on the SVG)
-`WriteableBitmap` and `BitmapSource` have no component: the bindings
-hold no `WriteableBitmap`, and `BitmapSource` is abstract
+`WriteableBitmap` and `BitmapSource` have no component: a `WriteableBitmap`
+takes its size when it is made (`writeableBitmapOf` makes one), and `BitmapSource` is abstract
 
 | Export | Does |
 |---|---|
+| `writeableBitmapOf({ width, height, pixels })`, `setBitmapPixels({ source, width, height, pixels })` | An image source from straight RGBA bytes (the pixel buffer is written through `IBufferByteAccess`), and the way to draw another frame in it |
 | `bitmapImageOf({ source, decodePixelWidth, decodePixelHeight, decodePixelType, createOptions, autoPlay, onFailed })` | A `BitmapImage` from a URI, a `data:` URI or bytes, with the options set before it loads |
 | `svgImageSourceOf({ source, rasterizePixelWidth, rasterizePixelHeight, onFailed })` | An `SvgImageSource` from markup, a `.svg` URI, a `data:` URI or bytes |
 | `decodeDataUri(uri)`, `isDataUri(text)` | A `data:` URI as `{ mimeType, bytes }`: WinUI opens no `data:` URI itself |
@@ -2410,7 +2423,7 @@ entry point is named nowhere in the docs
 | `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed |
 | `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet`, `textTransforms` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, removal of a stylesheet, and the text each element's `text-transform` shows (the renderer reads it) |
-| `animationGroups`, `effectGroups`, `visualEffectGroups`, `clipGroups`, `environmentGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
+| `animationGroups`, `effectGroups`, `visualEffectGroups`, `clipGroups`, `cursorGroups`, `environmentGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
 | `translateComponent` | `winui-svelte/css/sheet-module` | the build's translation of a component's `<style>`, which the validator and the Vite plugin share |
 | `unusedSelectorMessages` | `winui-svelte/css/sheet-module` | the messages of Svelte's unused-selector warnings for a component read with its instances as elements, which `winuiWarningFilter` keeps |

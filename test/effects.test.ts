@@ -16,6 +16,8 @@ const TIMEOUT_MILLISECONDS = 300_000;
 const NATIVE_LIBRARY = path.join(import.meta.dirname, "..", ".winapp", "bin", process.arch, "Microsoft.Graphics.Canvas.dll");
 const IS_AVAILABLE = IS_WINDOWS_APP_SDK_RESTORED && existsSync(NATIVE_LIBRARY);
 const STAGE_COLOR = "FF0000";
+const INPUT_CURSOR_HAND = 3;
+const INPUT_CURSOR_NO = 11;
 const SETTLE_MILLISECONDS = 1500;
 const CHANNEL_SLACK = 12;
 // The border is 160 by 100, centered in a stage 480 by 330: these are its places.
@@ -337,6 +339,40 @@ test("the blur transition blurs the element for real, and draw measures a path",
       y: PATH_DOWN_Y
     }]);
     assert.ok(down !== undefined && down.g >= PATH_COLOR - PURE_SLACK, `the path is not drawn down its second part: ${JSON.stringify(down)}`);
+    example.send({ cmd: "close" });
+    assert.equal(await example.exited, 0);
+  } finally {
+    example.kill();
+  }
+});
+
+test("cursor sets the ProtectedCursor of the element, read back as the shape", {
+  skip: !IS_AVAILABLE,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const example = ExampleProcess.start({ entry: "examples/effects/main.ts" });
+  try {
+    async function shapeWith(className: string) {
+      await example.ask({
+        command: {
+          cmd: "set",
+          class: className
+        },
+        kind: "set"
+      });
+      await wait(SETTLE_MILLISECONDS);
+      const report = await example.ask({
+        command: {
+          cmd: "cursor"
+        },
+        kind: "cursor"
+      });
+      return report["shape"];
+    }
+
+    assert.equal(await shapeWith("fx-pointer"), INPUT_CURSOR_HAND, "cursor: pointer is the hand");
+    assert.equal(await shapeWith("fx-forbidden"), INPUT_CURSOR_NO, "cursor: not-allowed is the universal no");
+    assert.equal(await shapeWith(""), null, "without a cursor rule the element has none of its own");
     example.send({ cmd: "close" });
     assert.equal(await example.exited, 0);
   } finally {

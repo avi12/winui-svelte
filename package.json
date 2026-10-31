@@ -172,6 +172,10 @@
       "types": "./dist/css/filter.d.ts",
       "default": "./dist/css/filter.js"
     },
+    "./css/cursor": {
+      "types": "./dist/css/cursor.d.ts",
+      "default": "./dist/css/cursor.js"
+    },
     "./css/clip": {
       "types": "./dist/css/clip.d.ts",
       "default": "./dist/css/clip.js"

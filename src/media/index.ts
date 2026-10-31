@@ -11,3 +11,5 @@ export type { MediaPlayerOptions } from "./media-player.ts";
 export { createMediaPlayer, mediaSourceOfBytes } from "./media-player.ts";
 export type { ObservedPlayer } from "./playback-state.svelte.ts";
 export { observePlayback, PlaybackState } from "./playback-state.svelte.ts";
+export type { BitmapPixels } from "./writeable-bitmap.ts";
+export { setBitmapPixels, writeableBitmapOf } from "./writeable-bitmap.ts";

@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 // The media example (examples/media-elements) in a real WinUI window, off screen and
-// never activated: Images made from bytes, a data URI, a file path and SVG
-// markup show the pixels they were made from, a bad image raises ImageFailed,
+// never activated: Images made from bytes, a data URI, a file path, SVG
+// markup and raw pixels (a WriteableBitmap) show the pixels they were made from, a bad image raises ImageFailed,
 // and a MediaPlayer with no window plays a generated WAV to its end.
 
 const TIMEOUT_MILLISECONDS = 300_000;
@@ -106,6 +106,27 @@ test("images made from bytes, a data URI, a file and SVG show their pixels", {
       key: "file",
       left: [255, 0, 0, 255],
       right: [0, 0, 255, 255]
+    });
+
+    assertColors({
+      report,
+      key: "pixels",
+      left: [255, 0, 0, 255],
+      right: [0, 0, 255, 255]
+    });
+    example.send({ cmd: "repaint" });
+    await new Promise(resolve => setTimeout(resolve, LOAD_MILLISECONDS));
+    const repainted = await example.ask({
+      command: {
+        cmd: "images"
+      },
+      kind: "images"
+    });
+    assertColors({
+      report: repainted,
+      key: "pixels",
+      left: [0, 255, 0, 255],
+      right: [255, 255, 0, 255]
     });
 
     example.send({ cmd: "close" });

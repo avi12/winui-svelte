@@ -166,12 +166,13 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | `winui-svelte/css/effects` | `aspect-ratio` | Aspect ratio |
 | `winui-svelte/css/filter` | `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` | Filters, blends and masks |
 | `winui-svelte/css/clip` | `clip-path` | Clip shapes |
+| `winui-svelte/css/cursor` | `cursor` | Cursor |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `box-shadow` | Elevation |
 | `winui-svelte/css/position` | `position`, `top`, `left`, `right`, `bottom`, `inset` | Position |
 | `winui-svelte/css/queries` | `@media`, `@container` and `@starting-style` rules (a group with no property of its own) | Responsive rules |
 | `winui-svelte/css/environment` | the `@media` features beyond the size (preferences, display, input; a group with no property of its own) | Media features |
-| `winui-svelte/css/compat` | `text-transform`, `word-break`, `user-select`, `object-fit`, `line-clamp`, `box-sizing`, `cursor` (ignored) | Unsupported |
+| `winui-svelte/css/compat` | `text-transform`, `word-break`, `user-select`, `object-fit`, `line-clamp`, `box-sizing` | Unsupported |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |
 
 `calc()`, `min()`, `max()` and `clamp()` of px fold when the build
@@ -538,6 +539,33 @@ draws it
 .card { clip-path: inset(0 round 12px) }
 ```
 
+## Cursor: `cursor`
+
+`cursor` is the pointer shape over an element: a sheet that uses it imports
+`winui-svelte/css/cursor`
+WinUI has no public cursor property; `UIElement.ProtectedCursor` is protected
+in C#, but that is a language rule, and the property sits on the
+`IUIElementProtected` interface of every element, which the binding reaches by
+QueryInterface from outside; the value is an `InputSystemCursor` made by
+`InputSystemCursor.Create`
+
+| Keywords | Shape |
+|---|---|
+| `auto`, `default`, `context-menu` | Arrow |
+| `pointer`, `grab`, `grabbing` | Hand |
+| `text`, `vertical-text` | IBeam |
+| `wait`, `progress` | Wait |
+| `help` | Help |
+| `not-allowed`, `no-drop` | UniversalNo |
+| `crosshair`, `cell` | Cross |
+| `move`, `all-scroll` | SizeAll |
+| `n-resize`, `s-resize`, `ns-resize`, `row-resize` | SizeNorthSouth |
+| `e-resize`, `w-resize`, `ew-resize`, `col-resize` | SizeWestEast |
+| `ne-resize`, `sw-resize`, `nesw-resize` | SizeNortheastSouthwest |
+| `nw-resize`, `se-resize`, `nwse-resize` | SizeNorthwestSoutheast |
+
+Removing the rule gives the element no cursor of its own again
+
 ## Aspect ratio: `aspect-ratio`
 
 `winui-svelte/css/effects` has `aspect-ratio` (`auto`, a number or `w / h`):
@@ -786,8 +814,8 @@ knows better supplies it (`installMatchMedia({ inputs: { devices: ... } })`)
 | `color-index` | range | always 0: no display uses an indexed palette |
 | `monochrome` | range | always 0: the display is a color one |
 | `grid` | range | always 0: a window is a bitmap display |
-| `color-gamut` | keyword | srgb, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet |
-| `dynamic-range`, `video-dynamic-range` | keyword | standard, or what the app supplies: the display's advanced color info needs QueryDisplayConfig and DisplayConfigGetDeviceInfo (DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO) through native structs, which the bindings do not wrap yet |
+| `color-gamut` | keyword | the primary monitor's EDID primaries (DisplayMonitor.RedPrimary, GreenPrimary, BluePrimary): srgb, p3 when their triangle is 1.25 times sRGB's, rec2020 at 1.75 times; srgb until the monitor has been opened |
+| `dynamic-range`, `video-dynamic-range` | keyword | high when Windows shows the primary monitor in HDR (QueryDisplayConfig and DisplayConfigGetDeviceInfo with DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO), read again when the displays change; standard otherwise |
 | `hover`, `any-hover` | keyword | read from Windows.Devices.Input (`MouseCapabilities`, `TouchCapabilities`, `PointerDevice`) by the same reader as `winui-svelte/devices/input`, read again when an input device comes or goes; hover is none for touch only |
 | `pointer`, `any-pointer` | keyword | read from Windows.Devices.Input: fine for a mouse, touchpad or pen, coarse when touch is the only pointer |
 | `scan` | keyword | always progressive |
@@ -799,7 +827,7 @@ knows better supplies it (`installMatchMedia({ inputs: { devices: ... } })`)
 | `prefers-reduced-motion` | keyword | UISettings.AnimationsEnabled |
 | `prefers-reduced-transparency` | keyword | UISettings.AdvancedEffectsEnabled (Transparency effects) |
 | `forced-colors` | keyword | AccessibilitySettings.HighContrast |
-| `prefers-reduced-data` | keyword | no-preference, or what the app supplies: Windows.Networking.Connectivity.NetworkInformation is not in the generated bindings (only ConnectionCost is) |
+| `prefers-reduced-data` | keyword | reduce on a metered connection (NetworkInformation.GetInternetConnectionProfile().GetConnectionCost(): a Fixed or Variable cost), read again on NetworkStatusChanged |
 | `inverted-colors` | keyword | always none: Windows tells apps of no color inversion |
 | `light-level` | keyword | always normal: no ambient light sensor is read |
 | `nav-controls` | keyword | always back |
@@ -1087,7 +1115,7 @@ Declarations like these fail the build with it:
 | `position`, `top`, `left`, `right`, `bottom`, `inset` in a style attribute | they are read from a component's `<style>` block (see Position); `right`, `bottom` and `position: sticky` have no WinUI counterpart |
 | `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` in a style attribute | they are read from a component's `<style>` block, which opts the window into `winui-svelte/css/filter` (see Filters, blends and masks); `url()` filters, `mask-position`, `mask-size`, `mask-repeat` and `mask-mode` have no counterpart |
 | `clip-path` as `rect()`, `xywh()` or `url()` | `inset()`, `circle()`, `ellipse()`, `polygon()` and `path()` have one (see Clip shapes) |
-| `cursor` | accepted and ignored with a warning: `IUIElementProtected.ProtectedCursor` is in the bindings, but the `InputCursor` it takes can only be made by `Microsoft.UI.Input.InputSystemCursor.Create(InputSystemCursorShape)`, and the bindings have neither `InputSystemCursor` nor `InputSystemCursorShape` (add them to the bindings and it becomes a write like the others) |
+| `cursor` as a `url()` image, `none`, `copy`, `alias`, `zoom-in` and `zoom-out` | WinUI's cursors are the sixteen system shapes of `InputSystemCursorShape`; the other keywords have one (see Cursor) |
 | `animation` without its module | see Animations |
 | `text-transform: uppercase`, `lowercase`, `capitalize` | the text an element shows is written through the change, in a `<text-block>`, a `<run>`, a button's content and the text of an inline element: the tree keeps the text as written, and the control reports the changed one (`none` is no change; an inherited transform is not: write it on the element that holds the text) |
 | `user-select`, `object-fit`, `line-clamp` (`-webkit-line-clamp`), `word-break` | `IsTextSelectionEnabled`, an image's `Stretch` (`contain` is `Uniform`, `cover` `UniformToFill`; `scale-down` is an error), `MaxLines` (with `Wrap` and an ellipsis, which `text-wrap` and `text-overflow` override), `TextWrapping` |

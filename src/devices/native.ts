@@ -1,3 +1,4 @@
+import type { DisplayConfigSource } from "./display-config.ts";
 import type { PrinterRecord, PrinterSource } from "./printer-source.ts";
 import type { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
@@ -16,6 +17,27 @@ import {
 // are bound when a source is made, never when the module loads.
 
 const NULL_ADDRESS = 0n;
+const QDC_ONLY_ACTIVE_PATHS = 0x2;
+const SUCCESS = 0;
+const PATH_BYTES = 72;
+const MODE_BYTES = 64;
+const OFFSET_SOURCE_MODE_INDEX = 12;
+const OFFSET_TARGET_ADAPTER = 20;
+const OFFSET_TARGET_ID = 28;
+const MODE_TYPE_SOURCE = 1;
+const OFFSET_MODE_TYPE = 0;
+const OFFSET_MODE_POSITION_X = 28;
+const OFFSET_MODE_POSITION_Y = 32;
+const DEVICE_INFO_GET_ADVANCED_COLOR_INFO = 9;
+const ADVANCED_COLOR_INFO_BYTES = 32;
+const OFFSET_INFO_ADAPTER = 8;
+const OFFSET_INFO_TARGET = 16;
+const OFFSET_INFO_FLAGS = 20;
+const FLAG_ENABLED = 0x2;
+const FLAG_WIDE_COLOR_ENFORCED = 0x4;
+const UNKNOWN_MODE = 0xffffffff;
+const WORD_BITS = 32n;
+const LOW_WORD_MASK = 0xffffffffn;
 const ENUM_LOCAL = 0x2;
 const ENUM_CONNECTIONS = 0x4;
 const INFO_LEVEL = 2;
@@ -204,4 +226,175 @@ export function shellPrint({ path, printerName, window = NO_WINDOW }: {
     file.release();
     printer?.release();
   }
+}
+
+function luidAt({ memory, offset }: {
+  memory: DynComRawMemory;
+  offset: number;
+}) {
+  const low = BigInt(memory.readU32(offset));
+  const high = BigInt(memory.readU32(offset + DWORD_BYTES));
+  return (high << WORD_BITS) | low;
+}
+
+/**
+ * The display configuration source over `QueryDisplayConfig` and
+ * `DisplayConfigGetDeviceInfo`.
+ *
+ * @returns Reads of the primary monitor's target and color state.
+ */
+/**
+ * The display configuration source over `QueryDisplayConfig` and
+ * `DisplayConfigGetDeviceInfo`.
+ *
+ * @returns Reads of the primary monitor's target and color state.
+ */
+export function windowsDisplayConfig() {
+  const getSizes = bind({
+    dll: "user32.dll",
+    entryPoint: "GetDisplayConfigBufferSizes",
+    parameters: ["u32", "pointer", "pointer"],
+    returnType: "i32"
+  });
+  const query = bind({
+    dll: "user32.dll",
+    entryPoint: "QueryDisplayConfig",
+    parameters: ["u32", "pointer", "pointer", "pointer", "pointer", "pointer"],
+    returnType: "i32"
+  });
+  const getInfo = bind({
+    dll: "user32.dll",
+    entryPoint: "DisplayConfigGetDeviceInfo",
+    parameters: ["pointer"],
+    returnType: "i32"
+  });
+  function pointerTo({ memory, offset }: {
+    memory: DynComRawMemory;
+    offset: number;
+  }) {
+    return DynWin32Unsafe.pointer(memory.pointer(offset).address);
+  }
+  function colorOf({ adapter, targetId }: {
+    adapter: bigint;
+    targetId: number;
+  }) {
+    return withMemory({
+      size: ADVANCED_COLOR_INFO_BYTES,
+      alignment: DWORD_BYTES,
+      use(info) {
+        info.writeBytes(0, Buffer.alloc(ADVANCED_COLOR_INFO_BYTES));
+        info.writeU32(0, DEVICE_INFO_GET_ADVANCED_COLOR_INFO);
+        info.writeU32(DWORD_BYTES, ADVANCED_COLOR_INFO_BYTES);
+        info.writeU32(OFFSET_INFO_ADAPTER, Number(adapter & LOW_WORD_MASK));
+        info.writeU32(OFFSET_INFO_ADAPTER + DWORD_BYTES, Number(adapter >> WORD_BITS));
+        info.writeU32(OFFSET_INFO_TARGET, targetId);
+        const result = getInfo.invoke([pointerTo({
+          memory: info,
+          offset: 0
+        })]);
+        const isFailed = numberOf(result.returnValue) !== SUCCESS;
+        if (isFailed) {
+          return {
+            isEnabled: false,
+            isWideColorEnforced: false
+          };
+        }
+
+        const flags = info.readU32(OFFSET_INFO_FLAGS);
+        return {
+          isEnabled: (flags & FLAG_ENABLED) !== 0,
+          isWideColorEnforced: (flags & FLAG_WIDE_COLOR_ENFORCED) !== 0
+        };
+      }
+    });
+  }
+  return {
+    primaryTarget() {
+      return withMemory({
+        size: 2 * DWORD_BYTES,
+        alignment: DWORD_BYTES,
+        use(counts) {
+          const sizes = getSizes.invoke([
+            DynWin32.u32(QDC_ONLY_ACTIVE_PATHS),
+            pointerTo({
+              memory: counts,
+              offset: 0
+            }),
+            pointerTo({
+              memory: counts,
+              offset: DWORD_BYTES
+            })
+          ]);
+          const isUnavailable = numberOf(sizes.returnValue) !== SUCCESS;
+          const pathCount = counts.readU32(0);
+          const modeCount = counts.readU32(DWORD_BYTES);
+          const isEmpty = isUnavailable || pathCount === 0;
+          if (isEmpty) {
+            return null;
+          }
+
+          return withMemory({
+            size: pathCount * PATH_BYTES,
+            alignment: DWORD_BYTES,
+            use: paths => withMemory({
+              size: Math.max(modeCount, 1) * MODE_BYTES,
+              alignment: DWORD_BYTES,
+              use(modes) {
+                const filled = query.invoke([
+                  DynWin32.u32(QDC_ONLY_ACTIVE_PATHS),
+                  pointerTo({
+                    memory: counts,
+                    offset: 0
+                  }),
+                  pointerTo({
+                    memory: paths,
+                    offset: 0
+                  }),
+                  pointerTo({
+                    memory: counts,
+                    offset: DWORD_BYTES
+                  }),
+                  pointerTo({
+                    memory: modes,
+                    offset: 0
+                  }),
+                  DynWin32Unsafe.pointer(null)
+                ]);
+                const isFailed = numberOf(filled.returnValue) !== SUCCESS;
+                if (isFailed) {
+                  return null;
+                }
+
+                for (let iPath = 0; iPath < counts.readU32(0); iPath++) {
+                  const start = iPath * PATH_BYTES;
+                  const iMode = paths.readU32(start + OFFSET_SOURCE_MODE_INDEX);
+                  const isOrigin = iMode !== UNKNOWN_MODE
+                    && modes.readU32(iMode * MODE_BYTES + OFFSET_MODE_TYPE) === MODE_TYPE_SOURCE
+                    && modes.readI32(iMode * MODE_BYTES + OFFSET_MODE_POSITION_X) === 0
+                    && modes.readI32(iMode * MODE_BYTES + OFFSET_MODE_POSITION_Y) === 0;
+                  if (isOrigin) {
+                    const adapter = luidAt({
+                      memory: paths,
+                      offset: start + OFFSET_TARGET_ADAPTER
+                    });
+                    const targetId = paths.readU32(start + OFFSET_TARGET_ID);
+                    return {
+                      adapterId: adapter,
+                      targetId,
+                      color: colorOf({
+                        adapter,
+                        targetId
+                      })
+                    };
+                  }
+                }
+
+                return null;
+              }
+            })
+          });
+        }
+      });
+    }
+  } satisfies DisplayConfigSource;
 }

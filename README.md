@@ -1277,8 +1277,9 @@ Stated plainly, so nobody finds them by surprise:
   `createMediaPlayer` keeps a `state` that it reads again every 100 ms on the
   UI thread (`playbackState`, `position`, `naturalDuration`, `isEnded`), which
   is what an app relies on
-- **No `WriteableBitmap` component.** The bindings hold no `WriteableBitmap`;
-  `RenderTargetBitmap`, `SoftwareBitmapSource` and `BitmapImage` are there
+- **No `WriteableBitmap` component.** A `WriteableBitmap` takes its size when it
+  is made, so `writeableBitmapOf({ width, height, pixels })` from
+  `winui-svelte/media` makes one from RGBA bytes
 - **The tray icon hears the mouse by polling.** WinUI has no tray API, and
   dynwinrt cannot make a JavaScript function a native window procedure, so
   `winui-svelte/tray` reads the pointer and the buttons every 30 ms instead of
@@ -1365,9 +1366,8 @@ Stated plainly, so nobody finds them by surprise:
   children (`src/css/API.md`, Containers); `text-transform` shows the text
   changed and keeps the source text; a `transition` on `border-color` runs a
   color animation on the border brush
-  `cursor` is ignored with a warning: `InputSystemCursor` and
-  `InputSystemCursorShape` (Microsoft.UI.Input) are not in the bindings, and
-  `ProtectedCursor` takes only one of those
+  `cursor` works through `winui-svelte/css/cursor` (the system cursor shapes;
+  a `url()` cursor image has no WinUI counterpart)
   Gradients are `linear-gradient()` and `radial-gradient()` only
   (no repeating or conic ones, no stop in `px`), and replace `background-color`
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can

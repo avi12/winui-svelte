@@ -21,6 +21,27 @@ function logOf(report: Report) {
   return Array.isArray(log) ? log.map(String) : [];
 }
 
+test("a window gives the share manager through the interop call, with no package identity", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const example = ExampleProcess.start({ entry: "examples/data-transfer/main.ts" });
+  try {
+    const report = await example.ask({
+      command: {
+        cmd: "shareManager"
+      },
+      kind: "shareManager"
+    });
+    assert.equal(report["error"], undefined, "GetForWindow raised no error");
+    assert.equal(report["isManager"], true, "GetForWindow returned a DataTransferManager that takes DataRequested");
+    example.send({ cmd: "close" });
+    assert.equal(await example.exited, 0);
+  } finally {
+    example.kill();
+  }
+});
+
 test("a control takes drops through the dropzone and the web event names", {
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
   timeout: TIMEOUT_MILLISECONDS

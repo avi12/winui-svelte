@@ -228,3 +228,26 @@ test("a short passive Bluetooth scan reports what it hears, or why it cannot", a
   scope.stop();
   flushSync();
 });
+
+test("this machine's primary monitor answers the display configuration, its color and its gamut", async () => {
+  const { windowsDisplayConfig } = await import("./native.ts");
+  const { displayColor, windowsDisplayColor } = await import("./display-color.ts");
+  const target = windowsDisplayConfig().primaryTarget();
+  const hasDisplay = target !== null;
+  if (hasDisplay) {
+    assert.equal(typeof target.color.isEnabled, "boolean");
+  }
+
+  const color = displayColor({
+    ...windowsDisplayColor(),
+    subscriptions: []
+  });
+  assert.equal(typeof color.isHdr(), "boolean");
+  assert.ok(["srgb", "p3", "rec2020"].includes(color.gamut()));
+});
+
+test("this machine's connection cost reads as metered or not", async () => {
+  const { isMeteredCost } = await import("./network-information.svelte.ts");
+  const reading = windowsNetworkSource().read();
+  assert.equal(typeof isMeteredCost(reading.costType), "boolean");
+});

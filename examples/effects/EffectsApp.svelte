@@ -1,7 +1,10 @@
 <script lang="ts">
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
+  import { read } from "#src/renderer/host/reflect.js";
   import { projectAs } from "#winui/lifetime";
+  import { InputSystemCursor } from "#winui/microsoft/ui/input/InputSystemCursor";
   import type { FrameworkElement } from "#winui/microsoft/ui/xaml/FrameworkElement";
+  import { IUIElementProtected } from "#winui/microsoft/ui/xaml/IUIElementProtected";
   import { XamlReader } from "#winui/microsoft/ui/xaml/markup/XamlReader";
   import { PathGeometry } from "#winui/microsoft/ui/xaml/media/PathGeometry";
   import { Path } from "#winui/microsoft/ui/xaml/shapes/Path";
@@ -20,6 +23,7 @@
 
   const { host }: Props = $props();
   const stage = elementRef<FrameworkElement>();
+  const target = elementRef<FrameworkElement>();
   let targetClass = $state("");
   let isCardShown = $state(false);
   let isLineShown = $state(false);
@@ -61,6 +65,13 @@
         targetClass
       });
     }],
+    ["cursor", () => {
+      const cursor = IUIElementProtected.from(read(target.current, "_obj")).protectedCursor;
+      host.report({
+        kind: "cursor",
+        shape: cursor === null ? null : projectAs(cursor, InputSystemCursor).cursorShape
+      });
+    }],
     ["close", () => exitApplication()]
   ]);
   // svelte-ignore state_referenced_locally
@@ -95,7 +106,7 @@
     {#if isLineShown}
       <path class="fx-line" {...lineAttributes} in:draw={{ duration: TRANSITION_MILLISECONDS }}></path>
     {/if}
-    <Border class="fx-target {targetClass}">
+    <Border class="fx-target {targetClass}" {@attach target.attach}>
       <Grid>
         <Border class="fx-green" />
         <Border class="fx-black" />
@@ -193,6 +204,14 @@
   .fx-target.fx-backdrop {
     background-color: rgb(255 255 0 / 0.3);
     backdrop-filter: blur(8px);
+  }
+
+  .fx-target.fx-pointer {
+    cursor: pointer;
+  }
+
+  .fx-target.fx-forbidden {
+    cursor: not-allowed;
   }
 
   .fx-target.fx-circle {
