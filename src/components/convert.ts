@@ -219,6 +219,13 @@ export type ItemsPanelTemplateInput = string | ItemsPanelTemplate;
  */
 export type StyleInput = string | Style;
 
+/**
+ * What the build makes of a Style prop written in a component that has a
+ * `<style>`: the value and the component's scope class, so the scoped rules
+ * of that component match the class names.
+ */
+export type ScopedStyleInput = readonly [StyleInput | null | undefined, string];
+
 /** A record of resources (see `ResourceRecordInput`) or a ResourceDictionary. */
 export type ResourcesInput = ResourceRecordInput | ResourceDictionary;
 
@@ -844,24 +851,26 @@ function isStyle(value: object | null): value is Style {
  * @throws {Error} When the prop's element is not known for the control, or no rule matches the classes.
  */
 export function styleOf({ input, owner, property }: {
-  input: StyleInput;
+  input: StyleInput | ScopedStyleInput;
   owner: object;
   property: string;
 }) {
-  const isStyleObject = typeof input !== "string";
+  const [written, scope] = Array.isArray(input) ? input : [input, ""];
+  const isStyleObject = typeof written !== "string";
   if (isStyleObject) {
-    return input;
+    return written;
   }
 
+  const classNames = `${written} ${scope}`;
   const style = styleOfClasses({
     elementType: styleTarget({
       property,
       owner: classNameOf(owner)
     }),
-    classNames: input
+    classNames
   });
   if (!isStyle(style)) {
-    throw new Error(`no CSS rule matches "${input}" for ${property}: declare it in a <style> block`);
+    throw new Error(`no CSS rule matches "${written}" for ${property}: declare it in a <style> block`);
   }
 
   return style;

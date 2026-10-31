@@ -1,5 +1,6 @@
 import { applyEdits } from "./relational.ts";
 import type { Edit } from "./style-edits.ts";
+import { hasStyleTarget } from "#src/components/style-targets.js";
 import type { AST } from "svelte/compiler";
 import { parse } from "svelte/compiler";
 
@@ -280,6 +281,81 @@ function closingTagStart({ source, instance }: {
   return isClosed ? instance.start + index : null;
 }
 
+// The attributes of an instance that name classes for an element the instance does not hold: a Style prop.
+function styleProps(instance: Instance) {
+  return instance.attributes.filter((attribute): attribute is AST.Attribute => (
+    attribute.type === "Attribute" && hasStyleTarget(attribute.name)
+  ));
+}
+
+// A Style prop's value takes the scope class, so the rules of the component's own `<style>` reach
+// the class it names: quoted text gets it appended, an expression becomes `[expression, "svelte-x"]`
+// (a Style object or class names, then the scope; the runtime reads the pair).
+function styleScopeEdits({ source, instance, scope }: {
+  source: string;
+  instance: Instance;
+  scope: string;
+}) {
+  const hasNoScope = scope === "";
+  if (hasNoScope) {
+    return [];
+  }
+
+  return styleProps(instance).flatMap(attribute => {
+    const isFlag = attribute.value === true;
+    if (isFlag) {
+      return [];
+    }
+
+    const isQuoted = QUOTES.has(source.charAt(attribute.end - 1));
+    if (isQuoted) {
+      return [{
+        start: attribute.end - 1,
+        end: attribute.end - 1,
+        text: ` ${scope}`
+      }];
+    }
+
+    return [{
+      start: attribute.start,
+      end: attribute.end,
+      text: `${attribute.name}={[${valueSource({
+        source,
+        value: attribute.value
+      })}, ${JSON.stringify(scope)}]}`
+    }];
+  });
+}
+
+// The class attribute a stand-in gets: the instance's own classes and the classes its Style props name,
+// so Svelte counts a rule for them as used. Static text stays text (Svelte reads it exactly);
+// anything dynamic becomes a list (Svelte then keeps every class rule).
+function standInClassEdits({ source, instance }: {
+  source: string;
+  instance: Instance;
+}) {
+  const named = styleProps(instance);
+  const hasNone = named.length === 0;
+  if (hasNone) {
+    return [];
+  }
+
+  const written = instance.attributes.find(isClassAttribute);
+  const values = [...written === undefined ? [] : [written], ...named].flatMap(attribute => (
+    attribute.type === "Attribute" ? [attribute.value] : []
+  ));
+  const isStatic = values.every(value => value === true || partsOf(value).every(part => part.type === "Text"));
+  const text = isStatic ? `class="${values.flatMap(partsOf).map(part => part.type === "Text" ? part.data : "").join(" ")}"` : `class={[${values.map(value => valueSource({
+    source,
+    value
+  })).join(", ")}]}`;
+  return [replaceOrAdd({
+    instance,
+    written,
+    text
+  })];
+}
+
 // A component instance written as an element that keeps only what selectors see.
 function standIn({ source, instance }: {
   source: string;
@@ -306,7 +382,10 @@ function standIn({ source, instance }: {
     start: closing + 2,
     end: closing + 2 + instance.name.length,
     text: STAND_IN
-  }], ...dropped];
+  }], ...standInClassEdits({
+    source,
+    instance
+  }), ...dropped];
 }
 
 /**
@@ -326,12 +405,17 @@ export function withScopedInstances({ source, scopeOf = () => "" }: {
     return source;
   }
 
+  const scope = root.css === null ? "" : scopeOf(root.css.content.styles);
   return applyEdits({
     source,
     edits: instancesIn(root).flatMap(instance => [...classEditsOf({
       source,
       instance,
-      scope: root.css === null ? "" : scopeOf(root.css.content.styles)
+      scope
+    }), ...styleScopeEdits({
+      source,
+      instance,
+      scope
     }), ...styleEditsOf({
       source,
       instance
