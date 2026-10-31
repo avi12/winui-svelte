@@ -759,6 +759,186 @@ says the component takes content (its WinUI content property: `Content`,
 
 <!-- controls:end -->
 
+## Writing values and content (`winui-svelte/components`)
+
+How a value is written:
+
+  (`horizontalAlignment={HorizontalAlignment.Center}`; the value and its type
+  share the name) or the member's WinUI name as text, and nothing else, so the
+  editor offers exactly the members; a flag enum also
+  takes a list of names (`modifiers={["Control", "Shift"]}`)
+- Padding, margin, spacing, font size, colours and sizes are CSS, in the
+  `<style>` of the component (see [Styling with CSS](https://github.com/avi12/winui-svelte/blob/main/README.md#styling-with-css)); the props of those names
+  exist as WinUI has them, and a prop beats a rule
+- A thickness takes `8`, `[8, 4]`, `[left, top, right, bottom]` or a CSS-order
+  string; a corner radius a number or an array; a grid length `"Auto"`, `"*"`,
+  `"2*"` or pixels
+- A brush takes a color (`"#0078d4"`, `"transparent"`), one of WinUI's theme
+  brushes by name (`"AcrylicBackgroundFillColorDefaultBrush"`, the `ThemeBrush`
+  set), so light and dark stay WinUI's, or a brush the app names in
+  `AppBrushes` (see Closed sets)
+- A time (`duration`, `beginTime`, a key frame's `keyTime`) takes milliseconds
+  (`300`) or text with its unit (`"0.3s"`, `"2m"`) or as a clock
+  (`"0:00:05"`); a `duration` also takes `"auto"` and `"forever"`, and a
+  `repeatBehavior` a count (`3`, `"3x"`), a length of time or `"forever"`
+- A date (`DatePicker.date`, `CalendarDatePicker.minDate`) takes a `Date`,
+  milliseconds since 1970 or an ISO string, and `null` where WinUI allows none
+  A bound date or time reads back as a `Date` or as milliseconds
+- A `fontWeight` takes a name (`"bold"`, `"semiBold"`) or a number from 1 to
+  999
+- A point, size, rect, matrix or vector takes an array (`[x, y]`,
+  `[width, height]`, `[x, y, width, height]`, `[x, y, z]`) or WinUI's own
+  object
+  A list of points (`points` of a `Polygon`) takes points or text
+  (`"0,0 10,0 10,10"`); a list of numbers (`strokeDashArray`) takes numbers or
+  text (`"4 2"`)
+- A geometry prop (`Path.data`, `PathIcon.data`) takes path data as XAML writes
+  it (`"M0,0 L10,10"`)
+- An image source takes a URI (one ending in `.svg` is drawn as an SVG) or the
+  bytes of an image file (`Uint8Array`, `ArrayBuffer`)
+  A `MediaPlayerElement`'s
+  `source` takes a URI
+- An `itemsSource` takes an array, which becomes the collection WinUI reads; an
+  `inputScope` takes a name (`"Url"`) or a list of names
+- A property that takes any object (`header`, `content`) takes a string, which
+  is boxed for it, or a control
+- Attached properties are plain props: `gridRow`, `gridColumn`, `gridRowSpan`,
+  `gridColumnSpan`, `canvasLeft`, `canvasTop`, `canvasZIndex`,
+  `automationName`, `automationHelpText`, `toolTip`
+  Any other:
+  `attached={[Owner, "Property", value]}`
+- A `ref` to the native control: `{@attach control(native => ...)}` from
+  `winui-svelte` hands your code the WinUI object (typed from your bindings);
+  `withControl(StackPanel, panel => ...)` checks its class first
+
+Content, transitions, items, pages and raw elements:
+
+The transitions an element plays are the same: `transitions`,
+`childrenTransitions` (a panel), `childTransitions` (a `Border`, a `Popup`),
+`contentTransitions`, `itemContainerTransitions`, `headerTransitions` and
+`footerTransitions` are snippets that hold transition components
+(`EntranceThemeTransition`, `RepositionThemeTransition`...)
+WinUI leaves
+these collections null; the renderer makes the `TransitionCollection` when the
+snippet has a transition in it
+
+```svelte
+<StackPanel>
+  {#snippet childrenTransitions()}
+    <EntranceThemeTransition />
+    <RepositionThemeTransition />
+  {/snippet}
+</StackPanel>
+```
+
+One written directly among an element's children (a `Storyboard`) is made but
+placed nowhere; reach it with
+`{@attach control(storyboard => storyboard.begin())}`
+
+Items come in two forms
+`ListView`, `GridView`, `ItemsRepeater`, `ItemsView`,
+`BreadcrumbBar` and `TreeView` take `items`, `key` and an `item` snippet, and
+keep a row only for each item the control has realized; a `TreeView` also takes
+`children` (the items under an item) and `bind:expandedKeys`, and a `ListView`
+or `GridView` can show its items in groups (`groupBy`, `groupHeader`)
+A
+control whose items are controls takes them as Svelte's own blocks: `{#each}`
+in the children of `ComboBox`, `FlipView` and `ListBox`, or in the snippet of
+`NavigationView` (`menuItems`), `TabView` (`tabItems`) and `RadioButtons`
+(`items`)
+[API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) has the details
+
+Pages are Svelte components: `Navigator` shows one in a content control and
+keeps the back and forward history (`Frame` needs a page type XAML
+registered, which a Node host cannot give it)
+A page's props are the params
+it was navigated to with, and its `NavigationCacheMode` says whether it stays
+mounted, with its state, while the user is elsewhere:
+
+```svelte
+<script lang="ts">
+  import { NavigationCacheMode } from "winui-svelte/components";
+
+  let navigator = $state<NavigatorHandle>();
+</script>
+
+<Navigator bind:handle={navigator} onready={ready => ready.navigate({ page: HomePage })}>
+  {#snippet transition()}
+    <DrillInNavigationTransitionInfo />
+  {/snippet}
+</Navigator>
+
+<Button onclick={() => navigator?.navigate({
+  page: { component: SettingsPage, cacheMode: NavigationCacheMode.REQUIRED },
+  params: { section: "display" }
+})}>Settings</Button>
+```
+
+`handle.goBack()`, `goForward()`, `canGoBack`, `canGoForward` and `current`
+complete it; [API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) has the details, and `examples/navigation` ties
+it to a `NavigationView`
+
+`WebView2` is a component like the rest
+Its native libraries ship with the
+package and `initWindowsAppSdk` makes them findable; the browser starts in an
+ordinary desktop session, not in a sandboxed process
+A `data:` URL is blocked
+as the top frame, as WebView2 does
+
+Win2D is opt-in: `import { Canvas } from "winui-svelte/win2d"`, and
+`<Canvas draw={({ painter }) => painter.fillCircle({ x: 50, y: 50, radius: 40, paint: { a: 255, r: 255, g: 0, b: 0 } })} />`
+draws, and draws again when the state `draw` read changes; the Win2D effects
+(`GaussianBlurEffect`, `ColorMatrixEffect`, `BlendEffect`, `ShadowEffect`...) draw
+through `painter.drawImage`
+An app that does not import it does not bundle it
+`winui-svelte/win2d/context-2d` (also opt-in) makes a canvas of it that a library written for an HTML canvas draws on:
+`createCanvas2D().getContext("2d")`, or `<Canvas2D bind:canvas />`, give a `CanvasRenderingContext2D` over Win2D
+[API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) has the details, what is supported and what is not, and `examples/win2d` the example
+
+The raw elements the components are made of work too:
+`<stack-panel>`, `<text-block>`, `grid.column={1}` for an attached property; they need
+`registerControls(...)` with the classes they name (a component registers only
+its own class, when it is made, so an app bundles only the bindings it uses)
+Components are the supported way; see [API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) for the raw forms and
+the renderer's functions
+
+## Hosts: Tauri, Electron and Node
+
+**Tauri** (what [Edge+](https://github.com/avi12/edge-plus) does)
+The Rust
+core starts the window as a child process
+(a sidecar: your `main.ts`, or a bundled executable with Node inside) with its
+stdin and stdout piped, writes request lines
+(`{"id":1,"type":"snapshot","data":{"name":"view","value":{...}},"timestamp":...}`)
+and later `patch` ones, and reads `action` requests back, answering each with a
+response line (`{"id":1,"response":null}` or `{"id":1,"error":"..."}`)
+In the
+window, `createStdioTransport()` and `reserveStdout()` (so a
+stray `console.log` goes to stderr and cannot corrupt the protocol) are the
+other end
+Edge+'s `app/panel-tauri` (`ui/main.ts`, with the core in
+`src-tauri`) is the working example
+
+**Electron.** The main process starts the window with
+`utilityProcess.fork("main.js")` (or `child_process.spawn` of Node) and speaks
+the same messages over the process's stdio or a `MessagePort`; the main
+process is where the state lives and where `diff(previous, next)` from
+`winui-svelte/state/host` makes the patches
+The Windows App SDK is started by
+the window's own process, so the Electron renderer is not involved
+This path was run with Electron 45 (Node 24): its main process spawned
+Node, which opened the window and answered `info` and `close` over stdio
+(`pnpm verify:electron` repeats it in a throwaway install under `.verify`)
+The window cannot start inside Electron's own Node (`ELECTRON_RUN_AS_NODE`,
+and so `utilityProcess`): the system denies the Windows App SDK there (0x80070005),
+so spawn a Node process
+
+**Node.** The simplest host is your own script: it starts the Windows App SDK
+and the window as the [Quick start](https://github.com/avi12/winui-svelte/blob/main/README.md#quick-start)'s `main.ts` does, and keeps its state in plain objects
+`examples/counter` is a host in Node that owns `{ count, history }`, sends it
+with `diff()`, and answers the window's actions over a `MessagePort`
+(`examples/counter/run.ps1` clicks its buttons through UI Automation)
+
 ## Value props (`winui-svelte/components`)
 
 A prop whose WinUI type is a value struct or a collection of them takes an
