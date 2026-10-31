@@ -27,6 +27,7 @@ test("a Style prop written as text takes the scope class", () => {
 });
 
 test("a Style prop written as an expression becomes the value and the scope class", () => {
+  // noinspection JSUnresolvedReference: cls is Svelte markup in a string
   const code = scoped("<ListView itemContainerStyle={cls} />");
   assert.match(code, /itemContainerStyle=\{\[\(cls\), "svelte-abc123"\]\}/u);
 });
@@ -62,6 +63,7 @@ test("the stand-in carries the Style prop's classes with the instance's own", ()
 
 test("a rule for a class only a Style prop names is used, text or expression", () => {
   assert.deepEqual(unused("<ListView itemContainerStyle=\"row\" />"), []);
+  // noinspection JSUnresolvedReference: cls is Svelte markup in a string
   assert.deepEqual(unused("<ListView itemContainerStyle={cls} />"), []);
   assert.deepEqual(unused("<ListView itemContainerStyle={isOn ? \"row\" : \"x\"} />"), []);
 });
