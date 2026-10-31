@@ -5,6 +5,7 @@ import type {
   DataTemplateInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   FlagsInput,
   InputScopeInput,
   ObjectInput
@@ -20,6 +21,9 @@ import {
   TextWrapping
 } from "../bindings.ts";
 import type { RichEditBox } from "../bindings.ts";
+import type { ContextMenuEventArgs } from "#winui/microsoft/ui/xaml/controls/ContextMenuEventArgs";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
+import type { TextControlPasteEventArgs } from "#winui/microsoft/ui/xaml/controls/TextControlPasteEventArgs";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
@@ -49,13 +53,13 @@ export interface RichEditBoxProps extends ControlProps {
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textWrapping?: EnumInput<typeof TextWrapping>;
   oncandidatewindowboundschanged?: Parameters<RichEditBox["onCandidateWindowBoundsChanged"]>[0];
-  oncontextmenuopening?: Parameters<RichEditBox["onContextMenuOpening"]>[0];
+  oncontextmenuopening?: (sender: RichEditBox, args: EventArguments<ContextMenuEventArgs>) => void;
   oncopyingtoclipboard?: Parameters<RichEditBox["onCopyingToClipboard"]>[0];
   oncuttingtoclipboard?: Parameters<RichEditBox["onCuttingToClipboard"]>[0];
-  onpaste?: Parameters<RichEditBox["onPaste"]>[0];
-  onselectionchanged?: Parameters<RichEditBox["onSelectionChanged"]>[0];
+  onpaste?: (sender: RichEditBox, args: EventArguments<TextControlPasteEventArgs>) => void;
+  onselectionchanged?: (sender: RichEditBox, args: EventArguments<RoutedEventArgs>) => void;
   onselectionchanging?: Parameters<RichEditBox["onSelectionChanging"]>[0];
-  ontextchanged?: Parameters<RichEditBox["onTextChanged"]>[0];
+  ontextchanged?: (sender: RichEditBox, args: EventArguments<RoutedEventArgs>) => void;
   ontextchanging?: Parameters<RichEditBox["onTextChanging"]>[0];
   ontextcompositionchanged?: Parameters<RichEditBox["onTextCompositionChanged"]>[0];
   ontextcompositionended?: Parameters<RichEditBox["onTextCompositionEnded"]>[0];
@@ -112,76 +116,25 @@ export function linkRichEditBox(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncandidatewindowboundschanged",
-    subscribe: handler => control.onCandidateWindowBoundsChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncontextmenuopening",
-    subscribe: handler => control.onContextMenuOpening(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncopyingtoclipboard",
-    subscribe: handler => control.onCopyingToClipboard(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncuttingtoclipboard",
-    subscribe: handler => control.onCuttingToClipboard(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpaste",
-    subscribe: handler => control.onPaste(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselectionchanged",
-    subscribe: handler => control.onSelectionChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselectionchanging",
-    subscribe: handler => control.onSelectionChanging(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextchanged",
-    subscribe: handler => control.onTextChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextchanging",
-    subscribe: handler => control.onTextChanging(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextcompositionchanged",
-    subscribe: handler => control.onTextCompositionChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextcompositionended",
-    subscribe: handler => control.onTextCompositionEnded(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextcompositionstarted",
-    subscribe: handler => control.onTextCompositionStarted(handler)
+    control,
+    names: [
+      "ContextMenuOpening",
+      "Paste",
+      "SelectionChanged",
+      "TextChanged"
+    ],
+    raw: [
+      "CandidateWindowBoundsChanged",
+      "CopyingToClipboard",
+      "CuttingToClipboard",
+      "SelectionChanging",
+      "TextChanging",
+      "TextCompositionChanged",
+      "TextCompositionEnded",
+      "TextCompositionStarted"
+    ]
   });
 }
 

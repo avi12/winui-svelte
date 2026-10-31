@@ -59,10 +59,12 @@ export function linkDatePickerFlyout(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "ondatepicked",
-    subscribe: handler => control.onDatePicked(handler)
+    control,
+    raw: [
+      "DatePicked"
+    ]
   });
 }
 

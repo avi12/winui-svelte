@@ -94,7 +94,7 @@ import { xamlSeam } from "./xaml-seam.ts";
 import { styleOfClasses } from "#src/css/index.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
-import { classNameOf, read, write } from "#src/renderer/host/reflect.js";
+import { call, classNameOf, read, write } from "#src/renderer/host/reflect.js";
 import { boxed, doubleCollection } from "#src/renderer/host/values.js";
 import type { IMediaPlaybackSource } from "#winui/windows/media/playback/IMediaPlaybackSource";
 
@@ -168,6 +168,18 @@ export type GridLengthInput = number | GridLengthText | GridLengthValue;
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- an app fills it by merging
 export interface AppBrushes {}
+
+declare const projection: unique symbol;
+
+/**
+ * The arguments of an event as WinUI hands them to a handler: a bare WinRT
+ * object, not yet the class (`RoutedEventArgs`, `KeyRoutedEventArgs`) its
+ * event is documented with. `Projection` names that class:
+ * `projectAs(args, KeyRoutedEventArgs)` reads the arguments as one.
+ */
+export type EventArguments<Projection extends object> = object & {
+  readonly [projection]?: Projection;
+};
 
 /** A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush. */
 export type BrushInput = ColorText | ThemeBrush | keyof AppBrushes | Brush;
@@ -403,22 +415,37 @@ export function brushOf(input: BrushInput) {
   });
 }
 
+// What `projectAs` calls on the class, reached from the class itself: an
+// import of projectAs would add a module to every app that sets a brush.
+const PROJECT_BORROWED = "_fromNativeBorrowed";
+
 // A dictionary hands a resource back as a bare WinRT object, whatever it is
 // (a ThemeBrush key included): it is a brush when it answers as one.
 function brushResource({ found, name }: {
   found: unknown;
   name: string;
 }) {
-  const isProjected = typeof found === "object" && found !== null && isBrush(found);
+  const isObject = typeof found === "object" && found !== null;
+  if (!isObject) {
+    throw new TypeError(`the resource "${name}" is not a brush`);
+  }
+
+  const isProjected = isBrush(found);
   if (isProjected) {
     return found;
   }
 
   try {
-    return projectAs(found, Brush);
+    const projected = call(Brush, PROJECT_BORROWED, found);
+    const isBrushProjection = typeof projected === "object" && projected !== null && isBrush(projected);
+    if (isBrushProjection) {
+      return projected;
+    }
   } catch (error) {
     throw new TypeError(`the resource "${name}" is not a brush`, { cause: error });
   }
+
+  throw new TypeError(`the resource "${name}" is not a brush`);
 }
 
 /** A time span prop as the bindings' `TimeSpan`; throws a `TypeError` for text that is not one. */

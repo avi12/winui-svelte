@@ -41,16 +41,13 @@ export function linkCanvasControl(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncreateresources",
-    subscribe: handler => control.onCreateResources(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondraw",
-    subscribe: handler => control.onDraw(handler)
+    control,
+    raw: [
+      "CreateResources",
+      "Draw"
+    ]
   });
 }
 

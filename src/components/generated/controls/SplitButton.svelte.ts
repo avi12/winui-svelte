@@ -39,10 +39,12 @@ export function linkSplitButton(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onclick",
-    subscribe: handler => control.onClick(handler)
+    control,
+    raw: [
+      "Click"
+    ]
   });
 }
 

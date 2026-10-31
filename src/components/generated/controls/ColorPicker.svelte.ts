@@ -74,10 +74,12 @@ export function linkColorPicker(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncolorchanged",
-    subscribe: handler => control.onColorChanged(handler)
+    control,
+    raw: [
+      "ColorChanged"
+    ]
   });
 }
 

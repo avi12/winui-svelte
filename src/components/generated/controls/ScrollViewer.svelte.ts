@@ -103,34 +103,16 @@ export function linkScrollViewer(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onanchorrequested",
-    subscribe: handler => control.onAnchorRequested(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondirectmanipulationcompleted",
-    subscribe: handler => control.onDirectManipulationCompleted(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondirectmanipulationstarted",
-    subscribe: handler => control.onDirectManipulationStarted(handler)
-  });
-
-  link.event({
-    props,
-    key: "onviewchanged",
-    subscribe: handler => control.onViewChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onviewchanging",
-    subscribe: handler => control.onViewChanging(handler)
+    control,
+    raw: [
+      "AnchorRequested",
+      "DirectManipulationCompleted",
+      "DirectManipulationStarted",
+      "ViewChanged",
+      "ViewChanging"
+    ]
   });
 }
 

@@ -120,40 +120,17 @@ export function linkContentDialog(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onclosebuttonclick",
-    subscribe: handler => control.onCloseButtonClick(handler)
-  });
-
-  link.event({
-    props,
-    key: "onclosed",
-    subscribe: handler => control.onClosed(handler)
-  });
-
-  link.event({
-    props,
-    key: "onclosing",
-    subscribe: handler => control.onClosing(handler)
-  });
-
-  link.event({
-    props,
-    key: "onopened",
-    subscribe: handler => control.onOpened(handler)
-  });
-
-  link.event({
-    props,
-    key: "onprimarybuttonclick",
-    subscribe: handler => control.onPrimaryButtonClick(handler)
-  });
-
-  link.event({
-    props,
-    key: "onsecondarybuttonclick",
-    subscribe: handler => control.onSecondaryButtonClick(handler)
+    control,
+    raw: [
+      "CloseButtonClick",
+      "Closed",
+      "Closing",
+      "Opened",
+      "PrimaryButtonClick",
+      "SecondaryButtonClick"
+    ]
   });
 }
 

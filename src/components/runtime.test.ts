@@ -88,33 +88,63 @@ function silenced<Result>(action: () => Result) {
   }
 }
 
-test("an event prop calls the app's handler with the event's arguments", () => {
-  const link = new Linker();
+// A control with one event, raised by the test the way WinUI raises it: a sender
+// that is a bare object, then the arguments.
+function fakeControl() {
   const raised = new Raised();
+  const control = {
+    onSomething(handler: (...args: unknown[]) => void) {
+      return raised.subscribe(() => handler({ isBare: true }, "args"));
+    }
+  };
+  return {
+    control,
+    raised
+  };
+}
+
+test("an event prop calls the app's handler with the control as sender and the event's arguments", () => {
+  const link = new Linker();
+  const { control, raised } = fakeControl();
   const seen: unknown[] = [];
-  link.event({
+  link.events({
     props: {
       onsomething: (...args: unknown[]) => seen.push(...args)
     },
-    key: "onsomething",
-    subscribe: (handler: (...args: unknown[]) => void) => raised.subscribe(() => handler("sender", "args"))
+    control,
+    names: ["Something"]
   });
   raised.raise();
-  assert.deepEqual(seen, ["sender", "args"]);
+  assert.deepEqual(seen, [control, "args"]);
+});
+
+test("an event in raw gets what WinUI passed", () => {
+  const link = new Linker();
+  const { control, raised } = fakeControl();
+  const seen: unknown[] = [];
+  link.events({
+    props: {
+      onsomething: (...args: unknown[]) => seen.push(...args)
+    },
+    control,
+    raw: ["Something"]
+  });
+  raised.raise();
+  assert.deepEqual(seen, [{ isBare: true }, "args"]);
 });
 
 test("an event handler that throws is reported with its stack and does not reach the caller", () => {
   const link = new Linker();
-  const raised = new Raised();
+  const { control, raised } = fakeControl();
   const { written } = silenced(() => {
-    link.event({
+    link.events({
       props: {
         onsomething() {
           throw new Error("handler failed");
         }
       },
-      key: "onsomething",
-      subscribe: (handler: () => void) => raised.subscribe(handler)
+      control,
+      names: ["Something"]
     });
     raised.raise();
   });
@@ -122,16 +152,28 @@ test("an event handler that throws is reported with its stack and does not reach
   assert.match(written[0] ?? "", /event "onsomething".*handler failed[\s\S]*at /u);
 });
 
-test("an event prop that was not given subscribes to nothing", () => {
+test("an event prop that was not given subscribes to nothing, and an unlinked control stops", () => {
   const link = new Linker();
-  let subscriptions = 0;
-  link.event({
-    props: {},
-    key: "onsomething",
-    subscribe() {
-      subscriptions++;
-      return () => undefined;
-    }
+  const { control, raised } = fakeControl();
+  const props: { onsomething?: () => void } = {};
+  link.events({
+    props,
+    control,
+    names: ["Something"]
   });
-  assert.equal(subscriptions, 0);
+  raised.raise();
+  const stopped = new Linker();
+  let calls = 0;
+  stopped.events({
+    props: {
+      onsomething() {
+        calls++;
+      }
+    },
+    control,
+    names: ["Something"]
+  });
+  stopped.dispose();
+  raised.raise();
+  assert.equal(calls, 0);
 });

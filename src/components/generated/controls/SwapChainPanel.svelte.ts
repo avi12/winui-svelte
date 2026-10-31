@@ -22,10 +22,12 @@ export function linkSwapChainPanel(
 ) {
   linkGrid(control, props, bound, link);
 
-  link.event({
+  link.events({
     props,
-    key: "oncompositionscalechanged",
-    subscribe: handler => control.onCompositionScaleChanged(handler)
+    control,
+    raw: [
+      "CompositionScaleChanged"
+    ]
   });
 }
 

@@ -50,16 +50,13 @@ export function linkItemsView(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oniteminvoked",
-    subscribe: handler => control.onItemInvoked(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselectionchanged",
-    subscribe: handler => control.onSelectionChanged(handler)
+    control,
+    raw: [
+      "ItemInvoked",
+      "SelectionChanged"
+    ]
   });
 }
 

@@ -87,58 +87,20 @@ export function linkScrollPresenter(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onanchorrequested",
-    subscribe: handler => control.onAnchorRequested(handler)
-  });
-
-  link.event({
-    props,
-    key: "onbringingintoview",
-    subscribe: handler => control.onBringingIntoView(handler)
-  });
-
-  link.event({
-    props,
-    key: "onextentchanged",
-    subscribe: handler => control.onExtentChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onscrollanimationstarting",
-    subscribe: handler => control.onScrollAnimationStarting(handler)
-  });
-
-  link.event({
-    props,
-    key: "onscrollcompleted",
-    subscribe: handler => control.onScrollCompleted(handler)
-  });
-
-  link.event({
-    props,
-    key: "onstatechanged",
-    subscribe: handler => control.onStateChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onviewchanged",
-    subscribe: handler => control.onViewChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onzoomanimationstarting",
-    subscribe: handler => control.onZoomAnimationStarting(handler)
-  });
-
-  link.event({
-    props,
-    key: "onzoomcompleted",
-    subscribe: handler => control.onZoomCompleted(handler)
+    control,
+    raw: [
+      "AnchorRequested",
+      "BringingIntoView",
+      "ExtentChanged",
+      "ScrollAnimationStarting",
+      "ScrollCompleted",
+      "StateChanged",
+      "ViewChanged",
+      "ZoomAnimationStarting",
+      "ZoomCompleted"
+    ]
   });
 }
 

@@ -106,22 +106,14 @@ export function linkComboBox(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "ondropdownclosed",
-    subscribe: handler => control.onDropDownClosed(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondropdownopened",
-    subscribe: handler => control.onDropDownOpened(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextsubmitted",
-    subscribe: handler => control.onTextSubmitted(handler)
+    control,
+    raw: [
+      "DropDownClosed",
+      "DropDownOpened",
+      "TextSubmitted"
+    ]
   });
 }
 

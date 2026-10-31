@@ -20,16 +20,13 @@ export function linkLayout(
   link: Linker
 ) {
 
-  link.event({
+  link.events({
     props,
-    key: "onarrangeinvalidated",
-    subscribe: handler => control.onArrangeInvalidated(handler)
-  });
-
-  link.event({
-    props,
-    key: "onmeasureinvalidated",
-    subscribe: handler => control.onMeasureInvalidated(handler)
+    control,
+    raw: [
+      "ArrangeInvalidated",
+      "MeasureInvalidated"
+    ]
   });
 
   link.property({

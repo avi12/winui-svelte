@@ -81,10 +81,12 @@ export function linkTimeline(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncompleted",
-    subscribe: handler => control.onCompleted(handler)
+    control,
+    raw: [
+      "Completed"
+    ]
   });
 
   link.property({

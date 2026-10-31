@@ -498,16 +498,13 @@ export function linkCalendarView(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncalendarviewdayitemchanging",
-    subscribe: handler => control.onCalendarViewDayItemChanging(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselecteddateschanged",
-    subscribe: handler => control.onSelectedDatesChanged(handler)
+    control,
+    raw: [
+      "CalendarViewDayItemChanging",
+      "SelectedDatesChanged"
+    ]
   });
 }
 

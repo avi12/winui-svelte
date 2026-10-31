@@ -67,10 +67,12 @@ export function linkSwipeItem(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oninvoked",
-    subscribe: handler => control.onInvoked(handler)
+    control,
+    raw: [
+      "Invoked"
+    ]
   });
 
   link.property({

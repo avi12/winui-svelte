@@ -38,10 +38,12 @@ export function linkPickerFlyout(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onconfirmed",
-    subscribe: handler => control.onConfirmed(handler)
+    control,
+    raw: [
+      "Confirmed"
+    ]
   });
 }
 

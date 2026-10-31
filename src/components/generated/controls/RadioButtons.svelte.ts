@@ -5,11 +5,13 @@ import type {
   CollectionInput,
   DataTemplateInput,
   ElementProps,
+  EventArguments,
   ObjectInput,
   ObjectReferenceInput
 } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { RadioButtons } from "../bindings.ts";
+import type { SelectionChangedEventArgs } from "#winui/microsoft/ui/xaml/controls/SelectionChangedEventArgs";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
@@ -23,7 +25,7 @@ export interface RadioButtonsProps extends ControlProps {
   itemsSource?: CollectionInput;
   itemTemplate?: ObjectReferenceInput;
   maxColumns?: number;
-  onselectionchanged?: Parameters<RadioButtons["onSelectionChanged"]>[0];
+  onselectionchanged?: (sender: RadioButtons, args: EventArguments<SelectionChangedEventArgs>) => void;
 }
 
 export type RadioButtonsBound = ControlBound & Pick<RadioButtonsProps, "selectedIndex" | "selectedItem">;
@@ -97,10 +99,12 @@ export function linkRadioButtons(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onselectionchanged",
-    subscribe: handler => control.onSelectionChanged(handler)
+    control,
+    names: [
+      "SelectionChanged"
+    ]
   });
 }
 

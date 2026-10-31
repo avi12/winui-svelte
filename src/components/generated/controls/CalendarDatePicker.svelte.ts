@@ -13,6 +13,7 @@ import type {
   DateInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   NullableDateInput,
   ObjectInput,
   StyleInput
@@ -20,6 +21,9 @@ import type {
 import { Linker } from "../../runtime.svelte.ts";
 import { CalendarViewDisplayMode, DayOfWeek, LightDismissOverlayMode } from "../bindings.ts";
 import type { CalendarDatePicker } from "../bindings.ts";
+import type {
+  CalendarViewDayItemChangingEventArgs
+} from "#winui/microsoft/ui/xaml/controls/CalendarViewDayItemChangingEventArgs";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
@@ -43,7 +47,7 @@ export interface CalendarDatePickerProps extends ControlProps {
   maxDate?: DateInput;
   minDate?: DateInput;
   placeholderText?: string;
-  oncalendarviewdayitemchanging?: Parameters<CalendarDatePicker["onCalendarViewDayItemChanging"]>[0];
+  oncalendarviewdayitemchanging?: (sender: CalendarDatePicker, args: EventArguments<CalendarViewDayItemChangingEventArgs>) => void;
   onclosed?: Parameters<CalendarDatePicker["onClosed"]>[0];
   ondatechanged?: Parameters<CalendarDatePicker["onDateChanged"]>[0];
   onopened?: Parameters<CalendarDatePicker["onOpened"]>[0];
@@ -126,28 +130,17 @@ export function linkCalendarDatePicker(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncalendarviewdayitemchanging",
-    subscribe: handler => control.onCalendarViewDayItemChanging(handler)
-  });
-
-  link.event({
-    props,
-    key: "onclosed",
-    subscribe: handler => control.onClosed(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondatechanged",
-    subscribe: handler => control.onDateChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onopened",
-    subscribe: handler => control.onOpened(handler)
+    control,
+    names: [
+      "CalendarViewDayItemChanging"
+    ],
+    raw: [
+      "Closed",
+      "DateChanged",
+      "Opened"
+    ]
   });
 }
 

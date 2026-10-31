@@ -36,10 +36,12 @@ export function linkRefreshContainer(
     tables: { pullDirection: RefreshPullDirection }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onrefreshrequested",
-    subscribe: handler => control.onRefreshRequested(handler)
+    control,
+    raw: [
+      "RefreshRequested"
+    ]
   });
 }
 

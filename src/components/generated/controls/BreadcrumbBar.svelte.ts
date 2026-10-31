@@ -39,10 +39,12 @@ export function linkBreadcrumbBar(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onitemclicked",
-    subscribe: handler => control.onItemClicked(handler)
+    control,
+    raw: [
+      "ItemClicked"
+    ]
   });
 }
 

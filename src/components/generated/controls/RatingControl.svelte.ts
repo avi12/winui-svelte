@@ -49,10 +49,12 @@ export function linkRatingControl(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onvaluechanged",
-    subscribe: handler => control.onValueChanged(handler)
+    control,
+    raw: [
+      "ValueChanged"
+    ]
   });
 }
 

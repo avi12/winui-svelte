@@ -76,10 +76,12 @@ export function linkListPickerFlyout(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onitemspicked",
-    subscribe: handler => control.onItemsPicked(handler)
+    control,
+    raw: [
+      "ItemsPicked"
+    ]
   });
 }
 

@@ -41,16 +41,13 @@ export function linkCanvasVirtualControl(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncreateresources",
-    subscribe: handler => control.onCreateResources(handler)
-  });
-
-  link.event({
-    props,
-    key: "onregionsinvalidated",
-    subscribe: handler => control.onRegionsInvalidated(handler)
+    control,
+    raw: [
+      "CreateResources",
+      "RegionsInvalidated"
+    ]
   });
 }
 

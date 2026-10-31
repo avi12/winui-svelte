@@ -34,16 +34,13 @@ export function linkMapControl(
     keys: ["center", "interactiveControlsVisible", "layers", "mapServiceToken", "zoomLevel"]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onmapelementclick",
-    subscribe: handler => control.onMapElementClick(handler)
-  });
-
-  link.event({
-    props,
-    key: "onmapserviceerroroccurred",
-    subscribe: handler => control.onMapServiceErrorOccurred(handler)
+    control,
+    raw: [
+      "MapElementClick",
+      "MapServiceErrorOccurred"
+    ]
   });
 }
 

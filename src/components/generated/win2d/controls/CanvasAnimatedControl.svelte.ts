@@ -55,34 +55,16 @@ export function linkCanvasAnimatedControl(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncreateresources",
-    subscribe: handler => control.onCreateResources(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondraw",
-    subscribe: handler => control.onDraw(handler)
-  });
-
-  link.event({
-    props,
-    key: "ongameloopstarting",
-    subscribe: handler => control.onGameLoopStarting(handler)
-  });
-
-  link.event({
-    props,
-    key: "ongameloopstopped",
-    subscribe: handler => control.onGameLoopStopped(handler)
-  });
-
-  link.event({
-    props,
-    key: "onupdate",
-    subscribe: handler => control.onUpdate(handler)
+    control,
+    raw: [
+      "CreateResources",
+      "Draw",
+      "GameLoopStarting",
+      "GameLoopStopped",
+      "Update"
+    ]
   });
 }
 

@@ -88,40 +88,17 @@ export function linkTreeView(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncollapsed",
-    subscribe: handler => control.onCollapsed(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondragitemscompleted",
-    subscribe: handler => control.onDragItemsCompleted(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondragitemsstarting",
-    subscribe: handler => control.onDragItemsStarting(handler)
-  });
-
-  link.event({
-    props,
-    key: "onexpanding",
-    subscribe: handler => control.onExpanding(handler)
-  });
-
-  link.event({
-    props,
-    key: "oniteminvoked",
-    subscribe: handler => control.onItemInvoked(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselectionchanged",
-    subscribe: handler => control.onSelectionChanged(handler)
+    control,
+    raw: [
+      "Collapsed",
+      "DragItemsCompleted",
+      "DragItemsStarting",
+      "Expanding",
+      "ItemInvoked",
+      "SelectionChanged"
+    ]
   });
 }
 

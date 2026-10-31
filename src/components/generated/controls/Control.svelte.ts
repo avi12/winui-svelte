@@ -14,6 +14,7 @@ import type {
   ControlTemplateInput,
   CornerRadiusInput,
   EnumInput,
+  EventArguments,
   FontFamilyInput,
   FontWeightInput,
   ThicknessInput,
@@ -31,6 +32,7 @@ import {
   VerticalAlignment
 } from "../bindings.ts";
 import type { Control } from "../bindings.ts";
+import type { DependencyPropertyChangedEventArgs } from "#winui/microsoft/ui/xaml/DependencyPropertyChangedEventArgs";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
@@ -62,7 +64,7 @@ export interface ControlProps extends FrameworkElementProps {
   verticalContentAlignment?: EnumInput<typeof VerticalAlignment>;
   onfocusdisengaged?: Parameters<Control["onFocusDisengaged"]>[0];
   onfocusengaged?: Parameters<Control["onFocusEngaged"]>[0];
-  onisenabledchanged?: Parameters<Control["onIsEnabledChanged"]>[0];
+  onisenabledchanged?: (sender: Control, args: EventArguments<DependencyPropertyChangedEventArgs>) => void;
 }
 
 export type ControlBound = FrameworkElementBound;
@@ -155,21 +157,15 @@ export function linkControl(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onfocusdisengaged",
-    subscribe: handler => control.onFocusDisengaged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onfocusengaged",
-    subscribe: handler => control.onFocusEngaged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onisenabledchanged",
-    subscribe: handler => control.onIsEnabledChanged(handler)
+    control,
+    names: [
+      "IsEnabledChanged"
+    ],
+    raw: [
+      "FocusDisengaged",
+      "FocusEngaged"
+    ]
   });
 }

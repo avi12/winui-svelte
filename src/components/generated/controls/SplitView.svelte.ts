@@ -76,28 +76,15 @@ export function linkSplitView(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onpaneclosed",
-    subscribe: handler => control.onPaneClosed(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpaneclosing",
-    subscribe: handler => control.onPaneClosing(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpaneopened",
-    subscribe: handler => control.onPaneOpened(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpaneopening",
-    subscribe: handler => control.onPaneOpening(handler)
+    control,
+    raw: [
+      "PaneClosed",
+      "PaneClosing",
+      "PaneOpened",
+      "PaneOpening"
+    ]
   });
 }
 

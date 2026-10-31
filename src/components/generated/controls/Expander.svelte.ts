@@ -69,16 +69,13 @@ export function linkExpander(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncollapsed",
-    subscribe: handler => control.onCollapsed(handler)
-  });
-
-  link.event({
-    props,
-    key: "onexpanding",
-    subscribe: handler => control.onExpanding(handler)
+    control,
+    raw: [
+      "Collapsed",
+      "Expanding"
+    ]
   });
 }
 

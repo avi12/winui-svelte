@@ -5,6 +5,7 @@ import type {
   BrushInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   FlagsInput,
   FontFamilyInput,
   FontWeightInput,
@@ -25,6 +26,8 @@ import {
   TextWrapping
 } from "../bindings.ts";
 import type { TextBlock } from "../bindings.ts";
+import type { ContextMenuEventArgs } from "#winui/microsoft/ui/xaml/controls/ContextMenuEventArgs";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
@@ -58,9 +61,9 @@ export interface TextBlockProps extends FrameworkElementProps {
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textTrimming?: EnumInput<typeof TextTrimming>;
   textWrapping?: EnumInput<typeof TextWrapping>;
-  oncontextmenuopening?: Parameters<TextBlock["onContextMenuOpening"]>[0];
+  oncontextmenuopening?: (sender: TextBlock, args: EventArguments<ContextMenuEventArgs>) => void;
   onistexttrimmedchanged?: Parameters<TextBlock["onIsTextTrimmedChanged"]>[0];
-  onselectionchanged?: Parameters<TextBlock["onSelectionChanged"]>[0];
+  onselectionchanged?: (sender: TextBlock, args: EventArguments<RoutedEventArgs>) => void;
 }
 
 export type TextBlockBound = FrameworkElementBound & Pick<TextBlockProps, "isTextTrimmed">;
@@ -122,22 +125,16 @@ export function linkTextBlock(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncontextmenuopening",
-    subscribe: handler => control.onContextMenuOpening(handler)
-  });
-
-  link.event({
-    props,
-    key: "onistexttrimmedchanged",
-    subscribe: handler => control.onIsTextTrimmedChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselectionchanged",
-    subscribe: handler => control.onSelectionChanged(handler)
+    control,
+    names: [
+      "ContextMenuOpening",
+      "SelectionChanged"
+    ],
+    raw: [
+      "IsTextTrimmedChanged"
+    ]
   });
 }
 

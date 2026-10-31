@@ -11,6 +11,7 @@ import type {
   AttachedInput,
   ElementReferenceInput,
   EnumInput,
+  EventArguments,
   FlagsInput,
   ObjectInput,
   PointInput,
@@ -42,6 +43,27 @@ import type {
   UIElement,
   ZoomMode
 } from "../bindings.ts";
+import type { DoubleTappedRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/DoubleTappedRoutedEventArgs";
+import type { DragEventArgs } from "#winui/microsoft/ui/xaml/DragEventArgs";
+import type { HoldingRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/HoldingRoutedEventArgs";
+import type { KeyRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/KeyRoutedEventArgs";
+import type {
+  ManipulationCompletedRoutedEventArgs
+} from "#winui/microsoft/ui/xaml/input/ManipulationCompletedRoutedEventArgs";
+import type { ManipulationDeltaRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/ManipulationDeltaRoutedEventArgs";
+import type {
+  ManipulationInertiaStartingRoutedEventArgs
+} from "#winui/microsoft/ui/xaml/input/ManipulationInertiaStartingRoutedEventArgs";
+import type {
+  ManipulationStartedRoutedEventArgs
+} from "#winui/microsoft/ui/xaml/input/ManipulationStartedRoutedEventArgs";
+import type {
+  ManipulationStartingRoutedEventArgs
+} from "#winui/microsoft/ui/xaml/input/ManipulationStartingRoutedEventArgs";
+import type { PointerRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/PointerRoutedEventArgs";
+import type { RightTappedRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/RightTappedRoutedEventArgs";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
+import type { TappedRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/TappedRoutedEventArgs";
 import type { Snippet } from "svelte";
 
 export interface UIElementProps {
@@ -174,39 +196,39 @@ export interface UIElementProps {
   oncharacterreceived?: Parameters<UIElement["onCharacterReceived"]>[0];
   oncontextcanceled?: Parameters<UIElement["onContextCanceled"]>[0];
   oncontextrequested?: Parameters<UIElement["onContextRequested"]>[0];
-  ondoubletapped?: Parameters<UIElement["onDoubleTapped"]>[0];
-  ondragenter?: Parameters<UIElement["onDragEnter"]>[0];
-  ondragleave?: Parameters<UIElement["onDragLeave"]>[0];
-  ondragover?: Parameters<UIElement["onDragOver"]>[0];
+  ondoubletapped?: (sender: UIElement, args: EventArguments<DoubleTappedRoutedEventArgs>) => void;
+  ondragenter?: (sender: UIElement, args: EventArguments<DragEventArgs>) => void;
+  ondragleave?: (sender: UIElement, args: EventArguments<DragEventArgs>) => void;
+  ondragover?: (sender: UIElement, args: EventArguments<DragEventArgs>) => void;
   ondragstarting?: Parameters<UIElement["onDragStarting"]>[0];
-  ondrop?: Parameters<UIElement["onDrop"]>[0];
+  ondrop?: (sender: UIElement, args: EventArguments<DragEventArgs>) => void;
   ondropcompleted?: Parameters<UIElement["onDropCompleted"]>[0];
   ongettingfocus?: Parameters<UIElement["onGettingFocus"]>[0];
-  ongotfocus?: Parameters<UIElement["onGotFocus"]>[0];
-  onholding?: Parameters<UIElement["onHolding"]>[0];
-  onkeydown?: Parameters<UIElement["onKeyDown"]>[0];
-  onkeyup?: Parameters<UIElement["onKeyUp"]>[0];
+  ongotfocus?: (sender: UIElement, args: EventArguments<RoutedEventArgs>) => void;
+  onholding?: (sender: UIElement, args: EventArguments<HoldingRoutedEventArgs>) => void;
+  onkeydown?: (sender: UIElement, args: EventArguments<KeyRoutedEventArgs>) => void;
+  onkeyup?: (sender: UIElement, args: EventArguments<KeyRoutedEventArgs>) => void;
   onlosingfocus?: Parameters<UIElement["onLosingFocus"]>[0];
-  onlostfocus?: Parameters<UIElement["onLostFocus"]>[0];
-  onmanipulationcompleted?: Parameters<UIElement["onManipulationCompleted"]>[0];
-  onmanipulationdelta?: Parameters<UIElement["onManipulationDelta"]>[0];
-  onmanipulationinertiastarting?: Parameters<UIElement["onManipulationInertiaStarting"]>[0];
-  onmanipulationstarted?: Parameters<UIElement["onManipulationStarted"]>[0];
-  onmanipulationstarting?: Parameters<UIElement["onManipulationStarting"]>[0];
+  onlostfocus?: (sender: UIElement, args: EventArguments<RoutedEventArgs>) => void;
+  onmanipulationcompleted?: (sender: UIElement, args: EventArguments<ManipulationCompletedRoutedEventArgs>) => void;
+  onmanipulationdelta?: (sender: UIElement, args: EventArguments<ManipulationDeltaRoutedEventArgs>) => void;
+  onmanipulationinertiastarting?: (sender: UIElement, args: EventArguments<ManipulationInertiaStartingRoutedEventArgs>) => void;
+  onmanipulationstarted?: (sender: UIElement, args: EventArguments<ManipulationStartedRoutedEventArgs>) => void;
+  onmanipulationstarting?: (sender: UIElement, args: EventArguments<ManipulationStartingRoutedEventArgs>) => void;
   onnofocuscandidatefound?: Parameters<UIElement["onNoFocusCandidateFound"]>[0];
-  onpointercanceled?: Parameters<UIElement["onPointerCanceled"]>[0];
-  onpointercapturelost?: Parameters<UIElement["onPointerCaptureLost"]>[0];
-  onpointerentered?: Parameters<UIElement["onPointerEntered"]>[0];
-  onpointerexited?: Parameters<UIElement["onPointerExited"]>[0];
-  onpointermoved?: Parameters<UIElement["onPointerMoved"]>[0];
-  onpointerpressed?: Parameters<UIElement["onPointerPressed"]>[0];
-  onpointerreleased?: Parameters<UIElement["onPointerReleased"]>[0];
-  onpointerwheelchanged?: Parameters<UIElement["onPointerWheelChanged"]>[0];
-  onpreviewkeydown?: Parameters<UIElement["onPreviewKeyDown"]>[0];
-  onpreviewkeyup?: Parameters<UIElement["onPreviewKeyUp"]>[0];
+  onpointercanceled?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  onpointercapturelost?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  onpointerentered?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  onpointerexited?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  onpointermoved?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  onpointerpressed?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  onpointerreleased?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  onpointerwheelchanged?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  onpreviewkeydown?: (sender: UIElement, args: EventArguments<KeyRoutedEventArgs>) => void;
+  onpreviewkeyup?: (sender: UIElement, args: EventArguments<KeyRoutedEventArgs>) => void;
   onprocesskeyboardaccelerators?: Parameters<UIElement["onProcessKeyboardAccelerators"]>[0];
-  onrighttapped?: Parameters<UIElement["onRightTapped"]>[0];
-  ontapped?: Parameters<UIElement["onTapped"]>[0];
+  onrighttapped?: (sender: UIElement, args: EventArguments<RightTappedRoutedEventArgs>) => void;
+  ontapped?: (sender: UIElement, args: EventArguments<TappedRoutedEventArgs>) => void;
   attached?: AttachedInput;
 }
 
@@ -489,244 +511,53 @@ export function linkUIElement(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onaccesskeydisplaydismissed",
-    subscribe: handler => control.onAccessKeyDisplayDismissed(handler)
-  });
-
-  link.event({
-    props,
-    key: "onaccesskeydisplayrequested",
-    subscribe: handler => control.onAccessKeyDisplayRequested(handler)
-  });
-
-  link.event({
-    props,
-    key: "onaccesskeyinvoked",
-    subscribe: handler => control.onAccessKeyInvoked(handler)
-  });
-
-  link.event({
-    props,
-    key: "onbringintoviewrequested",
-    subscribe: handler => control.onBringIntoViewRequested(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncharacterreceived",
-    subscribe: handler => control.onCharacterReceived(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncontextcanceled",
-    subscribe: handler => control.onContextCanceled(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncontextrequested",
-    subscribe: handler => control.onContextRequested(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondoubletapped",
-    subscribe: handler => control.onDoubleTapped(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondragenter",
-    subscribe: handler => control.onDragEnter(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondragleave",
-    subscribe: handler => control.onDragLeave(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondragover",
-    subscribe: handler => control.onDragOver(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondragstarting",
-    subscribe: handler => control.onDragStarting(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondrop",
-    subscribe: handler => control.onDrop(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondropcompleted",
-    subscribe: handler => control.onDropCompleted(handler)
-  });
-
-  link.event({
-    props,
-    key: "ongettingfocus",
-    subscribe: handler => control.onGettingFocus(handler)
-  });
-
-  link.event({
-    props,
-    key: "ongotfocus",
-    subscribe: handler => control.onGotFocus(handler)
-  });
-
-  link.event({
-    props,
-    key: "onholding",
-    subscribe: handler => control.onHolding(handler)
-  });
-
-  link.event({
-    props,
-    key: "onkeydown",
-    subscribe: handler => control.onKeyDown(handler)
-  });
-
-  link.event({
-    props,
-    key: "onkeyup",
-    subscribe: handler => control.onKeyUp(handler)
-  });
-
-  link.event({
-    props,
-    key: "onlosingfocus",
-    subscribe: handler => control.onLosingFocus(handler)
-  });
-
-  link.event({
-    props,
-    key: "onlostfocus",
-    subscribe: handler => control.onLostFocus(handler)
-  });
-
-  link.event({
-    props,
-    key: "onmanipulationcompleted",
-    subscribe: handler => control.onManipulationCompleted(handler)
-  });
-
-  link.event({
-    props,
-    key: "onmanipulationdelta",
-    subscribe: handler => control.onManipulationDelta(handler)
-  });
-
-  link.event({
-    props,
-    key: "onmanipulationinertiastarting",
-    subscribe: handler => control.onManipulationInertiaStarting(handler)
-  });
-
-  link.event({
-    props,
-    key: "onmanipulationstarted",
-    subscribe: handler => control.onManipulationStarted(handler)
-  });
-
-  link.event({
-    props,
-    key: "onmanipulationstarting",
-    subscribe: handler => control.onManipulationStarting(handler)
-  });
-
-  link.event({
-    props,
-    key: "onnofocuscandidatefound",
-    subscribe: handler => control.onNoFocusCandidateFound(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpointercanceled",
-    subscribe: handler => control.onPointerCanceled(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpointercapturelost",
-    subscribe: handler => control.onPointerCaptureLost(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpointerentered",
-    subscribe: handler => control.onPointerEntered(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpointerexited",
-    subscribe: handler => control.onPointerExited(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpointermoved",
-    subscribe: handler => control.onPointerMoved(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpointerpressed",
-    subscribe: handler => control.onPointerPressed(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpointerreleased",
-    subscribe: handler => control.onPointerReleased(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpointerwheelchanged",
-    subscribe: handler => control.onPointerWheelChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpreviewkeydown",
-    subscribe: handler => control.onPreviewKeyDown(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpreviewkeyup",
-    subscribe: handler => control.onPreviewKeyUp(handler)
-  });
-
-  link.event({
-    props,
-    key: "onprocesskeyboardaccelerators",
-    subscribe: handler => control.onProcessKeyboardAccelerators(handler)
-  });
-
-  link.event({
-    props,
-    key: "onrighttapped",
-    subscribe: handler => control.onRightTapped(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontapped",
-    subscribe: handler => control.onTapped(handler)
+    control,
+    names: [
+      "DoubleTapped",
+      "DragEnter",
+      "DragLeave",
+      "DragOver",
+      "Drop",
+      "GotFocus",
+      "Holding",
+      "KeyDown",
+      "KeyUp",
+      "LostFocus",
+      "ManipulationCompleted",
+      "ManipulationDelta",
+      "ManipulationInertiaStarting",
+      "ManipulationStarted",
+      "ManipulationStarting",
+      "PointerCanceled",
+      "PointerCaptureLost",
+      "PointerEntered",
+      "PointerExited",
+      "PointerMoved",
+      "PointerPressed",
+      "PointerReleased",
+      "PointerWheelChanged",
+      "PreviewKeyDown",
+      "PreviewKeyUp",
+      "RightTapped",
+      "Tapped"
+    ],
+    raw: [
+      "AccessKeyDisplayDismissed",
+      "AccessKeyDisplayRequested",
+      "AccessKeyInvoked",
+      "BringIntoViewRequested",
+      "CharacterReceived",
+      "ContextCanceled",
+      "ContextRequested",
+      "DragStarting",
+      "DropCompleted",
+      "GettingFocus",
+      "LosingFocus",
+      "NoFocusCandidateFound",
+      "ProcessKeyboardAccelerators"
+    ]
   });
 
   link.property({

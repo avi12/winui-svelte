@@ -59,22 +59,14 @@ export function linkItemsRepeater(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onelementclearing",
-    subscribe: handler => control.onElementClearing(handler)
-  });
-
-  link.event({
-    props,
-    key: "onelementindexchanged",
-    subscribe: handler => control.onElementIndexChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onelementprepared",
-    subscribe: handler => control.onElementPrepared(handler)
+    control,
+    raw: [
+      "ElementClearing",
+      "ElementIndexChanged",
+      "ElementPrepared"
+    ]
   });
 }
 

@@ -39,16 +39,13 @@ export function linkTitleBar(
     keys: ["autoRefreshDragRegions", "content", "iconSource", "isBackButtonEnabled", "isBackButtonVisible", "isPaneToggleButtonVisible", "leftHeader", "rightHeader", "subtitle", "title"]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onbackrequested",
-    subscribe: handler => control.onBackRequested(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpanetogglerequested",
-    subscribe: handler => control.onPaneToggleRequested(handler)
+    control,
+    raw: [
+      "BackRequested",
+      "PaneToggleRequested"
+    ]
   });
 }
 

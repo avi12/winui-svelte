@@ -29,10 +29,12 @@ export function linkMapElementsLayer(
     keys: ["mapElements"]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onmapelementclick",
-    subscribe: handler => control.onMapElementClick(handler)
+    control,
+    raw: [
+      "MapElementClick"
+    ]
   });
 }
 

@@ -16,6 +16,7 @@ import { ticksDate } from "#src/components/values.js";
 import type { NativeValue } from "#src/native-value.js";
 import { mountControl } from "#src/renderer/host/mount.svelte.js";
 import { call, isRecord, read, vectorOf } from "#src/renderer/host/reflect.js";
+import { onUiError } from "#src/ui-errors.js";
 import { backgroundPlacement, keepInBackground } from "#src/window/background.js";
 import { runWindow } from "#src/window/index.js";
 import { DispatcherQueue } from "#winui/microsoft/ui/dispatching/DispatcherQueue";
@@ -594,6 +595,75 @@ function checkBehaviours({ connectors, failures }: {
       flushSync();
       assert.ok(toggle.isOn, "the state's change did not reach the switch");
       close();
+    }
+  });
+
+  check({
+    name: "an event prop gets the control as its sender, with the event's arguments (ToggleSwitch.ontoggled)",
+    action() {
+      const toggle = new bindings.ToggleSwitch();
+      const state = $state<Record<string, NativeValue>>({});
+      const seen: Array<{
+        sender: object;
+        args: object;
+      }> = [];
+      const close = open({
+        connect: connectorFor("ToggleSwitch"),
+        control: toggle,
+        props: {
+          ontoggled(sender: object, args: object) {
+            seen.push({
+              sender,
+              args
+            });
+          }
+        },
+        bound: boundOver({
+          state,
+          name: "ToggleSwitch"
+        })
+      });
+      flushSync();
+      toggle.isOn = true;
+      assert.equal(seen.length, 1, "the handler was not called");
+      assert.equal(seen[0]?.sender, toggle, "the sender is not the control");
+      assert.equal(typeof seen[0]?.args, "object", "the handler got no arguments");
+      close();
+    }
+  });
+
+  check({
+    name: "a handler that throws is reported with its origin and does not end the process (ToggleSwitch.ontoggled)",
+    action() {
+      const toggle = new bindings.ToggleSwitch();
+      const state = $state<Record<string, NativeValue>>({});
+      const reports: string[] = [];
+      const original = console.error;
+      console.error = () => undefined;
+      const stopListening = onUiError(report => reports.push(report.origin));
+      const close = open({
+        connect: connectorFor("ToggleSwitch"),
+        control: toggle,
+        props: {
+          ontoggled() {
+            throw new Error("handler failed");
+          }
+        },
+        bound: boundOver({
+          state,
+          name: "ToggleSwitch"
+        })
+      });
+      flushSync();
+      try {
+        toggle.isOn = true;
+      } finally {
+        console.error = original;
+        stopListening();
+        close();
+      }
+
+      assert.deepEqual(reports, ["event \"ontoggled\""]);
     }
   });
 

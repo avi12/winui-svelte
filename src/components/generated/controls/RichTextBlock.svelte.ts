@@ -5,6 +5,7 @@ import type {
   BrushInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   FlagsInput,
   FontFamilyInput,
   FontWeightInput,
@@ -25,6 +26,8 @@ import {
   TextWrapping
 } from "../bindings.ts";
 import type { RichTextBlock } from "../bindings.ts";
+import type { ContextMenuEventArgs } from "#winui/microsoft/ui/xaml/controls/ContextMenuEventArgs";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
@@ -59,9 +62,9 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   textTrimming?: EnumInput<typeof TextTrimming>;
   textWrapping?: EnumInput<typeof TextWrapping>;
-  oncontextmenuopening?: Parameters<RichTextBlock["onContextMenuOpening"]>[0];
+  oncontextmenuopening?: (sender: RichTextBlock, args: EventArguments<ContextMenuEventArgs>) => void;
   onistexttrimmedchanged?: Parameters<RichTextBlock["onIsTextTrimmedChanged"]>[0];
-  onselectionchanged?: Parameters<RichTextBlock["onSelectionChanged"]>[0];
+  onselectionchanged?: (sender: RichTextBlock, args: EventArguments<RoutedEventArgs>) => void;
 }
 
 export type RichTextBlockBound = FrameworkElementBound & Pick<RichTextBlockProps, "isTextTrimmed">;
@@ -123,22 +126,16 @@ export function linkRichTextBlock(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncontextmenuopening",
-    subscribe: handler => control.onContextMenuOpening(handler)
-  });
-
-  link.event({
-    props,
-    key: "onistexttrimmedchanged",
-    subscribe: handler => control.onIsTextTrimmedChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselectionchanged",
-    subscribe: handler => control.onSelectionChanged(handler)
+    control,
+    names: [
+      "ContextMenuOpening",
+      "SelectionChanged"
+    ],
+    raw: [
+      "IsTextTrimmedChanged"
+    ]
   });
 }
 

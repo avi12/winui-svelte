@@ -74,10 +74,12 @@ export function linkTwoPaneView(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onmodechanged",
-    subscribe: handler => control.onModeChanged(handler)
+    control,
+    raw: [
+      "ModeChanged"
+    ]
   });
 }
 

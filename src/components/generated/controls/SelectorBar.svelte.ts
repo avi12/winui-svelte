@@ -38,10 +38,12 @@ export function linkSelectorBar(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onselectionchanged",
-    subscribe: handler => control.onSelectionChanged(handler)
+    control,
+    raw: [
+      "SelectionChanged"
+    ]
   });
 }
 

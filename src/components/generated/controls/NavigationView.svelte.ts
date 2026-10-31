@@ -185,64 +185,21 @@ export function linkNavigationView(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onbackrequested",
-    subscribe: handler => control.onBackRequested(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncollapsed",
-    subscribe: handler => control.onCollapsed(handler)
-  });
-
-  link.event({
-    props,
-    key: "ondisplaymodechanged",
-    subscribe: handler => control.onDisplayModeChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onexpanding",
-    subscribe: handler => control.onExpanding(handler)
-  });
-
-  link.event({
-    props,
-    key: "oniteminvoked",
-    subscribe: handler => control.onItemInvoked(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpaneclosed",
-    subscribe: handler => control.onPaneClosed(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpaneclosing",
-    subscribe: handler => control.onPaneClosing(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpaneopened",
-    subscribe: handler => control.onPaneOpened(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpaneopening",
-    subscribe: handler => control.onPaneOpening(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselectionchanged",
-    subscribe: handler => control.onSelectionChanged(handler)
+    control,
+    raw: [
+      "BackRequested",
+      "Collapsed",
+      "DisplayModeChanged",
+      "Expanding",
+      "ItemInvoked",
+      "PaneClosed",
+      "PaneClosing",
+      "PaneOpened",
+      "PaneOpening",
+      "SelectionChanged"
+    ]
   });
 }
 

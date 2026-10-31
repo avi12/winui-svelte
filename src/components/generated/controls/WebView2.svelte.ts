@@ -50,34 +50,16 @@ export function linkWebView2(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncoreprocessfailed",
-    subscribe: handler => control.onCoreProcessFailed(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncorewebview2initialized",
-    subscribe: handler => control.onCoreWebView2Initialized(handler)
-  });
-
-  link.event({
-    props,
-    key: "onnavigationcompleted",
-    subscribe: handler => control.onNavigationCompleted(handler)
-  });
-
-  link.event({
-    props,
-    key: "onnavigationstarting",
-    subscribe: handler => control.onNavigationStarting(handler)
-  });
-
-  link.event({
-    props,
-    key: "onwebmessagereceived",
-    subscribe: handler => control.onWebMessageReceived(handler)
+    control,
+    raw: [
+      "CoreProcessFailed",
+      "CoreWebView2Initialized",
+      "NavigationCompleted",
+      "NavigationStarting",
+      "WebMessageReceived"
+    ]
   });
 }
 

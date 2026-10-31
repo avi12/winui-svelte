@@ -5,12 +5,16 @@ import type {
   DataTemplateInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   InputScopeInput,
   ObjectInput
 } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import { PasswordRevealMode, TextReadingOrder } from "../bindings.ts";
 import type { PasswordBox } from "../bindings.ts";
+import type { ContextMenuEventArgs } from "#winui/microsoft/ui/xaml/controls/ContextMenuEventArgs";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
+import type { TextControlPasteEventArgs } from "#winui/microsoft/ui/xaml/controls/TextControlPasteEventArgs";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
@@ -30,10 +34,10 @@ export interface PasswordBoxProps extends ControlProps {
   selectionFlyout?: PasswordBox["selectionFlyout"] | Snippet;
   selectionHighlightColor?: PasswordBox["selectionHighlightColor"] | Snippet;
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
-  oncontextmenuopening?: Parameters<PasswordBox["onContextMenuOpening"]>[0];
-  onpasswordchanged?: Parameters<PasswordBox["onPasswordChanged"]>[0];
+  oncontextmenuopening?: (sender: PasswordBox, args: EventArguments<ContextMenuEventArgs>) => void;
+  onpasswordchanged?: (sender: PasswordBox, args: EventArguments<RoutedEventArgs>) => void;
   onpasswordchanging?: Parameters<PasswordBox["onPasswordChanging"]>[0];
-  onpaste?: Parameters<PasswordBox["onPaste"]>[0];
+  onpaste?: (sender: PasswordBox, args: EventArguments<TextControlPasteEventArgs>) => void;
 }
 
 export type PasswordBoxBound = ControlBound & Pick<PasswordBoxProps, "password">;
@@ -99,28 +103,17 @@ export function linkPasswordBox(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncontextmenuopening",
-    subscribe: handler => control.onContextMenuOpening(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpasswordchanged",
-    subscribe: handler => control.onPasswordChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpasswordchanging",
-    subscribe: handler => control.onPasswordChanging(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpaste",
-    subscribe: handler => control.onPaste(handler)
+    control,
+    names: [
+      "ContextMenuOpening",
+      "PasswordChanged",
+      "Paste"
+    ],
+    raw: [
+      "PasswordChanging"
+    ]
   });
 }
 

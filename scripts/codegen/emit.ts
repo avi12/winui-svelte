@@ -475,11 +475,22 @@ function attachedType(attached: AttachedModel) {
   return plainTypes.get(attached.kind) ?? `Parameters<typeof ${attached.owner.name}.${attached.setter}>[1]`;
 }
 
-function eventType({ event, className }: {
+// The handler a prop takes: (sender, arguments) typed from the event's
+// delegate, or whatever the binding says when the delegate is another shape.
+function eventType({ event, className, imports }: {
   event: EventModel;
   className: string;
+  imports: LevelImports;
 }) {
-  return `Parameters<${className}["on${event.winName}"]>[0]`;
+  const { argsType } = event;
+  const isUntyped = argsType === undefined;
+  if (isUntyped) {
+    return `Parameters<${className}["on${event.winName}"]>[0]`;
+  }
+
+  imports.eventArguments.set(argsType.name, bindingModule(argsType));
+  imports.convertTypes.add("EventArguments");
+  return `(sender: ${className}, args: EventArguments<${argsType.name}>) => void`;
 }
 
 class LevelImports {
@@ -490,6 +501,8 @@ class LevelImports {
   readonly values = new Set<string>();
   readonly runtimeTypes = new Set<string>();
   readonly parents = new Set<string>();
+  // The classes an event's arguments are typed as, by name, and the module of each.
+  readonly eventArguments = new Map<string, string>();
 
   // A property the component writes: what it only reads, and the converter it
   // writes through.
@@ -724,15 +737,37 @@ function emitObserved({ observed, className, imports }: {
   };
 }
 
-function emitEvent(event: EventModel) {
-  return [
-    "",
-    "  link.event({",
-    "    props,",
-    `    key: "${event.key}",`,
-    `    subscribe: handler => control.on${event.winName}(handler)`,
-    "  });"
+function eventNames({ title, events }: {
+  title: string;
+  events: readonly EventModel[];
+}) {
+  const hasEvents = events.length > 0;
+  if (!hasEvents) {
+    return [];
+  }
+
+  return [`    ${title}: [\n${events.map(event => `      "${event.winName}"`).join(",\n")}\n    ]`];
+}
+
+// One call per level: the names of its events, those whose delegate takes
+// (sender, arguments) apart from the others.
+function emitEvents(events: readonly EventModel[]) {
+  const hasEvents = events.length > 0;
+  if (!hasEvents) {
+    return [];
+  }
+
+  const lists = [
+    ...eventNames({
+      title: "names",
+      events: events.filter(event => event.isPair === true)
+    }),
+    ...eventNames({
+      title: "raw",
+      events: events.filter(event => event.isPair !== true)
+    })
   ];
+  return ["", "  link.events({", "    props,", "    control,", lists.join(",\n"), "  });"];
 }
 
 function importLine({ names, from, isType = false }: {
@@ -918,14 +953,18 @@ function emitBindableBody({ level, imports }: {
   };
 }
 
-function emitEventBody(level: ClassModel) {
+function emitEventBody({ level, imports }: {
+  level: ClassModel;
+  imports: LevelImports;
+}) {
   const className = level.type.name;
   return {
     members: level.events.map(event => `  ${event.key}?: ${eventType({
       event,
-      className
+      className,
+      imports
     })};`),
-    body: level.events.flatMap(event => emitEvent(event))
+    body: emitEvents(level.events)
   };
 }
 
@@ -965,7 +1004,10 @@ function emitLevelBody({ level, imports }: {
     className: level.type.name,
     imports
   }));
-  const events = emitEventBody(level);
+  const events = emitEventBody({
+    level,
+    imports
+  });
   const attached = isRoot ? [emitAttachedBody(level)] : [];
   const hasChildren = level.declaresContent || level.holdsItems;
   const children = hasChildren ? ["  children?: Snippet;"] : [];
@@ -1070,7 +1112,12 @@ function emitLevelImports({ level, imports }: {
       names: [name, ...imports.bindingTypes],
       from: "../bindings.ts",
       isType: true
-    })
+    }),
+    ...[...imports.eventArguments].sort().flatMap(([argument, module]) => importLine({
+      names: [argument],
+      from: module,
+      isType: true
+    }))
   ];
   for (const parent of imports.parents) {
     const module = parentModule({

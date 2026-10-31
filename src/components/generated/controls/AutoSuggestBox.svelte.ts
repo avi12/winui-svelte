@@ -83,22 +83,14 @@ export function linkAutoSuggestBox(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onquerysubmitted",
-    subscribe: handler => control.onQuerySubmitted(handler)
-  });
-
-  link.event({
-    props,
-    key: "onsuggestionchosen",
-    subscribe: handler => control.onSuggestionChosen(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextchanged",
-    subscribe: handler => control.onTextChanged(handler)
+    control,
+    raw: [
+      "QuerySubmitted",
+      "SuggestionChosen",
+      "TextChanged"
+    ]
   });
 }
 

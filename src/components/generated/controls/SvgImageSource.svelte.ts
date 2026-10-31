@@ -39,16 +39,13 @@ export function linkSvgImageSource(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onopened",
-    subscribe: handler => control.onOpened(handler)
-  });
-
-  link.event({
-    props,
-    key: "onopenfailed",
-    subscribe: handler => control.onOpenFailed(handler)
+    control,
+    raw: [
+      "Opened",
+      "OpenFailed"
+    ]
   });
 }
 

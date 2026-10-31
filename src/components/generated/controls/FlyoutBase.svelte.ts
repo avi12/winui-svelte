@@ -45,28 +45,15 @@ export function linkFlyoutBase(
     tables: { elementSoundMode: ElementSoundMode, lightDismissOverlayMode: LightDismissOverlayMode, placement: FlyoutPlacementMode, showMode: FlyoutShowMode }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onclosed",
-    subscribe: handler => control.onClosed(handler)
-  });
-
-  link.event({
-    props,
-    key: "onclosing",
-    subscribe: handler => control.onClosing(handler)
-  });
-
-  link.event({
-    props,
-    key: "onopened",
-    subscribe: handler => control.onOpened(handler)
-  });
-
-  link.event({
-    props,
-    key: "onopening",
-    subscribe: handler => control.onOpening(handler)
+    control,
+    raw: [
+      "Closed",
+      "Closing",
+      "Opened",
+      "Opening"
+    ]
   });
 
   link.property({

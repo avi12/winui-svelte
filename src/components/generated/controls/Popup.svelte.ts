@@ -80,22 +80,14 @@ export function linkPopup(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onactualplacementchanged",
-    subscribe: handler => control.onActualPlacementChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onclosed",
-    subscribe: handler => control.onClosed(handler)
-  });
-
-  link.event({
-    props,
-    key: "onopened",
-    subscribe: handler => control.onOpened(handler)
+    control,
+    raw: [
+      "ActualPlacementChanged",
+      "Closed",
+      "Opened"
+    ]
   });
 }
 

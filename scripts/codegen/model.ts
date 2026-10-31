@@ -55,6 +55,7 @@ const ATTACHED_SEPARATOR = ".";
 const ATTACHED_SETTER_PARAMETERS = 2;
 const CHANGED_SUFFIX = "Changed";
 const FACTORY_PARAMETERS = 2;
+const EVENT_PARAMETER_COUNT = 2;
 const targetTypes = new Set(["DependencyObject", "UIElement", "FrameworkElement", "Timeline"]);
 const ENUM_BASE = "Enum";
 const FLAGS_ATTRIBUTE = "System.FlagsAttribute";
@@ -119,6 +120,10 @@ export interface SlotModel {
 export interface EventModel {
   winName: string;
   key: string;
+  /** Whether the delegate takes (sender, arguments), as every XAML event's does. */
+  isPair?: boolean;
+  /** The runtime class of the arguments; absent when they are an object or not a class the bindings hold. */
+  argsType?: TypeName;
 }
 
 export interface BindableModel {
@@ -518,12 +523,60 @@ class Builder {
           throw new Error(`${model.type.name} has events ${clash.winName} and ${member.name}, which are both ${key} in lowercase`);
         }
 
+        const delegate = this.delegateOf(member.handler);
         model.events.push({
           winName: member.name,
-          key
+          key,
+          ...delegate.isPair && {
+            isPair: true
+          },
+          ...delegate.argsType !== undefined && {
+            argsType: delegate.argsType
+          }
         });
       }
     }
+  }
+
+  // What a named delegate (RoutedEventHandler, PointerEventHandler...) takes:
+  // (sender, arguments) when its Invoke has two parameters, with the arguments'
+  // class when it is one of the core bindings. The bindings hand both over as
+  // bare objects. A `TypedEventHandler<S, A>` is not here: its binding makes
+  // the classes of both and types the callback itself.
+  private delegateOf(handler: TypeSignature | null) {
+    const parameters = this.delegateParameters(handler);
+    const isPair = parameters.length === EVENT_PARAMETER_COUNT;
+    const argument = parameters[1];
+    const hasArgument = isPair && argument !== undefined;
+    return {
+      isPair,
+      argsType: hasArgument ? this.argumentClass(argument) : undefined
+    };
+  }
+
+  private delegateParameters(handler: TypeSignature | null) {
+    const isNamed = handler?.kind === "named";
+    if (!isNamed) {
+      return [];
+    }
+
+    const invoke = this.index.find(handler.type)?.methods.find(method => method.name === "Invoke");
+    return invoke?.parameters.map(parameter => parameter.type) ?? [];
+  }
+
+  private argumentClass(signature: TypeSignature) {
+    const isNamed = signature.kind === "named";
+    if (!isNamed) {
+      return undefined;
+    }
+
+    const found = this.index.find(signature.type);
+    const isInterface = found === undefined || (found.flags & TypeAttribute.INTERFACE) !== 0;
+    const isClass = !isInterface && found.base !== null;
+    const isCore = folderOf(signature.type.namespace) === "";
+    const isReferenceType = !signature.isValueType;
+    const isUsable = isClass && isCore && isReferenceType;
+    return isUsable ? signature.type : undefined;
   }
 
   // The read-only properties the control reports changes of

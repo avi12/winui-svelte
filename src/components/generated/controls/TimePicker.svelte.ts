@@ -98,16 +98,13 @@ export function linkTimePicker(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onselectedtimechanged",
-    subscribe: handler => control.onSelectedTimeChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontimechanged",
-    subscribe: handler => control.onTimeChanged(handler)
+    control,
+    raw: [
+      "SelectedTimeChanged",
+      "TimeChanged"
+    ]
   });
 }
 

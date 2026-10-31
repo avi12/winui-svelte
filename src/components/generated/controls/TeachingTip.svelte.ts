@@ -130,28 +130,15 @@ export function linkTeachingTip(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onactionbuttonclick",
-    subscribe: handler => control.onActionButtonClick(handler)
-  });
-
-  link.event({
-    props,
-    key: "onclosebuttonclick",
-    subscribe: handler => control.onCloseButtonClick(handler)
-  });
-
-  link.event({
-    props,
-    key: "onclosed",
-    subscribe: handler => control.onClosed(handler)
-  });
-
-  link.event({
-    props,
-    key: "onclosing",
-    subscribe: handler => control.onClosing(handler)
+    control,
+    raw: [
+      "ActionButtonClick",
+      "CloseButtonClick",
+      "Closed",
+      "Closing"
+    ]
   });
 }
 

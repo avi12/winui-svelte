@@ -37,15 +37,12 @@ export function linkOrientedVirtualizingPanel(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onhorizontalsnappointschanged",
-    subscribe: handler => control.onHorizontalSnapPointsChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onverticalsnappointschanged",
-    subscribe: handler => control.onVerticalSnapPointsChanged(handler)
+    control,
+    raw: [
+      "HorizontalSnapPointsChanged",
+      "VerticalSnapPointsChanged"
+    ]
   });
 }

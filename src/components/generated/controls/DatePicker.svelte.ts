@@ -120,16 +120,13 @@ export function linkDatePicker(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "ondatechanged",
-    subscribe: handler => control.onDateChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselecteddatechanged",
-    subscribe: handler => control.onSelectedDateChanged(handler)
+    control,
+    raw: [
+      "DateChanged",
+      "SelectedDateChanged"
+    ]
   });
 }
 

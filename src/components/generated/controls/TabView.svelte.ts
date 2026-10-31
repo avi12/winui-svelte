@@ -6,11 +6,14 @@ import type {
   DataTemplateInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   ObjectInput
 } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import { TabViewCloseButtonOverlayMode, TabViewWidthMode } from "../bindings.ts";
 import type { TabView } from "../bindings.ts";
+import type { DragEventArgs } from "#winui/microsoft/ui/xaml/DragEventArgs";
+import type { SelectionChangedEventArgs } from "#winui/microsoft/ui/xaml/controls/SelectionChangedEventArgs";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
@@ -38,14 +41,14 @@ export interface TabViewProps extends ControlProps {
   onaddtabbuttonclick?: Parameters<TabView["onAddTabButtonClick"]>[0];
   onexternaltornouttabsdropped?: Parameters<TabView["onExternalTornOutTabsDropped"]>[0];
   onexternaltornouttabsdropping?: Parameters<TabView["onExternalTornOutTabsDropping"]>[0];
-  onselectionchanged?: Parameters<TabView["onSelectionChanged"]>[0];
+  onselectionchanged?: (sender: TabView, args: EventArguments<SelectionChangedEventArgs>) => void;
   ontabcloserequested?: Parameters<TabView["onTabCloseRequested"]>[0];
   ontabdragcompleted?: Parameters<TabView["onTabDragCompleted"]>[0];
   ontabdragstarting?: Parameters<TabView["onTabDragStarting"]>[0];
   ontabdroppedoutside?: Parameters<TabView["onTabDroppedOutside"]>[0];
   ontabitemschanged?: Parameters<TabView["onTabItemsChanged"]>[0];
-  ontabstripdragover?: Parameters<TabView["onTabStripDragOver"]>[0];
-  ontabstripdrop?: Parameters<TabView["onTabStripDrop"]>[0];
+  ontabstripdragover?: (sender: TabView, args: EventArguments<DragEventArgs>) => void;
+  ontabstripdrop?: (sender: TabView, args: EventArguments<DragEventArgs>) => void;
   ontabtearoutrequested?: Parameters<TabView["onTabTearOutRequested"]>[0];
   ontabtearoutwindowrequested?: Parameters<TabView["onTabTearOutWindowRequested"]>[0];
 }
@@ -147,82 +150,26 @@ export function linkTabView(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onaddtabbuttonclick",
-    subscribe: handler => control.onAddTabButtonClick(handler)
-  });
-
-  link.event({
-    props,
-    key: "onexternaltornouttabsdropped",
-    subscribe: handler => control.onExternalTornOutTabsDropped(handler)
-  });
-
-  link.event({
-    props,
-    key: "onexternaltornouttabsdropping",
-    subscribe: handler => control.onExternalTornOutTabsDropping(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselectionchanged",
-    subscribe: handler => control.onSelectionChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontabcloserequested",
-    subscribe: handler => control.onTabCloseRequested(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontabdragcompleted",
-    subscribe: handler => control.onTabDragCompleted(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontabdragstarting",
-    subscribe: handler => control.onTabDragStarting(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontabdroppedoutside",
-    subscribe: handler => control.onTabDroppedOutside(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontabitemschanged",
-    subscribe: handler => control.onTabItemsChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontabstripdragover",
-    subscribe: handler => control.onTabStripDragOver(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontabstripdrop",
-    subscribe: handler => control.onTabStripDrop(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontabtearoutrequested",
-    subscribe: handler => control.onTabTearOutRequested(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontabtearoutwindowrequested",
-    subscribe: handler => control.onTabTearOutWindowRequested(handler)
+    control,
+    names: [
+      "SelectionChanged",
+      "TabStripDragOver",
+      "TabStripDrop"
+    ],
+    raw: [
+      "AddTabButtonClick",
+      "ExternalTornOutTabsDropped",
+      "ExternalTornOutTabsDropping",
+      "TabCloseRequested",
+      "TabDragCompleted",
+      "TabDragStarting",
+      "TabDroppedOutside",
+      "TabItemsChanged",
+      "TabTearOutRequested",
+      "TabTearOutWindowRequested"
+    ]
   });
 }
 

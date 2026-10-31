@@ -36,10 +36,12 @@ export function linkToggleSplitButton(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onischeckedchanged",
-    subscribe: handler => control.onIsCheckedChanged(handler)
+    control,
+    raw: [
+      "IsCheckedChanged"
+    ]
   });
 }
 

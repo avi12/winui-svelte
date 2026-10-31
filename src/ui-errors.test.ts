@@ -102,7 +102,7 @@ test("a guarded callback reports the rejection of the promise it returns", async
     written.push(parts.map(String).join(" "));
   };
   try {
-    later().catch(() => undefined);
+    later()?.catch(() => undefined);
     await new Promise(resolve => setImmediate(resolve));
   } finally {
     console.error = original;

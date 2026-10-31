@@ -49,10 +49,12 @@ export function linkRichTextBlockOverflow(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onistexttrimmedchanged",
-    subscribe: handler => control.onIsTextTrimmedChanged(handler)
+    control,
+    raw: [
+      "IsTextTrimmedChanged"
+    ]
   });
 }
 

@@ -97,22 +97,14 @@ export function linkInfoBar(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onclosebuttonclick",
-    subscribe: handler => control.onCloseButtonClick(handler)
-  });
-
-  link.event({
-    props,
-    key: "onclosed",
-    subscribe: handler => control.onClosed(handler)
-  });
-
-  link.event({
-    props,
-    key: "onclosing",
-    subscribe: handler => control.onClosing(handler)
+    control,
+    raw: [
+      "CloseButtonClick",
+      "Closed",
+      "Closing"
+    ]
   });
 }
 

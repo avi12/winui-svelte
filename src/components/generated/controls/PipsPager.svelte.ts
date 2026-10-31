@@ -73,10 +73,12 @@ export function linkPipsPager(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onselectedindexchanged",
-    subscribe: handler => control.onSelectedIndexChanged(handler)
+    control,
+    raw: [
+      "SelectedIndexChanged"
+    ]
   });
 }
 

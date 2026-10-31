@@ -1,6 +1,7 @@
 import { enumValue } from "./convert.ts";
 import type { FlagsInput } from "./convert.ts";
 import type { AttachedModules } from "./generated/attached/owners.ts";
+import { eventPropName } from "#src/renderer/tree/markup.js";
 import { guarded, reportUiError } from "#src/ui-errors.js";
 import type { Snippet } from "svelte";
 
@@ -180,33 +181,67 @@ export class Linker {
   }
 
   /**
-   * An event prop: the app's handler is called for each raise of the event
-   * `subscribe` listens to, for the control's life. What the handler throws
-   * is reported (ui-errors.ts) and does not reach WinUI.
+   * The event props of a control, by WinUI event name (`KeyDown`): the handler
+   * the app gave is called for every raise of its event, for the control's
+   * life. A name in `names` hands the handler the control as its first
+   * argument (WinUI passes the sender as a bare object, on which `sender.isOn`
+   * is undefined, and the control raises every XAML event); one in `raw` gets
+   * what WinUI passed. What a handler throws is reported (ui-errors.ts) and
+   * does not reach WinUI.
    */
-  event<Props extends object, Key extends keyof Props, Args extends unknown[]>({ props, key, subscribe }: {
+  events<Props extends object, Target extends object>({ props, control, names = [], raw = [] }: {
     props: Props;
-    key: Key;
-    subscribe: (handler: (...args: Args) => void) => Unsubscribe;
+    control: Target;
+    names?: readonly string[];
+    raw?: readonly string[];
   }) {
-    const isGiven = key in props;
-    if (!isGiven) {
+    for (const name of names) {
+      this.subscribeEvent({
+        props,
+        control,
+        name,
+        isSender: true
+      });
+    }
+
+    for (const name of raw) {
+      this.subscribeEvent({
+        props,
+        control,
+        name,
+        isSender: false
+      });
+    }
+  }
+
+  private subscribeEvent<Props extends object, Target extends object>({ props, control, name, isSender }: {
+    props: Props;
+    control: Target;
+    name: string;
+    isSender: boolean;
+  }) {
+    const key = eventPropName(name);
+    const method = `on${name}`;
+    const isSubscribable = key in props && isKeyOf(control, method);
+    if (!isSubscribable) {
       return;
     }
 
-    this.add(
-      subscribe(
-        guarded({
-          origin: `event "${String(key)}"`,
-          callback(...args: Args) {
-            const handler: unknown = props[key];
-            if (isCallable(handler)) {
-              handler(...args);
-            }
+    const subscribe = control[method];
+    const unsubscribe: unknown = isCallable(subscribe) ? subscribe.call(
+      control, guarded({
+        origin: `event "${key}"`,
+        callback(...args: unknown[]) {
+          const handler: unknown = isKeyOf(props, key) ? props[key] : undefined;
+          if (isCallable(handler)) {
+            handler(...isSender ? [control, ...args.slice(1)] : args);
           }
-        })
-      )
-    );
+        }
+      })
+    ) : undefined;
+    if (isCallable(unsubscribe)) {
+      this.add(() => unsubscribe());
+    }
   }
 
   /**

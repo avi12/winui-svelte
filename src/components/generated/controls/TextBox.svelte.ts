@@ -6,6 +6,7 @@ import type {
   DataTemplateInput,
   ElementProps,
   EnumInput,
+  EventArguments,
   InputScopeInput,
   ObjectInput
 } from "../../convert.ts";
@@ -18,6 +19,10 @@ import {
   TextWrapping
 } from "../bindings.ts";
 import type { TextBox } from "../bindings.ts";
+import type { ContextMenuEventArgs } from "#winui/microsoft/ui/xaml/controls/ContextMenuEventArgs";
+import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
+import type { TextChangedEventArgs } from "#winui/microsoft/ui/xaml/controls/TextChangedEventArgs";
+import type { TextControlPasteEventArgs } from "#winui/microsoft/ui/xaml/controls/TextControlPasteEventArgs";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
@@ -51,13 +56,13 @@ export interface TextBoxProps extends ControlProps {
   textWrapping?: EnumInput<typeof TextWrapping>;
   onbeforetextchanging?: Parameters<TextBox["onBeforeTextChanging"]>[0];
   oncandidatewindowboundschanged?: Parameters<TextBox["onCandidateWindowBoundsChanged"]>[0];
-  oncontextmenuopening?: Parameters<TextBox["onContextMenuOpening"]>[0];
+  oncontextmenuopening?: (sender: TextBox, args: EventArguments<ContextMenuEventArgs>) => void;
   oncopyingtoclipboard?: Parameters<TextBox["onCopyingToClipboard"]>[0];
   oncuttingtoclipboard?: Parameters<TextBox["onCuttingToClipboard"]>[0];
-  onpaste?: Parameters<TextBox["onPaste"]>[0];
-  onselectionchanged?: Parameters<TextBox["onSelectionChanged"]>[0];
+  onpaste?: (sender: TextBox, args: EventArguments<TextControlPasteEventArgs>) => void;
+  onselectionchanged?: (sender: TextBox, args: EventArguments<RoutedEventArgs>) => void;
   onselectionchanging?: Parameters<TextBox["onSelectionChanging"]>[0];
-  ontextchanged?: Parameters<TextBox["onTextChanged"]>[0];
+  ontextchanged?: (sender: TextBox, args: EventArguments<TextChangedEventArgs>) => void;
   ontextchanging?: Parameters<TextBox["onTextChanging"]>[0];
   ontextcompositionchanged?: Parameters<TextBox["onTextCompositionChanged"]>[0];
   ontextcompositionended?: Parameters<TextBox["onTextCompositionEnded"]>[0];
@@ -160,82 +165,26 @@ export function linkTextBox(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onbeforetextchanging",
-    subscribe: handler => control.onBeforeTextChanging(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncandidatewindowboundschanged",
-    subscribe: handler => control.onCandidateWindowBoundsChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncontextmenuopening",
-    subscribe: handler => control.onContextMenuOpening(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncopyingtoclipboard",
-    subscribe: handler => control.onCopyingToClipboard(handler)
-  });
-
-  link.event({
-    props,
-    key: "oncuttingtoclipboard",
-    subscribe: handler => control.onCuttingToClipboard(handler)
-  });
-
-  link.event({
-    props,
-    key: "onpaste",
-    subscribe: handler => control.onPaste(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselectionchanged",
-    subscribe: handler => control.onSelectionChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "onselectionchanging",
-    subscribe: handler => control.onSelectionChanging(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextchanged",
-    subscribe: handler => control.onTextChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextchanging",
-    subscribe: handler => control.onTextChanging(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextcompositionchanged",
-    subscribe: handler => control.onTextCompositionChanged(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextcompositionended",
-    subscribe: handler => control.onTextCompositionEnded(handler)
-  });
-
-  link.event({
-    props,
-    key: "ontextcompositionstarted",
-    subscribe: handler => control.onTextCompositionStarted(handler)
+    control,
+    names: [
+      "ContextMenuOpening",
+      "Paste",
+      "SelectionChanged",
+      "TextChanged"
+    ],
+    raw: [
+      "BeforeTextChanging",
+      "CandidateWindowBoundsChanged",
+      "CopyingToClipboard",
+      "CuttingToClipboard",
+      "SelectionChanging",
+      "TextChanging",
+      "TextCompositionChanged",
+      "TextCompositionEnded",
+      "TextCompositionStarted"
+    ]
   });
 }
 

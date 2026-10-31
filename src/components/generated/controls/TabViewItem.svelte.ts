@@ -47,10 +47,12 @@ export function linkTabViewItem(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncloserequested",
-    subscribe: handler => control.onCloseRequested(handler)
+    control,
+    raw: [
+      "CloseRequested"
+    ]
   });
 }
 

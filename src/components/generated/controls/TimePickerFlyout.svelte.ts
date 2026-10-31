@@ -38,10 +38,12 @@ export function linkTimePickerFlyout(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "ontimepicked",
-    subscribe: handler => control.onTimePicked(handler)
+    control,
+    raw: [
+      "TimePicked"
+    ]
   });
 }
 

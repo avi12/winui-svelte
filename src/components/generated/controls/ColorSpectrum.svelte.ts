@@ -57,10 +57,12 @@ export function linkColorSpectrum(
     ]
   });
 
-  link.event({
+  link.events({
     props,
-    key: "oncolorchanged",
-    subscribe: handler => control.onColorChanged(handler)
+    control,
+    raw: [
+      "ColorChanged"
+    ]
   });
 }
 

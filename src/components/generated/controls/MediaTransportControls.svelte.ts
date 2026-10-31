@@ -58,10 +58,12 @@ export function linkMediaTransportControls(
     tables: { fastPlayFallbackBehaviour: FastPlayFallbackBehaviour }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "onthumbnailrequested",
-    subscribe: handler => control.onThumbnailRequested(handler)
+    control,
+    raw: [
+      "ThumbnailRequested"
+    ]
   });
 }
 

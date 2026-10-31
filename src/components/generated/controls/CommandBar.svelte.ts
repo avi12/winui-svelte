@@ -48,10 +48,12 @@ export function linkCommandBar(
     }
   });
 
-  link.event({
+  link.events({
     props,
-    key: "ondynamicoverflowitemschanging",
-    subscribe: handler => control.onDynamicOverflowItemsChanging(handler)
+    control,
+    raw: [
+      "DynamicOverflowItemsChanging"
+    ]
   });
 }
 
