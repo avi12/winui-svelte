@@ -1861,6 +1861,9 @@ the Permissions API's `camera` and `microphone` from the Windows privacy
 switches (`DeviceAccessInformation`); `installMediaRecorder()` defines
 `MediaRecorder` and `BlobEvent`
 
+- The classes are `MediaDevices`, `MediaStream`, `MediaStreamTrack`,
+  `MediaDeviceInfo`, `OverconstrainedError`, `MediaRecorder`, `BlobEvent` and
+  `MediaRecorderErrorEvent`; `CAMERA_AXES` lists the names of a camera's axes
 - `enumerateDevices()` lists inputs and outputs; until the camera or
   microphone may be used it lists one blank entry per kind, as browsers do
 - `getUserMedia({ audio, video })` opens one `MediaCapture` for the camera and
@@ -1903,6 +1906,13 @@ switches (`DeviceAccessInformation`); `installMediaRecorder()` defines
 and `webkitSpeechRecognition` over `SpeechRecognizer`; `installSpeech()`
 installs both
 
+- The classes are `SpeechSynthesis`, `SpeechSynthesisUtterance`,
+  `SpeechSynthesisVoice`, `SpeechSynthesisEvent`, `SpeechSynthesisErrorEvent`
+  (with `SpeechSynthesisErrorCode`), `SpeechRecognition`,
+  `SpeechRecognitionEvent`, `SpeechRecognitionErrorEvent` (with
+  `SpeechRecognitionErrorCode`), `SpeechRecognitionResultList`,
+  `SpeechRecognitionResult`, `SpeechRecognitionAlternative` and
+  `SpeechGrammarList`
 - `speechSynthesis.speak()` queues; each utterance is synthesized into a
   `SpeechSynthesisStream` and played by a `MediaPlayer`; `cancel()`, `pause()`,
   `resume()`, `getVoices()`, `speaking`, `pending`, `paused` and `voiceschanged`
@@ -1940,6 +1950,7 @@ installs both
 `MediaPlayer` (pass the one `createMediaPlayer` made, or let the session own a
 silent one)
 
+- `MediaSessionAction` names the actions the overlay can raise
 - `metadata` (also when its fields change later), `playbackState`,
   `setActionHandler()` and `setPositionState()` work as the spec says; a
   handler enables the matching overlay button: `play`, `pause`, `stop`,
