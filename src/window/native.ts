@@ -302,6 +302,7 @@ const PM_REMOVE = 1;
 const QS_ALLINPUT = 0x4ff;
 const MWMO_INPUTAVAILABLE = 4;
 const HANDLE_BYTES = 8;
+const WAIT_FAILED = 0xffffffff;
 const TIMER_PERIOD_MILLISECONDS = 1;
 
 // ContentPreTranslateMessage is exported by the Windows App SDK's
@@ -353,7 +354,6 @@ export function createMessageSource(wake?: LibuvWake) {
   }
 
   const handleCount = DynWin32.u32(hasWake ? 1 : 0);
-  const handlesPointer = hasWake ? pointerOf(wakeHandles) : noPointer;
   const queue = {
     take() {
       const found = peekMessage.invoke([messagePointer, noPointer, none, none, removeFromQueue]).returnValue;
@@ -376,7 +376,15 @@ export function createMessageSource(wake?: LibuvWake) {
     },
     wait(milliseconds: number) {
       wake?.arm();
-      waitForMessage.invoke([handleCount, handlesPointer, DynWin32.u32(milliseconds), anyInput, inputAvailable]);
+      // Read through the closure on every call: the memory is freed when its wrapper is collected.
+      const handlesPointer = hasWake ? pointerOf(wakeHandles) : noPointer;
+      const timeout = DynWin32.u32(milliseconds);
+      const result = waitForMessage.invoke([handleCount, handlesPointer, timeout, anyInput, inputAvailable]);
+      const hasFailed = numberOf(result.returnValue) === WAIT_FAILED;
+      if (hasFailed) {
+        waitForMessage.invoke([none, noPointer, timeout, anyInput, inputAvailable]);
+      }
+
       wake?.disarm();
     },
     idleMilliseconds: wake?.idleMilliseconds

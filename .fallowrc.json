@@ -100,6 +100,8 @@
     "examples/scheduling/window.ts",
     "examples/production/main.ts",
     "examples/production/window.ts",
+    "examples/relay/main.ts",
+    "examples/relay/window.ts",
     "examples/sidecar/main.ts",
     "examples/hello/main.ts",
     "examples/keys/main.ts",
