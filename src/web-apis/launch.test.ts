@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 
-// The Launch Handler API over a temporary FOLDER: the initial command line
+// The Launch Handler API over a temporary folder: the initial command line
 // waits for the consumer, later activations are delivered, arguments become
 // targetURL and files, and a file is the file-system API's own handle.
 
@@ -12,7 +12,7 @@ const { installLaunch } = await import("./launch.ts");
 const { FileSystemFileHandle } = await import("./file-system.ts");
 
 const FOLDER = mkdtempSync(path.join(tmpdir(), "launch-"));
-const NOTES = path.join(FOLDER, "NOTES.txt");
+const NOTES = path.join(FOLDER, "notes.txt");
 writeFileSync(NOTES, "hello");
 
 test.after(() => {
@@ -40,7 +40,7 @@ test("the start's command line waits for the consumer, then arrives as params", 
     });
     assert.deepEqual(received, {
       targetURL: "myapp://open?id=1",
-      names: ["NOTES.txt"],
+      names: ["notes.txt"],
       areHandles: [true]
     });
   } finally {
@@ -58,7 +58,7 @@ test("a later activation reaches the consumer and its file reads back", async ()
       }
     });
     await launchQueue.enqueueActivation({
-      arguments: ["NOTES.txt"],
+      arguments: ["notes.txt"],
       workingDirectory: FOLDER
     });
     assert.deepEqual(texts, ["hello"]);
