@@ -305,6 +305,10 @@
       "types": "./dist/web-apis/credentials.d.ts",
       "default": "./dist/web-apis/credentials.js"
     },
+    "./web-apis/eye-dropper": {
+      "types": "./dist/web-apis/eye-dropper.d.ts",
+      "default": "./dist/web-apis/eye-dropper.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {

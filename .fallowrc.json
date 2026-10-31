@@ -31,6 +31,7 @@
     "src/web-apis/index.ts",
     "src/web-apis/notification.ts",
     "src/web-apis/credentials.ts",
+    "src/web-apis/eye-dropper.ts",
     "src/tray/index.ts",
     "src/enums.ts",
     "test/choice-props.types.ts",
