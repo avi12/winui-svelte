@@ -605,15 +605,29 @@ test("-winui-based-on names a WinUI style", () => {
   );
 });
 
-test("cursor is ignored with a warning, not an error", () => {
+test("cursor lowers to a write of the InputSystemCursorShape name", () => {
   const result = lower({
     elementType: null,
     declarations: "cursor: pointer; opacity: 1"
   });
   assert.deepEqual(result.errors, []);
-  assert.equal(result.warnings.length, 1);
-  assert.match(result.warnings[0] ?? "", /^t\.svelte:1:\d+: warning: cursor ignored/u);
+  assert.deepEqual(result.warnings, []);
+  assert.deepEqual(result.writes, [["cursor", "Hand"]]);
   assert.deepEqual(result.setters, [["Opacity", "1"]]);
+});
+
+test("cursor names a shape WinUI has, and refuses what it has not", () => {
+  const known = lower({
+    elementType: null,
+    declarations: "cursor: not-allowed"
+  });
+  assert.deepEqual(known.writes, [["cursor", "UniversalNo"]]);
+  const unknown = lower({
+    elementType: null,
+    declarations: "cursor: zoom-in"
+  });
+  assert.equal(unknown.errors.length, 1);
+  assert.match(unknown.errors[0] ?? "", /zoom-in/u);
 });
 
 test("a gradient warns where WinUI cannot keep it exact, and when it replaces a color", () => {

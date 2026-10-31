@@ -1364,9 +1364,8 @@ Stated plainly, so nobody finds them by surprise:
   children (`src/css/API.md`, Containers); `text-transform` shows the text
   changed and keeps the source text; a `transition` on `border-color` runs a
   color animation on the border brush
-  `cursor` is ignored with a warning: `InputSystemCursor` and
-  `InputSystemCursorShape` (Microsoft.UI.Input) are not in the bindings, and
-  `ProtectedCursor` takes only one of those
+  `cursor` works through `winui-svelte/css/cursor` (the system cursor shapes;
+  a `url()` cursor image has no WinUI counterpart)
   Gradients are `linear-gradient()` and `radial-gradient()` only
   (no repeating or conic ones, no stop in `px`), and replace `background-color`
   `@media (prefers-color-scheme)` and `@media (forced-colors: active)` can

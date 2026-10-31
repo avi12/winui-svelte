@@ -166,12 +166,13 @@ and the `outline` shorthand does not work there: write `outline-width`,
 | `winui-svelte/css/effects` | `aspect-ratio` | Aspect ratio |
 | `winui-svelte/css/filter` | `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` | Filters, blends and masks |
 | `winui-svelte/css/clip` | `clip-path` | Clip shapes |
+| `winui-svelte/css/cursor` | `cursor` | Cursor |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `box-shadow` | Elevation |
 | `winui-svelte/css/position` | `position`, `top`, `left`, `right`, `bottom`, `inset` | Position |
 | `winui-svelte/css/queries` | `@media`, `@container` and `@starting-style` rules (a group with no property of its own) | Responsive rules |
 | `winui-svelte/css/environment` | the `@media` features beyond the size (preferences, display, input; a group with no property of its own) | Media features |
-| `winui-svelte/css/compat` | `text-transform`, `word-break`, `user-select`, `object-fit`, `line-clamp`, `box-sizing`, `cursor` (ignored) | Unsupported |
+| `winui-svelte/css/compat` | `text-transform`, `word-break`, `user-select`, `object-fit`, `line-clamp`, `box-sizing` | Unsupported |
 | `winui-svelte/css/resources` | custom properties on a class | Custom properties |
 
 `calc()`, `min()`, `max()` and `clamp()` of px fold when the build
@@ -537,6 +538,33 @@ draws it
 .badge { clip-path: polygon(50% 0, 100% 100%, 0 100%) }
 .card { clip-path: inset(0 round 12px) }
 ```
+
+## Cursor: `cursor`
+
+`cursor` is the pointer shape over an element: a sheet that uses it imports
+`winui-svelte/css/cursor`
+WinUI has no public cursor property; `UIElement.ProtectedCursor` is protected
+in C#, but that is a language rule, and the property sits on the
+`IUIElementProtected` interface of every element, which the binding reaches by
+QueryInterface from outside; the value is an `InputSystemCursor` made by
+`InputSystemCursor.Create`
+
+| Keywords | Shape |
+|---|---|
+| `auto`, `default`, `context-menu` | Arrow |
+| `pointer`, `grab`, `grabbing` | Hand |
+| `text`, `vertical-text` | IBeam |
+| `wait`, `progress` | Wait |
+| `help` | Help |
+| `not-allowed`, `no-drop` | UniversalNo |
+| `crosshair`, `cell` | Cross |
+| `move`, `all-scroll` | SizeAll |
+| `n-resize`, `s-resize`, `ns-resize`, `row-resize` | SizeNorthSouth |
+| `e-resize`, `w-resize`, `ew-resize`, `col-resize` | SizeWestEast |
+| `ne-resize`, `sw-resize`, `nesw-resize` | SizeNortheastSouthwest |
+| `nw-resize`, `se-resize`, `nwse-resize` | SizeNorthwestSoutheast |
+
+Removing the rule gives the element no cursor of its own again
 
 ## Aspect ratio: `aspect-ratio`
 
@@ -1069,7 +1097,7 @@ Declarations like these fail the build with it:
 | `position`, `top`, `left`, `right`, `bottom`, `inset` in a style attribute | they are read from a component's `<style>` block (see Position); `right`, `bottom` and `position: sticky` have no WinUI counterpart |
 | `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` in a style attribute | they are read from a component's `<style>` block, which opts the window into `winui-svelte/css/filter` (see Filters, blends and masks); `url()` filters, `mask-position`, `mask-size`, `mask-repeat` and `mask-mode` have no counterpart |
 | `clip-path` as `rect()`, `xywh()` or `url()` | `inset()`, `circle()`, `ellipse()`, `polygon()` and `path()` have one (see Clip shapes) |
-| `cursor` | accepted and ignored with a warning: `IUIElementProtected.ProtectedCursor` is in the bindings, but the `InputCursor` it takes can only be made by `Microsoft.UI.Input.InputSystemCursor.Create(InputSystemCursorShape)`, and the bindings have neither `InputSystemCursor` nor `InputSystemCursorShape` (add them to the bindings and it becomes a write like the others) |
+| `cursor` as a `url()` image, `none`, `copy`, `alias`, `zoom-in` and `zoom-out` | WinUI's cursors are the sixteen system shapes of `InputSystemCursorShape`; the other keywords have one (see Cursor) |
 | `animation` without its module | see Animations |
 | `text-transform: uppercase`, `lowercase`, `capitalize` | the text an element shows is written through the change, in a `<text-block>`, a `<run>`, a button's content and the text of an inline element: the tree keeps the text as written, and the control reports the changed one (`none` is no change; an inherited transform is not: write it on the element that holds the text) |
 | `user-select`, `object-fit`, `line-clamp` (`-webkit-line-clamp`), `word-break` | `IsTextSelectionEnabled`, an image's `Stretch` (`contain` is `Uniform`, `cover` `UniformToFill`; `scale-down` is an error), `MaxLines` (with `Wrap` and an ellipsis, which `text-wrap` and `text-overflow` override), `TextWrapping` |

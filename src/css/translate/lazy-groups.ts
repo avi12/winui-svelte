@@ -4,6 +4,7 @@ import { buildShorthandGroups } from "./build-shorthands.ts";
 import { CLIP_MEMBERS, clipGroups } from "./clip-properties.ts";
 import { COMPAT_MEMBERS, compatGroups } from "./compat-properties.ts";
 import { CONTAINER_MEMBERS, containerGroups } from "./container-properties.ts";
+import { CURSOR_MEMBERS, cursorGroups } from "./cursor-properties.ts";
 import { EFFECT_MEMBERS, effectGroups } from "./effect-properties.ts";
 import { focusGroups, OUTLINE_MEMBERS } from "./focus-properties.ts";
 import { POSITION_MEMBERS, positionGroups } from "./position-properties.ts";
@@ -81,6 +82,12 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     subpath: "/clip",
     exportName: "clipGroups",
     groups: clipGroups
+  },
+  {
+    isNeededBy: usesProperties(CURSOR_MEMBERS),
+    subpath: "/cursor",
+    exportName: "cursorGroups",
+    groups: cursorGroups
   },
   {
     isNeededBy: usesProperties(POSITION_MEMBERS),

@@ -1,4 +1,4 @@
-import { enumMap, ignored, keywordProperty, setter } from "./property-kit.ts";
+import { enumMap, keywordProperty, setter } from "./property-kit.ts";
 import type { GroupInput, PropertyGroup, WriteContext } from "./property-kit.ts";
 import { parseNumber } from "#src/css/parse/values.js";
 import { textTransforms } from "#src/css/runtime/text-transforms.js";
@@ -148,14 +148,13 @@ const WORD_BREAK = "word-break";
 const USER_SELECT = "user-select";
 const BOX_SIZING = "box-sizing";
 const OBJECT_FIT = "object-fit";
-const CURSOR = "cursor";
 const LINE_CLAMP = ["line-clamp", "-webkit-line-clamp"];
 
 /** The properties of browser stylesheets that WinUI has a plain counterpart or no-op for. */
-export const COMPAT_MEMBERS = [TEXT_TRANSFORM, WORD_BREAK, USER_SELECT, OBJECT_FIT, CURSOR, BOX_SIZING, ...LINE_CLAMP];
+export const COMPAT_MEMBERS = [TEXT_TRANSFORM, WORD_BREAK, USER_SELECT, OBJECT_FIT, BOX_SIZING, ...LINE_CLAMP];
 
 /**
- * `text-transform`, `word-break`, `user-select`, `object-fit`, `cursor` (ignored), `line-clamp` and `box-sizing`,
+ * `text-transform`, `word-break`, `user-select`, `object-fit`, `line-clamp` and `box-sizing`,
  * which a stylesheet written for browsers carries. They come before the built-in groups, so
  * `text-wrap` and `text-overflow` win where they are written too.
  */
@@ -180,10 +179,6 @@ export function compatGroups() {
       member: WORD_BREAK,
       property: "TextWrapping",
       choices: wordBreaks
-    }),
-    ignored({
-      member: CURSOR,
-      why: "IUIElementProtected.ProtectedCursor is in the bindings, but the only way to make the InputCursor it takes is Microsoft.UI.Input.InputSystemCursor.Create(InputSystemCursorShape), and the bindings lack both classes"
     }),
     keywordProperty({
       member: OBJECT_FIT,
