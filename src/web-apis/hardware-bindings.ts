@@ -6,3 +6,8 @@ export { UsbSetupPacket } from "#winui/windows/devices/usb/UsbSetupPacket";
 export { InputStreamOptions } from "#winui/windows/storage/streams/InputStreamOptions";
 export { HidDevice } from "#winui/windows/devices/human-interface-device/HidDevice";
 export { FileAccessMode } from "#winui/windows/storage/FileAccessMode";
+export { SerialDevice } from "#winui/windows/devices/serial-communication/SerialDevice";
+export { SerialError } from "#winui/windows/devices/serial-communication/SerialError";
+export { SerialHandshake } from "#winui/windows/devices/serial-communication/SerialHandshake";
+export { SerialParity } from "#winui/windows/devices/serial-communication/SerialParity";
+export { SerialStopBitCount } from "#winui/windows/devices/serial-communication/SerialStopBitCount";

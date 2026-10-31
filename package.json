@@ -301,6 +301,10 @@
       "types": "./dist/web-apis/notification.d.ts",
       "default": "./dist/web-apis/notification.js"
     },
+    "./web-apis/serial": {
+      "types": "./dist/web-apis/serial.d.ts",
+      "default": "./dist/web-apis/serial.js"
+    },
     "./web-apis/hid": {
       "types": "./dist/web-apis/hid.d.ts",
       "default": "./dist/web-apis/hid.js"
