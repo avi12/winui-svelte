@@ -5,6 +5,7 @@ import type {
   GridLengthInput,
   KeyboardAcceleratorComponentProps,
   StackPanelComponentProps,
+  TextBoxComponentProps,
   WindowComponentProps
 } from "#src/components/index.js";
 import {
@@ -102,3 +103,12 @@ export const refused: {
     icon: "question"
   }
 };
+
+// A WinUI enum prop takes the member as WinUI spells it, or the enum's value; the
+// DOM-like spelling is refused by svelte-check, and by the control at run time
+// with the prop and the members it takes.
+export const textWrapping: readonly TextBoxComponentProps[] = [
+  { textWrapping: "Wrap" },
+  // @ts-expect-error "wrap" is written "Wrap", as WinUI has it
+  { textWrapping: "wrap" }
+];

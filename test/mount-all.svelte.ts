@@ -668,6 +668,38 @@ function checkBehaviours({ connectors, failures }: {
   });
 
   check({
+    name: "a wrong enum member is reported with the prop and the members it takes (TextBox.textWrapping)",
+    action() {
+      const box = new bindings.TextBox();
+      const state = $state<Record<string, NativeValue>>({});
+      const messages: string[] = [];
+      const original = console.error;
+      console.error = () => undefined;
+      const stopListening = onUiError(report => messages.push(`${report.origin}: ${String(report.error)}`));
+      try {
+        const close = open({
+          connect: connectorFor("TextBox"),
+          control: box,
+          props: {
+            textWrapping: "wrap"
+          },
+          bound: boundOver({
+            state,
+            name: "TextBox"
+          })
+        });
+        flushSync();
+        close();
+      } finally {
+        console.error = original;
+        stopListening();
+      }
+
+      assert.deepEqual(messages, ["prop \"textWrapping\": RangeError: textWrapping: \"wrap\" is not one of NoWrap, Wrap, WrapWholeWords"]);
+    }
+  });
+
+  check({
     name: "a bindable number goes both ways (Slider.value)",
     action() {
       const slider = new bindings.Slider();
