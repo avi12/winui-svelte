@@ -21,6 +21,10 @@ project adheres to [Semantic Versioning](https://semver.org/)
   `navigator.permissions`, and `Notification` over app notifications with
   WinUI extras (buttons, inputs, progress, scenario, sound and more)
   (`winui-svelte/web-apis/notification`)
+- Web APIs: `PushManager` and `PushSubscription` over `PushNotificationManager`,
+  `navigator.setAppBadge` and `clearAppBadge` over `BadgeNotificationManager`,
+  and the Launch Handler `launchQueue` over the start and the single-instance
+  redirects (`winui-svelte/web-apis/push`, `/badging`, `/launch`)
 
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support
