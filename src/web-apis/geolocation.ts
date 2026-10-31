@@ -331,7 +331,6 @@ export class Geolocation {
    * @param error - Called with a `GeolocationPositionError` when it fails.
    * @param options - The standard `PositionOptions`, and the WinUI extras.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the standard positional signature
   getCurrentPosition(success: SuccessCallback, error?: ErrorCallback | null, options?: PositionOptions) {
     requireCallback({
       method: "getCurrentPosition",
@@ -353,7 +352,6 @@ export class Geolocation {
    * @param options - The standard `PositionOptions`, and the WinUI extras.
    * @returns The id that `clearWatch` takes.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the standard positional signature
   watchPosition(success: SuccessCallback, error?: ErrorCallback | null, options?: PositionOptions) {
     requireCallback({
       method: "watchPosition",

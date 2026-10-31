@@ -663,7 +663,6 @@ export class MediaDevices extends HandlerEventTarget {
     this.watchChanges();
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- mirrors EventTarget's positional signature
   override addEventListener(
     type: string,
     callback: EventListenerOrEventListenerObject | null,

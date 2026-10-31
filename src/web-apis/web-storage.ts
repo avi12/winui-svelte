@@ -182,7 +182,6 @@ export class Storage {
    *
    * @throws {DOMException} `QuotaExceededError` when the storage would pass 5 MiB characters.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the standard method signature
   setItem(key: string, value: string) {
     const { items, hooks } = stateOf(this);
     const name = String(key);

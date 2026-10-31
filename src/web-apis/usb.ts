@@ -333,7 +333,6 @@ export class USBDevice {
    * @param interfaceNumber - The interface's number.
    * @param alternateSetting - The setting's number.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the positional signature of the Web API
   async selectAlternateInterface(interfaceNumber: number, alternateSetting: number) {
     const connection = this.requireOpen();
     this.requireClaimed(interfaceNumber);
@@ -357,7 +356,6 @@ export class USBDevice {
    * @param length - How many bytes to ask for.
    * @returns The status and the bytes.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the positional signature of the Web API
   async controlTransferIn(setup: UsbSetup, length: number) {
     const connection = this.requireOpen();
     this.requireSetupTarget(setup);
@@ -376,7 +374,6 @@ export class USBDevice {
    * @param data - The bytes to send, if any.
    * @returns The status and how many bytes went.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the positional signature of the Web API
   async controlTransferOut(setup: UsbSetup, data?: BufferSource) {
     const connection = this.requireOpen();
     this.requireSetupTarget(setup);
@@ -397,7 +394,6 @@ export class USBDevice {
    * @param length - How many bytes to ask for.
    * @returns The status and the bytes.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the positional signature of the Web API
   async transferIn(endpointNumber: number, length: number) {
     const connection = this.requireOpen();
     this.requireEndpoint({
@@ -419,7 +415,6 @@ export class USBDevice {
    * @param data - The bytes to send.
    * @returns The status and how many bytes went.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the positional signature of the Web API
   async transferOut(endpointNumber: number, data: BufferSource) {
     const connection = this.requireOpen();
     this.requireEndpoint({
@@ -442,7 +437,6 @@ export class USBDevice {
    * @param direction - `"in"` or `"out"`.
    * @param endpointNumber - The endpoint's number.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the positional signature of the Web API
   async clearHalt(direction: UsbDirection, endpointNumber: number) {
     const connection = this.requireOpen();
     this.requireEndpoint({

@@ -123,7 +123,6 @@ export class DevicePresenceTarget<T extends { readonly id: string }> extends Han
     });
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- the signature EventTarget has
   override addEventListener(
     type: string,
     callback: EventListenerOrEventListenerObject | null,

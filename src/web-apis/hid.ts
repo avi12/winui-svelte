@@ -239,7 +239,6 @@ export class HIDDevice extends HandlerEventTarget {
    * @param reportId - The report's id, 0 when the device uses none.
    * @param data - The report's bytes, without the id.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the positional signature of the Web API
   async sendReport(reportId: number, data: BufferSource) {
     const connection = this.requireOpen();
     await guarded({
@@ -257,7 +256,6 @@ export class HIDDevice extends HandlerEventTarget {
    * @param reportId - The report's id, 0 when the device uses none.
    * @param data - The report's bytes, without the id.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the positional signature of the Web API
   async sendFeatureReport(reportId: number, data: BufferSource) {
     const connection = this.requireOpen();
     await guarded({

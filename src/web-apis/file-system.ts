@@ -358,7 +358,6 @@ export class FileSystemDirectoryHandle extends FileSystemHandle {
    * @throws {TypeError} For a name with a separator, `.` or `..`.
    * @throws {DOMException} `NotFoundError` without `create` when it does not exist; `TypeMismatchError` for a folder.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the standard method signature
   getFileHandle(name: string, options: FileSystemGetHandleOptions = {}) {
     return this.entryLocation({
       name,
@@ -374,7 +373,6 @@ export class FileSystemDirectoryHandle extends FileSystemHandle {
    * @throws {TypeError} For a name with a separator, `.` or `..`.
    * @throws {DOMException} `NotFoundError` without `create` when it does not exist; `TypeMismatchError` for a file.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the standard method signature
   getDirectoryHandle(name: string, options: FileSystemGetHandleOptions = {}) {
     return this.entryLocation({
       name,
@@ -389,7 +387,6 @@ export class FileSystemDirectoryHandle extends FileSystemHandle {
    *
    * @throws {DOMException} `NotFoundError`, or `InvalidModificationError` for a folder with entries and no `recursive`.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the standard method signature
   removeEntry(name: string, options: FileSystemRemoveOptions = {}) {
     return attempt(() => {
       assertEntryName(name);

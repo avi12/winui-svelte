@@ -229,7 +229,6 @@ export class ContactsManager {
    * @throws {TypeError} For no property or an unknown one.
    * @throws {DOMException} `InvalidStateError` while another picker is open, `NotSupportedError` without a picker.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the spec's select(properties, options) is positional
   async select(properties: readonly string[], options: ContactsSelectOptions = {}) {
     const known = requireInstalled();
     const wanted = validatedProperties(properties);

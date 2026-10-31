@@ -218,7 +218,6 @@ export class ResizeObserver {
   }
 
   /** Starts watching the element; its size is reported once as soon as it is not 0 by 0. */
-  // eslint-disable-next-line no-restricted-syntax -- mirrors ResizeObserver.observe(target, options)
   observe(target: object, options: ResizeObserverOptions = {}) {
     const control = controlOf(target);
     this.unobserve(target);
@@ -815,7 +814,6 @@ export class MutationObserver {
   }
 
   /** Starts watching the node for the kinds of change `init` names. */
-  // eslint-disable-next-line no-restricted-syntax -- mirrors MutationObserver.observe(target, options)
   observe(target: object, init: MutationObserverInit) {
     if (!isTreeNode(target)) {
       throw new TypeError("the target is not a node of the tree");

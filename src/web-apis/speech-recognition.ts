@@ -182,7 +182,6 @@ export class SpeechGrammarList {
   }
 
   /** Adds a grammar by text. */
-  // eslint-disable-next-line no-restricted-syntax -- mirrors the Web API's positional signature
   addFromString(grammar: string, weight = 1) {
     this.grammars.push({
       src: grammar,
@@ -191,7 +190,6 @@ export class SpeechGrammarList {
   }
 
   /** Adds a grammar by address. */
-  // eslint-disable-next-line no-restricted-syntax -- mirrors the Web API's positional signature
   addFromURI(src: string, weight = 1) {
     this.grammars.push({
       src,

@@ -299,7 +299,6 @@ export class MediaSession extends HandlerEventTarget {
    *
    * @throws {TypeError} When the action is not a `MediaSessionAction`.
    */
-  // eslint-disable-next-line no-restricted-syntax -- mirrors the Web API's positional signature
   setActionHandler(action: string, handler: MediaSessionActionHandler | null) {
     const isKnown = isSupportedAction(action) || STANDARD_ONLY_ACTIONS.includes(action);
     if (!isKnown) {

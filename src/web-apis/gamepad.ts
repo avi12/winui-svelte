@@ -137,7 +137,6 @@ export class GamepadHapticActuator {
    * @param parameters - Delay, duration and the strength of each motor, 0 to 1.
    * @returns How it ended; a newer effect preempts this one.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the standard positional signature
   async playEffect(type: GamepadEffectType, parameters: GamepadEffectParameters = {}) {
     const isKnown = type === "dual-rumble" || type === "trigger-rumble";
     if (!isKnown) {

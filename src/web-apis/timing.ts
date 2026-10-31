@@ -106,7 +106,6 @@ export function installTiming(options: TimingInstallOptions = {}) {
     return lastId;
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- mirrors requestIdleCallback(callback, options)
   function requestIdle(callback: (deadline: IdleDeadline) => void, init: IdleRequestOptions = {}) {
     lastId++;
     idleRequests.set(lastId, {
