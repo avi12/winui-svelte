@@ -156,9 +156,10 @@ calls `flushSync`), and `hostState<T>()` / `send(action)` over a transport (type
   anyway, and the focus change was measured taking the foreground from the
   person at the desk; so `pnpm test:windows` starts each file on a desktop
   object of its own (`scripts/desktop/run-on-desktop.ps1`), whose windows can
-  never take the foreground; the files that cannot run there (the tray: the
-  notification area is the shell's; WebView2: its browser does not start) stay
-  on the default desktop and were measured not to take the foreground
+  never take the foreground; the one file that cannot run there
+  (`tray-shell.test.ts`: the notification area is the shell's) stays on the
+  default desktop, sends no input and opens no menu; the rest of the tray and
+  WebView2 (each run with a profile folder of its own) run hidden
 - Edge+'s window is checked pixel by pixel against its references after every
   change to the package (0 differing pixels)
 - `pnpm check:editor` opens every `.svelte` file of the package in the Svelte
