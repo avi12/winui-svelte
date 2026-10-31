@@ -47,6 +47,8 @@ const ELEMENT_ANIMATION_DIRECTIVES = ["TransitionDirective", "AnimateDirective"]
 const animationDirectiveSchema = z.looseObject({ type: z.enum(ELEMENT_ANIMATION_DIRECTIVES) });
 const ELEMENT_ANIMATION_IMPORT = /\bfrom\s*["']svelte\/(?:transition|animate|motion)["']/u;
 const ELEMENT_EFFECTS_IMPORT = /import\s*\{[^}]*\b(?:blur|draw)\b[^}]*\}\s*from\s*["']svelte\/transition["']/u;
+// Only a source that writes one of these can have an animation directive, so the rest is never parsed.
+const DIRECTIVE_TEXT = /\b(?:transition|in|out|animate)\s*:/u;
 const ELEMENT_ANIMATION_RUNTIME = "winui-svelte/element-animation";
 const ELEMENT_EFFECTS_RUNTIME = "winui-svelte/element-effects";
 const ELEMENT_EFFECTS_BINDING = "winuiEnableElementEffects";
@@ -99,7 +101,7 @@ export function withElementAnimation({
   effectsRuntime?: string;
 }) {
   const isImported = ELEMENT_ANIMATION_IMPORT.test(source);
-  const isNeeded = isImported || isComponent && hasDirective(
+  const isNeeded = isImported || isComponent && DIRECTIVE_TEXT.test(source) && hasDirective(
     parse(source, {
       modern: true
     })
