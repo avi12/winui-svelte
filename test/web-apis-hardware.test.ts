@@ -1,7 +1,7 @@
 import { roInitialize } from "@microsoft/dynwinrt";
 import { installBluetooth } from "#src/web-apis/bluetooth.js";
 import { windowsHidBackend } from "#src/web-apis/hid-backend.js";
-import { installIdleDetector } from "#src/web-apis/idle.js";
+import { IdleDetector, installIdleDetector } from "#src/web-apis/idle.js";
 import { windowsSerialBackend } from "#src/web-apis/serial-backend.js";
 import { windowsUsbBackend } from "#src/web-apis/usb-backend.js";
 import { installWakeLock } from "#src/web-apis/wake-lock.js";
