@@ -11,11 +11,13 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { setTimeout as sleep } from "node:timers/promises";
 
 // The mapping on the real WinRT classes, with no window: a DataPackage a
 // drag source fills is read back through its view, as a drop target reads it.
 // The clipboard test swaps the clipboard's text for its own and puts the
-// original back, and does nothing when the clipboard holds anything but text.
+// original back, and does nothing when the clipboard holds anything but text
+// or when another process (a clipboard manager) keeps it open for seconds.
 
 const SINGLE_THREADED_APARTMENT = 0;
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
@@ -24,7 +26,33 @@ const SMALL_PNG = Buffer.from(
   "base64"
 );
 
+// CLIPBRD_E_CANT_OPEN: OpenClipboard failed because another process holds it.
+const CLIPBOARD_BUSY_CODE = /0x800401d0/iu;
+const CLIPBOARD_RETRY_MILLISECONDS = 100;
+const CLIPBOARD_BUSY_SECONDS = 5;
+const MILLISECONDS_PER_SECOND = 1000;
+
 roInitialize(SINGLE_THREADED_APARTMENT);
+
+function isClipboardBusy(error: unknown) {
+  return error instanceof Error && CLIPBOARD_BUSY_CODE.test(error.message);
+}
+
+async function whenClipboardOpens<T>(action: () => T | Promise<T>) {
+  const deadline = Date.now() + CLIPBOARD_BUSY_SECONDS * MILLISECONDS_PER_SECOND;
+  for (;;) {
+    try {
+      return await action();
+    } catch (error) {
+      const isRetryable = isClipboardBusy(error) && Date.now() < deadline;
+      if (!isRetryable) {
+        throw error;
+      }
+
+      await sleep(CLIPBOARD_RETRY_MILLISECONDS);
+    }
+  }
+}
 
 test("a package a source fills reads back through its view as a target reads it", async () => {
   const folder = await mkdtemp(path.join(tmpdir(), "winui-svelte-package-"));
@@ -71,30 +99,41 @@ test("a package a source fills reads back through its view as a target reads it"
 });
 
 test("the clipboard round trip returns the text it was given, and the original is put back", async context => {
-  const types = clipboard.types();
+  let types: string[];
+  try {
+    types = await whenClipboardOpens(() => clipboard.types());
+  } catch (error) {
+    if (isClipboardBusy(error)) {
+      context.skip("another process keeps the clipboard open; it is left alone");
+      return;
+    }
+
+    throw error;
+  }
+
   const isTextOnly = types.every(type => type === FormatType.text);
   if (!isTextOnly) {
     context.skip("the clipboard holds something other than text; it is left alone");
     return;
   }
 
-  const original = await clipboard.readText();
+  const original = await whenClipboardOpens(() => clipboard.readText());
   const hasText = types.length > 0;
   try {
-    await clipboard.writeText("winui-svelte clipboard test");
-    assert.equal(await clipboard.readText(), "winui-svelte clipboard test");
-    await clipboard.write({
+    await whenClipboardOpens(() => clipboard.writeText("winui-svelte clipboard test"));
+    assert.equal(await whenClipboardOpens(() => clipboard.readText()), "winui-svelte clipboard test");
+    await whenClipboardOpens(() => clipboard.write({
       text: "plain",
       html: "<i>rich</i>"
-    });
-    assert.equal(await clipboard.readHtml(), "<i>rich</i>");
-    const read = await clipboard.read();
+    }));
+    assert.equal(await whenClipboardOpens(() => clipboard.readHtml()), "<i>rich</i>");
+    const read = await whenClipboardOpens(() => clipboard.read());
     assert.equal(read.getData(FormatType.text), "plain");
   } finally {
     if (hasText) {
-      await clipboard.writeText(original);
+      await whenClipboardOpens(() => clipboard.writeText(original));
     } else {
-      clipboard.clear();
+      await whenClipboardOpens(() => clipboard.clear());
     }
   }
 });
