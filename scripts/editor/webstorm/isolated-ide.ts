@@ -18,6 +18,7 @@ import {
   lstatSync,
   mkdirSync,
   readdirSync,
+  readFileSync,
   realpathSync,
   rmSync,
   statSync,
@@ -27,6 +28,7 @@ import {
   writeFileSync
 } from "node:fs";
 import path from "node:path";
+import { z } from "zod";
 
 const REPO_ROOT = path.resolve(import.meta.dirname, "../../..");
 const ISOLATED_FOLDER = path.join(REPO_ROOT, ".verify", "webstorm");
@@ -40,14 +42,17 @@ export const RESULTS_FOLDER = path.join(ISOLATED_FOLDER, "results");
 const VM_OPTIONS_FILE = path.join(ISOLATED_FOLDER, "vmoptions.txt");
 const SVELTE_PLUGIN_FOLDER = "svelte";
 const DEPENDENCIES_FOLDER = "node_modules";
-const BUILT_FOLDER = "dist";
-const KEPT_IN_SHADOW = [".idea", DEPENDENCIES_FOLDER, BUILT_FOLDER];
+const KEPT_IN_SHADOW = [".idea", DEPENDENCIES_FOLDER];
 // The generated WinUI bindings are reached through #winui/*, which package.json
-// maps to dist/bindings, a folder git ignores and so the copy lacks. Copied in
-// whole they would be inspected too (some three thousand findings in code that
-// is not ours), so the shadow holds a real copy of their declarations only, 1
-// MB of the 100, as the dependency they are.
-const BUILT_BINDINGS = path.join(BUILT_FOLDER, "bindings");
+// maps to dist/bindings, a folder git ignores and so the copy lacks. Linked or
+// copied in whole at that path they would be inspected too (some three thousand
+// findings in code that is not ours), and the IDE evaluates their types
+// unreliably as project code. So the shadow holds a real copy of their
+// declarations only, 1 MB of the 100, in node_modules as the dependency they
+// are, and its package.json maps #winui/* there.
+const BUILT_BINDINGS = path.join("dist", "bindings");
+const SHADOW_BINDINGS = path.join(DEPENDENCIES_FOLDER, "winui-bindings");
+const IMPORTS_KEY = "#winui/*";
 const DECLARATION_SUFFIX = ".d.ts";
 const PACKAGE_MANIFEST = "package.json";
 const IDEA_FOLDER = ".idea";
@@ -221,7 +226,7 @@ function linkDependencies() {
   if (existsSync(bindings)) {
     copyBindingDeclarations({
       source: bindings,
-      target: path.join(SHADOW_FOLDER, BUILT_BINDINGS)
+      target: path.join(SHADOW_FOLDER, SHADOW_BINDINGS)
     });
   }
 }
@@ -266,7 +271,25 @@ export function syncShadowProject({ isUsingIdeTypes }: {
   }
 
   linkDependencies();
+  mapBindingsIntoDependencies();
   return SHADOW_FOLDER;
+}
+
+const manifestSchema = z.looseObject({
+  imports: z.record(z.string(), z.unknown())
+});
+
+function mapBindingsIntoDependencies() {
+  const manifestPath = path.join(SHADOW_FOLDER, PACKAGE_MANIFEST);
+  const manifest = manifestSchema.parse(JSON.parse(readFileSync(manifestPath, "utf8")));
+  const mapped = {
+    ...manifest,
+    imports: {
+      ...manifest.imports,
+      [IMPORTS_KEY]: `./${SHADOW_BINDINGS.replaceAll(path.sep, "/")}/*.d.ts`
+    }
+  };
+  writeFileSync(manifestPath, JSON.stringify(mapped, undefined, 2));
 }
 
 function quoted(value: string) {
