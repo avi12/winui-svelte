@@ -236,17 +236,3 @@ export function multiple({ member, parse }: {
     lower: input => parse(input.reading(member))
   } satisfies PropertyGroup;
 }
-
-/** A property WinUI has no use for: accepted, reported as a warning and dropped. */
-export function ignored({ member, why }: {
-  member: string;
-  why: string;
-}) {
-  return {
-    members: [member],
-    lower(input) {
-      input.reading(member).warn(`${member} ignored (${why})`);
-      return [];
-    }
-  } satisfies PropertyGroup;
-}

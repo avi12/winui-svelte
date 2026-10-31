@@ -4,6 +4,7 @@
   import type { Border as BorderControl } from "#winui/microsoft/ui/xaml/controls/Border";
   import type { TextBlock as TextBlockControl } from "#winui/microsoft/ui/xaml/controls/TextBlock";
   import { control, flush } from "winui-svelte";
+  import type { WindowHandle } from "winui-svelte/components";
   import { Border, StackPanel, TextBlock, Window } from "winui-svelte/components";
   import type { DragEvent } from "winui-svelte/data-transfer";
   import {
@@ -15,7 +16,6 @@
     nativeFileAt,
     simulateDrop
   } from "winui-svelte/data-transfer";
-  import type { WindowHandle } from "winui-svelte/window";
   import { exitApplication } from "winui-svelte/window";
 
   const WINDOW_HEIGHT = 360;
