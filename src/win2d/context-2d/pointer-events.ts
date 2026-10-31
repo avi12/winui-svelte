@@ -7,7 +7,9 @@ import type { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
 import { VirtualKeyModifiers } from "#winui/windows/system/VirtualKeyModifiers";
 
 // WinUI pointer events of the control a canvas is shown in, as the DOM events
-// a drawing library listens for on a canvas element.
+// a drawing library listens for on a canvas element. A listener that calls
+// `preventDefault` marks the WinUI event handled, so it goes no further up the
+// tree (a wheel over the canvas does not scroll the ScrollViewer around it).
 
 const PRIMARY_BUTTON = 0;
 const MIDDLE_BUTTON = 1;
@@ -149,11 +151,17 @@ function forward({ name, canvas, element, user }: {
         args: pointerArguments,
         element: target
       });
+      let isPrevented = false;
       for (const type of EVENT_TYPES[name]) {
-        canvas.dispatchEvent({
+        const isAllowed = canvas.dispatchEvent({
           type,
           ...fields
         });
+        isPrevented ||= !isAllowed;
+      }
+
+      if (isPrevented) {
+        pointerArguments.handled = true;
       }
     }
 

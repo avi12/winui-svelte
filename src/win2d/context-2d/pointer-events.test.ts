@@ -147,6 +147,29 @@ test("a listener's preventDefault reaches the dispatch result", { skip: !IS_AVAI
   assert.equal(canvas.dispatchEvent({ type: "pointerdown" }), true);
 });
 
+test("a listener's preventDefault marks the WinUI event handled", { skip: !IS_AVAILABLE }, () => {
+  const { handlers, canvas } = setup();
+  canvas.addEventListener("wheel", event => event.preventDefault());
+  const prevented = {
+    ...fakeArguments({
+      updateKind: InputPointerUpdateKind.Other,
+      wheel: WHEEL_DELTA
+    }),
+    handled: false
+  };
+  handlers.onpointerwheelchanged({}, prevented);
+  assert.equal(prevented.handled, true);
+  const allowed = {
+    ...fakeArguments({
+      updateKind: InputPointerUpdateKind.LeftButtonPressed,
+      isLeft: true
+    }),
+    handled: false
+  };
+  handlers.onpointerpressed({}, allowed);
+  assert.equal(allowed.handled, false, "no listener prevented the press");
+});
+
 test("arguments that are not pointer data raise no DOM event but still call the app's handler", { skip: !IS_AVAILABLE }, () => {
   const { handlers, received, calls } = setup();
   handlers.onpointerpressed({}, {});
