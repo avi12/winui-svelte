@@ -1877,7 +1877,7 @@ silent failure
   (`alert`, `available`, `away`, `busy`, `newMessage` and so on)
   The unpackaged fallback (an overlay icon through `ITaskbarList3`) is not
   built; without identity Windows refuses and the call rejects
-- `installLaunch({ initialArguments })` defines `launchQueue.setConsumer`
+- `installLaunch({ initialArguments })` defines `launchQueue` (a `LaunchQueue`) with `setConsumer`
   The start's command line is the first launch; each later copy's is handed
   over with `launchQueue.enqueueActivation(activation)` (WinUI-only), which
   takes what `ensureSingleInstance`'s `onRedirect` receives
