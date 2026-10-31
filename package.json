@@ -305,6 +305,14 @@
       "types": "./dist/web-apis/badging.d.ts",
       "default": "./dist/web-apis/badging.js"
     },
+    "./web-apis/push": {
+      "types": "./dist/web-apis/push.d.ts",
+      "default": "./dist/web-apis/push.js"
+    },
+    "./web-apis/push": {
+      "types": "./dist/web-apis/push.d.ts",
+      "default": "./dist/web-apis/push.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
