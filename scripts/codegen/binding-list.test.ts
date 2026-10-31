@@ -60,6 +60,12 @@ test("every class src/winui.ts imports is among the classes the bindings are gen
     "microsoft/ui/composition/system-backdrops/desktopacrylickind",
     "microsoft/ui/composition/system-backdrops/systembackdroptheme",
     "microsoft/ui/composition/icompositionsupportssystembackdrop",
+    "microsoft/windows/app-notifications/builder/appnotificationbuttonstyle",
+    "microsoft/windows/app-notifications/builder/appnotificationscenario",
+    "microsoft/windows/app-notifications/builder/appnotificationsoundevent",
+    "microsoft/windows/app-notifications/appnotificationprogressdata",
+    "microsoft/windows/app-notifications/appnotificationprogressresult",
+    "microsoft/windows/app-notifications/appnotificationsetting",
     "lifetime"
   ]);
   const listed = listedModules();

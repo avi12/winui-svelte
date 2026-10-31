@@ -55,3 +55,12 @@ export { FileOpenPicker } from "#winui/microsoft/windows/storage/pickers/FileOpe
 export { FileSavePicker } from "#winui/microsoft/windows/storage/pickers/FileSavePicker";
 export { FolderPicker } from "#winui/microsoft/windows/storage/pickers/FolderPicker";
 export { PickerLocationId } from "#winui/microsoft/windows/storage/pickers/PickerLocationId";
+export { AppNotificationButton } from "#winui/microsoft/windows/app-notifications/builder/AppNotificationButton";
+export { AppNotificationButtonStyle } from "#winui/microsoft/windows/app-notifications/builder/AppNotificationButtonStyle";
+export { AppNotificationComboBox } from "#winui/microsoft/windows/app-notifications/builder/AppNotificationComboBox";
+export { AppNotificationProgressBar } from "#winui/microsoft/windows/app-notifications/builder/AppNotificationProgressBar";
+export { AppNotificationScenario } from "#winui/microsoft/windows/app-notifications/builder/AppNotificationScenario";
+export { AppNotificationSoundEvent } from "#winui/microsoft/windows/app-notifications/builder/AppNotificationSoundEvent";
+export { AppNotificationProgressData } from "#winui/microsoft/windows/app-notifications/AppNotificationProgressData";
+export { AppNotificationProgressResult } from "#winui/microsoft/windows/app-notifications/AppNotificationProgressResult";
+export { AppNotificationSetting } from "#winui/microsoft/windows/app-notifications/AppNotificationSetting";

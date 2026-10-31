@@ -1,9 +1,18 @@
+import type { NotificationContent } from "./notification-content.ts";
+import { windowsNotificationSource } from "./notification-source.ts";
 import { joinAppUserModel } from "#src/window/native.js";
-import { AppNotificationBuilder, AppNotificationManager, Uri } from "#src/winui.js";
-import { pathToFileURL } from "node:url";
+import { AppNotificationManager } from "#src/winui.js";
 
-const ARGUMENT_SEPARATOR = ";";
-const PAIR_SEPARATOR = "=";
+export { argumentsOf } from "./notification-source.ts";
+export type {
+  NotificationButtonStyle,
+  NotificationChoice,
+  NotificationContent,
+  NotificationControl,
+  NotificationProgress,
+  NotificationScenario,
+  NotificationSound
+} from "./notification-content.ts";
 
 /** A click on a notification (or one of its buttons), as the app hears it. */
 export interface NotificationInvocation {
@@ -12,22 +21,13 @@ export interface NotificationInvocation {
 
   /** The `arguments` the notification was shown with, read back. */
   readonly arguments: ReadonlyMap<string, string>;
+
+  /** What the user typed or chose in the input with this id, if there was one. */
+  readInput(id: string): string | undefined;
 }
 
 /** What `notify` takes. */
-export interface NotifyOptions {
-  /** The first line, in bold. */
-  readonly title: string;
-
-  /** The text under it. */
-  readonly body?: string;
-
-  /** With `group`, names the notification so a later one can replace or remove it. */
-  readonly tag?: string;
-
-  /** See `tag`. */
-  readonly group?: string;
-
+export interface NotifyOptions extends NotificationContent {
   /** Key-value pairs that come back in `onInvoked` when the user clicks. */
   readonly arguments?: Readonly<Record<string, string>>;
 
@@ -53,11 +53,7 @@ export interface NotifyOptions {
 }
 
 /** The notification as `showNotification` hands it on. */
-export interface NotificationSpec {
-  readonly title: string;
-  readonly body?: string;
-  readonly tag?: string;
-  readonly group?: string;
+export interface NotificationSpec extends NotificationContent {
   readonly arguments: ReadonlyMap<string, string>;
 }
 
@@ -74,23 +70,60 @@ export interface NotificationSource {
   onInvoked(callback: (invocation: NotificationInvocation) => void): () => void;
 }
 
-/**
- * Reads the argument string a notification was built with back into pairs.
- *
- * @param argument - The `key=value;key=value` text.
- * @returns The pairs.
- */
-export function argumentsOf(argument: string) {
-  const pairs = argument.split(ARGUMENT_SEPARATOR).filter(pair => pair.length > 0).map(pair => {
-    const iSeparator = pair.indexOf(PAIR_SEPARATOR);
-    const isFlag = iSeparator < 0;
-    if (isFlag) {
-      return [pair, ""] as const;
-    }
+/** What the web `Notification` needs beyond showing: removing, updating a bar, and the user's setting. */
+export interface NotificationBackend extends NotificationSource {
+  /** Whether this process can show app notifications at all. */
+  isSupported(): boolean;
 
-    return [pair.slice(0, iSeparator), pair.slice(iSeparator + 1)] as const;
-  });
-  return new Map<string, string>(pairs);
+  /** False when the user or a policy has turned this app's notifications off. */
+  isEnabled(): boolean;
+
+  remove(id: number): Promise<void>;
+
+  /** Changes the progress bar of the notification with this tag and group; false when it is gone. */
+  updateProgress(update: {
+    tag: string;
+    group: string;
+    sequence: number;
+    progress: NotificationContent["progress"];
+  }): Promise<boolean>;
+}
+
+/**
+ * Registers the process with the platform once, and starts listening for clicks.
+ *
+ * @param options - The source, the identity (both parts or neither), the click handler and the notifier's state.
+ * @throws {Error} When only one of `displayName` and `iconPath` is given.
+ */
+export function registerNotifier({ source, identity, onInvoked, state }: {
+  source: NotificationSource;
+  identity: Partial<NotificationIdentity>;
+  onInvoked: ((invocation: NotificationInvocation) => void) | undefined;
+  state: { isRegistered: boolean };
+}) {
+  const { displayName, iconPath } = identity;
+  const hasHalfIdentity = (displayName === undefined) !== (iconPath === undefined);
+  if (hasHalfIdentity) {
+    throw new Error("notify takes displayName and iconPath together or neither");
+  }
+
+  if (state.isRegistered) {
+    return;
+  }
+
+  const hasHandler = onInvoked !== undefined;
+  if (hasHandler) {
+    source.onInvoked(onInvoked);
+  }
+
+  const hasIdentity = displayName !== undefined && iconPath !== undefined;
+  source.register(
+    hasIdentity ? {
+      displayName,
+      iconPath
+    } : undefined
+  );
+  state.isRegistered = true;
 }
 
 /**
@@ -106,87 +139,24 @@ export function showNotification({ source, notification, state }: {
   notification: NotifyOptions;
   state: { isRegistered: boolean };
 }) {
-  const { displayName, iconPath, onInvoked, title, body, tag, group } = notification;
-  const hasHalfIdentity = (displayName === undefined) !== (iconPath === undefined);
-  if (hasHalfIdentity) {
-    throw new Error("notify takes displayName and iconPath together or neither");
-  }
-
-  if (!state.isRegistered) {
-    const hasHandler = onInvoked !== undefined;
-    if (hasHandler) {
-      source.onInvoked(onInvoked);
+  const { displayName, iconPath, onInvoked, appUserModelId, arguments: argumentRecord, ...content } = notification;
+  registerNotifier({
+    source,
+    state,
+    onInvoked,
+    identity: {
+      ...displayName === undefined ? {} : { displayName },
+      ...iconPath === undefined ? {} : { iconPath }
     }
-
-    const hasIdentity = displayName !== undefined && iconPath !== undefined;
-    source.register(
-      hasIdentity ? {
-        displayName,
-        iconPath
-      } : undefined
-    );
-    state.isRegistered = true;
-  }
-
+  });
   return source.show({
-    title,
-    arguments: new Map(Object.entries(notification.arguments ?? {})),
-    ...body === undefined ? {} : { body },
-    ...tag === undefined ? {} : { tag },
-    ...group === undefined ? {} : { group }
+    ...content,
+    arguments: new Map(Object.entries(argumentRecord ?? {}))
   });
 }
 
-function managerSource() {
-  const manager = AppNotificationManager.default_;
-  return {
-    register(identity) {
-      const isUnidentified = identity === undefined;
-      if (isUnidentified) {
-        manager.register();
-        return;
-      }
-
-      manager.register(identity.displayName, new Uri(pathToFileURL(identity.iconPath).href));
-    },
-    show(spec) {
-      const builder = AppNotificationBuilder.create().addText(spec.title);
-      const { body, tag, group } = spec;
-      const hasBody = body !== undefined;
-      if (hasBody) {
-        builder.addText(body);
-      }
-
-      for (const [key, value] of spec.arguments) {
-        builder.addArgument(key, value);
-      }
-
-      const hasTag = tag !== undefined;
-      if (hasTag) {
-        builder.setTag(tag);
-      }
-
-      const hasGroup = group !== undefined;
-      if (hasGroup) {
-        builder.setGroup(group);
-      }
-
-      const notification = builder.buildNotification();
-      manager.show(notification);
-      return notification.id;
-    },
-    onInvoked(callback) {
-      return manager.onNotificationInvoked((_sender, args) => {
-        callback({
-          argument: args.argument,
-          arguments: argumentsOf(args.argument)
-        });
-      });
-    }
-  } satisfies NotificationSource;
-}
-
-const processState = { isRegistered: false };
+/** Whether the process has registered with the platform; `notify` and the web `Notification` share it. */
+export const notifierState = { isRegistered: false };
 
 /**
  * Shows a notification in the Windows notification center, over
@@ -212,14 +182,14 @@ export function notify(options: NotifyOptions) {
   }
 
   const { appUserModelId } = options;
-  const isNamedBeforeRegistering = appUserModelId !== undefined && !processState.isRegistered;
+  const isNamedBeforeRegistering = appUserModelId !== undefined && !notifierState.isRegistered;
   if (isNamedBeforeRegistering) {
     joinAppUserModel(appUserModelId);
   }
 
   return showNotification({
-    source: managerSource(),
+    source: windowsNotificationSource(),
     notification: options,
-    state: processState
+    state: notifierState
   });
 }

@@ -14,6 +14,13 @@ export interface RunWindowOptions {
    * and open windows.
    */
   onStart: () => void;
+
+  /**
+   * The Web APIs to define on this thread before `onStart`: the
+   * `install...` functions of `winui-svelte/web-apis` and its subpaths
+   * (`installNotification`, and so on). Nothing is installed that is not listed.
+   */
+  webApis?: ReadonlyArray<() => unknown>;
 }
 
 /**
@@ -33,8 +40,12 @@ export async function runWindow(options: RunWindowOptions) {
         installCss(winui);
         installXaml();
         installMedia();
+        for (const install of options.webApis ?? []) {
+          install();
+        }
         options.onStart();
       });
+      options.onStart();
     });
   } finally {
     stopAllTimers();

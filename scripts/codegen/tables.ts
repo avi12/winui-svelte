@@ -365,7 +365,9 @@ const DEVICES_WINMD = "Windows.Foundation.UniversalApiContract.winmd";
 /**
  * Classes of the Windows App SDK that the helpers of winui-svelte/win2d need
  * and the components do not, and the Windows classes of winui-svelte/devices
- * (Bluetooth, radios, power, input, network, audio, gamepads, sensors): scripts/bindings/after-winapp.ts makes their
+ * (Bluetooth, radios, power, input, network, audio, gamepads, sensors), of
+ * winui-svelte/web-apis (geolocation, media capture, speech, USB, HID, serial,
+ * credentials, wake lock, sockets, files) and of the as-is examples: scripts/bindings/after-winapp.ts makes their
  * bindings after winapp's run, so a full `pnpm bindings` (about twelve
  * minutes) is not needed to add one.
  */
@@ -484,6 +486,206 @@ export const lateClasses = [
     winmd: DEVICES_WINMD,
     namespace: "Windows.Security.Cryptography",
     classes: ["CryptographicBuffer"]
+  },
+  {
+    winmd: COMPONENT_WINMD,
+    namespace: "Microsoft.UI.Xaml.Media",
+    classes: ["CompositionTarget"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Geolocation",
+    classes: ["Geolocator", "Geoposition", "Geocoordinate", "GeolocationAccessStatus", "PositionAccuracy", "PositionStatus", "CivicAddress"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Sensors",
+    classes: ["Gyrometer", "Magnetometer", "OrientationSensor", "Compass", "Barometer", "Altimeter", "ProximitySensor"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Haptics",
+    classes: ["VibrationDevice", "VibrationAccessStatus"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Graphics.Display",
+    classes: ["DisplayInformation"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Storage",
+    classes: ["FileIO", "PathIO", "ApplicationData", "ApplicationDataContainer", "KnownFolders", "DownloadsFolder", "StorageLibrary", "UserDataPaths"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Storage.AccessCache",
+    classes: ["StorageApplicationPermissions"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Foundation.Collections",
+    classes: ["PropertySet"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.ApplicationModel.Contacts",
+    classes: ["ContactPicker"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Networking.Sockets",
+    classes: ["StreamSocket", "DatagramSocket", "MessageWebSocket", "StreamWebSocket", "StreamSocketListener"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Networking.BackgroundTransfer",
+    classes: ["BackgroundDownloader", "BackgroundUploader"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Security.Credentials",
+    classes: ["PasswordVault", "KeyCredentialManager"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Security.Credentials.UI",
+    classes: ["UserConsentVerifier"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Security.Cryptography.Core",
+    classes: ["CryptographicEngine", "SymmetricKeyAlgorithmProvider", "HashAlgorithmProvider"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Security.Cryptography.DataProtection",
+    classes: ["DataProtectionProvider"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.System",
+    classes: ["MemoryManager"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.System.Display",
+    classes: ["DisplayRequest"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.System.UserProfile",
+    classes: ["UserInformation", "GlobalizationPreferences"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.System.Profile",
+    classes: ["AnalyticsInfo"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Globalization",
+    classes: ["ApplicationLanguages", "Calendar", "GeographicRegion"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Globalization.NumberFormatting",
+    classes: ["CurrencyFormatter", "DecimalFormatter"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Globalization.DateTimeFormatting",
+    classes: ["DateTimeFormatter"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Graphics.Imaging",
+    classes: ["BitmapDecoder", "BitmapEncoder", "BitmapTransform"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Graphics.Capture",
+    classes: ["GraphicsCapturePicker", "GraphicsCaptureSession", "GraphicsCaptureItem", "Direct3D11CaptureFramePool"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Media",
+    classes: ["VideoFrame", "AudioFrame"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Media.Capture",
+    classes: ["MediaCapture", "MediaCaptureInitializationSettings"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Media.Capture.Frames",
+    classes: ["MediaFrameReader"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Media.MediaProperties",
+    classes: ["MediaEncodingProfile", "ImageEncodingProperties"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Media.SpeechSynthesis",
+    classes: ["SpeechSynthesizer", "VoiceInformation", "SpeechSynthesisStream"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Media.SpeechRecognition",
+    classes: ["SpeechRecognizer", "SpeechRecognitionResult", "SpeechRecognitionTopicConstraint", "SpeechRecognitionListConstraint", "SpeechContinuousRecognitionSession"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Media.Ocr",
+    classes: ["OcrEngine"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Media.Transcoding",
+    classes: ["MediaTranscoder"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Media.Audio",
+    classes: ["AudioGraph", "AudioGraphSettings"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Enumeration",
+    classes: ["DevicePicker"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.Usb",
+    classes: ["UsbDevice", "UsbInterface", "UsbBulkInPipe", "UsbBulkOutPipe", "UsbInterruptInPipe", "UsbSetupPacket", "UsbDeviceClasses", "UsbControlRequestType"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.HumanInterfaceDevice",
+    classes: ["HidDevice", "HidInputReport", "HidOutputReport", "HidFeatureReport"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Devices.SerialCommunication",
+    classes: ["SerialDevice"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Gaming.Input",
+    classes: ["RawGameController"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.UI.ViewManagement",
+    classes: ["InputPane"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Foundation.Metadata",
+    classes: ["ApiInformation"]
   }
 ];
 
