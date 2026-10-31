@@ -1,11 +1,10 @@
-// fallow-ignore-file unused-class-member
 // fallow-ignore-file unused-export
 import { TimerQueue } from "./timer-queue.ts";
 
 // Node's timers, in the shape of the web's: one scheduler over one native
-// clock. The thread that runs WinUI cannot use libuv's (its loop is inside the
-// message loop and never turns), so the clock and the queue of work for the
-// next turn come from a driver.
+// clock. The UI thread runs it on the dispatcher, which is driven by messages
+// and needs no polling, so the clock and the queue of work for the next turn
+// come from a driver.
 
 const MAXIMUM_DELAY_BITS = 31;
 const MAXIMUM_DELAY = 2 ** MAXIMUM_DELAY_BITS - 1;
