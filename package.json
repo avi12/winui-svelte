@@ -301,6 +301,10 @@
       "types": "./dist/web-apis/notification.d.ts",
       "default": "./dist/web-apis/notification.js"
     },
+    "./web-apis/badging": {
+      "types": "./dist/web-apis/badging.d.ts",
+      "default": "./dist/web-apis/badging.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
