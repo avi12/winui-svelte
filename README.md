@@ -11,7 +11,7 @@ No browser engine is involved; there is no DOM
 ## Using it, at a glance
 
 Everything an app needs, in the order a new project hits it
-Each point links to the section with the detail, and [API.md](API.md) has every
+Each point links to the section with the detail, and [API.md](https://unpkg.com/winui-svelte/API.md) has every
 signature
 
 - **Setup:** `pnpm add winui-svelte`, one `winuiSvelte()` plugin in
