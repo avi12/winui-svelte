@@ -128,6 +128,11 @@ export function attachFlyout({ placed, props, bound }: {
     access: {
       read: () => flyout.isOpen,
       write(isOpen) {
+        const isOpenAlready = isOpen && flyout.isOpen;
+        if (isOpenAlready) {
+          return;
+        }
+
         hide();
 
         if (isOpen) {
