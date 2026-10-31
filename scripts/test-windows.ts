@@ -8,7 +8,12 @@ import path from "node:path";
 // in the background. The windows open off screen and are never activated
 // (WINUI_SVELTE_BACKGROUND, src/window/background-mode.ts), and the processes
 // run at below-normal priority, so the desktop stays free to work on. Each
-// file has a timeout. The result is in .verify/test-windows.txt (one line per
+// file runs on a desktop of its own (scripts/desktop/run-on-desktop.ps1):
+// off screen and no-activate are not enough, because focusing a control
+// (a form's first invalid field, a UI Automation call) still activates its
+// window, and a window on another desktop object can never take the
+// foreground from the person at the keyboard. WINUI_SVELTE_TEST_DESKTOP=default
+// opts out. Each file has a timeout. The result is in .verify/test-windows.txt (one line per
 // file), the spec output of each file in .verify/test-windows/<name>.log and
 // its JUnit report beside it as <name>.xml. Name files to run only those.
 
@@ -19,6 +24,15 @@ const SUMMARY_PATH = path.join(PACKAGE_ROOT, ".verify", "test-windows.txt");
 const FILE_TIMEOUT_MILLISECONDS = 600_000;
 const TEST_TIMEOUT_MILLISECONDS = 120_000;
 const MILLISECONDS_PER_SECOND = 1000;
+const DESKTOP_VARIABLE = "WINUI_SVELTE_TEST_DESKTOP";
+const DEFAULT_DESKTOP = "default";
+const DESKTOP_RUNNER = path.join(PACKAGE_ROOT, "scripts", "desktop", "run-on-desktop.ps1");
+// What cannot run on a desktop of its own, and why: these stay on the default
+// one, where they never take the foreground (measured, .verify/focus-steal.md).
+const DEFAULT_DESKTOP_TESTS = new Map([
+  ["tray.test.ts", "the notification area belongs to the shell, on the default desktop"],
+  ["web.test.ts", "WebView2 does not start its browser on another desktop"]
+]);
 // The mount test is `pnpm test`'s; every other test/*.test.ts opens windows.
 const NOT_WINDOW_TESTS = new Set(["mount-all.test.ts"]);
 
@@ -45,6 +59,45 @@ function verdictOf({ isTimedOut, code }: {
   return code === 0 ? "PASS" : "FAIL";
 }
 
+function isOnOwnDesktop(file: string) {
+  const isOptedOut = process.env[DESKTOP_VARIABLE] === DEFAULT_DESKTOP;
+  return !isOptedOut && !DEFAULT_DESKTOP_TESTS.has(path.basename(file));
+}
+
+function quoted(argument: string) {
+  return `"${argument}"`;
+}
+
+// The node process that runs `file`, started directly or, for a file that
+// runs on a desktop of its own, through the script that creates the desktop.
+function spawnFile({ file, nodeArguments }: {
+  file: string;
+  nodeArguments: string[];
+}) {
+  const options = {
+    cwd: PACKAGE_ROOT,
+    env: backgroundEnvironment(),
+    stdio: "ignore",
+    windowsHide: true
+  } as const;
+  if (!isOnOwnDesktop(file)) {
+    return spawn(process.execPath, nodeArguments, options);
+  }
+
+  const commandLine = [process.execPath, ...nodeArguments].map(quoted).join(" ");
+  return spawn("powershell.exe", [
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    DESKTOP_RUNNER,
+    "-CommandLine",
+    commandLine,
+    "-WorkingDirectory",
+    PACKAGE_ROOT
+  ], options);
+}
+
 function runFile(file: string) {
   const name = path.basename(file, ".test.ts");
   const logPath = path.join(RESULT_FOLDER, `${name}.log`);
@@ -55,21 +108,19 @@ function runFile(file: string) {
     status: string;
     seconds: number;
   }>(resolve => {
-    const child = spawn(process.execPath, [
-      "--disable-warning=ExperimentalWarning",
-      "--enable-source-maps",
-      "--test",
-      `--test-timeout=${TEST_TIMEOUT_MILLISECONDS}`,
-      "--test-reporter=spec",
-      `--test-reporter-destination=${logPath}`,
-      "--test-reporter=junit",
-      `--test-reporter-destination=${reportPath}`,
-      file
-    ], {
-      cwd: PACKAGE_ROOT,
-      env: backgroundEnvironment(),
-      stdio: "ignore",
-      windowsHide: true
+    const child = spawnFile({
+      file,
+      nodeArguments: [
+        "--disable-warning=ExperimentalWarning",
+        "--enable-source-maps",
+        "--test",
+        `--test-timeout=${TEST_TIMEOUT_MILLISECONDS}`,
+        "--test-reporter=spec",
+        `--test-reporter-destination=${logPath}`,
+        "--test-reporter=junit",
+        `--test-reporter-destination=${reportPath}`,
+        file
+      ]
     });
     let isTimedOut = false;
     const timer = setTimeout(() => {

@@ -90,16 +90,33 @@ further work; a test that makes a `Window` of its own calls
 What cannot be hidden:
 
 - A tray icon is in the real notification area while its test runs
-- WebView2 starts browser processes of its own (they end with the window)
-- `test/interaction.test.ts` drives controls through UI Automation, and
-  Windows gives the window the foreground when a pattern is invoked, whatever
-  its styles say; the window is off screen and has no taskbar button, but keys
-  typed meanwhile go to it, so run that file while you are not typing
+  (`test/tray.test.ts` stays on the default desktop, see below)
+- WebView2 starts browser processes of its own (they end with the window), and
+  its browser does not start on another desktop, so `test/web.test.ts` stays
+  on the default desktop
 - A combo box's drop-down is a window of its own that WinUI keeps on the
   nearest display, so it shows for a moment at the edge of the display next to
   the off-screen window
 - Popups that can stay inside their window (flyouts, menus) are made to, in a
   background run
+
+Off screen and no-activate do not keep the foreground by themselves: focusing
+a control (a form's first invalid field, a UI Automation `Invoke` or
+`SetFocus`) activates its window whatever its styles say, and the person at
+the desk loses their window for as long as the test runs
+So `scripts/test-windows.ts` starts each file on a desktop object of its own
+(`scripts/desktop/run-on-desktop.ps1`: `CreateDesktopW`, then `CreateProcessW`
+with that desktop; every process the test starts, the examples and the
+UI Automation scripts, inherits it), and a window there can
+never take the foreground; UI Automation, WinUI and Win2D work on it
+Two files cannot run there and stay on the default desktop, where they were
+measured not to take the foreground (`DEFAULT_DESKTOP_TESTS` in the script):
+`tray.test.ts` (the notification area is the shell's) and `web.test.ts`
+(WebView2's browser does not start)
+Set `WINUI_SVELTE_TEST_DESKTOP=default` to run every file on the default
+desktop instead; a file run with `node --test` directly is not on its own
+desktop either, so run it through the script
+(`pnpm test:windows test/forms.test.ts`)
 
 Start the whole run and read the result later:
 
