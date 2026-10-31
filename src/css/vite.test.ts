@@ -212,6 +212,68 @@ test("a sheet with an error fails the load with its line", () => {
   }), /^Error: .*broken\.svelte:3:8: float has no WinUI meaning/u);
 });
 
+function loadWith({ onError, command }: {
+  onError: "fail" | "report" | "report-when-serving";
+  command: "serve" | "build";
+}) {
+  const configured = winuiCss({
+    root: FOLDER,
+    onError
+  });
+  const configResolved = configured.configResolved;
+  const isConfigurable = typeof configResolved === "function";
+  if (!isConfigurable) {
+    throw new TypeError("configResolved is not a function");
+  }
+
+  callHook({
+    hook: configResolved,
+    thisArg: context,
+    args: [{
+      root: FOLDER,
+      command
+    }]
+  });
+  const load = configured.load;
+  const isLoadable = typeof load === "function";
+  if (!isLoadable) {
+    throw new TypeError("load is not a function");
+  }
+
+  return () => callHook({
+    hook: load,
+    thisArg: context,
+    args: [`${BROKEN}-winui-css.js`]
+  });
+}
+
+test("report-when-serving reports under the dev server and fails a build", () => {
+  const written: string[] = [];
+  const original = process.stderr.write;
+  process.stderr.write = (chunk: string | Uint8Array) => {
+    written.push(String(chunk));
+    return true;
+  };
+  try {
+    assert.equal(
+      loadWith({
+        onError: "report-when-serving",
+        command: "serve"
+      })(), "export default null;"
+    );
+  } finally {
+    process.stderr.write = original;
+  }
+
+  assert.match(written.join(""), /float has no WinUI meaning/u);
+  assert.throws(
+    loadWith({
+      onError: "report-when-serving",
+      command: "build"
+    }), /float has no WinUI meaning/u
+  );
+});
+
 test.after(() => {
   rmSync(FOLDER, {
     recursive: true,

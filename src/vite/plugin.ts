@@ -94,10 +94,11 @@ export function winuiSvelte() {
   };
   const { compile } = winuiPluginOptions();
   // A component's <style> becomes WinUI Styles its module registers; a rule
-  // WinUI cannot say is reported, and the open window keeps running.
+  // WinUI cannot say is reported under the dev server, and the open window
+  // keeps running; a build fails on it.
   const css = winuiCss({
     compilerOptions: compile,
-    onError: "report"
+    onError: "report-when-serving"
   });
   return [environment, ...svelteCompiler(compile), css, barrelImports()];
 }

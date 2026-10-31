@@ -115,9 +115,18 @@ function styledElement({ control, elementType, refreshText = () => undefined }: 
   });
 }
 
+// WinUI refuses a Style whose property the element's type lacks; a Setter with this value does it here.
+const REFUSED_PROPERTY = "Value=\"0.123\"";
 const mergedResources: string[] = [];
 const fakeNative: CssNative = {
-  loadDictionary: xaml => ({ xaml }),
+  loadDictionary(xaml) {
+    const isRefused = xaml.includes(REFUSED_PROPERTY);
+    if (isRefused) {
+      throw new Error("The property 'FontSize' was not found in type 'PathIcon'");
+    }
+
+    return { xaml };
+  },
   mergeIntoApplication(dictionary) {
     mergedResources.push(String(read(dictionary, "xaml")));
   },
@@ -711,7 +720,26 @@ test("a declaration the element cannot take fails with where it came from", () =
     control: control(),
     elementType: "border"
   });
-  assert.throws(() => element.setClasses("b"), /<border> cannot take the style of bad\.svelte#0: gap has no WinUI meaning on <border>/u);
+  assert.throws(() => element.setClasses("b"), /<border> cannot take the style of bad\.svelte:1 \.b \{ row-gap, column-gap \}: gap has no WinUI meaning on <border>/u);
+  element.dispose();
+});
+
+test("a Style that WinUI refuses to load is reported with the rule that made it", () => {
+  registerStyleSheet(
+    sheet({
+      id: "icon.svelte",
+      css: ".icon { opacity: 0.123 }"
+    })
+  );
+  const element = styledElement({
+    control: control(),
+    elementType: "border"
+  });
+  assert.throws(() => element.setClasses("icon"), error => {
+    const message = error instanceof Error ? error.message : "";
+    return message.includes("<border> cannot take the style of icon.svelte:1 .icon { opacity }: The property 'FontSize' was not found in type 'PathIcon'")
+      && error instanceof Error && error.cause instanceof Error;
+  });
   element.dispose();
 });
 
