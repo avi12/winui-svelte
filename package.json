@@ -305,6 +305,10 @@
       "types": "./dist/web-apis/media-session.d.ts",
       "default": "./dist/web-apis/media-session.js"
     },
+    "./web-apis/speech": {
+      "types": "./dist/web-apis/speech.d.ts",
+      "default": "./dist/web-apis/speech.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {

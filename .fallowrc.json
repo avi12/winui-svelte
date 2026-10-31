@@ -30,6 +30,7 @@
     "src/app/index.ts",
     "src/web-apis/index.ts",
     "src/web-apis/notification.ts",
+    "src/web-apis/speech.ts",
     "src/web-apis/media-session.ts",
     "src/tray/index.ts",
     "src/enums.ts",
