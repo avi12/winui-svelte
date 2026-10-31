@@ -1128,6 +1128,19 @@ feature and what each one is answered from
 ## State
 
 Svelte's own state tools work unchanged (runes, context, `SvelteMap`, stores)
+`examples/stores` runs them in a real window (`test/stores.test.ts` drives it
+and reads the controls back): `writable`, `readable`, `derived`, a custom store
+and `get`, the `$store` read and `$store = value` write, a store passed as a
+prop or through context, `bind:text`, `bind:value` and `bind:isOn` into a
+store, a store behind `{#each}` and `{#if}`, a store unsubscribed when its
+component is destroyed, `Tween`, `Spring` and the older `tweened` and `spring`
+stores from `svelte/motion`, and `SvelteMap`, `SvelteSet`, `SvelteDate`,
+`createSubscriber` and `MediaQuery` from `svelte/reactivity`
+`src/renderer/testing/stores.test.ts` checks the same store syntax in plain
+Node, on the DOM shim
+Two things to know: a `readable` that ticks starts its timer with
+`startTimer` from `winui-svelte/window`, because Node's `setInterval` never
+fires on the UI thread, and `MediaQuery` needs `installMatchMedia()` first
 The package adds `winui-svelte/state`: `createHostChannel(transport)`,
 `hostState<View>(channel, "view")` and `channel.send(action)`, for state a Tauri
 core, an Electron main process or a script owns

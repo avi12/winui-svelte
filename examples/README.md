@@ -31,6 +31,7 @@ to keep every window off screen and unactivated (what the tests do)
 | `gallery` | A NavigationView with a page per area: state, forms, layout, lists, overlays, theming, templates, window, services, media, text, input, data, animation, CSS layout, Win2D, tray |
 | `todo` | A real app: host state saved to a file, a keyed ListView, a confirm dialog and an InfoBar |
 | `settings` | App structure: NavigationView pages, forms, a theme switch, a window with its own title bar |
+| `stores` | Svelte's stores and `$store`, `svelte/motion` and `svelte/reactivity` on WinUI controls, with the subscriptions counted |
 | `counter`, `hello`, `lists`, ... | The focused examples the tests drive |
 
 `test/examples.test.ts` mounts the gallery, todo and settings in a real window

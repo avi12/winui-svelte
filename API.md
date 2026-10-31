@@ -258,8 +258,10 @@ What it does:
   layout while it leaves, and its siblings move when it is gone
 - A leaving element stays in its parent, out of reach (`IsHitTestVisible`
   false, Svelte's `inert`), until its outro has run, then Svelte removes it
-- `Tween`, `Spring` and a transition's `tick` step on `requestAnimationFrame`,
-  which is the same clock
+- `Tween`, `Spring`, the older `tweened` and `spring` stores and a transition's
+  `tick` step on `requestAnimationFrame`, which is the same clock
+  (`examples/stores` and `test/stores.test.ts` run all four against a
+  `ProgressBar` and an element's opacity)
   `prefersReducedMotion` matches nothing
 - `filter: blur(<length>)` (what Svelte's `blur` writes) is read as the radius
   of a blur, which `setBlur` draws: with `winui-svelte/element-effects` it is a
