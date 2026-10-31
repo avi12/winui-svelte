@@ -6,12 +6,14 @@
 // continuations a handler queued run before the next message is handled, as
 // they do for a browser's events. A message is first offered to the content
 // that owns the keyboard (`dispatchNextMessage`), as WinUI's own loop does.
-// When no message is waiting the slice sleeps in the message wait, which ends the moment one arrives: the sleep doubles
-// from one millisecond to a cap while nothing happens, so libuv's answers (a
-// socket, a file read, a child process) are late by the cap at most, and an
-// idle window costs a wake-up every cap milliseconds. libuv cannot be asked
-// whether it has work (file requests and worker threads do not show in
-// `process.getActiveResourcesInfo`), so the sleep never grows beyond the cap.
+// When no message is waiting the slice sleeps in the message wait, which ends
+// the moment one arrives. How long it may sleep is the source's to say when it
+// can hear libuv too (`idleMilliseconds`, see libuv-wake.ts): an idle window
+// then sleeps until something happens and costs nothing. A source that cannot
+// polls: the sleep doubles from one millisecond to a cap while nothing
+// happens, so libuv's answers (a socket, a file read, a child process) are late
+// by the cap at most, and an idle window costs a wake-up every cap
+// milliseconds.
 
 const FIRST_SLEEP_MILLISECONDS = 1;
 const MAXIMUM_SLEEP_MILLISECONDS = 8;
@@ -32,8 +34,14 @@ export interface MessageSource {
   /** Dispatches the message that is waiting, if any, without blocking. */
   dispatchNext(): Dispatched;
 
-  /** Blocks until a message is waiting or `milliseconds` have passed. */
+  /**
+   * Blocks until a message is waiting or `milliseconds` have passed (or, when
+   * the source hears libuv, until libuv has work).
+   */
   wait(milliseconds: number): void;
+
+  /** How long an idle thread may sleep; absent when the source cannot hear libuv and the pump polls. */
+  idleMilliseconds?: (() => number) | undefined;
 }
 
 /** The thread's Win32 queue, one message at a time. */
@@ -100,6 +108,13 @@ export function createMessagePump({ source, schedule, onQuit }: MessagePumpOptio
   let sleepMilliseconds = FIRST_SLEEP_MILLISECONDS;
 
   function sleep() {
+    const idleMilliseconds = source.idleMilliseconds?.();
+    const isHeard = idleMilliseconds !== undefined;
+    if (isHeard) {
+      source.wait(idleMilliseconds);
+      return;
+    }
+
     source.wait(sleepMilliseconds);
     sleepMilliseconds = Math.min(sleepMilliseconds * BACKOFF_FACTOR, MAXIMUM_SLEEP_MILLISECONDS);
   }

@@ -9,7 +9,10 @@ const CAP_MILLISECONDS = 8;
 // A message source that answers from a script, and a libuv that takes turns:
 // each turn runs the callbacks that were ready when it began (callbacks they
 // queue wait for the next turn, as in libuv), then the immediates.
-function createFakes(script: (iSlice: number) => Dispatched) {
+function createFakes({ script, idleMilliseconds }: {
+  script: (iSlice: number) => Dispatched;
+  idleMilliseconds?: () => number;
+}) {
   const log: string[] = [];
   const waits: number[] = [];
   const ready: Array<() => void> = [];
@@ -27,7 +30,8 @@ function createFakes(script: (iSlice: number) => Dispatched) {
       },
       wait(milliseconds) {
         waits.push(milliseconds);
-      }
+      },
+      idleMilliseconds
     },
     schedule(callback) {
       immediates.push(callback);
@@ -67,7 +71,7 @@ function createFakes(script: (iSlice: number) => Dispatched) {
 }
 
 test("a slice dispatches one message, then libuv takes a turn", () => {
-  const fakes = createFakes(() => Dispatched.MESSAGE);
+  const fakes = createFakes({ script: () => Dispatched.MESSAGE });
   const order: string[] = [];
   fakes.pump.start();
   fakes.ready.push(() => order.push("libuv"));
@@ -77,15 +81,31 @@ test("a slice dispatches one message, then libuv takes a turn", () => {
 });
 
 test("an idle pump sleeps longer each slice up to a cap, and a message starts the backoff over", () => {
-  const fakes = createFakes(iSlice => (iSlice === 6 ? Dispatched.MESSAGE : Dispatched.NOTHING));
+  const fakes = createFakes({ script: iSlice => (iSlice === 6 ? Dispatched.MESSAGE : Dispatched.NOTHING) });
   fakes.pump.start();
   fakes.turns(9);
   assert.deepEqual(fakes.waits, [1, 2, 4, 8, 8, 8, 1, 2, 4]);
   assert.ok(fakes.waits.every(milliseconds => milliseconds <= CAP_MILLISECONDS), "never sleeps beyond the cap");
 });
 
+test("a source that hears libuv says how long the pump sleeps, with no backoff", () => {
+  const sleeps = [250, 16, 250];
+  let iSleep = 0;
+  const fakes = createFakes({
+    script: () => Dispatched.NOTHING,
+    idleMilliseconds() {
+      const milliseconds = sleeps[iSleep] ?? 0;
+      iSleep += 1;
+      return milliseconds;
+    }
+  });
+  fakes.pump.start();
+  fakes.turns(2);
+  assert.deepEqual(fakes.waits, sleeps);
+});
+
 test("a flood of messages does not starve libuv", () => {
-  const fakes = createFakes(() => Dispatched.MESSAGE);
+  const fakes = createFakes({ script: () => Dispatched.MESSAGE });
   let served = 0;
   fakes.pump.start();
   for (let i = 0; i < FLOOD; i += 1) {
@@ -101,7 +121,7 @@ test("a flood of messages does not starve libuv", () => {
 });
 
 test("a flood of libuv callbacks does not starve messages", () => {
-  const fakes = createFakes(() => Dispatched.MESSAGE);
+  const fakes = createFakes({ script: () => Dispatched.MESSAGE });
   let served = 0;
   function again() {
     served += 1;
@@ -119,7 +139,7 @@ test("a flood of libuv callbacks does not starve messages", () => {
 });
 
 test("the quit message ends the pump: it calls back once and schedules nothing more", () => {
-  const fakes = createFakes(iSlice => (iSlice === 2 ? Dispatched.QUIT : Dispatched.MESSAGE));
+  const fakes = createFakes({ script: iSlice => (iSlice === 2 ? Dispatched.QUIT : Dispatched.MESSAGE) });
   fakes.pump.start();
   fakes.turns(5);
   assert.equal(fakes.quits, 1);
@@ -129,7 +149,7 @@ test("the quit message ends the pump: it calls back once and schedules nothing m
 });
 
 test("stop ends the pump without calling back", () => {
-  const fakes = createFakes(() => Dispatched.MESSAGE);
+  const fakes = createFakes({ script: () => Dispatched.MESSAGE });
   fakes.pump.start();
   fakes.pump.stop();
   fakes.turns(3);
@@ -139,7 +159,7 @@ test("stop ends the pump without calling back", () => {
 });
 
 test("starting twice runs one chain of slices", () => {
-  const fakes = createFakes(() => Dispatched.NOTHING);
+  const fakes = createFakes({ script: () => Dispatched.NOTHING });
   fakes.pump.start();
   fakes.pump.start();
   fakes.turns(3);
@@ -147,13 +167,15 @@ test("starting twice runs one chain of slices", () => {
 });
 
 test("a slice that throws is followed by another", () => {
-  const fakes = createFakes(iSlice => {
-    const isFirst = iSlice === 0;
-    if (isFirst) {
-      throw new Error("a handler failed");
-    }
+  const fakes = createFakes({
+    script(iSlice) {
+      const isFirst = iSlice === 0;
+      if (isFirst) {
+        throw new Error("a handler failed");
+      }
 
-    return Dispatched.NOTHING;
+      return Dispatched.NOTHING;
+    }
   });
   assert.throws(() => fakes.pump.start(), /a handler failed/u);
   fakes.turns(2);

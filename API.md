@@ -364,10 +364,10 @@ function buildApp(options: {
   config?: InlineConfig;                   // Vite settings merged over these (an alias, a plugin)
 }): Promise<string[]>;                     // the files written, relative to outDirectory
 
-// winui-svelte/runner: the window thread's side. `receive()` is called from a
-// DispatcherQueue timer; a hot update that cannot be applied is reported and
-// the window goes on.
-function createWindowModuleRunner(port: MessagePort): { runner: ModuleRunner; receive(): void };
+// winui-svelte/runner: the window thread's side. Hot updates arrive as messages
+// on the port, which the window's loop delivers; one that cannot be applied is
+// reported and the window goes on.
+function createWindowModuleRunner(port: MessagePort): { runner: ModuleRunner };
 ```
 
 Svelte is a published release (peer range `5.51.1 - 5.57.3`), compiled with its own
@@ -3872,16 +3872,27 @@ two messages, with no JavaScript under it: the promise continuations a handler
 queued run before the next message, as they do for a browser's events
 
 When no message is waiting the pump sleeps in `MsgWaitForMultipleObjectsEx`,
-which ends the moment a message arrives; the sleep doubles from 1 ms to 8 ms
-while nothing happens, so an idle window wakes about 125 times a second and a
-libuv callback waits 8 ms at most (a busy window gives libuv a turn per
-message)
+which ends the moment a message arrives
+libuv cannot be heard by that wait, so a helper thread
+(`src/window/libuv-wake.ts`) waits on the loop's I/O completion port while the
+UI thread sleeps; when a file read, a socket, a port or worker message or a
+child process has something for libuv, it puts the packet back and signals an
+event the wait includes, and the pump wakes to give libuv its turn
+An idle window then sleeps up to 250 ms at a time (a safety net for what no
+event announces, such as an unreferenced timer) and uses next to no CPU
+The one thing nobody can ask libuv from outside is when its next timer fires:
+while Node itself holds a timer (a socket timeout) the pump wakes every 16 ms
+The timers an app makes go through the scheduler, which the dispatcher drives
+If the completion port cannot be found the pump polls instead, sleeping from
+1 ms to 8 ms, and an idle window costs about 2 % of a core
 While it runs the pump asks Windows for 1 ms timer ticks (`timeBeginPeriod`),
 as browsers do; without them every wait rounds up to 15.6 ms
 Measured, off screen: `setTimeout` is 1 ms late (15 ms without the finer
 ticks), an `fs.readFile` callback and a TCP echo arrive within 5 ms, and an
-idle window uses about the same CPU as with `Application.Start`'s own loop
-(about 4 % of a core, the example's host included)
+idle window uses under 0.5 % of a core (`test/idle-cpu.test.ts`)
+Polling the module server's port from a timer (`receive()`) is no longer
+needed: its messages are libuv's, delivered by the pump, and a 30 ms timer
+alone costs about 2 % of a core
 
 `runOnUiThread` installs, before anything else runs, one scheduler on the
 dispatcher (`installUiTimers`) for the standard timers: it is driven by

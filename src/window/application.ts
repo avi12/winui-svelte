@@ -1,3 +1,4 @@
+import { startLibuvWake } from "./libuv-wake.ts";
 import { createMessagePump } from "./message-pump.ts";
 import { createMessageSource, requestFineTimerResolution } from "./native.ts";
 import { runTeardown } from "./teardown.ts";
@@ -62,8 +63,9 @@ export async function runWindow(options: RunWindowOptions) {
   const { libuv } = uiTimers();
   const stopListening = options.onerror === undefined ? undefined : onUiError(options.onerror);
   const ended = Promise.withResolvers<void>();
+  const wake = startLibuvWake();
   const pump = createMessagePump({
-    source: createMessageSource(),
+    source: createMessageSource(wake),
     schedule(callback) {
       libuv.setImmediate(callback);
     },
@@ -98,6 +100,7 @@ export async function runWindow(options: RunWindowOptions) {
     await ended.promise;
   } finally {
     pump.stop();
+    wake?.stop();
     stopListening?.();
     restoreTimerResolution();
     stopAllTimers();

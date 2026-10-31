@@ -1,8 +1,15 @@
+import type { LibuvWake } from "./libuv-wake.ts";
 import type { MessageQueue, MessageSource } from "./message-pump.ts";
 import { dispatchNextMessage } from "./message-pump.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
-import { bind, numberOf, pointerOf, withMemory } from "#src/win32-calls.js";
+import {
+  addressOf,
+  bind,
+  numberOf,
+  pointerOf,
+  withMemory
+} from "#src/win32-calls.js";
 
 // The window's only flat Win32 calls: the rest is WinUI's own API.
 
@@ -294,13 +301,14 @@ const WM_QUIT = 0x12;
 const PM_REMOVE = 1;
 const QS_ALLINPUT = 0x4ff;
 const MWMO_INPUTAVAILABLE = 4;
+const HANDLE_BYTES = 8;
 const TIMER_PERIOD_MILLISECONDS = 1;
 
 // ContentPreTranslateMessage is exported by the Windows App SDK's
 // Microsoft.UI.Windowing.Core.dll, which the bootstrapper put in the process's
 // package graph: the bare name binds it, like a System32 DLL.
 /** This thread's Win32 message queue, for the message pump; call it on the thread whose queue it is. */
-export function createMessageSource() {
+export function createMessageSource(wake?: LibuvWake) {
   const peekMessage = bind({
     dll: "user32.dll",
     entryPoint: "PeekMessageW",
@@ -338,6 +346,14 @@ export function createMessageSource() {
   const removeFromQueue = DynWin32.u32(PM_REMOVE);
   const anyInput = DynWin32.u32(QS_ALLINPUT);
   const inputAvailable = DynWin32.u32(MWMO_INPUTAVAILABLE);
+  const wakeHandles = DynComRawMemory.allocate(HANDLE_BYTES, HANDLE_BYTES);
+  const hasWake = wake !== undefined;
+  if (hasWake) {
+    wakeHandles.writeU64(0, wake.event);
+  }
+
+  const handleCount = DynWin32.u32(hasWake ? 1 : 0);
+  const handlesPointer = hasWake ? pointerOf(wakeHandles) : noPointer;
   const queue = {
     take() {
       const found = peekMessage.invoke([messagePointer, noPointer, none, none, removeFromQueue]).returnValue;
@@ -359,8 +375,11 @@ export function createMessageSource() {
       return dispatchNextMessage(queue);
     },
     wait(milliseconds: number) {
-      waitForMessage.invoke([none, noPointer, DynWin32.u32(milliseconds), anyInput, inputAvailable]);
-    }
+      wake?.arm();
+      waitForMessage.invoke([handleCount, handlesPointer, DynWin32.u32(milliseconds), anyInput, inputAvailable]);
+      wake?.disarm();
+    },
+    idleMilliseconds: wake?.idleMilliseconds
   } satisfies MessageSource;
 }
 
@@ -386,4 +405,136 @@ export function requestFineTimerResolution() {
   return () => {
     end.invoke([DynWin32.u32(TIMER_PERIOD_MILLISECONDS)]);
   };
+}
+
+const LOOP_OFFSET = 8;
+const IOCP_OFFSET = 56;
+const POINTER_BYTES = 8;
+const POINTER_ALIGNMENT = 8;
+const OBJECT_TYPE_BUFFER_BYTES = 256;
+const OBJECT_TYPE_NAME_LENGTH_OFFSET = 0;
+const OBJECT_TYPE_NAME_POINTER_OFFSET = 8;
+const OBJECT_TYPE_INFORMATION = 2;
+const IO_COMPLETION_TYPE = "IoCompletion";
+
+/**
+ * An auto-reset event, signalled by the helper thread of libuv-wake.ts and
+ * waited on by the message wait. It lives as long as the process.
+ */
+export function createWakeEvent() {
+  const createEvent = bind({
+    dll: "kernel32.dll",
+    entryPoint: "CreateEventW",
+    parameters: ["pointer", "i32", "i32", "pointer"],
+    returnType: "pointer"
+  });
+  const created = createEvent.invoke([pointerOf(null), DynWin32.i32(0), DynWin32.i32(0), pointerOf(null)]).returnValue;
+  return addressOf(created);
+}
+
+function readPointer({ address, scratch, copyMemory }: {
+  address: bigint;
+  scratch: DynComRawMemory;
+  copyMemory: ReturnType<typeof bind>;
+}) {
+  copyMemory.invoke([pointerOf(scratch), DynWin32Unsafe.pointer(address), DynWin32.u64(BigInt(POINTER_BYTES))]);
+  return scratch.readU64(0);
+}
+
+function objectTypeOf({ handle, queryObject }: {
+  handle: bigint;
+  queryObject: ReturnType<typeof bind>;
+}) {
+  return withMemory({
+    size: OBJECT_TYPE_BUFFER_BYTES,
+    alignment: POINTER_ALIGNMENT,
+    use(buffer) {
+      const status = numberOf(
+        queryObject.invoke([
+          DynWin32Unsafe.pointer(handle),
+          DynWin32.u32(OBJECT_TYPE_INFORMATION),
+          pointerOf(buffer),
+          DynWin32.u32(OBJECT_TYPE_BUFFER_BYTES),
+          pointerOf(null)
+        ]).returnValue
+      );
+      const isFailed = status < 0;
+      if (isFailed) {
+        return "";
+      }
+
+      // The name's characters follow the structure inside the same buffer.
+      const bytes = buffer.readU16(OBJECT_TYPE_NAME_LENGTH_OFFSET);
+      const textOffset = buffer.readU64(OBJECT_TYPE_NAME_POINTER_OFFSET) - buffer.pointer().address;
+      return buffer.readBytes(textOffset, bytes).toString("utf16le");
+    }
+  });
+}
+
+/**
+ * The I/O completion port of this thread's libuv loop, found through the
+ * address of one of its handles that Node's diagnostic report lists (a handle's
+ * second pointer is its loop, and the port the first private field after the
+ * loop's public ones, libuv 1.x on Windows); undefined when what is found is
+ * not such a port. Costs a diagnostic report, about 40 ms.
+ */
+export function findLoopCompletionPort() {
+  Object.assign(process.report, {
+    excludeNetwork: true,
+    excludeEnv: true
+  });
+  const report: unknown = process.report.getReport();
+  const reported = reportedHandleAddress(report);
+  const isMissing = reported === undefined;
+  if (isMissing) {
+    return undefined;
+  }
+
+  const copyMemory = bind({
+    dll: "kernel32.dll",
+    entryPoint: "RtlMoveMemory",
+    parameters: ["pointer", "pointer", "u64"],
+    returnType: "i32"
+  });
+  const queryObject = bind({
+    dll: "ntdll.dll",
+    entryPoint: "NtQueryObject",
+    parameters: ["pointer", "u32", "pointer", "u32", "pointer"],
+    returnType: "i32"
+  });
+  const scratch = DynComRawMemory.allocate(POINTER_BYTES, POINTER_ALIGNMENT);
+  try {
+    const loop = readPointer({
+      address: BigInt(reported) + BigInt(LOOP_OFFSET),
+      scratch,
+      copyMemory
+    });
+    const iocp = readPointer({
+      address: loop + BigInt(IOCP_OFFSET),
+      scratch,
+      copyMemory
+    });
+    const isPort = objectTypeOf({
+      handle: iocp,
+      queryObject
+    }) === IO_COMPLETION_TYPE;
+    return isPort ? iocp : undefined;
+  } finally {
+    scratch.release();
+  }
+}
+
+interface ReportedHandle {
+  address: string;
+}
+
+function isReportedHandle(value: unknown): value is ReportedHandle {
+  return typeof value === "object" && value !== null && "address" in value && typeof value.address === "string";
+}
+
+function reportedHandleAddress(report: unknown) {
+  const hasLibuv = typeof report === "object" && report !== null && "libuv" in report;
+  const libuv: unknown = hasLibuv ? report.libuv : undefined;
+  const handles: unknown[] = Array.isArray(libuv) ? libuv : [];
+  return handles.find(isReportedHandle)?.address;
 }
