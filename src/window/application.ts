@@ -9,6 +9,11 @@ import { installCss } from "#src/css/index.js";
 import * as winui from "#src/winui.js";
 import { Application } from "#src/winui.js";
 
+// DispatcherShutdownMode.OnLastWindowClose: the XAML runtime posts WM_QUIT when
+// the last window closes, as `Application.Start` arranged; with the manager
+// made by hand (xaml-thread.ts) the mode must be set explicitly.
+const ON_LAST_WINDOW_CLOSE = 0;
+
 /** How `runWindow` starts the application. */
 export interface RunWindowOptions {
   /**
@@ -53,6 +58,7 @@ export async function runWindow(options: RunWindowOptions) {
   const held = startXamlThread(() => {
     Application.create(() => {
       try {
+        Application.current.dispatcherShutdownMode = ON_LAST_WINDOW_CLOSE;
         useDispatcherTimers();
         installCss(winui);
         installXaml();
