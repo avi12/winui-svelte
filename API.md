@@ -1879,6 +1879,11 @@ installed
 - The `GeolocationAccessStatus`, `PositionAccuracy` and `PositionSource`
   enums are placeholders in the generated bindings, so the module reads their
   numbers by value
+- The backend for tests is a `GeolocationBackend`; `windowsGeolocationBackend`
+  is the real one, `GeolocationFailure` (with a `GeolocationFailureReason` of
+  `denied`, `unavailable` or `timeout`) is what it rejects with,
+  `GeolocationAccess` is `allowed`, `denied` or `unspecified`, and
+  `GeolocationErrorCode` holds the three codes
 
 #### Battery (`winui-svelte/web-apis/battery`)
 
@@ -1909,6 +1914,8 @@ installed
 - Extras: `isOnline`, `connectivityLevel`, `profileName`, `costType`,
   `isRoaming`, `isOverDataLimit`, `isApproachingDataLimit`, `signalBars` and
   `profileNames`
+- `EffectiveConnectionType` and `ConnectionType` list the values of
+  `effectiveType` and `type`
 
 #### Gamepad (`winui-svelte/web-apis/gamepad`)
 
@@ -1928,6 +1935,8 @@ installed
   as never pressed
 - Extras: `playEffect("trigger-rumble", { leftTrigger, rightTrigger })`,
   `isWireless` and `batteryPercent`
+- `windowsGamepadBackend` is the real `GamepadBackend`; a test gives devices
+  with `read`, `vibrate` and `battery`
 
 #### Sensors (`winui-svelte/web-apis/sensors`)
 
@@ -1949,6 +1958,9 @@ has, `Accelerometer` (meters per second squared, gravity included),
   `headingTrueNorth`, `accuracy`), and `accuracy` and `yawAccuracy` on the
   magnetometer and orientation sensors
 - The proximity sensor needs a device id and a trigger, so it has no class here
+- `SensorKind` names the nine sensors, `windowsSensorBackend` is the real
+  `SensorBackend` (it takes the WinRT sensors, so a test checks the unit
+  conversions) and `SensorErrorEvent` is the `error` event
 
 #### Screen (`winui-svelte/web-apis/screen`)
 
@@ -1971,6 +1983,8 @@ and `ScreenDetailed` classes over `DisplayArea` and the system DPI
 - `DisplayInformation` (refresh rate, HDR, rotation) needs a view that an
   unpackaged WinUI app lacks, so those stay out; the display areas need the
   Windows App SDK to be running, which a window does
+- `windowsScreenBackend` is the real `ScreenBackend`; `OrientationType` is
+  `landscape-primary` or `portrait-primary`
 
 ## Forms (`winui-svelte/forms`)
 
