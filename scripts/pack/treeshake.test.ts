@@ -65,7 +65,10 @@ async function bundleOf(input: string) {
   const code = chunks.map(chunk => chunk.code).join("\n");
   return {
     bytes: Buffer.byteLength(code),
-    modules: new Set(code.match(bindingImport) ?? [])
+    modules: new Set(code.match(bindingImport) ?? []),
+    sourceFiles: chunks.flatMap(chunk => Object.entries(chunk.modules)
+      .filter(([, rendered]) => rendered.renderedLength > 0)
+      .map(([id]) => id))
   };
 }
 
@@ -117,4 +120,14 @@ test("an app bundles only the enums it imports from winui-svelte/enums", {
   assert.deepEqual(addedEnums, ["#winui/microsoft/ui/xaml/controls/AppBarClosedDisplayMode"]);
   assert.deepEqual(added, addedEnums);
   assert.ok(withEnum.bytes - button.bytes <= ONE_ENUM_BYTES, `one enum added ${withEnum.bytes - button.bytes} bytes`);
+});
+
+// The Web APIs are opt-in: an app that installs none must not carry one.
+test("an app with one Button bundles no Web API code", {
+  skip: !IS_BUILT,
+  timeout: BUNDLE_TIMEOUT_MILLISECONDS
+}, async () => {
+  const bundle = await bundleOf("main.ts");
+  const webApiFiles = bundle.sourceFiles.filter(file => /[/]web-apis[/]/u.test(file));
+  assert.deepEqual(webApiFiles, []);
 });
