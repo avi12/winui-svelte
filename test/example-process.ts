@@ -142,16 +142,6 @@ export class ExampleProcess {
     });
   }
 
-  // The processor time this process (the host and the window's thread) has used so far, in milliseconds.
-  cpuMilliseconds() {
-    const output = execFileSync("powershell.exe", [
-      "-NoProfile",
-      "-Command",
-      `(Get-Process -Id ${this.pid}).TotalProcessorTime.TotalMilliseconds`
-    ], { encoding: "utf8" });
-    return Number.parseFloat(output);
-  }
-
   // For a test that failed: end this process, and only it.
   kill() {
     this.child.kill();
@@ -180,6 +170,16 @@ export class ExampleProcess {
 
     return isLeft;
   }
+}
+
+// The processor time the process `pid` has used so far, in milliseconds.
+export function processorMilliseconds(pid: number) {
+  const output = execFileSync("powershell.exe", [
+    "-NoProfile",
+    "-Command",
+    `(Get-Process -Id ${pid}).TotalProcessorTime.TotalMilliseconds`
+  ], { encoding: "utf8" });
+  return Number.parseFloat(output);
 }
 
 export function numberOf({ report, field }: {
