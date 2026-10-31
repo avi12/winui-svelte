@@ -337,7 +337,12 @@ Every feature falls in one of three kinds, decided in this order
 | --- | --- | --- |
 | `Notification` (with buttons, inputs, progress, scenario and more) | `winui-svelte/web-apis/notification` | done |
 | `navigator.permissions`, `PermissionStatus` | `winui-svelte/web-apis` | done |
-| geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
+| `navigator.clipboard`, `ClipboardItem`, `clipboardchange` (with files, custom formats and history) | `winui-svelte/web-apis/clipboard` | done |
+| `navigator.share`, `navigator.canShare` (needs a package identity) | `winui-svelte/web-apis/share` | done |
+| `showOpenFilePicker`, `showSaveFilePicker`, `showDirectoryPicker`, `FileSystem*Handle` | `winui-svelte/web-apis/file-system` | done |
+| `navigator.storage` (`estimate`, `persist`, origin private file system) | `winui-svelte/web-apis/storage` | done |
+| `localStorage`, `sessionStorage`, `StorageEvent` | `winui-svelte/web-apis/web-storage` | done |
+| geolocation, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
 
 ## Host integration
 

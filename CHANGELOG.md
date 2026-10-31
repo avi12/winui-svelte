@@ -21,6 +21,10 @@ project adheres to [Semantic Versioning](https://semver.org/)
   `navigator.permissions`, and `Notification` over app notifications with
   WinUI extras (buttons, inputs, progress, scenario, sound and more)
   (`winui-svelte/web-apis/notification`)
+- Web APIs for data and storage: `navigator.clipboard` and `ClipboardItem`,
+  `navigator.share`, the File System Access API, `navigator.storage` (the
+  origin private file system) and `localStorage` / `sessionStorage`, each at
+  `winui-svelte/web-apis/<name>` with WinUI extras
 
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support
