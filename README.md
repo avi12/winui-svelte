@@ -8,7 +8,42 @@ controls animate and are accessible as WinUI makes them, and acrylic is a real
 backdrop
 No browser engine is involved; there is no DOM
 
-Agents: see [AGENTS.md](AGENTS.md)
+## Using it, at a glance
+
+Everything an app needs, in the order a new project hits it
+Each point links to the section with the detail, and [API.md](API.md) has every
+signature
+
+- **Setup:** `pnpm add winui-svelte`, one `winuiSvelte()` plugin in
+  `vite.config.ts`, and `winuiDiagnostics()` in `svelte.config.js` so scoped
+  classes on components do not warn ([Quick start](#quick-start))
+- **Components:** import them in PascalCase from `winui-svelte/components`
+  (`StackPanel`, `TextBlock`, `ToggleSwitch`); every WinUI 3 control exists, so
+  find yours in the [Controls](#controls) table and follow its link to the
+  WinUI docs
+- **Closed sets of values** (alignment, orientation, wrapping...) are enums from
+  `winui-svelte/enums`, never string literals
+- **Text** is the child of the component: `<TextBlock>Hello</TextBlock>`
+- **Props** are WinUI's own property names in `lowerCamelCase`; a wrong prop or a
+  wrong value type fails `svelte-check`, so run it after every change
+- **Events** mirror the DOM and are all lowercase: `onclick`, `ontoggled`,
+  `onselectionchanged`, never `onClick`
+- **Layout and look** are CSS in the component's `<style>`, scoped by Svelte's
+  own algorithm, with native units only: `px`, `deg`, `s`, `ms`, `fr`, `auto`
+  and plain numbers, never `%` or `rem` ([Styling with CSS](#styling-with-css))
+- **State** shared with the host goes through `winui-svelte/state`
+  (`hostState`, `send`); the host and the window talk in JSON lines
+  ([State](#state), [Host integration](#host-integration))
+- **Web APIs** (`Notification`, `navigator.geolocation`, the clipboard and the
+  rest) are the browser's own, backed by Windows; call them as on the web
+  ([Web APIs](#web-apis))
+- **Shipping:** `buildApp` from `winui-svelte/vite` builds one file per entry
+  that plain Node runs; leave minify off ([Entry points](#entry-points))
+- **Testing:** run a window test on a hidden desktop where you can; never inject
+  real mouse or keyboard input
+- **Not a browser:** there is no DOM, no `document`, no `%` layout; anything in
+  [Limitations](#limitations) is a known gap, so check it before working around
+  an error
 
 ## Why
 
