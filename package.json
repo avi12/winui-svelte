@@ -309,6 +309,10 @@
       "types": "./dist/web-apis/share.d.ts",
       "default": "./dist/web-apis/share.js"
     },
+    "./web-apis/file-system": {
+      "types": "./dist/web-apis/file-system.d.ts",
+      "default": "./dist/web-apis/file-system.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
