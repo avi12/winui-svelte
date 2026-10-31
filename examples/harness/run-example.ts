@@ -3,32 +3,25 @@ import { exampleCommandSchema, exampleModuleSchema } from "./contract.ts";
 import * as bindings from "#src/components/generated/bindings.js";
 import { registerControls } from "#src/renderer/host/host.js";
 import { runWindow } from "#src/window/index.js";
-import { DispatcherQueue } from "#src/winui.js";
 import type { MessagePort } from "node:worker_threads";
-import { receiveMessageOnPort } from "node:worker_threads";
 
 // Loaded through the module server, like an app's own modules: the example's
-// start() runs on the UI thread once WinUI is up, and the host's commands are
-// taken off the port by a dispatcher timer.
+// start() runs on the UI thread once WinUI is up, and the host's commands
+// arrive as messages on the port, which the window's loop delivers once the
+// window has had its first frames (WinUI lays out on its own schedule, and a
+// command that arrives before the first layout finds nothing realized).
 
-const COMMAND_MILLISECONDS = 30;
-const ticksPerMillisecond = 10_000n;
-
-// Held for as long as the window runs: a timer whose wrapper is collected
-// stops.
-const heldTimers = new Set<ReturnType<ReturnType<typeof DispatcherQueue.getForCurrentThread>["createTimer"]>>();
+const FIRST_FRAMES_MILLISECONDS = 30;
 
 export interface ExampleRun {
   entry: string;
   link: MessagePort;
   options: Record<string, string>;
-  // Takes in the module server's hot updates; called with each tick.
-  receive(): void;
 }
 
 export type RunExample = (run: ExampleRun) => Promise<void>;
 
-export async function runExample({ entry, link, options, receive }: ExampleRun) {
+export async function runExample({ entry, link, options }: ExampleRun) {
   const parsedExample = exampleModuleSchema.safeParse(await import(/* @vite-ignore */ entry));
   if (!parsedExample.success) {
     throw new Error(`${entry} exports no start()`);
@@ -51,25 +44,18 @@ export async function runExample({ entry, link, options, receive }: ExampleRun) 
       }
 
       start(host);
-      const timer = DispatcherQueue.getForCurrentThread().createTimer();
-      timer.interval = { duration: BigInt(COMMAND_MILLISECONDS) * ticksPerMillisecond };
-      timer.isRepeating = true;
-      timer.onTick(() => {
-        receive();
-        let received = receiveMessageOnPort(link);
-        while (received !== undefined) {
-          const parsedCommand = exampleCommandSchema.safeParse(received.message);
-          if (parsedCommand.success) {
-            for (const handler of handlers) {
-              handler(parsedCommand.data);
-            }
+      setTimeout(() => {
+        link.on("message", message => {
+          const parsedCommand = exampleCommandSchema.safeParse(message);
+          if (!parsedCommand.success) {
+            return;
           }
 
-          received = receiveMessageOnPort(link);
-        }
-      });
-      timer.start();
-      heldTimers.add(timer);
+          for (const handler of handlers) {
+            handler(parsedCommand.data);
+          }
+        });
+      }, FIRST_FRAMES_MILLISECONDS);
     }
   });
 }

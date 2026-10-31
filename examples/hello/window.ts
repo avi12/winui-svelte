@@ -5,9 +5,8 @@ import type * as WindowModule from "winui-svelte/window";
 import { z } from "zod";
 
 // The window: WinUI's thread. Its modules come from the host's dev server, and
-// a timer takes the server's hot updates in, since WinUI holds this thread.
+// the server's hot updates arrive as messages the window's loop delivers.
 
-const RECEIVE_MILLISECONDS = 30;
 const windowSize = {
   width: 480,
   height: 320
@@ -23,15 +22,11 @@ await runOnUiThread(async () => {
 
   // Everything goes through the runner, so the window and the components
   // share one renderer.
-  const { runner, receive } = createWindowModuleRunner(parsedData.data.modules);
-  const { createWindow, runWindow, startTimer } = await runner.import<typeof WindowModule>("winui-svelte/window");
+  const { runner } = createWindowModuleRunner(parsedData.data.modules);
+  const { createWindow, runWindow } = await runner.import<typeof WindowModule>("winui-svelte/window");
   const { default: appComponent } = await runner.import("/App.svelte");
   await runWindow({
     onStart() {
-      startTimer({
-        milliseconds: RECEIVE_MILLISECONDS,
-        onTick: receive
-      });
       createWindow({
         component: appComponent,
         props: {},

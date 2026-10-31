@@ -2,7 +2,6 @@ import { describeError, errorOf } from "./diagnostics.ts";
 import type { Json } from "#src/messaging/json.js";
 import { format } from "node:util";
 import type { MessagePort } from "node:worker_threads";
-import { receiveMessageOnPort } from "node:worker_threads";
 import type { HotPayload } from "vite";
 import type { HMRLogger, ModuleRunnerTransport } from "vite/module-runner";
 import { createNodeImportMeta, ESModulesEvaluator, ModuleRunner } from "vite/module-runner";
@@ -11,15 +10,12 @@ import { createNodeImportMeta, ESModulesEvaluator, ModuleRunner } from "vite/mod
  * The window thread's side of `server.ts`: a module runner that loads the
  * window's modules from the dev server and applies its hot updates.
  *
- * WinUI's message loop holds the window thread and never gives it back to
- * Node, so once the window is up, no 'message' event arrives here: the app
- * calls `receive()` from a timer of WinUI's own (a DispatcherQueue timer), on
- * the UI thread, and every reply and update is handled there.
+ * The server's replies and hot updates arrive as 'message' events on the
+ * port, which the window's loop (`runWindow`) delivers between WinUI's
+ * messages, so nothing has to poll for them.
  */
 export interface WindowModuleRunner {
   readonly runner: ModuleRunner;
-  /** Takes in everything the server has sent. */
-  receive(): void;
 }
 
 /**
@@ -97,7 +93,6 @@ export function createWindowModuleRunner(port: MessagePort) {
   const transport: ModuleRunnerTransport = {
     connect({ onMessage }) {
       handle = onMessage;
-      // Until WinUI takes the thread, Node delivers messages itself.
       port.on("message", deliver);
     },
     send(payload) {
@@ -112,13 +107,5 @@ export function createWindowModuleRunner(port: MessagePort) {
       logger
     }
   }, new ESModulesEvaluator());
-  const windowRunner: WindowModuleRunner = {
-    runner,
-    receive() {
-      for (let received = receiveMessageOnPort(port); received !== undefined; received = receiveMessageOnPort(port)) {
-        deliver(received.message);
-      }
-    }
-  };
-  return windowRunner;
+  return { runner } satisfies WindowModuleRunner;
 }
