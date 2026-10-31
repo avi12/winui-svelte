@@ -88,29 +88,41 @@ export function linkTreeView(
     }
   });
 
-  if ("oncollapsed" in props) {
-    link.add(control.onCollapsed((...args) => props.oncollapsed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncollapsed",
+    subscribe: handler => control.onCollapsed(handler)
+  });
 
-  if ("ondragitemscompleted" in props) {
-    link.add(control.onDragItemsCompleted((...args) => props.ondragitemscompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragitemscompleted",
+    subscribe: handler => control.onDragItemsCompleted(handler)
+  });
 
-  if ("ondragitemsstarting" in props) {
-    link.add(control.onDragItemsStarting((...args) => props.ondragitemsstarting?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragitemsstarting",
+    subscribe: handler => control.onDragItemsStarting(handler)
+  });
 
-  if ("onexpanding" in props) {
-    link.add(control.onExpanding((...args) => props.onexpanding?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onexpanding",
+    subscribe: handler => control.onExpanding(handler)
+  });
 
-  if ("oniteminvoked" in props) {
-    link.add(control.onItemInvoked((...args) => props.oniteminvoked?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oniteminvoked",
+    subscribe: handler => control.onItemInvoked(handler)
+  });
 
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselectionchanged",
+    subscribe: handler => control.onSelectionChanged(handler)
+  });
 }
 
 export function connectTreeView(

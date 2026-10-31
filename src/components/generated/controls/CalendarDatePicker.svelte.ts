@@ -126,21 +126,29 @@ export function linkCalendarDatePicker(
     ]
   });
 
-  if ("oncalendarviewdayitemchanging" in props) {
-    link.add(control.onCalendarViewDayItemChanging((...args) => props.oncalendarviewdayitemchanging?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncalendarviewdayitemchanging",
+    subscribe: handler => control.onCalendarViewDayItemChanging(handler)
+  });
 
-  if ("onclosed" in props) {
-    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosed",
+    subscribe: handler => control.onClosed(handler)
+  });
 
-  if ("ondatechanged" in props) {
-    link.add(control.onDateChanged((...args) => props.ondatechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondatechanged",
+    subscribe: handler => control.onDateChanged(handler)
+  });
 
-  if ("onopened" in props) {
-    link.add(control.onOpened((...args) => props.onopened?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onopened",
+    subscribe: handler => control.onOpened(handler)
+  });
 }
 
 export function connectCalendarDatePicker(

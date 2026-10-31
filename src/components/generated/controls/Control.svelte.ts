@@ -155,15 +155,21 @@ export function linkControl(
     }
   });
 
-  if ("onfocusdisengaged" in props) {
-    link.add(control.onFocusDisengaged((...args) => props.onfocusdisengaged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onfocusdisengaged",
+    subscribe: handler => control.onFocusDisengaged(handler)
+  });
 
-  if ("onfocusengaged" in props) {
-    link.add(control.onFocusEngaged((...args) => props.onfocusengaged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onfocusengaged",
+    subscribe: handler => control.onFocusEngaged(handler)
+  });
 
-  if ("onisenabledchanged" in props) {
-    link.add(control.onIsEnabledChanged((...args) => props.onisenabledchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onisenabledchanged",
+    subscribe: handler => control.onIsEnabledChanged(handler)
+  });
 }

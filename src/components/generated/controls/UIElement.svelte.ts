@@ -489,165 +489,245 @@ export function linkUIElement(
     }
   });
 
-  if ("onaccesskeydisplaydismissed" in props) {
-    link.add(control.onAccessKeyDisplayDismissed((...args) => props.onaccesskeydisplaydismissed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onaccesskeydisplaydismissed",
+    subscribe: handler => control.onAccessKeyDisplayDismissed(handler)
+  });
 
-  if ("onaccesskeydisplayrequested" in props) {
-    link.add(control.onAccessKeyDisplayRequested((...args) => props.onaccesskeydisplayrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onaccesskeydisplayrequested",
+    subscribe: handler => control.onAccessKeyDisplayRequested(handler)
+  });
 
-  if ("onaccesskeyinvoked" in props) {
-    link.add(control.onAccessKeyInvoked((...args) => props.onaccesskeyinvoked?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onaccesskeyinvoked",
+    subscribe: handler => control.onAccessKeyInvoked(handler)
+  });
 
-  if ("onbringintoviewrequested" in props) {
-    link.add(control.onBringIntoViewRequested((...args) => props.onbringintoviewrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onbringintoviewrequested",
+    subscribe: handler => control.onBringIntoViewRequested(handler)
+  });
 
-  if ("oncharacterreceived" in props) {
-    link.add(control.onCharacterReceived((...args) => props.oncharacterreceived?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncharacterreceived",
+    subscribe: handler => control.onCharacterReceived(handler)
+  });
 
-  if ("oncontextcanceled" in props) {
-    link.add(control.onContextCanceled((...args) => props.oncontextcanceled?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncontextcanceled",
+    subscribe: handler => control.onContextCanceled(handler)
+  });
 
-  if ("oncontextrequested" in props) {
-    link.add(control.onContextRequested((...args) => props.oncontextrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncontextrequested",
+    subscribe: handler => control.onContextRequested(handler)
+  });
 
-  if ("ondoubletapped" in props) {
-    link.add(control.onDoubleTapped((...args) => props.ondoubletapped?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondoubletapped",
+    subscribe: handler => control.onDoubleTapped(handler)
+  });
 
-  if ("ondragenter" in props) {
-    link.add(control.onDragEnter((...args) => props.ondragenter?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragenter",
+    subscribe: handler => control.onDragEnter(handler)
+  });
 
-  if ("ondragleave" in props) {
-    link.add(control.onDragLeave((...args) => props.ondragleave?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragleave",
+    subscribe: handler => control.onDragLeave(handler)
+  });
 
-  if ("ondragover" in props) {
-    link.add(control.onDragOver((...args) => props.ondragover?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragover",
+    subscribe: handler => control.onDragOver(handler)
+  });
 
-  if ("ondragstarting" in props) {
-    link.add(control.onDragStarting((...args) => props.ondragstarting?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragstarting",
+    subscribe: handler => control.onDragStarting(handler)
+  });
 
-  if ("ondrop" in props) {
-    link.add(control.onDrop((...args) => props.ondrop?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondrop",
+    subscribe: handler => control.onDrop(handler)
+  });
 
-  if ("ondropcompleted" in props) {
-    link.add(control.onDropCompleted((...args) => props.ondropcompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondropcompleted",
+    subscribe: handler => control.onDropCompleted(handler)
+  });
 
-  if ("ongettingfocus" in props) {
-    link.add(control.onGettingFocus((...args) => props.ongettingfocus?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ongettingfocus",
+    subscribe: handler => control.onGettingFocus(handler)
+  });
 
-  if ("ongotfocus" in props) {
-    link.add(control.onGotFocus((...args) => props.ongotfocus?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ongotfocus",
+    subscribe: handler => control.onGotFocus(handler)
+  });
 
-  if ("onholding" in props) {
-    link.add(control.onHolding((...args) => props.onholding?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onholding",
+    subscribe: handler => control.onHolding(handler)
+  });
 
-  if ("onkeydown" in props) {
-    link.add(control.onKeyDown((...args) => props.onkeydown?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onkeydown",
+    subscribe: handler => control.onKeyDown(handler)
+  });
 
-  if ("onkeyup" in props) {
-    link.add(control.onKeyUp((...args) => props.onkeyup?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onkeyup",
+    subscribe: handler => control.onKeyUp(handler)
+  });
 
-  if ("onlosingfocus" in props) {
-    link.add(control.onLosingFocus((...args) => props.onlosingfocus?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onlosingfocus",
+    subscribe: handler => control.onLosingFocus(handler)
+  });
 
-  if ("onlostfocus" in props) {
-    link.add(control.onLostFocus((...args) => props.onlostfocus?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onlostfocus",
+    subscribe: handler => control.onLostFocus(handler)
+  });
 
-  if ("onmanipulationcompleted" in props) {
-    link.add(control.onManipulationCompleted((...args) => props.onmanipulationcompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onmanipulationcompleted",
+    subscribe: handler => control.onManipulationCompleted(handler)
+  });
 
-  if ("onmanipulationdelta" in props) {
-    link.add(control.onManipulationDelta((...args) => props.onmanipulationdelta?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onmanipulationdelta",
+    subscribe: handler => control.onManipulationDelta(handler)
+  });
 
-  if ("onmanipulationinertiastarting" in props) {
-    link.add(control.onManipulationInertiaStarting((...args) => props.onmanipulationinertiastarting?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onmanipulationinertiastarting",
+    subscribe: handler => control.onManipulationInertiaStarting(handler)
+  });
 
-  if ("onmanipulationstarted" in props) {
-    link.add(control.onManipulationStarted((...args) => props.onmanipulationstarted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onmanipulationstarted",
+    subscribe: handler => control.onManipulationStarted(handler)
+  });
 
-  if ("onmanipulationstarting" in props) {
-    link.add(control.onManipulationStarting((...args) => props.onmanipulationstarting?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onmanipulationstarting",
+    subscribe: handler => control.onManipulationStarting(handler)
+  });
 
-  if ("onnofocuscandidatefound" in props) {
-    link.add(control.onNoFocusCandidateFound((...args) => props.onnofocuscandidatefound?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onnofocuscandidatefound",
+    subscribe: handler => control.onNoFocusCandidateFound(handler)
+  });
 
-  if ("onpointercanceled" in props) {
-    link.add(control.onPointerCanceled((...args) => props.onpointercanceled?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpointercanceled",
+    subscribe: handler => control.onPointerCanceled(handler)
+  });
 
-  if ("onpointercapturelost" in props) {
-    link.add(control.onPointerCaptureLost((...args) => props.onpointercapturelost?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpointercapturelost",
+    subscribe: handler => control.onPointerCaptureLost(handler)
+  });
 
-  if ("onpointerentered" in props) {
-    link.add(control.onPointerEntered((...args) => props.onpointerentered?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpointerentered",
+    subscribe: handler => control.onPointerEntered(handler)
+  });
 
-  if ("onpointerexited" in props) {
-    link.add(control.onPointerExited((...args) => props.onpointerexited?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpointerexited",
+    subscribe: handler => control.onPointerExited(handler)
+  });
 
-  if ("onpointermoved" in props) {
-    link.add(control.onPointerMoved((...args) => props.onpointermoved?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpointermoved",
+    subscribe: handler => control.onPointerMoved(handler)
+  });
 
-  if ("onpointerpressed" in props) {
-    link.add(control.onPointerPressed((...args) => props.onpointerpressed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpointerpressed",
+    subscribe: handler => control.onPointerPressed(handler)
+  });
 
-  if ("onpointerreleased" in props) {
-    link.add(control.onPointerReleased((...args) => props.onpointerreleased?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpointerreleased",
+    subscribe: handler => control.onPointerReleased(handler)
+  });
 
-  if ("onpointerwheelchanged" in props) {
-    link.add(control.onPointerWheelChanged((...args) => props.onpointerwheelchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpointerwheelchanged",
+    subscribe: handler => control.onPointerWheelChanged(handler)
+  });
 
-  if ("onpreviewkeydown" in props) {
-    link.add(control.onPreviewKeyDown((...args) => props.onpreviewkeydown?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpreviewkeydown",
+    subscribe: handler => control.onPreviewKeyDown(handler)
+  });
 
-  if ("onpreviewkeyup" in props) {
-    link.add(control.onPreviewKeyUp((...args) => props.onpreviewkeyup?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpreviewkeyup",
+    subscribe: handler => control.onPreviewKeyUp(handler)
+  });
 
-  if ("onprocesskeyboardaccelerators" in props) {
-    link.add(control.onProcessKeyboardAccelerators((...args) => props.onprocesskeyboardaccelerators?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onprocesskeyboardaccelerators",
+    subscribe: handler => control.onProcessKeyboardAccelerators(handler)
+  });
 
-  if ("onrighttapped" in props) {
-    link.add(control.onRightTapped((...args) => props.onrighttapped?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onrighttapped",
+    subscribe: handler => control.onRightTapped(handler)
+  });
 
-  if ("ontapped" in props) {
-    link.add(control.onTapped((...args) => props.ontapped?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontapped",
+    subscribe: handler => control.onTapped(handler)
+  });
 
   link.property({
     props,

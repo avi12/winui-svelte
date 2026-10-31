@@ -32,13 +32,17 @@ export function linkAnnotatedScrollBar(
     keys: ["detailLabelTemplate", "labels", "labelTemplate", "smallChange"]
   });
 
-  if ("ondetaillabelrequested" in props) {
-    link.add(control.onDetailLabelRequested((...args) => props.ondetaillabelrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondetaillabelrequested",
+    subscribe: handler => control.onDetailLabelRequested(handler)
+  });
 
-  if ("onscrolling" in props) {
-    link.add(control.onScrolling((...args) => props.onscrolling?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onscrolling",
+    subscribe: handler => control.onScrolling(handler)
+  });
 }
 
 export function connectAnnotatedScrollBar(

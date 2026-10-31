@@ -56,17 +56,23 @@ export function linkHyperlink(
     }
   });
 
-  if ("onclick" in props) {
-    link.add(control.onClick((...args) => props.onclick?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclick",
+    subscribe: handler => control.onClick(handler)
+  });
 
-  if ("ongotfocus" in props) {
-    link.add(control.onGotFocus((...args) => props.ongotfocus?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ongotfocus",
+    subscribe: handler => control.onGotFocus(handler)
+  });
 
-  if ("onlostfocus" in props) {
-    link.add(control.onLostFocus((...args) => props.onlostfocus?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onlostfocus",
+    subscribe: handler => control.onLostFocus(handler)
+  });
 }
 
 export function connectHyperlink(

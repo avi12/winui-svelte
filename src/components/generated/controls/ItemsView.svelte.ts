@@ -50,13 +50,17 @@ export function linkItemsView(
     }
   });
 
-  if ("oniteminvoked" in props) {
-    link.add(control.onItemInvoked((...args) => props.oniteminvoked?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oniteminvoked",
+    subscribe: handler => control.onItemInvoked(handler)
+  });
 
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselectionchanged",
+    subscribe: handler => control.onSelectionChanged(handler)
+  });
 }
 
 export function connectItemsView(

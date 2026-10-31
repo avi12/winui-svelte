@@ -42,13 +42,17 @@ export function linkSemanticZoom(
     }
   });
 
-  if ("onviewchangecompleted" in props) {
-    link.add(control.onViewChangeCompleted((...args) => props.onviewchangecompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onviewchangecompleted",
+    subscribe: handler => control.onViewChangeCompleted(handler)
+  });
 
-  if ("onviewchangestarted" in props) {
-    link.add(control.onViewChangeStarted((...args) => props.onviewchangestarted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onviewchangestarted",
+    subscribe: handler => control.onViewChangeStarted(handler)
+  });
 }
 
 export function connectSemanticZoom(

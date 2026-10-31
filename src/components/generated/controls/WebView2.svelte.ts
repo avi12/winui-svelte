@@ -50,25 +50,35 @@ export function linkWebView2(
     }
   });
 
-  if ("oncoreprocessfailed" in props) {
-    link.add(control.onCoreProcessFailed((...args) => props.oncoreprocessfailed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncoreprocessfailed",
+    subscribe: handler => control.onCoreProcessFailed(handler)
+  });
 
-  if ("oncorewebview2initialized" in props) {
-    link.add(control.onCoreWebView2Initialized((...args) => props.oncorewebview2initialized?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncorewebview2initialized",
+    subscribe: handler => control.onCoreWebView2Initialized(handler)
+  });
 
-  if ("onnavigationcompleted" in props) {
-    link.add(control.onNavigationCompleted((...args) => props.onnavigationcompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onnavigationcompleted",
+    subscribe: handler => control.onNavigationCompleted(handler)
+  });
 
-  if ("onnavigationstarting" in props) {
-    link.add(control.onNavigationStarting((...args) => props.onnavigationstarting?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onnavigationstarting",
+    subscribe: handler => control.onNavigationStarting(handler)
+  });
 
-  if ("onwebmessagereceived" in props) {
-    link.add(control.onWebMessageReceived((...args) => props.onwebmessagereceived?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onwebmessagereceived",
+    subscribe: handler => control.onWebMessageReceived(handler)
+  });
 }
 
 export function connectWebView2(

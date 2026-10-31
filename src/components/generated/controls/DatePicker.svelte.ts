@@ -120,13 +120,17 @@ export function linkDatePicker(
     ]
   });
 
-  if ("ondatechanged" in props) {
-    link.add(control.onDateChanged((...args) => props.ondatechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondatechanged",
+    subscribe: handler => control.onDateChanged(handler)
+  });
 
-  if ("onselecteddatechanged" in props) {
-    link.add(control.onSelectedDateChanged((...args) => props.onselecteddatechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselecteddatechanged",
+    subscribe: handler => control.onSelectedDateChanged(handler)
+  });
 }
 
 export function connectDatePicker(

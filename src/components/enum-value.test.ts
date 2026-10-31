@@ -48,6 +48,18 @@ test("an enum prop refuses what is no member", () => {
   }
 });
 
+test("the error names the prop and the members it takes", () => {
+  assert.throws(() => enumValue({
+    table: Modifiers,
+    // @ts-expect-error the value is out of the set on purpose
+    input: "wrap",
+    prop: "textWrapping"
+  }), {
+    name: "RangeError",
+    message: "textWrapping: \"wrap\" is not one of None, Control, Menu, Shift, High"
+  });
+});
+
 test("a member with the top bit set stays unsigned", () => {
   assert.equal(
     enumValue({

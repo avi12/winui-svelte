@@ -87,41 +87,59 @@ export function linkScrollPresenter(
     ]
   });
 
-  if ("onanchorrequested" in props) {
-    link.add(control.onAnchorRequested((...args) => props.onanchorrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onanchorrequested",
+    subscribe: handler => control.onAnchorRequested(handler)
+  });
 
-  if ("onbringingintoview" in props) {
-    link.add(control.onBringingIntoView((...args) => props.onbringingintoview?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onbringingintoview",
+    subscribe: handler => control.onBringingIntoView(handler)
+  });
 
-  if ("onextentchanged" in props) {
-    link.add(control.onExtentChanged((...args) => props.onextentchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onextentchanged",
+    subscribe: handler => control.onExtentChanged(handler)
+  });
 
-  if ("onscrollanimationstarting" in props) {
-    link.add(control.onScrollAnimationStarting((...args) => props.onscrollanimationstarting?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onscrollanimationstarting",
+    subscribe: handler => control.onScrollAnimationStarting(handler)
+  });
 
-  if ("onscrollcompleted" in props) {
-    link.add(control.onScrollCompleted((...args) => props.onscrollcompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onscrollcompleted",
+    subscribe: handler => control.onScrollCompleted(handler)
+  });
 
-  if ("onstatechanged" in props) {
-    link.add(control.onStateChanged((...args) => props.onstatechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onstatechanged",
+    subscribe: handler => control.onStateChanged(handler)
+  });
 
-  if ("onviewchanged" in props) {
-    link.add(control.onViewChanged((...args) => props.onviewchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onviewchanged",
+    subscribe: handler => control.onViewChanged(handler)
+  });
 
-  if ("onzoomanimationstarting" in props) {
-    link.add(control.onZoomAnimationStarting((...args) => props.onzoomanimationstarting?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onzoomanimationstarting",
+    subscribe: handler => control.onZoomAnimationStarting(handler)
+  });
 
-  if ("onzoomcompleted" in props) {
-    link.add(control.onZoomCompleted((...args) => props.onzoomcompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onzoomcompleted",
+    subscribe: handler => control.onZoomCompleted(handler)
+  });
 }
 
 export function connectScrollPresenter(

@@ -77,7 +77,9 @@ export function linkSelector(
     ]
   });
 
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselectionchanged",
+    subscribe: handler => control.onSelectionChanged(handler)
+  });
 }

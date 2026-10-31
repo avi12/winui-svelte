@@ -120,29 +120,41 @@ export function linkContentDialog(
     }
   });
 
-  if ("onclosebuttonclick" in props) {
-    link.add(control.onCloseButtonClick((...args) => props.onclosebuttonclick?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosebuttonclick",
+    subscribe: handler => control.onCloseButtonClick(handler)
+  });
 
-  if ("onclosed" in props) {
-    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosed",
+    subscribe: handler => control.onClosed(handler)
+  });
 
-  if ("onclosing" in props) {
-    link.add(control.onClosing((...args) => props.onclosing?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosing",
+    subscribe: handler => control.onClosing(handler)
+  });
 
-  if ("onopened" in props) {
-    link.add(control.onOpened((...args) => props.onopened?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onopened",
+    subscribe: handler => control.onOpened(handler)
+  });
 
-  if ("onprimarybuttonclick" in props) {
-    link.add(control.onPrimaryButtonClick((...args) => props.onprimarybuttonclick?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onprimarybuttonclick",
+    subscribe: handler => control.onPrimaryButtonClick(handler)
+  });
 
-  if ("onsecondarybuttonclick" in props) {
-    link.add(control.onSecondaryButtonClick((...args) => props.onsecondarybuttonclick?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onsecondarybuttonclick",
+    subscribe: handler => control.onSecondaryButtonClick(handler)
+  });
 }
 
 export function connectContentDialog(

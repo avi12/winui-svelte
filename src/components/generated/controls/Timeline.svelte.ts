@@ -81,9 +81,11 @@ export function linkTimeline(
     }
   });
 
-  if ("oncompleted" in props) {
-    link.add(control.onCompleted((...args) => props.oncompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncompleted",
+    subscribe: handler => control.onCompleted(handler)
+  });
 
   link.property({
     props,

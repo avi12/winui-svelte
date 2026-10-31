@@ -36,9 +36,11 @@ export function linkKeyboardAccelerator(
     tables: { key: VirtualKey, modifiers: VirtualKeyModifiers }
   });
 
-  if ("oninvoked" in props) {
-    link.add(control.onInvoked((...args) => props.oninvoked?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oninvoked",
+    subscribe: handler => control.onInvoked(handler)
+  });
 
   link.property({
     props,

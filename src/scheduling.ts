@@ -1,3 +1,4 @@
+import { guarded } from "./ui-errors.ts";
 import { DispatcherQueue } from "./winui.ts";
 import { flushSync } from "svelte";
 
@@ -44,10 +45,15 @@ export function onFlush(listener: () => void) {
  */
 export function uiThreadDispatcher() {
   const queue = DispatcherQueue.getForCurrentThread();
-  return (work: () => void) => queue.tryEnqueue(() => {
-    work();
-    flush();
-  });
+  return (work: () => void) => queue.tryEnqueue(
+    guarded({
+      origin: "a callback on the UI thread's dispatcher",
+      callback() {
+        work();
+        flush();
+      }
+    })
+  );
 }
 
 /**

@@ -36,9 +36,11 @@ export function linkRefreshContainer(
     tables: { pullDirection: RefreshPullDirection }
   });
 
-  if ("onrefreshrequested" in props) {
-    link.add(control.onRefreshRequested((...args) => props.onrefreshrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onrefreshrequested",
+    subscribe: handler => control.onRefreshRequested(handler)
+  });
 }
 
 export function connectRefreshContainer(

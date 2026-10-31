@@ -80,17 +80,23 @@ export function linkPopup(
     ]
   });
 
-  if ("onactualplacementchanged" in props) {
-    link.add(control.onActualPlacementChanged((...args) => props.onactualplacementchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onactualplacementchanged",
+    subscribe: handler => control.onActualPlacementChanged(handler)
+  });
 
-  if ("onclosed" in props) {
-    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosed",
+    subscribe: handler => control.onClosed(handler)
+  });
 
-  if ("onopened" in props) {
-    link.add(control.onOpened((...args) => props.onopened?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onopened",
+    subscribe: handler => control.onOpened(handler)
+  });
 }
 
 export function connectPopup(

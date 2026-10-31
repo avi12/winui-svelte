@@ -69,13 +69,17 @@ export function linkExpander(
     ]
   });
 
-  if ("oncollapsed" in props) {
-    link.add(control.onCollapsed((...args) => props.oncollapsed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncollapsed",
+    subscribe: handler => control.onCollapsed(handler)
+  });
 
-  if ("onexpanding" in props) {
-    link.add(control.onExpanding((...args) => props.onexpanding?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onexpanding",
+    subscribe: handler => control.onExpanding(handler)
+  });
 }
 
 export function connectExpander(

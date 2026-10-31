@@ -97,17 +97,23 @@ export function linkInfoBar(
     ]
   });
 
-  if ("onclosebuttonclick" in props) {
-    link.add(control.onCloseButtonClick((...args) => props.onclosebuttonclick?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosebuttonclick",
+    subscribe: handler => control.onCloseButtonClick(handler)
+  });
 
-  if ("onclosed" in props) {
-    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosed",
+    subscribe: handler => control.onClosed(handler)
+  });
 
-  if ("onclosing" in props) {
-    link.add(control.onClosing((...args) => props.onclosing?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosing",
+    subscribe: handler => control.onClosing(handler)
+  });
 }
 
 export function connectInfoBar(

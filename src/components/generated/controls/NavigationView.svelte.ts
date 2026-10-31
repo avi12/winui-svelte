@@ -185,45 +185,65 @@ export function linkNavigationView(
     ]
   });
 
-  if ("onbackrequested" in props) {
-    link.add(control.onBackRequested((...args) => props.onbackrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onbackrequested",
+    subscribe: handler => control.onBackRequested(handler)
+  });
 
-  if ("oncollapsed" in props) {
-    link.add(control.onCollapsed((...args) => props.oncollapsed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncollapsed",
+    subscribe: handler => control.onCollapsed(handler)
+  });
 
-  if ("ondisplaymodechanged" in props) {
-    link.add(control.onDisplayModeChanged((...args) => props.ondisplaymodechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondisplaymodechanged",
+    subscribe: handler => control.onDisplayModeChanged(handler)
+  });
 
-  if ("onexpanding" in props) {
-    link.add(control.onExpanding((...args) => props.onexpanding?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onexpanding",
+    subscribe: handler => control.onExpanding(handler)
+  });
 
-  if ("oniteminvoked" in props) {
-    link.add(control.onItemInvoked((...args) => props.oniteminvoked?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oniteminvoked",
+    subscribe: handler => control.onItemInvoked(handler)
+  });
 
-  if ("onpaneclosed" in props) {
-    link.add(control.onPaneClosed((...args) => props.onpaneclosed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpaneclosed",
+    subscribe: handler => control.onPaneClosed(handler)
+  });
 
-  if ("onpaneclosing" in props) {
-    link.add(control.onPaneClosing((...args) => props.onpaneclosing?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpaneclosing",
+    subscribe: handler => control.onPaneClosing(handler)
+  });
 
-  if ("onpaneopened" in props) {
-    link.add(control.onPaneOpened((...args) => props.onpaneopened?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpaneopened",
+    subscribe: handler => control.onPaneOpened(handler)
+  });
 
-  if ("onpaneopening" in props) {
-    link.add(control.onPaneOpening((...args) => props.onpaneopening?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpaneopening",
+    subscribe: handler => control.onPaneOpening(handler)
+  });
 
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselectionchanged",
+    subscribe: handler => control.onSelectionChanged(handler)
+  });
 }
 
 export function connectNavigationView(

@@ -87,9 +87,11 @@ export function linkToggleSwitch(
     ]
   });
 
-  if ("ontoggled" in props) {
-    link.add(control.onToggled((...args) => props.ontoggled?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontoggled",
+    subscribe: handler => control.onToggled(handler)
+  });
 }
 
 export function connectToggleSwitch(

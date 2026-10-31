@@ -126,25 +126,35 @@ export function linkPivot(
     ]
   });
 
-  if ("onpivotitemloaded" in props) {
-    link.add(control.onPivotItemLoaded((...args) => props.onpivotitemloaded?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpivotitemloaded",
+    subscribe: handler => control.onPivotItemLoaded(handler)
+  });
 
-  if ("onpivotitemloading" in props) {
-    link.add(control.onPivotItemLoading((...args) => props.onpivotitemloading?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpivotitemloading",
+    subscribe: handler => control.onPivotItemLoading(handler)
+  });
 
-  if ("onpivotitemunloaded" in props) {
-    link.add(control.onPivotItemUnloaded((...args) => props.onpivotitemunloaded?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpivotitemunloaded",
+    subscribe: handler => control.onPivotItemUnloaded(handler)
+  });
 
-  if ("onpivotitemunloading" in props) {
-    link.add(control.onPivotItemUnloading((...args) => props.onpivotitemunloading?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpivotitemunloading",
+    subscribe: handler => control.onPivotItemUnloading(handler)
+  });
 
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselectionchanged",
+    subscribe: handler => control.onSelectionChanged(handler)
+  });
 }
 
 export function connectPivot(

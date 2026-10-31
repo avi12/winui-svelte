@@ -20,13 +20,17 @@ export function linkLayout(
   link: Linker
 ) {
 
-  if ("onarrangeinvalidated" in props) {
-    link.add(control.onArrangeInvalidated((...args) => props.onarrangeinvalidated?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onarrangeinvalidated",
+    subscribe: handler => control.onArrangeInvalidated(handler)
+  });
 
-  if ("onmeasureinvalidated" in props) {
-    link.add(control.onMeasureInvalidated((...args) => props.onmeasureinvalidated?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onmeasureinvalidated",
+    subscribe: handler => control.onMeasureInvalidated(handler)
+  });
 
   link.property({
     props,

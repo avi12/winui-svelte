@@ -39,13 +39,17 @@ export function linkTitleBar(
     keys: ["autoRefreshDragRegions", "content", "iconSource", "isBackButtonEnabled", "isBackButtonVisible", "isPaneToggleButtonVisible", "leftHeader", "rightHeader", "subtitle", "title"]
   });
 
-  if ("onbackrequested" in props) {
-    link.add(control.onBackRequested((...args) => props.onbackrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onbackrequested",
+    subscribe: handler => control.onBackRequested(handler)
+  });
 
-  if ("onpanetogglerequested" in props) {
-    link.add(control.onPaneToggleRequested((...args) => props.onpanetogglerequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpanetogglerequested",
+    subscribe: handler => control.onPaneToggleRequested(handler)
+  });
 }
 
 export function connectTitleBar(

@@ -26,13 +26,17 @@ export function linkVisualStateGroup(
   link: Linker
 ) {
 
-  if ("oncurrentstatechanged" in props) {
-    link.add(control.onCurrentStateChanged((...args) => props.oncurrentstatechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncurrentstatechanged",
+    subscribe: handler => control.onCurrentStateChanged(handler)
+  });
 
-  if ("oncurrentstatechanging" in props) {
-    link.add(control.onCurrentStateChanging((...args) => props.oncurrentstatechanging?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncurrentstatechanging",
+    subscribe: handler => control.onCurrentStateChanging(handler)
+  });
 
   link.property({
     props,

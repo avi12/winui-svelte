@@ -727,9 +727,11 @@ function emitObserved({ observed, className, imports }: {
 function emitEvent(event: EventModel) {
   return [
     "",
-    `  if ("${event.key}" in props) {`,
-    `    link.add(control.on${event.winName}((...args) => props.${event.key}?.(...args)));`,
-    "  }"
+    "  link.event({",
+    "    props,",
+    `    key: "${event.key}",`,
+    `    subscribe: handler => control.on${event.winName}(handler)`,
+    "  });"
   ];
 }
 

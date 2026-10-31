@@ -154,35 +154,51 @@ export function linkFrameworkElement(
     }
   });
 
-  if ("onactualthemechanged" in props) {
-    link.add(control.onActualThemeChanged((...args) => props.onactualthemechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onactualthemechanged",
+    subscribe: handler => control.onActualThemeChanged(handler)
+  });
 
-  if ("ondatacontextchanged" in props) {
-    link.add(control.onDataContextChanged((...args) => props.ondatacontextchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondatacontextchanged",
+    subscribe: handler => control.onDataContextChanged(handler)
+  });
 
-  if ("oneffectiveviewportchanged" in props) {
-    link.add(control.onEffectiveViewportChanged((...args) => props.oneffectiveviewportchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oneffectiveviewportchanged",
+    subscribe: handler => control.onEffectiveViewportChanged(handler)
+  });
 
-  if ("onlayoutupdated" in props) {
-    link.add(control.onLayoutUpdated((...args) => props.onlayoutupdated?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onlayoutupdated",
+    subscribe: handler => control.onLayoutUpdated(handler)
+  });
 
-  if ("onloaded" in props) {
-    link.add(control.onLoaded((...args) => props.onloaded?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onloaded",
+    subscribe: handler => control.onLoaded(handler)
+  });
 
-  if ("onloading" in props) {
-    link.add(control.onLoading((...args) => props.onloading?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onloading",
+    subscribe: handler => control.onLoading(handler)
+  });
 
-  if ("onsizechanged" in props) {
-    link.add(control.onSizeChanged((...args) => props.onsizechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onsizechanged",
+    subscribe: handler => control.onSizeChanged(handler)
+  });
 
-  if ("onunloaded" in props) {
-    link.add(control.onUnloaded((...args) => props.onunloaded?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onunloaded",
+    subscribe: handler => control.onUnloaded(handler)
+  });
 }

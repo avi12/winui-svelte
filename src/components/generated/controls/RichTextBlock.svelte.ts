@@ -123,17 +123,23 @@ export function linkRichTextBlock(
     ]
   });
 
-  if ("oncontextmenuopening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncontextmenuopening",
+    subscribe: handler => control.onContextMenuOpening(handler)
+  });
 
-  if ("onistexttrimmedchanged" in props) {
-    link.add(control.onIsTextTrimmedChanged((...args) => props.onistexttrimmedchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onistexttrimmedchanged",
+    subscribe: handler => control.onIsTextTrimmedChanged(handler)
+  });
 
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselectionchanged",
+    subscribe: handler => control.onSelectionChanged(handler)
+  });
 }
 
 export function connectRichTextBlock(

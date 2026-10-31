@@ -87,27 +87,39 @@ export function linkListViewBase(
     }
   });
 
-  if ("onchoosinggroupheadercontainer" in props) {
-    link.add(control.onChoosingGroupHeaderContainer((...args) => props.onchoosinggroupheadercontainer?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onchoosinggroupheadercontainer",
+    subscribe: handler => control.onChoosingGroupHeaderContainer(handler)
+  });
 
-  if ("onchoosingitemcontainer" in props) {
-    link.add(control.onChoosingItemContainer((...args) => props.onchoosingitemcontainer?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onchoosingitemcontainer",
+    subscribe: handler => control.onChoosingItemContainer(handler)
+  });
 
-  if ("oncontainercontentchanging" in props) {
-    link.add(control.onContainerContentChanging((...args) => props.oncontainercontentchanging?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncontainercontentchanging",
+    subscribe: handler => control.onContainerContentChanging(handler)
+  });
 
-  if ("ondragitemscompleted" in props) {
-    link.add(control.onDragItemsCompleted((...args) => props.ondragitemscompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragitemscompleted",
+    subscribe: handler => control.onDragItemsCompleted(handler)
+  });
 
-  if ("ondragitemsstarting" in props) {
-    link.add(control.onDragItemsStarting((...args) => props.ondragitemsstarting?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragitemsstarting",
+    subscribe: handler => control.onDragItemsStarting(handler)
+  });
 
-  if ("onitemclick" in props) {
-    link.add(control.onItemClick((...args) => props.onitemclick?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onitemclick",
+    subscribe: handler => control.onItemClick(handler)
+  });
 }

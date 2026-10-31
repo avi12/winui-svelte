@@ -45,9 +45,11 @@ export function linkGroupStyle(
     }
   });
 
-  if ("onpropertychanged" in props) {
-    link.add(control.onPropertyChanged((...args) => props.onpropertychanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpropertychanged",
+    subscribe: handler => control.onPropertyChanged(handler)
+  });
 
   link.property({
     props,

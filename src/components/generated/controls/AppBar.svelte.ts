@@ -54,21 +54,29 @@ export function linkAppBar(
     ]
   });
 
-  if ("onclosed" in props) {
-    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosed",
+    subscribe: handler => control.onClosed(handler)
+  });
 
-  if ("onclosing" in props) {
-    link.add(control.onClosing((...args) => props.onclosing?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosing",
+    subscribe: handler => control.onClosing(handler)
+  });
 
-  if ("onopened" in props) {
-    link.add(control.onOpened((...args) => props.onopened?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onopened",
+    subscribe: handler => control.onOpened(handler)
+  });
 
-  if ("onopening" in props) {
-    link.add(control.onOpening((...args) => props.onopening?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onopening",
+    subscribe: handler => control.onOpening(handler)
+  });
 }
 
 export function connectAppBar(

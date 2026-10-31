@@ -24,17 +24,23 @@ export function linkThumb(
 ) {
   linkControl(control, props, bound, link);
 
-  if ("ondragcompleted" in props) {
-    link.add(control.onDragCompleted((...args) => props.ondragcompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragcompleted",
+    subscribe: handler => control.onDragCompleted(handler)
+  });
 
-  if ("ondragdelta" in props) {
-    link.add(control.onDragDelta((...args) => props.ondragdelta?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragdelta",
+    subscribe: handler => control.onDragDelta(handler)
+  });
 
-  if ("ondragstarted" in props) {
-    link.add(control.onDragStarted((...args) => props.ondragstarted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondragstarted",
+    subscribe: handler => control.onDragStarted(handler)
+  });
 }
 
 export function connectThumb(

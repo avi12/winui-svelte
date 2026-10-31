@@ -41,13 +41,17 @@ export function linkCanvasVirtualControl(
     }
   });
 
-  if ("oncreateresources" in props) {
-    link.add(control.onCreateResources((...args) => props.oncreateresources?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncreateresources",
+    subscribe: handler => control.onCreateResources(handler)
+  });
 
-  if ("onregionsinvalidated" in props) {
-    link.add(control.onRegionsInvalidated((...args) => props.onregionsinvalidated?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onregionsinvalidated",
+    subscribe: handler => control.onRegionsInvalidated(handler)
+  });
 }
 
 export function connectCanvasVirtualControl(

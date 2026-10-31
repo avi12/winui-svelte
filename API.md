@@ -390,8 +390,21 @@ function runOnUiThread(main: () => Promise<void>): Promise<never>;
 
 // window: starts WinUI on this thread: Application (WinUI's own resources
 // installed), then `onStart` on the UI thread. Settles when the app exits.
-function runWindow(options: { onStart: () => void }): Promise<void>;
+function runWindow(options: { onStart: () => void; onerror?: UiErrorListener }): Promise<void>;
 function exitApplication(): void;
+
+// Errors on the UI thread. An exception app code throws where WinUI calls it
+// (an event handler, a prop the control refuses, a dispatcher callback,
+// onStart) is caught there, written to stderr as
+// `[winui-svelte] event "ontoggled": Error: ...` with its stack, and handed to
+// the listeners; the application goes on. runWindow's `onerror` is the
+// `window.onerror` of the app; onUiError adds listeners and returns the
+// function that removes one; reportUiError sends an error of your own the
+// same way.
+interface UiErrorReport { readonly error: unknown; readonly origin: string }
+type UiErrorListener = (report: UiErrorReport) => void;
+function onUiError(listener: UiErrorListener): () => void;
+function reportUiError(report: UiErrorReport): void;
 
 // `setInterval` (or `setTimeout` when isRepeating is false) with the stop
 // handed back as a function; the same scheduler as the standard timers

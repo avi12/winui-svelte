@@ -74,9 +74,11 @@ export function linkTwoPaneView(
     ]
   });
 
-  if ("onmodechanged" in props) {
-    link.add(control.onModeChanged((...args) => props.onmodechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onmodechanged",
+    subscribe: handler => control.onModeChanged(handler)
+  });
 }
 
 export function connectTwoPaneView(

@@ -23,13 +23,17 @@ export function linkPivotPanel(
 ) {
   linkPanel(control, props, bound, link);
 
-  if ("onhorizontalsnappointschanged" in props) {
-    link.add(control.onHorizontalSnapPointsChanged((...args) => props.onhorizontalsnappointschanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onhorizontalsnappointschanged",
+    subscribe: handler => control.onHorizontalSnapPointsChanged(handler)
+  });
 
-  if ("onverticalsnappointschanged" in props) {
-    link.add(control.onVerticalSnapPointsChanged((...args) => props.onverticalsnappointschanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onverticalsnappointschanged",
+    subscribe: handler => control.onVerticalSnapPointsChanged(handler)
+  });
 }
 
 export function connectPivotPanel(

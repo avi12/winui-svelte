@@ -38,9 +38,11 @@ export function linkVirtualizingStackPanel(
     tables: { orientation: Orientation }
   });
 
-  if ("oncleanupvirtualizeditemevent" in props) {
-    link.add(control.onCleanUpVirtualizedItemEvent((...args) => props.oncleanupvirtualizeditemevent?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncleanupvirtualizeditemevent",
+    subscribe: handler => control.onCleanUpVirtualizedItemEvent(handler)
+  });
 }
 
 export function connectVirtualizingStackPanel(

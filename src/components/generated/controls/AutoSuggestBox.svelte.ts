@@ -83,17 +83,23 @@ export function linkAutoSuggestBox(
     ]
   });
 
-  if ("onquerysubmitted" in props) {
-    link.add(control.onQuerySubmitted((...args) => props.onquerysubmitted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onquerysubmitted",
+    subscribe: handler => control.onQuerySubmitted(handler)
+  });
 
-  if ("onsuggestionchosen" in props) {
-    link.add(control.onSuggestionChosen((...args) => props.onsuggestionchosen?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onsuggestionchosen",
+    subscribe: handler => control.onSuggestionChosen(handler)
+  });
 
-  if ("ontextchanged" in props) {
-    link.add(control.onTextChanged((...args) => props.ontextchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontextchanged",
+    subscribe: handler => control.onTextChanged(handler)
+  });
 }
 
 export function connectAutoSuggestBox(

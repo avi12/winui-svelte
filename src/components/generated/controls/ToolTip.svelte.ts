@@ -62,13 +62,17 @@ export function linkToolTip(
     ]
   });
 
-  if ("onclosed" in props) {
-    link.add(control.onClosed((...args) => props.onclosed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclosed",
+    subscribe: handler => control.onClosed(handler)
+  });
 
-  if ("onopened" in props) {
-    link.add(control.onOpened((...args) => props.onopened?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onopened",
+    subscribe: handler => control.onOpened(handler)
+  });
 }
 
 export function connectToolTip(

@@ -6,6 +6,8 @@ import { startXamlThread } from "./xaml-thread.ts";
 import { installMedia } from "#src/components/media.js";
 import { installXaml } from "#src/components/xaml.js";
 import { installCss } from "#src/css/index.js";
+import { onUiError, reportUiError } from "#src/ui-errors.js";
+import type { UiErrorListener } from "#src/ui-errors.js";
 import * as winui from "#src/winui.js";
 import { Application } from "#src/winui.js";
 
@@ -30,6 +32,16 @@ export interface RunWindowOptions {
    * (`installNotification`, and so on). Nothing is installed that is not listed.
    */
   webApis?: ReadonlyArray<() => unknown>;
+
+  /**
+   * Called with every exception app code throws on the UI thread and WinUI
+   * would otherwise see as a bare native failure: an event handler, a prop
+   * the control refuses, a timer or dispatcher callback, `onStart`. The stack
+   * is already on stderr; this is the place for a crash report or a dialog.
+   * Like `window.onerror`, it runs after the exception is caught, and the
+   * application goes on.
+   */
+  onerror?: UiErrorListener;
 }
 
 /**
@@ -47,6 +59,7 @@ export interface RunWindowOptions {
  */
 export async function runWindow(options: RunWindowOptions) {
   const { libuv } = uiTimers();
+  const stopListening = options.onerror === undefined ? undefined : onUiError(options.onerror);
   const ended = Promise.withResolvers<void>();
   const pump = createMessagePump({
     source: createMessageSource(),
@@ -69,6 +82,10 @@ export async function runWindow(options: RunWindowOptions) {
 
         options.onStart();
       } catch (error) {
+        reportUiError({
+          error,
+          origin: "onStart"
+        });
         ended.reject(error);
         exitApplication();
       }
@@ -80,6 +97,7 @@ export async function runWindow(options: RunWindowOptions) {
     await ended.promise;
   } finally {
     pump.stop();
+    stopListening?.();
     restoreTimerResolution();
     stopAllTimers();
     held.manager.release();

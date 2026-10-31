@@ -35,17 +35,23 @@ export function linkXamlUICommand(
     keys: ["accessKey", "command", "description", "iconSource", "label"]
   });
 
-  if ("oncanexecutechanged" in props) {
-    link.add(control.onCanExecuteChanged((...args) => props.oncanexecutechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncanexecutechanged",
+    subscribe: handler => control.onCanExecuteChanged(handler)
+  });
 
-  if ("oncanexecuterequested" in props) {
-    link.add(control.onCanExecuteRequested((...args) => props.oncanexecuterequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncanexecuterequested",
+    subscribe: handler => control.onCanExecuteRequested(handler)
+  });
 
-  if ("onexecuterequested" in props) {
-    link.add(control.onExecuteRequested((...args) => props.onexecuterequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onexecuterequested",
+    subscribe: handler => control.onExecuteRequested(handler)
+  });
 
   link.property({
     props,

@@ -47,9 +47,11 @@ export function linkTabViewItem(
     }
   });
 
-  if ("oncloserequested" in props) {
-    link.add(control.onCloseRequested((...args) => props.oncloserequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncloserequested",
+    subscribe: handler => control.onCloseRequested(handler)
+  });
 }
 
 export function connectTabViewItem(

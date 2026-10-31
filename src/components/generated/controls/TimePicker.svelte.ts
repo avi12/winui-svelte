@@ -98,13 +98,17 @@ export function linkTimePicker(
     ]
   });
 
-  if ("onselectedtimechanged" in props) {
-    link.add(control.onSelectedTimeChanged((...args) => props.onselectedtimechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselectedtimechanged",
+    subscribe: handler => control.onSelectedTimeChanged(handler)
+  });
 
-  if ("ontimechanged" in props) {
-    link.add(control.onTimeChanged((...args) => props.ontimechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontimechanged",
+    subscribe: handler => control.onTimeChanged(handler)
+  });
 }
 
 export function connectTimePicker(

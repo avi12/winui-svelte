@@ -43,7 +43,9 @@ export function linkButtonBase(
     }
   });
 
-  if ("onclick" in props) {
-    link.add(control.onClick((...args) => props.onclick?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onclick",
+    subscribe: handler => control.onClick(handler)
+  });
 }

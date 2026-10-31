@@ -39,13 +39,17 @@ export function linkSvgImageSource(
     }
   });
 
-  if ("onopened" in props) {
-    link.add(control.onOpened((...args) => props.onopened?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onopened",
+    subscribe: handler => control.onOpened(handler)
+  });
 
-  if ("onopenfailed" in props) {
-    link.add(control.onOpenFailed((...args) => props.onopenfailed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onopenfailed",
+    subscribe: handler => control.onOpenFailed(handler)
+  });
 }
 
 export function connectSvgImageSource(

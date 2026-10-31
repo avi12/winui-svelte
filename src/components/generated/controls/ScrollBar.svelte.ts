@@ -36,9 +36,11 @@ export function linkScrollBar(
     tables: { indicatorMode: ScrollingIndicatorMode, orientation: Orientation }
   });
 
-  if ("onscroll" in props) {
-    link.add(control.onScroll((...args) => props.onscroll?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onscroll",
+    subscribe: handler => control.onScroll(handler)
+  });
 }
 
 export function connectScrollBar(

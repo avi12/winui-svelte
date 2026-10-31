@@ -59,17 +59,23 @@ export function linkItemsRepeater(
     }
   });
 
-  if ("onelementclearing" in props) {
-    link.add(control.onElementClearing((...args) => props.onelementclearing?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onelementclearing",
+    subscribe: handler => control.onElementClearing(handler)
+  });
 
-  if ("onelementindexchanged" in props) {
-    link.add(control.onElementIndexChanged((...args) => props.onelementindexchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onelementindexchanged",
+    subscribe: handler => control.onElementIndexChanged(handler)
+  });
 
-  if ("onelementprepared" in props) {
-    link.add(control.onElementPrepared((...args) => props.onelementprepared?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onelementprepared",
+    subscribe: handler => control.onElementPrepared(handler)
+  });
 }
 
 export function connectItemsRepeater(

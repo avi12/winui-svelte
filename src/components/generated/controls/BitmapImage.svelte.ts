@@ -49,17 +49,23 @@ export function linkBitmapImage(
     }
   });
 
-  if ("ondownloadprogress" in props) {
-    link.add(control.onDownloadProgress((...args) => props.ondownloadprogress?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondownloadprogress",
+    subscribe: handler => control.onDownloadProgress(handler)
+  });
 
-  if ("onimagefailed" in props) {
-    link.add(control.onImageFailed((...args) => props.onimagefailed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onimagefailed",
+    subscribe: handler => control.onImageFailed(handler)
+  });
 
-  if ("onimageopened" in props) {
-    link.add(control.onImageOpened((...args) => props.onimageopened?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onimageopened",
+    subscribe: handler => control.onImageOpened(handler)
+  });
 }
 
 export function connectBitmapImage(

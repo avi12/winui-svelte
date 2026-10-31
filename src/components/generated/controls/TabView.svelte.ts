@@ -147,57 +147,83 @@ export function linkTabView(
     ]
   });
 
-  if ("onaddtabbuttonclick" in props) {
-    link.add(control.onAddTabButtonClick((...args) => props.onaddtabbuttonclick?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onaddtabbuttonclick",
+    subscribe: handler => control.onAddTabButtonClick(handler)
+  });
 
-  if ("onexternaltornouttabsdropped" in props) {
-    link.add(control.onExternalTornOutTabsDropped((...args) => props.onexternaltornouttabsdropped?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onexternaltornouttabsdropped",
+    subscribe: handler => control.onExternalTornOutTabsDropped(handler)
+  });
 
-  if ("onexternaltornouttabsdropping" in props) {
-    link.add(control.onExternalTornOutTabsDropping((...args) => props.onexternaltornouttabsdropping?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onexternaltornouttabsdropping",
+    subscribe: handler => control.onExternalTornOutTabsDropping(handler)
+  });
 
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselectionchanged",
+    subscribe: handler => control.onSelectionChanged(handler)
+  });
 
-  if ("ontabcloserequested" in props) {
-    link.add(control.onTabCloseRequested((...args) => props.ontabcloserequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontabcloserequested",
+    subscribe: handler => control.onTabCloseRequested(handler)
+  });
 
-  if ("ontabdragcompleted" in props) {
-    link.add(control.onTabDragCompleted((...args) => props.ontabdragcompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontabdragcompleted",
+    subscribe: handler => control.onTabDragCompleted(handler)
+  });
 
-  if ("ontabdragstarting" in props) {
-    link.add(control.onTabDragStarting((...args) => props.ontabdragstarting?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontabdragstarting",
+    subscribe: handler => control.onTabDragStarting(handler)
+  });
 
-  if ("ontabdroppedoutside" in props) {
-    link.add(control.onTabDroppedOutside((...args) => props.ontabdroppedoutside?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontabdroppedoutside",
+    subscribe: handler => control.onTabDroppedOutside(handler)
+  });
 
-  if ("ontabitemschanged" in props) {
-    link.add(control.onTabItemsChanged((...args) => props.ontabitemschanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontabitemschanged",
+    subscribe: handler => control.onTabItemsChanged(handler)
+  });
 
-  if ("ontabstripdragover" in props) {
-    link.add(control.onTabStripDragOver((...args) => props.ontabstripdragover?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontabstripdragover",
+    subscribe: handler => control.onTabStripDragOver(handler)
+  });
 
-  if ("ontabstripdrop" in props) {
-    link.add(control.onTabStripDrop((...args) => props.ontabstripdrop?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontabstripdrop",
+    subscribe: handler => control.onTabStripDrop(handler)
+  });
 
-  if ("ontabtearoutrequested" in props) {
-    link.add(control.onTabTearOutRequested((...args) => props.ontabtearoutrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontabtearoutrequested",
+    subscribe: handler => control.onTabTearOutRequested(handler)
+  });
 
-  if ("ontabtearoutwindowrequested" in props) {
-    link.add(control.onTabTearOutWindowRequested((...args) => props.ontabtearoutwindowrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontabtearoutwindowrequested",
+    subscribe: handler => control.onTabTearOutWindowRequested(handler)
+  });
 }
 
 export function connectTabView(

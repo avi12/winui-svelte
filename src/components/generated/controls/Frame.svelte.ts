@@ -64,21 +64,29 @@ export function linkFrame(
     ]
   });
 
-  if ("onnavigated" in props) {
-    link.add(control.onNavigated((...args) => props.onnavigated?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onnavigated",
+    subscribe: handler => control.onNavigated(handler)
+  });
 
-  if ("onnavigating" in props) {
-    link.add(control.onNavigating((...args) => props.onnavigating?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onnavigating",
+    subscribe: handler => control.onNavigating(handler)
+  });
 
-  if ("onnavigationfailed" in props) {
-    link.add(control.onNavigationFailed((...args) => props.onnavigationfailed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onnavigationfailed",
+    subscribe: handler => control.onNavigationFailed(handler)
+  });
 
-  if ("onnavigationstopped" in props) {
-    link.add(control.onNavigationStopped((...args) => props.onnavigationstopped?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onnavigationstopped",
+    subscribe: handler => control.onNavigationStopped(handler)
+  });
 }
 
 export function connectFrame(

@@ -282,9 +282,11 @@ function isList<Table extends Record<string, number>>(input: FlagsInput<Table>):
  * as their bits combined; throws a `RangeError` naming the members for
  * anything else.
  */
-export function enumValue<Table extends Record<string, number>>({ table, input }: {
+export function enumValue<Table extends Record<string, number>>({ table, input, prop }: {
   table: Table;
   input: FlagsInput<Table>;
+  /** The prop that holds the value, named in the error. */
+  prop?: string;
 }) {
   const members: NativeValue[] = Object.values(table);
   // The bindings type a flag enum as its single members, while WinUI takes
@@ -298,7 +300,8 @@ export function enumValue<Table extends Record<string, number>>({ table, input }
     const value = typeof part === "number" ? part : read(table, String(part));
     const isMember = members.includes(value);
     if (!isMember) {
-      throw new RangeError(`${String(part)} is not one of ${Object.keys(table).join(", ")}`);
+      const subject = prop === undefined ? "" : `${prop}: `;
+      throw new RangeError(`${subject}${JSON.stringify(part)} is not one of ${Object.keys(table).join(", ")}`);
     }
 
     bits = (bits | Number(value)) >>> 0;

@@ -99,21 +99,29 @@ export function linkPasswordBox(
     ]
   });
 
-  if ("oncontextmenuopening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncontextmenuopening",
+    subscribe: handler => control.onContextMenuOpening(handler)
+  });
 
-  if ("onpasswordchanged" in props) {
-    link.add(control.onPasswordChanged((...args) => props.onpasswordchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpasswordchanged",
+    subscribe: handler => control.onPasswordChanged(handler)
+  });
 
-  if ("onpasswordchanging" in props) {
-    link.add(control.onPasswordChanging((...args) => props.onpasswordchanging?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpasswordchanging",
+    subscribe: handler => control.onPasswordChanging(handler)
+  });
 
-  if ("onpaste" in props) {
-    link.add(control.onPaste((...args) => props.onpaste?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpaste",
+    subscribe: handler => control.onPaste(handler)
+  });
 }
 
 export function connectPasswordBox(

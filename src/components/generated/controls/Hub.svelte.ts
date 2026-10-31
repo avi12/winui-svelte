@@ -58,13 +58,17 @@ export function linkHub(
     }
   });
 
-  if ("onsectionheaderclick" in props) {
-    link.add(control.onSectionHeaderClick((...args) => props.onsectionheaderclick?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onsectionheaderclick",
+    subscribe: handler => control.onSectionHeaderClick(handler)
+  });
 
-  if ("onsectionsinviewchanged" in props) {
-    link.add(control.onSectionsInViewChanged((...args) => props.onsectionsinviewchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onsectionsinviewchanged",
+    subscribe: handler => control.onSectionsInViewChanged(handler)
+  });
 }
 
 export function connectHub(

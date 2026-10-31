@@ -76,21 +76,29 @@ export function linkSplitView(
     ]
   });
 
-  if ("onpaneclosed" in props) {
-    link.add(control.onPaneClosed((...args) => props.onpaneclosed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpaneclosed",
+    subscribe: handler => control.onPaneClosed(handler)
+  });
 
-  if ("onpaneclosing" in props) {
-    link.add(control.onPaneClosing((...args) => props.onpaneclosing?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpaneclosing",
+    subscribe: handler => control.onPaneClosing(handler)
+  });
 
-  if ("onpaneopened" in props) {
-    link.add(control.onPaneOpened((...args) => props.onpaneopened?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpaneopened",
+    subscribe: handler => control.onPaneOpened(handler)
+  });
 
-  if ("onpaneopening" in props) {
-    link.add(control.onPaneOpening((...args) => props.onpaneopening?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpaneopening",
+    subscribe: handler => control.onPaneOpening(handler)
+  });
 }
 
 export function connectSplitView(

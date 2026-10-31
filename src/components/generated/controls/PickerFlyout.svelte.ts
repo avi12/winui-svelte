@@ -38,9 +38,11 @@ export function linkPickerFlyout(
     }
   });
 
-  if ("onconfirmed" in props) {
-    link.add(control.onConfirmed((...args) => props.onconfirmed?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onconfirmed",
+    subscribe: handler => control.onConfirmed(handler)
+  });
 }
 
 export function connectPickerFlyout(

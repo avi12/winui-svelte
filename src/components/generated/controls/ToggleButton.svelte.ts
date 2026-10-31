@@ -47,17 +47,23 @@ export function linkToggleButton(
     ]
   });
 
-  if ("onchecked" in props) {
-    link.add(control.onChecked((...args) => props.onchecked?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onchecked",
+    subscribe: handler => control.onChecked(handler)
+  });
 
-  if ("onindeterminate" in props) {
-    link.add(control.onIndeterminate((...args) => props.onindeterminate?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onindeterminate",
+    subscribe: handler => control.onIndeterminate(handler)
+  });
 
-  if ("onunchecked" in props) {
-    link.add(control.onUnchecked((...args) => props.onunchecked?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onunchecked",
+    subscribe: handler => control.onUnchecked(handler)
+  });
 }
 
 export function connectToggleButton(

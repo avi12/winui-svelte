@@ -37,13 +37,17 @@ export function linkRefreshVisualizer(
     tables: { orientation: RefreshVisualizerOrientation }
   });
 
-  if ("onrefreshrequested" in props) {
-    link.add(control.onRefreshRequested((...args) => props.onrefreshrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onrefreshrequested",
+    subscribe: handler => control.onRefreshRequested(handler)
+  });
 
-  if ("onrefreshstatechanged" in props) {
-    link.add(control.onRefreshStateChanged((...args) => props.onrefreshstatechanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onrefreshstatechanged",
+    subscribe: handler => control.onRefreshStateChanged(handler)
+  });
 }
 
 export function connectRefreshVisualizer(

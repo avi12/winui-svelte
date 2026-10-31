@@ -103,25 +103,35 @@ export function linkScrollViewer(
     ]
   });
 
-  if ("onanchorrequested" in props) {
-    link.add(control.onAnchorRequested((...args) => props.onanchorrequested?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onanchorrequested",
+    subscribe: handler => control.onAnchorRequested(handler)
+  });
 
-  if ("ondirectmanipulationcompleted" in props) {
-    link.add(control.onDirectManipulationCompleted((...args) => props.ondirectmanipulationcompleted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondirectmanipulationcompleted",
+    subscribe: handler => control.onDirectManipulationCompleted(handler)
+  });
 
-  if ("ondirectmanipulationstarted" in props) {
-    link.add(control.onDirectManipulationStarted((...args) => props.ondirectmanipulationstarted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ondirectmanipulationstarted",
+    subscribe: handler => control.onDirectManipulationStarted(handler)
+  });
 
-  if ("onviewchanged" in props) {
-    link.add(control.onViewChanged((...args) => props.onviewchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onviewchanged",
+    subscribe: handler => control.onViewChanged(handler)
+  });
 
-  if ("onviewchanging" in props) {
-    link.add(control.onViewChanging((...args) => props.onviewchanging?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onviewchanging",
+    subscribe: handler => control.onViewChanging(handler)
+  });
 }
 
 export function connectScrollViewer(

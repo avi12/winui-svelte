@@ -39,9 +39,11 @@ export function linkBreadcrumbBar(
     }
   });
 
-  if ("onitemclicked" in props) {
-    link.add(control.onItemClicked((...args) => props.onitemclicked?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onitemclicked",
+    subscribe: handler => control.onItemClicked(handler)
+  });
 }
 
 export function connectBreadcrumbBar(

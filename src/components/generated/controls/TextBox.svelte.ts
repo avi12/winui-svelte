@@ -160,57 +160,83 @@ export function linkTextBox(
     ]
   });
 
-  if ("onbeforetextchanging" in props) {
-    link.add(control.onBeforeTextChanging((...args) => props.onbeforetextchanging?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onbeforetextchanging",
+    subscribe: handler => control.onBeforeTextChanging(handler)
+  });
 
-  if ("oncandidatewindowboundschanged" in props) {
-    link.add(control.onCandidateWindowBoundsChanged((...args) => props.oncandidatewindowboundschanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncandidatewindowboundschanged",
+    subscribe: handler => control.onCandidateWindowBoundsChanged(handler)
+  });
 
-  if ("oncontextmenuopening" in props) {
-    link.add(control.onContextMenuOpening((...args) => props.oncontextmenuopening?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncontextmenuopening",
+    subscribe: handler => control.onContextMenuOpening(handler)
+  });
 
-  if ("oncopyingtoclipboard" in props) {
-    link.add(control.onCopyingToClipboard((...args) => props.oncopyingtoclipboard?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncopyingtoclipboard",
+    subscribe: handler => control.onCopyingToClipboard(handler)
+  });
 
-  if ("oncuttingtoclipboard" in props) {
-    link.add(control.onCuttingToClipboard((...args) => props.oncuttingtoclipboard?.(...args)));
-  }
+  link.event({
+    props,
+    key: "oncuttingtoclipboard",
+    subscribe: handler => control.onCuttingToClipboard(handler)
+  });
 
-  if ("onpaste" in props) {
-    link.add(control.onPaste((...args) => props.onpaste?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onpaste",
+    subscribe: handler => control.onPaste(handler)
+  });
 
-  if ("onselectionchanged" in props) {
-    link.add(control.onSelectionChanged((...args) => props.onselectionchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselectionchanged",
+    subscribe: handler => control.onSelectionChanged(handler)
+  });
 
-  if ("onselectionchanging" in props) {
-    link.add(control.onSelectionChanging((...args) => props.onselectionchanging?.(...args)));
-  }
+  link.event({
+    props,
+    key: "onselectionchanging",
+    subscribe: handler => control.onSelectionChanging(handler)
+  });
 
-  if ("ontextchanged" in props) {
-    link.add(control.onTextChanged((...args) => props.ontextchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontextchanged",
+    subscribe: handler => control.onTextChanged(handler)
+  });
 
-  if ("ontextchanging" in props) {
-    link.add(control.onTextChanging((...args) => props.ontextchanging?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontextchanging",
+    subscribe: handler => control.onTextChanging(handler)
+  });
 
-  if ("ontextcompositionchanged" in props) {
-    link.add(control.onTextCompositionChanged((...args) => props.ontextcompositionchanged?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontextcompositionchanged",
+    subscribe: handler => control.onTextCompositionChanged(handler)
+  });
 
-  if ("ontextcompositionended" in props) {
-    link.add(control.onTextCompositionEnded((...args) => props.ontextcompositionended?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontextcompositionended",
+    subscribe: handler => control.onTextCompositionEnded(handler)
+  });
 
-  if ("ontextcompositionstarted" in props) {
-    link.add(control.onTextCompositionStarted((...args) => props.ontextcompositionstarted?.(...args)));
-  }
+  link.event({
+    props,
+    key: "ontextcompositionstarted",
+    subscribe: handler => control.onTextCompositionStarted(handler)
+  });
 }
 
 export function connectTextBox(
