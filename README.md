@@ -31,7 +31,9 @@ signature
   `onselectionchanged`, never `onClick`
 - **Layout and look** are CSS in the component's `<style>`, scoped by Svelte's
   own algorithm, with native units only: `px`, `deg`, `s`, `ms`, `fr`, `auto`
-  and plain numbers, never `%` or `rem` ([Styling with CSS](#styling-with-css))
+  and plain numbers, never `%` or `rem`; a property the styled element lacks
+  (`font-size` on a `PathIcon`) is a build error at the rule, not a failure when
+  the window opens ([Styling with CSS](#styling-with-css))
 - **State** shared with the host goes through `winui-svelte/state`
   (`hostState`, `send`); the host and the window talk in JSON lines
   ([State](#state), [Host integration](#host-integration))
@@ -553,6 +555,9 @@ unitless numbers where a property takes them; `padding: 8px`, `gap: 8px`,
 Any other unit (`rem`, `em`, `pt`, `vw`, `cqw`, a percentage length and so on)
 is a compile error from both the compiler and stylelint, with the message
 saying what to write
+A class that sets a property its element lacks (`font-size` on a `PathIcon`)
+is an error too, in the build and the editor, at the rule and naming the element
+that uses it, instead of a failure when the window opens
 The table of every unit is in [`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md#length-units)
 
 ### Scoping
