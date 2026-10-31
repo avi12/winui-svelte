@@ -1,15 +1,12 @@
+import { uiTimers } from "./ui-timers.ts";
+import type { TimerBackend } from "./ui-timers.ts";
 import { DispatcherQueue } from "#src/winui.js";
 
-// Timers on the UI thread's dispatcher. WinUI holds this thread, so Node's own
-// timers and message events never fire here; whatever the window needs to do
-// on a clock (take in a host's messages, a hot update) runs on one of these.
+// WinUI holds this thread, so Node's own timers never fire here (see
+// ui-timers.ts). Every timer on the thread, `setTimeout` included, runs on
+// one DispatcherQueue timer and the dispatcher's queue.
 
 const TICKS_PER_MILLISECOND = 10_000n;
-
-type Timer = ReturnType<DispatcherQueue["createTimer"]>;
-
-// Held for as long as they run: a timer whose wrapper is collected stops.
-const heldTimers = new Set<Timer>();
 
 /** What a dispatcher timer does, and how often. */
 export interface TimerOptions {
@@ -23,16 +20,63 @@ export interface TimerOptions {
   isRepeating?: boolean;
 }
 
-/** Starts a timer; call it on the UI thread. Returns what stops it. */
+function createDispatcherBackend(fire: () => void) {
+  const queue = DispatcherQueue.getForCurrentThread();
+  let alarm: ReturnType<typeof queue.createTimer> | undefined;
+
+  function disarm() {
+    alarm?.stop();
+    alarm = undefined;
+  }
+
+  return {
+    arm(delay: number) {
+      disarm();
+      const timer = queue.createTimer();
+      timer.isRepeating = false;
+      timer.interval = { duration: BigInt(Math.max(1, Math.ceil(delay))) * TICKS_PER_MILLISECOND };
+      timer.onTick(() => {
+        alarm = undefined;
+        fire();
+      });
+      timer.start();
+      alarm = timer;
+    },
+    disarm,
+    enqueue(callback: () => void) {
+      queue.tryEnqueue(callback);
+    }
+  } satisfies TimerBackend;
+}
+
+/**
+ * Moves the thread's timers onto the dispatcher; call it on the UI thread once
+ * WinUI is up. `runWindow` does. Timers set before keep their time.
+ */
+export function useDispatcherTimers() {
+  uiTimers().useBackend(createDispatcherBackend);
+}
+
+/**
+ * Starts a timer; call it on the UI thread. Returns what stops it. It is
+ * `setInterval` (or `setTimeout` when `isRepeating` is false) with the stop
+ * handed back as a function, on the same scheduler as the standard timers.
+ */
 export function startTimer(options: TimerOptions) {
-  const timer = DispatcherQueue.getForCurrentThread().createTimer();
-  timer.interval = { duration: BigInt(options.milliseconds) * TICKS_PER_MILLISECOND };
-  timer.isRepeating = options.isRepeating ?? true;
-  timer.onTick(options.onTick);
-  heldTimers.add(timer);
-  timer.start();
-  return () => {
-    timer.stop();
-    heldTimers.delete(timer);
-  };
+  const { scheduler } = uiTimers();
+  const isRepeating = options.isRepeating ?? true;
+  const timer = isRepeating
+    ? scheduler.setInterval(options.onTick, options.milliseconds)
+    : scheduler.setTimeout(options.onTick, options.milliseconds);
+  return () => scheduler.clearTimeout(timer);
+}
+
+/**
+ * Stops every timer, standard and `startTimer` alike, and refuses new ones
+ * until the next `useDispatcherTimers`. The application calls it as it exits:
+ * a tick that fires while the windows are torn down reads controls that are
+ * already gone, and the process ends with a failure code.
+ */
+export function stopAllTimers() {
+  uiTimers().scheduler.stopAll();
 }
