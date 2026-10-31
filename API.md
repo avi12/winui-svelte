@@ -22,7 +22,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/keyed-list` | `src/renderer/list/keyed-list.ts` | `syncKeyed()`: sync a native collection to wanted keys, touching only what changed |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()`, `hostState()`, the transports (see `src/state/README.md`) |
 | `winui-svelte/messaging` | `src/messaging/index.ts` | `defineMessaging(transport)`: typed `sendMessage` / `onMessage` over a ProtocolMap, as @webext-core/messaging; the state channel is built on it |
-| `winui-svelte/vite` | `src/vite/index.ts` | `winuiSvelte()` Vite plugin, `startModuleServer()`, compile-error formatting |
+| `winui-svelte/vite` | `src/vite/index.ts` | `winuiSvelte()` Vite plugin, `startModuleServer()`, `buildApp()` (the production bundle), compile-error formatting |
 | `winui-svelte/runner` | `src/vite/runner.ts` | `createWindowModuleRunner()`, the window thread's side of the module server |
 | `winui-svelte/compile` | `src/vite/compile.ts` | `compileSvelte()` for bundlers (esbuild) and tests, `WINUI_COMPILE_OPTIONS`, `withElementAnimation()` |
 | `winui-svelte/testing` | `src/vite/loader.ts` | `svelteHooks()`: Node module hooks that run `.svelte` files, with Svelte's runtime read through the package's edits (pure tests) |
@@ -337,6 +337,18 @@ function startModuleServer(options: {
   configFile?: string;                     // the app's vite.config; without one, winuiSvelte() defaults serve
   isNative?: (file: string) => boolean;    // an app's own native modules (the package's bindings are built in)
 }): Promise<ViteDevServer>;
+
+// The production build: one Vite SSR build per entry, each written as a single
+// self-contained file (`<name>.js`) that runs on plain Node. Components and
+// the package's .svelte.js rune modules are compiled for the client, Svelte
+// resolves to its browser build, and @microsoft/dynwinrt stays an import.
+function buildApp(options: {
+  root: string;                            // the app's folder
+  entries: Record<string, string>;         // output name to source file: { main, window }
+  outDirectory: string;                    // emptied first
+  isMinified?: boolean;                    // default false; off for apps that draw with Win2D
+  config?: InlineConfig;                   // Vite settings merged over these (an alias, a plugin)
+}): Promise<string[]>;                     // the files written, relative to outDirectory
 
 // winui-svelte/runner: the window thread's side. `receive()` is called from a
 // DispatcherQueue timer; a hot update that cannot be applied is reported and
@@ -3172,6 +3184,7 @@ entry point is named nowhere in the docs
 | `requestFrameSchema`, `responseFrameSchema` | `winui-svelte/messaging` | the wire shapes of a request and its answer |
 | `MessagingError`, `MessagingClosedError` | `winui-svelte/messaging` | a handler that threw; a pending send whose link closed |
 | `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
+| `classNameOf` | `winui-svelte/host` | the class name (`ListView`) of a control, from the tag it was registered under, so it holds when a minifier renames classes |
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet`, `textTransforms` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, removal of a stylesheet, and the text each element's `text-transform` shows (the renderer reads it) |
 | `animationGroups`, `effectGroups`, `visualEffectGroups`, `clipGroups`, `cursorGroups`, `environmentGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
