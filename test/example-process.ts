@@ -1,6 +1,6 @@
 import { jsonSchema } from "#src/messaging/json.js";
 import { backgroundEnvironment } from "#src/window/background-mode.js";
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import type { ChildProcessByStdio } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -140,6 +140,16 @@ export class ExampleProcess {
       },
       kind: "stats"
     });
+  }
+
+  // The processor time this process (the host and the window's thread) has used so far, in milliseconds.
+  cpuMilliseconds() {
+    const output = execFileSync("powershell.exe", [
+      "-NoProfile",
+      "-Command",
+      `(Get-Process -Id ${this.pid}).TotalProcessorTime.TotalMilliseconds`
+    ], { encoding: "utf8" });
+    return Number.parseFloat(output);
   }
 
   // For a test that failed: end this process, and only it.
