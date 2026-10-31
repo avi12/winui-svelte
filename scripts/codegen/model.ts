@@ -9,6 +9,7 @@ import {
   featureClasses,
   hostOwnedBindables,
   kindOfType,
+  madeFromProps,
   neverBindable,
   nonConstructible,
   nullableKindOfType,
@@ -777,6 +778,7 @@ class Builder {
   // from the registry, and only a component that can be one of their items
   // needs them there.
   private deriveRegisters(model: ClassModel) {
+    model.registers.push(...madeFromProps.get(model.type.name) ?? []);
     const levels: string[] = [];
     for (let level: ClassModel | null = model; level !== null; level = level.parent) {
       levels.push(fullName(level.type));

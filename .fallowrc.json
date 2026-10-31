@@ -125,6 +125,7 @@
     "examples/app/main.ts",
     "examples/web/main.ts",
     "examples/window/main.ts",
+    "examples/window-frame/main.ts",
     "examples/tray/main.ts",
     "examples/gallery/main.ts",
     "examples/todo/main.ts",

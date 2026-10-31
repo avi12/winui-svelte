@@ -327,6 +327,22 @@ export const createdCollections = new Map<string, TypeName>([
   ["FooterTransitions", TRANSITION_COLLECTION]
 ]);
 
+// The classes a component makes from a string prop (a grid's `rows` and
+// `columns` lists), by the component's name: it registers them beside its own,
+// so the renderer finds them and an app bundles them only with the component.
+export const madeFromProps = new Map<string, TypeName[]>([
+  ["Grid", [
+    {
+      namespace: "Microsoft.UI.Xaml.Controls",
+      name: "ColumnDefinition"
+    },
+    {
+      namespace: "Microsoft.UI.Xaml.Controls",
+      name: "RowDefinition"
+    }
+  ]]
+]);
+
 // A property that has its own props `children`, `class`, `style` or
 // `attached`, which every component takes.
 export const reservedKeys = new Set(["children", "class", "style", "attached"]);

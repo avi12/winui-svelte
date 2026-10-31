@@ -23,9 +23,12 @@ export interface ExampleHost {
 }
 
 interface ExampleModule {
+  // true: the harness registers no control for the example, which then has only what its own components register.
+  IS_BARE?: boolean;
   start(host: ExampleHost): void;
 }
 
 export const exampleModuleSchema = z.object({
-  start: z.custom<ExampleModule["start"]>(value => typeof value === "function")
+  start: z.custom<ExampleModule["start"]>(value => typeof value === "function"),
+  IS_BARE: z.boolean().optional()
 });
