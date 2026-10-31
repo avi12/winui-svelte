@@ -67,6 +67,7 @@
     "examples/win2d/main.ts",
     "examples/data-transfer/main.ts",
     "examples/effects/main.ts",
+    "examples/stores/main.ts",
     "examples/hello/App.svelte",
     "examples/hello/window.ts",
     "src/components/index.ts",
