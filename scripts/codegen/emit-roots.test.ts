@@ -112,7 +112,7 @@ test("an attached slot is a prop that takes a snippet, filled through its owner"
       collection: null
     }]
   });
-  assert.match(emitLevel(level), /toolTip\?: ObjectInput \| Snippet;/u);
+  assert.match(emitLevel(level), /toolTip\?: ObjectInput \| Snippet \| undefined;/u);
   const component = emitComponent(level);
   assert.match(component, /import \{ Border, ToolTipService \} from "\.\/bindings\.ts";/u);
   assert.match(component, /registerControls\(\{ "border": Border, "tool-tip-service": ToolTipService \}\);/u);
