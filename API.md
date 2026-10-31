@@ -1851,6 +1851,127 @@ with `registerPermission({ name, provider })` and calls
   implement; `notify` shares it, so `scenario`, `controls` and `progress` are
   available there too
 
+### Location and device state
+
+Six installers, each its own subpath; every one takes a `backend` or `source`
+in its options so a test needs no WinRT, and listens to Windows only while
+installed
+
+#### Geolocation (`winui-svelte/web-apis/geolocation`)
+
+`installGeolocation()` defines `navigator.geolocation` and the
+`Geolocation`, `GeolocationPosition`, `GeolocationCoordinates` and
+`GeolocationPositionError` globals over `Geolocator`
+
+- `getCurrentPosition(success, error, options)`, `watchPosition` and
+  `clearWatch` with the standard `enableHighAccuracy` (a 10 meter accuracy
+  request), `maximumAge` and `timeout`; a failure is a
+  `GeolocationPositionError` with code 1 (`PERMISSION_DENIED`), 2
+  (`POSITION_UNAVAILABLE`) or 3 (`TIMEOUT`)
+- Permission `geolocation`: `prompt` until the first call, then what
+  `Geolocator.RequestAccessAsync` answered (`granted` for Allowed, `denied`
+  for Denied); the Windows location switch off reads as denied
+- Extras, all optional and WinUI-only: on the position `positionSource`
+  (`satellite`, `wifi`, `ip-address` and more), `isRemoteSource`,
+  `satelliteData` (the dilutions of precision) and `civicAddress` (country,
+  state, city, postal code); in the options `desiredAccuracyInMeters`,
+  `reportInterval` and `movementThreshold`
+- The `GeolocationAccessStatus`, `PositionAccuracy` and `PositionSource`
+  enums are placeholders in the generated bindings, so the module reads their
+  numbers by value
+
+#### Battery (`winui-svelte/web-apis/battery`)
+
+`installBattery({ source })` defines `navigator.getBattery()` and
+`BatteryManager` over the `battery` source of `winui-svelte/devices`
+
+- `charging`, `chargingTime`, `dischargingTime` (seconds, `Infinity` when
+  Windows cannot say), `level` (0 to 1) and the four change events with their
+  `on` properties; a desktop with no battery is charging at level 1
+- Windows is read and listened to from the first `getBattery()` call
+- Extras: `hasBattery`, `isEnergySaverOn`, `chargeRateMilliwatts`,
+  `designCapacityMilliwattHours`, `fullChargeCapacityMilliwattHours` and
+  `remainingCapacityMilliwattHours`
+
+#### Network (`winui-svelte/web-apis/network`)
+
+`installNetwork({ source })` defines `navigator.connection`,
+`navigator.onLine` and the `online` and `offline` events over the
+`networkInformation` source
+
+- `type` (`wifi`, `cellular`, `ethernet`, `none`), `effectiveType` (from the
+  cellular signal bars; wired and Wi-Fi read as `4g`), `saveData` (true on a
+  metered connection) and `change`
+- Windows reports no throughput, so `rtt`, `downlink` and `downlinkMax` are
+  the nominal figures of the effective type
+- `online` and `offline` go to the global scope; a runtime with no window gets
+  a small event target for them
+- Extras: `isOnline`, `connectivityLevel`, `profileName`, `costType`,
+  `isRoaming`, `isOverDataLimit`, `isApproachingDataLimit`, `signalBars` and
+  `profileNames`
+
+#### Gamepad (`winui-svelte/web-apis/gamepad`)
+
+`installGamepad({ backend })` defines `navigator.getGamepads()`, `Gamepad`,
+`GamepadButton`, `GamepadHapticActuator` and `GamepadEvent` over
+`Windows.Gaming.Input.Gamepad`
+
+- Four slots, each a `Gamepad` in the `standard` mapping (17 buttons, 4 axes
+  with up as negative) or null; `gamepadconnected` and `gamepaddisconnected`
+  fire on the global scope as Windows reports controllers, and the first
+  `getGamepads()` call reports those already connected
+- `vibrationActuator.playEffect("dual-rumble", ...)` with `startDelay`,
+  `duration`, `strongMagnitude` and `weakMagnitude`, resolving `complete` or
+  `preempted`; `reset()` stops
+- Windows delivers input to a window that has focus, so a background process
+  reads neutral values; the guide button has no Windows counterpart and reads
+  as never pressed
+- Extras: `playEffect("trigger-rumble", { leftTrigger, rightTrigger })`,
+  `isWireless` and `batteryPercent`
+
+#### Sensors (`winui-svelte/web-apis/sensors`)
+
+`installSensors({ backend })` defines `Sensor` and, for each sensor the machine
+has, `Accelerometer` (meters per second squared, gravity included),
+`Gyroscope` (radians per second), `Magnetometer` (microtesla),
+`AbsoluteOrientationSensor`, `RelativeOrientationSensor` (`quaternion`,
+`populateMatrix`) and `AmbientLightSensor` (lux) over `Windows.Devices.Sensors`
+
+- `new Accelerometer({ frequency })`, `start()`, `stop()`, `activated`,
+  `hasReading`, `timestamp` and the `activate`, `reading` and `error` events;
+  starting a sensor the machine lacks fires `error` with a `NotReadableError`
+- A kind the machine lacks gets no class, so `"Accelerometer" in globalThis`
+  tells; the permissions `accelerometer`, `gyroscope`, `magnetometer` and
+  `ambient-light-sensor` are `granted` where the sensor exists and `denied`
+  where not
+- Extras: `Barometer` (`pressure` in hectopascals), `Altimeter` (`altitude`,
+  the change in meters), `Compass` (`headingMagneticNorth`,
+  `headingTrueNorth`, `accuracy`), and `accuracy` and `yawAccuracy` on the
+  magnetometer and orientation sensors
+- The proximity sensor needs a device id and a trigger, so it has no class here
+
+#### Screen (`winui-svelte/web-apis/screen`)
+
+`installScreen({ backend })` defines `screen`, `devicePixelRatio`,
+`getScreenDetails()` and the `Screen`, `ScreenOrientation`, `ScreenDetails`
+and `ScreenDetailed` classes over `DisplayArea` and the system DPI
+
+- Sizes are CSS pixels: device pixels over the system scale
+  (`devicePixelRatio`); `width`, `height`, `availWidth`, `availHeight`,
+  `colorDepth` (24), `isExtended`
+- `screen.orientation` is portrait or landscape from the primary display's
+  shape with angle 0, fires `change`, and `lock()` rejects `NotSupportedError`
+- `getScreenDetails()` resolves a `ScreenDetails` with `screens` (position,
+  size, work area, `isPrimary`, `devicePixelRatio`, `label`), `currentScreen`
+  (the primary display: the window's own display is not tracked) and
+  `screenschange` and `currentscreenchange`; the permission `window-management`
+  is always `granted`
+- Extras: `displayId` on each screen and `monitors` on the details (name,
+  native resolution, physical size, DPI and maximum brightness from EDID)
+- `DisplayInformation` (refresh rate, HDR, rotation) needs a view that an
+  unpackaged WinUI app lacks, so those stay out; the display areas need the
+  Windows App SDK to be running, which a window does
+
 ## Forms (`winui-svelte/forms`)
 
 Opt-in: nothing in the core imports it, so an app that does not use it does

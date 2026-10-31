@@ -337,7 +337,13 @@ Every feature falls in one of three kinds, decided in this order
 | --- | --- | --- |
 | `Notification` (with buttons, inputs, progress, scenario and more) | `winui-svelte/web-apis/notification` | done |
 | `navigator.permissions`, `PermissionStatus` | `winui-svelte/web-apis` | done |
-| geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
+| `navigator.geolocation` (with position source and civic address) | `winui-svelte/web-apis/geolocation` | done |
+| `navigator.getBattery()` (with capacity and charge rate) | `winui-svelte/web-apis/battery` | done |
+| `navigator.connection`, `onLine`, `online` and `offline` (with cost and signal) | `winui-svelte/web-apis/network` | done |
+| `navigator.getGamepads()`, `GamepadHapticActuator` (with trigger rumble) | `winui-svelte/web-apis/gamepad` | done |
+| `Accelerometer`, `Gyroscope`, `Magnetometer`, orientation and ambient light sensors (with barometer, altimeter, compass) | `winui-svelte/web-apis/sensors` | done |
+| `screen`, `devicePixelRatio`, `getScreenDetails()` (with monitor EDID data) | `winui-svelte/web-apis/screen` | done |
+| clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
 
 ## Host integration
 
