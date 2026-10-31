@@ -1851,6 +1851,89 @@ with `registerPermission({ name, provider })` and calls
   implement; `notify` shares it, so `scenario`, `controls` and `progress` are
   available there too
 
+### Page, timing, observers and animations
+
+Four subpaths, each with its own `install<Name>()`; none is defined until it is
+called (`runWindow({ webApis: [installPage, installTiming] })`)
+
+#### Page (`winui-svelte/web-apis/page`)
+
+`installPage()` defines the page on the global scope, following the window
+that `usePageWindow(handle)` is given (`bind:handle` on `<Window>`)
+
+- `document.visibilityState`, `hidden`, `hasFocus()` and `visibilitychange`:
+  hidden means minimized or hidden (to the tray); the window being active is
+  focus
+- `window` `focus`, `blur`, `beforeunload` (call `preventDefault()` to keep the
+  window open; there is no prompt), `pagehide` and `unload`, with `onfocus` and
+  the other handler properties; `window.close()`, `window.closed` and
+  `window.open(url)`, which hands the address to Windows and returns `null`
+- The Fullscreen API: `element.requestFullscreen()`,
+  `document.exitFullscreen()`, `fullscreenElement`, `fullscreenEnabled`,
+  `fullscreenchange` and `fullscreenerror`; the whole window goes fullscreen
+  (`FullScreenPresenter`), whichever element asked
+- `document.title` reads and sets the window's title
+- Extras (WinUI only): `document.windowState` (`normal`, `minimized`,
+  `maximized`, `fullscreen`, `compact-overlay`) and
+  `document.requestWindowState(state)`, which reaches the compact overlay
+  (Windows' picture in picture); the types merge into `Document` where this
+  module is imported
+- An app that installs this before its first component mounts keeps it: the DOM
+  shim puts the `document` it makes in front of the one there is
+
+#### Timing (`winui-svelte/web-apis/timing`)
+
+`installTiming({ clock })` defines `requestAnimationFrame`,
+`cancelAnimationFrame`, `requestIdleCallback` and `cancelIdleCallback`; a frame
+is a tick of the UI thread's dispatcher timer (about 16 milliseconds), a
+callback runs once on the next tick, and an idle callback runs after the frame
+callbacks with the web's `IdleDeadline` (`timeRemaining()`, `didTimeout` and the
+`timeout` option); with the element animations on, `requestAnimationFrame` is
+that engine's own on the same timer
+
+#### Observers (`winui-svelte/web-apis/observers`)
+
+`installObservers()` defines `ResizeObserver`, `IntersectionObserver` and
+`MutationObserver` over the tree's elements (what `bind:this` and `@attach`
+give) or a control; entries arrive after the current event, on the dispatcher
+
+- `ResizeObserver`: the control's `SizeChanged`; `content-box` and `border-box`
+  are both `ActualWidth` by `ActualHeight`, `device-pixel-content-box` uses the
+  rasterization scale; extra: `entry.rasterizationScale`
+- `IntersectionObserver`: against the window, the effective viewport of the
+  scrolling ancestors (`EffectiveViewportChanged`) or a `root` element, with
+  `rootMargin` (px and %) and `threshold`
+- `MutationObserver`: children, attributes (with `attributeFilter` and
+  `attributeOldValue`) and text of the renderer's tree, with `subtree`; the tree
+  is hooked only while an observer watches
+- Not covered: `IntersectionObserver` `delay` and `trackVisibility`
+
+#### Animations (`winui-svelte/web-apis/animations`)
+
+`installAnimations()` turns on the element animation engine and gives the
+tree's elements `animate()` and `getAnimations()`, and the global scope
+`Animation`, `KeyframeEffect` and `AnimationPlaybackEvent`
+
+- `Animation`: `play`, `pause`, `finish`, `cancel`, `reverse`,
+  `updatePlaybackRate`, `currentTime`, `startTime`, `playbackRate`, `playState`,
+  `ready`, `finished` (rejects with `AbortError` on cancel), `onfinish`,
+  `oncancel` and the `finish` and `cancel` events
+- `KeyframeEffect`: `getKeyframes`, `setKeyframes`, `getTiming`,
+  `getComputedTiming`, `updateTiming`; keyframes may be a list or
+  property-indexed
+- Timing: `duration`, `delay`, `endDelay`, `iterations`, `direction`, `easing`
+  (keywords, `cubic-bezier()`, `steps()`) and `fill`
+- What animates is what the engine reaches (opacity, translation, scale,
+  rotation, size, margin, padding, border, shape dashes); the keyframes are
+  evenly spaced, so a keyframe `offset` or `easing` is ignored, and anything
+  else warns once
+- Not covered: `document.getAnimations()`, composite modes, pseudo-elements and
+  scroll timelines
+- Extras (WinUI only): `element.prepareConnectedAnimation(key)` and
+  `element.startConnectedAnimation(key)` over `ConnectedAnimationService`;
+  implicit animations are the CSS `transition:` the translator already maps to
+  `OpacityTransition` and its siblings
+
 ## Forms (`winui-svelte/forms`)
 
 Opt-in: nothing in the core imports it, so an app that does not use it does

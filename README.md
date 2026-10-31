@@ -337,7 +337,11 @@ Every feature falls in one of three kinds, decided in this order
 | --- | --- | --- |
 | `Notification` (with buttons, inputs, progress, scenario and more) | `winui-svelte/web-apis/notification` | done |
 | `navigator.permissions`, `PermissionStatus` | `winui-svelte/web-apis` | done |
-| geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
+| `document.visibilityState`, focus, Fullscreen API, `document.title`, `window.close()` | `winui-svelte/web-apis/page` | done |
+| `requestAnimationFrame`, `requestIdleCallback` | `winui-svelte/web-apis/timing` | done |
+| `ResizeObserver`, `IntersectionObserver`, `MutationObserver` | `winui-svelte/web-apis/observers` | done |
+| `element.animate()`, `Animation`, `KeyframeEffect` | `winui-svelte/web-apis/animations` | done |
+| geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
 
 ## Host integration
 
