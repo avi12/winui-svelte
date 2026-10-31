@@ -95,14 +95,32 @@ export function virtualScreen() {
   };
 }
 
-/** Turns on the extended window style bits `styles` of the window `hwnd`, keeping the rest. */
-export function addExtendedStyles({ hwnd, styles }: {
+/**
+ * The extended window style bits the window chrome sets (`WS_EX_*`): a tool
+ * window has no taskbar button or Alt+Tab entry, a no-activate window is never
+ * activated by a click, and a transparent layered window lets clicks through.
+ */
+export const ExtendedStyle = {
+  toolWindow: 0x80n,
+  noActivate: 0x08000000n,
+  transparent: 0x20n,
+  layered: 0x80000n
+} as const;
+
+function extendedStylesOf(hwnd: bigint) {
+  const current = getWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(EXTENDED_STYLE_INDEX)]).returnValue;
+  return current === null ? NO_STYLES : DynWin32.toBigint(current);
+}
+
+/** Turns the extended window style bits `styles` of the window `hwnd` on or off, keeping the rest. */
+export function changeExtendedStyles({ hwnd, styles, isOn }: {
   hwnd: bigint;
   styles: bigint;
+  isOn: boolean;
 }) {
-  const current = getWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(EXTENDED_STYLE_INDEX)]).returnValue;
-  const held = current === null ? NO_STYLES : DynWin32.toBigint(current);
-  setWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(EXTENDED_STYLE_INDEX), DynWin32.i64(held | styles)]);
+  const held = extendedStylesOf(hwnd);
+  const changed = isOn ? held | styles : held & ~styles;
+  setWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(EXTENDED_STYLE_INDEX), DynWin32.i64(changed)]);
 }
 
 const MESSAGE_BYTES = 48;

@@ -29,6 +29,35 @@ test("a bare Window with a title bar opens with no control registered by hand", 
       }), ROWS_WITH_TITLE_BAR, "the title bar row and the content row"
     );
 
+    await example.ask({
+      command: {
+        cmd: "trayOnClose",
+        value: true
+      },
+      kind: "trayOnClose"
+    });
+    const hidden = await example.ask({
+      command: {
+        cmd: "tryClose"
+      },
+      kind: "closeTried"
+    });
+    assert.equal(hidden["isVisible"], false, "hideToTray inside onclosing hides a window that has no taskbar button, without throwing");
+    const restored = await example.ask({
+      command: {
+        cmd: "restore"
+      },
+      kind: "restored"
+    });
+    assert.equal(restored["isVisible"], true, "restoreFromTray shows it again");
+    await example.ask({
+      command: {
+        cmd: "trayOnClose",
+        value: false
+      },
+      kind: "trayOnClose"
+    });
+
     example.send({ cmd: "close" });
     assert.equal(await example.exited, 0, "closing the window ends the example");
   } finally {

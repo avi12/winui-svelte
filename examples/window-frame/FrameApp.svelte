@@ -4,11 +4,14 @@
   import { flush } from "winui-svelte";
   import { TextBlock, Window } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
+  import { hideToTray, restoreFromTray } from "winui-svelte/tray";
   import { exitApplication } from "winui-svelte/window";
 
   const { host }: { host: ExampleHost } = $props();
 
   let handle: WindowHandle | undefined = $state();
+  let isTrayOnClose = false;
+  let closeRequests = 0;
 
   function report(kind: string) {
     flush();
@@ -17,12 +20,41 @@
     host.report({
       kind,
       isOpen,
-      rowCount: isOpen ? projectAs(content, Grid).rowDefinitions.size : 0
+      rowCount: isOpen ? projectAs(content, Grid).rowDefinitions.size : 0,
+      isVisible: handle?.appWindow.isVisible,
+      closeRequests
     });
+  }
+
+  function refuseClose() {
+    closeRequests++;
+    const isOpen = handle !== undefined;
+    const isHiding = isTrayOnClose && isOpen;
+    if (isHiding) {
+      hideToTray(handle);
+    }
+
+    return isHiding;
   }
 
   const commands = new Map<string, (command: ExampleCommand) => void>([
     ["info", () => report("info")],
+    ["trayOnClose", command => {
+      isTrayOnClose = command["value"] === true;
+      report("trayOnClose");
+    }],
+    ["tryClose", () => {
+      handle?.close();
+      report("closeTried");
+    }],
+    ["restore", () => {
+      const isOpen = handle !== undefined;
+      if (isOpen) {
+        restoreFromTray(handle);
+      }
+
+      report("restored");
+    }],
     ["close", () => {
       handle?.close();
     }]
@@ -33,6 +65,7 @@
 
 <Window
   onclosed={() => exitApplication()}
+  onclosing={refuseClose}
   title="Window frame example"
   bind:handle
 >
