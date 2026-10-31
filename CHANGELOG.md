@@ -21,6 +21,10 @@ project adheres to [Semantic Versioning](https://semver.org/)
   `navigator.permissions`, and `Notification` over app notifications with
   WinUI extras (buttons, inputs, progress, scenario, sound and more)
   (`winui-svelte/web-apis/notification`)
+- Web APIs: `navigator.credentials` with `PasswordCredential` and WebAuthn over
+  the PasswordVault and Windows Hello (`winui-svelte/web-apis/credentials`),
+  `EyeDropper` (`winui-svelte/web-apis/eye-dropper`) and `navigator.contacts`
+  (`winui-svelte/web-apis/contacts`)
 
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support

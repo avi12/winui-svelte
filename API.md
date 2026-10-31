@@ -1851,6 +1851,74 @@ with `registerPermission({ name, provider })` and calls
   implement; `notify` shares it, so `scenario`, `controls` and `progress` are
   available there too
 
+### Credentials, eye dropper and contacts
+
+#### Credentials (`winui-svelte/web-apis/credentials`)
+
+`installCredentials({ origin, windowHandle, chooseAccount })` defines
+`navigator.credentials` (`get`, `store`, `create`, `preventSilentAccess`) and
+the classes `Credential`, `PasswordCredential`, `PublicKeyCredential` and the
+`AuthenticatorResponse` family
+
+- **Passwords**: `create({ password })` makes a `PasswordCredential`, `store`
+  keeps it in the Windows PasswordVault under the origin, `get({ password:
+  true })` reads it back; `mediation: "silent"` answers only for exactly one
+  account and not after `preventSilentAccess()`; with several accounts
+  `chooseAccount(accounts)` is asked, and the first is used without one; the
+  name and icon of a `PasswordCredential` are not kept
+- **WebAuthn**: `create({ publicKey })` and `get({ publicKey })` use a Windows
+  Hello key made with `KeyCredentialManager` (the Hello prompt is shown by
+  Windows)
+  - Covered: platform credentials, `none` attestation, RS256 (-257) keys,
+    discoverable credentials (kept in the PasswordVault, without secrets),
+    `excludeCredentials`, `allowCredentials`, `clientDataJSON`,
+    `authenticatorData` with flags and signature counter, `getPublicKey()`,
+    `getTransports()`, `isUserVerifyingPlatformAuthenticatorAvailable()`
+  - Not covered: roaming authenticators and security keys (`webauthn.dll` is
+    not used), extensions, other algorithms, attestation formats other than
+    `none`, conditional mediation, `FederatedCredential`
+  - `rp.id` must be a suffix of the host of `origin` (`https://localhost` by
+    default), and the origin must be secure
+  - Errors are the spec's: `NotAllowedError` (cancelled, nothing found, Hello
+    not set up), `NotSupportedError`, `InvalidStateError`, `SecurityError`,
+    `AbortError` from `signal`
+- **Extras** (optional, ignored anywhere else): `userVerificationMessage` on
+  `create` and `get` asks Windows Hello to verify the user first;
+  `PublicKeyCredential.verifyUser(message)` runs that check alone (`verified`,
+  `canceled`, `unavailable`, `busy`, `retries-exhausted`);
+  `PublicKeyCredential.deleteCredential({ id, rpId })` removes a credential and
+  its Hello key
+- `CredentialsBackend` (the vault and the key store) is the one interface the
+  real Windows backend and the tests implement
+
+#### EyeDropper (`winui-svelte/web-apis/eye-dropper`)
+
+`installEyeDropper()` defines `EyeDropper`; `await new EyeDropper().open({
+signal })` resolves with `{ sRGBHex }` for the pixel under the next left click
+anywhere on the screen
+
+- Escape or the user cancelling rejects with `AbortError`, as does `signal`; a
+  second `open` while one waits is an `InvalidStateError`
+- The click is not swallowed: it reaches the window under the cursor; there is
+  no magnifier
+- Extra: the result also has `position` (`x`, `y` in screen pixels)
+- `ScreenPicker` is the one interface the polling picker and the tests implement
+
+#### Contacts (`winui-svelte/web-apis/contacts`)
+
+`installContacts()` defines `navigator.contacts` with `getProperties()` and
+`select(properties, { multiple })`
+
+- Resolves with one object per contact holding only the requested properties,
+  each a list (`name`, `email`, `tel`, `address`); a cancelled picker gives an
+  empty list; no or an unknown property is a `TypeError`; a second `select`
+  while one is open is an `InvalidStateError`
+- Backed by the Windows `ContactPicker`, a user interface that needs a window
+  and, for most apps, package identity; where Windows refuses, `select` rejects
+  with `NotSupportedError`; `icon` returns an empty list
+- Extra: `commitButtonText` in the options
+- `ContactChooser` is the one interface the real picker and the tests implement
+
 ## Forms (`winui-svelte/forms`)
 
 Opt-in: nothing in the core imports it, so an app that does not use it does

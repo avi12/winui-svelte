@@ -337,6 +337,9 @@ Every feature falls in one of three kinds, decided in this order
 | --- | --- | --- |
 | `Notification` (with buttons, inputs, progress, scenario and more) | `winui-svelte/web-apis/notification` | done |
 | `navigator.permissions`, `PermissionStatus` | `winui-svelte/web-apis` | done |
+| `navigator.credentials`, `PasswordCredential` (PasswordVault), WebAuthn `PublicKeyCredential` (Windows Hello) | `winui-svelte/web-apis/credentials` | done |
+| `EyeDropper` | `winui-svelte/web-apis/eye-dropper` | done |
+| `navigator.contacts` (Contact Picker) | `winui-svelte/web-apis/contacts` | done |
 | geolocation, clipboard, share, file pickers, media devices, speech, Bluetooth, USB, HID, serial, wake lock, idle, credentials, badging, battery, network, gamepads, sensors, screen, observers, animations | one subpath each under `winui-svelte/web-apis/` | surveyed, not built yet ([`API.md`](API.md#web-apis-winui-svelteweb-apis)) |
 
 ## Host integration
