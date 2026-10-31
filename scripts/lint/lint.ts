@@ -1,3 +1,4 @@
+import { pnpmInvocation } from "#scripts/package-manager.ts";
 import { spawn } from "node:child_process";
 import path from "node:path";
 
@@ -75,10 +76,9 @@ const STEPS: Step[] = [
 ];
 
 function runStep(name: string) {
-  const pnpmScript = process.env["npm_execpath"];
-  const isRunThroughPnpm = pnpmScript !== undefined;
-  const child = isRunThroughPnpm
-    ? spawn(process.execPath, [pnpmScript, "run", name], { cwd: PACKAGE_ROOT })
+  const invocation = pnpmInvocation(["run", name]);
+  const child = invocation
+    ? spawn(invocation.command, invocation.args, { cwd: PACKAGE_ROOT })
     : spawn("pnpm", ["run", name], {
       cwd: PACKAGE_ROOT,
       shell: true

@@ -1,3 +1,4 @@
+import { pnpmInvocation } from "#scripts/package-manager.ts";
 import { execFileSync, spawn } from "node:child_process";
 import {
   mkdirSync,
@@ -102,15 +103,18 @@ function tarballFiles(tarball: string) {
   return files;
 }
 
-// pnpm sets npm_execpath to its own script, which Node runs directly (no shell).
-function run(args: string[]) {
-  const pnpmScript = process.env["npm_execpath"];
-  const isRunThroughPnpm = pnpmScript !== undefined;
-  if (!isRunThroughPnpm) {
+function pnpmInvocationOrThrow(args: string[]) {
+  const invocation = pnpmInvocation(args);
+  if (!invocation) {
     throw new Error("Run this through pnpm: pnpm check:package");
   }
 
-  execFileSync(process.execPath, [pnpmScript, ...args], {
+  return invocation;
+}
+
+function run(args: string[]) {
+  const invocation = pnpmInvocationOrThrow(args);
+  execFileSync(invocation.command, invocation.args, {
     cwd: PACKAGE_ROOT,
     stdio: "inherit"
   });
@@ -119,13 +123,8 @@ function run(args: string[]) {
 // pnpm exec, in the background: output is held and printed when it ends, so
 // the checks that run side by side do not interleave.
 function runAsync(args: string[]) {
-  const pnpmScript = process.env["npm_execpath"];
-  const isRunThroughPnpm = pnpmScript !== undefined;
-  if (!isRunThroughPnpm) {
-    throw new Error("Run this through pnpm: pnpm check:package");
-  }
-
-  const child = spawn(process.execPath, [pnpmScript, ...args], { cwd: PACKAGE_ROOT });
+  const invocation = pnpmInvocationOrThrow(args);
+  const child = spawn(invocation.command, invocation.args, { cwd: PACKAGE_ROOT });
   return new Promise<void>((resolve, reject) => {
     const chunks: Buffer[] = [];
     child.stdout.on("data", (chunk: Buffer) => chunks.push(chunk));
