@@ -1505,6 +1505,12 @@ in a probe, the table of a COM object it made ended after the three `IUnknown`
 entries, and a COM thunk needs its own object as `this`
 So the shell's callback message
 (`NIF_MESSAGE`) cannot be received
+That includes the keyboard ones: `NIN_KEYSELECT` and `NIN_SELECT` (Enter and
+Space on a focused icon; `NOTIFYICON_VERSION_4` makes the shell send them) are
+callback messages of the icon's window, delivered to its window procedure like
+the mouse ones; reading them takes a procedure, and the polled substitutes do
+not exist for a key (`GetAsyncKeyState` says a key is down, not that the shell
+sent the icon an activation, and which icon has focus is not readable)
 The tray polls every 30 ms instead:
 `GetCursorPos`, `GetAsyncKeyState` and `Shell_NotifyIconGetRect`, and a click
 is a press and a release both over the icon while the pointer is on the taskbar
