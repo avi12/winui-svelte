@@ -2036,6 +2036,66 @@ and `ScreenDetailed` classes over `DisplayArea` and the system DPI
 - `windowsScreenBackend` is the real `ScreenBackend`; `OrientationType` is
   `landscape-primary` or `portrait-primary`
 
+### Data and storage (clipboard, share, file system, storage, web storage)
+
+Each is `install<Name>()` from its own subpath and takes an optional `backend`
+(or `file`) so a test needs no WinRT
+
+- `winui-svelte/web-apis/clipboard`: `installClipboard()` defines
+  `navigator.clipboard` (`read`, `write`, `readText`, `writeText`,
+  `onclipboardchange` and the `clipboardchange` event), the global
+  `ClipboardItem` (text, HTML, URL list, images, and `web ` custom types) and
+  the always granted `clipboard-read` and `clipboard-write` permissions
+  More than one item, or a type the clipboard cannot take, rejects with
+  `NotAllowedError`
+  Extras: `readContent({ formats })` (copied files in `files`, custom formats
+  as text), `writeContent({ files, custom, bitmap, shouldPersist })`,
+  `formats()` and `history()` (Win+V, empty when history is off)
+  `windowsClipboardBackend()` is the real backend, for a test to wrap
+- `winui-svelte/web-apis/share`: `installShare()` defines `navigator.share`
+  and `navigator.canShare` over the share pane
+  An app without a package identity rejects with `NotAllowedError`; `File`
+  objects are copied to a temporary folder first
+  Extras on `ShareData`: `description`, `html`, `bitmap`, `custom`,
+  `nativeFiles`
+  `Sharer` is the object behind the two functions and `windowsShareBackend()`
+  the real pane
+- `winui-svelte/web-apis/file-system`: `installFileSystem({ owner })` defines
+  `showOpenFilePicker`, `showSaveFilePicker`, `showDirectoryPicker` and the
+  `FileSystemHandle`, `FileSystemFileHandle`, `FileSystemDirectoryHandle` and
+  `FileSystemWritableFileStream` classes
+  The handles read and write real files; a writable stream writes a swap file
+  and renames it over the target on `close`, so `abort` leaves the file as it
+  was
+  `owner` gives the window or control the dialogs open over
+  `queryPermission` and `requestPermission` always answer `granted`
+  Extras: `path` on every handle, `getNativeFile()`, and on the pickers
+  `title`, `commitButtonText`, `suggestedStartLocation`, `startFolder`,
+  `shouldPromptOverwrite` and `defaultFileExtension`; `viewMode` and the labels
+  of `types` are not passed to the dialog
+  `FileSystemPickers` holds the three pickers, `windowsPickerBackend(owner)` is
+  the real dialogs and `directoryHandleAt(path)` makes a handle for a folder
+  the app trusts
+- `winui-svelte/web-apis/storage`: `installStorage({ appName })` defines
+  `navigator.storage` (`estimate`, `persist`, `persisted`, `getDirectory`) and
+  the `persistent-storage` permission
+  The origin private file system is `%LOCALAPPDATA%\<app>\origin-private-file-system`
+  (Windows redirects it for a packaged app)
+  Extra: `getDirectory({ location })` with `roaming` or `temporary`
+  `StorageManager` is the class behind `navigator.storage`
+- `winui-svelte/web-apis/web-storage`: `installWebStorage({ appName })`
+  defines `localStorage`, `sessionStorage`, `Storage` and `StorageEvent`
+  `localStorage` is loaded once from `local-storage.json` in the app data
+  folder and answered from memory, so every call is synchronous; changes are
+  written together 200 milliseconds after the last one (at most 2 seconds
+  later), to a sibling file renamed over the old one, and again on exit and on
+  uninstall
+  `atomicFile(path)` is the default file and `defaultSchedule` the default
+  timer (the window thread's dispatcher, or Node's timers elsewhere)
+  The quota is 5 MiB of characters (`QuotaExceededError`)
+  Extras: `location: "roaming"`, `shouldNotifySelf` to fire `storage` for
+  changes made here
+
 ## Forms (`winui-svelte/forms`)
 
 Opt-in: nothing in the core imports it, so an app that does not use it does

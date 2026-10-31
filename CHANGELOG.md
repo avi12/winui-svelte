@@ -32,6 +32,11 @@ project adheres to [Semantic Versioning](https://semver.org/)
   `screen` with `getScreenDetails()`, each its own subpath under
   `winui-svelte/web-apis/` with WinUI extras
 
+- Web APIs for data and storage: `navigator.clipboard` and `ClipboardItem`,
+  `navigator.share`, the File System Access API, `navigator.storage` (the
+  origin private file system) and `localStorage` / `sessionStorage`, each at
+  `winui-svelte/web-apis/<name>` with WinUI extras
+
 - Components: every WinUI 3 control as a Svelte 5 component, generated from
   WinUI's metadata, with typed props, events and `bind:` support
 - Renderer: a tree that Svelte draws into as if it were the DOM, creating and
