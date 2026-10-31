@@ -1,11 +1,18 @@
 <script lang="ts">
   import ContextReader from "./ContextReader.svelte";
   import StoreReader from "./StoreReader.svelte";
-  import { CONTEXT_KEY, createStores } from "./stores.ts";
+  import {
+    CONTEXT_KEY,
+    createMotionStores,
+    createStores,
+    MOTION_MILLISECONDS,
+    SPRING_DAMPING,
+    SPRING_STIFFNESS
+  } from "./stores.ts";
   import Subscriber from "./Subscriber.svelte";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import { getContext, setContext } from "svelte";
-  import { Spring, spring, Tween, tweened } from "svelte/motion";
+  import { Spring, Tween } from "svelte/motion";
   import {
     createSubscriber,
     MediaQuery,
@@ -29,9 +36,6 @@
 
   const WINDOW_HEIGHT = 700;
   const WINDOW_WIDTH = 1300;
-  const MOTION_MILLISECONDS = 200;
-  const SPRING_STIFFNESS = 0.3;
-  const SPRING_DAMPING = 0.8;
   const FULL = 100;
   const WIDE_QUERY = "(min-width: 1px)";
   const STAMP_YEAR = 2030;
@@ -59,13 +63,7 @@
     stiffness: SPRING_STIFFNESS,
     damping: SPRING_DAMPING
   });
-  const tweenedStore = tweened(0, {
-    duration: MOTION_MILLISECONDS
-  });
-  const springStore = spring(0, {
-    stiffness: SPRING_STIFFNESS,
-    damping: SPRING_DAMPING
-  });
+  const { tweenedStore, springStore } = createMotionStores();
   const prices = new SvelteMap<string, number>();
   const tags = new SvelteSet<string>();
   const stamp = new SvelteDate(0);

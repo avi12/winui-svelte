@@ -1,4 +1,5 @@
 import { metered, meteredWritable } from "./metered.ts";
+import { spring, tweened } from "svelte/motion";
 import { derived, readable, writable } from "svelte/store";
 import { startTimer } from "winui-svelte/window";
 
@@ -50,5 +51,19 @@ function createStepper() {
   return {
     subscribe: inner.subscribe,
     increment: () => inner.update(value => value + STEP)
+  };
+}
+
+export const MOTION_MILLISECONDS = 200;
+export const SPRING_STIFFNESS = 0.3;
+export const SPRING_DAMPING = 0.8;
+
+export function createMotionStores() {
+  return {
+    tweenedStore: tweened(0, { duration: MOTION_MILLISECONDS }),
+    springStore: spring(0, {
+      stiffness: SPRING_STIFFNESS,
+      damping: SPRING_DAMPING
+    })
   };
 }
