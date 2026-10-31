@@ -74,8 +74,10 @@ const configurationRequestSchema = z.object({
 // package that is .worktrees (dozens of other checkouts), .verify and
 // the rest, which never settles. So it is started on a scratch workspace that
 // links in only what the editor would show, not these (dist stays: the package
-// imports itself through its exports, which point there).
-const WORKSPACE_FOLDER = path.resolve(import.meta.dirname, "../../.verify/editor-workspace");
+// imports itself through its exports, which point there). Each process has a
+// folder of its own, because the tests run in parallel and one shared folder
+// is cleared and rebuilt under another test that is using it.
+const WORKSPACE_FOLDER = path.resolve(import.meta.dirname, "../../.verify/editor-workspace", String(process.pid));
 const UNSEEN_ENTRIES = new Set([".worktrees", ".verify", ".git", ".idea", ".claude", ".fallow", ".winapp", "target"]);
 const HEADER_SEPARATOR = "\r\n\r\n";
 const contentLengthPattern = /Content-Length: (\d+)/i;
