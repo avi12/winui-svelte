@@ -310,7 +310,7 @@ function lowerContainer({ run, element, declarations, subjects }: {
 
   const facts = childFacts({
     run,
-    children: run.context.elements.filter(candidate => candidate.parent === element),
+    children: run.context.elements.filter(candidate => candidate.parent === element && !candidate.isInstance),
     declarationsOf: child => declarationsOf({
       subjects,
       element: child
@@ -421,7 +421,7 @@ export function lowerContainers({ context, blocks }: {
     }
   }
 
-  for (const element of context.elements) {
+  for (const element of context.elements.filter(candidate => !candidate.isInstance)) {
     const declarations = declarationsOf({
       subjects,
       element

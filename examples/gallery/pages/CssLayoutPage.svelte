@@ -29,7 +29,7 @@
 
 <style>
   :root {
-    --css-base: oklch(70% 0.15 200deg);
+    --css-base: oklch(0.7 0.15 200deg);
   }
 
   .css-flex {
@@ -40,7 +40,7 @@
   .css-chip {
     padding: 8px 12px;
     border-radius: 6px;
-    background-color: color-mix(in oklch, oklch(70% 0.15 200deg) 40%, #ffffff);
+    background-color: color-mix(in oklch, oklch(0.7 0.15 200deg) 40%, #ffffff);
   }
 
   .css-stage {
@@ -63,7 +63,7 @@
   @media (width >= 700px) {
     .css-responsive {
       padding: 24px;
-      background-color: oklch(85% 0.1 150deg);
+      background-color: oklch(0.85 0.1 150deg);
     }
   }
 
@@ -80,13 +80,13 @@
   @container card (min-width: 500px) {
     .css-badge {
       padding: 20px;
-      background-color: oklch(80% 0.12 60deg);
+      background-color: oklch(0.8 0.12 60deg);
     }
   }
 
   .css-colours {
     width: calc(160px + 80px);
     padding: 12px;
-    background-color: color-mix(in oklch, oklch(60% 0.2 30deg), oklch(60% 0.2 250deg));
+    background-color: color-mix(in oklch, oklch(0.6 0.2 30deg), oklch(0.6 0.2 250deg));
   }
 </style>

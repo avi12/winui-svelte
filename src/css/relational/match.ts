@@ -154,7 +154,8 @@ function classMatch({ element, name }: {
     return YES;
   }
 
-  return element.hasDynamicClass ? maybe(
+  const isUnknown = element.hasDynamicClass || element.conditionalClasses.includes(name);
+  return isUnknown ? maybe(
     `${describe(element)} has its class set by an expression, a class: directive or a spread, so .${name} cannot be told at build time`
   ) : NO_MATCH;
 }
@@ -332,7 +333,7 @@ function relatives({ element, combinator }: {
   }
 
   const { level } = element;
-  if (!level.isStatic) {
+  if (!level.isOrdered) {
     return null;
   }
 

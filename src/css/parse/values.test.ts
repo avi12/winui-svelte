@@ -33,7 +33,7 @@ test("colors are spelled the way XAML takes them", () => {
   assert.equal(parseColor("#00aaff80"), "#8000AAFF");
   assert.equal(parseColor("#0af8"), "#8800AAFF");
   assert.equal(parseColor("rgb(0, 170, 255)"), "#00AAFF");
-  assert.equal(parseColor("rgb(0 170 255 / 50%)"), "#8000AAFF");
+  assert.equal(parseColor("rgb(0 170 255 / 0.5)"), "#8000AAFF");
   assert.equal(parseColor("rgba(255, 0, 0, 0.5)"), "#80FF0000");
   assert.equal(parseColor("hsl(120, 100%, 25%)"), "#008000");
   assert.equal(parseColor("RebeccaPurple"), "#663399");
@@ -66,7 +66,7 @@ test("var() reads its name and fallback", () => {
 });
 
 test("lists split outside parentheses and strings", () => {
-  assert.deepEqual(splitWords("1px solid rgb(0 0 0 / 50%)"), ["1px", "solid", "rgb(0 0 0 / 50%)"]);
+  assert.deepEqual(splitWords("1px solid rgb(0 0 0 / 0.5)"), ["1px", "solid", "rgb(0 0 0 / 0.5)"]);
   assert.deepEqual(splitCommas("\"A, B\", serif, rgb(0, 0, 0)"), ["\"A, B\"", "serif", "rgb(0, 0, 0)"]);
   assert.deepEqual(splitSlash("14px/20px"), ["14px", "20px"]);
   assert.deepEqual(splitSlash("2 / span 2"), ["2", "span 2"]);

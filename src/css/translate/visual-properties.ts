@@ -1,6 +1,7 @@
 import { enumMap } from "./property-kit.ts";
+import { NOTATIONS } from "#src/css/parse/notation.js";
 import type { Reader } from "#src/css/parse/reader.js";
-import { parseNumber, parsePercent } from "#src/css/parse/values.js";
+import { parseNumber } from "#src/css/parse/values.js";
 
 /** `visibility`. */
 export const visibilities = enumMap([
@@ -23,7 +24,7 @@ export const colorSchemes = enumMap([
   ["dark", "Dark"]
 ]);
 
-/** `opacity`: a number or a percentage from 0 to 1. */
+/** `opacity`: a number from 0 to 1. */
 export function opacity(reader: Reader) {
   const word = reader.single();
   const isWordMissing = word === null;
@@ -31,10 +32,10 @@ export function opacity(reader: Reader) {
     return null;
   }
 
-  const amount = parseNumber(word) ?? parsePercent(word);
+  const amount = parseNumber(word);
   const isInRange = amount !== null && amount >= 0 && amount <= 1;
   return isInRange ? String(amount) : reader.expectedToken({
-    what: "a number or percentage from 0 to 1",
+    what: `a number from 0 to 1: ${NOTATIONS.alpha.advice}`,
     token: word
   });
 }

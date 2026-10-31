@@ -77,7 +77,7 @@ test("@keyframes becomes data: offsets in order, a list sharing its declarations
 
 test("@keyframes with a selector that is no offset fails the build at its position", () => {
   const { errors } = translate("@keyframes x {\n  soon { opacity: 0 }\n}");
-  assert.deepEqual(errors, ["a.svelte:2:3: @keyframes holds from, to and percentage keyframes only"]);
+  assert.deepEqual(errors, ["a.svelte:2:3: @keyframes holds from, to and percentage keyframes only: write from, to or a percentage (50%): a percentage here is a share of the animation, not a length"]);
 });
 
 test("a keyframe property WinUI cannot animate fails the build and says what it can", () => {

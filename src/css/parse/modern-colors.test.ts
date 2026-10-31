@@ -24,7 +24,7 @@ function assertClose({ token, expected }: {
 
 test("oklch, oklab, lab and lch resolve to sRGB", () => {
   assertClose({
-    token: "oklch(62.8% 0.2577 29.23)",
+    token: "oklch(0.628 0.2577 29.23)",
     expected: [255, 0, 0]
   });
   assertClose({
@@ -89,7 +89,7 @@ test("hue interpolation takes the shorter way by default, and the longer one on 
 });
 
 test("a relative color keeps the origin's channels it does not change", () => {
-  assert.equal(color("rgb(from #ff0000 r g b / 50%)"), "#80FF0000");
+  assert.equal(color("rgb(from #ff0000 r g b / 0.5)"), "#80FF0000");
   assert.equal(color("rgb(from #102030 calc(r + 16) g b)"), "#202030");
   assertClose({
     token: "oklch(from #ff0000 l c h)",
@@ -105,7 +105,7 @@ test("a relative color's origin may be a custom property of the sheet", () => {
   const lookup = new Map([["--c", "#102030"]]);
   assert.equal(
     resolveModernColor({
-      token: "rgb(from var(--c) r g b / 50%)",
+      token: "rgb(from var(--c) r g b / 0.5)",
       lookup
     }), "#80102030"
   );
@@ -118,7 +118,7 @@ test("a relative color's origin may be a custom property of the sheet", () => {
 });
 
 test("an alpha after a slash is kept", () => {
-  assert.match(color("oklab(1 0 0 / 50%)") ?? "", /^#80FFFFFF$/u);
+  assert.match(color("oklab(1 0 0 / 0.5)") ?? "", /^#80FFFFFF$/u);
 });
 
 test("a color the functions cannot read is null, and a plain color passes through", () => {
@@ -131,5 +131,5 @@ test("a value with modern colors inside keeps the rest", () => {
   assert.equal(resolveModernColors({ value: "1px solid hwb(0 0% 0%)" }), "1px solid #FF0000");
   assert.equal(resolveModernColors({ value: "oklab(1 0 0) oklab(0 0 0)" }), "#FFFFFF #000000");
   assert.equal(resolveModernColors({ value: "rgb(1 2 3)" }), "rgb(1 2 3)");
-  assert.equal(resolveModernColors({ value: "rgb(from #ff0000 r g b / 50%) blue" }), "#80FF0000 blue");
+  assert.equal(resolveModernColors({ value: "rgb(from #ff0000 r g b / 0.5) blue" }), "#80FF0000 blue");
 });

@@ -167,7 +167,7 @@ test("stops: two positions make a stop that holds its color", () => {
 });
 
 test("stops: colors are spelled the way XAML takes them", () => {
-  const gradient = gradientOf("linear-gradient(to right, #0af, rgb(0 0 0 / 50%) 50%, hsl(120, 100%, 25%))");
+  const gradient = gradientOf("linear-gradient(to right, #0af, rgb(0 0 0 / 0.5) 50%, hsl(120, 100%, 25%))");
   assert.deepEqual(gradient.stops.map(stop => stop.color), ["#00AAFF", "#80000000", "#008000"]);
 });
 

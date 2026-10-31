@@ -76,10 +76,7 @@ function alphaValue(part: string | undefined) {
     return 1;
   }
 
-  return channelValue({
-    part,
-    scale: 1
-  });
+  return parseNumber(part);
 }
 
 function parseRgbColor(token: string) {

@@ -9,9 +9,13 @@ import type { AST } from "svelte/compiler";
  */
 export interface TemplateElement {
   name: string;
+  /** Whether it is a component instance: matched by selectors, but never lowered as a container or a child of one. */
+  isInstance: boolean;
   /** The classes the markup writes, in `class="..."`. */
   classes: readonly string[];
-  /** Whether the class is also set by an expression, a `class:` directive or a spread: what it has cannot be told. */
+  /** The classes `class:name={...}` directives add when their condition holds. */
+  conditionalClasses: readonly string[];
+  /** Whether the class is also set by an expression or a spread: what it has cannot be told. */
   hasDynamicClass: boolean;
   /** Where the opening tag's name ends in the source: a class goes here when there is no class attribute. */
   nameEnd: number;
@@ -31,6 +35,8 @@ export interface Level {
   items: Array<TemplateElement | null>;
   /** Whether the items are all there is: no block or component among them, and a known parent. */
   isStatic: boolean;
+  /** Whether the elements and component instances among them are in a fixed order: what a sibling combinator needs. */
+  isOrdered: boolean;
   /** Whether an `{#if}`, `{#each}`, `{#key}` or `{#await}` is among them: the number of elements depends on data. */
   hasBlock: boolean;
   /** Whether a component, a snippet render or other markup that is not an element is among them. */
@@ -44,6 +50,8 @@ interface Walk {
   elements: TemplateElement[];
 }
 
+// A component instance is an element to a selector, as the stand-in the build gives Svelte's matcher.
+const ELEMENT_TYPES: ReadonlySet<string> = new Set(["RegularElement", "Component", "SvelteComponent", "SvelteSelf"]);
 const QUOTES: ReadonlySet<string> = new Set(["\"", "'"]);
 
 type AttributeValue = AST.Attribute["value"];
@@ -57,11 +65,14 @@ function valueParts(value: AttributeValue) {
   return [value].flat();
 }
 
+type ElementLike = AST.RegularElement | AST.Component | AST.SvelteComponent | AST.SvelteSelf;
+
 function classFacts({ element, source }: {
-  element: AST.RegularElement;
+  element: ElementLike;
   source: string;
 }) {
   const classes: string[] = [];
+  const conditionalClasses: string[] = [];
   let hasDynamicClass = false;
   let classEnd: number | null = null;
   for (const attribute of element.attributes) {
@@ -69,7 +80,11 @@ function classFacts({ element, source }: {
     const isDirective = attribute.type === "ClassDirective";
     const isClassAttribute = attribute.type === "Attribute" && attribute.name === "class";
 
-    hasDynamicClass ||= isSpread || isDirective;
+    hasDynamicClass ||= isSpread;
+
+    if (isDirective) {
+      conditionalClasses.push(attribute.name);
+    }
 
     if (!isClassAttribute) {
       continue;
@@ -94,6 +109,7 @@ function classFacts({ element, source }: {
 
   return {
     classes,
+    conditionalClasses,
     hasDynamicClass,
     classEnd
   };
@@ -101,18 +117,20 @@ function classFacts({ element, source }: {
 
 function addElement({ walk, node, parent, level }: {
   walk: Walk;
-  node: AST.RegularElement;
+  node: ElementLike;
   parent: TemplateElement | null;
   level: Level;
 }) {
   const childLevel: Level = {
     items: [],
     isStatic: true,
+    isOrdered: true,
     hasBlock: false,
     hasOpaque: false
   };
   const element: TemplateElement = {
     name: node.name.toLowerCase(),
+    isInstance: node.type !== "RegularElement",
     ...classFacts({
       element: node,
       source: walk.source
@@ -126,6 +144,12 @@ function addElement({ walk, node, parent, level }: {
   };
   level.items.push(element);
   walk.elements.push(element);
+
+  if (element.isInstance) {
+    level.isStatic = false;
+    level.hasOpaque = true;
+  }
+
   addNodes({
     walk,
     nodes: node.fragment.nodes,
@@ -150,6 +174,10 @@ function blockFragments(node: TemplateNode) {
   }
 }
 
+function isElementLike(node: TemplateNode): node is ElementLike {
+  return ELEMENT_TYPES.has(node.type);
+}
+
 function addNodes({ walk, nodes, parent, level }: {
   walk: Walk;
   nodes: readonly TemplateNode[];
@@ -157,8 +185,7 @@ function addNodes({ walk, nodes, parent, level }: {
   level: Level;
 }) {
   for (const node of nodes) {
-    const isElement = node.type === "RegularElement";
-    if (isElement) {
+    if (isElementLike(node)) {
       addElement({
         walk,
         node,
@@ -177,6 +204,7 @@ function addNodes({ walk, nodes, parent, level }: {
 
     level.items.push(null);
     level.isStatic = false;
+    level.isOrdered = false;
     level.hasBlock ||= isBlock;
     level.hasOpaque ||= !isBlock;
     for (const fragment of isBlock ? fragments : []) {
@@ -187,6 +215,7 @@ function addNodes({ walk, nodes, parent, level }: {
         level: {
           items: [],
           isStatic: false,
+          isOrdered: false,
           hasBlock: false,
           hasOpaque: false
         }
@@ -211,6 +240,7 @@ export function templateElements({ root, source }: {
     level: {
       items: [],
       isStatic: false,
+      isOrdered: false,
       hasBlock: false,
       hasOpaque: false
     }
