@@ -141,6 +141,35 @@ an ordinary desktop session: a process a sandbox or a service started cannot
 launch the browser (WebView2 reports 0x8007139F), and the tests skip where the
 Windows App SDK was not restored or the WebView2 Runtime is not installed
 
+`test/keys.test.ts` drives the keyboard's routes without real input: it
+posts `WM_KEYDOWN`, `WM_KEYUP`, `WM_SYSKEYDOWN`, `WM_CHAR` and `WM_IME_CHAR` to
+the `InputSiteWindowClass` window inside the window of `examples/keys` (the
+process the test started; `examples/harness/post-messages.ps1`, never
+`SendInput`), and reads back what the controls received: the tab order
+(also with Shift), Space on a button, a Ctrl+S `KeyboardAccelerator`, an
+Alt+F access key, typed Latin and Hebrew text, Backspace, Delete, arrows, Home,
+End and Shift+arrows in a `TextBox`, Enter and Escape in a `ContentDialog`
+Posted messages do not update the thread's key state, so the script sets the
+modifier it holds in the input state the window's thread shares
+(`AttachThreadInput` and `SetKeyboardState` on the test's own process)
+
+What only a person with a real keyboard can check, after a change to the pump
+or to `ContentPreTranslateMessage` handling (run `examples/keys` or any app):
+
+- Tab and Shift+Tab move focus in the tab order; arrows move inside lists,
+  radio groups and menus
+- Ctrl+C, Ctrl+X, Ctrl+V and Ctrl+Z in a `TextBox` and a `RichEditBox`
+- Hebrew typing (right to left caret, mixed Hebrew and Latin), switching the
+  layout with Alt+Shift or Win+Space
+- An IME (Japanese or Chinese pinyin): the composition underline, the
+  candidate window placed at the caret, committing with Enter
+- Dead keys (an accent then a letter) and AltGr characters
+- The emoji panel (Win+.), clipboard history (Win+V) and voice typing (Win+H)
+  inserting at the caret
+- The touch keyboard appearing when a `TextBox` takes focus by touch
+- Alt+F style access keys showing their tips, and Enter and Escape in a
+  `ContentDialog`
+
 Tests must never inject real input into the desktop of whoever runs them: no
 `SetCursorPos`, `mouse_event`, `SendInput`, `keybd_event`, no clicks on the
 taskbar or the notification area, and no messages posted to windows the test

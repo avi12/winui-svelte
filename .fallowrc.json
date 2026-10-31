@@ -64,6 +64,7 @@
     "examples/scheduling/launch.ts",
     "examples/scheduling/window.ts",
     "examples/hello/main.ts",
+    "examples/keys/main.ts",
     "examples/win2d/main.ts",
     "examples/data-transfer/main.ts",
     "examples/effects/main.ts",
