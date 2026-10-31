@@ -32,6 +32,7 @@
     "src/enums.ts",
     "test/choice-props.types.ts",
     "scripts/pack/treeshake-app/enum-main.ts",
+    "scripts/pack/treeshake-app/five-main.ts",
     "src/forms/index.ts",
     "src/forms/Form.d.svelte.ts",
     "src/forms/FormField.d.svelte.ts",

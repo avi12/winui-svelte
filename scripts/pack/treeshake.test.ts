@@ -11,8 +11,12 @@ import { build } from "vite";
 // bindings and dynwinrt stay external, as native modules Node loads itself.
 //
 // A bundler can only drop what the package lets it: `sideEffects: false`, ESM
-// and no import-time work. The first test holds the line against growth. The
-// second is the goal: a Button must not import the bindings of every control.
+// and no import-time work. The first test holds the line against growth and
+// the bindings a Button imports; the third shows how an app of five controls
+// grows. What an app loads at start is its entry chunk: the attached
+// properties (Canvas.Left, ScrollViewer.ZoomMode, AutomationProperties.Name)
+// load their owner's bindings the first time one is set, in chunks of their
+// own, and a Button's app never fetches them.
 
 const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const APP_FOLDER = path.join(import.meta.dirname, "treeshake-app");
@@ -21,13 +25,15 @@ const BUNDLE_TIMEOUT_MILLISECONDS = 120_000;
 const bindingImport = /#winui\/[\w./-]+/gu;
 const externalModule = new RegExp(String.raw`^#winui/|dist[\\/]bindings|@microsoft[\\/]dynwinrt`, "u");
 
-// Measured with one <Button>: today's bundle. Lower it when the package gets
-// smaller; never raise it to make a change pass.
-const BUDGET_BYTES = 123_000;
-const BUDGET_BINDINGS = 46;
-// What the goal allows: the bindings of the controls and enums the app uses,
-// and the renderer's own handful.
-const GOAL_BINDINGS = 40;
+// Measured with one <Button>: the entry chunk today. Lower it when the package
+// gets smaller; never raise it to make a change pass.
+const BUDGET_BYTES = 122_500;
+// The bindings of the Button, the enums its properties take and the renderer's
+// own handful. Lower it when an import goes; never raise it.
+const BUDGET_BINDINGS = 29;
+// What five controls (a panel, two inputs, a check box and a Button) may add
+// to one Button.
+const BUDGET_FIVE_EXTRA_BYTES = 24_000;
 
 // What importing one enum may add to an app: the import of its bindings
 // module and the expression that reads it, never the other enums.
@@ -54,7 +60,8 @@ async function bundleOf(input: string) {
     }
   });
   const outputs = Array.isArray(result) ? result : [result];
-  const chunks = outputs.flatMap(output => "output" in output ? output.output : []).flatMap(item => item.type === "chunk" ? [item] : []);
+  const items = outputs.flatMap(output => "output" in output ? output.output : []);
+  const chunks = items.flatMap(item => item.type === "chunk" ? [item] : []).filter(chunk => chunk.isEntry);
   const code = chunks.map(chunk => chunk.code).join("\n");
   return {
     bytes: Buffer.byteLength(code),
@@ -75,17 +82,25 @@ test("an app with one Button stays within the bundle budget", {
   timeout: BUNDLE_TIMEOUT_MILLISECONDS
 }, async () => {
   const bundle = await bundleOfOneButton();
+  console.log(`one Button: ${bundle.bytes} bytes, ${bundle.bindings} binding imports`);
   assert.ok(bundle.bytes <= BUDGET_BYTES, `${bundle.bytes} bytes is over the ${BUDGET_BYTES} budget`);
-  assert.ok(bundle.bindings <= BUDGET_BINDINGS, `${bundle.bindings} binding imports is over the ${BUDGET_BINDINGS} budget`);
 });
 
 test("an app with one Button imports only the bindings it uses", {
   skip: !IS_BUILT,
-  timeout: BUNDLE_TIMEOUT_MILLISECONDS,
-  todo: "the owners of the attached properties every element takes (Canvas, RelativePanel, ScrollViewer, VariableSizedWrapGrid) and their enums load with every component"
+  timeout: BUNDLE_TIMEOUT_MILLISECONDS
 }, async () => {
   const bundle = await bundleOfOneButton();
-  assert.ok(bundle.bindings <= GOAL_BINDINGS, `${bundle.bindings} binding imports for one Button, the goal is ${GOAL_BINDINGS}`);
+  assert.ok(bundle.bindings <= BUDGET_BINDINGS, `${bundle.bindings} binding imports for one Button, the budget is ${BUDGET_BINDINGS}`);
+});
+
+test("five controls cost little more than one", {
+  skip: !IS_BUILT,
+  timeout: BUNDLE_TIMEOUT_MILLISECONDS
+}, async () => {
+  const [button, five] = await Promise.all([bundleOf("main.ts"), bundleOf("five-main.ts")]);
+  console.log(`one Button: ${button.bytes} bytes; five controls: ${five.bytes} bytes, ${five.modules.size} binding imports`);
+  assert.ok(five.bytes - button.bytes <= BUDGET_FIVE_EXTRA_BYTES, `five controls added ${five.bytes - button.bytes} bytes`);
 });
 
 // The same Button, importing one enum's value and another's type from
