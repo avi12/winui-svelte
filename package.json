@@ -301,6 +301,10 @@
       "types": "./dist/web-apis/notification.d.ts",
       "default": "./dist/web-apis/notification.js"
     },
+    "./web-apis/hid": {
+      "types": "./dist/web-apis/hid.d.ts",
+      "default": "./dist/web-apis/hid.js"
+    },
     "./web-apis/usb": {
       "types": "./dist/web-apis/usb.d.ts",
       "default": "./dist/web-apis/usb.js"

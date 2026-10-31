@@ -4,3 +4,5 @@ export { UsbControlRequestType } from "#winui/windows/devices/usb/UsbControlRequ
 export { UsbDevice } from "#winui/windows/devices/usb/UsbDevice";
 export { UsbSetupPacket } from "#winui/windows/devices/usb/UsbSetupPacket";
 export { InputStreamOptions } from "#winui/windows/storage/streams/InputStreamOptions";
+export { HidDevice } from "#winui/windows/devices/human-interface-device/HidDevice";
+export { FileAccessMode } from "#winui/windows/storage/FileAccessMode";
