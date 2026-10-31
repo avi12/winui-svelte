@@ -1,3 +1,4 @@
+import { withAttachedOwners } from "./attached-owners.ts";
 import { describeError, errorOf } from "./diagnostics.ts";
 import { compileSheetModule, scopedMarkup, SheetError } from "#src/css/runtime/sheet-module.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
@@ -178,17 +179,21 @@ function compileSource({ filename, source, options }: {
     resources,
     runtimeModule: options.cssRuntime ?? WINUI_CSS_RUNTIME
   });
+  const animated = withElementAnimation({
+    source,
+    code: sheet === null ? js.code : `${js.code}\n${sheet.code}`,
+    isComponent: true,
+    ...options.animationRuntime && {
+      runtime: options.animationRuntime
+    },
+    ...options.effectsRuntime && {
+      effectsRuntime: options.effectsRuntime
+    }
+  });
   return withInlineSourceMap({
-    code: withElementAnimation({
+    code: withAttachedOwners({
       source,
-      code: sheet === null ? js.code : `${js.code}\n${sheet.code}`,
-      isComponent: true,
-      ...options.animationRuntime && {
-        runtime: options.animationRuntime
-      },
-      ...options.effectsRuntime && {
-        effectsRuntime: options.effectsRuntime
-      }
+      code: animated
     }),
     map: js.map
   });

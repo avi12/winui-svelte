@@ -1,5 +1,6 @@
 import { enumValue } from "./convert.ts";
 import type { FlagsInput } from "./convert.ts";
+import type { AttachedModules } from "./generated/attached/owners.ts";
 import type { Snippet } from "svelte";
 
 // What a generated component links its control to its props with. A prop
@@ -23,6 +24,20 @@ function isEnumInput(value: unknown): value is FlagsInput<EnumTable> {
 // eslint-disable-next-line no-restricted-syntax -- a type predicate cannot destructure its subject
 function isKeyOf<Target extends object>(target: Target, key: PropertyKey): key is keyof Target {
   return key in target;
+}
+
+const loadedOwners: Partial<AttachedModules> = {};
+
+/**
+ * Records the module an attached owner's properties are written through.
+ *
+ * @param options - The owner's name (`Canvas`) and its module.
+ */
+export function rememberOwner<Name extends keyof AttachedModules>({ name, module }: {
+  name: Name;
+  module: AttachedModules[Name];
+}) {
+  loadedOwners[name] = module;
 }
 
 // A value a prop can hold once `undefined` (the prop was not given) is out:
@@ -160,19 +175,16 @@ export class Linker {
 
   /**
    * The attached properties of one owner, each written through the module
-   * `owner` imports. The module is imported when a control first gives one
-   * of the props, so an app that never sets an owner's attached properties
-   * never loads its bindings; the value is written once the import settles.
+   * the app has loaded under `owner`'s name (`rememberOwner`): the compiler
+   * has a component whose markup names such a prop load its owner first, so
+   * an app that sets none never loads an owner's bindings, and the control
+   * has its place when WinUI first lays it out.
    */
-  attached<Props extends object, Owner>({ props, owner, setters }: {
+  attached<Props extends object, Name extends keyof AttachedModules>({ props, owner, setters }: {
     props: Props;
-    owner: () => Promise<Owner>;
-    setters: { [Key in keyof Props]?: (owner: Owner, value: Written<Props[Key]>) => void };
+    owner: Name;
+    setters: { [Key in keyof Props]?: (owner: AttachedModules[Name], value: Written<Props[Key]>) => void };
   }) {
-    let isDisposed = false;
-    this.add(() => {
-      isDisposed = true;
-    });
     for (const key of Object.keys(setters)) {
       const isSetter = isKeyOf(setters, key);
       if (isSetter) {
@@ -180,8 +192,7 @@ export class Linker {
           props,
           key,
           owner,
-          apply: setters[key],
-          isDisposed: () => isDisposed
+          apply: setters[key]
         });
       }
     }
@@ -190,25 +201,25 @@ export class Linker {
   private followAttached<
     Props extends object,
     Key extends keyof Props,
-    Owner
-  >({ props, key, owner, apply, isDisposed }: {
+    Name extends keyof AttachedModules
+  >({ props, key, owner, apply }: {
     props: Props;
     key: Key;
-    owner: () => Promise<Owner>;
-    apply: ((owner: Owner, value: Written<Props[Key]>) => void) | undefined;
-    isDisposed: () => boolean;
+    owner: Name;
+    apply: ((owner: AttachedModules[Name], value: Written<Props[Key]>) => void) | undefined;
   }) {
-    this.follow({
+    this.property({
       props,
       key,
       apply(value) {
-        void owner().then(loaded => {
-          if (!isDisposed()) {
-            apply?.(loaded, value);
-          }
-        });
-      },
-      isBlocked: () => false
+        const loaded = loadedOwners[owner];
+        const isLoaded = loaded !== undefined;
+        if (!isLoaded) {
+          throw new Error(`${String(key)} needs the ${owner} module: name the prop in a .svelte file, or await preloadAttachedOwners(["${owner}"])`);
+        }
+
+        apply?.(loaded, value);
+      }
     });
   }
 

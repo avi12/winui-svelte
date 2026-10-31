@@ -261,10 +261,13 @@ export function emitBindings(model: Model) {
   return `${lines.join("\n")}\n`;
 }
 
+const ATTACHED_OWNERS_MODULE = "owners";
+
 // The modules the attached properties are written through, one per owner
-// (attachedOwners in tables.ts): a component imports its owner's module when
-// an attached prop is first given, so the owner's bindings and the enums its
-// setters take load only for an app that sets them.
+// (attachedOwners in tables.ts), and the table that imports them by name. No
+// component imports either: the compiler has a component whose markup names
+// an attached prop load its owner first (preloadAttachedOwners), so the owner's
+// bindings and the enums its setters take load only for an app that sets them.
 export function emitAttachedOwners(model: Model) {
   const owners = new Map<string, Map<string, TypeName>>();
   for (const attached of model.classes.flatMap(level => level.attached)) {
@@ -278,7 +281,7 @@ export function emitAttachedOwners(model: Model) {
     owners.set(attached.owner.name, exported);
   }
 
-  return [...owners].map(([owner, exported]) => ({
+  const modules = [...owners].map(([owner, exported]) => ({
     owner,
     text: [
       GENERATED_HEADER,
@@ -287,6 +290,26 @@ export function emitAttachedOwners(model: Model) {
       ""
     ].join("\n")
   }));
+  const hasOwners = modules.length > 0;
+  if (!hasOwners) {
+    return modules;
+  }
+
+  return [...modules, {
+    owner: ATTACHED_OWNERS_MODULE,
+    text: [
+      GENERATED_HEADER,
+      "",
+      "export const attachedOwners = {",
+      modules.map(({ owner }) => `  ${owner}: () => import("./${owner}.ts")`).join(",\n"),
+      "};",
+      "",
+      "export type AttachedModules = {",
+      "  [Name in keyof typeof attachedOwners]: Awaited<ReturnType<(typeof attachedOwners)[Name]>>;",
+      "};",
+      ""
+    ].join("\n")
+  }];
 }
 
 // The input type of an enum prop: one member by name or value, and for a flag
@@ -601,17 +624,14 @@ function emitAttached({ attached, imports, isSlot }: {
   };
 }
 
-// One link per owner: its module is imported once, when a prop of it is first
-// given, and each prop's setter runs on it.
-function attachedBody({ entries, root }: {
-  entries: Array<ReturnType<typeof emitAttached>>;
-  root: string;
-}) {
+// One link per owner: each prop's setter runs on the owner's module, which
+// the app has loaded under the owner's name.
+function attachedBody(entries: Array<ReturnType<typeof emitAttached>>) {
   const owners = new Set(entries.map(entry => entry.owner));
   return [...owners].flatMap(owner => [
     "  link.attached({",
     "    props,",
-    `    owner: () => import("${root}../attached/${owner}.ts"),`,
+    `    owner: "${owner}",`,
     "    setters: {",
     entries.filter(entry => entry.owner === owner).map(entry => entry.setter.join("\n")).join(",\n"),
     "    }",
@@ -850,10 +870,7 @@ function emitPropertyBody({ level, imports }: {
   ] : [];
   return {
     members: [...attached, ...properties].map(entry => entry.member),
-    body: [...plain, ...enums, ...attachedBody({
-      entries: attached,
-      root: sharedRoot(level)
-    }), ...properties.flatMap(entry => entry.body)]
+    body: [...plain, ...enums, ...attachedBody(attached), ...properties.flatMap(entry => entry.body)]
   };
 }
 

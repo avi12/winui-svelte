@@ -46,7 +46,7 @@ export function linkTimeline(
   });
   link.attached({
     props,
-    owner: () => import("../attached/Storyboard.ts"),
+    owner: "Storyboard",
     setters: {
       storyboardTargetProperty({ Storyboard }, value) {
         Storyboard.setTargetProperty(control, value);

@@ -90,6 +90,11 @@
       "svelte": "./dist/renderer/host/element-animation.js",
       "default": "./dist/renderer/host/element-animation.js"
     },
+    "./attached-owners": {
+      "types": "./dist/components/attached-owners.d.ts",
+      "svelte": "./dist/components/attached-owners.js",
+      "default": "./dist/components/attached-owners.js"
+    },
     "./element-effects": {
       "types": "./dist/win2d/element-effects.d.ts",
       "svelte": "./dist/win2d/element-effects.js",

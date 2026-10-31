@@ -1210,6 +1210,7 @@ attachments, because a component prop would pull this code into every app
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
+| `winui-svelte/attached-owners` | `preloadAttachedOwners` (the Vite plugin calls it for a component that names `canvasLeft`, `gridRow` and the like, so a placed control has its place at its first layout; a prop named nowhere needs the call by hand) |
 | `winui-svelte/element-effects` | `enableElementEffects` (the Vite plugin calls it from a component that imports `blur` or `draw`): the blur transition blurs for real and `draw` measures a `path`, with Composition and Win2D |
 | `winui-svelte/app` | single-instance handling over a named pipe, and app notifications |
 | `winui-svelte/data-transfer` | web-shaped drag and drop, `NativeFile`, pickers, the clipboard and the launcher (opt-in) |

@@ -9,6 +9,7 @@
     "src/renderer/host/host.ts",
     "src/renderer/list/keyed-list.ts",
     "src/renderer/host/element-animation.ts",
+    "src/components/attached-owners.ts",
     "src/state/index.ts",
     "src/state/host.ts",
     "src/messaging/index.ts",

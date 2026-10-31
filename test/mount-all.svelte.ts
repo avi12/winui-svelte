@@ -1,9 +1,13 @@
+import AttachedFixture from "./Attached.fixture.svelte";
 import { checkCssEffects } from "./css-effects-behaviours.ts";
 import { checkCssPrecedence } from "./css-precedence-behaviours.ts";
 import type { Counts, Failure, Report } from "./mount-report.ts";
 import SlotsFixture from "./Slots.fixture.svelte";
 import { checkXamlBehaviours } from "./xaml-behaviours.svelte.ts";
 import { unboxObject } from "@microsoft/dynwinrt";
+import { preloadAttachedOwners } from "#src/components/attached-owners.js";
+import type { AttachedOwnerName } from "#src/components/attached-owners.js";
+import { attachedOwners } from "#src/components/generated/attached/owners.js";
 import * as bindings from "#src/components/generated/bindings.js";
 import type { LevelMetadata } from "#src/components/generated/metadata.js";
 import { levels } from "#src/components/generated/metadata.js";
@@ -87,6 +91,9 @@ const BORDER_PADDING_ENDS = 4;
 const BORDER_CORNER_RADIUS = 6;
 const BORDER_WIDTH = 120;
 const BORDER_GRID_ROW = 2;
+const ATTACHED_CANVAS_LEFT = 7;
+const ATTACHED_CANVAS_TOP = 9;
+const ATTACHED_GRID_CELL = 1;
 const BORDER_CANVAS_LEFT = 7;
 const HORIZONTAL_ALIGNMENT_CENTER = 1;
 const ANIMATION_TICKS = 3_000_000n;
@@ -739,22 +746,10 @@ function checkBehaviours({ connectors, failures }: {
       assert.ok(border.cornerRadius.topLeft === BORDER_CORNER_RADIUS, "cornerRadius 6 is not 6 on every corner");
       assert.ok(border.horizontalAlignment === HORIZONTAL_ALIGNMENT_CENTER, "horizontalAlignment Center is not 1");
       assert.ok(border.width === BORDER_WIDTH, "width was not written");
+      assert.ok(bindings.Grid.getRow(border) === BORDER_GRID_ROW, "gridRow 2 did not reach Grid.Row");
       assert.ok(bindings.Canvas.getLeft(border) === BORDER_CANVAS_LEFT, "attached Canvas.Left 7 did not reach Canvas.Left");
       assert.ok(border.background !== null, "the background color made no brush");
-      // A prop of an attached property is written once its owner's module is
-      // imported (the app loaded it before the window opened).
-      setTimeout(() => {
-        const isRowWritten = bindings.Grid.getRow(border) === BORDER_GRID_ROW;
-        if (!isRowWritten) {
-          failures.push({
-            name: "behaviour: conversions build what WinUI takes (Border)",
-            step: "check",
-            message: "gridRow 2 did not reach Grid.Row"
-          });
-        }
-
-        close();
-      }, 0);
+      close();
     }
   });
 
@@ -1030,6 +1025,75 @@ function statistics() {
   } satisfies Pick<Report, "components" | "properties" | "events" | "attached" | "bindables">;
 }
 
+// What a Canvas child and a Grid child hold when WinUI first lays them out:
+// the attached properties are written by then, not a moment after (this runs
+// before anything else has loaded an attached owner, so the import is cold).
+function checkAttachedBeforeLayout({ failures, panel }: {
+  failures: Failure[];
+  panel: bindings.StackPanel;
+}) {
+  const children: Partial<Record<string, bindings.FrameworkElement>> = {};
+  const mounted = mountControl({
+    component: AttachedFixture,
+    props: {
+      onFound({ name, native }: {
+        name: string;
+        native: object;
+      }) {
+        children[name] = bindings.projectAs(native, bindings.FrameworkElement);
+      }
+    }
+  });
+  panel.children.append(mounted.root);
+  const canvasChild = children["canvasChild"];
+  const gridChild = children["gridChild"];
+  const isFound = canvasChild !== undefined && gridChild !== undefined;
+  if (!isFound) {
+    failures.push({
+      name: "behaviour: attached properties before layout",
+      step: "mount",
+      message: "the fixture's controls were not found"
+    });
+    return;
+  }
+
+  function verify({ step, canvasPlaced, gridPlaced }: {
+    step: string;
+    canvasPlaced: bindings.FrameworkElement;
+    gridPlaced: bindings.FrameworkElement;
+  }) {
+    const placements = [
+      ["Canvas.Left", bindings.Canvas.getLeft(canvasPlaced), ATTACHED_CANVAS_LEFT],
+      ["Canvas.Top", bindings.Canvas.getTop(canvasPlaced), ATTACHED_CANVAS_TOP],
+      ["Grid.Row", bindings.Grid.getRow(gridPlaced), ATTACHED_GRID_CELL],
+      ["Grid.Column", bindings.Grid.getColumn(gridPlaced), ATTACHED_GRID_CELL]
+    ] as const;
+    for (const [property, actual, expected] of placements) {
+      const isPlaced = actual === expected;
+      if (!isPlaced) {
+        failures.push({
+          name: "behaviour: attached properties before layout",
+          step,
+          message: `${property} is ${actual}, not ${expected}`
+        });
+      }
+    }
+  }
+
+  const placed = {
+    canvasPlaced: canvasChild,
+    gridPlaced: gridChild
+  };
+  verify({
+    step: "after the flush",
+    ...placed
+  });
+  canvasChild.onLoaded(() => verify({
+    step: "loaded",
+    ...placed
+  }));
+}
+
 function launch({ connectors, report, throughRenderer }: {
   connectors: Map<string, Connect>;
   report: (result: Report) => void;
@@ -1039,6 +1103,10 @@ function launch({ connectors, report, throughRenderer }: {
   const window = new Window();
   window.content = panel;
   const exercise = new Exercise(panel);
+  checkAttachedBeforeLayout({
+    failures: exercise.failures,
+    panel
+  });
   const only = new RegExp(process.env["WINUI_SVELTE_ONLY"] ?? ".");
   for (const [name, connect] of connectors) {
     if (only.test(name)) {
@@ -1449,10 +1517,18 @@ function checkSlotsThroughRenderer(failures: Failure[]) {
   }
 }
 
+// The fixture loads the owners its markup names (the compiler adds the call);
+// the rest are loaded here, for the connectors exercised with every prop.
+const FIXTURE_OWNERS = new Set(["Canvas", "Grid"]);
+
+function isUnnamedByFixture(name: string): name is AttachedOwnerName {
+  return !FIXTURE_OWNERS.has(name);
+}
+
 export async function run(report: (result: Report) => void) {
   trace("loading");
   const connectors = await loadConnectors();
-  await import("#src/components/generated/attached/Grid.js");
+  await preloadAttachedOwners(Object.keys(attachedOwners).filter(isUnnamedByFixture));
   trace("loaded");
   await Application.startScheduled(() => {
     Application.create(() => {

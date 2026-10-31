@@ -230,7 +230,7 @@ export function linkUIElement(
   });
   link.attached({
     props,
-    owner: () => import("../attached/Canvas.ts"),
+    owner: "Canvas",
     setters: {
       canvasLeft({ Canvas }, value) {
         Canvas.setLeft(control, value);
@@ -245,7 +245,7 @@ export function linkUIElement(
   });
   link.attached({
     props,
-    owner: () => import("../attached/RelativePanel.ts"),
+    owner: "RelativePanel",
     setters: {
       relativePanelLeftOf({ RelativePanel }, value) {
         RelativePanel.setLeftOf(control, objectOf(value));
@@ -299,7 +299,7 @@ export function linkUIElement(
   });
   link.attached({
     props,
-    owner: () => import("../attached/VariableSizedWrapGrid.ts"),
+    owner: "VariableSizedWrapGrid",
     setters: {
       variableSizedWrapGridRowSpan({ VariableSizedWrapGrid }, value) {
         VariableSizedWrapGrid.setRowSpan(control, value);
@@ -311,7 +311,7 @@ export function linkUIElement(
   });
   link.attached({
     props,
-    owner: () => import("../attached/ScrollViewer.ts"),
+    owner: "ScrollViewer",
     setters: {
       scrollViewerHorizontalScrollBarVisibility({ ScrollViewer, ScrollBarVisibility }, value) {
         ScrollViewer.setHorizontalScrollBarVisibility(control, enumValue({ table: ScrollBarVisibility, input: value }));
@@ -362,7 +362,7 @@ export function linkUIElement(
   });
   link.attached({
     props,
-    owner: () => import("../attached/ToolTipService.ts"),
+    owner: "ToolTipService",
     setters: {
       toolTipPlacement({ ToolTipService, PlacementMode }, value) {
         ToolTipService.setPlacement(control, enumValue({ table: PlacementMode, input: value }));
@@ -377,7 +377,7 @@ export function linkUIElement(
   });
   link.attached({
     props,
-    owner: () => import("../attached/AutomationProperties.ts"),
+    owner: "AutomationProperties",
     setters: {
       automationAcceleratorKey({ AutomationProperties }, value) {
         AutomationProperties.setAcceleratorKey(control, value);

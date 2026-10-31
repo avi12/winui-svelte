@@ -1,3 +1,4 @@
+import { withAttachedOwners } from "./attached-owners.ts";
 import { withElementAnimation } from "./compile.ts";
 import { isPatchedRuntime, patchSvelteRuntime } from "./runtime-patch.ts";
 import { scopedMarkup } from "#src/css/runtime/sheet-module.js";
@@ -172,10 +173,13 @@ export function svelteCompiler(options: CompileOptions) {
           filename
         });
         return {
-          code: withElementAnimation({
+          code: withAttachedOwners({
             source: code,
-            code: js.code,
-            isComponent: true
+            code: withElementAnimation({
+              source: code,
+              code: js.code,
+              isComponent: true
+            })
           }),
           map: plainSourceMap(js.map)
         };

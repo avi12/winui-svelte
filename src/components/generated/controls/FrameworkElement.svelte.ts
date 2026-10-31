@@ -74,7 +74,7 @@ export function linkFrameworkElement(
   });
   link.attached({
     props,
-    owner: () => import("../attached/Grid.ts"),
+    owner: "Grid",
     setters: {
       gridRow({ Grid }, value) {
         Grid.setRow(control, value);
