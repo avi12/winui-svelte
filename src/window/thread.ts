@@ -1,12 +1,11 @@
 import { installUiTimers } from "./install-timers.ts";
-import { installUiFetch } from "./ui-fetch.ts";
 import { roInitialize } from "@microsoft/dynwinrt";
 
-// The UI thread: a worker, because WinUI's message loop never gives its
-// thread back. Its apartment comes first, so everything loaded after it may
-// create WinRT objects as it loads. This file imports nothing of WinRT for
-// that reason (the timers it installs are plain JavaScript): `main` loads the
-// rest.
+// The UI thread: a worker, so the host's main thread stays its own (WinUI's
+// messages and libuv take turns here, see message-pump.ts). Its apartment
+// comes first, so everything loaded after it may create WinRT objects as it
+// loads. This file imports nothing of WinRT for that reason (the timers it
+// installs are plain JavaScript): `main` loads the rest.
 
 const SINGLE_THREADED_APARTMENT = 0;
 
@@ -22,7 +21,6 @@ const SINGLE_THREADED_APARTMENT = 0;
  */
 export async function runOnUiThread(main: () => Promise<void>) {
   installUiTimers();
-  installUiFetch();
   roInitialize(SINGLE_THREADED_APARTMENT);
   try {
     await main();

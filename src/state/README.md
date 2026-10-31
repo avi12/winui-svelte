@@ -6,15 +6,15 @@ only what Svelte cannot know: state that lives in the host
 ## Scheduling: nothing to do
 
 App code never calls `flushSync`
-WinUI's loop must be started with
-`Application.startScheduled`; WinUI then calls back into JS with no script
-under it, Node drains microtasks when each callback returns, and Svelte's
+`runWindow` takes WinUI's messages one at a time (the message pump, see
+Timers and I/O in API.md); WinUI calls back into JS with no script under it,
+Node drains microtasks when each callback returns, and Svelte's
 `queueMicrotask` flush runs
 Proven for a control event, a dispatcher timer and
 a host message by `examples/scheduling/run.ps1`
-A host message is taken off its
-port by a timer (port events never fire on the UI thread, see Timers and I/O in API.md):
-`createMessagePortTransport({ port, poll })` takes that timer
+A host message arrives on its port as any `MessagePort` event does, since the
+thread's libuv turns between WinUI's messages; `createMessagePortTransport`'s
+`poll` option, which takes the port off on a timer, is no longer needed there
 
 ## Svelte's tools here
 

@@ -3187,24 +3187,56 @@ entry point is named nowhere in the docs
 
 ## Timers and I/O
 
-WinUI's message loop runs inside the callback libuv gave the UI thread, so
-the thread's libuv loop never turns again once `runWindow` starts: Node's own
-timers, immediates, `fs` and `net` callbacks and `MessagePort` events never fire
-there (measured: `setTimeout`, `setInterval`, `setImmediate`, an `fs.readFile`
-callback, a `fetch` and a port `message` event all stayed silent for four seconds)
+`runWindow` does not hand the UI thread to `Application.Start`, whose message
+loop blocks inside a libuv callback and keeps the thread's libuv from ever
+turning again; it runs a pump of its own (`src/window/message-pump.ts`)
+Each turn of the pump dispatches one WinUI message, then gives libuv a turn
+(an immediate), so every callback Node delivers fires on the UI thread, between
+two messages, with no JavaScript under it: the promise continuations a handler
+queued run before the next message, as they do for a browser's events
 
-`runOnUiThread` therefore installs, before anything else runs, one scheduler on
-the dispatcher (`installUiTimers`) and a `fetch` that runs in a helper thread:
+When no message is waiting the pump sleeps in `MsgWaitForMultipleObjectsEx`,
+which ends the moment a message arrives; the sleep doubles from 1 ms to 8 ms
+while nothing happens, so an idle window wakes about 125 times a second and a
+libuv callback waits 8 ms at most (a busy window gives libuv a turn per
+message)
+While it runs the pump asks Windows for 1 ms timer ticks (`timeBeginPeriod`),
+as browsers do; without them every wait rounds up to 15.6 ms
+Measured, off screen: `setTimeout` is 1 ms late (15 ms without the finer
+ticks), an `fs.readFile` callback and a TCP echo arrive within 5 ms, and an
+idle window uses about the same CPU as with `Application.Start`'s own loop
+(about 4 % of a core, the example's host included)
+
+`runOnUiThread` installs, before anything else runs, one scheduler on the
+dispatcher (`installUiTimers`) for the standard timers: it is driven by
+messages, so it needs no polling, and with 1 ms ticks it is as accurate as
+libuv's own timers would be
 
 | API | On the UI thread |
 |---|---|
-| `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval` | Works; `Timeout` has `ref`, `unref`, `hasRef`, `refresh`, `close`, and converts to its id; extra arguments and `this` as in Node; 4 ms clamp once nested deeper than 5, as in browsers; accuracy is the Windows timer tick (about 15 ms) |
+| `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval` | Works; `Timeout` has `ref`, `unref`, `hasRef`, `refresh`, `close`, and converts to its id; extra arguments and `this` as in Node; 4 ms clamp once nested deeper than 5, as in browsers; about 1 ms late |
 | `setImmediate`, `clearImmediate` | Works (dispatcher queue) |
 | `node:timers`, `node:timers/promises` (`AbortSignal`, `setInterval` iterator, `scheduler.wait`) | Works |
-| `queueMicrotask`, `process.nextTick`, promises, `await` | Work (unchanged) |
-| `fetch` | Works, streaming responses; `blob:` URLs and streamed request bodies do not |
-| `fs` callbacks and `fs.promises`, `net`, `http`, `child_process`, `WebSocket`, `MessagePort` events | Do not fire; use the synchronous `fs` calls, do the work on another thread, and read its answers with `receiveMessageOnPort` on a timer |
+| `queueMicrotask`, `process.nextTick`, promises, `await` | Work |
+| `fetch` (streaming bodies too), `WebSocket`, `EventSource` | Work |
+| `fs` callbacks, `fs.promises`, `fs.watch` | Work |
+| `net`, `http`, `https`, `dns` (client and server) | Work |
+| `child_process` (`spawn` output events, `exec` callbacks) | Work |
+| `MessageChannel` and `MessagePort` events, `Worker` messages | Work |
 
-Pending timers never keep the process alive; `exitApplication` and the end of
-`runWindow` stop all of them, `startTimer` ones included
+`examples/loop` runs each of these on the UI thread while an interval animates
+a control, and `test/loop.test.ts` checks them
+
+Pending sockets, files and timers never keep the process alive after
+`runWindow` ends: `exitApplication`, the last window closing and the end of
+`runWindow` stop the pump and all the dispatcher timers (`startTimer` ones
+included), and `runOnUiThread` ends the process
 `startTimer` is kept as `setInterval` that returns its stop function
+A handler that throws does not stop the pump
+Like WinUI's own loop, the pump offers each message to
+`ContentPreTranslateMessage` (exported by `Microsoft.UI.Windowing.Core.dll`)
+before `TranslateMessage` and `DispatchMessage`, so accelerators, access keys,
+Tab and arrow focus navigation and text input (the Text Services Framework)
+work as under `Application.Start`
+Work that takes the UI thread, such as starting a child process (about
+100 ms), shows as a gap in the animation

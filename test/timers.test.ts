@@ -4,9 +4,9 @@ import { createServer } from "node:http";
 import { test } from "node:test";
 
 // The timers example (examples/timers) in a real WinUI window, off screen and
-// never activated: the standard timers and fetch run on the UI thread, whose
-// libuv loop WinUI's message loop holds. A setInterval drives a TextBlock, an
-// awaited setTimeout resolves, and a fetch of a server of this test settles.
+// never activated: the standard timers and fetch run on the UI thread. A
+// setInterval drives a TextBlock, an awaited setTimeout resolves, and a fetch
+// of a server of this test settles.
 // Skipped where the Windows App SDK was not restored.
 
 const TIMEOUT_MILLISECONDS = 300_000;
