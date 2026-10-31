@@ -4,7 +4,6 @@ import {
   brushOf,
   cornerRadiusOf,
   dateTimeOf,
-  enumValue,
   fontFamilyOf,
   fontWeightOf,
   styleOf,
@@ -129,6 +128,11 @@ export function linkCalendarView(
     control,
     keys: ["calendarIdentifier", "dayItemFontSize", "dayOfWeekFormat", "firstOfMonthLabelFontSize", "firstOfYearDecadeLabelFontSize", "isGroupLabelVisible", "isOutOfScopeEnabled", "isTodayHighlighted", "monthYearItemFontSize", "numberOfWeeksInView"]
   });
+  link.enums({
+    props,
+    control,
+    tables: { dayItemFontStyle: FontStyle, displayMode: CalendarViewDisplayMode, firstDayOfWeek: DayOfWeek, firstOfMonthLabelFontStyle: FontStyle, firstOfYearDecadeLabelFontStyle: FontStyle, horizontalDayItemAlignment: HorizontalAlignment, horizontalFirstOfMonthLabelAlignment: HorizontalAlignment, monthYearItemFontStyle: FontStyle, selectionMode: CalendarViewSelectionMode, verticalDayItemAlignment: VerticalAlignment, verticalFirstOfMonthLabelAlignment: VerticalAlignment }
+  });
   link.property({
     props,
     key: "blackoutBackground",
@@ -222,13 +226,6 @@ export function linkCalendarView(
   });
   link.property({
     props,
-    key: "dayItemFontStyle",
-    apply(value) {
-      control.dayItemFontStyle = enumValue({ table: FontStyle, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "dayItemFontWeight",
     apply(value) {
       control.dayItemFontWeight = fontWeightOf(value);
@@ -250,30 +247,9 @@ export function linkCalendarView(
   });
   link.property({
     props,
-    key: "displayMode",
-    apply(value) {
-      control.displayMode = enumValue({ table: CalendarViewDisplayMode, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "firstDayOfWeek",
-    apply(value) {
-      control.firstDayOfWeek = enumValue({ table: DayOfWeek, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "firstOfMonthLabelFontFamily",
     apply(value) {
       control.firstOfMonthLabelFontFamily = fontFamilyOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "firstOfMonthLabelFontStyle",
-    apply(value) {
-      control.firstOfMonthLabelFontStyle = enumValue({ table: FontStyle, input: value });
     }
   });
   link.property({
@@ -299,13 +275,6 @@ export function linkCalendarView(
   });
   link.property({
     props,
-    key: "firstOfYearDecadeLabelFontStyle",
-    apply(value) {
-      control.firstOfYearDecadeLabelFontStyle = enumValue({ table: FontStyle, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "firstOfYearDecadeLabelFontWeight",
     apply(value) {
       control.firstOfYearDecadeLabelFontWeight = fontWeightOf(value);
@@ -323,20 +292,6 @@ export function linkCalendarView(
     key: "focusBorderBrush",
     apply(value) {
       control.focusBorderBrush = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "horizontalDayItemAlignment",
-    apply(value) {
-      control.horizontalDayItemAlignment = enumValue({ table: HorizontalAlignment, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "horizontalFirstOfMonthLabelAlignment",
-    apply(value) {
-      control.horizontalFirstOfMonthLabelAlignment = enumValue({ table: HorizontalAlignment, input: value });
     }
   });
   link.property({
@@ -365,13 +320,6 @@ export function linkCalendarView(
     key: "monthYearItemFontFamily",
     apply(value) {
       control.monthYearItemFontFamily = fontFamilyOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "monthYearItemFontStyle",
-    apply(value) {
-      control.monthYearItemFontStyle = enumValue({ table: FontStyle, input: value });
     }
   });
   link.property({
@@ -488,13 +436,6 @@ export function linkCalendarView(
   });
   link.property({
     props,
-    key: "selectionMode",
-    apply(value) {
-      control.selectionMode = enumValue({ table: CalendarViewSelectionMode, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "todayBackground",
     apply(value) {
       control.todayBackground = brushOf(value);
@@ -554,20 +495,6 @@ export function linkCalendarView(
     key: "todaySelectedInnerBorderBrush",
     apply(value) {
       control.todaySelectedInnerBorderBrush = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "verticalDayItemAlignment",
-    apply(value) {
-      control.verticalDayItemAlignment = enumValue({ table: VerticalAlignment, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "verticalFirstOfMonthLabelAlignment",
-    apply(value) {
-      control.verticalFirstOfMonthLabelAlignment = enumValue({ table: VerticalAlignment, input: value });
     }
   });
 

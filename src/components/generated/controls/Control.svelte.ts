@@ -4,7 +4,6 @@ import {
   brushOf,
   controlTemplateOf,
   cornerRadiusOf,
-  enumValue,
   fontFamilyOf,
   fontWeightOf,
   thicknessOf,
@@ -80,18 +79,16 @@ export function linkControl(
     control,
     keys: ["characterSpacing", "fontSize", "isEnabled", "isFocusEngaged", "isFocusEngagementEnabled", "isTextScaleFactorEnabled"]
   });
+  link.enums({
+    props,
+    control,
+    tables: { backgroundSizing: BackgroundSizing, elementSoundMode: ElementSoundMode, fontStretch: FontStretch, fontStyle: FontStyle, horizontalContentAlignment: HorizontalAlignment, requiresPointer: RequiresPointer, tabNavigation: KeyboardNavigationMode, verticalContentAlignment: VerticalAlignment }
+  });
   link.property({
     props,
     key: "background",
     apply(value) {
       control.background = brushOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "backgroundSizing",
-    apply(value) {
-      control.backgroundSizing = enumValue({ table: BackgroundSizing, input: value });
     }
   });
   link.property({
@@ -124,30 +121,9 @@ export function linkControl(
   });
   link.property({
     props,
-    key: "elementSoundMode",
-    apply(value) {
-      control.elementSoundMode = enumValue({ table: ElementSoundMode, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "fontFamily",
     apply(value) {
       control.fontFamily = fontFamilyOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "fontStretch",
-    apply(value) {
-      control.fontStretch = enumValue({ table: FontStretch, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "fontStyle",
-    apply(value) {
-      control.fontStyle = enumValue({ table: FontStyle, input: value });
     }
   });
   link.property({
@@ -166,13 +142,6 @@ export function linkControl(
   });
   link.property({
     props,
-    key: "horizontalContentAlignment",
-    apply(value) {
-      control.horizontalContentAlignment = enumValue({ table: HorizontalAlignment, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "padding",
     apply(value) {
       control.padding = thicknessOf(value);
@@ -180,30 +149,9 @@ export function linkControl(
   });
   link.property({
     props,
-    key: "requiresPointer",
-    apply(value) {
-      control.requiresPointer = enumValue({ table: RequiresPointer, input: value });
-    }
-  });
-  link.property({
-    props,
-    key: "tabNavigation",
-    apply(value) {
-      control.tabNavigation = enumValue({ table: KeyboardNavigationMode, input: value });
-    }
-  });
-  link.property({
-    props,
     key: "template",
     apply(value) {
       control.template = controlTemplateOf(value);
-    }
-  });
-  link.property({
-    props,
-    key: "verticalContentAlignment",
-    apply(value) {
-      control.verticalContentAlignment = enumValue({ table: VerticalAlignment, input: value });
     }
   });
 
