@@ -1676,6 +1676,9 @@ flyouts: `Flyout`, `MenuFlyout`, `MenuBarItemFlyout`, `CommandBarFlyout`,
   or closes the control; the user closing it (light dismiss, Escape, a choice,
   the dialog's buttons) sets it back to `false`
   Left unset, nothing opens
+  A button opens the flyout in its `flyout` snippet itself when it is
+  clicked, so an `onclick` that also sets `open` to `true` is harmless: a
+  flyout that is already open stays open
 - `target` is the element the control opens next to: a flyout through
   `ShowAt`, a dialog in that element's window (its `XamlRoot`)
   It defaults to
