@@ -1,27 +1,18 @@
+import { FileSystemFileHandle } from "./file-system.ts";
 import { defineProperty } from "./install.ts";
 import type { Activation } from "#src/app/redirect.js";
-import { readFile, stat } from "node:fs/promises";
+import { stat } from "node:fs/promises";
 import path from "node:path";
 
 const URL_PATTERN = /^[a-z][a-z0-9+.-]+:/iu;
-
-/** A file the app was started with, shaped like a `FileSystemFileHandle`. */
-export interface LaunchFile {
-  readonly kind: "file";
-  readonly name: string;
-
-  /** The full path on disk. WinUI-only. */
-  readonly path: string;
-  getFile(): Promise<File>;
-}
 
 /** What one start or redirect of the app carried. */
 export interface LaunchParams {
   /** The first protocol address on the command line, or `undefined`. */
   readonly targetURL: string | undefined;
 
-  /** The files on the command line, in order. */
-  readonly files: readonly LaunchFile[];
+  /** The files on the command line, in order; the handle's `path` is WinUI-only. */
+  readonly files: readonly FileSystemFileHandle[];
 }
 
 /** What `installLaunch` takes. */
@@ -32,12 +23,6 @@ export interface LaunchInstallOptions {
    * none.
    */
   readonly initialArguments?: readonly string[];
-
-  /** Answers whether a path names a file; the default asks the disk. A test stands in. */
-  readonly isFile?: (candidate: string) => Promise<boolean>;
-
-  /** Reads a file; the default reads the disk. A test stands in. */
-  readonly read?: (candidate: string) => Promise<Uint8Array>;
 }
 
 declare global {
@@ -46,7 +31,7 @@ declare global {
   var launchQueue: LaunchQueue;
 }
 
-async function defaultIsFile(candidate: string) {
+async function isFile(candidate: string) {
   const status = await stat(candidate).catch(() => undefined);
   return status?.isFile() ?? false;
 }
@@ -55,17 +40,6 @@ async function defaultIsFile(candidate: string) {
 export class LaunchQueue {
   private consumer: ((params: LaunchParams) => unknown) | undefined;
   private pending: LaunchParams[] = [];
-  private readonly isFile: (candidate: string) => Promise<boolean>;
-  private readonly read: (candidate: string) => Promise<Uint8Array>;
-
-  /** Made by `installLaunch`. */
-  constructor({ isFile, read }: {
-    isFile: (candidate: string) => Promise<boolean>;
-    read: (candidate: string) => Promise<Uint8Array>;
-  }) {
-    this.isFile = isFile;
-    this.read = read;
-  }
 
   /**
    * Sets the one consumer, which gets every launch, those already waiting
@@ -100,7 +74,7 @@ export class LaunchQueue {
 
   private async paramsOf({ arguments: values, workingDirectory }: Activation) {
     let targetURL: string | undefined;
-    const files: LaunchFile[] = [];
+    const files: FileSystemFileHandle[] = [];
     for (const value of values) {
       const isAddress = URL_PATTERN.test(value);
       if (isAddress) {
@@ -109,9 +83,9 @@ export class LaunchQueue {
       }
 
       const full = path.resolve(workingDirectory, value);
-      const isExisting = await this.isFile(full);
+      const isExisting = await isFile(full);
       if (isExisting) {
-        files.push(this.fileOf(full));
+        files.push(new FileSystemFileHandle(full));
       }
     }
 
@@ -119,16 +93,6 @@ export class LaunchQueue {
       targetURL,
       files
     };
-  }
-
-  private fileOf(full: string) {
-    const name = path.basename(full);
-    return {
-      kind: "file",
-      name,
-      path: full,
-      getFile: async () => new File([new Uint8Array(await this.read(full))], name)
-    } satisfies LaunchFile;
   }
 
   get [Symbol.toStringTag]() {
@@ -145,14 +109,11 @@ export class LaunchQueue {
  * protocol or file type with Windows is the installer's job. Nothing is
  * defined until this is called.
  *
- * @param options - The initial arguments, and stand-ins for the disk.
+ * @param options - The initial arguments.
  * @returns The function that takes it away again.
  */
 export function installLaunch(options: LaunchInstallOptions = {}) {
-  const queue = new LaunchQueue({
-    isFile: options.isFile ?? defaultIsFile,
-    read: options.read ?? (candidate => readFile(candidate))
-  });
+  const queue = new LaunchQueue();
   const uninstall = defineProperty({
     name: "launchQueue",
     value: queue

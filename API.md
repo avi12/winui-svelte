@@ -1902,7 +1902,7 @@ silent failure
   over with `launchQueue.enqueueActivation(activation)` (WinUI-only), which
   takes what `ensureSingleInstance`'s `onRedirect` receives
   `LaunchParams.targetURL` is the first `scheme:` argument, `files` are the
-  existing paths, as handles with `name`, `getFile()` and the WinUI-only `path`
+  existing paths, as the file-system API's own `FileSystemFileHandle` (`name`, `getFile()`, the WinUI-only `path`)
   Launches wait for the consumer; registering the protocol or file type with
   Windows is the installer's job
 
