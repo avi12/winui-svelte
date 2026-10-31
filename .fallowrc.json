@@ -30,6 +30,7 @@
     "src/app/index.ts",
     "src/web-apis/index.ts",
     "src/web-apis/notification.ts",
+    "src/web-apis/sensors.ts",
     "src/web-apis/gamepad.ts",
     "src/web-apis/network.ts",
     "src/web-apis/battery.ts",

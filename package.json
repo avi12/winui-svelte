@@ -317,6 +317,10 @@
       "types": "./dist/web-apis/gamepad.d.ts",
       "default": "./dist/web-apis/gamepad.js"
     },
+    "./web-apis/sensors": {
+      "types": "./dist/web-apis/sensors.d.ts",
+      "default": "./dist/web-apis/sensors.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
