@@ -1,3 +1,4 @@
+import { barrelImports } from "./barrel.ts";
 import { WINUI_COMPILE_OPTIONS } from "./compile.ts";
 import { svelteCompiler } from "./svelte-plugin.ts";
 import { winuiCss } from "#src/css/vite.js";
@@ -98,5 +99,5 @@ export function winuiSvelte() {
     compilerOptions: compile,
     onError: "report"
   });
-  return [environment, ...svelteCompiler(compile), css];
+  return [environment, ...svelteCompiler(compile), css, barrelImports()];
 }
