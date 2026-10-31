@@ -173,7 +173,7 @@ const singles: Array<[string, string, string]> = [
   [`${XAML}.Media`, "XamlLight", "the abstract base of the XAML lights, which an app subclasses"],
   [`${XAML}.Media.Imaging`, "SurfaceImageSource", "draws through Direct2D on a native surface, which JavaScript cannot reach"],
   [`${XAML}.Media.Imaging`, "VirtualSurfaceImageSource", "draws through Direct2D on a native surface, which JavaScript cannot reach"],
-  [`${XAML}.Media.Imaging`, "WriteableBitmap", "needs a native pixel buffer; use a BitmapImage with a stream or a uri"],
+  [`${XAML}.Media.Imaging`, "WriteableBitmap", "takes its size when it is made; writeableBitmapOf in winui-svelte/media makes one from pixels"],
   [XAML, "Style", "the class and style props are the styling surface"],
   [XAML, "TriggerBase", "the base of EventTrigger"],
   [XAML, "TriggerAction", "the base of BeginStoryboard"],

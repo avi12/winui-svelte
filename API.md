@@ -1878,11 +1878,12 @@ properties (`decodePixelWidth`, `decodePixelHeight`, `decodePixelType`,
 `uriSource`) and events (`onimageopened` and `onimagefailed` on the `Image`;
 `ondownloadprogress` and `onimageopened` on the bitmap; `onopened` and
 `onopenfailed` on the SVG)
-`WriteableBitmap` and `BitmapSource` have no component: the bindings
-hold no `WriteableBitmap`, and `BitmapSource` is abstract
+`WriteableBitmap` and `BitmapSource` have no component: a `WriteableBitmap`
+takes its size when it is made (`writeableBitmapOf` makes one), and `BitmapSource` is abstract
 
 | Export | Does |
 |---|---|
+| `writeableBitmapOf({ width, height, pixels })`, `setBitmapPixels({ source, width, height, pixels })` | An image source from straight RGBA bytes (the pixel buffer is written through `IBufferByteAccess`), and the way to draw another frame in it |
 | `bitmapImageOf({ source, decodePixelWidth, decodePixelHeight, decodePixelType, createOptions, autoPlay, onFailed })` | A `BitmapImage` from a URI, a `data:` URI or bytes, with the options set before it loads |
 | `svgImageSourceOf({ source, rasterizePixelWidth, rasterizePixelHeight, onFailed })` | An `SvgImageSource` from markup, a `.svg` URI, a `data:` URI or bytes |
 | `decodeDataUri(uri)`, `isDataUri(text)` | A `data:` URI as `{ mimeType, bytes }`: WinUI opens no `data:` URI itself |

@@ -1275,8 +1275,9 @@ Stated plainly, so nobody finds them by surprise:
   `createMediaPlayer` keeps a `state` that it reads again every 100 ms on the
   UI thread (`playbackState`, `position`, `naturalDuration`, `isEnded`), which
   is what an app relies on
-- **No `WriteableBitmap` component.** The bindings hold no `WriteableBitmap`;
-  `RenderTargetBitmap`, `SoftwareBitmapSource` and `BitmapImage` are there
+- **No `WriteableBitmap` component.** A `WriteableBitmap` takes its size when it
+  is made, so `writeableBitmapOf({ width, height, pixels })` from
+  `winui-svelte/media` makes one from RGBA bytes
 - **The tray icon hears the mouse by polling.** WinUI has no tray API, and
   dynwinrt cannot make a JavaScript function a native window procedure, so
   `winui-svelte/tray` reads the pointer and the buttons every 30 ms instead of

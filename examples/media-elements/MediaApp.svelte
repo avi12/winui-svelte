@@ -11,7 +11,14 @@
   import { SvelteMap, SvelteSet } from "svelte/reactivity";
   import { control, flush } from "winui-svelte";
   import { BitmapImage, Image, StackPanel, Window } from "winui-svelte/components";
-  import { bitmapImageOf, createMediaPlayer, mediaSourceOfBytes, svgImageSourceOf } from "winui-svelte/media";
+  import {
+    bitmapImageOf,
+    createMediaPlayer,
+    mediaSourceOfBytes,
+    setBitmapPixels,
+    svgImageSourceOf,
+    writeableBitmapOf
+  } from "winui-svelte/media";
   import { exitApplication } from "winui-svelte/window";
   import { z } from "zod";
 
@@ -67,6 +74,38 @@
     }),
     rasterizePixelWidth: IMAGE_SIZE * 2,
     rasterizePixelHeight: IMAGE_SIZE * 2
+  });
+  const rawPixels = new Uint8Array(IMAGE_SIZE * IMAGE_SIZE * PIXEL_BYTES);
+  const GREEN = {
+    r: 0,
+    g: 255,
+    b: 0,
+    a: 255
+  };
+  const YELLOW = {
+    r: 255,
+    g: 255,
+    b: 0,
+    a: 255
+  };
+  function paintHalves({ left, right }: {
+    left: typeof RED;
+    right: typeof RED;
+  }) {
+    for (let iPixel = 0; iPixel < IMAGE_SIZE * IMAGE_SIZE; iPixel++) {
+      const isLeft = iPixel % IMAGE_SIZE < IMAGE_SIZE / 2;
+      const { r, g, b, a } = isLeft ? left : right;
+      rawPixels.set([r, g, b, a], iPixel * PIXEL_BYTES);
+    }
+  }
+  paintHalves({
+    left: RED,
+    right: BLUE
+  });
+  const writeable = writeableBitmapOf({
+    width: IMAGE_SIZE,
+    height: IMAGE_SIZE,
+    pixels: rawPixels
   });
   const natives = new SvelteMap<string, ImageControl>();
   const opened = new SvelteSet<string>();
@@ -127,7 +166,21 @@
       dataUriWidth: projectAs(fromDataUri, BitmapImageSource).pixelWidth,
       bytes: await colorsOf("bytes"),
       svg: await colorsOf("svg"),
-      file: await colorsOf("file")
+      file: await colorsOf("file"),
+      pixels: await colorsOf("pixels")
+    });
+  }
+
+  function repaint() {
+    paintHalves({
+      left: GREEN,
+      right: YELLOW
+    });
+    setBitmapPixels({
+      source: writeable,
+      width: IMAGE_SIZE,
+      height: IMAGE_SIZE,
+      pixels: rawPixels
     });
   }
 
@@ -160,6 +213,7 @@
 
   const commands = new Map<string, (command: ExampleCommand) => void>([
     ["images", () => reportImages().catch(reportError)],
+    ["repaint", repaint],
     ["play", () => playTone().then(reportAudio).catch(reportError)],
     ["audio", reportAudio],
     ["close", () => exitApplication()]
@@ -178,6 +232,7 @@
     <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("bytes")} source={fromBytes} {...imageEvents("bytes")} />
     <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("dataUri")} source={fromDataUri} {...imageEvents("dataUri")} />
     <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("svg")} source={svg} {...imageEvents("svg")} />
+    <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("pixels")} source={writeable} {...imageEvents("pixels")} />
     <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("broken")} source={broken} {...imageEvents("broken")} />
     <Image style:width="{IMAGE_SIZE}px" style:height="{IMAGE_SIZE}px" {@attach track("file")} {...imageEvents("file")}>
       {#snippet source()}
