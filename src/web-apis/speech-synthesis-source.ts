@@ -13,6 +13,7 @@ import { MediaPlaybackState } from "#winui/windows/media/playback/MediaPlaybackS
 import { MediaPlayer } from "#winui/windows/media/playback/MediaPlayer";
 import { SpeechAppendedSilence } from "#winui/windows/media/speech-synthesis/SpeechAppendedSilence";
 import { SpeechPunctuationSilence } from "#winui/windows/media/speech-synthesis/SpeechPunctuationSilence";
+import type { SpeechSynthesisStream } from "#winui/windows/media/speech-synthesis/SpeechSynthesisStream";
 import { SpeechSynthesizer } from "#winui/windows/media/speech-synthesis/SpeechSynthesizer";
 import { VoiceGender } from "#winui/windows/media/speech-synthesis/VoiceGender";
 import type { VoiceInformation } from "#winui/windows/media/speech-synthesis/VoiceInformation";
@@ -22,8 +23,11 @@ const NO_TICKS = 0n;
 const POLL_MILLISECONDS = 50;
 const MIN_SPEAKING_RATE = 0.5;
 const MAX_SPEAKING_RATE = 6;
-const SENTENCE_MARKER = "SentenceBoundary";
-const WORD_MARKER = "WordBoundary";
+const SENTENCE_TRACK = "SpeechSentence";
+const WORD_TRACK = "SpeechWord";
+const TAG_PATTERN = /<[^>]*>/gu;
+const WORD_PATTERN = /[\p{L}\p{N}']+/gu;
+const SENTENCE_PATTERN = /[^.!?]+[.!?]*/gu;
 const ONLINE_VOICE_PATTERN = /online|natural/iu;
 
 /** A boundary of rendered speech, with the time it is spoken at. */
@@ -71,17 +75,52 @@ function voiceOf(request: SpeechRequest) {
     ?? (hasLanguage ? voices.find(voice => voice.language.toLowerCase().startsWith(language)) : undefined);
 }
 
-function boundaryOf(marker: {
-  time: { duration: bigint };
-  mediaMarkerType: string;
-  text: string;
+function markupFree(request: SpeechRequest) {
+  return request.isSsml ? request.text.replace(TAG_PATTERN, " ") : request.text;
+}
+
+function timeOf(time: { duration: bigint }) {
+  return Number(time.duration / TICKS_PER_MILLISECOND);
+}
+
+// SpeechCue (the text and char positions of a cue) is not bound, so the nth
+// word cue is the nth word of the text and the nth sentence cue the nth sentence.
+function boundariesOf({ stream, request }: {
+  stream: SpeechSynthesisStream;
+  request: SpeechRequest;
 }) {
-  const kinds = new Map([[WORD_MARKER, "word" as const], [SENTENCE_MARKER, "sentence" as const]]);
-  return {
-    kind: kinds.get(marker.mediaMarkerType) ?? "mark" as const,
-    text: marker.text,
-    milliseconds: Number(marker.time.duration / TICKS_PER_MILLISECOND)
-  } satisfies RenderedBoundary;
+  const plain = markupFree(request);
+  const parts = new Map([
+    [WORD_TRACK, {
+      kind: "word" as const,
+      texts: plain.match(WORD_PATTERN) ?? []
+    }],
+    [SENTENCE_TRACK, {
+      kind: "sentence" as const,
+      texts: plain.match(SENTENCE_PATTERN) ?? []
+    }]
+  ]);
+  const boundaries: RenderedBoundary[] = [];
+  for (const track of stream.timedMetadataTracks ?? []) {
+    const part = parts.get(track.label);
+    for (const [i, cue] of [...(track.cues ?? [])].entries()) {
+      boundaries.push({
+        kind: part?.kind ?? "mark",
+        text: (part?.texts[i] ?? "").trim(),
+        milliseconds: timeOf(cue.startTime)
+      });
+    }
+  }
+
+  for (const marker of stream.markers ?? []) {
+    boundaries.push({
+      kind: "mark",
+      text: marker.text,
+      milliseconds: timeOf(marker.time)
+    });
+  }
+
+  return boundaries.sort((first, second) => first.milliseconds - second.milliseconds);
 }
 
 function configure({ synthesizer, request }: {
@@ -131,9 +170,11 @@ async function synthesize(request: SpeechRequest) {
  */
 export async function renderSpeech(request: SpeechRequest) {
   const stream = await synthesize(request);
-  const markers = [...(stream.markers ?? [])];
   const result = {
-    boundaries: markers.map(marker => boundaryOf(marker)),
+    boundaries: boundariesOf({
+      stream,
+      request
+    }),
     contentType: stream.contentType,
     byteLength: Number(stream.size)
   } satisfies RenderedSpeech;
@@ -154,7 +195,10 @@ async function play({ request, listener, control }: {
   control: PlaybackControl;
 }) {
   const stream = await synthesize(request);
-  const boundaries = [...(stream.markers ?? [])].map(marker => boundaryOf(marker));
+  const boundaries = boundariesOf({
+    stream,
+    request
+  });
   if (control.isCanceled) {
     stream.close();
     return;

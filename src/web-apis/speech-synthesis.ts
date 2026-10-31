@@ -42,7 +42,10 @@ export interface SpeechSynthesisVoiceExtras {
 
 /** What Windows adds to a `SpeechSynthesisUtterance`; a browser ignores every member. */
 export interface SpeechSynthesisUtteranceExtras {
-  /** Reads `text` as SSML (`<speak>...</speak>`), whose `<bookmark>` elements raise `mark` events. */
+  /**
+   * Reads `text` as SSML (`<speak>...</speak>`). A `<bookmark>` raises a `mark` event only for a voice that
+   * reports bookmarks; the Microsoft voices installed with Windows do not.
+   */
   isSsml?: boolean;
 
   /** Silence after punctuation: Windows' `default`, or the `minimal` it offers. */
