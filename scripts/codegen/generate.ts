@@ -1,6 +1,7 @@
 import { packageJsonWithBindings } from "./binding-list.ts";
 import {
   bindingModule,
+  emitAttachedOwners,
   emitBindings,
   emitComponent,
   emitControlsTable,
@@ -135,6 +136,13 @@ function modelFiles(model: Model) {
     }, {
       file: path.join(folder, "theme-brushes.ts"),
       text: emitThemeBrushes(loadWinuiCatalogue().keysOfKind(ResourceKind.BRUSH))
+    });
+  }
+
+  for (const entry of emitAttachedOwners(model)) {
+    output.push({
+      file: path.join(folder, "attached", `${entry.owner}.ts`),
+      text: entry.text
     });
   }
 
