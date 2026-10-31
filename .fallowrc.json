@@ -68,6 +68,7 @@
     "examples/data-transfer/main.ts",
     "examples/effects/main.ts",
     "examples/timers/main.ts",
+    "examples/loop/main.ts",
     "examples/hello/App.svelte",
     "examples/hello/window.ts",
     "src/components/index.ts",
