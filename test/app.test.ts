@@ -79,7 +79,7 @@ test("the application ends cleanly when its last window closes, with its timers 
       },
       kind: "stats"
     });
-    assert.equal(stats["isPrimary"], true, "the single-instance poll timer is running");
+    assert.equal(stats["isPrimary"], true, "the single-instance listener is running");
 
     example.send({ cmd: "closeWindowOnly" });
     assert.equal(await example.exited, 0, "no tick reads a control that is gone");

@@ -104,7 +104,10 @@ function serverOf(pipe: PipeServer) {
   return {
     isPrimary: true,
     close: () => pipe.close(),
-    transport: createMessagePortTransport<Json>({ port: pipe.port })
+    transport: createMessagePortTransport<Json>({
+      port: pipe.port,
+      shouldKeepAlive: false
+    })
   } satisfies InstanceServer;
 }
 

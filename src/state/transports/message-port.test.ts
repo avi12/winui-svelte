@@ -29,3 +29,15 @@ test("messages cross a port by its events", async () => {
     n: 1
   }]);
 });
+
+test("a transport that should not keep the thread alive leaves the port unreferenced", () => {
+  const { port1, port2 } = new MessageChannel();
+  const stop = createMessagePortTransport({
+    port: port1,
+    shouldKeepAlive: false
+  }).listen(listenerInto([]));
+  assert.equal(port1.hasRef(), false);
+  stop();
+  port1.close();
+  port2.close();
+});

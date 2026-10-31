@@ -9,10 +9,16 @@ import type { MessagePort } from "node:worker_threads";
 /** A transport over a worker's MessagePort. */
 export interface MessagePortSetup {
   port: MessagePort;
+
+  /**
+   * Whether listening keeps the thread alive (default true, as a MessagePort
+   * listener does); false lets the thread end while the transport listens.
+   */
+  shouldKeepAlive?: boolean;
 }
 
 /** A transport over `port`, driven by the port's own events. */
-export function createMessagePortTransport<Frame = MessagingFrame>({ port }: MessagePortSetup) {
+export function createMessagePortTransport<Frame = MessagingFrame>({ port, shouldKeepAlive = true }: MessagePortSetup) {
   const transport: Transport<Frame> = {
     send(frame) {
       port.postMessage(frame);
@@ -20,6 +26,11 @@ export function createMessagePortTransport<Frame = MessagingFrame>({ port }: Mes
     listen(listener: TransportListener) {
       port.on("message", value => listener.message(value));
       port.on("close", () => listener.closed());
+
+      if (!shouldKeepAlive) {
+        port.unref();
+      }
+
       return () => {
         port.removeAllListeners("message");
         port.removeAllListeners("close");
