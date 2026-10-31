@@ -313,6 +313,10 @@
       "types": "./dist/web-apis/network.d.ts",
       "default": "./dist/web-apis/network.js"
     },
+    "./web-apis/gamepad": {
+      "types": "./dist/web-apis/gamepad.d.ts",
+      "default": "./dist/web-apis/gamepad.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
