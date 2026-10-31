@@ -1,7 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
+import { stripTypeScriptTypes } from "node:module";
 import path from "node:path";
 import type { Plugin } from "vite";
 import { z } from "zod";
+
+const TYPESCRIPT_EXTENSION = ".ts";
 
 /**
  * In `serve`, a named import from a package barrel loads the module that
@@ -138,7 +141,10 @@ function originsOf({ file, parse, known }: {
 
   const origins: Origins = new Map();
   known.set(file, origins);
-  const program = programSchema.parse(parse(readFileSync(file, "utf8")));
+  const source = readFileSync(file, "utf8");
+  const isTypeScript = file.endsWith(TYPESCRIPT_EXTENSION);
+  const javascript = isTypeScript ? stripTypeScriptTypes(source) : source;
+  const program = programSchema.parse(parse(javascript));
   for (const statement of program.body) {
     addStatement({
       origins,

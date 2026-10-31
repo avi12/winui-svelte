@@ -96,3 +96,24 @@ test("a namespace import, a build and an unrelated module are left alone", async
     );
   });
 });
+
+test("a barrel written in TypeScript, with type exports, is read too", async () => {
+  const root = mkdtempSync(path.join(tmpdir(), "winui-barrel-"));
+  try {
+    writeFileSync(path.join(root, "A.ts"), "export default 1;\n");
+    const barrel = path.join(root, "index.ts");
+    writeFileSync(barrel, "export { default as A } from \"./A.ts\";\nexport type { Shape } from \"./shape.ts\";\n");
+    const result = await transformOf({
+      barrel,
+      importer: "/app/App.svelte",
+      code: `import { A } from "${BARREL_SPECIFIER}";\nuse(A);\n`,
+      command: "serve"
+    });
+    assert.match(String(result?.code), /A\.ts/u);
+  } finally {
+    rmSync(root, {
+      recursive: true,
+      force: true
+    });
+  }
+});
