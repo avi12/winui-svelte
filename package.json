@@ -313,6 +313,10 @@
       "types": "./dist/web-apis/push.d.ts",
       "default": "./dist/web-apis/push.js"
     },
+    "./web-apis/launch": {
+      "types": "./dist/web-apis/launch.d.ts",
+      "default": "./dist/web-apis/launch.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
