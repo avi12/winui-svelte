@@ -313,6 +313,10 @@
       "types": "./dist/web-apis/file-system.d.ts",
       "default": "./dist/web-apis/file-system.js"
     },
+    "./web-apis/storage": {
+      "types": "./dist/web-apis/storage.d.ts",
+      "default": "./dist/web-apis/storage.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
