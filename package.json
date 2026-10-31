@@ -289,6 +289,10 @@
       "svelte": "./dist/devices/sensors.js",
       "default": "./dist/devices/sensors.js"
     },
+    "./web-apis": {
+      "types": "./dist/web-apis/index.d.ts",
+      "default": "./dist/web-apis/index.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {

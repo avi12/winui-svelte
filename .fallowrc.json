@@ -28,6 +28,7 @@
     "src/window/thread.ts",
     "src/window/index.ts",
     "src/app/index.ts",
+    "src/web-apis/index.ts",
     "src/tray/index.ts",
     "src/enums.ts",
     "test/choice-props.types.ts",
