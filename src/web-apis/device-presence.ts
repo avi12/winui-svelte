@@ -1,3 +1,5 @@
+import { HandlerEventTarget } from "./event-handlers.ts";
+
 /**
  * Tells when devices of a kind come and go, from a listing and a "something
  * changed" signal: the listing is read again on each signal and compared with
@@ -7,7 +9,7 @@
  * @param options - How to list, how to hear of a change, and what to do about each arrival and departure.
  * @returns `start`, which begins watching once (calling it again does nothing), and `stop`.
  */
-export function createDevicePresence<T extends { readonly id: string }>({ list, subscribe, onAdded, onRemoved }: {
+function createDevicePresence<T extends { readonly id: string }>({ list, subscribe, onAdded, onRemoved }: {
   list: () => Promise<readonly T[]>;
   subscribe: (onChange: () => void) => () => void;
   onAdded: (device: T) => void;
@@ -53,4 +55,86 @@ export function createDevicePresence<T extends { readonly id: string }>({ list, 
       stopWatching = undefined;
     }
   };
+}
+
+/**
+ * An `EventTarget` (`navigator.usb`, `navigator.hid`) that fires
+ * `connect` and `disconnect`. It watches the system only once something
+ * listens, and stops when told.
+ */
+export class DevicePresenceTarget<T extends { readonly id: string }> extends HandlerEventTarget {
+  private readonly presence;
+
+  /** Made by the API that extends this. */
+  constructor({ list, subscribe, onAdded, onRemoved }: {
+    list: () => Promise<readonly T[]>;
+    subscribe: (onChange: () => void) => () => void;
+
+    /** The `connect` event to fire for an arrival, or nothing to stay quiet. */
+    onAdded: (device: T) => Event | undefined;
+
+    /** The `disconnect` event to fire for a departure, or nothing to stay quiet. */
+    onRemoved: (device: T) => Event | undefined;
+  }) {
+    super();
+    this.presence = createDevicePresence({
+      list,
+      subscribe,
+      onAdded: device => {
+        const event = onAdded(device);
+        const hasEvent = event !== undefined;
+        if (hasEvent) {
+          this.dispatchEvent(event);
+        }
+      },
+      onRemoved: device => {
+        const event = onRemoved(device);
+        const hasEvent = event !== undefined;
+        if (hasEvent) {
+          this.dispatchEvent(event);
+        }
+      }
+    });
+  }
+
+  // fallow-ignore-next-line unused-class-member
+  get onconnect() {
+    return this.getHandler("connect");
+  }
+
+  // fallow-ignore-next-line unused-class-member
+  set onconnect(handler: EventListener | null) {
+    this.setHandler({
+      type: "connect",
+      handler
+    });
+  }
+
+  // fallow-ignore-next-line unused-class-member
+  get ondisconnect() {
+    return this.getHandler("disconnect");
+  }
+
+  // fallow-ignore-next-line unused-class-member
+  set ondisconnect(handler: EventListener | null) {
+    this.setHandler({
+      type: "disconnect",
+      handler
+    });
+  }
+
+  // eslint-disable-next-line no-restricted-syntax -- the signature EventTarget has
+  override addEventListener(
+    type: string,
+    callback: EventListenerOrEventListenerObject | null,
+    options?: AddEventListenerOptions | boolean
+  ) {
+    this.presence.start();
+    super.addEventListener(type, callback, options);
+  }
+
+  /** Stops watching for devices; used when the API is uninstalled. */
+  stopWatching() {
+    this.presence.stop();
+  }
 }

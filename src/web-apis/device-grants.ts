@@ -19,6 +19,9 @@ export interface DeviceGrants<T> {
   /** Allows a device no longer; true when it was allowed. */
   forget(id: string): boolean;
 
+  /** Whether a device is allowed. */
+  has(id: string): boolean;
+
   /** The allowed devices. */
   list(): T[];
 
@@ -38,6 +41,7 @@ export function createDeviceGrants<T extends { readonly id: string }>() {
       granted.set(device.id, device);
     },
     forget: id => granted.delete(id),
+    has: id => granted.has(id),
     list: () => [...granted.values()],
     get hasAny() {
       return granted.size > 0;
@@ -69,4 +73,44 @@ export async function chooseDevices<T>({ chooser, candidates, signal }: {
     candidates,
     ...signal === undefined ? {} : { signal }
   });
+}
+
+/**
+ * The shared body of `requestDevice` and `requestPort`: asks the chooser,
+ * and allows what it returns.
+ *
+ * @param options - The chooser, the candidates, the grants to add to, the text of the `NotFoundError`
+ *   for an empty answer, and how many may be chosen.
+ * @returns The chosen devices, at most `maximum`.
+ * @throws {DOMException} `NotAllowedError` without a chooser, `NotFoundError` when nothing is chosen.
+ */
+export async function chooseAndGrant<T extends { readonly id: string }>(options: {
+  chooser: DeviceChooser<T> | undefined;
+  candidates: readonly T[];
+  signal?: AbortSignal;
+  grants: DeviceGrants<T>;
+  emptyMessage: string;
+  maximum: number;
+}) {
+  const { chooser, candidates, signal, grants, emptyMessage, maximum } = options;
+  const chosen = (await chooseDevices({
+    chooser,
+    candidates,
+    ...signal === undefined ? {} : { signal }
+  })).slice(0, maximum);
+  const [first, ...rest] = chosen;
+  const isEmpty = first === undefined;
+  if (isEmpty) {
+    throw domException({
+      name: DomErrorName.NOT_FOUND,
+      message: emptyMessage
+    });
+  }
+
+  for (const device of chosen) {
+    grants.grant(device);
+  }
+
+  const result: [T, ...T[]] = [first, ...rest];
+  return result;
 }

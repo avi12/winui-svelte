@@ -1,9 +1,8 @@
 import { bytesOfBufferSource, dataViewOf } from "./buffer-source.ts";
-import { chooseDevices, createDeviceGrants } from "./device-grants.ts";
+import { chooseAndGrant, createDeviceGrants } from "./device-grants.ts";
 import type { DeviceChooser, DeviceGrants } from "./device-grants.ts";
-import { createDevicePresence } from "./device-presence.ts";
+import { DevicePresenceTarget } from "./device-presence.ts";
 import { DomErrorName, domException } from "./dom-exception.ts";
-import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineNavigatorProperty } from "./install.ts";
 import type {
   UsbAlternateInfo,
@@ -620,80 +619,40 @@ function deviceOf({ known, info }: {
 }
 
 /** The `navigator.usb` object. */
-export class USB extends HandlerEventTarget {
-  private readonly presence;
-
+export class USB extends DevicePresenceTarget<UsbDeviceInfo> {
   /** Made by `installUsb`. */
   constructor(known: UsbContext) {
-    super();
-    this.presence = createDevicePresence({
+    super({
       list: () => known.backend.list(),
       subscribe: onChange => known.backend.subscribe(onChange),
-      onAdded: info => {
-        const isAllowed = known.grants.list().some(granted => granted.id === info.id);
-        if (isAllowed) {
-          this.dispatchEvent(
-            new USBConnectionEvent("connect", {
-              device: deviceOf({
-                known,
-                info
-              })
-            })
-          );
+      onAdded(info) {
+        const isAllowed = known.grants.has(info.id);
+        if (!isAllowed) {
+          return undefined;
         }
+
+        return new USBConnectionEvent("connect", {
+          device: deviceOf({
+            known,
+            info
+          })
+        });
       },
-      onRemoved: info => {
+      onRemoved(info) {
         const device = known.devices.get(info.id);
         const isUnknown = device === undefined;
         if (isUnknown) {
-          return;
+          return undefined;
         }
 
         device.markGone();
-        this.dispatchEvent(new USBConnectionEvent("disconnect", { device }));
+        return new USBConnectionEvent("disconnect", { device });
       }
     });
   }
 
-  get onconnect() {
-    return this.getHandler("connect");
-  }
-
-  set onconnect(handler: EventListener | null) {
-    this.setHandler({
-      type: "connect",
-      handler
-    });
-  }
-
-  get ondisconnect() {
-    return this.getHandler("disconnect");
-  }
-
-  set ondisconnect(handler: EventListener | null) {
-    this.setHandler({
-      type: "disconnect",
-      handler
-    });
-  }
-
-  // eslint-disable-next-line no-restricted-syntax -- the signature EventTarget has
-  override addEventListener(
-    type: string,
-    callback: EventListenerOrEventListenerObject | null,
-    options?: AddEventListenerOptions | boolean
-  ) {
-    this.presence.start();
-    super.addEventListener(type, callback, options);
-  }
-
-  /** Stops watching for devices; used when the API is uninstalled. */
-  stopWatching() {
-    this.presence.stop();
-  }
-
   /**
-   * The devices the user allowed that are connected now.
+   * The USB devices the user allowed earlier that are plugged in now.
    *
    * @returns The devices.
    */
@@ -701,7 +660,7 @@ export class USB extends HandlerEventTarget {
     const known = requireContext();
     const present = await guarded(() => known.backend.list());
     return present
-      .filter(info => known.grants.list().some(granted => granted.id === info.id))
+      .filter(info => known.grants.has(info.id))
       .map(info => deviceOf({
         known,
         info
@@ -735,17 +694,14 @@ export class USB extends HandlerEventTarget {
       info,
       filter
     })));
-    const [chosen] = await chooseDevices({
+    const [chosen] = await chooseAndGrant({
       chooser: options.chooser ?? known.chooser,
       candidates,
+      grants: known.grants,
+      emptyMessage: "No device selected.",
+      maximum: 1,
       ...options.signal === undefined ? {} : { signal: options.signal }
     });
-    const isCancelled = chosen === undefined;
-    if (isCancelled) {
-      throw notFound("No device selected.");
-    }
-
-    known.grants.grant(chosen);
     return deviceOf({
       known,
       info: chosen
