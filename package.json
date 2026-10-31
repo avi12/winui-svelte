@@ -301,6 +301,10 @@
       "types": "./dist/web-apis/notification.d.ts",
       "default": "./dist/web-apis/notification.js"
     },
+    "./web-apis/animations": {
+      "types": "./dist/web-apis/animations.d.ts",
+      "default": "./dist/web-apis/animations.js"
+    },
     "./web-apis/observers": {
       "types": "./dist/web-apis/observers.d.ts",
       "default": "./dist/web-apis/observers.js"

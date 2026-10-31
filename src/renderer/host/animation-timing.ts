@@ -65,7 +65,7 @@ export function resolveTiming(input: EffectTimingInput = {}) {
 }
 
 /** How long the iterations run, without the delays. */
-function activeDuration(timing: EffectTiming) {
+export function activeDuration(timing: EffectTiming) {
   return timing.duration * timing.iterations;
 }
 
