@@ -262,7 +262,10 @@ export const fallbackSchema = z.object({
  */
 export function loadFallback(file: string) {
   const parsed = fallbackSchema.parse(JSON.parse(readFileSync(file, "utf8")));
-  const types = new Map<string, TypeDocumentation>();
+  const types = new Map<string, {
+    summary: string | null;
+    members: Map<string, string>;
+  }>();
   for (const [id, text] of Object.entries(parsed.members)) {
     const split = id.lastIndexOf(".");
     const isType = id.startsWith("T:");
