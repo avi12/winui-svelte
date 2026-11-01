@@ -57,6 +57,7 @@ test("glyph names the exported GlyphInput type, so the editor can show it and of
 test("a prop names its type beside its name", () => {
   const visibility = elements.find(element => element.name === "UIElement")?.attributes.find(attribute => attribute.name === "visibility");
   assert.equal(visibility?.value?.type, "Visibility");
+  assert.match(visibility?.description ?? "", /Type: `Visibility`/u);
 });
 
 test("a prop is written once, on the class that declares it", () => {

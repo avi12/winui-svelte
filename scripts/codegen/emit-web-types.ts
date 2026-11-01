@@ -65,7 +65,8 @@ function attributeOf({ level, key, kind, winName, inputType, displayType }: {
   const accepts = hasInputType ? inputDocumentationOf(inputType) : undefined;
   const paragraphs = [
     text,
-    accepts === undefined ? undefined : `Accepts ${accepts}`
+    accepts === undefined ? undefined : `Accepts ${accepts}`,
+    displayType === undefined ? undefined : `Type: \`${displayType}\``
   ];
   const description = paragraphs.filter(paragraph => paragraph !== undefined).join("\n\n");
   const attribute: Attribute = { name: key };
