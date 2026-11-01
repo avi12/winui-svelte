@@ -882,3 +882,28 @@ test("a calc of px reaches the sheet as the px it comes to", () => {
   const declarations = translation.sheet.rules[0]?.declarations.map(({ property, value }) => [property, value]);
   assert.deepEqual(declarations, [["width", "240px"], ["height", "12px"]]);
 });
+
+test("a display transition with allow-discrete is a write the runtime holds a hide for", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "display: none; transition: display 200ms allow-discrete 50ms"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.warnings, []);
+  const [[target, value] = ["", ""]] = result.writes;
+  assert.equal(target, "visibility-transition");
+  assert.deepEqual(JSON.parse(value), {
+    to: "Collapsed",
+    durationMs: 200,
+    delayMs: 50
+  });
+});
+
+test("a display transition without allow-discrete warns and is dropped", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "display: none; transition: display 200ms"
+  });
+  assert.deepEqual(result.writes, []);
+  assert.match(result.warnings.join(), /transition: display steps instead of blending: add allow-discrete/u);
+});

@@ -1,4 +1,4 @@
-import { TrackKind } from "./animation-tracks.ts";
+import { TrackKind, visibilityOf } from "./animation-tracks.ts";
 import { AnimationDirection, AnimationFill, storyboardXaml } from "./animation-xaml.ts";
 import { parseEasing } from "./easing.ts";
 import type { GroupInput, Output, PropertyGroup, WriteContext } from "./property-kit.ts";
@@ -8,6 +8,11 @@ import { parseMilliseconds, splitCommas, splitWords } from "#src/css/parse/value
 
 const BORDER_COLOR = "border-color";
 const BORDER_COLOR_TARGET = "border-color-transition";
+const VISIBILITY_TARGET = "visibility-transition";
+const ALLOW_DISCRETE = "allow-discrete";
+const VISIBLE = "Visible";
+const COLLAPSED = "Collapsed";
+const DISCRETE_PROPERTIES = ["display", "visibility"];
 const DEFAULT_EASING = "ease";
 const MILLISECONDS_PER_SECOND = 1000;
 const DURATION_FRACTION_DIGITS = 3;
@@ -151,6 +156,110 @@ function animateBorderColor({ control, value, native }: WriteContext) {
   });
 }
 
+interface VisibilityTransition {
+  to: string;
+  durationMs: number;
+  delayMs: number;
+}
+
+// The Visibility each element last had (the one a change is held at until the transition ends).
+const visibilities = new WeakMap<object, string>();
+const visibilityResolved = new Map<string, VisibilityTransition>();
+
+// `display 200ms allow-discrete`: a hide waits for the duration (and delay), a show is at once.
+function visibilityWrite({ input, durationMs, rest }: {
+  input: GroupInput;
+  durationMs: number;
+  rest: readonly string[];
+}) {
+  const reader = input.reading("transition");
+  const written = DISCRETE_PROPERTIES.map(property => ({
+    property,
+    word: input.computed.get(property)?.value
+  })).findLast(entry => entry.word !== undefined);
+  const to = written === undefined ? VISIBLE : visibilityOf({
+    property: written.property,
+    word: written.word ?? ""
+  }) ?? VISIBLE;
+  const delays = rest.map(parseMilliseconds).filter(delay => delay !== null);
+  const unread = rest.filter(word => {
+    const isRead = word === ALLOW_DISCRETE || parseEasing(word) !== null || parseMilliseconds(word) !== null;
+    return !isRead;
+  });
+  const hasUnread = unread.length > 0;
+  if (hasUnread) {
+    reader.warn(`transition: "${unread.join(" ")}" ignored (a display transition takes a duration, allow-discrete and a delay)`);
+  }
+
+  const transition = {
+    to,
+    durationMs,
+    delayMs: delays[0] ?? 0
+  } satisfies VisibilityTransition;
+  const value = JSON.stringify(transition);
+  visibilityResolved.set(value, transition);
+  return [{
+    kind: "write",
+    target: VISIBILITY_TARGET,
+    value
+  } as const];
+}
+
+// When an element goes from visible to collapsed, a Storyboard keeps it visible for the duration, then collapses it.
+function animateVisibility({ control, value, native }: WriteContext) {
+  const transition = visibilityResolved.get(value);
+  const isUnknown = transition === undefined;
+  if (isUnknown) {
+    return null;
+  }
+
+  const { to, durationMs, delayMs } = transition;
+  const from = visibilities.get(control);
+  visibilities.set(control, to);
+  const isHide = from === VISIBLE && to === COLLAPSED;
+  if (!isHide) {
+    return null;
+  }
+
+  const xaml = storyboardXaml({
+    name: VISIBILITY_TARGET,
+    durationMs,
+    delayMs,
+    easing: DEFAULT_EASING,
+    iterations: 1,
+    direction: AnimationDirection.NORMAL,
+    fill: AnimationFill.FORWARDS,
+    isPaused: false,
+    tracks: [{
+      target: "Visibility",
+      kind: TrackKind.VISIBILITY,
+      brush: null,
+      isTransform: false,
+      frames: [
+        {
+          offset: 0,
+          value: VISIBLE,
+          easing: null
+        },
+        {
+          offset: 1,
+          value: COLLAPSED,
+          easing: null
+        }
+      ]
+    }]
+  });
+  return native.animate({
+    control,
+    storyboards: [{
+      xaml,
+      isPaused: false
+    }],
+    hasTransform: false,
+    brushes: []
+  });
+}
+
 // One entry of a `transition` list (`property duration ...`) as its writes.
 function entryOutputs({ input, reader, entry }: {
   input: GroupInput;
@@ -173,10 +282,28 @@ function entryOutputs({ input, reader, entry }: {
     return outputs;
   }
 
+  const isDiscrete = DISCRETE_PROPERTIES.includes(name) && milliseconds !== null;
+  if (isDiscrete) {
+    const isAllowed = rest.includes(ALLOW_DISCRETE);
+    if (isAllowed) {
+      outputs.push(
+        ...visibilityWrite({
+          input,
+          durationMs: milliseconds,
+          rest
+        })
+      );
+    } else {
+      reader.warn(`transition: ${property} steps instead of blending: add allow-discrete to hold the old value for the duration; ignored`);
+    }
+
+    return outputs;
+  }
+
   const targets = TRANSITION_TARGETS.get(name);
   const isTargetsMissing = targets === undefined;
   if (isTargetsMissing) {
-    reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background, border-color and a shadow's depth); ignored`);
+    reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background, border-color, a shadow's depth, and display or visibility with allow-discrete); ignored`);
     return outputs;
   }
 
@@ -223,7 +350,8 @@ export function transitionProperty() {
     members: ["transition"],
     lower: transition,
     writes: {
-      [BORDER_COLOR_TARGET]: animateBorderColor
+      [BORDER_COLOR_TARGET]: animateBorderColor,
+      [VISIBILITY_TARGET]: animateVisibility
     }
   } satisfies PropertyGroup;
 }

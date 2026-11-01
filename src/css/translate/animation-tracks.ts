@@ -327,11 +327,22 @@ function displayVisibility(word: string) {
   return word === "none" ? COLLAPSED : VISIBLE;
 }
 
+/** The Visibility a `display` or `visibility` keyword stands for, or undefined for a word that is neither. */
+export function visibilityOf({ property, word }: {
+  property: string;
+  word: string;
+}) {
+  const lower = word.trim().toLowerCase();
+  return property === "display" ? displayVisibility(lower) : visibilities.get(lower);
+}
+
 // `display` and `visibility` both drive Visibility, which WinUI cannot blend: it steps.
 function visibilityValues({ declaration, fail }: Reading) {
-  const word = declaration.value.trim().toLowerCase();
   const isDisplay = declaration.property === "display";
-  const value = isDisplay ? displayVisibility(word) : visibilities.get(word);
+  const value = visibilityOf({
+    property: declaration.property,
+    word: declaration.value
+  });
   const isReadable = value !== undefined;
   return isReadable ? [{
     key: "Visibility",
