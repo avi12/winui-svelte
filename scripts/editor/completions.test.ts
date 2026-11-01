@@ -64,3 +64,9 @@ test("a glyph prop offers the names of Segoe Fluent Icons", async () => {
   assert.ok(offered.has("Save"));
   assert.equal(offered.size, Object.keys(FluentGlyph).length);
 });
+
+test("a font family prop offers the families that ship with Windows", async () => {
+  const offered = await offeredAt("fontFamily");
+  assert.ok(offered.has("Segoe UI"));
+  assert.ok(offered.has("Consolas"));
+});

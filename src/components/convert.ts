@@ -1,4 +1,5 @@
 import type { FluentGlyphName } from "./fluent-glyph.ts";
+import type { FontFamilyName } from "./font-family-name.ts";
 import {
   Application,
   BitmapImage,
@@ -200,7 +201,7 @@ export type MediaPlaybackSourceInput = string | IMediaPlaybackSource;
 export type GeometryInput = string | Geometry;
 
 /** A font family name or a font family. */
-export type FontFamilyInput = string | FontFamily;
+export type FontFamilyInput = FontFamilyName | (string & Record<never, never>) | FontFamily;
 
 /** An icon glyph: a name of Segoe Fluent Icons ("Save"), a code point (`0xE74E`), code points to compose, or text. */
 export type GlyphInput = FluentGlyphName | (string & Record<never, never>) | number | readonly number[];

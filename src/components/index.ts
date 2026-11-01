@@ -23,6 +23,7 @@ export { NavigationCacheMode, NavigationMode } from "./hand-written/navigation/n
 export { MoveDirection } from "./hand-written/items/reorder.ts";
 export { FluentGlyph } from "./fluent-glyph.ts";
 export type { FluentGlyphName } from "./fluent-glyph.ts";
+export type { FontFamilyName } from "./font-family-name.ts";
 export { isColorText, ticksDate, ticksMilliseconds } from "./values.ts";
 export type { ColorInput, ColorKeyword, ColorText, GridLengthText, HexColor } from "./values.ts";
 export type { AppBrushes, BrushInput, EnumInput, FlagsInput, GlyphInput, GridLengthInput } from "./convert.ts";

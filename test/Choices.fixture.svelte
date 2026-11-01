@@ -5,5 +5,5 @@
 <Window backdrop="mica" title="Choices">
   <AppBar closedDisplayMode="Minimal" />
   <Border background="transparent" />
-  <FontIcon glyph="Save" />
+  <FontIcon fontFamily="Segoe UI" glyph="Save" />
 </Window>

@@ -1342,7 +1342,13 @@
               "name": "dayItemFontFamily",
               "description": "Gets or sets the font used to display day values in the calendar.\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.dayitemfontfamily"
             },
@@ -1414,7 +1420,13 @@
               "name": "firstOfMonthLabelFontFamily",
               "description": "Gets or sets the font used to display the first-of-month banner in the calendar.\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.firstofmonthlabelfontfamily"
             },
@@ -1454,7 +1466,13 @@
               "name": "firstOfYearDecadeLabelFontFamily",
               "description": "Gets or sets the font used to display the first-of-year banner in the calendar.\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.firstofyeardecadelabelfontfamily"
             },
@@ -1566,7 +1584,13 @@
               "name": "monthYearItemFontFamily",
               "description": "Gets or sets the font used to display the month and year items in the calendar.\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.monthyearitemfontfamily"
             },
@@ -3033,7 +3057,13 @@
               "name": "fontFamily",
               "description": "Gets or sets the preferred top-level font family for the text content presented by the ContentPresenter. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.fontfamily"
             },
@@ -3270,7 +3300,13 @@
               "name": "fontFamily",
               "description": "Gets or sets the font used to display text in the control.\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.fontfamily"
             },
@@ -4365,7 +4401,13 @@
               "name": "fontFamily",
               "description": "Gets or sets the font used to display the icon glyph.\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon.fontfamily"
             },
@@ -4437,7 +4479,13 @@
               "name": "fontFamily",
               "description": "Gets or sets the font used to display the icon glyph. The font used to display the icon glyph. The default is the font family defined by the SymbolThemeFontFamily theme resource (see Remarks).\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.fontfamily"
             },
@@ -11042,7 +11090,13 @@
               "name": "fontFamily",
               "description": "Gets or sets the preferred top-level font family for the text content in this element. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontfamily"
             },
@@ -13803,7 +13857,13 @@
               "name": "fontFamily",
               "description": "Gets or sets the preferred top-level font family for the text content in this element. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.fontfamily"
             },
@@ -14328,7 +14388,13 @@
               "name": "fontFamily",
               "description": "Gets or sets the preferred top-level font family for the content of the element. The preferred font family, or a primary preferred font family with one or more fallback font families. See FontFamily for default information.\n\nAccepts A font family name or a font family.",
               "value": {
-                "type": "FontFamilyInput"
+                "type": [
+                  {
+                    "module": "winui-svelte/components",
+                    "name": "FontFamilyName"
+                  },
+                  "string"
+                ]
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontfamily"
             },

@@ -10,7 +10,7 @@ import type { ClassModel } from "./model.ts";
 const INDENT = 2;
 const PACKAGE_MODULE = "winui-svelte/components";
 
-// The input types whose members the editor can offer for an attribute: the names of a glyph, with what else it takes
+// The input types whose names the editor can offer for an attribute, with what else each takes
 const OFFERED_INPUTS = new Map<string, TypeReference[]>([
   ["GlyphInput", [
     {
@@ -20,6 +20,13 @@ const OFFERED_INPUTS = new Map<string, TypeReference[]>([
     "string",
     "number",
     "number[]"
+  ]],
+  ["FontFamilyInput", [
+    {
+      module: PACKAGE_MODULE,
+      name: "FontFamilyName"
+    },
+    "string"
   ]]
 ]);
 
