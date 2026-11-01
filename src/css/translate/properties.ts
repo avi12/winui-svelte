@@ -1,41 +1,18 @@
 import { borderThickness, cornerRadius, thicknessGroup } from "./box-properties.ts";
+import { discreteGroup } from "./discrete-properties.ts";
 import {
   alignmentProperty,
   display,
-  flexDirections,
   gap,
   gridPlacement,
   gridTemplate,
   overflow
 } from "./layout-properties.ts";
-import {
-  brushProperty,
-  COMPOSITION_PROPERTIES,
-  keywordProperty,
-  lengthProperty,
-  simple
-} from "./property-kit.ts";
+import { brushProperty, COMPOSITION_PROPERTIES, lengthProperty, simple } from "./property-kit.ts";
 import type { GroupInput, Output, PropertyGroup } from "./property-kit.ts";
-import {
-  fontFamily,
-  fontStyles,
-  fontWeight,
-  letterSpacing,
-  lineHeight,
-  textAlignments,
-  textDecorations,
-  textOverflows,
-  whiteSpaceKeywords,
-  wrapKeywords
-} from "./text-properties.ts";
+import { fontFamily, fontWeight, letterSpacing, lineHeight } from "./text-properties.ts";
 import type { Declaration } from "./types.ts";
-import {
-  colorSchemes,
-  hitTesting,
-  opacity,
-  visibilities,
-  zIndex
-} from "./visual-properties.ts";
+import { opacity, zIndex } from "./visual-properties.ts";
 import { NOT_A_NUMBER, Reader, UNBOUNDED } from "#src/css/parse/reader.js";
 import type { LowerOptions } from "#src/css/parse/reader.js";
 
@@ -162,11 +139,7 @@ export const propertyGroups: readonly PropertyGroup[] = [
     property: "FontFamily",
     parse: fontFamily
   }),
-  keywordProperty({
-    member: "font-style",
-    property: "FontStyle",
-    choices: fontStyles
-  }),
+  discreteGroup("font-style"),
   {
     members: ["line-height"],
     lower: lineHeight
@@ -176,36 +149,12 @@ export const propertyGroups: readonly PropertyGroup[] = [
     property: "CharacterSpacing",
     parse: letterSpacing
   }),
-  keywordProperty({
-    member: "text-align",
-    property: "TextAlignment",
-    choices: textAlignments
-  }),
-  keywordProperty({
-    member: "text-wrap",
-    property: "TextWrapping",
-    choices: wrapKeywords
-  }),
-  keywordProperty({
-    member: "white-space",
-    property: "TextWrapping",
-    choices: whiteSpaceKeywords
-  }),
-  keywordProperty({
-    member: "text-overflow",
-    property: "TextTrimming",
-    choices: textOverflows
-  }),
-  keywordProperty({
-    member: "text-decoration",
-    property: "TextDecorations",
-    choices: textDecorations
-  }),
-  keywordProperty({
-    member: "text-decoration-line",
-    property: "TextDecorations",
-    choices: textDecorations
-  }),
+  discreteGroup("text-align"),
+  discreteGroup("text-wrap"),
+  discreteGroup("white-space"),
+  discreteGroup("text-overflow"),
+  discreteGroup("text-decoration"),
+  discreteGroup("text-decoration-line"),
   alignmentProperty({
     member: "align-self",
     property: "VerticalAlignment",
@@ -218,11 +167,7 @@ export const propertyGroups: readonly PropertyGroup[] = [
     startName: "Left",
     endName: "Right"
   }),
-  keywordProperty({
-    member: "flex-direction",
-    property: "Orientation",
-    choices: flexDirections
-  }),
+  discreteGroup("flex-direction"),
   {
     members: ["row-gap", "column-gap"],
     lower: gap
@@ -241,26 +186,14 @@ export const propertyGroups: readonly PropertyGroup[] = [
     members: ["overflow-x", "overflow-y"],
     lower: overflow
   },
-  keywordProperty({
-    member: "visibility",
-    property: "Visibility",
-    choices: visibilities
-  }),
+  discreteGroup("visibility"),
   {
     members: ["display"],
     property: "Visibility",
     lower: display
   },
-  keywordProperty({
-    member: "pointer-events",
-    property: "IsHitTestVisible",
-    choices: hitTesting
-  }),
-  keywordProperty({
-    member: "color-scheme",
-    property: "RequestedTheme",
-    choices: colorSchemes
-  }),
+  discreteGroup("pointer-events"),
+  discreteGroup("color-scheme"),
   simple({
     member: "z-index",
     property: "Canvas.ZIndex",

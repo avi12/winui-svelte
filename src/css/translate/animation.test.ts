@@ -82,7 +82,7 @@ test("@keyframes with a selector that is no offset fails the build at its positi
 
 test("a keyframe property WinUI cannot animate fails the build and says what it can", () => {
   const { errors } = translate("@keyframes x { to { padding: 4px } }");
-  assert.match(errors.join(), /@keyframes x: padding cannot be animated \(WinUI animates opacity, width, height, colors, translate, scale, rotate, transform, display and visibility\)/u);
+  assert.match(errors.join(), /@keyframes x: padding cannot be animated \(WinUI animates opacity, width, height, colors, translate, scale, rotate, transform, display and any keyword property\)/u);
 });
 
 test("a keyframe color must be written out", () => {
@@ -304,9 +304,9 @@ test("an animation property that is not a value fails the build", () => {
 });
 
 test("display in @keyframes steps Visibility: a hide lands at the end of the fade, a show at its start", () => {
-  const [hide] = tracksFor("@keyframes out { from { opacity: 1; display: block } to { opacity: 0; display: none } }").filter(track => track.kind === "visibility");
+  const [hide] = tracksFor("@keyframes out { from { opacity: 1; display: block } to { opacity: 0; display: none } }").filter(track => track.kind === "discrete");
   assert.deepEqual(hide?.frames.map(frame => [frame.offset, frame.value]), [[0, "Visible"], [1, "Collapsed"]]);
-  const [show] = tracksFor("@keyframes in { from { display: none } to { display: block } }").filter(track => track.kind === "visibility");
+  const [show] = tracksFor("@keyframes in { from { display: none } to { display: block } }").filter(track => track.kind === "discrete");
   assert.deepEqual(show?.frames.map(frame => [frame.offset, frame.value]), [[0, "Visible"], [1, "Visible"]]);
 });
 
@@ -325,5 +325,34 @@ test("a Visibility track is written as discrete object key frames, whatever the 
 
 test("display in @keyframes fails the build on a word it does not know", () => {
   const { errors } = translate("@keyframes x { to { display: sideways } }");
-  assert.match(errors.join(), /@keyframes x: display: expected a display keyword, found "sideways"/u);
+  assert.match(errors.join(), /@keyframes x: display: expected one of none, block, inline, inline-block, flex, inline-flex, grid, inline-grid, contents, found "sideways"/u);
+});
+
+test("a keyword property in @keyframes flips at the middle of the interval", () => {
+  const [flip] = tracksFor("@keyframes x { from { font-style: normal } to { font-style: italic } }");
+  assert.equal(flip?.kind, "discrete");
+  assert.equal(flip?.target, "FontStyle");
+  assert.deepEqual(flip?.frames.map(frame => [frame.offset, frame.value]), [[0, "Normal"], [0.5, "Italic"], [1, "Italic"]]);
+});
+
+test("properties that set one WinUI property share its track", () => {
+  const tracks = tracksFor("@keyframes x { from { white-space: normal } to { text-wrap: nowrap } }");
+  assert.deepEqual(tracks.map(track => track.target), ["TextWrapping"]);
+});
+
+test("a keyword track is written as discrete object key frames", () => {
+  const xaml = storyboardXaml(
+    spec({
+      easing: "ease-in",
+      tracks: tracksFor("@keyframes x { from { font-style: normal } to { font-style: italic } }")
+    })
+  );
+  assert.match(xaml, /<ObjectAnimationUsingKeyFrames Storyboard\.TargetProperty="FontStyle"/u);
+  assert.match(xaml, /<DiscreteObjectKeyFrame KeyTime="0:00:00\.000" Value="Normal"\/>/u);
+  assert.match(xaml, /<DiscreteObjectKeyFrame KeyTime="0:00:00\.500" Value="Italic"\/>/u);
+});
+
+test("a keyword property in @keyframes fails the build on a word it does not know", () => {
+  const { errors } = translate("@keyframes x { to { text-align: sideways } }");
+  assert.match(errors.join(), /@keyframes x: text-align: expected one of left, start, center, right, end, justify, found "sideways"/u);
 });

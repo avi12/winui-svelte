@@ -899,6 +899,31 @@ test("a display transition with allow-discrete is a write the runtime holds a hi
   });
 });
 
+test("a keyword property transition with allow-discrete is a write per WinUI property", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "text-align: center; transition: text-align 200ms allow-discrete"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.warnings, []);
+  const [[target, value] = ["", ""]] = result.writes;
+  assert.equal(target, "textalignment-transition");
+  assert.deepEqual(JSON.parse(value), {
+    to: "Center",
+    durationMs: 200,
+    delayMs: 0
+  });
+});
+
+test("a keyword property transition without allow-discrete warns and is dropped", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "text-align: center; transition: text-align 200ms"
+  });
+  assert.deepEqual(result.writes, []);
+  assert.match(result.warnings.join(), /transition: text-align steps instead of blending: add allow-discrete/u);
+});
+
 test("a display transition without allow-discrete warns and is dropped", () => {
   const result = lower({
     elementType: null,

@@ -1,20 +1,22 @@
+import { type Track, TrackKind } from "./animation-tracks.ts";
+import { AnimationDirection, AnimationFill, storyboardXaml } from "./animation-xaml.ts";
 import {
   COLLAPSED,
-  type Track,
-  TrackKind,
-  visibilityOf,
+  DISCRETE_MEMBERS,
+  DISCRETE_WINUI_PROPERTIES,
+  discretePropertyOf,
+  discreteValueOf,
+  VISIBILITY_PROPERTY,
   VISIBLE
-} from "./animation-tracks.ts";
-import { AnimationDirection, AnimationFill, storyboardXaml } from "./animation-xaml.ts";
+} from "./discrete-properties.ts";
 import { parseEasing } from "./easing.ts";
 import type { GroupInput, Output, PropertyGroup, WriteContext } from "./property-kit.ts";
 import { parseColor } from "#src/css/parse/colors.js";
 import type { Reader } from "#src/css/parse/reader.js";
 import { parseLength, parseMilliseconds, splitCommas, splitWords } from "#src/css/parse/values.js";
 
-const VISIBILITY_TARGET = "visibility-transition";
 const ALLOW_DISCRETE = "allow-discrete";
-const DISCRETE_PROPERTIES = ["display", "visibility"];
+const MIDPOINT = 0.5;
 const DEFAULT_EASING = "ease";
 const MILLISECONDS_PER_SECOND = 1000;
 const DURATION_FRACTION_DIGITS = 3;
@@ -90,7 +92,7 @@ interface StoryboardTransition {
   easing: string;
 }
 
-interface VisibilityTransition {
+interface DiscreteTransition {
   to: string;
   durationMs: number;
   delayMs: number;
@@ -101,10 +103,14 @@ const lastValues = new WeakMap<object, Map<string, number | string>>();
 
 // What each write's text stands for (the write's value is a string), as the animation group does.
 const resolved = new Map<string, StoryboardTransition>();
-const visibilityResolved = new Map<string, VisibilityTransition>();
+const discreteResolved = new Map<string, DiscreteTransition>();
 
 function targetOf(member: string) {
   return `${member}-transition`;
+}
+
+function discreteTargetOf(property: string) {
+  return targetOf(property.toLowerCase());
 }
 
 function swapLastValue({ control, key, value }: {
@@ -313,29 +319,49 @@ function animateStoryboard({ context, member }: {
   });
 }
 
-// `display 200ms allow-discrete`: a hide waits for the duration (and delay), a show is at once.
-function visibilityWrite({ input, durationMs, rest }: {
+// The value a rule gave the WinUI property of a discrete member: the last of the members that set it.
+function writtenWinuiValue({ input, property }: {
   input: GroupInput;
+  property: string;
+}) {
+  const written = DISCRETE_MEMBERS.filter(member => discretePropertyOf(member) === property).map(member => ({
+    member,
+    word: input.computed.get(member)?.value
+  })).findLast(entry => entry.word !== undefined);
+  const fallback = property === VISIBILITY_PROPERTY ? VISIBLE : undefined;
+  return written === undefined ? fallback : discreteValueOf({
+    member: written.member,
+    word: written.word ?? ""
+  }) ?? fallback;
+}
+
+// `display 200ms allow-discrete`: a hide waits for the duration (and delay), a show is at once; any other keyword
+// property takes its new value at the middle of the duration.
+function discreteWrite({ input, member, durationMs, rest }: {
+  input: GroupInput;
+  member: string;
   durationMs: number;
   rest: readonly string[];
 }) {
-  const written = DISCRETE_PROPERTIES.map(property => ({
-    property,
-    word: input.computed.get(property)?.value
-  })).findLast(entry => entry.word !== undefined);
-  const to = written === undefined ? VISIBLE : visibilityOf({
-    property: written.property,
-    word: written.word ?? ""
-  }) ?? VISIBLE;
+  const property = discretePropertyOf(member) ?? "";
+  const to = writtenWinuiValue({
+    input,
+    property
+  });
+  const isValueMissing = to === undefined;
+  if (isValueMissing) {
+    return [];
+  }
+
   const { delayMs } = timingTail({
     reader: input.reading("transition"),
     rest,
     accepted: [ALLOW_DISCRETE],
-    takes: "a display transition takes a duration, allow-discrete and a delay"
+    takes: `a ${member} transition takes a duration, allow-discrete and a delay`
   });
   return writeOf({
-    registry: visibilityResolved,
-    target: VISIBILITY_TARGET,
+    registry: discreteResolved,
+    target: discreteTargetOf(property),
     transition: {
       to,
       durationMs,
@@ -344,40 +370,78 @@ function visibilityWrite({ input, durationMs, rest }: {
   });
 }
 
-// When an element goes from visible to collapsed, a Storyboard keeps it visible for the duration, then collapses it.
-function animateVisibility(context: WriteContext) {
-  const transition = visibilityResolved.get(context.value);
+// The old value for the first half of the duration, the new one after it, held to the end.
+function flipTrack({ property, from, to }: {
+  property: string;
+  from: string;
+  to: string;
+}) {
+  const track = fromToTrack({
+    target: property,
+    kind: TrackKind.DISCRETE,
+    brush: null,
+    from,
+    to
+  });
+  track.frames.splice(1, 0, {
+    offset: MIDPOINT,
+    value: to,
+    easing: null
+  });
+  return track;
+}
+
+// When an element goes from visible to collapsed, a Storyboard keeps it visible for the duration, then collapses it;
+// any other keyword property flips to its new value at the middle of the duration.
+function animateDiscrete({ context, property }: {
+  context: WriteContext;
+  property: string;
+}) {
+  const transition = discreteResolved.get(context.value);
   const isUnknown = transition === undefined;
   if (isUnknown) {
     return null;
   }
 
   const { to, durationMs, delayMs } = transition;
+  const name = discreteTargetOf(property);
   const from = swapLastValue({
     control: context.control,
-    key: VISIBILITY_TARGET,
+    key: name,
     value: to
   });
-  const isHide = from === VISIBLE && to === COLLAPSED;
-  if (!isHide) {
+  const isUnchanged = from === undefined || from === to;
+  if (isUnchanged) {
     return null;
   }
 
+  const isVisibility = property === VISIBILITY_PROPERTY;
+  const isHide = from === VISIBLE && to === COLLAPSED;
+  const isShow = isVisibility && !isHide;
+  if (isShow) {
+    return null;
+  }
+
+  const track = isVisibility ? fromToTrack({
+    target: property,
+    kind: TrackKind.DISCRETE,
+    brush: null,
+    from: VISIBLE,
+    to: COLLAPSED
+  }) : flipTrack({
+    property,
+    from: String(from),
+    to
+  });
   return runTrack({
     context,
-    name: VISIBILITY_TARGET,
+    name,
     timing: {
       durationMs,
       delayMs,
       easing: DEFAULT_EASING
     },
-    track: fromToTrack({
-      target: "Visibility",
-      kind: TrackKind.VISIBILITY,
-      brush: null,
-      from: VISIBLE,
-      to: COLLAPSED
-    }),
+    track,
     brushes: []
   });
 }
@@ -405,13 +469,14 @@ function entryOutputs({ input, reader, entry }: {
     return outputs;
   }
 
-  const isDiscrete = DISCRETE_PROPERTIES.includes(name) && milliseconds !== null;
+  const isDiscrete = DISCRETE_MEMBERS.includes(name) && milliseconds !== null;
   if (isDiscrete) {
     const isAllowed = rest.includes(ALLOW_DISCRETE);
     if (isAllowed) {
       outputs.push(
-        ...visibilityWrite({
+        ...discreteWrite({
           input,
+          member: name,
           durationMs: milliseconds,
           rest
         })
@@ -426,7 +491,7 @@ function entryOutputs({ input, reader, entry }: {
   const targets = TRANSITION_TARGETS.get(name);
   const isTargetsMissing = targets === undefined;
   if (isTargetsMissing) {
-    reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background, color, border-color, width, height, font-size, a shadow's depth, and display or visibility with allow-discrete); ignored`);
+    reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background, color, border-color, width, height, font-size, a shadow's depth, and display or any keyword property with allow-discrete); ignored`);
     return outputs;
   }
 
@@ -477,14 +542,24 @@ const storyboardHandlers = Object.fromEntries(
   ])
 );
 
-/** The group of `transition`: WinUI's implicit transitions, and a border color's Storyboard. */
+const discreteHandlers = Object.fromEntries(
+  DISCRETE_WINUI_PROPERTIES.map(property => [
+    discreteTargetOf(property),
+    (context: WriteContext) => animateDiscrete({
+      context,
+      property
+    })
+  ])
+);
+
+/** The group of `transition`: WinUI's implicit transitions, and the Storyboards of the rest. */
 export function transitionProperty() {
   return {
     members: ["transition"],
     lower: transition,
     writes: {
       ...storyboardHandlers,
-      [VISIBILITY_TARGET]: animateVisibility
+      ...discreteHandlers
     }
   } satisfies PropertyGroup;
 }

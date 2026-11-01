@@ -1,24 +1,8 @@
-import { enumMap, keywordProperty, setter } from "./property-kit.ts";
+import { discreteGroup } from "./discrete-properties.ts";
+import { setter } from "./property-kit.ts";
 import type { GroupInput, PropertyGroup, WriteContext } from "./property-kit.ts";
 import { parseNumber } from "#src/css/parse/values.js";
 import { textTransforms } from "#src/css/runtime/text-transforms.js";
-
-/** `word-break`: WinUI breaks inside a word only when it is wider than the line. */
-const wordBreaks = enumMap([
-  ["normal", "WrapWholeWords"],
-  ["keep-all", "WrapWholeWords"],
-  ["break-all", "Wrap"],
-  ["break-word", "Wrap"]
-]);
-
-/** `user-select`, as IsTextSelectionEnabled. */
-const textSelections = enumMap([
-  ["auto", "True"],
-  ["text", "True"],
-  ["all", "True"],
-  ["contain", "True"],
-  ["none", "False"]
-]);
 
 /**
  * `line-clamp` (and `-webkit-line-clamp`): a number of lines, or `none`. It sets
@@ -67,14 +51,6 @@ function lineClamp(input: GroupInput) {
     })
   ];
 }
-
-/** `object-fit`, as an image's Stretch. */
-const objectFits = enumMap([
-  ["fill", "Fill"],
-  ["contain", "Uniform"],
-  ["cover", "UniformToFill"],
-  ["none", "None"]
-]);
 
 /** `box-sizing`: a WinUI Width and Height include padding and border, so border-box is the only kind. */
 function boxSizing(input: GroupInput) {
@@ -175,21 +151,9 @@ export function compatGroups() {
       members: LINE_CLAMP,
       lower: lineClamp
     },
-    keywordProperty({
-      member: WORD_BREAK,
-      property: "TextWrapping",
-      choices: wordBreaks
-    }),
-    keywordProperty({
-      member: OBJECT_FIT,
-      property: "Stretch",
-      choices: objectFits
-    }),
-    keywordProperty({
-      member: USER_SELECT,
-      property: "IsTextSelectionEnabled",
-      choices: textSelections
-    })
+    discreteGroup(WORD_BREAK),
+    discreteGroup(OBJECT_FIT),
+    discreteGroup(USER_SELECT)
   ].map(group => ({
     ...group,
     isFallback: true

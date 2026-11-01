@@ -1,24 +1,24 @@
+import {
+  DISCRETE_MEMBERS,
+  discretePropertyOf,
+  discreteValueOf,
+  discreteWordsOf,
+  VISIBILITY_PROPERTY,
+  VISIBLE
+} from "./discrete-properties.ts";
 import { parseEasing } from "./easing.ts";
-import { DISPLAY_KEYWORDS } from "./layout-properties.ts";
 import type { Declaration, Keyframes, KeyframeStep, SourcePosition } from "./types.ts";
-import { visibilities } from "./visual-properties.ts";
 import { parseDegrees } from "#src/css/parse/angles.js";
 import { parseColor } from "#src/css/parse/colors.js";
 import { NOTATIONS } from "#src/css/parse/notation.js";
 import { parseLength, parseNumber, splitCommas, splitWords } from "#src/css/parse/values.js";
 
-/** The kinds of value WinUI animates: a Double, a Color of a brush, or a Visibility, which steps. */
+/** The kinds of value WinUI animates: a Double, a Color of a brush, or an enum or boolean member, which steps. */
 export const TrackKind = {
   DOUBLE: "double",
   COLOR: "color",
-  VISIBILITY: "visibility"
+  DISCRETE: "discrete"
 } as const;
-
-/** The Visibility values a track steps between. */
-export const VISIBLE = "Visible";
-
-/** The Visibility of an element that takes no space. */
-export const COLLAPSED = "Collapsed";
 
 /** One of the kinds in `TrackKind`. */
 export type TrackKind = (typeof TrackKind)[keyof typeof TrackKind];
@@ -26,7 +26,7 @@ export type TrackKind = (typeof TrackKind)[keyof typeof TrackKind];
 /** One value of a track at an offset of the animation, with the easing it starts. */
 export interface TrackFrame {
   offset: number;
-  /** A number for a Double, `#AARRGGBB` for a Color, `Visible` or `Collapsed` for a Visibility. */
+  /** A number for a Double, `#AARRGGBB` for a Color, a WinUI member name (`Italic`, `False`) for a discrete one. */
   value: number | string;
   /** The `animation-timing-function` the keyframe itself set, or null for the animation's. */
   easing: string | null;
@@ -60,7 +60,7 @@ type Report = (input: {
 
 const TIMING_FUNCTION = "animation-timing-function";
 const FUNCTION = /^([a-z][a-z0-9]*)\((.*)\)$/isu;
-const ANIMATED = "WinUI animates opacity, width, height, colors, translate, scale, rotate, transform, display and visibility";
+const ANIMATED = "WinUI animates opacity, width, height, colors, translate, scale, rotate, transform, display and any keyword property";
 const TRANSFORM_PREFIX = "(UIElement.RenderTransform).(CompositeTransform.";
 const SCALE_PREFIX = "Scale";
 const IDENTITY = new Map<string, number>([
@@ -322,45 +322,26 @@ function colorValues({ declaration, fail }: Reading) {
   } satisfies TrackValue];
 }
 
-function displayVisibility(word: string) {
-  const isKnown = DISPLAY_KEYWORDS.has(word);
-  if (!isKnown) {
-    return undefined;
-  }
-
-  return word === "none" ? COLLAPSED : VISIBLE;
-}
-
-/** The Visibility a `display` or `visibility` keyword stands for, or undefined for a word that is neither. */
-export function visibilityOf({ property, word }: {
-  property: string;
-  word: string;
-}) {
-  const lower = word.trim().toLowerCase();
-  return property === "display" ? displayVisibility(lower) : visibilities.get(lower);
-}
-
-// `display` and `visibility` both drive Visibility, which WinUI cannot blend: it steps.
-function visibilityValues({ declaration, fail }: Reading) {
-  const isDisplay = declaration.property === "display";
-  const value = visibilityOf({
-    property: declaration.property,
+// A keyword property steps: its WinUI member name is the value, and members of one WinUI property share its track.
+function discreteValues({ declaration, fail }: Reading) {
+  const member = declaration.property;
+  const value = discreteValueOf({
+    member,
     word: declaration.value
   });
-  const isReadable = value !== undefined;
+  const property = discretePropertyOf(member);
+  const isReadable = value !== undefined && property !== undefined;
   return isReadable ? [{
-    key: "Visibility",
-    target: "Visibility",
-    kind: TrackKind.VISIBILITY,
+    key: property,
+    target: property,
+    kind: TrackKind.DISCRETE,
     value
-  } satisfies TrackValue] : fail(`${declaration.property}: expected a ${isDisplay ? "display" : "visibility"} keyword, found "${declaration.value}"`);
+  } satisfies TrackValue] : fail(`${member}: expected one of ${discreteWordsOf(member).join(", ")}, found "${declaration.value}"`);
 }
 
 // Each animatable property and how its value becomes WinUI values.
 const VALUES = new Map<string, (reading: Reading) => TrackValue[] | null>([
   ["opacity", opacityValues],
-  ["display", visibilityValues],
-  ["visibility", visibilityValues],
   ["width", reading => sizeValues({
     target: "Width",
     reading
@@ -385,7 +366,8 @@ const VALUES = new Map<string, (reading: Reading) => TrackValue[] | null>([
   ["rotate", rotationValues],
   ["background-color", colorValues],
   ["color", colorValues],
-  ["border-color", colorValues]
+  ["border-color", colorValues],
+  ...DISCRETE_MEMBERS.map(member => [member, discreteValues] as const)
 ]);
 
 function trackOf({ tracks, entry }: {
@@ -477,6 +459,19 @@ function showBeforeAppearing(track: Track) {
   }
 }
 
+// Any other keyword property flips at the middle of an interval whose ends differ.
+function flipAtMidpoint(track: Track) {
+  track.frames = track.frames.flatMap((frame, i) => {
+    const next = track.frames[i + 1];
+    const isChange = next !== undefined && next.value !== frame.value;
+    return isChange ? [frame, {
+      offset: (frame.offset + next.offset) / 2,
+      value: next.value,
+      easing: null
+    }] : [frame];
+  });
+}
+
 /**
  * The WinUI properties an `@keyframes` rule drives, each with its values at the
  * offsets that set it. Every keyframe property WinUI cannot animate is reported
@@ -495,9 +490,14 @@ export function tracksOf({ keyframes, report }: {
   }));
   for (const track of tracks.values()) {
     track.frames.sort((first, second) => first.offset - second.offset);
-    const isVisibility = track.kind === TrackKind.VISIBILITY;
+    const isVisibility = track.target === VISIBILITY_PROPERTY;
     if (isVisibility) {
       showBeforeAppearing(track);
+    }
+
+    const isFlipping = track.kind === TrackKind.DISCRETE && !isVisibility;
+    if (isFlipping) {
+      flipAtMidpoint(track);
     }
   }
 

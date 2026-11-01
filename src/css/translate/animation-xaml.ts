@@ -80,7 +80,7 @@ const OBJECT_KEYFRAME = "Object";
 const KEYFRAME_TYPES = new Map<TrackKind, string>([
   [TrackKind.DOUBLE, "Double"],
   [TrackKind.COLOR, "Color"],
-  [TrackKind.VISIBILITY, OBJECT_KEYFRAME]
+  [TrackKind.DISCRETE, OBJECT_KEYFRAME]
 ]);
 
 function pad(amount: number) {
@@ -170,7 +170,7 @@ function run({ track, spec, isReversed }: {
     t: frame.offset * spec.durationMs,
     value: frame.value
   }));
-  const isStepped = track.kind === TrackKind.VISIBILITY;
+  const isStepped = track.kind === TrackKind.DISCRETE;
   const easings = track.frames.map(frame => {
     const timingFunction = isStepped ? null : frame.easing;
     const isFallback = timingFunction === null;
@@ -328,7 +328,7 @@ function trackFrames({ track, spec, written, hold }: {
     frames.push(...isSeamless ? next.slice(1) : next);
   }
 
-  const isStepped = track.kind === TrackKind.VISIBILITY;
+  const isStepped = track.kind === TrackKind.DISCRETE;
   const steps = isStepped ? frames.map(jump) : frames;
   const [first] = steps;
   const isHeld = hold > 0 && first?.mode === DISCRETE;
