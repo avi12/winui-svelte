@@ -741,3 +741,9 @@ export function isResourceRecord(input: object): input is ResourceRecordInput {
   const prototype: unknown = Object.getPrototypeOf(input);
   return prototype === Object.prototype || prototype === null;
 }
+
+/** An icon glyph as the character it is: a number is its code point. */
+export function glyphText(input: string | number) {
+  const isCodePoint = typeof input === "number";
+  return isCodePoint ? String.fromCodePoint(input) : input;
+}

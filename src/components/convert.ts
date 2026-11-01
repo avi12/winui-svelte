@@ -123,7 +123,7 @@ export type {
   TimeSpanInput,
   Vector3Input
 } from "./values.ts";
-export { colorOf } from "./values.ts";
+export { colorOf, glyphText as glyphOf } from "./values.ts";
 
 /**
  * RelativePanel places an element by another element, or by that element's
@@ -200,6 +200,9 @@ export type GeometryInput = string | Geometry;
 
 /** A font family name or a font family. */
 export type FontFamilyInput = string | FontFamily;
+
+/** An icon glyph: the character, or its code point (`0xE711`). */
+export type GlyphInput = string | number;
 
 /** A URI string or a URI. */
 export type UriInput = string | Uri;

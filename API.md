@@ -1056,6 +1056,7 @@ const vertical: Orientation = 1;
 | A flag enum WinUI marks `[Flags]` (`FlagsInput`) | the same, or a list of names it combines | `modifiers={["Control", "Shift"]}` |
 | A color (`ColorInput`) | hex text (`HexColor`), a `ColorKeyword`, or WinUI's own value | `"#0078d4"`, `"transparent"` |
 | A brush (`BrushInput`) | a color, a `ThemeBrush`, a key of `AppBrushes`, or a `Brush` | `"AcrylicBackgroundFillColorDefaultBrush"` |
+| An icon glyph (`GlyphInput`, on `FontIcon` and `FontIconSource`) | the character, or its code point (`fontFamily` takes a family name such as `"Segoe Fluent Icons"` or a `FontFamily`) | `glyph={0xE711}`, `glyph=""` |
 | A grid length (`GridLengthInput`) | pixels, or `GridLengthText` as XAML writes it | `"Auto"`, `"2*"`, `"120"` |
 | The package's own | `Backdrop`, `WindowTheme`, `TitleBarHeight`, `WindowPresentation`, `PickerLocation`, `NavigationCacheMode`, `NavigationMode`, `MoveDirection`, `XamlKind`, `FocusKind`, `TrayGesture`, `TrayBalloonIcon` | `backdrop={Backdrop.mica}` |
 

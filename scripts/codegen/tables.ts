@@ -1353,6 +1353,7 @@ export const PropertyKind = {
   COLOR: "color",
   IMAGE_SOURCE: "imageSource",
   FONT_FAMILY: "fontFamily",
+  GLYPH: "glyph",
   URI: "uri",
   DURATION: "duration",
   TIME_SPAN: "timeSpan",
@@ -1387,6 +1388,12 @@ export const PropertyKind = {
 } as const;
 
 export type PropertyKind = (typeof PropertyKind)[keyof typeof PropertyKind];
+
+// By "Type.Property", ahead of the type: a string that is also written as a code point.
+export const kindOfProperty = new Map<string, PropertyKind>([
+  ["FontIcon.Glyph", PropertyKind.GLYPH],
+  ["FontIconSource.Glyph", PropertyKind.GLYPH]
+]);
 
 // By the full name of the type; anything else a value or a class is handed
 // on as the bindings type it.

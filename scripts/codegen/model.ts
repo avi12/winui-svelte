@@ -8,6 +8,7 @@ import {
   createdCollections,
   featureClasses,
   hostOwnedBindables,
+  kindOfProperty,
   kindOfType,
   madeFromProps,
   neverBindable,
@@ -479,7 +480,10 @@ class Builder {
       const isWritableProperty = member.hasSetter && !isSkipped && isNew;
       if (isWritableProperty) {
         seenProperties.add(member.name);
-        const { kind, enumType } = this.classify(member.type);
+        const { kind: classified, enumType } = this.classify(member.type);
+        const overriddenKind = kindOfProperty.get(`${model.type.name}.${member.name}`);
+        const isOverridden = overriddenKind !== undefined && classified === PropertyKind.STRING;
+        const kind = isOverridden ? overriddenKind : classified;
         const isStyleWithoutElement = kind === PropertyKind.STYLE && !hasStyleTarget(key);
         if (isStyleWithoutElement) {
           throw new Error(`${model.type.name}.${key} takes a Style: add the element it styles to src/components/style-targets.ts`);

@@ -188,6 +188,10 @@ const converters = new Map<PropertyKind, Converter>([
     convert: "fontFamilyOf",
     inputType: "FontFamilyInput"
   }],
+  [PropertyKind.GLYPH, {
+    convert: "glyphOf",
+    inputType: "GlyphInput"
+  }],
   [PropertyKind.URI, {
     convert: "uriOf",
     inputType: "UriInput"

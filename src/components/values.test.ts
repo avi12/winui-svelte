@@ -5,6 +5,7 @@ import {
   DurationKind,
   durationParts,
   fontWeightNumber,
+  glyphText,
   gridLengthParts,
   GridUnit,
   isResourceRecord,
@@ -284,4 +285,10 @@ test("a track list reads each length with its minimum and maximum", () => {
     }
   ]);
   assert.deepEqual(trackListParts(""), []);
+});
+
+test("an icon glyph is the character, or the character of its code point", () => {
+  assert.equal(glyphText("\uE711"), "\uE711");
+  assert.equal(glyphText(0xE711), "\uE711");
+  assert.equal(glyphText(0x1F600), "\u{1F600}");
 });
