@@ -1486,6 +1486,9 @@ export type TypeReference = string | {
 
 const PACKAGE_MODULE = "winui-svelte/components";
 
+/** The module that exports each enum, with the union of its member names. */
+export const ENUMS_MODULE = "winui-svelte/enums";
+
 // The input types whose names the editor can offer for an attribute, with what else each takes
 export const OFFERED_INPUTS = new Map<string, TypeReference[]>([
   ["GlyphInput", [

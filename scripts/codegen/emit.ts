@@ -328,16 +328,23 @@ const enumInputTypes = new Map<PropertyKind, string>([
 // The public enum module (`winui-svelte/enums`): each enum a prop takes, re-exported
 // from its own bindings module, so it is one name for the value and its type
 // and an app bundles only the enums it imports.
+const THEME_BRUSH_EXPORT = "export { ThemeBrush } from \"./theme-brushes.ts\";";
+
 export function emitEnums(model: Model) {
-  const lines = [GENERATED_HEADER, ""];
+  const imports: string[] = [];
+  const exports: string[] = [];
+  const names: string[] = [];
   for (const type of enumsOf(model)) {
     const publicName = renamedEnums.get(type.name);
     const isRenamed = publicName !== undefined;
     const exported = isRenamed ? `${type.name} as ${publicName}` : type.name;
-    lines.push(`export { ${exported} } from "${bindingModule(type)}";`);
+    const source = bindingModule(type);
+    imports.push(`import type { ${exported} } from "${source}";`);
+    exports.push(`export { ${exported} } from "${source}";`);
+    names.push(`export type ${publicEnumName(type.name)}Name = keyof typeof ${publicEnumName(type.name)};`);
   }
 
-  lines.push("export { ThemeBrush } from \"./theme-brushes.ts\";");
+  const lines = [GENERATED_HEADER, "", ...imports, "", ...exports, THEME_BRUSH_EXPORT, "", ...names];
   return `${lines.join("\n")}\n`;
 }
 
@@ -358,6 +365,20 @@ export function emitThemeBrushes(keys: readonly string[]) {
     "export type ThemeBrush = (typeof ThemeBrush)[keyof typeof ThemeBrush];",
     ""
   ].join("\n");
+}
+
+function publicEnumName(name: string) {
+  return renamedEnums.get(name) ?? name;
+}
+
+/** The name, in winui-svelte/enums, of the union of an enum prop's member names; undefined if it is no enum */
+export function enumNamesTypeOf(property: {
+  kind: PropertyKind;
+  enumType: TypeName | null;
+}) {
+  const { enumType } = property;
+  const isEnum = enumInputTypes.has(property.kind) && enumType !== null;
+  return isEnum ? `${publicEnumName(enumType.name)}Name` : undefined;
 }
 
 function enumName({ enumType }: { enumType: TypeName | null }) {
@@ -413,7 +434,7 @@ export function displayTypeOf(property: {
 }) {
   const isEnum = enumInputTypes.has(property.kind);
   if (isEnum) {
-    return enumName(property);
+    return publicEnumName(enumName(property));
   }
 
   return inputTypeOf(property) ?? plainTypes.get(property.kind);

@@ -25,7 +25,7 @@ const webTypesSchema = z.object({
               name: z.string(),
               description: z.string().optional(),
               value: z.object({
-                type: z.union([z.string(), z.array(typeReferenceSchema)])
+                type: z.union([typeReferenceSchema, z.array(typeReferenceSchema)])
               }).optional()
             })
           )
@@ -55,9 +55,9 @@ test("glyph names the exported GlyphInput type, so the editor can show it and of
 });
 
 test("a prop names its type beside its name", () => {
-  const visibility = elements.find(element => element.name === "UIElement")?.attributes.find(attribute => attribute.name === "visibility");
-  assert.equal(visibility?.value?.type, "Visibility");
-  assert.match(visibility?.description ?? "", /Type: `Visibility`/u);
+  const opacity = elements.find(element => element.name === "UIElement")?.attributes.find(attribute => attribute.name === "opacity");
+  assert.equal(opacity?.value?.type, "number");
+  assert.match(opacity?.description ?? "", /Type: `number`/u);
 });
 
 test("a prop is written once, on the class that declares it", () => {
@@ -77,4 +77,12 @@ test("the package names the file, and ships it", () => {
 test("visibility names display, which like Collapsed takes no space", () => {
   const visibility = elements.find(element => element.name === "UIElement")?.attributes.find(attribute => attribute.name === "visibility");
   assert.match(visibility?.description ?? "", /Also settable in CSS as `display`/u);
+});
+
+test("an enum prop names the union of its member names, so the editor offers them", () => {
+  const visibility = elements.find(element => element.name === "UIElement")?.attributes.find(attribute => attribute.name === "visibility");
+  assert.deepEqual(visibility?.value?.type, {
+    module: "winui-svelte/enums",
+    name: "VisibilityName"
+  });
 });

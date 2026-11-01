@@ -147,7 +147,10 @@
               "name": "animationOptimization",
               "description": "Gets or sets a value that specifies how animations are cached when the AnimatedVisualPlayer is idle (when PlayAsync is not active).\n\nType: `PlayerAnimationOptimization`",
               "value": {
-                "type": "PlayerAnimationOptimization"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PlayerAnimationOptimizationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer.animationoptimization"
             },
@@ -184,7 +187,10 @@
               "name": "stretch",
               "description": "Gets or sets a value that describes how an animated visual should be stretched to fill the destination rectangle.\n\nType: `Stretch`",
               "value": {
-                "type": "Stretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "StretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer.stretch"
             }
@@ -241,7 +247,10 @@
               "name": "closedDisplayMode",
               "description": "Gets or sets a value that indicates whether icon buttons are displayed when the app bar is not completely open.\n\nType: `AppBarClosedDisplayMode`",
               "value": {
-                "type": "AppBarClosedDisplayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AppBarClosedDisplayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.closeddisplaymode"
             },
@@ -265,7 +274,10 @@
               "name": "lightDismissOverlayMode",
               "description": "Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.\n\nType: `LightDismissOverlayMode`",
               "value": {
-                "type": "LightDismissOverlayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LightDismissOverlayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.lightdismissoverlaymode"
             },
@@ -338,7 +350,10 @@
               "name": "labelPosition",
               "description": "Gets or sets a value that indicates the placement and visibility of the button's label. An enumeration value that specifies the placement and visibility of the button's label. The default is Default.\n\nType: `CommandBarLabelPosition`",
               "value": {
-                "type": "CommandBarLabelPosition"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CommandBarLabelPositionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton.labelposition"
             }
@@ -439,7 +454,10 @@
               "name": "labelPosition",
               "description": "Gets or sets a value that indicates the placement and visibility of the button's label. An enumeration value that specifies the placement and visibility of the button's label. The default is Default.\n\nType: `CommandBarLabelPosition`",
               "value": {
-                "type": "CommandBarLabelPosition"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CommandBarLabelPositionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton.labelposition"
             }
@@ -487,7 +505,10 @@
               "name": "sweepDirection",
               "description": "Gets or sets a value that specifies whether the arc is drawn in the Clockwise or Counterclockwise direction. One of the enumeration values that specifies the direction in which the arc is drawn. The default is Counterclockwise.\n\nType: `SweepDirection`",
               "value": {
-                "type": "SweepDirection"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SweepDirectionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment.sweepdirection"
             }
@@ -535,7 +556,10 @@
               "name": "lightDismissOverlayMode",
               "description": "Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.\n\nType: `LightDismissOverlayMode`",
               "value": {
-                "type": "LightDismissOverlayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LightDismissOverlayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.lightdismissoverlaymode"
             },
@@ -730,7 +754,10 @@
               "name": "createOptions",
               "description": "Gets or sets the BitmapCreateOptions for a BitmapImage. The BitmapCreateOptions used for this BitmapImage. The default is None. With this default, a BitmapImage uses cached content when it is available. For a BitmapImage that is created by referencing an image source file by Uniform Resource Identifier (URI), the Uniform Resource Identifier (URI) controls the internal caching scheme.\n\nType: `BitmapCreateOptions`",
               "value": {
-                "type": "BitmapCreateOptions"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "BitmapCreateOptionsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.createoptions"
             },
@@ -746,7 +773,10 @@
               "name": "decodePixelType",
               "description": "Gets or sets a value that determines how DecodePixelWidth and DecodePixelHeight values are interpreted for decoding operations. A value of the enumeration. The default is Physical.\n\nType: `DecodePixelType`",
               "value": {
-                "type": "DecodePixelType"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "DecodePixelTypeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.decodepixeltype"
             },
@@ -800,7 +830,10 @@
               "name": "horizontalTextAlignment",
               "description": "Gets or sets a value that indicates how text is aligned in the Block. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.\n\nType: `TextAlignment`",
               "value": {
-                "type": "TextAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block.horizontaltextalignment"
             },
@@ -816,7 +849,10 @@
               "name": "lineStackingStrategy",
               "description": "Gets or sets a value that indicates how a line box is determined for each line of text in the Block.\n\nType: `LineStackingStrategy`",
               "value": {
-                "type": "LineStackingStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LineStackingStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block.linestackingstrategy"
             },
@@ -832,7 +868,10 @@
               "name": "textAlignment",
               "description": "Gets or sets the horizontal alignment of the text content. The horizontal alignment of the text content. The default is Left.\n\nAlso settable in CSS as `text-align`\n\nType: `TextAlignment`",
               "value": {
-                "type": "TextAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block.textalignment"
             }
@@ -863,7 +902,10 @@
               "name": "backgroundSizing",
               "description": "Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.\n\nType: `BackgroundSizing`",
               "value": {
-                "type": "BackgroundSizing"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "BackgroundSizingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border.backgroundsizing"
             },
@@ -1019,7 +1061,10 @@
               "name": "clickMode",
               "description": "Gets or sets a value that indicates when the Click event occurs, in terms of device behavior.\n\nType: `ClickMode`",
               "value": {
-                "type": "ClickMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ClickModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.buttonbase.clickmode"
             },
@@ -1107,7 +1152,10 @@
               "name": "displayMode",
               "description": "Gets or sets a value that indicates whether the calendar shows selections for month, year, or decade in the picker's CalendarView.\n\nType: `CalendarViewDisplayMode`",
               "value": {
-                "type": "CalendarViewDisplayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CalendarViewDisplayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.displaymode"
             },
@@ -1115,7 +1163,10 @@
               "name": "firstDayOfWeek",
               "description": "Gets or sets a value that indicates which day is shown as the first day of the week in the picker's CalendarView.\n\nType: `DayOfWeek`",
               "value": {
-                "type": "DayOfWeek"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "DayOfWeekName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.firstdayofweek"
             },
@@ -1171,7 +1222,10 @@
               "name": "lightDismissOverlayMode",
               "description": "Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.\n\nType: `LightDismissOverlayMode`",
               "value": {
-                "type": "LightDismissOverlayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LightDismissOverlayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.lightdismissoverlaymode"
             },
@@ -1364,7 +1418,10 @@
               "name": "dayItemFontStyle",
               "description": "Gets or sets the font style used to display day values in the calendar.\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.dayitemfontstyle"
             },
@@ -1404,7 +1461,10 @@
               "name": "displayMode",
               "description": "Gets or sets a value that indicates whether the calendar shows a picker for month, year, or decade.\n\nType: `CalendarViewDisplayMode`",
               "value": {
-                "type": "CalendarViewDisplayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CalendarViewDisplayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.displaymode"
             },
@@ -1412,7 +1472,10 @@
               "name": "firstDayOfWeek",
               "description": "Gets or sets a value that indicates which day is shown as the first day of the week.\n\nType: `DayOfWeek`",
               "value": {
-                "type": "DayOfWeek"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "DayOfWeekName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.firstdayofweek"
             },
@@ -1442,7 +1505,10 @@
               "name": "firstOfMonthLabelFontStyle",
               "description": "Gets or sets the font style used to display the first-of-month banner in the calendar.\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.firstofmonthlabelfontstyle"
             },
@@ -1488,7 +1554,10 @@
               "name": "firstOfYearDecadeLabelFontStyle",
               "description": "Gets or sets the font style used to display the first-of-year banner in the calendar.\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.firstofyeardecadelabelfontstyle"
             },
@@ -1520,7 +1589,10 @@
               "name": "horizontalDayItemAlignment",
               "description": "Gets or sets the horizontal alignment of day items in the calendar. An enumeration value that indicates the horizontal alignment of day items in the calendar.\n\nType: `HorizontalAlignment`",
               "value": {
-                "type": "HorizontalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "HorizontalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.horizontaldayitemalignment"
             },
@@ -1528,7 +1600,10 @@
               "name": "horizontalFirstOfMonthLabelAlignment",
               "description": "Gets or sets the horizontal alignment of the first-of-month banner text. An enumeration value that indicates the horizontal alignment of the first-of-month banner text.\n\nType: `HorizontalAlignment`",
               "value": {
-                "type": "HorizontalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "HorizontalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.horizontalfirstofmonthlabelalignment"
             },
@@ -1606,7 +1681,10 @@
               "name": "monthYearItemFontStyle",
               "description": "Gets or sets the font style used to display the month and year items in the calendar.\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.monthyearitemfontstyle"
             },
@@ -1750,7 +1828,10 @@
               "name": "selectionMode",
               "description": "Gets or sets a value that indicates what kind of selections are allowed. An enumeration value that indicates the current selection mode. The default is Single.\n\nType: `CalendarViewSelectionMode`",
               "value": {
-                "type": "CalendarViewSelectionMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CalendarViewSelectionModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.selectionmode"
             },
@@ -1830,7 +1911,10 @@
               "name": "verticalDayItemAlignment",
               "description": "Gets or sets the vertical alignment of day items in the calendar. An enumeration value that indicates the vertical alignment of day items in the calendar.\n\nType: `VerticalAlignment`",
               "value": {
-                "type": "VerticalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VerticalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.verticaldayitemalignment"
             },
@@ -1838,7 +1922,10 @@
               "name": "verticalFirstOfMonthLabelAlignment",
               "description": "Gets or sets the vertical alignment of the first-of-month banner text. An enumeration value that indicates the vertical alignment of the first-of-month banner text.\n\nType: `VerticalAlignment`",
               "value": {
-                "type": "VerticalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VerticalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.verticalfirstofmonthlabelalignment"
             },
@@ -2063,7 +2150,10 @@
               "name": "colorSpectrumComponents",
               "description": "Gets or sets a value that indicates how the Hue-Saturation-Value (HSV) color components are mapped onto the ColorSpectrum. A value of the enumeration. The default is HueSaturation.\n\nType: `ColorSpectrumComponents`",
               "value": {
-                "type": "ColorSpectrumComponents"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ColorSpectrumComponentsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.colorspectrumcomponents"
             },
@@ -2071,7 +2161,10 @@
               "name": "colorSpectrumShape",
               "description": "Gets or sets a value that indicates whether the ColorSpectrum is shown as a square or a circle. A value of the enumeration. The default is Box, which shows the spectrum as a square.\n\nType: `ColorSpectrumShape`",
               "value": {
-                "type": "ColorSpectrumShape"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ColorSpectrumShapeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.colorspectrumshape"
             },
@@ -2199,7 +2292,10 @@
               "name": "orientation",
               "description": "Gets or sets the orientation of the editing controls in the ColorPicker. The orientation of the editing controls in the ColorPicker. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.orientation"
             },
@@ -2228,7 +2324,10 @@
               "name": "colorChannel",
               "description": "Gets or sets a value that indicates which color channel the slider modifies.\n\nType: `ColorPickerHsvChannel`",
               "value": {
-                "type": "ColorPickerHsvChannel"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ColorPickerHsvChannelName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorpickerslider.colorchannel"
             }
@@ -2252,7 +2351,10 @@
               "name": "components",
               "description": "Gets or sets a value that indicates how the Hue-Saturation-Value (HSV) color components are mapped onto the ColorSpectrum. A value of the enumeration. The default is HueSaturation.\n\nType: `ColorSpectrumComponents`",
               "value": {
-                "type": "ColorSpectrumComponents"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ColorSpectrumComponentsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.components"
             },
@@ -2313,7 +2415,10 @@
               "name": "shape",
               "description": "Gets or sets a value that indicates whether the ColorSpectrum is shown as a square or a circle. A value of the enumeration. The default is Box, which shows the spectrum as a square.\n\nType: `ColorSpectrumShape`",
               "value": {
-                "type": "ColorSpectrumShape"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ColorSpectrumShapeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.shape"
             },
@@ -2414,7 +2519,10 @@
               "name": "lightDismissOverlayMode",
               "description": "Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.\n\nType: `LightDismissOverlayMode`",
               "value": {
-                "type": "LightDismissOverlayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LightDismissOverlayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.lightdismissoverlaymode"
             },
@@ -2446,7 +2554,10 @@
               "name": "selectionChangedTrigger",
               "description": "Gets or sets a value that indicates what action causes a SelectionChanged event to occur. A value of the enumeration. The default is Committed.\n\nType: `ComboBoxSelectionChangedTrigger`",
               "value": {
-                "type": "ComboBoxSelectionChangedTrigger"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ComboBoxSelectionChangedTriggerName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.selectionchangedtrigger"
             },
@@ -2508,7 +2619,10 @@
               "name": "defaultLabelPosition",
               "description": "Gets or sets a value that indicates the placement and visibility of the labels on the command bar's buttons. An enumeration value that indicates the placement and visibility of the labels on the command bar's buttons. The default is Bottom.\n\nType: `CommandBarDefaultLabelPosition`",
               "value": {
-                "type": "CommandBarDefaultLabelPosition"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CommandBarDefaultLabelPositionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar.defaultlabelposition"
             },
@@ -2524,7 +2638,10 @@
               "name": "overflowButtonVisibility",
               "description": "Gets or sets a value that indicates when a command bar's overflow button is shown. An enumeration value that indicates when a command bar's overflow button is shown. The default is Auto.\n\nType: `CommandBarOverflowButtonVisibility`",
               "value": {
-                "type": "CommandBarOverflowButtonVisibility"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CommandBarOverflowButtonVisibilityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar.overflowbuttonvisibility"
             },
@@ -2839,7 +2956,10 @@
               "name": "defaultButton",
               "description": "Gets or sets a value that indicates which button on the dialog is the default action. A value of the enumeration. The default is None.\n\nType: `ContentDialogButton`",
               "value": {
-                "type": "ContentDialogButton"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ContentDialogButtonName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.defaultbutton"
             },
@@ -2991,7 +3111,10 @@
               "name": "backgroundSizing",
               "description": "Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.\n\nType: `BackgroundSizing`",
               "value": {
-                "type": "BackgroundSizing"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "BackgroundSizingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.backgroundsizing"
             },
@@ -3079,7 +3202,10 @@
               "name": "fontStretch",
               "description": "Gets or sets the font stretch for the text content presented by the ContentPresenter. The requested font stretch, as a FontStretch constant. The default is Normal.\n\nType: `FontStretch`",
               "value": {
-                "type": "FontStretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.fontstretch"
             },
@@ -3087,7 +3213,10 @@
               "name": "fontStyle",
               "description": "Gets or sets the font style for the presented content. The requested font style, which is a FontStyle constant name. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.fontstyle"
             },
@@ -3111,7 +3240,10 @@
               "name": "horizontalContentAlignment",
               "description": "Gets or sets the horizontal alignment of the content. One of the HorizontalAlignment values.\n\nType: `HorizontalAlignment`",
               "value": {
-                "type": "HorizontalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "HorizontalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.horizontalcontentalignment"
             },
@@ -3135,7 +3267,10 @@
               "name": "lineStackingStrategy",
               "description": "Gets or sets a value that indicates how a line box is determined for each line of text.\n\nType: `LineStackingStrategy`",
               "value": {
-                "type": "LineStackingStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LineStackingStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.linestackingstrategy"
             },
@@ -3151,7 +3286,10 @@
               "name": "opticalMarginAlignment",
               "description": "Get or sets a value that indicates how the font is modified to align with fonts of different sizes.\n\nType: `OpticalMarginAlignment`",
               "value": {
-                "type": "OpticalMarginAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OpticalMarginAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.opticalmarginalignment"
             },
@@ -3167,7 +3305,10 @@
               "name": "textLineBounds",
               "description": "Gets or sets a value that indicates how the line box height is determined for each line of text displayed in the ContentPresenter.\n\nType: `TextLineBounds`",
               "value": {
-                "type": "TextLineBounds"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextLineBoundsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.textlinebounds"
             },
@@ -3175,7 +3316,10 @@
               "name": "textWrapping",
               "description": "Gets or sets how the element wraps text. A value that indicates how the element wraps text. The default is NoWrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
               "value": {
-                "type": "TextWrapping"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextWrappingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.textwrapping"
             },
@@ -3183,7 +3327,10 @@
               "name": "verticalContentAlignment",
               "description": "Gets or sets the vertical alignment of the content. One of the VerticalAlignment values.\n\nType: `VerticalAlignment`",
               "value": {
-                "type": "VerticalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VerticalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.verticalcontentalignment"
             }
@@ -3244,7 +3391,10 @@
               "name": "backgroundSizing",
               "description": "Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.\n\nType: `BackgroundSizing`",
               "value": {
-                "type": "BackgroundSizing"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "BackgroundSizingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.backgroundsizing"
             },
@@ -3292,7 +3442,10 @@
               "name": "elementSoundMode",
               "description": "Get or sets a value that specifies a control's preference for whether sounds are played.\n\nType: `ElementSoundMode`",
               "value": {
-                "type": "ElementSoundMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ElementSoundModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.elementsoundmode"
             },
@@ -3322,7 +3475,10 @@
               "name": "fontStretch",
               "description": "Gets or sets the degree to which a font is condensed or expanded on the screen. One of the values that specifies the degree to which a font is condensed or expanded on the screen. The default is Normal.\n\nType: `FontStretch`",
               "value": {
-                "type": "FontStretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.fontstretch"
             },
@@ -3330,7 +3486,10 @@
               "name": "fontStyle",
               "description": "Gets or sets the style in which the text is rendered. One of the values that specifies the style in which the text is rendered. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.fontstyle"
             },
@@ -3354,7 +3513,10 @@
               "name": "horizontalContentAlignment",
               "description": "Gets or sets the horizontal alignment of the control's content. One of the HorizontalAlignment values. The default is Left.\n\nType: `HorizontalAlignment`",
               "value": {
-                "type": "HorizontalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "HorizontalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.horizontalcontentalignment"
             },
@@ -3402,7 +3564,10 @@
               "name": "requiresPointer",
               "description": "Gets or sets whether a UI element supports mouse mode, which emulates pointer interaction experiences with non-pointer input devices such as a keyboard or game controller. The pointer emulation mode. The default is Never.\n\nType: `RequiresPointer`",
               "value": {
-                "type": "RequiresPointer"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "RequiresPointerName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.requirespointer"
             },
@@ -3410,7 +3575,10 @@
               "name": "tabNavigation",
               "description": "Gets or sets a value that modifies how tabbing and UIElement.TabIndex work for this control. > [!NOTE] > For Windows 10 Creators Update (build 10.0.15063) and newer, the TabFocusNavigation property is available on the UIElement base class to include objects in the tab sequence that do not use a ControlTemplate. A value of the enumeration. The default is Local.\n\nType: `KeyboardNavigationMode`",
               "value": {
-                "type": "KeyboardNavigationMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "KeyboardNavigationModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.tabnavigation"
             },
@@ -3426,7 +3594,10 @@
               "name": "verticalContentAlignment",
               "description": "Gets or sets the vertical alignment of the control's content. One of the VerticalAlignment values. The default is Top.\n\nType: `VerticalAlignment`",
               "value": {
-                "type": "VerticalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VerticalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.verticalcontentalignment"
             },
@@ -3512,7 +3683,10 @@
               "name": "lightDismissOverlayMode",
               "description": "Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.\n\nType: `LightDismissOverlayMode`",
               "value": {
-                "type": "LightDismissOverlayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LightDismissOverlayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker.lightdismissoverlaymode"
             },
@@ -3552,7 +3726,10 @@
               "name": "orientation",
               "description": "Gets or sets a value that indicates whether the day, month, and year selectors are stacked horizontally or vertically. A named constant of the enumeration that indicates whether the day, month, and year selectors are stacked horizontally or vertically. The default is Horizontal.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker.orientation"
             },
@@ -3830,7 +4007,10 @@
               "name": "direction",
               "description": "Gets or sets the direction that the target should translate, when the animation is active. A value of the enumeration.\n\nType: `AnimationDirection`",
               "value": {
-                "type": "AnimationDirection"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AnimationDirectionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragoverthemeanimation.direction"
             },
@@ -3986,7 +4166,10 @@
               "name": "easingMode",
               "description": "Gets or sets a value that specifies how the animation interpolates. One of the enumeration values that specifies how the animation interpolates. The default is EaseOut.\n\nType: `EasingMode`",
               "value": {
-                "type": "EasingMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "EasingModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingfunctionbase.easingmode"
             }
@@ -4014,7 +4197,10 @@
               "name": "edge",
               "description": "Gets or sets the edge position to use for the transition. A value of the enumeration. The default is Top.\n\nType: `EdgeTransitionLocation`",
               "value": {
-                "type": "EdgeTransitionLocation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "EdgeTransitionLocationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.edgeuithemetransition.edge"
             }
@@ -4132,7 +4318,10 @@
               "name": "expandDirection",
               "description": "::: moniker range=\"winui-3.0-preview\" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Gets or sets a value that indicates the direction in which the content area expands.\n\nType: `ExpandDirection`",
               "value": {
-                "type": "ExpandDirection"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ExpandDirectionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander.expanddirection"
             },
@@ -4303,7 +4492,10 @@
               "name": "elementSoundMode",
               "description": "Gets or sets a value that specifies the control's preference for whether it plays sounds. An enumeration value that specifies the control's preference for whether it plays sounds. The default is Default.\n\nType: `ElementSoundMode`",
               "value": {
-                "type": "ElementSoundMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ElementSoundModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.elementsoundmode"
             },
@@ -4311,7 +4503,10 @@
               "name": "lightDismissOverlayMode",
               "description": "Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.\n\nType: `LightDismissOverlayMode`",
               "value": {
-                "type": "LightDismissOverlayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LightDismissOverlayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.lightdismissoverlaymode"
             },
@@ -4324,7 +4519,10 @@
               "name": "placement",
               "description": "Gets or sets the default placement to be used for the flyout, in relation to its placement target. A named constant of the enumeration that indicates where the flyout is placed in relation to its placement target. The default is Top.\n\nType: `FlyoutPlacementMode`",
               "value": {
-                "type": "FlyoutPlacementMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FlyoutPlacementModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.placement"
             },
@@ -4340,7 +4538,10 @@
               "name": "showMode",
               "description": "Gets or sets a value that indicates how a flyout behaves when shown. A value of the enumeration that indicates how a flyout behaves when shown.\n\nType: `FlyoutShowMode`",
               "value": {
-                "type": "FlyoutShowMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FlyoutShowModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.showmode"
             },
@@ -4423,7 +4624,10 @@
               "name": "fontStyle",
               "description": "Gets or sets the font style for the icon glyph. A named constant of the enumeration that specifies the style in which the icon glyph is rendered. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon.fontstyle"
             },
@@ -4501,7 +4705,10 @@
               "name": "fontStyle",
               "description": "Gets or sets the font style for the icon glyph. A named constant of the enumeration that specifies the style in which the icon glyph is rendered. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.fontstyle"
             },
@@ -4630,7 +4837,10 @@
               "name": "flowDirection",
               "description": "Gets or sets the direction in which text and other UI elements flow within any parent element that controls their layout. This property can be set to either LeftToRight or RightToLeft. Setting FlowDirection to RightToLeft on any element sets the alignment to the right, the reading order to right-to-left and the layout of the control to flow from right to left. The direction that text and other UI elements flow within their parent element, as a value of the enumeration. The default value is LeftToRight.\n\nType: `FlowDirection`",
               "value": {
-                "type": "FlowDirection"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FlowDirectionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.flowdirection"
             },
@@ -4686,7 +4896,10 @@
               "name": "horizontalAlignment",
               "description": "Gets or sets the horizontal alignment characteristics that are applied to a FrameworkElement when it is composed in a layout parent, such as a panel or items control. A horizontal alignment setting, as a value of the enumeration. The default is Stretch.\n\nAlso settable in CSS as `justify-self`\n\nType: `HorizontalAlignment`",
               "value": {
-                "type": "HorizontalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "HorizontalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.horizontalalignment"
             },
@@ -4750,7 +4963,10 @@
               "name": "requestedTheme",
               "description": "Gets or sets the UI theme that is used by the UIElement (and its child elements) for resource determination. The UI theme you specify with RequestedTheme can override the app-level RequestedTheme. A value of the enumeration, for example Light.\n\nAlso settable in CSS as `color-scheme`\n\nType: `ElementTheme`",
               "value": {
-                "type": "ElementTheme"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ElementThemeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.requestedtheme"
             },
@@ -4774,7 +4990,10 @@
               "name": "verticalAlignment",
               "description": "Gets or sets the vertical alignment characteristics that are applied to a FrameworkElement when it is composed in a parent object such as a panel or items control. A vertical alignment setting, as a value of the enumeration. The default is Stretch.\n\nAlso settable in CSS as `align-self`\n\nType: `VerticalAlignment`",
               "value": {
-                "type": "VerticalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VerticalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.verticalalignment"
             },
@@ -4850,7 +5069,10 @@
               "name": "fillRule",
               "description": "Gets or sets how the intersecting areas of the objects contained in this GeometryGroup are combined. One of the enumeration values that specifies how the intersecting areas are combined to form the resulting area. The default is EvenOdd.\n\nType: `FillRule`",
               "value": {
-                "type": "FillRule"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FillRuleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.geometrygroup.fillrule"
             }
@@ -4930,7 +5152,10 @@
               "name": "styleSimulations",
               "description": "Gets or sets the style simulations applied to the glyphs. One of the enumeration values that specifies the style simulations to apply to the glyphs. The default is \"None\".\n\nType: `StyleSimulations`",
               "value": {
-                "type": "StyleSimulations"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "StyleSimulationsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.stylesimulations"
             },
@@ -4954,7 +5179,10 @@
               "name": "colorInterpolationMode",
               "description": "Gets or sets a ColorInterpolationMode enumeration value that specifies how the gradient's colors are interpolated. Specifies how the colors in a gradient are interpolated. The default is SRgbLinearInterpolation.\n\nType: `ColorInterpolationMode`",
               "value": {
-                "type": "ColorInterpolationMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ColorInterpolationModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush.colorinterpolationmode"
             },
@@ -4967,7 +5195,10 @@
               "name": "mappingMode",
               "description": "Gets or sets a BrushMappingMode enumeration value that specifies whether the positioning coordinates of the gradient brush are absolute or relative to the output area. A BrushMappingMode value that specifies how to interpret the gradient brush's positioning coordinates. The default is RelativeToBoundingBox.\n\nType: `BrushMappingMode`",
               "value": {
-                "type": "BrushMappingMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "BrushMappingModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush.mappingmode"
             },
@@ -4975,7 +5206,10 @@
               "name": "spreadMethod",
               "description": "Gets or sets the type of spread method that specifies how to draw a gradient that starts or ends inside the bounds of the object to be painted. The type of spread method used to paint the gradient. The default is Pad.\n\nType: `GradientSpreadMethod`",
               "value": {
-                "type": "GradientSpreadMethod"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "GradientSpreadMethodName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush.spreadmethod"
             }
@@ -5014,7 +5248,10 @@
               "name": "backgroundSizing",
               "description": "Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.\n\nType: `BackgroundSizing`",
               "value": {
-                "type": "BackgroundSizing"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "BackgroundSizingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid.backgroundsizing"
             },
@@ -5171,7 +5408,10 @@
               "name": "gridViewItemPresenterHorizontalContentAlignment",
               "description": "> [!NOTE] > GridViewItemPresenterHorizontalContentAlignment may be altered or unavailable for releases after Windows 10. Instead, use ContentPresenter.HorizontalContentAlignment. Gets or sets the horizontal alignment of the content being presented.\n\nType: `HorizontalAlignment`",
               "value": {
-                "type": "HorizontalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "HorizontalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.gridviewitempresenterhorizontalcontentalignment"
             },
@@ -5187,7 +5427,10 @@
               "name": "gridViewItemPresenterVerticalContentAlignment",
               "description": "> [!NOTE] > GridViewItemPresenterVerticalContentAlignment may be altered or unavailable for releases after Windows 10. Instead, use ContentPresenter.VerticalContentAlignment. Gets or sets the vertical alignment of the content being presented.\n\nType: `VerticalAlignment`",
               "value": {
-                "type": "VerticalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VerticalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.gridviewitempresenterverticalcontentalignment"
             },
@@ -5376,7 +5619,10 @@
               "name": "orientation",
               "description": "Gets or sets the orientation of a Hub. One of the Orientation values. The default is Horizontal.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.orientation"
             },
@@ -5447,7 +5693,10 @@
               "name": "elementSoundMode",
               "description": "Gets or sets a value that specifies the control's preference for whether it plays sounds. An enumeration value that specifies the control's preference for whether it plays sounds. The default is Default.\n\nType: `ElementSoundMode`",
               "value": {
-                "type": "ElementSoundMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ElementSoundModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.elementsoundmode"
             },
@@ -5479,7 +5728,10 @@
               "name": "underlineStyle",
               "description": "Gets or sets a value that indicates what kind of underline is shown under the hyperlink. An enumeration value that specifies what kind of underline is shown. The default is Single.\n\nType: `UnderlineStyle`",
               "value": {
-                "type": "UnderlineStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "UnderlineStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.underlinestyle"
             },
@@ -5492,7 +5744,10 @@
               "name": "xYFocusDownNavigationStrategy",
               "description": "Gets or sets a value that specifies the strategy used to determine the target element of a down navigation. A value of the enumeration. The default is Auto.\n\nType: `XYFocusNavigationStrategy`",
               "value": {
-                "type": "XYFocusNavigationStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "XYFocusNavigationStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusdownnavigationstrategy"
             },
@@ -5505,7 +5760,10 @@
               "name": "xYFocusLeftNavigationStrategy",
               "description": "Gets or sets a value that specifies the strategy used to determine the target element of a left navigation. A value of the enumeration. The default is Auto.\n\nType: `XYFocusNavigationStrategy`",
               "value": {
-                "type": "XYFocusNavigationStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "XYFocusNavigationStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusleftnavigationstrategy"
             },
@@ -5518,7 +5776,10 @@
               "name": "xYFocusRightNavigationStrategy",
               "description": "Gets or sets a value that specifies the strategy used to determine the target element of a right navigation. A value of the enumeration. The default is Auto.\n\nType: `XYFocusNavigationStrategy`",
               "value": {
-                "type": "XYFocusNavigationStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "XYFocusNavigationStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusrightnavigationstrategy"
             },
@@ -5531,7 +5792,10 @@
               "name": "xYFocusUpNavigationStrategy",
               "description": "Gets or sets a value that specifies the strategy used to determine the target element of an up navigation. A value of the enumeration. The default is Auto.\n\nType: `XYFocusNavigationStrategy`",
               "value": {
-                "type": "XYFocusNavigationStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "XYFocusNavigationStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusupnavigationstrategy"
             },
@@ -5638,7 +5902,10 @@
               "name": "stretch",
               "description": "Gets or sets a value that describes how an Image should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source image is rendered, if the Height and/or Width of the Image are not explicitly specified. The default value is Uniform.\n\nType: `Stretch`",
               "value": {
-                "type": "Stretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "StretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.image.stretch"
             },
@@ -5828,7 +6095,10 @@
               "name": "severity",
               "description": "Gets or sets the type of the InfoBar to apply consistent status color, icon, and assistive technology settings dependent on the criticality of the notification. The style of the InfoBar that indicates the criticality of the notification. The default is Informational\n\nType: `InfoBarSeverity`",
               "value": {
-                "type": "InfoBarSeverity"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "InfoBarSeverityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar.severity"
             },
@@ -6176,7 +6446,10 @@
               "name": "groupHeaderPlacement",
               "description": "Gets or sets a value that specifies where group headers are positioned in relation to the group. An enumeration value that specifies where group headers are positioned in relation to the group. The default is Top.\n\nType: `GroupHeaderPlacement`",
               "value": {
-                "type": "GroupHeaderPlacement"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "GroupHeaderPlacementName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel.groupheaderplacement"
             },
@@ -6192,7 +6465,10 @@
               "name": "itemsUpdatingScrollMode",
               "description": "Gets or sets a value that specifies scrolling behavior when the ItemsSource is updated. A value of the enumeration. The default is KeepItemsInView.\n\nType: `ItemsUpdatingScrollMode`",
               "value": {
-                "type": "ItemsUpdatingScrollMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ItemsUpdatingScrollModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel.itemsupdatingscrollmode"
             },
@@ -6200,7 +6476,10 @@
               "name": "orientation",
               "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel.orientation"
             }
@@ -6247,7 +6526,10 @@
               "name": "selectionMode",
               "description": "Gets or sets the selection behavior for an ItemsView instance. An enumeration value that indicates the selection behavior. The default is Single.\n\nType: `ItemsViewSelectionMode`",
               "value": {
-                "type": "ItemsViewSelectionMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ItemsViewSelectionModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview.selectionmode"
             },
@@ -6294,7 +6576,10 @@
               "name": "groupHeaderPlacement",
               "description": "Gets or sets a value that specifies where group headers are positioned in relation to the group. An enumeration value that specifies where group headers are positioned in relation to the group. The default is Top.\n\nType: `GroupHeaderPlacement`",
               "value": {
-                "type": "GroupHeaderPlacement"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "GroupHeaderPlacementName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.groupheaderplacement"
             },
@@ -6334,7 +6619,10 @@
               "name": "orientation",
               "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.orientation"
             }
@@ -6358,7 +6646,10 @@
               "name": "key",
               "description": "Gets or sets the virtual-key (used in conjunction with one or more modifier keys) for a keyboard shortcut (accelerator). A keyboard shortcut is invoked when the modifier keys associated with the shortcut are pressed and then the non-modifier key is pressed at the same time. For example, Ctrl+C for copy and Ctrl+S for save.\n\nType: `VirtualKey`",
               "value": {
-                "type": "VirtualKey"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VirtualKeyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator.key"
             },
@@ -6366,7 +6657,10 @@
               "name": "modifiers",
               "description": "Gets or sets the virtual-key used to modify another keypress for a keyboard shortcut (accelerator). A keyboard shortcut is invoked when the modifier keys associated with the shortcut are pressed and then the non-modifier key is pressed at the same time. For example, Ctrl+C for copy and Ctrl+S for save.\n\nType: `VirtualKeyModifiers`",
               "value": {
-                "type": "VirtualKeyModifiers"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VirtualKeyModifiersName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator.modifiers"
             },
@@ -6523,7 +6817,10 @@
               "name": "itemsJustification",
               "description": "Gets or sets a value that indicates how items are aligned on the horizontal axis. An enumeration value that indicates how items are aligned. The default is Start.\n\nType: `LinedFlowLayoutItemsJustification`",
               "value": {
-                "type": "LinedFlowLayoutItemsJustification"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LinedFlowLayoutItemsJustificationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout.itemsjustification"
             },
@@ -6531,7 +6828,10 @@
               "name": "itemsStretch",
               "description": "Gets or sets a value that indicates how items are sized to fill the available space. An enumeration value that indicates how items are sized to fill the available space. The default is None.\n\nType: `LinedFlowLayoutItemsStretch`",
               "value": {
-                "type": "LinedFlowLayoutItemsStretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LinedFlowLayoutItemsStretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout.itemsstretch"
             },
@@ -6621,7 +6921,10 @@
               "name": "selectionMode",
               "description": "Gets or sets the selection behavior for the ListBox control. One of the SelectionMode values.\n\nType: `SelectionMode`",
               "value": {
-                "type": "SelectionMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SelectionModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listbox.selectionmode"
             },
@@ -6708,7 +7011,10 @@
               "name": "selectionMode",
               "description": "Gets or sets the selection mode of the picker.\n\nType: `ListPickerFlyoutSelectionMode`",
               "value": {
-                "type": "ListPickerFlyoutSelectionMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ListPickerFlyoutSelectionModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout.selectionmode"
             },
@@ -6800,7 +7106,10 @@
               "name": "incrementalLoadingTrigger",
               "description": "Gets or sets a value that indicates the conditions for prefetch operations by the ListViewBase class. An enumeration value that indicates the conditions that trigger prefetch operations. The default is Edge.\n\nType: `IncrementalLoadingTrigger`",
               "value": {
-                "type": "IncrementalLoadingTrigger"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "IncrementalLoadingTriggerName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.incrementalloadingtrigger"
             },
@@ -6848,7 +7157,10 @@
               "name": "reorderMode",
               "description": "Gets or sets the reorder behavior for a ListViewBase instance. When Enabled, unsorted and ungrouped lists can be reordered by user manipulation. One of the ListViewReorderMode enumeration values. The default is Disabled.\n\nType: `ListViewReorderMode`",
               "value": {
-                "type": "ListViewReorderMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ListViewReorderModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.reordermode"
             },
@@ -6856,7 +7168,10 @@
               "name": "selectionMode",
               "description": "Gets or sets the selection behavior for a ListViewBase instance. One of the ListViewSelectionMode enumeration values. The default is Single selection.\n\nType: `ListViewSelectionMode`",
               "value": {
-                "type": "ListViewSelectionMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ListViewSelectionModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.selectionmode"
             },
@@ -7072,7 +7387,10 @@
               "name": "checkMode",
               "description": "Gets or sets the style of checkbox shown for selecting an item. A value of the enumeration that specifies the style of checkbox to show. The default is Inline.\n\nType: `ListViewItemPresenterCheckMode`",
               "value": {
-                "type": "ListViewItemPresenterCheckMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ListViewItemPresenterCheckModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkmode"
             },
@@ -7152,7 +7470,10 @@
               "name": "listViewItemPresenterHorizontalContentAlignment",
               "description": "> [!NOTE] > ListViewItemPresenterHorizontalContentAlignment may be altered or unavailable for releases after Windows 10. Instead, use ContentPresenter.HorizontalContentAlignment. Gets or sets the horizontal alignment of the content being presented.\n\nType: `HorizontalAlignment`",
               "value": {
-                "type": "HorizontalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "HorizontalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.listviewitempresenterhorizontalcontentalignment"
             },
@@ -7168,7 +7489,10 @@
               "name": "listViewItemPresenterVerticalContentAlignment",
               "description": "> [!NOTE] > ListViewItemPresenterVerticalContentAlignment may be altered or unavailable for releases after Windows 10. Instead, use ContentPresenter.VerticalContentAlignment. Gets or sets the vertical alignment of the content being presented.\n\nType: `VerticalAlignment`",
               "value": {
-                "type": "VerticalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VerticalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.listviewitempresenterverticalcontentalignment"
             },
@@ -7384,7 +7708,10 @@
               "name": "selectionIndicatorMode",
               "description": "Gets or sets a value that indicates how the selection indicator is shown on a list view item.\n\nType: `ListViewItemPresenterSelectionIndicatorMode`",
               "value": {
-                "type": "ListViewItemPresenterSelectionIndicatorMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ListViewItemPresenterSelectionIndicatorModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectionindicatormode"
             },
@@ -7588,7 +7915,10 @@
               "name": "stretch",
               "description": "Gets or sets a value that describes how an MediaPlayerElement should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source visual media is rendered. The default value is Uniform.\n\nType: `Stretch`",
               "value": {
-                "type": "Stretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "StretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement.stretch"
             },
@@ -7622,7 +7952,10 @@
               "name": "stretch",
               "description": "Gets or sets a value that describes how an MediaPlayerPresenter should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source visual media is rendered. The default value is Uniform.\n\nType: `Stretch`",
               "value": {
-                "type": "Stretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "StretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerpresenter.stretch"
             }
@@ -7638,7 +7971,10 @@
               "name": "fastPlayFallbackBehaviour",
               "description": "Gets or sets a value that specifies how the fast-forward/fast-rewind buttons behave.\n\nType: `FastPlayFallbackBehaviour`",
               "value": {
-                "type": "FastPlayFallbackBehaviour"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FastPlayFallbackBehaviourName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.fastplayfallbackbehaviour"
             },
@@ -7999,7 +8335,10 @@
               "name": "kind",
               "description": "Gets or sets the kind of backdrop that the MicaBackdrop displays.\n\nType: `MicaKind`",
               "value": {
-                "type": "MicaKind"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "MicaKindName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.micabackdrop.kind"
             }
@@ -8121,7 +8460,10 @@
               "name": "isBackButtonVisible",
               "description": "Gets or sets a value that indicates whether the back button is visible or not. Default value is \"Auto\", which indicates that button visibility depends on the DisplayMode setting of the NavigationView.\n\nType: `NavigationViewBackButtonVisible`",
               "value": {
-                "type": "NavigationViewBackButtonVisible"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "NavigationViewBackButtonVisibleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.isbackbuttonvisible"
             },
@@ -8219,7 +8561,10 @@
               "name": "overflowLabelMode",
               "description": "Gets or sets a value that indicates what text label is shown for the overflow menu. A value of the enumeration that indicates what text label is shown for the overflow menu. The default is MoreLabel, which shows the text \"More\".\n\nType: `NavigationViewOverflowLabelMode`",
               "value": {
-                "type": "NavigationViewOverflowLabelMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "NavigationViewOverflowLabelModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.overflowlabelmode"
             },
@@ -8232,7 +8577,10 @@
               "name": "paneDisplayMode",
               "description": "Gets or sets a value that indicates how and where the NavigationView pane is shown. A value of the enumeration that indicates how and where the NavigationView pane is shown. The default is Auto.\n\nType: `NavigationViewPaneDisplayMode`",
               "value": {
-                "type": "NavigationViewPaneDisplayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "NavigationViewPaneDisplayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.panedisplaymode"
             },
@@ -8274,7 +8622,10 @@
               "name": "selectionFollowsFocus",
               "description": "Gets or sets a value that indicates whether item selection changes when keyboard focus changes. A value of the enumeration that indicates whether selection changes when keyboard focus changes. The default is Disabled.\n\nType: `NavigationViewSelectionFollowsFocus`",
               "value": {
-                "type": "NavigationViewSelectionFollowsFocus"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "NavigationViewSelectionFollowsFocusName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.selectionfollowsfocus"
             },
@@ -8282,7 +8633,10 @@
               "name": "shoulderNavigationEnabled",
               "description": "Gets or sets a value that indicates when game controller bumpers can be used to navigate the top-level navigation items in a NavigationView.\n\nType: `NavigationViewShoulderNavigationEnabled`",
               "value": {
-                "type": "NavigationViewShoulderNavigationEnabled"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "NavigationViewShoulderNavigationEnabledName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.shouldernavigationenabled"
             },
@@ -8564,7 +8918,10 @@
               "name": "spinButtonPlacementMode",
               "description": "Gets or sets a value that indicates the placement of buttons used to increment or decrement the Value property.\n\nType: `NumberBoxSpinButtonPlacementMode`",
               "value": {
-                "type": "NumberBoxSpinButtonPlacementMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "NumberBoxSpinButtonPlacementModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.spinbuttonplacementmode"
             },
@@ -8580,7 +8937,10 @@
               "name": "textReadingOrder",
               "description": "Gets or sets a value that indicates how the reading order is determined for the NumberBox.\n\nType: `TextReadingOrder`",
               "value": {
-                "type": "TextReadingOrder"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextReadingOrderName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.textreadingorder"
             },
@@ -8588,7 +8948,10 @@
               "name": "validationMode",
               "description": "Gets or sets the input validation behavior to invoke when invalid input is entered.\n\nType: `NumberBoxValidationMode`",
               "value": {
-                "type": "NumberBoxValidationMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "NumberBoxValidationModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.validationmode"
             },
@@ -8703,7 +9066,10 @@
               "name": "navigationCacheMode",
               "description": "Gets or sets the navigation mode that indicates whether this Page is cached, and the period of time that the cache entry should persist. A value of the enumeration. The default is Disabled.\n\nType: `NavigationCacheMode`",
               "value": {
-                "type": "NavigationCacheMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "NavigationCacheModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page.navigationcachemode"
             },
@@ -8745,7 +9111,10 @@
               "name": "edge",
               "description": "Gets or sets the edge position to use for the transition. A value of the enumeration. The default is Left.\n\nType: `EdgeTransitionLocation`",
               "value": {
-                "type": "EdgeTransitionLocation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "EdgeTransitionLocationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.panethemetransition.edge"
             }
@@ -8798,7 +9167,10 @@
               "name": "horizontalSourceOffsetKind",
               "description": "Gets or sets a value that determines how the horizontal source offset values of a ParallaxView are interpreted.\n\nType: `ParallaxSourceOffsetKind`",
               "value": {
-                "type": "ParallaxSourceOffsetKind"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ParallaxSourceOffsetKindName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.horizontalsourceoffsetkind"
             },
@@ -8867,7 +9239,10 @@
               "name": "verticalSourceOffsetKind",
               "description": "Gets or sets a value that determines how the vertical source offset values of a ParallaxView are interpreted.\n\nType: `ParallaxSourceOffsetKind`",
               "value": {
-                "type": "ParallaxSourceOffsetKind"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ParallaxSourceOffsetKindName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.verticalsourceoffsetkind"
             },
@@ -8955,7 +9330,10 @@
               "name": "passwordRevealMode",
               "description": "Gets or sets a value that specifies whether the password is always, never, or optionally obscured.\n\nType: `PasswordRevealMode`",
               "value": {
-                "type": "PasswordRevealMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PasswordRevealModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox.passwordrevealmode"
             },
@@ -8989,7 +9367,10 @@
               "name": "textReadingOrder",
               "description": "Gets or sets a value that indicates how the reading order is determined for the PasswordBox.\n\nType: `TextReadingOrder`",
               "value": {
-                "type": "TextReadingOrder"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextReadingOrderName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox.textreadingorder"
             },
@@ -9082,7 +9463,10 @@
               "name": "fillRule",
               "description": "Gets or sets a value that determines how the intersecting areas contained in the PathGeometry are combined. A FillRule enumeration value that indicates how the intersecting areas of the PathGeometry are combined. The default is EvenOdd.\n\nType: `FillRule`",
               "value": {
-                "type": "FillRule"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FillRuleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry.fillrule"
             }
@@ -9302,7 +9686,10 @@
               "name": "nextButtonVisibility",
               "description": "Gets or sets the display state of the Next button. The display state of the Previous button. The default value is 'Collapsed'.\n\nType: `PipsPagerButtonVisibility`",
               "value": {
-                "type": "PipsPagerButtonVisibility"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PipsPagerButtonVisibilityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager.nextbuttonvisibility"
             },
@@ -9326,7 +9713,10 @@
               "name": "orientation",
               "description": "Gets or sets the orientation of the pips and navigation buttons in the PipsPager.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager.orientation"
             },
@@ -9342,7 +9732,10 @@
               "name": "previousButtonVisibility",
               "description": "Gets or sets the display state of the Previous button. The display state of the Previous button. The default value is 'Collapsed'.\n\nType: `PipsPagerButtonVisibility`",
               "value": {
-                "type": "PipsPagerButtonVisibility"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PipsPagerButtonVisibilityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager.previousbuttonvisibility"
             },
@@ -9366,7 +9759,10 @@
               "name": "wrapMode",
               "description": "Gets or sets a value that determines whether the `PipsPager` control wraps between the first and last items. A value of the enumeration that determines whether the `PipsPager` control wraps between the first and last items. The default is `None`.\n\nType: `PipsPagerWrapMode`",
               "value": {
-                "type": "PipsPagerWrapMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PipsPagerWrapModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager.wrapmode"
             },
@@ -9387,7 +9783,10 @@
               "name": "headerFocusVisualPlacement",
               "description": "Gets or sets a value that specifies the style of focus visual used for pivot header items.\n\nType: `PivotHeaderFocusVisualPlacement`",
               "value": {
-                "type": "PivotHeaderFocusVisualPlacement"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PivotHeaderFocusVisualPlacementName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot.headerfocusvisualplacement"
             },
@@ -9793,7 +10192,10 @@
               "name": "fillRule",
               "description": "Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration. The default is EvenOdd.\n\nType: `FillRule`",
               "value": {
-                "type": "FillRule"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FillRuleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polygon.fillrule"
             },
@@ -9817,7 +10219,10 @@
               "name": "fillRule",
               "description": "Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration that specifies the fill behavior. The default is EvenOdd.\n\nType: `FillRule`",
               "value": {
-                "type": "FillRule"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FillRuleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline.fillrule"
             },
@@ -9926,7 +10331,10 @@
               "name": "desiredPlacement",
               "description": "Gets or sets the preferred placement to be used for the popup, in relation to its placement target. A value of the enumeration that indicates the preferred placement to be used for the popup, in relation to its placement target.\n\nType: `PopupPlacementMode`",
               "value": {
-                "type": "PopupPlacementMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PopupPlacementModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup.desiredplacement"
             },
@@ -9958,7 +10366,10 @@
               "name": "lightDismissOverlayMode",
               "description": "Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.\n\nType: `LightDismissOverlayMode`",
               "value": {
-                "type": "LightDismissOverlayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LightDismissOverlayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup.lightdismissoverlaymode"
             },
@@ -10200,7 +10611,10 @@
               "name": "interpolationSpace",
               "description": "Gets or sets the color space used to interpolate the gradient's colors. The color space used to interpolate the gradient's colors. The default is Auto.\n\nType: `CompositionColorSpace`",
               "value": {
-                "type": "CompositionColorSpace"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CompositionColorSpaceName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush.interpolationspace"
             },
@@ -10208,7 +10622,10 @@
               "name": "mappingMode",
               "description": "Gets or sets whether the gradient brush's positioning coordinates are absolute or relative to the output area. Defines whether Center, RadiusX, RadiusY, and GradientOrigin represent relative coordinates in the range 0 to 1 or absolute coordinates. The default is RelativeToBoundingBox.\n\nType: `BrushMappingMode`",
               "value": {
-                "type": "BrushMappingMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "BrushMappingModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush.mappingmode"
             },
@@ -10232,7 +10649,10 @@
               "name": "spreadMethod",
               "description": "Gets or sets the type of spread method that specifies how to draw a gradient that starts or ends inside the bounds of the object to be painted.\n\nType: `GradientSpreadMethod`",
               "value": {
-                "type": "GradientSpreadMethod"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "GradientSpreadMethodName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush.spreadmethod"
             }
@@ -10642,7 +11062,10 @@
               "name": "pullDirection",
               "description": "Gets or sets a value that specifies the direction to pull to initiate a refresh.\n\nType: `RefreshPullDirection`",
               "value": {
-                "type": "RefreshPullDirection"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "RefreshPullDirectionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshcontainer.pulldirection"
             },
@@ -10673,7 +11096,10 @@
               "name": "orientation",
               "description": "Gets or sets a value that indicates the orientation of the visualizer. A value of the enumeration that indicates the orientation of the visualizer. The default is Top.\n\nAlso settable in CSS as `flex-direction`\n\nType: `RefreshVisualizerOrientation`",
               "value": {
-                "type": "RefreshVisualizerOrientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "RefreshVisualizerOrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer.orientation"
             },
@@ -10699,7 +11125,10 @@
               "name": "backgroundSizing",
               "description": "Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.\n\nType: `BackgroundSizing`",
               "value": {
-                "type": "BackgroundSizing"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "BackgroundSizingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.relativepanel.backgroundsizing"
             },
@@ -10848,7 +11277,10 @@
               "name": "characterCasing",
               "description": "Gets or sets a value that indicates how the control modifies the case of characters as they are typed. A value of the enumeration that indicates how the control modifies the case of characters as they are typed. The default is Normal, which indicates that the charcters are not changed.\n\nType: `CharacterCasing`",
               "value": {
-                "type": "CharacterCasing"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CharacterCasingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.charactercasing"
             },
@@ -10856,7 +11288,10 @@
               "name": "clipboardCopyFormat",
               "description": "Gets or sets a value that specifies whether text is copied with all formats, or as plain text only. An enumeration value that specifies whether text is copied with all formats, or as plain text only. The default is AllFormats.\n\nType: `RichEditClipboardFormat`",
               "value": {
-                "type": "RichEditClipboardFormat"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "RichEditClipboardFormatName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.clipboardcopyformat"
             },
@@ -10872,7 +11307,10 @@
               "name": "desiredCandidateWindowAlignment",
               "description": "Gets or sets a value that indicates the preferred alignment of the Input Method Editor (IME).\n\nType: `CandidateWindowAlignment`",
               "value": {
-                "type": "CandidateWindowAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CandidateWindowAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.desiredcandidatewindowalignment"
             },
@@ -10880,7 +11318,10 @@
               "name": "disabledFormattingAccelerators",
               "description": "Gets or sets a value that indicates which keyboard shortcuts for formatting are disabled. A value that indicates which keyboard shortcuts for formatting are disabled. The default is None.\n\nType: `DisabledFormattingAccelerators`",
               "value": {
-                "type": "DisabledFormattingAccelerators"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "DisabledFormattingAcceleratorsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.disabledformattingaccelerators"
             },
@@ -10904,7 +11345,10 @@
               "name": "horizontalTextAlignment",
               "description": "Gets or sets a value that indicates how text is aligned in the RichEditBox. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.\n\nType: `TextAlignment`",
               "value": {
-                "type": "TextAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.horizontaltextalignment"
             },
@@ -10991,7 +11435,10 @@
               "name": "textAlignment",
               "description": "Gets or sets a value that indicates how text is aligned in the RichEditBox. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.\n\nAlso settable in CSS as `text-align`\n\nType: `TextAlignment`",
               "value": {
-                "type": "TextAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.textalignment"
             },
@@ -10999,7 +11446,10 @@
               "name": "textReadingOrder",
               "description": "Gets or sets a value that indicates how the reading order is determined for the RichEditBox.\n\nType: `TextReadingOrder`",
               "value": {
-                "type": "TextReadingOrder"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextReadingOrderName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.textreadingorder"
             },
@@ -11007,7 +11457,10 @@
               "name": "textWrapping",
               "description": "Gets or sets a value that indicates how text wrapping occurs if a line of text extends beyond the available width of the RichEditBox. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
               "value": {
-                "type": "TextWrapping"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextWrappingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.textwrapping"
             },
@@ -11113,7 +11566,10 @@
               "name": "fontStretch",
               "description": "Gets or sets the font stretch for the text content in this element. The requested font stretch, as a FontStretch constant. The default is Normal.\n\nType: `FontStretch`",
               "value": {
-                "type": "FontStretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontstretch"
             },
@@ -11121,7 +11577,10 @@
               "name": "fontStyle",
               "description": "Gets or sets the font style for the content in this element. The requested font style, which is a FontStyle enumeration named constant. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontstyle"
             },
@@ -11145,7 +11604,10 @@
               "name": "horizontalTextAlignment",
               "description": "Gets or sets a value that indicates how text is aligned in the RichTextBlock. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.\n\nType: `TextAlignment`",
               "value": {
-                "type": "TextAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.horizontaltextalignment"
             },
@@ -11185,7 +11647,10 @@
               "name": "lineStackingStrategy",
               "description": "Gets or sets a value that indicates how a line box is determined for each line of text in the RichTextBlock.\n\nType: `LineStackingStrategy`",
               "value": {
-                "type": "LineStackingStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LineStackingStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.linestackingstrategy"
             },
@@ -11201,7 +11666,10 @@
               "name": "opticalMarginAlignment",
               "description": "Get or sets a value that indicates how the font is modified to align with fonts of different sizes.\n\nType: `OpticalMarginAlignment`",
               "value": {
-                "type": "OpticalMarginAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OpticalMarginAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.opticalmarginalignment"
             },
@@ -11232,7 +11700,10 @@
               "name": "textAlignment",
               "description": "Gets or sets a value that indicates how the text is aligned in the RichTextBlock. One of the TextAlignment enumeration values that indicates how text is aligned. The default is Left.\n\nAlso settable in CSS as `text-align`\n\nType: `TextAlignment`",
               "value": {
-                "type": "TextAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textalignment"
             },
@@ -11240,7 +11711,10 @@
               "name": "textDecorations",
               "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration-line`\n\nType: `TextDecorations`",
               "value": {
-                "type": "TextDecorations"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextDecorationsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textdecorations"
             },
@@ -11256,7 +11730,10 @@
               "name": "textLineBounds",
               "description": "Gets or sets a value that indicates how the line box height is determined for each line of text in the RichTextBlock.\n\nType: `TextLineBounds`",
               "value": {
-                "type": "TextLineBounds"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextLineBoundsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textlinebounds"
             },
@@ -11264,7 +11741,10 @@
               "name": "textReadingOrder",
               "description": "Gets or sets a value that indicates how the reading order is determined for the RichTextBlock.\n\nType: `TextReadingOrder`",
               "value": {
-                "type": "TextReadingOrder"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextReadingOrderName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textreadingorder"
             },
@@ -11272,7 +11752,10 @@
               "name": "textTrimming",
               "description": "Gets or sets a value that indicates how text is trimmed when it overflows the content area. One of the TextTrimming enumeration values that specifies the text trimming behavior to use. The default is None.\n\nAlso settable in CSS as `text-overflow`\n\nType: `TextTrimming`",
               "value": {
-                "type": "TextTrimming"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextTrimmingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.texttrimming"
             },
@@ -11280,7 +11763,10 @@
               "name": "textWrapping",
               "description": "Gets or sets a value that indicates whether text wrapping occurs if a line of text extends beyond the available width of the RichTextBlock. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
               "value": {
-                "type": "TextWrapping"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextWrappingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textwrapping"
             },
@@ -11377,7 +11863,10 @@
               "name": "flowDirection",
               "description": "Gets or sets the direction that text and other user interface elements flow within the Run element that controls their layout. The direction that text and other user interface (UI) elements flow within the Run element. The default value is LeftToRight.\n\nType: `FlowDirection`",
               "value": {
-                "type": "FlowDirection"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FlowDirectionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.run.flowdirection"
             },
@@ -11441,7 +11930,10 @@
               "name": "indicatorMode",
               "description": "Gets or sets a value that results in different input indicator modes for the ScrollBar. A value of the enumeration. The default is None.\n\nType: `ScrollingIndicatorMode`",
               "value": {
-                "type": "ScrollingIndicatorMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingIndicatorModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar.indicatormode"
             },
@@ -11449,7 +11941,10 @@
               "name": "orientation",
               "description": "Gets or sets a value that indicates whether the ScrollBar is displayed horizontally or vertically. An Orientation enumeration value that defines whether the ScrollBar is displayed horizontally or vertically. The default is Horizontal. Specific control templates might change this value, which would cause the templated value to be the apparent runtime default.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar.orientation"
             },
@@ -11539,7 +12034,10 @@
               "name": "contentOrientation",
               "description": "Gets or sets a value that indicates whether the content prefers to scroll horizontally or vertically. The preferred scroll direction of the content. The default is Vertical.\n\nType: `ScrollingContentOrientation`",
               "value": {
-                "type": "ScrollingContentOrientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingContentOrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.contentorientation"
             },
@@ -11555,7 +12053,10 @@
               "name": "horizontalScrollChainMode",
               "description": "Gets or sets a value that indicates whether or not to chain horizontal scrolling to an outer scroll control. A value of the enumeration. The default is Auto.\n\nType: `ScrollingChainMode`",
               "value": {
-                "type": "ScrollingChainMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingChainModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.horizontalscrollchainmode"
             },
@@ -11568,7 +12069,10 @@
               "name": "horizontalScrollMode",
               "description": "Gets or sets a value that determines how manipulation input influences scrolling behavior on the horizontal axis. A value of the enumeration. The default is Auto.\n\nType: `ScrollingScrollMode`",
               "value": {
-                "type": "ScrollingScrollMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingScrollModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.horizontalscrollmode"
             },
@@ -11576,7 +12080,10 @@
               "name": "horizontalScrollRailMode",
               "description": "Gets or sets a value that indicates whether the scroll rail is enabled for the horizontal axis.\n\nType: `ScrollingRailMode`",
               "value": {
-                "type": "ScrollingRailMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingRailModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.horizontalscrollrailmode"
             },
@@ -11584,7 +12091,10 @@
               "name": "ignoredInputKinds",
               "description": "Gets or sets the kinds of user input the control does not respond to. A combination of enumeration member values that indicates the kinds of user input the control does not respond to. The default is None.\n\nType: `ScrollingInputKinds`",
               "value": {
-                "type": "ScrollingInputKinds"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingInputKindsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.ignoredinputkinds"
             },
@@ -11616,7 +12126,10 @@
               "name": "verticalScrollChainMode",
               "description": "Gets or sets a value that indicates whether or not to chain vertical scrolling to an outer scroll control. A value of the enumeration. The default is Auto.\n\nType: `ScrollingChainMode`",
               "value": {
-                "type": "ScrollingChainMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingChainModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.verticalscrollchainmode"
             },
@@ -11629,7 +12142,10 @@
               "name": "verticalScrollMode",
               "description": "Gets or sets a value that determines how manipulation input influences scrolling behavior on the vertical axis. A value of the enumeration. The default is Auto.\n\nType: `ScrollingScrollMode`",
               "value": {
-                "type": "ScrollingScrollMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingScrollModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.verticalscrollmode"
             },
@@ -11637,7 +12153,10 @@
               "name": "verticalScrollRailMode",
               "description": "Gets or sets a value that indicates whether the scroll rail is enabled for the vertical axis.\n\nType: `ScrollingRailMode`",
               "value": {
-                "type": "ScrollingRailMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingRailModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.verticalscrollrailmode"
             },
@@ -11645,7 +12164,10 @@
               "name": "zoomChainMode",
               "description": "Gets or sets a value that indicates whether or not to chain zooming to an outer scroll control. A value of the enumeration. The default is Auto.\n\nType: `ScrollingChainMode`",
               "value": {
-                "type": "ScrollingChainMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingChainModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.zoomchainmode"
             },
@@ -11653,7 +12175,10 @@
               "name": "zoomMode",
               "description": "Gets or sets a value that indicates the ability to zoom in and out by means of user input.\n\nType: `ScrollingZoomMode`",
               "value": {
-                "type": "ScrollingZoomMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingZoomModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.zoommode"
             },
@@ -11719,7 +12244,10 @@
               "name": "contentOrientation",
               "description": "Gets or sets a value that indicates whether the content prefers to scroll horizontally or vertically. The preferred scroll direction of the content. The default is Vertical.\n\nType: `ScrollingContentOrientation`",
               "value": {
-                "type": "ScrollingContentOrientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingContentOrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.contentorientation"
             },
@@ -11735,7 +12263,10 @@
               "name": "horizontalScrollBarVisibility",
               "description": "Gets or sets a value that indicates whether a scroll controller should be displayed for the horizontal scrolling direction.\n\nType: `ScrollingScrollBarVisibility`",
               "value": {
-                "type": "ScrollingScrollBarVisibility"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingScrollBarVisibilityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.horizontalscrollbarvisibility"
             },
@@ -11743,7 +12274,10 @@
               "name": "horizontalScrollChainMode",
               "description": "Gets or sets a value that indicates whether or not to chain horizontal scrolling to an outer scroll control. A value of the enumeration. The default is Auto.\n\nType: `ScrollingChainMode`",
               "value": {
-                "type": "ScrollingChainMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingChainModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.horizontalscrollchainmode"
             },
@@ -11751,7 +12285,10 @@
               "name": "horizontalScrollMode",
               "description": "Gets or sets a value that determines how manipulation input influences scrolling behavior on the horizontal axis. A value of the enumeration. The default is Auto.\n\nType: `ScrollingScrollMode`",
               "value": {
-                "type": "ScrollingScrollMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingScrollModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.horizontalscrollmode"
             },
@@ -11759,7 +12296,10 @@
               "name": "horizontalScrollRailMode",
               "description": "Gets or sets a value that indicates whether the scroll rail is enabled for the horizontal axis.\n\nType: `ScrollingRailMode`",
               "value": {
-                "type": "ScrollingRailMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingRailModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.horizontalscrollrailmode"
             },
@@ -11767,7 +12307,10 @@
               "name": "ignoredInputKinds",
               "description": "Gets or sets the kinds of user input the control does not respond to. A combination of enumeration member values that indicates the kinds of user input the control does not respond to. The default is None.\n\nType: `ScrollingInputKinds`",
               "value": {
-                "type": "ScrollingInputKinds"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingInputKindsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.ignoredinputkinds"
             },
@@ -11799,7 +12342,10 @@
               "name": "verticalScrollBarVisibility",
               "description": "Gets or sets a value that indicates whether a scroll controller should be displayed for the vertical scrolling direction.\n\nType: `ScrollingScrollBarVisibility`",
               "value": {
-                "type": "ScrollingScrollBarVisibility"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingScrollBarVisibilityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.verticalscrollbarvisibility"
             },
@@ -11807,7 +12353,10 @@
               "name": "verticalScrollChainMode",
               "description": "Gets or sets a value that indicates whether or not to chain vertical scrolling to an outer scroll control. A value of the enumeration. The default is Auto.\n\nType: `ScrollingChainMode`",
               "value": {
-                "type": "ScrollingChainMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingChainModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.verticalscrollchainmode"
             },
@@ -11815,7 +12364,10 @@
               "name": "verticalScrollMode",
               "description": "Gets or sets a value that determines how manipulation input influences scrolling behavior on the horizontal axis. A value of the enumeration. The default is Auto.\n\nType: `ScrollingScrollMode`",
               "value": {
-                "type": "ScrollingScrollMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingScrollModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.verticalscrollmode"
             },
@@ -11823,7 +12375,10 @@
               "name": "verticalScrollRailMode",
               "description": "Gets or sets a value that indicates whether the scroll rail is enabled for the vertical axis.\n\nType: `ScrollingRailMode`",
               "value": {
-                "type": "ScrollingRailMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingRailModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.verticalscrollrailmode"
             },
@@ -11831,7 +12386,10 @@
               "name": "zoomChainMode",
               "description": "Gets or sets a value that indicates whether or not to chain zooming to an outer scroll control. A value of the enumeration. The default is Auto.\n\nType: `ScrollingChainMode`",
               "value": {
-                "type": "ScrollingChainMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingChainModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.zoomchainmode"
             },
@@ -11839,7 +12397,10 @@
               "name": "zoomMode",
               "description": "Gets or sets a value that indicates the ability to zoom in and out by means of user input.\n\nType: `ScrollingZoomMode`",
               "value": {
-                "type": "ScrollingZoomMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollingZoomModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.zoommode"
             },
@@ -11924,7 +12485,10 @@
               "name": "horizontalScrollBarVisibility",
               "description": "Gets or sets a value that indicates whether a horizontal ScrollBar should be displayed. A ScrollBarVisibility value that indicates whether a horizontal ScrollBar should be displayed. The default value is Disabled.\n\nType: `ScrollBarVisibility`",
               "value": {
-                "type": "ScrollBarVisibility"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollBarVisibilityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.horizontalscrollbarvisibility"
             },
@@ -11932,7 +12496,10 @@
               "name": "horizontalScrollMode",
               "description": "Gets or sets a value that determines how manipulation input influences scrolling behavior on the horizontal axis. A value of the enumeration. The typical default (as set through the default template, not class initialization) is Enabled.\n\nType: `ScrollMode`",
               "value": {
-                "type": "ScrollMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.horizontalscrollmode"
             },
@@ -11940,7 +12507,10 @@
               "name": "horizontalSnapPointsAlignment",
               "description": "Gets or sets a value that indicates how the existing snap points are horizontally aligned versus the initial viewport. A value of the enumeration.\n\nType: `SnapPointsAlignment`",
               "value": {
-                "type": "SnapPointsAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SnapPointsAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.horizontalsnappointsalignment"
             },
@@ -11948,7 +12518,10 @@
               "name": "horizontalSnapPointsType",
               "description": "Gets or sets a value that declares how manipulation behavior reacts to the snap points along the horizontal axis. A value of the enumeration. The default is None but might be set through a control template.\n\nType: `SnapPointsType`",
               "value": {
-                "type": "SnapPointsType"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SnapPointsTypeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.horizontalsnappointstype"
             },
@@ -12067,7 +12640,10 @@
               "name": "verticalScrollBarVisibility",
               "description": "Gets or sets a value that indicates whether a vertical ScrollBar should be displayed. A ScrollBarVisibility value that indicates whether a vertical ScrollBar should be displayed. The default value is Visible.\n\nType: `ScrollBarVisibility`",
               "value": {
-                "type": "ScrollBarVisibility"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollBarVisibilityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.verticalscrollbarvisibility"
             },
@@ -12075,7 +12651,10 @@
               "name": "verticalScrollMode",
               "description": "Gets or sets a value that determines how manipulation input influences scrolling behavior on the vertical axis. A value of the enumeration. The typical default (as set through the default template, not class initialization) is Enabled.\n\nType: `ScrollMode`",
               "value": {
-                "type": "ScrollMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.verticalscrollmode"
             },
@@ -12083,7 +12662,10 @@
               "name": "verticalSnapPointsAlignment",
               "description": "Gets or sets a value that indicates how the existing snap points are vertically aligned versus the initial viewport. A value of the enumeration.\n\nType: `SnapPointsAlignment`",
               "value": {
-                "type": "SnapPointsAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SnapPointsAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.verticalsnappointsalignment"
             },
@@ -12091,7 +12673,10 @@
               "name": "verticalSnapPointsType",
               "description": "Gets or sets a value that declares how manipulation behavior reacts to the snap points along the vertical axis. A value of the enumeration. The default is None but might be set through a control template.\n\nType: `SnapPointsType`",
               "value": {
-                "type": "SnapPointsType"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SnapPointsTypeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.verticalsnappointstype"
             },
@@ -12099,7 +12684,10 @@
               "name": "zoomMode",
               "description": "Gets or sets a value that indicates whether zoom behavior in the ScrollViewer content is enabled. A value of the enumeration.\n\nType: `ZoomMode`",
               "value": {
-                "type": "ZoomMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ZoomModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.zoommode"
             },
@@ -12107,7 +12695,10 @@
               "name": "zoomSnapPointsType",
               "description": "Gets or sets a value that indicates how zoom snap points are processed for interaction input. A value of the enumeration.\n\nType: `SnapPointsType`",
               "value": {
-                "type": "SnapPointsType"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SnapPointsTypeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.zoomsnappointstype"
             },
@@ -12344,7 +12935,10 @@
               "name": "stretch",
               "description": "Gets or sets a Stretch enumeration value that describes how the shape fills its allocated space. One of the Stretch enumeration values. The default value at run time depends on the type of Shape.\n\nType: `Stretch`",
               "value": {
-                "type": "Stretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "StretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.stretch"
             },
@@ -12368,7 +12962,10 @@
               "name": "strokeDashCap",
               "description": "Gets or sets a PenLineCap enumeration value that specifies how the ends of a dash are drawn. One of the enumeration values for PenLineCap. The default is Flat.\n\nType: `PenLineCap`",
               "value": {
-                "type": "PenLineCap"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PenLineCapName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokedashcap"
             },
@@ -12384,7 +12981,10 @@
               "name": "strokeEndLineCap",
               "description": "Gets or sets a PenLineCap enumeration value that describes the Shape at the end of a line. One of the enumeration values for PenLineCap. The default is Flat.\n\nType: `PenLineCap`",
               "value": {
-                "type": "PenLineCap"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PenLineCapName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokeendlinecap"
             },
@@ -12392,7 +12992,10 @@
               "name": "strokeLineJoin",
               "description": "Gets or sets a PenLineJoin enumeration value that specifies the type of join that is used at the vertices of a Shape.\n\nType: `PenLineJoin`",
               "value": {
-                "type": "PenLineJoin"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PenLineJoinName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokelinejoin"
             },
@@ -12408,7 +13011,10 @@
               "name": "strokeStartLineCap",
               "description": "Gets or sets a PenLineCap enumeration value that describes the Shape at the start of a Stroke.\n\nType: `PenLineCap`",
               "value": {
-                "type": "PenLineCap"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PenLineCapName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokestartlinecap"
             },
@@ -12479,7 +13085,10 @@
               "name": "effect",
               "description": "Gets or sets the type of animation effect to play during the slide transition.\n\nType: `SlideNavigationTransitionEffect`",
               "value": {
-                "type": "SlideNavigationTransitionEffect"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SlideNavigationTransitionEffectName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.slidenavigationtransitioninfo.effect"
             }
@@ -12535,7 +13144,10 @@
               "name": "orientation",
               "description": "Gets or sets the orientation of a Slider. One of the Orientation values. The default is Horizontal.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.orientation"
             },
@@ -12543,7 +13155,10 @@
               "name": "snapsTo",
               "description": "Gets or sets a value that indicates how the Slider conforms the thumb position to its steps or tick marks. An enumeration value that specifies whether the Slider snaps to steps or tick marks. The default is StepValues.\n\nType: `SliderSnapsTo`",
               "value": {
-                "type": "SliderSnapsTo"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SliderSnapsToName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.snapsto"
             },
@@ -12572,7 +13187,10 @@
               "name": "tickPlacement",
               "description": "Gets or sets a value that indicates where to draw tick marks in relation to the track. An enumeration value that specifies where to draw tick marks in relation to the track. The default is Inline.\n\nType: `TickPlacement`",
               "value": {
-                "type": "TickPlacement"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TickPlacementName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.tickplacement"
             }
@@ -12728,7 +13346,10 @@
               "name": "contentTranslationDirection",
               "description": "Gets or sets a value that determines which direction the content should translate when the animation runs. A value of the enumeration.\n\nType: `AnimationDirection`",
               "value": {
-                "type": "AnimationDirection"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AnimationDirectionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.contenttranslationdirection"
             },
@@ -12836,7 +13457,10 @@
               "name": "contentTranslationDirection",
               "description": "Gets or sets a value that determines which direction the content should translate when the animation runs. A value of the enumeration.\n\nType: `AnimationDirection`",
               "value": {
-                "type": "AnimationDirection"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AnimationDirectionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitopenthemeanimation.contenttranslationdirection"
             },
@@ -12902,7 +13526,10 @@
               "name": "displayMode",
               "description": "Gets of sets a value that specifies how the pane and content areas of a SplitView are shown.\n\nType: `SplitViewDisplayMode`",
               "value": {
-                "type": "SplitViewDisplayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SplitViewDisplayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.displaymode"
             },
@@ -12918,7 +13545,10 @@
               "name": "lightDismissOverlayMode",
               "description": "Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.\n\nType: `LightDismissOverlayMode`",
               "value": {
-                "type": "LightDismissOverlayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LightDismissOverlayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.lightdismissoverlaymode"
             },
@@ -12947,7 +13577,10 @@
               "name": "panePlacement",
               "description": "Gets or sets a value that specifies whether the pane is shown on the right or left side of the SplitView.\n\nType: `SplitViewPanePlacement`",
               "value": {
-                "type": "SplitViewPanePlacement"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SplitViewPanePlacementName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.paneplacement"
             },
@@ -12983,7 +13616,10 @@
               "name": "orientation",
               "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stacklayout.orientation"
             },
@@ -13015,7 +13651,10 @@
               "name": "backgroundSizing",
               "description": "Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.\n\nType: `BackgroundSizing`",
               "value": {
-                "type": "BackgroundSizing"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "BackgroundSizingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.backgroundsizing"
             },
@@ -13047,7 +13686,10 @@
               "name": "orientation",
               "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.orientation"
             },
@@ -13089,7 +13731,10 @@
               "name": "kind",
               "description": "Gets the platform command (with pre-defined properties such as icon, keyboard accelerator, and description) that can be used with a StandardUICommand.\n\nType: `StandardUICommandKind`",
               "value": {
-                "type": "StandardUICommandKind"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "StandardUICommandKindName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.standarduicommand.kind"
             }
@@ -13296,7 +13941,10 @@
               "name": "behaviorOnInvoked",
               "description": "Gets or sets a value that indicates how a SwipeControl behaves after this item is invoked.\n\nType: `SwipeBehaviorOnInvoked`",
               "value": {
-                "type": "SwipeBehaviorOnInvoked"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SwipeBehaviorOnInvokedName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.behavioroninvoked"
             },
@@ -13350,7 +13998,10 @@
               "name": "mode",
               "description": "Gets or sets a value that indicates the effect of a swipe interaction. A value of the enumeration that indicates the effect of a swipe interaction. The default is Reveal.\n\nType: `SwipeMode`",
               "value": {
-                "type": "SwipeMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SwipeModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitems.mode"
             }
@@ -13363,9 +14014,12 @@
           "attributes": [
             {
               "name": "symbol",
-              "description": "Gets or sets the Segoe MDL2 Assets glyph used as the icon content. A named constant of the numeration that specifies the Segoe MDL2 Assets glyph to use.\n\nType: `Symbol`",
+              "description": "Gets or sets the Segoe MDL2 Assets glyph used as the icon content. A named constant of the numeration that specifies the Segoe MDL2 Assets glyph to use.\n\nType: `SymbolGlyph`",
               "value": {
-                "type": "Symbol"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SymbolGlyphName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symbolicon.symbol"
             }
@@ -13379,9 +14033,12 @@
           "attributes": [
             {
               "name": "symbol",
-              "description": "Gets or sets the Segoe MDL2 Assets glyph used as the icon content. A named constant of the numeration that specifies the Segoe MDL2 Assets glyph to use.\n\nType: `Symbol`",
+              "description": "Gets or sets the Segoe MDL2 Assets glyph used as the icon content. A named constant of the numeration that specifies the Segoe MDL2 Assets glyph to use.\n\nType: `SymbolGlyph`",
               "value": {
-                "type": "Symbol"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SymbolGlyphName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symboliconsource.symbol"
             }
@@ -13465,7 +14122,10 @@
               "name": "closeButtonOverlayMode",
               "description": "Gets or sets a value that indicates the behavior of the close button within tabs. A value of the enumeration that describes the behavior of the close button within tabs. The default is Auto.\n\nType: `TabViewCloseButtonOverlayMode`",
               "value": {
-                "type": "TabViewCloseButtonOverlayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TabViewCloseButtonOverlayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.closebuttonoverlaymode"
             },
@@ -13550,7 +14210,10 @@
               "name": "tabWidthMode",
               "description": "Gets or sets how the tabs should be sized. The enum for how the tabs should be sized.\n\nType: `TabViewWidthMode`",
               "value": {
-                "type": "TabViewWidthMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TabViewWidthModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabwidthmode"
             },
@@ -13743,7 +14406,10 @@
               "name": "heroContentPlacement",
               "description": "Placement of the hero content within the teaching tip.\n\nType: `TeachingTipHeroContentPlacementMode`",
               "value": {
-                "type": "TeachingTipHeroContentPlacementMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TeachingTipHeroContentPlacementModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.herocontentplacement"
             },
@@ -13780,7 +14446,10 @@
               "name": "preferredPlacement",
               "description": "Preferred placement to be used for the teaching tip. If there is not enough space to show at the preferred placement, a new placement will be automatically chosen. Placement is relative to its target if Target is non-null or to the parent window of the teaching tip if Target is null.\n\nType: `TeachingTipPlacementMode`",
               "value": {
-                "type": "TeachingTipPlacementMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TeachingTipPlacementModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.preferredplacement"
             },
@@ -13804,7 +14473,10 @@
               "name": "tailVisibility",
               "description": "Toggles collapse of a teaching tip's tail. Can be used to override auto behavior to make a tail visible on a non-targeted teaching tip and hidden on a targeted teaching tip.\n\nType: `TeachingTipTailVisibility`",
               "value": {
-                "type": "TeachingTipTailVisibility"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TeachingTipTailVisibilityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.tailvisibility"
             },
@@ -13883,7 +14555,10 @@
               "name": "fontStretch",
               "description": "Gets or sets the font stretch for the text content in this element. The requested font stretch, as a FontStretch constant. The default is Normal.\n\nType: `FontStretch`",
               "value": {
-                "type": "FontStretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.fontstretch"
             },
@@ -13891,7 +14566,10 @@
               "name": "fontStyle",
               "description": "Gets or sets the font style for the content in this element. The requested font style, which is a FontStyle enumeration value. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.fontstyle"
             },
@@ -13915,7 +14593,10 @@
               "name": "horizontalTextAlignment",
               "description": "Gets or sets a value that indicates how text is aligned in the TextBlock. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.\n\nType: `TextAlignment`",
               "value": {
-                "type": "TextAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.horizontaltextalignment"
             },
@@ -13955,7 +14636,10 @@
               "name": "lineStackingStrategy",
               "description": "Gets or sets a value that indicates how a line box is determined for each line of text in the TextBlock.\n\nType: `LineStackingStrategy`",
               "value": {
-                "type": "LineStackingStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LineStackingStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.linestackingstrategy"
             },
@@ -13971,7 +14655,10 @@
               "name": "opticalMarginAlignment",
               "description": "Get or sets a value that indicates how the font is modified to align with fonts of different sizes.\n\nType: `OpticalMarginAlignment`",
               "value": {
-                "type": "OpticalMarginAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OpticalMarginAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.opticalmarginalignment"
             },
@@ -14005,7 +14692,10 @@
               "name": "textAlignment",
               "description": "Gets or sets a value that indicates the horizontal alignment of text content. The text alignment. The default is Left.\n\nAlso settable in CSS as `text-align`\n\nType: `TextAlignment`",
               "value": {
-                "type": "TextAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.textalignment"
             },
@@ -14013,7 +14703,10 @@
               "name": "textDecorations",
               "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration-line`\n\nType: `TextDecorations`",
               "value": {
-                "type": "TextDecorations"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextDecorationsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.textdecorations"
             },
@@ -14021,7 +14714,10 @@
               "name": "textLineBounds",
               "description": "Gets or sets a value that indicates how the line box height is determined for each line of text in the TextBlock.\n\nType: `TextLineBounds`",
               "value": {
-                "type": "TextLineBounds"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextLineBoundsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.textlinebounds"
             },
@@ -14029,7 +14725,10 @@
               "name": "textReadingOrder",
               "description": "Gets or sets a value that indicates how the reading order is determined for the TextBlock.\n\nType: `TextReadingOrder`",
               "value": {
-                "type": "TextReadingOrder"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextReadingOrderName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.textreadingorder"
             },
@@ -14037,7 +14736,10 @@
               "name": "textTrimming",
               "description": "Gets or sets the text trimming behavior to employ when content overflows the content area. One of the TextTrimming values that specifies the text trimming behavior to employ. The default is None.\n\nAlso settable in CSS as `text-overflow`\n\nType: `TextTrimming`",
               "value": {
-                "type": "TextTrimming"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextTrimmingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.texttrimming"
             },
@@ -14045,7 +14747,10 @@
               "name": "textWrapping",
               "description": "Gets or sets how the TextBlock wraps text. A value that indicates how the TextBlock wraps text. The default is NoWrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
               "value": {
-                "type": "TextWrapping"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextWrappingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.textwrapping"
             },
@@ -14084,7 +14789,10 @@
               "name": "characterCasing",
               "description": "Gets or sets a value that indicates how the control modifies the case of characters as they are typed. A value of the enumeration that indicates how the control modifies the case of characters as they are typed. The default is Normal, which indicates that the charcters are not changed.\n\nType: `CharacterCasing`",
               "value": {
-                "type": "CharacterCasing"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CharacterCasingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.charactercasing"
             },
@@ -14100,7 +14808,10 @@
               "name": "desiredCandidateWindowAlignment",
               "description": "Gets or sets a value that indicates the preferred alignment of the Input Method Editor (IME).\n\nType: `CandidateWindowAlignment`",
               "value": {
-                "type": "CandidateWindowAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "CandidateWindowAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.desiredcandidatewindowalignment"
             },
@@ -14124,7 +14835,10 @@
               "name": "horizontalTextAlignment",
               "description": "Gets or sets a value that indicates how text is aligned in the TextBox. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.\n\nType: `TextAlignment`",
               "value": {
-                "type": "TextAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.horizontaltextalignment"
             },
@@ -14251,7 +14965,10 @@
               "name": "textAlignment",
               "description": "Gets or sets how the text should be horizontally aligned in the text box. One of the TextAlignment enumeration values. The default is Left.\n\nAlso settable in CSS as `text-align`\n\nType: `TextAlignment`",
               "value": {
-                "type": "TextAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textalignment"
             },
@@ -14259,7 +14976,10 @@
               "name": "textReadingOrder",
               "description": "Gets or sets a value that indicates how the reading order is determined for the TextBox.\n\nType: `TextReadingOrder`",
               "value": {
-                "type": "TextReadingOrder"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextReadingOrderName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textreadingorder"
             },
@@ -14267,7 +14987,10 @@
               "name": "textWrapping",
               "description": "Gets or sets how line breaking occurs if a line of text extends beyond the available width of the text box. One of the TextWrapping values. The default is NoWrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
               "value": {
-                "type": "TextWrapping"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextWrappingName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textwrapping"
             },
@@ -14414,7 +15137,10 @@
               "name": "fontStretch",
               "description": "Gets or sets the glyph width of the font in a family to select. One of the FontStretch constant names, specifying the desired font stretch. The default is Normal.\n\nType: `FontStretch`",
               "value": {
-                "type": "FontStretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontstretch"
             },
@@ -14422,7 +15148,10 @@
               "name": "fontStyle",
               "description": "Gets or sets the font style for the content in this element. One of the FontStyle constant names, specifying the font style. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
-                "type": "FontStyle"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FontStyleName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontstyle"
             },
@@ -14470,7 +15199,10 @@
               "name": "keyTipPlacementMode",
               "description": "Gets or sets a value that indicates where the KeyTip is placed in relation to the text element. A value of the enumeration. The default is Auto.\n\nType: `KeyTipPlacementMode`",
               "value": {
-                "type": "KeyTipPlacementMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "KeyTipPlacementModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.keytipplacementmode"
             },
@@ -14494,7 +15226,10 @@
               "name": "textDecorations",
               "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration-line`\n\nType: `TextDecorations`",
               "value": {
-                "type": "TextDecorations"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TextDecorationsName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.textdecorations"
             },
@@ -14583,7 +15318,10 @@
               "name": "alignmentX",
               "description": "Gets or sets the horizontal alignment of content in the TileBrush base tile. A value that specifies the horizontal position of TileBrush content in its base tile. The default value is Center.\n\nType: `AlignmentX`",
               "value": {
-                "type": "AlignmentX"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AlignmentXName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.tilebrush.alignmentx"
             },
@@ -14591,7 +15329,10 @@
               "name": "alignmentY",
               "description": "Gets or sets the vertical alignment of content in the TileBrush base tile. A value that specifies the vertical position of TileBrush content in its base tile. The default value is Center.\n\nType: `AlignmentY`",
               "value": {
-                "type": "AlignmentY"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AlignmentYName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.tilebrush.alignmenty"
             },
@@ -14599,7 +15340,10 @@
               "name": "stretch",
               "description": "Gets or sets a value that specifies how the content of this TileBrush stretches to fit its tiles. A value that specifies how this TileBrush content is projected onto its base tile. The default value is Fill.\n\nType: `Stretch`",
               "value": {
-                "type": "Stretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "StretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.tilebrush.stretch"
             }
@@ -14639,7 +15383,10 @@
               "name": "fillBehavior",
               "description": "Gets or sets a value that specifies how the animation behaves after it reaches the end of its active period. A value that specifies how the timeline behaves after it reaches the end of its active period but its parent is inside its active or fill period. The default value is HoldEnd.\n\nType: `FillBehavior`",
               "value": {
-                "type": "FillBehavior"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "FillBehaviorName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline.fillbehavior"
             },
@@ -14699,7 +15446,10 @@
               "name": "lightDismissOverlayMode",
               "description": "Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.\n\nType: `LightDismissOverlayMode`",
               "value": {
-                "type": "LightDismissOverlayMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "LightDismissOverlayModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepicker.lightdismissoverlaymode"
             },
@@ -15032,7 +15782,10 @@
               "name": "placement",
               "description": "Gets or sets how a ToolTip is positioned in relation to the placement target element. One of the PlacementMode values.\n\nType: `PlacementMode`",
               "value": {
-                "type": "PlacementMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PlacementModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.placement"
             },
@@ -15191,7 +15944,10 @@
               "name": "selectionMode",
               "description": "Gets or sets the selection behavior for a TreeView instance. An enumeration value that specifies the selection behavior for a TreeView. The default is Single selection.\n\nType: `TreeViewSelectionMode`",
               "value": {
-                "type": "TreeViewSelectionMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TreeViewSelectionModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview.selectionmode"
             },
@@ -15389,7 +16145,10 @@
               "name": "panePriority",
               "description": "Gets or sets a value that indicates which pane has priority. An enumeration value that indicates which pane has priority.\n\nType: `TwoPaneViewPriority`",
               "value": {
-                "type": "TwoPaneViewPriority"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TwoPaneViewPriorityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.panepriority"
             },
@@ -15397,7 +16156,10 @@
               "name": "tallModeConfiguration",
               "description": "Gets or sets a value that indicates how panes are shown in tall mode.\n\nType: `TwoPaneViewTallModeConfiguration`",
               "value": {
-                "type": "TwoPaneViewTallModeConfiguration"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TwoPaneViewTallModeConfigurationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.tallmodeconfiguration"
             },
@@ -15405,7 +16167,10 @@
               "name": "wideModeConfiguration",
               "description": "Gets or sets a value that indicates how panes are shown in wide mode.\n\nType: `TwoPaneViewWideModeConfiguration`",
               "value": {
-                "type": "TwoPaneViewWideModeConfiguration"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TwoPaneViewWideModeConfigurationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.widemodeconfiguration"
             },
@@ -15481,7 +16246,10 @@
               "name": "compositeMode",
               "description": "Gets or sets a property that declares alternate composition and blending modes for the element in its parent layout and window. This is relevant for elements that are involved in a mixed XAML / Microsoft DirectX UI. A value of the enumeration. The default is Inherit, but see Remarks.\n\nType: `ElementCompositeMode`",
               "value": {
-                "type": "ElementCompositeMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ElementCompositeModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.compositemode"
             },
@@ -15502,7 +16270,10 @@
               "name": "highContrastAdjustment",
               "description": "Gets or sets a value that indicates whether the framework automatically adjusts the element's visual properties when high contrast themes are enabled.\n\nType: `ElementHighContrastAdjustment`",
               "value": {
-                "type": "ElementHighContrastAdjustment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ElementHighContrastAdjustmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.highcontrastadjustment"
             },
@@ -15566,7 +16337,10 @@
               "name": "keyboardAcceleratorPlacementMode",
               "description": "Gets or sets a value that indicates whether the control tooltip displays the key combination for its associated keyboard accelerator. A value of the enumeration. The default is Auto.\n\nType: `KeyboardAcceleratorPlacementMode`",
               "value": {
-                "type": "KeyboardAcceleratorPlacementMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "KeyboardAcceleratorPlacementModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.keyboardacceleratorplacementmode"
             },
@@ -15587,7 +16361,10 @@
               "name": "keyTipPlacementMode",
               "description": "Gets or sets a value that indicates where the access key Key Tip is placed in relation to the boundary of the UIElement. A value of the enumeration. The default is Auto.\n\nType: `KeyTipPlacementMode`",
               "value": {
-                "type": "KeyTipPlacementMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "KeyTipPlacementModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.keytipplacementmode"
             },
@@ -15608,7 +16385,10 @@
               "name": "manipulationMode",
               "description": "Gets or sets the ManipulationModes value used for UIElement behavior and interaction with gestures. Setting this value enables handling the manipulation events from this element in app code. A value or values of the enumeration. The default is typically System, but this can vary on specific controls and elements. See Remarks.\n\nType: `ManipulationModes`",
               "value": {
-                "type": "ManipulationModes"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ManipulationModesName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.manipulationmode"
             },
@@ -15694,7 +16474,10 @@
               "name": "tabFocusNavigation",
               "description": "Gets or sets a value that modifies how tabbing and TabIndex work for this control. A value of the enumeration. The default is Local.\n\nType: `KeyboardNavigationMode`",
               "value": {
-                "type": "KeyboardNavigationMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "KeyboardNavigationModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.tabfocusnavigation"
             },
@@ -15749,7 +16532,10 @@
               "name": "visibility",
               "description": "Gets or sets the visibility of a UIElement. A UIElement that is not visible is not rendered and does not communicate its desired size to layout. A value of the enumeration. The default value is Visible.\n\nAlso settable in CSS as `display`\n\nType: `Visibility`",
               "value": {
-                "type": "Visibility"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VisibilityName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.visibility"
             },
@@ -15767,7 +16553,10 @@
               "name": "xYFocusDownNavigationStrategy",
               "description": "Gets or sets a value that specifies the strategy used to determine the target element of a down navigation. A value of the enumeration. The default is Auto.\n\nType: `XYFocusNavigationStrategy`",
               "value": {
-                "type": "XYFocusNavigationStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "XYFocusNavigationStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.xyfocusdownnavigationstrategy"
             },
@@ -15775,7 +16564,10 @@
               "name": "xYFocusKeyboardNavigation",
               "description": "Gets or sets a value that enables or disables navigation using the keyboard directional arrows. A value of the enumeration. The default is Auto.\n\nType: `XYFocusKeyboardNavigationMode`",
               "value": {
-                "type": "XYFocusKeyboardNavigationMode"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "XYFocusKeyboardNavigationModeName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.xyfocuskeyboardnavigation"
             },
@@ -15788,7 +16580,10 @@
               "name": "xYFocusLeftNavigationStrategy",
               "description": "Gets or sets a value that specifies the strategy used to determine the target element of a left navigation. A value of the enumeration. The default is Auto.\n\nType: `XYFocusNavigationStrategy`",
               "value": {
-                "type": "XYFocusNavigationStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "XYFocusNavigationStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.xyfocusleftnavigationstrategy"
             },
@@ -15801,7 +16596,10 @@
               "name": "xYFocusRightNavigationStrategy",
               "description": "Gets or sets a value that specifies the strategy used to determine the target element of a right navigation. A value of the enumeration. The default is Auto.\n\nType: `XYFocusNavigationStrategy`",
               "value": {
-                "type": "XYFocusNavigationStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "XYFocusNavigationStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.xyfocusrightnavigationstrategy"
             },
@@ -15814,7 +16612,10 @@
               "name": "xYFocusUpNavigationStrategy",
               "description": "Gets or sets a value that specifies the strategy used to determine the target element of an up navigation. A value of the enumeration. The default is Auto.\n\nType: `XYFocusNavigationStrategy`",
               "value": {
-                "type": "XYFocusNavigationStrategy"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "XYFocusNavigationStrategyName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.xyfocusupnavigationstrategy"
             },
@@ -16036,7 +16837,10 @@
               "name": "itemsJustification",
               "description": "Gets or sets a value that indicates how items are aligned on the non-scrolling or non-virtualizing axis. An enumeration value that indicates how items are aligned. The default is Start.\n\nType: `UniformGridLayoutItemsJustification`",
               "value": {
-                "type": "UniformGridLayoutItemsJustification"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "UniformGridLayoutItemsJustificationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.itemsjustification"
             },
@@ -16044,7 +16848,10 @@
               "name": "itemsStretch",
               "description": "Gets or sets a value that indicates how items are sized to fill the available space. An enumeration value that indicates how items are sized to fill the available space. The default is None.\n\nType: `UniformGridLayoutItemsStretch`",
               "value": {
-                "type": "UniformGridLayoutItemsStretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "UniformGridLayoutItemsStretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.itemsstretch"
             },
@@ -16092,7 +16899,10 @@
               "name": "orientation",
               "description": "Gets or sets the axis along which items are laid out. One of the enumeration values that specifies the axis along which items are laid out. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.orientation"
             }
@@ -16121,7 +16931,10 @@
               "name": "horizontalChildrenAlignment",
               "description": "Gets or sets the alignment rules by which child elements are arranged for the horizontal dimension. A value of the enumeration. The default is Left.\n\nType: `HorizontalAlignment`",
               "value": {
-                "type": "HorizontalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "HorizontalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid.horizontalchildrenalignment"
             },
@@ -16153,7 +16966,10 @@
               "name": "orientation",
               "description": "Gets or sets the direction in which child elements are arranged. A value of the enumeration. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid.orientation"
             },
@@ -16161,7 +16977,10 @@
               "name": "verticalChildrenAlignment",
               "description": "Gets or sets the alignment rules by which child elements are arranged for the vertical dimension. A value of the enumeration. The default is Top.\n\nType: `VerticalAlignment`",
               "value": {
-                "type": "VerticalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VerticalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid.verticalchildrenalignment"
             }
@@ -16182,7 +17001,10 @@
               "name": "stretch",
               "description": "Gets or sets the Stretch mode, which determines how content fits into the available space. A Stretch mode, which determines how content fits in the available space. The default is Uniform.\n\nType: `Stretch`",
               "value": {
-                "type": "Stretch"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "StretchName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox.stretch"
             },
@@ -16190,7 +17012,10 @@
               "name": "stretchDirection",
               "description": "Gets or sets the StretchDirection, which determines how scaling is applied to the contents of a Viewbox.\n\nType: `StretchDirection`",
               "value": {
-                "type": "StretchDirection"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "StretchDirectionName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox.stretchdirection"
             }
@@ -16228,7 +17053,10 @@
               "name": "orientation",
               "description": "Gets or sets a value that describes the horizontal or vertical orientation of stacked content. The Orientation of child content, as a value of the enumeration. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel.orientation"
             },
@@ -16384,7 +17212,10 @@
               "name": "horizontalChildrenAlignment",
               "description": "Gets or sets the alignment rules by which child elements are arranged for the horizontal dimension. A value of the enumeration. The default is Left.\n\nType: `HorizontalAlignment`",
               "value": {
-                "type": "HorizontalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "HorizontalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid.horizontalchildrenalignment"
             },
@@ -16416,7 +17247,10 @@
               "name": "orientation",
               "description": "Gets or sets the direction in which child elements are arranged. A value of the enumeration. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
-                "type": "Orientation"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "OrientationName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid.orientation"
             },
@@ -16424,7 +17258,10 @@
               "name": "verticalChildrenAlignment",
               "description": "Gets or sets the alignment rules by which child elements are arranged for the vertical dimension. A value of the enumeration. The default is Top.\n\nType: `VerticalAlignment`",
               "value": {
-                "type": "VerticalAlignment"
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "VerticalAlignmentName"
+                }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid.verticalchildrenalignment"
             }

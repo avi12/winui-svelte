@@ -1,7 +1,13 @@
-import { displayTypeOf, docsUrlOf, inputTypeOf, memberDocsUrlOf } from "./emit.ts";
+import {
+  displayTypeOf,
+  docsUrlOf,
+  enumNamesTypeOf,
+  inputTypeOf,
+  memberDocsUrlOf
+} from "./emit.ts";
 import { descriptionParagraphsOf } from "./member-description.ts";
 import type { ClassModel } from "./model.ts";
-import { OFFERED_INPUTS } from "./tables.ts";
+import { ENUMS_MODULE, OFFERED_INPUTS } from "./tables.ts";
 import type { TypeReference } from "./tables.ts";
 
 // The component and prop documentation as WebStorm reads it for a package
@@ -28,13 +34,22 @@ interface Attribute {
   };
 }
 
-function attributeOf({ level, key, kind, winName, inputType, displayType }: {
+function enumReferenceOf(enumNames: string | undefined) {
+  const isEnum = enumNames !== undefined;
+  return isEnum ? {
+    module: ENUMS_MODULE,
+    name: enumNames
+  } : undefined;
+}
+
+function attributeOf({ level, key, kind, winName, inputType, displayType, enumNames }: {
   level: ClassModel;
   key: string;
   kind: string;
   winName: string;
   inputType: string | undefined;
   displayType: string | undefined;
+  enumNames: string | undefined;
 }) {
   const text = level.documentation?.members.get(`${kind}:${winName}`);
   const hasInputType = inputType !== undefined;
@@ -51,7 +66,7 @@ function attributeOf({ level, key, kind, winName, inputType, displayType }: {
     attribute.description = description;
   }
 
-  const type = (hasInputType ? OFFERED_INPUTS.get(inputType) : undefined) ?? displayType;
+  const type = (hasInputType ? OFFERED_INPUTS.get(inputType) : undefined) ?? enumReferenceOf(enumNames) ?? displayType;
   const isTyped = type !== undefined;
   if (isTyped) {
     attribute.value = { type };
@@ -79,7 +94,8 @@ function attributesOf(level: ClassModel) {
       kind: "P",
       winName: property.winName,
       inputType: inputTypeOf(property),
-      displayType: displayTypeOf(property)
+      displayType: displayTypeOf(property),
+      enumNames: enumNamesTypeOf(property)
     })),
     ...level.events.map(event => attributeOf({
       level,
@@ -87,7 +103,8 @@ function attributesOf(level: ClassModel) {
       kind: "E",
       winName: event.winName,
       inputType: undefined,
-      displayType: undefined
+      displayType: undefined,
+      enumNames: undefined
     }))
   ];
 }
