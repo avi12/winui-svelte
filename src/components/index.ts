@@ -21,6 +21,8 @@ export type {
 } from "./hand-written/navigation/navigator-host.svelte.ts";
 export { NavigationCacheMode, NavigationMode } from "./hand-written/navigation/navigation-stack.ts";
 export { MoveDirection } from "./hand-written/items/reorder.ts";
+export { FluentGlyph } from "./fluent-glyph.ts";
+export type { FluentGlyphName } from "./fluent-glyph.ts";
 export { isColorText, ticksDate, ticksMilliseconds } from "./values.ts";
 export type { ColorInput, ColorKeyword, ColorText, GridLengthText, HexColor } from "./values.ts";
 export type { AppBrushes, BrushInput, EnumInput, FlagsInput, GridLengthInput } from "./convert.ts";

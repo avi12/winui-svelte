@@ -1,4 +1,5 @@
 import { LanguageServer } from "./language-server.ts";
+import { FluentGlyph } from "#src/components/fluent-glyph.js";
 import { AppBarClosedDisplayMode, Backdrop, ColorKeyword, ThemeBrush } from "#src/enums.js";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -56,4 +57,10 @@ test("the window's backdrop offers the Backdrop set", async () => {
 test("a brush prop offers the color keywords, WinUI's theme brushes and the app's own", async () => {
   const brushes: string[] = [...Object.values(ColorKeyword), ...Object.values(ThemeBrush), APP_BRUSH];
   assert.deepEqual(await offeredAt("background"), new Set(brushes));
+});
+
+test("a glyph prop offers the names of Segoe Fluent Icons", async () => {
+  const offered = await offeredAt("glyph");
+  assert.ok(offered.has("Save"));
+  assert.equal(offered.size, Object.keys(FluentGlyph).length);
 });

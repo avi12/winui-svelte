@@ -51,7 +51,7 @@ export interface FontIconProps extends IconElementProps {
   /**
    * Gets or sets the character code that identifies the icon glyph. The hexadecimal character code for the icon glyph.
    *
-   * Accepts an icon glyph: the character, or its code point (`0xE711`).
+   * Accepts an icon glyph: a name of Segoe Fluent Icons ("Save"), a code point (`0xE74E`), code points to compose, or text.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon.glyph
    */

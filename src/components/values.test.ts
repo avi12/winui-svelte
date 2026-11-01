@@ -1,3 +1,4 @@
+import { FluentGlyph } from "./fluent-glyph.ts";
 import {
   attachedList,
   cornerSides,
@@ -291,4 +292,12 @@ test("an icon glyph is the character, or the character of its code point", () =>
   assert.equal(glyphText("\uE711"), "\uE711");
   assert.equal(glyphText(0xE711), "\uE711");
   assert.equal(glyphText(0x1F600), "\u{1F600}");
+  assert.equal(glyphText([0xE711, 0xE712]), "");
+});
+
+test("an icon glyph named for Segoe Fluent Icons is that icon, and a name it lacks is text", () => {
+  assert.equal(glyphText("Save"), "");
+  assert.equal(glyphText(FluentGlyph.Save), "");
+  assert.equal(glyphText("toString"), "toString");
+  assert.equal(glyphText("NotAnIcon"), "NotAnIcon");
 });

@@ -1,3 +1,4 @@
+import type { FluentGlyphName } from "./fluent-glyph.ts";
 import {
   Application,
   BitmapImage,
@@ -201,8 +202,8 @@ export type GeometryInput = string | Geometry;
 /** A font family name or a font family. */
 export type FontFamilyInput = string | FontFamily;
 
-/** An icon glyph: the character, or its code point (`0xE711`). */
-export type GlyphInput = string | number;
+/** An icon glyph: a name of Segoe Fluent Icons ("Save"), a code point (`0xE74E`), code points to compose, or text. */
+export type GlyphInput = FluentGlyphName | (string & Record<never, never>) | number | readonly number[];
 
 /** A URI string or a URI. */
 export type UriInput = string | Uri;

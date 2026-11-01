@@ -1,3 +1,5 @@
+import type { FluentGlyphName } from "./fluent-glyph.ts";
+import { FluentGlyph } from "./fluent-glyph.ts";
 import type { DurationType, RepeatBehaviorType } from "./generated/bindings.ts";
 import type { ResourceRecordInput } from "./resource-record.ts";
 import { PRESENTATION_NAMESPACE } from "#src/css/translate/cascade.js";
@@ -742,8 +744,24 @@ export function isResourceRecord(input: object): input is ResourceRecordInput {
   return prototype === Object.prototype || prototype === null;
 }
 
-/** An icon glyph as the character it is: a number is its code point. */
-export function glyphText(input: string | number) {
+/**
+ * An icon glyph as text: a number is a code point, a list of numbers the characters of those code points, a
+ * name of Segoe Fluent Icons its icon, and any other text itself.
+ */
+export function glyphText(input: string | number | readonly number[]) {
   const isCodePoint = typeof input === "number";
-  return isCodePoint ? String.fromCodePoint(input) : input;
+  if (isCodePoint) {
+    return String.fromCodePoint(input);
+  }
+
+  const isText = typeof input === "string";
+  if (!isText) {
+    return String.fromCodePoint(...input);
+  }
+
+  return isFluentGlyphName(input) ? String.fromCodePoint(FluentGlyph[input]) : input;
+}
+
+function isFluentGlyphName(text: string): text is FluentGlyphName {
+  return Object.hasOwn(FluentGlyph, text);
 }

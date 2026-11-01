@@ -22,6 +22,15 @@ Changes: each description is cut to its first paragraph, markup and links are
 reduced to plain text, a property's description is joined with its value's, and
 an attached property's is taken from its getter
 
+The names and code points of FluentGlyph (src/components/fluent-glyph.ts) come
+from Microsoft's list of Segoe Fluent Icons,
+https://github.com/MicrosoftDocs/windows-dev-docs
+(hub/apps/design/iconography/segoe-fluent-icons-font.md)
+Copyright (c) Microsoft Corporation. Licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0),
+https://creativecommons.org/licenses/by/4.0/
+Changes: the icons' names and code points are kept as a TypeScript object
+
 The descriptions of the Win2D controls and members come from Win2D's
 documentation sources, https://github.com/microsoft/Win2D (winrt/docsrc)
 Copyright (c) Microsoft Corporation. Licensed under the MIT License,
