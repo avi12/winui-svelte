@@ -52,6 +52,13 @@ const completionSchema = z.union([
   z.object({ items: z.array(completionItemSchema) })
 ]).nullable();
 
+// A hover answer: the text of its contents, which are a string, a marked
+// string or a list of them, or a markup content.
+const markedSchema = z.union([z.string(), z.object({ value: z.string() })]);
+const hoverSchema = z.object({
+  contents: z.union([markedSchema, z.array(markedSchema)])
+}).nullable();
+
 const messageSchema = z.object({
   id: z.number().optional(),
   method: z.string().optional(),
@@ -215,7 +222,8 @@ export class LanguageServer {
         textDocument: {
           publishDiagnostics: {},
           inlayHint: {},
-          completion: {}
+          completion: {},
+          hover: {}
         },
         workspace: {
           configuration: true
@@ -335,6 +343,33 @@ export class LanguageServer {
     ) ?? [];
     const items = Array.isArray(answer) ? answer : answer.items;
     return items.map(item => item.label);
+  }
+
+  // The documentation the editor shows on hover at a position (zero-based
+  // line and character), as one text; empty where there is none.
+  async hoverAt({ file, line, character }: {
+    file: string;
+    line: number;
+    character: number;
+  }) {
+    const params = {
+      textDocument: {
+        uri: pathToFileURL(this.inWorkspace(file)).href
+      },
+      position: {
+        line,
+        character
+      }
+    };
+    const answer = hoverSchema.parse(
+      await this.request({
+        method: "textDocument/hover",
+        params
+      })
+    );
+    const contents = answer?.contents ?? [];
+    const parts = Array.isArray(contents) ? contents : [contents];
+    return parts.map(part => typeof part === "string" ? part : part.value).join("\n");
   }
 
   stop() {
