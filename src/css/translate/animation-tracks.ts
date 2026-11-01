@@ -14,6 +14,12 @@ export const TrackKind = {
   VISIBILITY: "visibility"
 } as const;
 
+/** The Visibility values a track steps between. */
+export const VISIBLE = "Visible";
+
+/** The Visibility of an element that takes no space. */
+export const COLLAPSED = "Collapsed";
+
 /** One of the kinds in `TrackKind`. */
 export type TrackKind = (typeof TrackKind)[keyof typeof TrackKind];
 
@@ -55,8 +61,6 @@ type Report = (input: {
 const TIMING_FUNCTION = "animation-timing-function";
 const FUNCTION = /^([a-z][a-z0-9]*)\((.*)\)$/isu;
 const ANIMATED = "WinUI animates opacity, width, height, colors, translate, scale, rotate, transform, display and visibility";
-const VISIBLE = "Visible";
-const COLLAPSED = "Collapsed";
 const TRANSFORM_PREFIX = "(UIElement.RenderTransform).(CompositeTransform.";
 const SCALE_PREFIX = "Scale";
 const IDENTITY = new Map<string, number>([

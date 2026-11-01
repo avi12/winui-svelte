@@ -76,10 +76,11 @@ const CHANNELS = 4;
 const HEX_RADIX = 16;
 const ALTERNATE_CYCLE = 2;
 const FOREVER = "Forever";
+const OBJECT_KEYFRAME = "Object";
 const KEYFRAME_TYPES = new Map<TrackKind, string>([
   [TrackKind.DOUBLE, "Double"],
   [TrackKind.COLOR, "Color"],
-  [TrackKind.VISIBILITY, "Object"]
+  [TrackKind.VISIBILITY, OBJECT_KEYFRAME]
 ]);
 
 function pad(amount: number) {
@@ -126,7 +127,7 @@ function valueText({ value, kind }: {
   value: number | string;
   kind: string;
 }) {
-  const isObject = kind === "Object";
+  const isObject = kind === OBJECT_KEYFRAME;
   if (isObject) {
     return String(value);
   }
