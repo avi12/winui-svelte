@@ -466,6 +466,7 @@
     "bindings": "winapp node generate-bindings && pnpm bindings:after-winapp",
     "bindings:after-winapp": "node --disable-warning=ExperimentalWarning scripts/bindings/after-winapp.ts",
     "build": "node --disable-warning=ExperimentalWarning scripts/pack/build.ts",
+    "dev": "node --disable-warning=ExperimentalWarning scripts/pack/dev.ts",
     "check": "tsc --noEmit && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "check:editor": "node --disable-warning=ExperimentalWarning scripts/editor/check-editor.ts",
     "check:webstorm": "node --disable-warning=ExperimentalWarning scripts/editor/check-webstorm.ts",

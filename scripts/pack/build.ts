@@ -1,5 +1,14 @@
 import { extraPackages } from "#scripts/codegen/tables.ts";
 import { filesIn } from "#scripts/files-in.ts";
+import {
+  copyShippedFile,
+  isAliasedFile,
+  isShipped,
+  OUTPUT_FOLDER,
+  PACKAGE_ROOT,
+  resolveAliasesIn,
+  SOURCE_FOLDER
+} from "#scripts/pack/dist-files.ts";
 import { WINAPP_BINARIES, WINAPP_BINDINGS } from "#scripts/winapp-paths.ts";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -34,9 +43,6 @@ import path from "node:path";
 // (@sveltejs/package, the usual tool, hands a *.d.svelte.ts file to TypeScript
 // as source and fails, so tsc and a copy do it.)
 
-const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
-const SOURCE_FOLDER = path.join(PACKAGE_ROOT, "src");
-const OUTPUT_FOLDER = path.join(PACKAGE_ROOT, "dist");
 // What `pnpm bindings` (winapp) generates from WinUI's metadata, and where
 // package.json's `#winui/*` finds it once built. Shipped whole: they declare
 // `"sideEffects": false`, so an app's bundler keeps only the controls it uses.
@@ -52,61 +58,6 @@ const SHIPPED_BOOTSTRAPPERS = path.join(OUTPUT_FOLDER, "bin");
 // scripts/bindings/after-winapp.ts and winapp put in .winapp/bin; arm64ec has
 // none of them).
 const BOOTSTRAPPER = "Microsoft.WindowsAppRuntime.Bootstrap.dll";
-const copiedExtensions = [".svelte", ".json"];
-const DECLARATION_SUFFIX = ".d.svelte.ts";
-// `from "./x.ts"` and `import("./x.ts")` in a .svelte script.
-const relativeTsImport = /(["'])(\.{1,2}\/[^"']*?)\.ts\1/gu;
-// `from "#src/x/y.js"`: package.json's `imports` maps #src/*.js to src/*.ts,
-// which a published package does not have, so the build points each at dist/
-// instead. (Written .js, because TypeScript refuses to leave a non-relative
-// .ts import unrewritten.)
-const sourceAliasImport = /(["'])#src\/([^"']*?)(\.js|\.svelte|\.json)\1/gu;
-const aliasedExtensions = [".js", ".ts", ".svelte"];
-
-function isShipped(file: string) {
-  const isDeclaration = file.endsWith(DECLARATION_SUFFIX);
-  const isCopied = copiedExtensions.includes(path.extname(file));
-  const isTestSupport = /\.fixture\.svelte$|\.test\./u.test(file);
-  return (isDeclaration || isCopied) && !isTestSupport;
-}
-
-// A .svelte file's imports of .ts modules, as the .js they are compiled to; a
-// .d.svelte.ts import is a type and stays.
-function withCompiledImports(source: string) {
-  return source.replaceAll(relativeTsImport, (whole: string, quote: string, target: string) => {
-    const isDeclarationImport = target.endsWith(".d.svelte");
-    return isDeclarationImport ? whole : `${quote}${target}.js${quote}`;
-  });
-}
-
-// `#src/x/y.js` as the path from the file to dist/x/y.js: the same specifier,
-// relative, which TypeScript finds as y.d.ts and Node as y.js.
-function withRelativeAliases({ file, source }: {
-  file: string;
-  source: string;
-}) {
-  return source.replaceAll(sourceAliasImport, (_whole: string, quote: string, target: string, extension: string) => {
-    const relative = path.relative(path.dirname(file), path.join(OUTPUT_FOLDER, target)).replaceAll("\\", "/");
-    const specifier = relative.startsWith(".") ? relative : `./${relative}`;
-    return `${quote}${specifier}${extension}${quote}`;
-  });
-}
-
-function resolveSourceAliases() {
-  const files = filesIn(OUTPUT_FOLDER).filter(file => aliasedExtensions.includes(path.extname(file)));
-  for (const file of files) {
-    const source = readFileSync(file, "utf8");
-    if (source.includes("#src/")) {
-      writeFileSync(
-        file, withRelativeAliases({
-          file,
-          source
-        })
-      );
-    }
-  }
-}
-
 // The bindings are CommonJS, which a package.json of their own keeps them
 // inside this ESM package. Only what applies to a nested package is written:
 // its `exports` would be ignored there, and `#winui/*` reaches the files.
@@ -206,14 +157,13 @@ function copyBootstrappers() {
 
 function copyShipped() {
   for (const file of filesIn(SOURCE_FOLDER).filter(isShipped)) {
-    const target = path.join(OUTPUT_FOLDER, path.relative(SOURCE_FOLDER, file));
-    mkdirSync(path.dirname(target), { recursive: true });
+    copyShippedFile(file);
+  }
+}
 
-    if (file.endsWith(".svelte")) {
-      writeFileSync(target, withCompiledImports(readFileSync(file, "utf8")));
-    } else {
-      copyFileSync(file, target);
-    }
+function resolveSourceAliases() {
+  for (const file of filesIn(OUTPUT_FOLDER).filter(isAliasedFile)) {
+    resolveAliasesIn(file);
   }
 }
 
