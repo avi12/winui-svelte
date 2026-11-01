@@ -47,10 +47,11 @@ const packageBindingsSites = [
 // alike, dist/bindings sits two folders above this file.
 const BUNDLED_BINDINGS_FOLDER = path.join(import.meta.dirname, "..", "..", "dist", "bindings");
 // Folders under the root that hold no source the window loads (build output,
-// the restored Windows App SDK, git worktrees of other branches). The watcher
+// the restored Windows App SDK, git worktrees of other branches, whether in
+// .worktrees or in the .claude folder an agent session makes). The watcher
 // opens a handle per file it finds, and on a root with worktrees that is
 // minutes of the server thread, in which no module is served.
-const UNWATCHED_FOLDERS = ["dist", ".winapp", ".worktrees", ".verify", ".fallow", ".idea"];
+const UNWATCHED_FOLDERS = ["dist", ".winapp", ".worktrees", ".claude", ".verify", ".fallow", ".idea"];
 const queryOrHash = /[?#].*$/u;
 const scriptExtension = /\.[cm]?[jt]s$/u;
 

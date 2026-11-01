@@ -11,9 +11,11 @@ import { MessageChannel } from "node:worker_threads";
 
 const WATCH_SETTLE_MILLISECONDS = 500;
 
-test("the watcher skips build output, worktrees and the restored SDK", async () => {
+const SKIPPED_FOLDERS = ["dist", ".worktrees", ".claude", ".winapp"];
+
+test("the watcher skips build output, worktrees (also an agent session's) and the restored SDK", async () => {
   const root = mkdtempSync(path.join(tmpdir(), "winui-server-"));
-  for (const folder of ["src", "dist", ".worktrees", ".winapp"]) {
+  for (const folder of ["src", ...SKIPPED_FOLDERS]) {
     mkdirSync(path.join(root, folder));
     writeFileSync(path.join(root, folder, "file.ts"), "export const a = 1;\n");
   }
@@ -27,7 +29,7 @@ test("the watcher skips build output, worktrees and the restored SDK", async () 
     await new Promise(resolve => setTimeout(resolve, WATCH_SETTLE_MILLISECONDS));
     const watched = Object.keys(server.watcher.getWatched()).map(folder => path.relative(root, folder));
     assert.ok(watched.includes("src"));
-    for (const folder of ["dist", ".worktrees", ".winapp"]) {
+    for (const folder of SKIPPED_FOLDERS) {
       assert.deepEqual(watched.filter(watchedFolder => watchedFolder.startsWith(folder)), []);
     }
   } finally {
