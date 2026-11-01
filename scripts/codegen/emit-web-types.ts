@@ -1,7 +1,8 @@
-import { cssNoteOf } from "./css-names.ts";
 import { displayTypeOf, docsUrlOf, inputTypeOf, memberDocsUrlOf } from "./emit.ts";
-import { inputDocumentationOf } from "./input-documentation.ts";
+import { descriptionParagraphsOf } from "./member-description.ts";
 import type { ClassModel } from "./model.ts";
+import { OFFERED_INPUTS } from "./tables.ts";
+import type { TypeReference } from "./tables.ts";
 
 // The component and prop documentation as WebStorm reads it for a package
 // (the `web-types` field of package.json): the editor's own layer shows it
@@ -9,32 +10,6 @@ import type { ClassModel } from "./model.ts";
 // the language server's hover, on a prop written as `{glyph}`, does not cover.
 
 const INDENT = 2;
-const PACKAGE_MODULE = "winui-svelte/components";
-
-// The input types whose names the editor can offer for an attribute, with what else each takes
-const OFFERED_INPUTS = new Map<string, TypeReference[]>([
-  ["GlyphInput", [
-    {
-      module: PACKAGE_MODULE,
-      name: "FluentGlyphName"
-    },
-    "string",
-    "number",
-    "number[]"
-  ]],
-  ["FontFamilyInput", [
-    {
-      module: PACKAGE_MODULE,
-      name: "FontFamilyName"
-    },
-    "string"
-  ]]
-]);
-
-type TypeReference = string | {
-  module: string;
-  name: string;
-};
 
 interface Element {
   name: string;
@@ -63,14 +38,13 @@ function attributeOf({ level, key, kind, winName, inputType, displayType }: {
 }) {
   const text = level.documentation?.members.get(`${kind}:${winName}`);
   const hasInputType = inputType !== undefined;
-  const accepts = hasInputType ? inputDocumentationOf(inputType) : undefined;
-  const paragraphs = [
+  const description = descriptionParagraphsOf({
     text,
-    accepts === undefined ? undefined : `Accepts ${accepts}`,
-    kind === "P" ? cssNoteOf(winName) : undefined,
-    displayType === undefined ? undefined : `Type: \`${displayType}\``
-  ];
-  const description = paragraphs.filter(paragraph => paragraph !== undefined).join("\n\n");
+    kind,
+    winName,
+    inputType,
+    displayType
+  }).join("\n\n");
   const attribute: Attribute = { name: key };
   const isDescribed = description !== "";
   if (isDescribed) {

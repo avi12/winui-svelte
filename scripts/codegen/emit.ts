@@ -1,5 +1,4 @@
-import { cssNoteOf } from "./css-names.ts";
-import { inputDocumentationOf } from "./input-documentation.ts";
+import { descriptionParagraphsOf } from "./member-description.ts";
 import type {
   AttachedModel,
   BindableModel,
@@ -596,26 +595,19 @@ class LevelImports {
 
 // A JSDoc comment of WinUI's own text with a link to the page the text is
 // from, or nothing where WinUI has none.
-function docLines({ text, url, indent, accepts, css }: {
-  text: string | undefined;
+function docLines({ paragraphs, url, indent }: {
+  paragraphs: string[];
   url: string;
   indent: string;
-  accepts?: string | undefined;
-  css?: string | undefined;
 }) {
-  const isDocumented = text !== undefined;
+  const isDocumented = paragraphs.length > 0;
   if (!isDocumented) {
     return [];
   }
 
-  const hasAccepts = accepts !== undefined;
-  const hasCss = css !== undefined;
   return [
     `${indent}/**`,
-    `${indent} * ${text}`,
-    `${indent} *`,
-    ...hasAccepts ? [`${indent} * Accepts ${accepts}`, `${indent} *`] : [],
-    ...hasCss ? [`${indent} * ${css}`, `${indent} *`] : [],
+    ...paragraphs.flatMap(paragraph => [`${indent} * ${paragraph}`, `${indent} *`]),
     `${indent} * @see ${url}`,
     `${indent} */`
   ];
@@ -629,11 +621,19 @@ function memberDocLines({ level, kind, winName, inputType }: {
   winName: string;
   inputType?: string | undefined;
 }) {
-  const hasInputType = inputType !== undefined;
+  const text = level.documentation?.members.get(`${kind}:${winName}`);
+  const isDocumented = text !== undefined;
+  if (!isDocumented) {
+    return [];
+  }
+
   return docLines({
-    accepts: hasInputType ? inputDocumentationOf(inputType) : undefined,
-    css: kind === "P" ? cssNoteOf(winName) : undefined,
-    text: level.documentation?.members.get(`${kind}:${winName}`),
+    paragraphs: descriptionParagraphsOf({
+      text,
+      kind,
+      winName,
+      inputType
+    }),
     url: memberDocsUrlOf({
       type: level.type,
       kind,
@@ -646,7 +646,7 @@ function memberDocLines({ level, kind, winName, inputType }: {
 // The comment of an attached property: its owner's own text for the getter.
 function attachedDocLines(attached: AttachedModel) {
   return docLines({
-    text: attached.documentation,
+    paragraphs: descriptionParagraphsOf({ text: attached.documentation }),
     url: memberDocsUrlOf({
       type: attached.owner,
       kind: "M",
@@ -672,7 +672,7 @@ function childrenDocLines(level: ClassModel) {
   }
 
   return docLines({
-    text: level.documentation?.summary ?? undefined,
+    paragraphs: descriptionParagraphsOf({ text: level.documentation?.summary ?? undefined }),
     url: docsUrlOf(level.type),
     indent: "  "
   });
@@ -687,7 +687,7 @@ function componentCommentLines(level: ClassModel) {
 
 function typeDocLines(level: ClassModel) {
   return docLines({
-    text: level.documentation?.summary ?? undefined,
+    paragraphs: descriptionParagraphsOf({ text: level.documentation?.summary ?? undefined }),
     url: docsUrlOf(level.type),
     indent: ""
   });

@@ -1478,3 +1478,30 @@ export const constructedClasses = new Map<string, {
     isMadeByXaml: false
   }]
 ]);
+
+export type TypeReference = string | {
+  module: string;
+  name: string;
+};
+
+const PACKAGE_MODULE = "winui-svelte/components";
+
+// The input types whose names the editor can offer for an attribute, with what else each takes
+export const OFFERED_INPUTS = new Map<string, TypeReference[]>([
+  ["GlyphInput", [
+    {
+      module: PACKAGE_MODULE,
+      name: "FluentGlyphName"
+    },
+    "string",
+    "number",
+    "number[]"
+  ]],
+  ["FontFamilyInput", [
+    {
+      module: PACKAGE_MODULE,
+      name: "FontFamilyName"
+    },
+    "string"
+  ]]
+]);
