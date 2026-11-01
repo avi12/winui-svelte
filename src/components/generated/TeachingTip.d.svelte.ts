@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TeachingTipComponentProps };
 
+/**
+ * A teaching tip is a notification flyout used to provide contextually relevant information. It supports rich content (including titles, subtitles, icons, images, and text) and can be configured for either explicit or light-dismiss.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+ */
 declare const TeachingTip: Component<TeachingTipComponentProps, Record<string, never>, "isOpen">;
 export default TeachingTip;

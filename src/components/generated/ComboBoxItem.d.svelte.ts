@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ComboBoxItemComponentProps };
 
+/**
+ * Represents the container for an item in a ComboBox control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.comboboxitem
+ */
 declare const ComboBoxItem: Component<ComboBoxItemComponentProps, Record<string, never>, "">;
 export default ComboBoxItem;

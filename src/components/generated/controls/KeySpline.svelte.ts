@@ -5,8 +5,23 @@ import type { AttachedInput, ElementProps, PointInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { KeySpline } from "../bindings.ts";
 
+/**
+ * Represents a spline key frame to define animation progress.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline
+ */
 export interface KeySplineProps {
+  /**
+   * Gets or sets the first control point used to define a Bezier curve that describes a KeySpline.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline
+   */
   controlPoint1?: PointInput;
+  /**
+   * Gets or sets the second control point used to define a Bezier curve that describes a KeySpline.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline
+   */
   controlPoint2?: PointInput;
   attached?: AttachedInput;
 }

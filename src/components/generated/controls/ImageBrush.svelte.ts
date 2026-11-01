@@ -10,9 +10,29 @@ import { linkTileBrush } from "./TileBrush.svelte.ts";
 import type { TileBrushBound, TileBrushProps } from "./TileBrush.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Paints an area with an image. The image source is typically obtained from file formats such as Joint Photographic Experts Group (JPEG).
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush
+ */
 export interface ImageBrushProps extends TileBrushProps {
+  /**
+   * Gets or sets the image source displayed by this ImageBrush. In code you set this with an ImageSource subclass instance, in XAML you set this with a URI to an image source file. An object representing the image source, to be displayed by this ImageBrush when it's applied to content.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush
+   */
   imageSource?: ImageSourceInput | Snippet;
+  /**
+   * Occurs when there is an error associated with image retrieval or format.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush
+   */
   onimagefailed?: (sender: ImageBrush, args: EventArguments<ExceptionRoutedEventArgs>) => void;
+  /**
+   * Occurs when the image source is downloaded and decoded with no failure. You can use this event to determine the size of an image before rendering it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush
+   */
   onimageopened?: (sender: ImageBrush, args: EventArguments<RoutedEventArgs>) => void;
 }
 

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { HubComponentProps };
 
+/**
+ * Represents a control that displays groups of content in a panning view.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
+ */
 declare const Hub: Component<HubComponentProps, Record<string, never>, "">;
 export default Hub;

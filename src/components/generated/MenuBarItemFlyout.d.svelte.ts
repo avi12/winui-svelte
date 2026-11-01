@@ -7,5 +7,10 @@ import type { Component } from "svelte";
 /** The props of `MenuBarItemFlyout`: the control's, `open` and `target`. */
 export type MenuBarItemFlyoutComponentProps = FlyoutOverlayComponentProps<MenuBarItemFlyoutControlProps>;
 
+/**
+ * Represents the flyout of a MenuBarItem.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubaritemflyout
+ */
 declare const MenuBarItemFlyout: Component<MenuBarItemFlyoutComponentProps, Record<string, never>, "open">;
 export default MenuBarItemFlyout;

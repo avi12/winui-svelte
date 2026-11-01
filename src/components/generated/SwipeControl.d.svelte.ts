@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SwipeControlComponentProps };
 
+/**
+ * Represents a container that provides access to, and the ability to invoke, contextual commands through a basic touch interaction.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol
+ */
 declare const SwipeControl: Component<SwipeControlComponentProps, Record<string, never>, "">;
 export default SwipeControl;

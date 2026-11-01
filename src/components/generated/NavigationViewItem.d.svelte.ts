@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { NavigationViewItemComponentProps };
 
+/**
+ * Represents the container for an item in a NavigationView control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem
+ */
 declare const NavigationViewItem: Component<NavigationViewItemComponentProps, Record<string, never>, "">;
 export default NavigationViewItem;

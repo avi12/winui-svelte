@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ArcSegmentComponentProps };
 
+/**
+ * Represents an elliptical arc between two points.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+ */
 declare const ArcSegment: Component<ArcSegmentComponentProps, Record<string, never>, "">;
 export default ArcSegment;

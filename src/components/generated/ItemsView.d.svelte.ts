@@ -6,5 +6,10 @@ import type { RepeaterComponent, RepeaterComponentProps } from "../hand-written/
 /** The props of `ItemsView`, generic over the items it shows. */
 export type ItemsViewComponentProps<Item = object> = RepeaterComponentProps<Item, ItemsViewControlProps>;
 
+/**
+ * Represents a control that displays data items. It can organize them using various layouts like vertical stacking or columns and rows.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+ */
 declare const ItemsView: RepeaterComponent<ItemsViewControlProps>;
 export default ItemsView;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DropDownButtonComponentProps };
 
+/**
+ * Represents a button that includes a chevron to indicate a menu can be opened.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.dropdownbutton
+ */
 declare const DropDownButton: Component<DropDownButtonComponentProps, Record<string, never>, "">;
 export default DropDownButton;

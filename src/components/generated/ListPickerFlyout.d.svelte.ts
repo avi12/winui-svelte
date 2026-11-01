@@ -7,5 +7,10 @@ import type { Component } from "svelte";
 /** The props of `ListPickerFlyout`: the control's, `open` and `target`. */
 export type ListPickerFlyoutComponentProps = FlyoutOverlayComponentProps<ListPickerFlyoutControlProps>;
 
+/**
+ * Represents a control that allows a user to pick one or more items from a list. See Remarks.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+ */
 declare const ListPickerFlyout: Component<ListPickerFlyoutComponentProps, Record<string, never>, "open">;
 export default ListPickerFlyout;

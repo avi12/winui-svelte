@@ -7,8 +7,23 @@ import type { LineGeometry } from "../bindings.ts";
 import { linkGeometry } from "./Geometry.svelte.ts";
 import type { GeometryBound, GeometryProps } from "./Geometry.svelte.ts";
 
+/**
+ * Represents the geometry of a line.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linegeometry
+ */
 export interface LineGeometryProps extends GeometryProps {
+  /**
+   * Gets or sets the end point of a line. The end point of the line. The default is a Point with value 0,0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linegeometry
+   */
   endPoint?: PointInput;
+  /**
+   * Gets or sets the start point of the line. The start point of the line. The default is a Point with value 0,0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linegeometry
+   */
   startPoint?: PointInput;
 }
 

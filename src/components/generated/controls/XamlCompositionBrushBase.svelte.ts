@@ -7,7 +7,17 @@ import type { XamlCompositionBrushBase } from "../bindings.ts";
 import { linkBrush } from "./Brush.svelte.ts";
 import type { BrushBound, BrushProps } from "./Brush.svelte.ts";
 
+/**
+ * Provides a base class used to create XAML brushes that paint an area with a CompositionBrush.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.xamlcompositionbrushbase
+ */
 export interface XamlCompositionBrushBaseProps extends BrushProps {
+  /**
+   * The color to use for rendering in case the CompositionBrush can't be rendered.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.xamlcompositionbrushbase
+   */
   fallbackColor?: ColorInput;
 }
 

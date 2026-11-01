@@ -6,7 +6,17 @@ import type { FlipView } from "../bindings.ts";
 import { linkSelector } from "./Selector.svelte.ts";
 import type { SelectorBound, SelectorProps } from "./Selector.svelte.ts";
 
+/**
+ * Represents an items control that displays one item at a time, and enables "flip" behavior for traversing its collection of items.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flipview
+ */
 export interface FlipViewProps extends SelectorProps {
+  /**
+   * Gets or sets a value that indicates whether transition animations are always used whether the navigation is touch-based, button-based or programmatic.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flipview
+   */
   useTouchAnimationsForAllNavigation?: boolean;
 }
 

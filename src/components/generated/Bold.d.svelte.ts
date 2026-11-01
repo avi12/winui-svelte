@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { BoldComponentProps };
 
+/**
+ * Provides an inline-level content element that causes content to render with a bold font weight.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.bold
+ */
 declare const Bold: Component<BoldComponentProps, Record<string, never>, "">;
 export default Bold;

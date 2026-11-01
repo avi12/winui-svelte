@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ParallaxViewComponentProps };
 
+/**
+ * Represents a container that associates the scroll position of a foreground element, such as a list, with a background element, such as an image. A 3D effect is created from each element having a different scrolling rate.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+ */
 declare const ParallaxView: Component<ParallaxViewComponentProps, Record<string, never>, "">;
 export default ParallaxView;

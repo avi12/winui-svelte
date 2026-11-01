@@ -6,12 +6,47 @@ import type { AnnotatedScrollBar } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * Represents a control that enables vertical scrolling of content with navigation to labeled positions at definable increments.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.annotatedscrollbar
+ */
 export interface AnnotatedScrollBarProps extends ControlProps {
+  /**
+   * Gets or sets an IElementFactory (such as a DataTemplate) used to display detail labels in an annotated scrollbar. An IElementFactory (such as a DataTemplate) used to display detail labels in an annotated scrollbar. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.annotatedscrollbar
+   */
   detailLabelTemplate?: AnnotatedScrollBar["detailLabelTemplate"];
+  /**
+   * Gets or sets a collection of AnnotatedScrollBarLabel objects that define the labels to be displayed by the AnnotatedScrollBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.annotatedscrollbar
+   */
   labels?: AnnotatedScrollBar["labels"];
+  /**
+   * Gets or sets an IElementFactory (such as a DataTemplate) used to display labels in an annotated scrollbar. An IElementFactory (such as a DataTemplate) used to display labels in an annotated scrollbar. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.annotatedscrollbar
+   */
   labelTemplate?: AnnotatedScrollBar["labelTemplate"];
+  /**
+   * Gets or sets the offset delta by which the AnnotatedScrollBar scrolls when using the up and down arrow buttons.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.annotatedscrollbar
+   */
   smallChange?: number;
+  /**
+   * Raised upon user interaction with the AnnotatedScrollBar track when content for a tooltip is required.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.annotatedscrollbar
+   */
   ondetaillabelrequested?: Parameters<AnnotatedScrollBar["onDetailLabelRequested"]>[0];
+  /**
+   * Occurs when a user scrolls using the buttons or by interacting with the track.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.annotatedscrollbar
+   */
   onscrolling?: Parameters<AnnotatedScrollBar["onScrolling"]>[0];
 }
 

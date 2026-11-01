@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SplinePointKeyFrameComponentProps };
 
+/**
+ * Animates from the Point value of the previous key frame to its own Value using splined interpolation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinepointkeyframe
+ */
 declare const SplinePointKeyFrame: Component<SplinePointKeyFrameComponentProps, Record<string, never>, "">;
 export default SplinePointKeyFrame;

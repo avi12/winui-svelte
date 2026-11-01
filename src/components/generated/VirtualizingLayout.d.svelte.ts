@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { VirtualizingLayoutComponentProps };
 
+/**
+ * Represents the base class for an object that sizes and arranges child elements for a host and supports virtualization.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizinglayout
+ */
 declare const VirtualizingLayout: Component<VirtualizingLayoutComponentProps, Record<string, never>, "">;
 export default VirtualizingLayout;

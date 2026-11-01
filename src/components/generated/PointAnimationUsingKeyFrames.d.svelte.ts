@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PointAnimationUsingKeyFramesComponentProps };
 
+/**
+ * Animates the value of a Point property along a set of KeyFrames.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimationusingkeyframes
+ */
 declare const PointAnimationUsingKeyFrames: Component<PointAnimationUsingKeyFramesComponentProps, Record<string, never>, "">;
 export default PointAnimationUsingKeyFrames;

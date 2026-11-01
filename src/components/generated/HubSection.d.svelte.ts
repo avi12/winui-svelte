@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { HubSectionComponentProps };
 
+/**
+ * Represents a single group of content in a Hub.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
+ */
 declare const HubSection: Component<HubSectionComponentProps, Record<string, never>, "">;
 export default HubSection;

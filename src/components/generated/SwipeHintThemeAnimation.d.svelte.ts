@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SwipeHintThemeAnimationComponentProps };
 
+/**
+ * Represents the preconfigured animation that indicates that a Swipe gesture is now possible.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.swipehintthemeanimation
+ */
 declare const SwipeHintThemeAnimation: Component<SwipeHintThemeAnimationComponentProps, Record<string, never>, "">;
 export default SwipeHintThemeAnimation;

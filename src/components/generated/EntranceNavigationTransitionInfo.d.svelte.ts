@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { EntranceNavigationTransitionInfoComponentProps };
 
+/**
+ * Specifies the animation to run when content appears on a Page.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancenavigationtransitioninfo
+ */
 declare const EntranceNavigationTransitionInfo: Component<EntranceNavigationTransitionInfoComponentProps, Record<string, never>, "">;
 export default EntranceNavigationTransitionInfo;

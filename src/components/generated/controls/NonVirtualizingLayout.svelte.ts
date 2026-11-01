@@ -6,6 +6,11 @@ import type { NonVirtualizingLayout } from "../bindings.ts";
 import { linkLayout } from "./Layout.svelte.ts";
 import type { LayoutBound, LayoutProps } from "./Layout.svelte.ts";
 
+/**
+ * Represents the base class for an object that sizes and arranges child elements for a host and and does not support virtualization.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.nonvirtualizinglayout
+ */
 export interface NonVirtualizingLayoutProps extends LayoutProps {
 }
 

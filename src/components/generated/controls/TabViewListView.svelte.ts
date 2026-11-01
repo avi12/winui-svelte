@@ -6,6 +6,11 @@ import type { TabViewListView } from "../bindings.ts";
 import { linkListView } from "./ListView.svelte.ts";
 import type { ListViewBound, ListViewProps } from "./ListView.svelte.ts";
 
+/**
+ * Represents the ListView corresponding to the TabStrip within the TabView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.tabviewlistview
+ */
 export interface TabViewListViewProps extends ListViewProps {
 }
 

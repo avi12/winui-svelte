@@ -9,22 +9,92 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Displays content on top of existing content, within the bounds of the application window.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+ */
 export interface PopupProps extends FrameworkElementProps {
   children?: Snippet;
   childTransitions?: Snippet;
+  /**
+   * Gets or sets whether the popup is currently displayed on the screen.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   isOpen?: boolean | undefined;
+  /**
+   * Gets the actual placement of the popup, in relation to its placement target. A value of the enumeration that indicates the actual placement of the popup, in relation to its placement target.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   actualPlacement?: EnumInput<typeof PopupPlacementMode> | undefined;
+  /**
+   * Gets or sets the content to be hosted in the popup.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   child?: Popup["child"] | Snippet;
+  /**
+   * Gets or sets the preferred placement to be used for the popup, in relation to its placement target. A value of the enumeration that indicates the preferred placement to be used for the popup, in relation to its placement target.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   desiredPlacement?: EnumInput<typeof PopupPlacementMode>;
+  /**
+   * Gets or sets the distance between the left side of the application window and the left side of the popup. A measurement in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   horizontalOffset?: number;
+  /**
+   * Gets or sets a value that determines how the Popup can be dismissed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   isLightDismissEnabled?: boolean;
+  /**
+   * Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
+  /**
+   * Gets or sets the element to use as the popup's placement target.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   placementTarget?: Popup["placementTarget"];
+  /**
+   * Gets or sets a value that indicates whether the popup should be shown within the bounds of the XAML root.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   shouldConstrainToRootBounds?: boolean;
+  /**
+   * Gets or sets the system backdrop to apply to this Popup. The backdrop is rendered behind the Popup content.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   systemBackdrop?: Popup["systemBackdrop"] | Snippet;
+  /**
+   * Gets or sets the distance between the top of the application window and the top of the popup. A measurement in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   verticalOffset?: number;
   onactualplacementchanged?: Parameters<Popup["onActualPlacementChanged"]>[0];
+  /**
+   * Fires when the IsOpen property is set to false.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   onclosed?: Parameters<Popup["onClosed"]>[0];
+  /**
+   * Fires when the IsOpen property is set to true.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+   */
   onopened?: Parameters<Popup["onOpened"]>[0];
 }
 

@@ -5,8 +5,23 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { Layout } from "../bindings.ts";
 
+/**
+ * Represents the base class for an object that sizes and arranges child elements for a host.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.layout
+ */
 export interface LayoutProps {
+  /**
+   * Occurs when the arrange state (layout) has been invalidated.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.layout
+   */
   onarrangeinvalidated?: Parameters<Layout["onArrangeInvalidated"]>[0];
+  /**
+   * Occurs when the measurement state (layout) has been invalidated.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.layout
+   */
   onmeasureinvalidated?: Parameters<Layout["onMeasureInvalidated"]>[0];
   attached?: AttachedInput;
 }

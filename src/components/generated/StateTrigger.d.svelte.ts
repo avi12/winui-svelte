@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { StateTriggerComponentProps };
 
+/**
+ * Represents a trigger that applies visual states conditionally.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.statetrigger
+ */
 declare const StateTrigger: Component<StateTriggerComponentProps, Record<string, never>, "">;
 export default StateTrigger;

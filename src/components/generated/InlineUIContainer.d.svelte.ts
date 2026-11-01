@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { InlineUIContainerComponentProps };
 
+/**
+ * Provides an inline content element that enables UIElement types to be embedded in the content of a RichTextBlock.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.inlineuicontainer
+ */
 declare const InlineUIContainer: Component<InlineUIContainerComponentProps, Record<string, never>, "">;
 export default InlineUIContainer;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { InfoBadgeComponentProps };
 
+/**
+ * Represents a control for indicating notifications, alerts, new content, or to attract focus to an area within an app.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobadge
+ */
 declare const InfoBadge: Component<InfoBadgeComponentProps, Record<string, never>, "">;
 export default InfoBadge;

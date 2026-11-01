@@ -7,9 +7,29 @@ import type { BreadcrumbBar } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * The BreadcrumbBar control provides the direct path of pages or folders to the current location.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar
+ */
 export interface BreadcrumbBarProps extends ControlProps {
+  /**
+   * Gets or sets an object source used to generate the content of the BreadcrumbBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar
+   */
   itemsSource?: CollectionInput;
+  /**
+   * Gets or sets the data template for the BreadcrumbBarItem. The data template that is used to display the content of the BreadcrumbBarItem.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar
+   */
   itemTemplate?: ObjectReferenceInput;
+  /**
+   * Occurs when an item is clicked in the BreadcrumbBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar
+   */
   onitemclicked?: Parameters<BreadcrumbBar["onItemClicked"]>[0];
 }
 

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CalendarPanelComponentProps };
 
+/**
+ * Represents a panel that contains a calendar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.calendarpanel
+ */
 declare const CalendarPanel: Component<CalendarPanelComponentProps, Record<string, never>, "">;
 export default CalendarPanel;

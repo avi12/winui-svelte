@@ -6,6 +6,11 @@ import type { CheckBox } from "../bindings.ts";
 import { linkToggleButton } from "./ToggleButton.svelte.ts";
 import type { ToggleButtonBound, ToggleButtonProps } from "./ToggleButton.svelte.ts";
 
+/**
+ * Represents a control that a user can select (check) or clear (uncheck). A CheckBox can also report its value as indeterminate.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.checkbox
+ */
 export interface CheckBoxProps extends ToggleButtonProps {
 }
 

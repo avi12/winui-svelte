@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SplineDoubleKeyFrameComponentProps };
 
+/**
+ * Animates from the Double value of the previous key frame to its own Value using splined interpolation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinedoublekeyframe
+ */
 declare const SplineDoubleKeyFrame: Component<SplineDoubleKeyFrameComponentProps, Record<string, never>, "">;
 export default SplineDoubleKeyFrame;

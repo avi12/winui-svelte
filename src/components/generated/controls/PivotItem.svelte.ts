@@ -8,7 +8,17 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents the container for an item in a Pivot control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivotitem
+ */
 export interface PivotItemProps extends ContentControlProps {
+  /**
+   * Gets or sets the header for the PivotItem. Returns Object.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivotitem
+   */
   header?: ObjectInput | Snippet;
 }
 

@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { NavigationTransitionInfo } from "../bindings.ts";
 
+/**
+ * Provides parameter info for the Frame.Navigate method. Controls how the transition animation runs during the navigation action.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.navigationtransitioninfo
+ */
 export interface NavigationTransitionInfoProps {
   attached?: AttachedInput;
 }

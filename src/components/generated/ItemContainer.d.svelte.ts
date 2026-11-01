@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ItemContainerComponentProps };
 
+/**
+ * Represents the container for an individual item in an ItemsView collection control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemcontainer
+ */
 declare const ItemContainer: Component<ItemContainerComponentProps, Record<string, never>, "">;
 export default ItemContainer;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RatingControlComponentProps };
 
+/**
+ * Represents a control that lets a user enter a star rating.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol
+ */
 declare const RatingControl: Component<RatingControlComponentProps, Record<string, never>, "value">;
 export default RatingControl;

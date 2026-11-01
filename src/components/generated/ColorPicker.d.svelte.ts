@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ColorPickerComponentProps };
 
+/**
+ * Represents a control that lets a user pick a color using a color spectrum, sliders, or text input.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+ */
 declare const ColorPicker: Component<ColorPickerComponentProps, Record<string, never>, "color">;
 export default ColorPicker;

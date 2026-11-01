@@ -9,12 +9,47 @@ import type {
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * Represents an element that has a value within a specific range, such as the ProgressBar, ScrollBar, and Slider controls.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.rangebase
+ */
 export interface RangeBaseProps extends ControlProps {
+  /**
+   * Gets or sets the current setting of the range control, which may be coerced.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.rangebase
+   */
   value?: number | undefined;
+  /**
+   * Gets or sets a value to be added to or subtracted from the Value of a RangeBase control. Value to add to or subtract from the Value of the RangeBase element. The default is 1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.rangebase
+   */
   largeChange?: number;
+  /**
+   * Gets or sets the highest possible Value of the range element. The highest possible Value of the range element. The default is 1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.rangebase
+   */
   maximum?: number;
+  /**
+   * Gets or sets the Minimum possible Value of the range element. Minimum possible Value of the range element. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.rangebase
+   */
   minimum?: number;
+  /**
+   * Gets or sets a Value to be added to or subtracted from the Value of a RangeBase control. Value to add to or subtract from the Value of the RangeBase element. The default is 0.1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.rangebase
+   */
   smallChange?: number;
+  /**
+   * Occurs when the range value changes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.rangebase
+   */
   onvaluechanged?: (sender: RangeBase, args: EventArguments<RangeBaseValueChangedEventArgs>) => void;
 }
 

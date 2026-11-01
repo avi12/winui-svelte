@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { WebView2ComponentProps };
 
+/**
+ * Represents an object that enables the hosting of web content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+ */
 declare const WebView2: Component<WebView2ComponentProps, Record<string, never>, "">;
 export default WebView2;

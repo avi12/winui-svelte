@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { NavigationViewComponentProps };
 
+/**
+ * Represents a container that enables navigation of app content. It has a header, a view for the main content, and a menu pane for navigation commands.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+ */
 declare const NavigationView: Component<NavigationViewComponentProps, Record<string, never>, "isPaneOpen" | "selectedItem" | "displayMode">;
 export default NavigationView;

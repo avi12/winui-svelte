@@ -6,7 +6,17 @@ import type { MapIcon } from "../bindings.ts";
 import { linkMapElement } from "./MapElement.svelte.ts";
 import type { MapElementBound, MapElementProps } from "./MapElement.svelte.ts";
 
+/**
+ * Represents an icon that displays a pushpin on a MapControl.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapicon
+ */
 export interface MapIconProps extends MapElementProps {
+  /**
+   * Gets or sets the geographic location of the icon on the MapControl. The geographic location of the icon on the MapControl. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapicon
+   */
   location?: MapIcon["location"];
 }
 

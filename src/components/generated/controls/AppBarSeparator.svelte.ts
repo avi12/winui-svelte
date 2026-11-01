@@ -6,8 +6,23 @@ import type { AppBarSeparator } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * Represents a line that separates items in an AppBar or CommandBar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarseparator
+ */
 export interface AppBarSeparatorProps extends ControlProps {
+  /**
+   * Gets or sets the order in which this item is moved to the CommandBar overflow menu.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarseparator
+   */
   dynamicOverflowOrder?: number;
+  /**
+   * Gets or sets a value that indicates whether the separator is shown with reduced padding.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarseparator
+   */
   isCompact?: boolean;
 }
 

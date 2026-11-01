@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ItemsWrapGridComponentProps };
 
+/**
+ * Positions child elements sequentially from left to right or top to bottom in an ItemsControl that shows multiple items. When elements extend beyond the container edge, elements are positioned in the next row or column. Supports pixel-based UI virtualization and grouped layouts.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid
+ */
 declare const ItemsWrapGrid: Component<ItemsWrapGridComponentProps, Record<string, never>, "">;
 export default ItemsWrapGrid;

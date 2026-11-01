@@ -7,9 +7,29 @@ import type { EllipseGeometry } from "../bindings.ts";
 import { linkGeometry } from "./Geometry.svelte.ts";
 import type { GeometryBound, GeometryProps } from "./Geometry.svelte.ts";
 
+/**
+ * Represents the geometry of a circle or ellipse.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry
+ */
 export interface EllipseGeometryProps extends GeometryProps {
+  /**
+   * Gets or sets the center point of the EllipseGeometry.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry
+   */
   center?: PointInput;
+  /**
+   * Gets or sets the x-radius value of the EllipseGeometry.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry
+   */
   radiusX?: number;
+  /**
+   * Gets or sets the y-radius value of the EllipseGeometry.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry
+   */
   radiusY?: number;
 }
 

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { BorderComponentProps };
 
+/**
+ * Draws a border, background, or both, around another object.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border
+ */
 declare const Border: Component<BorderComponentProps, Record<string, never>, "">;
 export default Border;

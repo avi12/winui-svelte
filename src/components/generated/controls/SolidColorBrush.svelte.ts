@@ -8,8 +8,18 @@ import { linkBrush } from "./Brush.svelte.ts";
 import type { BrushBound, BrushProps } from "./Brush.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Paints an area with a solid color. The solid color is defined by a Color value.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.solidcolorbrush
+ */
 export interface SolidColorBrushProps extends BrushProps {
   children?: Snippet;
+  /**
+   * Gets or sets the color of this SolidColorBrush. The brush's color. The default value is Transparent.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.solidcolorbrush
+   */
   color?: ColorInput;
 }
 

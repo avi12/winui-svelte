@@ -5,6 +5,11 @@ import type { PickerFlyoutBase } from "../bindings.ts";
 import { linkFlyoutBase } from "./FlyoutBase.svelte.ts";
 import type { FlyoutBaseBound, FlyoutBaseProps } from "./FlyoutBase.svelte.ts";
 
+/**
+ * Represents a base class for picker controls.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.pickerflyoutbase
+ */
 export interface PickerFlyoutBaseProps extends FlyoutBaseProps {
 }
 

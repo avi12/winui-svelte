@@ -7,10 +7,20 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { VisualState } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents the visual appearance of a UI element when it is in a specific state. Visual states use Setters or a Storyboard to set UI properties within pages or control templates where the VisualState is defined.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstate
+ */
 export interface VisualStateProps {
   children?: Snippet;
   setters?: Snippet;
   stateTriggers?: Snippet;
+  /**
+   * Gets or sets a Storyboard that defines state-specific property values and appearance of the control when it is using this visual state. A Storyboard that defines the property changes to apply to the control when this VisualState is used as the current visual state.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstate
+   */
   storyboard?: VisualState["storyboard"] | Snippet;
   attached?: AttachedInput;
 }

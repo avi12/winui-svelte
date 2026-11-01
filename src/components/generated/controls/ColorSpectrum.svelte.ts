@@ -8,17 +8,77 @@ import type { ColorSpectrum } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * Represents a control that lets a user choose a color from a visual spectrum.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+ */
 export interface ColorSpectrumProps extends ControlProps {
+  /**
+   * Gets or sets the current color value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   color?: ColorInput | undefined;
+  /**
+   * Gets or sets a value that indicates how the Hue-Saturation-Value (HSV) color components are mapped onto the ColorSpectrum. A value of the enumeration. The default is HueSaturation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   components?: EnumInput<typeof ColorSpectrumComponents>;
+  /**
+   * Gets or sets the current color value as a Vector4.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   hsvColor?: ColorSpectrum["hsvColor"];
+  /**
+   * Gets or sets the maximum Hue value in the range 0-359.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   maxHue?: number;
+  /**
+   * Gets or sets the maximum Saturation value in the range 0-100.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   maxSaturation?: number;
+  /**
+   * Gets or sets the maximum Value value in the range 0-100.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   maxValue?: number;
+  /**
+   * Gets or sets the minimum Hue value in the range 0-359.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   minHue?: number;
+  /**
+   * Gets or sets the minimum Saturation value in the range 0-100.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   minSaturation?: number;
+  /**
+   * Gets or sets the minimum Value value in the range 0-100.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   minValue?: number;
+  /**
+   * Gets or sets a value that indicates whether the ColorSpectrum is shown as a square or a circle. A value of the enumeration. The default is Box, which shows the spectrum as a square.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   shape?: EnumInput<typeof ColorSpectrumShape>;
+  /**
+   * Occurs when the Color property has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   */
   oncolorchanged?: Parameters<ColorSpectrum["onColorChanged"]>[0];
 }
 

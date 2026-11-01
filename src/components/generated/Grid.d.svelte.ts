@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { GridComponentProps };
 
+/**
+ * Defines a flexible grid area that consists of columns and rows. Child elements of the Grid are measured and arranged according to their row/column assignments (set by using Grid.Row and Grid.Column attached properties) and other logic.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid
+ */
 declare const Grid: Component<GridComponentProps, Record<string, never>, "">;
 export default Grid;

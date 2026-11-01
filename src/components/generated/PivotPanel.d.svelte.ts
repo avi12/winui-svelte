@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PivotPanelComponentProps };
 
+/**
+ * Displays the items in a Pivot control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.pivotpanel
+ */
 declare const PivotPanel: Component<PivotPanelComponentProps, Record<string, never>, "">;
 export default PivotPanel;

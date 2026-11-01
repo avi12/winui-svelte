@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PathIconComponentProps };
 
+/**
+ * Represents an icon that uses a vector path as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pathicon
+ */
 declare const PathIcon: Component<PathIconComponentProps, Record<string, never>, "">;
 export default PathIcon;

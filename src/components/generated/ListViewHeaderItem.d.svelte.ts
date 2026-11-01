@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ListViewHeaderItemComponentProps };
 
+/**
+ * Represents items in the header for grouped data inside a ListView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewheaderitem
+ */
 declare const ListViewHeaderItem: Component<ListViewHeaderItemComponentProps, Record<string, never>, "">;
 export default ListViewHeaderItem;

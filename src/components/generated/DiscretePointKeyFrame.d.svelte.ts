@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DiscretePointKeyFrameComponentProps };
 
+/**
+ * Animates from the Point value of the previous key frame to its own Value using discrete frames.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.discretepointkeyframe
+ */
 declare const DiscretePointKeyFrame: Component<DiscretePointKeyFrameComponentProps, Record<string, never>, "">;
 export default DiscretePointKeyFrame;

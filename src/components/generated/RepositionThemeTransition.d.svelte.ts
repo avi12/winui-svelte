@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RepositionThemeTransitionComponentProps };
 
+/**
+ * Reacts to layout moves when no context is set and a trigger of move is passed.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemetransition
+ */
 declare const RepositionThemeTransition: Component<RepositionThemeTransitionComponentProps, Record<string, never>, "">;
 export default RepositionThemeTransition;

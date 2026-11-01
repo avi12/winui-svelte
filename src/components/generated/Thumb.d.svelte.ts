@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ThumbComponentProps };
 
+/**
+ * Represents a control that can be dragged by the user.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb
+ */
 declare const Thumb: Component<ThumbComponentProps, Record<string, never>, "">;
 export default Thumb;

@@ -7,5 +7,10 @@ import type { Component } from "svelte";
 /** The props of `TimePickerFlyout`: the control's, `open` and `target`. */
 export type TimePickerFlyoutComponentProps = FlyoutOverlayComponentProps<TimePickerFlyoutControlProps>;
 
+/**
+ * Represents a control that allows a user to pick a time value.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepickerflyout
+ */
 declare const TimePickerFlyout: Component<TimePickerFlyoutComponentProps, Record<string, never>, "open">;
 export default TimePickerFlyout;

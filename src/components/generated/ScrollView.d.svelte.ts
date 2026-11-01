@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ScrollViewComponentProps };
 
+/**
+ * Represents a container that provides scroll, pan, and zoom support for its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+ */
 declare const ScrollView: Component<ScrollViewComponentProps, Record<string, never>, "extentHeight" | "extentWidth" | "horizontalOffset" | "state" | "verticalOffset" | "zoomFactor">;
 export default ScrollView;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ScrollViewerComponentProps };
 
+/**
+ * Represents a scrollable area that can contain other visible elements.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+ */
 declare const ScrollViewer: Component<ScrollViewerComponentProps, Record<string, never>, "horizontalOffset" | "verticalOffset" | "zoomFactor">;
 export default ScrollViewer;

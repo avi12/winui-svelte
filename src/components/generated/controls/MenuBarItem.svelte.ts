@@ -7,8 +7,18 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a top-level menu in a MenuBar control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubaritem
+ */
 export interface MenuBarItemProps extends ControlProps {
   items?: Snippet;
+  /**
+   * Gets or sets the text label for a MenuBar menu. The text label for this menu. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubaritem
+   */
   title?: string;
 }
 

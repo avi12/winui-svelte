@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PivotItemComponentProps };
 
+/**
+ * Represents the container for an item in a Pivot control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivotitem
+ */
 declare const PivotItem: Component<PivotItemComponentProps, Record<string, never>, "">;
 export default PivotItem;

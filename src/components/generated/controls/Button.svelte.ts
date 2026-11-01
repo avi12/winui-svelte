@@ -7,7 +7,17 @@ import { linkButtonBase } from "./ButtonBase.svelte.ts";
 import type { ButtonBaseBound, ButtonBaseProps } from "./ButtonBase.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a templated button control that interprets a Click user interaction.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.button
+ */
 export interface ButtonProps extends ButtonBaseProps {
+  /**
+   * Gets or sets the flyout associated with this button. The flyout associated with this button, if any; otherwise, null. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.button
+   */
   flyout?: Button["flyout"] | Snippet;
 }
 

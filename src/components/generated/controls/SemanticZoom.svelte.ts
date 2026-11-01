@@ -10,14 +10,54 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a scrollable control that incorporates two views that have a semantic relationship. For example, the ZoomedOutView might be an index of titles, and the ZoomedInView might include details and summaries for each of the title entries. Views can be changed using zoom or other interactions.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+ */
 export interface SemanticZoomProps extends ControlProps {
   children?: Snippet;
+  /**
+   * Gets or sets a value that declares whether the SemanticZoom can change display views.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   */
   canChangeViews?: boolean;
+  /**
+   * Gets or sets a value that determines whether the ZoomedInView is the active view.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   */
   isZoomedInViewActive?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the ZoomedInView shows a button that activates the ZoomedOutView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   */
   isZoomOutButtonEnabled?: boolean;
+  /**
+   * Gets or sets the semantically more complete zoomed-in view of the SemanticZoom. An object that implements ISemanticZoomInfo. Typically this is a practical ListViewBase implementation such as GridView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   */
   zoomedInView?: SemanticZoom["zoomedInView"] | Snippet;
+  /**
+   * Gets or sets the zoomed-out view of the SemanticZoom. An object that implements ISemanticZoomInfo. Typically this is a practical ListViewBase implementation such as GridView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   */
   zoomedOutView?: SemanticZoom["zoomedOutView"] | Snippet;
+  /**
+   * Occurs when a view change is complete and the view is displayed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   */
   onviewchangecompleted?: (sender: SemanticZoom, args: EventArguments<SemanticZoomViewChangedEventArgs>) => void;
+  /**
+   * Occurs when a view change is requested.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   */
   onviewchangestarted?: (sender: SemanticZoom, args: EventArguments<SemanticZoomViewChangedEventArgs>) => void;
 }
 

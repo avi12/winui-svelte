@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TranslateTransformComponentProps };
 
+/**
+ * Translates (moves) an object in the two-dimensional x-y coordinate system.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.translatetransform
+ */
 declare const TranslateTransform: Component<TranslateTransformComponentProps, Record<string, never>, "">;
 export default TranslateTransform;

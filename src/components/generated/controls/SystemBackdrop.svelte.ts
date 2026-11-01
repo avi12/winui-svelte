@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { SystemBackdrop } from "../bindings.ts";
 
+/**
+ * Base class for custom system backdrops used to render materials like Mica and Acrylic.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.systembackdrop
+ */
 export interface SystemBackdropProps {
   attached?: AttachedInput;
 }

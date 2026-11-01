@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SineEaseComponentProps };
 
+/**
+ * Represents an easing function that creates an animation that accelerates and/or decelerates using a sine formula.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.sineease
+ */
 declare const SineEase: Component<SineEaseComponentProps, Record<string, never>, "">;
 export default SineEase;

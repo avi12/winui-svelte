@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PointAnimationComponentProps };
 
+/**
+ * Animates the value of a Point property between two target values using linear interpolation over a specified Duration.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation
+ */
 declare const PointAnimation: Component<PointAnimationComponentProps, Record<string, never>, "">;
 export default PointAnimation;

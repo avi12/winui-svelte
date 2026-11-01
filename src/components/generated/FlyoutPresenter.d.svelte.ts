@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { FlyoutPresenterComponentProps };
 
+/**
+ * Displays the content of a Flyout.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyoutpresenter
+ */
 declare const FlyoutPresenter: Component<FlyoutPresenterComponentProps, Record<string, never>, "">;
 export default FlyoutPresenter;

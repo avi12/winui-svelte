@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TextBoxComponentProps };
 
+/**
+ * Represents a control that can be used to display and edit plain text (single or multi-line).
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+ */
 declare const TextBox: Component<TextBoxComponentProps, Record<string, never>, "selectionLength" | "selectionStart" | "text">;
 export default TextBox;

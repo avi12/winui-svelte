@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DropTargetItemThemeAnimationComponentProps };
 
+/**
+ * Represents the preconfigured animation that applies to potential drop target elements.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.droptargetitemthemeanimation
+ */
 declare const DropTargetItemThemeAnimation: Component<DropTargetItemThemeAnimationComponentProps, Record<string, never>, "">;
 export default DropTargetItemThemeAnimation;

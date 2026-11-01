@@ -8,18 +8,78 @@ import type { PipsPager } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * Represents a control that enables navigation within linearly paginated content using a configurable collection of glyphs, each of which represents a single "page" within a limitless range.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+ */
 export interface PipsPagerProps extends ControlProps {
+  /**
+   * The maximum number of pips shown in the PipsPager at one time.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   maxVisiblePips?: number;
+  /**
+   * Gets or sets the style to apply to the Next button.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   nextButtonStyle?: StyleInput;
+  /**
+   * Gets or sets the display state of the Next button. The display state of the Previous button. The default value is 'Collapsed'.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   nextButtonVisibility?: EnumInput<typeof PipsPagerButtonVisibility>;
+  /**
+   * Gets or sets the style for the default, unselected pips in the PipsPager.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   normalPipStyle?: StyleInput;
+  /**
+   * Gets or sets the maximum number of pages supported by the PipsPager. The maximum number of pages supported by the PipsPager. The default is -1 (infinite).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   numberOfPages?: number;
+  /**
+   * Gets or sets the orientation of the pips and navigation buttons in the PipsPager.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   orientation?: EnumInput<typeof Orientation>;
+  /**
+   * Gets or sets the style to apply to the Previous button.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   previousButtonStyle?: StyleInput;
+  /**
+   * Gets or sets the display state of the Previous button. The display state of the Previous button. The default value is 'Collapsed'.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   previousButtonVisibility?: EnumInput<typeof PipsPagerButtonVisibility>;
+  /**
+   * Gets or sets the 0 based index of the currently selected pip in the PipsPager. A pip is always selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   selectedPageIndex?: number;
+  /**
+   * Gets or sets the style to apply to the selected pip in the PipsPager.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   selectedPipStyle?: StyleInput;
   wrapMode?: EnumInput<typeof PipsPagerWrapMode>;
+  /**
+   * Occurs after the selected index changes on the PipsPager.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+   */
   onselectedindexchanged?: Parameters<PipsPager["onSelectedIndexChanged"]>[0];
 }
 

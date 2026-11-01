@@ -7,15 +7,65 @@ import type { WebView2 } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 
+/**
+ * Represents an object that enables the hosting of web content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+ */
 export interface WebView2Props extends FrameworkElementProps {
+  /**
+   * Gets or sets a value that indicates whether backward navigation is possible.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+   */
   canGoBack?: boolean;
+  /**
+   * Gets or sets a value that indicates whether forward navigation is possible.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+   */
   canGoForward?: boolean;
+  /**
+   * Gets or sets the color to use as the WebView2 background when the HTML content does not specify a color.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+   */
   defaultBackgroundColor?: ColorInput;
+  /**
+   * Gets or sets the URI of the current top level document.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+   */
   source?: UriInput;
+  /**
+   * Occurs when the core WebView2 process fails.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+   */
   oncoreprocessfailed?: Parameters<WebView2["onCoreProcessFailed"]>[0];
+  /**
+   * Occurs when the WebView2 object is initialized.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+   */
   oncorewebview2initialized?: Parameters<WebView2["onCoreWebView2Initialized"]>[0];
+  /**
+   * Occurs when the WebView2 has completely loaded (body.onload has been raised) or loading stopped with error.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+   */
   onnavigationcompleted?: Parameters<WebView2["onNavigationCompleted"]>[0];
+  /**
+   * Occurs when the main frame of the WebView2 navigates to a different URI.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+   */
   onnavigationstarting?: Parameters<WebView2["onNavigationStarting"]>[0];
+  /**
+   * Occurs when a new HTML document is loaded.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2
+   */
   onwebmessagereceived?: Parameters<WebView2["onWebMessageReceived"]>[0];
 }
 

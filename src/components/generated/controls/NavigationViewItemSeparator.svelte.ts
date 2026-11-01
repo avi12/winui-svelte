@@ -6,6 +6,11 @@ import type { NavigationViewItemSeparator } from "../bindings.ts";
 import { linkNavigationViewItemBase } from "./NavigationViewItemBase.svelte.ts";
 import type { NavigationViewItemBaseBound, NavigationViewItemBaseProps } from "./NavigationViewItemBase.svelte.ts";
 
+/**
+ * Represents a line that separates menu items in a NavigationView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitemseparator
+ */
 export interface NavigationViewItemSeparatorProps extends NavigationViewItemBaseProps {
 }
 

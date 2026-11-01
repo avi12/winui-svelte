@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MenuFlyoutPresenterComponentProps };
 
+/**
+ * Displays the content of a MenuFlyout control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutpresenter
+ */
 declare const MenuFlyoutPresenter: Component<MenuFlyoutPresenterComponentProps, Record<string, never>, "">;
 export default MenuFlyoutPresenter;

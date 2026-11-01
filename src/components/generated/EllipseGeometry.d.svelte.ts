@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { EllipseGeometryComponentProps };
 
+/**
+ * Represents the geometry of a circle or ellipse.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry
+ */
 declare const EllipseGeometry: Component<EllipseGeometryComponentProps, Record<string, never>, "">;
 export default EllipseGeometry;

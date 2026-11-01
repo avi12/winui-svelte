@@ -17,11 +17,41 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that displays an image. The image source is specified by referring to an image file, using several supported formats. The image source can also be set with a stream. See Remarks for the list of supported image source formats.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.image
+ */
 export interface ImageProps extends FrameworkElementProps {
+  /**
+   * Gets or sets a value for a nine-grid metaphor that controls how the image can be resized. The nine-grid metaphor enables you to stretch edges and corners of an image differently than its center. See Remarks for more info and an illustration. A Thickness value that sets the Left, Top, Right, Bottom measurements for the nine-grid resizing metaphor.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.image
+   */
   nineGrid?: ThicknessInput;
+  /**
+   * Gets or sets the source for the image. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage object, constructed with the Uniform Resource Identifier (URI) that describes the path to a valid image source file. Or, you can initialize a BitmapSource with a stream, perhaps a stream from a storage file.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.image
+   */
   source?: ImageSourceInput | Snippet;
+  /**
+   * Gets or sets a value that describes how an Image should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source image is rendered, if the Height and/or Width of the Image are not explicitly specified. The default value is Uniform.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.image
+   */
   stretch?: EnumInput<typeof Stretch>;
+  /**
+   * Occurs when there is an error associated with image retrieval or format.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.image
+   */
   onimagefailed?: (sender: Image, args: EventArguments<ExceptionRoutedEventArgs>) => void;
+  /**
+   * Occurs when the image source is downloaded and decoded with no failure. You can use this event to determine the natural size of the image source.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.image
+   */
   onimageopened?: (sender: Image, args: EventArguments<RoutedEventArgs>) => void;
 }
 

@@ -7,6 +7,11 @@ import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Controls animations with a timeline, and provides object and property targeting information for its child animations.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.storyboard
+ */
 export interface StoryboardProps extends TimelineProps {
   children?: Snippet;
 }

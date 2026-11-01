@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ColorAnimationComponentProps };
 
+/**
+ * Animates the value of a Color property between two target values using linear interpolation over a specified Duration.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation
+ */
 declare const ColorAnimation: Component<ColorAnimationComponentProps, Record<string, never>, "">;
 export default ColorAnimation;

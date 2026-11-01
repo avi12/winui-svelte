@@ -7,9 +7,24 @@ import { linkMenuFlyoutItemBase } from "./MenuFlyoutItemBase.svelte.ts";
 import type { MenuFlyoutItemBaseBound, MenuFlyoutItemBaseProps } from "./MenuFlyoutItemBase.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a menu item that displays a sub-menu in a MenuFlyout control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem
+ */
 export interface MenuFlyoutSubItemProps extends MenuFlyoutItemBaseProps {
   children?: Snippet;
+  /**
+   * Gets or sets the graphic content of the menu flyout subitem.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem
+   */
   icon?: MenuFlyoutSubItem["icon"] | Snippet;
+  /**
+   * Gets or sets the text content of a MenuFlyoutSubItem. A string that specifies the text content of this MenuFlyoutSubItem. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem
+   */
   text?: string;
 }
 

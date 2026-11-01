@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { NavigationViewItemSeparatorComponentProps };
 
+/**
+ * Represents a line that separates menu items in a NavigationView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitemseparator
+ */
 declare const NavigationViewItemSeparator: Component<NavigationViewItemSeparatorComponentProps, Record<string, never>, "">;
 export default NavigationViewItemSeparator;

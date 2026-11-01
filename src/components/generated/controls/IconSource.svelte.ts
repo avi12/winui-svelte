@@ -6,7 +6,17 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { IconSource } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents the base class for an icon source.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsource
+ */
 export interface IconSourceProps {
+  /**
+   * Gets or sets a brush that paints the foreground color of the control. The brush that paints the foreground of the control. The default is null, (a null brush), which is evaluated as Transparent for rendering. However, this value is typically set by a default system resource at runtime that is tied to the active theme and other settings.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsource
+   */
   foreground?: BrushInput | Snippet;
   attached?: AttachedInput;
 }

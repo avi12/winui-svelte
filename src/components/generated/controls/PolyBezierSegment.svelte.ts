@@ -8,8 +8,18 @@ import { linkPathSegment } from "./PathSegment.svelte.ts";
 import type { PathSegmentBound, PathSegmentProps } from "./PathSegment.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents one or more cubic Bezier curves.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polybeziersegment
+ */
 export interface PolyBezierSegmentProps extends PathSegmentProps {
   children?: Snippet;
+  /**
+   * Gets or sets the Point collection that defines this PolyBezierSegment object. The collection of points that defines this PolyBezierSegment object.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polybeziersegment
+   */
   points?: PointCollectionInput;
 }
 

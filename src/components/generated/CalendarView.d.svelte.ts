@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CalendarViewComponentProps };
 
+/**
+ * Represents a control that enables a user to select a date by using a visual calendar display.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+ */
 declare const CalendarView: Component<CalendarViewComponentProps, Record<string, never>, "">;
 export default CalendarView;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { LinearPointKeyFrameComponentProps };
 
+/**
+ * Animates from the Point value of the previous key frame to its own Value, using linear interpolation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.linearpointkeyframe
+ */
 declare const LinearPointKeyFrame: Component<LinearPointKeyFrameComponentProps, Record<string, never>, "">;
 export default LinearPointKeyFrame;

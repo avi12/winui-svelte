@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CollectionViewSourceComponentProps };
 
+/**
+ * Provides a data source that adds grouping and current-item support to collection classes.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource
+ */
 declare const CollectionViewSource: Component<CollectionViewSourceComponentProps, Record<string, never>, "">;
 export default CollectionViewSource;

@@ -14,15 +14,65 @@ import type { ListPickerFlyout } from "../bindings.ts";
 import { linkPickerFlyoutBase } from "./PickerFlyoutBase.svelte.ts";
 import type { PickerFlyoutBaseBound, PickerFlyoutBaseProps } from "./PickerFlyoutBase.svelte.ts";
 
+/**
+ * Represents a control that allows a user to pick one or more items from a list. See Remarks.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+ */
 export interface ListPickerFlyoutProps extends PickerFlyoutBaseProps {
+  /**
+   * Gets or sets the name or path of the property that is displayed for each data item The name or path of the property that is displayed for each the data item in the control. The default is an empty string ("").
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+   */
   displayMemberPath?: string;
+  /**
+   * Gets or sets an object source used to generate the content of the control. The object that is used to generate the content of the control. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+   */
   itemsSource?: CollectionInput;
+  /**
+   * Gets or sets the DataTemplate used to display each item. The template that specifies the visualization of the data objects. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+   */
   itemTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets the index of the selected item. The index of the selected item. The default is -1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+   */
   selectedIndex?: number;
+  /**
+   * Gets or sets the selected item. The selected item. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+   */
   selectedItem?: ObjectInput;
+  /**
+   * Gets or sets the value of the selected item, obtained by using the SelectedValuePath The value of the selected item, obtained by using the SelectedValuePath, or null if no item is selected. The default value is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+   */
   selectedValue?: ObjectInput;
+  /**
+   * Gets or sets the property path that is used to get the SelectedValue property of the SelectedItem property.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+   */
   selectedValuePath?: string;
+  /**
+   * Gets or sets the selection mode of the picker.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+   */
   selectionMode?: EnumInput<typeof ListPickerFlyoutSelectionMode>;
+  /**
+   * Occurs when the user has selected items.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout
+   */
   onitemspicked?: Parameters<ListPickerFlyout["onItemsPicked"]>[0];
 }
 

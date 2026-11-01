@@ -6,9 +6,29 @@ import type { ColumnMajorUniformToLargestGridLayout } from "../bindings.ts";
 import { linkNonVirtualizingLayout } from "./NonVirtualizingLayout.svelte.ts";
 import type { NonVirtualizingLayoutBound, NonVirtualizingLayoutProps } from "./NonVirtualizingLayout.svelte.ts";
 
+/**
+ * Represents a layout grid where each cell is sized uniformly based on the largest cell in the grid required to accommodate its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout
+ */
 export interface ColumnMajorUniformToLargestGridLayoutProps extends NonVirtualizingLayoutProps {
+  /**
+   * Gets or sets the uniform distance (in pixels) between grid columns.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout
+   */
   columnSpacing?: number;
+  /**
+   * Gets or sets the maximum number of columns in the grid.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout
+   */
   maxColumns?: number;
+  /**
+   * Gets or sets the uniform distance (in pixels) between grid rows.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout
+   */
   rowSpacing?: number;
 }
 

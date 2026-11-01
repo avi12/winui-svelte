@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TabViewItemComponentProps };
 
+/**
+ * Represents a single tab within a TabView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+ */
 declare const TabViewItem: Component<TabViewItemComponentProps, Record<string, never>, "">;
 export default TabViewItem;

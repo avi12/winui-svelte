@@ -7,13 +7,53 @@ import type { LinedFlowLayout } from "../bindings.ts";
 import { linkVirtualizingLayout } from "./VirtualizingLayout.svelte.ts";
 import type { VirtualizingLayoutBound, VirtualizingLayoutProps } from "./VirtualizingLayout.svelte.ts";
 
+/**
+ * Represents a control that positions elements sequentially from left to right, then top to bottom, in a wrapping layout, using the same height for all elements.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout
+ */
 export interface LinedFlowLayoutProps extends VirtualizingLayoutProps {
+  /**
+   * Gets or sets a value that indicates how items are aligned on the horizontal axis. An enumeration value that indicates how items are aligned. The default is Start.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout
+   */
   itemsJustification?: EnumInput<typeof LinedFlowLayoutItemsJustification>;
+  /**
+   * Gets or sets a value that indicates how items are sized to fill the available space. An enumeration value that indicates how items are sized to fill the available space. The default is None.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout
+   */
   itemsStretch?: EnumInput<typeof LinedFlowLayoutItemsStretch>;
+  /**
+   * Gets or sets the lines fixed height. The common height of all lines, and therefore of all items. The default is Double.NaN.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout
+   */
   lineHeight?: number;
+  /**
+   * Gets or sets the vertical space between items. The space (in pixels) between items on the vertical axis. Default is 0.0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout
+   */
   lineSpacing?: number;
+  /**
+   * Gets or sets the minimum space between items on the horizontal axis. The minimum space (in pixels) between items on the horizontal axis. The default is 0.0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout
+   */
   minItemSpacing?: number;
+  /**
+   * Occurs when the LinedFlowLayout needs sizing information for items in and around the current scrolling viewport.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout
+   */
   onitemsinforequested?: Parameters<LinedFlowLayout["onItemsInfoRequested"]>[0];
+  /**
+   * Occurs whenever items that had been locked into specific lines through calls to the LockItemToLine method are unlocked again.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout
+   */
   onitemsunlocked?: Parameters<LinedFlowLayout["onItemsUnlocked"]>[0];
 }
 

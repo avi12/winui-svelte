@@ -8,11 +8,41 @@ import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Animates the value of a Color property between two target values using linear interpolation over a specified Duration.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation
+ */
 export interface ColorAnimationProps extends TimelineProps {
+  /**
+   * Gets or sets the total amount by which the animation changes its starting value. The total amount by which the animation changes its starting value. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **Color?**(a nullable Color.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation
+   */
   by?: NullableColorInput;
+  /**
+   * Gets or sets the easing function applied to this animation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation
+   */
   easingFunction?: ColorAnimation["easingFunction"] | Snippet;
+  /**
+   * Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation
+   */
   enableDependentAnimation?: boolean;
+  /**
+   * Gets or sets the animation's starting value. The starting value of the animation. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **Color?**(a nullable Color.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation
+   */
   from?: NullableColorInput;
+  /**
+   * Gets or sets the animation's ending value. The ending value of the animation. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **Color?**(a nullable Color.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation
+   */
   to?: NullableColorInput;
 }
 

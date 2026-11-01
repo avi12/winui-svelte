@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PivotComponentProps };
 
+/**
+ * Represents a control that provides quick navigation of views within an app.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+ */
 declare const Pivot: Component<PivotComponentProps, Record<string, never>, "selectedIndex" | "selectedItem">;
 export default Pivot;

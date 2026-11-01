@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MapElementsLayerComponentProps };
 
+/**
+ * Represents a collection of map elements to which you can bind data and manipulate independently of other map elements.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapelementslayer
+ */
 declare const MapElementsLayer: Component<MapElementsLayerComponentProps, Record<string, never>, "">;
 export default MapElementsLayer;

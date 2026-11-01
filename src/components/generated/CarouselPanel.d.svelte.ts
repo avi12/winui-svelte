@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CarouselPanelComponentProps };
 
+/**
+ * Represents a panel that arranges its items in a line and circles around to the first item when the last item is reached.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+ */
 declare const CarouselPanel: Component<CarouselPanelComponentProps, Record<string, never>, "">;
 export default CarouselPanel;

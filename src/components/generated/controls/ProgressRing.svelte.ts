@@ -6,11 +6,41 @@ import type { ProgressRing } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * Represents a control that indicates the progress of an operation. The typical visual appearance is a ring-shaped "spinner".
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+ */
 export interface ProgressRingProps extends ControlProps {
+  /**
+   * Gets or sets a value that indicates whether the ProgressRing is showing progress.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+   */
   isActive?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the progress ring reports generic progress with a repeating pattern or reports progress based on the Value property.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+   */
   isIndeterminate?: boolean;
+  /**
+   * Gets or sets the highest allowed Value of the range element. The highest possible Value of the range element. The default is 100.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+   */
   maximum?: number;
+  /**
+   * Gets or sets the minimum allowed Value of the range element. Minimum allowed Value of the range element. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+   */
   minimum?: number;
+  /**
+   * Gets or sets the current magnitude of the progress ring. The current magnitude of the progress ring. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+   */
   value?: number;
 }
 

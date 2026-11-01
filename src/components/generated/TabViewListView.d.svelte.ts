@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TabViewListViewComponentProps };
 
+/**
+ * Represents the ListView corresponding to the TabStrip within the TabView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.tabviewlistview
+ */
 declare const TabViewListView: Component<TabViewListViewComponentProps, Record<string, never>, "selectedIndex" | "selectedItem" | "selectedValue">;
 export default TabViewListView;

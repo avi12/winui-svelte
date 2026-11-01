@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { GroupItemComponentProps };
 
+/**
+ * Represents the root element for a subtree that is created for a group.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupitem
+ */
 declare const GroupItem: Component<GroupItemComponentProps, Record<string, never>, "">;
 export default GroupItem;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ScrollContentPresenterComponentProps };
 
+/**
+ * Displays the content of a ScrollViewer control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter
+ */
 declare const ScrollContentPresenter: Component<ScrollContentPresenterComponentProps, Record<string, never>, "">;
 export default ScrollContentPresenter;

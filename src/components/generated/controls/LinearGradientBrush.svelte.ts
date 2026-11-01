@@ -7,8 +7,23 @@ import type { LinearGradientBrush } from "../bindings.ts";
 import { linkGradientBrush } from "./GradientBrush.svelte.ts";
 import type { GradientBrushBound, GradientBrushProps } from "./GradientBrush.svelte.ts";
 
+/**
+ * Paints an area with a linear gradient.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.lineargradientbrush
+ */
 export interface LinearGradientBrushProps extends GradientBrushProps {
+  /**
+   * Gets or sets the ending two-dimensional coordinates of the linear gradient. The ending two-dimensional coordinates of the linear gradient. The default is a Point with value 1,1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.lineargradientbrush
+   */
   endPoint?: PointInput;
+  /**
+   * Gets or sets the starting two-dimensional coordinates of the linear gradient. The starting two-dimensional coordinates for the linear gradient. The default is a Point with value 0,0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.lineargradientbrush
+   */
   startPoint?: PointInput;
 }
 

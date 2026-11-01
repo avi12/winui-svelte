@@ -8,7 +8,17 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a tick mark on a Slider control. Not intended for general use.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.tickbar
+ */
 export interface TickBarProps extends FrameworkElementProps {
+  /**
+   * Gets or sets the Brush that draws on the background area of the TickBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.tickbar
+   */
   fill?: BrushInput | Snippet;
 }
 

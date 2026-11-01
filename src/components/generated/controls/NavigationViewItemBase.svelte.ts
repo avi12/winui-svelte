@@ -5,7 +5,17 @@ import type { NavigationViewItemBase } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
+/**
+ * Base class for NavigationView menu items.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitembase
+ */
 export interface NavigationViewItemBaseProps extends ContentControlProps {
+  /**
+   * Gets or sets the value that indicates whether a NavigationViewItem is selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitembase
+   */
   isSelected?: boolean;
 }
 

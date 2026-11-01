@@ -13,14 +13,59 @@ import { SwipeBehaviorOnInvoked } from "../bindings.ts";
 import type { SwipeItem } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents an individual command in a SwipeControl.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+ */
 export interface SwipeItemProps {
+  /**
+   * Gets or sets a brush that provides the background of the control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   */
   background?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates how a SwipeControl behaves after this item is invoked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   */
   behaviorOnInvoked?: EnumInput<typeof SwipeBehaviorOnInvoked>;
+  /**
+   * Gets or sets the command to execute when this item is invoked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   */
   command?: SwipeItem["command"] | Snippet;
+  /**
+   * Gets or sets the parameter to pass to the Command property. The parameter to pass to the Command property. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   */
   commandParameter?: ObjectInput;
+  /**
+   * Gets or sets the brush that paints the text and icon of the item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   */
   foreground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the graphic content of the item. The graphic content of the item. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   */
   iconSource?: SwipeItem["iconSource"] | Snippet;
+  /**
+   * Gets or sets the text description displayed on the item. The text description displayed on the item. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   */
   text?: string;
+  /**
+   * Occurs when user interaction indicates that the command represented by this item should execute.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   */
   oninvoked?: Parameters<SwipeItem["onInvoked"]>[0];
   attached?: AttachedInput;
 }

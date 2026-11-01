@@ -8,12 +8,47 @@ import { linkRatingItemInfo } from "./RatingItemInfo.svelte.ts";
 import type { RatingItemInfoBound, RatingItemInfoProps } from "./RatingItemInfo.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents information about the visual states of image elements that represent a rating.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemimageinfo
+ */
 export interface RatingItemImageInfoProps extends RatingItemInfoProps {
+  /**
+   * Gets or sets an image that represents a rating element that is disabled. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage with a stream, perhaps a stream from a storage file.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemimageinfo
+   */
   disabledImage?: ImageSourceInput | Snippet;
+  /**
+   * Gets or sets an image that represents a rating element that has been set by the user. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage with a stream, perhaps a stream from a storage file.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemimageinfo
+   */
   image?: ImageSourceInput | Snippet;
+  /**
+   * Gets or sets an image that represents a rating element that is showing a placeholder value. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage with a stream, perhaps a stream from a storage file.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemimageinfo
+   */
   placeholderImage?: ImageSourceInput | Snippet;
+  /**
+   * Gets or sets an image that represents a rating element that has the pointer over it. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage with a stream, perhaps a stream from a storage file.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemimageinfo
+   */
   pointerOverImage?: ImageSourceInput | Snippet;
+  /**
+   * Gets or sets an image that represents a rating element showing a placeholder value with the pointer over it. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage with a stream, perhaps a stream from a storage file.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemimageinfo
+   */
   pointerOverPlaceholderImage?: ImageSourceInput | Snippet;
+  /**
+   * Gets or sets an image that represents a rating element that has not been set. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage with a stream, perhaps a stream from a storage file.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemimageinfo
+   */
   unsetImage?: ImageSourceInput | Snippet;
 }
 

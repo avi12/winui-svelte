@@ -23,24 +23,114 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that allows a user to pick a date value.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+ */
 export interface DatePickerProps extends ControlProps {
   children?: Snippet;
+  /**
+   * Gets or sets the date currently selected in the date picker, or null if no date is selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   selectedDate?: NullableDateInput | undefined;
+  /**
+   * Gets or sets the date currently set in the date picker.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   date?: DateInput | undefined;
+  /**
+   * Gets or sets the calendar system to use.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   calendarIdentifier?: string;
+  /**
+   * Gets or sets the display format for the day value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   dayFormat?: string;
+  /**
+   * Gets or sets a value that indicates whether the day selector is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   dayVisible?: boolean;
+  /**
+   * Gets or sets the content for the control's header. The content of the control's header. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   header?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   headerTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
+  /**
+   * Gets or sets the maximum Gregorian year available for picking.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   maxYear?: DateInput;
+  /**
+   * Gets or sets the minimum Gregorian year available for picking.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   minYear?: DateInput;
+  /**
+   * Gets or sets the display format for the month value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   monthFormat?: string;
+  /**
+   * Gets or sets a value that indicates whether the month selector is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   monthVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the day, month, and year selectors are stacked horizontally or vertically. A named constant of the enumeration that indicates whether the day, month, and year selectors are stacked horizontally or vertically. The default is Horizontal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   orientation?: EnumInput<typeof Orientation>;
+  /**
+   * Gets or sets the display format for the year value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   yearFormat?: string;
+  /**
+   * Gets or sets a value that indicates whether the year selector is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   yearVisible?: boolean;
+  /**
+   * Occurs when the date value is changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   ondatechanged?: Parameters<DatePicker["onDateChanged"]>[0];
+  /**
+   * Occurs when the date value is changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+   */
   onselecteddatechanged?: Parameters<DatePicker["onSelectedDateChanged"]>[0];
 }
 

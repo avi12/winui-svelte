@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RepeatButtonComponentProps };
 
+/**
+ * Represents a control that raises its Click event repeatedly when it is pressed and held.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.repeatbutton
+ */
 declare const RepeatButton: Component<RepeatButtonComponentProps, Record<string, never>, "">;
 export default RepeatButton;

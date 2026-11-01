@@ -6,6 +6,11 @@ import type { BreadcrumbBarItem } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
+/**
+ * Represents an item in a BreadcrumbBar control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbaritem
+ */
 export interface BreadcrumbBarItemProps extends ContentControlProps {
 }
 

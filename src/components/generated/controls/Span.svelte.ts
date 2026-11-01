@@ -7,8 +7,18 @@ import { linkInline } from "./Inline.svelte.ts";
 import type { InlineBound, InlineProps } from "./Inline.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Groups other Inline content elements. Parent class for Bold, Hyperlink, Italic and Underline.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.span
+ */
 export interface SpanProps extends InlineProps {
   children?: Snippet;
+  /**
+   * Gets an InlineCollection containing the top-level inline elements that include the contents of Span. An InlineCollection containing the inline elements that include the contents of the Span. This property has no default value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.span
+   */
   inlines?: Span["inlines"];
 }
 

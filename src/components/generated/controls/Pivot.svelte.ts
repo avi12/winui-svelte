@@ -16,23 +16,113 @@ import { linkItemsControl } from "./ItemsControl.svelte.ts";
 import type { ItemsControlBound, ItemsControlProps } from "./ItemsControl.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that provides quick navigation of views within an app.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+ */
 export interface PivotProps extends ItemsControlProps {
+  /**
+   * Gets or sets the currently selected item in the Pivot. The currently selected PivotItem or, if the Pivot is bound to data, the data item set as the Content of the currently selected PivotItem.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   selectedItem?: ObjectInput | undefined;
+  /**
+   * Gets or sets the zero-based index of the currently selected item in the Pivot.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   selectedIndex?: number | undefined;
+  /**
+   * Gets or sets a value that specifies the style of focus visual used for pivot header items.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   headerFocusVisualPlacement?: EnumInput<typeof PivotHeaderFocusVisualPlacement>;
+  /**
+   * Gets or sets the template for the Header property of PivotItem children.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   headerTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets a value that indicates whether the selected header moves to the first position.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   isHeaderItemsCarouselEnabled?: boolean;
+  /**
+   * Gets or sets whether the Pivot is locked to show only the current PivotItem. While the Pivot is locked, all other PivotItems are removed, and the user cannot navigate to them. An example of locking is when the email list is put into a multi-select mode.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   isLocked?: boolean;
+  /**
+   * Gets or sets the content for the header on the control's left side. The content of the header on the control's left side. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   leftHeader?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the template for the header on the control's left side.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   leftHeaderTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets the content for the header on the control's right side. The content of the header on the control's right side. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   rightHeader?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the template for the header on the control's right side.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   rightHeaderTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets the title to be optionally set above the headers. Returns String.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   title?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the title template used for displaying the title above the headers area. The template that specifies the visualization of the title object.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   titleTemplate?: DataTemplateInput;
+  /**
+   * Event for indicating that an item has fully loaded.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   onpivotitemloaded?: Parameters<Pivot["onPivotItemLoaded"]>[0];
+  /**
+   * Event for offering an opportunity to dynamically load or change the content of a pivot item before it is displayed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   onpivotitemloading?: Parameters<Pivot["onPivotItemLoading"]>[0];
+  /**
+   * Event for notifying that the pivot item has been completely unloaded from the visual pivot.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   onpivotitemunloaded?: Parameters<Pivot["onPivotItemUnloaded"]>[0];
+  /**
+   * Event for offering an opportunity to dynamically load, change, or remove the content of a pivot item as it is removed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   onpivotitemunloading?: Parameters<Pivot["onPivotItemUnloading"]>[0];
+  /**
+   * Occurs when the currently selected item changes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot
+   */
   onselectionchanged?: (sender: Pivot, args: EventArguments<SelectionChangedEventArgs>) => void;
 }
 

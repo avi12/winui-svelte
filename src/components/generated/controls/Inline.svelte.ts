@@ -5,6 +5,11 @@ import type { Inline } from "../bindings.ts";
 import { linkTextElement } from "./TextElement.svelte.ts";
 import type { TextElementBound, TextElementProps } from "./TextElement.svelte.ts";
 
+/**
+ * Provides a base class for inline text elements, such as Span and Run.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.inline
+ */
 export interface InlineProps extends TextElementProps {
 }
 

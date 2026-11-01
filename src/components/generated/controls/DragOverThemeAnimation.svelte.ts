@@ -7,9 +7,29 @@ import type { DragOverThemeAnimation } from "../bindings.ts";
 import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 
+/**
+ * Represents the preconfigured animation that applies to the elements underneath an element being dragged.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragoverthemeanimation
+ */
 export interface DragOverThemeAnimationProps extends TimelineProps {
+  /**
+   * Gets or sets the direction that the target should translate, when the animation is active. A value of the enumeration.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragoverthemeanimation
+   */
   direction?: EnumInput<typeof AnimationDirection>;
+  /**
+   * Gets or sets the reference name of the control element being targeted. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragoverthemeanimation
+   */
   targetName?: string;
+  /**
+   * Gets or sets the distance by which the target is translated when the animation is active. The offset, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragoverthemeanimation
+   */
   toOffset?: number;
 }
 

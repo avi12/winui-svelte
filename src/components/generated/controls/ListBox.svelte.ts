@@ -7,8 +7,23 @@ import type { ListBox } from "../bindings.ts";
 import { linkSelector } from "./Selector.svelte.ts";
 import type { SelectorBound, SelectorProps } from "./Selector.svelte.ts";
 
+/**
+ * Presents a list of items the user can select from.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listbox
+ */
 export interface ListBoxProps extends SelectorProps {
+  /**
+   * Gets or sets the selection behavior for the ListBox control. One of the SelectionMode values.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listbox
+   */
   selectionMode?: EnumInput<typeof SelectionMode>;
+  /**
+   * Gets or sets a value that indicates whether item selection changes when keyboard focus changes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listbox
+   */
   singleSelectionFollowsFocus?: boolean;
 }
 

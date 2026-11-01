@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { Projection } from "../bindings.ts";
 
+/**
+ * Provides a base class for projections, which describe how to transform an object in 3-D space using perspective transforms.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.projection
+ */
 export interface ProjectionProps {
   attached?: AttachedInput;
 }

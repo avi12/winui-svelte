@@ -6,9 +6,29 @@ import type { ProgressBar } from "../bindings.ts";
 import { linkRangeBase } from "./RangeBase.svelte.ts";
 import type { RangeBaseBound, RangeBaseProps } from "./RangeBase.svelte.ts";
 
+/**
+ * Represents a control that indicates the progress of an operation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar
+ */
 export interface ProgressBarProps extends RangeBaseProps {
+  /**
+   * Gets or sets a value that indicates whether the progress bar reports generic progress with a repeating pattern or reports progress based on the Value property.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar
+   */
   isIndeterminate?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the progress bar should use visual states that communicate an Error state to the user.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar
+   */
   showError?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the progress bar should use visual states that communicate a Paused state to the user.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar
+   */
   showPaused?: boolean;
 }
 

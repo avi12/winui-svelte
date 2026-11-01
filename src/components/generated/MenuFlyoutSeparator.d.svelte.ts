@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MenuFlyoutSeparatorComponentProps };
 
+/**
+ * Represents a horizontal line that separates items in an MenuFlyout.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutseparator
+ */
 declare const MenuFlyoutSeparator: Component<MenuFlyoutSeparatorComponentProps, Record<string, never>, "">;
 export default MenuFlyoutSeparator;

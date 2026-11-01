@@ -6,7 +6,17 @@ import type { DragItemThemeAnimation } from "../bindings.ts";
 import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 
+/**
+ * Represents the preconfigured animation that applies to item elements being dragged.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragitemthemeanimation
+ */
 export interface DragItemThemeAnimationProps extends TimelineProps {
+  /**
+   * Gets or sets the reference name of the control element being targeted. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragitemthemeanimation
+   */
   targetName?: string;
 }
 

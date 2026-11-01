@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PlaneProjectionComponentProps };
 
+/**
+ * Represents a perspective transform (a 3-D-like effect) on an object.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+ */
 declare const PlaneProjection: Component<PlaneProjectionComponentProps, Record<string, never>, "">;
 export default PlaneProjection;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { LineSegmentComponentProps };
 
+/**
+ * Represents a line drawn between two points, which can be part of a PathFigure within Path data.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linesegment
+ */
 declare const LineSegment: Component<LineSegmentComponentProps, Record<string, never>, "">;
 export default LineSegment;

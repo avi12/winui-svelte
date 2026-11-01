@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PasswordBoxComponentProps };
 
+/**
+ * Represents a control for entering passwords.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+ */
 declare const PasswordBox: Component<PasswordBoxComponentProps, Record<string, never>, "password">;
 export default PasswordBox;

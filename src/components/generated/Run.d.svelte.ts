@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RunComponentProps };
 
+/**
+ * Represents a discrete section of formatted or unformatted text.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.run
+ */
 declare const Run: Component<RunComponentProps, Record<string, never>, "">;
 export default Run;

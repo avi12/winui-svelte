@@ -7,7 +7,17 @@ import { linkCommandBar } from "./CommandBar.svelte.ts";
 import type { CommandBarBound, CommandBarProps } from "./CommandBar.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a specialized command bar used in a CommandBarFlyout.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.commandbarflyoutcommandbar
+ */
 export interface CommandBarFlyoutCommandBarProps extends CommandBarProps {
+  /**
+   * Gets or sets the system backdrop to apply to this CommandBar flyout. The backdrop is rendered behind the CommandBar flyout content.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.commandbarflyoutcommandbar
+   */
   systemBackdrop?: CommandBarFlyoutCommandBar["systemBackdrop"] | Snippet;
 }
 

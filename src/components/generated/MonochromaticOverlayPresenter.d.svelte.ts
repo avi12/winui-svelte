@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MonochromaticOverlayPresenterComponentProps };
 
+/**
+ * Enables visually overriding the colors of items in a grid with a monochromatic scheme or hue.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.monochromaticoverlaypresenter
+ */
 declare const MonochromaticOverlayPresenter: Component<MonochromaticOverlayPresenterComponentProps, Record<string, never>, "">;
 export default MonochromaticOverlayPresenter;

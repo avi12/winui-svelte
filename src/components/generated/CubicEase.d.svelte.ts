@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CubicEaseComponentProps };
 
+/**
+ * Represents an easing function that creates an animation that accelerates and/or decelerates using the formula f (t) = t<sup>3</sup>.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.cubicease
+ */
 declare const CubicEase: Component<CubicEaseComponentProps, Record<string, never>, "">;
 export default CubicEase;

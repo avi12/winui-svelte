@@ -7,8 +7,18 @@ import { linkBlock } from "./Block.svelte.ts";
 import type { BlockBound, BlockProps } from "./Block.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Provides a block-level content element that is used to group content into a paragraph.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.paragraph
+ */
 export interface ParagraphProps extends BlockProps {
   children?: Snippet;
+  /**
+   * Gets or sets the indentation of the first line of text in a paragraph, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.paragraph
+   */
   textIndent?: number;
 }
 

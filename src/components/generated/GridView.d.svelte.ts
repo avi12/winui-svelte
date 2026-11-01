@@ -6,5 +6,10 @@ import type { ListComponent, ListComponentProps } from "../hand-written/items/it
 /** The props of `GridView`, generic over the items it shows. */
 export type GridViewComponentProps<Item = object> = ListComponentProps<Item, GridViewControlProps>;
 
+/**
+ * Represents a control that displays data items in rows and columns.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.gridview
+ */
 declare const GridView: ListComponent<GridViewControlProps>;
 export default GridView;

@@ -7,7 +7,17 @@ import type { EdgeUIThemeTransition } from "../bindings.ts";
 import { linkTransition } from "./Transition.svelte.ts";
 import type { TransitionBound, TransitionProps } from "./Transition.svelte.ts";
 
+/**
+ * Provides the animated transition behavior for an edge UI transition.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.edgeuithemetransition
+ */
 export interface EdgeUIThemeTransitionProps extends TransitionProps {
+  /**
+   * Gets or sets the edge position to use for the transition. A value of the enumeration. The default is Top.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.edgeuithemetransition
+   */
   edge?: EnumInput<typeof EdgeTransitionLocation>;
 }
 

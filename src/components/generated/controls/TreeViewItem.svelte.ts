@@ -8,14 +8,59 @@ import { linkListViewItem } from "./ListViewItem.svelte.ts";
 import type { ListViewItemBound, ListViewItemProps } from "./ListViewItem.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents the container for an item in a TreeView control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+ */
 export interface TreeViewItemProps extends ListViewItemProps {
+  /**
+   * Gets or sets the glyph to show for a collapsed tree node.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   */
   collapsedGlyph?: string;
+  /**
+   * Gets or sets the glyph to show for an expanded tree node.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   */
   expandedGlyph?: string;
+  /**
+   * Gets or sets the Brush used to paint node glyphs on a TreeView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   */
   glyphBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the opacity of node glyphs on a TreeView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   */
   glyphOpacity?: number;
+  /**
+   * Gets or sets the size of node glyphs on a TreeView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   */
   glyphSize?: number;
+  /**
+   * Gets or sets a value that indicates whether the current item has child items that haven't been shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   */
   hasUnrealizedChildren?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a tree node is expanded.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   */
   isExpanded?: boolean;
+  /**
+   * Gets or sets an object source used to generate the content of the TreeView. The object that is used to generate the content of the TreeViewItem. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   */
   itemsSource?: CollectionInput;
 }
 

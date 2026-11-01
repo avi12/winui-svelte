@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ListBoxComponentProps };
 
+/**
+ * Presents a list of items the user can select from.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listbox
+ */
 declare const ListBox: Component<ListBoxComponentProps, Record<string, never>, "selectedIndex" | "selectedItem" | "selectedValue">;
 export default ListBox;

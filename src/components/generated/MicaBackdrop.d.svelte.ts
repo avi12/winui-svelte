@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MicaBackdropComponentProps };
 
+/**
+ * Represents a system backdrop that applies Mica material to a supported XAML surface, such as a Window.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.micabackdrop
+ */
 declare const MicaBackdrop: Component<MicaBackdropComponentProps, Record<string, never>, "">;
 export default MicaBackdrop;

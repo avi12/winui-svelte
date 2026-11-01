@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ItemsPresenterComponentProps };
 
+/**
+ * Specifies where items are placed in a control, usually an ItemsControl.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+ */
 declare const ItemsPresenter: Component<ItemsPresenterComponentProps, Record<string, never>, "">;
 export default ItemsPresenter;

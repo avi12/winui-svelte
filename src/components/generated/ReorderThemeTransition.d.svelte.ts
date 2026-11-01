@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ReorderThemeTransitionComponentProps };
 
+/**
+ * Provides the animated transition behavior for when list-view controls items change order. Typically this is due to a drag-drop operation. Different controls and themes potentially have varying characteristics for the animations involved.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.reorderthemetransition
+ */
 declare const ReorderThemeTransition: Component<ReorderThemeTransitionComponentProps, Record<string, never>, "">;
 export default ReorderThemeTransition;

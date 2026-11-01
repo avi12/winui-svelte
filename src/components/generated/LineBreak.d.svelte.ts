@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { LineBreakComponentProps };
 
+/**
+ * Represents an inline element that causes a new line to begin in content when rendered in a text container.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.linebreak
+ */
 declare const LineBreak: Component<LineBreakComponentProps, Record<string, never>, "">;
 export default LineBreak;

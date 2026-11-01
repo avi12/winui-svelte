@@ -6,8 +6,23 @@ import type { RadioMenuFlyoutItem } from "../bindings.ts";
 import { linkMenuFlyoutItem } from "./MenuFlyoutItem.svelte.ts";
 import type { MenuFlyoutItemBound, MenuFlyoutItemProps } from "./MenuFlyoutItem.svelte.ts";
 
+/**
+ * Represents a menu item that is mutually exclusive with other radio menu items in its group.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiomenuflyoutitem
+ */
 export interface RadioMenuFlyoutItemProps extends MenuFlyoutItemProps {
+  /**
+   * Gets or sets the name that specifies which RadioMenuFlyoutItem controls are mutually exclusive.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiomenuflyoutitem
+   */
   groupName?: string;
+  /**
+   * Gets or sets whether the RadioMenuFlyoutItem is checked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiomenuflyoutitem
+   */
   isChecked?: boolean;
 }
 

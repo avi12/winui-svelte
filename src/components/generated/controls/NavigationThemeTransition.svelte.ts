@@ -7,8 +7,18 @@ import { linkTransition } from "./Transition.svelte.ts";
 import type { TransitionBound, TransitionProps } from "./Transition.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Provides page navigation animations.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.navigationthemetransition
+ */
 export interface NavigationThemeTransitionProps extends TransitionProps {
   children?: Snippet;
+  /**
+   * Gets or sets the default transition used when navigating between pages.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.navigationthemetransition
+   */
   defaultNavigationTransitionInfo?: NavigationThemeTransition["defaultNavigationTransitionInfo"] | Snippet;
 }
 

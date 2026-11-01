@@ -9,7 +9,17 @@ import { linkSetterBase } from "./SetterBase.svelte.ts";
 import type { SetterBaseBound, SetterBaseProps } from "./SetterBase.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Applies a value to a property in a Style or a VisualState.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.setter
+ */
 export interface SetterProps extends SetterBaseProps {
+  /**
+   * Gets or sets the value to apply to the property that is specified by the Setter.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.setter
+   */
   value?: ObjectInput | Snippet;
 }
 

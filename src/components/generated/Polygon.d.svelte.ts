@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PolygonComponentProps };
 
+/**
+ * Draws a polygon, which is a connected series of lines that form a closed shape.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polygon
+ */
 declare const Polygon: Component<PolygonComponentProps, Record<string, never>, "">;
 export default Polygon;

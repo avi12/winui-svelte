@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RectangleGeometryComponentProps };
 
+/**
+ * Describes a two-dimensional rectangular geometry.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rectanglegeometry
+ */
 declare const RectangleGeometry: Component<RectangleGeometryComponentProps, Record<string, never>, "">;
 export default RectangleGeometry;

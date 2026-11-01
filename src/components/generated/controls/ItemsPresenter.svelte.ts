@@ -8,15 +8,55 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Specifies where items are placed in a control, usually an ItemsControl.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+ */
 export interface ItemsPresenterProps extends FrameworkElementProps {
   footerTransitions?: Snippet;
   headerTransitions?: Snippet;
+  /**
+   * Gets or sets the content for the items footer. The content of the items footer. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   */
   footer?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the DataTemplate used to display the content of the items header. The template that specifies the visualization of the header object. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   */
   footerTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets the content for the items header. The content of the items header. The default value is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   */
   header?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the DataTemplate used to display the content of the items header. The template that specifies the visualization of the header object. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   */
   headerTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets the distance between the ItemsPresenter and its child objects. The dimensions of the space between the presenter and its children as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   */
   padding?: ThicknessInput;
+  /**
+   * Occurs when the horizontal snap points change.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   */
   onhorizontalsnappointschanged?: Parameters<ItemsPresenter["onHorizontalSnapPointsChanged"]>[0];
+  /**
+   * Occurs when the vertical snap points change.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   */
   onverticalsnappointschanged?: Parameters<ItemsPresenter["onVerticalSnapPointsChanged"]>[0];
 }
 

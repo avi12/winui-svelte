@@ -8,8 +8,23 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { TextHighlighter } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents an object that highlights one or more ranges of text.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter
+ */
 export interface TextHighlighterProps extends TextHighlighterExtras {
+  /**
+   * Gets or sets the brush used to highlight the text.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter
+   */
   background?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to color highlighted text.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter
+   */
   foreground?: BrushInput | Snippet;
   attached?: AttachedInput;
 }

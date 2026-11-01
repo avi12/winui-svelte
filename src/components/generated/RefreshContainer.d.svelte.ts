@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RefreshContainerComponentProps };
 
+/**
+ * Represents a container control that provides a RefreshVisualizer and pull-to-refresh functionality for scrollable content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshcontainer
+ */
 declare const RefreshContainer: Component<RefreshContainerComponentProps, Record<string, never>, "">;
 export default RefreshContainer;

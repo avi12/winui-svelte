@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PopupThemeTransitionComponentProps };
 
+/**
+ * Provides the animated transition behavior that applies to pop-in components of controls (for example, tooltip-like UI on an object) as they appear.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popupthemetransition
+ */
 declare const PopupThemeTransition: Component<PopupThemeTransitionComponentProps, Record<string, never>, "">;
 export default PopupThemeTransition;

@@ -6,6 +6,11 @@ import type { LinearColorKeyFrame } from "../bindings.ts";
 import { linkColorKeyFrame } from "./ColorKeyFrame.svelte.ts";
 import type { ColorKeyFrameBound, ColorKeyFrameProps } from "./ColorKeyFrame.svelte.ts";
 
+/**
+ * Animates from the Color value of the previous key frame to its own Value using linear interpolation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.linearcolorkeyframe
+ */
 export interface LinearColorKeyFrameProps extends ColorKeyFrameProps {
 }
 

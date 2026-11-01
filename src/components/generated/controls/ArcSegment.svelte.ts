@@ -8,11 +8,41 @@ import type { ArcSegment } from "../bindings.ts";
 import { linkPathSegment } from "./PathSegment.svelte.ts";
 import type { PathSegmentBound, PathSegmentProps } from "./PathSegment.svelte.ts";
 
+/**
+ * Represents an elliptical arc between two points.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+ */
 export interface ArcSegmentProps extends PathSegmentProps {
+  /**
+   * Gets or sets a value that indicates whether the arc should be greater than 180 degrees.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+   */
   isLargeArc?: boolean;
+  /**
+   * Gets or sets the endpoint of the elliptical arc. The point to which the arc is drawn. The default is a Point with value 0,0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+   */
   point?: PointInput;
+  /**
+   * Gets or sets the amount (in degrees) by which the ellipse is rotated about the x-axis.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+   */
   rotationAngle?: number;
+  /**
+   * Gets or sets the x-radius and y-radius of the arc as a Size structure. A Size with value 0,0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+   */
   size?: SizeInput;
+  /**
+   * Gets or sets a value that specifies whether the arc is drawn in the Clockwise or Counterclockwise direction. One of the enumeration values that specifies the direction in which the arc is drawn. The default is Counterclockwise.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+   */
   sweepDirection?: EnumInput<typeof SweepDirection>;
 }
 

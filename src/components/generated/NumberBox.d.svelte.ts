@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { NumberBoxComponentProps };
 
+/**
+ * Represents a control that can be used to display and edit numbers.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+ */
 declare const NumberBox: Component<NumberBoxComponentProps, Record<string, never>, "value">;
 export default NumberBox;

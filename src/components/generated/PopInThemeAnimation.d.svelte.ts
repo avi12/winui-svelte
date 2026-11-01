@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PopInThemeAnimationComponentProps };
 
+/**
+ * Represents the preconfigured animation that applies to pop-in components of controls (for example, tooltip-like UI on an object) as they appear. This animation combines opacity and translation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popinthemeanimation
+ */
 declare const PopInThemeAnimation: Component<PopInThemeAnimationComponentProps, Record<string, never>, "">;
 export default PopInThemeAnimation;

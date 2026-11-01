@@ -6,9 +6,29 @@ import type { PerspectiveTransform3D } from "../bindings.ts";
 import { linkTransform3D } from "./Transform3D.svelte.ts";
 import type { Transform3DBound, Transform3DProps } from "./Transform3D.svelte.ts";
 
+/**
+ * Represents a 3-D perspective effect.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.perspectivetransform3d
+ */
 export interface PerspectiveTransform3DProps extends Transform3DProps {
+  /**
+   * Gets or sets the distance in pixels to the plane where z=0. The distance to the z=0 plane. This value must be greater than zero. The default value is 1000.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.perspectivetransform3d
+   */
   depth?: number;
+  /**
+   * Gets or sets the x-offset in pixels for the perspective's origin from the center of the element. The x-offset of the perspective's origin from the center of the element. This distance is measured in pixels and the default value is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.perspectivetransform3d
+   */
   offsetX?: number;
+  /**
+   * Gets or sets the y-offset in pixels for the perspective's origin from the center of the element. The y-offset of the perspective's origin from the center of the element. This distance is measured in pixels and the default value is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.perspectivetransform3d
+   */
   offsetY?: number;
 }
 

@@ -5,8 +5,23 @@ import type { AttachedInput, KeyTimeInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { DoubleKeyFrame } from "../bindings.ts";
 
+/**
+ * An abstract class that defines an animation segment with its own target value and interpolation method for a DoubleAnimationUsingKeyFrames.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doublekeyframe
+ */
 export interface DoubleKeyFrameProps {
+  /**
+   * Gets or sets the time at which the key frame's target Value should be reached. The time at which the key frame's current value should be equal to its Value property. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doublekeyframe
+   */
   keyTime?: KeyTimeInput;
+  /**
+   * Gets or sets the key frame's target value. The key frame's target value, which is the value of this key frame at its specified KeyTime. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doublekeyframe
+   */
   value?: number;
   attached?: AttachedInput;
 }

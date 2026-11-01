@@ -7,7 +7,17 @@ import type { StandardUICommand } from "../bindings.ts";
 import { linkXamlUICommand } from "./XamlUICommand.svelte.ts";
 import type { XamlUICommandBound, XamlUICommandProps } from "./XamlUICommand.svelte.ts";
 
+/**
+ * Derives from XamlUICommand, adding a set of standard platform commands with pre-defined properties.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.standarduicommand
+ */
 export interface StandardUICommandProps extends XamlUICommandProps {
+  /**
+   * Gets the platform command (with pre-defined properties such as icon, keyboard accelerator, and description) that can be used with a StandardUICommand.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.standarduicommand
+   */
   kind?: EnumInput<typeof StandardUICommandKind>;
 }
 

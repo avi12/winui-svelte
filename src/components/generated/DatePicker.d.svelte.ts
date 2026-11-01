@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DatePickerComponentProps };
 
+/**
+ * Represents a control that allows a user to pick a date value.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker
+ */
 declare const DatePicker: Component<DatePickerComponentProps, Record<string, never>, "date" | "selectedDate">;
 export default DatePicker;

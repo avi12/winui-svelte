@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { LineGeometryComponentProps };
 
+/**
+ * Represents the geometry of a line.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linegeometry
+ */
 declare const LineGeometry: Component<LineGeometryComponentProps, Record<string, never>, "">;
 export default LineGeometry;

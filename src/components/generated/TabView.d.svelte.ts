@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TabViewComponentProps };
 
+/**
+ * The TabView control is a way to display a set of tabs and their respective content. Tab controls are useful for displaying several pages (or documents) of content while giving a user the capability to rearrange, open, or close new tabs. **Is this the right control?** Use a TabView to help the user manage multiple app pages or documents within the same window. Do not use a TabView to display a static set of tabs that the user cannot rearrange, open, or close. Use a NavigationView (NavigationViewPaneDisplayMode of Top) instead.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+ */
 declare const TabView: Component<TabViewComponentProps, Record<string, never>, "selectedIndex" | "selectedItem">;
 export default TabView;

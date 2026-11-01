@@ -6,8 +6,23 @@ import type { AppBarElementContainer } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
+/**
+ * Represents a container that allows an element that doesn't implement ICommandBarElement to be displayed in a command bar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarelementcontainer
+ */
 export interface AppBarElementContainerProps extends ContentControlProps {
+  /**
+   * Gets or sets the order in which this item is moved to the CommandBar overflow menu.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarelementcontainer
+   */
   dynamicOverflowOrder?: number;
+  /**
+   * Gets or sets a value that indicates whether the element is shown in its compact state.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarelementcontainer
+   */
   isCompact?: boolean;
 }
 

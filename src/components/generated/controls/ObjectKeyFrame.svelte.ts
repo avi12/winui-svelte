@@ -6,8 +6,23 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { ObjectKeyFrame } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Defines an animation segment with its own target value and interpolation method for an ObjectAnimationUsingKeyFrames.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectkeyframe
+ */
 export interface ObjectKeyFrameProps {
+  /**
+   * Gets or sets the time at which the key frame's target Value should be reached. The time at which the key frame's current value should be equal to its Value property. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectkeyframe
+   */
   keyTime?: KeyTimeInput;
+  /**
+   * Gets or sets the key frame's target value. The key frame's target value, which is the value of this key frame at its specified KeyTime. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectkeyframe
+   */
   value?: ObjectInput | Snippet;
   attached?: AttachedInput;
 }

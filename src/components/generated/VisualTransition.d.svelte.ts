@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { VisualTransitionComponentProps };
 
+/**
+ * Represents the visual behavior that occurs when the control transitions from one visual state to another.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualtransition
+ */
 declare const VisualTransition: Component<VisualTransitionComponentProps, Record<string, never>, "">;
 export default VisualTransition;

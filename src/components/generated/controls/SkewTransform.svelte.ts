@@ -6,10 +6,35 @@ import type { SkewTransform } from "../bindings.ts";
 import { linkTransform } from "./Transform.svelte.ts";
 import type { TransformBound, TransformProps } from "./Transform.svelte.ts";
 
+/**
+ * Represents a two-dimensional skew.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform
+ */
 export interface SkewTransformProps extends TransformProps {
+  /**
+   * Gets or sets the x-axis skew angle, which is measured in degrees counterclockwise from the y-axis.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform
+   */
   angleX?: number;
+  /**
+   * Gets or sets the y-axis skew angle, which is measured in degrees counterclockwise from the x-axis.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform
+   */
   angleY?: number;
+  /**
+   * Gets or sets the x-coordinate of the transform center. The x-coordinate of the transform center. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform
+   */
   centerX?: number;
+  /**
+   * Gets or sets the y-coordinate of the transform center. The y-coordinate of the transform center. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform
+   */
   centerY?: number;
 }
 

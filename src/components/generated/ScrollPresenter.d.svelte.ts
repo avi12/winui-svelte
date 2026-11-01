@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ScrollPresenterComponentProps };
 
+/**
+ * Represents a primitive container that provides scroll, pan, and zoom support for its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+ */
 declare const ScrollPresenter: Component<ScrollPresenterComponentProps, Record<string, never>, "state">;
 export default ScrollPresenter;

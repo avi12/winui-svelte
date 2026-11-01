@@ -5,6 +5,11 @@ import type { AttachedInput, ElementProps } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { RatingItemInfo } from "../bindings.ts";
 
+/**
+ * Represents information about the visual states of the elements that represent a rating.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingiteminfo
+ */
 export interface RatingItemInfoProps {
   attached?: AttachedInput;
 }

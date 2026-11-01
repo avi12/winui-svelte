@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ListBoxItemComponentProps };
 
+/**
+ * Represents the container for an item in a ListBox control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listboxitem
+ */
 declare const ListBoxItem: Component<ListBoxItemComponentProps, Record<string, never>, "">;
 export default ListBoxItem;

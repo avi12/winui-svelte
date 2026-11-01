@@ -5,6 +5,11 @@ import type { MenuFlyoutItemBase } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * Represents the base class for items in a MenuFlyout control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitembase
+ */
 export interface MenuFlyoutItemBaseProps extends ControlProps {
 }
 

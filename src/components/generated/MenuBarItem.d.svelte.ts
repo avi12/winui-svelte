@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MenuBarItemComponentProps };
 
+/**
+ * Represents a top-level menu in a MenuBar control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubaritem
+ */
 declare const MenuBarItem: Component<MenuBarItemComponentProps, Record<string, never>, "">;
 export default MenuBarItem;

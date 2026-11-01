@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MatrixTransformComponentProps };
 
+/**
+ * Creates an arbitrary affine matrix transformation that is used to manipulate objects or coordinate systems in a two-dimensional plane.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrixtransform
+ */
 declare const MatrixTransform: Component<MatrixTransformComponentProps, Record<string, never>, "">;
 export default MatrixTransform;

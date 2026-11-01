@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TreeViewNodeComponentProps };
 
+/**
+ * Represents a node in a TreeView control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode
+ */
 declare const TreeViewNode: Component<TreeViewNodeComponentProps, Record<string, never>, "">;
 export default TreeViewNode;

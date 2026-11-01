@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { GeometryGroupComponentProps };
 
+/**
+ * Represents a composite geometry, composed of other Geometry objects.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.geometrygroup
+ */
 declare const GeometryGroup: Component<GeometryGroupComponentProps, Record<string, never>, "">;
 export default GeometryGroup;

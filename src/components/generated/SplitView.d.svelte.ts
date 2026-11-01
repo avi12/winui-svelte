@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SplitViewComponentProps };
 
+/**
+ * Represents a container with two views; one view for the main content and another view that is typically used for navigation commands.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+ */
 declare const SplitView: Component<SplitViewComponentProps, Record<string, never>, "isPaneOpen">;
 export default SplitView;

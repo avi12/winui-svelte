@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { BackEaseComponentProps };
 
+/**
+ * Represents an easing function that changes a value in the opposite direction of the main function during part of a duration, then reverses and finishes the function-over-time behavior in a conventional way.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.backease
+ */
 declare const BackEase: Component<BackEaseComponentProps, Record<string, never>, "">;
 export default BackEase;

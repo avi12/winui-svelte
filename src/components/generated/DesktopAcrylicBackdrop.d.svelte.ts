@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DesktopAcrylicBackdropComponentProps };
 
+/**
+ * Represents a system backdrop that applies Acrylic material to a supported XAML surface, such as a Window.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.desktopacrylicbackdrop
+ */
 declare const DesktopAcrylicBackdrop: Component<DesktopAcrylicBackdropComponentProps, Record<string, never>, "">;
 export default DesktopAcrylicBackdrop;

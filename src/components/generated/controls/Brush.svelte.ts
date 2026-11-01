@@ -6,9 +6,29 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { Brush } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Defines objects used to paint graphical objects. Classes that derive from Brush describe how the area is painted.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.brush
+ */
 export interface BrushProps {
+  /**
+   * Gets or sets the degree of opacity of a Brush. The value of the Opacity property is expressed as a value between 0 and 1.0. The default value is 1.0, which is full opacity. 0 is transparent opacity.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.brush
+   */
   opacity?: number;
+  /**
+   * Gets or sets the transformation that is applied to the brush using relative coordinates.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.brush
+   */
   relativeTransform?: Brush["relativeTransform"] | Snippet;
+  /**
+   * Gets or sets the transformation that is applied to the brush.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.brush
+   */
   transform?: Brush["transform"] | Snippet;
   attached?: AttachedInput;
 }

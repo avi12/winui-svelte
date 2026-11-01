@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { MapElement } from "../bindings.ts";
 
+/**
+ * Represents an element displayed on a MapControl.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapelement
+ */
 export interface MapElementProps {
   attached?: AttachedInput;
 }

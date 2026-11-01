@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DragOverThemeAnimationComponentProps };
 
+/**
+ * Represents the preconfigured animation that applies to the elements underneath an element being dragged.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragoverthemeanimation
+ */
 declare const DragOverThemeAnimation: Component<DragOverThemeAnimationComponentProps, Record<string, never>, "">;
 export default DragOverThemeAnimation;

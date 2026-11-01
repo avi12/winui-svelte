@@ -7,8 +7,18 @@ import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Animates the value of a Point property along a set of KeyFrames.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimationusingkeyframes
+ */
 export interface PointAnimationUsingKeyFramesProps extends TimelineProps {
   children?: Snippet;
+  /**
+   * Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimationusingkeyframes
+   */
   enableDependentAnimation?: boolean;
 }
 

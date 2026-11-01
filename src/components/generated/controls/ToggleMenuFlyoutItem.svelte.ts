@@ -6,7 +6,17 @@ import type { ToggleMenuFlyoutItem } from "../bindings.ts";
 import { linkMenuFlyoutItem } from "./MenuFlyoutItem.svelte.ts";
 import type { MenuFlyoutItemBound, MenuFlyoutItemProps } from "./MenuFlyoutItem.svelte.ts";
 
+/**
+ * Represents an item in a MenuFlyout that a user can change between two states, checked or unchecked.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglemenuflyoutitem
+ */
 export interface ToggleMenuFlyoutItemProps extends MenuFlyoutItemProps {
+  /**
+   * Gets or sets whether the ToggleMenuFlyoutItem is checked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglemenuflyoutitem
+   */
   isChecked?: boolean;
 }
 

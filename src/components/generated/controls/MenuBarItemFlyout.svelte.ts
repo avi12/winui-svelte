@@ -6,6 +6,11 @@ import type { MenuBarItemFlyout } from "../bindings.ts";
 import { linkMenuFlyout } from "./MenuFlyout.svelte.ts";
 import type { MenuFlyoutBound, MenuFlyoutProps } from "./MenuFlyout.svelte.ts";
 
+/**
+ * Represents the flyout of a MenuBarItem.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubaritemflyout
+ */
 export interface MenuBarItemFlyoutProps extends MenuFlyoutProps {
 }
 

@@ -7,10 +7,35 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a container that provides access to, and the ability to invoke, contextual commands through a basic touch interaction.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol
+ */
 export interface SwipeControlProps extends ContentControlProps {
+  /**
+   * Gets or sets the items that can be invoked when the control is swiped from the bottom up.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol
+   */
   bottomItems?: SwipeControl["bottomItems"] | Snippet;
+  /**
+   * Gets or sets the items that can be invoked when the control is swiped from the left side.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol
+   */
   leftItems?: SwipeControl["leftItems"] | Snippet;
+  /**
+   * Gets or sets the items that can be invoked when the control is swiped from the right side.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol
+   */
   rightItems?: SwipeControl["rightItems"] | Snippet;
+  /**
+   * Gets or sets the items that can be invoked when the control is swiped from the top down.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol
+   */
   topItems?: SwipeControl["topItems"] | Snippet;
 }
 

@@ -7,7 +7,17 @@ import { linkPointKeyFrame } from "./PointKeyFrame.svelte.ts";
 import type { PointKeyFrameBound, PointKeyFrameProps } from "./PointKeyFrame.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Animates from the Point value of the previous key frame to its own Value using splined interpolation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinepointkeyframe
+ */
 export interface SplinePointKeyFrameProps extends PointKeyFrameProps {
+  /**
+   * Gets or sets the two control points that define animation progress for this key frame. The two control points that specify the cubic Bezier curve that defines the progress of the key frame.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinepointkeyframe
+   */
   keySpline?: SplinePointKeyFrame["keySpline"] | Snippet;
 }
 

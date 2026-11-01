@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RichTextBlockComponentProps };
 
+/**
+ * Represents a rich text display container that supports formatted text, hyperlinks, inline images, and other rich content. RichTextBlock supports a built-in overflow model.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+ */
 declare const RichTextBlock: Component<RichTextBlockComponentProps, Record<string, never>, "isTextTrimmed">;
 export default RichTextBlock;

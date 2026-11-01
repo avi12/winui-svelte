@@ -6,6 +6,11 @@ import type { GroupItem } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
+/**
+ * Represents the root element for a subtree that is created for a group.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupitem
+ */
 export interface GroupItemProps extends ContentControlProps {
 }
 

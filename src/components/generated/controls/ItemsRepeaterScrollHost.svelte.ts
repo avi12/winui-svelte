@@ -7,9 +7,29 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * A helper to coordinate interaction between the ItemsRepeater and ScrollViewer. Use the ItemsRepeaterScrollHost if your app will run on versions of Windows prior Windows 10 1809 (Build 17763). If your app will only run on versions of Windows 1809 or higher, there is no need to use this control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost
+ */
 export interface ItemsRepeaterScrollHostProps extends FrameworkElementProps {
+  /**
+   * Determines the horizontal position of the ScrollViewer's _anchor point_ with respect to the viewport. By default, the ScrollViewer selects an element as its CurrentAnchor by identifying the element in its viewport nearest to the anchor point.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost
+   */
   horizontalAnchorRatio?: number;
+  /**
+   * Gets or sets the ScrollViewer to host. A ScrollViewer that contains one or more ItemsRepeater controls.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost
+   */
   scrollViewer?: ItemsRepeaterScrollHost["scrollViewer"] | Snippet;
+  /**
+   * Determines the vertical position of the ScrollViewer's _anchor point_ with respect to the viewport. By default, the ScrollViewer selects an element as its CurrentAnchor by identifying the element in its viewport nearest to the anchor point.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost
+   */
   verticalAnchorRatio?: number;
 }
 

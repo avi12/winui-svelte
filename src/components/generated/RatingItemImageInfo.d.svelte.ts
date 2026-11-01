@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RatingItemImageInfoComponentProps };
 
+/**
+ * Represents information about the visual states of image elements that represent a rating.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemimageinfo
+ */
 declare const RatingItemImageInfo: Component<RatingItemImageInfoComponentProps, Record<string, never>, "">;
 export default RatingItemImageInfo;

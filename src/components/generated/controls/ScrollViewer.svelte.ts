@@ -15,42 +15,227 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a scrollable area that can contain other visible elements.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+ */
 export interface ScrollViewerProps extends ContentControlProps {
+  /**
+   * Gets the distance the content has been scrolled horizontally.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   horizontalOffset?: number | undefined;
+  /**
+   * Gets the distance the content has been scrolled vertically.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   verticalOffset?: number | undefined;
+  /**
+   * Gets a value that indicates the current zoom factor engaged for content scaling. The current zoom factor engaged for content scaling. The default is 1.0, where 1.0 indicates no additional scaling.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   zoomFactor?: number | undefined;
+  /**
+   * Gets or sets a value that determines whether the ScrollViewer uses a bring-into-view scroll behavior when an item in the view gets focus.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   bringIntoViewOnFocusChange?: boolean;
+  /**
+   * Gets or sets a value that indicates whether scrolled content can render outside the bounds of the ScrollViewer.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   canContentRenderOutsideBounds?: boolean;
+  /**
+   * Determines the horizontal position of the ScrollViewer's anchor point with respect to the viewport. By default, the ScrollViewer selects an element as its CurrentAnchor by identifying the element in its viewport nearest to the anchor point.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   horizontalAnchorRatio?: number;
+  /**
+   * Gets or sets a value that indicates whether a horizontal ScrollBar should be displayed. A ScrollBarVisibility value that indicates whether a horizontal ScrollBar should be displayed. The default value is Disabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   horizontalScrollBarVisibility?: EnumInput<typeof ScrollBarVisibility>;
+  /**
+   * Gets or sets a value that determines how manipulation input influences scrolling behavior on the horizontal axis. A value of the enumeration. The typical default (as set through the default template, not class initialization) is Enabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   horizontalScrollMode?: EnumInput<typeof ScrollMode>;
+  /**
+   * Gets or sets a value that indicates how the existing snap points are horizontally aligned versus the initial viewport. A value of the enumeration.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   horizontalSnapPointsAlignment?: EnumInput<typeof SnapPointsAlignment>;
+  /**
+   * Gets or sets a value that declares how manipulation behavior reacts to the snap points along the horizontal axis. A value of the enumeration. The default is None but might be set through a control template.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   horizontalSnapPointsType?: EnumInput<typeof SnapPointsType>;
+  /**
+   * Gets or sets a value that determines the deferred scrolling behavior for a ScrollViewer.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   isDeferredScrollingEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the scroll rail is enabled for the horizontal axis.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   isHorizontalRailEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether scroll chaining is enabled from this child to its parent, for the horizontal axis.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   isHorizontalScrollChainingEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether scroll actions should include inertia in their behavior and value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   isScrollInertiaEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the scroll rail is enabled for the vertical axis.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   isVerticalRailEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether scroll chaining is enabled from this child to its parent, for the vertical axis.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   isVerticalScrollChainingEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether zoom chaining is enabled from this child to its parent.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   isZoomChainingEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether zoom actions should include inertia in their behavior and value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   isZoomInertiaEnabled?: boolean;
+  /**
+   * Gets or sets the content of the left header.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   leftHeader?: ScrollViewer["leftHeader"] | Snippet;
+  /**
+   * Gets or sets a value that indicates the maximum permitted run-time value of ZoomFactor. The maximum permitted run-time value of ZoomFactor. The default is 10.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   maxZoomFactor?: number;
+  /**
+   * Gets or sets a value that indicates the minimum permitted run-time value of ZoomFactor. The minimum permitted run-time value of ZoomFactor. The value must be greater than or equal to 0.1. The default is 0.1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   minZoomFactor?: number;
+  /**
+   * Gets or sets a value that indicates whether the ScrollViewer should try to adjust its content to keep it visible when a docked CoreInputView occludes part of it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   reduceViewportForCoreInputViewOcclusions?: boolean;
+  /**
+   * Gets or sets the content of the top header.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   topHeader?: ScrollViewer["topHeader"] | Snippet;
+  /**
+   * Gets or sets the content of the top, left header.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   topLeftHeader?: ScrollViewer["topLeftHeader"] | Snippet;
+  /**
+   * Determines the vertical position of the ScrollViewer's anchor point with respect to the viewport. By default, the ScrollViewer selects an element as its CurrentAnchor by identifying the element in its viewport nearest to the anchor point.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   verticalAnchorRatio?: number;
+  /**
+   * Gets or sets a value that indicates whether a vertical ScrollBar should be displayed. A ScrollBarVisibility value that indicates whether a vertical ScrollBar should be displayed. The default value is Visible.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   verticalScrollBarVisibility?: EnumInput<typeof ScrollBarVisibility>;
+  /**
+   * Gets or sets a value that determines how manipulation input influences scrolling behavior on the vertical axis. A value of the enumeration. The typical default (as set through the default template, not class initialization) is Enabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   verticalScrollMode?: EnumInput<typeof ScrollMode>;
+  /**
+   * Gets or sets a value that indicates how the existing snap points are vertically aligned versus the initial viewport. A value of the enumeration.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   verticalSnapPointsAlignment?: EnumInput<typeof SnapPointsAlignment>;
+  /**
+   * Gets or sets a value that declares how manipulation behavior reacts to the snap points along the vertical axis. A value of the enumeration. The default is None but might be set through a control template.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   verticalSnapPointsType?: EnumInput<typeof SnapPointsType>;
+  /**
+   * Gets or sets a value that indicates whether zoom behavior in the ScrollViewer content is enabled. A value of the enumeration.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   zoomMode?: EnumInput<typeof ZoomMode>;
+  /**
+   * Gets or sets a value that indicates how zoom snap points are processed for interaction input. A value of the enumeration.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   zoomSnapPointsType?: EnumInput<typeof SnapPointsType>;
+  /**
+   * Occurs when an anchor is requested at the beginning of the Arrange pass. Handle this event to override the ScrollViewer's default logic to select an anchor element as part of scroll anchoring.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   onanchorrequested?: Parameters<ScrollViewer["onAnchorRequested"]>[0];
+  /**
+   * Occurs when any direct manipulation of the ScrollViewer finishes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   ondirectmanipulationcompleted?: Parameters<ScrollViewer["onDirectManipulationCompleted"]>[0];
+  /**
+   * Occurs when any direct manipulation of the ScrollViewer begins.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   ondirectmanipulationstarted?: Parameters<ScrollViewer["onDirectManipulationStarted"]>[0];
+  /**
+   * Occurs when manipulations such as scrolling and zooming have caused the view to change.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   onviewchanged?: Parameters<ScrollViewer["onViewChanged"]>[0];
+  /**
+   * Occurs when manipulations such as scrolling and zooming cause the view to change.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer
+   */
   onviewchanging?: Parameters<ScrollViewer["onViewChanging"]>[0];
 }
 

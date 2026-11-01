@@ -7,11 +7,41 @@ import type { OrientedVirtualizingPanel } from "../bindings.ts";
 import { linkVirtualizingPanel } from "./VirtualizingPanel.svelte.ts";
 import type { VirtualizingPanelBound, VirtualizingPanelProps } from "./VirtualizingPanel.svelte.ts";
 
+/**
+ * Adds infrastructure (provides base class) for virtualizing layout containers that support spatial cues, such as VirtualizingStackPanel and WrapGrid.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.orientedvirtualizingpanel
+ */
 export interface OrientedVirtualizingPanelProps extends VirtualizingPanelProps {
+  /**
+   * Gets or sets a value that determines how the OrientedVirtualizingPanel measures space for child elements for possible scrolling in the horizontal dimension.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.orientedvirtualizingpanel
+   */
   canHorizontallyScroll?: boolean;
+  /**
+   * Gets or sets a value that determines how the OrientedVirtualizingPanel measures space for child elements for possible scrolling in the vertical dimension.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.orientedvirtualizingpanel
+   */
   canVerticallyScroll?: boolean;
+  /**
+   * Gets or sets a reference to a ScrollViewer that is the scroll host or scroll owner for scrolling behavior of the OrientedVirtualizingPanel.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.orientedvirtualizingpanel
+   */
   scrollOwner?: ObjectReferenceInput;
+  /**
+   * Fires when the measurements for horizontal snap points change.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.orientedvirtualizingpanel
+   */
   onhorizontalsnappointschanged?: Parameters<OrientedVirtualizingPanel["onHorizontalSnapPointsChanged"]>[0];
+  /**
+   * Fires when the measurements for vertical snap points change.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.orientedvirtualizingpanel
+   */
   onverticalsnappointschanged?: Parameters<OrientedVirtualizingPanel["onVerticalSnapPointsChanged"]>[0];
 }
 

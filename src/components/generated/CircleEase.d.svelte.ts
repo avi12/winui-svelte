@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CircleEaseComponentProps };
 
+/**
+ * Represents an easing function that creates an animation that accelerates and/or decelerates using a circular function.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.circleease
+ */
 declare const CircleEase: Component<CircleEaseComponentProps, Record<string, never>, "">;
 export default CircleEase;

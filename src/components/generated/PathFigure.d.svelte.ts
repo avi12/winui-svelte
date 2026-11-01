@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PathFigureComponentProps };
 
+/**
+ * Represents a subsection of a geometry, a single connected series of two-dimensional geometric segments.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
+ */
 declare const PathFigure: Component<PathFigureComponentProps, Record<string, never>, "">;
 export default PathFigure;

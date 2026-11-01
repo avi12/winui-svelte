@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ToggleMenuFlyoutItemComponentProps };
 
+/**
+ * Represents an item in a MenuFlyout that a user can change between two states, checked or unchecked.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglemenuflyoutitem
+ */
 declare const ToggleMenuFlyoutItem: Component<ToggleMenuFlyoutItemComponentProps, Record<string, never>, "">;
 export default ToggleMenuFlyoutItem;

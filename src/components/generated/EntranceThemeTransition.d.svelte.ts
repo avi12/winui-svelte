@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { EntranceThemeTransitionComponentProps };
 
+/**
+ * Provides the animated transition behavior on controls when they first appear. You can use this on individual objects or on containers of objects. In the latter case, child elements will animate into view in sequence rather than all at the same time.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancethemetransition
+ */
 declare const EntranceThemeTransition: Component<EntranceThemeTransitionComponentProps, Record<string, never>, "">;
 export default EntranceThemeTransition;

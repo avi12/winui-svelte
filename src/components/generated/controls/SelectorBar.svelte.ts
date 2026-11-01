@@ -7,9 +7,24 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that consists of a small group of options from which one is selected.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar
+ */
 export interface SelectorBarProps extends ControlProps {
   items?: Snippet;
+  /**
+   * Gets or sets the currently selected item. The selected SelectorBarItem in the Items list. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar
+   */
   selectedItem?: SelectorBar["selectedItem"] | undefined;
+  /**
+   * Occurs when the SelectorBar selection changes; that is, when the SelectedItem property has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar
+   */
   onselectionchanged?: Parameters<SelectorBar["onSelectionChanged"]>[0];
 }
 

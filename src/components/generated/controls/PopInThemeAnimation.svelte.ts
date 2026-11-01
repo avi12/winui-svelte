@@ -6,9 +6,29 @@ import type { PopInThemeAnimation } from "../bindings.ts";
 import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 
+/**
+ * Represents the preconfigured animation that applies to pop-in components of controls (for example, tooltip-like UI on an object) as they appear. This animation combines opacity and translation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popinthemeanimation
+ */
 export interface PopInThemeAnimationProps extends TimelineProps {
+  /**
+   * Gets or sets the distance by which the target is translated in the horizontal direction when the animation is active. The horizontal offset translation, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popinthemeanimation
+   */
   fromHorizontalOffset?: number;
+  /**
+   * Gets or sets the distance by which the target is translated in the vertical direction when the animation is active. The vertical offset translation, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popinthemeanimation
+   */
   fromVerticalOffset?: number;
+  /**
+   * Gets or sets the reference name of the control element being targeted. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popinthemeanimation
+   */
   targetName?: string;
 }
 

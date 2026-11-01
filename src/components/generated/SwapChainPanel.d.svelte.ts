@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SwapChainPanelComponentProps };
 
+/**
+ * Provides a hosting surface, where Microsoft DirectX swap chains provide content that can be rendered into a XAML UI. A SwapChainPanel element is a key component for an app that renders Microsoft DirectX graphics and then presents those visuals within a XAML page.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swapchainpanel
+ */
 declare const SwapChainPanel: Component<SwapChainPanelComponentProps, Record<string, never>, "">;
 export default SwapChainPanel;

@@ -32,37 +32,187 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Provides a lightweight control for displaying small amounts of text.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+ */
 export interface TextBlockProps extends FrameworkElementProps {
   children?: Snippet;
   textHighlighters?: Snippet;
+  /**
+   * Gets a value that indicates whether the control has trimmed text that overflows the content area.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   isTextTrimmed?: boolean | undefined;
+  /**
+   * Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   characterSpacing?: number;
+  /**
+   * Gets or sets the preferred top-level font family for the text content in this element. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   fontFamily?: FontFamilyInput;
+  /**
+   * Gets or sets the font size for the text content in this element. A non-negative value that specifies the font size, measured in pixels. The default is 11.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   fontSize?: number;
+  /**
+   * Gets or sets the font stretch for the text content in this element. The requested font stretch, as a FontStretch constant. The default is Normal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   fontStretch?: EnumInput<typeof FontStretch>;
+  /**
+   * Gets or sets the font style for the content in this element. The requested font style, which is a FontStyle enumeration value. The default is Normal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   fontStyle?: EnumInput<typeof FontStyle>;
+  /**
+   * Gets or sets the top-level font weight for the TextBlock. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   fontWeight?: FontWeightInput;
+  /**
+   * Gets or sets the Brush to apply to the text contents of the TextBlock. The brush used to apply to the text content. The default is a null brush from a pure code perspective, but the default text styles set this to Black (for Light theme) or White (for Dark theme) for a TextBlock element in UI.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   foreground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates how text is aligned in the TextBlock. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
+  /**
+   * Gets or sets a value that determines whether font glyphs that contain color layers, such as Segoe UI Emoji, are rendered in color.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   isColorFontEnabled?: boolean;
+  /**
+   * Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   isTextScaleFactorEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether text selection is enabled in the TextBlock, either through user action or calling selection-related API.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   isTextSelectionEnabled?: boolean;
+  /**
+   * Gets or sets the height of each line of content. The height of each line in pixels. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   lineHeight?: number;
+  /**
+   * Gets or sets a value that indicates how a line box is determined for each line of text in the TextBlock.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   lineStackingStrategy?: EnumInput<typeof LineStackingStrategy>;
+  /**
+   * Gets or sets the maximum number of lines of text shown in the TextBlock. The maximum number of lines of text shown in the TextBlock. The default is 0, which is a special value that represents "Auto" behavior. The value cannot be negative.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   maxLines?: number;
+  /**
+   * Get or sets a value that indicates how the font is modified to align with fonts of different sizes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   opticalMarginAlignment?: EnumInput<typeof OpticalMarginAlignment>;
+  /**
+   * Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a TextBlock. A Thickness structure that specifies the amount of padding to apply.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   padding?: ThicknessInput;
+  /**
+   * Gets or sets the flyout that is shown when text is selected using touch or pen, or null if no flyout is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   selectionFlyout?: TextBlock["selectionFlyout"] | Snippet;
+  /**
+   * Gets or sets the brush used to highlight the selected text. The brush used to highlight the selected text. The default is a null brush from a pure code perspective, but the system uses base text styles to supply a runtime value for apps (unless you specifically override that style). The practical default is a brush using the theme resource TextSelectionHighlightThemeColor.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   selectionHighlightColor?: TextBlock["selectionHighlightColor"] | Snippet;
+  /**
+   * Gets or sets the text contents of a TextBlock. A string that specifies the text contents of this TextBlock. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   text?: string;
+  /**
+   * Gets or sets a value that indicates the horizontal alignment of text content. The text alignment. The default is Left.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   textAlignment?: EnumInput<typeof TextAlignment>;
+  /**
+   * Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   textDecorations?: FlagsInput<typeof TextDecorations>;
+  /**
+   * Gets or sets a value that indicates how the line box height is determined for each line of text in the TextBlock.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   textLineBounds?: EnumInput<typeof TextLineBounds>;
+  /**
+   * Gets or sets a value that indicates how the reading order is determined for the TextBlock.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
+  /**
+   * Gets or sets the text trimming behavior to employ when content overflows the content area. One of the TextTrimming values that specifies the text trimming behavior to employ. The default is None.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   textTrimming?: EnumInput<typeof TextTrimming>;
+  /**
+   * Gets or sets how the TextBlock wraps text. A value that indicates how the TextBlock wraps text. The default is NoWrap.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   textWrapping?: EnumInput<typeof TextWrapping>;
+  /**
+   * Occurs when the system processes an interaction that displays a context menu.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   oncontextmenuopening?: (sender: TextBlock, args: EventArguments<ContextMenuEventArgs>) => void;
+  /**
+   * Occurs when the IsTextTrimmed property value has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   onistexttrimmedchanged?: Parameters<TextBlock["onIsTextTrimmedChanged"]>[0];
+  /**
+   * Occurs when the text selection has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+   */
   onselectionchanged?: (sender: TextBlock, args: EventArguments<RoutedEventArgs>) => void;
 }
 

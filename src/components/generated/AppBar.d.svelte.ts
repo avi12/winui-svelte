@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AppBarComponentProps };
 
+/**
+ * Represents the container control that holds app UI components for commanding and experiences.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar
+ */
 declare const AppBar: Component<AppBarComponentProps, Record<string, never>, "isOpen">;
 export default AppBar;

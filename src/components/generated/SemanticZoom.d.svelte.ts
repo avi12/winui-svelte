@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SemanticZoomComponentProps };
 
+/**
+ * Represents a scrollable control that incorporates two views that have a semantic relationship. For example, the ZoomedOutView might be an index of titles, and the ZoomedInView might include details and summaries for each of the title entries. Views can be changed using zoom or other interactions.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+ */
 declare const SemanticZoom: Component<SemanticZoomComponentProps, Record<string, never>, "">;
 export default SemanticZoom;

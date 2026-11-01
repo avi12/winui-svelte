@@ -8,10 +8,35 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that provides animated state indicators for content refresh.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer
+ */
 export interface RefreshVisualizerProps extends ControlProps {
+  /**
+   * Gets or sets the content of the visualizer.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer
+   */
   content?: RefreshVisualizer["content"] | Snippet;
+  /**
+   * Gets or sets a value that indicates the orientation of the visualizer. A value of the enumeration that indicates the orientation of the visualizer. The default is Top.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer
+   */
   orientation?: EnumInput<typeof RefreshVisualizerOrientation>;
+  /**
+   * Occurs when an update of the content has been initiated.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer
+   */
   onrefreshrequested?: Parameters<RefreshVisualizer["onRefreshRequested"]>[0];
+  /**
+   * Occurs when the state of the visualizer changes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer
+   */
   onrefreshstatechanged?: Parameters<RefreshVisualizer["onRefreshStateChanged"]>[0];
 }
 

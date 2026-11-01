@@ -7,8 +7,23 @@ import type { InfoBarPanel } from "../bindings.ts";
 import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
 
+/**
+ * Represents a panel that arranges its items horizontally if there is available space, otherwise vertically.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.infobarpanel
+ */
 export interface InfoBarPanelProps extends PanelProps {
+  /**
+   * Gets and sets the distance between the edges of the InfoBarPanel and its children when the panel is oriented horizontally.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.infobarpanel
+   */
   horizontalOrientationPadding?: ThicknessInput;
+  /**
+   * Gets and sets the distance between the edges of the InfoBarPanel and its children when the panel is oriented vertically.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.infobarpanel
+   */
   verticalOrientationPadding?: ThicknessInput;
 }
 

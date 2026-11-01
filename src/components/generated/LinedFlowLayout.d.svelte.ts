@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { LinedFlowLayoutComponentProps };
 
+/**
+ * Represents a control that positions elements sequentially from left to right, then top to bottom, in a wrapping layout, using the same height for all elements.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout
+ */
 declare const LinedFlowLayout: Component<LinedFlowLayoutComponentProps, Record<string, never>, "">;
 export default LinedFlowLayout;

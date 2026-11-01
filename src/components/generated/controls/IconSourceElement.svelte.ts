@@ -7,8 +7,18 @@ import { linkIconElement } from "./IconElement.svelte.ts";
 import type { IconElementBound, IconElementProps } from "./IconElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents an icon that uses an IconSource as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsourceelement
+ */
 export interface IconSourceElementProps extends IconElementProps {
   children?: Snippet;
+  /**
+   * Gets or sets the IconSource used as the icon content. The IconSource used as the icon content. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsourceelement
+   */
   iconSource?: IconSourceElement["iconSource"] | Snippet;
 }
 

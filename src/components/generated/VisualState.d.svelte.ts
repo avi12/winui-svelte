@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { VisualStateComponentProps };
 
+/**
+ * Represents the visual appearance of a UI element when it is in a specific state. Visual states use Setters or a Storyboard to set UI properties within pages or control templates where the VisualState is defined.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstate
+ */
 declare const VisualState: Component<VisualStateComponentProps, Record<string, never>, "">;
 export default VisualState;

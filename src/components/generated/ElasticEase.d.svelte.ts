@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ElasticEaseComponentProps };
 
+/**
+ * Represents an easing function that creates an animation that resembles a spring oscillating back and forth until it comes to rest.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.elasticease
+ */
 declare const ElasticEase: Component<ElasticEaseComponentProps, Record<string, never>, "">;
 export default ElasticEase;

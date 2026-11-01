@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MenuBarComponentProps };
 
+/**
+ * Represents a specialized container that presents a set of menus in a horizontal row, typically at the top of an app window.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubar
+ */
 declare const MenuBar: Component<MenuBarComponentProps, Record<string, never>, "">;
 export default MenuBar;

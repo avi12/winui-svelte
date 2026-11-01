@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { GroupStyleComponentProps };
 
+/**
+ * Describes how to display the grouped items in a collection, such as the collection from GroupItems.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle
+ */
 declare const GroupStyle: Component<GroupStyleComponentProps, Record<string, never>, "">;
 export default GroupStyle;

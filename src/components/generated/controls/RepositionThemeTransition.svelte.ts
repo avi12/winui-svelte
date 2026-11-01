@@ -6,7 +6,17 @@ import type { RepositionThemeTransition } from "../bindings.ts";
 import { linkTransition } from "./Transition.svelte.ts";
 import type { TransitionBound, TransitionProps } from "./Transition.svelte.ts";
 
+/**
+ * Reacts to layout moves when no context is set and a trigger of move is passed.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemetransition
+ */
 export interface RepositionThemeTransitionProps extends TransitionProps {
+  /**
+   * Gets or sets a value that determines whether the transition staggers rendering of multiple items, or renders all items at once.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemetransition
+   */
   isStaggeringEnabled?: boolean;
 }
 

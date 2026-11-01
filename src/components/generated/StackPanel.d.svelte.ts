@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { StackPanelComponentProps };
 
+/**
+ * Arranges child elements into a single line that can be oriented horizontally or vertically.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+ */
 declare const StackPanel: Component<StackPanelComponentProps, Record<string, never>, "">;
 export default StackPanel;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RepositionThemeAnimationComponentProps };
 
+/**
+ * Use to animate an object that is being repositioned.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemeanimation
+ */
 declare const RepositionThemeAnimation: Component<RepositionThemeAnimationComponentProps, Record<string, never>, "">;
 export default RepositionThemeAnimation;

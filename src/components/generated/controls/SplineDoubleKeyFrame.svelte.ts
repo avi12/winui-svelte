@@ -7,7 +7,17 @@ import { linkDoubleKeyFrame } from "./DoubleKeyFrame.svelte.ts";
 import type { DoubleKeyFrameBound, DoubleKeyFrameProps } from "./DoubleKeyFrame.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Animates from the Double value of the previous key frame to its own Value using splined interpolation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinedoublekeyframe
+ */
 export interface SplineDoubleKeyFrameProps extends DoubleKeyFrameProps {
+  /**
+   * Gets or sets the two control points that define animation progress for this key frame. The two control points that specify the cubic Bezier curve that defines the progress of the key frame.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinedoublekeyframe
+   */
   keySpline?: SplineDoubleKeyFrame["keySpline"] | Snippet;
 }
 

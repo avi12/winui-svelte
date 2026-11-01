@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PathGeometryComponentProps };
 
+/**
+ * Represents a complex vector-based shape that may be composed of arcs, curves, ellipses, lines, and rectangles.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry
+ */
 declare const PathGeometry: Component<PathGeometryComponentProps, Record<string, never>, "">;
 export default PathGeometry;

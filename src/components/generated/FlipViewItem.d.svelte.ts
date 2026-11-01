@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { FlipViewItemComponentProps };
 
+/**
+ * Represents the container for an item in a FlipView control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flipviewitem
+ */
 declare const FlipViewItem: Component<FlipViewItemComponentProps, Record<string, never>, "">;
 export default FlipViewItem;

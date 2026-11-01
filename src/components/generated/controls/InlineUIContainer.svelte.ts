@@ -7,8 +7,18 @@ import { linkInline } from "./Inline.svelte.ts";
 import type { InlineBound, InlineProps } from "./Inline.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Provides an inline content element that enables UIElement types to be embedded in the content of a RichTextBlock.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.inlineuicontainer
+ */
 export interface InlineUIContainerProps extends InlineProps {
   children?: Snippet;
+  /**
+   * Gets or sets the UIElement hosted by the InlineUIContainer.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.inlineuicontainer
+   */
   child?: InlineUIContainer["child"] | Snippet;
 }
 

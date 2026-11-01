@@ -37,33 +37,173 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents the base class for UI elements that use a ControlTemplate to define their appearance. Parent class for ContentControl, UserControl, ItemsControl and several practical controls.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+ */
 export interface ControlProps extends FrameworkElementProps {
+  /**
+   * Gets or sets a brush that provides the background of the control. The brush that provides the background of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   background?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
+  /**
+   * Gets or sets a brush that describes the border fill of a control. The brush that is used to fill the control's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   borderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the border thickness of a control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   borderThickness?: ThicknessInput;
+  /**
+   * Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   characterSpacing?: number;
+  /**
+   * Gets or sets the radius for the corners of the control's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   cornerRadius?: CornerRadiusInput;
+  /**
+   * Gets or sets the path to the resource file that contains the default style for the control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   defaultStyleResourceUri?: UriInput;
+  /**
+   * Get or sets a value that specifies a control's preference for whether sounds are played.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   elementSoundMode?: EnumInput<typeof ElementSoundMode>;
+  /**
+   * Gets or sets the font used to display text in the control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   fontFamily?: FontFamilyInput;
+  /**
+   * Gets or sets the size of the text in this control. The size of the text in the Control, in pixels. The default is 11.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   fontSize?: number;
+  /**
+   * Gets or sets the degree to which a font is condensed or expanded on the screen. One of the values that specifies the degree to which a font is condensed or expanded on the screen. The default is Normal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   fontStretch?: EnumInput<typeof FontStretch>;
+  /**
+   * Gets or sets the style in which the text is rendered. One of the values that specifies the style in which the text is rendered. The default is Normal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   fontStyle?: EnumInput<typeof FontStyle>;
+  /**
+   * Gets or sets the thickness of the specified font. One of the values that specifies the thickness of the specified font. The default is Normal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   fontWeight?: FontWeightInput;
+  /**
+   * Gets or sets a brush that describes the foreground color. The brush that paints the foreground of the control. The default value is a SolidColorBrush with color of Black.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   foreground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the horizontal alignment of the control's content. One of the HorizontalAlignment values. The default is Left.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   horizontalContentAlignment?: EnumInput<typeof HorizontalAlignment>;
+  /**
+   * Gets or sets a value indicating whether the user can interact with the control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   isEnabled?: boolean;
+  /**
+   * Get or sets a value that indicates whether focus is constrained to the control when the user presses the A/Select button on a game controller.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   isFocusEngaged?: boolean;
+  /**
+   * Get or sets a value that indicates whether focus can be constrained to the control when the user presses the A/Select button on a game controller.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   isFocusEngagementEnabled?: boolean;
+  /**
+   * Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   isTextScaleFactorEnabled?: boolean;
+  /**
+   * Gets or sets the padding inside a control. The amount of space between the content of a Control and its Margin or Border. The default is a Thickness with values of 0 on all four sides.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   padding?: ThicknessInput;
+  /**
+   * Gets or sets whether a UI element supports mouse mode, which emulates pointer interaction experiences with non-pointer input devices such as a keyboard or game controller. The pointer emulation mode. The default is Never.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   requiresPointer?: EnumInput<typeof RequiresPointer>;
+  /**
+   * Gets or sets a value that modifies how tabbing and UIElement.TabIndex work for this control. > [!NOTE] > For Windows 10 Creators Update (build 10.0.15063) and newer, the TabFocusNavigation property is available on the UIElement base class to include objects in the tab sequence that do not use a ControlTemplate. A value of the enumeration. The default is Local.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   tabNavigation?: EnumInput<typeof KeyboardNavigationMode>;
+  /**
+   * Gets or sets a control template. The control template defines the visual appearance of a control in UI, and is defined in XAML markup. The template that defines the appearance of the Control. The ControlTemplate must have exactly one root element as its content.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   template?: ControlTemplateInput;
+  /**
+   * Gets or sets the vertical alignment of the control's content. One of the VerticalAlignment values. The default is Top.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   verticalContentAlignment?: EnumInput<typeof VerticalAlignment>;
+  /**
+   * Occurs as focus is released from the control when the user presses the B/Back button on a game controller.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   onfocusdisengaged?: Parameters<Control["onFocusDisengaged"]>[0];
+  /**
+   * Occurs as focus is constrained to the control when the user presses the A/Select button on a game controller.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   onfocusengaged?: Parameters<Control["onFocusEngaged"]>[0];
+  /**
+   * Occurs when the IsEnabled property changes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control
+   */
   onisenabledchanged?: (sender: Control, args: EventArguments<DependencyPropertyChangedEventArgs>) => void;
 }
 

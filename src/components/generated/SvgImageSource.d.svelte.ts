@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SvgImageSourceComponentProps };
 
+/**
+ * Provides a source object for properties that use a Scalable Vector Graphics (SVG) source. You can define a SvgImageSource by using a Uniform Resource Identifier (URI) that references a SVG file, or by calling SetSourceAsync(IRandomAccessStream) and supplying a stream.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.svgimagesource
+ */
 declare const SvgImageSource: Component<SvgImageSourceComponentProps, Record<string, never>, "">;
 export default SvgImageSource;

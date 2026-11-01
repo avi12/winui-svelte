@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { Transform } from "../bindings.ts";
 
+/**
+ * Defines functionality that enables transformations in a two-dimensional plane.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.transform
+ */
 export interface TransformProps {
   attached?: AttachedInput;
 }

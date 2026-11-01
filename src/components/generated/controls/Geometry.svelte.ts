@@ -6,7 +6,17 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { Geometry } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Provides a base class for objects that define geometric shapes. Geometry objects can be used for clipping regions and as geometry definitions for rendering two-dimensional graphical data as a Path.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.geometry
+ */
 export interface GeometryProps {
+  /**
+   * Gets or sets the Transform object applied to a Geometry. The transformation applied to the Geometry. Note that this value may be a single Transform or a list of Transform items.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.geometry
+   */
   transform?: Geometry["transform"] | Snippet;
   attached?: AttachedInput;
 }

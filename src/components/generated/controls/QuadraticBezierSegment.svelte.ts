@@ -7,8 +7,23 @@ import type { QuadraticBezierSegment } from "../bindings.ts";
 import { linkPathSegment } from "./PathSegment.svelte.ts";
 import type { PathSegmentBound, PathSegmentProps } from "./PathSegment.svelte.ts";
 
+/**
+ * Creates a quadratic Bezier curve between two points in a PathFigure.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.quadraticbeziersegment
+ */
 export interface QuadraticBezierSegmentProps extends PathSegmentProps {
+  /**
+   * Gets or sets the control point of the curve. The control point of this QuadraticBezierSegment. The default value is a Point with value 0,0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.quadraticbeziersegment
+   */
   point1?: PointInput;
+  /**
+   * Gets or sets the end Point of this QuadraticBezierSegment. The end point of this QuadraticBezierSegment. The default value is a Point with value 0,0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.quadraticbeziersegment
+   */
   point2?: PointInput;
 }
 

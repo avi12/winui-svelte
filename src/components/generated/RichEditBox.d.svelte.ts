@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RichEditBoxComponentProps };
 
+/**
+ * Represents a rich text editing control that supports formatted text, hyperlinks, and other rich content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+ */
 declare const RichEditBox: Component<RichEditBoxComponentProps, Record<string, never>, "">;
 export default RichEditBox;

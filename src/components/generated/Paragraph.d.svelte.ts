@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ParagraphComponentProps };
 
+/**
+ * Provides a block-level content element that is used to group content into a paragraph.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.paragraph
+ */
 declare const Paragraph: Component<ParagraphComponentProps, Record<string, never>, "">;
 export default Paragraph;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ProgressRingComponentProps };
 
+/**
+ * Represents a control that indicates the progress of an operation. The typical visual appearance is a ring-shaped "spinner".
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+ */
 declare const ProgressRing: Component<ProgressRingComponentProps, Record<string, never>, "">;
 export default ProgressRing;

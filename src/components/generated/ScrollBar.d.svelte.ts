@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ScrollBarComponentProps };
 
+/**
+ * Represents a control that provides a scroll bar that has a sliding Thumb whose position corresponds to a value.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar
+ */
 declare const ScrollBar: Component<ScrollBarComponentProps, Record<string, never>, "value">;
 export default ScrollBar;

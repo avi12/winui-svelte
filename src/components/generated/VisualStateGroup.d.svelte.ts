@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { VisualStateGroupComponentProps };
 
+/**
+ * Contains mutually exclusive VisualState objects and VisualTransition objects that are used to go from one state to another.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup
+ */
 declare const VisualStateGroup: Component<VisualStateGroupComponentProps, Record<string, never>, "">;
 export default VisualStateGroup;

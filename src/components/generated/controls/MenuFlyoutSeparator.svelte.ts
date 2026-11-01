@@ -6,6 +6,11 @@ import type { MenuFlyoutSeparator } from "../bindings.ts";
 import { linkMenuFlyoutItemBase } from "./MenuFlyoutItemBase.svelte.ts";
 import type { MenuFlyoutItemBaseBound, MenuFlyoutItemBaseProps } from "./MenuFlyoutItemBase.svelte.ts";
 
+/**
+ * Represents a horizontal line that separates items in an MenuFlyout.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutseparator
+ */
 export interface MenuFlyoutSeparatorProps extends MenuFlyoutItemBaseProps {
 }
 

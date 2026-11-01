@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RectangleComponentProps };
 
+/**
+ * Draws a rectangle with a given Height and Width specified in device-independent pixel (DIP).
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.rectangle
+ */
 declare const Rectangle: Component<RectangleComponentProps, Record<string, never>, "">;
 export default Rectangle;

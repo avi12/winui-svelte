@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { KeyboardAcceleratorComponentProps };
 
+/**
+ * Represents a keyboard shortcut (or accelerator) that lets a user perform an action using the keyboard instead of navigating the app UI (directly or through access keys). Accelerators are typically assigned to buttons or menu items.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator
+ */
 declare const KeyboardAccelerator: Component<KeyboardAcceleratorComponentProps, Record<string, never>, "">;
 export default KeyboardAccelerator;

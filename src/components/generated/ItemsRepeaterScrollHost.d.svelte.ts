@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ItemsRepeaterScrollHostComponentProps };
 
+/**
+ * A helper to coordinate interaction between the ItemsRepeater and ScrollViewer. Use the ItemsRepeaterScrollHost if your app will run on versions of Windows prior Windows 10 1809 (Build 17763). If your app will only run on versions of Windows 1809 or higher, there is no need to use this control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost
+ */
 declare const ItemsRepeaterScrollHost: Component<ItemsRepeaterScrollHostComponentProps, Record<string, never>, "">;
 export default ItemsRepeaterScrollHost;

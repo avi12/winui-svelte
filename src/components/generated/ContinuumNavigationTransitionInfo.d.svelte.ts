@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ContinuumNavigationTransitionInfoComponentProps };
 
+/**
+ * Specifies the object that will fly between pages to provide context during a continuum transition.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.continuumnavigationtransitioninfo
+ */
 declare const ContinuumNavigationTransitionInfo: Component<ContinuumNavigationTransitionInfoComponentProps, Record<string, never>, "">;
 export default ContinuumNavigationTransitionInfo;

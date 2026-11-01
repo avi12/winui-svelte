@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RenderTargetBitmapComponentProps };
 
+/**
+ * Represents an image source that can be populated with the combined contents of a XAML visual tree. See for some notable limitations on which XAML visuals can be captured in a RenderTargetBitmap.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.rendertargetbitmap
+ */
 declare const RenderTargetBitmap: Component<RenderTargetBitmapComponentProps, Record<string, never>, "">;
 export default RenderTargetBitmap;

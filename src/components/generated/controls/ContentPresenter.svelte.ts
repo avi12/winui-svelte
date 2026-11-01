@@ -37,34 +37,169 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Displays the content of a ContentControl. Can also provide content presentation for non-controls. Provides a base class for specialized presenters such as ScrollContentPresenter.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+ */
 export interface ContentPresenterProps extends FrameworkElementProps {
   children?: Snippet;
   contentTransitions?: Snippet;
+  /**
+   * Gets or sets the Brush to apply to the background of content handled by the ContentPresenter. The brush used as the background brush for the contents. The default is a null brush from a pure code perspective, but system style defaults set this to White (for Light theme) or Black (for Dark theme).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   background?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
+  /**
+   * Gets or sets an instance of BrushTransition to automatically animate changes to the Background property. An instance of BrushTransition to automatically animate changes to the Background; otherwise, null. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   backgroundTransition?: ContentPresenter["backgroundTransition"];
+  /**
+   * Gets or sets a brush that describes the border fill of the content presenter. The brush that is used to fill the content presenter's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   borderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the border thickness of the content presenter. The border thickness of the content presenter, as a Thickness value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   borderThickness?: ThicknessInput;
+  /**
+   * Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   characterSpacing?: number;
+  /**
+   * Gets or sets the data that is used to generate the child elements of a ContentPresenter.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   content?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the template that is used to display the content of the control. A DataTemplate that defines the visualization of the content. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   contentTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets a selection object that changes the DataTemplate to apply for content presented in the ContentPresenter, based on processing information about the content item or its container at run time.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   contentTemplateSelector?: ContentPresenter["contentTemplateSelector"];
+  /**
+   * Gets or sets the radius for the corners of the content presenter's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   cornerRadius?: CornerRadiusInput;
+  /**
+   * Gets or sets the preferred top-level font family for the text content presented by the ContentPresenter. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   fontFamily?: FontFamilyInput;
+  /**
+   * Gets or sets the font size for the text content presented by the ContentPresenter. A non-negative value that specifies the font size, measured in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   fontSize?: number;
+  /**
+   * Gets or sets the font stretch for the text content presented by the ContentPresenter. The requested font stretch, as a FontStretch constant. The default is Normal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   fontStretch?: EnumInput<typeof FontStretch>;
+  /**
+   * Gets or sets the font style for the presented content. The requested font style, which is a FontStyle constant name. The default is Normal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   fontStyle?: EnumInput<typeof FontStyle>;
+  /**
+   * Gets or sets the top-level font weight for the text content presented by the ContentPresenter. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   fontWeight?: FontWeightInput;
+  /**
+   * Gets or sets the Brush to apply to the text content handled by the ContentPresenter. The brush used as the foreground brush for the text contents. The default is a null brush from a pure code perspective, but system style defaults set this to Black (for Light theme) or White (for Dark theme).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   foreground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the horizontal alignment of the content. One of the HorizontalAlignment values.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   horizontalContentAlignment?: EnumInput<typeof HorizontalAlignment>;
+  /**
+   * Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   isTextScaleFactorEnabled?: boolean;
+  /**
+   * Gets or sets the height of each line of text content presented by the ContentPresenter. The height in pixels of each line of text content. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   lineHeight?: number;
+  /**
+   * Gets or sets a value that indicates how a line box is determined for each line of text.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   lineStackingStrategy?: EnumInput<typeof LineStackingStrategy>;
+  /**
+   * Gets or sets the maximum lines of text shown. The maximum lines of text shown. The default is 0, which is a special value that represents "Auto" behavior. The value cannot be negative.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   maxLines?: number;
+  /**
+   * Get or sets a value that indicates how the font is modified to align with fonts of different sizes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   opticalMarginAlignment?: EnumInput<typeof OpticalMarginAlignment>;
+  /**
+   * Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   padding?: ThicknessInput;
+  /**
+   * Gets or sets a value that indicates how the line box height is determined for each line of text displayed in the ContentPresenter.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   textLineBounds?: EnumInput<typeof TextLineBounds>;
+  /**
+   * Gets or sets how the element wraps text. A value that indicates how the element wraps text. The default is NoWrap.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   textWrapping?: EnumInput<typeof TextWrapping>;
+  /**
+   * Gets or sets the vertical alignment of the content. One of the VerticalAlignment values.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+   */
   verticalContentAlignment?: EnumInput<typeof VerticalAlignment>;
 }
 

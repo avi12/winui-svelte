@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { EasingDoubleKeyFrameComponentProps };
 
+/**
+ * Associates an easing function with a DoubleAnimationUsingKeyFrames key-frame animation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingdoublekeyframe
+ */
 declare const EasingDoubleKeyFrame: Component<EasingDoubleKeyFrameComponentProps, Record<string, never>, "">;
 export default EasingDoubleKeyFrame;

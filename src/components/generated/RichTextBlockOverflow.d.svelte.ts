@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RichTextBlockOverflowComponentProps };
 
+/**
+ * Represents a rich text display overflow container. This element cannot have direct content. The only purpose of RichTextBlockOverflow is to display text content that does not fit in the bounds of a RichTextBlock or another RichTextBlockOverflow element.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+ */
 declare const RichTextBlockOverflow: Component<RichTextBlockOverflowComponentProps, Record<string, never>, "isTextTrimmed">;
 export default RichTextBlockOverflow;

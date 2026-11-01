@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PointerDownThemeAnimationComponentProps };
 
+/**
+ * Represents a preconfigured animation that runs when a pointer down is detected on an item or element.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointerdownthemeanimation
+ */
 declare const PointerDownThemeAnimation: Component<PointerDownThemeAnimationComponentProps, Record<string, never>, "">;
 export default PointerDownThemeAnimation;

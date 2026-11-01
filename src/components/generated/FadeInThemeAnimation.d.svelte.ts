@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { FadeInThemeAnimationComponentProps };
 
+/**
+ * Represents the preconfigured opacity animation that applies to controls when they are first shown.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.fadeinthemeanimation
+ */
 declare const FadeInThemeAnimation: Component<FadeInThemeAnimationComponentProps, Record<string, never>, "">;
 export default FadeInThemeAnimation;

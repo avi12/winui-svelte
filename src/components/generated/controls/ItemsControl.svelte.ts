@@ -14,17 +14,62 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that can be used to present a collection of items.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol
+ */
 export interface ItemsControlProps extends ControlProps {
   children?: Snippet;
   groupStyle?: Snippet;
   itemContainerTransitions?: Snippet;
+  /**
+   * Gets or sets the name or path of the property that is displayed for each data item. The name or path of the property that is displayed for each the data item in the control. The default is an empty string ("").
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol
+   */
   displayMemberPath?: string;
+  /**
+   * Gets or sets a reference to a custom GroupStyleSelector logic class. The GroupStyleSelector returns different GroupStyle values to use for content based on the characteristics of that content.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol
+   */
   groupStyleSelector?: ItemsControl["groupStyleSelector"];
+  /**
+   * Gets or sets the style that is used when rendering the item containers for an ItemsControl. The style applied to the item containers. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol
+   */
   itemContainerStyle?: StyleInput;
+  /**
+   * Gets or sets a reference to a custom StyleSelector logic class. The StyleSelector returns different Style values to use for the item container based on characteristics of the object being displayed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol
+   */
   itemContainerStyleSelector?: ItemsControl["itemContainerStyleSelector"];
+  /**
+   * Gets or sets the template that defines the panel that controls the layout of items. An ItemsPanelTemplate that defines the panel to use for the layout of the items. The default value for the ItemsControl is an ItemsPanelTemplate that specifies a StackPanel.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol
+   */
   itemsPanel?: ItemsPanelTemplateInput;
+  /**
+   * Gets or sets an object source used to generate the content of the ItemsControl. The object that is used to generate the content of the ItemsControl. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol
+   */
   itemsSource?: CollectionInput;
+  /**
+   * Gets or sets the DataTemplate used to display each item. The template that specifies the visualization of the data objects. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol
+   */
   itemTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets a reference to a custom DataTemplateSelector logic class. The DataTemplateSelector referenced by this property returns a template to apply to items.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol
+   */
   itemTemplateSelector?: ItemsControl["itemTemplateSelector"];
 }
 

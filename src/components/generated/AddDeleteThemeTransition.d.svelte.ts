@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AddDeleteThemeTransitionComponentProps };
 
+/**
+ * Provides the animated transition behavior for when controls add or delete children of a panel. For example, if you have a collection of photos displayed in a Grid, you can associate this animation to the Grid so that when photos are added or deleted, the photos will animate in and out of view.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.adddeletethemetransition
+ */
 declare const AddDeleteThemeTransition: Component<AddDeleteThemeTransitionComponentProps, Record<string, never>, "">;
 export default AddDeleteThemeTransition;

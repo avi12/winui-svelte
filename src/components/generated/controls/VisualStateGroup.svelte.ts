@@ -8,10 +8,25 @@ import type { VisualStateGroup } from "../bindings.ts";
 import type { VisualStateChangedEventArgs } from "#winui/microsoft/ui/xaml/VisualStateChangedEventArgs";
 import type { Snippet } from "svelte";
 
+/**
+ * Contains mutually exclusive VisualState objects and VisualTransition objects that are used to go from one state to another.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup
+ */
 export interface VisualStateGroupProps {
   children?: Snippet;
   transitions?: Snippet;
+  /**
+   * Occurs after a control changes into a different state.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup
+   */
   oncurrentstatechanged?: (sender: VisualStateGroup, args: EventArguments<VisualStateChangedEventArgs>) => void;
+  /**
+   * Occurs when a control begins changing into a different state.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup
+   */
   oncurrentstatechanging?: (sender: VisualStateGroup, args: EventArguments<VisualStateChangedEventArgs>) => void;
   attached?: AttachedInput;
 }

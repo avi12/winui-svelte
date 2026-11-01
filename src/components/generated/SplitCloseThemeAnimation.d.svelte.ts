@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SplitCloseThemeAnimationComponentProps };
 
+/**
+ * Represents the preconfigured animation that conceals a target UI using a split animation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+ */
 declare const SplitCloseThemeAnimation: Component<SplitCloseThemeAnimationComponentProps, Record<string, never>, "">;
 export default SplitCloseThemeAnimation;

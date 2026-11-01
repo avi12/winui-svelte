@@ -6,6 +6,11 @@ import type { LinearPointKeyFrame } from "../bindings.ts";
 import { linkPointKeyFrame } from "./PointKeyFrame.svelte.ts";
 import type { PointKeyFrameBound, PointKeyFrameProps } from "./PointKeyFrame.svelte.ts";
 
+/**
+ * Animates from the Point value of the previous key frame to its own Value, using linear interpolation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.linearpointkeyframe
+ */
 export interface LinearPointKeyFrameProps extends PointKeyFrameProps {
 }
 

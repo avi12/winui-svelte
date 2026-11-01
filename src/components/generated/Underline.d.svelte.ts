@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { UnderlineComponentProps };
 
+/**
+ * Provides an inline-level content element that causes content to render with an underlined text decoration.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.underline
+ */
 declare const Underline: Component<UnderlineComponentProps, Record<string, never>, "">;
 export default Underline;

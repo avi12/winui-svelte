@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { HyperlinkButtonComponentProps };
 
+/**
+ * Represents a button control that functions as a hyperlink.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hyperlinkbutton
+ */
 declare const HyperlinkButton: Component<HyperlinkButtonComponentProps, Record<string, never>, "">;
 export default HyperlinkButton;

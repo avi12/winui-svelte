@@ -6,8 +6,23 @@ import type { Rectangle } from "../bindings.ts";
 import { linkShape } from "./Shape.svelte.ts";
 import type { ShapeBound, ShapeProps } from "./Shape.svelte.ts";
 
+/**
+ * Draws a rectangle with a given Height and Width specified in device-independent pixel (DIP).
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.rectangle
+ */
 export interface RectangleProps extends ShapeProps {
+  /**
+   * Gets or sets the x-axis radius of the ellipse that is used to round the corners of the rectangle.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.rectangle
+   */
   radiusX?: number;
+  /**
+   * Gets or sets the y-axis radius of the ellipse that is used to round the corners of the rectangle.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.rectangle
+   */
   radiusY?: number;
 }
 

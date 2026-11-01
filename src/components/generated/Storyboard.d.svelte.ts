@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { StoryboardComponentProps };
 
+/**
+ * Controls animations with a timeline, and provides object and property targeting information for its child animations.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.storyboard
+ */
 declare const Storyboard: Component<StoryboardComponentProps, Record<string, never>, "">;
 export default Storyboard;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { HyperlinkComponentProps };
 
+/**
+ * Provides an inline-level content element that provides facilities for hosting hyperlinks.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+ */
 declare const Hyperlink: Component<HyperlinkComponentProps, Record<string, never>, "">;
 export default Hyperlink;

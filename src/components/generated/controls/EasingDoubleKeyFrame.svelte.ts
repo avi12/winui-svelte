@@ -7,7 +7,17 @@ import { linkDoubleKeyFrame } from "./DoubleKeyFrame.svelte.ts";
 import type { DoubleKeyFrameBound, DoubleKeyFrameProps } from "./DoubleKeyFrame.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Associates an easing function with a DoubleAnimationUsingKeyFrames key-frame animation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingdoublekeyframe
+ */
 export interface EasingDoubleKeyFrameProps extends DoubleKeyFrameProps {
+  /**
+   * Gets or sets the easing function that is applied to the key frame.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingdoublekeyframe
+   */
   easingFunction?: EasingDoubleKeyFrame["easingFunction"] | Snippet;
 }
 

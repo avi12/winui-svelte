@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ColorAnimationUsingKeyFramesComponentProps };
 
+/**
+ * Animates the value of a Color property along a set of key frames.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimationusingkeyframes
+ */
 declare const ColorAnimationUsingKeyFrames: Component<ColorAnimationUsingKeyFramesComponentProps, Record<string, never>, "">;
 export default ColorAnimationUsingKeyFrames;

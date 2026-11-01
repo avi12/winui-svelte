@@ -6,6 +6,11 @@ import type { DiscreteObjectKeyFrame } from "../bindings.ts";
 import { linkObjectKeyFrame } from "./ObjectKeyFrame.svelte.ts";
 import type { ObjectKeyFrameBound, ObjectKeyFrameProps } from "./ObjectKeyFrame.svelte.ts";
 
+/**
+ * Animates from the Object value of the previous key frame to its own Value using discrete values.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.discreteobjectkeyframe
+ */
 export interface DiscreteObjectKeyFrameProps extends ObjectKeyFrameProps {
 }
 

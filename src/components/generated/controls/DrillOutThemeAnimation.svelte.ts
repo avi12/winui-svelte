@@ -6,10 +6,35 @@ import type { DrillOutThemeAnimation } from "../bindings.ts";
 import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 
+/**
+ * Represents a preconfigured animation that runs when a user navigates backward in a logical hierarchy, like from a detail page to a master page.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation
+ */
 export interface DrillOutThemeAnimationProps extends TimelineProps {
+  /**
+   * Gets or sets the element that is animating into view, such as a master page.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation
+   */
   entranceTarget?: DrillOutThemeAnimation["entranceTarget"];
+  /**
+   * Gets or sets the name of the element that is animating into view.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation
+   */
   entranceTargetName?: string;
+  /**
+   * Gets or sets the element that is animating out of view, such as a detail page.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation
+   */
   exitTarget?: DrillOutThemeAnimation["exitTarget"];
+  /**
+   * Gets of sets the name of the element that is animating out of view.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation
+   */
   exitTargetName?: string;
 }
 

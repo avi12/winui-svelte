@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ScaleTransformComponentProps };
 
+/**
+ * Scales an object in the two-dimensional x-y coordinate system.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform
+ */
 declare const ScaleTransform: Component<ScaleTransformComponentProps, Record<string, never>, "">;
 export default ScaleTransform;

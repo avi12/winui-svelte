@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ItemsControlComponentProps };
 
+/**
+ * Represents a control that can be used to present a collection of items.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol
+ */
 declare const ItemsControl: Component<ItemsControlComponentProps, Record<string, never>, "">;
 export default ItemsControl;

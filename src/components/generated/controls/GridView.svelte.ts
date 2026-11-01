@@ -6,6 +6,11 @@ import type { GridView } from "../bindings.ts";
 import { linkListViewBase } from "./ListViewBase.svelte.ts";
 import type { ListViewBaseBound, ListViewBaseProps } from "./ListViewBase.svelte.ts";
 
+/**
+ * Represents a control that displays data items in rows and columns.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.gridview
+ */
 export interface GridViewProps extends ListViewBaseProps {
 }
 

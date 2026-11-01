@@ -8,7 +8,17 @@ import { linkIconElement } from "./IconElement.svelte.ts";
 import type { IconElementBound, IconElementProps } from "./IconElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents an icon that uses a vector path as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pathicon
+ */
 export interface PathIconProps extends IconElementProps {
+  /**
+   * Gets or sets a Geometry that specifies the shape to be drawn. In XAML. this can also be set using a string that describes Move and draw commands syntax. A description of the shape to be drawn.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pathicon
+   */
   data?: GeometryInput | Snippet;
 }
 

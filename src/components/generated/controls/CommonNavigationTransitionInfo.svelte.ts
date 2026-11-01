@@ -9,7 +9,17 @@ import type {
   NavigationTransitionInfoProps
 } from "./NavigationTransitionInfo.svelte.ts";
 
+/**
+ * Provides common parameters for navigation transition animations.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.commonnavigationtransitioninfo
+ */
 export interface CommonNavigationTransitionInfoProps extends NavigationTransitionInfoProps {
+  /**
+   * Gets or sets a Boolean value indicating if staggering is enabled for the navigation transition.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.commonnavigationtransitioninfo
+   */
   isStaggeringEnabled?: boolean;
 }
 

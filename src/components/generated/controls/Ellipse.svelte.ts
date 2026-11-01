@@ -6,6 +6,11 @@ import type { Ellipse } from "../bindings.ts";
 import { linkShape } from "./Shape.svelte.ts";
 import type { ShapeBound, ShapeProps } from "./Shape.svelte.ts";
 
+/**
+ * Draws an ellipse with a given Height and Width specified in device-independent pixel (DIP).
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.ellipse
+ */
 export interface EllipseProps extends ShapeProps {
 }
 

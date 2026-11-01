@@ -8,11 +8,41 @@ import { linkListViewItem } from "./ListViewItem.svelte.ts";
 import type { ListViewItemBound, ListViewItemProps } from "./ListViewItem.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a single tab within a TabView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+ */
 export interface TabViewItemProps extends ListViewItemProps {
+  /**
+   * Gets or sets the content that appears inside the tab strip to represent the tab.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+   */
   header?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the DataTemplate used to display the content to the right of the tab strip.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+   */
   headerTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets the value for the IconSource to be displayed within the tab.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+   */
   iconSource?: TabViewItem["iconSource"] | Snippet;
+  /**
+   * Gets or sets the value that determines if the tab shows a close button. The default is true.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+   */
   isClosable?: boolean;
+  /**
+   * Raised when the user attempts to close the TabViewItem via clicking the x-to-close button, CTRL+F4, or mousewheel.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+   */
   oncloserequested?: Parameters<TabViewItem["onCloseRequested"]>[0];
 }
 

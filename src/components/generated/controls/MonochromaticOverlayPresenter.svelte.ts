@@ -7,8 +7,23 @@ import type { MonochromaticOverlayPresenter } from "../bindings.ts";
 import { linkGrid } from "./Grid.svelte.ts";
 import type { GridBound, GridProps } from "./Grid.svelte.ts";
 
+/**
+ * Enables visually overriding the colors of items in a grid with a monochromatic scheme or hue.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.monochromaticoverlaypresenter
+ */
 export interface MonochromaticOverlayPresenterProps extends GridProps {
+  /**
+   * Gets or sets the base color used to generate the monochromatic overlay.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.monochromaticoverlaypresenter
+   */
   replacementColor?: ColorInput;
+  /**
+   * Gets or sets the source element on which to overlay the monochromatic color scheme or hue.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.monochromaticoverlaypresenter
+   */
   sourceElement?: MonochromaticOverlayPresenter["sourceElement"];
 }
 

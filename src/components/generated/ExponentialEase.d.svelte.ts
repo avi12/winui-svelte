@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ExponentialEaseComponentProps };
 
+/**
+ * Represents an easing function that creates an animation that accelerates and/or decelerates using an exponential formula.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.exponentialease
+ */
 declare const ExponentialEase: Component<ExponentialEaseComponentProps, Record<string, never>, "">;
 export default ExponentialEase;

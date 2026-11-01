@@ -8,16 +8,66 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a data-driven collection control that incorporates a flexible layout system, custom views, and virtualization, with no default UI or interaction policies.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+ */
 export interface ItemsRepeaterProps extends FrameworkElementProps {
+  /**
+   * Gets or sets a brush that provides the background of the control. The brush that provides the background of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   */
   background?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates the size of the buffer used to realize items when panning or scrolling horizontally. A non-negative value that indicates the size of the buffer as a multiple of the viewport size. The default value is determined by the system.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   */
   horizontalCacheLength?: number;
+  /**
+   * Gets or sets an object source used to generate the content of the ItemsRepeater. The object that is used to generate the content of the ItemsRepeater. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   */
   itemsSource?: CollectionInput;
+  /**
+   * Gets or sets the template used to display each item. The template that specifies the visualization of the data objects. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   */
   itemTemplate?: ObjectReferenceInput;
   itemTransitionProvider?: ItemsRepeater["itemTransitionProvider"];
+  /**
+   * Gets or sets the layout used to size and position elements in the ItemsRepeater. The layout used to size and position elements. The default is a StackLayout with vertical orientation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   */
   layout?: ItemsRepeater["layout"] | Snippet;
+  /**
+   * Gets or sets a value that indicates the size of the buffer used to realize items when panning or scrolling vertically. A non-negative value that indicates the size of the buffer as a multiple of the viewport size. The default value is determined by the system.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   */
   verticalCacheLength?: number;
+  /**
+   * Occurs each time an element is cleared and made available to be re-used.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   */
   onelementclearing?: Parameters<ItemsRepeater["onElementClearing"]>[0];
+  /**
+   * Occurs for each realized UIElement when the index for the item it represents has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   */
   onelementindexchanged?: Parameters<ItemsRepeater["onElementIndexChanged"]>[0];
+  /**
+   * Occurs each time an element is prepared for use.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   */
   onelementprepared?: Parameters<ItemsRepeater["onElementPrepared"]>[0];
 }
 

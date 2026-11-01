@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ColumnMajorUniformToLargestGridLayoutComponentProps };
 
+/**
+ * Represents a layout grid where each cell is sized uniformly based on the largest cell in the grid required to accommodate its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout
+ */
 declare const ColumnMajorUniformToLargestGridLayout: Component<ColumnMajorUniformToLargestGridLayoutComponentProps, Record<string, never>, "">;
 export default ColumnMajorUniformToLargestGridLayout;

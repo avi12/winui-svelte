@@ -7,17 +7,77 @@ import type { DatePickerFlyout } from "../bindings.ts";
 import { linkPickerFlyoutBase } from "./PickerFlyoutBase.svelte.ts";
 import type { PickerFlyoutBaseBound, PickerFlyoutBaseProps } from "./PickerFlyoutBase.svelte.ts";
 
+/**
+ * Represents a control that allows a user to pick a date.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+ */
 export interface DatePickerFlyoutProps extends PickerFlyoutBaseProps {
+  /**
+   * Gets or sets the calendar system to use. The name of the calendar system to use. For a list of supported calendar systems, see CalendarIdentifiers.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   calendarIdentifier?: string;
+  /**
+   * Gets or sets the date currently set in the date picker.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   date?: DateInput;
+  /**
+   * Gets or sets the display format for the day value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   dayFormat?: string;
+  /**
+   * Gets or sets a value that indicates whether the day selector is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   dayVisible?: boolean;
+  /**
+   * Gets or sets the maximum Gregorian year available for picking.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   maxYear?: DateInput;
+  /**
+   * Gets or sets the minimum Gregorian year available for picking.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   minYear?: DateInput;
+  /**
+   * Gets or sets the display format for the month value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   monthFormat?: string;
+  /**
+   * Gets or sets a value that indicates whether the month selector is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   monthVisible?: boolean;
+  /**
+   * Gets or sets the display format for the year value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   yearFormat?: string;
+  /**
+   * Gets or sets a value that indicates whether the year selector is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   yearVisible?: boolean;
+  /**
+   * Occurs when a date has been picked by the user.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+   */
   ondatepicked?: Parameters<DatePickerFlyout["onDatePicked"]>[0];
 }
 

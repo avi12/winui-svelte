@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DiscreteColorKeyFrameComponentProps };
 
+/**
+ * Animates from the Color value of the previous key frame to its own Value using discrete values.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.discretecolorkeyframe
+ */
 declare const DiscreteColorKeyFrame: Component<DiscreteColorKeyFrameComponentProps, Record<string, never>, "">;
 export default DiscreteColorKeyFrame;

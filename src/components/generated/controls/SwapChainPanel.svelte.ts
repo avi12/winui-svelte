@@ -6,7 +6,17 @@ import type { SwapChainPanel } from "../bindings.ts";
 import { linkGrid } from "./Grid.svelte.ts";
 import type { GridBound, GridProps } from "./Grid.svelte.ts";
 
+/**
+ * Provides a hosting surface, where Microsoft DirectX swap chains provide content that can be rendered into a XAML UI. A SwapChainPanel element is a key component for an app that renders Microsoft DirectX graphics and then presents those visuals within a XAML page.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swapchainpanel
+ */
 export interface SwapChainPanelProps extends GridProps {
+  /**
+   * Occurs when the composition scale factor of the SwapChainPanel has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swapchainpanel
+   */
   oncompositionscalechanged?: Parameters<SwapChainPanel["onCompositionScaleChanged"]>[0];
 }
 

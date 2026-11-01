@@ -8,11 +8,41 @@ import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
 import { linkButtonBase } from "./ButtonBase.svelte.ts";
 import type { ButtonBaseBound, ButtonBaseProps } from "./ButtonBase.svelte.ts";
 
+/**
+ * Represents a control that a user can select (check) or clear (uncheck). Base class for controls that can switch states, such as CheckBox and RadioButton.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+ */
 export interface ToggleButtonProps extends ButtonBaseProps {
+  /**
+   * Gets or sets whether the ToggleButton is checked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+   */
   isChecked?: NullableBooleanInput | undefined;
+  /**
+   * Gets or sets a value that indicates whether the control supports three states.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+   */
   isThreeState?: boolean;
+  /**
+   * Fires when a ToggleButton is checked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+   */
   onchecked?: (sender: ToggleButton, args: EventArguments<RoutedEventArgs>) => void;
+  /**
+   * Fires when the state of a ToggleButton is switched to the indeterminate state.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+   */
   onindeterminate?: (sender: ToggleButton, args: EventArguments<RoutedEventArgs>) => void;
+  /**
+   * Occurs when a ToggleButton is unchecked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+   */
   onunchecked?: (sender: ToggleButton, args: EventArguments<RoutedEventArgs>) => void;
 }
 

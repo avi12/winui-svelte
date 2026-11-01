@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { NavigationViewItemHeaderComponentProps };
 
+/**
+ * Represents a header for a group of menu items in a NavigationView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitemheader
+ */
 declare const NavigationViewItemHeader: Component<NavigationViewItemHeaderComponentProps, Record<string, never>, "">;
 export default NavigationViewItemHeader;

@@ -6,6 +6,11 @@ import type { QuinticEase } from "../bindings.ts";
 import { linkEasingFunctionBase } from "./EasingFunctionBase.svelte.ts";
 import type { EasingFunctionBaseBound, EasingFunctionBaseProps } from "./EasingFunctionBase.svelte.ts";
 
+/**
+ * Represents an easing function that creates an animation that accelerates and/or decelerates using the formula f (t) = t<sup>5</sup>.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.quinticease
+ */
 export interface QuinticEaseProps extends EasingFunctionBaseProps {
 }
 

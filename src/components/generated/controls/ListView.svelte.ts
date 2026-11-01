@@ -6,6 +6,11 @@ import type { ListView } from "../bindings.ts";
 import { linkListViewBase } from "./ListViewBase.svelte.ts";
 import type { ListViewBaseBound, ListViewBaseProps } from "./ListViewBase.svelte.ts";
 
+/**
+ * Represents a control that displays data items in a vertical stack.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listview
+ */
 export interface ListViewProps extends ListViewBaseProps {
 }
 

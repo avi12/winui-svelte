@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { BreadcrumbBarItemComponentProps };
 
+/**
+ * Represents an item in a BreadcrumbBar control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbaritem
+ */
 declare const BreadcrumbBarItem: Component<BreadcrumbBarItemComponentProps, Record<string, never>, "">;
 export default BreadcrumbBarItem;

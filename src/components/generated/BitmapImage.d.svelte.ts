@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { BitmapImageComponentProps };
 
+/**
+ * Provides the practical object source type for the Image.Source and ImageBrush.ImageSource properties. You can define a BitmapImage by using a Uniform Resource Identifier (URI) that references an image source file, or by calling SetSourceAsync and supplying a stream.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage
+ */
 declare const BitmapImage: Component<BitmapImageComponentProps, Record<string, never>, "">;
 export default BitmapImage;

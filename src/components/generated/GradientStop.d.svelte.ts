@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { GradientStopComponentProps };
 
+/**
+ * Describes the location and color of a transition point in a gradient.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop
+ */
 declare const GradientStop: Component<GradientStopComponentProps, Record<string, never>, "">;
 export default GradientStop;

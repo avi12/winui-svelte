@@ -6,6 +6,11 @@ import type { ReorderThemeTransition } from "../bindings.ts";
 import { linkTransition } from "./Transition.svelte.ts";
 import type { TransitionBound, TransitionProps } from "./Transition.svelte.ts";
 
+/**
+ * Provides the animated transition behavior for when list-view controls items change order. Typically this is due to a drag-drop operation. Different controls and themes potentially have varying characteristics for the animations involved.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.reorderthemetransition
+ */
 export interface ReorderThemeTransitionProps extends TransitionProps {
 }
 

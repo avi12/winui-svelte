@@ -8,9 +8,24 @@ import { linkInline } from "./Inline.svelte.ts";
 import type { InlineBound, InlineProps } from "./Inline.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a discrete section of formatted or unformatted text.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.run
+ */
 export interface RunProps extends InlineProps {
   children?: Snippet;
+  /**
+   * Gets or sets the direction that text and other user interface elements flow within the Run element that controls their layout. The direction that text and other user interface (UI) elements flow within the Run element. The default value is LeftToRight.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.run
+   */
   flowDirection?: EnumInput<typeof FlowDirection>;
+  /**
+   * Gets or sets the text contents of the Run. A string that specifies the text contents of the Run. The default is String.Empty.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.run
+   */
   text?: string;
 }
 

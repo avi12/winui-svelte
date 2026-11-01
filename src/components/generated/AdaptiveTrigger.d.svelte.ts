@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AdaptiveTriggerComponentProps };
 
+/**
+ * Represents a declarative rule that applies visual states based on window properties.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.adaptivetrigger
+ */
 declare const AdaptiveTrigger: Component<AdaptiveTriggerComponentProps, Record<string, never>, "">;
 export default AdaptiveTrigger;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { FrameComponentProps };
 
+/**
+ * Displays Page instances, supports navigation to new pages, and maintains a navigation history to support forward and backward navigation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+ */
 declare const Frame: Component<FrameComponentProps, Record<string, never>, "backStackDepth" | "canGoBack" | "canGoForward">;
 export default Frame;

@@ -7,5 +7,10 @@ import type { Component } from "svelte";
 /** The props of `ContentDialog`: the control's, `open` and `target`. */
 export type ContentDialogComponentProps = DialogOverlayComponentProps<ContentDialogControlProps>;
 
+/**
+ * Represents a dialog box that can be customized to contain checkboxes, hyperlinks, buttons and any other XAML content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+ */
 declare const ContentDialog: Component<ContentDialogComponentProps, Record<string, never>, "open">;
 export default ContentDialog;

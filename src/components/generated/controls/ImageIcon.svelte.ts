@@ -8,7 +8,17 @@ import { linkIconElement } from "./IconElement.svelte.ts";
 import type { IconElementBound, IconElementProps } from "./IconElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents an icon that uses an Image as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.imageicon
+ */
 export interface ImageIconProps extends IconElementProps {
+  /**
+   * Gets or sets the URI of the image file to use as the icon.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.imageicon
+   */
   source?: ImageSourceInput | Snippet;
 }
 

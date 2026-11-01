@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { KeySplineComponentProps };
 
+/**
+ * Represents a spline key frame to define animation progress.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline
+ */
 declare const KeySpline: Component<KeySplineComponentProps, Record<string, never>, "">;
 export default KeySpline;

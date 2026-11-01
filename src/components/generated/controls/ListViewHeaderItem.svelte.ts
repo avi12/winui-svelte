@@ -6,6 +6,11 @@ import type { ListViewHeaderItem } from "../bindings.ts";
 import { linkListViewBaseHeaderItem } from "./ListViewBaseHeaderItem.svelte.ts";
 import type { ListViewBaseHeaderItemBound, ListViewBaseHeaderItemProps } from "./ListViewBaseHeaderItem.svelte.ts";
 
+/**
+ * Represents items in the header for grouped data inside a ListView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewheaderitem
+ */
 export interface ListViewHeaderItemProps extends ListViewBaseHeaderItemProps {
 }
 

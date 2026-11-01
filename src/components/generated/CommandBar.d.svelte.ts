@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CommandBarComponentProps };
 
+/**
+ * Represents a specialized app bar that provides layout for AppBarButton and related command elements.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar
+ */
 declare const CommandBar: Component<CommandBarComponentProps, Record<string, never>, "isOpen">;
 export default CommandBar;

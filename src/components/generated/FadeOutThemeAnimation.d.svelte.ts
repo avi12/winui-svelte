@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { FadeOutThemeAnimationComponentProps };
 
+/**
+ * Represents the preconfigured opacity animation that applies to controls when they are removed from the UI or hidden.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.fadeoutthemeanimation
+ */
 declare const FadeOutThemeAnimation: Component<FadeOutThemeAnimationComponentProps, Record<string, never>, "">;
 export default FadeOutThemeAnimation;

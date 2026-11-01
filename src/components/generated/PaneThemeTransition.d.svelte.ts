@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PaneThemeTransitionComponentProps };
 
+/**
+ * Provides the animated transition behavior for a panel UI transition.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.panethemetransition
+ */
 declare const PaneThemeTransition: Component<PaneThemeTransitionComponentProps, Record<string, never>, "">;
 export default PaneThemeTransition;

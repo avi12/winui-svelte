@@ -6,6 +6,11 @@ import type { CommandBarOverflowPresenter } from "../bindings.ts";
 import { linkItemsControl } from "./ItemsControl.svelte.ts";
 import type { ItemsControlBound, ItemsControlProps } from "./ItemsControl.svelte.ts";
 
+/**
+ * Displays the overflow content of a CommandBar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbaroverflowpresenter
+ */
 export interface CommandBarOverflowPresenterProps extends ItemsControlProps {
 }
 

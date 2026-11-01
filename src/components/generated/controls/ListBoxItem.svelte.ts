@@ -6,6 +6,11 @@ import type { ListBoxItem } from "../bindings.ts";
 import { linkSelectorItem } from "./SelectorItem.svelte.ts";
 import type { SelectorItemBound, SelectorItemProps } from "./SelectorItem.svelte.ts";
 
+/**
+ * Represents the container for an item in a ListBox control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listboxitem
+ */
 export interface ListBoxItemProps extends SelectorItemProps {
 }
 

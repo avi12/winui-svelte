@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ExpanderComponentProps };
 
+/**
+ * ::: moniker range="winui-3.0-preview" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Represents a control that displays a header and has a collapsible body that displays content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander
+ */
 declare const Expander: Component<ExpanderComponentProps, Record<string, never>, "isExpanded">;
 export default Expander;

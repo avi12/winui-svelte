@@ -8,12 +8,47 @@ import type { AnimatedVisualPlayer } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 
+/**
+ * An element that displays and controls an IAnimatedVisual.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer
+ */
 export interface AnimatedVisualPlayerProps extends FrameworkElementProps {
+  /**
+   * Gets or sets a value that specifies how animations are cached when the AnimatedVisualPlayer is idle (when PlayAsync is not active).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer
+   */
   animationOptimization?: EnumInput<typeof PlayerAnimationOptimization>;
+  /**
+   * Gets or sets a value that indicates whether an animated visual plays immediately when it is loaded.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer
+   */
   autoPlay?: boolean;
+  /**
+   * Gets or sets content to display if an animated visual fails to load.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer
+   */
   fallbackContent?: DataTemplateInput;
+  /**
+   * Gets or sets the rate at which the animation plays. The rate at which the animation plays. The default is 1.0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer
+   */
   playbackRate?: number;
+  /**
+   * Gets or sets the provider of the animated visual for the player.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer
+   */
   source?: AnimatedVisualPlayer["source"];
+  /**
+   * Gets or sets a value that describes how an animated visual should be stretched to fill the destination rectangle.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer
+   */
   stretch?: EnumInput<typeof Stretch>;
 }
 

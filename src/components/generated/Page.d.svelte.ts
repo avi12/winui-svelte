@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PageComponentProps };
 
+/**
+ * Represents content that a Frame control can navigate to.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page
+ */
 declare const Page: Component<PageComponentProps, Record<string, never>, "">;
 export default Page;

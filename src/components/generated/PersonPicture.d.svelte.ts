@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PersonPictureComponentProps };
 
+/**
+ * Represents a control that displays the avatar image for a person, if one is available; if not, it displays the person's initials or a generic glyph.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+ */
 declare const PersonPicture: Component<PersonPictureComponentProps, Record<string, never>, "">;
 export default PersonPicture;

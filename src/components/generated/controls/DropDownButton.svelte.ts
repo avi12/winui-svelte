@@ -6,6 +6,11 @@ import type { DropDownButton } from "../bindings.ts";
 import { linkButton } from "./Button.svelte.ts";
 import type { ButtonBound, ButtonProps } from "./Button.svelte.ts";
 
+/**
+ * Represents a button that includes a chevron to indicate a menu can be opened.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.dropdownbutton
+ */
 export interface DropDownButtonProps extends ButtonProps {
 }
 

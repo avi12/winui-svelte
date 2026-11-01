@@ -6,11 +6,36 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { PathFigure } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a subsection of a geometry, a single connected series of two-dimensional geometric segments.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
+ */
 export interface PathFigureProps {
   children?: Snippet;
+  /**
+   * Gets or sets a value that indicates whether this figure's first and last segments are connected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
+   */
   isClosed?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the contained area of this PathFigure is to be used for hit-testing, rendering, and clipping.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
+   */
   isFilled?: boolean;
+  /**
+   * Gets or sets the collection of segments that define the shape of this PathFigure object. The collection of segments that define the shape of this PathFigure object. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
+   */
   segments?: PathFigure["segments"];
+  /**
+   * Gets or sets the Point where the PathFigure begins. The Point with value 0,0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
+   */
   startPoint?: PointInput;
   attached?: AttachedInput;
 }

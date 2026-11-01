@@ -6,8 +6,23 @@ import type { ContentThemeTransition } from "../bindings.ts";
 import { linkTransition } from "./Transition.svelte.ts";
 import type { TransitionBound, TransitionProps } from "./Transition.svelte.ts";
 
+/**
+ * Provides the animated transition behavior for when the content of a control is changing. This might be applied in addition to AddDeleteThemeTransition.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.contentthemetransition
+ */
 export interface ContentThemeTransitionProps extends TransitionProps {
+  /**
+   * Gets or sets the distance by which the target is translated in the horizontal direction when the transition is active. The horizontal offset translation, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.contentthemetransition
+   */
   horizontalOffset?: number;
+  /**
+   * Gets or sets the distance by which the target is translated in the vertical direction when the transition is active. The vertical offset translation, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.contentthemetransition
+   */
   verticalOffset?: number;
 }
 

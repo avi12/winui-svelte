@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { BitmapCacheComponentProps };
 
+/**
+ * Represents the behavior of caching a visual element or tree of elements as bitmap surfaces.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.bitmapcache
+ */
 declare const BitmapCache: Component<BitmapCacheComponentProps, Record<string, never>, "">;
 export default BitmapCache;

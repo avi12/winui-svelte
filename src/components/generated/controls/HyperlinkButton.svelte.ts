@@ -7,7 +7,17 @@ import type { HyperlinkButton } from "../bindings.ts";
 import { linkButtonBase } from "./ButtonBase.svelte.ts";
 import type { ButtonBaseBound, ButtonBaseProps } from "./ButtonBase.svelte.ts";
 
+/**
+ * Represents a button control that functions as a hyperlink.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hyperlinkbutton
+ */
 export interface HyperlinkButtonProps extends ButtonBaseProps {
+  /**
+   * Gets or sets the Uniform Resource Identifier (URI) to navigate to when the HyperlinkButton is clicked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hyperlinkbutton
+   */
   navigateUri?: UriInput;
 }
 

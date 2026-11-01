@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SwipeBackThemeAnimationComponentProps };
 
+/**
+ * Represents the preconfigured animation that applies to controls when an element slides back into its layout slot after a Swipe interaction.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.swipebackthemeanimation
+ */
 declare const SwipeBackThemeAnimation: Component<SwipeBackThemeAnimationComponentProps, Record<string, never>, "">;
 export default SwipeBackThemeAnimation;

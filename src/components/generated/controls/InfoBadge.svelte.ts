@@ -7,8 +7,23 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control for indicating notifications, alerts, new content, or to attract focus to an area within an app.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobadge
+ */
 export interface InfoBadgeProps extends ControlProps {
+  /**
+   * Gets or sets the icon to be used in an InfoBadge. The icon to be used in an InfoBadge. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobadge
+   */
   iconSource?: InfoBadge["iconSource"] | Snippet;
+  /**
+   * Gets or sets the integer to be displayed in a numeric InfoBadge. The integer to be displayed in a numeric InfoBadge. The defaults is -1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobadge
+   */
   value?: number;
 }
 

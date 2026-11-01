@@ -6,6 +6,11 @@ import type { SoftwareBitmapSource } from "../bindings.ts";
 import { linkImageSource } from "./ImageSource.svelte.ts";
 import type { ImageSourceBound, ImageSourceProps } from "./ImageSource.svelte.ts";
 
+/**
+ * Provides a source object, backed by a SoftwareBitmap, for properties that use a bitmap-format image source.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.softwarebitmapsource
+ */
 export interface SoftwareBitmapSourceProps extends ImageSourceProps {
 }
 

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MediaTransportControlsComponentProps };
 
+/**
+ * Represents the playback controls for a media player element.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+ */
 declare const MediaTransportControls: Component<MediaTransportControlsComponentProps, Record<string, never>, "">;
 export default MediaTransportControls;

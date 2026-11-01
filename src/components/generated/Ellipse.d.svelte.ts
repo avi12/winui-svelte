@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { EllipseComponentProps };
 
+/**
+ * Draws an ellipse with a given Height and Width specified in device-independent pixel (DIP).
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.ellipse
+ */
 declare const Ellipse: Component<EllipseComponentProps, Record<string, never>, "">;
 export default Ellipse;

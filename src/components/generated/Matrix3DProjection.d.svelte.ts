@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { Matrix3DProjectionComponentProps };
 
+/**
+ * Applies a Matrix3D projection to an object.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrix3dprojection
+ */
 declare const Matrix3DProjection: Component<Matrix3DProjectionComponentProps, Record<string, never>, "">;
 export default Matrix3DProjection;

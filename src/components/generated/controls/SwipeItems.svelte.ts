@@ -7,8 +7,18 @@ import { SwipeMode } from "../bindings.ts";
 import type { SwipeItems } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a collection of SwipeItem objects.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitems
+ */
 export interface SwipeItemsProps {
   children?: Snippet;
+  /**
+   * Gets or sets a value that indicates the effect of a swipe interaction. A value of the enumeration that indicates the effect of a swipe interaction. The default is Reveal.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitems
+   */
   mode?: EnumInput<typeof SwipeMode>;
   attached?: AttachedInput;
 }

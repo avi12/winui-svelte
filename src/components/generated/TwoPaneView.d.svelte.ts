@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TwoPaneViewComponentProps };
 
+/**
+ * Represents a container with two views that size and position content in the available space, either side-by-side or top-bottom.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+ */
 declare const TwoPaneView: Component<TwoPaneViewComponentProps, Record<string, never>, "mode">;
 export default TwoPaneView;

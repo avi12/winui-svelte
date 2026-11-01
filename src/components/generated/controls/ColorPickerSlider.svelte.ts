@@ -7,7 +7,17 @@ import type { ColorPickerSlider } from "../bindings.ts";
 import { linkSlider } from "./Slider.svelte.ts";
 import type { SliderBound, SliderProps } from "./Slider.svelte.ts";
 
+/**
+ * Represents a slider in a ColorPicker control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorpickerslider
+ */
 export interface ColorPickerSliderProps extends SliderProps {
+  /**
+   * Gets or sets a value that indicates which color channel the slider modifies.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorpickerslider
+   */
   colorChannel?: EnumInput<typeof ColorPickerHsvChannel>;
 }
 

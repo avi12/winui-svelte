@@ -5,6 +5,11 @@ import type { ListViewBaseHeaderItem } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
+/**
+ * Provides the infrastructure for the ListViewHeaderItem and GridViewHeaderItem classes.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbaseheaderitem
+ */
 export interface ListViewBaseHeaderItemProps extends ContentControlProps {
 }
 

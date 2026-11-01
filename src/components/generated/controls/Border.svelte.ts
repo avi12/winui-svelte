@@ -15,16 +15,61 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Draws a border, background, or both, around another object.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border
+ */
 export interface BorderProps extends FrameworkElementProps {
   children?: Snippet;
   childTransitions?: Snippet;
+  /**
+   * Gets or sets the Brush that fills the background (inner area) of the border. The brush that fills the background. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border
+   */
   background?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border
+   */
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
+  /**
+   * Gets or sets an instance of BrushTransition to automatically animate changes to the Background property. An instance of BrushTransition to automatically animate changes to the Background; otherwise, null. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border
+   */
   backgroundTransition?: Border["backgroundTransition"];
+  /**
+   * Gets or sets the Brush that is applied to the edge area of the Border. The brush that fills the border. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border
+   */
   borderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the thickness of the border. The thickness of the border, in pixels. The default is 0 on all four sides.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border
+   */
   borderThickness?: ThicknessInput;
+  /**
+   * Gets or sets the child element to draw the border around. The UIElement to apply the border to.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border
+   */
   child?: Border["child"] | Snippet;
+  /**
+   * Gets or sets the radius for the corners of the border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border
+   */
   cornerRadius?: CornerRadiusInput;
+  /**
+   * Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border
+   */
   padding?: ThicknessInput;
 }
 

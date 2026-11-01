@@ -6,7 +6,17 @@ import type { PopOutThemeAnimation } from "../bindings.ts";
 import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 
+/**
+ * Represents the preconfigured animation that applies to pop-in components of controls (for example, tooltip-like UI on an object) as they are closed/removed. This animation combines opacity and translation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popoutthemeanimation
+ */
 export interface PopOutThemeAnimationProps extends TimelineProps {
+  /**
+   * Gets or sets the reference name of the control element being targeted. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popoutthemeanimation
+   */
   targetName?: string;
 }
 

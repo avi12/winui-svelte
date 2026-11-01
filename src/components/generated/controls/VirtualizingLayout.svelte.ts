@@ -6,6 +6,11 @@ import type { VirtualizingLayout } from "../bindings.ts";
 import { linkLayout } from "./Layout.svelte.ts";
 import type { LayoutBound, LayoutProps } from "./Layout.svelte.ts";
 
+/**
+ * Represents the base class for an object that sizes and arranges child elements for a host and supports virtualization.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizinglayout
+ */
 export interface VirtualizingLayoutProps extends LayoutProps {
 }
 

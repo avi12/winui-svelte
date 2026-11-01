@@ -7,9 +7,19 @@ import { linkFlyoutBase } from "./FlyoutBase.svelte.ts";
 import type { FlyoutBaseBound, FlyoutBaseProps } from "./FlyoutBase.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a specialized flyout that provides layout for AppBarButton controls.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbarflyout
+ */
 export interface CommandBarFlyoutProps extends FlyoutBaseProps {
   primaryCommands?: Snippet;
   secondaryCommands?: Snippet;
+  /**
+   * Gets or sets a value that indicates whether or not the CommandBarFlyout should always stay in its Expanded state and block the user from entering the Collapsed state. Defaults to false.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbarflyout
+   */
   alwaysExpanded?: boolean;
 }
 

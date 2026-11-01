@@ -6,12 +6,42 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { VisualTransition } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents the visual behavior that occurs when the control transitions from one visual state to another.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualtransition
+ */
 export interface VisualTransitionProps {
   children?: Snippet;
+  /**
+   * Gets or sets the name of the VisualState to transition from.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualtransition
+   */
   from?: string;
+  /**
+   * Gets or sets the amount of time it takes to move from one state to another, and the time that any implicit transition animations should run as part of the transition behavior.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualtransition
+   */
   generatedDuration?: DurationInput;
+  /**
+   * Gets or sets the easing function applied to the generated animations. An easing function implementation that is applied to the generated animations.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualtransition
+   */
   generatedEasingFunction?: VisualTransition["generatedEasingFunction"] | Snippet;
+  /**
+   * Gets or sets the Storyboard that runs when the transition occurs.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualtransition
+   */
   storyboard?: VisualTransition["storyboard"] | Snippet;
+  /**
+   * Gets or sets the name of the VisualState to transition to.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualtransition
+   */
   to?: string;
   attached?: AttachedInput;
 }

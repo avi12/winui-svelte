@@ -15,22 +15,107 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * An InfoBar is an inline notification for essential app-wide messages. The InfoBar will take up space in a layout and will not cover up other content or float on top of it. It supports rich content (including titles, messages, icons, and buttons) and can be configured to be user-dismissable or persistent.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+ */
 export interface InfoBarProps extends ControlProps {
+  /**
+   * Gets or sets a value that indicates whether the InfoBar is open.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   isOpen?: boolean | undefined;
+  /**
+   * Gets or sets the action button of the InfoBar. The action button of the InfoBar. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   actionButton?: InfoBar["actionButton"] | Snippet;
+  /**
+   * Gets or sets the command to invoke when the close button is clicked in the InfoBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   closeButtonCommand?: InfoBar["closeButtonCommand"] | Snippet;
+  /**
+   * Gets or sets the parameter to pass to the command for the close button in the InfoBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   closeButtonCommandParameter?: ObjectInput;
+  /**
+   * Gets or sets the Style to apply to the close button in the InfoBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   closeButtonStyle?: StyleInput;
+  /**
+   * Gets or sets the XAML Content that is displayed below the title and message in the InfoBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   content?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the data template for the InfoBar.Content. The data template that is used to display the content of the InfoBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   contentTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets the graphic content to appear alongside the title and message in the InfoBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   iconSource?: InfoBar["iconSource"] | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the user can close the InfoBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   isClosable?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the icon is visible in the InfoBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   isIconVisible?: boolean;
+  /**
+   * Gets or sets the message of the InfoBar. The message of the InfoBar. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   message?: string;
+  /**
+   * Gets or sets the type of the InfoBar to apply consistent status color, icon, and assistive technology settings dependent on the criticality of the notification. The style of the InfoBar that indicates the criticality of the notification. The default is Informational
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   severity?: EnumInput<typeof InfoBarSeverity>;
+  /**
+   * Gets or sets the title of the InfoBar. The title of the InfoBar. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   title?: string;
+  /**
+   * Occurs after the close button is clicked in the InfoBar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   onclosebuttonclick?: Parameters<InfoBar["onCloseButtonClick"]>[0];
+  /**
+   * Occurs after the InfoBar is closed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   onclosed?: Parameters<InfoBar["onClosed"]>[0];
+  /**
+   * Occurs just before the InfoBar begins to close.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+   */
   onclosing?: Parameters<InfoBar["onClosing"]>[0];
 }
 

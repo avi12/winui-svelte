@@ -7,7 +7,17 @@ import type { MicaBackdrop } from "../bindings.ts";
 import { linkSystemBackdrop } from "./SystemBackdrop.svelte.ts";
 import type { SystemBackdropBound, SystemBackdropProps } from "./SystemBackdrop.svelte.ts";
 
+/**
+ * Represents a system backdrop that applies Mica material to a supported XAML surface, such as a Window.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.micabackdrop
+ */
 export interface MicaBackdropProps extends SystemBackdropProps {
+  /**
+   * Gets or sets the kind of backdrop that the MicaBackdrop displays.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.micabackdrop
+   */
   kind?: EnumInput<typeof MicaKind>;
 }
 

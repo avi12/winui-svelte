@@ -7,7 +7,17 @@ import { linkColorKeyFrame } from "./ColorKeyFrame.svelte.ts";
 import type { ColorKeyFrameBound, ColorKeyFrameProps } from "./ColorKeyFrame.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Associates easing functions with a ColorAnimationUsingKeyFrames key-frame animation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingcolorkeyframe
+ */
 export interface EasingColorKeyFrameProps extends ColorKeyFrameProps {
+  /**
+   * Gets or sets the easing function that is applied to the key frame.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingcolorkeyframe
+   */
   easingFunction?: EasingColorKeyFrame["easingFunction"] | Snippet;
 }
 

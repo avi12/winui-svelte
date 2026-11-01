@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RadioMenuFlyoutItemComponentProps };
 
+/**
+ * Represents a menu item that is mutually exclusive with other radio menu items in its group.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiomenuflyoutitem
+ */
 declare const RadioMenuFlyoutItem: Component<RadioMenuFlyoutItemComponentProps, Record<string, never>, "">;
 export default RadioMenuFlyoutItem;

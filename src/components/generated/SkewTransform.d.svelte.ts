@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SkewTransformComponentProps };
 
+/**
+ * Represents a two-dimensional skew.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform
+ */
 declare const SkewTransform: Component<SkewTransformComponentProps, Record<string, never>, "">;
 export default SkewTransform;

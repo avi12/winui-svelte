@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ToggleSwitchComponentProps };
 
+/**
+ * Represents a switch that can be toggled between two states.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch
+ */
 declare const ToggleSwitch: Component<ToggleSwitchComponentProps, Record<string, never>, "isOn">;
 export default ToggleSwitch;

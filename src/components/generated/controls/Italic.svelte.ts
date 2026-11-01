@@ -6,6 +6,11 @@ import type { Italic } from "../bindings.ts";
 import { linkSpan } from "./Span.svelte.ts";
 import type { SpanBound, SpanProps } from "./Span.svelte.ts";
 
+/**
+ * Provides an inline-level flow content element that causes content to render with an italic font style.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.italic
+ */
 export interface ItalicProps extends SpanProps {
 }
 

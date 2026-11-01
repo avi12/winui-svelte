@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { UniformGridLayoutComponentProps };
 
+/**
+ * Positions elements sequentially from left to right or top to bottom in a wrapping layout.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout
+ */
 declare const UniformGridLayout: Component<UniformGridLayoutComponentProps, Record<string, never>, "">;
 export default UniformGridLayout;

@@ -10,11 +10,41 @@ import type {
   XamlCompositionBrushBaseProps
 } from "./XamlCompositionBrushBase.svelte.ts";
 
+/**
+ * Paints an area with a semi-transparent material that uses multiple effects including blur and a noise texture.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+ */
 export interface AcrylicBrushProps extends XamlCompositionBrushBaseProps {
+  /**
+   * Gets or sets a value that specifies whether the brush is forced to the solid fallback color.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+   */
   alwaysUseFallback?: boolean;
+  /**
+   * Gets or sets the color tint for the semi-transparent acrylic material.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+   */
   tintColor?: ColorInput;
+  /**
+   * Gets or sets the degree of opacity of the color's luminosity tint. The opacity expressed as a value between 0 and 1.0. The default value is 1.0, which is full opacity. 0 is transparent opacity.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+   */
   tintLuminosityOpacity?: NullableDoubleInput;
+  /**
+   * Gets or sets the degree of opacity of the color tint. The opacity expressed as a value between 0 and 1.0. The default value is 1.0, which is full opacity. 0 is transparent opacity.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+   */
   tintOpacity?: number;
+  /**
+   * Gets or sets the length of the automatic transition animation used when the TintColor changes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+   */
   tintTransitionDuration?: TimeSpanInput;
 }
 

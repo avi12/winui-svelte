@@ -6,8 +6,23 @@ import type { RepeatButton } from "../bindings.ts";
 import { linkButtonBase } from "./ButtonBase.svelte.ts";
 import type { ButtonBaseBound, ButtonBaseProps } from "./ButtonBase.svelte.ts";
 
+/**
+ * Represents a control that raises its Click event repeatedly when it is pressed and held.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.repeatbutton
+ */
 export interface RepeatButtonProps extends ButtonBaseProps {
+  /**
+   * Gets or sets the time, in milliseconds, that the RepeatButton waits when it is pressed before it starts repeating the click action.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.repeatbutton
+   */
   delay?: number;
+  /**
+   * Gets or sets the time, in milliseconds, between repetitions of the click action, as soon as repeating starts.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.repeatbutton
+   */
   interval?: number;
 }
 

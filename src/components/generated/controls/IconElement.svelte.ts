@@ -8,7 +8,17 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents the base class for an icon UI element.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconelement
+ */
 export interface IconElementProps extends FrameworkElementProps {
+  /**
+   * Gets or sets a brush that describes the foreground color. The brush that paints the foreground of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering. However, this value is typically set by a default system resource at runtime, which is tied to the active theme and other settings.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconelement
+   */
   foreground?: BrushInput | Snippet;
 }
 

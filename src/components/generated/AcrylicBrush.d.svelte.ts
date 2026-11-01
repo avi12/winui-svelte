@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AcrylicBrushComponentProps };
 
+/**
+ * Paints an area with a semi-transparent material that uses multiple effects including blur and a noise texture.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+ */
 declare const AcrylicBrush: Component<AcrylicBrushComponentProps, Record<string, never>, "">;
 export default AcrylicBrush;

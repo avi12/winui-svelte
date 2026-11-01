@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CalendarViewDayItemComponentProps };
 
+/**
+ * Represents a day on a CalendarView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarviewdayitem
+ */
 declare const CalendarViewDayItem: Component<CalendarViewDayItemComponentProps, Record<string, never>, "">;
 export default CalendarViewDayItem;

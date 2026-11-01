@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CanvasComponentProps };
 
+/**
+ * Defines an area within which you can explicitly position child objects, using coordinates that are relative to the Canvas area.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.canvas
+ */
 declare const Canvas: Component<CanvasComponentProps, Record<string, never>, "">;
 export default Canvas;

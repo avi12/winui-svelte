@@ -8,9 +8,24 @@ import { linkFlyoutBase } from "./FlyoutBase.svelte.ts";
 import type { FlyoutBaseBound, FlyoutBaseProps } from "./FlyoutBase.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that displays lightweight UI that is either information, or requires user interaction. Unlike a dialog, a Flyout can be light dismissed by clicking or tapping outside of it, pressing the device's back button, or pressing the 'Esc' key.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout
+ */
 export interface FlyoutProps extends FlyoutBaseProps {
   children?: Snippet;
+  /**
+   * Gets or sets the content of the Flyout.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout
+   */
   content?: Flyout["content"] | Snippet;
+  /**
+   * Gets or sets the Style applied to the Flyout content. The applied Style for the Flyout content, if present; otherwise, null. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout
+   */
   flyoutPresenterStyle?: StyleInput;
 }
 

@@ -6,9 +6,29 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { TreeViewNode } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a node in a TreeView control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode
+ */
 export interface TreeViewNodeProps {
+  /**
+   * Gets or sets the data content for the current node.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode
+   */
   content?: ObjectInput | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the current node has child items that haven't been shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode
+   */
   hasUnrealizedChildren?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the current tree view node is expanded.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode
+   */
   isExpanded?: boolean;
   attached?: AttachedInput;
 }

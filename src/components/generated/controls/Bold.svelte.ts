@@ -6,6 +6,11 @@ import type { Bold } from "../bindings.ts";
 import { linkSpan } from "./Span.svelte.ts";
 import type { SpanBound, SpanProps } from "./Span.svelte.ts";
 
+/**
+ * Provides an inline-level content element that causes content to render with a bold font weight.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.bold
+ */
 export interface BoldProps extends SpanProps {
 }
 

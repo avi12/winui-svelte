@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ContentControlComponentProps };
 
+/**
+ * Represents a control with a single piece of content. Controls such as Button, CheckBox, and ScrollViewer directly or indirectly inherit from this class.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol
+ */
 declare const ContentControl: Component<ContentControlComponentProps, Record<string, never>, "">;
 export default ContentControl;

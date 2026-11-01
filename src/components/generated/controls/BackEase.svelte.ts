@@ -6,7 +6,17 @@ import type { BackEase } from "../bindings.ts";
 import { linkEasingFunctionBase } from "./EasingFunctionBase.svelte.ts";
 import type { EasingFunctionBaseBound, EasingFunctionBaseProps } from "./EasingFunctionBase.svelte.ts";
 
+/**
+ * Represents an easing function that changes a value in the opposite direction of the main function during part of a duration, then reverses and finishes the function-over-time behavior in a conventional way.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.backease
+ */
 export interface BackEaseProps extends EasingFunctionBaseProps {
+  /**
+   * Gets or sets the amplitude of retraction associated with a BackEase animation. The amplitude of retraction associated with a BackEase animation. This value must be greater than or equal to 0. The default is 1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.backease
+   */
   amplitude?: number;
 }
 

@@ -7,8 +7,18 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Provides the base class for defining a new control that encapsulates related existing controls and provides its own logic.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.usercontrol
+ */
 export interface UserControlProps extends ControlProps {
   children?: Snippet;
+  /**
+   * Gets or sets the content that is contained within a user control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.usercontrol
+   */
   content?: UserControl["content"] | Snippet;
 }
 

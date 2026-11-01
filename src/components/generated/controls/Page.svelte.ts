@@ -8,9 +8,29 @@ import { linkUserControl } from "./UserControl.svelte.ts";
 import type { UserControlBound, UserControlProps } from "./UserControl.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents content that a Frame control can navigate to.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page
+ */
 export interface PageProps extends UserControlProps {
+  /**
+   * Gets or sets the AppBar displayed at the bottom of the page. A reference to an AppBar displayed at the top of the page, if any; otherwise, null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page
+   */
   bottomAppBar?: Page["bottomAppBar"] | Snippet;
+  /**
+   * Gets or sets the navigation mode that indicates whether this Page is cached, and the period of time that the cache entry should persist. A value of the enumeration. The default is Disabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page
+   */
   navigationCacheMode?: EnumInput<typeof NavigationCacheMode>;
+  /**
+   * Gets or sets the AppBar displayed in a dedicated area at the top of the page. A reference to an AppBar displayed at the top of the page, if any; otherwise, null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page
+   */
   topAppBar?: Page["topAppBar"] | Snippet;
 }
 

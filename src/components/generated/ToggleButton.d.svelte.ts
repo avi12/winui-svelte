@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ToggleButtonComponentProps };
 
+/**
+ * Represents a control that a user can select (check) or clear (uncheck). Base class for controls that can switch states, such as CheckBox and RadioButton.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+ */
 declare const ToggleButton: Component<ToggleButtonComponentProps, Record<string, never>, "isChecked">;
 export default ToggleButton;

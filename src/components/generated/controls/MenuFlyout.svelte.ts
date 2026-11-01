@@ -8,8 +8,18 @@ import { linkFlyoutBase } from "./FlyoutBase.svelte.ts";
 import type { FlyoutBaseBound, FlyoutBaseProps } from "./FlyoutBase.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a flyout that displays a menu of commands.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyout
+ */
 export interface MenuFlyoutProps extends FlyoutBaseProps {
   children?: Snippet;
+  /**
+   * Gets or sets the style that is used when rendering the MenuFlyout.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyout
+   */
   menuFlyoutPresenterStyle?: StyleInput;
 }
 

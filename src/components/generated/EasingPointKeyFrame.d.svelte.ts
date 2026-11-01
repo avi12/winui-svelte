@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { EasingPointKeyFrameComponentProps };
 
+/**
+ * Associates an easing function with a PointAnimationUsingKeyFrames key-frame animation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingpointkeyframe
+ */
 declare const EasingPointKeyFrame: Component<EasingPointKeyFrameComponentProps, Record<string, never>, "">;
 export default EasingPointKeyFrame;

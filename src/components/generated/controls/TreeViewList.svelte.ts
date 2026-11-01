@@ -6,6 +6,11 @@ import type { TreeViewList } from "../bindings.ts";
 import { linkListView } from "./ListView.svelte.ts";
 import type { ListViewBound, ListViewProps } from "./ListView.svelte.ts";
 
+/**
+ * Represents a flattened list of tree view items so that operations such as keyboard navigation and drag-and-drop can be inherited from ListView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewlist
+ */
 export interface TreeViewListProps extends ListViewProps {
 }
 

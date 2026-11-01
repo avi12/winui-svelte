@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RelativePanelComponentProps };
 
+/**
+ * Defines an area within which you can position and align child objects in relation to each other or the parent panel.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.relativepanel
+ */
 declare const RelativePanel: Component<RelativePanelComponentProps, Record<string, never>, "">;
 export default RelativePanel;

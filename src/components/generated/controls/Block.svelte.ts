@@ -8,11 +8,41 @@ import type { Block } from "../bindings.ts";
 import { linkTextElement } from "./TextElement.svelte.ts";
 import type { TextElementBound, TextElementProps } from "./TextElement.svelte.ts";
 
+/**
+ * An abstract class that provides a base for all block-level content elements.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block
+ */
 export interface BlockProps extends TextElementProps {
+  /**
+   * Gets or sets a value that indicates how text is aligned in the Block. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block
+   */
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
+  /**
+   * Gets or sets the height of each line of content. The pixel height of each line as modified by LineStackingStrategy. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block
+   */
   lineHeight?: number;
+  /**
+   * Gets or sets a value that indicates how a line box is determined for each line of text in the Block.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block
+   */
   lineStackingStrategy?: EnumInput<typeof LineStackingStrategy>;
+  /**
+   * Gets or sets the amount of space around a Block element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block
+   */
   margin?: ThicknessInput;
+  /**
+   * Gets or sets the horizontal alignment of the text content. The horizontal alignment of the text content. The default is Left.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block
+   */
   textAlignment?: EnumInput<typeof TextAlignment>;
 }
 

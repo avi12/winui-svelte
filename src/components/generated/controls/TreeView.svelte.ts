@@ -16,25 +16,110 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a hierarchical list with expanding and collapsing nodes that contain nested items.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+ */
 export interface TreeViewProps extends ControlProps {
   rootNodes?: Snippet;
   selectedNodes?: Snippet;
   itemContainerTransitions?: Snippet;
+  /**
+   * Gets or sets a value that indicates whether items in the view can be dragged as data payload.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   canDragItems?: boolean;
+  /**
+   * Gets or sets a value that indicates whether items in the view can be reordered through user interaction.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   canReorderItems?: boolean;
+  /**
+   * Gets or sets the style that is used when rendering the item containers. The style applied to the item containers. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   itemContainerStyle?: StyleInput;
+  /**
+   * Gets or sets a reference to a custom StyleSelector values to use for the item container based on characteristics of the object being displayed. A custom StyleSelector logic class.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   itemContainerStyleSelector?: TreeView["itemContainerStyleSelector"];
+  /**
+   * Gets or sets an object source used to generate the content of the TreeView. The object that is used to generate the content of the TreeView. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   itemsSource?: CollectionInput;
+  /**
+   * Gets or sets the DataTemplate used to display each item. The template that specifies the visualization of the data objects. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   itemTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets a reference to a custom DataTemplateSelector logic class. The DataTemplateSelector referenced by this property returns a template to apply to items.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   itemTemplateSelector?: TreeView["itemTemplateSelector"];
+  /**
+   * Gets or sets the SelectedItem property of a TreeView. Gets or sets the selected item. Default value is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   selectedItem?: ObjectInput;
+  /**
+   * Gets or sets the node that is selected in the tree.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   selectedNode?: TreeView["selectedNode"] | Snippet;
+  /**
+   * Gets or sets the selection behavior for a TreeView instance. An enumeration value that specifies the selection behavior for a TreeView. The default is Single selection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   selectionMode?: EnumInput<typeof TreeViewSelectionMode>;
+  /**
+   * Occurs when a node in the tree is collapsed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   oncollapsed?: Parameters<TreeView["onCollapsed"]>[0];
+  /**
+   * Occurs when a drag operation that involves one of the items in the view is ended.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   ondragitemscompleted?: Parameters<TreeView["onDragItemsCompleted"]>[0];
+  /**
+   * Occurs when a drag operation that involves one of the items in the view is initiated.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   ondragitemsstarting?: Parameters<TreeView["onDragItemsStarting"]>[0];
+  /**
+   * Occurs when a node in the tree starts to expand.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   onexpanding?: Parameters<TreeView["onExpanding"]>[0];
+  /**
+   * Occurs when an item in the tree is invoked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   oniteminvoked?: Parameters<TreeView["onItemInvoked"]>[0];
+  /**
+   * Occurs when there's a change to the items currently selected in the TreeView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+   */
   onselectionchanged?: Parameters<TreeView["onSelectionChanged"]>[0];
 }
 

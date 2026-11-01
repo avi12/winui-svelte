@@ -8,11 +8,36 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a single group of content in a Hub.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
+ */
 export interface HubSectionProps extends ControlProps {
   children?: Snippet;
+  /**
+   * Gets or sets the data template that is used to display the content of the HubSection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
+   */
   contentTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets the content for the hub section header. The content of the section header. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
+   */
   header?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the DataTemplate used to display the content of the hub section header. The template that specifies the visualization of the header object. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
+   */
   headerTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets a value that indicates whether the section header raises a SectionHeaderClick event on its containing Hub.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
+   */
   isHeaderInteractive?: boolean;
 }
 

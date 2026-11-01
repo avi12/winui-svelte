@@ -8,9 +8,24 @@ import { linkGeometry } from "./Geometry.svelte.ts";
 import type { GeometryBound, GeometryProps } from "./Geometry.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a complex vector-based shape that may be composed of arcs, curves, ellipses, lines, and rectangles.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry
+ */
 export interface PathGeometryProps extends GeometryProps {
   children?: Snippet;
+  /**
+   * Gets or sets the collection of PathFigure objects that describe the contents of a path. A collection of PathFigure objects that describe the contents of a path. Each individual PathFigure describes a shape.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry
+   */
   figures?: PathGeometry["figures"];
+  /**
+   * Gets or sets a value that determines how the intersecting areas contained in the PathGeometry are combined. A FillRule enumeration value that indicates how the intersecting areas of the PathGeometry are combined. The default is EvenOdd.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry
+   */
   fillRule?: EnumInput<typeof FillRule>;
 }
 

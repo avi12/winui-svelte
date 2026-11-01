@@ -7,9 +7,29 @@ import type { MediaPlayerPresenter } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 
+/**
+ * Represents an object that displays a MediaPlayer.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerpresenter
+ */
 export interface MediaPlayerPresenterProps extends FrameworkElementProps {
+  /**
+   * Gets or sets a value that specifies if the MediaPlayerPresenter is rendering in full window mode.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerpresenter
+   */
   isFullWindow?: boolean;
+  /**
+   * Gets or sets the MediaPlayer instance used to render media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerpresenter
+   */
   mediaPlayer?: MediaPlayerPresenter["mediaPlayer"];
+  /**
+   * Gets or sets a value that describes how an MediaPlayerPresenter should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source visual media is rendered. The default value is Uniform.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerpresenter
+   */
   stretch?: EnumInput<typeof Stretch>;
 }
 

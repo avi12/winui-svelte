@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TextBlockComponentProps };
 
+/**
+ * Provides a lightweight control for displaying small amounts of text.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock
+ */
 declare const TextBlock: Component<TextBlockComponentProps, Record<string, never>, "isTextTrimmed">;
 export default TextBlock;

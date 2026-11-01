@@ -28,41 +28,221 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a rich text editing control that supports formatted text, hyperlinks, and other rich content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+ */
 export interface RichEditBoxProps extends ControlProps {
+  /**
+   * Gets or sets a value that indicates whether the RichEditBox allows and displays the newline or return characters when the ENTER or RETURN keys are pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   acceptsReturn?: boolean;
+  /**
+   * Gets or sets a value that indicates how the control modifies the case of characters as they are typed. A value of the enumeration that indicates how the control modifies the case of characters as they are typed. The default is Normal, which indicates that the charcters are not changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   characterCasing?: EnumInput<typeof CharacterCasing>;
+  /**
+   * Gets or sets a value that specifies whether text is copied with all formats, or as plain text only. An enumeration value that specifies whether text is copied with all formats, or as plain text only. The default is AllFormats.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   clipboardCopyFormat?: EnumInput<typeof RichEditClipboardFormat>;
+  /**
+   * Gets or sets content that is shown below the control. The content should provide guidance about the input expected by the control. The content to be displayed below the control. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   description?: ObjectInput | Snippet;
+  /**
+   * Gets or sets a value that indicates the preferred alignment of the Input Method Editor (IME).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   desiredCandidateWindowAlignment?: EnumInput<typeof CandidateWindowAlignment>;
+  /**
+   * Gets or sets a value that indicates which keyboard shortcuts for formatting are disabled. A value that indicates which keyboard shortcuts for formatting are disabled. The default is None.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   disabledFormattingAccelerators?: FlagsInput<typeof DisabledFormattingAccelerators>;
+  /**
+   * Gets or sets the content for the control's header. The content of the control's header. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   header?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   headerTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets a value that indicates how text is aligned in the RichEditBox. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
+  /**
+   * Gets or sets the context for input used by this RichEditBox. The input scope, which provides a hint at the type of text input expected by the control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   inputScope?: InputScopeInput;
+  /**
+   * Gets or sets a value that determines whether font glyphs that contain color layers, such as Segoe UI Emoji, are rendered in color.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   isColorFontEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the user can change the text in the RichEditBox.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   isReadOnly?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the text input should interact with a spell check engine.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   isSpellCheckEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether text prediction features ("autocomplete") are enabled for this RichEditBox.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   isTextPredictionEnabled?: boolean;
+  /**
+   * Gets or sets the value that specifies the maximum number of characters allowed for user input. The maximum number of characters allowed for user input. The default is 0 (no limit).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   maxLength?: number;
+  /**
+   * Gets or sets the text that is displayed in the control until the value is changed by a user action or some other operation. The text that is displayed in the control when no value is entered. The default is an empty string ("").
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   placeholderText?: string;
+  /**
+   * Gets or sets a value that indicates whether the on-screen keyboard is shown when the control receives focus programmatically.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
+  /**
+   * Gets or sets the flyout that is shown when text is selected using mouse, touch, or pen; or null if no flyout is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   selectionFlyout?: RichEditBox["selectionFlyout"] | Snippet;
+  /**
+   * Gets or sets the brush used to highlight the selected text. The brush used to highlight the selected text. The default is a null brush from a pure code perspective, but the default control template for RichEditBox applies a theme resource brush for this in a runtime instance of a RichEditBox control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   selectionHighlightColor?: RichEditBox["selectionHighlightColor"] | Snippet;
+  /**
+   * Gets or sets the brush used to highlight the selected text when the RichEditBox does not have focus. The brush used to highlight the selected text when RichEditBox loses focus. The default is a null brush from a pure code perspective, but the default control template for RichEditBox applies a Transparent brush for this in a runtime instance of a RichEditBox control. To disable the SelectionHighlightColorWhenNotFocused, set the brush to Transparent once again.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   selectionHighlightColorWhenNotFocused?: RichEditBox["selectionHighlightColorWhenNotFocused"] | Snippet;
+  /**
+   * Gets or sets a value that indicates how text is aligned in the RichEditBox. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   textAlignment?: EnumInput<typeof TextAlignment>;
+  /**
+   * Gets or sets a value that indicates how the reading order is determined for the RichEditBox.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
+  /**
+   * Gets or sets a value that indicates how text wrapping occurs if a line of text extends beyond the available width of the RichEditBox. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   textWrapping?: EnumInput<typeof TextWrapping>;
+  /**
+   * Occurs when the Input Method Editor (IME) window open, updates, or closes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   oncandidatewindowboundschanged?: Parameters<RichEditBox["onCandidateWindowBoundsChanged"]>[0];
+  /**
+   * Occurs when the system processes an interaction that displays a context menu.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   oncontextmenuopening?: (sender: RichEditBox, args: EventArguments<ContextMenuEventArgs>) => void;
+  /**
+   * Occurs before copied text is moved to the clipboard.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   oncopyingtoclipboard?: Parameters<RichEditBox["onCopyingToClipboard"]>[0];
+  /**
+   * Occurs before cut text is moved to the clipboard.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   oncuttingtoclipboard?: Parameters<RichEditBox["onCuttingToClipboard"]>[0];
+  /**
+   * Occurs when text is pasted into the control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   onpaste?: (sender: RichEditBox, args: EventArguments<TextControlPasteEventArgs>) => void;
+  /**
+   * Occurs when the text selection has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   onselectionchanged?: (sender: RichEditBox, args: EventArguments<RoutedEventArgs>) => void;
+  /**
+   * Occurs when the text selection starts to change.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   onselectionchanging?: Parameters<RichEditBox["onSelectionChanging"]>[0];
+  /**
+   * Occurs when content changes in the RichEditBox.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   ontextchanged?: (sender: RichEditBox, args: EventArguments<RoutedEventArgs>) => void;
+  /**
+   * Occurs synchronously when the text in the edit box starts to change, but before it is rendered.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   ontextchanging?: Parameters<RichEditBox["onTextChanging"]>[0];
+  /**
+   * Occurs when text being composed through an Input Method Editor (IME) changes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   ontextcompositionchanged?: Parameters<RichEditBox["onTextCompositionChanged"]>[0];
+  /**
+   * Occurs when a user stops composing text through an Input Method Editor (IME).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   ontextcompositionended?: Parameters<RichEditBox["onTextCompositionEnded"]>[0];
+  /**
+   * Occurs when a user starts composing text through an Input Method Editor (IME).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox
+   */
   ontextcompositionstarted?: Parameters<RichEditBox["onTextCompositionStarted"]>[0];
 }
 

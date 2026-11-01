@@ -5,6 +5,11 @@ import type { VirtualizingPanel } from "../bindings.ts";
 import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
 
+/**
+ * Provides a framework for Panel elements that virtualize their visual children.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingpanel
+ */
 export interface VirtualizingPanelProps extends PanelProps {
 }
 

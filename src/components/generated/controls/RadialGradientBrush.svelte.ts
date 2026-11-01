@@ -12,14 +12,54 @@ import type {
 } from "./XamlCompositionBrushBase.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * RadialGradientBrush paints an area with a radial gradient. A center point defines the origin of the gradient, and an ellipse defines the outer bounds of the gradient.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush
+ */
 export interface RadialGradientBrushProps extends XamlCompositionBrushBaseProps {
   gradientStops?: Snippet;
+  /**
+   * Gets or sets the center of the ellipse that contains the gradient. The center of the ellipse that contains the gradient. The default is (0.5, 0.5).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush
+   */
   center?: PointInput;
+  /**
+   * Gets or sets the gradient's origin (relative to the top left corner). The gradient's origin (relative to the top left corner). The default is (0.5, 0,5).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush
+   */
   gradientOrigin?: PointInput;
+  /**
+   * Gets or sets the color space used to interpolate the gradient's colors. The color space used to interpolate the gradient's colors. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush
+   */
   interpolationSpace?: EnumInput<typeof CompositionColorSpace>;
+  /**
+   * Gets or sets whether the gradient brush's positioning coordinates are absolute or relative to the output area. Defines whether Center, RadiusX, RadiusY, and GradientOrigin represent relative coordinates in the range 0 to 1 or absolute coordinates. The default is RelativeToBoundingBox.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush
+   */
   mappingMode?: EnumInput<typeof BrushMappingMode>;
+  /**
+   * Gets or sets the X axis radius of the ellipse that contains the gradient. The X axis radius of the ellipse that contains the gradient. The default is 0.5.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush
+   */
   radiusX?: number;
+  /**
+   * Gets or sets the Y axis radius of the ellipse that contains the gradient. The Y axis radius of the ellipse that contains the gradient. The default is 0.5.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush
+   */
   radiusY?: number;
+  /**
+   * Gets or sets the type of spread method that specifies how to draw a gradient that starts or ends inside the bounds of the object to be painted.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush
+   */
   spreadMethod?: EnumInput<typeof GradientSpreadMethod>;
 }
 

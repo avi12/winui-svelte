@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { VirtualizingStackPanelComponentProps };
 
+/**
+ * Arranges and virtualizes content on a single line that is oriented either horizontally or vertically. Can only be used to display items in an ItemsControl.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel
+ */
 declare const VirtualizingStackPanel: Component<VirtualizingStackPanelComponentProps, Record<string, never>, "">;
 export default VirtualizingStackPanel;

@@ -7,8 +7,23 @@ import { linkMapLayer } from "./MapLayer.svelte.ts";
 import type { MapLayerBound, MapLayerProps } from "./MapLayer.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a collection of map elements to which you can bind data and manipulate independently of other map elements.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapelementslayer
+ */
 export interface MapElementsLayerProps extends MapLayerProps {
+  /**
+   * Gets or sets the collection of map element objects that are children of this map layer. The collection of map element objects that are children of this map layer. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapelementslayer
+   */
   mapElements?: MapElementsLayer["mapElements"] | Snippet;
+  /**
+   * Occurs when the user taps or clicks a map element that is a child of this map layer.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapelementslayer
+   */
   onmapelementclick?: Parameters<MapElementsLayer["onMapElementClick"]>[0];
 }
 

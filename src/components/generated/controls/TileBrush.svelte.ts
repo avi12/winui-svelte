@@ -7,9 +7,29 @@ import type { TileBrush } from "../bindings.ts";
 import { linkBrush } from "./Brush.svelte.ts";
 import type { BrushBound, BrushProps } from "./Brush.svelte.ts";
 
+/**
+ * Base class that describes a way to paint a region. Parent of ImageBrush.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.tilebrush
+ */
 export interface TileBrushProps extends BrushProps {
+  /**
+   * Gets or sets the horizontal alignment of content in the TileBrush base tile. A value that specifies the horizontal position of TileBrush content in its base tile. The default value is Center.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.tilebrush
+   */
   alignmentX?: EnumInput<typeof AlignmentX>;
+  /**
+   * Gets or sets the vertical alignment of content in the TileBrush base tile. A value that specifies the vertical position of TileBrush content in its base tile. The default value is Center.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.tilebrush
+   */
   alignmentY?: EnumInput<typeof AlignmentY>;
+  /**
+   * Gets or sets a value that specifies how the content of this TileBrush stretches to fit its tiles. A value that specifies how this TileBrush content is projected onto its base tile. The default value is Fill.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.tilebrush
+   */
   stretch?: EnumInput<typeof Stretch>;
 }
 

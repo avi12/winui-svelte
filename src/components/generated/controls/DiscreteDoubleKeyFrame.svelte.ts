@@ -6,6 +6,11 @@ import type { DiscreteDoubleKeyFrame } from "../bindings.ts";
 import { linkDoubleKeyFrame } from "./DoubleKeyFrame.svelte.ts";
 import type { DoubleKeyFrameBound, DoubleKeyFrameProps } from "./DoubleKeyFrame.svelte.ts";
 
+/**
+ * Animates from the Double value of the previous key frame to its own Value using discrete values.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.discretedoublekeyframe
+ */
 export interface DiscreteDoubleKeyFrameProps extends DoubleKeyFrameProps {
 }
 

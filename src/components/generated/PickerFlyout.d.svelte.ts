@@ -7,5 +7,10 @@ import type { Component } from "svelte";
 /** The props of `PickerFlyout`: the control's, `open` and `target`. */
 export type PickerFlyoutComponentProps = FlyoutOverlayComponentProps<PickerFlyoutControlProps>;
 
+/**
+ * Represents a custom picker control. (Not recommended for Universal Windows Platform (UWP) app. See Flyout.)
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout
+ */
 declare const PickerFlyout: Component<PickerFlyoutComponentProps, Record<string, never>, "open">;
 export default PickerFlyout;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { GridViewItemComponentProps };
 
+/**
+ * Represents the container for an item in a GridView control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.gridviewitem
+ */
 declare const GridViewItem: Component<GridViewItemComponentProps, Record<string, never>, "">;
 export default GridViewItem;

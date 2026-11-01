@@ -8,8 +8,23 @@ import type { Polyline } from "../bindings.ts";
 import { linkShape } from "./Shape.svelte.ts";
 import type { ShapeBound, ShapeProps } from "./Shape.svelte.ts";
 
+/**
+ * Draws a series of connected straight lines.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline
+ */
 export interface PolylineProps extends ShapeProps {
+  /**
+   * Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration that specifies the fill behavior. The default is EvenOdd.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline
+   */
   fillRule?: EnumInput<typeof FillRule>;
+  /**
+   * Gets or sets a collection that contains the vertex points of the Polyline. A collection of Point structures that describes the vertex points of the Polyline. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline
+   */
   points?: PointCollectionInput;
 }
 

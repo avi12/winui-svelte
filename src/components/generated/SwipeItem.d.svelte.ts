@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SwipeItemComponentProps };
 
+/**
+ * Represents an individual command in a SwipeControl.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+ */
 declare const SwipeItem: Component<SwipeItemComponentProps, Record<string, never>, "">;
 export default SwipeItem;

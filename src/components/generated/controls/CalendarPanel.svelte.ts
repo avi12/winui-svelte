@@ -6,6 +6,11 @@ import type { CalendarPanel } from "../bindings.ts";
 import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
 
+/**
+ * Represents a panel that contains a calendar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.calendarpanel
+ */
 export interface CalendarPanelProps extends PanelProps {
 }
 

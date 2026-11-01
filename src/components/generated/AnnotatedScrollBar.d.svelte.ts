@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AnnotatedScrollBarComponentProps };
 
+/**
+ * Represents a control that enables vertical scrolling of content with navigation to labeled positions at definable increments.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.annotatedscrollbar
+ */
 declare const AnnotatedScrollBar: Component<AnnotatedScrollBarComponentProps, Record<string, never>, "">;
 export default AnnotatedScrollBar;

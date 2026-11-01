@@ -6,5 +6,10 @@ import type { ListComponent, ListComponentProps } from "../hand-written/items/it
 /** The props of `ListView`, generic over the items it shows. */
 export type ListViewComponentProps<Item = object> = ListComponentProps<Item, ListViewControlProps>;
 
+/**
+ * Represents a control that displays data items in a vertical stack.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listview
+ */
 declare const ListView: ListComponent<ListViewControlProps>;
 export default ListView;

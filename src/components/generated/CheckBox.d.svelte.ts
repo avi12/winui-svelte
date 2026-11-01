@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CheckBoxComponentProps };
 
+/**
+ * Represents a control that a user can select (check) or clear (uncheck). A CheckBox can also report its value as indeterminate.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.checkbox
+ */
 declare const CheckBox: Component<CheckBoxComponentProps, Record<string, never>, "isChecked">;
 export default CheckBox;

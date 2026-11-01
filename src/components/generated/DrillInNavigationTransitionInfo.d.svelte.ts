@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DrillInNavigationTransitionInfoComponentProps };
 
+/**
+ * Specifies the animation to run when a user navigates forward in a logical hierarchy, like from a master list to a detail page.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drillinnavigationtransitioninfo
+ */
 declare const DrillInNavigationTransitionInfo: Component<DrillInNavigationTransitionInfoComponentProps, Record<string, never>, "">;
 export default DrillInNavigationTransitionInfo;

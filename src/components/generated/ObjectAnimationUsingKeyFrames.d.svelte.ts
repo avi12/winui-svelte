@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ObjectAnimationUsingKeyFramesComponentProps };
 
+/**
+ * Animates the value of an Object property along a set of KeyFrames over a specified Duration.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectanimationusingkeyframes
+ */
 declare const ObjectAnimationUsingKeyFrames: Component<ObjectAnimationUsingKeyFramesComponentProps, Record<string, never>, "">;
 export default ObjectAnimationUsingKeyFrames;

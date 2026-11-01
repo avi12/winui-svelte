@@ -7,5 +7,10 @@ import type { Component } from "svelte";
 /** The props of `Flyout`: the control's, `open` and `target`. */
 export type FlyoutComponentProps = FlyoutOverlayComponentProps<FlyoutControlProps>;
 
+/**
+ * Represents a control that displays lightweight UI that is either information, or requires user interaction. Unlike a dialog, a Flyout can be light dismissed by clicking or tapping outside of it, pressing the device's back button, or pressing the 'Esc' key.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout
+ */
 declare const Flyout: Component<FlyoutComponentProps, Record<string, never>, "open">;
 export default Flyout;

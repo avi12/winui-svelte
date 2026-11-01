@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ProgressBarComponentProps };
 
+/**
+ * Represents a control that indicates the progress of an operation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar
+ */
 declare const ProgressBar: Component<ProgressBarComponentProps, Record<string, never>, "value">;
 export default ProgressBar;

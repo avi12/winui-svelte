@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CalendarDatePickerComponentProps };
 
+/**
+ * Represents a control that allows a user to pick a date from a calendar display.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+ */
 declare const CalendarDatePicker: Component<CalendarDatePickerComponentProps, Record<string, never>, "date">;
 export default CalendarDatePicker;

@@ -6,8 +6,23 @@ import type { PopupThemeTransition } from "../bindings.ts";
 import { linkTransition } from "./Transition.svelte.ts";
 import type { TransitionBound, TransitionProps } from "./Transition.svelte.ts";
 
+/**
+ * Provides the animated transition behavior that applies to pop-in components of controls (for example, tooltip-like UI on an object) as they appear.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popupthemetransition
+ */
 export interface PopupThemeTransitionProps extends TransitionProps {
+  /**
+   * Gets or sets the distance by which the target is translated in the horizontal direction when the animation is active. The horizontal offset translation, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popupthemetransition
+   */
   fromHorizontalOffset?: number;
+  /**
+   * Gets or sets the distance by which the target is translated in the vertical direction when the animation is active. The vertical offset translation, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popupthemetransition
+   */
   fromVerticalOffset?: number;
 }
 

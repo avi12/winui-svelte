@@ -7,5 +7,10 @@ import type { Component } from "svelte";
 /** The props of `TextCommandBarFlyout`: the control's, `open` and `target`. */
 export type TextCommandBarFlyoutComponentProps = FlyoutOverlayComponentProps<TextCommandBarFlyoutControlProps>;
 
+/**
+ * Represents a specialized CommandBarFlyout that contains commands for editing text.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textcommandbarflyout
+ */
 declare const TextCommandBarFlyout: Component<TextCommandBarFlyoutComponentProps, Record<string, never>, "open">;
 export default TextCommandBarFlyout;

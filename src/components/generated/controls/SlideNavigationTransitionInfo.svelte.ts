@@ -10,7 +10,17 @@ import type {
   NavigationTransitionInfoProps
 } from "./NavigationTransitionInfo.svelte.ts";
 
+/**
+ * Provides the parameters for a slide navigation transition.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.slidenavigationtransitioninfo
+ */
 export interface SlideNavigationTransitionInfoProps extends NavigationTransitionInfoProps {
+  /**
+   * Gets or sets the type of animation effect to play during the slide transition.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.slidenavigationtransitioninfo
+   */
   effect?: EnumInput<typeof SlideNavigationTransitionEffect>;
 }
 

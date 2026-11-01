@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DoubleAnimationUsingKeyFramesComponentProps };
 
+/**
+ * Animates the value of a Double property along a set of key frames.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimationusingkeyframes
+ */
 declare const DoubleAnimationUsingKeyFrames: Component<DoubleAnimationUsingKeyFramesComponentProps, Record<string, never>, "">;
 export default DoubleAnimationUsingKeyFrames;

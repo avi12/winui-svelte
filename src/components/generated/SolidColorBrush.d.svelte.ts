@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SolidColorBrushComponentProps };
 
+/**
+ * Paints an area with a solid color. The solid color is defined by a Color value.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.solidcolorbrush
+ */
 declare const SolidColorBrush: Component<SolidColorBrushComponentProps, Record<string, never>, "">;
 export default SolidColorBrush;

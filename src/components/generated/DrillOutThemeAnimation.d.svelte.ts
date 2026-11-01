@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DrillOutThemeAnimationComponentProps };
 
+/**
+ * Represents a preconfigured animation that runs when a user navigates backward in a logical hierarchy, like from a detail page to a master page.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation
+ */
 declare const DrillOutThemeAnimation: Component<DrillOutThemeAnimationComponentProps, Record<string, never>, "">;
 export default DrillOutThemeAnimation;

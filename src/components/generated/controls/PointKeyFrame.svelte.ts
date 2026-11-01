@@ -5,8 +5,23 @@ import type { AttachedInput, KeyTimeInput, PointInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { PointKeyFrame } from "../bindings.ts";
 
+/**
+ * Defines an animation segment with its own target value and interpolation method for a PointAnimationUsingKeyFrames.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointkeyframe
+ */
 export interface PointKeyFrameProps {
+  /**
+   * Gets or sets the time at which the key frame's target Value should be reached. The time at which the key frame's current value should be equal to its Value property. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointkeyframe
+   */
   keyTime?: KeyTimeInput;
+  /**
+   * Gets or sets the key frame's target value. The key frame's target value, which is the value of this key frame at its specified KeyTime. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointkeyframe
+   */
   value?: PointInput;
   attached?: AttachedInput;
 }

@@ -7,13 +7,53 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a symbolic map of the Earth.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol
+ */
 export interface MapControlProps extends ControlProps {
+  /**
+   * Gets or sets the geographic location where the map is centered.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol
+   */
   center?: MapControl["center"];
+  /**
+   * Gets or sets a value that indicates whether the map is rendering the default interactive controls from Azure Maps as an overlay. Included controls are zoom, rotation, pitch, and style.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol
+   */
   interactiveControlsVisible?: boolean;
+  /**
+   * Gets the collection of map layer objects that are children of the MapControl. The collection of map layer objects that are children of the MapControl. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol
+   */
   layers?: MapControl["layers"] | Snippet;
+  /**
+   * Gets or sets the authentication key required for using the MapControl and online mapping services. The authentication key required for using the MapControl and online mapping services. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol
+   */
   mapServiceToken?: string;
+  /**
+   * Gets or sets the zoom level of the map, which is a value between 0 and 24.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol
+   */
   zoomLevel?: number;
+  /**
+   * Occurs when the user taps or clicks a MapElement on the MapControl.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol
+   */
   onmapelementclick?: Parameters<MapControl["onMapElementClick"]>[0];
+  /**
+   * Occurs when communication with Azure Maps web service fails.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol
+   */
   onmapserviceerroroccurred?: Parameters<MapControl["onMapServiceErrorOccurred"]>[0];
 }
 

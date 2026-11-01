@@ -7,8 +7,23 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents the visual elements of a NavigationViewItem.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.navigationviewitempresenter
+ */
 export interface NavigationViewItemPresenterProps extends ContentControlProps {
+  /**
+   * Gets or sets the icon in a NavigationView item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.navigationviewitempresenter
+   */
   icon?: NavigationViewItemPresenter["icon"] | Snippet;
+  /**
+   * Gets or sets the informational badge shown on a NavigationView item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.navigationviewitempresenter
+   */
   infoBadge?: NavigationViewItemPresenter["infoBadge"] | Snippet;
 }
 

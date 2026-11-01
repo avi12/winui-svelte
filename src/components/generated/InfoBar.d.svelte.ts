@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { InfoBarComponentProps };
 
+/**
+ * An InfoBar is an inline notification for essential app-wide messages. The InfoBar will take up space in a layout and will not cover up other content or float on top of it. It supports rich content (including titles, messages, icons, and buttons) and can be configured to be user-dismissable or persistent.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar
+ */
 declare const InfoBar: Component<InfoBarComponentProps, Record<string, never>, "isOpen">;
 export default InfoBar;

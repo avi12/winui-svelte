@@ -19,24 +19,119 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control for entering passwords.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+ */
 export interface PasswordBoxProps extends ControlProps {
+  /**
+   * Gets or sets the password currently held by the PasswordBox. A string that represents the password currently held by the PasswordBox. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   password?: string | undefined;
+  /**
+   * Gets or sets content that is shown below the control. The content should provide guidance about the input expected by the control. The content to be displayed below the control. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   description?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the content for the control's header. The content of the control's header. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   header?: ObjectInput | Snippet;
+  /**
+   * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   headerTemplate?: DataTemplateInput;
+  /**
+   * Gets or sets the context for input used by this PasswordBox. The input scope, which provides a hint at the type of text input expected by the control. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   inputScope?: InputScopeInput;
+  /**
+   * This property is ignored. Use PasswordRevealMode instead.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   isPasswordRevealButtonEnabled?: boolean;
+  /**
+   * Gets or sets the maximum length for passwords to be handled by this PasswordBox. An integer that specifies the maximum number of characters for passwords to be handled by this PasswordBox. A value of zero (0) means no limit. The default is 0 (no length limit).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   maxLength?: number;
+  /**
+   * Gets or sets the masking character for the PasswordBox. A masking character to echo when the user enters text into the PasswordBox. The default value is a bullet character (●).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   passwordChar?: string;
+  /**
+   * Gets or sets a value that specifies whether the password is always, never, or optionally obscured.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   passwordRevealMode?: EnumInput<typeof PasswordRevealMode>;
+  /**
+   * Gets or sets the text that is displayed in the control until the value is changed by a user action or some other operation. The text that is displayed in the control when no value is entered. The default is an empty string ("").
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   placeholderText?: string;
+  /**
+   * Gets or sets a value that indicates whether the on-screen keyboard is shown when the control receives focus programmatically.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
+  /**
+   * Gets or sets the flyout that is shown when text is selected, or null if no flyout is shown. The flyout that is shown when text is selected, or null if no flyout is shown. The default is an instance of TextCommandBarFlyout.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   selectionFlyout?: PasswordBox["selectionFlyout"] | Snippet;
+  /**
+   * Gets or sets the brush used to highlight the selected text. The brush used to highlight the selected text. The default is a null brush from a pure code perspective, but the default control template for PasswordBox applies a theme resource brush for this in a runtime instance of a PasswordBox control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   selectionHighlightColor?: PasswordBox["selectionHighlightColor"] | Snippet;
+  /**
+   * Gets or sets a value that indicates how the reading order is determined for the PasswordBox.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
+  /**
+   * Occurs when the system processes an interaction that displays a context menu.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   oncontextmenuopening?: (sender: PasswordBox, args: EventArguments<ContextMenuEventArgs>) => void;
+  /**
+   * Occurs when the value of the Password property changes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   onpasswordchanged?: (sender: PasswordBox, args: EventArguments<RoutedEventArgs>) => void;
+  /**
+   * Occurs synchronously when the text in the password box starts to change, but before it is rendered.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   onpasswordchanging?: Parameters<PasswordBox["onPasswordChanging"]>[0];
+  /**
+   * Occurs when text is pasted into the control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox
+   */
   onpaste?: (sender: PasswordBox, args: EventArguments<TextControlPasteEventArgs>) => void;
 }
 

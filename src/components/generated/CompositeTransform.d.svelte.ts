@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CompositeTransformComponentProps };
 
+/**
+ * Applies multiple transform operations to an object.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform
+ */
 declare const CompositeTransform: Component<CompositeTransformComponentProps, Record<string, never>, "">;
 export default CompositeTransform;

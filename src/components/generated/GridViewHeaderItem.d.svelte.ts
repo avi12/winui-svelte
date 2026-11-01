@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { GridViewHeaderItemComponentProps };
 
+/**
+ * Represents items in the header for grouped data inside a GridView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.gridviewheaderitem
+ */
 declare const GridViewHeaderItem: Component<GridViewHeaderItemComponentProps, Record<string, never>, "">;
 export default GridViewHeaderItem;

@@ -7,8 +7,23 @@ import { linkItemsControl } from "./ItemsControl.svelte.ts";
 import type { ItemsControlBound, ItemsControlProps } from "./ItemsControl.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Displays the content of a MenuFlyout control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutpresenter
+ */
 export interface MenuFlyoutPresenterProps extends ItemsControlProps {
+  /**
+   * Gets or sets a value that indicates whether the default shadow effect is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutpresenter
+   */
   isDefaultShadowEnabled?: boolean;
+  /**
+   * Gets or sets the system backdrop to apply to this flyout. The backdrop is rendered behind the flyout content.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutpresenter
+   */
   systemBackdrop?: MenuFlyoutPresenter["systemBackdrop"] | Snippet;
 }
 

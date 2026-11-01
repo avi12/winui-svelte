@@ -6,8 +6,23 @@ import type { AdaptiveTrigger } from "../bindings.ts";
 import { linkStateTriggerBase } from "./StateTriggerBase.svelte.ts";
 import type { StateTriggerBaseBound, StateTriggerBaseProps } from "./StateTriggerBase.svelte.ts";
 
+/**
+ * Represents a declarative rule that applies visual states based on window properties.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.adaptivetrigger
+ */
 export interface AdaptiveTriggerProps extends StateTriggerBaseProps {
+  /**
+   * Gets or sets the minimum window height at which the VisualState should be applied. The minimum window height (in effective pixels) at which the VisualState should be applied.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.adaptivetrigger
+   */
   minWindowHeight?: number;
+  /**
+   * Gets or sets the minimum window width at which the VisualState should be applied. The minimum window width (in effective pixels) at which the VisualState should be applied.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.adaptivetrigger
+   */
   minWindowWidth?: number;
 }
 

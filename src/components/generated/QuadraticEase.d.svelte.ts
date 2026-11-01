@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { QuadraticEaseComponentProps };
 
+/**
+ * Represents an easing function that creates an animation that accelerates and/or decelerates using the formula f (t) = t<sup>2</sup>
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.quadraticease
+ */
 declare const QuadraticEase: Component<QuadraticEaseComponentProps, Record<string, never>, "">;
 export default QuadraticEase;

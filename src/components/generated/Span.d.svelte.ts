@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SpanComponentProps };
 
+/**
+ * Groups other Inline content elements. Parent class for Bold, Hyperlink, Italic and Underline.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.span
+ */
 declare const Span: Component<SpanComponentProps, Record<string, never>, "">;
 export default Span;

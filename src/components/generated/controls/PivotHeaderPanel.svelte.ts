@@ -6,6 +6,11 @@ import type { PivotHeaderPanel } from "../bindings.ts";
 import { linkCanvas } from "./Canvas.svelte.ts";
 import type { CanvasBound, CanvasProps } from "./Canvas.svelte.ts";
 
+/**
+ * Displays the header text of the items in a Pivot control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.pivotheaderpanel
+ */
 export interface PivotHeaderPanelProps extends CanvasProps {
 }
 

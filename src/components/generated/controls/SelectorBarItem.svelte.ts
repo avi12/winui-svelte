@@ -7,8 +7,23 @@ import { linkItemContainer } from "./ItemContainer.svelte.ts";
 import type { ItemContainerBound, ItemContainerProps } from "./ItemContainer.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents one item of content in a SelectorBar control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbaritem
+ */
 export interface SelectorBarItemProps extends ItemContainerProps {
+  /**
+   * Gets or sets the item's graphical icon. The icon associated with the item. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbaritem
+   */
   icon?: SelectorBarItem["icon"] | Snippet;
+  /**
+   * Gets or sets the item's text label. The item's text label. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbaritem
+   */
   text?: string;
 }
 

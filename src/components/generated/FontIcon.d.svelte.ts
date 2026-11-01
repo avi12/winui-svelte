@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { FontIconComponentProps };
 
+/**
+ * Represents an icon that uses a glyph from the specified font.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon
+ */
 declare const FontIcon: Component<FontIconComponentProps, Record<string, never>, "">;
 export default FontIcon;

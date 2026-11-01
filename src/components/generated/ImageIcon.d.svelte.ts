@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ImageIconComponentProps };
 
+/**
+ * Represents an icon that uses an Image as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.imageicon
+ */
 declare const ImageIcon: Component<ImageIconComponentProps, Record<string, never>, "">;
 export default ImageIcon;

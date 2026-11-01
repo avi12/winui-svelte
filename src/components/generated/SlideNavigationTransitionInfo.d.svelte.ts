@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SlideNavigationTransitionInfoComponentProps };
 
+/**
+ * Provides the parameters for a slide navigation transition.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.slidenavigationtransitioninfo
+ */
 declare const SlideNavigationTransitionInfo: Component<SlideNavigationTransitionInfoComponentProps, Record<string, never>, "">;
 export default SlideNavigationTransitionInfo;

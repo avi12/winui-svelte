@@ -9,13 +9,53 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents an object that uses a MediaPlayer to render audio and video to the display.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement
+ */
 export interface MediaPlayerElementProps extends ControlProps {
+  /**
+   * Gets or sets a value that determines whether the standard transport controls are enabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement
+   */
   areTransportControlsEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether media will begin playback automatically when the Source property is set.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement
+   */
   autoPlay?: boolean;
+  /**
+   * Gets or sets a value that specifies if the MediaPlayerElement is rendering in full window mode.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement
+   */
   isFullWindow?: boolean;
+  /**
+   * Gets or sets the image source that is used for a placeholder image during MediaPlayerElement loading transition states. An image source for a transition ImageBrush that is applied to the MediaPlayerElement content area.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement
+   */
   posterSource?: ImageSourceInput | Snippet;
+  /**
+   * Gets or sets a media source on the MediaPlayerElement. The source of the media. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement
+   */
   source?: MediaPlaybackSourceInput;
+  /**
+   * Gets or sets a value that describes how an MediaPlayerElement should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source visual media is rendered. The default value is Uniform.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement
+   */
   stretch?: EnumInput<typeof Stretch>;
+  /**
+   * Gets or sets the transport controls for the media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement
+   */
   transportControls?: MediaPlayerElement["transportControls"] | Snippet;
 }
 

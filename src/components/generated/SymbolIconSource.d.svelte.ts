@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SymbolIconSourceComponentProps };
 
+/**
+ * Represents an icon source that uses a glyph from the Segoe MDL2 Assets font as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symboliconsource
+ */
 declare const SymbolIconSource: Component<SymbolIconSourceComponentProps, Record<string, never>, "">;
 export default SymbolIconSource;

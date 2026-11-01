@@ -8,12 +8,47 @@ import type { ItemsStackPanel } from "../bindings.ts";
 import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
 
+/**
+ * Arranges child elements of an ItemsControl into a single line that can be oriented horizontally or vertically. Supports pixel-based UI virtualization and grouped layouts.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel
+ */
 export interface ItemsStackPanelProps extends PanelProps {
+  /**
+   * Gets or sets a value that specifies whether a group header moves with the group when the group is panned vertically.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel
+   */
   areStickyGroupHeadersEnabled?: boolean;
+  /**
+   * Gets or sets the size of the buffers for items outside the viewport, in multiples of the viewport size.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel
+   */
   cacheLength?: number;
+  /**
+   * Gets or sets a value that specifies where group headers are positioned in relation to the group. An enumeration value that specifies where group headers are positioned in relation to the group. The default is Top.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel
+   */
   groupHeaderPlacement?: EnumInput<typeof GroupHeaderPlacement>;
+  /**
+   * Gets or sets the amount of space around a group. The amount of space around a group as a Thickness value. Thickness is a structure that stores dimension values using pixel measures. The default is a uniform Thickness of 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel
+   */
   groupPadding?: ThicknessInput;
+  /**
+   * Gets or sets a value that specifies scrolling behavior when the ItemsSource is updated. A value of the enumeration. The default is KeepItemsInView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel
+   */
   itemsUpdatingScrollMode?: EnumInput<typeof ItemsUpdatingScrollMode>;
+  /**
+   * Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel
+   */
   orientation?: EnumInput<typeof Orientation>;
 }
 

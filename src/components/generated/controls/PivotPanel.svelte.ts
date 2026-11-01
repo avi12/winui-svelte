@@ -6,8 +6,23 @@ import type { PivotPanel } from "../bindings.ts";
 import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
 
+/**
+ * Displays the items in a Pivot control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.pivotpanel
+ */
 export interface PivotPanelProps extends PanelProps {
+  /**
+   * This property is reserved for internal use and is not intended to be used in your code.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.pivotpanel
+   */
   onhorizontalsnappointschanged?: Parameters<PivotPanel["onHorizontalSnapPointsChanged"]>[0];
+  /**
+   * This property is reserved for internal use and is not intended to be used in your code.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.pivotpanel
+   */
   onverticalsnappointschanged?: Parameters<PivotPanel["onVerticalSnapPointsChanged"]>[0];
 }
 

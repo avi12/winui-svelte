@@ -6,7 +6,17 @@ import type { PointerDownThemeAnimation } from "../bindings.ts";
 import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 
+/**
+ * Represents a preconfigured animation that runs when a pointer down is detected on an item or element.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointerdownthemeanimation
+ */
 export interface PointerDownThemeAnimationProps extends TimelineProps {
+  /**
+   * Gets or sets the reference name of the control element being targeted.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointerdownthemeanimation
+   */
   targetName?: string;
 }
 

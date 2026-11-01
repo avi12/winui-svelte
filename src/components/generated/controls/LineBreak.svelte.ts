@@ -6,6 +6,11 @@ import type { LineBreak } from "../bindings.ts";
 import { linkInline } from "./Inline.svelte.ts";
 import type { InlineBound, InlineProps } from "./Inline.svelte.ts";
 
+/**
+ * Represents an inline element that causes a new line to begin in content when rendered in a text container.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.linebreak
+ */
 export interface LineBreakProps extends InlineProps {
 }
 

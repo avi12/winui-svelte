@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ColorPickerSliderComponentProps };
 
+/**
+ * Represents a slider in a ColorPicker control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorpickerslider
+ */
 declare const ColorPickerSlider: Component<ColorPickerSliderComponentProps, Record<string, never>, "value">;
 export default ColorPickerSlider;

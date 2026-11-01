@@ -66,6 +66,11 @@ import type { RoutedEventArgs } from "#winui/microsoft/ui/xaml/RoutedEventArgs";
 import type { TappedRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/TappedRoutedEventArgs";
 import type { Snippet } from "svelte";
 
+/**
+ * UIElement is a base class for most of the Windows Runtime UI objects that have visual appearance and can process basic input as part of your app's user interface.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+ */
 export interface UIElementProps {
   keyboardAccelerators?: Snippet;
   transitions?: Snippet;
@@ -132,102 +137,587 @@ export interface UIElementProps {
   automationHeadingLevel?: EnumInput<typeof AutomationHeadingLevel> | undefined;
   automationIsDialog?: boolean | undefined;
   automationControlType?: EnumInput<typeof AutomationControlType> | undefined;
+  /**
+   * Gets or sets the access key (mnemonic) for this element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   accessKey?: string;
+  /**
+   * Gets or sets a source element that provides the access key scope for this element, even if it's not in the visual tree of the source element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   accessKeyScopeOwner?: UIElement["accessKeyScopeOwner"];
+  /**
+   * Gets or sets a value that determines whether this UIElement can be a drop target for purposes of drag-and-drop operations.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   allowDrop?: boolean;
+  /**
+   * Gets or sets a value that indicates that rendered content should be cached as a composited bitmap when possible. A value that indicates that rendered content should be cached as a composited bitmap when possible. If you specify a value of CacheMode, rendering operations from RenderTransform and Opacity execute on the graphics processing unit (GPU), if available. The default is null, which does not enable a cached composition mode.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   cacheMode?: UIElement["cacheMode"] | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the UIElement can be a candidate for scroll anchoring.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   canBeScrollAnchor?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the element can be dragged as data in a drag-and-drop operation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   canDrag?: boolean;
+  /**
+   * Gets or sets the center point of the element, which is the point about which rotation or scaling occurs. Affects the rendering position of the element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   centerPoint?: Vector3Input;
+  /**
+   * Gets or sets the RectangleGeometry used to define the outline of the contents of a UIElement. The rectangle geometry to be used for clipping area sizing. The default value is null (no clipping).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   clip?: UIElement["clip"] | Snippet;
+  /**
+   * Gets or sets a property that declares alternate composition and blending modes for the element in its parent layout and window. This is relevant for elements that are involved in a mixed XAML / Microsoft DirectX UI. A value of the enumeration. The default is Inherit, but see Remarks.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   compositeMode?: EnumInput<typeof ElementCompositeMode>;
+  /**
+   * Gets or sets the flyout associated with this element. The flyout associated with this element, if any; otherwise, null. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   contextFlyout?: UIElement["contextFlyout"] | Snippet;
+  /**
+   * Gets or sets a value that specifies whether the access key display is dismissed when an access key is invoked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   exitDisplayModeOnAccessKeyInvoked?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the framework automatically adjusts the element's visual properties when high contrast themes are enabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   highContrastAdjustment?: FlagsInput<typeof ElementHighContrastAdjustment>;
+  /**
+   * Gets or sets a value that indicates whether an element defines its own access key scope.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   isAccessKeyScope?: boolean;
+  /**
+   * Gets or sets a value that determines whether the DoubleTapped event can originate from that element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   isDoubleTapEnabled?: boolean;
+  /**
+   * Gets or sets whether the contained area of this UIElement can return true values for hit testing.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   isHitTestVisible?: boolean;
+  /**
+   * Gets or sets a value that determines whether the Holding event can originate from that element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   isHoldingEnabled?: boolean;
+  /**
+   * Gets or sets a value that determines whether the RightTapped event can originate from that element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   isRightTapEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a control is included in tab navigation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   isTabStop?: boolean;
+  /**
+   * Gets or sets a value that determines whether the Tapped event can originate from that element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   isTapEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the control tooltip displays the key combination for its associated keyboard accelerator. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   keyboardAcceleratorPlacementMode?: EnumInput<typeof KeyboardAcceleratorPlacementMode>;
+  /**
+   * Gets or sets a value that indicates the control tooltip that displays the accelerator key combination.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   keyboardAcceleratorPlacementTarget?: UIElement["keyboardAcceleratorPlacementTarget"];
+  /**
+   * Gets or sets a value that indicates how far left or right the Key Tip is placed in relation to the UIElement. The number of pixels to move the Key Tip. Positive values move it right. Negative values move it left.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   keyTipHorizontalOffset?: number;
+  /**
+   * Gets or sets a value that indicates where the access key Key Tip is placed in relation to the boundary of the UIElement. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   keyTipPlacementMode?: EnumInput<typeof KeyTipPlacementMode>;
+  /**
+   * Gets or sets a value that indicates the element targeted by the access key Key Tip.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   keyTipTarget?: UIElement["keyTipTarget"];
+  /**
+   * Gets or sets a value that indicates how far up or down the Key Tip is placed in relation to the UI element. The number of pixels to move the Key Tip. Positive values move it down. Negative values move it up.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   keyTipVerticalOffset?: number;
+  /**
+   * Gets or sets the ManipulationModes value used for UIElement behavior and interaction with gestures. Setting this value enables handling the manipulation events from this element in app code. A value or values of the enumeration. The default is typically System, but this can vary on specific controls and elements. See Remarks.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   manipulationMode?: FlagsInput<typeof ManipulationModes>;
+  /**
+   * Gets or sets the degree of the object's opacity. A value between 0 and 1.0 that declares the opacity factor, with 1.0 meaning full opacity and 0 meaning transparent. The default value is 1.0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   opacity?: number;
+  /**
+   * Gets or sets the ScalarTransition that animates changes to the Opacity property.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   opacityTransition?: UIElement["opacityTransition"];
+  /**
+   * Gets or sets the perspective projection (3-D effect) to apply when rendering this element. A 3-D projection effect applied to the element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   projection?: UIElement["projection"] | Snippet;
+  /**
+   * Gets a value that represents the number of raw (physical) pixels for each view pixel. A value that represents the number of raw (physical) pixels for each view pixel. The default is 1.0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   rasterizationScale?: number;
+  /**
+   * Gets or sets transform information that affects the rendering position of a UIElement. Describes the specifics of the desired render transform. The default value is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   renderTransform?: UIElement["renderTransform"] | Snippet;
+  /**
+   * Gets or sets the origin point of any possible render transform declared by RenderTransform, relative to the bounds of the UIElement. The origin point of the render transform. The default value is a Point with value 0,0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   renderTransformOrigin?: PointInput;
+  /**
+   * Gets or sets the angle of clockwise rotation, in degrees. Rotates relative to the RotationAxis and the CenterPoint. Affects the rendering position of the element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   rotation?: number;
+  /**
+   * Gets or sets the axis to rotate the element around.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   rotationAxis?: Vector3Input;
+  /**
+   * Gets or sets the ScalarTransition that animates changes to the Rotation property.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   rotationTransition?: UIElement["rotationTransition"];
+  /**
+   * Gets or sets the scale of the element. Scales relative to the element's CenterPoint. Affects the rendering position of the element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   scale?: Vector3Input;
+  /**
+   * Gets or sets the Vector3Transition that animates changes to the Scale property.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   scaleTransition?: UIElement["scaleTransition"];
+  /**
+   * Gets or sets the shadow effect cast by the element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   shadow?: UIElement["shadow"] | Snippet;
+  /**
+   * Gets or sets a value that modifies how tabbing and TabIndex work for this control. A value of the enumeration. The default is Local.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   tabFocusNavigation?: EnumInput<typeof KeyboardNavigationMode>;
+  /**
+   * Gets or sets a value that determines the order in which elements receive focus when the user navigates through controls using the _Tab_ key. A value that determines the order of logical navigation for a device. The default value is MaxValue with the tab order based on declaration order in the XAML or child collections.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   tabIndex?: number;
+  /**
+   * Gets or sets the 3-D transform effect to apply when rendering this element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   transform3D?: UIElement["transform3D"] | Snippet;
+  /**
+   * Gets or sets the transformation matrix to apply to the element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   transformMatrix?: UIElement["transformMatrix"];
+  /**
+   * Gets or sets the x, y, and z rendering position of the element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   translation?: Vector3Input;
+  /**
+   * Gets or sets the Vector3Transition that animates changes to the Translation property.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   translationTransition?: UIElement["translationTransition"];
+  /**
+   * Gets or sets a value that determines whether rendering for the object and its visual subtree should use rounding behavior that aligns rendering to whole pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   useLayoutRounding?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the control uses focus visuals drawn by the system or focus visuals defined in the control template.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   useSystemFocusVisuals?: boolean;
+  /**
+   * Gets or sets the visibility of a UIElement. A UIElement that is not visible is not rendered and does not communicate its desired size to layout. A value of the enumeration. The default value is Visible.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   visibility?: EnumInput<typeof Visibility>;
+  /**
+   * Gets or sets the XamlRoot in which this element is being viewed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   xamlRoot?: UIElement["xamlRoot"];
+  /**
+   * Gets or sets the object that gets focus when a user presses down on the Directional Pad (D-pad) of a game controller.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   xYFocusDown?: UIElement["xYFocusDown"];
+  /**
+   * Gets or sets a value that specifies the strategy used to determine the target element of a down navigation. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   xYFocusDownNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
+  /**
+   * Gets or sets a value that enables or disables navigation using the keyboard directional arrows. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   xYFocusKeyboardNavigation?: EnumInput<typeof XYFocusKeyboardNavigationMode>;
+  /**
+   * Gets or sets the object that gets focus when a user presses left on the Directional Pad (D-pad) of a game controller.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   xYFocusLeft?: UIElement["xYFocusLeft"];
+  /**
+   * Gets or sets a value that specifies the strategy used to determine the target element of a left navigation. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   xYFocusLeftNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
+  /**
+   * Gets or sets the object that gets focus when a user presses right on the Directional Pad (D-pad) of a game controller.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   xYFocusRight?: UIElement["xYFocusRight"];
+  /**
+   * Gets or sets a value that specifies the strategy used to determine the target element of a right navigation. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   xYFocusRightNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
+  /**
+   * Gets or sets the object that gets focus when a user presses up on the Directional Pad (D-pad) of a game controller.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   xYFocusUp?: UIElement["xYFocusUp"];
+  /**
+   * Gets or sets a value that specifies the strategy used to determine the target element of an up navigation. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   xYFocusUpNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
+  /**
+   * Occurs when access keys should no longer be displayed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onaccesskeydisplaydismissed?: Parameters<UIElement["onAccessKeyDisplayDismissed"]>[0];
+  /**
+   * Occurs when the user requests that access keys be displayed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onaccesskeydisplayrequested?: Parameters<UIElement["onAccessKeyDisplayRequested"]>[0];
+  /**
+   * Occurs when a user completes an access key sequence.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onaccesskeyinvoked?: Parameters<UIElement["onAccessKeyInvoked"]>[0];
+  /**
+   * Occurs when StartBringIntoView is called on this element or one of its descendants.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onbringintoviewrequested?: Parameters<UIElement["onBringIntoViewRequested"]>[0];
+  /**
+   * Occurs when a single, composed character is received by the input queue.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   oncharacterreceived?: Parameters<UIElement["onCharacterReceived"]>[0];
+  /**
+   * Occurs when a context input gesture continues into a manipulation gesture, to notify the element that the context flyout should not be opened.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   oncontextcanceled?: Parameters<UIElement["onContextCanceled"]>[0];
+  /**
+   * Occurs when the user has completed a context input gesture, such as a right-click.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   oncontextrequested?: Parameters<UIElement["onContextRequested"]>[0];
+  /**
+   * Occurs when an otherwise unhandled DoubleTap interaction occurs over the hit test area of this element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   ondoubletapped?: (sender: UIElement, args: EventArguments<DoubleTappedRoutedEventArgs>) => void;
+  /**
+   * Occurs when the input system reports an underlying drag event with this element as the target.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   ondragenter?: (sender: UIElement, args: EventArguments<DragEventArgs>) => void;
+  /**
+   * Occurs when the input system reports an underlying drag event with this element as the origin.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   ondragleave?: (sender: UIElement, args: EventArguments<DragEventArgs>) => void;
+  /**
+   * Occurs when the input system reports an underlying drag event with this element as the potential drop target.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   ondragover?: (sender: UIElement, args: EventArguments<DragEventArgs>) => void;
+  /**
+   * Occurs when a drag operation is initiated.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   ondragstarting?: Parameters<UIElement["onDragStarting"]>[0];
+  /**
+   * Occurs when the input system reports an underlying drop event with this element as the drop target.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   ondrop?: (sender: UIElement, args: EventArguments<DragEventArgs>) => void;
+  /**
+   * Occurs when a drag-and-drop operation with this element as the source is ended.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   ondropcompleted?: Parameters<UIElement["onDropCompleted"]>[0];
+  /**
+   * Occurs before a UIElement receives focus. This event is raised synchronously to ensure focus isn't moved while the event is bubbling.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   ongettingfocus?: Parameters<UIElement["onGettingFocus"]>[0];
+  /**
+   * Occurs when a UIElement receives focus. This event is raised asynchronously, so focus can move again before bubbling is complete.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   ongotfocus?: (sender: UIElement, args: EventArguments<RoutedEventArgs>) => void;
+  /**
+   * Occurs when an otherwise unhandled Hold interaction occurs over the hit test area of this element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onholding?: (sender: UIElement, args: EventArguments<HoldingRoutedEventArgs>) => void;
+  /**
+   * Occurs when a keyboard key is pressed while the UIElement has focus.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onkeydown?: (sender: UIElement, args: EventArguments<KeyRoutedEventArgs>) => void;
+  /**
+   * Occurs when a keyboard key is released while the UIElement has focus.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onkeyup?: (sender: UIElement, args: EventArguments<KeyRoutedEventArgs>) => void;
+  /**
+   * Occurs before a UIElement loses focus. This event is raised synchronously to ensure focus isn't moved while the event is bubbling.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onlosingfocus?: Parameters<UIElement["onLosingFocus"]>[0];
+  /**
+   * Occurs when a UIElement loses focus. This event is raised asynchronously, so focus can move again before bubbling is complete.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onlostfocus?: (sender: UIElement, args: EventArguments<RoutedEventArgs>) => void;
+  /**
+   * Occurs when a manipulation on the UIElement is complete.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onmanipulationcompleted?: (sender: UIElement, args: EventArguments<ManipulationCompletedRoutedEventArgs>) => void;
+  /**
+   * Occurs when the input device changes position during a manipulation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onmanipulationdelta?: (sender: UIElement, args: EventArguments<ManipulationDeltaRoutedEventArgs>) => void;
+  /**
+   * Occurs when the input device loses contact with the UIElement object during a manipulation and inertia begins.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onmanipulationinertiastarting?: (sender: UIElement, args: EventArguments<ManipulationInertiaStartingRoutedEventArgs>) => void;
+  /**
+   * Occurs when an input device begins a manipulation on the UIElement.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onmanipulationstarted?: (sender: UIElement, args: EventArguments<ManipulationStartedRoutedEventArgs>) => void;
+  /**
+   * Occurs when the manipulation processor is first created.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onmanipulationstarting?: (sender: UIElement, args: EventArguments<ManipulationStartingRoutedEventArgs>) => void;
+  /**
+   * Occurs when a user attempts to move focus (via tab or directional arrows), but focus doesn't move because no focus candidate is found in the direction of movement.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onnofocuscandidatefound?: Parameters<UIElement["onNoFocusCandidateFound"]>[0];
+  /**
+   * Occurs when a pointer that made contact abnormally loses contact.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onpointercanceled?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  /**
+   * Occurs when pointer capture previously held by this element moves to another element or elsewhere.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onpointercapturelost?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  /**
+   * Occurs when a pointer enters the hit test area of this element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onpointerentered?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  /**
+   * Occurs when a pointer leaves the hit test area of this element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onpointerexited?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  /**
+   * Occurs when a pointer moves while the pointer remains within the hit test area of this element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onpointermoved?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  /**
+   * Occurs when the pointer device initiates a Press action within this element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onpointerpressed?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  /**
+   * Occurs when the pointer device that previously initiated a Press action is released, while within this element. Note that the end of a Press action is not guaranteed to fire a PointerReleased event; other events may fire instead. For more info, see Remarks.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onpointerreleased?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  /**
+   * Occurs when the delta value of a pointer wheel changes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onpointerwheelchanged?: (sender: UIElement, args: EventArguments<PointerRoutedEventArgs>) => void;
+  /**
+   * Occurs when a keyboard key is pressed while the UIElement has focus.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onpreviewkeydown?: (sender: UIElement, args: EventArguments<KeyRoutedEventArgs>) => void;
+  /**
+   * Occurs when a keyboard key is released while the UIElement has focus.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onpreviewkeyup?: (sender: UIElement, args: EventArguments<KeyRoutedEventArgs>) => void;
+  /**
+   * Occurs when a keyboard shortcut (or accelerator) is pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onprocesskeyboardaccelerators?: Parameters<UIElement["onProcessKeyboardAccelerators"]>[0];
+  /**
+   * Occurs when a right-tap input stimulus happens while the pointer is over the element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   onrighttapped?: (sender: UIElement, args: EventArguments<RightTappedRoutedEventArgs>) => void;
+  /**
+   * Occurs when an otherwise unhandled Tap interaction occurs over the hit test area of this element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement
+   */
   ontapped?: (sender: UIElement, args: EventArguments<TappedRoutedEventArgs>) => void;
   attached?: AttachedInput;
 }

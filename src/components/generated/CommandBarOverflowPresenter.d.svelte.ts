@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CommandBarOverflowPresenterComponentProps };
 
+/**
+ * Displays the overflow content of a CommandBar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbaroverflowpresenter
+ */
 declare const CommandBarOverflowPresenter: Component<CommandBarOverflowPresenterComponentProps, Record<string, never>, "">;
 export default CommandBarOverflowPresenter;

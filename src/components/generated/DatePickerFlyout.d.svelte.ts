@@ -7,5 +7,10 @@ import type { Component } from "svelte";
 /** The props of `DatePickerFlyout`: the control's, `open` and `target`. */
 export type DatePickerFlyoutComponentProps = FlyoutOverlayComponentProps<DatePickerFlyoutControlProps>;
 
+/**
+ * Represents a control that allows a user to pick a date.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout
+ */
 declare const DatePickerFlyout: Component<DatePickerFlyoutComponentProps, Record<string, never>, "open">;
 export default DatePickerFlyout;

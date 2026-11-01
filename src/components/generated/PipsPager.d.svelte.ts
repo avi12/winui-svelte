@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PipsPagerComponentProps };
 
+/**
+ * Represents a control that enables navigation within linearly paginated content using a configurable collection of glyphs, each of which represents a single "page" within a limitless range.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager
+ */
 declare const PipsPager: Component<PipsPagerComponentProps, Record<string, never>, "">;
 export default PipsPager;

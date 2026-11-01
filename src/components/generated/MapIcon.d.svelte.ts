@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MapIconComponentProps };
 
+/**
+ * Represents an icon that displays a pushpin on a MapControl.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapicon
+ */
 declare const MapIcon: Component<MapIconComponentProps, Record<string, never>, "">;
 export default MapIcon;

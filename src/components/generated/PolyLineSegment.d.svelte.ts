@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PolyLineSegmentComponentProps };
 
+/**
+ * Represents a set of line segments defined by a Point specifying the end point of a line segment.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polylinesegment
+ */
 declare const PolyLineSegment: Component<PolyLineSegmentComponentProps, Record<string, never>, "">;
 export default PolyLineSegment;

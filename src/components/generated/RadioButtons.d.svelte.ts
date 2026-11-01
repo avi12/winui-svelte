@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RadioButtonsComponentProps };
 
+/**
+ * Represents a control that shows a group of related options from which one can be selected.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons
+ */
 declare const RadioButtons: Component<RadioButtonsComponentProps, Record<string, never>, "selectedIndex" | "selectedItem">;
 export default RadioButtons;

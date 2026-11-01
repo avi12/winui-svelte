@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { Transform3D } from "../bindings.ts";
 
+/**
+ * The base class for the CompositeTransform3D and PerspectiveTransform3D classes.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.transform3d
+ */
 export interface Transform3DProps {
   attached?: AttachedInput;
 }

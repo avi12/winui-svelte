@@ -6,10 +6,35 @@ import type { ScaleTransform } from "../bindings.ts";
 import { linkTransform } from "./Transform.svelte.ts";
 import type { TransformBound, TransformProps } from "./Transform.svelte.ts";
 
+/**
+ * Scales an object in the two-dimensional x-y coordinate system.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform
+ */
 export interface ScaleTransformProps extends TransformProps {
+  /**
+   * Gets or sets the x-coordinate of the center point of this ScaleTransform. The x-coordinate of the center point of this ScaleTransform. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform
+   */
   centerX?: number;
+  /**
+   * Gets or sets the y-coordinate of the center point of this ScaleTransform. The y-coordinate of the center point of this ScaleTransform. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform
+   */
   centerY?: number;
+  /**
+   * Gets or sets the x-axis scale factor. The scale factor along the x-axis. The default is 1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform
+   */
   scaleX?: number;
+  /**
+   * Gets or sets the y-axis scale factor. The scale factor along the y-axis. The default is 1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform
+   */
   scaleY?: number;
 }
 

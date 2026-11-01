@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SplitButtonComponentProps };
 
+/**
+ * Represents a button with two parts that can be invoked separately. One part behaves like a standard button and the other part invokes a flyout.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton
+ */
 declare const SplitButton: Component<SplitButtonComponentProps, Record<string, never>, "">;
 export default SplitButton;

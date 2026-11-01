@@ -5,9 +5,29 @@ import type { AttachedInput, ElementProps, ObjectInput } from "../../convert.ts"
 import { Linker } from "../../runtime.svelte.ts";
 import type { CollectionViewSource } from "../bindings.ts";
 
+/**
+ * Provides a data source that adds grouping and current-item support to collection classes.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource
+ */
 export interface CollectionViewSourceProps {
+  /**
+   * Gets or sets a value that indicates whether source data is grouped.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource
+   */
   isSourceGrouped?: boolean;
+  /**
+   * Gets or sets the property path to follow from the top level item to find groups within the CollectionViewSource. The property path to follow from the top level item to find groups. The default is a PropertyPath created from an empty string. This path implies that the object itself is the collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource
+   */
   itemsPath?: CollectionViewSource["itemsPath"];
+  /**
+   * Gets or sets the collection object from which to create this view.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource
+   */
   source?: ObjectInput;
   attached?: AttachedInput;
 }

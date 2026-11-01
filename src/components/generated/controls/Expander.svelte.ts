@@ -9,13 +9,53 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * ::: moniker range="winui-3.0-preview" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Represents a control that displays a header and has a collapsible body that displays content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander
+ */
 export interface ExpanderProps extends ContentControlProps {
+  /**
+   * ::: moniker range="winui-3.0-preview" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Gets or sets a value that indicates whether the content area of the Expander is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander
+   */
   isExpanded?: boolean | undefined;
+  /**
+   * ::: moniker range="winui-3.0-preview" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Gets or sets a value that indicates the direction in which the content area expands.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander
+   */
   expandDirection?: EnumInput<typeof ExpandDirection>;
+  /**
+   * ::: moniker range="winui-3.0-preview" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Gets or sets the XAML content that is displayed in the header of the Expander.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander
+   */
   header?: ObjectInput | Snippet;
+  /**
+   * ::: moniker range="winui-3.0-preview" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Gets or sets the data template for the Expander.Header.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander
+   */
   headerTemplate?: DataTemplateInput;
+  /**
+   * ::: moniker range="winui-3.0-preview" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Gets or sets a reference to a custom DataTemplateSelector logic class that returns a template to apply to the Header.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander
+   */
   headerTemplateSelector?: Expander["headerTemplateSelector"];
+  /**
+   * ::: moniker range="winui-3.0-preview" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Occurs when the content area of the Expander is hidden.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander
+   */
   oncollapsed?: Parameters<Expander["onCollapsed"]>[0];
+  /**
+   * ::: moniker range="winui-3.0-preview" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Occurs when the content area of the Expander starts to be shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander
+   */
   onexpanding?: Parameters<Expander["onExpanding"]>[0];
 }
 

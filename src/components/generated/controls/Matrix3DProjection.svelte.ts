@@ -7,8 +7,18 @@ import { linkProjection } from "./Projection.svelte.ts";
 import type { ProjectionBound, ProjectionProps } from "./Projection.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Applies a Matrix3D projection to an object.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrix3dprojection
+ */
 export interface Matrix3DProjectionProps extends ProjectionProps {
   children?: Snippet;
+  /**
+   * Gets or sets the Matrix3D that is used for the projection that is applied to the object.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrix3dprojection
+   */
   projectionMatrix?: Matrix3DProjection["projectionMatrix"];
 }
 

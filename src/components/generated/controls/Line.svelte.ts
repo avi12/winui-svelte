@@ -6,10 +6,35 @@ import type { Line } from "../bindings.ts";
 import { linkShape } from "./Shape.svelte.ts";
 import type { ShapeBound, ShapeProps } from "./Shape.svelte.ts";
 
+/**
+ * Draws a straight line between two points.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line
+ */
 export interface LineProps extends ShapeProps {
+  /**
+   * Gets or sets the x-coordinate of the Line start point. The x-coordinate for the start point of the line, in pixels. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line
+   */
   x1?: number;
+  /**
+   * Gets or sets the x-coordinate of the Line end point. The x-coordinate for the end point of the line, in pixels. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line
+   */
   x2?: number;
+  /**
+   * Gets or sets the y-coordinate of the Line start point. The y-coordinate for the start point of the line, in pixels. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line
+   */
   y1?: number;
+  /**
+   * Gets or sets the y-coordinate of the Line end point. The y-coordinate for the end point of the line, in pixels. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line
+   */
   y2?: number;
 }
 

@@ -8,8 +8,18 @@ import { linkPathSegment } from "./PathSegment.svelte.ts";
 import type { PathSegmentBound, PathSegmentProps } from "./PathSegment.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a set of quadratic Bezier segments.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polyquadraticbeziersegment
+ */
 export interface PolyQuadraticBezierSegmentProps extends PathSegmentProps {
   children?: Snippet;
+  /**
+   * Gets or sets the Point collection that defines this PolyQuadraticBezierSegment object. A collection of points that defines the shape of this PolyQuadraticBezierSegment object. The default value is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polyquadraticbeziersegment
+   */
   points?: PointCollectionInput;
 }
 

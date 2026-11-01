@@ -7,11 +7,41 @@ import type { CarouselPanel } from "../bindings.ts";
 import { linkVirtualizingPanel } from "./VirtualizingPanel.svelte.ts";
 import type { VirtualizingPanelBound, VirtualizingPanelProps } from "./VirtualizingPanel.svelte.ts";
 
+/**
+ * Represents a panel that arranges its items in a line and circles around to the first item when the last item is reached.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+ */
 export interface CarouselPanelProps extends VirtualizingPanelProps {
+  /**
+   * Not intended for general use. Gets or sets a value that indicates whether scrolling on the horizontal axis is possible.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+   */
   canHorizontallyScroll?: boolean;
+  /**
+   * Not intended for general use. Gets or sets a value that indicates whether scrolling on the vertical axis is possible.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+   */
   canVerticallyScroll?: boolean;
+  /**
+   * Gets or sets a reference to a ScrollViewer that is the scroll host or scroll owner for scrolling behavior of the CarouselPanel.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+   */
   scrollOwner?: ObjectReferenceInput;
+  /**
+   * Occurs when the measurements for horizontal snap points change.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+   */
   onhorizontalsnappointschanged?: Parameters<CarouselPanel["onHorizontalSnapPointsChanged"]>[0];
+  /**
+   * Occurs when the measurements for vertical snap points change.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+   */
   onverticalsnappointschanged?: Parameters<CarouselPanel["onVerticalSnapPointsChanged"]>[0];
 }
 

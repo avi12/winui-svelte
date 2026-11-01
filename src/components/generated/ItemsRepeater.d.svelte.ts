@@ -6,5 +6,10 @@ import type { RepeaterComponent, RepeaterComponentProps } from "../hand-written/
 /** The props of `ItemsRepeater`, generic over the items it shows. */
 export type ItemsRepeaterComponentProps<Item = object> = RepeaterComponentProps<Item, ItemsRepeaterControlProps>;
 
+/**
+ * Represents a data-driven collection control that incorporates a flexible layout system, custom views, and virtualization, with no default UI or interaction policies.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+ */
 declare const ItemsRepeater: RepeaterComponent<ItemsRepeaterControlProps>;
 export default ItemsRepeater;

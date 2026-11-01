@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { UserControlComponentProps };
 
+/**
+ * Provides the base class for defining a new control that encapsulates related existing controls and provides its own logic.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.usercontrol
+ */
 declare const UserControl: Component<UserControlComponentProps, Record<string, never>, "">;
 export default UserControl;

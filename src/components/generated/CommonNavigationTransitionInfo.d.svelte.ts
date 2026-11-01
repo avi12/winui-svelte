@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CommonNavigationTransitionInfoComponentProps };
 
+/**
+ * Provides common parameters for navigation transition animations.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.commonnavigationtransitioninfo
+ */
 declare const CommonNavigationTransitionInfo: Component<CommonNavigationTransitionInfoComponentProps, Record<string, never>, "">;
 export default CommonNavigationTransitionInfo;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PolylineComponentProps };
 
+/**
+ * Draws a series of connected straight lines.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline
+ */
 declare const Polyline: Component<PolylineComponentProps, Record<string, never>, "">;
 export default Polyline;

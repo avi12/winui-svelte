@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TimePickerComponentProps };
 
+/**
+ * Represents a control that allows a user to pick a time value.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepicker
+ */
 declare const TimePicker: Component<TimePickerComponentProps, Record<string, never>, "selectedTime" | "time">;
 export default TimePicker;

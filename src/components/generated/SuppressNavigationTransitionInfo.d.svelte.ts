@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SuppressNavigationTransitionInfoComponentProps };
 
+/**
+ * Specifies that animations are suppressed during navigation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.suppressnavigationtransitioninfo
+ */
 declare const SuppressNavigationTransitionInfo: Component<SuppressNavigationTransitionInfoComponentProps, Record<string, never>, "">;
 export default SuppressNavigationTransitionInfo;

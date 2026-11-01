@@ -7,5 +7,10 @@ import type { Component } from "svelte";
 /** The props of `CommandBarFlyout`: the control's, `open` and `target`. */
 export type CommandBarFlyoutComponentProps = FlyoutOverlayComponentProps<CommandBarFlyoutControlProps>;
 
+/**
+ * Represents a specialized flyout that provides layout for AppBarButton controls.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbarflyout
+ */
 declare const CommandBarFlyout: Component<CommandBarFlyoutComponentProps, Record<string, never>, "open">;
 export default CommandBarFlyout;

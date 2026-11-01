@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CompositeTransform3DComponentProps };
 
+/**
+ * Represents 3-D scale, rotation, and translate transforms to be applied to an element.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+ */
 declare const CompositeTransform3D: Component<CompositeTransform3DComponentProps, Record<string, never>, "">;
 export default CompositeTransform3D;

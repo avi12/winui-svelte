@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ToolTipComponentProps };
 
+/**
+ * Represents a pop-up window for displaying information about an element in the UI.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip
+ */
 declare const ToolTip: Component<ToolTipComponentProps, Record<string, never>, "isOpen">;
 export default ToolTip;

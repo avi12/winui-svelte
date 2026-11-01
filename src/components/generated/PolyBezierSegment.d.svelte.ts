@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PolyBezierSegmentComponentProps };
 
+/**
+ * Represents one or more cubic Bezier curves.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polybeziersegment
+ */
 declare const PolyBezierSegment: Component<PolyBezierSegmentComponentProps, Record<string, never>, "">;
 export default PolyBezierSegment;

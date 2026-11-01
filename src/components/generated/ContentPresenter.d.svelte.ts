@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ContentPresenterComponentProps };
 
+/**
+ * Displays the content of a ContentControl. Can also provide content presentation for non-controls. Provides a base class for specialized presenters such as ScrollContentPresenter.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter
+ */
 declare const ContentPresenter: Component<ContentPresenterComponentProps, Record<string, never>, "">;
 export default ContentPresenter;

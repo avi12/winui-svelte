@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MediaPlayerPresenterComponentProps };
 
+/**
+ * Represents an object that displays a MediaPlayer.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerpresenter
+ */
 declare const MediaPlayerPresenter: Component<MediaPlayerPresenterComponentProps, Record<string, never>, "">;
 export default MediaPlayerPresenter;

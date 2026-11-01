@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AppBarElementContainerComponentProps };
 
+/**
+ * Represents a container that allows an element that doesn't implement ICommandBarElement to be displayed in a command bar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarelementcontainer
+ */
 declare const AppBarElementContainer: Component<AppBarElementContainerComponentProps, Record<string, never>, "">;
 export default AppBarElementContainer;

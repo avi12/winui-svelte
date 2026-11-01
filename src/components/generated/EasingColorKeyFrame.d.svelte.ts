@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { EasingColorKeyFrameComponentProps };
 
+/**
+ * Associates easing functions with a ColorAnimationUsingKeyFrames key-frame animation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingcolorkeyframe
+ */
 declare const EasingColorKeyFrame: Component<EasingColorKeyFrameComponentProps, Record<string, never>, "">;
 export default EasingColorKeyFrame;

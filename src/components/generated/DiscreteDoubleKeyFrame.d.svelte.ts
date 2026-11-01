@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DiscreteDoubleKeyFrameComponentProps };
 
+/**
+ * Animates from the Double value of the previous key frame to its own Value using discrete values.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.discretedoublekeyframe
+ */
 declare const DiscreteDoubleKeyFrame: Component<DiscreteDoubleKeyFrameComponentProps, Record<string, never>, "">;
 export default DiscreteDoubleKeyFrame;

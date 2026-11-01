@@ -6,6 +6,11 @@ import type { BitmapCache } from "../bindings.ts";
 import { linkCacheMode } from "./CacheMode.svelte.ts";
 import type { CacheModeBound, CacheModeProps } from "./CacheMode.svelte.ts";
 
+/**
+ * Represents the behavior of caching a visual element or tree of elements as bitmap surfaces.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.bitmapcache
+ */
 export interface BitmapCacheProps extends CacheModeProps {
 }
 

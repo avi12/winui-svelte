@@ -20,65 +20,365 @@ import { linkContentPresenter } from "./ContentPresenter.svelte.ts";
 import type { ContentPresenterBound, ContentPresenterProps } from "./ContentPresenter.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents the visual elements of a ListViewItem. When developing for Windows 10, use ListViewItemPresenter instead of GridViewItemPresenter in your item container style, both for ListView and for GridView. If you edit a copy of the default item container styles then you will get the correct type.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+ */
 export interface ListViewItemPresenterProps extends ContentPresenterProps {
+  /**
+   * Gets or sets the brush used to render the border of the check box.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxBorderBrush?: BrushInput | Snippet;
+  /**
+   * In a ListView in multiple selection mode, gets or sets the brush used to render an item's check box border. In a GridView, the check box background is set rather than the border, and only for unselected items.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the radius for the corners of check box. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxCornerRadius?: CornerRadiusInput;
+  /**
+   * Gets or sets the brush used to render the border of the check box when it's disabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxDisabledBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the check box when it's disabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxDisabledBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the border of the check box when the pointer is over it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxPointerOverBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the check box when the pointer is over it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxPointerOverBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the border of the check box when it's pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxPressedBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the check box when it's pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxPressedBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the check box when it's selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxSelectedBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render a disabled check box when it's selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxSelectedDisabledBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render a selected check box when the pointer is over it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxSelectedPointerOverBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render a selected check box when it's pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBoxSelectedPressedBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the check mark on a selected item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the check mark on disabled check box.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkDisabledBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the check mark hint. This property is ignored for a Windows 10 app.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkHintBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the style of checkbox shown for selecting an item. A value of the enumeration that specifies the style of checkbox to show. The default is Inline.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkMode?: EnumInput<typeof ListViewItemPresenterCheckMode>;
+  /**
+   * Gets or sets the brush used to render the check mark when it's pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkPressedBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the check mark on an item while it's being selected using a swipe interaction. This property is ignored for a Windows 10 app.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   checkSelectingBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets an internal margin between presented content and its presenter. A Thickness value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   contentMargin?: ThicknessInput;
+  /**
+   * Gets or sets the opacity of an item that is disabled. The opacity of an item that is disabled. The value should be between 0 and 1. 0 is no opacity (transparent), 1 is full opacity (renders normally). The effective default value at run-time comes from themes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   disabledOpacity?: number;
+  /**
+   * Gets or sets the brush used to render the background of an item that's being dragged.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   dragBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the foreground of an item that's being dragged.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   dragForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the opacity of an item that's being dragged. The opacity of an item that's being dragged. The value should be between 0 and 1. 0 is no opacity (transparent), 1 is full opacity (renders normally). The effective default value at run-time comes from themes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   dragOpacity?: number;
+  /**
+   * Gets or sets the brush used to render the border of an item that has focus. Also see FocusSecondaryBorderBrush.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   focusBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the second color of the border around an item that has focus. Focus is rendered as a composition of two brushes. This property is used together the FocusBorderBrush to specify these two brushes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   focusSecondaryBorderBrush?: BrushInput | Snippet;
+  /**
+   * > [!NOTE] > ListViewItemPresenterHorizontalContentAlignment may be altered or unavailable for releases after Windows 10. Instead, use ContentPresenter.HorizontalContentAlignment. Gets or sets the horizontal alignment of the content being presented.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   listViewItemPresenterHorizontalContentAlignment?: EnumInput<typeof HorizontalAlignment>;
+  /**
+   * > [!NOTE] > ListViewItemPresenterPadding may be altered or unavailable for releases after Windows 10. Instead, use ContentPresenter.Padding. Gets or sets the padding around the presenter.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   listViewItemPresenterPadding?: ThicknessInput;
+  /**
+   * > [!NOTE] > ListViewItemPresenterVerticalContentAlignment may be altered or unavailable for releases after Windows 10. Instead, use ContentPresenter.VerticalContentAlignment. Gets or sets the vertical alignment of the content being presented.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   listViewItemPresenterVerticalContentAlignment?: EnumInput<typeof VerticalAlignment>;
+  /**
+   * Gets or sets the brush used to render the placeholder background for an item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   placeholderBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the background of an item that has the pointer over it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   pointerOverBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the margin of the background displayed for pointer-over input actions in the ListView item cell, versus the cell. This property is ignored for a Windows 10 app. A Thickness value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   pointerOverBackgroundMargin?: ThicknessInput;
+  /**
+   * Gets or sets the brush used to render the border of the list view item when the pointer is over it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   pointerOverBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the foreground when the pointer is over the item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   pointerOverForeground?: BrushInput | Snippet;
+  /**
+   * In a ListView, gets or sets the brush used to render the background of an unselected item while the user is pressing it. In a GridView, the item's border is set rather than the background.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   pressedBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the amount that the reorder hint is offset. This property is ignored for a Windows 10 app. The amount that the reorder hint is offset, in pixels. The effective default value at run-time comes from themes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   reorderHintOffset?: number;
+  /**
+   * Gets or sets the brush used to render the background of the reveal effect.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   revealBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the reveal backgound is shown on top of the content.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   revealBackgroundShowsAboveContent?: boolean;
+  /**
+   * Gets or sets the brush used to render the border of the reveal effect.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   revealBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the thickness of the border of the reveal effect.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   revealBorderThickness?: ThicknessInput;
+  /**
+   * Gets or sets the brush used to render the background of an item that's selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the border of the list view item when it's selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the thickness of the border around an item that's selected. This property is ignored for a Windows 10 app.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedBorderThickness?: ThicknessInput;
+  /**
+   * Gets or sets the brush used to render the background of a disabled list view item when it's selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedDisabledBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the border of a disabled list view item when it's selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedDisabledBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the foreground of an item that's selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the inner border of a list view item when it's selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedInnerBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the background of an item that's selected and has the pointer over it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedPointerOverBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the border of an item that's selected and has the pointer over it. This property is ignored for a Windows 10 app.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedPointerOverBorderBrush?: BrushInput | Snippet;
+  /**
+   * In a ListView, gets or sets the brush used to render the background of a selected item while the user is pressing it. In a GridView, the item's border is set rather than the background.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedPressedBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the border of a selected list view item when it's pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectedPressedBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the check mark is shown when the item is selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectionCheckMarkVisualEnabled?: boolean;
+  /**
+   * Gets or sets the brush used to render the selection indicator of a list view item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectionIndicatorBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the radius for the corners of the list view item selection indicator. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectionIndicatorCornerRadius?: CornerRadiusInput;
+  /**
+   * Gets or sets the brush used to render the selection indicator of a disabled list view item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectionIndicatorDisabledBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates how the selection indicator is shown on a list view item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectionIndicatorMode?: EnumInput<typeof ListViewItemPresenterSelectionIndicatorMode>;
+  /**
+   * Gets or sets the brush used to render the selection indicator of a list view item when the pointer is over it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectionIndicatorPointerOverBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the brush used to render the selection indicator of a list view item when it's pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectionIndicatorPressedBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the selection indicator of a list view item is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+   */
   selectionIndicatorVisualEnabled?: boolean;
 }
 

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { EdgeUIThemeTransitionComponentProps };
 
+/**
+ * Provides the animated transition behavior for an edge UI transition.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.edgeuithemetransition
+ */
 declare const EdgeUIThemeTransition: Component<EdgeUIThemeTransitionComponentProps, Record<string, never>, "">;
 export default EdgeUIThemeTransition;

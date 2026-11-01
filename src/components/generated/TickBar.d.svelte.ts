@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TickBarComponentProps };
 
+/**
+ * Represents a tick mark on a Slider control. Not intended for general use.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.tickbar
+ */
 declare const TickBar: Component<TickBarComponentProps, Record<string, never>, "">;
 export default TickBar;

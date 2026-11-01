@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { PathSegment } from "../bindings.ts";
 
+/**
+ * Represents a segment of a PathFigure object. Derived classes of PathFigure describe different types of segments.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathsegment
+ */
 export interface PathSegmentProps {
   attached?: AttachedInput;
 }

@@ -9,15 +9,65 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that displays data items. It can organize them using various layouts like vertical stacking or columns and rows.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+ */
 export interface ItemsViewProps extends ControlProps {
+  /**
+   * Gets or sets a value that indicates whether items in the view raise the ItemInvoked event in response to interaction.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+   */
   isItemInvokedEnabled?: boolean;
+  /**
+   * Gets or sets an object source used to generate the content of the ItemsView. The object that is used to generate the content of the inner ItemsRepeater. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+   */
   itemsSource?: CollectionInput;
+  /**
+   * Gets or sets the template used to display each item. The template that specifies the visualization of the data objects. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+   */
   itemTemplate?: ItemsView["itemTemplate"];
+  /**
+   * Gets or sets an element animator instance applied when items are added, removed, or moved in the ItemsView. An ItemCollectionTransitionProvider instance used to animate items as they are added, removed or, moved in the ItemsView's layout.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+   */
   itemTransitionProvider?: ItemsView["itemTransitionProvider"];
+  /**
+   * Gets or sets the layout used to size and position elements in the ItemsView. The layout used to size and position elements. The default is a StackLayout with vertical orientation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+   */
   layout?: ItemsView["layout"] | Snippet;
+  /**
+   * Gets or sets the selection behavior for an ItemsView instance. An enumeration value that indicates the selection behavior. The default is Single.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+   */
   selectionMode?: EnumInput<typeof ItemsViewSelectionMode>;
+  /**
+   * Gets or sets a custom scroll controller for the vertical scrolling direction. The ScrollPresenter.VerticalScrollController value of the inner ScrollView, after the ItemsView control template is loaded. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+   */
   verticalScrollController?: ItemsView["verticalScrollController"];
+  /**
+   * Occurs when an item in the ItemsView control receives a user interaction, while the IsItemInvokedEnabled property is set to true.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+   */
   oniteminvoked?: Parameters<ItemsView["onItemInvoked"]>[0];
+  /**
+   * Occurs when the selection of items changes.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview
+   */
   onselectionchanged?: Parameters<ItemsView["onSelectionChanged"]>[0];
 }
 

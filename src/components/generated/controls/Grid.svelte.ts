@@ -17,13 +17,53 @@ import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Defines a flexible grid area that consists of columns and rows. Child elements of the Grid are measured and arranged according to their row/column assignments (set by using Grid.Row and Grid.Column attached properties) and other logic.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid
+ */
 export interface GridProps extends PanelProps, GridExtras {
+  /**
+   * Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid
+   */
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
+  /**
+   * Gets or sets a brush that describes the border fill of the panel. The brush that is used to fill the panel's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid
+   */
   borderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the border thickness of the panel. The border thickness of the panel, as a Thickness value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid
+   */
   borderThickness?: ThicknessInput;
+  /**
+   * Gets or sets the uniform distance (in pixels) between grid columns.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid
+   */
   columnSpacing?: number;
+  /**
+   * Gets or sets the radius for the corners of the panel's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid
+   */
   cornerRadius?: CornerRadiusInput;
+  /**
+   * Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid
+   */
   padding?: ThicknessInput;
+  /**
+   * Gets or sets the uniform distance (in pixels) between grid rows.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid
+   */
   rowSpacing?: number;
 }
 

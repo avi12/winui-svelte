@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CommandBarFlyoutCommandBarComponentProps };
 
+/**
+ * Represents a specialized command bar used in a CommandBarFlyout.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.commandbarflyoutcommandbar
+ */
 declare const CommandBarFlyoutCommandBar: Component<CommandBarFlyoutCommandBarComponentProps, Record<string, never>, "isOpen">;
 export default CommandBarFlyoutCommandBar;

@@ -7,17 +7,77 @@ import type { SplitCloseThemeAnimation } from "../bindings.ts";
 import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 
+/**
+ * Represents the preconfigured animation that conceals a target UI using a split animation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+ */
 export interface SplitCloseThemeAnimationProps extends TimelineProps {
+  /**
+   * Gets or sets the initial size of the target element in the animation direction.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   closedLength?: number;
+  /**
+   * Gets or sets the UI element that specifies the initial clip size.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   closedTarget?: SplitCloseThemeAnimation["closedTarget"];
+  /**
+   * Gets or sets the identifying name of the UI element that specifies the initial clip size. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   closedTargetName?: string;
+  /**
+   * Gets or sets the UI element that will be translated. Typically this is a child/part of the element identified by OpenedTargetName or OpenedTarget.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   contentTarget?: SplitCloseThemeAnimation["contentTarget"];
+  /**
+   * Gets or sets the identifying name of the UI element that will be translated. Typically this is a child/part of the element identified by OpenedTargetName.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   contentTargetName?: string;
+  /**
+   * Gets or sets a value that determines which direction the content should translate when the animation runs. A value of the enumeration.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   contentTranslationDirection?: EnumInput<typeof AnimationDirection>;
+  /**
+   * Gets or sets the pixels to translate by when the animation runs. A distance in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   contentTranslationOffset?: number;
+  /**
+   * Gets or sets an offset from the center of the opened target. An offset in pixels. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   offsetFromCenter?: number;
+  /**
+   * Gets or sets the final size of the target UI element. The final size. If left unset, the value defaults to the size of the opened target.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   openedLength?: number;
+  /**
+   * Gets or sets the UI element that will be clipped.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   openedTarget?: SplitCloseThemeAnimation["openedTarget"];
+  /**
+   * Gets or sets the identifying name of the UI element that will be clipped. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   */
   openedTargetName?: string;
 }
 

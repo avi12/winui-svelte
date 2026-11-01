@@ -8,10 +8,30 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Defines a content decorator that can stretch and scale a single child to fill the available space.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox
+ */
 export interface ViewboxProps extends FrameworkElementProps {
   children?: Snippet;
+  /**
+   * Gets or sets the single child element of a Viewbox element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox
+   */
   child?: Viewbox["child"] | Snippet;
+  /**
+   * Gets or sets the Stretch mode, which determines how content fits into the available space. A Stretch mode, which determines how content fits in the available space. The default is Uniform.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox
+   */
   stretch?: EnumInput<typeof Stretch>;
+  /**
+   * Gets or sets the StretchDirection, which determines how scaling is applied to the contents of a Viewbox.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox
+   */
   stretchDirection?: EnumInput<typeof StretchDirection>;
 }
 

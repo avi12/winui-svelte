@@ -6,6 +6,11 @@ import type { TextCommandBarFlyout } from "../bindings.ts";
 import { linkCommandBarFlyout } from "./CommandBarFlyout.svelte.ts";
 import type { CommandBarFlyoutBound, CommandBarFlyoutProps } from "./CommandBarFlyout.svelte.ts";
 
+/**
+ * Represents a specialized CommandBarFlyout that contains commands for editing text.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textcommandbarflyout
+ */
 export interface TextCommandBarFlyoutProps extends CommandBarFlyoutProps {
 }
 

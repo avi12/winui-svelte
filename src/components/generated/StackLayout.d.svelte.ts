@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { StackLayoutComponentProps };
 
+/**
+ * Represents an _attached layout_ that arranges child elements into a single line that can be oriented horizontally or vertically.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stacklayout
+ */
 declare const StackLayout: Component<StackLayoutComponentProps, Record<string, never>, "">;
 export default StackLayout;

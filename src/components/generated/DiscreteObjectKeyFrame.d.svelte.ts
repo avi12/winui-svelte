@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DiscreteObjectKeyFrameComponentProps };
 
+/**
+ * Animates from the Object value of the previous key frame to its own Value using discrete values.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.discreteobjectkeyframe
+ */
 declare const DiscreteObjectKeyFrame: Component<DiscreteObjectKeyFrameComponentProps, Record<string, never>, "">;
 export default DiscreteObjectKeyFrame;

@@ -8,7 +8,17 @@ import { linkShape } from "./Shape.svelte.ts";
 import type { ShapeBound, ShapeProps } from "./Shape.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Draws a series of connected lines and curves. The line and curve dimensions are declared through the Data property, and can be specified either with Move and draw commands syntax, or with an object model.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.path
+ */
 export interface PathProps extends ShapeProps {
+  /**
+   * Gets or sets a Geometry that specifies the shape to be drawn. A description of the shape to be drawn.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.path
+   */
   data?: GeometryInput | Snippet;
 }
 

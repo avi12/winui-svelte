@@ -6,5 +6,10 @@ import type { RepeaterComponent, RepeaterComponentProps } from "../hand-written/
 /** The props of `BreadcrumbBar`, generic over the items it shows. */
 export type BreadcrumbBarComponentProps<Item = object> = RepeaterComponentProps<Item, BreadcrumbBarControlProps>;
 
+/**
+ * The BreadcrumbBar control provides the direct path of pages or folders to the current location.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar
+ */
 declare const BreadcrumbBar: RepeaterComponent<BreadcrumbBarControlProps>;
 export default BreadcrumbBar;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RotateTransformComponentProps };
 
+/**
+ * Rotates an object around a specified point in a two-dimensional x-y coordinate system.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rotatetransform
+ */
 declare const RotateTransform: Component<RotateTransformComponentProps, Record<string, never>, "">;
 export default RotateTransform;

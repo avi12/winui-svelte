@@ -10,12 +10,47 @@ import type {
   OrientedVirtualizingPanelProps
 } from "./OrientedVirtualizingPanel.svelte.ts";
 
+/**
+ * Positions child elements sequentially from left to right or top to bottom. When elements extend beyond the container edge, elements are positioned in the next row or column. Can only be used to display items in an ItemsControl. See Remarks.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid
+ */
 export interface WrapGridProps extends OrientedVirtualizingPanelProps {
+  /**
+   * Gets or sets the alignment rules by which child elements are arranged for the horizontal dimension. A value of the enumeration. The default is Left.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid
+   */
   horizontalChildrenAlignment?: EnumInput<typeof HorizontalAlignment>;
+  /**
+   * Gets or sets the height of the layout area for each item that is contained in a WrapGrid. The height of the layout area for each item that is contained in a WrapGrid. The default is NaN. See Remarks below.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid
+   */
   itemHeight?: number;
+  /**
+   * Gets or sets the width of the layout area for each item that is contained in a WrapGrid. The width of the layout area for each item that is contained in a WrapGrid. The default is the special value NaN. See Remarks below.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid
+   */
   itemWidth?: number;
+  /**
+   * Gets or sets a value that influences the wrap point, also accounting for Orientation. The maximum rows or columns that this WrapGrid should present before it introduces wrapping to the layout. The default is -1, which is a special value that indicates no maximum.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid
+   */
   maximumRowsOrColumns?: number;
+  /**
+   * Gets or sets the direction in which child elements are arranged. A value of the enumeration. The default is Vertical.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid
+   */
   orientation?: EnumInput<typeof Orientation>;
+  /**
+   * Gets or sets the alignment rules by which child elements are arranged for the vertical dimension. A value of the enumeration. The default is Top.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid
+   */
   verticalChildrenAlignment?: EnumInput<typeof VerticalAlignment>;
 }
 

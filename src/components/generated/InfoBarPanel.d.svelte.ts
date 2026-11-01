@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { InfoBarPanelComponentProps };
 
+/**
+ * Represents a panel that arranges its items horizontally if there is available space, otherwise vertically.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.infobarpanel
+ */
 declare const InfoBarPanel: Component<InfoBarPanelComponentProps, Record<string, never>, "">;
 export default InfoBarPanel;

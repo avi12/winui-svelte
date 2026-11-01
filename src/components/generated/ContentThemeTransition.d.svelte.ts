@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ContentThemeTransitionComponentProps };
 
+/**
+ * Provides the animated transition behavior for when the content of a control is changing. This might be applied in addition to AddDeleteThemeTransition.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.contentthemetransition
+ */
 declare const ContentThemeTransition: Component<ContentThemeTransitionComponentProps, Record<string, never>, "">;
 export default ContentThemeTransition;

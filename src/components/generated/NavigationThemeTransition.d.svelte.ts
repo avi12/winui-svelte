@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { NavigationThemeTransitionComponentProps };
 
+/**
+ * Provides page navigation animations.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.navigationthemetransition
+ */
 declare const NavigationThemeTransition: Component<NavigationThemeTransitionComponentProps, Record<string, never>, "">;
 export default NavigationThemeTransition;

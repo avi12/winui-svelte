@@ -7,8 +7,23 @@ import type { BitmapIconSource } from "../bindings.ts";
 import { linkIconSource } from "./IconSource.svelte.ts";
 import type { IconSourceBound, IconSourceProps } from "./IconSource.svelte.ts";
 
+/**
+ * Represents an icon source that uses a bitmap as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapiconsource
+ */
 export interface BitmapIconSourceProps extends IconSourceProps {
+  /**
+   * Gets or sets a value that indicates whether the bitmap is shown in a single color.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapiconsource
+   */
   showAsMonochrome?: boolean;
+  /**
+   * Gets or sets the Uniform Resource Identifier (URI) of the bitmap to use as the icon content.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapiconsource
+   */
   uriSource?: UriInput;
 }
 

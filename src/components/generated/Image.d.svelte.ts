@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ImageComponentProps };
 
+/**
+ * Represents a control that displays an image. The image source is specified by referring to an image file, using several supported formats. The image source can also be set with a stream. See Remarks for the list of supported image source formats.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.image
+ */
 declare const Image: Component<ImageComponentProps, Record<string, never>, "">;
 export default Image;

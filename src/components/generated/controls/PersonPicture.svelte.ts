@@ -8,16 +8,71 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that displays the avatar image for a person, if one is available; if not, it displays the person's initials or a generic glyph.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+ */
 export interface PersonPictureProps extends ControlProps {
+  /**
+   * Gets or sets a Segoe MDL2 Assets font glyph to display on the badge. The hexadecimal character code for the badge glyph.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   */
   badgeGlyph?: string;
+  /**
+   * Gets or sets the source of an image to display on the badge. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage with a stream, perhaps a stream from a storage file.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   */
   badgeImageSource?: ImageSourceInput | Snippet;
+  /**
+   * Gets or sets the contact number to display on the badge.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   */
   badgeNumber?: number;
+  /**
+   * Gets or sets the contact text to display on the badge.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   */
   badgeText?: string;
+  /**
+   * Gets or sets a Contact object that contains information about the person.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   */
   contact?: PersonPicture["contact"];
+  /**
+   * Gets or sets the contact's display name.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   */
   displayName?: string;
+  /**
+   * Gets or sets the contact's initials.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   */
   initials?: string;
+  /**
+   * Gets or sets a value that indicates whether the PersonPicture represents a group or an individual.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   */
   isGroup?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a small image is displayed rather than a large image when both are available.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   */
   preferSmallImage?: boolean;
+  /**
+   * Gets or sets the source of the contact's profile picture. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage with a stream, perhaps a stream from a storage file.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   */
   profilePicture?: ImageSourceInput | Snippet;
 }
 

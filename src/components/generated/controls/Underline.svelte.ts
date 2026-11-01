@@ -6,6 +6,11 @@ import type { Underline } from "../bindings.ts";
 import { linkSpan } from "./Span.svelte.ts";
 import type { SpanBound, SpanProps } from "./Span.svelte.ts";
 
+/**
+ * Provides an inline-level content element that causes content to render with an underlined text decoration.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.underline
+ */
 export interface UnderlineProps extends SpanProps {
 }
 

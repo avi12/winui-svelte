@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { LineComponentProps };
 
+/**
+ * Draws a straight line between two points.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line
+ */
 declare const Line: Component<LineComponentProps, Record<string, never>, "">;
 export default Line;

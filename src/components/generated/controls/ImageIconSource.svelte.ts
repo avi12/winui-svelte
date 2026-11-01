@@ -8,7 +8,17 @@ import { linkIconSource } from "./IconSource.svelte.ts";
 import type { IconSourceBound, IconSourceProps } from "./IconSource.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents an icon source that uses an image type as its content. The image types currently supported are .bmp, .gif, .jpg, .png, .wdp, and .tiff.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.imageiconsource
+ */
 export interface ImageIconSourceProps extends IconSourceProps {
+  /**
+   * Gets or sets the URI of the image file to use as the icon source.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.imageiconsource
+   */
   imageSource?: ImageSourceInput | Snippet;
 }
 

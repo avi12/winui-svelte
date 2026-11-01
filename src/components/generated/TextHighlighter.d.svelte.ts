@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TextHighlighterComponentProps };
 
+/**
+ * Represents an object that highlights one or more ranges of text.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter
+ */
 declare const TextHighlighter: Component<TextHighlighterComponentProps, Record<string, never>, "">;
 export default TextHighlighter;

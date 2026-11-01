@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AnimatedIconComponentProps };
 
+/**
+ * Represents an icon that displays and controls a visual that can animate in response to user interaction and visual state changes.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedicon
+ */
 declare const AnimatedIcon: Component<AnimatedIconComponentProps, Record<string, never>, "">;
 export default AnimatedIcon;

@@ -6,9 +6,29 @@ import type { SwipeHintThemeAnimation } from "../bindings.ts";
 import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 
+/**
+ * Represents the preconfigured animation that indicates that a Swipe gesture is now possible.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.swipehintthemeanimation
+ */
 export interface SwipeHintThemeAnimationProps extends TimelineProps {
+  /**
+   * Gets or sets the reference name of the control element being targeted. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.swipehintthemeanimation
+   */
   targetName?: string;
+  /**
+   * Gets or sets the distance by which the target is translated in the horizontal direction when the animation is active. The horizontal offset translation, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.swipehintthemeanimation
+   */
   toHorizontalOffset?: number;
+  /**
+   * Gets or sets the distance by which the target is translated in the vertical direction when the animation is active. The vertical offset, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.swipehintthemeanimation
+   */
   toVerticalOffset?: number;
 }
 

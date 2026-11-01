@@ -15,17 +15,77 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a container with two views that size and position content in the available space, either side-by-side or top-bottom.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+ */
 export interface TwoPaneViewProps extends ControlProps {
+  /**
+   * Gets a value that indicates how panes are shown. An enumeration value that indicates how panes are shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   mode?: EnumInput<typeof TwoPaneViewMode> | undefined;
+  /**
+   * Gets or sets the minimum height at which panes are shown in tall mode.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   minTallModeHeight?: number;
+  /**
+   * Gets or sets the minimum width at which panes are shown in wide mode.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   minWideModeWidth?: number;
+  /**
+   * Gets or sets the content of pane 1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   pane1?: TwoPaneView["pane1"] | Snippet;
+  /**
+   * Gets the calculated width (in wide mode) or height (in tall mode) of pane 1, or sets the GridLength value of pane 1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   pane1Length?: GridLengthInput;
+  /**
+   * Gets or sets the content of pane 2.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   pane2?: TwoPaneView["pane2"] | Snippet;
+  /**
+   * Gets the calculated width (in wide mode) or height (in tall mode) of pane 2, or sets the GridLength value of pane 2.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   pane2Length?: GridLengthInput;
+  /**
+   * Gets or sets a value that indicates which pane has priority. An enumeration value that indicates which pane has priority.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   panePriority?: EnumInput<typeof TwoPaneViewPriority>;
+  /**
+   * Gets or sets a value that indicates how panes are shown in tall mode.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   tallModeConfiguration?: EnumInput<typeof TwoPaneViewTallModeConfiguration>;
+  /**
+   * Gets or sets a value that indicates how panes are shown in wide mode.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   wideModeConfiguration?: EnumInput<typeof TwoPaneViewWideModeConfiguration>;
+  /**
+   * Occurs when the Mode of the TwoPaneView has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   */
   onmodechanged?: Parameters<TwoPaneView["onModeChanged"]>[0];
 }
 

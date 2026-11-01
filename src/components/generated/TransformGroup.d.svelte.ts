@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TransformGroupComponentProps };
 
+/**
+ * Represents a composite Transform composed of other Transform objects.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.transformgroup
+ */
 declare const TransformGroup: Component<TransformGroupComponentProps, Record<string, never>, "">;
 export default TransformGroup;

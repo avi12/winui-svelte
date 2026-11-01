@@ -6,7 +6,17 @@ import type { ExponentialEase } from "../bindings.ts";
 import { linkEasingFunctionBase } from "./EasingFunctionBase.svelte.ts";
 import type { EasingFunctionBaseBound, EasingFunctionBaseProps } from "./EasingFunctionBase.svelte.ts";
 
+/**
+ * Represents an easing function that creates an animation that accelerates and/or decelerates using an exponential formula.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.exponentialease
+ */
 export interface ExponentialEaseProps extends EasingFunctionBaseProps {
+  /**
+   * Gets or sets the exponent used to determine the interpolation of the animation. The exponent used to determine the interpolation of the animation. The default is 2.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.exponentialease
+   */
   exponent?: number;
 }
 

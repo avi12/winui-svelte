@@ -10,10 +10,35 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents the base class for all button controls, such as Button, RepeatButton, and HyperlinkButton.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.buttonbase
+ */
 export interface ButtonBaseProps extends ContentControlProps {
+  /**
+   * Gets or sets a value that indicates when the Click event occurs, in terms of device behavior.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.buttonbase
+   */
   clickMode?: EnumInput<typeof ClickMode>;
+  /**
+   * Gets or sets the command to invoke when this button is pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.buttonbase
+   */
   command?: ButtonBase["command"] | Snippet;
+  /**
+   * Gets or sets the parameter to pass to the Command property. The parameter to pass to the Command property. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.buttonbase
+   */
   commandParameter?: ObjectInput;
+  /**
+   * Occurs when a button control is clicked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.buttonbase
+   */
   onclick?: (sender: ButtonBase, args: EventArguments<RoutedEventArgs>) => void;
 }
 

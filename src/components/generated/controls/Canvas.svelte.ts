@@ -6,6 +6,11 @@ import type { Canvas } from "../bindings.ts";
 import { linkPanel } from "./Panel.svelte.ts";
 import type { PanelBound, PanelProps } from "./Panel.svelte.ts";
 
+/**
+ * Defines an area within which you can explicitly position child objects, using coordinates that are relative to the Canvas area.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.canvas
+ */
 export interface CanvasProps extends PanelProps {
 }
 

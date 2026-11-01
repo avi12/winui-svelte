@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ListViewItemPresenterComponentProps };
 
+/**
+ * Represents the visual elements of a ListViewItem. When developing for Windows 10, use ListViewItemPresenter instead of GridViewItemPresenter in your item container style, both for ListView and for GridView. If you edit a copy of the default item container styles then you will get the correct type.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter
+ */
 declare const ListViewItemPresenter: Component<ListViewItemPresenterComponentProps, Record<string, never>, "">;
 export default ListViewItemPresenter;

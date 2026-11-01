@@ -7,6 +7,11 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a specialized container that presents a set of menus in a horizontal row, typically at the top of an app window.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubar
+ */
 export interface MenuBarProps extends ControlProps {
   items?: Snippet;
 }

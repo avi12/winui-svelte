@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PathComponentProps };
 
+/**
+ * Draws a series of connected lines and curves. The line and curve dimensions are declared through the Data property, and can be specified either with Move and draw commands syntax, or with an object model.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.path
+ */
 declare const Path: Component<PathComponentProps, Record<string, never>, "">;
 export default Path;

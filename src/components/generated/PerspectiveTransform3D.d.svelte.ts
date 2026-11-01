@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PerspectiveTransform3DComponentProps };
 
+/**
+ * Represents a 3-D perspective effect.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.perspectivetransform3d
+ */
 declare const PerspectiveTransform3D: Component<PerspectiveTransform3DComponentProps, Record<string, never>, "">;
 export default PerspectiveTransform3D;

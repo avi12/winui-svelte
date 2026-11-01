@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AutoSuggestBoxComponentProps };
 
+/**
+ * Represents a text control that makes suggestions to users as they enter text using a keyboard or pen (using ink and handwriting recognition). The app is notified when text has been changed by the user and is responsible for providing relevant suggestions for this control to display.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+ */
 declare const AutoSuggestBox: Component<AutoSuggestBoxComponentProps, Record<string, never>, "text">;
 export default AutoSuggestBox;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { XamlUICommandComponentProps };
 
+/**
+ * Provides a base class for defining the command behavior of an interactive UI element that performs an action when invoked (such as sending an email, deleting an item, or submitting a form).
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand
+ */
 declare const XamlUICommand: Component<XamlUICommandComponentProps, Record<string, never>, "">;
 export default XamlUICommand;

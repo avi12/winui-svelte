@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PointerUpThemeAnimationComponentProps };
 
+/**
+ * Represents a preconfigured animation that runs after a pointer down is detected on an item or element and the tap action is released.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointerupthemeanimation
+ */
 declare const PointerUpThemeAnimation: Component<PointerUpThemeAnimationComponentProps, Record<string, never>, "">;
 export default PointerUpThemeAnimation;

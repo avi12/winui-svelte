@@ -6,6 +6,11 @@ import type { GridViewHeaderItem } from "../bindings.ts";
 import { linkListViewBaseHeaderItem } from "./ListViewBaseHeaderItem.svelte.ts";
 import type { ListViewBaseHeaderItemBound, ListViewBaseHeaderItemProps } from "./ListViewBaseHeaderItem.svelte.ts";
 
+/**
+ * Represents items in the header for grouped data inside a GridView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.gridviewheaderitem
+ */
 export interface GridViewHeaderItemProps extends ListViewBaseHeaderItemProps {
 }
 

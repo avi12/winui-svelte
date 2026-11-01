@@ -9,6 +9,11 @@ import type {
   NavigationTransitionInfoProps
 } from "./NavigationTransitionInfo.svelte.ts";
 
+/**
+ * Specifies that animations are suppressed during navigation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.suppressnavigationtransitioninfo
+ */
 export interface SuppressNavigationTransitionInfoProps extends NavigationTransitionInfoProps {
 }
 

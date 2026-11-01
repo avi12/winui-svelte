@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { StateTriggerBase } from "../bindings.ts";
 
+/**
+ * Represents the base class for state triggers.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.statetriggerbase
+ */
 export interface StateTriggerBaseProps {
   attached?: AttachedInput;
 }

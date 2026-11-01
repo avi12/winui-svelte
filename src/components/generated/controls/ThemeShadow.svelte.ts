@@ -7,6 +7,11 @@ import { linkShadow } from "./Shadow.svelte.ts";
 import type { ShadowBound, ShadowProps } from "./Shadow.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * A ThemeShadow is a preconfigured shadow effect that can be applied to any XAML element to draw shadows appropriately based on x, y, z coordinates. ThemeShadow also automatically adjusts for other environmental specifications: - Adapts to changes in lighting, user theme, app environment, and shell. - Shadows elements automatically based on their elevation. - Keeps elements in sync as they move and change elevation. - Keeps shadows consistent throughout and across applications.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.themeshadow
+ */
 export interface ThemeShadowProps extends ShadowProps {
   receivers?: Snippet;
 }

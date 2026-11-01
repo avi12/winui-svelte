@@ -7,11 +7,41 @@ import type { ScrollContentPresenter } from "../bindings.ts";
 import { linkContentPresenter } from "./ContentPresenter.svelte.ts";
 import type { ContentPresenterBound, ContentPresenterProps } from "./ContentPresenter.svelte.ts";
 
+/**
+ * Displays the content of a ScrollViewer control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter
+ */
 export interface ScrollContentPresenterProps extends ContentPresenterProps {
+  /**
+   * Gets or sets a value that indicates whether scrolled content can render outside the bounds of the ScrollViewer.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter
+   */
   canContentRenderOutsideBounds?: boolean;
+  /**
+   * Gets or sets a value that indicates whether scrolling on the horizontal axis is possible.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter
+   */
   canHorizontallyScroll?: boolean;
+  /**
+   * Gets or sets a value that indicates whether scrolling on the vertical axis is possible.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter
+   */
   canVerticallyScroll?: boolean;
+  /**
+   * Gets or sets the ScrollViewer element that controls scrolling behavior.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter
+   */
   scrollOwner?: ObjectReferenceInput;
+  /**
+   * Gets or sets a value that indicates whether, when used in the ControlTemplate for a ScrollViewer, the presenter restricts the size of its Content to the owning ScrollViewer size.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter
+   */
   sizesContentToTemplatedParent?: boolean;
 }
 

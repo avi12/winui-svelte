@@ -6,8 +6,23 @@ import type { TranslateTransform } from "../bindings.ts";
 import { linkTransform } from "./Transform.svelte.ts";
 import type { TransformBound, TransformProps } from "./Transform.svelte.ts";
 
+/**
+ * Translates (moves) an object in the two-dimensional x-y coordinate system.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.translatetransform
+ */
 export interface TranslateTransformProps extends TransformProps {
+  /**
+   * Gets or sets the distance to translate along the x-axis. The distance to translate (move) an object along the x-axis, in pixels. This property is read/write. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.translatetransform
+   */
   x?: number;
+  /**
+   * Gets or sets the distance to translate (move) an object along the y-axis. The distance to translate (move) an object along the y-axis, in pixels. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.translatetransform
+   */
   y?: number;
 }
 

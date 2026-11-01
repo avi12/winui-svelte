@@ -7,7 +7,17 @@ import type { SymbolIcon } from "../bindings.ts";
 import { linkIconElement } from "./IconElement.svelte.ts";
 import type { IconElementBound, IconElementProps } from "./IconElement.svelte.ts";
 
+/**
+ * Represents an icon that uses a glyph from the SymbolThemeFontFamily resource as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symbolicon
+ */
 export interface SymbolIconProps extends IconElementProps {
+  /**
+   * Gets or sets the Segoe MDL2 Assets glyph used as the icon content. A named constant of the numeration that specifies the Segoe MDL2 Assets glyph to use.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symbolicon
+   */
   symbol?: EnumInput<typeof Symbol>;
 }
 

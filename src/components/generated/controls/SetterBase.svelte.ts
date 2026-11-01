@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { SetterBase } from "../bindings.ts";
 
+/**
+ * Represents the base class for value setters.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.setterbase
+ */
 export interface SetterBaseProps {
   attached?: AttachedInput;
 }

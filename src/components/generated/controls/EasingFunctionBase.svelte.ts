@@ -6,7 +6,17 @@ import { Linker } from "../../runtime.svelte.ts";
 import { EasingMode } from "../bindings.ts";
 import type { EasingFunctionBase } from "../bindings.ts";
 
+/**
+ * Provides the base class for all the easing functions.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingfunctionbase
+ */
 export interface EasingFunctionBaseProps {
+  /**
+   * Gets or sets a value that specifies how the animation interpolates. One of the enumeration values that specifies how the animation interpolates. The default is EaseOut.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingfunctionbase
+   */
   easingMode?: EnumInput<typeof EasingMode>;
   attached?: AttachedInput;
 }

@@ -18,38 +18,203 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a container that provides scroll, pan, and zoom support for its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+ */
 export interface ScrollViewProps extends ControlProps {
+  /**
+   * Gets the vertical size of all the scrollable content in the ScrollView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   extentHeight?: number | undefined;
+  /**
+   * Gets the horizontal size of all the scrollable content in the ScrollView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   extentWidth?: number | undefined;
+  /**
+   * Gets the distance the content has been scrolled horizontally. The distance the content has been scrolled horizontally. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   horizontalOffset?: number | undefined;
+  /**
+   * Gets the current interaction state of the control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   state?: EnumInput<typeof ScrollingInteractionState> | undefined;
+  /**
+   * Gets the distance the content has been scrolled vertically. The distance the content has been scrolled vertically. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   verticalOffset?: number | undefined;
+  /**
+   * Gets a value that indicates the amount of scaling currently applied to content. The amount of scaling currently applied to content. The default is 1.0, where 1.0 indicates no additional scaling.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   zoomFactor?: number | undefined;
+  /**
+   * Gets or sets the content that can be scrolled, panned, or zoomed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   content?: ScrollView["content"] | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the content prefers to scroll horizontally or vertically. The preferred scroll direction of the content. The default is Vertical.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   contentOrientation?: EnumInput<typeof ScrollingContentOrientation>;
+  /**
+   * Gets or sets the ratio within the viewport where the anchor element is selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   horizontalAnchorRatio?: number;
+  /**
+   * Gets or sets a value that indicates whether a scroll controller should be displayed for the horizontal scrolling direction.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   horizontalScrollBarVisibility?: EnumInput<typeof ScrollingScrollBarVisibility>;
+  /**
+   * Gets or sets a value that indicates whether or not to chain horizontal scrolling to an outer scroll control. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   horizontalScrollChainMode?: EnumInput<typeof ScrollingChainMode>;
+  /**
+   * Gets or sets a value that determines how manipulation input influences scrolling behavior on the horizontal axis. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   horizontalScrollMode?: EnumInput<typeof ScrollingScrollMode>;
+  /**
+   * Gets or sets a value that indicates whether the scroll rail is enabled for the horizontal axis.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   horizontalScrollRailMode?: EnumInput<typeof ScrollingRailMode>;
+  /**
+   * Gets or sets the kinds of user input the control does not respond to. A combination of enumeration member values that indicates the kinds of user input the control does not respond to. The default is None.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   ignoredInputKinds?: FlagsInput<typeof ScrollingInputKinds>;
+  /**
+   * Gets or sets the maximum value for the read-only ZoomFactor property. The maximum value for the read-only ZoomFactor property. The default is 10.0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   maxZoomFactor?: number;
+  /**
+   * Gets or sets the minimum value for the read-only ZoomFactor property. The minimum value for the read-only ZoomFactor property. The default is 0.1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   minZoomFactor?: number;
+  /**
+   * Determines the vertical position of the ScrollView's anchor point with respect to the viewport. By default, the ScrollView selects an element as its CurrentAnchor by identifying the element in its viewport nearest to the anchor point.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   verticalAnchorRatio?: number;
+  /**
+   * Gets or sets a value that indicates whether a scroll controller should be displayed for the vertical scrolling direction.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   verticalScrollBarVisibility?: EnumInput<typeof ScrollingScrollBarVisibility>;
+  /**
+   * Gets or sets a value that indicates whether or not to chain vertical scrolling to an outer scroll control. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   verticalScrollChainMode?: EnumInput<typeof ScrollingChainMode>;
+  /**
+   * Gets or sets a value that determines how manipulation input influences scrolling behavior on the horizontal axis. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   verticalScrollMode?: EnumInput<typeof ScrollingScrollMode>;
+  /**
+   * Gets or sets a value that indicates whether the scroll rail is enabled for the vertical axis.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   verticalScrollRailMode?: EnumInput<typeof ScrollingRailMode>;
+  /**
+   * Gets or sets a value that indicates whether or not to chain zooming to an outer scroll control. A value of the enumeration. The default is Auto.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   zoomChainMode?: EnumInput<typeof ScrollingChainMode>;
+  /**
+   * Gets or sets a value that indicates the ability to zoom in and out by means of user input.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   zoomMode?: EnumInput<typeof ScrollingZoomMode>;
+  /**
+   * Occurs when the ScrollView is about to select an anchor element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   onanchorrequested?: Parameters<ScrollView["onAnchorRequested"]>[0];
+  /**
+   * Occurs at the beginning of a bring-into-view request participation. Allows customization of that participation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   onbringingintoview?: Parameters<ScrollView["onBringingIntoView"]>[0];
+  /**
+   * Occurs when either the ExtentWidth or ExtentHeight properties has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   onextentchanged?: Parameters<ScrollView["onExtentChanged"]>[0];
+  /**
+   * Occurs when a call to ScrollTo or ScrollBy triggers an animation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   onscrollanimationstarting?: Parameters<ScrollView["onScrollAnimationStarting"]>[0];
+  /**
+   * Occurs when a ScrollTo, ScrollBy, or AddScrollVelocity asynchronous operation ends. Provides the original correlation ID.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   onscrollcompleted?: Parameters<ScrollView["onScrollCompleted"]>[0];
+  /**
+   * Occurs when the current interaction state of the control has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   onstatechanged?: Parameters<ScrollView["onStateChanged"]>[0];
+  /**
+   * Occurs when manipulations such as scrolling and zooming have caused the view to change.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   onviewchanged?: Parameters<ScrollView["onViewChanged"]>[0];
+  /**
+   * Occurs when a call to ZoomTo or ZoomBy triggers an animation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   onzoomanimationstarting?: Parameters<ScrollView["onZoomAnimationStarting"]>[0];
+  /**
+   * Occurs when a ZoomTo, ZoomBy, or AddZoomVelocity asynchronous operation ends. Provides the original correlation ID.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview
+   */
   onzoomcompleted?: Parameters<ScrollView["onZoomCompleted"]>[0];
 }
 

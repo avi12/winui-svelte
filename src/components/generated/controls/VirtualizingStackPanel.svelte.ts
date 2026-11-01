@@ -13,9 +13,29 @@ import type {
   OrientedVirtualizingPanelProps
 } from "./OrientedVirtualizingPanel.svelte.ts";
 
+/**
+ * Arranges and virtualizes content on a single line that is oriented either horizontally or vertically. Can only be used to display items in an ItemsControl.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel
+ */
 export interface VirtualizingStackPanelProps extends OrientedVirtualizingPanelProps {
+  /**
+   * Gets or sets a value that indicates whether the generated snap points used for panning in the VirtualizingStackPanel are equidistant from each other.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel
+   */
   areScrollSnapPointsRegular?: boolean;
+  /**
+   * Gets or sets a value that describes the horizontal or vertical orientation of stacked content. The Orientation of child content, as a value of the enumeration. The default is Vertical.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel
+   */
   orientation?: EnumInput<typeof Orientation>;
+  /**
+   * Occurs when an item that is hosted by the VirtualizingStackPanel is re-virtualized.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel
+   */
   oncleanupvirtualizeditemevent?: (sender: VirtualizingStackPanel, args: EventArguments<CleanUpVirtualizedItemEventArgs>) => void;
 }
 

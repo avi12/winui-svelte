@@ -7,7 +7,17 @@ import type { PaneThemeTransition } from "../bindings.ts";
 import { linkTransition } from "./Transition.svelte.ts";
 import type { TransitionBound, TransitionProps } from "./Transition.svelte.ts";
 
+/**
+ * Provides the animated transition behavior for a panel UI transition.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.panethemetransition
+ */
 export interface PaneThemeTransitionProps extends TransitionProps {
+  /**
+   * Gets or sets the edge position to use for the transition. A value of the enumeration. The default is Left.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.panethemetransition
+   */
   edge?: EnumInput<typeof EdgeTransitionLocation>;
 }
 

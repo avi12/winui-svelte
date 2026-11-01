@@ -6,7 +6,17 @@ import type { FlyoutPresenter } from "../bindings.ts";
 import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 
+/**
+ * Displays the content of a Flyout.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyoutpresenter
+ */
 export interface FlyoutPresenterProps extends ContentControlProps {
+  /**
+   * Gets or sets a value that indicates whether the default shadow effect is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyoutpresenter
+   */
   isDefaultShadowEnabled?: boolean;
 }
 

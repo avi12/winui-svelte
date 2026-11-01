@@ -9,9 +9,29 @@ import type { DragStartedEventArgs } from "#winui/microsoft/ui/xaml/controls/pri
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * Represents a control that can be dragged by the user.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb
+ */
 export interface ThumbProps extends ControlProps {
+  /**
+   * Fires when the Thumb control loses mouse capture.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb
+   */
   ondragcompleted?: (sender: Thumb, args: EventArguments<DragCompletedEventArgs>) => void;
+  /**
+   * Fires one or more times as the mouse pointer is moved when a Thumb control has logical focus and mouse capture.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb
+   */
   ondragdelta?: (sender: Thumb, args: EventArguments<DragDeltaEventArgs>) => void;
+  /**
+   * Fires when a Thumb control receives logical focus and mouse capture.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb
+   */
   ondragstarted?: (sender: Thumb, args: EventArguments<DragStartedEventArgs>) => void;
 }
 

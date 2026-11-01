@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ImageBrushComponentProps };
 
+/**
+ * Paints an area with an image. The image source is typically obtained from file formats such as Joint Photographic Experts Group (JPEG).
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush
+ */
 declare const ImageBrush: Component<ImageBrushComponentProps, Record<string, never>, "">;
 export default ImageBrush;

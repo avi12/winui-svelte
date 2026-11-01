@@ -12,16 +12,56 @@ import { Linker } from "../../runtime.svelte.ts";
 import { FillBehavior } from "../bindings.ts";
 import type { Storyboard, Timeline } from "../bindings.ts";
 
+/**
+ * Defines a duration and other behavior properties for a Windows Runtime animation. Timeline is the base class for Storyboard and all the Windows Runtime animation types, including those from the animation library and those used for custom animations in visual states or page-level XAML.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline
+ */
 export interface TimelineProps {
   storyboardTargetProperty?: string | undefined;
   storyboardTargetName?: string | undefined;
   storyboardTarget?: Parameters<typeof Storyboard.setTarget>[1] | undefined;
+  /**
+   * Gets or sets a value that indicates whether the timeline plays in reverse after it completes a forward iteration.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline
+   */
   autoReverse?: boolean;
+  /**
+   * Gets or sets the time at which this Timeline should begin. The start time of the time line. The default value is zero. If you are programming using C# or Visual Basic, the parameter type of this parameter is projected as **System.TimeSpan?**(a nullable System.TimeSpan.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline
+   */
   beginTime?: NullableTimeSpanInput;
+  /**
+   * Gets or sets the length of time for which this timeline plays, not counting repetitions. The timeline's simple duration: the amount of time this timeline takes to complete a single forward iteration. The default value is a Duration that evaluates as Automatic.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline
+   */
   duration?: DurationInput;
+  /**
+   * Gets or sets a value that specifies how the animation behaves after it reaches the end of its active period. A value that specifies how the timeline behaves after it reaches the end of its active period but its parent is inside its active or fill period. The default value is HoldEnd.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline
+   */
   fillBehavior?: EnumInput<typeof FillBehavior>;
+  /**
+   * Gets or sets the repeating behavior of this timeline. An iteration Count that specifies the number of times the timeline should play, a TimeSpan value that specifies the total length of this timeline's active period, or the special value Forever, which specifies that the timeline should repeat indefinitely. The default value is a RepeatBehavior with a Count value of 1, which indicates that the timeline plays once.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline
+   */
   repeatBehavior?: RepeatBehaviorInput;
+  /**
+   * Gets or sets the rate, relative to its parent, at which time progresses for this Timeline. A finite value greater than 0 that specifies the rate at which time progresses for this timeline, relative to the speed of the timeline's parent. If this timeline is a root timeline, specifies the default timeline speed. The value is expressed as a factor where 1 represents normal speed, 2 is double speed, 0.5 is half speed, and so on. The default value is 1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline
+   */
   speedRatio?: number;
+  /**
+   * Occurs when the Storyboard object has completed playing.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline
+   */
   oncompleted?: Parameters<Timeline["onCompleted"]>[0];
   attached?: AttachedInput;
 }

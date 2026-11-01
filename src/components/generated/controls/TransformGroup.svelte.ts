@@ -7,6 +7,11 @@ import { linkTransform } from "./Transform.svelte.ts";
 import type { TransformBound, TransformProps } from "./Transform.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a composite Transform composed of other Transform objects.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.transformgroup
+ */
 export interface TransformGroupProps extends TransformProps {
   children?: Snippet;
 }

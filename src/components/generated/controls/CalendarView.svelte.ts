@@ -34,81 +34,461 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that enables a user to select a date by using a visual calendar display.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+ */
 export interface CalendarViewProps extends ControlProps {
+  /**
+   * Gets or sets a brush that provides the background of a date that can't be selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   blackoutBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of a date that can't be selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   blackoutForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that marks out a date that can't be selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   blackoutStrikethroughBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the calendar system to use.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   calendarIdentifier?: string;
+  /**
+   * Gets or sets a brush that provides the background of a calendar item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   calendarItemBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the border of a calendar item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   calendarItemBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the thickness of a calendar item's border.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   calendarItemBorderThickness?: ThicknessInput;
+  /**
+   * Gets or sets the radius for the corners of calendar item. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   calendarItemCornerRadius?: CornerRadiusInput;
+  /**
+   * Gets or sets a brush that provides the background of a calendar item that is disabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   calendarItemDisabledBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of a calendar item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   calendarItemForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the background of a calendar item that the cursor is over.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   calendarItemHoverBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the background of a calendar item that is pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   calendarItemPressedBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the Style associated with the control's internal CalendarViewDayItem object.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   calendarViewDayItemStyle?: StyleInput;
+  /**
+   * Gets or sets the font used to display day values in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   dayItemFontFamily?: FontFamilyInput;
+  /**
+   * Gets or sets the font size used to display day values in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   dayItemFontSize?: number;
+  /**
+   * Gets or sets the font style used to display day values in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   dayItemFontStyle?: EnumInput<typeof FontStyle>;
+  /**
+   * Gets or sets the font weight used to display day values in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   dayItemFontWeight?: FontWeightInput;
+  /**
+   * Gets or sets the amount of space around the outside of a day item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   dayItemMargin?: ThicknessInput;
+  /**
+   * Gets or sets the display format for the day of the week headers.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   dayOfWeekFormat?: string;
+  /**
+   * Gets or sets a brush that provides the foreground of a calendar item that is disabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   disabledForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the calendar shows a picker for month, year, or decade.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   displayMode?: EnumInput<typeof CalendarViewDisplayMode>;
+  /**
+   * Gets or sets a value that indicates which day is shown as the first day of the week.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstDayOfWeek?: EnumInput<typeof DayOfWeek>;
+  /**
+   * Gets or sets the font used to display the first-of-month banner in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstOfMonthLabelFontFamily?: FontFamilyInput;
+  /**
+   * Gets or sets the font size used to display the first-of-month banner in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstOfMonthLabelFontSize?: number;
+  /**
+   * Gets or sets the font style used to display the first-of-month banner in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstOfMonthLabelFontStyle?: EnumInput<typeof FontStyle>;
+  /**
+   * Gets or sets the font weight used to display the first-of-month banner in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstOfMonthLabelFontWeight?: FontWeightInput;
+  /**
+   * Gets or sets the amount of space around the first-of-month label.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstOfMonthLabelMargin?: ThicknessInput;
+  /**
+   * Gets or sets the font used to display the first-of-year banner in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstOfYearDecadeLabelFontFamily?: FontFamilyInput;
+  /**
+   * Gets or sets the font size used to display the first-of-year banner in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstOfYearDecadeLabelFontSize?: number;
+  /**
+   * Gets or sets the font style used to display the first-of-year banner in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstOfYearDecadeLabelFontStyle?: EnumInput<typeof FontStyle>;
+  /**
+   * Gets or sets the font weight used to display the first-of-year banner in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstOfYearDecadeLabelFontWeight?: FontWeightInput;
+  /**
+   * Gets or sets the amount of space around the first-of-year/decade label.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   firstOfYearDecadeLabelMargin?: ThicknessInput;
+  /**
+   * Gets or sets a brush that provides the border of a calendar item that has focus.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   focusBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the horizontal alignment of day items in the calendar. An enumeration value that indicates the horizontal alignment of day items in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   horizontalDayItemAlignment?: EnumInput<typeof HorizontalAlignment>;
+  /**
+   * Gets or sets the horizontal alignment of the first-of-month banner text. An enumeration value that indicates the horizontal alignment of the first-of-month banner text.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   horizontalFirstOfMonthLabelAlignment?: EnumInput<typeof HorizontalAlignment>;
+  /**
+   * Gets or sets a brush that provides the border of a calendar item while the pointer is over it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   hoverBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the month name is shown with the first day of the month when the DisplayMode is Month, or whether the year name is shown with the first month of the year when the DisplayMode is Year.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   isGroupLabelVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether out-of-scope calendar items are shown with a unique foreground color.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   isOutOfScopeEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the current date is highlighted.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   isTodayHighlighted?: boolean;
+  /**
+   * Gets or sets the last date to be displayed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   maxDate?: DateInput;
+  /**
+   * Gets or sets the first date to display.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   minDate?: DateInput;
+  /**
+   * Gets or sets the font used to display the month and year items in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   monthYearItemFontFamily?: FontFamilyInput;
+  /**
+   * Gets or sets the font size used to display the month and year items in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   monthYearItemFontSize?: number;
+  /**
+   * Gets or sets the font style used to display the month and year items in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   monthYearItemFontStyle?: EnumInput<typeof FontStyle>;
+  /**
+   * Gets or sets the font weight used to display the month and year items in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   monthYearItemFontWeight?: FontWeightInput;
+  /**
+   * Gets or sets the amount of space around the outside of a month or year item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   monthYearItemMargin?: ThicknessInput;
+  /**
+   * Gets or sets the number of weeks shown in the calendar view. The number of weeks shown in the calendar view. The default is 6.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   numberOfWeeksInView?: number;
+  /**
+   * Gets or sets a brush that provides the background of a date that's out of scope.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   outOfScopeBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of calendar items that are outside the current scope (month, year, or decade).
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   outOfScopeForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of an out-of-scope calendar item that the cursor is over.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   outOfScopeHoverForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of an out-of-scope calendar item that is pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   outOfScopePressedForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the border of a calendar item while it's pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   pressedBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of a calendar item while it's pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   pressedForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the border of the currently selected calendar item.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   selectedBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the border of a selected calendar item that is disabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   selectedDisabledBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of a disabled calendar item that is selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   selectedDisabledForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of a calendar item that's selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   selectedForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the border of a selected calendar item while the pointer is over it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   selectedHoverBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of a selected calendar item that the cursor is over.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   selectedHoverForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the border of a selected calendar item while it's pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   selectedPressedBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of a selected calendar item that is pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   selectedPressedForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a value that indicates what kind of selections are allowed. An enumeration value that indicates the current selection mode. The default is Single.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   selectionMode?: EnumInput<typeof CalendarViewSelectionMode>;
+  /**
+   * Gets or sets a brush that provides the background of the current date in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   todayBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the background of the current date when it can't be selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   todayBlackoutBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the foreground of the current date when it can't be selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   todayBlackoutForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the background of the current date when it is disabled.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   todayDisabledBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets the font weight used to display the current date in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   todayFontWeight?: FontWeightInput;
+  /**
+   * Gets or sets a brush that provides the foreground of the calendar item for the current date.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   todayForeground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the background of the current date when the cursor is over it.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   todayHoverBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the background of the current date when it is pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   todayPressedBackground?: BrushInput | Snippet;
+  /**
+   * Gets or sets a brush that provides the inner border of the current date when it is selected.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   todaySelectedInnerBorderBrush?: BrushInput | Snippet;
+  /**
+   * Gets or sets the vertical alignment of day items in the calendar. An enumeration value that indicates the vertical alignment of day items in the calendar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   verticalDayItemAlignment?: EnumInput<typeof VerticalAlignment>;
+  /**
+   * Gets or sets the vertical alignment of the first-of-month banner text. An enumeration value that indicates the vertical alignment of the first-of-month banner text.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   verticalFirstOfMonthLabelAlignment?: EnumInput<typeof VerticalAlignment>;
+  /**
+   * Occurs when a CalendarViewDayItem is loading.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   oncalendarviewdayitemchanging?: Parameters<CalendarView["onCalendarViewDayItemChanging"]>[0];
+  /**
+   * Occurs when the collection of selected dates is changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview
+   */
   onselecteddateschanged?: Parameters<CalendarView["onSelectedDatesChanged"]>[0];
 }
 

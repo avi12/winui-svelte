@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AppBarButtonComponentProps };
 
+/**
+ * Represents a templated button control to be displayed in an AppBar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton
+ */
 declare const AppBarButton: Component<AppBarButtonComponentProps, Record<string, never>, "">;
 export default AppBarButton;

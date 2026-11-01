@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PolyQuadraticBezierSegmentComponentProps };
 
+/**
+ * Represents a set of quadratic Bezier segments.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polyquadraticbeziersegment
+ */
 declare const PolyQuadraticBezierSegment: Component<PolyQuadraticBezierSegmentComponentProps, Record<string, never>, "">;
 export default PolyQuadraticBezierSegment;

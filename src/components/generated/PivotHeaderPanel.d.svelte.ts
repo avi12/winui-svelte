@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PivotHeaderPanelComponentProps };
 
+/**
+ * Displays the header text of the items in a Pivot control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.pivotheaderpanel
+ */
 declare const PivotHeaderPanel: Component<PivotHeaderPanelComponentProps, Record<string, never>, "">;
 export default PivotHeaderPanel;

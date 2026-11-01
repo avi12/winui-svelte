@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { MapLayer } from "../bindings.ts";
 
+/**
+ * Represents a collection of map data to which you can bind data and manipulate independently of other types of map data.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.maplayer
+ */
 export interface MapLayerProps {
   attached?: AttachedInput;
 }

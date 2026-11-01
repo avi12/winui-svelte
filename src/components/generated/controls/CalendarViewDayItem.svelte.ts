@@ -6,7 +6,17 @@ import type { CalendarViewDayItem } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * Represents a day on a CalendarView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarviewdayitem
+ */
 export interface CalendarViewDayItemProps extends ControlProps {
+  /**
+   * Gets or sets a value that indicates whether the date is unavailable.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarviewdayitem
+   */
   isBlackout?: boolean;
 }
 

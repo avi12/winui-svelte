@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SelectorBarItemComponentProps };
 
+/**
+ * Represents one item of content in a SelectorBar control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbaritem
+ */
 declare const SelectorBarItem: Component<SelectorBarItemComponentProps, Record<string, never>, "">;
 export default SelectorBarItem;

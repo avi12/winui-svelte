@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ColorSpectrumComponentProps };
 
+/**
+ * Represents a control that lets a user choose a color from a visual spectrum.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+ */
 declare const ColorSpectrum: Component<ColorSpectrumComponentProps, Record<string, never>, "color">;
 export default ColorSpectrum;

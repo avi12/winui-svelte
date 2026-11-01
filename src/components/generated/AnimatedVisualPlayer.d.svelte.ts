@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AnimatedVisualPlayerComponentProps };
 
+/**
+ * An element that displays and controls an IAnimatedVisual.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer
+ */
 declare const AnimatedVisualPlayer: Component<AnimatedVisualPlayerComponentProps, Record<string, never>, "">;
 export default AnimatedVisualPlayer;

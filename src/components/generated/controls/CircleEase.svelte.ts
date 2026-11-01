@@ -6,6 +6,11 @@ import type { CircleEase } from "../bindings.ts";
 import { linkEasingFunctionBase } from "./EasingFunctionBase.svelte.ts";
 import type { EasingFunctionBaseBound, EasingFunctionBaseProps } from "./EasingFunctionBase.svelte.ts";
 
+/**
+ * Represents an easing function that creates an animation that accelerates and/or decelerates using a circular function.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.circleease
+ */
 export interface CircleEaseProps extends EasingFunctionBaseProps {
 }
 

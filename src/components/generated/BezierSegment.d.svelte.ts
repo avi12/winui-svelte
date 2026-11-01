@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { BezierSegmentComponentProps };
 
+/**
+ * Represents a cubic Bezier curve drawn between two points.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.beziersegment
+ */
 declare const BezierSegment: Component<BezierSegmentComponentProps, Record<string, never>, "">;
 export default BezierSegment;

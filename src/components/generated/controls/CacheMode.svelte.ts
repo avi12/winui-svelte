@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { CacheMode } from "../bindings.ts";
 
+/**
+ * Represents cached content modes for graphics acceleration features.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.cachemode
+ */
 export interface CacheModeProps {
   attached?: AttachedInput;
 }

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AppBarSeparatorComponentProps };
 
+/**
+ * Represents a line that separates items in an AppBar or CommandBar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarseparator
+ */
 declare const AppBarSeparator: Component<AppBarSeparatorComponentProps, Record<string, never>, "">;
 export default AppBarSeparator;

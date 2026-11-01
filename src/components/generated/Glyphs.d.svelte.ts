@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { GlyphsComponentProps };
 
+/**
+ * Provides a visual representation of letters, characters, or symbols, in a specific font and style.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+ */
 declare const Glyphs: Component<GlyphsComponentProps, Record<string, never>, "">;
 export default Glyphs;

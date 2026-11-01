@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RatingItemFontInfoComponentProps };
 
+/**
+ * Represents information about the visual states of font elements that represent a rating.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo
+ */
 declare const RatingItemFontInfo: Component<RatingItemFontInfoComponentProps, Record<string, never>, "">;
 export default RatingItemFontInfo;

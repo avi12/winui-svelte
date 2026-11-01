@@ -6,6 +6,11 @@ import type { DesktopAcrylicBackdrop } from "../bindings.ts";
 import { linkSystemBackdrop } from "./SystemBackdrop.svelte.ts";
 import type { SystemBackdropBound, SystemBackdropProps } from "./SystemBackdrop.svelte.ts";
 
+/**
+ * Represents a system backdrop that applies Acrylic material to a supported XAML surface, such as a Window.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.desktopacrylicbackdrop
+ */
 export interface DesktopAcrylicBackdropProps extends SystemBackdropProps {
 }
 

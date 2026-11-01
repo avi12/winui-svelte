@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SoftwareBitmapSourceComponentProps };
 
+/**
+ * Provides a source object, backed by a SoftwareBitmap, for properties that use a bitmap-format image source.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.softwarebitmapsource
+ */
 declare const SoftwareBitmapSource: Component<SoftwareBitmapSourceComponentProps, Record<string, never>, "">;
 export default SoftwareBitmapSource;

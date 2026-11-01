@@ -6,9 +6,29 @@ import type { RepositionThemeAnimation } from "../bindings.ts";
 import { linkTimeline } from "./Timeline.svelte.ts";
 import type { TimelineBound, TimelineProps } from "./Timeline.svelte.ts";
 
+/**
+ * Use to animate an object that is being repositioned.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemeanimation
+ */
 export interface RepositionThemeAnimationProps extends TimelineProps {
+  /**
+   * Gets or sets the distance by which the target is translated in the horizontal direction when the animation is active. The horizontal offset translation, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemeanimation
+   */
   fromHorizontalOffset?: number;
+  /**
+   * Gets or sets the distance by which the target is translated in the vertical direction when the animation is active. The vertical offset translation, in pixels.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemeanimation
+   */
   fromVerticalOffset?: number;
+  /**
+   * Gets or sets the reference name of the control element being targeted. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemeanimation
+   */
   targetName?: string;
 }
 

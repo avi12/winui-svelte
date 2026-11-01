@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { BitmapIconComponentProps };
 
+/**
+ * Represents an icon that uses a bitmap as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapicon
+ */
 declare const BitmapIcon: Component<BitmapIconComponentProps, Record<string, never>, "">;
 export default BitmapIcon;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MenuFlyoutItemComponentProps };
 
+/**
+ * Represents a command in a MenuFlyout control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem
+ */
 declare const MenuFlyoutItem: Component<MenuFlyoutItemComponentProps, Record<string, never>, "">;
 export default MenuFlyoutItem;

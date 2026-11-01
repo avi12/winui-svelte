@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MapControlComponentProps };
 
+/**
+ * Represents a symbolic map of the Earth.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol
+ */
 declare const MapControl: Component<MapControlComponentProps, Record<string, never>, "">;
 export default MapControl;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PowerEaseComponentProps };
 
+/**
+ * Represents an easing function that creates an animation that accelerates and/or decelerates using the formula f (t) = t*<sup>p</sup> where p* is equal to the Power property.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.powerease
+ */
 declare const PowerEase: Component<PowerEaseComponentProps, Record<string, never>, "">;
 export default PowerEase;

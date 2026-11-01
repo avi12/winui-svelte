@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { WrapGridComponentProps };
 
+/**
+ * Positions child elements sequentially from left to right or top to bottom. When elements extend beyond the container edge, elements are positioned in the next row or column. Can only be used to display items in an ItemsControl. See Remarks.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid
+ */
 declare const WrapGrid: Component<WrapGridComponentProps, Record<string, never>, "">;
 export default WrapGrid;

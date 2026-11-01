@@ -7,11 +7,41 @@ import type { SvgImageSource } from "../bindings.ts";
 import { linkImageSource } from "./ImageSource.svelte.ts";
 import type { ImageSourceBound, ImageSourceProps } from "./ImageSource.svelte.ts";
 
+/**
+ * Provides a source object for properties that use a Scalable Vector Graphics (SVG) source. You can define a SvgImageSource by using a Uniform Resource Identifier (URI) that references a SVG file, or by calling SetSourceAsync(IRandomAccessStream) and supplying a stream.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.svgimagesource
+ */
 export interface SvgImageSourceProps extends ImageSourceProps {
+  /**
+   * Gets or sets the height to use for SVG rasterization operations. The height (in logical pixels) to use for SVG decoding operations. The default is NaN.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.svgimagesource
+   */
   rasterizePixelHeight?: number;
+  /**
+   * Gets or sets the width to use for SVG rasterization operations. The width (in logical pixels) to use for SVG decoding operations. The default is NaN.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.svgimagesource
+   */
   rasterizePixelWidth?: number;
+  /**
+   * Gets or sets the Uniform Resource Identifier (URI) of the SVG source file that generated this SvgImageSource.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.svgimagesource
+   */
   uriSource?: UriInput;
+  /**
+   * Occurs when the SVG source is downloaded and decoded with no failure.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.svgimagesource
+   */
   onopened?: Parameters<SvgImageSource["onOpened"]>[0];
+  /**
+   * Occurs when there is an error associated with SVG retrieval or format.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.svgimagesource
+   */
   onopenfailed?: Parameters<SvgImageSource["onOpenFailed"]>[0];
 }
 

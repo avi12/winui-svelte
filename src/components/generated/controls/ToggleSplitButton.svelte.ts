@@ -6,8 +6,23 @@ import type { ToggleSplitButton } from "../bindings.ts";
 import { linkSplitButton } from "./SplitButton.svelte.ts";
 import type { SplitButtonBound, SplitButtonProps } from "./SplitButton.svelte.ts";
 
+/**
+ * Represents a button with two parts that can be invoked separately. One part behaves like a toggle button that can be on or off, while the other part invokes a flyout that contains additional options for the user to choose from.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglesplitbutton
+ */
 export interface ToggleSplitButtonProps extends SplitButtonProps {
+  /**
+   * Gets or sets whether the ToggleSplitButton is checked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglesplitbutton
+   */
   isChecked?: boolean | undefined;
+  /**
+   * Occurs when the value of the IsChecked property is changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglesplitbutton
+   */
   onischeckedchanged?: Parameters<ToggleSplitButton["onIsCheckedChanged"]>[0];
 }
 

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SelectorBarComponentProps };
 
+/**
+ * Represents a control that consists of a small group of options from which one is selected.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar
+ */
 declare const SelectorBar: Component<SelectorBarComponentProps, Record<string, never>, "selectedItem">;
 export default SelectorBar;

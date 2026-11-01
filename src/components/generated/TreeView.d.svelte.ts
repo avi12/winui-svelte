@@ -6,5 +6,10 @@ import type { TreeComponent, TreeComponentProps } from "../hand-written/items/it
 /** The props of `TreeView`, generic over the items it shows. */
 export type TreeViewComponentProps<Item = object> = TreeComponentProps<Item, TreeViewControlProps>;
 
+/**
+ * Represents a hierarchical list with expanding and collapsing nodes that contain nested items.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview
+ */
 declare const TreeView: TreeComponent<TreeViewControlProps>;
 export default TreeView;

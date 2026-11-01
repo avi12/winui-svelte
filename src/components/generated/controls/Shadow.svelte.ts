@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { Shadow } from "../bindings.ts";
 
+/**
+ * The base class for shadow effects that can be applied to a XAML element.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.shadow
+ */
 export interface ShadowProps {
   attached?: AttachedInput;
 }

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SetterComponentProps };
 
+/**
+ * Applies a value to a property in a Style or a VisualState.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.setter
+ */
 declare const Setter: Component<SetterComponentProps, Record<string, never>, "">;
 export default Setter;

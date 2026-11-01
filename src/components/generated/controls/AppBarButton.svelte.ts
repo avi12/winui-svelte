@@ -8,12 +8,47 @@ import { linkButton } from "./Button.svelte.ts";
 import type { ButtonBound, ButtonProps } from "./Button.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a templated button control to be displayed in an AppBar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton
+ */
 export interface AppBarButtonProps extends ButtonProps {
+  /**
+   * Gets or sets the order in which this item is moved to the CommandBar overflow menu.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton
+   */
   dynamicOverflowOrder?: number;
+  /**
+   * Gets or sets the image displayed on the app bar button.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton
+   */
   icon?: AppBarButton["icon"] | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the button is shown with no label and reduced padding.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton
+   */
   isCompact?: boolean;
+  /**
+   * Gets or sets a string that overrides the default key combination string associated with a keyboard accelerator. !Example of a menu showing keyboard accelerators for various menu items Example of a menu showing keyboard accelerators for various menu items The string to replace the default key combination string. The default is null. Use a single space for no text.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton
+   */
   keyboardAcceleratorTextOverride?: string;
+  /**
+   * Gets or sets the text displayed on the app bar button.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton
+   */
   label?: string;
+  /**
+   * Gets or sets a value that indicates the placement and visibility of the button's label. An enumeration value that specifies the placement and visibility of the button's label. The default is Default.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton
+   */
   labelPosition?: EnumInput<typeof CommandBarLabelPosition>;
 }
 

@@ -6,9 +6,24 @@ import { Linker } from "../../runtime.svelte.ts";
 import type { GradientStop } from "../bindings.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Describes the location and color of a transition point in a gradient.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop
+ */
 export interface GradientStopProps {
   children?: Snippet;
+  /**
+   * Gets or sets the color of the gradient stop. The color of the gradient stop. The default is Transparent.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop
+   */
   color?: ColorInput;
+  /**
+   * Gets the location of the gradient stop within the gradient vector. The relative location of this gradient stop along the gradient vector. The default is 0.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop
+   */
   offset?: number;
   attached?: AttachedInput;
 }

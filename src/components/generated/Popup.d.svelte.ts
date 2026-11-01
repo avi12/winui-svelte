@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { PopupComponentProps };
 
+/**
+ * Displays content on top of existing content, within the bounds of the application window.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup
+ */
 declare const Popup: Component<PopupComponentProps, Record<string, never>, "isOpen" | "actualPlacement">;
 export default Popup;

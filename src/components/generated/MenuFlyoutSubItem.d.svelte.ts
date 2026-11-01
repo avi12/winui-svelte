@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { MenuFlyoutSubItemComponentProps };
 
+/**
+ * Represents a menu item that displays a sub-menu in a MenuFlyout control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem
+ */
 declare const MenuFlyoutSubItem: Component<MenuFlyoutSubItemComponentProps, Record<string, never>, "">;
 export default MenuFlyoutSubItem;

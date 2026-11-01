@@ -7,32 +7,162 @@ import type { MediaTransportControls } from "../bindings.ts";
 import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 
+/**
+ * Represents the playback controls for a media player element.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+ */
 export interface MediaTransportControlsProps extends ControlProps {
+  /**
+   * Gets or sets a value that specifies how the fast-forward/fast-rewind buttons behave.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   fastPlayFallbackBehaviour?: EnumInput<typeof FastPlayFallbackBehaviour>;
   isCompact?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the fast forward button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isFastForwardButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a user can fast forward the media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isFastForwardEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the rewind button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isFastRewindButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a user can rewind the media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isFastRewindEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the next track button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isNextTrackButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the playback rate button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isPlaybackRateButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a user can adjust the playback rate of the media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isPlaybackRateEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the previous track button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isPreviousTrackButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the repeat button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isRepeatButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a user repeat the playback of the media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isRepeatEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the seek bar is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isSeekBarVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a user can use the seek bar to find a location in the media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isSeekEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the skip backward button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isSkipBackwardButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a user can skip backward in the media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isSkipBackwardEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the skip forward button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isSkipForwardButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a user can skip forward in the media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isSkipForwardEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the stop button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isStopButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a user can stop the media playback.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isStopEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the volume button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isVolumeButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a user can adjust the volume of the media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isVolumeEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the zoom button is shown.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isZoomButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether a user can zoom the media.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   isZoomEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the controls are shown and hidden automatically.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   showAndHideAutomatically?: boolean;
+  /**
+   * Occurs whenever the app needs to display a thumbnail adjacent to the seek bar when the user performs a seek operation.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols
+   */
   onthumbnailrequested?: Parameters<MediaTransportControls["onThumbnailRequested"]>[0];
 }
 

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TreeViewListComponentProps };
 
+/**
+ * Represents a flattened list of tree view items so that operations such as keyboard navigation and drag-and-drop can be inherited from ListView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewlist
+ */
 declare const TreeViewList: Component<TreeViewListComponentProps, Record<string, never>, "selectedIndex" | "selectedItem" | "selectedValue">;
 export default TreeViewList;

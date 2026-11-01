@@ -7,7 +7,17 @@ import { linkPointKeyFrame } from "./PointKeyFrame.svelte.ts";
 import type { PointKeyFrameBound, PointKeyFrameProps } from "./PointKeyFrame.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Associates an easing function with a PointAnimationUsingKeyFrames key-frame animation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingpointkeyframe
+ */
 export interface EasingPointKeyFrameProps extends PointKeyFrameProps {
+  /**
+   * Gets or sets the easing function that is applied to the key frame.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingpointkeyframe
+   */
   easingFunction?: EasingPointKeyFrame["easingFunction"] | Snippet;
 }
 

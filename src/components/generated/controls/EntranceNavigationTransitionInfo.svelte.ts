@@ -9,6 +9,11 @@ import type {
   NavigationTransitionInfoProps
 } from "./NavigationTransitionInfo.svelte.ts";
 
+/**
+ * Specifies the animation to run when content appears on a Page.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancenavigationtransitioninfo
+ */
 export interface EntranceNavigationTransitionInfoProps extends NavigationTransitionInfoProps {
 }
 

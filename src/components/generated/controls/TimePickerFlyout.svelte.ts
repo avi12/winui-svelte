@@ -7,10 +7,35 @@ import type { TimePickerFlyout } from "../bindings.ts";
 import { linkPickerFlyoutBase } from "./PickerFlyoutBase.svelte.ts";
 import type { PickerFlyoutBaseBound, PickerFlyoutBaseProps } from "./PickerFlyoutBase.svelte.ts";
 
+/**
+ * Represents a control that allows a user to pick a time value.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepickerflyout
+ */
 export interface TimePickerFlyoutProps extends PickerFlyoutBaseProps {
+  /**
+   * Gets or sets the clock system to use. The name of the clock system to use.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepickerflyout
+   */
   clockIdentifier?: string;
+  /**
+   * Gets or sets a value that indicates the time increments shown in the minute picker. For example, 15 specifies that minute picker displays only the choices 00, 15, 30, 45. An integer from 0-59 that indicates the increments shown in the minute picker. The default is 1.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepickerflyout
+   */
   minuteIncrement?: number;
+  /**
+   * Gets or sets the time currently set in the time picker.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepickerflyout
+   */
   time?: TimeSpanInput;
+  /**
+   * Occurs when the user has selected a time in the time picker flyout.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepickerflyout
+   */
   ontimepicked?: Parameters<TimePickerFlyout["onTimePicked"]>[0];
 }
 

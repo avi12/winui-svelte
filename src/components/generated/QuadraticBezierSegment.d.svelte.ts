@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { QuadraticBezierSegmentComponentProps };
 
+/**
+ * Creates a quadratic Bezier curve between two points in a PathFigure.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.quadraticbeziersegment
+ */
 declare const QuadraticBezierSegment: Component<QuadraticBezierSegmentComponentProps, Record<string, never>, "">;
 export default QuadraticBezierSegment;

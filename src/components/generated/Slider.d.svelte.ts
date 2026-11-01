@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SliderComponentProps };
 
+/**
+ * Represents a control that lets the user select from a range of values by moving a Thumb control along a track.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+ */
 declare const Slider: Component<SliderComponentProps, Record<string, never>, "value">;
 export default Slider;

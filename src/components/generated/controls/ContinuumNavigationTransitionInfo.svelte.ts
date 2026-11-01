@@ -10,7 +10,17 @@ import type {
 } from "./NavigationTransitionInfo.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Specifies the object that will fly between pages to provide context during a continuum transition.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.continuumnavigationtransitioninfo
+ */
 export interface ContinuumNavigationTransitionInfoProps extends NavigationTransitionInfoProps {
+  /**
+   * Gets or sets the element that will fly between pages during a continuum navigation transition.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.continuumnavigationtransitioninfo
+   */
   exitElement?: ContinuumNavigationTransitionInfo["exitElement"] | Snippet;
 }
 

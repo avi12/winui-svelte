@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DoubleAnimationComponentProps };
 
+/**
+ * Animates the value of a Double property between two target values using linear interpolation over a specified Duration.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation
+ */
 declare const DoubleAnimation: Component<DoubleAnimationComponentProps, Record<string, never>, "">;
 export default DoubleAnimation;

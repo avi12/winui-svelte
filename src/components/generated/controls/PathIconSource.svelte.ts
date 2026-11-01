@@ -8,7 +8,17 @@ import { linkIconSource } from "./IconSource.svelte.ts";
 import type { IconSourceBound, IconSourceProps } from "./IconSource.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents an icon source that uses a vector path as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pathiconsource
+ */
 export interface PathIconSourceProps extends IconSourceProps {
+  /**
+   * Gets or sets a Geometry. A description of the shape to be drawn.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pathiconsource
+   */
   data?: GeometryInput | Snippet;
 }
 

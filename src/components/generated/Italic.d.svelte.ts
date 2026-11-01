@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ItalicComponentProps };
 
+/**
+ * Provides an inline-level flow content element that causes content to render with an italic font style.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.italic
+ */
 declare const Italic: Component<ItalicComponentProps, Record<string, never>, "">;
 export default Italic;

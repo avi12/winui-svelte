@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { SymbolIconComponentProps };
 
+/**
+ * Represents an icon that uses a glyph from the SymbolThemeFontFamily resource as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symbolicon
+ */
 declare const SymbolIcon: Component<SymbolIconComponentProps, Record<string, never>, "">;
 export default SymbolIcon;

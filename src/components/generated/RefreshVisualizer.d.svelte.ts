@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RefreshVisualizerComponentProps };
 
+/**
+ * Represents a control that provides animated state indicators for content refresh.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer
+ */
 declare const RefreshVisualizer: Component<RefreshVisualizerComponentProps, Record<string, never>, "">;
 export default RefreshVisualizer;

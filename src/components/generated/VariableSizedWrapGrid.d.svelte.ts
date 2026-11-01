@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { VariableSizedWrapGridComponentProps };
 
+/**
+ * Provides a grid-style layout panel where each tile/cell can be variable size based on content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid
+ */
 declare const VariableSizedWrapGrid: Component<VariableSizedWrapGridComponentProps, Record<string, never>, "">;
 export default VariableSizedWrapGrid;

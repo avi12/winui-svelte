@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { LinearGradientBrushComponentProps };
 
+/**
+ * Paints an area with a linear gradient.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.lineargradientbrush
+ */
 declare const LinearGradientBrush: Component<LinearGradientBrushComponentProps, Record<string, never>, "">;
 export default LinearGradientBrush;

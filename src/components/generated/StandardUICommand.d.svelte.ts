@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { StandardUICommandComponentProps };
 
+/**
+ * Derives from XamlUICommand, adding a set of standard platform commands with pre-defined properties.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.standarduicommand
+ */
 declare const StandardUICommand: Component<StandardUICommandComponentProps, Record<string, never>, "">;
 export default StandardUICommand;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { LinearColorKeyFrameComponentProps };
 
+/**
+ * Animates from the Color value of the previous key frame to its own Value using linear interpolation.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.linearcolorkeyframe
+ */
 declare const LinearColorKeyFrame: Component<LinearColorKeyFrameComponentProps, Record<string, never>, "">;
 export default LinearColorKeyFrame;

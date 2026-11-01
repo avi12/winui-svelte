@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { NavigationViewItemPresenterComponentProps };
 
+/**
+ * Represents the visual elements of a NavigationViewItem.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.navigationviewitempresenter
+ */
 declare const NavigationViewItemPresenter: Component<NavigationViewItemPresenterComponentProps, Record<string, never>, "">;
 export default NavigationViewItemPresenter;

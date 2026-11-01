@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ComboBoxComponentProps };
 
+/**
+ * Represents a selection control that combines a non-editable text box and a drop-down list box that allows users to select an item from a list.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+ */
 declare const ComboBox: Component<ComboBoxComponentProps, Record<string, never>, "selectedIndex" | "selectedItem" | "selectedValue" | "isDropDownOpen">;
 export default ComboBox;

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { AppBarToggleButtonComponentProps };
 
+/**
+ * Represents a button control that can switch states and be displayed in an AppBar.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton
+ */
 declare const AppBarToggleButton: Component<AppBarToggleButtonComponentProps, Record<string, never>, "isChecked">;
 export default AppBarToggleButton;

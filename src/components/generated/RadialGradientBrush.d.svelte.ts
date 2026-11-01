@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RadialGradientBrushComponentProps };
 
+/**
+ * RadialGradientBrush paints an area with a radial gradient. A center point defines the origin of the gradient, and an ellipse defines the outer bounds of the gradient.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush
+ */
 declare const RadialGradientBrush: Component<RadialGradientBrushComponentProps, Record<string, never>, "">;
 export default RadialGradientBrush;

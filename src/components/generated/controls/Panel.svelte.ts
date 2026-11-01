@@ -8,10 +8,25 @@ import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Provides a base class for all Panel elements. Use Panel elements to position and arrange child objects in a UI page.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel
+ */
 export interface PanelProps extends FrameworkElementProps {
   children?: Snippet;
   childrenTransitions?: Snippet;
+  /**
+   * Gets or sets a Brush that fills the panel content area. The brush that fills the panel content area. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel
+   */
   background?: BrushInput | Snippet;
+  /**
+   * Gets or sets an instance of BrushTransition to automatically animate changes to the Background property. An instance of BrushTransition to automatically animate changes to the Background; otherwise, null. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel
+   */
   backgroundTransition?: Panel["backgroundTransition"];
 }
 

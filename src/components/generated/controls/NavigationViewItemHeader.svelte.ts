@@ -6,6 +6,11 @@ import type { NavigationViewItemHeader } from "../bindings.ts";
 import { linkNavigationViewItemBase } from "./NavigationViewItemBase.svelte.ts";
 import type { NavigationViewItemBaseBound, NavigationViewItemBaseProps } from "./NavigationViewItemBase.svelte.ts";
 
+/**
+ * Represents a header for a group of menu items in a NavigationView.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitemheader
+ */
 export interface NavigationViewItemHeaderProps extends NavigationViewItemBaseProps {
 }
 

@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TreeViewItemComponentProps };
 
+/**
+ * Represents the container for an item in a TreeView control.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+ */
 declare const TreeViewItem: Component<TreeViewItemComponentProps, Record<string, never>, "">;
 export default TreeViewItem;

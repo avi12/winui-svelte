@@ -8,10 +8,35 @@ import { linkContentControl } from "./ContentControl.svelte.ts";
 import type { ContentControlBound, ContentControlProps } from "./ContentControl.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a button with two parts that can be invoked separately. One part behaves like a standard button and the other part invokes a flyout.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton
+ */
 export interface SplitButtonProps extends ContentControlProps {
+  /**
+   * Gets or sets the command to invoke when this button is pressed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton
+   */
   command?: SplitButton["command"] | Snippet;
+  /**
+   * Gets or sets the parameter to pass to the Command property. The parameter to pass to the Command property. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton
+   */
   commandParameter?: ObjectInput;
+  /**
+   * Gets or sets the flyout associated with this button. The flyout associated with this button. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton
+   */
   flyout?: SplitButton["flyout"] | Snippet;
+  /**
+   * Occurs when a button control is clicked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton
+   */
   onclick?: Parameters<SplitButton["onClick"]>[0];
 }
 

@@ -8,11 +8,41 @@ import type { RichTextBlockOverflow } from "../bindings.ts";
 import { linkFrameworkElement } from "./FrameworkElement.svelte.ts";
 import type { FrameworkElementBound, FrameworkElementProps } from "./FrameworkElement.svelte.ts";
 
+/**
+ * Represents a rich text display overflow container. This element cannot have direct content. The only purpose of RichTextBlockOverflow is to display text content that does not fit in the bounds of a RichTextBlock or another RichTextBlockOverflow element.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+ */
 export interface RichTextBlockOverflowProps extends FrameworkElementProps {
+  /**
+   * Gets a value that indicates whether the control has trimmed text that overflows the content area.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+   */
   isTextTrimmed?: boolean | undefined;
+  /**
+   * Gets or sets the maximum lines of text shown in the RichTextBlockOverflow. The maximum lines of text shown in the RichTextBlockOverflow. The default is 0, which is a special value that represents "Auto" behavior. The value cannot be negative.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+   */
   maxLines?: number;
+  /**
+   * Gets or sets a reference to another RichTextBlockOverflow that is the linked target for any text overflow from this RichTextBlockOverflow.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+   */
   overflowContentTarget?: RichTextBlockOverflow["overflowContentTarget"];
+  /**
+   * Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a RichTextBlockOverflow. A Thickness structure that specifies the amount of padding to apply.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+   */
   padding?: ThicknessInput;
+  /**
+   * Occurs when the IsTextTrimmed property value has changed.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+   */
   onistexttrimmedchanged?: Parameters<RichTextBlockOverflow["onIsTextTrimmedChanged"]>[0];
 }
 

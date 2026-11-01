@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ImageIconSourceComponentProps };
 
+/**
+ * Represents an icon source that uses an image type as its content. The image types currently supported are .bmp, .gif, .jpg, .png, .wdp, and .tiff.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.imageiconsource
+ */
 declare const ImageIconSource: Component<ImageIconSourceComponentProps, Record<string, never>, "">;
 export default ImageIconSource;

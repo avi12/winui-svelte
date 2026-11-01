@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { IconSourceElementComponentProps };
 
+/**
+ * Represents an icon that uses an IconSource as its content.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsourceelement
+ */
 declare const IconSourceElement: Component<IconSourceElementComponentProps, Record<string, never>, "">;
 export default IconSourceElement;

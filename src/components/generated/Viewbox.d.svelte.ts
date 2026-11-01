@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ViewboxComponentProps };
 
+/**
+ * Defines a content decorator that can stretch and scale a single child to fill the available space.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox
+ */
 declare const Viewbox: Component<ViewboxComponentProps, Record<string, never>, "">;
 export default Viewbox;

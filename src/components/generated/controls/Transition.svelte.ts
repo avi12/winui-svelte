@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { Transition } from "../bindings.ts";
 
+/**
+ * Represents a visual behavior that occurs for predefined actions or state changes. Specific theme transitions (various Transition derived classes) can be applied to individual elements using the UIElement.Transitions property, or applied for scenario-specific theme transition properties such as ContentControl.ContentTransitions.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.transition
+ */
 export interface TransitionProps {
   attached?: AttachedInput;
 }

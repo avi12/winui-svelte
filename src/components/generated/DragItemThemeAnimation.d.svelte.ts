@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { DragItemThemeAnimationComponentProps };
 
+/**
+ * Represents the preconfigured animation that applies to item elements being dragged.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.dragitemthemeanimation
+ */
 declare const DragItemThemeAnimation: Component<DragItemThemeAnimationComponentProps, Record<string, never>, "">;
 export default DragItemThemeAnimation;

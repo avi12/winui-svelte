@@ -6,7 +6,17 @@ import type { StateTrigger } from "../bindings.ts";
 import { linkStateTriggerBase } from "./StateTriggerBase.svelte.ts";
 import type { StateTriggerBaseBound, StateTriggerBaseProps } from "./StateTriggerBase.svelte.ts";
 
+/**
+ * Represents a trigger that applies visual states conditionally.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.statetrigger
+ */
 export interface StateTriggerProps extends StateTriggerBaseProps {
+  /**
+   * Gets or sets a value that indicates whether the trigger should be applied.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.statetrigger
+   */
   isActive?: boolean;
 }
 

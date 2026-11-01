@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { RevealListViewItemPresenterComponentProps };
 
+/**
+ * Represents a specialized ListViewItemPresenter that supports custom visual state management. > [!NOTE] > No longer required. Please use ListViewItemPresenter in Windows 10 April 2018 Update (version 1803) and newer.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.reveallistviewitempresenter
+ */
 declare const RevealListViewItemPresenter: Component<RevealListViewItemPresenterComponentProps, Record<string, never>, "">;
 export default RevealListViewItemPresenter;

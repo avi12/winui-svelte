@@ -6,6 +6,11 @@ import type { RenderTargetBitmap } from "../bindings.ts";
 import { linkImageSource } from "./ImageSource.svelte.ts";
 import type { ImageSourceBound, ImageSourceProps } from "./ImageSource.svelte.ts";
 
+/**
+ * Represents an image source that can be populated with the combined contents of a XAML visual tree. See for some notable limitations on which XAML visuals can be captured in a RenderTargetBitmap.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.rendertargetbitmap
+ */
 export interface RenderTargetBitmapProps extends ImageSourceProps {
 }
 

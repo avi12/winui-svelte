@@ -5,6 +5,11 @@ import type { AttachedInput } from "../../convert.ts";
 import { Linker } from "../../runtime.svelte.ts";
 import type { ImageSource } from "../bindings.ts";
 
+/**
+ * Provides an object source type for the Image.Source and ImageBrush.ImageSource properties.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagesource
+ */
 export interface ImageSourceProps {
   attached?: AttachedInput;
 }

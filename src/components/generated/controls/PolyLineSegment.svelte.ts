@@ -8,8 +8,18 @@ import { linkPathSegment } from "./PathSegment.svelte.ts";
 import type { PathSegmentBound, PathSegmentProps } from "./PathSegment.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a set of line segments defined by a Point specifying the end point of a line segment.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polylinesegment
+ */
 export interface PolyLineSegmentProps extends PathSegmentProps {
   children?: Snippet;
+  /**
+   * Gets or sets the collection of Point values that defines this PolyLineSegment object. The points that define this PolyLineSegment object.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polylinesegment
+   */
   points?: PointCollectionInput;
 }
 

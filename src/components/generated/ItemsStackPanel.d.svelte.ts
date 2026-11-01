@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { ItemsStackPanelComponentProps };
 
+/**
+ * Arranges child elements of an ItemsControl into a single line that can be oriented horizontally or vertically. Supports pixel-based UI virtualization and grouped layouts.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel
+ */
 declare const ItemsStackPanel: Component<ItemsStackPanelComponentProps, Record<string, never>, "">;
 export default ItemsStackPanel;
