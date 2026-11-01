@@ -25,12 +25,16 @@ test("the plugin brings Svelte's own with its environment", () => {
 
 test("the window's module environment resolves Svelte's browser build", () => {
   const { resolve, environments } = windowConfig();
-  assert.deepEqual(resolve, { conditions: ["browser", "svelte"] });
+  assert.deepEqual(resolve, {
+    conditions: ["browser", "svelte"],
+    dedupe: ["svelte"]
+  });
   assert.deepEqual(environments, {
     [WINDOW_ENVIRONMENT]: {
       consumer: "server",
       resolve: {
         conditions: ["browser", "svelte", "development"],
+        dedupe: ["svelte"],
         noExternal: [/^svelte(?:\/|$)/u, "esm-env", "winui-svelte"]
       },
       dev: {

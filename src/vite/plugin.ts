@@ -36,6 +36,11 @@ function hasSideEffects(id: string, isExternal: boolean) {
   return !isExternal || !bindingModule.test(id);
 }
 
+// One copy of Svelte: an app that links this package (a workspace or a link:
+// dependency) resolves its own Svelte and the package's own, and components
+// from one would register on a runtime the renderer of the other never sees.
+const DEDUPED_PACKAGES = ["svelte"];
+
 /** What the plugin compiles with, without Vite: kept apart so it can be checked. */
 export function winuiPluginOptions() {
   const options: PluginOptions = {
@@ -51,7 +56,8 @@ export function windowConfig() {
   const config: UserConfig = {
     // Svelte's browser build is the one that mounts components.
     resolve: {
-      conditions: [...BROWSER_CONDITIONS, SVELTE_CONDITION]
+      conditions: [...BROWSER_CONDITIONS, SVELTE_CONDITION],
+      dedupe: DEDUPED_PACKAGES
     },
     build: {
       rollupOptions: {
@@ -70,6 +76,7 @@ export function windowConfig() {
         consumer: "server",
         resolve: {
           conditions: [...BROWSER_CONDITIONS, SVELTE_CONDITION, "development"],
+          dedupe: DEDUPED_PACKAGES,
           noExternal: compiledPackages
         },
         dev: {
