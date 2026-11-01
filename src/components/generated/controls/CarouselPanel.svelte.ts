@@ -16,31 +16,31 @@ export interface CarouselPanelProps extends VirtualizingPanelProps {
   /**
    * Not intended for general use. Gets or sets a value that indicates whether scrolling on the horizontal axis is possible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel.canhorizontallyscroll
    */
   canHorizontallyScroll?: boolean;
   /**
    * Not intended for general use. Gets or sets a value that indicates whether scrolling on the vertical axis is possible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel.canverticallyscroll
    */
   canVerticallyScroll?: boolean;
   /**
    * Gets or sets a reference to a ScrollViewer that is the scroll host or scroll owner for scrolling behavior of the CarouselPanel.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel.scrollowner
    */
   scrollOwner?: ObjectReferenceInput;
   /**
    * Occurs when the measurements for horizontal snap points change.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel.horizontalsnappointschanged
    */
   onhorizontalsnappointschanged?: Parameters<CarouselPanel["onHorizontalSnapPointsChanged"]>[0];
   /**
    * Occurs when the measurements for vertical snap points change.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel.verticalsnappointschanged
    */
   onverticalsnappointschanged?: Parameters<CarouselPanel["onVerticalSnapPointsChanged"]>[0];
 }

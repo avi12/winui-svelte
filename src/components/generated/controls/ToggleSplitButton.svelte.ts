@@ -15,13 +15,13 @@ export interface ToggleSplitButtonProps extends SplitButtonProps {
   /**
    * Gets or sets whether the ToggleSplitButton is checked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglesplitbutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglesplitbutton.ischecked
    */
   isChecked?: boolean | undefined;
   /**
    * Occurs when the value of the IsChecked property is changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglesplitbutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglesplitbutton.ischeckedchanged
    */
   onischeckedchanged?: Parameters<ToggleSplitButton["onIsCheckedChanged"]>[0];
 }

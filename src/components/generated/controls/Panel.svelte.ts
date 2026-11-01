@@ -14,18 +14,28 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel
  */
 export interface PanelProps extends FrameworkElementProps {
+  /**
+   * Gets the collection of child elements of the panel. The collection of child objects. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel.children
+   */
   children?: Snippet;
+  /**
+   * Gets or sets the collection of Transition style elements that apply to child content of a Panel subclass. The strongly typed collection of Transition style elements.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel.childrentransitions
+   */
   childrenTransitions?: Snippet;
   /**
    * Gets or sets a Brush that fills the panel content area. The brush that fills the panel content area. The default is null, (a null brush) which is evaluated as Transparent for rendering.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel.background
    */
   background?: BrushInput | Snippet;
   /**
    * Gets or sets an instance of BrushTransition to automatically animate changes to the Background property. An instance of BrushTransition to automatically animate changes to the Background; otherwise, null. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel.backgroundtransition
    */
   backgroundTransition?: Panel["backgroundTransition"];
 }

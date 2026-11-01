@@ -15,31 +15,31 @@ export interface ProgressRingProps extends ControlProps {
   /**
    * Gets or sets a value that indicates whether the ProgressRing is showing progress.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring.isactive
    */
   isActive?: boolean;
   /**
    * Gets or sets a value that indicates whether the progress ring reports generic progress with a repeating pattern or reports progress based on the Value property.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring.isindeterminate
    */
   isIndeterminate?: boolean;
   /**
    * Gets or sets the highest allowed Value of the range element. The highest possible Value of the range element. The default is 100.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring.maximum
    */
   maximum?: number;
   /**
    * Gets or sets the minimum allowed Value of the range element. Minimum allowed Value of the range element. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring.minimum
    */
   minimum?: number;
   /**
    * Gets or sets the current magnitude of the progress ring. The current magnitude of the progress ring. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring.value
    */
   value?: number;
 }

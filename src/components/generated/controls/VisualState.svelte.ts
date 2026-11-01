@@ -13,15 +13,34 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstate
  */
 export interface VisualStateProps {
+  /**
+   * Gets or sets a Storyboard that defines state-specific property values and appearance of the control when it is using this visual state. A Storyboard that defines the property changes to apply to the control when this VisualState is used as the current visual state.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstate.storyboard
+   */
   children?: Snippet;
+  /**
+   * Gets a collection of Setter objects that define discrete property values that control the appearance of UIElements when this VisualState is applied. A collection of Setter objects. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstate.setters
+   */
   setters?: Snippet;
+  /**
+   * Gets a collection of StateTriggerBase objects that indicate when this VisualState should be applied. If any (not all) of the triggers are active, the VisualState will be applied. A collection of StateTriggerBase objects. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstate.statetriggers
+   */
   stateTriggers?: Snippet;
   /**
    * Gets or sets a Storyboard that defines state-specific property values and appearance of the control when it is using this visual state. A Storyboard that defines the property changes to apply to the control when this VisualState is used as the current visual state.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstate
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstate.storyboard
    */
   storyboard?: VisualState["storyboard"] | Snippet;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

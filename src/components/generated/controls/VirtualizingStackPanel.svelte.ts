@@ -22,19 +22,19 @@ export interface VirtualizingStackPanelProps extends OrientedVirtualizingPanelPr
   /**
    * Gets or sets a value that indicates whether the generated snap points used for panning in the VirtualizingStackPanel are equidistant from each other.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel.arescrollsnappointsregular
    */
   areScrollSnapPointsRegular?: boolean;
   /**
    * Gets or sets a value that describes the horizontal or vertical orientation of stacked content. The Orientation of child content, as a value of the enumeration. The default is Vertical.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel.orientation
    */
   orientation?: EnumInput<typeof Orientation>;
   /**
    * Occurs when an item that is hosted by the VirtualizingStackPanel is re-virtualized.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel.cleanupvirtualizeditemevent
    */
   oncleanupvirtualizeditemevent?: (sender: VirtualizingStackPanel, args: EventArguments<CleanUpVirtualizedItemEventArgs>) => void;
 }

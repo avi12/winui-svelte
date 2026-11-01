@@ -16,13 +16,13 @@ export interface BitmapIconProps extends IconElementProps {
   /**
    * Gets or sets a value that indicates whether the bitmap is shown in a single color.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapicon
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapicon.showasmonochrome
    */
   showAsMonochrome?: boolean;
   /**
    * Gets or sets the Uniform Resource Identifier (URI) of the bitmap to use as the icon content.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapicon
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapicon.urisource
    */
   uriSource?: UriInput;
 }

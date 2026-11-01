@@ -17,25 +17,25 @@ export interface RefreshVisualizerProps extends ControlProps {
   /**
    * Gets or sets the content of the visualizer.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer.content
    */
   content?: RefreshVisualizer["content"] | Snippet;
   /**
    * Gets or sets a value that indicates the orientation of the visualizer. A value of the enumeration that indicates the orientation of the visualizer. The default is Top.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer.orientation
    */
   orientation?: EnumInput<typeof RefreshVisualizerOrientation>;
   /**
    * Occurs when an update of the content has been initiated.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer.refreshrequested
    */
   onrefreshrequested?: Parameters<RefreshVisualizer["onRefreshRequested"]>[0];
   /**
    * Occurs when the state of the visualizer changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer.refreshstatechanged
    */
   onrefreshstatechanged?: Parameters<RefreshVisualizer["onRefreshStateChanged"]>[0];
 }

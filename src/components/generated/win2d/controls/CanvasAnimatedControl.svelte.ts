@@ -7,20 +7,95 @@ import type { CanvasAnimatedControl } from "../bindings.ts";
 import { linkUserControl } from "../../controls/UserControl.svelte.ts";
 import type { UserControlBound, UserControlProps } from "../../controls/UserControl.svelte.ts";
 
+/**
+ * XAML control intended for displaying animating content.
+ *
+ * @see https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl.htm
+ */
 export interface CanvasAnimatedControlProps extends UserControlProps {
+  /**
+   * The color that the control is cleared to before the Draw event is raised.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_ClearColor.htm
+   */
   clearColor?: ColorInput;
+  /**
+   * Gets or sets an application-chosen device for this control.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_CustomDevice.htm
+   */
   customDevice?: CanvasAnimatedControl["customDevice"];
+  /**
+   * Gets or sets a scaling factor applied to this control's Dpi.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_DpiScale.htm
+   */
   dpiScale?: number;
+  /**
+   * Gets or sets the whether the devices that this control creates will be forced to software rendering.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_ForceSoftwareRenderer.htm
+   */
   forceSoftwareRenderer?: boolean;
+  /**
+   * Indicates whether the game loop is running in fixed or variable timing mode.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_IsFixedTimeStep.htm
+   */
   isFixedTimeStep?: boolean;
+  /**
+   * Indicates whether the control's game loop is paused.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_Paused.htm
+   */
   paused?: boolean;
+  /**
+   * Specifies the sync interval that determines how frame presentation is synchronized with display vertical blank.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_SyncInterval.htm
+   */
   syncInterval?: number;
+  /**
+   * Gets or sets the time between Update events
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_TargetElapsedTime.htm
+   */
   targetElapsedTime?: TimeSpanInput;
+  /**
+   * Gets or sets whether this control should create a new device each time, or use a device which may common between other controls.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_UseSharedDevice.htm
+   */
   useSharedDevice?: boolean;
+  /**
+   * Hook this event to create any resources needed for your drawing.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/E_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_CreateResources.htm
+   */
   oncreateresources?: Parameters<CanvasAnimatedControl["onCreateResources"]>[0];
+  /**
+   * Hook this event to draw the contents of the control.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/E_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_Draw.htm
+   */
   ondraw?: Parameters<CanvasAnimatedControl["onDraw"]>[0];
+  /**
+   * Occurs on the game loop thread just before the game loop starts.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/E_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_GameLoopStarting.htm
+   */
   ongameloopstarting?: Parameters<CanvasAnimatedControl["onGameLoopStarting"]>[0];
+  /**
+   * Occurs on the game loop thread just after the game loop stops.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/E_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_GameLoopStopped.htm
+   */
   ongameloopstopped?: Parameters<CanvasAnimatedControl["onGameLoopStopped"]>[0];
+  /**
+   * Hook this event to update any data, as necessary, for your app's animation.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/E_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_Update.htm
+   */
   onupdate?: Parameters<CanvasAnimatedControl["onUpdate"]>[0];
 }
 

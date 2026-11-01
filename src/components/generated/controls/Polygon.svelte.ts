@@ -17,13 +17,13 @@ export interface PolygonProps extends ShapeProps {
   /**
    * Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration. The default is EvenOdd.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polygon
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polygon.fillrule
    */
   fillRule?: EnumInput<typeof FillRule>;
   /**
    * Gets or sets a collection that contains the vertex points of the polygon. A collection of Point structures that describes the vertex points of the polygon. The default is null. The value can be expressed as a string for XAML or type conversion.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polygon
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polygon.points
    */
   points?: PointCollectionInput;
 }

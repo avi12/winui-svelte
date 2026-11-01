@@ -17,37 +17,37 @@ export interface AppBarToggleButtonProps extends ToggleButtonProps {
   /**
    * Gets or sets the order in which this item is moved to the CommandBar overflow menu.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton.dynamicoverfloworder
    */
   dynamicOverflowOrder?: number;
   /**
    * Gets or sets the graphic content of the app bar toggle button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton.icon
    */
   icon?: AppBarToggleButton["icon"] | Snippet;
   /**
    * Gets or sets a value that indicates whether the button is shown with no label and reduced padding.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton.iscompact
    */
   isCompact?: boolean;
   /**
    * Gets or sets a string that overrides the default key combination string associated with a keyboard accelerator. !Example of a menu showing keyboard accelerators for various menu items Example of a menu showing keyboard accelerators for various menu items The string to replace the default key combination string. The default is null. Use a single space for no text.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton.keyboardacceleratortextoverride
    */
   keyboardAcceleratorTextOverride?: string;
   /**
    * Gets or sets the text description displayed on the app bar toggle button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton.label
    */
   label?: string;
   /**
    * Gets or sets a value that indicates the placement and visibility of the button's label. An enumeration value that specifies the placement and visibility of the button's label. The default is Default.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton.labelposition
    */
   labelPosition?: EnumInput<typeof CommandBarLabelPosition>;
 }

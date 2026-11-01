@@ -16,55 +16,55 @@ export interface RatingControlProps extends ControlProps {
   /**
    * Gets or sets the rating value. The rating value. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.value
    */
   value?: number | undefined;
   /**
    * Gets or sets the text label for the control. The text label for the control. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.caption
    */
   caption?: string;
   /**
    * Gets or sets the initial set rating value. The initial set rating value. The default is 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.initialsetvalue
    */
   initialSetValue?: number;
   /**
    * Gets or sets the value that determines if the user can remove the rating.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.isclearenabled
    */
   isClearEnabled?: boolean;
   /**
    * Gets or sets the value that determines if the user can change the rating.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.isreadonly
    */
   isReadOnly?: boolean;
   /**
    * Gets or sets info about the visual states of the items that represent a rating. A RatingItemInfo-derived object that contains details about the visual states of the items that represent a rating.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.iteminfo
    */
   itemInfo?: RatingControl["itemInfo"] | Snippet;
   /**
    * Gets or sets the maximum allowed rating value. The maximum allowed rating value. The default is 5.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.maxrating
    */
   maxRating?: number;
   /**
    * Gets or sets the rating that is displayed in the control until the value is changed by a user action or some other operation. The rating that is displayed in the control when no value is entered. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.placeholdervalue
    */
   placeholderValue?: number;
   /**
    * Occurs when the Value property has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.valuechanged
    */
   onvaluechanged?: Parameters<RatingControl["onValueChanged"]>[0];
 }

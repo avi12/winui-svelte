@@ -12,55 +12,64 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand
  */
 export interface XamlUICommandProps {
+  /**
+   * Gets the collection of key combinations for this element that invoke an action using the keyboard.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand.keyboardaccelerators
+   */
   keyboardAccelerators?: Snippet;
   /**
    * Gets or sets the access key (mnemonic) for this element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand.accesskey
    */
   accessKey?: string;
   /**
    * Gets or sets the command behavior of an interactive UI element that performs an action when invoked, such as sending an email, deleting an item, or submitting a form.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand.command
    */
   command?: XamlUICommand["command"] | Snippet;
   /**
    * Gets or sets a description for this element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand.description
    */
   description?: string;
   /**
    * Gets or sets a glyph from the Segoe MDL2 Assets font for this element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand.iconsource
    */
   iconSource?: XamlUICommand["iconSource"] | Snippet;
   /**
    * Gets or sets the label for this element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand.label
    */
   label?: string;
   /**
    * Occurs whenever something happens that affects whether the command can execute.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand.canexecutechanged
    */
   oncanexecutechanged?: Parameters<XamlUICommand["onCanExecuteChanged"]>[0];
   /**
    * Occurs when a CanExecute call is made.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand.canexecuterequested
    */
   oncanexecuterequested?: Parameters<XamlUICommand["onCanExecuteRequested"]>[0];
   /**
    * Occurs when an Execute call is made.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.xamluicommand.executerequested
    */
   onexecuterequested?: Parameters<XamlUICommand["onExecuteRequested"]>[0];
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

@@ -24,67 +24,67 @@ export interface TwoPaneViewProps extends ControlProps {
   /**
    * Gets a value that indicates how panes are shown. An enumeration value that indicates how panes are shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.mode
    */
   mode?: EnumInput<typeof TwoPaneViewMode> | undefined;
   /**
    * Gets or sets the minimum height at which panes are shown in tall mode.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.mintallmodeheight
    */
   minTallModeHeight?: number;
   /**
    * Gets or sets the minimum width at which panes are shown in wide mode.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.minwidemodewidth
    */
   minWideModeWidth?: number;
   /**
    * Gets or sets the content of pane 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.pane1
    */
   pane1?: TwoPaneView["pane1"] | Snippet;
   /**
    * Gets the calculated width (in wide mode) or height (in tall mode) of pane 1, or sets the GridLength value of pane 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.pane1length
    */
   pane1Length?: GridLengthInput;
   /**
    * Gets or sets the content of pane 2.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.pane2
    */
   pane2?: TwoPaneView["pane2"] | Snippet;
   /**
    * Gets the calculated width (in wide mode) or height (in tall mode) of pane 2, or sets the GridLength value of pane 2.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.pane2length
    */
   pane2Length?: GridLengthInput;
   /**
    * Gets or sets a value that indicates which pane has priority. An enumeration value that indicates which pane has priority.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.panepriority
    */
   panePriority?: EnumInput<typeof TwoPaneViewPriority>;
   /**
    * Gets or sets a value that indicates how panes are shown in tall mode.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.tallmodeconfiguration
    */
   tallModeConfiguration?: EnumInput<typeof TwoPaneViewTallModeConfiguration>;
   /**
    * Gets or sets a value that indicates how panes are shown in wide mode.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.widemodeconfiguration
    */
   wideModeConfiguration?: EnumInput<typeof TwoPaneViewWideModeConfiguration>;
   /**
    * Occurs when the Mode of the TwoPaneView has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.modechanged
    */
   onmodechanged?: Parameters<TwoPaneView["onModeChanged"]>[0];
 }

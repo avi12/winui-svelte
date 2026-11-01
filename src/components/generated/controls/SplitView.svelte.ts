@@ -15,83 +15,88 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
  */
 export interface SplitViewProps extends ControlProps {
+  /**
+   * Gets or sets the contents of the main panel of a SplitView. The contents of the main panel of a SplitView. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.content
+   */
   children?: Snippet;
   /**
    * Gets or sets a value that specifies whether the SplitView pane is expanded to its full width.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.ispaneopen
    */
   isPaneOpen?: boolean | undefined;
   /**
    * Gets or sets the width of the SplitView pane in its compact display mode. The width of the pane in it's compact display mode. The default is 48 device-independent pixel (DIP) (defined by the SplitViewCompactPaneThemeLength resource).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.compactpanelength
    */
   compactPaneLength?: number;
   /**
    * Gets or sets the contents of the main panel of a SplitView. The contents of the main panel of a SplitView. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.content
    */
   content?: SplitView["content"] | Snippet;
   /**
    * Gets of sets a value that specifies how the pane and content areas of a SplitView are shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.displaymode
    */
   displayMode?: EnumInput<typeof SplitViewDisplayMode>;
   /**
    * Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.lightdismissoverlaymode
    */
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   /**
    * Gets or sets the width of the SplitView pane when it's fully expanded. The width of the SplitView pane when it's fully expanded. The default is 320 device-independent pixel (DIP).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.openpanelength
    */
   openPaneLength?: number;
   /**
    * Gets or sets the contents of the pane of a SplitView. The contents of the pane of a SplitView. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.pane
    */
   pane?: SplitView["pane"] | Snippet;
   /**
    * Gets or sets the Brush to apply to the background of the Pane area of the control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.panebackground
    */
   paneBackground?: BrushInput | Snippet;
   /**
    * Gets or sets a value that specifies whether the pane is shown on the right or left side of the SplitView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.paneplacement
    */
   panePlacement?: EnumInput<typeof SplitViewPanePlacement>;
   /**
    * Occurs when the SplitView pane is closed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.paneclosed
    */
   onpaneclosed?: Parameters<SplitView["onPaneClosed"]>[0];
   /**
    * Occurs when the SplitView pane is closing.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.paneclosing
    */
   onpaneclosing?: Parameters<SplitView["onPaneClosing"]>[0];
   /**
    * Occurs when the SplitView pane is opened.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.paneopened
    */
   onpaneopened?: Parameters<SplitView["onPaneOpened"]>[0];
   /**
    * Occurs when the SplitView pane is opening.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.paneopening
    */
   onpaneopening?: Parameters<SplitView["onPaneOpening"]>[0];
 }

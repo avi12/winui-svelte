@@ -13,11 +13,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.navigationthemetransition
  */
 export interface NavigationThemeTransitionProps extends TransitionProps {
+  /**
+   * Gets or sets the default transition used when navigating between pages.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.navigationthemetransition.defaultnavigationtransitioninfo
+   */
   children?: Snippet;
   /**
    * Gets or sets the default transition used when navigating between pages.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.navigationthemetransition
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.navigationthemetransition.defaultnavigationtransitioninfo
    */
   defaultNavigationTransitionInfo?: NavigationThemeTransition["defaultNavigationTransitionInfo"] | Snippet;
 }

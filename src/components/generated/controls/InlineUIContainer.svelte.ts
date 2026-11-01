@@ -13,11 +13,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.inlineuicontainer
  */
 export interface InlineUIContainerProps extends InlineProps {
+  /**
+   * Gets or sets the UIElement hosted by the InlineUIContainer.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.inlineuicontainer.child
+   */
   children?: Snippet;
   /**
    * Gets or sets the UIElement hosted by the InlineUIContainer.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.inlineuicontainer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.inlineuicontainer.child
    */
   child?: InlineUIContainer["child"] | Snippet;
 }

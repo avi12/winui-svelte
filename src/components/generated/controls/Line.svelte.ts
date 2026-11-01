@@ -15,25 +15,25 @@ export interface LineProps extends ShapeProps {
   /**
    * Gets or sets the x-coordinate of the Line start point. The x-coordinate for the start point of the line, in pixels. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line.x1
    */
   x1?: number;
   /**
    * Gets or sets the x-coordinate of the Line end point. The x-coordinate for the end point of the line, in pixels. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line.x2
    */
   x2?: number;
   /**
    * Gets or sets the y-coordinate of the Line start point. The y-coordinate for the start point of the line, in pixels. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line.y1
    */
   y1?: number;
   /**
    * Gets or sets the y-coordinate of the Line end point. The y-coordinate for the end point of the line, in pixels. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.line.y2
    */
   y2?: number;
 }

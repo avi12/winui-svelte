@@ -15,9 +15,13 @@ export interface IconSourceProps {
   /**
    * Gets or sets a brush that paints the foreground color of the control. The brush that paints the foreground of the control. The default is null, (a null brush), which is evaluated as Transparent for rendering. However, this value is typically set by a default system resource at runtime that is tied to the active theme and other settings.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsource.foreground
    */
   foreground?: BrushInput | Snippet;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

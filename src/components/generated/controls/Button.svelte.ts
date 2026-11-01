@@ -16,7 +16,7 @@ export interface ButtonProps extends ButtonBaseProps {
   /**
    * Gets or sets the flyout associated with this button. The flyout associated with this button, if any; otherwise, null. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.button
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.button.flyout
    */
   flyout?: Button["flyout"] | Snippet;
 }

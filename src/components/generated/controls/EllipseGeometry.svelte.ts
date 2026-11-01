@@ -16,19 +16,19 @@ export interface EllipseGeometryProps extends GeometryProps {
   /**
    * Gets or sets the center point of the EllipseGeometry.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry.center
    */
   center?: PointInput;
   /**
    * Gets or sets the x-radius value of the EllipseGeometry.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry.radiusx
    */
   radiusX?: number;
   /**
    * Gets or sets the y-radius value of the EllipseGeometry.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry.radiusy
    */
   radiusY?: number;
 }

@@ -18,19 +18,19 @@ export interface ThumbProps extends ControlProps {
   /**
    * Fires when the Thumb control loses mouse capture.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb.dragcompleted
    */
   ondragcompleted?: (sender: Thumb, args: EventArguments<DragCompletedEventArgs>) => void;
   /**
    * Fires one or more times as the mouse pointer is moved when a Thumb control has logical focus and mouse capture.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb.dragdelta
    */
   ondragdelta?: (sender: Thumb, args: EventArguments<DragDeltaEventArgs>) => void;
   /**
    * Fires when a Thumb control receives logical focus and mouse capture.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.thumb.dragstarted
    */
   ondragstarted?: (sender: Thumb, args: EventArguments<DragStartedEventArgs>) => void;
 }

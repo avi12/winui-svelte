@@ -23,117 +23,121 @@ export interface TextElementProps {
   /**
    * Gets or sets the access key for this element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.accesskey
    */
   accessKey?: string;
   /**
    * Gets or sets a source element that provides the access key scope for this element, even if it's not in the visual tree of the source element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.accesskeyscopeowner
    */
   accessKeyScopeOwner?: TextElement["accessKeyScopeOwner"];
   /**
    * Gets or sets a value that indicates whether the element automatically gets focus when the user interacts with it.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.allowfocusoninteraction
    */
   allowFocusOnInteraction?: boolean;
   /**
    * Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.characterspacing
    */
   characterSpacing?: number;
   /**
    * Gets or sets a value that specifies whether the access key display is dismissed when an access key is invoked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.exitdisplaymodeonaccesskeyinvoked
    */
   exitDisplayModeOnAccessKeyInvoked?: boolean;
   /**
    * Gets or sets the preferred top-level font family for the content of the element. The preferred font family, or a primary preferred font family with one or more fallback font families. See FontFamily for default information.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontfamily
    */
   fontFamily?: FontFamilyInput;
   /**
    * Gets or sets the font size for the content of the element. The desired font size in pixels. The default is 11 pixels.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontsize
    */
   fontSize?: number;
   /**
    * Gets or sets the glyph width of the font in a family to select. One of the FontStretch constant names, specifying the desired font stretch. The default is Normal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontstretch
    */
   fontStretch?: EnumInput<typeof FontStretch>;
   /**
    * Gets or sets the font style for the content in this element. One of the FontStyle constant names, specifying the font style. The default is Normal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontstyle
    */
   fontStyle?: EnumInput<typeof FontStyle>;
   /**
    * Gets or sets the top-level font weight to select from the font family for the content in this element. One of the FontWeights property values, specifying the font weight. The default is Normal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontweight
    */
   fontWeight?: FontWeightInput;
   /**
    * Gets or sets the Brush to apply to the content in this element. The brush that is applied to the text content. The default is a SolidColorBrush with Color value Black.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.foreground
    */
   foreground?: BrushInput | Snippet;
   /**
    * Gets or sets a value that indicates whether an element defines its own access key scope.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.isaccesskeyscope
    */
   isAccessKeyScope?: boolean;
   /**
    * Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.istextscalefactorenabled
    */
   isTextScaleFactorEnabled?: boolean;
   /**
    * Gets or sets a value that indicates how far left or right the keytip is placed in relation to the text element. The number of pixels to move the KeyTip. Positive values move it right. Negative values move it left.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.keytiphorizontaloffset
    */
   keyTipHorizontalOffset?: number;
   /**
    * Gets or sets a value that indicates where the KeyTip is placed in relation to the text element. A value of the enumeration. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.keytipplacementmode
    */
   keyTipPlacementMode?: EnumInput<typeof KeyTipPlacementMode>;
   /**
    * Gets or sets a value that indicates how far up or down the keytip is placed in relation to the text element. The number of pixels to move the KeyTip. Positive values move it down. Negative values move it up.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.keytipverticaloffset
    */
   keyTipVerticalOffset?: number;
   /**
    * Gets or sets localization/globalization language information that applies to a TextElement. A string specifying language and culture that follows the RFC 3066 / ISO 639-1 standards. For example, U.S. English is "en-US".
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.language
    */
   language?: string;
   /**
    * Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.textdecorations
    */
   textDecorations?: FlagsInput<typeof TextDecorations>;
   /**
    * Gets or sets the XamlRoot in which this element is being viewed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.xamlroot
    */
   xamlRoot?: TextElement["xamlRoot"];
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

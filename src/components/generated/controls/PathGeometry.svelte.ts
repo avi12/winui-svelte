@@ -14,17 +14,22 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry
  */
 export interface PathGeometryProps extends GeometryProps {
+  /**
+   * Gets or sets the collection of PathFigure objects that describe the contents of a path. A collection of PathFigure objects that describe the contents of a path. Each individual PathFigure describes a shape.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry.figures
+   */
   children?: Snippet;
   /**
    * Gets or sets the collection of PathFigure objects that describe the contents of a path. A collection of PathFigure objects that describe the contents of a path. Each individual PathFigure describes a shape.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry.figures
    */
   figures?: PathGeometry["figures"];
   /**
    * Gets or sets a value that determines how the intersecting areas contained in the PathGeometry are combined. A FillRule enumeration value that indicates how the intersecting areas of the PathGeometry are combined. The default is EvenOdd.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry.fillrule
    */
   fillRule?: EnumInput<typeof FillRule>;
 }

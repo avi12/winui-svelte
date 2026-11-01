@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CanvasControlComponentProps };
 
+/**
+ * XAML control providing immediate mode 2D rendering. Start here if you are new to the Win2D API.
+ *
+ * @see https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasControl.htm
+ */
 declare const CanvasControl: Component<CanvasControlComponentProps, Record<string, never>, "">;
 export default CanvasControl;

@@ -15,25 +15,25 @@ export interface SkewTransformProps extends TransformProps {
   /**
    * Gets or sets the x-axis skew angle, which is measured in degrees counterclockwise from the y-axis.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform.anglex
    */
   angleX?: number;
   /**
    * Gets or sets the y-axis skew angle, which is measured in degrees counterclockwise from the x-axis.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform.angley
    */
   angleY?: number;
   /**
    * Gets or sets the x-coordinate of the transform center. The x-coordinate of the transform center. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform.centerx
    */
   centerX?: number;
   /**
    * Gets or sets the y-coordinate of the transform center. The y-coordinate of the transform center. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.skewtransform.centery
    */
   centerY?: number;
 }

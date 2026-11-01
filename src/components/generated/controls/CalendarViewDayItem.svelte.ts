@@ -15,7 +15,7 @@ export interface CalendarViewDayItemProps extends ControlProps {
   /**
    * Gets or sets a value that indicates whether the date is unavailable.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarviewdayitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarviewdayitem.isblackout
    */
   isBlackout?: boolean;
 }

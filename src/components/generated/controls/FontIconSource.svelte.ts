@@ -23,43 +23,43 @@ export interface FontIconSourceProps extends IconSourceProps {
   /**
    * Gets or sets the font used to display the icon glyph. The font used to display the icon glyph. The default is the font family defined by the SymbolThemeFontFamily theme resource (see Remarks).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.fontfamily
    */
   fontFamily?: FontFamilyInput;
   /**
    * Gets or sets the size of the icon glyph. A non-negative value that specifies the font size, measured in pixels.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.fontsize
    */
   fontSize?: number;
   /**
    * Gets or sets the font style for the icon glyph. A named constant of the enumeration that specifies the style in which the icon glyph is rendered. The default is Normal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.fontstyle
    */
   fontStyle?: EnumInput<typeof FontStyle>;
   /**
    * Gets or sets the thickness of the icon glyph. A value that specifies the thickness of the icon glyph. The default is Normal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.fontweight
    */
   fontWeight?: FontWeightInput;
   /**
    * Gets or sets the character code that identifies the icon glyph. The hexadecimal character code for the icon glyph.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.glyph
    */
   glyph?: GlyphInput;
   /**
    * Gets or sets a value that indicates whether automatic text enlargement, to reflect the system text size setting, is enabled.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.istextscalefactorenabled
    */
   isTextScaleFactorEnabled?: boolean;
   /**
    * Gets or sets a value that indicates whether the icon is mirrored when its containing element's FlowDirection is RightToLeft.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.mirroredwhenrighttoleft
    */
   mirroredWhenRightToLeft?: boolean;
 }

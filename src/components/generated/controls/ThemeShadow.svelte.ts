@@ -13,6 +13,11 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.themeshadow
  */
 export interface ThemeShadowProps extends ShadowProps {
+  /**
+   * Gets a collection of UI elements that this ThemeShadow is cast on.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.themeshadow.receivers
+   */
   receivers?: Snippet;
 }
 

@@ -15,9 +15,13 @@ export interface EasingFunctionBaseProps {
   /**
    * Gets or sets a value that specifies how the animation interpolates. One of the enumeration values that specifies how the animation interpolates. The default is EaseOut.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingfunctionbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingfunctionbase.easingmode
    */
   easingMode?: EnumInput<typeof EasingMode>;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

@@ -28,145 +28,145 @@ export interface TeachingTipProps extends ContentControlProps {
   /**
    * Gets or sets a value that indicates whether the teaching tip is open.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.isopen
    */
   isOpen?: boolean | undefined;
   /**
    * Gets or sets the command to invoke when the action button is clicked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.actionbuttoncommand
    */
   actionButtonCommand?: TeachingTip["actionButtonCommand"] | Snippet;
   /**
    * Gets or sets the parameter to pass to the command for the action button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.actionbuttoncommandparameter
    */
   actionButtonCommandParameter?: ObjectInput;
   /**
    * Gets or sets the text of the teaching tip's action button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.actionbuttoncontent
    */
   actionButtonContent?: ObjectInput | Snippet;
   /**
    * Gets or sets the Style to apply to the action button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.actionbuttonstyle
    */
   actionButtonStyle?: StyleInput;
   /**
    * Gets or sets the command to invoke when the close button is clicked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.closebuttoncommand
    */
   closeButtonCommand?: TeachingTip["closeButtonCommand"] | Snippet;
   /**
    * Gets or sets the parameter to pass to the command for the close button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.closebuttoncommandparameter
    */
   closeButtonCommandParameter?: ObjectInput;
   /**
    * Gets or sets the content of the teaching tip's close button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.closebuttoncontent
    */
   closeButtonContent?: ObjectInput | Snippet;
   /**
    * Gets or sets the Style to apply to the teaching tip's close button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.closebuttonstyle
    */
   closeButtonStyle?: StyleInput;
   /**
    * Border-to-border graphic content displayed in the header or footer of the teaching tip. Will appear opposite of the tail in targeted teaching tips unless otherwise set.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.herocontent
    */
   heroContent?: TeachingTip["heroContent"] | Snippet;
   /**
    * Placement of the hero content within the teaching tip.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.herocontentplacement
    */
   heroContentPlacement?: EnumInput<typeof TeachingTipHeroContentPlacementMode>;
   /**
    * Gets or sets the graphic content to appear alongside the title and subtitle.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.iconsource
    */
   iconSource?: TeachingTip["iconSource"] | Snippet;
   /**
    * Enables light-dismiss functionality so that a teaching tip will dismiss when a user scrolls or interacts with other elements of the application.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.islightdismissenabled
    */
   isLightDismissEnabled?: boolean;
   /**
    * Adds a margin between a targeted teaching tip and its target or between a non-targeted teaching tip and the xaml root.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.placementmargin
    */
   placementMargin?: ThicknessInput;
   /**
    * Preferred placement to be used for the teaching tip. If there is not enough space to show at the preferred placement, a new placement will be automatically chosen. Placement is relative to its target if Target is non-null or to the parent window of the teaching tip if Target is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.preferredplacement
    */
   preferredPlacement?: EnumInput<typeof TeachingTipPlacementMode>;
   /**
    * Gets or sets a value that indicates whether the teaching tip will constrain to the bounds of its xaml root.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.shouldconstraintorootbounds
    */
   shouldConstrainToRootBounds?: boolean;
   /**
    * Gets or sets the subtitle of the teaching tip.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.subtitle
    */
   subtitle?: string;
   /**
    * Toggles collapse of a teaching tip's tail. Can be used to override auto behavior to make a tail visible on a non-targeted teaching tip and hidden on a targeted teaching tip.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.tailvisibility
    */
   tailVisibility?: EnumInput<typeof TeachingTipTailVisibility>;
   /**
    * Sets the target for a teaching tip to position itself relative to and point at with its tail.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.target
    */
   target?: TeachingTip["target"];
   /**
    * Gets or sets the title of the teaching tip.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.title
    */
   title?: string;
   /**
    * Occurs after the action button is clicked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.actionbuttonclick
    */
   onactionbuttonclick?: Parameters<TeachingTip["onActionButtonClick"]>[0];
   /**
    * Occurs after the close button is clicked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.closebuttonclick
    */
   onclosebuttonclick?: Parameters<TeachingTip["onCloseButtonClick"]>[0];
   /**
    * Occurs after the tip is closed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.closed
    */
   onclosed?: Parameters<TeachingTip["onClosed"]>[0];
   /**
    * Occurs just before the tip begins to close.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.closing
    */
   onclosing?: Parameters<TeachingTip["onClosing"]>[0];
 }

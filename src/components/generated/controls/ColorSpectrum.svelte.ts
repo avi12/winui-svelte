@@ -17,67 +17,67 @@ export interface ColorSpectrumProps extends ControlProps {
   /**
    * Gets or sets the current color value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.color
    */
   color?: ColorInput | undefined;
   /**
    * Gets or sets a value that indicates how the Hue-Saturation-Value (HSV) color components are mapped onto the ColorSpectrum. A value of the enumeration. The default is HueSaturation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.components
    */
   components?: EnumInput<typeof ColorSpectrumComponents>;
   /**
    * Gets or sets the current color value as a Vector4.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.hsvcolor
    */
   hsvColor?: ColorSpectrum["hsvColor"];
   /**
    * Gets or sets the maximum Hue value in the range 0-359.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.maxhue
    */
   maxHue?: number;
   /**
    * Gets or sets the maximum Saturation value in the range 0-100.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.maxsaturation
    */
   maxSaturation?: number;
   /**
    * Gets or sets the maximum Value value in the range 0-100.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.maxvalue
    */
   maxValue?: number;
   /**
    * Gets or sets the minimum Hue value in the range 0-359.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.minhue
    */
   minHue?: number;
   /**
    * Gets or sets the minimum Saturation value in the range 0-100.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.minsaturation
    */
   minSaturation?: number;
   /**
    * Gets or sets the minimum Value value in the range 0-100.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.minvalue
    */
   minValue?: number;
   /**
    * Gets or sets a value that indicates whether the ColorSpectrum is shown as a square or a circle. A value of the enumeration. The default is Box, which shows the spectrum as a square.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.shape
    */
   shape?: EnumInput<typeof ColorSpectrumShape>;
   /**
    * Occurs when the Color property has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorspectrum.colorchanged
    */
   oncolorchanged?: Parameters<ColorSpectrum["onColorChanged"]>[0];
 }

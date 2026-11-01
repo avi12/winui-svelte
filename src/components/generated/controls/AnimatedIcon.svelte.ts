@@ -16,19 +16,19 @@ export interface AnimatedIconProps extends IconElementProps {
   /**
    * Gets or sets the static icon to use when the animated icon cannot run.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedicon
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedicon.fallbackiconsource
    */
   fallbackIconSource?: AnimatedIcon["fallbackIconSource"] | Snippet;
   /**
    * Gets or sets a value that indicates whether the icon is mirrored when the FlowDirection is RightToLeft.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedicon
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedicon.mirroredwhenrighttoleft
    */
   mirroredWhenRightToLeft?: boolean;
   /**
    * Gets or sets the animated visual shown by the AnimatedIcon object. The animated visual shown by the AnimatedIcon. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedicon
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedicon.source
    */
   source?: AnimatedIcon["source"];
 }

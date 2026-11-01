@@ -17,25 +17,25 @@ export interface SplitButtonProps extends ContentControlProps {
   /**
    * Gets or sets the command to invoke when this button is pressed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton.command
    */
   command?: SplitButton["command"] | Snippet;
   /**
    * Gets or sets the parameter to pass to the Command property. The parameter to pass to the Command property. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton.commandparameter
    */
   commandParameter?: ObjectInput;
   /**
    * Gets or sets the flyout associated with this button. The flyout associated with this button. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton.flyout
    */
   flyout?: SplitButton["flyout"] | Snippet;
   /**
    * Occurs when a button control is clicked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitbutton.click
    */
   onclick?: Parameters<SplitButton["onClick"]>[0];
 }

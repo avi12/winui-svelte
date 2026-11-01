@@ -22,53 +22,58 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons
  */
 export interface RadioButtonsProps extends ControlProps {
+  /**
+   * Gets the collection used to generate the content of the control. The collection that is used to generate the content of the control, if it exists; otherwise, null. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons.items
+   */
   items?: Snippet;
   /**
    * Gets or sets the selected radio button. The selected radio button. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons.selecteditem
    */
   selectedItem?: ObjectInput | undefined;
   /**
    * Gets or sets the index of the selected radio button. The index of the selected radio button. The default is -1, which indicates that no radio button is selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons.selectedindex
    */
   selectedIndex?: number | undefined;
   /**
    * Gets or sets the content for the group header. The content of the group header. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the data template used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets an object source used to generate the content of the control. The object that is used to generate the content of the control. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons.itemssource
    */
   itemsSource?: CollectionInput;
   /**
    * Gets or sets the DataTemplate used to display each item. The template that specifies the visualization of the data objects. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons.itemtemplate
    */
   itemTemplate?: ObjectReferenceInput;
   /**
    * Gets or sets the maximum number of columns the radio buttons are arranged in.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons.maxcolumns
    */
   maxColumns?: number;
   /**
    * Occurs when the currently selected item changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobuttons.selectionchanged
    */
   onselectionchanged?: (sender: RadioButtons, args: EventArguments<SelectionChangedEventArgs>) => void;
 }

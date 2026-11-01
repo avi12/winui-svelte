@@ -18,61 +18,61 @@ export interface GlyphsProps extends FrameworkElementProps {
   /**
    * Gets or sets the index of the palette to use for the color font.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.colorfontpaletteindex
    */
   colorFontPaletteIndex?: number;
   /**
    * Gets or sets the Brush that is used to render the glyphs. The brush to use to render the glyphs. The default is null, which is evaluated as Transparent for rendering.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.fill
    */
   fill?: BrushInput | Snippet;
   /**
    * Gets or sets the em size used for rendering the glyphs. The em size used for rendering. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.fontrenderingemsize
    */
   fontRenderingEmSize?: number;
   /**
    * Gets or sets the location of the font used for rendering the glyphs. An object describing the Uniform Resource Identifier (URI) source of the font. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.fonturi
    */
   fontUri?: UriInput;
   /**
    * Gets or sets a collection of glyph specifications that represents the Glyphs object. A collection of glyph specifications that represents the Glyphs object. A string that defines the position of a glyph in the font as well as other glyph specifics in a string mini-language. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.indices
    */
   indices?: string;
   /**
    * Gets or sets a value that determines whether font glyphs that contain color layers, such as Segoe UI Emoji, are rendered in color.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.iscolorfontenabled
    */
   isColorFontEnabled?: boolean;
   /**
    * Gets or sets the x origin for the glyphs. The x origin of the Glyphs, in pixels. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.originx
    */
   originX?: number;
   /**
    * Gets or sets the y origin for the glyphs. The y origin of the Glyphs, in pixels. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.originy
    */
   originY?: number;
   /**
    * Gets or sets the style simulations applied to the glyphs. One of the enumeration values that specifies the style simulations to apply to the glyphs. The default is "None".
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.stylesimulations
    */
   styleSimulations?: EnumInput<typeof StyleSimulations>;
   /**
    * Gets or sets the Unicode string to render in glyphs. A Unicode string with XAML-compatible encoding. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.unicodestring
    */
   unicodeString?: string;
 }

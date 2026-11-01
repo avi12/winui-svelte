@@ -17,61 +17,61 @@ export interface PersonPictureProps extends ControlProps {
   /**
    * Gets or sets a Segoe MDL2 Assets font glyph to display on the badge. The hexadecimal character code for the badge glyph.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.badgeglyph
    */
   badgeGlyph?: string;
   /**
    * Gets or sets the source of an image to display on the badge. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage with a stream, perhaps a stream from a storage file.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.badgeimagesource
    */
   badgeImageSource?: ImageSourceInput | Snippet;
   /**
    * Gets or sets the contact number to display on the badge.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.badgenumber
    */
   badgeNumber?: number;
   /**
    * Gets or sets the contact text to display on the badge.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.badgetext
    */
   badgeText?: string;
   /**
    * Gets or sets a Contact object that contains information about the person.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.contact
    */
   contact?: PersonPicture["contact"];
   /**
    * Gets or sets the contact's display name.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.displayname
    */
   displayName?: string;
   /**
    * Gets or sets the contact's initials.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.initials
    */
   initials?: string;
   /**
    * Gets or sets a value that indicates whether the PersonPicture represents a group or an individual.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.isgroup
    */
   isGroup?: boolean;
   /**
    * Gets or sets a value that indicates whether a small image is displayed rather than a large image when both are available.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.prefersmallimage
    */
   preferSmallImage?: boolean;
   /**
    * Gets or sets the source of the contact's profile picture. An object that represents the image source file for the drawn image. Typically you set this with a BitmapImage with a stream, perhaps a stream from a storage file.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.profilepicture
    */
   profilePicture?: ImageSourceInput | Snippet;
 }

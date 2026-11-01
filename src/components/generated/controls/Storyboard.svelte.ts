@@ -13,6 +13,11 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.storyboard
  */
 export interface StoryboardProps extends TimelineProps {
+  /**
+   * Gets the collection of child Timeline objects. The collection of child Timeline objects. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.storyboard.children
+   */
   children?: Snippet;
 }
 

@@ -16,13 +16,13 @@ export interface LineGeometryProps extends GeometryProps {
   /**
    * Gets or sets the end point of a line. The end point of the line. The default is a Point with value 0,0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linegeometry
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linegeometry.endpoint
    */
   endPoint?: PointInput;
   /**
    * Gets or sets the start point of the line. The start point of the line. The default is a Point with value 0,0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linegeometry
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linegeometry.startpoint
    */
   startPoint?: PointInput;
 }

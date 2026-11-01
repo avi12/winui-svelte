@@ -26,55 +26,55 @@ export interface BitmapImageProps extends BitmapSourceProps {
   /**
    * Gets or sets a value that indicates whether an animated image should play as soon as it loads.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.autoplay
    */
   autoPlay?: boolean;
   /**
    * Gets or sets the BitmapCreateOptions for a BitmapImage. The BitmapCreateOptions used for this BitmapImage. The default is None. With this default, a BitmapImage uses cached content when it is available. For a BitmapImage that is created by referencing an image source file by Uniform Resource Identifier (URI), the Uniform Resource Identifier (URI) controls the internal caching scheme.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.createoptions
    */
   createOptions?: FlagsInput<typeof BitmapCreateOptions>;
   /**
    * Gets or sets the height to use for image decoding operations.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.decodepixelheight
    */
   decodePixelHeight?: number;
   /**
    * Gets or sets a value that determines how DecodePixelWidth and DecodePixelHeight values are interpreted for decoding operations. A value of the enumeration. The default is Physical.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.decodepixeltype
    */
   decodePixelType?: EnumInput<typeof DecodePixelType>;
   /**
    * Gets or sets the width to use for image decoding operations.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.decodepixelwidth
    */
   decodePixelWidth?: number;
   /**
    * Gets or sets the Uniform Resource Identifier (URI) of the graphics source file that generated this BitmapImage.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.urisource
    */
   uriSource?: UriInput;
   /**
    * Occurs when a significant change has occurred in the download progress of the BitmapImage content.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.downloadprogress
    */
   ondownloadprogress?: (sender: BitmapImage, args: EventArguments<DownloadProgressEventArgs>) => void;
   /**
    * Occurs when there is an error associated with image retrieval or format.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.imagefailed
    */
   onimagefailed?: (sender: BitmapImage, args: EventArguments<ExceptionRoutedEventArgs>) => void;
   /**
    * Occurs when the image source is downloaded and decoded with no failure. You can use this event to determine the size of an image before rendering it.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.imageopened
    */
   onimageopened?: (sender: BitmapImage, args: EventArguments<RoutedEventArgs>) => void;
 }

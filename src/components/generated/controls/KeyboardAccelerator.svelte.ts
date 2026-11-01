@@ -15,33 +15,37 @@ export interface KeyboardAcceleratorProps {
   /**
    * Gets or sets whether a keyboard shortcut (accelerator) is available to the user.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator.isenabled
    */
   isEnabled?: boolean;
   /**
    * Gets or sets the virtual-key (used in conjunction with one or more modifier keys) for a keyboard shortcut (accelerator). A keyboard shortcut is invoked when the modifier keys associated with the shortcut are pressed and then the non-modifier key is pressed at the same time. For example, Ctrl+C for copy and Ctrl+S for save.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator.key
    */
   key?: EnumInput<typeof VirtualKey>;
   /**
    * Gets or sets the virtual-key used to modify another keypress for a keyboard shortcut (accelerator). A keyboard shortcut is invoked when the modifier keys associated with the shortcut are pressed and then the non-modifier key is pressed at the same time. For example, Ctrl+C for copy and Ctrl+S for save.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator.modifiers
    */
   modifiers?: FlagsInput<typeof VirtualKeyModifiers>;
   /**
    * Gets or sets the scope (or target) of the keyboard accelerator. The scope (or target) of the keyboard accelerator. The default is null (global scope).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator.scopeowner
    */
   scopeOwner?: KeyboardAccelerator["scopeOwner"];
   /**
    * Occurs when the key combination for this KeyboardAccelerator is pressed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator.invoked
    */
   oninvoked?: Parameters<KeyboardAccelerator["onInvoked"]>[0];
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

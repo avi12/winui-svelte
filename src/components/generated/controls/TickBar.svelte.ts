@@ -17,7 +17,7 @@ export interface TickBarProps extends FrameworkElementProps {
   /**
    * Gets or sets the Brush that draws on the background area of the TickBar.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.tickbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.tickbar.fill
    */
   fill?: BrushInput | Snippet;
 }

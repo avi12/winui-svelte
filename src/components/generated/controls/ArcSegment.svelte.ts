@@ -17,31 +17,31 @@ export interface ArcSegmentProps extends PathSegmentProps {
   /**
    * Gets or sets a value that indicates whether the arc should be greater than 180 degrees.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment.islargearc
    */
   isLargeArc?: boolean;
   /**
    * Gets or sets the endpoint of the elliptical arc. The point to which the arc is drawn. The default is a Point with value 0,0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment.point
    */
   point?: PointInput;
   /**
    * Gets or sets the amount (in degrees) by which the ellipse is rotated about the x-axis.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment.rotationangle
    */
   rotationAngle?: number;
   /**
    * Gets or sets the x-radius and y-radius of the arc as a Size structure. A Size with value 0,0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment.size
    */
   size?: SizeInput;
   /**
    * Gets or sets a value that specifies whether the arc is drawn in the Clockwise or Counterclockwise direction. One of the enumeration values that specifies the direction in which the arc is drawn. The default is Counterclockwise.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment.sweepdirection
    */
   sweepDirection?: EnumInput<typeof SweepDirection>;
 }

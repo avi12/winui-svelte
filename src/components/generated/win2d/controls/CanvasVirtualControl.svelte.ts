@@ -7,13 +7,53 @@ import type { CanvasVirtualControl } from "../bindings.ts";
 import { linkUserControl } from "../../controls/UserControl.svelte.ts";
 import type { UserControlBound, UserControlProps } from "../../controls/UserControl.svelte.ts";
 
+/**
+ * XAML control providing immediate mode 2D rendering to a virtualized surface.
+ *
+ * @see https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl.htm
+ */
 export interface CanvasVirtualControlProps extends UserControlProps {
+  /**
+   * The color that the control is cleared to when CreateDrawingSession is called.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl_ClearColor.htm
+   */
   clearColor?: ColorInput;
+  /**
+   * Gets or sets an application-chosen device for this control.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl_CustomDevice.htm
+   */
   customDevice?: CanvasVirtualControl["customDevice"];
+  /**
+   * Gets or sets a scaling factor applied to this control's Dpi.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl_DpiScale.htm
+   */
   dpiScale?: number;
+  /**
+   * Gets or sets the whether the devices that this control creates will be forced to software rendering.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl_ForceSoftwareRenderer.htm
+   */
   forceSoftwareRenderer?: boolean;
+  /**
+   * Gets or sets whether this control should create a new device each time, or use a device which may common between other controls.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl_UseSharedDevice.htm
+   */
   useSharedDevice?: boolean;
+  /**
+   * Hook this event to create any resources needed for your drawing.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/E_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl_CreateResources.htm
+   */
   oncreateresources?: Parameters<CanvasVirtualControl["onCreateResources"]>[0];
+  /**
+   * Occurs when a region of the control needs redrawing.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/E_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl_RegionsInvalidated.htm
+   */
   onregionsinvalidated?: Parameters<CanvasVirtualControl["onRegionsInvalidated"]>[0];
 }
 

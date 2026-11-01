@@ -17,31 +17,31 @@ export interface PointAnimationProps extends TimelineProps {
   /**
    * Gets or sets the total amount by which the animation changes its starting value. The total amount by which the animation changes its starting value. The default is null. If you are programming using C#or Microsoft Visual Basic, the type of this property is projected as **Point?**(a nullable Point.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation.by
    */
   by?: NullablePointInput;
   /**
    * Gets or sets the easing function you are applying to the animation. The easing function you are applying to the animation. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation.easingfunction
    */
   easingFunction?: PointAnimation["easingFunction"] | Snippet;
   /**
    * Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation.enabledependentanimation
    */
   enableDependentAnimation?: boolean;
   /**
    * Gets or sets the animation's starting value. The starting value of the animation. The default is null. If you are programming using C#or Microsoft Visual Basic, the type of this property is projected as **Point?**(a nullable Point.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation.from
    */
   from?: NullablePointInput;
   /**
    * Gets or sets the animation's ending value. The ending value of the animation. The default is null. If you are programming using C#or Microsoft Visual Basic, the type of this property is projected as **Point?**(a nullable Point.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation.to
    */
   to?: NullablePointInput;
 }

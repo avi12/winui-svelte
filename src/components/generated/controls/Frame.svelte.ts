@@ -19,61 +19,61 @@ export interface FrameProps extends ContentControlProps {
   /**
    * Gets the number of entries in the navigation back stack.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.backstackdepth
    */
   backStackDepth?: number | undefined;
   /**
    * Gets a value that indicates whether there is at least one entry in back navigation history.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.cangoback
    */
   canGoBack?: boolean | undefined;
   /**
    * Gets a value that indicates whether there is at least one entry in forward navigation history.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.cangoforward
    */
   canGoForward?: boolean | undefined;
   /**
    * Gets or sets the number of pages in the navigation history that can be cached for the frame.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.cachesize
    */
   cacheSize?: number;
   /**
    * Gets or sets a value that indicates whether navigation is recorded in the Frame's ForwardStack or BackStack.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.isnavigationstackenabled
    */
   isNavigationStackEnabled?: boolean;
   /**
    * Gets or sets a type reference of the current content, or the content that should be navigated to.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.sourcepagetype
    */
   sourcePageType?: Frame["sourcePageType"];
   /**
    * Occurs when the content that is being navigated to has been found and is available from the Content property, although it may not have completed loading.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.navigated
    */
   onnavigated?: (sender: Frame, args: EventArguments<NavigationEventArgs>) => void;
   /**
    * Occurs when a new navigation is requested.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.navigating
    */
   onnavigating?: (sender: Frame, args: EventArguments<NavigatingCancelEventArgs>) => void;
   /**
    * Occurs when an error is raised while navigating to the requested content.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.navigationfailed
    */
   onnavigationfailed?: (sender: Frame, args: EventArguments<NavigationFailedEventArgs>) => void;
   /**
    * Occurs when a new navigation is requested while a current navigation is in progress.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.navigationstopped
    */
   onnavigationstopped?: (sender: Frame, args: EventArguments<NavigationEventArgs>) => void;
 }

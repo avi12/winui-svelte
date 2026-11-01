@@ -13,23 +13,28 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout
  */
 export interface PickerFlyoutProps extends PickerFlyoutBaseProps {
+  /**
+   * Gets or sets the content that is contained within the picker. The content of the user control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout.content
+   */
   children?: Snippet;
   /**
    * Gets or sets whether the confirmation buttons are visible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout.confirmationbuttonsvisible
    */
   confirmationButtonsVisible?: boolean;
   /**
    * Gets or sets the content that is contained within the picker. The content of the user control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout.content
    */
   content?: PickerFlyout["content"] | Snippet;
   /**
    * Occurs when the user has tapped a confirmation button to confirm the selection.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout.confirmed
    */
   onconfirmed?: Parameters<PickerFlyout["onConfirmed"]>[0];
 }

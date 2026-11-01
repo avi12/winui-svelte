@@ -15,25 +15,25 @@ export interface ScaleTransformProps extends TransformProps {
   /**
    * Gets or sets the x-coordinate of the center point of this ScaleTransform. The x-coordinate of the center point of this ScaleTransform. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform.centerx
    */
   centerX?: number;
   /**
    * Gets or sets the y-coordinate of the center point of this ScaleTransform. The y-coordinate of the center point of this ScaleTransform. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform.centery
    */
   centerY?: number;
   /**
    * Gets or sets the x-axis scale factor. The scale factor along the x-axis. The default is 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform.scalex
    */
   scaleX?: number;
   /**
    * Gets or sets the y-axis scale factor. The scale factor along the y-axis. The default is 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.scaletransform.scaley
    */
   scaleY?: number;
 }

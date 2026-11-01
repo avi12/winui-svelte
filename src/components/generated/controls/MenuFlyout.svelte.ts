@@ -14,11 +14,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyout
  */
 export interface MenuFlyoutProps extends FlyoutBaseProps {
+  /**
+   * Gets the collection used to generate the content of the menu. The collection that is used to generate the content of the menu. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyout.items
+   */
   children?: Snippet;
   /**
    * Gets or sets the style that is used when rendering the MenuFlyout.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyout.menuflyoutpresenterstyle
    */
   menuFlyoutPresenterStyle?: StyleInput;
 }

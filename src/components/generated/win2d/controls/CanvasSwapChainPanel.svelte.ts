@@ -6,7 +6,17 @@ import type { CanvasSwapChainPanel } from "../bindings.ts";
 import { linkSwapChainPanel } from "../../controls/SwapChainPanel.svelte.ts";
 import type { SwapChainPanelBound, SwapChainPanelProps } from "../../controls/SwapChainPanel.svelte.ts";
 
+/**
+ * A swap chain panel is a XAML control which draws to a swap chain.
+ *
+ * @see https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasSwapChainPanel.htm
+ */
 export interface CanvasSwapChainPanelProps extends SwapChainPanelProps {
+  /**
+   * Gets or sets the associated swap chain object.
+   *
+   * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasSwapChainPanel_SwapChain.htm
+   */
   swapChain?: CanvasSwapChainPanel["swapChain"];
 }
 

@@ -13,17 +13,22 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar
  */
 export interface SelectorBarProps extends ControlProps {
+  /**
+   * Gets the collection of SelectorBarItem instances used to generate the content of the SelectorBar control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar.items
+   */
   items?: Snippet;
   /**
    * Gets or sets the currently selected item. The selected SelectorBarItem in the Items list. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar.selecteditem
    */
   selectedItem?: SelectorBar["selectedItem"] | undefined;
   /**
    * Occurs when the SelectorBar selection changes; that is, when the SelectedItem property has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbar.selectionchanged
    */
   onselectionchanged?: Parameters<SelectorBar["onSelectionChanged"]>[0];
 }

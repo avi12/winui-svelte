@@ -15,7 +15,7 @@ export interface PowerEaseProps extends EasingFunctionBaseProps {
   /**
    * Gets or sets the exponential power of the animation interpolation. For example, a value of 7 creates an animation interpolation curve that follows the formula f (t) = t<sup>7</sup>. The exponential power of the animation interpolation. This value must be greater or equal to 0. The default is 2.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.powerease
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.powerease.power
    */
   power?: number;
 }

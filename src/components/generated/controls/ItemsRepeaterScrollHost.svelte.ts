@@ -16,19 +16,19 @@ export interface ItemsRepeaterScrollHostProps extends FrameworkElementProps {
   /**
    * Determines the horizontal position of the ScrollViewer's _anchor point_ with respect to the viewport. By default, the ScrollViewer selects an element as its CurrentAnchor by identifying the element in its viewport nearest to the anchor point.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost.horizontalanchorratio
    */
   horizontalAnchorRatio?: number;
   /**
    * Gets or sets the ScrollViewer to host. A ScrollViewer that contains one or more ItemsRepeater controls.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost.scrollviewer
    */
   scrollViewer?: ItemsRepeaterScrollHost["scrollViewer"] | Snippet;
   /**
    * Determines the vertical position of the ScrollViewer's _anchor point_ with respect to the viewport. By default, the ScrollViewer selects an element as its CurrentAnchor by identifying the element in its viewport nearest to the anchor point.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeaterscrollhost.verticalanchorratio
    */
   verticalAnchorRatio?: number;
 }

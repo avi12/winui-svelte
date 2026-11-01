@@ -13,11 +13,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsourceelement
  */
 export interface IconSourceElementProps extends IconElementProps {
+  /**
+   * Gets or sets the IconSource used as the icon content. The IconSource used as the icon content. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsourceelement.iconsource
+   */
   children?: Snippet;
   /**
    * Gets or sets the IconSource used as the icon content. The IconSource used as the icon content. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsourceelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.iconsourceelement.iconsource
    */
   iconSource?: IconSourceElement["iconSource"] | Snippet;
 }

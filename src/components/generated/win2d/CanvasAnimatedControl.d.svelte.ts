@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CanvasAnimatedControlComponentProps };
 
+/**
+ * XAML control intended for displaying animating content.
+ *
+ * @see https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl.htm
+ */
 declare const CanvasAnimatedControl: Component<CanvasAnimatedControlComponentProps, Record<string, never>, "">;
 export default CanvasAnimatedControl;

@@ -474,6 +474,7 @@
     "check:package": "node --disable-warning=ExperimentalWarning scripts/pack/check-package.ts",
     "fallow": "fallow",
     "fallow:audit": "fallow audit --base HEAD",
+    "fetch:documentation": "node --disable-warning=ExperimentalWarning scripts/codegen/fetch-documentation.ts",
     "gen:components": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts",
     "gen:css-data": "node --disable-warning=ExperimentalWarning scripts/css/export-vscode-css-data.ts",
     "gen:css-data:check": "node --disable-warning=ExperimentalWarning scripts/css/export-vscode-css-data.ts --check",

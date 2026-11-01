@@ -15,19 +15,19 @@ export interface EntranceThemeTransitionProps extends TransitionProps {
   /**
    * Gets or sets the distance by which the target is translated in the horizontal direction when the animation is active. The horizontal offset translation, in pixels.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancethemetransition
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancethemetransition.fromhorizontaloffset
    */
   fromHorizontalOffset?: number;
   /**
    * Gets or sets the distance by which the target is translated in the vertical direction when the animation is active. The vertical offset translation, in pixels.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancethemetransition
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancethemetransition.fromverticaloffset
    */
   fromVerticalOffset?: number;
   /**
    * Gets or sets a value that determines whether the transition staggers rendering of multiple items, or renders all items at once.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancethemetransition
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancethemetransition.isstaggeringenabled
    */
   isStaggeringEnabled?: boolean;
 }

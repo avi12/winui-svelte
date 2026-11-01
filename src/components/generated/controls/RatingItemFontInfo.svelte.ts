@@ -15,37 +15,37 @@ export interface RatingItemFontInfoProps extends RatingItemInfoProps {
   /**
    * Gets or sets a Segoe MDL2 Assets font glyph that represents a rating element that is disabled. The hexadecimal character code for the rating element glyph.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo.disabledglyph
    */
   disabledGlyph?: string;
   /**
    * Gets or sets a Segoe MDL2 Assets font glyph that represents a rating element that has been set by the user. The hexadecimal character code for the rating element glyph.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo.glyph
    */
   glyph?: string;
   /**
    * Gets or sets a Segoe MDL2 Assets font glyph that represents a rating element that is showing a placeholder value. The hexadecimal character code for the rating element glyph.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo.placeholderglyph
    */
   placeholderGlyph?: string;
   /**
    * Gets or sets a Segoe MDL2 Assets font glyph that represents a rating element that has the pointer over it. The hexadecimal character code for the rating element glyph.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo.pointeroverglyph
    */
   pointerOverGlyph?: string;
   /**
    * Gets or sets a Segoe MDL2 Assets font glyph that represents a rating element showing a placeholder value with the pointer over it. The hexadecimal character code for the rating element glyph.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo.pointeroverplaceholderglyph
    */
   pointerOverPlaceholderGlyph?: string;
   /**
    * Gets or sets a Segoe MDL2 Assets font glyph that represents a rating element that has not been set. The hexadecimal character code for the rating element glyph.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingitemfontinfo.unsetglyph
    */
   unsetGlyph?: string;
 }

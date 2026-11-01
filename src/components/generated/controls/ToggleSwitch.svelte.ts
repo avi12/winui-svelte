@@ -15,53 +15,58 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch
  */
 export interface ToggleSwitchProps extends ControlProps {
+  /**
+   * Gets or sets the header content. The header content for the ToggleSwitch.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.header
+   */
   children?: Snippet;
   /**
    * Gets or sets a value that declares whether the state of the ToggleSwitch is "On".
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.ison
    */
   isOn?: boolean | undefined;
   /**
    * Gets or sets the header content. The header content for the ToggleSwitch.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the control's header.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Provides the object content that should be displayed using the OffContentTemplate when this ToggleSwitch has state of "Off".
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.offcontent
    */
   offContent?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the control's content while in "Off" state.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.offcontenttemplate
    */
   offContentTemplate?: DataTemplateInput;
   /**
    * Provides the object content that should be displayed using the OnContentTemplate when this ToggleSwitch has state of "On".
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.oncontent
    */
   onContent?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the control's content while in "On" state.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.oncontenttemplate
    */
   onContentTemplate?: DataTemplateInput;
   /**
    * Occurs when "On"/"Off" state changes for this ToggleSwitch.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.toggled
    */
   ontoggled?: (sender: ToggleSwitch, args: EventArguments<RoutedEventArgs>) => void;
 }

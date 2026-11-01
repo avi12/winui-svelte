@@ -15,13 +15,13 @@ export interface RadioMenuFlyoutItemProps extends MenuFlyoutItemProps {
   /**
    * Gets or sets the name that specifies which RadioMenuFlyoutItem controls are mutually exclusive.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiomenuflyoutitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiomenuflyoutitem.groupname
    */
   groupName?: string;
   /**
    * Gets or sets whether the RadioMenuFlyoutItem is checked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiomenuflyoutitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiomenuflyoutitem.ischecked
    */
   isChecked?: boolean;
 }

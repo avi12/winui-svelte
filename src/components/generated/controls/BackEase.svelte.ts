@@ -15,7 +15,7 @@ export interface BackEaseProps extends EasingFunctionBaseProps {
   /**
    * Gets or sets the amplitude of retraction associated with a BackEase animation. The amplitude of retraction associated with a BackEase animation. This value must be greater than or equal to 0. The default is 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.backease
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.backease.amplitude
    */
   amplitude?: number;
 }

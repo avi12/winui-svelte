@@ -16,7 +16,7 @@ export interface SymbolIconProps extends IconElementProps {
   /**
    * Gets or sets the Segoe MDL2 Assets glyph used as the icon content. A named constant of the numeration that specifies the Segoe MDL2 Assets glyph to use.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symbolicon
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.symbolicon.symbol
    */
   symbol?: EnumInput<typeof Symbol>;
 }

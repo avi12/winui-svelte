@@ -15,9 +15,13 @@ export interface GeometryProps {
   /**
    * Gets or sets the Transform object applied to a Geometry. The transformation applied to the Geometry. Note that this value may be a single Transform or a list of Transform items.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.geometry
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.geometry.transform
    */
   transform?: Geometry["transform"] | Snippet;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

@@ -574,11 +574,11 @@ class LevelImports {
   }
 }
 
-// A JSDoc comment of WinUI's own text with a link to the page of the type
-// (the docs have no anchor for a member), or nothing where WinUI has none.
-function docLines({ text, type, indent }: {
+// A JSDoc comment of WinUI's own text with a link to the page the text is
+// from, or nothing where WinUI has none.
+function docLines({ text, url, indent }: {
   text: string | undefined;
-  type: TypeName;
+  url: string;
   indent: string;
 }) {
   const isDocumented = text !== undefined;
@@ -590,12 +590,13 @@ function docLines({ text, type, indent }: {
     `${indent}/**`,
     `${indent} * ${text}`,
     `${indent} *`,
-    `${indent} * @see ${docsUrlOf(type)}`,
+    `${indent} * @see ${url}`,
     `${indent} */`
   ];
 }
 
-// The comment of a property (`P`) or event (`E`) of the level's class.
+// The comment of a property (`P`) or event (`E`) of the level's class, linked
+// to the member's own page.
 function memberDocLines({ level, kind, winName }: {
   level: ClassModel;
   kind: string;
@@ -603,7 +604,46 @@ function memberDocLines({ level, kind, winName }: {
 }) {
   return docLines({
     text: level.documentation?.members.get(`${kind}:${winName}`),
-    type: level.type,
+    url: memberDocsUrlOf({
+      type: level.type,
+      kind,
+      name: winName
+    }),
+    indent: "  "
+  });
+}
+
+// The comment of an attached property: its owner's own text for the getter.
+function attachedDocLines(attached: AttachedModel) {
+  return docLines({
+    text: attached.documentation,
+    url: memberDocsUrlOf({
+      type: attached.owner,
+      kind: "M",
+      name: `Get${attached.name}`
+    }),
+    indent: "  "
+  });
+}
+
+// What `children` is: the content property of the class that declares one
+// (Panel.Children), else the class itself, which is a collection of its items.
+function childrenDocLines(level: ClassModel) {
+  const declaring = chain(level).findLast(entry => entry.declaresContent);
+  const content = declaring?.contentProperty ?? null;
+  const contentText = content === null ? undefined : declaring?.documentation?.members.get(`P:${content}`);
+  const hasContentText = declaring !== undefined && content !== null && contentText !== undefined;
+  if (hasContentText) {
+    return memberDocLines({
+      level: declaring,
+      kind: "P",
+      winName: content
+    });
+  }
+
+  return docLines({
+    text: level.documentation?.summary ?? undefined,
+    url: docsUrlOf(level.type),
     indent: "  "
   });
 }
@@ -618,7 +658,7 @@ function componentCommentLines(level: ClassModel) {
 function typeDocLines(level: ClassModel) {
   return docLines({
     text: level.documentation?.summary ?? undefined,
-    type: level.type,
+    url: docsUrlOf(level.type),
     indent: ""
   });
 }
@@ -688,7 +728,10 @@ function emitAttached({ attached, imports, isSlot }: {
 
   const enumNames = attachedOwnerExports(attached);
   return {
-    member: `  ${attached.key}?: ${isSlot ? `${type} | Snippet` : type} | undefined;`,
+    member: [
+      ...attachedDocLines(attached),
+      `  ${attached.key}?: ${isSlot ? `${type} | Snippet` : type} | undefined;`
+    ].join("\n"),
     owner: attached.owner.name,
     setter: [
       `      ${attached.key}({ ${enumNames.join(", ")} }, value) {`,
@@ -1054,7 +1097,7 @@ function emitEventBody({ level, imports }: {
 function emitAttachedBody(level: ClassModel) {
   const hasEvents = level.events.length > 0;
   return {
-    members: ["  attached?: AttachedInput;"],
+    members: [`${ATTACHED_PROP_DOC}\n  attached?: AttachedInput;`],
     body: [
       ...hasEvents ? [""] : [],
       "  link.property({",
@@ -1092,11 +1135,15 @@ function emitLevelBody({ level, imports }: {
   });
   const attached = isRoot ? [emitAttachedBody(level)] : [];
   const hasChildren = level.declaresContent || level.holdsItems;
-  const children = hasChildren ? ["  children?: Snippet;"] : [];
-  const collections = [...slotKeysOf({
-    level,
-    kind: SlotKind.COLLECTION
-  })].map(key => `  ${key}?: Snippet;`);
+  const children = hasChildren ? [[...childrenDocLines(level), "  children?: Snippet;"].join("\n")] : [];
+  const collections = level.slots.filter(slot => slot.kind === SlotKind.COLLECTION).map(slot => [
+    ...memberDocLines({
+      level,
+      kind: "P",
+      winName: slot.winName
+    }),
+    `  ${slot.key}?: Snippet;`
+  ].join("\n"));
   const body = [
     ...properties.body,
     ...bindables.body,
@@ -1747,6 +1794,13 @@ const NAMESPACE_PREFIX = "Microsoft.UI.Xaml.";
 const WINUI_DOCS_URL = "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt";
 const WIN2D_NAMESPACE = "Microsoft.Graphics.Canvas";
 const WIN2D_DOCS_URL = "https://microsoft.github.io/Win2D/WinUI3/html";
+// The one prop WinUI has no property for, so no page of its own.
+const ATTACHED_PROP_DOC = [
+  "  /**",
+  "   * Sets attached properties on the element: an entry `[Owner, \"Property\", value]`",
+  "   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.",
+  "   */"
+].join("\n");
 
 function docsUrlOf(type: {
   namespace: string;
@@ -1758,6 +1812,24 @@ function docsUrlOf(type: {
   }
 
   return `${WINUI_DOCS_URL}/${type.namespace}.${type.name}`.toLowerCase();
+}
+
+// The page of one member: WinUI's reference has a page for each, named
+// type.member; Win2D's reference names it Kind_Namespace_Type_Member.htm.
+function memberDocsUrlOf({ type, kind, name }: {
+  type: {
+    namespace: string;
+    name: string;
+  };
+  kind: string;
+  name: string;
+}) {
+  const isWin2d = type.namespace.startsWith(WIN2D_NAMESPACE);
+  if (isWin2d) {
+    return `${WIN2D_DOCS_URL}/${kind}_${type.namespace.replaceAll(".", "_")}_${type.name}_${name}.htm`;
+  }
+
+  return `${docsUrlOf(type)}.${name.toLowerCase()}`;
 }
 
 function codeList(names: string[]) {

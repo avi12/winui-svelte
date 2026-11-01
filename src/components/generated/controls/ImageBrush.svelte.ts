@@ -19,19 +19,19 @@ export interface ImageBrushProps extends TileBrushProps {
   /**
    * Gets or sets the image source displayed by this ImageBrush. In code you set this with an ImageSource subclass instance, in XAML you set this with a URI to an image source file. An object representing the image source, to be displayed by this ImageBrush when it's applied to content.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush.imagesource
    */
   imageSource?: ImageSourceInput | Snippet;
   /**
    * Occurs when there is an error associated with image retrieval or format.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush.imagefailed
    */
   onimagefailed?: (sender: ImageBrush, args: EventArguments<ExceptionRoutedEventArgs>) => void;
   /**
    * Occurs when the image source is downloaded and decoded with no failure. You can use this event to determine the size of an image before rendering it.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imagebrush.imageopened
    */
   onimageopened?: (sender: ImageBrush, args: EventArguments<RoutedEventArgs>) => void;
 }

@@ -14,7 +14,7 @@ export interface SelectorItemProps extends ContentControlProps {
   /**
    * Gets or sets a value that indicates whether the item is selected in a selector.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selectoritem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selectoritem.isselected
    */
   isSelected?: boolean;
 }

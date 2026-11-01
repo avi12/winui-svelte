@@ -18,97 +18,97 @@ export interface HyperlinkProps extends SpanProps {
   /**
    * Gets or sets a value that specifies the control's preference for whether it plays sounds. An enumeration value that specifies the control's preference for whether it plays sounds. The default is Default.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.elementsoundmode
    */
   elementSoundMode?: EnumInput<typeof ElementSoundMode>;
   /**
    * Gets or sets a value that indicates whether the hyperlink is included in tab navigation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.istabstop
    */
   isTabStop?: boolean;
   /**
    * Gets or sets the Uniform Resource Identifier (URI) to navigate to when the Hyperlink is activated.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.navigateuri
    */
   navigateUri?: UriInput;
   /**
    * Gets or sets a value that determines the order in which elements receive focus when the user navigates through controls by pressing the Tab key. A value that determines the order of logical navigation for a device. The default value is MaxValue with the tab order based on declaration order in the XAML or child collections.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.tabindex
    */
   tabIndex?: number;
   /**
    * Gets or sets a value that indicates what kind of underline is shown under the hyperlink. An enumeration value that specifies what kind of underline is shown. The default is Single.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.underlinestyle
    */
   underlineStyle?: EnumInput<typeof UnderlineStyle>;
   /**
    * Gets or sets the object that gets focus when a user presses the Directional Pad (DPAD) down.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusdown
    */
   xYFocusDown?: Hyperlink["xYFocusDown"];
   /**
    * Gets or sets a value that specifies the strategy used to determine the target element of a down navigation. A value of the enumeration. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusdownnavigationstrategy
    */
   xYFocusDownNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
   /**
    * Gets or sets the object that gets focus when a user presses the Directional Pad (DPAD) left.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusleft
    */
   xYFocusLeft?: Hyperlink["xYFocusLeft"];
   /**
    * Gets or sets a value that specifies the strategy used to determine the target element of a left navigation. A value of the enumeration. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusleftnavigationstrategy
    */
   xYFocusLeftNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
   /**
    * Gets or sets the object that gets focus when a user presses the Directional Pad (DPAD) right.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusright
    */
   xYFocusRight?: Hyperlink["xYFocusRight"];
   /**
    * Gets or sets a value that specifies the strategy used to determine the target element of a right navigation. A value of the enumeration. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusrightnavigationstrategy
    */
   xYFocusRightNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
   /**
    * Gets or sets the object that gets focus when a user presses the Directional Pad (DPAD) up.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusup
    */
   xYFocusUp?: Hyperlink["xYFocusUp"];
   /**
    * Gets or sets a value that specifies the strategy used to determine the target element of an up navigation. A value of the enumeration. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.xyfocusupnavigationstrategy
    */
   xYFocusUpNavigationStrategy?: EnumInput<typeof XYFocusNavigationStrategy>;
   /**
    * Occurs when the Hyperlink is clicked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.click
    */
   onclick?: Parameters<Hyperlink["onClick"]>[0];
   /**
    * Occurs when a Hyperlink receives focus.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.gotfocus
    */
   ongotfocus?: (sender: Hyperlink, args: EventArguments<RoutedEventArgs>) => void;
   /**
    * Occurs when a Hyperlink loses focus.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.lostfocus
    */
   onlostfocus?: (sender: Hyperlink, args: EventArguments<RoutedEventArgs>) => void;
 }

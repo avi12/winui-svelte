@@ -14,15 +14,19 @@ export interface ColorKeyFrameProps {
   /**
    * Gets or sets the time at which the key frame's target Value should be reached. The time at which the key frame's current value should be equal to its Value property. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.colorkeyframe
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.colorkeyframe.keytime
    */
   keyTime?: KeyTimeInput;
   /**
    * Gets or sets the key frame's target value. The key frame's target value, which is the value at its specified KeyTime. The default is a Color with an ARGB value of #00000000.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.colorkeyframe
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.colorkeyframe.value
    */
   value?: ColorInput;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

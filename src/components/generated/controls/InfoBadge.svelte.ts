@@ -16,13 +16,13 @@ export interface InfoBadgeProps extends ControlProps {
   /**
    * Gets or sets the icon to be used in an InfoBadge. The icon to be used in an InfoBadge. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobadge
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobadge.iconsource
    */
   iconSource?: InfoBadge["iconSource"] | Snippet;
   /**
    * Gets or sets the integer to be displayed in a numeric InfoBadge. The integer to be displayed in a numeric InfoBadge. The defaults is -1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobadge
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobadge.value
    */
   value?: number;
 }

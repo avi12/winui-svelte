@@ -22,51 +22,55 @@ export interface SwipeItemProps {
   /**
    * Gets or sets a brush that provides the background of the control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.background
    */
   background?: BrushInput | Snippet;
   /**
    * Gets or sets a value that indicates how a SwipeControl behaves after this item is invoked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.behavioroninvoked
    */
   behaviorOnInvoked?: EnumInput<typeof SwipeBehaviorOnInvoked>;
   /**
    * Gets or sets the command to execute when this item is invoked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.command
    */
   command?: SwipeItem["command"] | Snippet;
   /**
    * Gets or sets the parameter to pass to the Command property. The parameter to pass to the Command property. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.commandparameter
    */
   commandParameter?: ObjectInput;
   /**
    * Gets or sets the brush that paints the text and icon of the item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.foreground
    */
   foreground?: BrushInput | Snippet;
   /**
    * Gets or sets the graphic content of the item. The graphic content of the item. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.iconsource
    */
   iconSource?: SwipeItem["iconSource"] | Snippet;
   /**
    * Gets or sets the text description displayed on the item. The text description displayed on the item. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.text
    */
   text?: string;
   /**
    * Occurs when user interaction indicates that the command represented by this item should execute.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.invoked
    */
   oninvoked?: Parameters<SwipeItem["onInvoked"]>[0];
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

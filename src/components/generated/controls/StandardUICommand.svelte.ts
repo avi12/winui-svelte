@@ -16,7 +16,7 @@ export interface StandardUICommandProps extends XamlUICommandProps {
   /**
    * Gets the platform command (with pre-defined properties such as icon, keyboard accelerator, and description) that can be used with a StandardUICommand.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.standarduicommand
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.standarduicommand.kind
    */
   kind?: EnumInput<typeof StandardUICommandKind>;
 }

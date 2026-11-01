@@ -17,31 +17,31 @@ export interface ToggleButtonProps extends ButtonBaseProps {
   /**
    * Gets or sets whether the ToggleButton is checked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton.ischecked
    */
   isChecked?: NullableBooleanInput | undefined;
   /**
    * Gets or sets a value that indicates whether the control supports three states.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton.isthreestate
    */
   isThreeState?: boolean;
   /**
    * Fires when a ToggleButton is checked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton.checked
    */
   onchecked?: (sender: ToggleButton, args: EventArguments<RoutedEventArgs>) => void;
   /**
    * Fires when the state of a ToggleButton is switched to the indeterminate state.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton.indeterminate
    */
   onindeterminate?: (sender: ToggleButton, args: EventArguments<RoutedEventArgs>) => void;
   /**
    * Occurs when a ToggleButton is unchecked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton.unchecked
    */
   onunchecked?: (sender: ToggleButton, args: EventArguments<RoutedEventArgs>) => void;
 }

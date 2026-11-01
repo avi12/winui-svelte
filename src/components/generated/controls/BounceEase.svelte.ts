@@ -15,13 +15,13 @@ export interface BounceEaseProps extends EasingFunctionBaseProps {
   /**
    * Gets or sets the number of bounces. The number of bounces. The value must be greater or equal to zero. Negative values will resolve to zero. The default is 3.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.bounceease
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.bounceease.bounces
    */
   bounces?: number;
   /**
    * Gets or sets a value that specifies how bouncy the bounce animation is. Low values of this property result in bounces with little loss of height between bounces (more bouncy) while high values result in dampened bounces (less bouncy). The value that specifies how bouncy the bounce animation is. This value must be positive. The default value is 2.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.bounceease
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.bounceease.bounciness
    */
   bounciness?: number;
 }

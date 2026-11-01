@@ -1,4 +1,4 @@
-import { memberText, parseDocumentation, plainText } from "./documentation.ts";
+import { attachedText, memberText, parseDocumentation, plainText } from "./documentation.ts";
 import type { TypeDocumentation } from "./documentation.ts";
 import { emitLevel } from "./emit.ts";
 import { PropertyKind } from "./tables.ts";
@@ -71,7 +71,7 @@ function fontIcon(properties: Array<{
   });
 }
 
-test("a documented property carries WinUI's summary, then the page of its type", () => {
+test("a documented property carries WinUI's summary, then the page of the member", () => {
   const text = emitLevel(
     fontIcon([{
       key: "glyph",
@@ -81,7 +81,7 @@ test("a documented property carries WinUI's summary, then the page of its type",
   assert.match(text, /\/\*\*\n \* Represents an icon that uses a glyph from the specified font\.\n/);
   assert.match(
     text,
-    /  \/\*\*\n {3}\* Gets or sets the character code that identifies the icon glyph\. The hexadecimal character code for the icon glyph\.\n {3}\*\n {3}\* @see https:\/\/learn\.microsoft\.com\/windows\/windows-app-sdk\/api\/winrt\/microsoft\.ui\.xaml\.controls\.fonticon\n {3}\*\/\n {2}glyph\?: GlyphInput;/
+    /  \/\*\*\n {3}\* Gets or sets the character code that identifies the icon glyph\. The hexadecimal character code for the icon glyph\.\n {3}\*\n {3}\* @see https:\/\/learn\.microsoft\.com\/windows\/windows-app-sdk\/api\/winrt\/microsoft\.ui\.xaml\.controls\.fonticon\.glyph\n {3}\*\/\n {2}glyph\?: GlyphInput;/
   );
 });
 
@@ -94,7 +94,7 @@ test("a member WinUI does not document has no comment, not an empty one", () => 
   );
   assert.match(text, /\n {2}fontSize\?: GlyphInput;/);
   assert.doesNotMatch(text, /\n {2}\/\*\*\n {3}\*\n/);
-  assert.equal(text.split("  /**").length, 1);
+  assert.doesNotMatch(text, /\*\/\n {2}fontSize/);
 });
 
 test("a level without documentation emits no comment at all", () => {
@@ -105,7 +105,65 @@ test("a level without documentation emits no comment at all", () => {
       winName: "Glyph"
     }]
   });
-  assert.doesNotMatch(emitLevel(bare), /\/\*\*/);
+  assert.doesNotMatch(emitLevel(bare), /@see/);
+});
+
+test("an attached property takes its getter's summary as a property's", () => {
+  const owner = parseDocumentation(
+    `<doc><members>
+<member name="M:Microsoft.UI.Xaml.Controls.Canvas.GetLeft(Microsoft.UI.Xaml.UIElement)">
+  <summary>Gets the value of the Canvas.Left XAML attached property for the target element.</summary>
+</member>
+<member name="P:Microsoft.UI.Xaml.Controls.Canvas.TopProperty">
+  <summary>Identifies the Canvas.Top XAML attached property.</summary>
+</member>
+</members></doc>`
+  ).get("Microsoft.UI.Xaml.Controls.Canvas");
+  assert.equal(
+    attachedText({
+      documentation: owner,
+      name: "Left"
+    }),
+    "Gets or sets the value of the Canvas.Left XAML attached property for the target element."
+  );
+  assert.equal(
+    attachedText({
+      documentation: owner,
+      name: "Top"
+    }),
+    "Gets or sets the Canvas.Top XAML attached property."
+  );
+  assert.equal(
+    attachedText({
+      documentation: owner,
+      name: "ZIndex"
+    }),
+    undefined
+  );
+});
+
+test("an attached prop and the children snippet carry WinUI's text and their own page", () => {
+  const text = emitLevel({
+    ...fontIcon([]),
+    declaresContent: true,
+    contentProperty: "Glyph",
+    attached: [{
+      key: "canvasLeft",
+      owner: {
+        namespace: "Microsoft.UI.Xaml.Controls",
+        name: "Canvas"
+      },
+      name: "Left",
+      setter: "setLeft",
+      isSlot: false,
+      kind: PropertyKind.NUMBER,
+      enumType: null,
+      target: "UIElement",
+      documentation: "Gets or sets the Canvas.Left XAML attached property."
+    }]
+  });
+  assert.match(text, / {3}\* Gets or sets the Canvas\.Left XAML attached property\.\n {3}\*\n {3}\* @see \S+canvas\.getleft\n {3}\*\/\n {2}canvasLeft\?: /);
+  assert.match(text, / {3}\* Gets or sets the character code[^\n]*\n {3}\*\n {3}\* @see \S+fonticon\.glyph\n {3}\*\/\n {2}children\?: Snippet;/);
 });
 
 test("an event takes the summary of its WinUI event", () => {

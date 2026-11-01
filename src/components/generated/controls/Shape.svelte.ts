@@ -18,67 +18,67 @@ export interface ShapeProps extends FrameworkElementProps {
   /**
    * Gets or sets the Brush that paints the interior area of the shape. A Brush that paints/fills the shape interior. The default is null, (a null brush) which is evaluated as Transparent for rendering.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.fill
    */
   fill?: BrushInput | Snippet;
   /**
    * Gets or sets a Stretch enumeration value that describes how the shape fills its allocated space. One of the Stretch enumeration values. The default value at run time depends on the type of Shape.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.stretch
    */
   stretch?: EnumInput<typeof Stretch>;
   /**
    * Gets or sets the Brush that specifies how the Shape outline is painted. A Brush that specifies how the Shape outline is painted. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.stroke
    */
   stroke?: BrushInput | Snippet;
   /**
    * Gets or sets a collection of Double values that indicates the pattern of dashes and gaps that is used to outline shapes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokedasharray
    */
   strokeDashArray?: DoubleCollectionInput;
   /**
    * Gets or sets a PenLineCap enumeration value that specifies how the ends of a dash are drawn. One of the enumeration values for PenLineCap. The default is Flat.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokedashcap
    */
   strokeDashCap?: EnumInput<typeof PenLineCap>;
   /**
    * Gets or sets a value that specifies the distance within the dash pattern where a dash begins. A value that represents the distance within the dash pattern where a dash begins. The default value is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokedashoffset
    */
   strokeDashOffset?: number;
   /**
    * Gets or sets a PenLineCap enumeration value that describes the Shape at the end of a line. One of the enumeration values for PenLineCap. The default is Flat.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokeendlinecap
    */
   strokeEndLineCap?: EnumInput<typeof PenLineCap>;
   /**
    * Gets or sets a PenLineJoin enumeration value that specifies the type of join that is used at the vertices of a Shape.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokelinejoin
    */
   strokeLineJoin?: EnumInput<typeof PenLineJoin>;
   /**
    * Gets or sets a limit on the ratio of the miter length to half the StrokeThickness of a Shape element. The limit on the ratio of the miter length to the StrokeThickness of a Shape element. This value is always a positive number that is greater than or equal to 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokemiterlimit
    */
   strokeMiterLimit?: number;
   /**
    * Gets or sets a PenLineCap enumeration value that describes the Shape at the start of a Stroke.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokestartlinecap
    */
   strokeStartLineCap?: EnumInput<typeof PenLineCap>;
   /**
    * Gets or sets the width of the Shape stroke outline. The width of the Shape outline, in pixels. The default value is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokethickness
    */
   strokeThickness?: number;
 }

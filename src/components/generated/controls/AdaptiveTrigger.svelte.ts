@@ -15,13 +15,13 @@ export interface AdaptiveTriggerProps extends StateTriggerBaseProps {
   /**
    * Gets or sets the minimum window height at which the VisualState should be applied. The minimum window height (in effective pixels) at which the VisualState should be applied.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.adaptivetrigger
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.adaptivetrigger.minwindowheight
    */
   minWindowHeight?: number;
   /**
    * Gets or sets the minimum window width at which the VisualState should be applied. The minimum window width (in effective pixels) at which the VisualState should be applied.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.adaptivetrigger
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.adaptivetrigger.minwindowwidth
    */
   minWindowWidth?: number;
 }

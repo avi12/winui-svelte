@@ -16,93 +16,97 @@ export interface FlyoutBaseProps {
   /**
    * Gets or sets a value that indicates whether the element automatically gets focus when the user interacts with it.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.allowfocusoninteraction
    */
   allowFocusOnInteraction?: boolean;
   /**
    * Gets or sets a value that specifies whether the control can receive focus when it's disabled.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.allowfocuswhendisabled
    */
   allowFocusWhenDisabled?: boolean;
   /**
    * Gets or sets a value that indicates whether animations are played when the flyout is opened or closed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.areopencloseanimationsenabled
    */
   areOpenCloseAnimationsEnabled?: boolean;
   /**
    * Gets or sets a value that specifies the control's preference for whether it plays sounds. An enumeration value that specifies the control's preference for whether it plays sounds. The default is Default.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.elementsoundmode
    */
   elementSoundMode?: EnumInput<typeof ElementSoundMode>;
   /**
    * Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.lightdismissoverlaymode
    */
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   /**
    * Gets or sets an element that should receive pointer input events even when underneath the flyout's overlay.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.overlayinputpassthroughelement
    */
   overlayInputPassThroughElement?: FlyoutBase["overlayInputPassThroughElement"];
   /**
    * Gets or sets the default placement to be used for the flyout, in relation to its placement target. A named constant of the enumeration that indicates where the flyout is placed in relation to its placement target. The default is Top.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.placement
    */
   placement?: EnumInput<typeof FlyoutPlacementMode>;
   /**
    * Gets or sets a value that indicates whether the flyout should be shown within the bounds of the XAML root.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.shouldconstraintorootbounds
    */
   shouldConstrainToRootBounds?: boolean;
   /**
    * Gets or sets a value that indicates how a flyout behaves when shown. A value of the enumeration that indicates how a flyout behaves when shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.showmode
    */
   showMode?: EnumInput<typeof FlyoutShowMode>;
   /**
    * Gets or sets the system backdrop to apply to this flyout. The backdrop is rendered behind the flyout content.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.systembackdrop
    */
   systemBackdrop?: FlyoutBase["systemBackdrop"] | Snippet;
   /**
    * Gets or sets the XamlRoot in which this flyout is being viewed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.xamlroot
    */
   xamlRoot?: FlyoutBase["xamlRoot"];
   /**
    * Occurs when the flyout is hidden.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.closed
    */
   onclosed?: Parameters<FlyoutBase["onClosed"]>[0];
   /**
    * Occurs when the flyout starts to be hidden.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.closing
    */
   onclosing?: Parameters<FlyoutBase["onClosing"]>[0];
   /**
    * Occurs when the flyout is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.opened
    */
   onopened?: Parameters<FlyoutBase["onOpened"]>[0];
   /**
    * Occurs before the flyout is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.opening
    */
   onopening?: Parameters<FlyoutBase["onOpening"]>[0];
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

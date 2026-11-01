@@ -16,7 +16,7 @@ export interface EdgeUIThemeTransitionProps extends TransitionProps {
   /**
    * Gets or sets the edge position to use for the transition. A value of the enumeration. The default is Top.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.edgeuithemetransition
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.edgeuithemetransition.edge
    */
   edge?: EnumInput<typeof EdgeTransitionLocation>;
 }

@@ -18,133 +18,133 @@ export interface GridViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the check mark on a selected item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.checkbrush
    */
   checkBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the check mark hint.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.checkhintbrush
    */
   checkHintBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the check mark on an item while it's being selected using a swipe interaction.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.checkselectingbrush
    */
   checkSelectingBrush?: BrushInput | Snippet;
   /**
    * Gets or sets an internal margin between presented content and its presenter. A Thickness value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.contentmargin
    */
   contentMargin?: ThicknessInput;
   /**
    * Gets or sets the opacity of an item that is disabled. The opacity of an item that is disabled. The value should be between 0 and 1. 0 is no opacity (transparent), 1 is full opacity (renders normally). The effective default value at run-time comes from themes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.disabledopacity
    */
   disabledOpacity?: number;
   /**
    * Gets or sets the brush used to render the background of an item that's being dragged.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.dragbackground
    */
   dragBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the foreground of an item that's being dragged.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.dragforeground
    */
   dragForeground?: BrushInput | Snippet;
   /**
    * Gets or sets the opacity of an item that's being dragged. The opacity of an item that's being dragged. The value should be between 0 and 1. 0 is no opacity (transparent), 1 is full opacity (renders normally). The effective default value at run-time comes from themes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.dragopacity
    */
   dragOpacity?: number;
   /**
    * Gets or sets the brush used to render the border of an item that has focus.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.focusborderbrush
    */
   focusBorderBrush?: BrushInput | Snippet;
   /**
    * > [!NOTE] > GridViewItemPresenterHorizontalContentAlignment may be altered or unavailable for releases after Windows 10. Instead, use ContentPresenter.HorizontalContentAlignment. Gets or sets the horizontal alignment of the content being presented.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.gridviewitempresenterhorizontalcontentalignment
    */
   gridViewItemPresenterHorizontalContentAlignment?: EnumInput<typeof HorizontalAlignment>;
   /**
    * > [!NOTE] > GridViewItemPresenterPadding may be altered or unavailable for releases after Windows 10. Instead, use ContentPresenter.Padding. Gets or sets the padding between the presenter and the GridView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.gridviewitempresenterpadding
    */
   gridViewItemPresenterPadding?: ThicknessInput;
   /**
    * > [!NOTE] > GridViewItemPresenterVerticalContentAlignment may be altered or unavailable for releases after Windows 10. Instead, use ContentPresenter.VerticalContentAlignment. Gets or sets the vertical alignment of the content being presented.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.gridviewitempresenterverticalcontentalignment
    */
   gridViewItemPresenterVerticalContentAlignment?: EnumInput<typeof VerticalAlignment>;
   /**
    * Gets or sets the brush used to render the placeholder background for an item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.placeholderbackground
    */
   placeholderBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the background of an item that has the pointer over it.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.pointeroverbackground
    */
   pointerOverBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the margin of the background displayed for pointer-over input actions in the GridView item cell, versus the cell. A Thickness value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.pointeroverbackgroundmargin
    */
   pointerOverBackgroundMargin?: ThicknessInput;
   /**
    * Gets or sets the amount that the reorder hint is offset. The amount that the reorder hint is offset, in pixels. The effective default value at run-time comes from themes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.reorderhintoffset
    */
   reorderHintOffset?: number;
   /**
    * Gets or sets the brush used to render the background of an item that's selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectedbackground
    */
   selectedBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the thickness of the border around an item that's selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectedborderthickness
    */
   selectedBorderThickness?: ThicknessInput;
   /**
    * Gets or sets the brush used to render the foreground of an item that's selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectedforeground
    */
   selectedForeground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the background of an item that's selected and has the pointer over it.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectedpointeroverbackground
    */
   selectedPointerOverBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the border of an item that's selected and has the pointer over it.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectedpointeroverborderbrush
    */
   selectedPointerOverBorderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets a value that indicates whether the check mark is shown when the item is selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectioncheckmarkvisualenabled
    */
   selectionCheckMarkVisualEnabled?: boolean;
 }

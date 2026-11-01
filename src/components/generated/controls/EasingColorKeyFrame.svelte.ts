@@ -16,7 +16,7 @@ export interface EasingColorKeyFrameProps extends ColorKeyFrameProps {
   /**
    * Gets or sets the easing function that is applied to the key frame.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingcolorkeyframe
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingcolorkeyframe.easingfunction
    */
   easingFunction?: EasingColorKeyFrame["easingFunction"] | Snippet;
 }

@@ -16,19 +16,19 @@ export interface BezierSegmentProps extends PathSegmentProps {
   /**
    * Gets or sets the first control point of the curve. The first control point of the curve. The default is a Point with value 0,0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.beziersegment
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.beziersegment.point1
    */
   point1?: PointInput;
   /**
    * Gets or sets the second control point of the curve.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.beziersegment
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.beziersegment.point2
    */
   point2?: PointInput;
   /**
    * Gets or sets the end point of the curve.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.beziersegment
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.beziersegment.point3
    */
   point3?: PointInput;
 }

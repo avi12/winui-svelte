@@ -25,97 +25,97 @@ export interface ComboBoxProps extends SelectorProps {
   /**
    * Gets or sets a value that indicates whether the drop-down portion of the ComboBox is currently open.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.isdropdownopen
    */
   isDropDownOpen?: boolean | undefined;
   /**
    * Gets or sets content that is shown below the control. The content should provide guidance about the input expected by the control. The content to be displayed below the control. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.description
    */
   description?: ObjectInput | Snippet;
   /**
    * Gets or sets the content for the control's header. The content of the control's header. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets a value that indicates whether the user can edit text in the text box portion of the ComboBox. See remarks.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.iseditable
    */
   isEditable?: boolean;
   /**
    * Gets or sets a value that specifies whether a user can jump to a value by typing.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.istextsearchenabled
    */
   isTextSearchEnabled?: boolean;
   /**
    * Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.lightdismissoverlaymode
    */
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   /**
    * Gets or sets the maximum height for a combo box drop-down. The maximum height of the drop-down. The default is infinity.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.maxdropdownheight
    */
   maxDropDownHeight?: number;
   /**
    * Gets or sets a brush that describes the color of placeholder text.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.placeholderforeground
    */
   placeholderForeground?: BrushInput | Snippet;
   /**
    * Gets or sets the text that is displayed in the control until the value is changed by a user action or some other operation. The text that is displayed in the control when no value is selected. The default is an empty string ("").
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.placeholdertext
    */
   placeholderText?: string;
   /**
    * Gets or sets a value that indicates what action causes a SelectionChanged event to occur. A value of the enumeration. The default is Committed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.selectionchangedtrigger
    */
   selectionChangedTrigger?: EnumInput<typeof ComboBoxSelectionChangedTrigger>;
   /**
    * Gets or sets the text in the ComboBox.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.text
    */
   text?: string;
   /**
    * Gets or sets the style of the TextBox in the ComboBox when the ComboBox is editable.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.textboxstyle
    */
   textBoxStyle?: StyleInput;
   /**
    * Occurs when the drop-down portion of the ComboBox closes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.dropdownclosed
    */
   ondropdownclosed?: Parameters<ComboBox["onDropDownClosed"]>[0];
   /**
    * Occurs when the drop-down portion of the ComboBox opens.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.dropdownopened
    */
   ondropdownopened?: Parameters<ComboBox["onDropDownOpened"]>[0];
   /**
    * Occurs when the user submits some text that does not correspond to an item in the ComboBox dropdown list.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.textsubmitted
    */
   ontextsubmitted?: Parameters<ComboBox["onTextSubmitted"]>[0];
 }

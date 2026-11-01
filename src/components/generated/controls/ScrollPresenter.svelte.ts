@@ -27,169 +27,169 @@ export interface ScrollPresenterProps extends FrameworkElementProps {
   /**
    * Gets the current interaction state of the control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.state
    */
   state?: EnumInput<typeof ScrollingInteractionState> | undefined;
   /**
    * Gets or sets a brush that provides the background of the ScrollPresenter.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.background
    */
   background?: BrushInput | Snippet;
   /**
    * Gets or sets the content that can be scrolled, panned, or zoomed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.content
    */
   content?: ScrollPresenter["content"] | Snippet;
   /**
    * Gets or sets a value that indicates whether the content prefers to scroll horizontally or vertically. The preferred scroll direction of the content. The default is Vertical.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.contentorientation
    */
   contentOrientation?: EnumInput<typeof ScrollingContentOrientation>;
   /**
    * Gets or sets the ratio within the viewport where the anchor element is selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.horizontalanchorratio
    */
   horizontalAnchorRatio?: number;
   /**
    * Gets or sets a value that indicates whether or not to chain horizontal scrolling to an outer scroll control. A value of the enumeration. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.horizontalscrollchainmode
    */
   horizontalScrollChainMode?: EnumInput<typeof ScrollingChainMode>;
   /**
    * Gets or sets the IScrollController implementation that can drive the horizontal scrolling of the ScrollPresenter.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.horizontalscrollcontroller
    */
   horizontalScrollController?: ScrollPresenter["horizontalScrollController"];
   /**
    * Gets or sets a value that determines how manipulation input influences scrolling behavior on the horizontal axis. A value of the enumeration. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.horizontalscrollmode
    */
   horizontalScrollMode?: EnumInput<typeof ScrollingScrollMode>;
   /**
    * Gets or sets a value that indicates whether the scroll rail is enabled for the horizontal axis.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.horizontalscrollrailmode
    */
   horizontalScrollRailMode?: EnumInput<typeof ScrollingRailMode>;
   /**
    * Gets or sets the kinds of user input the control does not respond to. A combination of enumeration member values that indicates the kinds of user input the control does not respond to. The default is None.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.ignoredinputkinds
    */
   ignoredInputKinds?: FlagsInput<typeof ScrollingInputKinds>;
   /**
    * Gets or sets the maximum value for the read-only ZoomFactor property. The maximum value for the read-only ZoomFactor property. The default is 10.0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.maxzoomfactor
    */
   maxZoomFactor?: number;
   /**
    * Gets or sets the minimum value for the read-only ZoomFactor property. The minimum value for the read-only ZoomFactor property. The default is 0.1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.minzoomfactor
    */
   minZoomFactor?: number;
   /**
    * Determines the vertical position of the ScrollPresenter's anchor point with respect to the viewport. By default, the ScrollPresenter selects an element as its CurrentAnchor by identifying the element in its viewport nearest to the anchor point.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.verticalanchorratio
    */
   verticalAnchorRatio?: number;
   /**
    * Gets or sets a value that indicates whether or not to chain vertical scrolling to an outer scroll control. A value of the enumeration. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.verticalscrollchainmode
    */
   verticalScrollChainMode?: EnumInput<typeof ScrollingChainMode>;
   /**
    * Gets or sets the IScrollController implementation that can drive the vertical scrolling of the ScrollPresenter.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.verticalscrollcontroller
    */
   verticalScrollController?: ScrollPresenter["verticalScrollController"];
   /**
    * Gets or sets a value that determines how manipulation input influences scrolling behavior on the vertical axis. A value of the enumeration. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.verticalscrollmode
    */
   verticalScrollMode?: EnumInput<typeof ScrollingScrollMode>;
   /**
    * Gets or sets a value that indicates whether the scroll rail is enabled for the vertical axis.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.verticalscrollrailmode
    */
   verticalScrollRailMode?: EnumInput<typeof ScrollingRailMode>;
   /**
    * Gets or sets a value that indicates whether or not to chain zooming to an outer scroll control. A value of the enumeration. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.zoomchainmode
    */
   zoomChainMode?: EnumInput<typeof ScrollingChainMode>;
   /**
    * Gets or sets a value that indicates the ability to zoom in and out by means of user input.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.zoommode
    */
   zoomMode?: EnumInput<typeof ScrollingZoomMode>;
   /**
    * Occurs when the ScrollView is about to select an anchor element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.anchorrequested
    */
   onanchorrequested?: Parameters<ScrollPresenter["onAnchorRequested"]>[0];
   /**
    * Occurs at the beginning of a bring-into-view request participation. Allows customization of that participation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.bringingintoview
    */
   onbringingintoview?: Parameters<ScrollPresenter["onBringingIntoView"]>[0];
   /**
    * Occurs when either the ExtentWidth or ExtentHeight properties has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.extentchanged
    */
   onextentchanged?: Parameters<ScrollPresenter["onExtentChanged"]>[0];
   /**
    * Occurs when a call to ScrollTo or ScrollBy triggers an animation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.scrollanimationstarting
    */
   onscrollanimationstarting?: Parameters<ScrollPresenter["onScrollAnimationStarting"]>[0];
   /**
    * Occurs when a ScrollTo, ScrollBy, or AddScrollVelocity asynchronous operation ends. Provides the original correlation ID.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.scrollcompleted
    */
   onscrollcompleted?: Parameters<ScrollPresenter["onScrollCompleted"]>[0];
   /**
    * Occurs when the current interaction state of the control has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.statechanged
    */
   onstatechanged?: Parameters<ScrollPresenter["onStateChanged"]>[0];
   /**
    * Occurs when manipulations such as scrolling and zooming have caused the view to change.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.viewchanged
    */
   onviewchanged?: Parameters<ScrollPresenter["onViewChanged"]>[0];
   /**
    * Occurs when a call to ZoomTo or ZoomBy triggers an animation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.zoomanimationstarting
    */
   onzoomanimationstarting?: Parameters<ScrollPresenter["onZoomAnimationStarting"]>[0];
   /**
    * Occurs when a ZoomTo, ZoomBy, or AddZoomVelocity asynchronous operation ends. Provides the original correlation ID.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.zoomcompleted
    */
   onzoomcompleted?: Parameters<ScrollPresenter["onZoomCompleted"]>[0];
 }

@@ -14,23 +14,28 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox
  */
 export interface ViewboxProps extends FrameworkElementProps {
+  /**
+   * Gets or sets the single child element of a Viewbox element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox.child
+   */
   children?: Snippet;
   /**
    * Gets or sets the single child element of a Viewbox element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox.child
    */
   child?: Viewbox["child"] | Snippet;
   /**
    * Gets or sets the Stretch mode, which determines how content fits into the available space. A Stretch mode, which determines how content fits in the available space. The default is Uniform.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox.stretch
    */
   stretch?: EnumInput<typeof Stretch>;
   /**
    * Gets or sets the StretchDirection, which determines how scaling is applied to the contents of a Viewbox.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox.stretchdirection
    */
   stretchDirection?: EnumInput<typeof StretchDirection>;
 }

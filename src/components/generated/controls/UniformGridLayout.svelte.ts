@@ -16,49 +16,49 @@ export interface UniformGridLayoutProps extends VirtualizingLayoutProps {
   /**
    * Gets or sets a value that indicates how items are aligned on the non-scrolling or non-virtualizing axis. An enumeration value that indicates how items are aligned. The default is Start.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.itemsjustification
    */
   itemsJustification?: EnumInput<typeof UniformGridLayoutItemsJustification>;
   /**
    * Gets or sets a value that indicates how items are sized to fill the available space. An enumeration value that indicates how items are sized to fill the available space. The default is None.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.itemsstretch
    */
   itemsStretch?: EnumInput<typeof UniformGridLayoutItemsStretch>;
   /**
    * Gets or sets the maximum number of items rendered per row or column, based on the orientation of the UniformGridLayout. An integer indicating the maximum number of items per row (for Vertical orientation) or column (for Horizontal orientation).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.maximumrowsorcolumns
    */
   maximumRowsOrColumns?: number;
   /**
    * Gets or sets the minimum space between items on the horizontal axis.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.mincolumnspacing
    */
   minColumnSpacing?: number;
   /**
    * Gets or sets the minimum height of each item. The minimum height (in pixels) of each item. The default is NaN, in which case the height of the first item is used as the minimum.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.minitemheight
    */
   minItemHeight?: number;
   /**
    * Gets or sets the minimum width of each item. The minimum width (in pixels) of each item. The default is NaN, in which case the width of the first item is used as the minimum.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.minitemwidth
    */
   minItemWidth?: number;
   /**
    * Gets or sets the minimum space between items on the vertical axis.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.minrowspacing
    */
   minRowSpacing?: number;
   /**
    * Gets or sets the axis along which items are laid out. One of the enumeration values that specifies the axis along which items are laid out. The default is Vertical.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.orientation
    */
   orientation?: EnumInput<typeof Orientation>;
 }

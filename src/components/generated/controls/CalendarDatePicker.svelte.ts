@@ -37,133 +37,133 @@ export interface CalendarDatePickerProps extends ControlProps {
   /**
    * Gets or sets the date currently set in the calendar picker.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.date
    */
   date?: NullableDateInput | undefined;
   /**
    * Gets or sets the calendar system to use. The name of the calendar system to use.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.calendaridentifier
    */
   calendarIdentifier?: string;
   /**
    * Gets or sets the Style associated with the control's internal CalendarView object. The current style of the CalendarView object.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.calendarviewstyle
    */
   calendarViewStyle?: StyleInput;
   /**
    * Gets or sets the display format for the date value in the picker's text box. The string format to use to display the date in the picker's text box.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.dateformat
    */
   dateFormat?: string;
   /**
    * Gets or sets the display format for the day of the week headers in the picker's CalendarView. The string format to use to display the day of the week headers in the picker's CalendarView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.dayofweekformat
    */
   dayOfWeekFormat?: string;
   /**
    * Gets or sets content that is shown below the control. The content should provide guidance about the input expected by the control. The content to be displayed below the control. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.description
    */
   description?: ObjectInput | Snippet;
   /**
    * Gets or sets a value that indicates whether the calendar shows selections for month, year, or decade in the picker's CalendarView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.displaymode
    */
   displayMode?: EnumInput<typeof CalendarViewDisplayMode>;
   /**
    * Gets or sets a value that indicates which day is shown as the first day of the week in the picker's CalendarView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.firstdayofweek
    */
   firstDayOfWeek?: EnumInput<typeof DayOfWeek>;
   /**
    * Gets or sets the content for the calendar picker's header. The content of the header. The default value is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the header. The template that specifies the visualization of the header object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets a value that indicates whether the calendar view of the CalendarDatePicker is currently shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.iscalendaropen
    */
   isCalendarOpen?: boolean;
   /**
    * Gets or sets a value that indicates whether the month name is shown with the first day of the month in the picker's CalendarView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.isgrouplabelvisible
    */
   isGroupLabelVisible?: boolean;
   /**
    * Gets or sets a value that indicates whether out-of-scope calendar items are shown with a unique foreground color in the picker's CalendarView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.isoutofscopeenabled
    */
   isOutOfScopeEnabled?: boolean;
   /**
    * Gets or sets a value that indicates whether the current date is highlighted in the picker's CalendarView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.istodayhighlighted
    */
   isTodayHighlighted?: boolean;
   /**
    * Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.lightdismissoverlaymode
    */
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   /**
    * Gets or sets the latest date that can be set in the picker.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.maxdate
    */
   maxDate?: DateInput;
   /**
    * Gets or sets the earliest date that can be set in the picker.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.mindate
    */
   minDate?: DateInput;
   /**
    * Gets or sets the text that is displayed in the picker's text box until the value is changed by a user action or some other operation. The text that is displayed in the control when no value is entered. The default is an empty string ("").
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.placeholdertext
    */
   placeholderText?: string;
   /**
    * Occurs when a CalendarViewDayItem is loading in the picker's CalendarView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.calendarviewdayitemchanging
    */
   oncalendarviewdayitemchanging?: (sender: CalendarDatePicker, args: EventArguments<CalendarViewDayItemChangingEventArgs>) => void;
   /**
    * Occurs when the picker's CalendarView is hidden.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.closed
    */
   onclosed?: Parameters<CalendarDatePicker["onClosed"]>[0];
   /**
    * Occurs when the date value is changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.datechanged
    */
   ondatechanged?: Parameters<CalendarDatePicker["onDateChanged"]>[0];
   /**
    * Occurs when the picker's CalendarView is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.opened
    */
   onopened?: Parameters<CalendarDatePicker["onOpened"]>[0];
 }

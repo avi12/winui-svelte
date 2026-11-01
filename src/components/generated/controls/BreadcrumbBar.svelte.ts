@@ -16,19 +16,19 @@ export interface BreadcrumbBarProps extends ControlProps {
   /**
    * Gets or sets an object source used to generate the content of the BreadcrumbBar.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar.itemssource
    */
   itemsSource?: CollectionInput;
   /**
    * Gets or sets the data template for the BreadcrumbBarItem. The data template that is used to display the content of the BreadcrumbBarItem.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar.itemtemplate
    */
   itemTemplate?: ObjectReferenceInput;
   /**
    * Occurs when an item is clicked in the BreadcrumbBar.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.breadcrumbbar.itemclicked
    */
   onitemclicked?: Parameters<BreadcrumbBar["onItemClicked"]>[0];
 }

@@ -15,36 +15,46 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar
  */
 export interface CommandBarProps extends AppBarProps {
+  /**
+   * Gets the collection of primary command elements for the CommandBar. The collection of primary command elements for the CommandBar. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar.primarycommands
+   */
   children?: Snippet;
+  /**
+   * Gets the collection of secondary command elements for the CommandBar. The collection of secondary command elements for the CommandBar. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar.secondarycommands
+   */
   secondaryCommands?: Snippet;
   /**
    * Gets or sets the Style applied to the overflow content of the CommandBar. The applied Style for the overflow content of the CommandBar, if present; otherwise, null. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar.commandbaroverflowpresenterstyle
    */
   commandBarOverflowPresenterStyle?: StyleInput;
   /**
    * Gets or sets a value that indicates the placement and visibility of the labels on the command bar's buttons. An enumeration value that indicates the placement and visibility of the labels on the command bar's buttons. The default is Bottom.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar.defaultlabelposition
    */
   defaultLabelPosition?: EnumInput<typeof CommandBarDefaultLabelPosition>;
   /**
    * Gets or sets a value that indicates whether primary commands automatically move to the overflow menu when space is limited.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar.isdynamicoverflowenabled
    */
   isDynamicOverflowEnabled?: boolean;
   /**
    * Gets or sets a value that indicates when a command bar's overflow button is shown. An enumeration value that indicates when a command bar's overflow button is shown. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar.overflowbuttonvisibility
    */
   overflowButtonVisibility?: EnumInput<typeof CommandBarOverflowButtonVisibility>;
   /**
    * Occurs when items move into or out of the overflow menu.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar.dynamicoverflowitemschanging
    */
   ondynamicoverflowitemschanging?: Parameters<CommandBar["onDynamicOverflowItemsChanging"]>[0];
 }

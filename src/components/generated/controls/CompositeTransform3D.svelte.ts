@@ -15,73 +15,73 @@ export interface CompositeTransform3DProps extends Transform3DProps {
   /**
    * Gets the x-coordinate of the center point in pixels for all transforms specified by the CompositeTransform3D. The x-coordinate of the center point for all transforms specified by the CompositeTransform3D. The default value is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.centerx
    */
   centerX?: number;
   /**
    * Gets the y-coordinate of the center point in pixels for all transforms specified by the CompositeTransform3D. The y-coordinate of the center point for all transforms specified by the CompositeTransform3D. The default value is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.centery
    */
   centerY?: number;
   /**
    * Gets the z-coordinate of the center point in pixels for all transforms specified by the CompositeTransform3D. The z-coordinate of the center point for all transforms specified by the CompositeTransform3D. The default value is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.centerz
    */
   centerZ?: number;
   /**
    * Gets or sets the angle in degrees of counterclockwise rotation around the x-axis. The angle of rotation around the x-axis, given in degrees in a counterclockwise direction. The default value is 0 degrees.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.rotationx
    */
   rotationX?: number;
   /**
    * Gets or sets the angle in degrees of counterclockwise rotation around the y-axis. The angle of rotation around the y-axis, given in degrees in a counterclockwise direction. The default value is 0 degrees.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.rotationy
    */
   rotationY?: number;
   /**
    * Gets or sets the angle in degrees of counterclockwise rotation around the z-axis. The angle of rotation around the z-axis, given in degrees in a counterclockwise direction. The default value is 0 degrees.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.rotationz
    */
   rotationZ?: number;
   /**
    * Gets or sets the x-axis scale factor. You can use this property to stretch or shrink an object along this axis. The scale factor along the x-axis. The default is 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.scalex
    */
   scaleX?: number;
   /**
    * Gets or sets the y-axis scale factor. You can use this property to stretch or shrink an object along this axis. The scale factor along the y-axis. The default is 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.scaley
    */
   scaleY?: number;
   /**
    * Gets or sets the z-axis scale factor. You can use this property to stretch or shrink an object along this axis. The scale factor along the z-axis. The default is 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.scalez
    */
   scaleZ?: number;
   /**
    * Gets or sets the distance to translate along the x-axis in pixels. The distance to translate (move) an object along the x-axis, in pixels. The default value is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.translatex
    */
   translateX?: number;
   /**
    * Gets or sets the distance to translate along the y-axis in pixels. The distance to translate (move) an object along the y-axis, in pixels. The default value is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.translatey
    */
   translateY?: number;
   /**
    * Gets or sets the distance to translate along the z-axis in pixels. The distance to translate (move) an object along the z-axis, in pixels. The default value is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.media3d.compositetransform3d.translatez
    */
   translateZ?: number;
 }

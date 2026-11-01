@@ -24,145 +24,145 @@ export interface ContentDialogProps extends ContentControlProps {
   /**
    * Gets or sets the command to invoke when the close button is tapped.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.closebuttoncommand
    */
   closeButtonCommand?: ContentDialog["closeButtonCommand"] | Snippet;
   /**
    * Gets or sets the parameter to pass to the command for the close button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.closebuttoncommandparameter
    */
   closeButtonCommandParameter?: ObjectInput;
   /**
    * Gets or sets the style to apply to the dialog's close button. The applied style for the button, if present; otherwise, null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.closebuttonstyle
    */
   closeButtonStyle?: StyleInput;
   /**
    * Gets or sets the text to display on the close button. The text to display on the close button. To hide this button, set the text to null or an empty string. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.closebuttontext
    */
   closeButtonText?: string;
   /**
    * Gets or sets a value that indicates which button on the dialog is the default action. A value of the enumeration. The default is None.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.defaultbutton
    */
   defaultButton?: EnumInput<typeof ContentDialogButton>;
   /**
    * Gets or sets a value that indicates whether a request is being made to display the dialog full size.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.fullsizedesired
    */
   fullSizeDesired?: boolean;
   /**
    * Gets or sets whether the dialog's primary button is enabled.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.isprimarybuttonenabled
    */
   isPrimaryButtonEnabled?: boolean;
   /**
    * Gets or sets whether the dialog's secondary button is enabled.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.issecondarybuttonenabled
    */
   isSecondaryButtonEnabled?: boolean;
   /**
    * Gets or sets the command to invoke when the primary button is tapped.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.primarybuttoncommand
    */
   primaryButtonCommand?: ContentDialog["primaryButtonCommand"] | Snippet;
   /**
    * Gets or sets the parameter to pass to the command for the primary button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.primarybuttoncommandparameter
    */
   primaryButtonCommandParameter?: ObjectInput;
   /**
    * Gets or sets the style to apply to the dialog's primary button. The applied style for the button, if present; otherwise, null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.primarybuttonstyle
    */
   primaryButtonStyle?: StyleInput;
   /**
    * Gets or sets the text to display on the primary button. The text to display on the primary button. To hide this button, set the text to null or an empty string. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.primarybuttontext
    */
   primaryButtonText?: string;
   /**
    * Gets or sets the command to invoke when the secondary button is tapped.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.secondarybuttoncommand
    */
   secondaryButtonCommand?: ContentDialog["secondaryButtonCommand"] | Snippet;
   /**
    * Gets or sets the parameter to pass to the command for the secondary button. The command parameter for the secondary button. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.secondarybuttoncommandparameter
    */
   secondaryButtonCommandParameter?: ObjectInput;
   /**
    * Gets or sets the style to apply to the dialog's secondary button. The applied style for the button, if present; otherwise, null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.secondarybuttonstyle
    */
   secondaryButtonStyle?: StyleInput;
   /**
    * Gets or sets the text to be displayed on the secondary button. The text to display on the secondary button. To hide this button, set the text to null or an empty string. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.secondarybuttontext
    */
   secondaryButtonText?: string;
   /**
    * Gets or sets the title of the dialog.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.title
    */
   title?: ObjectInput | Snippet;
   /**
    * Gets or sets the title template.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.titletemplate
    */
   titleTemplate?: DataTemplateInput;
   /**
    * Occurs after the close button has been tapped.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.closebuttonclick
    */
   onclosebuttonclick?: Parameters<ContentDialog["onCloseButtonClick"]>[0];
   /**
    * Occurs after the dialog is closed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.closed
    */
   onclosed?: Parameters<ContentDialog["onClosed"]>[0];
   /**
    * Occurs after the dialog starts to close, but before it is closed and before the Closed event occurs.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.closing
    */
   onclosing?: Parameters<ContentDialog["onClosing"]>[0];
   /**
    * Occurs after the dialog is opened.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.opened
    */
   onopened?: Parameters<ContentDialog["onOpened"]>[0];
   /**
    * Occurs after the primary button has been tapped.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.primarybuttonclick
    */
   onprimarybuttonclick?: Parameters<ContentDialog["onPrimaryButtonClick"]>[0];
   /**
    * Occurs after the secondary button has been tapped.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.secondarybuttonclick
    */
   onsecondarybuttonclick?: Parameters<ContentDialog["onSecondaryButtonClick"]>[0];
 }

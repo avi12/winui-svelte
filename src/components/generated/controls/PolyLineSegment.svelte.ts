@@ -14,11 +14,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polylinesegment
  */
 export interface PolyLineSegmentProps extends PathSegmentProps {
+  /**
+   * Gets or sets the collection of Point values that defines this PolyLineSegment object. The points that define this PolyLineSegment object.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polylinesegment.points
+   */
   children?: Snippet;
   /**
    * Gets or sets the collection of Point values that defines this PolyLineSegment object. The points that define this PolyLineSegment object.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polylinesegment
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polylinesegment.points
    */
   points?: PointCollectionInput;
 }

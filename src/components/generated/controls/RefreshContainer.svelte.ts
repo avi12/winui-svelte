@@ -17,19 +17,19 @@ export interface RefreshContainerProps extends ContentControlProps {
   /**
    * Gets or sets a value that specifies the direction to pull to initiate a refresh.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshcontainer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshcontainer.pulldirection
    */
   pullDirection?: EnumInput<typeof RefreshPullDirection>;
   /**
    * Gets or sets the RefreshVisualizer for this container.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshcontainer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshcontainer.visualizer
    */
   visualizer?: RefreshContainer["visualizer"] | Snippet;
   /**
    * Occurs when an update of the content has been initiated.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshcontainer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshcontainer.refreshrequested
    */
   onrefreshrequested?: Parameters<RefreshContainer["onRefreshRequested"]>[0];
 }

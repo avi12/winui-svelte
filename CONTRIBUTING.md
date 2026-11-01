@@ -67,6 +67,7 @@ Build once before `pnpm check` or the examples
 | `pnpm bindings` | the WinUI bindings in `.winapp/bindings`: winapp's run, then WebView2's (`scripts/bindings/`) |
 | `pnpm test:windows` | every `test/*.test.ts` that opens real windows (all but the mount test), one file at a time, in the background (see below). Needs an ordinary desktop session |
 | `pnpm gen:components` | regenerates `src/components/generated`, the class list in `package.json` and the tables in the README from WinUI's metadata. Never edit those files by hand |
+| `pnpm fetch:documentation` | by hand, never in `gen:components`: reads Microsoft's published reference for each member the NuGet XML does not document and records its text in `scripts/codegen/documentation-fallback.json` (pinned to a commit; CC BY 4.0, credited in `NOTICE`), then run `pnpm gen:components` |
 | `pnpm check:svelte-matrix` | runs the Svelte-facing tests against every release of the peer range (slow; see "Svelte versions") |
 | `pnpm check:package` | packs the tarball and runs publint and Are The Types Wrong on it |
 

@@ -17,37 +17,37 @@ export interface SelectorProps extends ItemsControlProps {
   /**
    * Gets or sets the value of the selected item, obtained by using the SelectedValuePath. The value of the selected item, obtained by using the SelectedValuePath, or null if no item is selected. The default value is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector.selectedvalue
    */
   selectedValue?: ObjectInput | undefined;
   /**
    * Gets or sets the selected item. The selected item. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector.selecteditem
    */
   selectedItem?: ObjectInput | undefined;
   /**
    * Gets or sets the index of the selected item. The index of the selected item. The default is -1, which indicates that no item is selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector.selectedindex
    */
   selectedIndex?: number | undefined;
   /**
    * Gets or sets a value that indicates whether a Selector should keep the SelectedItem synchronized with the current item in the Items property.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector.issynchronizedwithcurrentitem
    */
   isSynchronizedWithCurrentItem?: NullableBooleanInput;
   /**
    * Gets or sets the property path that is used to get the SelectedValue property of the SelectedItem property.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector.selectedvaluepath
    */
   selectedValuePath?: string;
   /**
    * Occurs when the currently selected item changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector.selectionchanged
    */
   onselectionchanged?: (sender: Selector, args: EventArguments<SelectionChangedEventArgs>) => void;
 }

@@ -16,13 +16,13 @@ export interface ItemContainerProps extends ControlProps {
   /**
    * Gets or sets the child element of the item, which can be any UIElement. This is the content of the item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemcontainer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemcontainer.child
    */
   child?: ItemContainer["child"] | Snippet;
   /**
    * Gets or sets a value that indicates whether the item is currently selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemcontainer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemcontainer.isselected
    */
   isSelected?: boolean;
 }

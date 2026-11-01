@@ -16,7 +16,7 @@ export interface ColorPickerSliderProps extends SliderProps {
   /**
    * Gets or sets a value that indicates which color channel the slider modifies.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorpickerslider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.colorpickerslider.colorchannel
    */
   colorChannel?: EnumInput<typeof ColorPickerHsvChannel>;
 }

@@ -16,7 +16,7 @@ export interface EasingDoubleKeyFrameProps extends DoubleKeyFrameProps {
   /**
    * Gets or sets the easing function that is applied to the key frame.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingdoublekeyframe
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.easingdoublekeyframe.easingfunction
    */
   easingFunction?: EasingDoubleKeyFrame["easingFunction"] | Snippet;
 }

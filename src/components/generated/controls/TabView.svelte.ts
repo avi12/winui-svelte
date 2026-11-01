@@ -24,167 +24,197 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
  */
 export interface TabViewProps extends ControlProps {
+  /**
+   * Gets the collection used to generate the tabs within the control.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabitems
+   */
   tabItems?: Snippet;
   /**
    * Gets or sets the selected item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.selecteditem
    */
   selectedItem?: ObjectInput | undefined;
   /**
    * Gets or sets the index of the selected item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.selectedindex
    */
   selectedIndex?: number | undefined;
   /**
    * Gets or sets the command to invoke when the add (+) button is tapped.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.addtabbuttoncommand
    */
   addTabButtonCommand?: TabView["addTabButtonCommand"] | Snippet;
   /**
    * Gets or sets the parameter to pass to the AddTabButtonCommand property.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.addtabbuttoncommandparameter
    */
   addTabButtonCommandParameter?: ObjectInput;
   /**
    * Gets or sets a value that determines whether the TabView can be a drop target for the purposes of drag-and-drop operations.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.allowdroptabs
    */
   allowDropTabs?: boolean;
   /**
    * Gets or sets a value that indicates whether tabs can be dragged as a data payload.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.candragtabs
    */
   canDragTabs?: boolean;
   /**
    * Gets or sets a value that indicates whether the tabs in the TabStrip can be reordered through user interaction.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.canreordertabs
    */
   canReorderTabs?: boolean;
+  /**
+   * Gets or sets a value that indicates whether or not dragging out tabs into a new window is allowed on this TabView. `true` if tabs can be dragged out into a new window; otherwise, `false`. The default is `false`.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.cantearouttabs
+   */
   canTearOutTabs?: boolean;
   /**
    * Gets or sets a value that indicates the behavior of the close button within tabs. A value of the enumeration that describes the behavior of the close button within tabs. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.closebuttonoverlaymode
    */
   closeButtonOverlayMode?: EnumInput<typeof TabViewCloseButtonOverlayMode>;
   /**
    * Gets or sets whether the add (+) tab button is visible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.isaddtabbuttonvisible
    */
   isAddTabButtonVisible?: boolean;
   /**
    * Gets or sets an object source used to generate the tabs within the TabView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabitemssource
    */
   tabItemsSource?: CollectionInput;
   /**
    * Gets or sets the DataTemplate used to display each item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabitemtemplate
    */
   tabItemTemplate?: DataTemplateInput;
   /**
    * Gets or sets a selection object that changes the DataTemplate to apply for content, based on processing information about the content item or its container at run time.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabitemtemplateselector
    */
   tabItemTemplateSelector?: TabView["tabItemTemplateSelector"];
   /**
    * Gets or sets the content that is shown to the right of the tab strip.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabstripfooter
    */
   tabStripFooter?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the TabStripFooter.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabstripfootertemplate
    */
   tabStripFooterTemplate?: DataTemplateInput;
   /**
    * Gets or sets the content that is shown to the left of the tab strip.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabstripheader
    */
   tabStripHeader?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the TabStripHeader.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabstripheadertemplate
    */
   tabStripHeaderTemplate?: DataTemplateInput;
   /**
    * Gets or sets how the tabs should be sized. The enum for how the tabs should be sized.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabwidthmode
    */
   tabWidthMode?: EnumInput<typeof TabViewWidthMode>;
   /**
    * Occurs when the add (+) tab button has been clicked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.addtabbuttonclick
    */
   onaddtabbuttonclick?: Parameters<TabView["onAddTabButtonClick"]>[0];
+  /**
+   * Occurs when tabs torn-out from a TabView in another window have been dropped onto this TabView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.externaltornouttabsdropped
+   */
   onexternaltornouttabsdropped?: Parameters<TabView["onExternalTornOutTabsDropped"]>[0];
+  /**
+   * Occurs when tabs torn-out from a TabView in another window are being dropped onto this TabView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.externaltornouttabsdropping
+   */
   onexternaltornouttabsdropping?: Parameters<TabView["onExternalTornOutTabsDropping"]>[0];
   /**
    * Occurs when the currently selected tab changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.selectionchanged
    */
   onselectionchanged?: (sender: TabView, args: EventArguments<SelectionChangedEventArgs>) => void;
   /**
    * Raised when the user attempts to close a Tab via clicking the x-to-close button, CTRL+F4, or mousewheel.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabcloserequested
    */
   ontabcloserequested?: Parameters<TabView["onTabCloseRequested"]>[0];
   /**
    * Raised when the user completes the drag action.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabdragcompleted
    */
   ontabdragcompleted?: Parameters<TabView["onTabDragCompleted"]>[0];
   /**
    * Occurs when a drag operation is initiated.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabdragstarting
    */
   ontabdragstarting?: Parameters<TabView["onTabDragStarting"]>[0];
   /**
    * Occurs when the user completes a drag and drop operation by dropping a tab outside of the TabStrip area.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabdroppedoutside
    */
   ontabdroppedoutside?: Parameters<TabView["onTabDroppedOutside"]>[0];
   /**
    * Raised when the items collection has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabitemschanged
    */
   ontabitemschanged?: Parameters<TabView["onTabItemsChanged"]>[0];
   /**
    * Occurs when the input system reports an underlying drag event with the TabStrip as the potential drop target.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabstripdragover
    */
   ontabstripdragover?: (sender: TabView, args: EventArguments<DragEventArgs>) => void;
   /**
    * Occurs when the input system reports an underlying drop event with the TabStrip as the drop target.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabstripdrop
    */
   ontabstripdrop?: (sender: TabView, args: EventArguments<DragEventArgs>) => void;
+  /**
+   * Occurs when the user has started to tear-out tabs from a TabView and a new window has been provided by the `TabTearOutWindowRequested` event.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabtearoutrequested
+   */
   ontabtearoutrequested?: Parameters<TabView["onTabTearOutRequested"]>[0];
+  /**
+   * Occurs when the user has started to drag the selected tabs and `CanTearOutTabs` is set to `true`.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabtearoutwindowrequested
+   */
   ontabtearoutwindowrequested?: Parameters<TabView["onTabTearOutWindowRequested"]>[0];
 }
 

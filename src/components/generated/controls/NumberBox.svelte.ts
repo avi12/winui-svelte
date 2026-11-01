@@ -18,121 +18,121 @@ export interface NumberBoxProps extends ControlProps {
   /**
    * Gets or sets the numeric value of a NumberBox.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.value
    */
   value?: number | undefined;
   /**
    * Toggles whether the control will accept and evaluate a basic formulaic expression entered as input.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.acceptsexpression
    */
   acceptsExpression?: boolean;
   /**
    * Gets or sets content that is shown below the control. The content should provide guidance about the input expected by the control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.description
    */
   description?: ObjectInput | Snippet;
   /**
    * Gets or sets the content for the control's header.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the control's header.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Toggles whether line breaking occurs if a line of text extends beyond the available width of the control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.iswrapenabled
    */
   isWrapEnabled?: boolean;
   /**
    * Gets or sets the value that is added to or subtracted from Value when a large change is made, such as with the PageUP and PageDown keys.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.largechange
    */
   largeChange?: number;
   /**
    * Gets or sets the numerical maximum for Value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.maximum
    */
   maximum?: number;
   /**
    * Gets or sets the numerical minimum for Value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.minimum
    */
   minimum?: number;
   /**
    * Gets or sets the object used to specify the formatting of Value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.numberformatter
    */
   numberFormatter?: NumberBox["numberFormatter"];
   /**
    * Gets or sets the text that is displayed in the control until the value is changed by a user action or some other operation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.placeholdertext
    */
   placeholderText?: string;
   /**
    * Gets or sets a value that indicates whether the on-screen keyboard is shown when the control receives focus programmatically.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.preventkeyboarddisplayonprogrammaticfocus
    */
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
   /**
    * Gets or sets the flyout that is shown when text is selected, or null if no flyout is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.selectionflyout
    */
   selectionFlyout?: NumberBox["selectionFlyout"] | Snippet;
   /**
    * Gets or sets the brush used to highlight the selected text. The brush used to highlight the selected text. The practical default is a brush using the theme resource TextSelectionHighlightThemeColor.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.selectionhighlightcolor
    */
   selectionHighlightColor?: NumberBox["selectionHighlightColor"] | Snippet;
   /**
    * Gets or sets the value that is added to or subtracted from Value when a small change is made, such as with an arrow key or scrolling.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.smallchange
    */
   smallChange?: number;
   /**
    * Gets or sets a value that indicates the placement of buttons used to increment or decrement the Value property.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.spinbuttonplacementmode
    */
   spinButtonPlacementMode?: EnumInput<typeof NumberBoxSpinButtonPlacementMode>;
   /**
    * Gets or sets the string type representation of the Value property.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.text
    */
   text?: string;
   /**
    * Gets or sets a value that indicates how the reading order is determined for the NumberBox.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.textreadingorder
    */
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   /**
    * Gets or sets the input validation behavior to invoke when invalid input is entered.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.validationmode
    */
   validationMode?: EnumInput<typeof NumberBoxValidationMode>;
   /**
    * Occurs after the user triggers evaluation of new input by pressing the Enter key, clicking a spin button, or by changing focus.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.valuechanged
    */
   onvaluechanged?: Parameters<NumberBox["onValueChanged"]>[0];
 }

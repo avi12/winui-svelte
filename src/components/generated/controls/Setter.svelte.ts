@@ -18,7 +18,7 @@ export interface SetterProps extends SetterBaseProps {
   /**
    * Gets or sets the value to apply to the property that is specified by the Setter.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.setter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.setter.value
    */
   value?: ObjectInput | Snippet;
 }

@@ -17,127 +17,127 @@ export interface ColorPickerProps extends ControlProps {
   /**
    * Gets or sets the current color value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.color
    */
   color?: ColorInput | undefined;
   /**
    * Gets or sets a value that indicates how the Hue-Saturation-Value (HSV) color components are mapped onto the ColorSpectrum. A value of the enumeration. The default is HueSaturation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.colorspectrumcomponents
    */
   colorSpectrumComponents?: EnumInput<typeof ColorSpectrumComponents>;
   /**
    * Gets or sets a value that indicates whether the ColorSpectrum is shown as a square or a circle. A value of the enumeration. The default is Box, which shows the spectrum as a square.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.colorspectrumshape
    */
   colorSpectrumShape?: EnumInput<typeof ColorSpectrumShape>;
   /**
    * Gets or sets a value that indicates whether the alpha channel can be modified.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.isalphaenabled
    */
   isAlphaEnabled?: boolean;
   /**
    * Gets or sets a value that indicates whether the slider control for the alpha channel is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.isalphaslidervisible
    */
   isAlphaSliderVisible?: boolean;
   /**
    * Gets or sets a value that indicates whether the text input box for the alpha channel is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.isalphatextinputvisible
    */
   isAlphaTextInputVisible?: boolean;
   /**
    * Gets or sets a value that indicates whether the text input boxes for the color channels are shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.iscolorchanneltextinputvisible
    */
   isColorChannelTextInputVisible?: boolean;
   /**
    * Gets or sets a value that indicates whether the color preview bar is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.iscolorpreviewvisible
    */
   isColorPreviewVisible?: boolean;
   /**
    * Gets or sets a value that indicates whether the slider control for the color value is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.iscolorslidervisible
    */
   isColorSliderVisible?: boolean;
   /**
    * Gets or sets a value that indicates whether the color spectrum control is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.iscolorspectrumvisible
    */
   isColorSpectrumVisible?: boolean;
   /**
    * Gets or sets a value that indicates whether the text input box for a HEX color value is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.ishexinputvisible
    */
   isHexInputVisible?: boolean;
   /**
    * Gets or sets a value that indicates whether the 'more' button is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.ismorebuttonvisible
    */
   isMoreButtonVisible?: boolean;
   /**
    * Gets or sets the maximum Hue value in the range 0-359.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.maxhue
    */
   maxHue?: number;
   /**
    * Gets or sets the maximum Saturation value in the range 0-100.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.maxsaturation
    */
   maxSaturation?: number;
   /**
    * Gets or sets the maximum Value value in the range 0-100.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.maxvalue
    */
   maxValue?: number;
   /**
    * Gets or sets the minimum Hue value in the range 0-359.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.minhue
    */
   minHue?: number;
   /**
    * Gets or sets the minimum Saturation value in the range 0-100.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.minsaturation
    */
   minSaturation?: number;
   /**
    * Gets or sets the minimum Value value in the range 0-100.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.minvalue
    */
   minValue?: number;
   /**
    * Gets or sets the orientation of the editing controls in the ColorPicker. The orientation of the editing controls in the ColorPicker. The default is Vertical.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.orientation
    */
   orientation?: EnumInput<typeof Orientation>;
   /**
    * Gets or sets the previous color. The previous color. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.previouscolor
    */
   previousColor?: NullableColorInput;
   /**
    * Occurs when the Color property has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.colorchanged
    */
   oncolorchanged?: Parameters<ColorPicker["onColorChanged"]>[0];
 }
