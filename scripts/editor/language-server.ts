@@ -131,6 +131,10 @@ function uriKey(uri: string) {
 
 // Removes a folder of links and copies without touching what the links point at.
 function clearFolder(folder: string) {
+  if (!existsSync(folder)) {
+    return;
+  }
+
   for (const entry of readdirSync(folder)) {
     const entryPath = path.join(folder, entry);
     const stats = lstatSync(entryPath);
@@ -197,10 +201,7 @@ export class LanguageServer {
    * the methods below take the real paths and map them in.
    */
   async start(folders: string[]) {
-    if (existsSync(WORKSPACE_FOLDER)) {
-      clearFolder(WORKSPACE_FOLDER);
-    }
-
+    clearFolder(WORKSPACE_FOLDER);
     for (const [iFolder, folder] of folders.entries()) {
       const mirrored = path.join(WORKSPACE_FOLDER, `${iFolder}-${path.basename(folder)}`);
       mirror({
@@ -374,6 +375,11 @@ export class LanguageServer {
 
   stop() {
     this.server.kill();
+
+    if (existsSync(WORKSPACE_FOLDER)) {
+      clearFolder(WORKSPACE_FOLDER);
+      rmdirSync(WORKSPACE_FOLDER);
+    }
   }
 
   private request({ method, params }: {
