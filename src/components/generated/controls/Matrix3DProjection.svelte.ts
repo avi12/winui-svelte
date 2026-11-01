@@ -13,11 +13,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrix3dprojection
  */
 export interface Matrix3DProjectionProps extends ProjectionProps {
+  /**
+   * Gets or sets the Matrix3D that is used for the projection that is applied to the object.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrix3dprojection.projectionmatrix
+   */
   children?: Snippet;
   /**
    * Gets or sets the Matrix3D that is used for the projection that is applied to the object.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrix3dprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrix3dprojection.projectionmatrix
    */
   projectionMatrix?: Matrix3DProjection["projectionMatrix"];
 }

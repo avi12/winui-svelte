@@ -13,11 +13,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectanimationusingkeyframes
  */
 export interface ObjectAnimationUsingKeyFramesProps extends TimelineProps {
+  /**
+   * Gets the collection of ObjectKeyFrame objects that define the animation. The collection of ObjectKeyFrame objects that define the animation. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectanimationusingkeyframes.keyframes
+   */
   children?: Snippet;
   /**
    * Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectanimationusingkeyframes
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectanimationusingkeyframes.enabledependentanimation
    */
   enableDependentAnimation?: boolean;
 }

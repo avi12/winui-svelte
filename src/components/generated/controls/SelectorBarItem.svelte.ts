@@ -16,13 +16,13 @@ export interface SelectorBarItemProps extends ItemContainerProps {
   /**
    * Gets or sets the item's graphical icon. The icon associated with the item. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbaritem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbaritem.icon
    */
   icon?: SelectorBarItem["icon"] | Snippet;
   /**
    * Gets or sets the item's text label. The item's text label. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbaritem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.selectorbaritem.text
    */
   text?: string;
 }

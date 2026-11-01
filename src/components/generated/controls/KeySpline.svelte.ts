@@ -14,15 +14,19 @@ export interface KeySplineProps {
   /**
    * Gets or sets the first control point used to define a Bezier curve that describes a KeySpline.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline.controlpoint1
    */
   controlPoint1?: PointInput;
   /**
    * Gets or sets the second control point used to define a Bezier curve that describes a KeySpline.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline.controlpoint2
    */
   controlPoint2?: PointInput;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

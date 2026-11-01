@@ -16,13 +16,13 @@ export interface MenuFlyoutPresenterProps extends ItemsControlProps {
   /**
    * Gets or sets a value that indicates whether the default shadow effect is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutpresenter.isdefaultshadowenabled
    */
   isDefaultShadowEnabled?: boolean;
   /**
    * Gets or sets the system backdrop to apply to this flyout. The backdrop is rendered behind the flyout content.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutpresenter.systembackdrop
    */
   systemBackdrop?: MenuFlyoutPresenter["systemBackdrop"] | Snippet;
 }

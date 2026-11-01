@@ -14,11 +14,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.solidcolorbrush
  */
 export interface SolidColorBrushProps extends BrushProps {
+  /**
+   * Gets or sets the color of this SolidColorBrush. The brush's color. The default value is Transparent.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.solidcolorbrush.color
+   */
   children?: Snippet;
   /**
    * Gets or sets the color of this SolidColorBrush. The brush's color. The default value is Transparent.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.solidcolorbrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.solidcolorbrush.color
    */
   color?: ColorInput;
 }

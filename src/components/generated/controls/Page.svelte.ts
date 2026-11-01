@@ -17,19 +17,19 @@ export interface PageProps extends UserControlProps {
   /**
    * Gets or sets the AppBar displayed at the bottom of the page. A reference to an AppBar displayed at the top of the page, if any; otherwise, null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page.bottomappbar
    */
   bottomAppBar?: Page["bottomAppBar"] | Snippet;
   /**
    * Gets or sets the navigation mode that indicates whether this Page is cached, and the period of time that the cache entry should persist. A value of the enumeration. The default is Disabled.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page.navigationcachemode
    */
   navigationCacheMode?: EnumInput<typeof NavigationCacheMode>;
   /**
    * Gets or sets the AppBar displayed in a dedicated area at the top of the page. A reference to an AppBar displayed at the top of the page, if any; otherwise, null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.page.topappbar
    */
   topAppBar?: Page["topAppBar"] | Snippet;
 }

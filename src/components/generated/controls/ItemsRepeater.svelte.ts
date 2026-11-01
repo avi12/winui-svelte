@@ -17,56 +17,56 @@ export interface ItemsRepeaterProps extends FrameworkElementProps {
   /**
    * Gets or sets a brush that provides the background of the control. The brush that provides the background of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater.background
    */
   background?: BrushInput | Snippet;
   /**
    * Gets or sets a value that indicates the size of the buffer used to realize items when panning or scrolling horizontally. A non-negative value that indicates the size of the buffer as a multiple of the viewport size. The default value is determined by the system.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater.horizontalcachelength
    */
   horizontalCacheLength?: number;
   /**
    * Gets or sets an object source used to generate the content of the ItemsRepeater. The object that is used to generate the content of the ItemsRepeater. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater.itemssource
    */
   itemsSource?: CollectionInput;
   /**
    * Gets or sets the template used to display each item. The template that specifies the visualization of the data objects. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater.itemtemplate
    */
   itemTemplate?: ObjectReferenceInput;
   itemTransitionProvider?: ItemsRepeater["itemTransitionProvider"];
   /**
    * Gets or sets the layout used to size and position elements in the ItemsRepeater. The layout used to size and position elements. The default is a StackLayout with vertical orientation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater.layout
    */
   layout?: ItemsRepeater["layout"] | Snippet;
   /**
    * Gets or sets a value that indicates the size of the buffer used to realize items when panning or scrolling vertically. A non-negative value that indicates the size of the buffer as a multiple of the viewport size. The default value is determined by the system.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater.verticalcachelength
    */
   verticalCacheLength?: number;
   /**
    * Occurs each time an element is cleared and made available to be re-used.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater.elementclearing
    */
   onelementclearing?: Parameters<ItemsRepeater["onElementClearing"]>[0];
   /**
    * Occurs for each realized UIElement when the index for the item it represents has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater.elementindexchanged
    */
   onelementindexchanged?: Parameters<ItemsRepeater["onElementIndexChanged"]>[0];
   /**
    * Occurs each time an element is prepared for use.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsrepeater.elementprepared
    */
   onelementprepared?: Parameters<ItemsRepeater["onElementPrepared"]>[0];
 }

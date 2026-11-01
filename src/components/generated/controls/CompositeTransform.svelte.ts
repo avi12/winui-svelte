@@ -15,55 +15,55 @@ export interface CompositeTransformProps extends TransformProps {
   /**
    * Gets or sets the x-coordinate of the center point for all transforms specified by the CompositeTransform in device-independent pixel (DIP) relative to the upper left-hand corner of the element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform.centerx
    */
   centerX?: number;
   /**
    * Gets or sets the y-coordinate of the center point for all transforms specified by the CompositeTransform in device-independent pixel (DIP) relative to the upper left-hand corner of the element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform.centery
    */
   centerY?: number;
   /**
    * Gets or sets the angle, in degrees, of clockwise rotation. The angle, in degrees, of clockwise rotation. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform.rotation
    */
   rotation?: number;
   /**
    * Gets or sets the x-axis scale factor. You can use this property to stretch or shrink an object horizontally. The scale factor along the x-axis. The default is 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform.scalex
    */
   scaleX?: number;
   /**
    * Gets or sets the y-axis scale factor. You can use this property to stretch or shrink an object vertically. The scale factor along the y-axis. The default is 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform.scaley
    */
   scaleY?: number;
   /**
    * Gets or sets the x-axis skew angle, which is measured in degrees counterclockwise from the y-axis. A skew transform can be useful for creating the illusion of three-dimensional depth in a two-dimensional object.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform.skewx
    */
   skewX?: number;
   /**
    * Gets or sets the y-axis skew angle, which is measured in degrees counterclockwise from the x-axis. A skew transform can be useful for creating the illusion of three-dimensional depth in a two-dimensional object.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform.skewy
    */
   skewY?: number;
   /**
    * Gets or sets the distance to translate along the x-axis. The distance to translate (move) an object along the x-axis, in pixels. This property is read/write. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform.translatex
    */
   translateX?: number;
   /**
    * Gets or sets the distance to translate (move) an object along the y-axis. The distance to translate (move) an object along the y-axis, in pixels. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.compositetransform.translatey
    */
   translateY?: number;
 }

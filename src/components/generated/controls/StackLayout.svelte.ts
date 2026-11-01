@@ -16,13 +16,13 @@ export interface StackLayoutProps extends VirtualizingLayoutProps {
   /**
    * Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stacklayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stacklayout.orientation
    */
   orientation?: EnumInput<typeof Orientation>;
   /**
    * Gets or sets a uniform distance (in pixels) between stacked items. It is applied in the direction of the StackLayout's Orientation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stacklayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stacklayout.spacing
    */
   spacing?: number;
 }

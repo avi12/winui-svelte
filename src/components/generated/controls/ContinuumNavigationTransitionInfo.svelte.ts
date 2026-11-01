@@ -19,7 +19,7 @@ export interface ContinuumNavigationTransitionInfoProps extends NavigationTransi
   /**
    * Gets or sets the element that will fly between pages during a continuum navigation transition.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.continuumnavigationtransitioninfo
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.continuumnavigationtransitioninfo.exitelement
    */
   exitElement?: ContinuumNavigationTransitionInfo["exitElement"] | Snippet;
 }

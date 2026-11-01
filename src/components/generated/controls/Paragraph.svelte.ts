@@ -13,11 +13,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.paragraph
  */
 export interface ParagraphProps extends BlockProps {
+  /**
+   * Gets an InlineCollection containing the top-level Inline elements that include the contents of the Paragraph.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.paragraph.inlines
+   */
   children?: Snippet;
   /**
    * Gets or sets the indentation of the first line of text in a paragraph, in pixels.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.paragraph
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.paragraph.textindent
    */
   textIndent?: number;
 }

@@ -16,25 +16,25 @@ export interface SwipeControlProps extends ContentControlProps {
   /**
    * Gets or sets the items that can be invoked when the control is swiped from the bottom up.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol.bottomitems
    */
   bottomItems?: SwipeControl["bottomItems"] | Snippet;
   /**
    * Gets or sets the items that can be invoked when the control is swiped from the left side.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol.leftitems
    */
   leftItems?: SwipeControl["leftItems"] | Snippet;
   /**
    * Gets or sets the items that can be invoked when the control is swiped from the right side.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol.rightitems
    */
   rightItems?: SwipeControl["rightItems"] | Snippet;
   /**
    * Gets or sets the items that can be invoked when the control is swiped from the top down.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipecontrol.topitems
    */
   topItems?: SwipeControl["topItems"] | Snippet;
 }

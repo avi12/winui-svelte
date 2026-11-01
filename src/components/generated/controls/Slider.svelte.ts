@@ -18,67 +18,67 @@ export interface SliderProps extends RangeBaseProps {
   /**
    * Gets or sets the content for the control's header. The content of the control's header. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets the value of the Slider while the user is interacting with it, before the value is snapped to either the tick or step value. The value the Slider snaps to is specified by the SnapsTo property. A temporary value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.intermediatevalue
    */
   intermediateValue?: number;
   /**
    * Gets or sets a value that indicates the direction of increasing value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.isdirectionreversed
    */
   isDirectionReversed?: boolean;
   /**
    * Gets or sets a value that determines whether the slider value is shown in a tool tip for the Thumb component of the Slider.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.isthumbtooltipenabled
    */
   isThumbToolTipEnabled?: boolean;
   /**
    * Gets or sets the orientation of a Slider. One of the Orientation values. The default is Horizontal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.orientation
    */
   orientation?: EnumInput<typeof Orientation>;
   /**
    * Gets or sets a value that indicates how the Slider conforms the thumb position to its steps or tick marks. An enumeration value that specifies whether the Slider snaps to steps or tick marks. The default is StepValues.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.snapsto
    */
   snapsTo?: EnumInput<typeof SliderSnapsTo>;
   /**
    * Gets or sets the value part of a value range that steps should be created for.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.stepfrequency
    */
   stepFrequency?: number;
   /**
    * Gets or sets the converter logic that converts the range value of the Slider into tool tip content. A converter implementation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.thumbtooltipvalueconverter
    */
   thumbToolTipValueConverter?: Slider["thumbToolTipValueConverter"];
   /**
    * Gets or sets the increment of the value range that ticks should be created for. The increment to create tick marks for. The default is 0.0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.tickfrequency
    */
   tickFrequency?: number;
   /**
    * Gets or sets a value that indicates where to draw tick marks in relation to the track. An enumeration value that specifies where to draw tick marks in relation to the track. The default is Inline.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.tickplacement
    */
   tickPlacement?: EnumInput<typeof TickPlacement>;
 }

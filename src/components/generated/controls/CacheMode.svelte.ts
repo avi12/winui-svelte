@@ -11,6 +11,10 @@ import type { CacheMode } from "../bindings.ts";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.cachemode
  */
 export interface CacheModeProps {
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

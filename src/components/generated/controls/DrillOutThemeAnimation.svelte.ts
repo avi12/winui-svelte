@@ -15,25 +15,25 @@ export interface DrillOutThemeAnimationProps extends TimelineProps {
   /**
    * Gets or sets the element that is animating into view, such as a master page.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation.entrancetarget
    */
   entranceTarget?: DrillOutThemeAnimation["entranceTarget"];
   /**
    * Gets or sets the name of the element that is animating into view.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation.entrancetargetname
    */
   entranceTargetName?: string;
   /**
    * Gets or sets the element that is animating out of view, such as a detail page.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation.exittarget
    */
   exitTarget?: DrillOutThemeAnimation["exitTarget"];
   /**
    * Gets of sets the name of the element that is animating out of view.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.drilloutthemeanimation.exittargetname
    */
   exitTargetName?: string;
 }

@@ -15,13 +15,13 @@ export interface ElasticEaseProps extends EasingFunctionBaseProps {
   /**
    * Gets or sets the number of times the target slides back and forth over the animation destination. The number of times the target slides back and forth over the animation destination. This value must be greater than or equal to 0. The default is 3.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.elasticease
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.elasticease.oscillations
    */
   oscillations?: number;
   /**
    * Gets or sets the stiffness of the spring. The smaller the Springiness value is, the stiffer the spring and the faster the elasticity decreases in intensity over each oscillation. A positive number that specifies the stiffness of the spring. The default value is 3.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.elasticease
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.elasticease.springiness
    */
   springiness?: number;
 }

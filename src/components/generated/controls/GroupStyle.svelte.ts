@@ -21,39 +21,43 @@ export interface GroupStyleProps {
   /**
    * > [!NOTE] > ContainerStyleSelector may be altered or unavailable for releases after Windows 8.1 and is not supported for ItemsControl.GroupStyle. Gets or sets a reference to a custom StyleSelector logic class. The StyleSelector referenced by this property returns a style to apply to each generated GroupItem.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle.containerstyleselector
    */
   containerStyleSelector?: GroupStyle["containerStyleSelector"];
   /**
    * Gets or sets the template that is used to display the group header. A DataTemplate object that is used to display the group header. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets a reference to a custom DataTemplateSelector logic class. The DataTemplateSelector returns different DataTemplate values to use for the header area of group item content. An object that derives from DataTemplateSelector. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle.headertemplateselector
    */
   headerTemplateSelector?: GroupStyle["headerTemplateSelector"];
   /**
    * Gets or sets a value that indicates whether items corresponding to empty groups should be displayed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle.hidesifempty
    */
   hidesIfEmpty?: boolean;
   /**
    * Gets or sets a template that creates the panel used to lay out the items. An ItemsPanelTemplate object that creates the panel used to layout the items.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle.panel
    */
   panel?: ItemsPanelTemplateInput;
   /**
    * Occurs when a property value changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle.propertychanged
    */
   onpropertychanged?: (sender: GroupStyle, args: EventArguments<PropertyChangedEventArgs>) => void;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

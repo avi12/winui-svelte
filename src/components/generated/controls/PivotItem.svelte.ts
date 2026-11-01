@@ -17,7 +17,7 @@ export interface PivotItemProps extends ContentControlProps {
   /**
    * Gets or sets the header for the PivotItem. Returns Object.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivotitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivotitem.header
    */
   header?: ObjectInput | Snippet;
 }

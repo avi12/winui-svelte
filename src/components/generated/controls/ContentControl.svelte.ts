@@ -14,24 +14,34 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol
  */
 export interface ContentControlProps extends ControlProps {
+  /**
+   * Gets or sets the content of a ContentControl. An object that contains the control's content. The default is null.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol.content
+   */
   children?: Snippet;
+  /**
+   * Gets or sets the collection of Transition style elements that apply to the content of a ContentControl. The strongly typed collection of Transition style elements.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol.contenttransitions
+   */
   contentTransitions?: Snippet;
   /**
    * Gets or sets the content of a ContentControl. An object that contains the control's content. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol.content
    */
   content?: ObjectInput | Snippet;
   /**
    * Gets or sets the data template that is used to display the content of the ContentControl.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol.contenttemplate
    */
   contentTemplate?: DataTemplateInput;
   /**
    * Gets or sets a selection object that changes the DataTemplate to apply for content, based on processing information about the content item or its container at run time.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol.contenttemplateselector
    */
   contentTemplateSelector?: ContentControl["contentTemplateSelector"];
 }

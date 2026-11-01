@@ -16,7 +16,7 @@ export interface PaneThemeTransitionProps extends TransitionProps {
   /**
    * Gets or sets the edge position to use for the transition. A value of the enumeration. The default is Left.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.panethemetransition
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.panethemetransition.edge
    */
   edge?: EnumInput<typeof EdgeTransitionLocation>;
 }

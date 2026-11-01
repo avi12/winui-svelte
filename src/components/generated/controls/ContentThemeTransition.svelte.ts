@@ -15,13 +15,13 @@ export interface ContentThemeTransitionProps extends TransitionProps {
   /**
    * Gets or sets the distance by which the target is translated in the horizontal direction when the transition is active. The horizontal offset translation, in pixels.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.contentthemetransition
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.contentthemetransition.horizontaloffset
    */
   horizontalOffset?: number;
   /**
    * Gets or sets the distance by which the target is translated in the vertical direction when the transition is active. The vertical offset translation, in pixels.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.contentthemetransition
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.contentthemetransition.verticaloffset
    */
   verticalOffset?: number;
 }

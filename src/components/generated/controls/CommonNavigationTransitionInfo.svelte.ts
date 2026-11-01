@@ -18,7 +18,7 @@ export interface CommonNavigationTransitionInfoProps extends NavigationTransitio
   /**
    * Gets or sets a Boolean value indicating if staggering is enabled for the navigation transition.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.commonnavigationtransitioninfo
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.commonnavigationtransitioninfo.isstaggeringenabled
    */
   isStaggeringEnabled?: boolean;
 }

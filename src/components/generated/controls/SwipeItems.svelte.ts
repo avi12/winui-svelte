@@ -13,13 +13,22 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitems
  */
 export interface SwipeItemsProps {
+  /**
+   * Represents a collection of SwipeItem objects.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitems
+   */
   children?: Snippet;
   /**
    * Gets or sets a value that indicates the effect of a swipe interaction. A value of the enumeration that indicates the effect of a swipe interaction. The default is Reveal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitems
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitems.mode
    */
   mode?: EnumInput<typeof SwipeMode>;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

@@ -15,7 +15,7 @@ export interface ExponentialEaseProps extends EasingFunctionBaseProps {
   /**
    * Gets or sets the exponent used to determine the interpolation of the animation. The exponent used to determine the interpolation of the animation. The default is 2.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.exponentialease
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.exponentialease.exponent
    */
   exponent?: number;
 }

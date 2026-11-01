@@ -15,13 +15,13 @@ export interface AppBarElementContainerProps extends ContentControlProps {
   /**
    * Gets or sets the order in which this item is moved to the CommandBar overflow menu.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarelementcontainer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarelementcontainer.dynamicoverfloworder
    */
   dynamicOverflowOrder?: number;
   /**
    * Gets or sets a value that indicates whether the element is shown in its compact state.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarelementcontainer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarelementcontainer.iscompact
    */
   isCompact?: boolean;
 }

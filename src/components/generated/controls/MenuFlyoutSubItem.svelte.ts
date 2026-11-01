@@ -13,17 +13,22 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem
  */
 export interface MenuFlyoutSubItemProps extends MenuFlyoutItemBaseProps {
+  /**
+   * Gets the collection used to generate the content of the sub-menu. The collection that is used to generate the content of the sub-menu, if it exists; otherwise, null. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem.items
+   */
   children?: Snippet;
   /**
    * Gets or sets the graphic content of the menu flyout subitem.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem.icon
    */
   icon?: MenuFlyoutSubItem["icon"] | Snippet;
   /**
    * Gets or sets the text content of a MenuFlyoutSubItem. A string that specifies the text content of this MenuFlyoutSubItem. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutsubitem.text
    */
   text?: string;
 }

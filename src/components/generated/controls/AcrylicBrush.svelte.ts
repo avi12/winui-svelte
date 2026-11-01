@@ -19,31 +19,31 @@ export interface AcrylicBrushProps extends XamlCompositionBrushBaseProps {
   /**
    * Gets or sets a value that specifies whether the brush is forced to the solid fallback color.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush.alwaysusefallback
    */
   alwaysUseFallback?: boolean;
   /**
    * Gets or sets the color tint for the semi-transparent acrylic material.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush.tintcolor
    */
   tintColor?: ColorInput;
   /**
    * Gets or sets the degree of opacity of the color's luminosity tint. The opacity expressed as a value between 0 and 1.0. The default value is 1.0, which is full opacity. 0 is transparent opacity.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush.tintluminosityopacity
    */
   tintLuminosityOpacity?: NullableDoubleInput;
   /**
    * Gets or sets the degree of opacity of the color tint. The opacity expressed as a value between 0 and 1.0. The default value is 1.0, which is full opacity. 0 is transparent opacity.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush.tintopacity
    */
   tintOpacity?: number;
   /**
    * Gets or sets the length of the automatic transition animation used when the TintColor changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush.tinttransitionduration
    */
   tintTransitionDuration?: TimeSpanInput;
 }

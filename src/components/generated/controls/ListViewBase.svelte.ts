@@ -17,156 +17,166 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
  */
 export interface ListViewBaseProps extends SelectorProps {
+  /**
+   * Gets or sets the collection of Transition style elements that apply to the view footer.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.footertransitions
+   */
   footerTransitions?: Snippet;
+  /**
+   * Gets or sets the collection of Transition style elements that apply to the view header.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.headertransitions
+   */
   headerTransitions?: Snippet;
   /**
    * Gets or sets a value that indicates whether items in the view can be dragged as data payload.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.candragitems
    */
   canDragItems?: boolean;
   /**
    * Gets or sets a value that indicates whether items in the view can be reordered through user interaction.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.canreorderitems
    */
   canReorderItems?: boolean;
   /**
    * Gets or sets the amount of data to fetch for virtualizing/prefetch operations. The amount of data to fetch per interval, in pages.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.datafetchsize
    */
   dataFetchSize?: number;
   /**
    * Gets or sets the content for the list footer. The content of the list footer. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.footer
    */
   footer?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the view footer. The template that specifies the visualization of the footer object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.footertemplate
    */
   footerTemplate?: DataTemplateInput;
   /**
    * Gets or sets the content for the list header. The content of the list header. The default value is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the view header. The template that specifies the visualization of the header object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets the threshold range that governs when the ListViewBase class will begin to prefetch more items. The loading threshold, in terms of pages.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.incrementalloadingthreshold
    */
   incrementalLoadingThreshold?: number;
   /**
    * Gets or sets a value that indicates the conditions for prefetch operations by the ListViewBase class. An enumeration value that indicates the conditions that trigger prefetch operations. The default is Edge.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.incrementalloadingtrigger
    */
   incrementalLoadingTrigger?: EnumInput<typeof IncrementalLoadingTrigger>;
   /**
    * Gets or sets a value that indicates whether the ListViewBase instance is the active view in its owning SemanticZoom.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.isactiveview
    */
   isActiveView?: boolean;
   /**
    * Gets or sets a value that indicates whether items in the view fire an ItemClick event in response to interaction.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.isitemclickenabled
    */
   isItemClickEnabled?: boolean;
   /**
    * Gets or sets a value that indicates whether a check box is shown to enable multi-selection.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.ismultiselectcheckboxenabled
    */
   isMultiSelectCheckBoxEnabled?: boolean;
   /**
    * Gets or sets a value that indicates whether the view supports discrete input processing for a swipe interaction.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.isswipeenabled
    */
   isSwipeEnabled?: boolean;
   /**
    * Gets or sets a value that indicates whether the ListViewBase instance is the zoomed-in view in its owning SemanticZoom.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.iszoomedinview
    */
   isZoomedInView?: boolean;
   /**
    * Gets or sets the reorder behavior for a ListViewBase instance. When Enabled, unsorted and ungrouped lists can be reordered by user manipulation. One of the ListViewReorderMode enumeration values. The default is Disabled.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.reordermode
    */
   reorderMode?: EnumInput<typeof ListViewReorderMode>;
   /**
    * Gets or sets the selection behavior for a ListViewBase instance. One of the ListViewSelectionMode enumeration values. The default is Single selection.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.selectionmode
    */
   selectionMode?: EnumInput<typeof ListViewSelectionMode>;
   /**
    * Gets or sets the SemanticZoom instance that hosts the ListViewBase. The SemanticZoom instance that hosts this view, or null if the view is not hosted in a SemanticZoom control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.semanticzoomowner
    */
   semanticZoomOwner?: ListViewBase["semanticZoomOwner"];
   /**
    * Gets or sets a value that indicates whether the view shows placeholder UI for items during scrolling.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.showsscrollingplaceholders
    */
   showsScrollingPlaceholders?: boolean;
   /**
    * Gets or sets a value that indicates whether item selection changes when keyboard focus changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.singleselectionfollowsfocus
    */
   singleSelectionFollowsFocus?: boolean;
   /**
    * Occurs when an item container is to be chosen for a data group.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.choosinggroupheadercontainer
    */
   onchoosinggroupheadercontainer?: Parameters<ListViewBase["onChoosingGroupHeaderContainer"]>[0];
   /**
    * Occurs when an item container is to be chosen for a data item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.choosingitemcontainer
    */
   onchoosingitemcontainer?: Parameters<ListViewBase["onChoosingItemContainer"]>[0];
   /**
    * Occurs when the data item associated with a UI container changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.containercontentchanging
    */
   oncontainercontentchanging?: Parameters<ListViewBase["onContainerContentChanging"]>[0];
   /**
    * Occurs when a drag operation that involves one of the items in the view is ended.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.dragitemscompleted
    */
   ondragitemscompleted?: Parameters<ListViewBase["onDragItemsCompleted"]>[0];
   /**
    * Occurs when a drag operation that involves one of the items in the view is initiated.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.dragitemsstarting
    */
   ondragitemsstarting?: (sender: ListViewBase, args: EventArguments<DragItemsStartingEventArgs>) => void;
   /**
    * Occurs when an item in the list view receives an interaction, and the IsItemClickEnabled property is true.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.itemclick
    */
   onitemclick?: (sender: ListViewBase, args: EventArguments<ItemClickEventArgs>) => void;
 }

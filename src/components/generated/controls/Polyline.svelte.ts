@@ -17,13 +17,13 @@ export interface PolylineProps extends ShapeProps {
   /**
    * Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration that specifies the fill behavior. The default is EvenOdd.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline.fillrule
    */
   fillRule?: EnumInput<typeof FillRule>;
   /**
    * Gets or sets a collection that contains the vertex points of the Polyline. A collection of Point structures that describes the vertex points of the Polyline. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline.points
    */
   points?: PointCollectionInput;
 }

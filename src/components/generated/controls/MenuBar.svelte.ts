@@ -13,6 +13,11 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubar
  */
 export interface MenuBarProps extends ControlProps {
+  /**
+   * Gets the collection of top-level menu items.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menubar.items
+   */
   items?: Snippet;
 }
 

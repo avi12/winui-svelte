@@ -17,49 +17,49 @@ export interface ItemsWrapGridProps extends PanelProps {
   /**
    * Gets or sets a value that specifies whether a group header moves with the group when the group is panned vertically.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.arestickygroupheadersenabled
    */
   areStickyGroupHeadersEnabled?: boolean;
   /**
    * Gets or sets the size of the buffers for items outside the viewport, in multiples of the viewport size.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.cachelength
    */
   cacheLength?: number;
   /**
    * Gets or sets a value that specifies where group headers are positioned in relation to the group. An enumeration value that specifies where group headers are positioned in relation to the group. The default is Top.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.groupheaderplacement
    */
   groupHeaderPlacement?: EnumInput<typeof GroupHeaderPlacement>;
   /**
    * Gets or sets the amount of space around a group. The amount of space around a group as a Thickness value. Thickness is a structure that stores dimension values using pixel measures. The default is a uniform Thickness of 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.grouppadding
    */
   groupPadding?: ThicknessInput;
   /**
    * Gets or sets the height of the layout area for each item that is contained in an ItemsWrapGrid. The height of the layout area for each item that is contained in an ItemsWrapGrid. The default is NaN. See Remarks below.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.itemheight
    */
   itemHeight?: number;
   /**
    * Gets or sets the width of the layout area for each item that is contained in an ItemsWrapGrid. The width of the layout area for each item that is contained in an ItemsWrapGrid. The default is NaN. See Remarks below.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.itemwidth
    */
   itemWidth?: number;
   /**
    * Gets or sets a value that influences the wrap point, also accounting for Orientation. The maximum rows or columns that this ItemsWrapGrid should present before it introduces wrapping to the layout. The default is -1, which is a special value that indicates no maximum.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.maximumrowsorcolumns
    */
   maximumRowsOrColumns?: number;
   /**
    * Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.orientation
    */
   orientation?: EnumInput<typeof Orientation>;
 }

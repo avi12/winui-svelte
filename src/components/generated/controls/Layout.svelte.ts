@@ -14,15 +14,19 @@ export interface LayoutProps {
   /**
    * Occurs when the arrange state (layout) has been invalidated.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.layout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.layout.arrangeinvalidated
    */
   onarrangeinvalidated?: Parameters<Layout["onArrangeInvalidated"]>[0];
   /**
    * Occurs when the measurement state (layout) has been invalidated.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.layout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.layout.measureinvalidated
    */
   onmeasureinvalidated?: Parameters<Layout["onMeasureInvalidated"]>[0];
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

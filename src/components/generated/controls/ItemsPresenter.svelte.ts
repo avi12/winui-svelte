@@ -14,48 +14,58 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
  */
 export interface ItemsPresenterProps extends FrameworkElementProps {
+  /**
+   * Gets or sets the collection of Transition style elements that apply to the footer of an ItemsPresenter.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter.footertransitions
+   */
   footerTransitions?: Snippet;
+  /**
+   * Gets or sets the collection of Transition style elements that apply to the header of an ItemsPresenter.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter.headertransitions
+   */
   headerTransitions?: Snippet;
   /**
    * Gets or sets the content for the items footer. The content of the items footer. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter.footer
    */
   footer?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the items header. The template that specifies the visualization of the header object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter.footertemplate
    */
   footerTemplate?: DataTemplateInput;
   /**
    * Gets or sets the content for the items header. The content of the items header. The default value is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the items header. The template that specifies the visualization of the header object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets the distance between the ItemsPresenter and its child objects. The dimensions of the space between the presenter and its children as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter.padding
    */
   padding?: ThicknessInput;
   /**
    * Occurs when the horizontal snap points change.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter.horizontalsnappointschanged
    */
   onhorizontalsnappointschanged?: Parameters<ItemsPresenter["onHorizontalSnapPointsChanged"]>[0];
   /**
    * Occurs when the vertical snap points change.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter.verticalsnappointschanged
    */
   onverticalsnappointschanged?: Parameters<ItemsPresenter["onVerticalSnapPointsChanged"]>[0];
 }

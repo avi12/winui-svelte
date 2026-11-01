@@ -16,47 +16,52 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
  */
 export interface SemanticZoomProps extends ControlProps {
+  /**
+   * Gets or sets the semantically more complete zoomed-in view of the SemanticZoom. An object that implements ISemanticZoomInfo. Typically this is a practical ListViewBase implementation such as GridView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.zoomedinview
+   */
   children?: Snippet;
   /**
    * Gets or sets a value that declares whether the SemanticZoom can change display views.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.canchangeviews
    */
   canChangeViews?: boolean;
   /**
    * Gets or sets a value that determines whether the ZoomedInView is the active view.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.iszoomedinviewactive
    */
   isZoomedInViewActive?: boolean;
   /**
    * Gets or sets a value that indicates whether the ZoomedInView shows a button that activates the ZoomedOutView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.iszoomoutbuttonenabled
    */
   isZoomOutButtonEnabled?: boolean;
   /**
    * Gets or sets the semantically more complete zoomed-in view of the SemanticZoom. An object that implements ISemanticZoomInfo. Typically this is a practical ListViewBase implementation such as GridView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.zoomedinview
    */
   zoomedInView?: SemanticZoom["zoomedInView"] | Snippet;
   /**
    * Gets or sets the zoomed-out view of the SemanticZoom. An object that implements ISemanticZoomInfo. Typically this is a practical ListViewBase implementation such as GridView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.zoomedoutview
    */
   zoomedOutView?: SemanticZoom["zoomedOutView"] | Snippet;
   /**
    * Occurs when a view change is complete and the view is displayed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.viewchangecompleted
    */
   onviewchangecompleted?: (sender: SemanticZoom, args: EventArguments<SemanticZoomViewChangedEventArgs>) => void;
   /**
    * Occurs when a view change is requested.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.viewchangestarted
    */
   onviewchangestarted?: (sender: SemanticZoom, args: EventArguments<SemanticZoomViewChangedEventArgs>) => void;
 }

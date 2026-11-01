@@ -16,13 +16,13 @@ export interface MapElementsLayerProps extends MapLayerProps {
   /**
    * Gets or sets the collection of map element objects that are children of this map layer. The collection of map element objects that are children of this map layer. The default is an empty collection.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapelementslayer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapelementslayer.mapelements
    */
   mapElements?: MapElementsLayer["mapElements"] | Snippet;
   /**
    * Occurs when the user taps or clicks a map element that is a child of this map layer.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapelementslayer
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapelementslayer.mapelementclick
    */
   onmapelementclick?: Parameters<MapElementsLayer["onMapElementClick"]>[0];
 }

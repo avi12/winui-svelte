@@ -24,194 +24,214 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
  */
 export interface FrameworkElementProps extends UIElementProps {
+  /**
+   * Gets or sets the value of the Grid.Row XAML attached property from the specified FrameworkElement. The value of the Grid.Row XAML attached property on the target element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid.getrow
+   */
   gridRow?: number | undefined;
+  /**
+   * Gets or sets the value of the Grid.Column XAML attached property from the specified FrameworkElement. The value of the Grid.Column XAML attached property on the target element. This is a zero-based index.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid.getcolumn
+   */
   gridColumn?: number | undefined;
+  /**
+   * Gets or sets the value of the Grid.RowSpan XAML attached property from the specified FrameworkElement. The value of the Grid.RowSpan XAML attached property on the target element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid.getrowspan
+   */
   gridRowSpan?: number | undefined;
+  /**
+   * Gets or sets the value of the Grid.ColumnSpan XAML attached property from the specified FrameworkElement. The value of the Grid.ColumnSpan XAML attached property on the target element.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid.getcolumnspan
+   */
   gridColumnSpan?: number | undefined;
   /**
    * Gets or sets a value that indicates whether the element automatically gets focus when the user interacts with it.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.allowfocusoninteraction
    */
   allowFocusOnInteraction?: boolean;
   /**
    * Gets or sets whether a disabled control can receive focus.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.allowfocuswhendisabled
    */
   allowFocusWhenDisabled?: boolean;
   /**
    * Gets or sets the data context for a FrameworkElement. A common use of a data context is when a FrameworkElement uses the {Binding} markup extension and participates in data binding. The object to use as data context.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.datacontext
    */
   dataContext?: ObjectInput;
   /**
    * Gets or sets the direction in which text and other UI elements flow within any parent element that controls their layout. This property can be set to either LeftToRight or RightToLeft. Setting FlowDirection to RightToLeft on any element sets the alignment to the right, the reading order to right-to-left and the layout of the control to flow from right to left. The direction that text and other UI elements flow within their parent element, as a value of the enumeration. The default value is LeftToRight.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.flowdirection
    */
   flowDirection?: EnumInput<typeof FlowDirection>;
   /**
    * Gets or sets the outer margin of the focus visual for a FrameworkElement. Provides margin values for the focus visual. The default is a Thickness with all properties (dimensions) equal to 0. A different runtime default is often provided by individual control templates.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualmargin
    */
   focusVisualMargin?: ThicknessInput;
   /**
    * Gets or sets the brush used to draw the outer border of a HighVisibility or Reveal focus visual for a FrameworkElement.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualprimarybrush
    */
   focusVisualPrimaryBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the thickness of the outer border of a HighVisibility or Reveal focus visual for a FrameworkElement.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualprimarythickness
    */
   focusVisualPrimaryThickness?: ThicknessInput;
   /**
    * Gets or sets the brush used to draw the inner border of a HighVisibility or Reveal focus visual for a FrameworkElement.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualsecondarybrush
    */
   focusVisualSecondaryBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the thickness of the inner border of a HighVisibility or Reveal focus visual for a FrameworkElement. The thickness of the inner border of a HighVisibility focus visual. The default value is 1.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualsecondarythickness
    */
   focusVisualSecondaryThickness?: ThicknessInput;
   /**
    * Gets or sets the suggested height of a FrameworkElement. The height, in pixels, of the object. The default is NaN value, this value must be equal to or greater than 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.height
    */
   height?: number;
   /**
    * Gets or sets the horizontal alignment characteristics that are applied to a FrameworkElement when it is composed in a layout parent, such as a panel or items control. A horizontal alignment setting, as a value of the enumeration. The default is Stretch.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.horizontalalignment
    */
   horizontalAlignment?: EnumInput<typeof HorizontalAlignment>;
   /**
    * Gets or sets localization/globalization language information that applies to a FrameworkElement, and also to all child elements of the current FrameworkElement in the object representation and in UI. A string specifying language and culture that follows the Internet Engineering Task Force (IETF) BCP 47 standards. For example, U.S. English is "en-US".
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.language
    */
   language?: string;
   /**
    * Gets or sets the outer margin of a FrameworkElement. Provides margin values for the object. The default value is a default Thickness with all properties (dimensions) equal to 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.margin
    */
   margin?: ThicknessInput;
   /**
    * Gets or sets the maximum height constraint of a FrameworkElement. The maximum height of the object, in pixels. The default value is PositiveInfinity is also valid.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.maxheight
    */
   maxHeight?: number;
   /**
    * Gets or sets the maximum width constraint of a FrameworkElement. The maximum width of the object, in pixels. The default is PositiveInfinity is also valid.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.maxwidth
    */
   maxWidth?: number;
   /**
    * Gets or sets the minimum height constraint of a FrameworkElement. The minimum height of the object, in pixels. The default is 0. This value can be any value equal to or greater than 0. However, PositiveInfinity is not valid.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.minheight
    */
   minHeight?: number;
   /**
    * Gets or sets the minimum width constraint of a FrameworkElement. The minimum width of the object, in pixels. The default is 0. This value can be any value equal to or greater than 0. However, PositiveInfinity is not valid.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.minwidth
    */
   minWidth?: number;
   /**
    * Gets or sets the identifying name of the object. When a XAML processor creates the object tree from XAML markup, run-time code can refer to the XAML-declared object by this name. The name of the object, which must be a string that is valid in the XamlName grammar (see table in x:Name attribute. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.name
    */
   name?: string;
   /**
    * Gets or sets the UI theme that is used by the UIElement (and its child elements) for resource determination. The UI theme you specify with RequestedTheme can override the app-level RequestedTheme. A value of the enumeration, for example Light.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.requestedtheme
    */
   requestedTheme?: EnumInput<typeof ElementTheme>;
   /**
    * Gets the locally defined resource dictionary. In XAML, you can establish resource items as child object elements of a frameworkElement.Resources property element, through XAML implicit collection syntax. The current locally defined dictionary of resources, where each resource can be accessed by its key.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.resources
    */
   resources?: ResourcesInput;
   /**
    * Gets or sets an arbitrary object value that can be used to store custom information about this object. The intended arbitrary object value. This property has no default value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.tag
    */
   tag?: ObjectInput;
   /**
    * Gets or sets the vertical alignment characteristics that are applied to a FrameworkElement when it is composed in a parent object such as a panel or items control. A vertical alignment setting, as a value of the enumeration. The default is Stretch.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.verticalalignment
    */
   verticalAlignment?: EnumInput<typeof VerticalAlignment>;
   /**
    * Gets or sets the width of a FrameworkElement. The width of the object, in pixels. The default is NaN value, this value must be equal to or greater than 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.width
    */
   width?: number;
   /**
    * Occurs when the ActualTheme property value has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.actualthemechanged
    */
   onactualthemechanged?: Parameters<FrameworkElement["onActualThemeChanged"]>[0];
   /**
    * Occurs when the value of the FrameworkElement.DataContext property changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.datacontextchanged
    */
   ondatacontextchanged?: Parameters<FrameworkElement["onDataContextChanged"]>[0];
   /**
    * Occurs when the FrameworkElement's effective viewport changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.effectiveviewportchanged
    */
   oneffectiveviewportchanged?: Parameters<FrameworkElement["onEffectiveViewportChanged"]>[0];
   /**
    * Occurs when the layout of the visual tree changes, due to layout-relevant properties changing value or some other action that refreshes the layout.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.layoutupdated
    */
   onlayoutupdated?: Parameters<FrameworkElement["onLayoutUpdated"]>[0];
   /**
    * Occurs when a FrameworkElement has been constructed and added to the object tree, and is ready for interaction.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.loaded
    */
   onloaded?: (sender: FrameworkElement, args: EventArguments<RoutedEventArgs>) => void;
   /**
    * Occurs when a FrameworkElement begins to load.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.loading
    */
   onloading?: Parameters<FrameworkElement["onLoading"]>[0];
   /**
    * Occurs when either the ActualHeight or the ActualWidth property changes value on a FrameworkElement.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.sizechanged
    */
   onsizechanged?: (sender: FrameworkElement, args: EventArguments<SizeChangedEventArgs>) => void;
   /**
    * Occurs when this object is no longer connected to the main object tree.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.unloaded
    */
   onunloaded?: (sender: FrameworkElement, args: EventArguments<RoutedEventArgs>) => void;
 }

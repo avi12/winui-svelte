@@ -16,7 +16,7 @@ export interface MicaBackdropProps extends SystemBackdropProps {
   /**
    * Gets or sets the kind of backdrop that the MicaBackdrop displays.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.micabackdrop
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.micabackdrop.kind
    */
   kind?: EnumInput<typeof MicaKind>;
 }

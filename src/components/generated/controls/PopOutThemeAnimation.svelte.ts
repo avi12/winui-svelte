@@ -15,7 +15,7 @@ export interface PopOutThemeAnimationProps extends TimelineProps {
   /**
    * Gets or sets the reference name of the control element being targeted. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popoutthemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.popoutthemeanimation.targetname
    */
   targetName?: string;
 }

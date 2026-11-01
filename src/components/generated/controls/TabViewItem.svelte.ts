@@ -17,31 +17,31 @@ export interface TabViewItemProps extends ListViewItemProps {
   /**
    * Gets or sets the content that appears inside the tab strip to represent the tab.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content to the right of the tab strip.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets the value for the IconSource to be displayed within the tab.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem.iconsource
    */
   iconSource?: TabViewItem["iconSource"] | Snippet;
   /**
    * Gets or sets the value that determines if the tab shows a close button. The default is true.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem.isclosable
    */
   isClosable?: boolean;
   /**
    * Raised when the user attempts to close the TabViewItem via clicking the x-to-close button, CTRL+F4, or mousewheel.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem.closerequested
    */
   oncloserequested?: Parameters<TabViewItem["onCloseRequested"]>[0];
 }

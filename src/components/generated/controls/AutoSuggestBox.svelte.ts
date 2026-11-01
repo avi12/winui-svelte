@@ -18,91 +18,91 @@ export interface AutoSuggestBoxProps extends ItemsControlProps {
   /**
    * Gets or sets the text that is shown in the control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.text
    */
   text?: string | undefined;
   /**
    * Indicates if the suggestion area should be automatically maximized.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.automaximizesuggestionarea
    */
   autoMaximizeSuggestionArea?: boolean;
   /**
    * Gets or sets content that is shown below the control. The content should provide guidance about the input expected by the control. The content to be displayed below the control. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.description
    */
   description?: ObjectInput | Snippet;
   /**
    * Gets or sets the header object for the text box portion of this control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets a Boolean value indicating whether the drop-down portion of the AutoSuggestBox is open.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.issuggestionlistopen
    */
   isSuggestionListOpen?: boolean;
   /**
    * Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.lightdismissoverlaymode
    */
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   /**
    * Gets or set the maximum height for the drop-down portion of the AutoSuggestBox control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.maxsuggestionlistheight
    */
   maxSuggestionListHeight?: number;
   /**
    * Gets or sets the placeholder text to be displayed in the control. The placeholder text to be displayed in the control. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.placeholdertext
    */
   placeholderText?: string;
   /**
    * Gets or sets the graphic content of the button that is clicked to initiate a query. The graphic content of the button that is clicked to initiate a query, if present; otherwise, null. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.queryicon
    */
   queryIcon?: AutoSuggestBox["queryIcon"] | Snippet;
   /**
    * Gets or sets the style of the auto-suggest text box.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.textboxstyle
    */
   textBoxStyle?: StyleInput;
   /**
    * Gets or sets the property path that is used to get the value for display in the text box portion of the AutoSuggestBox control, when an item is selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.textmemberpath
    */
   textMemberPath?: string;
   /**
    * Used in conjunction with TextMemberPath, gets or sets a value indicating whether items in the view will trigger an update of the editable text part of the AutoSuggestBox when clicked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.updatetextonselect
    */
   updateTextOnSelect?: boolean;
   /**
    * Occurs when the user submits a search query.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.querysubmitted
    */
   onquerysubmitted?: Parameters<AutoSuggestBox["onQuerySubmitted"]>[0];
   /**
    * Raised before the text content of the editable control component is updated.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.suggestionchosen
    */
   onsuggestionchosen?: Parameters<AutoSuggestBox["onSuggestionChosen"]>[0];
   /**
    * Raised after the text content of the editable control component is updated.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.textchanged
    */
   ontextchanged?: Parameters<AutoSuggestBox["onTextChanged"]>[0];
 }

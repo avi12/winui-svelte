@@ -16,7 +16,7 @@ export interface SplineColorKeyFrameProps extends ColorKeyFrameProps {
   /**
    * Gets or sets the two control points that define animation progress for this key frame. The two control points that specify the cubic Bezier curve that defines the progress of the key frame.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinecolorkeyframe
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splinecolorkeyframe.keyspline
    */
   keySpline?: SplineColorKeyFrame["keySpline"] | Snippet;
 }

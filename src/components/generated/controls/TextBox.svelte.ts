@@ -36,235 +36,235 @@ export interface TextBoxProps extends ControlProps {
   /**
    * Gets or sets the text contents of the text box. A string containing the text contents of the text box. The default is an empty string ("").
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.text
    */
   text?: string | undefined;
   /**
    * Gets or sets the starting position of the text selected in the text box. When the SelectionLength is 0 (there is no selected text), the SelectionStart property corresponds to the cursor position. The starting position of the current selection or the current cursor position.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.selectionstart
    */
   selectionStart?: number | undefined;
   /**
    * Gets or sets the number of characters in the current selection in the text box. The number of characters in the current selection in the text box, or 0 if there is no selection.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.selectionlength
    */
   selectionLength?: number | undefined;
   /**
    * Gets or sets the value that determines whether the text box allows and displays the newline or return characters.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.acceptsreturn
    */
   acceptsReturn?: boolean;
   /**
    * Gets or sets a value that indicates how the control modifies the case of characters as they are typed. A value of the enumeration that indicates how the control modifies the case of characters as they are typed. The default is Normal, which indicates that the charcters are not changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.charactercasing
    */
   characterCasing?: EnumInput<typeof CharacterCasing>;
   /**
    * Gets or sets content that is shown below the control. The content should provide guidance about the input expected by the control. The content to be displayed below the control. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.description
    */
   description?: ObjectInput | Snippet;
   /**
    * Gets or sets a value that indicates the preferred alignment of the Input Method Editor (IME).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.desiredcandidatewindowalignment
    */
   desiredCandidateWindowAlignment?: EnumInput<typeof CandidateWindowAlignment>;
   /**
    * Gets or sets the content for the control's header. The content of the control's header. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets a value that indicates how text is aligned in the TextBox. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.horizontaltextalignment
    */
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
   /**
    * Gets or sets the context for input used by this TextBox. The input scope, which provides a hint at the type of text input expected by the control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.inputscope
    */
   inputScope?: InputScopeInput;
   /**
    * Gets or sets a value that determines whether font glyphs that contain color layers, such as Segoe UI Emoji, are rendered in color.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.iscolorfontenabled
    */
   isColorFontEnabled?: boolean;
   /**
    * Gets or sets the value that determines if the user can change the text in the text box.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.isreadonly
    */
   isReadOnly?: boolean;
   /**
    * Gets or sets a value that specifies whether the TextBox input interacts with a spell check engine.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.isspellcheckenabled
    */
   isSpellCheckEnabled?: boolean;
   /**
    * Gets or sets a value that determines whether text prediction features ("autocomplete") should be enabled for this TextBox.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.istextpredictionenabled
    */
   isTextPredictionEnabled?: boolean;
   /**
    * Gets or sets the value that specifies the maximum number of characters allowed for user input. The maximum number of characters allowed for user input. The default is 0 (no limit).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.maxlength
    */
   maxLength?: number;
   /**
    * Gets or sets a brush that describes the color of placeholder text.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.placeholderforeground
    */
   placeholderForeground?: BrushInput | Snippet;
   /**
    * Gets or sets the text that is displayed in the control until the value is changed by a user action or some other operation. The text that is displayed in the control when no value is entered. The default is an empty string ("").
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.placeholdertext
    */
   placeholderText?: string;
   /**
    * Gets or sets a value that indicates whether the on-screen keyboard is shown when the control receives focus programmatically.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.preventkeyboarddisplayonprogrammaticfocus
    */
   preventKeyboardDisplayOnProgrammaticFocus?: boolean;
   /**
    * Gets or sets the content of the current selection in the text box. The currently selected text in the text box. If no text is selected, the value is String.Empty.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.selectedtext
    */
   selectedText?: string;
   /**
    * Gets or sets the flyout shown when text is selected with touch or pen input. The flyout shown when text is selected with touch or pen input, or null if no flyout should be shown. The default is an instance of TextCommandBarFlyout.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.selectionflyout
    */
   selectionFlyout?: TextBox["selectionFlyout"] | Snippet;
   /**
    * Gets or sets the brush used to highlight the selected text. The brush used to highlight the selected text. The practical default is a brush using the theme resource TextSelectionHighlightThemeColor.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.selectionhighlightcolor
    */
   selectionHighlightColor?: TextBox["selectionHighlightColor"] | Snippet;
   /**
    * Gets or sets the brush used to highlight the selected text when the TextBox does not have focus. The brush used to highlight the selected text when TextBox loses focus. The default is a null brush from a pure code perspective, but the default control template for TextBox applies a Transparent brush for this in a runtime instance of a TextBox control. To disable the SelectionHighlightColorWhenNotFocused, set the brush to Transparent once again.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.selectionhighlightcolorwhennotfocused
    */
   selectionHighlightColorWhenNotFocused?: TextBox["selectionHighlightColorWhenNotFocused"] | Snippet;
   /**
    * Gets or sets how the text should be horizontally aligned in the text box. One of the TextAlignment enumeration values. The default is Left.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textalignment
    */
   textAlignment?: EnumInput<typeof TextAlignment>;
   /**
    * Gets or sets a value that indicates how the reading order is determined for the TextBox.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textreadingorder
    */
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   /**
    * Gets or sets how line breaking occurs if a line of text extends beyond the available width of the text box. One of the TextWrapping values. The default is NoWrap.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textwrapping
    */
   textWrapping?: EnumInput<typeof TextWrapping>;
   /**
    * Occurs synchronously when the text in the text box starts to change, but before the Text property is updated.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.beforetextchanging
    */
   onbeforetextchanging?: Parameters<TextBox["onBeforeTextChanging"]>[0];
   /**
    * Occurs when the Input Method Editor (IME) window open, updates, or closes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.candidatewindowboundschanged
    */
   oncandidatewindowboundschanged?: Parameters<TextBox["onCandidateWindowBoundsChanged"]>[0];
   /**
    * Occurs when the system processes an interaction that displays a context menu.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.contextmenuopening
    */
   oncontextmenuopening?: (sender: TextBox, args: EventArguments<ContextMenuEventArgs>) => void;
   /**
    * Occurs before copied text is moved to the clipboard.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.copyingtoclipboard
    */
   oncopyingtoclipboard?: Parameters<TextBox["onCopyingToClipboard"]>[0];
   /**
    * Occurs before cut text is moved to the clipboard.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.cuttingtoclipboard
    */
   oncuttingtoclipboard?: Parameters<TextBox["onCuttingToClipboard"]>[0];
   /**
    * Occurs when text is pasted into the control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.paste
    */
   onpaste?: (sender: TextBox, args: EventArguments<TextControlPasteEventArgs>) => void;
   /**
    * Occurs when the text selection has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.selectionchanged
    */
   onselectionchanged?: (sender: TextBox, args: EventArguments<RoutedEventArgs>) => void;
   /**
    * Occurs when the text selection starts to change.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.selectionchanging
    */
   onselectionchanging?: Parameters<TextBox["onSelectionChanging"]>[0];
   /**
    * Occurs when content changes in the text box.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textchanged
    */
   ontextchanged?: (sender: TextBox, args: EventArguments<TextChangedEventArgs>) => void;
   /**
    * Occurs synchronously when the text in the text box starts to change, but before it is rendered.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textchanging
    */
   ontextchanging?: Parameters<TextBox["onTextChanging"]>[0];
   /**
    * Occurs when text being composed through an Input Method Editor (IME) changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textcompositionchanged
    */
   ontextcompositionchanged?: Parameters<TextBox["onTextCompositionChanged"]>[0];
   /**
    * Occurs when a user stops composing text through an Input Method Editor (IME).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textcompositionended
    */
   ontextcompositionended?: Parameters<TextBox["onTextCompositionEnded"]>[0];
   /**
    * Occurs when a user starts composing text through an Input Method Editor (IME).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textcompositionstarted
    */
   ontextcompositionstarted?: Parameters<TextBox["onTextCompositionStarted"]>[0];
 }

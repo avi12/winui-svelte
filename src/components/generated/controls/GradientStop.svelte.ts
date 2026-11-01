@@ -12,19 +12,28 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop
  */
 export interface GradientStopProps {
+  /**
+   * Gets or sets the color of the gradient stop. The color of the gradient stop. The default is Transparent.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop.color
+   */
   children?: Snippet;
   /**
    * Gets or sets the color of the gradient stop. The color of the gradient stop. The default is Transparent.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop.color
    */
   color?: ColorInput;
   /**
    * Gets the location of the gradient stop within the gradient vector. The relative location of this gradient stop along the gradient vector. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop.offset
    */
   offset?: number;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

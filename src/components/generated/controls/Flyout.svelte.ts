@@ -14,17 +14,22 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout
  */
 export interface FlyoutProps extends FlyoutBaseProps {
+  /**
+   * Gets or sets the content of the Flyout.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout.content
+   */
   children?: Snippet;
   /**
    * Gets or sets the content of the Flyout.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout.content
    */
   content?: Flyout["content"] | Snippet;
   /**
    * Gets or sets the Style applied to the Flyout content. The applied Style for the Flyout content, if present; otherwise, null. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyout.flyoutpresenterstyle
    */
   flyoutPresenterStyle?: StyleInput;
 }

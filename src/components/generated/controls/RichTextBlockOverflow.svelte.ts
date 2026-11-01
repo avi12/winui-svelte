@@ -17,31 +17,31 @@ export interface RichTextBlockOverflowProps extends FrameworkElementProps {
   /**
    * Gets a value that indicates whether the control has trimmed text that overflows the content area.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow.istexttrimmed
    */
   isTextTrimmed?: boolean | undefined;
   /**
    * Gets or sets the maximum lines of text shown in the RichTextBlockOverflow. The maximum lines of text shown in the RichTextBlockOverflow. The default is 0, which is a special value that represents "Auto" behavior. The value cannot be negative.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow.maxlines
    */
   maxLines?: number;
   /**
    * Gets or sets a reference to another RichTextBlockOverflow that is the linked target for any text overflow from this RichTextBlockOverflow.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow.overflowcontenttarget
    */
   overflowContentTarget?: RichTextBlockOverflow["overflowContentTarget"];
   /**
    * Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a RichTextBlockOverflow. A Thickness structure that specifies the amount of padding to apply.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow.padding
    */
   padding?: ThicknessInput;
   /**
    * Occurs when the IsTextTrimmed property value has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow.istexttrimmedchanged
    */
   onistexttrimmedchanged?: Parameters<RichTextBlockOverflow["onIsTextTrimmedChanged"]>[0];
 }

@@ -17,49 +17,49 @@ export interface TreeViewItemProps extends ListViewItemProps {
   /**
    * Gets or sets the glyph to show for a collapsed tree node.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.collapsedglyph
    */
   collapsedGlyph?: string;
   /**
    * Gets or sets the glyph to show for an expanded tree node.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.expandedglyph
    */
   expandedGlyph?: string;
   /**
    * Gets or sets the Brush used to paint node glyphs on a TreeView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.glyphbrush
    */
   glyphBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the opacity of node glyphs on a TreeView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.glyphopacity
    */
   glyphOpacity?: number;
   /**
    * Gets or sets the size of node glyphs on a TreeView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.glyphsize
    */
   glyphSize?: number;
   /**
    * Gets or sets a value that indicates whether the current item has child items that haven't been shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.hasunrealizedchildren
    */
   hasUnrealizedChildren?: boolean;
   /**
    * Gets or sets a value that indicates whether a tree node is expanded.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.isexpanded
    */
   isExpanded?: boolean;
   /**
    * Gets or sets an object source used to generate the content of the TreeView. The object that is used to generate the content of the TreeViewItem. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.itemssource
    */
   itemsSource?: CollectionInput;
 }

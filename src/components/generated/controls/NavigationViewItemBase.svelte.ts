@@ -14,7 +14,7 @@ export interface NavigationViewItemBaseProps extends ContentControlProps {
   /**
    * Gets or sets the value that indicates whether a NavigationViewItem is selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitembase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitembase.isselected
    */
   isSelected?: boolean;
 }

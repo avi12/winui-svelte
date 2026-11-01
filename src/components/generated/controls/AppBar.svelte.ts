@@ -16,49 +16,49 @@ export interface AppBarProps extends ContentControlProps {
   /**
    * Gets or sets a value that indicates whether the AppBar is open.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.isopen
    */
   isOpen?: boolean | undefined;
   /**
    * Gets or sets a value that indicates whether icon buttons are displayed when the app bar is not completely open.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.closeddisplaymode
    */
   closedDisplayMode?: EnumInput<typeof AppBarClosedDisplayMode>;
   /**
    * Gets or sets a value that indicates whether the AppBar does not close on light dismiss.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.issticky
    */
   isSticky?: boolean;
   /**
    * Gets or sets a value that specifies whether the area outside of a light-dismiss UI is darkened.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.lightdismissoverlaymode
    */
   lightDismissOverlayMode?: EnumInput<typeof LightDismissOverlayMode>;
   /**
    * Occurs when the AppBar changes from visible to hidden.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.closed
    */
   onclosed?: Parameters<AppBar["onClosed"]>[0];
   /**
    * Occurs when the AppBar starts to change from visible to hidden.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.closing
    */
   onclosing?: Parameters<AppBar["onClosing"]>[0];
   /**
    * Occurs when the AppBar changes from hidden to visible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.opened
    */
   onopened?: Parameters<AppBar["onOpened"]>[0];
   /**
    * Occurs when the AppBar starts to change from hidden to visible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.opening
    */
   onopening?: Parameters<AppBar["onOpening"]>[0];
 }

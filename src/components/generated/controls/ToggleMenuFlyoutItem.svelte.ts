@@ -15,7 +15,7 @@ export interface ToggleMenuFlyoutItemProps extends MenuFlyoutItemProps {
   /**
    * Gets or sets whether the ToggleMenuFlyoutItem is checked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglemenuflyoutitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglemenuflyoutitem.ischecked
    */
   isChecked?: boolean;
 }

@@ -16,7 +16,7 @@ export interface CommandBarFlyoutCommandBarProps extends CommandBarProps {
   /**
    * Gets or sets the system backdrop to apply to this CommandBar flyout. The backdrop is rendered behind the CommandBar flyout content.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.commandbarflyoutcommandbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.commandbarflyoutcommandbar.systembackdrop
    */
   systemBackdrop?: CommandBarFlyoutCommandBar["systemBackdrop"] | Snippet;
 }

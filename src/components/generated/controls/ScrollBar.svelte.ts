@@ -17,25 +17,25 @@ export interface ScrollBarProps extends RangeBaseProps {
   /**
    * Gets or sets a value that results in different input indicator modes for the ScrollBar. A value of the enumeration. The default is None.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar.indicatormode
    */
   indicatorMode?: EnumInput<typeof ScrollingIndicatorMode>;
   /**
    * Gets or sets a value that indicates whether the ScrollBar is displayed horizontally or vertically. An Orientation enumeration value that defines whether the ScrollBar is displayed horizontally or vertically. The default is Horizontal. Specific control templates might change this value, which would cause the templated value to be the apparent runtime default.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar.orientation
    */
   orientation?: EnumInput<typeof Orientation>;
   /**
    * Gets or sets the amount of the scrollable content that is currently visible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar.viewportsize
    */
   viewportSize?: number;
   /**
    * Occurs one or more times as content scrolls in a ScrollBar when the user moves the Thumb by using the mouse.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar.scroll
    */
   onscroll?: (sender: ScrollBar, args: EventArguments<ScrollEventArgs>) => void;
 }

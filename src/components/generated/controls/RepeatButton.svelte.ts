@@ -15,13 +15,13 @@ export interface RepeatButtonProps extends ButtonBaseProps {
   /**
    * Gets or sets the time, in milliseconds, that the RepeatButton waits when it is pressed before it starts repeating the click action.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.repeatbutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.repeatbutton.delay
    */
   delay?: number;
   /**
    * Gets or sets the time, in milliseconds, between repetitions of the click action, as soon as repeating starts.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.repeatbutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.repeatbutton.interval
    */
   interval?: number;
 }

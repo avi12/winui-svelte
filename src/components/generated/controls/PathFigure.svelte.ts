@@ -12,31 +12,40 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
  */
 export interface PathFigureProps {
+  /**
+   * Gets or sets the collection of segments that define the shape of this PathFigure object. The collection of segments that define the shape of this PathFigure object. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure.segments
+   */
   children?: Snippet;
   /**
    * Gets or sets a value that indicates whether this figure's first and last segments are connected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure.isclosed
    */
   isClosed?: boolean;
   /**
    * Gets or sets a value that indicates whether the contained area of this PathFigure is to be used for hit-testing, rendering, and clipping.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure.isfilled
    */
   isFilled?: boolean;
   /**
    * Gets or sets the collection of segments that define the shape of this PathFigure object. The collection of segments that define the shape of this PathFigure object. The default is an empty collection.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure.segments
    */
   segments?: PathFigure["segments"];
   /**
    * Gets or sets the Point where the PathFigure begins. The Point with value 0,0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure.startpoint
    */
   startPoint?: PointInput;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

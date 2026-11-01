@@ -15,7 +15,7 @@ export interface PointerDownThemeAnimationProps extends TimelineProps {
   /**
    * Gets or sets the reference name of the control element being targeted.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointerdownthemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointerdownthemeanimation.targetname
    */
   targetName?: string;
 }

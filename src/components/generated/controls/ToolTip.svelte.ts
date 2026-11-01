@@ -18,49 +18,49 @@ export interface ToolTipProps extends ContentControlProps {
   /**
    * Gets or sets a value that indicates whether the ToolTip is visible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.isopen
    */
   isOpen?: boolean | undefined;
   /**
    * Gets or sets the horizontal distance between the target origin and the pop-up alignment point.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.horizontaloffset
    */
   horizontalOffset?: number;
   /**
    * Gets or sets how a ToolTip is positioned in relation to the placement target element. One of the PlacementMode values.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.placement
    */
   placement?: EnumInput<typeof PlacementMode>;
   /**
    * Gets or sets the rectangular area that the tooltip should be positioned in relation to when opened by the ToolTipService. If space allows, the open tooltip will not occlude the area defined by its PlacementRect.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.placementrect
    */
   placementRect?: NullableRectInput;
   /**
    * Gets or sets the visual element or control that the tool tip should be positioned in relation to when opened by the ToolTipService.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.placementtarget
    */
   placementTarget?: ToolTip["placementTarget"];
   /**
    * Gets or sets the vertical distance between the target origin and the pop-up alignment point.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.verticaloffset
    */
   verticalOffset?: number;
   /**
    * Occurs when a ToolTip is closed and is no longer visible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.closed
    */
   onclosed?: (sender: ToolTip, args: EventArguments<RoutedEventArgs>) => void;
   /**
    * Occurs when a ToolTip becomes visible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.opened
    */
   onopened?: (sender: ToolTip, args: EventArguments<RoutedEventArgs>) => void;
 }

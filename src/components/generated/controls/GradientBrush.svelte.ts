@@ -14,29 +14,34 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush
  */
 export interface GradientBrushProps extends BrushProps {
+  /**
+   * Gets or sets the brush's gradient stops. A collection of the GradientStop objects associated with the brush, each of which specifies a color and an offset along the brush's gradient axis. The default is an empty GradientStopCollection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush.gradientstops
+   */
   children?: Snippet;
   /**
    * Gets or sets a ColorInterpolationMode enumeration value that specifies how the gradient's colors are interpolated. Specifies how the colors in a gradient are interpolated. The default is SRgbLinearInterpolation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush.colorinterpolationmode
    */
   colorInterpolationMode?: EnumInput<typeof ColorInterpolationMode>;
   /**
    * Gets or sets the brush's gradient stops. A collection of the GradientStop objects associated with the brush, each of which specifies a color and an offset along the brush's gradient axis. The default is an empty GradientStopCollection.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush.gradientstops
    */
   gradientStops?: GradientBrush["gradientStops"];
   /**
    * Gets or sets a BrushMappingMode enumeration value that specifies whether the positioning coordinates of the gradient brush are absolute or relative to the output area. A BrushMappingMode value that specifies how to interpret the gradient brush's positioning coordinates. The default is RelativeToBoundingBox.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush.mappingmode
    */
   mappingMode?: EnumInput<typeof BrushMappingMode>;
   /**
    * Gets or sets the type of spread method that specifies how to draw a gradient that starts or ends inside the bounds of the object to be painted. The type of spread method used to paint the gradient. The default is Pad.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientbrush.spreadmethod
    */
   spreadMethod?: EnumInput<typeof GradientSpreadMethod>;
 }

@@ -14,29 +14,34 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
  */
 export interface HubSectionProps extends ControlProps {
+  /**
+   * Gets or sets the data template that is used to display the content of the HubSection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection.contenttemplate
+   */
   children?: Snippet;
   /**
    * Gets or sets the data template that is used to display the content of the HubSection.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection.contenttemplate
    */
   contentTemplate?: DataTemplateInput;
   /**
    * Gets or sets the content for the hub section header. The content of the section header. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the hub section header. The template that specifies the visualization of the header object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets a value that indicates whether the section header raises a SectionHeaderClick event on its containing Hub.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection.isheaderinteractive
    */
   isHeaderInteractive?: boolean;
 }

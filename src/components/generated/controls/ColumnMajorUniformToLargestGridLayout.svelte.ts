@@ -15,19 +15,19 @@ export interface ColumnMajorUniformToLargestGridLayoutProps extends NonVirtualiz
   /**
    * Gets or sets the uniform distance (in pixels) between grid columns.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout.columnspacing
    */
   columnSpacing?: number;
   /**
    * Gets or sets the maximum number of columns in the grid.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout.maxcolumns
    */
   maxColumns?: number;
   /**
    * Gets or sets the uniform distance (in pixels) between grid rows.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.columnmajoruniformtolargestgridlayout.rowspacing
    */
   rowSpacing?: number;
 }

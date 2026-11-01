@@ -17,31 +17,31 @@ export interface DoubleAnimationProps extends TimelineProps {
   /**
    * Gets or sets the total amount by which the animation changes its starting value. The total amount by which the animation changes its starting value. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **double?**(a nullable double).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation.by
    */
   by?: NullableDoubleInput;
   /**
    * Gets or sets the easing function applied to this animation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation.easingfunction
    */
   easingFunction?: DoubleAnimation["easingFunction"] | Snippet;
   /**
    * Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation.enabledependentanimation
    */
   enableDependentAnimation?: boolean;
   /**
    * Gets or sets the animation's starting value. The starting value of the animation. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **double?**(a nullable double).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation.from
    */
   from?: NullableDoubleInput;
   /**
    * Gets or sets the animation's ending value. The ending value of the animation. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **double?**(a nullable double).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation.to
    */
   to?: NullableDoubleInput;
 }

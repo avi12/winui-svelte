@@ -15,73 +15,73 @@ export interface PlaneProjectionProps extends ProjectionProps {
   /**
    * Gets or sets the x-coordinate of the center of rotation of the object that you rotate. The x-coordinate of the center of rotation of the object that you rotate. Typical values are between 0 and 1 with a value of 0 corresponding to one edge of the object and 1 to the opposite edge. Values outside this range are allowed and move the center of rotation accordingly. The default is 0.5 (the center of object).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.centerofrotationx
    */
   centerOfRotationX?: number;
   /**
    * Gets or sets the y-coordinate of the center of rotation of the object that you rotate. The y-coordinate of the center of rotation of the object that you rotate. Typical values are between 0 and 1 with a value of 0 corresponding to one edge of the object and 1 to the opposite edge. Values outside this range are allowed and move the center of rotation accordingly. The default is 0.5 (the center of object).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.centerofrotationy
    */
   centerOfRotationY?: number;
   /**
    * Gets or sets the z-coordinate of the center of rotation of the object that you rotate. The z-coordinate of the center of rotation of the object that you rotate. The default is 0. Values greater than 0 correspond to coordinates in front of the plane of the object, and negative values correspond to coordinates behind the plane of the object.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.centerofrotationz
    */
   centerOfRotationZ?: number;
   /**
    * Gets or sets the distance that the object is translated along the x-axis of the screen.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.globaloffsetx
    */
   globalOffsetX?: number;
   /**
    * Gets or sets the distance that the object is translated along the y-axis of the screen.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.globaloffsety
    */
   globalOffsetY?: number;
   /**
    * Gets or sets the distance that the object is translated along the z-axis of the screen.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.globaloffsetz
    */
   globalOffsetZ?: number;
   /**
    * Gets or sets the distance that the object is translated along the x-axis of the plane of the object.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.localoffsetx
    */
   localOffsetX?: number;
   /**
    * Gets or sets the distance that the object is translated along the y-axis of the plane of the object.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.localoffsety
    */
   localOffsetY?: number;
   /**
    * Gets or sets the distance that the object is translated along the z-axis of the plane of the object.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.localoffsetz
    */
   localOffsetZ?: number;
   /**
    * Gets or sets the number of degrees to rotate the object around the x-axis of rotation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.rotationx
    */
   rotationX?: number;
   /**
    * Gets or sets the number of degrees to rotate the object around the y-axis of rotation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.rotationy
    */
   rotationY?: number;
   /**
    * Gets or sets the number of degrees to rotate the object around the z-axis of rotation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.planeprojection.rotationz
    */
   rotationZ?: number;
 }

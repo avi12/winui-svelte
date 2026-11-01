@@ -14,20 +14,34 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup
  */
 export interface VisualStateGroupProps {
+  /**
+   * Gets the collection of mutually exclusive VisualState objects.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup.states
+   */
   children?: Snippet;
+  /**
+   * Gets the collection of VisualTransition objects.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup.transitions
+   */
   transitions?: Snippet;
   /**
    * Occurs after a control changes into a different state.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup.currentstatechanged
    */
   oncurrentstatechanged?: (sender: VisualStateGroup, args: EventArguments<VisualStateChangedEventArgs>) => void;
   /**
    * Occurs when a control begins changing into a different state.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.visualstategroup.currentstatechanging
    */
   oncurrentstatechanging?: (sender: VisualStateGroup, args: EventArguments<VisualStateChangedEventArgs>) => void;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

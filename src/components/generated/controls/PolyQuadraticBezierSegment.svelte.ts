@@ -14,11 +14,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polyquadraticbeziersegment
  */
 export interface PolyQuadraticBezierSegmentProps extends PathSegmentProps {
+  /**
+   * Gets or sets the Point collection that defines this PolyQuadraticBezierSegment object. A collection of points that defines the shape of this PolyQuadraticBezierSegment object. The default value is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polyquadraticbeziersegment.points
+   */
   children?: Snippet;
   /**
    * Gets or sets the Point collection that defines this PolyQuadraticBezierSegment object. A collection of points that defines the shape of this PolyQuadraticBezierSegment object. The default value is an empty collection.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polyquadraticbeziersegment
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polyquadraticbeziersegment.points
    */
   points?: PointCollectionInput;
 }

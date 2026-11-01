@@ -15,15 +15,19 @@ export interface ObjectKeyFrameProps {
   /**
    * Gets or sets the time at which the key frame's target Value should be reached. The time at which the key frame's current value should be equal to its Value property. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectkeyframe
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectkeyframe.keytime
    */
   keyTime?: KeyTimeInput;
   /**
    * Gets or sets the key frame's target value. The key frame's target value, which is the value of this key frame at its specified KeyTime. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectkeyframe
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectkeyframe.value
    */
   value?: ObjectInput | Snippet;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

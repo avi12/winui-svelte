@@ -13,12 +13,22 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbarflyout
  */
 export interface CommandBarFlyoutProps extends FlyoutBaseProps {
+  /**
+   * Gets the collection of primary command elements for the CommandBarFlyout. The collection of primary command elements for the CommandBarFlyout. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbarflyout.primarycommands
+   */
   primaryCommands?: Snippet;
+  /**
+   * Gets the collection of secondary command elements for the CommandBarFlyout. The collection of secondary command elements for the CommandBarFlyout. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbarflyout.secondarycommands
+   */
   secondaryCommands?: Snippet;
   /**
    * Gets or sets a value that indicates whether or not the CommandBarFlyout should always stay in its Expanded state and block the user from entering the Collapsed state. Defaults to false.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbarflyout
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbarflyout.alwaysexpanded
    */
   alwaysExpanded?: boolean;
 }

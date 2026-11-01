@@ -16,13 +16,13 @@ export interface InfoBarPanelProps extends PanelProps {
   /**
    * Gets and sets the distance between the edges of the InfoBarPanel and its children when the panel is oriented horizontally.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.infobarpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.infobarpanel.horizontalorientationpadding
    */
   horizontalOrientationPadding?: ThicknessInput;
   /**
    * Gets and sets the distance between the edges of the InfoBarPanel and its children when the panel is oriented vertically.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.infobarpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.infobarpanel.verticalorientationpadding
    */
   verticalOrientationPadding?: ThicknessInput;
 }

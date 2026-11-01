@@ -15,7 +15,7 @@ export interface FlipViewProps extends SelectorProps {
   /**
    * Gets or sets a value that indicates whether transition animations are always used whether the navigation is touch-based, button-based or programmatic.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flipview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flipview.usetouchanimationsforallnavigation
    */
   useTouchAnimationsForAllNavigation?: boolean;
 }

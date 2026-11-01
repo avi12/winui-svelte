@@ -24,61 +24,61 @@ export interface StackPanelProps extends PanelProps {
   /**
    * Gets or sets a value that indicates whether the generated snap points used for panning in the StackPanel are equidistant from each other.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.arescrollsnappointsregular
    */
   areScrollSnapPointsRegular?: boolean;
   /**
    * Gets or sets a value that indicates how far the background extends in relation to this element's border. A value of the enumeration that indicates how far the background extends. The default is InnerBorderEdge.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.backgroundsizing
    */
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
   /**
    * Gets or sets a brush that describes the border fill of the panel. The brush that is used to fill the panel's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.borderbrush
    */
   borderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the border thickness of the panel. The border thickness of the panel, as a Thickness value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.borderthickness
    */
   borderThickness?: ThicknessInput;
   /**
    * Gets or sets the radius for the corners of the panel's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.cornerradius
    */
   cornerRadius?: CornerRadiusInput;
   /**
    * Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.orientation
    */
   orientation?: EnumInput<typeof Orientation>;
   /**
    * Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.padding
    */
   padding?: ThicknessInput;
   /**
    * Gets or sets a uniform distance (in pixels) between stacked items. It is applied in the direction of the StackPanel's Orientation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.spacing
    */
   spacing?: number;
   /**
    * Occurs when the measurements for horizontal snap points change.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.horizontalsnappointschanged
    */
   onhorizontalsnappointschanged?: Parameters<StackPanel["onHorizontalSnapPointsChanged"]>[0];
   /**
    * Occurs when the measurements for vertical snap points change.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.verticalsnappointschanged
    */
   onverticalsnappointschanged?: Parameters<StackPanel["onVerticalSnapPointsChanged"]>[0];
 }

@@ -13,11 +13,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.span
  */
 export interface SpanProps extends InlineProps {
+  /**
+   * Gets an InlineCollection containing the top-level inline elements that include the contents of Span. An InlineCollection containing the inline elements that include the contents of the Span. This property has no default value.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.span.inlines
+   */
   children?: Snippet;
   /**
    * Gets an InlineCollection containing the top-level inline elements that include the contents of Span. An InlineCollection containing the inline elements that include the contents of the Span. This property has no default value.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.span
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.span.inlines
    */
   inlines?: Span["inlines"];
 }

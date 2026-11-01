@@ -17,7 +17,7 @@ export interface ImageIconProps extends IconElementProps {
   /**
    * Gets or sets the URI of the image file to use as the icon.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.imageicon
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.imageicon.source
    */
   source?: ImageSourceInput | Snippet;
 }

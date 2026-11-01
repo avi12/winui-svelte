@@ -36,264 +36,274 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
  */
 export interface NavigationViewProps extends ContentControlProps {
+  /**
+   * Gets the list of objects to be used as navigation items in the footer menu. The collection of menu items displayed in the footer section of the NavigationView. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.footermenuitems
+   */
   footerMenuItems?: Snippet;
+  /**
+   * Gets the collection of menu items displayed in the NavigationView. The collection of menu items displayed in the NavigationView. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.menuitems
+   */
   menuItems?: Snippet;
   /**
    * Gets or sets the selected item. The selected item. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.selecteditem
    */
   selectedItem?: ObjectInput | undefined;
   /**
    * Gets or sets a value that specifies whether the NavigationView pane is expanded to its full width.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.ispaneopen
    */
   isPaneOpen?: boolean | undefined;
   /**
    * Gets a value that specifies how the pane and content areas of a NavigationView are being shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.displaymode
    */
   displayMode?: EnumInput<typeof NavigationViewDisplayMode> | undefined;
   /**
    * Gets or sets a value that indicates whether the header is always visible.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.alwaysshowheader
    */
   alwaysShowHeader?: boolean;
   /**
    * Gets or sets an AutoSuggestBox to be displayed in the NavigationView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.autosuggestbox
    */
   autoSuggestBox?: NavigationView["autoSuggestBox"] | Snippet;
   /**
    * Gets or sets the minimum window width at which the NavigationView enters Compact display mode. The minimum window width at which the NavigationView enters Compact display mode. The default is 641 pixels.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.compactmodethresholdwidth
    */
   compactModeThresholdWidth?: number;
   /**
    * Gets or sets the width of the NavigationView pane in its compact display mode. The width of the pane in its compact display mode. The default is 48 device-independent pixel (DIP).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.compactpanelength
    */
   compactPaneLength?: number;
   /**
    * Gets or sets a UI element that is shown at the top of the control, below the pane if PaneDisplayMode is Top.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.contentoverlay
    */
   contentOverlay?: NavigationView["contentOverlay"] | Snippet;
   /**
    * Gets or sets the minimum window width at which the NavigationView enters Expanded display mode. The minimum window width at which the NavigationView enters Expanded display mode. The default is 1008 pixels.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.expandedmodethresholdwidth
    */
   expandedModeThresholdWidth?: number;
   /**
    * Gets or sets the object that represents the navigation items to be used in the footer menu. The object that is used to generate the content of the NavigationView FooterMenuItems. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.footermenuitemssource
    */
   footerMenuItemsSource?: CollectionInput;
   /**
    * Gets or sets the header content. The header content for the NavigationView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the control's header.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets a value that indicates whether the back button is visible or not. Default value is "Auto", which indicates that button visibility depends on the DisplayMode setting of the NavigationView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.isbackbuttonvisible
    */
   isBackButtonVisible?: EnumInput<typeof NavigationViewBackButtonVisible>;
   /**
    * Gets or sets a value that indicates whether the back button is enabled or disabled.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.isbackenabled
    */
   isBackEnabled?: boolean;
   /**
    * Gets or sets a value that indicates whether the menu toggle button is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.ispanetogglebuttonvisible
    */
   isPaneToggleButtonVisible?: boolean;
   /**
    * Gets or sets a value that determines whether the pane is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.ispanevisible
    */
   isPaneVisible?: boolean;
   /**
    * Gets or sets a value that indicates whether the settings button is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.issettingsvisible
    */
   isSettingsVisible?: boolean;
   /**
    * Gets or sets a value that indicates whether top padding is added to the navigation view's header when used with a custom title bar.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.istitlebarautopaddingenabled
    */
   isTitleBarAutoPaddingEnabled?: boolean;
   /**
    * Gets or sets the style that is used when rendering the menu item containers. The style applied to the item containers. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.menuitemcontainerstyle
    */
   menuItemContainerStyle?: StyleInput;
   /**
    * Gets or sets a reference to a custom StyleSelector values to use for the item container based on characteristics of the object being displayed. A custom StyleSelector logic class.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.menuitemcontainerstyleselector
    */
   menuItemContainerStyleSelector?: NavigationView["menuItemContainerStyleSelector"];
   /**
    * Gets or sets an object source used to generate the content of the NavigationView menu. The object that is used to generate the content of the NavigationView menu. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.menuitemssource
    */
   menuItemsSource?: CollectionInput;
   /**
    * Gets or sets the DataTemplate used to display each menu item. The template that specifies the visualization of the menu data objects. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.menuitemtemplate
    */
   menuItemTemplate?: DataTemplateInput;
   /**
    * Gets or sets a reference to a custom DataTemplateSelector logic class. The DataTemplateSelector referenced by this property returns a template to apply to items.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.menuitemtemplateselector
    */
   menuItemTemplateSelector?: NavigationView["menuItemTemplateSelector"];
   /**
    * Gets or sets the width of the NavigationView pane when it's fully expanded. The width of the NavigationView pane when it's fully expanded. The default is 320 device-independent pixel (DIP).
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.openpanelength
    */
   openPaneLength?: number;
   /**
    * Gets or sets a value that indicates what text label is shown for the overflow menu. A value of the enumeration that indicates what text label is shown for the overflow menu. The default is MoreLabel, which shows the text "More".
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.overflowlabelmode
    */
   overflowLabelMode?: EnumInput<typeof NavigationViewOverflowLabelMode>;
   /**
    * Gets or sets a UI element that is shown in the NavigationView pane.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.panecustomcontent
    */
   paneCustomContent?: NavigationView["paneCustomContent"] | Snippet;
   /**
    * Gets or sets a value that indicates how and where the NavigationView pane is shown. A value of the enumeration that indicates how and where the NavigationView pane is shown. The default is Auto.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.panedisplaymode
    */
   paneDisplayMode?: EnumInput<typeof NavigationViewPaneDisplayMode>;
   /**
    * Gets or sets the content for the pane footer. The content of the pane footer. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.panefooter
    */
   paneFooter?: NavigationView["paneFooter"] | Snippet;
   /**
    * Gets or sets the content for the pane header. The content of the pane header. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.paneheader
    */
   paneHeader?: NavigationView["paneHeader"] | Snippet;
   /**
    * Gets or sets the label adjacent to the menu icon when the NavigationView pane is open. The label adjacent to the menu icon when the pane is open. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.panetitle
    */
   paneTitle?: string;
   /**
    * Gets or sets the Style that defines the look of the menu toggle button.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.panetogglebuttonstyle
    */
   paneToggleButtonStyle?: StyleInput;
   /**
    * Gets or sets a value that indicates whether item selection changes when keyboard focus changes. A value of the enumeration that indicates whether selection changes when keyboard focus changes. The default is Disabled.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.selectionfollowsfocus
    */
   selectionFollowsFocus?: EnumInput<typeof NavigationViewSelectionFollowsFocus>;
   /**
    * Gets or sets a value that indicates when game controller bumpers can be used to navigate the top-level navigation items in a NavigationView.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.shouldernavigationenabled
    */
   shoulderNavigationEnabled?: EnumInput<typeof NavigationViewShoulderNavigationEnabled>;
   /**
    * Occurs when the back button receives an interaction such as a click or tap.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.backrequested
    */
   onbackrequested?: Parameters<NavigationView["onBackRequested"]>[0];
   /**
    * Occurs when a node in the tree is collapsed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.collapsed
    */
   oncollapsed?: Parameters<NavigationView["onCollapsed"]>[0];
   /**
    * Occurs when the DisplayMode property changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.displaymodechanged
    */
   ondisplaymodechanged?: Parameters<NavigationView["onDisplayModeChanged"]>[0];
   /**
    * Occurs when a node in the tree starts to expand.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.expanding
    */
   onexpanding?: Parameters<NavigationView["onExpanding"]>[0];
   /**
    * Occurs when an item in the menu receives an interaction such a a click or tap.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.iteminvoked
    */
   oniteminvoked?: Parameters<NavigationView["onItemInvoked"]>[0];
   /**
    * Occurs when the NavigationView pane is closed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.paneclosed
    */
   onpaneclosed?: Parameters<NavigationView["onPaneClosed"]>[0];
   /**
    * Occurs when the NavigationView pane is closing.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.paneclosing
    */
   onpaneclosing?: Parameters<NavigationView["onPaneClosing"]>[0];
   /**
    * Occurs when the NavigationView pane is opened.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.paneopened
    */
   onpaneopened?: Parameters<NavigationView["onPaneOpened"]>[0];
   /**
    * Occurs when the NavigationView pane is opening.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.paneopening
    */
   onpaneopening?: Parameters<NavigationView["onPaneOpening"]>[0];
   /**
    * Occurs when the currently selected item changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.selectionchanged
    */
   onselectionchanged?: Parameters<NavigationView["onSelectionChanged"]>[0];
 }

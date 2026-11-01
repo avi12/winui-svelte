@@ -15,7 +15,7 @@ export interface StateTriggerProps extends StateTriggerBaseProps {
   /**
    * Gets or sets a value that indicates whether the trigger should be applied.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.statetrigger
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.statetrigger.isactive
    */
   isActive?: boolean;
 }

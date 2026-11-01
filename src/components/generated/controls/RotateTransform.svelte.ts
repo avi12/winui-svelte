@@ -15,19 +15,19 @@ export interface RotateTransformProps extends TransformProps {
   /**
    * Gets or sets the angle, in degrees, of clockwise rotation. The angle, in degrees, of clockwise rotation. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rotatetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rotatetransform.angle
    */
   angle?: number;
   /**
    * Gets or sets the x-coordinate of the rotation center point for this transformation. The x-coordinate of the center of rotation, in pixels within the transform's frame of reference. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rotatetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rotatetransform.centerx
    */
   centerX?: number;
   /**
    * Gets or sets the y-coordinate of the rotation center point for this transformation. The y-coordinate of the center of rotation, in pixels within the transform's frame of reference. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rotatetransform
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rotatetransform.centery
    */
   centerY?: number;
 }

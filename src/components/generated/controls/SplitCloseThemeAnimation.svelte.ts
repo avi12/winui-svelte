@@ -16,67 +16,67 @@ export interface SplitCloseThemeAnimationProps extends TimelineProps {
   /**
    * Gets or sets the initial size of the target element in the animation direction.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.closedlength
    */
   closedLength?: number;
   /**
    * Gets or sets the UI element that specifies the initial clip size.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.closedtarget
    */
   closedTarget?: SplitCloseThemeAnimation["closedTarget"];
   /**
    * Gets or sets the identifying name of the UI element that specifies the initial clip size. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.closedtargetname
    */
   closedTargetName?: string;
   /**
    * Gets or sets the UI element that will be translated. Typically this is a child/part of the element identified by OpenedTargetName or OpenedTarget.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.contenttarget
    */
   contentTarget?: SplitCloseThemeAnimation["contentTarget"];
   /**
    * Gets or sets the identifying name of the UI element that will be translated. Typically this is a child/part of the element identified by OpenedTargetName.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.contenttargetname
    */
   contentTargetName?: string;
   /**
    * Gets or sets a value that determines which direction the content should translate when the animation runs. A value of the enumeration.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.contenttranslationdirection
    */
   contentTranslationDirection?: EnumInput<typeof AnimationDirection>;
   /**
    * Gets or sets the pixels to translate by when the animation runs. A distance in pixels.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.contenttranslationoffset
    */
   contentTranslationOffset?: number;
   /**
    * Gets or sets an offset from the center of the opened target. An offset in pixels. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.offsetfromcenter
    */
   offsetFromCenter?: number;
   /**
    * Gets or sets the final size of the target UI element. The final size. If left unset, the value defaults to the size of the opened target.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.openedlength
    */
   openedLength?: number;
   /**
    * Gets or sets the UI element that will be clipped.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.openedtarget
    */
   openedTarget?: SplitCloseThemeAnimation["openedTarget"];
   /**
    * Gets or sets the identifying name of the UI element that will be clipped. The reference name. This is typically the x:Name of the relevant element as declared in XAML.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.splitclosethemeanimation.openedtargetname
    */
   openedTargetName?: string;
 }

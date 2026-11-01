@@ -17,85 +17,85 @@ export interface ParallaxViewProps extends FrameworkElementProps {
   /**
    * Gets or sets the background content of the ParallaxView. The background content of the ParallaxView, typically an image. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.child
    */
   child?: ParallaxView["child"] | Snippet;
   /**
    * Represents the horizontal range of motion of the child element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.horizontalshift
    */
   horizontalShift?: number;
   /**
    * Represents the horizontal scroll offset at which the parallax motion ends.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.horizontalsourceendoffset
    */
   horizontalSourceEndOffset?: number;
   /**
    * Gets or sets a value that determines how the horizontal source offset values of a ParallaxView are interpreted.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.horizontalsourceoffsetkind
    */
   horizontalSourceOffsetKind?: EnumInput<typeof ParallaxSourceOffsetKind>;
   /**
    * Represents the horizontal scroll offset at which parallax motion starts.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.horizontalsourcestartoffset
    */
   horizontalSourceStartOffset?: number;
   /**
    * Gets or sets a value that indicates whether the horizontal parallax ratio is clampled to a specified percentage of the source scroll velocity.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.ishorizontalshiftclamped
    */
   isHorizontalShiftClamped?: boolean;
   /**
    * Gets or sets a value that indicates whether the vertical parallax ratio is clampled to a specified percentage of the source scroll velocity.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.isverticalshiftclamped
    */
   isVerticalShiftClamped?: boolean;
   /**
    * Clamps the horizontal parallax ratio to the specified percentage of the source scroll velocity.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.maxhorizontalshiftratio
    */
   maxHorizontalShiftRatio?: number;
   /**
    * Clamps the vertical parallax ratio to the specified percentage of the source scroll velocity.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.maxverticalshiftratio
    */
   maxVerticalShiftRatio?: number;
   /**
    * The element that either is or contains the ScrollViewer that controls the parallax operation.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.source
    */
   source?: ParallaxView["source"];
   /**
    * Represents the vertical range of motion of the child element.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.verticalshift
    */
   verticalShift?: number;
   /**
    * Represents the vertical scroll offset at which the parallax motion ends.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.verticalsourceendoffset
    */
   verticalSourceEndOffset?: number;
   /**
    * Gets or sets a value that determines how the vertical source offset values of a ParallaxView are interpreted.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.verticalsourceoffsetkind
    */
   verticalSourceOffsetKind?: EnumInput<typeof ParallaxSourceOffsetKind>;
   /**
    * Represents the vertical scroll offset at which parallax motion starts.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.verticalsourcestartoffset
    */
   verticalSourceStartOffset?: number;
 }

@@ -13,6 +13,11 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.transformgroup
  */
 export interface TransformGroupProps extends TransformProps {
+  /**
+   * Gets or sets the collection of child Transform objects. The collection of child Transform objects. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.transformgroup.children
+   */
   children?: Snippet;
 }
 

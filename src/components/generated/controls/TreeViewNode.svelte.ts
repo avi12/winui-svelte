@@ -15,21 +15,25 @@ export interface TreeViewNodeProps {
   /**
    * Gets or sets the data content for the current node.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode.content
    */
   content?: ObjectInput | Snippet;
   /**
    * Gets or sets a value that indicates whether the current node has child items that haven't been shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode.hasunrealizedchildren
    */
   hasUnrealizedChildren?: boolean;
   /**
    * Gets or sets a value that indicates whether the current tree view node is expanded.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode.isexpanded
    */
   isExpanded?: boolean;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

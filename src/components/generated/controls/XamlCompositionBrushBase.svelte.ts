@@ -16,7 +16,7 @@ export interface XamlCompositionBrushBaseProps extends BrushProps {
   /**
    * The color to use for rendering in case the CompositionBrush can't be rendered.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.xamlcompositionbrushbase
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.xamlcompositionbrushbase.fallbackcolor
    */
   fallbackColor?: ColorInput;
 }

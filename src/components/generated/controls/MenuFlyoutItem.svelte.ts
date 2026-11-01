@@ -15,41 +15,46 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem
  */
 export interface MenuFlyoutItemProps extends MenuFlyoutItemBaseProps {
+  /**
+   * Gets or sets the text content of a MenuFlyoutItem. A string that specifies the text content of this MenuFlyoutItem. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem.text
+   */
   children?: Snippet;
   /**
    * Gets or sets the command to invoke when the item is pressed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem.command
    */
   command?: MenuFlyoutItem["command"] | Snippet;
   /**
    * Gets or sets the parameter to pass to the Command property. The parameter to pass to the Command property. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem.commandparameter
    */
   commandParameter?: ObjectInput;
   /**
    * Gets or sets the graphic content of the menu flyout item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem.icon
    */
   icon?: MenuFlyoutItem["icon"] | Snippet;
   /**
    * Gets or sets a string that overrides the default key combination string associated with a keyboard accelerator. <img src="./microsoft.ui.xaml.controls/images/keyboard-accelerators.png" alt="Example of a menu showing keyboard accelerators for various menu items"> Example of a menu showing keyboard accelerators for various menu items The string to replace the default key combination string. The default is null. Use a single space for no text.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem.keyboardacceleratortextoverride
    */
   keyboardAcceleratorTextOverride?: string;
   /**
    * Gets or sets the text content of a MenuFlyoutItem. A string that specifies the text content of this MenuFlyoutItem. The default is an empty string.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem.text
    */
   text?: string;
   /**
    * Occurs when a menu item is clicked.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutitem.click
    */
   onclick?: (sender: MenuFlyoutItem, args: EventArguments<RoutedEventArgs>) => void;
 }

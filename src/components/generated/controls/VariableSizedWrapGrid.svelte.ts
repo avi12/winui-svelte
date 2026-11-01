@@ -16,37 +16,37 @@ export interface VariableSizedWrapGridProps extends PanelProps {
   /**
    * Gets or sets the alignment rules by which child elements are arranged for the horizontal dimension. A value of the enumeration. The default is Left.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid.horizontalchildrenalignment
    */
   horizontalChildrenAlignment?: EnumInput<typeof HorizontalAlignment>;
   /**
    * Gets or sets the height of the layout area for each item that is contained in a VariableSizedWrapGrid. The height of the layout area for each item that is contained in a VariableSizedWrapGrid. The default is NaN. See Remarks below.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid.itemheight
    */
   itemHeight?: number;
   /**
    * Gets or sets the width of the layout area for each item that is contained in a VariableSizedWrapGrid. The width of the layout area for each item that is contained in a VariableSizedWrapGrid. The default is NaN. See Remarks below.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid.itemwidth
    */
   itemWidth?: number;
   /**
    * Gets or sets a value that influences the wrap point, also accounting for Orientation. The maximum rows or columns that this VariableSizedWrapGrid should present before it introduces wrapping to the layout. The default is -1, which is a special value that indicates no maximum.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid.maximumrowsorcolumns
    */
   maximumRowsOrColumns?: number;
   /**
    * Gets or sets the direction in which child elements are arranged. A value of the enumeration. The default is Vertical.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid.orientation
    */
   orientation?: EnumInput<typeof Orientation>;
   /**
    * Gets or sets the alignment rules by which child elements are arranged for the vertical dimension. A value of the enumeration. The default is Top.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.variablesizedwrapgrid.verticalchildrenalignment
    */
   verticalChildrenAlignment?: EnumInput<typeof VerticalAlignment>;
 }

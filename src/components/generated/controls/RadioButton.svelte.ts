@@ -15,7 +15,7 @@ export interface RadioButtonProps extends ToggleButtonProps {
   /**
    * Gets or sets the name that specifies which RadioButton controls are mutually exclusive. The name that specifies which RadioButton controls are mutually exclusive. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobutton
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiobutton.groupname
    */
   groupName?: string;
 }

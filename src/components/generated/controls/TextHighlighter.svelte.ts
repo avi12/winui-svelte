@@ -17,15 +17,19 @@ export interface TextHighlighterProps extends TextHighlighterExtras {
   /**
    * Gets or sets the brush used to highlight the text.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter.background
    */
   background?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to color highlighted text.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter.foreground
    */
   foreground?: BrushInput | Snippet;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

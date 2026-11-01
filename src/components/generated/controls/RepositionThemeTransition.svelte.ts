@@ -15,7 +15,7 @@ export interface RepositionThemeTransitionProps extends TransitionProps {
   /**
    * Gets or sets a value that determines whether the transition staggers rendering of multiple items, or renders all items at once.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemetransition
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemetransition.isstaggeringenabled
    */
   isStaggeringEnabled?: boolean;
 }

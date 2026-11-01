@@ -23,59 +23,64 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
  */
 export interface HubProps extends ControlProps {
+  /**
+   * Gets all the hub sections in the Hub. All the hub sections in the Hub. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.sections
+   */
   children?: Snippet;
   /**
    * Gets or sets the index of the hub section to show first when the Hub is initialized.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.defaultsectionindex
    */
   defaultSectionIndex?: number;
   /**
    * Gets or sets the content for the hub header. The content of the hub header. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.header
    */
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the hub header. The template that specifies the visualization of the header object. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets a value that indicates whether the Hub instance is the active view in its owning SemanticZoom.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.isactiveview
    */
   isActiveView?: boolean;
   /**
    * Gets or sets a value that indicates whether the Hub instance is the zoomed-in view in its owning SemanticZoom.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.iszoomedinview
    */
   isZoomedInView?: boolean;
   /**
    * Gets or sets the orientation of a Hub. One of the Orientation values. The default is Horizontal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.orientation
    */
   orientation?: EnumInput<typeof Orientation>;
   /**
    * Gets or sets the SemanticZoom instance that hosts the Hub. The SemanticZoom instance that hosts this Hub, or null if the Hub is not hosted in a SemanticZoom control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.semanticzoomowner
    */
   semanticZoomOwner?: Hub["semanticZoomOwner"];
   /**
    * Occurs when a section header is clicked and the section's IsHeaderInteractive property is true.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.sectionheaderclick
    */
   onsectionheaderclick?: (sender: Hub, args: EventArguments<HubSectionHeaderClickEventArgs>) => void;
   /**
    * Occurs when the SectionsInView collection changes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.sectionsinviewchanged
    */
   onsectionsinviewchanged?: (sender: Hub, args: EventArguments<SectionsInViewChangedEventArgs>) => void;
 }

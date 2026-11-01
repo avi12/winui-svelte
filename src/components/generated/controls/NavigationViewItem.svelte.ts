@@ -14,47 +14,52 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem
  */
 export interface NavigationViewItemProps extends NavigationViewItemBaseProps {
+  /**
+   * Gets the collection of menu items displayed as children of the NavigationViewItem.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.menuitems
+   */
   menuItems?: Snippet;
   /**
    * Gets or sets a value that indicates whether the current item has child items that haven't been shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.hasunrealizedchildren
    */
   hasUnrealizedChildren?: boolean;
   /**
    * Gets or sets the icon to show next to the menu item text. The icon to show next to the menu item text. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.icon
    */
   icon?: NavigationViewItem["icon"] | Snippet;
   /**
    * Gets or sets the InfoBadge object to display on the NavigationViewItem. The badge to display on the NavigationViewItem. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.infobadge
    */
   infoBadge?: NavigationViewItem["infoBadge"] | Snippet;
   /**
    * Gets or sets the value that indicates whether or not descendant item is selected.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.ischildselected
    */
   isChildSelected?: boolean;
   /**
    * Gets or sets a value that indicates whether a tree node is expanded. Ignored if there are no menu items.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.isexpanded
    */
   isExpanded?: boolean;
   /**
    * Gets or sets an object source used to generate the children of the NavigationViewItem.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.menuitemssource
    */
   menuItemsSource?: CollectionInput;
   /**
    * Gets or sets a value that indicates whether invoking a navigation menu item also selects it.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.selectsoninvoked
    */
   selectsOnInvoked?: boolean;
 }

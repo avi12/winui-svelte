@@ -38,186 +38,196 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
  */
 export interface RichTextBlockProps extends FrameworkElementProps {
+  /**
+   * Gets the contents of the RichTextBlock. A BlockCollection that contains the contents of the RichTextBlock.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.blocks
+   */
   children?: Snippet;
+  /**
+   * Gets the collection of text highlights.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.texthighlighters
+   */
   textHighlighters?: Snippet;
   /**
    * Gets a value that indicates whether the control has trimmed text that overflows the content area.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.istexttrimmed
    */
   isTextTrimmed?: boolean | undefined;
   /**
    * Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.characterspacing
    */
   characterSpacing?: number;
   /**
    * Gets or sets the preferred top-level font family for the text content in this element. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontfamily
    */
   fontFamily?: FontFamilyInput;
   /**
    * Gets or sets the font size for the text content in this element. A non-negative value that specifies the font size, measured in pixels. The default is 11.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontsize
    */
   fontSize?: number;
   /**
    * Gets or sets the font stretch for the text content in this element. The requested font stretch, as a FontStretch constant. The default is Normal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontstretch
    */
   fontStretch?: EnumInput<typeof FontStretch>;
   /**
    * Gets or sets the font style for the content in this element. The requested font style, which is a FontStyle enumeration named constant. The default is Normal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontstyle
    */
   fontStyle?: EnumInput<typeof FontStyle>;
   /**
    * Gets or sets the top-level font weight for the RichTextBlock. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontweight
    */
   fontWeight?: FontWeightInput;
   /**
    * Gets or sets the Brush to apply to the text contents of the RichTextBlock. The brush used to apply to the text contents. The default is a null brush from a pure code perspective, but the default text styles set this to Black (for Light theme) or White (for Dark theme) for a TextBlock element in UI.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.foreground
    */
   foreground?: BrushInput | Snippet;
   /**
    * Gets or sets a value that indicates how text is aligned in the RichTextBlock. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.horizontaltextalignment
    */
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
   /**
    * Gets or sets a value that determines whether font glyphs that contain color layers, such as Segoe UI Emoji, are rendered in color.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.iscolorfontenabled
    */
   isColorFontEnabled?: boolean;
   /**
    * Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.istextscalefactorenabled
    */
   isTextScaleFactorEnabled?: boolean;
   /**
    * Gets or sets a value that determines whether text content of the RichTextBlock can be selected for clipboard or drag purposes, or for UI styling changes that indicate selected text.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.istextselectionenabled
    */
   isTextSelectionEnabled?: boolean;
   /**
    * Gets or sets the height of each line of content. The height of each line in pixels. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.lineheight
    */
   lineHeight?: number;
   /**
    * Gets or sets a value that indicates how a line box is determined for each line of text in the RichTextBlock.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.linestackingstrategy
    */
   lineStackingStrategy?: EnumInput<typeof LineStackingStrategy>;
   /**
    * Gets or sets the maximum lines of text shown in the RichTextBlock. The maximum lines of text shown in the RichTextBlock. The default is 0, which is a special value that represents "Auto" behavior. The value cannot be negative.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.maxlines
    */
   maxLines?: number;
   /**
    * Get or sets a value that indicates how the font is modified to align with fonts of different sizes.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.opticalmarginalignment
    */
   opticalMarginAlignment?: EnumInput<typeof OpticalMarginAlignment>;
   /**
    * Gets or sets a reference to a RichTextBlockOverflow that is the linked target for any text overflow from this RichTextBlock.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.overflowcontenttarget
    */
   overflowContentTarget?: RichTextBlock["overflowContentTarget"];
   /**
    * Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a RichTextBlock. A Thickness structure that specifies the amount of padding to apply.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.padding
    */
   padding?: ThicknessInput;
   /**
    * Gets or sets the flyout that is shown when text is selected using touch or pen, or null if no flyout is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.selectionflyout
    */
   selectionFlyout?: RichTextBlock["selectionFlyout"] | Snippet;
   /**
    * Gets or sets the brush used to highlight the selected text. The brush used to highlight the selected text. The default is a null brush from a pure code perspective, but the default text styles for RichTextBlock content apply a theme resource brush for this in a runtime instance of a RichTextBlock control.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.selectionhighlightcolor
    */
   selectionHighlightColor?: RichTextBlock["selectionHighlightColor"] | Snippet;
   /**
    * Gets or sets a value that indicates how the text is aligned in the RichTextBlock. One of the TextAlignment enumeration values that indicates how text is aligned. The default is Left.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textalignment
    */
   textAlignment?: EnumInput<typeof TextAlignment>;
   /**
    * Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textdecorations
    */
   textDecorations?: FlagsInput<typeof TextDecorations>;
   /**
    * Gets or sets the indentation of the first line of text in each paragraph in the RichTextBlock. The offset amount of the first line of text in a paragraph.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textindent
    */
   textIndent?: number;
   /**
    * Gets or sets a value that indicates how the line box height is determined for each line of text in the RichTextBlock.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textlinebounds
    */
   textLineBounds?: EnumInput<typeof TextLineBounds>;
   /**
    * Gets or sets a value that indicates how the reading order is determined for the RichTextBlock.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textreadingorder
    */
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   /**
    * Gets or sets a value that indicates how text is trimmed when it overflows the content area. One of the TextTrimming enumeration values that specifies the text trimming behavior to use. The default is None.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.texttrimming
    */
   textTrimming?: EnumInput<typeof TextTrimming>;
   /**
    * Gets or sets a value that indicates whether text wrapping occurs if a line of text extends beyond the available width of the RichTextBlock. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textwrapping
    */
   textWrapping?: EnumInput<typeof TextWrapping>;
   /**
    * Occurs when the system processes an interaction that displays a context menu.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.contextmenuopening
    */
   oncontextmenuopening?: (sender: RichTextBlock, args: EventArguments<ContextMenuEventArgs>) => void;
   /**
    * Occurs when the IsTextTrimmed property value has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.istexttrimmedchanged
    */
   onistexttrimmedchanged?: Parameters<RichTextBlock["onIsTextTrimmedChanged"]>[0];
   /**
    * Occurs when the text selection has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.selectionchanged
    */
   onselectionchanged?: (sender: RichTextBlock, args: EventArguments<RoutedEventArgs>) => void;
 }

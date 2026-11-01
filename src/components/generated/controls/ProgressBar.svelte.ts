@@ -15,19 +15,19 @@ export interface ProgressBarProps extends RangeBaseProps {
   /**
    * Gets or sets a value that indicates whether the progress bar reports generic progress with a repeating pattern or reports progress based on the Value property.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar.isindeterminate
    */
   isIndeterminate?: boolean;
   /**
    * Gets or sets a value that indicates whether the progress bar should use visual states that communicate an Error state to the user.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar.showerror
    */
   showError?: boolean;
   /**
    * Gets or sets a value that indicates whether the progress bar should use visual states that communicate a Paused state to the user.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar.showpaused
    */
   showPaused?: boolean;
 }

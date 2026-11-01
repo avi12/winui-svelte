@@ -15,7 +15,7 @@ export interface MapIconProps extends MapElementProps {
   /**
    * Gets or sets the geographic location of the icon on the MapControl. The geographic location of the icon on the MapControl. The default is null.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapicon
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapicon.location
    */
   location?: MapIcon["location"];
 }

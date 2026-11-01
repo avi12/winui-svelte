@@ -14,21 +14,25 @@ export interface CollectionViewSourceProps {
   /**
    * Gets or sets a value that indicates whether source data is grouped.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource.issourcegrouped
    */
   isSourceGrouped?: boolean;
   /**
    * Gets or sets the property path to follow from the top level item to find groups within the CollectionViewSource. The property path to follow from the top level item to find groups. The default is a PropertyPath created from an empty string. This path implies that the object itself is the collection.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource.itemspath
    */
   itemsPath?: CollectionViewSource["itemsPath"];
   /**
    * Gets or sets the collection object from which to create this view.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource.source
    */
   source?: ObjectInput;
+  /**
+   * Sets attached properties on the element: an entry `[Owner, "Property", value]`
+   * calls the owner's static `SetProperty` with the element and the value, and a list of entries sets several.
+   */
   attached?: AttachedInput;
 }
 

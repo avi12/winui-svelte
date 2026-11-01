@@ -13,11 +13,16 @@ import type { Snippet } from "svelte";
  * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimationusingkeyframes
  */
 export interface ColorAnimationUsingKeyFramesProps extends TimelineProps {
+  /**
+   * Gets the collection of ColorKeyFrame objects that define the animation. The collection of ColorKeyFrame objects that define the animation. The default is an empty collection.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimationusingkeyframes.keyframes
+   */
   children?: Snippet;
   /**
    * Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimationusingkeyframes
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimationusingkeyframes.enabledependentanimation
    */
   enableDependentAnimation?: boolean;
 }

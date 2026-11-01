@@ -15,7 +15,7 @@ export interface FlyoutPresenterProps extends ContentControlProps {
   /**
    * Gets or sets a value that indicates whether the default shadow effect is shown.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyoutpresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyoutpresenter.isdefaultshadowenabled
    */
   isDefaultShadowEnabled?: boolean;
 }

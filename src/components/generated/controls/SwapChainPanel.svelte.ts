@@ -15,7 +15,7 @@ export interface SwapChainPanelProps extends GridProps {
   /**
    * Occurs when the composition scale factor of the SwapChainPanel has changed.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swapchainpanel
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swapchainpanel.compositionscalechanged
    */
   oncompositionscalechanged?: Parameters<SwapChainPanel["onCompositionScaleChanged"]>[0];
 }

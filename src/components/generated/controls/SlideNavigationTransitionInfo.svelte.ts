@@ -19,7 +19,7 @@ export interface SlideNavigationTransitionInfoProps extends NavigationTransition
   /**
    * Gets or sets the type of animation effect to play during the slide transition.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.slidenavigationtransitioninfo
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.slidenavigationtransitioninfo.effect
    */
   effect?: EnumInput<typeof SlideNavigationTransitionEffect>;
 }

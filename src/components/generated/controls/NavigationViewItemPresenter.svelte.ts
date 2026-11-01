@@ -16,13 +16,13 @@ export interface NavigationViewItemPresenterProps extends ContentControlProps {
   /**
    * Gets or sets the icon in a NavigationView item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.navigationviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.navigationviewitempresenter.icon
    */
   icon?: NavigationViewItemPresenter["icon"] | Snippet;
   /**
    * Gets or sets the informational badge shown on a NavigationView item.
    *
-   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.navigationviewitempresenter
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.navigationviewitempresenter.infobadge
    */
   infoBadge?: NavigationViewItemPresenter["infoBadge"] | Snippet;
 }

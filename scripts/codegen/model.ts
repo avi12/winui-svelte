@@ -1,4 +1,4 @@
-import { documentationBeside, loadDocumentation } from "./documentation.ts";
+import { attachedText, documentationAround, loadDocumentation, loadFallback } from "./documentation.ts";
 import type { TypeDocumentation } from "./documentation.ts";
 import {
   attachedOwners,
@@ -83,6 +83,7 @@ function nullableKindOf(signature: TypeSignature) {
   return isNamed ? nullableKindOfType.get(fullName(argument.type)) : undefined;
 }
 const OBJECT_NAME = "Object";
+const FALLBACK_DOCUMENTATION = path.join(import.meta.dirname, "documentation-fallback.json");
 // Image.Source is a snippet slot like ImageBrush.ImageSource, though "Source" names state elsewhere.
 const IMAGE_SOURCE_NAME = "Microsoft.UI.Xaml.Media.ImageSource";
 // The collections whose items markup can fill.
@@ -144,6 +145,9 @@ export interface AttachedModel {
   setter: string;
   // Whether a snippet fills it (attachedOwners in tables.ts).
   isSlot: boolean;
+  // What the owner's documentation says about the property, absent where it
+  // says nothing.
+  documentation?: string;
   kind: PropertyKind;
   enumType: TypeName | null;
   // The class whose level holds it: the narrowest type the setter takes.
@@ -233,9 +237,11 @@ export function loadMetadata(lockPath: string) {
   }
 
   const documented = [COMPONENT_WINMD, ...referenceWinmds, ...componentWinmds.map(extra => extra.winmd)]
-    .map(name => documentationBeside(find(name)))
-    .filter(file => file !== null);
-  const documentation = loadDocumentation(documented);
+    .flatMap(name => documentationAround(find(name)));
+  const documentation = loadDocumentation({
+    files: documented,
+    fallback: loadFallback(FALLBACK_DOCUMENTATION)
+  });
 
   const extras = componentWinmds.map(extra => {
     const file = new WinMdFile(find(extra.winmd));
@@ -720,6 +726,10 @@ class Builder {
     const isPrefixed = name.toLowerCase().startsWith(prefix.toLowerCase());
     const key = isPrefixed ? camelCase(name) : `${prefix}${name}`;
     const { kind, enumType } = this.classify(value);
+    const documentation = attachedText({
+      documentation: this.documentation.get(fullName(owner)),
+      name
+    });
     const model: AttachedModel = {
       key,
       owner,
@@ -728,7 +738,8 @@ class Builder {
       isSlot: slots.includes(name),
       kind,
       enumType,
-      target: targetName
+      target: targetName,
+      ...documentation === undefined ? {} : { documentation }
     };
     // A DependencyObject target is every element's; a text element is not one
     // of the automation tree's, so it is left to UIElement.
