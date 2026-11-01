@@ -64,7 +64,7 @@
     {/if}
     <GridView itemName={name => name} items={SWATCHES} key={name => name}>
       {#snippet item()}
-        <Border style:clip-path={SWATCH_CLIP} background="#444" height={SWATCH_HEIGHT} width={SWATCH_WIDTH} />
+        <Border style:clip-path={SWATCH_CLIP} class="swatch" height={SWATCH_HEIGHT} width={SWATCH_WIDTH} />
       {/snippet}
     </GridView>
     <Button automationId="quit" onclick={() => exitApplication()}>Quit</Button>
@@ -79,3 +79,9 @@
   }}
   tooltip="Relay example"
 />
+
+<style>
+  .swatch {
+    background-color: #444444;
+  }
+</style>

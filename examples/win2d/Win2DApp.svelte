@@ -4,7 +4,6 @@
   import { NetworkInformation } from "#winui/windows/networking/connectivity/NetworkInformation";
   import { flushSync } from "svelte";
   import { StackPanel, Window } from "winui-svelte/components";
-  import { Orientation } from "winui-svelte/enums";
   import {
     bitmapFromColors,
     Canvas,
@@ -132,7 +131,7 @@
   title="Win2D example"
   width={WINDOW_WIDTH}
 >
-  <StackPanel orientation={Orientation.Horizontal}>
+  <StackPanel class="panels">
     <!-- width and height are props: a CSS Style cannot target CanvasControl, XamlReader cannot create the type -->
     <Canvas
       draw={({ painter, width, height, device }) => {
@@ -223,3 +222,10 @@
     />
   </StackPanel>
 </Window>
+
+<style>
+  .panels {
+    display: flex;
+    flex-direction: row;
+  }
+</style>
