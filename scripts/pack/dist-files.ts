@@ -69,15 +69,21 @@ export function isAliasedFile(file: string) {
   return aliasedExtensions.includes(path.extname(file));
 }
 
+// A declaration's relative `.ts` imports name files dist/ does not hold (it has
+// the .d.ts and the .js), which an editor cannot follow: they become `.js`.
 export function resolveAliasesIn(file: string) {
   const source = readFileSync(file, "utf8");
-  const isAliased = source.includes("#src/");
-  if (isAliased) {
-    writeFileSync(
-      file, withRelativeAliases({
-        file,
-        source
-      })
-    );
+  const isDeclaration = file.endsWith(".d.ts");
+  const compiled = isDeclaration ? withCompiledImports(source) : source;
+  const isAliased = compiled.includes("#src/");
+  const resolved = isAliased
+    ? withRelativeAliases({
+      file,
+      source: compiled
+    })
+    : compiled;
+  const isChanged = resolved !== source;
+  if (isChanged) {
+    writeFileSync(file, resolved);
   }
 }
