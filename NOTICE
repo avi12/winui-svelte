@@ -10,7 +10,7 @@ Copyright (c) Microsoft Corporation. Licensed under the MIT License,
 https://github.com/microsoft/Win2D/blob/master/LICENSE.txt
 
 Documentation text in the comments of the generated components
-(dist/components/generated):
+(dist/components/generated) and in web-types.json:
 
 The descriptions of WinUI types and members come from the XML documentation
 that ships in the Windows App SDK NuGet packages, and from Microsoft's API

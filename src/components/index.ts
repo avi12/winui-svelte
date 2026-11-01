@@ -25,7 +25,7 @@ export { FluentGlyph } from "./fluent-glyph.ts";
 export type { FluentGlyphName } from "./fluent-glyph.ts";
 export { isColorText, ticksDate, ticksMilliseconds } from "./values.ts";
 export type { ColorInput, ColorKeyword, ColorText, GridLengthText, HexColor } from "./values.ts";
-export type { AppBrushes, BrushInput, EnumInput, FlagsInput, GridLengthInput } from "./convert.ts";
+export type { AppBrushes, BrushInput, EnumInput, FlagsInput, GlyphInput, GridLengthInput } from "./convert.ts";
 export type { ResourceRecordInput, ResourceValueInput } from "./resource-record.ts";
 export { installMedia } from "./media.ts";
 export { goToState, installXaml, resourceDictionaryOf, xamlOf } from "./xaml.ts";

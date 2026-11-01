@@ -398,11 +398,25 @@ function converterOf({ kind, key }: {
 }
 
 // The input type a converted prop takes.
-function inputTypeOf(property: {
+export function inputTypeOf(property: {
   kind: PropertyKind;
   key: string;
 }) {
   return converterOf(property)?.inputType;
+}
+
+// The type an editor names beside a prop: the input type, or the enum, or the plain type.
+export function displayTypeOf(property: {
+  kind: PropertyKind;
+  key: string;
+  enumType: TypeName | null;
+}) {
+  const isEnum = enumInputTypes.has(property.kind);
+  if (isEnum) {
+    return enumName(property);
+  }
+
+  return inputTypeOf(property) ?? plainTypes.get(property.kind);
 }
 
 function propertyType({ property, className }: {
@@ -1814,7 +1828,7 @@ const ATTACHED_PROP_DOC = [
   "   */"
 ].join("\n");
 
-function docsUrlOf(type: {
+export function docsUrlOf(type: {
   namespace: string;
   name: string;
 }) {
@@ -1828,7 +1842,7 @@ function docsUrlOf(type: {
 
 // The page of one member: WinUI's reference has a page for each, named
 // type.member; Win2D's reference names it Kind_Namespace_Type_Member.htm.
-function memberDocsUrlOf({ type, kind, name }: {
+export function memberDocsUrlOf({ type, kind, name }: {
   type: {
     namespace: string;
     name: string;

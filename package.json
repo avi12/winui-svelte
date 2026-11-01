@@ -1,6 +1,7 @@
 {
   "name": "winui-svelte",
   "version": "0.0.0",
+  "web-types": "./web-types.json",
   "description": "WinUI 3 controls as Svelte components: native Windows apps in Svelte, for Tauri, Electron or Node",
   "keywords": [
     "svelte",
@@ -452,6 +453,7 @@
     "!src/devices/test-support",
     "!src/renderer/testing/fake-controls.ts",
     "!src/renderer/testing/tree-probe.ts",
+    "web-types.json",
     "README.md",
     "API.md",
     "LICENSE",

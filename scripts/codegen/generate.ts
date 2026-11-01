@@ -1,4 +1,5 @@
 import { packageJsonWithBindings } from "./binding-list.ts";
+import { emitWebTypes } from "./emit-web-types.ts";
 import {
   bindingModule,
   emitAttachedOwners,
@@ -28,6 +29,7 @@ import {
 } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
+import { z } from "zod";
 
 // Generates the components from WinUI's metadata:
 //
@@ -173,6 +175,12 @@ function modelFiles(model: Model) {
   return output;
 }
 
+const packageVersionSchema = z.object({ version: z.string() });
+
+function versionOf(packagePath: string) {
+  return packageVersionSchema.parse(JSON.parse(readFileSync(packagePath, "utf8"))).version;
+}
+
 function generatedFiles(project: string) {
   const lockPath = path.join(project, ...LOCK_PATH);
   const model = buildModel(lockPath);
@@ -197,6 +205,13 @@ function generatedFiles(project: string) {
     })
   );
   output.push(
+    {
+      file: path.join(project, "web-types.json"),
+      text: emitWebTypes({
+        classes: [model, ...extraModels].flatMap(entry => entry.classes),
+        version: versionOf(path.join(project, "package.json"))
+      })
+    },
     updatedPackageJson({
       packagePath: path.join(project, "package.json"),
       wanted: requestedClasses(model)
