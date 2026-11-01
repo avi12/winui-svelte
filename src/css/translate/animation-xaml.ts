@@ -78,7 +78,8 @@ const ALTERNATE_CYCLE = 2;
 const FOREVER = "Forever";
 const KEYFRAME_TYPES = new Map<TrackKind, string>([
   [TrackKind.DOUBLE, "Double"],
-  [TrackKind.COLOR, "Color"]
+  [TrackKind.COLOR, "Color"],
+  [TrackKind.VISIBILITY, "Object"]
 ]);
 
 function pad(amount: number) {
@@ -121,7 +122,15 @@ function roundedText(value: number) {
   return String(Number(value.toFixed(SPLINE_DIGITS)));
 }
 
-function valueText(value: number | string) {
+function valueText({ value, kind }: {
+  value: number | string;
+  kind: string;
+}) {
+  const isObject = kind === "Object";
+  if (isObject) {
+    return String(value);
+  }
+
   return typeof value === "number" ? roundedText(value) : colorText(argb(value));
 }
 
@@ -160,7 +169,12 @@ function run({ track, spec, isReversed }: {
     t: frame.offset * spec.durationMs,
     value: frame.value
   }));
-  const easings = track.frames.map(frame => (frame.easing === null ? fallback : parseEasing(frame.easing) ?? fallback));
+  const isStepped = track.kind === TrackKind.VISIBILITY;
+  const easings = track.frames.map(frame => {
+    const timingFunction = isStepped ? null : frame.easing;
+    const isFallback = timingFunction === null;
+    return isFallback ? fallback : parseEasing(timingFunction) ?? fallback;
+  });
   if (!isReversed) {
     return {
       points,
@@ -313,13 +327,15 @@ function trackFrames({ track, spec, written, hold }: {
     frames.push(...isSeamless ? next.slice(1) : next);
   }
 
-  const [first] = frames;
+  const isStepped = track.kind === TrackKind.VISIBILITY;
+  const steps = isStepped ? frames.map(jump) : frames;
+  const [first] = steps;
   const isHeld = hold > 0 && first?.mode === DISCRETE;
   return ordered(
     isHeld ? [{
       ...first,
       t: 0
-    }, ...frames] : frames
+    }, ...steps] : steps
   );
 }
 
@@ -344,7 +360,10 @@ function keyFrameXaml({ frame, kind }: {
 }) {
   const named = typeof frame.mode === "string" ? FRAME_NAMES.get(frame.mode) : undefined;
   const spline = typeof frame.mode === "string" ? "" : keySpline(frame.mode);
-  return `<${named ?? "Spline"}${kind}KeyFrame KeyTime="${timeSpan(frame.t)}" Value="${valueText(frame.value)}"${spline}/>`;
+  return `<${named ?? "Spline"}${kind}KeyFrame KeyTime="${timeSpan(frame.t)}" Value="${valueText({
+    value: frame.value,
+    kind
+  })}"${spline}/>`;
 }
 
 function trackXaml({ track, spec, written, repeat, hold, delay }: {

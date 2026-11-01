@@ -1,14 +1,17 @@
 import { parseEasing } from "./easing.ts";
+import { DISPLAY_KEYWORDS } from "./layout-properties.ts";
 import type { Declaration, Keyframes, KeyframeStep, SourcePosition } from "./types.ts";
+import { visibilities } from "./visual-properties.ts";
 import { parseDegrees } from "#src/css/parse/angles.js";
 import { parseColor } from "#src/css/parse/colors.js";
 import { NOTATIONS } from "#src/css/parse/notation.js";
 import { parseLength, parseNumber, splitCommas, splitWords } from "#src/css/parse/values.js";
 
-/** The kinds of value WinUI animates: a Double, or a Color of a brush. */
+/** The kinds of value WinUI animates: a Double, a Color of a brush, or a Visibility, which steps. */
 export const TrackKind = {
   DOUBLE: "double",
-  COLOR: "color"
+  COLOR: "color",
+  VISIBILITY: "visibility"
 } as const;
 
 /** One of the kinds in `TrackKind`. */
@@ -17,7 +20,7 @@ export type TrackKind = (typeof TrackKind)[keyof typeof TrackKind];
 /** One value of a track at an offset of the animation, with the easing it starts. */
 export interface TrackFrame {
   offset: number;
-  /** A number for a Double, `#AARRGGBB` for a Color. */
+  /** A number for a Double, `#AARRGGBB` for a Color, `Visible` or `Collapsed` for a Visibility. */
   value: number | string;
   /** The `animation-timing-function` the keyframe itself set, or null for the animation's. */
   easing: string | null;
@@ -51,7 +54,9 @@ type Report = (input: {
 
 const TIMING_FUNCTION = "animation-timing-function";
 const FUNCTION = /^([a-z][a-z0-9]*)\((.*)\)$/isu;
-const ANIMATED = "WinUI animates opacity, width, height, colors, translate, scale, rotate and transform";
+const ANIMATED = "WinUI animates opacity, width, height, colors, translate, scale, rotate, transform, display and visibility";
+const VISIBLE = "Visible";
+const COLLAPSED = "Collapsed";
 const TRANSFORM_PREFIX = "(UIElement.RenderTransform).(CompositeTransform.";
 const SCALE_PREFIX = "Scale";
 const IDENTITY = new Map<string, number>([
@@ -313,9 +318,34 @@ function colorValues({ declaration, fail }: Reading) {
   } satisfies TrackValue];
 }
 
+function displayVisibility(word: string) {
+  const isKnown = DISPLAY_KEYWORDS.has(word);
+  if (!isKnown) {
+    return undefined;
+  }
+
+  return word === "none" ? COLLAPSED : VISIBLE;
+}
+
+// `display` and `visibility` both drive Visibility, which WinUI cannot blend: it steps.
+function visibilityValues({ declaration, fail }: Reading) {
+  const word = declaration.value.trim().toLowerCase();
+  const isDisplay = declaration.property === "display";
+  const value = isDisplay ? displayVisibility(word) : visibilities.get(word);
+  const isReadable = value !== undefined;
+  return isReadable ? [{
+    key: "Visibility",
+    target: "Visibility",
+    kind: TrackKind.VISIBILITY,
+    value
+  } satisfies TrackValue] : fail(`${declaration.property}: expected a ${isDisplay ? "display" : "visibility"} keyword, found "${declaration.value}"`);
+}
+
 // Each animatable property and how its value becomes WinUI values.
 const VALUES = new Map<string, (reading: Reading) => TrackValue[] | null>([
   ["opacity", opacityValues],
+  ["display", visibilityValues],
+  ["visibility", visibilityValues],
   ["width", reading => sizeValues({
     target: "Width",
     reading
@@ -421,6 +451,17 @@ function addStep({ keyframes, step, tracks, report }: {
   return isValid;
 }
 
+// As CSS steps display and visibility: the visible value holds through an interval that has it at either end, so
+// a hide lands at the end of the fade and a show at its start.
+function showBeforeAppearing(track: Track) {
+  for (const [i, frame] of track.frames.entries()) {
+    const isBeforeVisible = track.frames[i + 1]?.value === VISIBLE;
+    if (isBeforeVisible) {
+      frame.value = VISIBLE;
+    }
+  }
+}
+
 /**
  * The WinUI properties an `@keyframes` rule drives, each with its values at the
  * offsets that set it. Every keyframe property WinUI cannot animate is reported
@@ -439,6 +480,10 @@ export function tracksOf({ keyframes, report }: {
   }));
   for (const track of tracks.values()) {
     track.frames.sort((first, second) => first.offset - second.offset);
+    const isVisibility = track.kind === TrackKind.VISIBILITY;
+    if (isVisibility) {
+      showBeforeAppearing(track);
+    }
   }
 
   return results.includes(false) ? null : [...tracks.values()];

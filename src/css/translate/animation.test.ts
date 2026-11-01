@@ -81,8 +81,8 @@ test("@keyframes with a selector that is no offset fails the build at its positi
 });
 
 test("a keyframe property WinUI cannot animate fails the build and says what it can", () => {
-  const { errors } = translate("@keyframes x { to { display: none } }");
-  assert.match(errors.join(), /@keyframes x: display cannot be animated \(WinUI animates opacity, width, height, colors, translate, scale, rotate and transform\)/u);
+  const { errors } = translate("@keyframes x { to { padding: 4px } }");
+  assert.match(errors.join(), /@keyframes x: padding cannot be animated \(WinUI animates opacity, width, height, colors, translate, scale, rotate, transform, display and visibility\)/u);
 });
 
 test("a keyframe color must be written out", () => {
@@ -301,4 +301,29 @@ test("an animation property that is not a value fails the build", () => {
   const { errors } = translate(".a { animation-name: x; animation-direction: sideways; animation-iteration-count: 1.5 }");
   assert.match(errors.join("\n"), /animation-direction: expected one of normal, reverse, alternate, alternate-reverse, found "sideways"/u);
   assert.match(errors.join("\n"), /animation-iteration-count: expected infinite or a whole number/u);
+});
+
+test("display in @keyframes steps Visibility: a hide lands at the end of the fade, a show at its start", () => {
+  const [hide] = tracksFor("@keyframes out { from { opacity: 1; display: block } to { opacity: 0; display: none } }").filter(track => track.kind === "visibility");
+  assert.deepEqual(hide?.frames.map(frame => [frame.offset, frame.value]), [[0, "Visible"], [1, "Collapsed"]]);
+  const [show] = tracksFor("@keyframes in { from { display: none } to { display: block } }").filter(track => track.kind === "visibility");
+  assert.deepEqual(show?.frames.map(frame => [frame.offset, frame.value]), [[0, "Visible"], [1, "Visible"]]);
+});
+
+test("a Visibility track is written as discrete object key frames, whatever the easing", () => {
+  const tracks = tracksFor("@keyframes out { from { display: block } to { display: none } }");
+  const xaml = storyboardXaml(
+    spec({
+      easing: "ease-in",
+      tracks
+    })
+  );
+  assert.match(xaml, /<ObjectAnimationUsingKeyFrames Storyboard\.TargetProperty="Visibility" BeginTime="0:00:00\.000" FillBehavior="Stop">/u);
+  assert.match(xaml, /<DiscreteObjectKeyFrame KeyTime="0:00:00\.000" Value="Visible"\/>/u);
+  assert.match(xaml, /<DiscreteObjectKeyFrame KeyTime="0:00:01\.000" Value="Collapsed"\/>/u);
+});
+
+test("display in @keyframes fails the build on a word it does not know", () => {
+  const { errors } = translate("@keyframes x { to { display: sideways } }");
+  assert.match(errors.join(), /@keyframes x: display: expected a display keyword, found "sideways"/u);
 });

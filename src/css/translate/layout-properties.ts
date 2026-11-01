@@ -20,7 +20,8 @@ const ALIGNMENTS = enumMap([
   ["auto", "Stretch"]
 ]);
 
-const DISPLAY_KEYWORDS = new Set(["none", "block", "inline", "inline-block", "flex", "inline-flex", "grid", "inline-grid", "contents"]);
+/** The values of `display` the lowering accepts. */
+export const DISPLAY_KEYWORDS = new Set(["none", "block", "inline", "inline-block", "flex", "inline-flex", "grid", "inline-grid", "contents"]);
 
 const SCROLL_BAR_VISIBILITIES = enumMap([
   ["auto", "Auto"],
