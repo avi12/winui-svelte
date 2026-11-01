@@ -123,7 +123,7 @@ export { StyleSimulations } from "#winui/microsoft/ui/xaml/media/StyleSimulation
 export { SweepDirection } from "#winui/microsoft/ui/xaml/media/SweepDirection";
 export { SwipeBehaviorOnInvoked } from "#winui/microsoft/ui/xaml/controls/SwipeBehaviorOnInvoked";
 export { SwipeMode } from "#winui/microsoft/ui/xaml/controls/SwipeMode";
-export { Symbol } from "#winui/microsoft/ui/xaml/controls/Symbol";
+export { Symbol as SymbolGlyph } from "#winui/microsoft/ui/xaml/controls/Symbol";
 export { TabViewCloseButtonOverlayMode } from "#winui/microsoft/ui/xaml/controls/TabViewCloseButtonOverlayMode";
 export { TabViewWidthMode } from "#winui/microsoft/ui/xaml/controls/TabViewWidthMode";
 export { TeachingTipHeroContentPlacementMode } from "#winui/microsoft/ui/xaml/controls/TeachingTipHeroContentPlacementMode";

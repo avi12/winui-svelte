@@ -79,3 +79,9 @@ test("a hand-written component compiles without a warning", () => {
     assert.deepEqual(warnings, []);
   }
 });
+
+test("no enum is exported under a name the language already has", () => {
+  const exported = [...readFileSync(path.join(GENERATED_FOLDER, "enums.ts"), "utf8").matchAll(/export \{ (?:\w+ as )?(\w+) \}/gu)];
+  const hidden = exported.map(match => match[1]).filter(name => name !== undefined && name in globalThis);
+  assert.deepEqual(hidden, []);
+});

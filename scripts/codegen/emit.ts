@@ -19,7 +19,8 @@ import {
   narrowedObjectInputs,
   OverlayHost,
   overlayHosted,
-  PropertyKind
+  PropertyKind,
+  renamedEnums
 } from "./tables.ts";
 import type { TypeName } from "./winmd.ts";
 import { fullName } from "./winmd.ts";
@@ -330,7 +331,10 @@ const enumInputTypes = new Map<PropertyKind, string>([
 export function emitEnums(model: Model) {
   const lines = [GENERATED_HEADER, ""];
   for (const type of enumsOf(model)) {
-    lines.push(`export { ${type.name} } from "${bindingModule(type)}";`);
+    const publicName = renamedEnums.get(type.name);
+    const isRenamed = publicName !== undefined;
+    const exported = isRenamed ? `${type.name} as ${publicName}` : type.name;
+    lines.push(`export { ${exported} } from "${bindingModule(type)}";`);
   }
 
   lines.push("export { ThemeBrush } from \"./theme-brushes.ts\";");

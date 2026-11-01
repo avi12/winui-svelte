@@ -349,6 +349,13 @@ export const reservedKeys = new Set(["children", "class", "style", "attached"]);
 
 // A class WinUI activates but the generator leaves out, and why. Filled from
 // the mount test: a control the test cannot construct on its own.
+// An enum whose WinUI name is a name the language already has, as it is
+// exported from winui-svelte/enums: importing `Symbol` would hide the global
+// one in the app's module.
+export const renamedEnums = new Map<string, string>([
+  ["Symbol", "SymbolGlyph"]
+]);
+
 export const nonConstructible = new Map<string, string>([
   [
     "Microsoft.UI.Xaml.Controls.SwapChainBackgroundPanel",
