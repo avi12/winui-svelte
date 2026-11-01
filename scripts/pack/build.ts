@@ -10,8 +10,10 @@ import {
   mkdirSync,
   readdirSync,
   readFileSync,
+  rmdirSync,
   rmSync,
   statSync,
+  unlinkSync,
   writeFileSync
 } from "node:fs";
 import { createRequire } from "node:module";
@@ -113,6 +115,50 @@ const bindingsManifest = {
   sideEffects: false
 };
 
+// A library a running app has loaded cannot be deleted or overwritten; the
+// build leaves it where it is and copies over the rest, so a window that links
+// this package can stay open while it is rebuilt.
+const LOCKED_CODES = new Set(["EPERM", "EBUSY"]);
+
+function isLocked(error: unknown) {
+  return error instanceof Error && "code" in error && typeof error.code === "string" && LOCKED_CODES.has(error.code);
+}
+
+function clearFolder(folder: string) {
+  if (!existsSync(folder)) {
+    return;
+  }
+
+  for (const entry of readdirSync(folder, { withFileTypes: true })) {
+    const entryPath = path.join(folder, entry.name);
+    try {
+      if (entry.isDirectory()) {
+        clearFolder(entryPath);
+        rmdirSync(entryPath);
+      } else {
+        unlinkSync(entryPath);
+      }
+    } catch (error) {
+      const isKept = isLocked(error) || (error instanceof Error && "code" in error && error.code === "ENOTEMPTY");
+      if (!isKept) {
+        throw error;
+      }
+    }
+  }
+}
+
+function copyLibrary({ source, target }: {
+  source: string;
+  target: string;
+}) {
+  const isAlreadyThere = existsSync(target) && readFileSync(target).equals(readFileSync(source));
+  if (isAlreadyThere) {
+    return;
+  }
+
+  copyFileSync(source, target);
+}
+
 function copyBindings() {
   cpSync(GENERATED_BINDINGS, SHIPPED_BINDINGS, { recursive: true });
   writeFileSync(
@@ -134,10 +180,10 @@ function copyExtraLibraries({ extra, architecture }: {
   }
 
   for (const library of restoredLibraries) {
-    copyFileSync(
-      path.join(RESTORED_BOOTSTRAPPERS, architecture, library),
-      path.join(SHIPPED_BOOTSTRAPPERS, architecture, library)
-    );
+    copyLibrary({
+      source: path.join(RESTORED_BOOTSTRAPPERS, architecture, library),
+      target: path.join(SHIPPED_BOOTSTRAPPERS, architecture, library)
+    });
   }
 }
 
@@ -145,7 +191,10 @@ function copyBootstrappers() {
   for (const architecture of readdirSync(RESTORED_BOOTSTRAPPERS)) {
     const target = path.join(SHIPPED_BOOTSTRAPPERS, architecture);
     mkdirSync(target, { recursive: true });
-    copyFileSync(path.join(RESTORED_BOOTSTRAPPERS, architecture, BOOTSTRAPPER), path.join(target, BOOTSTRAPPER));
+    copyLibrary({
+      source: path.join(RESTORED_BOOTSTRAPPERS, architecture, BOOTSTRAPPER),
+      target: path.join(target, BOOTSTRAPPER)
+    });
     for (const extra of extraPackages) {
       copyExtraLibraries({
         extra,
@@ -232,10 +281,7 @@ if (IS_UP_TO_DATE) {
 }
 
 rmSync(STAMP_FILE, { force: true });
-rmSync(OUTPUT_FOLDER, {
-  recursive: true,
-  force: true
-});
+clearFolder(OUTPUT_FOLDER);
 copyBindings();
 compile();
 copyShipped();
