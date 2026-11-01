@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CanvasVirtualControlComponentProps };
 
+/**
+ * XAML control providing immediate mode 2D rendering to a virtualized surface.
+ *
+ * @see https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl.htm
+ */
 declare const CanvasVirtualControl: Component<CanvasVirtualControlComponentProps, Record<string, never>, "">;
 export default CanvasVirtualControl;

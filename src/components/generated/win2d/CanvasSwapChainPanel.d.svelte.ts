@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { CanvasSwapChainPanelComponentProps };
 
+/**
+ * A swap chain panel is a XAML control which draws to a swap chain.
+ *
+ * @see https://microsoft.github.io/Win2D/WinUI3/html/T_Microsoft_Graphics_Canvas_UI_Xaml_CanvasSwapChainPanel.htm
+ */
 declare const CanvasSwapChainPanel: Component<CanvasSwapChainPanelComponentProps, Record<string, never>, "">;
 export default CanvasSwapChainPanel;

@@ -74,6 +74,11 @@ export interface PipsPagerProps extends ControlProps {
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager.selectedpipstyle
    */
   selectedPipStyle?: StyleInput;
+  /**
+   * Gets or sets a value that determines whether the `PipsPager` control wraps between the first and last items. A value of the enumeration that determines whether the `PipsPager` control wraps between the first and last items. The default is `None`.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager.wrapmode
+   */
   wrapMode?: EnumInput<typeof PipsPagerWrapMode>;
   /**
    * Occurs after the selected index changes on the PipsPager.

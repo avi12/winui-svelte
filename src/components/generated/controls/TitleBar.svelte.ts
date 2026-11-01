@@ -7,18 +7,78 @@ import { linkControl } from "./Control.svelte.ts";
 import type { ControlBound, ControlProps } from "./Control.svelte.ts";
 import type { Snippet } from "svelte";
 
+/**
+ * Represents a control that hosts the title text and system caption buttons for a window. It typically appears at the top of the window and includes core functionalities such as drag, minimize, maximize, and close buttons.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar
+ */
 export interface TitleBarProps extends ControlProps {
   autoRefreshDragRegions?: boolean;
+  /**
+   * Gets or sets the content to show in the center of the title bar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.content
+   */
   content?: TitleBar["content"] | Snippet;
+  /**
+   * Gets or sets the icon image to show in the title bar. The icon image to show in the title bar. The default is `null`.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.iconsource
+   */
   iconSource?: TitleBar["iconSource"] | Snippet;
+  /**
+   * Gets or sets a value that indicates whether the button to navigate back is enabled. `true` if the button to navigate back is enabled; otherwise, `false`. The default is `true`.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.isbackbuttonenabled
+   */
   isBackButtonEnabled?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the button to navigate back is shown. `true` if the button to navigate back is shown; otherwise, `false`. The default is `false`.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.isbackbuttonvisible
+   */
   isBackButtonVisible?: boolean;
+  /**
+   * Gets or sets a value that indicates whether the button to toggle the navigation pane is shown. `true` if the button to toggle the navigation pane is shown; otherwise, `false`. The default is `false`.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.ispanetogglebuttonvisible
+   */
   isPaneToggleButtonVisible?: boolean;
+  /**
+   * Gets or sets the content to show in the left side of the title bar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.leftheader
+   */
   leftHeader?: TitleBar["leftHeader"] | Snippet;
+  /**
+   * Gets or sets the content to show in the right side of the title bar.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.rightheader
+   */
   rightHeader?: TitleBar["rightHeader"] | Snippet;
+  /**
+   * Gets or sets the subtitle text to display in the title bar. The subtitle text to display in the title bar. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.subtitle
+   */
   subtitle?: string;
+  /**
+   * Gets or sets the title text to display in the title bar. The title text to display in the title bar. The default is an empty string.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.title
+   */
   title?: string;
+  /**
+   * Occurs when the back navigation button is invoked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.backrequested
+   */
   onbackrequested?: Parameters<TitleBar["onBackRequested"]>[0];
+  /**
+   * Occurs when the pane toggle button is invoked.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.panetogglerequested
+   */
   onpanetogglerequested?: Parameters<TitleBar["onPaneToggleRequested"]>[0];
 }
 

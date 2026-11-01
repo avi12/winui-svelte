@@ -72,6 +72,11 @@ export interface TabViewProps extends ControlProps {
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.canreordertabs
    */
   canReorderTabs?: boolean;
+  /**
+   * Gets or sets a value that indicates whether or not dragging out tabs into a new window is allowed on this TabView. `true` if tabs can be dragged out into a new window; otherwise, `false`. The default is `false`.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.cantearouttabs
+   */
   canTearOutTabs?: boolean;
   /**
    * Gets or sets a value that indicates the behavior of the close button within tabs. A value of the enumeration that describes the behavior of the close button within tabs. The default is Auto.
@@ -139,7 +144,17 @@ export interface TabViewProps extends ControlProps {
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.addtabbuttonclick
    */
   onaddtabbuttonclick?: Parameters<TabView["onAddTabButtonClick"]>[0];
+  /**
+   * Occurs when tabs torn-out from a TabView in another window have been dropped onto this TabView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.externaltornouttabsdropped
+   */
   onexternaltornouttabsdropped?: Parameters<TabView["onExternalTornOutTabsDropped"]>[0];
+  /**
+   * Occurs when tabs torn-out from a TabView in another window are being dropped onto this TabView.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.externaltornouttabsdropping
+   */
   onexternaltornouttabsdropping?: Parameters<TabView["onExternalTornOutTabsDropping"]>[0];
   /**
    * Occurs when the currently selected tab changes.
@@ -189,7 +204,17 @@ export interface TabViewProps extends ControlProps {
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabstripdrop
    */
   ontabstripdrop?: (sender: TabView, args: EventArguments<DragEventArgs>) => void;
+  /**
+   * Occurs when the user has started to tear-out tabs from a TabView and a new window has been provided by the `TabTearOutWindowRequested` event.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabtearoutrequested
+   */
   ontabtearoutrequested?: Parameters<TabView["onTabTearOutRequested"]>[0];
+  /**
+   * Occurs when the user has started to drag the selected tabs and `CanTearOutTabs` is set to `true`.
+   *
+   * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabtearoutwindowrequested
+   */
   ontabtearoutwindowrequested?: Parameters<TabView["onTabTearOutWindowRequested"]>[0];
 }
 

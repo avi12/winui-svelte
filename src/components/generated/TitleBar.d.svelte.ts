@@ -5,5 +5,10 @@ import type { Component } from "svelte";
 
 export type { TitleBarComponentProps };
 
+/**
+ * Represents a control that hosts the title text and system caption buttons for a window. It typically appears at the top of the window and includes core functionalities such as drag, minimize, maximize, and close buttons.
+ *
+ * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar
+ */
 declare const TitleBar: Component<TitleBarComponentProps, Record<string, never>, "">;
 export default TitleBar;
