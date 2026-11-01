@@ -58,6 +58,8 @@ export interface UniformGridLayoutProps extends VirtualizingLayoutProps {
   /**
    * Gets or sets the axis along which items are laid out. One of the enumeration values that specifies the axis along which items are laid out. The default is Vertical.
    *
+   * Also settable in CSS as `flex-direction`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.uniformgridlayout.orientation
    */
   orientation?: EnumInput<typeof Orientation>;

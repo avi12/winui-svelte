@@ -113,6 +113,8 @@ export type Expansion = (input: ExpansionInput) => Declaration[];
 /** The CSS properties that together set one WinUI property, and how they lower. */
 export interface PropertyGroup {
   members: readonly string[];
+  /** The WinUI property a group of one member sets, for the documentation that names the CSS one */
+  property?: string;
   /** Whether the built-in groups win over this one where both set a WinUI property (an opt-in one wins by default) */
   isFallback?: boolean;
   lower(input: GroupInput): Output[];
@@ -161,6 +163,7 @@ export function simple({ member, property, parse }: {
 }) {
   return {
     members: [member],
+    property,
     lower(input) {
       const value = parse(input.reading(member));
       return value === null ? [] : [setter({

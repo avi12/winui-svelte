@@ -23,6 +23,8 @@ export interface ScrollBarProps extends RangeBaseProps {
   /**
    * Gets or sets a value that indicates whether the ScrollBar is displayed horizontally or vertically. An Orientation enumeration value that defines whether the ScrollBar is displayed horizontally or vertically. The default is Horizontal. Specific control templates might change this value, which would cause the templated value to be the apparent runtime default.
    *
+   * Also settable in CSS as `flex-direction`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollbar.orientation
    */
   orientation?: EnumInput<typeof Orientation>;

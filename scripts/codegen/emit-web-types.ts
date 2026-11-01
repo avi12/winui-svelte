@@ -1,3 +1,4 @@
+import { cssNoteOf } from "./css-names.ts";
 import { displayTypeOf, docsUrlOf, inputTypeOf, memberDocsUrlOf } from "./emit.ts";
 import { inputDocumentationOf } from "./input-documentation.ts";
 import type { ClassModel } from "./model.ts";
@@ -66,6 +67,7 @@ function attributeOf({ level, key, kind, winName, inputType, displayType }: {
   const paragraphs = [
     text,
     accepts === undefined ? undefined : `Accepts ${accepts}`,
+    kind === "P" ? cssNoteOf(winName) : undefined,
     displayType === undefined ? undefined : `Type: \`${displayType}\``
   ];
   const description = paragraphs.filter(paragraph => paragraph !== undefined).join("\n\n");

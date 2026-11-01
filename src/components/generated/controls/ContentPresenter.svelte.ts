@@ -60,6 +60,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `background-color`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.background
    */
   background?: BrushInput | Snippet;
@@ -80,6 +82,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `border-color`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.borderbrush
    */
   borderBrush?: BrushInput | Snippet;
@@ -91,6 +95,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   borderThickness?: ThicknessInput;
   /**
    * Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.
+   *
+   * Also settable in CSS as `letter-spacing`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.characterspacing
    */
@@ -126,11 +132,15 @@ export interface ContentPresenterProps extends FrameworkElementProps {
    *
    * Accepts A font family name or a font family.
    *
+   * Also settable in CSS as `font-family`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.fontfamily
    */
   fontFamily?: FontFamilyInput;
   /**
    * Gets or sets the font size for the text content presented by the ContentPresenter. A non-negative value that specifies the font size, measured in pixels.
+   *
+   * Also settable in CSS as `font-size`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.fontsize
    */
@@ -144,6 +154,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets the font style for the presented content. The requested font style, which is a FontStyle constant name. The default is Normal.
    *
+   * Also settable in CSS as `font-style`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.fontstyle
    */
   fontStyle?: EnumInput<typeof FontStyle>;
@@ -152,6 +164,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
    *
    * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
    *
+   * Also settable in CSS as `font-weight`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.fontweight
    */
   fontWeight?: FontWeightInput;
@@ -159,6 +173,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
    * Gets or sets the Brush to apply to the text content handled by the ContentPresenter. The brush used as the foreground brush for the text contents. The default is a null brush from a pure code perspective, but system style defaults set this to Black (for Light theme) or White (for Dark theme).
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
+   * Also settable in CSS as `color`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.foreground
    */
@@ -213,6 +229,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   textLineBounds?: EnumInput<typeof TextLineBounds>;
   /**
    * Gets or sets how the element wraps text. A value that indicates how the element wraps text. The default is NoWrap.
+   *
+   * Also settable in CSS as `white-space`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.textwrapping
    */

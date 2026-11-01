@@ -28,6 +28,8 @@ export interface VirtualizingStackPanelProps extends OrientedVirtualizingPanelPr
   /**
    * Gets or sets a value that describes the horizontal or vertical orientation of stacked content. The Orientation of child content, as a value of the enumeration. The default is Vertical.
    *
+   * Also settable in CSS as `flex-direction`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel.orientation
    */
   orientation?: EnumInput<typeof Orientation>;

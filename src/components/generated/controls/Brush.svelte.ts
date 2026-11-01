@@ -15,6 +15,8 @@ export interface BrushProps {
   /**
    * Gets or sets the degree of opacity of a Brush. The value of the Opacity property is expressed as a value between 0 and 1.0. The default value is 1.0, which is full opacity. 0 is transparent opacity.
    *
+   * Also settable in CSS as `opacity`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.brush.opacity
    */
   opacity?: number;

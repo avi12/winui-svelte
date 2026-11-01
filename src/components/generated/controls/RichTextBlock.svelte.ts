@@ -59,6 +59,8 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.
    *
+   * Also settable in CSS as `letter-spacing`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.characterspacing
    */
   characterSpacing?: number;
@@ -67,11 +69,15 @@ export interface RichTextBlockProps extends FrameworkElementProps {
    *
    * Accepts A font family name or a font family.
    *
+   * Also settable in CSS as `font-family`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontfamily
    */
   fontFamily?: FontFamilyInput;
   /**
    * Gets or sets the font size for the text content in this element. A non-negative value that specifies the font size, measured in pixels. The default is 11.
+   *
+   * Also settable in CSS as `font-size`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontsize
    */
@@ -85,6 +91,8 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets the font style for the content in this element. The requested font style, which is a FontStyle enumeration named constant. The default is Normal.
    *
+   * Also settable in CSS as `font-style`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontstyle
    */
   fontStyle?: EnumInput<typeof FontStyle>;
@@ -93,6 +101,8 @@ export interface RichTextBlockProps extends FrameworkElementProps {
    *
    * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
    *
+   * Also settable in CSS as `font-weight`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontweight
    */
   fontWeight?: FontWeightInput;
@@ -100,6 +110,8 @@ export interface RichTextBlockProps extends FrameworkElementProps {
    * Gets or sets the Brush to apply to the text contents of the RichTextBlock. The brush used to apply to the text contents. The default is a null brush from a pure code perspective, but the default text styles set this to Black (for Light theme) or White (for Dark theme) for a TextBlock element in UI.
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
+   * Also settable in CSS as `color`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.foreground
    */
@@ -179,11 +191,15 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets a value that indicates how the text is aligned in the RichTextBlock. One of the TextAlignment enumeration values that indicates how text is aligned. The default is Left.
    *
+   * Also settable in CSS as `text-align`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textalignment
    */
   textAlignment?: EnumInput<typeof TextAlignment>;
   /**
    * Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.
+   *
+   * Also settable in CSS as `text-decoration-line`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textdecorations
    */
@@ -209,11 +225,15 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets a value that indicates how text is trimmed when it overflows the content area. One of the TextTrimming enumeration values that specifies the text trimming behavior to use. The default is None.
    *
+   * Also settable in CSS as `text-overflow`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.texttrimming
    */
   textTrimming?: EnumInput<typeof TextTrimming>;
   /**
    * Gets or sets a value that indicates whether text wrapping occurs if a line of text extends beyond the available width of the RichTextBlock. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.
+   *
+   * Also settable in CSS as `white-space`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textwrapping
    */

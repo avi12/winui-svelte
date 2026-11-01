@@ -248,6 +248,7 @@ export const propertyGroups: readonly PropertyGroup[] = [
   }),
   {
     members: ["display"],
+    property: "Visibility",
     lower: display
   },
   keywordProperty({

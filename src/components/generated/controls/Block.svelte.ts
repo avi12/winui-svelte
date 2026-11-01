@@ -41,6 +41,8 @@ export interface BlockProps extends TextElementProps {
   /**
    * Gets or sets the horizontal alignment of the text content. The horizontal alignment of the text content. The default is Left.
    *
+   * Also settable in CSS as `text-align`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block.textalignment
    */
   textAlignment?: EnumInput<typeof TextAlignment>;

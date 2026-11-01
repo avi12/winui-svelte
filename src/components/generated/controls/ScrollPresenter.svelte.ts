@@ -35,6 +35,8 @@ export interface ScrollPresenterProps extends FrameworkElementProps {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `background-color`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.scrollpresenter.background
    */
   background?: BrushInput | Snippet;

@@ -116,6 +116,8 @@ export interface DatePickerProps extends ControlProps {
   /**
    * Gets or sets a value that indicates whether the day, month, and year selectors are stacked horizontally or vertically. A named constant of the enumeration that indicates whether the day, month, and year selectors are stacked horizontally or vertically. The default is Horizontal.
    *
+   * Also settable in CSS as `flex-direction`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker.orientation
    */
   orientation?: EnumInput<typeof Orientation>;

@@ -830,7 +830,7 @@
             },
             {
               "name": "textAlignment",
-              "description": "Gets or sets the horizontal alignment of the text content. The horizontal alignment of the text content. The default is Left.\n\nType: `TextAlignment`",
+              "description": "Gets or sets the horizontal alignment of the text content. The horizontal alignment of the text content. The default is Left.\n\nAlso settable in CSS as `text-align`\n\nType: `TextAlignment`",
               "value": {
                 "type": "TextAlignment"
               },
@@ -853,7 +853,7 @@
           "attributes": [
             {
               "name": "background",
-              "description": "Gets or sets the Brush that fills the background (inner area) of the border. The brush that fills the background. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush that fills the background (inner area) of the border. The brush that fills the background. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `background-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -874,7 +874,7 @@
             },
             {
               "name": "borderBrush",
-              "description": "Gets or sets the Brush that is applied to the edge area of the Border. The brush that fills the border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush that is applied to the edge area of the Border. The brush that fills the border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `border-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -979,7 +979,7 @@
           "attributes": [
             {
               "name": "opacity",
-              "description": "Gets or sets the degree of opacity of a Brush. The value of the Opacity property is expressed as a value between 0 and 1.0. The default value is 1.0, which is full opacity. 0 is transparent opacity.\n\nType: `number`",
+              "description": "Gets or sets the degree of opacity of a Brush. The value of the Opacity property is expressed as a value between 0 and 1.0. The default value is 1.0, which is full opacity. 0 is transparent opacity.\n\nAlso settable in CSS as `opacity`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -2197,7 +2197,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets the orientation of the editing controls in the ColorPicker. The orientation of the editing controls in the ColorPicker. The default is Vertical.\n\nType: `Orientation`",
+              "description": "Gets or sets the orientation of the editing controls in the ColorPicker. The orientation of the editing controls in the ColorPicker. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -2981,7 +2981,7 @@
           "attributes": [
             {
               "name": "background",
-              "description": "Gets or sets the Brush to apply to the background of content handled by the ContentPresenter. The brush used as the background brush for the contents. The default is a null brush from a pure code perspective, but system style defaults set this to White (for Light theme) or Black (for Dark theme).\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush to apply to the background of content handled by the ContentPresenter. The brush used as the background brush for the contents. The default is a null brush from a pure code perspective, but system style defaults set this to White (for Light theme) or Black (for Dark theme).\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `background-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -3002,7 +3002,7 @@
             },
             {
               "name": "borderBrush",
-              "description": "Gets or sets a brush that describes the border fill of the content presenter. The brush that is used to fill the content presenter's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that describes the border fill of the content presenter. The brush that is used to fill the content presenter's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `border-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -3018,7 +3018,7 @@
             },
             {
               "name": "characterSpacing",
-              "description": "Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.\n\nType: `number`",
+              "description": "Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.\n\nAlso settable in CSS as `letter-spacing`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -3055,7 +3055,7 @@
             },
             {
               "name": "fontFamily",
-              "description": "Gets or sets the preferred top-level font family for the text content presented by the ContentPresenter. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.\n\nAccepts A font family name or a font family.\n\nType: `FontFamilyInput`",
+              "description": "Gets or sets the preferred top-level font family for the text content presented by the ContentPresenter. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.\n\nAccepts A font family name or a font family.\n\nAlso settable in CSS as `font-family`\n\nType: `FontFamilyInput`",
               "value": {
                 "type": [
                   {
@@ -3069,7 +3069,7 @@
             },
             {
               "name": "fontSize",
-              "description": "Gets or sets the font size for the text content presented by the ContentPresenter. A non-negative value that specifies the font size, measured in pixels.\n\nType: `number`",
+              "description": "Gets or sets the font size for the text content presented by the ContentPresenter. A non-negative value that specifies the font size, measured in pixels.\n\nAlso settable in CSS as `font-size`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -3085,7 +3085,7 @@
             },
             {
               "name": "fontStyle",
-              "description": "Gets or sets the font style for the presented content. The requested font style, which is a FontStyle constant name. The default is Normal.\n\nType: `FontStyle`",
+              "description": "Gets or sets the font style for the presented content. The requested font style, which is a FontStyle constant name. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
                 "type": "FontStyle"
               },
@@ -3093,7 +3093,7 @@
             },
             {
               "name": "fontWeight",
-              "description": "Gets or sets the top-level font weight for the text content presented by the ContentPresenter. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nType: `FontWeightInput`",
+              "description": "Gets or sets the top-level font weight for the text content presented by the ContentPresenter. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nAlso settable in CSS as `font-weight`\n\nType: `FontWeightInput`",
               "value": {
                 "type": "FontWeightInput"
               },
@@ -3101,7 +3101,7 @@
             },
             {
               "name": "foreground",
-              "description": "Gets or sets the Brush to apply to the text content handled by the ContentPresenter. The brush used as the foreground brush for the text contents. The default is a null brush from a pure code perspective, but system style defaults set this to Black (for Light theme) or White (for Dark theme).\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush to apply to the text content handled by the ContentPresenter. The brush used as the foreground brush for the text contents. The default is a null brush from a pure code perspective, but system style defaults set this to Black (for Light theme) or White (for Dark theme).\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -3173,7 +3173,7 @@
             },
             {
               "name": "textWrapping",
-              "description": "Gets or sets how the element wraps text. A value that indicates how the element wraps text. The default is NoWrap.\n\nType: `TextWrapping`",
+              "description": "Gets or sets how the element wraps text. A value that indicates how the element wraps text. The default is NoWrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
               "value": {
                 "type": "TextWrapping"
               },
@@ -3234,7 +3234,7 @@
           "attributes": [
             {
               "name": "background",
-              "description": "Gets or sets a brush that provides the background of the control. The brush that provides the background of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that provides the background of the control. The brush that provides the background of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `background-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -3250,7 +3250,7 @@
             },
             {
               "name": "borderBrush",
-              "description": "Gets or sets a brush that describes the border fill of a control. The brush that is used to fill the control's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that describes the border fill of a control. The brush that is used to fill the control's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `border-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -3266,7 +3266,7 @@
             },
             {
               "name": "characterSpacing",
-              "description": "Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.\n\nType: `number`",
+              "description": "Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.\n\nAlso settable in CSS as `letter-spacing`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -3298,7 +3298,7 @@
             },
             {
               "name": "fontFamily",
-              "description": "Gets or sets the font used to display text in the control.\n\nAccepts A font family name or a font family.\n\nType: `FontFamilyInput`",
+              "description": "Gets or sets the font used to display text in the control.\n\nAccepts A font family name or a font family.\n\nAlso settable in CSS as `font-family`\n\nType: `FontFamilyInput`",
               "value": {
                 "type": [
                   {
@@ -3312,7 +3312,7 @@
             },
             {
               "name": "fontSize",
-              "description": "Gets or sets the size of the text in this control. The size of the text in the Control, in pixels. The default is 11.\n\nType: `number`",
+              "description": "Gets or sets the size of the text in this control. The size of the text in the Control, in pixels. The default is 11.\n\nAlso settable in CSS as `font-size`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -3328,7 +3328,7 @@
             },
             {
               "name": "fontStyle",
-              "description": "Gets or sets the style in which the text is rendered. One of the values that specifies the style in which the text is rendered. The default is Normal.\n\nType: `FontStyle`",
+              "description": "Gets or sets the style in which the text is rendered. One of the values that specifies the style in which the text is rendered. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
                 "type": "FontStyle"
               },
@@ -3336,7 +3336,7 @@
             },
             {
               "name": "fontWeight",
-              "description": "Gets or sets the thickness of the specified font. One of the values that specifies the thickness of the specified font. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nType: `FontWeightInput`",
+              "description": "Gets or sets the thickness of the specified font. One of the values that specifies the thickness of the specified font. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nAlso settable in CSS as `font-weight`\n\nType: `FontWeightInput`",
               "value": {
                 "type": "FontWeightInput"
               },
@@ -3344,7 +3344,7 @@
             },
             {
               "name": "foreground",
-              "description": "Gets or sets a brush that describes the foreground color. The brush that paints the foreground of the control. The default value is a SolidColorBrush with color of Black.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that describes the foreground color. The brush that paints the foreground of the control. The default value is a SolidColorBrush with color of Black.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -3550,7 +3550,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets a value that indicates whether the day, month, and year selectors are stacked horizontally or vertically. A named constant of the enumeration that indicates whether the day, month, and year selectors are stacked horizontally or vertically. The default is Horizontal.\n\nType: `Orientation`",
+              "description": "Gets or sets a value that indicates whether the day, month, and year selectors are stacked horizontally or vertically. A named constant of the enumeration that indicates whether the day, month, and year selectors are stacked horizontally or vertically. The default is Horizontal.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -4399,7 +4399,7 @@
           "attributes": [
             {
               "name": "fontFamily",
-              "description": "Gets or sets the font used to display the icon glyph.\n\nAccepts A font family name or a font family.\n\nType: `FontFamilyInput`",
+              "description": "Gets or sets the font used to display the icon glyph.\n\nAccepts A font family name or a font family.\n\nAlso settable in CSS as `font-family`\n\nType: `FontFamilyInput`",
               "value": {
                 "type": [
                   {
@@ -4413,7 +4413,7 @@
             },
             {
               "name": "fontSize",
-              "description": "Gets or sets the size of the icon glyph. A non-negative value that specifies the font size, measured in pixels.\n\nType: `number`",
+              "description": "Gets or sets the size of the icon glyph. A non-negative value that specifies the font size, measured in pixels.\n\nAlso settable in CSS as `font-size`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -4421,7 +4421,7 @@
             },
             {
               "name": "fontStyle",
-              "description": "Gets or sets the font style for the icon glyph. A named constant of the enumeration that specifies the style in which the icon glyph is rendered. The default is Normal.\n\nType: `FontStyle`",
+              "description": "Gets or sets the font style for the icon glyph. A named constant of the enumeration that specifies the style in which the icon glyph is rendered. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
                 "type": "FontStyle"
               },
@@ -4429,7 +4429,7 @@
             },
             {
               "name": "fontWeight",
-              "description": "Gets or sets the thickness of the icon glyph. A value that specifies the thickness of the icon glyph. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nType: `FontWeightInput`",
+              "description": "Gets or sets the thickness of the icon glyph. A value that specifies the thickness of the icon glyph. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nAlso settable in CSS as `font-weight`\n\nType: `FontWeightInput`",
               "value": {
                 "type": "FontWeightInput"
               },
@@ -4477,7 +4477,7 @@
           "attributes": [
             {
               "name": "fontFamily",
-              "description": "Gets or sets the font used to display the icon glyph. The font used to display the icon glyph. The default is the font family defined by the SymbolThemeFontFamily theme resource (see Remarks).\n\nAccepts A font family name or a font family.\n\nType: `FontFamilyInput`",
+              "description": "Gets or sets the font used to display the icon glyph. The font used to display the icon glyph. The default is the font family defined by the SymbolThemeFontFamily theme resource (see Remarks).\n\nAccepts A font family name or a font family.\n\nAlso settable in CSS as `font-family`\n\nType: `FontFamilyInput`",
               "value": {
                 "type": [
                   {
@@ -4491,7 +4491,7 @@
             },
             {
               "name": "fontSize",
-              "description": "Gets or sets the size of the icon glyph. A non-negative value that specifies the font size, measured in pixels.\n\nType: `number`",
+              "description": "Gets or sets the size of the icon glyph. A non-negative value that specifies the font size, measured in pixels.\n\nAlso settable in CSS as `font-size`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -4499,7 +4499,7 @@
             },
             {
               "name": "fontStyle",
-              "description": "Gets or sets the font style for the icon glyph. A named constant of the enumeration that specifies the style in which the icon glyph is rendered. The default is Normal.\n\nType: `FontStyle`",
+              "description": "Gets or sets the font style for the icon glyph. A named constant of the enumeration that specifies the style in which the icon glyph is rendered. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
                 "type": "FontStyle"
               },
@@ -4507,7 +4507,7 @@
             },
             {
               "name": "fontWeight",
-              "description": "Gets or sets the thickness of the icon glyph. A value that specifies the thickness of the icon glyph. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nType: `FontWeightInput`",
+              "description": "Gets or sets the thickness of the icon glyph. A value that specifies the thickness of the icon glyph. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nAlso settable in CSS as `font-weight`\n\nType: `FontWeightInput`",
               "value": {
                 "type": "FontWeightInput"
               },
@@ -4676,7 +4676,7 @@
             },
             {
               "name": "height",
-              "description": "Gets or sets the suggested height of a FrameworkElement. The height, in pixels, of the object. The default is NaN value, this value must be equal to or greater than 0.\n\nType: `number`",
+              "description": "Gets or sets the suggested height of a FrameworkElement. The height, in pixels, of the object. The default is NaN value, this value must be equal to or greater than 0.\n\nAlso settable in CSS as `height`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -4684,7 +4684,7 @@
             },
             {
               "name": "horizontalAlignment",
-              "description": "Gets or sets the horizontal alignment characteristics that are applied to a FrameworkElement when it is composed in a layout parent, such as a panel or items control. A horizontal alignment setting, as a value of the enumeration. The default is Stretch.\n\nType: `HorizontalAlignment`",
+              "description": "Gets or sets the horizontal alignment characteristics that are applied to a FrameworkElement when it is composed in a layout parent, such as a panel or items control. A horizontal alignment setting, as a value of the enumeration. The default is Stretch.\n\nAlso settable in CSS as `justify-self`\n\nType: `HorizontalAlignment`",
               "value": {
                 "type": "HorizontalAlignment"
               },
@@ -4708,7 +4708,7 @@
             },
             {
               "name": "maxHeight",
-              "description": "Gets or sets the maximum height constraint of a FrameworkElement. The maximum height of the object, in pixels. The default value is PositiveInfinity is also valid.\n\nType: `number`",
+              "description": "Gets or sets the maximum height constraint of a FrameworkElement. The maximum height of the object, in pixels. The default value is PositiveInfinity is also valid.\n\nAlso settable in CSS as `max-height`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -4716,7 +4716,7 @@
             },
             {
               "name": "maxWidth",
-              "description": "Gets or sets the maximum width constraint of a FrameworkElement. The maximum width of the object, in pixels. The default is PositiveInfinity is also valid.\n\nType: `number`",
+              "description": "Gets or sets the maximum width constraint of a FrameworkElement. The maximum width of the object, in pixels. The default is PositiveInfinity is also valid.\n\nAlso settable in CSS as `max-width`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -4724,7 +4724,7 @@
             },
             {
               "name": "minHeight",
-              "description": "Gets or sets the minimum height constraint of a FrameworkElement. The minimum height of the object, in pixels. The default is 0. This value can be any value equal to or greater than 0. However, PositiveInfinity is not valid.\n\nType: `number`",
+              "description": "Gets or sets the minimum height constraint of a FrameworkElement. The minimum height of the object, in pixels. The default is 0. This value can be any value equal to or greater than 0. However, PositiveInfinity is not valid.\n\nAlso settable in CSS as `min-height`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -4732,7 +4732,7 @@
             },
             {
               "name": "minWidth",
-              "description": "Gets or sets the minimum width constraint of a FrameworkElement. The minimum width of the object, in pixels. The default is 0. This value can be any value equal to or greater than 0. However, PositiveInfinity is not valid.\n\nType: `number`",
+              "description": "Gets or sets the minimum width constraint of a FrameworkElement. The minimum width of the object, in pixels. The default is 0. This value can be any value equal to or greater than 0. However, PositiveInfinity is not valid.\n\nAlso settable in CSS as `min-width`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -4748,7 +4748,7 @@
             },
             {
               "name": "requestedTheme",
-              "description": "Gets or sets the UI theme that is used by the UIElement (and its child elements) for resource determination. The UI theme you specify with RequestedTheme can override the app-level RequestedTheme. A value of the enumeration, for example Light.\n\nType: `ElementTheme`",
+              "description": "Gets or sets the UI theme that is used by the UIElement (and its child elements) for resource determination. The UI theme you specify with RequestedTheme can override the app-level RequestedTheme. A value of the enumeration, for example Light.\n\nAlso settable in CSS as `color-scheme`\n\nType: `ElementTheme`",
               "value": {
                 "type": "ElementTheme"
               },
@@ -4772,7 +4772,7 @@
             },
             {
               "name": "verticalAlignment",
-              "description": "Gets or sets the vertical alignment characteristics that are applied to a FrameworkElement when it is composed in a parent object such as a panel or items control. A vertical alignment setting, as a value of the enumeration. The default is Stretch.\n\nType: `VerticalAlignment`",
+              "description": "Gets or sets the vertical alignment characteristics that are applied to a FrameworkElement when it is composed in a parent object such as a panel or items control. A vertical alignment setting, as a value of the enumeration. The default is Stretch.\n\nAlso settable in CSS as `align-self`\n\nType: `VerticalAlignment`",
               "value": {
                 "type": "VerticalAlignment"
               },
@@ -4780,7 +4780,7 @@
             },
             {
               "name": "width",
-              "description": "Gets or sets the width of a FrameworkElement. The width of the object, in pixels. The default is NaN value, this value must be equal to or greater than 0.\n\nType: `number`",
+              "description": "Gets or sets the width of a FrameworkElement. The width of the object, in pixels. The default is NaN value, this value must be equal to or greater than 0.\n\nAlso settable in CSS as `width`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -5020,7 +5020,7 @@
             },
             {
               "name": "borderBrush",
-              "description": "Gets or sets a brush that describes the border fill of the panel. The brush that is used to fill the panel's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that describes the border fill of the panel. The brush that is used to fill the panel's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `border-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -5374,7 +5374,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets the orientation of a Hub. One of the Orientation values. The default is Horizontal.\n\nType: `Orientation`",
+              "description": "Gets or sets the orientation of a Hub. One of the Orientation values. The default is Horizontal.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -5576,7 +5576,7 @@
           "attributes": [
             {
               "name": "foreground",
-              "description": "Gets or sets a brush that describes the foreground color. The brush that paints the foreground of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering. However, this value is typically set by a default system resource at runtime, which is tied to the active theme and other settings.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that describes the foreground color. The brush that paints the foreground of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering. However, this value is typically set by a default system resource at runtime, which is tied to the active theme and other settings.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -5592,7 +5592,7 @@
           "attributes": [
             {
               "name": "foreground",
-              "description": "Gets or sets a brush that paints the foreground color of the control. The brush that paints the foreground of the control. The default is null, (a null brush), which is evaluated as Transparent for rendering. However, this value is typically set by a default system resource at runtime that is tied to the active theme and other settings.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that paints the foreground color of the control. The brush that paints the foreground of the control. The default is null, (a null brush), which is evaluated as Transparent for rendering. However, this value is typically set by a default system resource at runtime that is tied to the active theme and other settings.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -6058,7 +6058,7 @@
           "attributes": [
             {
               "name": "background",
-              "description": "Gets or sets a brush that provides the background of the control. The brush that provides the background of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that provides the background of the control. The brush that provides the background of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `background-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -6198,7 +6198,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nType: `Orientation`",
+              "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -6332,7 +6332,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nType: `Orientation`",
+              "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -8722,7 +8722,7 @@
           "attributes": [
             {
               "name": "background",
-              "description": "Gets or sets a Brush that fills the panel content area. The brush that fills the panel content area. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a Brush that fills the panel content area. The brush that fills the panel content area. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `background-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -9324,7 +9324,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets the orientation of the pips and navigation buttons in the PipsPager.\n\nType: `Orientation`",
+              "description": "Gets or sets the orientation of the pips and navigation buttons in the PipsPager.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -10671,7 +10671,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets a value that indicates the orientation of the visualizer. A value of the enumeration that indicates the orientation of the visualizer. The default is Top.\n\nType: `RefreshVisualizerOrientation`",
+              "description": "Gets or sets a value that indicates the orientation of the visualizer. A value of the enumeration that indicates the orientation of the visualizer. The default is Top.\n\nAlso settable in CSS as `flex-direction`\n\nType: `RefreshVisualizerOrientation`",
               "value": {
                 "type": "RefreshVisualizerOrientation"
               },
@@ -10705,7 +10705,7 @@
             },
             {
               "name": "borderBrush",
-              "description": "Gets or sets a brush that describes the border fill of the panel. The brush that is used to fill the panel's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that describes the border fill of the panel. The brush that is used to fill the panel's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `border-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -10989,7 +10989,7 @@
             },
             {
               "name": "textAlignment",
-              "description": "Gets or sets a value that indicates how text is aligned in the RichEditBox. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.\n\nType: `TextAlignment`",
+              "description": "Gets or sets a value that indicates how text is aligned in the RichEditBox. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.\n\nAlso settable in CSS as `text-align`\n\nType: `TextAlignment`",
               "value": {
                 "type": "TextAlignment"
               },
@@ -11005,7 +11005,7 @@
             },
             {
               "name": "textWrapping",
-              "description": "Gets or sets a value that indicates how text wrapping occurs if a line of text extends beyond the available width of the RichEditBox. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.\n\nType: `TextWrapping`",
+              "description": "Gets or sets a value that indicates how text wrapping occurs if a line of text extends beyond the available width of the RichEditBox. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
               "value": {
                 "type": "TextWrapping"
               },
@@ -11081,7 +11081,7 @@
           "attributes": [
             {
               "name": "characterSpacing",
-              "description": "Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.\n\nType: `number`",
+              "description": "Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.\n\nAlso settable in CSS as `letter-spacing`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -11089,7 +11089,7 @@
             },
             {
               "name": "fontFamily",
-              "description": "Gets or sets the preferred top-level font family for the text content in this element. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.\n\nAccepts A font family name or a font family.\n\nType: `FontFamilyInput`",
+              "description": "Gets or sets the preferred top-level font family for the text content in this element. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.\n\nAccepts A font family name or a font family.\n\nAlso settable in CSS as `font-family`\n\nType: `FontFamilyInput`",
               "value": {
                 "type": [
                   {
@@ -11103,7 +11103,7 @@
             },
             {
               "name": "fontSize",
-              "description": "Gets or sets the font size for the text content in this element. A non-negative value that specifies the font size, measured in pixels. The default is 11.\n\nType: `number`",
+              "description": "Gets or sets the font size for the text content in this element. A non-negative value that specifies the font size, measured in pixels. The default is 11.\n\nAlso settable in CSS as `font-size`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -11119,7 +11119,7 @@
             },
             {
               "name": "fontStyle",
-              "description": "Gets or sets the font style for the content in this element. The requested font style, which is a FontStyle enumeration named constant. The default is Normal.\n\nType: `FontStyle`",
+              "description": "Gets or sets the font style for the content in this element. The requested font style, which is a FontStyle enumeration named constant. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
                 "type": "FontStyle"
               },
@@ -11127,7 +11127,7 @@
             },
             {
               "name": "fontWeight",
-              "description": "Gets or sets the top-level font weight for the RichTextBlock. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nType: `FontWeightInput`",
+              "description": "Gets or sets the top-level font weight for the RichTextBlock. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nAlso settable in CSS as `font-weight`\n\nType: `FontWeightInput`",
               "value": {
                 "type": "FontWeightInput"
               },
@@ -11135,7 +11135,7 @@
             },
             {
               "name": "foreground",
-              "description": "Gets or sets the Brush to apply to the text contents of the RichTextBlock. The brush used to apply to the text contents. The default is a null brush from a pure code perspective, but the default text styles set this to Black (for Light theme) or White (for Dark theme) for a TextBlock element in UI.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush to apply to the text contents of the RichTextBlock. The brush used to apply to the text contents. The default is a null brush from a pure code perspective, but the default text styles set this to Black (for Light theme) or White (for Dark theme) for a TextBlock element in UI.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -11230,7 +11230,7 @@
             },
             {
               "name": "textAlignment",
-              "description": "Gets or sets a value that indicates how the text is aligned in the RichTextBlock. One of the TextAlignment enumeration values that indicates how text is aligned. The default is Left.\n\nType: `TextAlignment`",
+              "description": "Gets or sets a value that indicates how the text is aligned in the RichTextBlock. One of the TextAlignment enumeration values that indicates how text is aligned. The default is Left.\n\nAlso settable in CSS as `text-align`\n\nType: `TextAlignment`",
               "value": {
                 "type": "TextAlignment"
               },
@@ -11238,7 +11238,7 @@
             },
             {
               "name": "textDecorations",
-              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nType: `TextDecorations`",
+              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration-line`\n\nType: `TextDecorations`",
               "value": {
                 "type": "TextDecorations"
               },
@@ -11270,7 +11270,7 @@
             },
             {
               "name": "textTrimming",
-              "description": "Gets or sets a value that indicates how text is trimmed when it overflows the content area. One of the TextTrimming enumeration values that specifies the text trimming behavior to use. The default is None.\n\nType: `TextTrimming`",
+              "description": "Gets or sets a value that indicates how text is trimmed when it overflows the content area. One of the TextTrimming enumeration values that specifies the text trimming behavior to use. The default is None.\n\nAlso settable in CSS as `text-overflow`\n\nType: `TextTrimming`",
               "value": {
                 "type": "TextTrimming"
               },
@@ -11278,7 +11278,7 @@
             },
             {
               "name": "textWrapping",
-              "description": "Gets or sets a value that indicates whether text wrapping occurs if a line of text extends beyond the available width of the RichTextBlock. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.\n\nType: `TextWrapping`",
+              "description": "Gets or sets a value that indicates whether text wrapping occurs if a line of text extends beyond the available width of the RichTextBlock. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
               "value": {
                 "type": "TextWrapping"
               },
@@ -11447,7 +11447,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets a value that indicates whether the ScrollBar is displayed horizontally or vertically. An Orientation enumeration value that defines whether the ScrollBar is displayed horizontally or vertically. The default is Horizontal. Specific control templates might change this value, which would cause the templated value to be the apparent runtime default.\n\nType: `Orientation`",
+              "description": "Gets or sets a value that indicates whether the ScrollBar is displayed horizontally or vertically. An Orientation enumeration value that defines whether the ScrollBar is displayed horizontally or vertically. The default is Horizontal. Specific control templates might change this value, which would cause the templated value to be the apparent runtime default.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -11524,7 +11524,7 @@
           "attributes": [
             {
               "name": "background",
-              "description": "Gets or sets a brush that provides the background of the ScrollPresenter.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that provides the background of the ScrollPresenter.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `background-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -12350,7 +12350,7 @@
             },
             {
               "name": "stroke",
-              "description": "Gets or sets the Brush that specifies how the Shape outline is painted. A Brush that specifies how the Shape outline is painted. The default is null.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush that specifies how the Shape outline is painted. A Brush that specifies how the Shape outline is painted. The default is null.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `stroke`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -12414,7 +12414,7 @@
             },
             {
               "name": "strokeThickness",
-              "description": "Gets or sets the width of the Shape stroke outline. The width of the Shape outline, in pixels. The default value is 0.\n\nType: `number`",
+              "description": "Gets or sets the width of the Shape stroke outline. The width of the Shape outline, in pixels. The default value is 0.\n\nAlso settable in CSS as `stroke-width`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -12533,7 +12533,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets the orientation of a Slider. One of the Orientation values. The default is Horizontal.\n\nType: `Orientation`",
+              "description": "Gets or sets the orientation of a Slider. One of the Orientation values. The default is Horizontal.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -12981,7 +12981,7 @@
           "attributes": [
             {
               "name": "orientation",
-              "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nType: `Orientation`",
+              "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -13021,7 +13021,7 @@
             },
             {
               "name": "borderBrush",
-              "description": "Gets or sets a brush that describes the border fill of the panel. The brush that is used to fill the panel's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that describes the border fill of the panel. The brush that is used to fill the panel's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `border-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -13045,7 +13045,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nType: `Orientation`",
+              "description": "Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -13286,7 +13286,7 @@
           "attributes": [
             {
               "name": "background",
-              "description": "Gets or sets a brush that provides the background of the control.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets a brush that provides the background of the control.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `background-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -13315,7 +13315,7 @@
             },
             {
               "name": "foreground",
-              "description": "Gets or sets the brush that paints the text and icon of the item.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the brush that paints the text and icon of the item.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -13851,7 +13851,7 @@
           "attributes": [
             {
               "name": "characterSpacing",
-              "description": "Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.\n\nType: `number`",
+              "description": "Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.\n\nAlso settable in CSS as `letter-spacing`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -13859,7 +13859,7 @@
             },
             {
               "name": "fontFamily",
-              "description": "Gets or sets the preferred top-level font family for the text content in this element. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.\n\nAccepts A font family name or a font family.\n\nType: `FontFamilyInput`",
+              "description": "Gets or sets the preferred top-level font family for the text content in this element. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.\n\nAccepts A font family name or a font family.\n\nAlso settable in CSS as `font-family`\n\nType: `FontFamilyInput`",
               "value": {
                 "type": [
                   {
@@ -13873,7 +13873,7 @@
             },
             {
               "name": "fontSize",
-              "description": "Gets or sets the font size for the text content in this element. A non-negative value that specifies the font size, measured in pixels. The default is 11.\n\nType: `number`",
+              "description": "Gets or sets the font size for the text content in this element. A non-negative value that specifies the font size, measured in pixels. The default is 11.\n\nAlso settable in CSS as `font-size`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -13889,7 +13889,7 @@
             },
             {
               "name": "fontStyle",
-              "description": "Gets or sets the font style for the content in this element. The requested font style, which is a FontStyle enumeration value. The default is Normal.\n\nType: `FontStyle`",
+              "description": "Gets or sets the font style for the content in this element. The requested font style, which is a FontStyle enumeration value. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
                 "type": "FontStyle"
               },
@@ -13897,7 +13897,7 @@
             },
             {
               "name": "fontWeight",
-              "description": "Gets or sets the top-level font weight for the TextBlock. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nType: `FontWeightInput`",
+              "description": "Gets or sets the top-level font weight for the TextBlock. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nAlso settable in CSS as `font-weight`\n\nType: `FontWeightInput`",
               "value": {
                 "type": "FontWeightInput"
               },
@@ -13905,7 +13905,7 @@
             },
             {
               "name": "foreground",
-              "description": "Gets or sets the Brush to apply to the text contents of the TextBlock. The brush used to apply to the text content. The default is a null brush from a pure code perspective, but the default text styles set this to Black (for Light theme) or White (for Dark theme) for a TextBlock element in UI.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush to apply to the text contents of the TextBlock. The brush used to apply to the text content. The default is a null brush from a pure code perspective, but the default text styles set this to Black (for Light theme) or White (for Dark theme) for a TextBlock element in UI.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -14003,7 +14003,7 @@
             },
             {
               "name": "textAlignment",
-              "description": "Gets or sets a value that indicates the horizontal alignment of text content. The text alignment. The default is Left.\n\nType: `TextAlignment`",
+              "description": "Gets or sets a value that indicates the horizontal alignment of text content. The text alignment. The default is Left.\n\nAlso settable in CSS as `text-align`\n\nType: `TextAlignment`",
               "value": {
                 "type": "TextAlignment"
               },
@@ -14011,7 +14011,7 @@
             },
             {
               "name": "textDecorations",
-              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nType: `TextDecorations`",
+              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration-line`\n\nType: `TextDecorations`",
               "value": {
                 "type": "TextDecorations"
               },
@@ -14035,7 +14035,7 @@
             },
             {
               "name": "textTrimming",
-              "description": "Gets or sets the text trimming behavior to employ when content overflows the content area. One of the TextTrimming values that specifies the text trimming behavior to employ. The default is None.\n\nType: `TextTrimming`",
+              "description": "Gets or sets the text trimming behavior to employ when content overflows the content area. One of the TextTrimming values that specifies the text trimming behavior to employ. The default is None.\n\nAlso settable in CSS as `text-overflow`\n\nType: `TextTrimming`",
               "value": {
                 "type": "TextTrimming"
               },
@@ -14043,7 +14043,7 @@
             },
             {
               "name": "textWrapping",
-              "description": "Gets or sets how the TextBlock wraps text. A value that indicates how the TextBlock wraps text. The default is NoWrap.\n\nType: `TextWrapping`",
+              "description": "Gets or sets how the TextBlock wraps text. A value that indicates how the TextBlock wraps text. The default is NoWrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
               "value": {
                 "type": "TextWrapping"
               },
@@ -14249,7 +14249,7 @@
             },
             {
               "name": "textAlignment",
-              "description": "Gets or sets how the text should be horizontally aligned in the text box. One of the TextAlignment enumeration values. The default is Left.\n\nType: `TextAlignment`",
+              "description": "Gets or sets how the text should be horizontally aligned in the text box. One of the TextAlignment enumeration values. The default is Left.\n\nAlso settable in CSS as `text-align`\n\nType: `TextAlignment`",
               "value": {
                 "type": "TextAlignment"
               },
@@ -14265,7 +14265,7 @@
             },
             {
               "name": "textWrapping",
-              "description": "Gets or sets how line breaking occurs if a line of text extends beyond the available width of the text box. One of the TextWrapping values. The default is NoWrap.\n\nType: `TextWrapping`",
+              "description": "Gets or sets how line breaking occurs if a line of text extends beyond the available width of the text box. One of the TextWrapping values. The default is NoWrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
               "value": {
                 "type": "TextWrapping"
               },
@@ -14374,7 +14374,7 @@
             },
             {
               "name": "characterSpacing",
-              "description": "Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.\n\nType: `number`",
+              "description": "Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.\n\nAlso settable in CSS as `letter-spacing`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -14390,7 +14390,7 @@
             },
             {
               "name": "fontFamily",
-              "description": "Gets or sets the preferred top-level font family for the content of the element. The preferred font family, or a primary preferred font family with one or more fallback font families. See FontFamily for default information.\n\nAccepts A font family name or a font family.\n\nType: `FontFamilyInput`",
+              "description": "Gets or sets the preferred top-level font family for the content of the element. The preferred font family, or a primary preferred font family with one or more fallback font families. See FontFamily for default information.\n\nAccepts A font family name or a font family.\n\nAlso settable in CSS as `font-family`\n\nType: `FontFamilyInput`",
               "value": {
                 "type": [
                   {
@@ -14404,7 +14404,7 @@
             },
             {
               "name": "fontSize",
-              "description": "Gets or sets the font size for the content of the element. The desired font size in pixels. The default is 11 pixels.\n\nType: `number`",
+              "description": "Gets or sets the font size for the content of the element. The desired font size in pixels. The default is 11 pixels.\n\nAlso settable in CSS as `font-size`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -14420,7 +14420,7 @@
             },
             {
               "name": "fontStyle",
-              "description": "Gets or sets the font style for the content in this element. One of the FontStyle constant names, specifying the font style. The default is Normal.\n\nType: `FontStyle`",
+              "description": "Gets or sets the font style for the content in this element. One of the FontStyle constant names, specifying the font style. The default is Normal.\n\nAlso settable in CSS as `font-style`\n\nType: `FontStyle`",
               "value": {
                 "type": "FontStyle"
               },
@@ -14428,7 +14428,7 @@
             },
             {
               "name": "fontWeight",
-              "description": "Gets or sets the top-level font weight to select from the font family for the content in this element. One of the FontWeights property values, specifying the font weight. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nType: `FontWeightInput`",
+              "description": "Gets or sets the top-level font weight to select from the font family for the content in this element. One of the FontWeights property values, specifying the font weight. The default is Normal.\n\nAccepts A weight by name (\"bold\") or number (700), or WinUI's own value.\n\nAlso settable in CSS as `font-weight`\n\nType: `FontWeightInput`",
               "value": {
                 "type": "FontWeightInput"
               },
@@ -14436,7 +14436,7 @@
             },
             {
               "name": "foreground",
-              "description": "Gets or sets the Brush to apply to the content in this element. The brush that is applied to the text content. The default is a SolidColorBrush with Color value Black.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush to apply to the content in this element. The brush that is applied to the text content. The default is a SolidColorBrush with Color value Black.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -14492,7 +14492,7 @@
             },
             {
               "name": "textDecorations",
-              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nType: `TextDecorations`",
+              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration-line`\n\nType: `TextDecorations`",
               "value": {
                 "type": "TextDecorations"
               },
@@ -14512,7 +14512,7 @@
           "attributes": [
             {
               "name": "background",
-              "description": "Gets or sets the brush used to highlight the text.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the brush used to highlight the text.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `background-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -14520,7 +14520,7 @@
             },
             {
               "name": "foreground",
-              "description": "Gets or sets the brush used to color highlighted text.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the brush used to color highlighted text.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -15524,7 +15524,7 @@
             },
             {
               "name": "isHitTestVisible",
-              "description": "Gets or sets whether the contained area of this UIElement can return true values for hit testing.\n\nType: `boolean`",
+              "description": "Gets or sets whether the contained area of this UIElement can return true values for hit testing.\n\nAlso settable in CSS as `pointer-events`\n\nType: `boolean`",
               "value": {
                 "type": "boolean"
               },
@@ -15614,7 +15614,7 @@
             },
             {
               "name": "opacity",
-              "description": "Gets or sets the degree of the object's opacity. A value between 0 and 1.0 that declares the opacity factor, with 1.0 meaning full opacity and 0 meaning transparent. The default value is 1.0.\n\nType: `number`",
+              "description": "Gets or sets the degree of the object's opacity. A value between 0 and 1.0 that declares the opacity factor, with 1.0 meaning full opacity and 0 meaning transparent. The default value is 1.0.\n\nAlso settable in CSS as `opacity`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -15747,7 +15747,7 @@
             },
             {
               "name": "visibility",
-              "description": "Gets or sets the visibility of a UIElement. A UIElement that is not visible is not rendered and does not communicate its desired size to layout. A value of the enumeration. The default value is Visible.\n\nType: `Visibility`",
+              "description": "Gets or sets the visibility of a UIElement. A UIElement that is not visible is not rendered and does not communicate its desired size to layout. A value of the enumeration. The default value is Visible.\n\nAlso settable in CSS as `display`\n\nType: `Visibility`",
               "value": {
                 "type": "Visibility"
               },
@@ -16090,7 +16090,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets the axis along which items are laid out. One of the enumeration values that specifies the axis along which items are laid out. The default is Vertical.\n\nType: `Orientation`",
+              "description": "Gets or sets the axis along which items are laid out. One of the enumeration values that specifies the axis along which items are laid out. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -16151,7 +16151,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets the direction in which child elements are arranged. A value of the enumeration. The default is Vertical.\n\nType: `Orientation`",
+              "description": "Gets or sets the direction in which child elements are arranged. A value of the enumeration. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -16226,7 +16226,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets a value that describes the horizontal or vertical orientation of stacked content. The Orientation of child content, as a value of the enumeration. The default is Vertical.\n\nType: `Orientation`",
+              "description": "Gets or sets a value that describes the horizontal or vertical orientation of stacked content. The Orientation of child content, as a value of the enumeration. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },
@@ -16414,7 +16414,7 @@
             },
             {
               "name": "orientation",
-              "description": "Gets or sets the direction in which child elements are arranged. A value of the enumeration. The default is Vertical.\n\nType: `Orientation`",
+              "description": "Gets or sets the direction in which child elements are arranged. A value of the enumeration. The default is Vertical.\n\nAlso settable in CSS as `flex-direction`\n\nType: `Orientation`",
               "value": {
                 "type": "Orientation"
               },

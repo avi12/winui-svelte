@@ -43,6 +43,8 @@ export interface WrapGridProps extends OrientedVirtualizingPanelProps {
   /**
    * Gets or sets the direction in which child elements are arranged. A value of the enumeration. The default is Vertical.
    *
+   * Also settable in CSS as `flex-direction`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.wrapgrid.orientation
    */
   orientation?: EnumInput<typeof Orientation>;

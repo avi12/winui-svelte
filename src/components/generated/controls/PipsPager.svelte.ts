@@ -47,6 +47,8 @@ export interface PipsPagerProps extends ControlProps {
   /**
    * Gets or sets the orientation of the pips and navigation buttons in the PipsPager.
    *
+   * Also settable in CSS as `flex-direction`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pipspager.orientation
    */
   orientation?: EnumInput<typeof Orientation>;

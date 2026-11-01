@@ -50,6 +50,8 @@ export interface SliderProps extends RangeBaseProps {
   /**
    * Gets or sets the orientation of a Slider. One of the Orientation values. The default is Horizontal.
    *
+   * Also settable in CSS as `flex-direction`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.orientation
    */
   orientation?: EnumInput<typeof Orientation>;

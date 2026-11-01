@@ -180,6 +180,8 @@ export interface TextBoxProps extends ControlProps {
   /**
    * Gets or sets how the text should be horizontally aligned in the text box. One of the TextAlignment enumeration values. The default is Left.
    *
+   * Also settable in CSS as `text-align`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textalignment
    */
   textAlignment?: EnumInput<typeof TextAlignment>;
@@ -191,6 +193,8 @@ export interface TextBoxProps extends ControlProps {
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   /**
    * Gets or sets how line breaking occurs if a line of text extends beyond the available width of the text box. One of the TextWrapping values. The default is NoWrap.
+   *
+   * Also settable in CSS as `white-space`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textwrapping
    */

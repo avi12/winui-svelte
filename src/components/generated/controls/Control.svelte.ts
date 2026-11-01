@@ -48,6 +48,8 @@ export interface ControlProps extends FrameworkElementProps {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `background-color`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.background
    */
   background?: BrushInput | Snippet;
@@ -62,6 +64,8 @@ export interface ControlProps extends FrameworkElementProps {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `border-color`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.borderbrush
    */
   borderBrush?: BrushInput | Snippet;
@@ -73,6 +77,8 @@ export interface ControlProps extends FrameworkElementProps {
   borderThickness?: ThicknessInput;
   /**
    * Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.
+   *
+   * Also settable in CSS as `letter-spacing`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.characterspacing
    */
@@ -102,11 +108,15 @@ export interface ControlProps extends FrameworkElementProps {
    *
    * Accepts A font family name or a font family.
    *
+   * Also settable in CSS as `font-family`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.fontfamily
    */
   fontFamily?: FontFamilyInput;
   /**
    * Gets or sets the size of the text in this control. The size of the text in the Control, in pixels. The default is 11.
+   *
+   * Also settable in CSS as `font-size`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.fontsize
    */
@@ -120,6 +130,8 @@ export interface ControlProps extends FrameworkElementProps {
   /**
    * Gets or sets the style in which the text is rendered. One of the values that specifies the style in which the text is rendered. The default is Normal.
    *
+   * Also settable in CSS as `font-style`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.fontstyle
    */
   fontStyle?: EnumInput<typeof FontStyle>;
@@ -128,6 +140,8 @@ export interface ControlProps extends FrameworkElementProps {
    *
    * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
    *
+   * Also settable in CSS as `font-weight`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.fontweight
    */
   fontWeight?: FontWeightInput;
@@ -135,6 +149,8 @@ export interface ControlProps extends FrameworkElementProps {
    * Gets or sets a brush that describes the foreground color. The brush that paints the foreground of the control. The default value is a SolidColorBrush with color of Black.
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
+   * Also settable in CSS as `color`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.foreground
    */

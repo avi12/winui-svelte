@@ -161,6 +161,8 @@ export interface RichEditBoxProps extends ControlProps {
   /**
    * Gets or sets a value that indicates how text is aligned in the RichEditBox. One of the TextAlignment enumeration values that specifies how text is aligned. The default is Left.
    *
+   * Also settable in CSS as `text-align`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.textalignment
    */
   textAlignment?: EnumInput<typeof TextAlignment>;
@@ -172,6 +174,8 @@ export interface RichEditBoxProps extends ControlProps {
   textReadingOrder?: EnumInput<typeof TextReadingOrder>;
   /**
    * Gets or sets a value that indicates how text wrapping occurs if a line of text extends beyond the available width of the RichEditBox. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.
+   *
+   * Also settable in CSS as `white-space`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.textwrapping
    */

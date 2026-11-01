@@ -19,6 +19,8 @@ export interface TextHighlighterProps extends TextHighlighterExtras {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `background-color`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter.background
    */
   background?: BrushInput | Snippet;
@@ -26,6 +28,8 @@ export interface TextHighlighterProps extends TextHighlighterExtras {
    * Gets or sets the brush used to color highlighted text.
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
+   * Also settable in CSS as `color`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.texthighlighter.foreground
    */

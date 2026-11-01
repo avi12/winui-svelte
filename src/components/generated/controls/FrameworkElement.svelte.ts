@@ -109,11 +109,15 @@ export interface FrameworkElementProps extends UIElementProps {
   /**
    * Gets or sets the suggested height of a FrameworkElement. The height, in pixels, of the object. The default is NaN value, this value must be equal to or greater than 0.
    *
+   * Also settable in CSS as `height`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.height
    */
   height?: number;
   /**
    * Gets or sets the horizontal alignment characteristics that are applied to a FrameworkElement when it is composed in a layout parent, such as a panel or items control. A horizontal alignment setting, as a value of the enumeration. The default is Stretch.
+   *
+   * Also settable in CSS as `justify-self`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.horizontalalignment
    */
@@ -133,11 +137,15 @@ export interface FrameworkElementProps extends UIElementProps {
   /**
    * Gets or sets the maximum height constraint of a FrameworkElement. The maximum height of the object, in pixels. The default value is PositiveInfinity is also valid.
    *
+   * Also settable in CSS as `max-height`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.maxheight
    */
   maxHeight?: number;
   /**
    * Gets or sets the maximum width constraint of a FrameworkElement. The maximum width of the object, in pixels. The default is PositiveInfinity is also valid.
+   *
+   * Also settable in CSS as `max-width`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.maxwidth
    */
@@ -145,11 +153,15 @@ export interface FrameworkElementProps extends UIElementProps {
   /**
    * Gets or sets the minimum height constraint of a FrameworkElement. The minimum height of the object, in pixels. The default is 0. This value can be any value equal to or greater than 0. However, PositiveInfinity is not valid.
    *
+   * Also settable in CSS as `min-height`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.minheight
    */
   minHeight?: number;
   /**
    * Gets or sets the minimum width constraint of a FrameworkElement. The minimum width of the object, in pixels. The default is 0. This value can be any value equal to or greater than 0. However, PositiveInfinity is not valid.
+   *
+   * Also settable in CSS as `min-width`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.minwidth
    */
@@ -162,6 +174,8 @@ export interface FrameworkElementProps extends UIElementProps {
   name?: string;
   /**
    * Gets or sets the UI theme that is used by the UIElement (and its child elements) for resource determination. The UI theme you specify with RequestedTheme can override the app-level RequestedTheme. A value of the enumeration, for example Light.
+   *
+   * Also settable in CSS as `color-scheme`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.requestedtheme
    */
@@ -183,11 +197,15 @@ export interface FrameworkElementProps extends UIElementProps {
   /**
    * Gets or sets the vertical alignment characteristics that are applied to a FrameworkElement when it is composed in a parent object such as a panel or items control. A vertical alignment setting, as a value of the enumeration. The default is Stretch.
    *
+   * Also settable in CSS as `align-self`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.verticalalignment
    */
   verticalAlignment?: EnumInput<typeof VerticalAlignment>;
   /**
    * Gets or sets the width of a FrameworkElement. The width of the object, in pixels. The default is NaN value, this value must be equal to or greater than 0.
+   *
+   * Also settable in CSS as `width`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.width
    */

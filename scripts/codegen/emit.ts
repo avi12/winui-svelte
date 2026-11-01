@@ -1,3 +1,4 @@
+import { cssNoteOf } from "./css-names.ts";
 import { inputDocumentationOf } from "./input-documentation.ts";
 import type {
   AttachedModel,
@@ -595,11 +596,12 @@ class LevelImports {
 
 // A JSDoc comment of WinUI's own text with a link to the page the text is
 // from, or nothing where WinUI has none.
-function docLines({ text, url, indent, accepts }: {
+function docLines({ text, url, indent, accepts, css }: {
   text: string | undefined;
   url: string;
   indent: string;
   accepts?: string | undefined;
+  css?: string | undefined;
 }) {
   const isDocumented = text !== undefined;
   if (!isDocumented) {
@@ -607,11 +609,13 @@ function docLines({ text, url, indent, accepts }: {
   }
 
   const hasAccepts = accepts !== undefined;
+  const hasCss = css !== undefined;
   return [
     `${indent}/**`,
     `${indent} * ${text}`,
     `${indent} *`,
     ...hasAccepts ? [`${indent} * Accepts ${accepts}`, `${indent} *`] : [],
+    ...hasCss ? [`${indent} * ${css}`, `${indent} *`] : [],
     `${indent} * @see ${url}`,
     `${indent} */`
   ];
@@ -628,6 +632,7 @@ function memberDocLines({ level, kind, winName, inputType }: {
   const hasInputType = inputType !== undefined;
   return docLines({
     accepts: hasInputType ? inputDocumentationOf(inputType) : undefined,
+    css: kind === "P" ? cssNoteOf(winName) : undefined,
     text: level.documentation?.members.get(`${kind}:${winName}`),
     url: memberDocsUrlOf({
       type: level.type,

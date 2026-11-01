@@ -47,6 +47,8 @@ export interface ItemsStackPanelProps extends PanelProps {
   /**
    * Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.
    *
+   * Also settable in CSS as `flex-direction`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel.orientation
    */
   orientation?: EnumInput<typeof Orientation>;

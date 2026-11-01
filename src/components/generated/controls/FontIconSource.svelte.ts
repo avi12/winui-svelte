@@ -25,17 +25,23 @@ export interface FontIconSourceProps extends IconSourceProps {
    *
    * Accepts A font family name or a font family.
    *
+   * Also settable in CSS as `font-family`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.fontfamily
    */
   fontFamily?: FontFamilyInput;
   /**
    * Gets or sets the size of the icon glyph. A non-negative value that specifies the font size, measured in pixels.
    *
+   * Also settable in CSS as `font-size`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.fontsize
    */
   fontSize?: number;
   /**
    * Gets or sets the font style for the icon glyph. A named constant of the enumeration that specifies the style in which the icon glyph is rendered. The default is Normal.
+   *
+   * Also settable in CSS as `font-style`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.fontstyle
    */
@@ -44,6 +50,8 @@ export interface FontIconSourceProps extends IconSourceProps {
    * Gets or sets the thickness of the icon glyph. A value that specifies the thickness of the icon glyph. The default is Normal.
    *
    * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
+   * Also settable in CSS as `font-weight`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.fontweight
    */

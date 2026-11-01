@@ -125,6 +125,8 @@ export interface ColorPickerProps extends ControlProps {
   /**
    * Gets or sets the orientation of the editing controls in the ColorPicker. The orientation of the editing controls in the ColorPicker. The default is Vertical.
    *
+   * Also settable in CSS as `flex-direction`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.orientation
    */
   orientation?: EnumInput<typeof Orientation>;

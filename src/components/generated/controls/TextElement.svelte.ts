@@ -41,6 +41,8 @@ export interface TextElementProps {
   /**
    * Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.
    *
+   * Also settable in CSS as `letter-spacing`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.characterspacing
    */
   characterSpacing?: number;
@@ -55,11 +57,15 @@ export interface TextElementProps {
    *
    * Accepts A font family name or a font family.
    *
+   * Also settable in CSS as `font-family`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontfamily
    */
   fontFamily?: FontFamilyInput;
   /**
    * Gets or sets the font size for the content of the element. The desired font size in pixels. The default is 11 pixels.
+   *
+   * Also settable in CSS as `font-size`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontsize
    */
@@ -73,6 +79,8 @@ export interface TextElementProps {
   /**
    * Gets or sets the font style for the content in this element. One of the FontStyle constant names, specifying the font style. The default is Normal.
    *
+   * Also settable in CSS as `font-style`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontstyle
    */
   fontStyle?: EnumInput<typeof FontStyle>;
@@ -81,6 +89,8 @@ export interface TextElementProps {
    *
    * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
    *
+   * Also settable in CSS as `font-weight`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontweight
    */
   fontWeight?: FontWeightInput;
@@ -88,6 +98,8 @@ export interface TextElementProps {
    * Gets or sets the Brush to apply to the content in this element. The brush that is applied to the text content. The default is a SolidColorBrush with Color value Black.
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
+   * Also settable in CSS as `color`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.foreground
    */
@@ -130,6 +142,8 @@ export interface TextElementProps {
   language?: string;
   /**
    * Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.
+   *
+   * Also settable in CSS as `text-decoration-line`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.textdecorations
    */

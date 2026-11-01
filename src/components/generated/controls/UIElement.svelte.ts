@@ -551,6 +551,8 @@ export interface UIElementProps {
   /**
    * Gets or sets whether the contained area of this UIElement can return true values for hit testing.
    *
+   * Also settable in CSS as `pointer-events`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.ishittestvisible
    */
   isHitTestVisible?: boolean;
@@ -622,6 +624,8 @@ export interface UIElementProps {
   manipulationMode?: FlagsInput<typeof ManipulationModes>;
   /**
    * Gets or sets the degree of the object's opacity. A value between 0 and 1.0 that declares the opacity factor, with 1.0 meaning full opacity and 0 meaning transparent. The default value is 1.0.
+   *
+   * Also settable in CSS as `opacity`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.opacity
    */
@@ -750,6 +754,8 @@ export interface UIElementProps {
   useSystemFocusVisuals?: boolean;
   /**
    * Gets or sets the visibility of a UIElement. A UIElement that is not visible is not rendered and does not communicate its desired size to layout. A value of the enumeration. The default value is Visible.
+   *
+   * Also settable in CSS as `display`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.visibility
    */

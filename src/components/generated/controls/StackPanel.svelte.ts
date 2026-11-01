@@ -38,6 +38,8 @@ export interface StackPanelProps extends PanelProps {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `border-color`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.borderbrush
    */
   borderBrush?: BrushInput | Snippet;
@@ -55,6 +57,8 @@ export interface StackPanelProps extends PanelProps {
   cornerRadius?: CornerRadiusInput;
   /**
    * Gets or sets the dimension by which child elements are stacked. One of the enumeration values that specifies the orientation of child elements. The default is Vertical.
+   *
+   * Also settable in CSS as `flex-direction`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.orientation
    */

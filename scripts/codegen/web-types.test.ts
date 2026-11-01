@@ -73,3 +73,8 @@ test("the package names the file, and ships it", () => {
   assert.equal(manifest["web-types"], "./web-types.json");
   assert.ok(manifest.files.includes("web-types.json"));
 });
+
+test("visibility names display, which like Collapsed takes no space", () => {
+  const visibility = elements.find(element => element.name === "UIElement")?.attributes.find(attribute => attribute.name === "visibility");
+  assert.match(visibility?.description ?? "", /Also settable in CSS as `display`/u);
+});

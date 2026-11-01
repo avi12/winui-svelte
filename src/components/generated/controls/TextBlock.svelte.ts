@@ -59,6 +59,8 @@ export interface TextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets the uniform spacing between characters, in units of 1/1000 of an em. The uniform spacing between characters, in units of 1/1000 of an em. The default is 0. Positive values increase tracking and loosen character spacing. Negative values decrease tracking and tighten the character spacing.
    *
+   * Also settable in CSS as `letter-spacing`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.characterspacing
    */
   characterSpacing?: number;
@@ -67,11 +69,15 @@ export interface TextBlockProps extends FrameworkElementProps {
    *
    * Accepts A font family name or a font family.
    *
+   * Also settable in CSS as `font-family`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.fontfamily
    */
   fontFamily?: FontFamilyInput;
   /**
    * Gets or sets the font size for the text content in this element. A non-negative value that specifies the font size, measured in pixels. The default is 11.
+   *
+   * Also settable in CSS as `font-size`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.fontsize
    */
@@ -85,6 +91,8 @@ export interface TextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets the font style for the content in this element. The requested font style, which is a FontStyle enumeration value. The default is Normal.
    *
+   * Also settable in CSS as `font-style`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.fontstyle
    */
   fontStyle?: EnumInput<typeof FontStyle>;
@@ -93,6 +101,8 @@ export interface TextBlockProps extends FrameworkElementProps {
    *
    * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
    *
+   * Also settable in CSS as `font-weight`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.fontweight
    */
   fontWeight?: FontWeightInput;
@@ -100,6 +110,8 @@ export interface TextBlockProps extends FrameworkElementProps {
    * Gets or sets the Brush to apply to the text contents of the TextBlock. The brush used to apply to the text content. The default is a null brush from a pure code perspective, but the default text styles set this to Black (for Light theme) or White (for Dark theme) for a TextBlock element in UI.
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
+   * Also settable in CSS as `color`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.foreground
    */
@@ -179,11 +191,15 @@ export interface TextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets a value that indicates the horizontal alignment of text content. The text alignment. The default is Left.
    *
+   * Also settable in CSS as `text-align`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.textalignment
    */
   textAlignment?: EnumInput<typeof TextAlignment>;
   /**
    * Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.
+   *
+   * Also settable in CSS as `text-decoration-line`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.textdecorations
    */
@@ -203,11 +219,15 @@ export interface TextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets the text trimming behavior to employ when content overflows the content area. One of the TextTrimming values that specifies the text trimming behavior to employ. The default is None.
    *
+   * Also settable in CSS as `text-overflow`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.texttrimming
    */
   textTrimming?: EnumInput<typeof TextTrimming>;
   /**
    * Gets or sets how the TextBlock wraps text. A value that indicates how the TextBlock wraps text. The default is NoWrap.
+   *
+   * Also settable in CSS as `white-space`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.textwrapping
    */

@@ -23,6 +23,8 @@ export interface RefreshVisualizerProps extends ControlProps {
   /**
    * Gets or sets a value that indicates the orientation of the visualizer. A value of the enumeration that indicates the orientation of the visualizer. The default is Top.
    *
+   * Also settable in CSS as `flex-direction`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.refreshvisualizer.orientation
    */
   orientation?: EnumInput<typeof RefreshVisualizerOrientation>;

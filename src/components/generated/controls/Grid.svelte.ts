@@ -34,6 +34,8 @@ export interface GridProps extends PanelProps, GridExtras {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `border-color`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.grid.borderbrush
    */
   borderBrush?: BrushInput | Snippet;
