@@ -1,4 +1,4 @@
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 // What turns a source file into the file dist/ holds, one file at a time: the
@@ -53,16 +53,44 @@ export function shippedTarget(file: string) {
   return path.join(OUTPUT_FOLDER, path.relative(SOURCE_FOLDER, file));
 }
 
-export function copyShippedFile(file: string) {
-  const target = shippedTarget(file);
-  mkdirSync(path.dirname(target), { recursive: true });
-  const isMarkup = file.endsWith(".svelte");
-  if (isMarkup) {
-    writeFileSync(target, withCompiledImports(readFileSync(file, "utf8")));
+/**
+ * Writes a file only when its bytes differ from what is there, so a build that
+ * changed nothing leaves the file, and the editor's index of it, alone.
+ */
+export function writeIfChanged({ file, content }: {
+  file: string;
+  content: string | Buffer;
+}) {
+  const bytes = typeof content === "string" ? Buffer.from(content) : content;
+  const isUnchanged = existsSync(file) && readFileSync(file).equals(bytes);
+  if (isUnchanged) {
     return;
   }
 
-  copyFileSync(file, target);
+  mkdirSync(path.dirname(file), { recursive: true });
+  writeFileSync(file, bytes);
+}
+
+export function copyShippedFile(file: string) {
+  const target = shippedTarget(file);
+  const isText = isAliasedFile(target);
+  if (!isText) {
+    writeIfChanged({
+      file: target,
+      content: readFileSync(file)
+    });
+    return;
+  }
+
+  const isMarkup = file.endsWith(".svelte");
+  const source = readFileSync(file, "utf8");
+  writeIfChanged({
+    file: target,
+    content: resolvedSource({
+      file: target,
+      source: isMarkup ? withCompiledImports(source) : source
+    })
+  });
 }
 
 export function isAliasedFile(file: string) {
@@ -71,19 +99,30 @@ export function isAliasedFile(file: string) {
 
 // A declaration's relative `.ts` imports name files dist/ does not hold (it has
 // the .d.ts and the .js), which an editor cannot follow: they become `.js`.
-export function resolveAliasesIn(file: string) {
-  const source = readFileSync(file, "utf8");
+function resolvedSource({ file, source }: {
+  file: string;
+  source: string;
+}) {
   const isDeclaration = file.endsWith(".d.ts");
   const compiled = isDeclaration ? withCompiledImports(source) : source;
   const isAliased = compiled.includes("#src/");
-  const resolved = isAliased
-    ? withRelativeAliases({
-      file,
-      source: compiled
-    })
-    : compiled;
-  const isChanged = resolved !== source;
-  if (isChanged) {
-    writeFileSync(file, resolved);
+  if (!isAliased) {
+    return compiled;
   }
+
+  return withRelativeAliases({
+    file,
+    source: compiled
+  });
+}
+
+export function resolveAliasesIn(file: string) {
+  const source = readFileSync(file, "utf8");
+  writeIfChanged({
+    file,
+    content: resolvedSource({
+      file,
+      source
+    })
+  });
 }

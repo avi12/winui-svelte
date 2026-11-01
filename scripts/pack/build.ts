@@ -7,14 +7,13 @@ import {
   OUTPUT_FOLDER,
   PACKAGE_ROOT,
   resolveAliasesIn,
-  SOURCE_FOLDER
+  SOURCE_FOLDER,
+  writeIfChanged
 } from "#scripts/pack/dist-files.ts";
 import { WINAPP_BINARIES, WINAPP_BINDINGS } from "#scripts/winapp-paths.ts";
-import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   copyFileSync,
-  cpSync,
   existsSync,
   mkdirSync,
   readdirSync,
@@ -27,6 +26,7 @@ import {
 } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
+import typescript from "typescript";
 
 // Builds dist/, what is published: the TypeScript compiled to JavaScript with
 // its declarations (tsc), and the Svelte pieces shipped as source, the way
@@ -69,10 +69,10 @@ const bindingsManifest = {
 // A library a running app has loaded cannot be deleted or overwritten; the
 // build leaves it where it is and copies over the rest, so a window that links
 // this package can stay open while it is rebuilt.
-const LOCKED_CODES = new Set(["EPERM", "EBUSY"]);
+const KEPT_CODES = new Set(["EPERM", "EBUSY", "ENOTEMPTY"]);
 
-function isLocked(error: unknown) {
-  return error instanceof Error && "code" in error && typeof error.code === "string" && LOCKED_CODES.has(error.code);
+function isKept(error: unknown) {
+  return error instanceof Error && "code" in error && typeof error.code === "string" && KEPT_CODES.has(error.code);
 }
 
 function clearFolder(folder: string) {
@@ -90,8 +90,7 @@ function clearFolder(folder: string) {
         unlinkSync(entryPath);
       }
     } catch (error) {
-      const isKept = isLocked(error) || (error instanceof Error && "code" in error && error.code === "ENOTEMPTY");
-      if (!isKept) {
+      if (!isKept(error)) {
         throw error;
       }
     }
@@ -111,11 +110,19 @@ function copyLibrary({ source, target }: {
 }
 
 function copyBindings() {
-  cpSync(GENERATED_BINDINGS, SHIPPED_BINDINGS, { recursive: true });
-  writeFileSync(
-    path.join(SHIPPED_BINDINGS, "package.json"), `${JSON.stringify(bindingsManifest, null, 2)}
+  const generated = filesIn(GENERATED_BINDINGS).filter(file => path.basename(file) !== "package.json");
+  for (const file of generated) {
+    writeIfChanged({
+      file: path.join(SHIPPED_BINDINGS, path.relative(GENERATED_BINDINGS, file)),
+      content: readFileSync(file)
+    });
+  }
+
+  writeIfChanged({
+    file: path.join(SHIPPED_BINDINGS, "package.json"),
+    content: `${JSON.stringify(bindingsManifest, null, 2)}
 `
-  );
+  });
 }
 
 function copyExtraLibraries({ extra, architecture }: {
@@ -167,21 +174,63 @@ function resolveSourceAliases() {
   }
 }
 
-// tsc exits 2 when it reports type errors but still emitted. The type check
-// belongs to `pnpm check` (and so to lint, which every release runs), so the
-// build only fails when nothing was emitted: that way an area's refactor can be
-// built and tested while another area still has type errors to fix.
-const TSC_EMITTED_WITH_ERRORS = 2;
+// The type check belongs to `pnpm check` (and so to lint, which every release
+// runs), so the build only fails when nothing was emitted: that way an area's
+// refactor can be built and tested while another area still has type errors to
+// fix. Each output goes through writeIfChanged, so a file the change did not
+// alter keeps its bytes and its time.
+const ERROR_SEPARATOR = "\n";
 
 function compile() {
-  const tsc = createRequire(import.meta.url).resolve("typescript/bin/tsc");
-  const result = spawnSync(process.execPath, [tsc, "-p", path.join(PACKAGE_ROOT, "tsconfig.build.json")], {
-    cwd: PACKAGE_ROOT,
-    stdio: "inherit"
+  const configPath = path.join(PACKAGE_ROOT, "tsconfig.build.json");
+  const config = typescript.getParsedCommandLineOfConfigFile(configPath, {}, {
+    ...typescript.sys,
+    onUnRecoverableConfigFileDiagnostic(diagnostic) {
+      throw new Error(typescript.flattenDiagnosticMessageText(diagnostic.messageText, ERROR_SEPARATOR));
+    }
   });
-  const isFailed = result.status !== 0 && result.status !== TSC_EMITTED_WITH_ERRORS;
-  if (isFailed) {
-    throw new Error(`tsc failed with exit code ${result.status}`);
+  const isUnreadable = config === undefined;
+  if (isUnreadable) {
+    throw new Error(`${configPath} could not be read`);
+  }
+
+  const program = typescript.createProgram({
+    rootNames: config.fileNames,
+    options: config.options
+  });
+  const result = program.emit(undefined, (file, content) => {
+    writeIfChanged({
+      file,
+      content
+    });
+  });
+  if (result.emitSkipped) {
+    throw new Error("tsc emitted nothing");
+  }
+}
+
+// Whether a file of dist/ still has a source: itself a shipped copy, or the
+// compiled form (.js, .d.ts and their maps) of a .ts file.
+function hasSource(file: string) {
+  const relative = path.relative(OUTPUT_FOLDER, file);
+  const isCopy = existsSync(path.join(SOURCE_FOLDER, relative));
+  const compiledSuffix = COMPILED_SUFFIXES.find(suffix => relative.endsWith(suffix));
+  const hasCompiledSource = compiledSuffix !== undefined
+    && existsSync(path.join(SOURCE_FOLDER, `${relative.slice(0, -compiledSuffix.length)}.ts`));
+  return isCopy || hasCompiledSource;
+}
+
+function isCopiedLibrary(file: string) {
+  return KEPT_FOLDERS.some(folder => file.startsWith(folder + path.sep));
+}
+
+// A source that was removed or renamed leaves its output behind in an update in
+// place, which the package would then ship.
+function removeStale() {
+  for (const file of filesIn(OUTPUT_FOLDER).filter(candidate => !isCopiedLibrary(candidate))) {
+    if (!hasSource(file)) {
+      rmSync(file, { force: true });
+    }
   }
 }
 
@@ -192,6 +241,10 @@ function compile() {
 // lint, test and the package check each ask for a build, and only one pays.
 const STAMP_FILE = path.join(PACKAGE_ROOT, ".verify", "build-stamp");
 const FORCE_FLAG = "--force";
+const BUILD_INFO = path.join(PACKAGE_ROOT, ".verify", "build.tsbuildinfo");
+// What dist/ holds that no source produces: the copied bindings and libraries.
+const KEPT_FOLDERS = [SHIPPED_BINDINGS, SHIPPED_BOOTSTRAPPERS];
+const COMPILED_SUFFIXES = [".d.ts.map", ".d.ts", ".js.map", ".js"];
 const BUILD_INPUTS = [
   SOURCE_FOLDER,
   GENERATED_BINDINGS,
@@ -221,8 +274,10 @@ function inputsStamp() {
 }
 
 const STAMP = inputsStamp();
-const IS_UP_TO_DATE = !process.argv.includes(FORCE_FLAG)
-  && existsSync(path.join(OUTPUT_FOLDER, "index.js"))
+const IS_FORCED = process.argv.includes(FORCE_FLAG);
+const HAS_OUTPUT = existsSync(path.join(OUTPUT_FOLDER, "index.js"));
+const IS_UP_TO_DATE = !IS_FORCED
+  && HAS_OUTPUT
   && existsSync(STAMP_FILE)
   && readFileSync(STAMP_FILE, "utf8") === STAMP;
 if (IS_UP_TO_DATE) {
@@ -230,13 +285,24 @@ if (IS_UP_TO_DATE) {
   process.exit(0);
 }
 
+// dist/ is updated in place, and a file whose bytes did not change is not
+// written: the editor that indexes dist/ through a link reanalyzes only what
+// this build changed. tsc's own record of what it emitted (BUILD_INFO) is only
+// true while dist/ is as it left it, so a rebuild from nothing drops it.
+const IS_FROM_NOTHING = IS_FORCED || !HAS_OUTPUT;
 rmSync(STAMP_FILE, { force: true });
-clearFolder(OUTPUT_FOLDER);
+
+if (IS_FROM_NOTHING) {
+  rmSync(BUILD_INFO, { force: true });
+  clearFolder(OUTPUT_FOLDER);
+}
+
 copyBindings();
 compile();
 copyShipped();
 copyBootstrappers();
 resolveSourceAliases();
+removeStale();
 mkdirSync(path.dirname(STAMP_FILE), { recursive: true });
 writeFileSync(STAMP_FILE, STAMP);
 process.stdout.write(`dist: ${filesIn(OUTPUT_FOLDER).length} files\n`);
