@@ -1,3 +1,5 @@
+import { documentationBeside, loadDocumentation } from "./documentation.ts";
+import type { TypeDocumentation } from "./documentation.ts";
 import {
   attachedOwners,
   bindableEvents,
@@ -181,6 +183,9 @@ export interface ClassModel {
   // The folder of src/components/generated the level is written to: empty for
   // WinUI, the component winmd's own for an extra package (Win2D).
   folder: string;
+  // What WinUI's documentation says about the class and its properties and
+  // events; absent where the package ships none (Win2D).
+  documentation?: TypeDocumentation;
 }
 
 export interface Model {
@@ -227,6 +232,11 @@ export function loadMetadata(lockPath: string) {
     index.add(new WinMdFile(find(name)));
   }
 
+  const documented = [COMPONENT_WINMD, ...referenceWinmds, ...componentWinmds.map(extra => extra.winmd)]
+    .map(name => documentationBeside(find(name)))
+    .filter(file => file !== null);
+  const documentation = loadDocumentation(documented);
+
   const extras = componentWinmds.map(extra => {
     const file = new WinMdFile(find(extra.winmd));
     index.add(file);
@@ -238,7 +248,8 @@ export function loadMetadata(lockPath: string) {
   return {
     index,
     components,
-    extras
+    extras,
+    documentation
   };
 }
 
@@ -286,9 +297,14 @@ class Builder {
   private readonly attachedByTarget = new Map<string, AttachedModel[]>();
   readonly excluded: Model["excluded"] = [];
   private readonly controlInterfaces = new Set<string>();
+  private readonly documentation: ReadonlyMap<string, TypeDocumentation>;
 
-  constructor(index: TypeIndex) {
+  constructor({ index, documentation }: {
+    index: TypeIndex;
+    documentation: ReadonlyMap<string, TypeDocumentation>;
+  }) {
     this.index = index;
+    this.documentation = documentation;
   }
 
   classify(signature: TypeSignature) {
@@ -456,6 +472,12 @@ class Builder {
       registers: [],
       folder: folderOf(type.namespace)
     };
+    const documentation = this.documentation.get(key);
+    const isDocumented = documentation !== undefined;
+    if (isDocumented) {
+      model.documentation = documentation;
+    }
+
     this.classes.set(key, model);
     this.fillMembers({
       model,
@@ -956,17 +978,23 @@ function folderOf(namespace: string) {
 }
 
 export function buildModel(lockPath: string) {
-  const { index, components } = loadMetadata(lockPath);
-  return new Builder(index).build({ components });
+  const { index, components, documentation } = loadMetadata(lockPath);
+  return new Builder({
+    index,
+    documentation
+  }).build({ components });
 }
 
 // The components of each extra package (componentWinmds) as a model of their
 // own: only the levels of the package's namespace, whose parents are the
 // WinUI levels they derive from.
 export function buildExtraModels(lockPath: string) {
-  const { index, extras } = loadMetadata(lockPath);
+  const { index, extras, documentation } = loadMetadata(lockPath);
   return extras.map(({ extra, file }) => {
-    const model = new Builder(index).build({
+    const model = new Builder({
+      index,
+      documentation
+    }).build({
       components: file,
       wanted: new Set(extra.classes)
     });

@@ -574,28 +574,85 @@ class LevelImports {
   }
 }
 
+// A JSDoc comment of WinUI's own text with a link to the page of the type
+// (the docs have no anchor for a member), or nothing where WinUI has none.
+function docLines({ text, type, indent }: {
+  text: string | undefined;
+  type: TypeName;
+  indent: string;
+}) {
+  const isDocumented = text !== undefined;
+  if (!isDocumented) {
+    return [];
+  }
+
+  return [
+    `${indent}/**`,
+    `${indent} * ${text}`,
+    `${indent} *`,
+    `${indent} * @see ${docsUrlOf(type)}`,
+    `${indent} */`
+  ];
+}
+
+// The comment of a property (`P`) or event (`E`) of the level's class.
+function memberDocLines({ level, kind, winName }: {
+  level: ClassModel;
+  kind: string;
+  winName: string;
+}) {
+  return docLines({
+    text: level.documentation?.members.get(`${kind}:${winName}`),
+    type: level.type,
+    indent: "  "
+  });
+}
+
+// What the Svelte language server shows on hover over the component's tag.
+function componentCommentLines(level: ClassModel) {
+  const summary = level.documentation?.summary;
+  const isDocumented = summary != null;
+  return isDocumented ? [`<!-- @component ${summary.replaceAll("-->", "--&gt;")} -->`] : [];
+}
+
+function typeDocLines(level: ClassModel) {
+  return docLines({
+    text: level.documentation?.summary ?? undefined,
+    type: level.type,
+    indent: ""
+  });
+}
+
 // A property the control takes just as the prop gives it: no conversion.
 function isPlainProperty(property: PropertyModel) {
   return !property.isContent && valueExpression(property) === "value";
 }
 
-function emitProperty({ property, className, imports, isSlot }: {
+function emitProperty({ property, level, imports, isSlot }: {
   property: PropertyModel;
-  className: string;
+  level: ClassModel;
   imports: LevelImports;
   isSlot: boolean;
 }) {
+  const className = level.type.name;
   imports.note(property);
   const method = property.isContent ? "contentProperty" : "property";
   const isPlain = isPlainProperty(property);
   const isEnum = enumInputTypes.has(property.kind) && !property.isContent;
   const isGrouped = isPlain || isEnum;
   return {
-    member: `  ${property.key}?: ${memberType({
-      property,
-      className,
-      isSlot
-    })};`,
+    member: [
+      ...memberDocLines({
+        level,
+        kind: "P",
+        winName: property.winName
+      }),
+      `  ${property.key}?: ${memberType({
+        property,
+        className,
+        isSlot
+      })};`
+    ].join("\n"),
     plainKey: isPlain ? property.key : null,
     enumTable: isEnum ? `${property.key}: ${enumName(property)}` : null,
     body: isGrouped ? [] : [
@@ -707,11 +764,12 @@ function emitBindable({ bindable, property, imports }: {
   ];
 }
 
-function emitObserved({ observed, className, imports }: {
+function emitObserved({ observed, level, imports }: {
   observed: ObservedModel;
-  className: string;
+  level: ClassModel;
   imports: LevelImports;
 }) {
+  const className = level.type.name;
   imports.noteReadOnly(observed);
   const read = readExpression({
     converter: converterOf(observed),
@@ -726,7 +784,14 @@ function emitObserved({ observed, className, imports }: {
     className
   });
   return {
-    member: `  ${observed.key}?: ${type} | undefined;`,
+    member: [
+      ...memberDocLines({
+        level,
+        kind: "P",
+        winName: observed.winName
+      }),
+      `  ${observed.key}?: ${type} | undefined;`
+    ].join("\n"),
     body: [
       "  observe({",
       "    link,",
@@ -872,7 +937,6 @@ function emitPropertyBody({ level, imports }: {
   level: ClassModel;
   imports: LevelImports;
 }) {
-  const className = level.type.name;
   const bindableKeys = new Set(level.bindables.map(bindable => bindable.key));
   const slotKeys = slotKeysOf({
     level,
@@ -887,7 +951,7 @@ function emitPropertyBody({ level, imports }: {
     .filter(property => !bindableKeys.has(property.key))
     .map(property => emitProperty({
       property,
-      className,
+      level,
       imports,
       isSlot: slotKeys.has(property.key)
     }));
@@ -936,11 +1000,18 @@ function emitBindableBody({ level, imports }: {
     // A binding that was never set reads as undefined, and exactOptionalPropertyTypes
     // keeps an optional prop from holding it unless it says so.
     members.unshift(
-      `  ${property.key}?: ${memberType({
-        property,
-        className,
-        isSlot: slotKeys.has(property.key)
-      })} | undefined;`
+      [
+        ...memberDocLines({
+          level,
+          kind: "P",
+          winName: property.winName
+        }),
+        `  ${property.key}?: ${memberType({
+          property,
+          className,
+          isSlot: slotKeys.has(property.key)
+        })} | undefined;`
+      ].join("\n")
     );
     body.push(
       ...emitBindable({
@@ -963,11 +1034,18 @@ function emitEventBody({ level, imports }: {
 }) {
   const className = level.type.name;
   return {
-    members: level.events.map(event => `  ${event.key}?: ${eventType({
-      event,
-      className,
-      imports
-    })};`),
+    members: level.events.map(event => [
+      ...memberDocLines({
+        level,
+        kind: "E",
+        winName: event.winName
+      }),
+      `  ${event.key}?: ${eventType({
+        event,
+        className,
+        imports
+      })};`
+    ].join("\n")),
     body: emitEvents(level.events)
   };
 }
@@ -1005,7 +1083,7 @@ function emitLevelBody({ level, imports }: {
   });
   const observed = level.observed.map(entry => emitObserved({
     observed: entry,
-    className: level.type.name,
+    level,
     imports
   }));
   const events = emitEventBody({
@@ -1231,6 +1309,7 @@ export function emitLevel(level: ClassModel) {
       imports
     }),
     "",
+    ...typeDocLines(level),
     `export interface ${name}Props${propsExtends} {`,
     ...members,
     "}",
@@ -1394,6 +1473,7 @@ function emitOverlayDeclaration({ level, overlay }: {
     `/** The props of \`${name}\`: the control's, \`open\` and \`target\`. */`,
     `export type ${name}ComponentProps = ${overlay.props}<${name}ControlProps>;`,
     "",
+    ...typeDocLines(level),
     `declare const ${name}: Component<${name}ComponentProps, Record<string, never>, ${bindings}>;`,
     `export default ${name};`
   ].join("\n")}\n`;
@@ -1422,6 +1502,7 @@ export function emitDeclaration(level: ClassModel) {
       `/** The props of \`${name}\`, generic over the items it shows. */`,
       `export type ${name}ComponentProps<Item = object> = ${host.props}<Item, ${name}ControlProps>;`,
       "",
+      ...typeDocLines(level),
       `declare const ${name}: ${host.component}<${name}ControlProps>;`,
       `export default ${name};`
     ].join("\n")}\n`;
@@ -1436,6 +1517,7 @@ export function emitDeclaration(level: ClassModel) {
     "",
     `export type { ${name}ComponentProps };`,
     "",
+    ...typeDocLines(level),
     `declare const ${name}: Component<${name}ComponentProps, Record<string, never>, ${bindings === "" ? "\"\"" : bindings}>;`,
     `export default ${name};`
   ].join("\n")}\n`;
@@ -1622,6 +1704,7 @@ export function emitComponent(level: ClassModel) {
   ];
   return `${[
     SVELTE_HEADER,
+    ...componentCommentLines(level),
     isHosted ? "<script generics=\"Item\" lang=\"ts\">" : "<script lang=\"ts\">",
     "  import { untrack } from \"svelte\";",
     `  import { ${sorted(registered.keys()).join(", ")} } from "./bindings.ts";`,
