@@ -8,6 +8,7 @@ import {
 } from "./host.ts";
 import { mountOnTree } from "#src/renderer/tree/document.js";
 import { flush } from "#src/scheduling.js";
+import { onTeardown } from "#src/window/teardown.js";
 import type { FrameworkElement } from "#src/winui.js";
 import type { Component } from "svelte";
 import { unmount } from "svelte";
@@ -77,6 +78,18 @@ export function mountControl<Props extends object>({ component, props: initial, 
       }
     }
   });
+  // The component's handlers on WinUI's events (layout, size, theme) end with
+  // its effects; a mounted tree the application ends with would otherwise keep
+  // them for WinUI to call as the Node environment closes.
+  function end() {
+    // Before Svelte removes the nodes, so the page is not told of a root
+    // that is going.
+    unwatchRoot(fragment);
+    void unmount(instance);
+    releaseFragment(fragment);
+  }
+
+  const forgetTeardown = onTeardown(end);
   return {
     get root() {
       return root;
@@ -89,11 +102,8 @@ export function mountControl<Props extends object>({ component, props: initial, 
       flush();
     },
     unmount() {
-      // Before Svelte removes the nodes, so the page is not told of a root
-      // that is going.
-      unwatchRoot(fragment);
-      void unmount(instance);
-      releaseFragment(fragment);
+      forgetTeardown();
+      end();
     }
   } satisfies Mounted<Props>;
 }

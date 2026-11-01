@@ -1,3 +1,4 @@
+import { act } from "./uia.ts";
 import { exportAliases, ExportTarget } from "#scripts/export-aliases.ts";
 import { buildApp } from "#src/vite/build.js";
 import { backgroundEnvironment } from "#src/window/background-mode.js";
@@ -106,6 +107,22 @@ export class RelayProcess {
   /** The quit message on the process channel. */
   requestQuit() {
     this.child.send({ cmd: "quit" });
+  }
+
+  /**
+   * A click on the example's own quit button, by UI Automation. The window
+   * is gone by the time the call reads the button back, which is no failure.
+   */
+  clickQuit() {
+    try {
+      act({
+        pid: this.pid,
+        action: "invoke",
+        id: "quit"
+      });
+    } catch {
+      // The button read back after the click: the window is already closing.
+    }
   }
 
   /** Waits for the process to end by itself; kills it when it does not. */
