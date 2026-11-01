@@ -23,6 +23,8 @@ export interface FontIconProps extends IconElementProps {
   /**
    * Gets or sets the font used to display the icon glyph.
    *
+   * Accepts A font family name or a font family.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon.fontfamily
    */
   fontFamily?: FontFamilyInput;
@@ -41,11 +43,15 @@ export interface FontIconProps extends IconElementProps {
   /**
    * Gets or sets the thickness of the icon glyph. A value that specifies the thickness of the icon glyph. The default is Normal.
    *
+   * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon.fontweight
    */
   fontWeight?: FontWeightInput;
   /**
    * Gets or sets the character code that identifies the icon glyph. The hexadecimal character code for the icon glyph.
+   *
+   * Accepts an icon glyph: the character, or its code point (`0xE711`).
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon.glyph
    */

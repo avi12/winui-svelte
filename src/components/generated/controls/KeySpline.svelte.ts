@@ -14,11 +14,15 @@ export interface KeySplineProps {
   /**
    * Gets or sets the first control point used to define a Bezier curve that describes a KeySpline.
    *
+   * Accepts A point: [x, y], or {x, y}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline.controlpoint1
    */
   controlPoint1?: PointInput;
   /**
    * Gets or sets the second control point used to define a Bezier curve that describes a KeySpline.
+   *
+   * Accepts A point: [x, y], or {x, y}.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.keyspline.controlpoint2
    */

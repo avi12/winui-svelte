@@ -27,11 +27,15 @@ export interface RadialGradientBrushProps extends XamlCompositionBrushBaseProps 
   /**
    * Gets or sets the center of the ellipse that contains the gradient. The center of the ellipse that contains the gradient. The default is (0.5, 0.5).
    *
+   * Accepts A point: [x, y], or {x, y}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush.center
    */
   center?: PointInput;
   /**
    * Gets or sets the gradient's origin (relative to the top left corner). The gradient's origin (relative to the top left corner). The default is (0.5, 0,5).
+   *
+   * Accepts A point: [x, y], or {x, y}.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush.gradientorigin
    */

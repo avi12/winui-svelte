@@ -16,6 +16,8 @@ export interface LineSegmentProps extends PathSegmentProps {
   /**
    * Gets or sets the end point of the line segment. The end point of the line segment. The default is a Point with value 0,0.
    *
+   * Accepts A point: [x, y], or {x, y}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.linesegment.point
    */
   point?: PointInput;

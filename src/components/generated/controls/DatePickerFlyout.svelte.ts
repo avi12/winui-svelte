@@ -22,6 +22,8 @@ export interface DatePickerFlyoutProps extends PickerFlyoutBaseProps {
   /**
    * Gets or sets the date currently set in the date picker.
    *
+   * Accepts A moment: a `Date`, milliseconds since 1970 UTC, an ISO 8601 string, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout.date
    */
   date?: DateInput;
@@ -40,11 +42,15 @@ export interface DatePickerFlyoutProps extends PickerFlyoutBaseProps {
   /**
    * Gets or sets the maximum Gregorian year available for picking.
    *
+   * Accepts A moment: a `Date`, milliseconds since 1970 UTC, an ISO 8601 string, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout.maxyear
    */
   maxYear?: DateInput;
   /**
    * Gets or sets the minimum Gregorian year available for picking.
+   *
+   * Accepts A moment: a `Date`, milliseconds since 1970 UTC, an ISO 8601 string, or WinUI's own value.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout.minyear
    */

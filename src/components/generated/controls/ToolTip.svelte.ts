@@ -36,6 +36,8 @@ export interface ToolTipProps extends ContentControlProps {
   /**
    * Gets or sets the rectangular area that the tooltip should be positioned in relation to when opened by the ToolTipService. If space allows, the open tooltip will not occlude the area defined by its PlacementRect.
    *
+   * Accepts A rect, or null for unset.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.placementrect
    */
   placementRect?: NullableRectInput;

@@ -17,6 +17,8 @@ export interface PathProps extends ShapeProps {
   /**
    * Gets or sets a Geometry that specifies the shape to be drawn. A description of the shape to be drawn.
    *
+   * Accepts path data as XAML writes it ("M0,0 L10,10 Z") or a geometry.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.path.data
    */
   data?: GeometryInput | Snippet;

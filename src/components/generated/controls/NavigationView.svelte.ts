@@ -117,6 +117,8 @@ export interface NavigationViewProps extends ContentControlProps {
   /**
    * Gets or sets the DataTemplate used to display the control's header.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.headertemplate
    */
   headerTemplate?: DataTemplateInput;
@@ -176,6 +178,8 @@ export interface NavigationViewProps extends ContentControlProps {
   menuItemsSource?: CollectionInput;
   /**
    * Gets or sets the DataTemplate used to display each menu item. The template that specifies the visualization of the menu data objects. The default is null.
+   *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.menuitemtemplate
    */

@@ -23,6 +23,8 @@ export interface PolyQuadraticBezierSegmentProps extends PathSegmentProps {
   /**
    * Gets or sets the Point collection that defines this PolyQuadraticBezierSegment object. A collection of points that defines the shape of this PolyQuadraticBezierSegment object. The default value is an empty collection.
    *
+   * Accepts A list of points: points or text of coordinate pairs, or a `PointCollection`.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polyquadraticbeziersegment.points
    */
   points?: PointCollectionInput;

@@ -23,6 +23,8 @@ export interface PolyLineSegmentProps extends PathSegmentProps {
   /**
    * Gets or sets the collection of Point values that defines this PolyLineSegment object. The points that define this PolyLineSegment object.
    *
+   * Accepts A list of points: points or text of coordinate pairs, or a `PointCollection`.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polylinesegment.points
    */
   points?: PointCollectionInput;

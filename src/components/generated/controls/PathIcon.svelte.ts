@@ -17,6 +17,8 @@ export interface PathIconProps extends IconElementProps {
   /**
    * Gets or sets a Geometry that specifies the shape to be drawn. In XAML. this can also be set using a string that describes Move and draw commands syntax. A description of the shape to be drawn.
    *
+   * Accepts path data as XAML writes it ("M0,0 L10,10 Z") or a geometry.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pathicon.data
    */
   data?: GeometryInput | Snippet;

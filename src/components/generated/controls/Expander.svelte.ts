@@ -36,6 +36,8 @@ export interface ExpanderProps extends ContentControlProps {
   /**
    * ::: moniker range="winui-3.0-preview" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Gets or sets the data template for the Expander.Header.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander.headertemplate
    */
   headerTemplate?: DataTemplateInput;

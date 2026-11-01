@@ -25,11 +25,15 @@ export interface AcrylicBrushProps extends XamlCompositionBrushBaseProps {
   /**
    * Gets or sets the color tint for the semi-transparent acrylic material.
    *
+   * Accepts A color as text, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush.tintcolor
    */
   tintColor?: ColorInput;
   /**
    * Gets or sets the degree of opacity of the color's luminosity tint. The opacity expressed as a value between 0 and 1.0. The default value is 1.0, which is full opacity. 0 is transparent opacity.
+   *
+   * Accepts A nullable number property (an animation's `to`): a number, or null for unset.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush.tintluminosityopacity
    */

@@ -28,6 +28,8 @@ export interface SvgImageSourceProps extends ImageSourceProps {
   /**
    * Gets or sets the Uniform Resource Identifier (URI) of the SVG source file that generated this SvgImageSource.
    *
+   * Accepts A URI string or a URI.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.svgimagesource.urisource
    */
   uriSource?: UriInput;

@@ -1,3 +1,4 @@
+import { inputDocumentationOf } from "./input-documentation.ts";
 import type {
   AttachedModel,
   BindableModel,
@@ -576,20 +577,23 @@ class LevelImports {
 
 // A JSDoc comment of WinUI's own text with a link to the page the text is
 // from, or nothing where WinUI has none.
-function docLines({ text, url, indent }: {
+function docLines({ text, url, indent, accepts }: {
   text: string | undefined;
   url: string;
   indent: string;
+  accepts?: string | undefined;
 }) {
   const isDocumented = text !== undefined;
   if (!isDocumented) {
     return [];
   }
 
+  const hasAccepts = accepts !== undefined;
   return [
     `${indent}/**`,
     `${indent} * ${text}`,
     `${indent} *`,
+    ...hasAccepts ? [`${indent} * Accepts ${accepts}`, `${indent} *`] : [],
     `${indent} * @see ${url}`,
     `${indent} */`
   ];
@@ -597,12 +601,15 @@ function docLines({ text, url, indent }: {
 
 // The comment of a property (`P`) or event (`E`) of the level's class, linked
 // to the member's own page.
-function memberDocLines({ level, kind, winName }: {
+function memberDocLines({ level, kind, winName, inputType }: {
   level: ClassModel;
   kind: string;
   winName: string;
+  inputType?: string | undefined;
 }) {
+  const hasInputType = inputType !== undefined;
   return docLines({
+    accepts: hasInputType ? inputDocumentationOf(inputType) : undefined,
     text: level.documentation?.members.get(`${kind}:${winName}`),
     url: memberDocsUrlOf({
       type: level.type,
@@ -685,7 +692,8 @@ function emitProperty({ property, level, imports, isSlot }: {
       ...memberDocLines({
         level,
         kind: "P",
-        winName: property.winName
+        winName: property.winName,
+        inputType: inputTypeOf(property)
       }),
       `  ${property.key}?: ${memberType({
         property,

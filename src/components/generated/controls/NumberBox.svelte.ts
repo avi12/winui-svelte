@@ -42,6 +42,8 @@ export interface NumberBoxProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display the content of the control's header.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.headertemplate
    */
   headerTemplate?: DataTemplateInput;

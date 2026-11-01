@@ -16,6 +16,8 @@ export interface RectangleGeometryProps extends GeometryProps {
   /**
    * Gets or sets the dimensions of the rectangle. The Rect structure that describes the position and size of the rectangle. The default is null.
    *
+   * Accepts A rectangle: [x, y, width, height], or {x, y, width, height}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.rectanglegeometry.rect
    */
   rect?: RectInput;

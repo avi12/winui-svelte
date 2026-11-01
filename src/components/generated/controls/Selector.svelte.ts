@@ -35,6 +35,8 @@ export interface SelectorProps extends ItemsControlProps {
   /**
    * Gets or sets a value that indicates whether a Selector should keep the SelectedItem synchronized with the current item in the Items property.
    *
+   * Accepts A nullable boolean property such as ToggleButton.IsChecked.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selector.issynchronizedwithcurrentitem
    */
   isSynchronizedWithCurrentItem?: NullableBooleanInput;

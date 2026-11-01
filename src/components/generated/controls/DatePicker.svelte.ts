@@ -74,6 +74,8 @@ export interface DatePickerProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker.headertemplate
    */
   headerTemplate?: DataTemplateInput;
@@ -86,11 +88,15 @@ export interface DatePickerProps extends ControlProps {
   /**
    * Gets or sets the maximum Gregorian year available for picking.
    *
+   * Accepts A moment: a `Date`, milliseconds since 1970 UTC, an ISO 8601 string, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker.maxyear
    */
   maxYear?: DateInput;
   /**
    * Gets or sets the minimum Gregorian year available for picking.
+   *
+   * Accepts A moment: a `Date`, milliseconds since 1970 UTC, an ISO 8601 string, or WinUI's own value.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker.minyear
    */

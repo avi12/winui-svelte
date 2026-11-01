@@ -35,6 +35,8 @@ export interface ListPickerFlyoutProps extends PickerFlyoutBaseProps {
   /**
    * Gets or sets the DataTemplate used to display each item. The template that specifies the visualization of the data objects. The default is null.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listpickerflyout.itemtemplate
    */
   itemTemplate?: DataTemplateInput;

@@ -48,6 +48,8 @@ export interface TwoPaneViewProps extends ControlProps {
   /**
    * Gets the calculated width (in wide mode) or height (in tall mode) of pane 1, or sets the GridLength value of pane 1.
    *
+   * Accepts A grid length: pixels, "Auto", "*", "2*" as XAML writes them, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.pane1length
    */
   pane1Length?: GridLengthInput;
@@ -59,6 +61,8 @@ export interface TwoPaneViewProps extends ControlProps {
   pane2?: TwoPaneView["pane2"] | Snippet;
   /**
    * Gets the calculated width (in wide mode) or height (in tall mode) of pane 2, or sets the GridLength value of pane 2.
+   *
+   * Accepts A grid length: pixels, "Auto", "*", "2*" as XAML writes them, or WinUI's own value.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.twopaneview.pane2length
    */

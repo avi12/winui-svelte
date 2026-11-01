@@ -17,6 +17,8 @@ export interface DoubleAnimationProps extends TimelineProps {
   /**
    * Gets or sets the total amount by which the animation changes its starting value. The total amount by which the animation changes its starting value. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **double?**(a nullable double).
    *
+   * Accepts A nullable number property (an animation's `to`): a number, or null for unset.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation.by
    */
   by?: NullableDoubleInput;
@@ -35,11 +37,15 @@ export interface DoubleAnimationProps extends TimelineProps {
   /**
    * Gets or sets the animation's starting value. The starting value of the animation. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **double?**(a nullable double).
    *
+   * Accepts A nullable number property (an animation's `to`): a number, or null for unset.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation.from
    */
   from?: NullableDoubleInput;
   /**
    * Gets or sets the animation's ending value. The ending value of the animation. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **double?**(a nullable double).
+   *
+   * Accepts A nullable number property (an animation's `to`): a number, or null for unset.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation.to
    */

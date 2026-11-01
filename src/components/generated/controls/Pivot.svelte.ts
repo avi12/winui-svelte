@@ -43,6 +43,8 @@ export interface PivotProps extends ItemsControlProps {
   /**
    * Gets or sets the template for the Header property of PivotItem children.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot.headertemplate
    */
   headerTemplate?: DataTemplateInput;
@@ -67,6 +69,8 @@ export interface PivotProps extends ItemsControlProps {
   /**
    * Gets or sets the template for the header on the control's left side.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot.leftheadertemplate
    */
   leftHeaderTemplate?: DataTemplateInput;
@@ -79,6 +83,8 @@ export interface PivotProps extends ItemsControlProps {
   /**
    * Gets or sets the template for the header on the control's right side.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot.rightheadertemplate
    */
   rightHeaderTemplate?: DataTemplateInput;
@@ -90,6 +96,8 @@ export interface PivotProps extends ItemsControlProps {
   title?: ObjectInput | Snippet;
   /**
    * Gets or sets the title template used for displaying the title above the headers area. The template that specifies the visualization of the title object.
+   *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot.titletemplate
    */

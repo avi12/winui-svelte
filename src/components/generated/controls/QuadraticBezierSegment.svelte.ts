@@ -16,11 +16,15 @@ export interface QuadraticBezierSegmentProps extends PathSegmentProps {
   /**
    * Gets or sets the control point of the curve. The control point of this QuadraticBezierSegment. The default value is a Point with value 0,0.
    *
+   * Accepts A point: [x, y], or {x, y}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.quadraticbeziersegment.point1
    */
   point1?: PointInput;
   /**
    * Gets or sets the end Point of this QuadraticBezierSegment. The end point of this QuadraticBezierSegment. The default value is a Point with value 0,0.
+   *
+   * Accepts A point: [x, y], or {x, y}.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.quadraticbeziersegment.point2
    */

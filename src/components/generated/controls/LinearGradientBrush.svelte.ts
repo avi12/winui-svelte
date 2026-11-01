@@ -16,11 +16,15 @@ export interface LinearGradientBrushProps extends GradientBrushProps {
   /**
    * Gets or sets the ending two-dimensional coordinates of the linear gradient. The ending two-dimensional coordinates of the linear gradient. The default is a Point with value 1,1.
    *
+   * Accepts A point: [x, y], or {x, y}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.lineargradientbrush.endpoint
    */
   endPoint?: PointInput;
   /**
    * Gets or sets the starting two-dimensional coordinates of the linear gradient. The starting two-dimensional coordinates for the linear gradient. The default is a Point with value 0,0.
+   *
+   * Accepts A point: [x, y], or {x, y}.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.lineargradientbrush.startpoint
    */

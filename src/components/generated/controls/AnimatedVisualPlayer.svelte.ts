@@ -29,6 +29,8 @@ export interface AnimatedVisualPlayerProps extends FrameworkElementProps {
   /**
    * Gets or sets content to display if an animated visual fails to load.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer.fallbackcontent
    */
   fallbackContent?: DataTemplateInput;

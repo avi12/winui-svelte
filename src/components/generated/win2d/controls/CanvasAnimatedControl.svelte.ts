@@ -16,6 +16,8 @@ export interface CanvasAnimatedControlProps extends UserControlProps {
   /**
    * The color that the control is cleared to before the Draw event is raised.
    *
+   * Accepts A color as text, or WinUI's own value.
+   *
    * @see https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_ClearColor.htm
    */
   clearColor?: ColorInput;

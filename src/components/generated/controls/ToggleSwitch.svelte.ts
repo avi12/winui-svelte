@@ -36,6 +36,8 @@ export interface ToggleSwitchProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display the control's header.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.headertemplate
    */
   headerTemplate?: DataTemplateInput;
@@ -48,6 +50,8 @@ export interface ToggleSwitchProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display the control's content while in "Off" state.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.offcontenttemplate
    */
   offContentTemplate?: DataTemplateInput;
@@ -59,6 +63,8 @@ export interface ToggleSwitchProps extends ControlProps {
   onContent?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the control's content while in "On" state.
+   *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.oncontenttemplate
    */

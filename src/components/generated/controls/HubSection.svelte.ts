@@ -23,6 +23,8 @@ export interface HubSectionProps extends ControlProps {
   /**
    * Gets or sets the data template that is used to display the content of the HubSection.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection.contenttemplate
    */
   contentTemplate?: DataTemplateInput;
@@ -34,6 +36,8 @@ export interface HubSectionProps extends ControlProps {
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the hub section header. The template that specifies the visualization of the header object. The default is null.
+   *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection.headertemplate
    */

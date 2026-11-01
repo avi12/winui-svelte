@@ -65,6 +65,8 @@ export interface ItemsControlProps extends ControlProps {
   /**
    * Gets or sets the template that defines the panel that controls the layout of items. An ItemsPanelTemplate that defines the panel to use for the layout of the items. The default value for the ItemsControl is an ItemsPanelTemplate that specifies a StackPanel.
    *
+   * Accepts XAML text (see `xamlOf`) or an ItemsPanelTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol.itemspanel
    */
   itemsPanel?: ItemsPanelTemplateInput;
@@ -76,6 +78,8 @@ export interface ItemsControlProps extends ControlProps {
   itemsSource?: CollectionInput;
   /**
    * Gets or sets the DataTemplate used to display each item. The template that specifies the visualization of the data objects. The default is null.
+   *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemscontrol.itemtemplate
    */

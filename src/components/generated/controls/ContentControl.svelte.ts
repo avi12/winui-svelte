@@ -35,6 +35,8 @@ export interface ContentControlProps extends ControlProps {
   /**
    * Gets or sets the data template that is used to display the content of the ContentControl.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentcontrol.contenttemplate
    */
   contentTemplate?: DataTemplateInput;

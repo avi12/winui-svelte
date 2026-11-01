@@ -22,6 +22,8 @@ export interface SwipeItemProps {
   /**
    * Gets or sets a brush that provides the background of the control.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.background
    */
   background?: BrushInput | Snippet;
@@ -45,6 +47,8 @@ export interface SwipeItemProps {
   commandParameter?: ObjectInput;
   /**
    * Gets or sets the brush that paints the text and icon of the item.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.swipeitem.foreground
    */

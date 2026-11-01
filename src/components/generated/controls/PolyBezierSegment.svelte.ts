@@ -23,6 +23,8 @@ export interface PolyBezierSegmentProps extends PathSegmentProps {
   /**
    * Gets or sets the Point collection that defines this PolyBezierSegment object. The collection of points that defines this PolyBezierSegment object.
    *
+   * Accepts A list of points: points or text of coordinate pairs, or a `PointCollection`.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.polybeziersegment.points
    */
   points?: PointCollectionInput;

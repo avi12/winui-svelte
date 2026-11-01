@@ -16,6 +16,8 @@ export interface EllipseGeometryProps extends GeometryProps {
   /**
    * Gets or sets the center point of the EllipseGeometry.
    *
+   * Accepts A point: [x, y], or {x, y}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry.center
    */
   center?: PointInput;

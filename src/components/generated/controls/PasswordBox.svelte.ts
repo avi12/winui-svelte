@@ -46,11 +46,15 @@ export interface PasswordBoxProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox.headertemplate
    */
   headerTemplate?: DataTemplateInput;
   /**
    * Gets or sets the context for input used by this PasswordBox. The input scope, which provides a hint at the type of text input expected by the control. The default is null.
+   *
+   * Accepts an input mode by name or number, several of them, or an `InputScope`.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox.inputscope
    */

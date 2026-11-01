@@ -79,6 +79,8 @@ export interface RichEditBoxProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.headertemplate
    */
   headerTemplate?: DataTemplateInput;
@@ -90,6 +92,8 @@ export interface RichEditBoxProps extends ControlProps {
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
   /**
    * Gets or sets the context for input used by this RichEditBox. The input scope, which provides a hint at the type of text input expected by the control.
+   *
+   * Accepts an input mode by name or number, several of them, or an `InputScope`.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.inputscope
    */

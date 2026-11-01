@@ -13,6 +13,7 @@ const PACKAGE_FOLDER = path.resolve(import.meta.dirname, "../..");
 const FIXTURE = path.join(PACKAGE_FOLDER, "test", "Documentation.fixture.svelte");
 const SERVER_TIMEOUT_MILLISECONDS = 300_000;
 const GLYPH_SUMMARY = "Gets or sets the character code that identifies the icon glyph.";
+const GLYPH_INPUT_SUMMARY = "Accepts an icon glyph: the character, or its code point";
 const FONT_ICON_SUMMARY = "Represents an icon that uses a glyph from the specified font.";
 const DOCUMENTATION_URL = "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon";
 
@@ -44,6 +45,11 @@ test("a prop shows WinUI's documentation of the property on hover", async () => 
   const hover = await server.hoverAt(inside("glyph"));
   assert.ok(hover.includes(GLYPH_SUMMARY), hover);
   assert.ok(hover.includes(DOCUMENTATION_URL), hover);
+});
+
+test("a prop's hover says what its input type accepts, since the type's own comment is not shown", async () => {
+  const hover = await server.hoverAt(inside("glyph"));
+  assert.ok(hover.includes(GLYPH_INPUT_SUMMARY), hover);
 });
 
 test("the component's tag shows WinUI's documentation of the class on hover", async () => {

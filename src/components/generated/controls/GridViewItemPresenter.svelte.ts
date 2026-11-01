@@ -18,17 +18,23 @@ export interface GridViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the check mark on a selected item.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.checkbrush
    */
   checkBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the check mark hint.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.checkhintbrush
    */
   checkHintBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the check mark on an item while it's being selected using a swipe interaction.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.checkselectingbrush
    */
@@ -48,11 +54,15 @@ export interface GridViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the background of an item that's being dragged.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.dragbackground
    */
   dragBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the foreground of an item that's being dragged.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.dragforeground
    */
@@ -65,6 +75,8 @@ export interface GridViewItemPresenterProps extends ContentPresenterProps {
   dragOpacity?: number;
   /**
    * Gets or sets the brush used to render the border of an item that has focus.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.focusborderbrush
    */
@@ -90,11 +102,15 @@ export interface GridViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the placeholder background for an item.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.placeholderbackground
    */
   placeholderBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the background of an item that has the pointer over it.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.pointeroverbackground
    */
@@ -114,6 +130,8 @@ export interface GridViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the background of an item that's selected.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectedbackground
    */
   selectedBackground?: BrushInput | Snippet;
@@ -126,17 +144,23 @@ export interface GridViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the foreground of an item that's selected.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectedforeground
    */
   selectedForeground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the background of an item that's selected and has the pointer over it.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectedpointeroverbackground
    */
   selectedPointerOverBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the border of an item that's selected and has the pointer over it.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectedpointeroverborderbrush
    */

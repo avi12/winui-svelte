@@ -65,6 +65,8 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets the preferred top-level font family for the text content in this element. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.
    *
+   * Accepts A font family name or a font family.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontfamily
    */
   fontFamily?: FontFamilyInput;
@@ -89,11 +91,15 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets the top-level font weight for the RichTextBlock. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.
    *
+   * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.fontweight
    */
   fontWeight?: FontWeightInput;
   /**
    * Gets or sets the Brush to apply to the text contents of the RichTextBlock. The brush used to apply to the text contents. The default is a null brush from a pure code perspective, but the default text styles set this to Black (for Light theme) or White (for Dark theme) for a TextBlock element in UI.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.foreground
    */

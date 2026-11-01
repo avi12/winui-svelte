@@ -84,6 +84,8 @@ export interface TextBoxProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.headertemplate
    */
   headerTemplate?: DataTemplateInput;
@@ -95,6 +97,8 @@ export interface TextBoxProps extends ControlProps {
   horizontalTextAlignment?: EnumInput<typeof TextAlignment>;
   /**
    * Gets or sets the context for input used by this TextBox. The input scope, which provides a hint at the type of text input expected by the control.
+   *
+   * Accepts an input mode by name or number, several of them, or an `InputScope`.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.inputscope
    */
@@ -131,6 +135,8 @@ export interface TextBoxProps extends ControlProps {
   maxLength?: number;
   /**
    * Gets or sets a brush that describes the color of placeholder text.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.placeholderforeground
    */

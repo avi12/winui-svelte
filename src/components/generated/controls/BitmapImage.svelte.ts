@@ -56,6 +56,8 @@ export interface BitmapImageProps extends BitmapSourceProps {
   /**
    * Gets or sets the Uniform Resource Identifier (URI) of the graphics source file that generated this BitmapImage.
    *
+   * Accepts A URI string or a URI.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.urisource
    */
   uriSource?: UriInput;

@@ -81,6 +81,8 @@ export interface FrameworkElementProps extends UIElementProps {
   /**
    * Gets or sets the brush used to draw the outer border of a HighVisibility or Reveal focus visual for a FrameworkElement.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualprimarybrush
    */
   focusVisualPrimaryBrush?: BrushInput | Snippet;
@@ -92,6 +94,8 @@ export interface FrameworkElementProps extends UIElementProps {
   focusVisualPrimaryThickness?: ThicknessInput;
   /**
    * Gets or sets the brush used to draw the inner border of a HighVisibility or Reveal focus visual for a FrameworkElement.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualsecondarybrush
    */
@@ -164,6 +168,8 @@ export interface FrameworkElementProps extends UIElementProps {
   requestedTheme?: EnumInput<typeof ElementTheme>;
   /**
    * Gets the locally defined resource dictionary. In XAML, you can establish resource items as child object elements of a frameworkElement.Resources property element, through XAML implicit collection syntax. The current locally defined dictionary of resources, where each resource can be accessed by its key.
+   *
+   * Accepts A record of resources (see `ResourceRecordInput`) or a ResourceDictionary.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.resources
    */

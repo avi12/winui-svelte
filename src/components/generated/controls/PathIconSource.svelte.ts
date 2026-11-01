@@ -17,6 +17,8 @@ export interface PathIconSourceProps extends IconSourceProps {
   /**
    * Gets or sets a Geometry. A description of the shape to be drawn.
    *
+   * Accepts path data as XAML writes it ("M0,0 L10,10 Z") or a geometry.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pathiconsource.data
    */
   data?: GeometryInput | Snippet;

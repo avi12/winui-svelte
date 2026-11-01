@@ -131,6 +131,8 @@ export interface ColorPickerProps extends ControlProps {
   /**
    * Gets or sets the previous color. The previous color. The default is null.
    *
+   * Accepts A color (see `ColorInput`), or null for unset.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.previouscolor
    */
   previousColor?: NullableColorInput;

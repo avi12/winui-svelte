@@ -42,6 +42,8 @@ export interface MediaPlayerElementProps extends ControlProps {
   /**
    * Gets or sets a media source on the MediaPlayerElement. The source of the media. The default is null.
    *
+   * Accepts A media URI or a playback source (a MediaPlayerElement's `source`).
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement.source
    */
   source?: MediaPlaybackSourceInput;

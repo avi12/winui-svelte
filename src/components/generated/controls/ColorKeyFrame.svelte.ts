@@ -14,11 +14,15 @@ export interface ColorKeyFrameProps {
   /**
    * Gets or sets the time at which the key frame's target Value should be reached. The time at which the key frame's current value should be equal to its Value property. The default is null.
    *
+   * Accepts when a key frame is reached, from the start: a time span (see `TimeSpanInput`) or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.colorkeyframe.keytime
    */
   keyTime?: KeyTimeInput;
   /**
    * Gets or sets the key frame's target value. The key frame's target value, which is the value at its specified KeyTime. The default is a Color with an ARGB value of #00000000.
+   *
+   * Accepts A color as text, or WinUI's own value.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.colorkeyframe.value
    */

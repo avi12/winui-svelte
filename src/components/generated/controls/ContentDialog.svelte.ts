@@ -126,6 +126,8 @@ export interface ContentDialogProps extends ContentControlProps {
   /**
    * Gets or sets the title template.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.titletemplate
    */
   titleTemplate?: DataTemplateInput;

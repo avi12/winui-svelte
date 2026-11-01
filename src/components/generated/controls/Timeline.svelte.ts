@@ -45,6 +45,8 @@ export interface TimelineProps {
   /**
    * Gets or sets the time at which this Timeline should begin. The start time of the time line. The default value is zero. If you are programming using C# or Visual Basic, the parameter type of this parameter is projected as **System.TimeSpan?**(a nullable System.TimeSpan.
    *
+   * Accepts A time span (see `TimeSpanInput`), or null for unset (Timeline.beginTime).
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline.begintime
    */
   beginTime?: NullableTimeSpanInput;

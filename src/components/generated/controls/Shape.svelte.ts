@@ -18,6 +18,8 @@ export interface ShapeProps extends FrameworkElementProps {
   /**
    * Gets or sets the Brush that paints the interior area of the shape. A Brush that paints/fills the shape interior. The default is null, (a null brush) which is evaluated as Transparent for rendering.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.fill
    */
   fill?: BrushInput | Snippet;
@@ -30,11 +32,15 @@ export interface ShapeProps extends FrameworkElementProps {
   /**
    * Gets or sets the Brush that specifies how the Shape outline is painted. A Brush that specifies how the Shape outline is painted. The default is null.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.stroke
    */
   stroke?: BrushInput | Snippet;
   /**
    * Gets or sets a collection of Double values that indicates the pattern of dashes and gaps that is used to outline shapes.
+   *
+   * Accepts A list of numbers (a dash pattern): numbers or text, or a `DoubleCollection`.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokedasharray
    */

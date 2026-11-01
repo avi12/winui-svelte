@@ -14,11 +14,15 @@ export interface PointKeyFrameProps {
   /**
    * Gets or sets the time at which the key frame's target Value should be reached. The time at which the key frame's current value should be equal to its Value property. The default is null.
    *
+   * Accepts when a key frame is reached, from the start: a time span (see `TimeSpanInput`) or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointkeyframe.keytime
    */
   keyTime?: KeyTimeInput;
   /**
    * Gets or sets the key frame's target value. The key frame's target value, which is the value of this key frame at its specified KeyTime. The default is 0.
+   *
+   * Accepts A point: [x, y], or {x, y}.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointkeyframe.value
    */

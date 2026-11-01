@@ -91,6 +91,8 @@ export interface CalendarDatePickerProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display the content of the header. The template that specifies the visualization of the header object. The default is null.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.headertemplate
    */
   headerTemplate?: DataTemplateInput;
@@ -127,11 +129,15 @@ export interface CalendarDatePickerProps extends ControlProps {
   /**
    * Gets or sets the latest date that can be set in the picker.
    *
+   * Accepts A moment: a `Date`, milliseconds since 1970 UTC, an ISO 8601 string, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.maxdate
    */
   maxDate?: DateInput;
   /**
    * Gets or sets the earliest date that can be set in the picker.
+   *
+   * Accepts A moment: a `Date`, milliseconds since 1970 UTC, an ISO 8601 string, or WinUI's own value.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.mindate
    */

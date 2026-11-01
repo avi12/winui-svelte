@@ -29,6 +29,8 @@ export interface PanelProps extends FrameworkElementProps {
   /**
    * Gets or sets a Brush that fills the panel content area. The brush that fills the panel content area. The default is null, (a null brush) which is evaluated as Transparent for rendering.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.panel.background
    */
   background?: BrushInput | Snippet;

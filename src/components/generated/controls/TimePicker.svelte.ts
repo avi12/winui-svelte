@@ -62,6 +62,8 @@ export interface TimePickerProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display the content of the control's header. The template that specifies the visualization of the header object. The default is null.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.timepicker.headertemplate
    */
   headerTemplate?: DataTemplateInput;

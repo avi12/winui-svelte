@@ -16,6 +16,8 @@ export interface MonochromaticOverlayPresenterProps extends GridProps {
   /**
    * Gets or sets the base color used to generate the monochromatic overlay.
    *
+   * Accepts A color as text, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.monochromaticoverlaypresenter.replacementcolor
    */
   replacementColor?: ColorInput;

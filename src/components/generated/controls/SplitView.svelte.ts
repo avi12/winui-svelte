@@ -66,6 +66,8 @@ export interface SplitViewProps extends ControlProps {
   /**
    * Gets or sets the Brush to apply to the background of the Pane area of the control.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.panebackground
    */
   paneBackground?: BrushInput | Snippet;

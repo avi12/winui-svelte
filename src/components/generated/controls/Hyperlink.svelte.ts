@@ -30,6 +30,8 @@ export interface HyperlinkProps extends SpanProps {
   /**
    * Gets or sets the Uniform Resource Identifier (URI) to navigate to when the Hyperlink is activated.
    *
+   * Accepts A URI string or a URI.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.navigateuri
    */
   navigateUri?: UriInput;

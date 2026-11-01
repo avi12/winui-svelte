@@ -56,6 +56,8 @@ export interface ListViewBaseProps extends SelectorProps {
   /**
    * Gets or sets the DataTemplate used to display the content of the view footer. The template that specifies the visualization of the footer object. The default is null.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.footertemplate
    */
   footerTemplate?: DataTemplateInput;
@@ -67,6 +69,8 @@ export interface ListViewBaseProps extends SelectorProps {
   header?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the view header. The template that specifies the visualization of the header object. The default is null.
+   *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.headertemplate
    */

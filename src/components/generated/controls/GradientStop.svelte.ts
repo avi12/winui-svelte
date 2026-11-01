@@ -21,6 +21,8 @@ export interface GradientStopProps {
   /**
    * Gets or sets the color of the gradient stop. The color of the gradient stop. The default is Transparent.
    *
+   * Accepts A color as text, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.gradientstop.color
    */
   color?: ColorInput;

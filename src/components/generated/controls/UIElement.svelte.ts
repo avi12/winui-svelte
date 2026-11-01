@@ -501,6 +501,8 @@ export interface UIElementProps {
   /**
    * Gets or sets the center point of the element, which is the point about which rotation or scaling occurs. Affects the rendering position of the element.
    *
+   * Accepts A vector: [x, y, z], or {x, y, z}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.centerpoint
    */
   centerPoint?: Vector3Input;
@@ -651,6 +653,8 @@ export interface UIElementProps {
   /**
    * Gets or sets the origin point of any possible render transform declared by RenderTransform, relative to the bounds of the UIElement. The origin point of the render transform. The default value is a Point with value 0,0.
    *
+   * Accepts A point: [x, y], or {x, y}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.rendertransformorigin
    */
   renderTransformOrigin?: PointInput;
@@ -663,6 +667,8 @@ export interface UIElementProps {
   /**
    * Gets or sets the axis to rotate the element around.
    *
+   * Accepts A vector: [x, y, z], or {x, y, z}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.rotationaxis
    */
   rotationAxis?: Vector3Input;
@@ -674,6 +680,8 @@ export interface UIElementProps {
   rotationTransition?: UIElement["rotationTransition"];
   /**
    * Gets or sets the scale of the element. Scales relative to the element's CenterPoint. Affects the rendering position of the element.
+   *
+   * Accepts A vector: [x, y, z], or {x, y, z}.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.scale
    */
@@ -716,6 +724,8 @@ export interface UIElementProps {
   transformMatrix?: UIElement["transformMatrix"];
   /**
    * Gets or sets the x, y, and z rendering position of the element.
+   *
+   * Accepts A vector: [x, y, z], or {x, y, z}.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.translation
    */

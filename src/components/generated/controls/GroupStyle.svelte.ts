@@ -27,6 +27,8 @@ export interface GroupStyleProps {
   /**
    * Gets or sets the template that is used to display the group header. A DataTemplate object that is used to display the group header. The default is null.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle.headertemplate
    */
   headerTemplate?: DataTemplateInput;
@@ -44,6 +46,8 @@ export interface GroupStyleProps {
   hidesIfEmpty?: boolean;
   /**
    * Gets or sets a template that creates the panel used to lay out the items. An ItemsPanelTemplate object that creates the panel used to layout the items.
+   *
+   * Accepts XAML text (see `xamlOf`) or an ItemsPanelTemplate.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle.panel
    */

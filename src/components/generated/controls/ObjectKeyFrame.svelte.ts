@@ -15,6 +15,8 @@ export interface ObjectKeyFrameProps {
   /**
    * Gets or sets the time at which the key frame's target Value should be reached. The time at which the key frame's current value should be equal to its Value property. The default is null.
    *
+   * Accepts when a key frame is reached, from the start: a time span (see `TimeSpanInput`) or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectkeyframe.keytime
    */
   keyTime?: KeyTimeInput;

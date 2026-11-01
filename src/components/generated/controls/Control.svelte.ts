@@ -46,6 +46,8 @@ export interface ControlProps extends FrameworkElementProps {
   /**
    * Gets or sets a brush that provides the background of the control. The brush that provides the background of the control. The default is null, (a null brush) which is evaluated as Transparent for rendering.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.background
    */
   background?: BrushInput | Snippet;
@@ -57,6 +59,8 @@ export interface ControlProps extends FrameworkElementProps {
   backgroundSizing?: EnumInput<typeof BackgroundSizing>;
   /**
    * Gets or sets a brush that describes the border fill of a control. The brush that is used to fill the control's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.borderbrush
    */
@@ -82,6 +86,8 @@ export interface ControlProps extends FrameworkElementProps {
   /**
    * Gets or sets the path to the resource file that contains the default style for the control.
    *
+   * Accepts A URI string or a URI.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.defaultstyleresourceuri
    */
   defaultStyleResourceUri?: UriInput;
@@ -93,6 +99,8 @@ export interface ControlProps extends FrameworkElementProps {
   elementSoundMode?: EnumInput<typeof ElementSoundMode>;
   /**
    * Gets or sets the font used to display text in the control.
+   *
+   * Accepts A font family name or a font family.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.fontfamily
    */
@@ -118,11 +126,15 @@ export interface ControlProps extends FrameworkElementProps {
   /**
    * Gets or sets the thickness of the specified font. One of the values that specifies the thickness of the specified font. The default is Normal.
    *
+   * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.fontweight
    */
   fontWeight?: FontWeightInput;
   /**
    * Gets or sets a brush that describes the foreground color. The brush that paints the foreground of the control. The default value is a SolidColorBrush with color of Black.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.foreground
    */
@@ -177,6 +189,8 @@ export interface ControlProps extends FrameworkElementProps {
   tabNavigation?: EnumInput<typeof KeyboardNavigationMode>;
   /**
    * Gets or sets a control template. The control template defines the visual appearance of a control in UI, and is defined in XAML markup. The template that defines the appearance of the Control. The ControlTemplate must have exactly one root element as its content.
+   *
+   * Accepts XAML text (see `xamlOf`) or a ControlTemplate.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.template
    */

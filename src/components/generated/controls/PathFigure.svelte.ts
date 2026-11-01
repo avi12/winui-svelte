@@ -39,6 +39,8 @@ export interface PathFigureProps {
   /**
    * Gets or sets the Point where the PathFigure begins. The Point with value 0,0.
    *
+   * Accepts A point: [x, y], or {x, y}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure.startpoint
    */
   startPoint?: PointInput;

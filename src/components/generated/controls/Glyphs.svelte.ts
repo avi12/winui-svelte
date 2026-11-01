@@ -24,6 +24,8 @@ export interface GlyphsProps extends FrameworkElementProps {
   /**
    * Gets or sets the Brush that is used to render the glyphs. The brush to use to render the glyphs. The default is null, which is evaluated as Transparent for rendering.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.fill
    */
   fill?: BrushInput | Snippet;
@@ -35,6 +37,8 @@ export interface GlyphsProps extends FrameworkElementProps {
   fontRenderingEmSize?: number;
   /**
    * Gets or sets the location of the font used for rendering the glyphs. An object describing the Uniform Resource Identifier (URI) source of the font. The default is null.
+   *
+   * Accepts A URI string or a URI.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.fonturi
    */

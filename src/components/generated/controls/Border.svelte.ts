@@ -36,6 +36,8 @@ export interface BorderProps extends FrameworkElementProps {
   /**
    * Gets or sets the Brush that fills the background (inner area) of the border. The brush that fills the background. The default is null, (a null brush) which is evaluated as Transparent for rendering.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border.background
    */
   background?: BrushInput | Snippet;
@@ -53,6 +55,8 @@ export interface BorderProps extends FrameworkElementProps {
   backgroundTransition?: Border["backgroundTransition"];
   /**
    * Gets or sets the Brush that is applied to the edge area of the Border. The brush that fills the border. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border.borderbrush
    */

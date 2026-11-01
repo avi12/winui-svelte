@@ -23,6 +23,8 @@ export interface ArcSegmentProps extends PathSegmentProps {
   /**
    * Gets or sets the endpoint of the elliptical arc. The point to which the arc is drawn. The default is a Point with value 0,0.
    *
+   * Accepts A point: [x, y], or {x, y}.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment.point
    */
   point?: PointInput;
@@ -34,6 +36,8 @@ export interface ArcSegmentProps extends PathSegmentProps {
   rotationAngle?: number;
   /**
    * Gets or sets the x-radius and y-radius of the arc as a Size structure. A Size with value 0,0.
+   *
+   * Accepts A size: [width, height], or {width, height}.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment.size
    */

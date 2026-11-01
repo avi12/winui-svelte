@@ -99,6 +99,8 @@ export interface TabViewProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display each item.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabitemtemplate
    */
   tabItemTemplate?: DataTemplateInput;
@@ -117,6 +119,8 @@ export interface TabViewProps extends ControlProps {
   /**
    * Gets or sets the DataTemplate used to display the content of the TabStripFooter.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabstripfootertemplate
    */
   tabStripFooterTemplate?: DataTemplateInput;
@@ -128,6 +132,8 @@ export interface TabViewProps extends ControlProps {
   tabStripHeader?: ObjectInput | Snippet;
   /**
    * Gets or sets the DataTemplate used to display the content of the TabStripHeader.
+   *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.tabstripheadertemplate
    */

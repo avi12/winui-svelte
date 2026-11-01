@@ -53,6 +53,8 @@ export interface TextElementProps {
   /**
    * Gets or sets the preferred top-level font family for the content of the element. The preferred font family, or a primary preferred font family with one or more fallback font families. See FontFamily for default information.
    *
+   * Accepts A font family name or a font family.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontfamily
    */
   fontFamily?: FontFamilyInput;
@@ -77,11 +79,15 @@ export interface TextElementProps {
   /**
    * Gets or sets the top-level font weight to select from the font family for the content in this element. One of the FontWeights property values, specifying the font weight. The default is Normal.
    *
+   * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontweight
    */
   fontWeight?: FontWeightInput;
   /**
    * Gets or sets the Brush to apply to the content in this element. The brush that is applied to the text content. The default is a SolidColorBrush with Color value Black.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.foreground
    */

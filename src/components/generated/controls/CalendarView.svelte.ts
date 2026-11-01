@@ -43,17 +43,23 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the background of a date that can't be selected.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.blackoutbackground
    */
   blackoutBackground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the foreground of a date that can't be selected.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.blackoutforeground
    */
   blackoutForeground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that marks out a date that can't be selected.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.blackoutstrikethroughbrush
    */
@@ -67,11 +73,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the background of a calendar item.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.calendaritembackground
    */
   calendarItemBackground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the border of a calendar item.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.calendaritemborderbrush
    */
@@ -91,11 +101,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the background of a calendar item that is disabled.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.calendaritemdisabledbackground
    */
   calendarItemDisabledBackground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the foreground of a calendar item.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.calendaritemforeground
    */
@@ -103,11 +117,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the background of a calendar item that the cursor is over.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.calendaritemhoverbackground
    */
   calendarItemHoverBackground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the background of a calendar item that is pressed.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.calendaritempressedbackground
    */
@@ -120,6 +138,8 @@ export interface CalendarViewProps extends ControlProps {
   calendarViewDayItemStyle?: StyleInput;
   /**
    * Gets or sets the font used to display day values in the calendar.
+   *
+   * Accepts A font family name or a font family.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.dayitemfontfamily
    */
@@ -139,6 +159,8 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets the font weight used to display day values in the calendar.
    *
+   * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.dayitemfontweight
    */
   dayItemFontWeight?: FontWeightInput;
@@ -156,6 +178,8 @@ export interface CalendarViewProps extends ControlProps {
   dayOfWeekFormat?: string;
   /**
    * Gets or sets a brush that provides the foreground of a calendar item that is disabled.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.disabledforeground
    */
@@ -175,6 +199,8 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets the font used to display the first-of-month banner in the calendar.
    *
+   * Accepts A font family name or a font family.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.firstofmonthlabelfontfamily
    */
   firstOfMonthLabelFontFamily?: FontFamilyInput;
@@ -193,6 +219,8 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets the font weight used to display the first-of-month banner in the calendar.
    *
+   * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.firstofmonthlabelfontweight
    */
   firstOfMonthLabelFontWeight?: FontWeightInput;
@@ -204,6 +232,8 @@ export interface CalendarViewProps extends ControlProps {
   firstOfMonthLabelMargin?: ThicknessInput;
   /**
    * Gets or sets the font used to display the first-of-year banner in the calendar.
+   *
+   * Accepts A font family name or a font family.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.firstofyeardecadelabelfontfamily
    */
@@ -223,6 +253,8 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets the font weight used to display the first-of-year banner in the calendar.
    *
+   * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.firstofyeardecadelabelfontweight
    */
   firstOfYearDecadeLabelFontWeight?: FontWeightInput;
@@ -234,6 +266,8 @@ export interface CalendarViewProps extends ControlProps {
   firstOfYearDecadeLabelMargin?: ThicknessInput;
   /**
    * Gets or sets a brush that provides the border of a calendar item that has focus.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.focusborderbrush
    */
@@ -252,6 +286,8 @@ export interface CalendarViewProps extends ControlProps {
   horizontalFirstOfMonthLabelAlignment?: EnumInput<typeof HorizontalAlignment>;
   /**
    * Gets or sets a brush that provides the border of a calendar item while the pointer is over it.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.hoverborderbrush
    */
@@ -277,17 +313,23 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets the last date to be displayed.
    *
+   * Accepts A moment: a `Date`, milliseconds since 1970 UTC, an ISO 8601 string, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.maxdate
    */
   maxDate?: DateInput;
   /**
    * Gets or sets the first date to display.
    *
+   * Accepts A moment: a `Date`, milliseconds since 1970 UTC, an ISO 8601 string, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.mindate
    */
   minDate?: DateInput;
   /**
    * Gets or sets the font used to display the month and year items in the calendar.
+   *
+   * Accepts A font family name or a font family.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.monthyearitemfontfamily
    */
@@ -307,6 +349,8 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets the font weight used to display the month and year items in the calendar.
    *
+   * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.monthyearitemfontweight
    */
   monthYearItemFontWeight?: FontWeightInput;
@@ -325,11 +369,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the background of a date that's out of scope.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.outofscopebackground
    */
   outOfScopeBackground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the foreground of calendar items that are outside the current scope (month, year, or decade).
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.outofscopeforeground
    */
@@ -337,11 +385,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the foreground of an out-of-scope calendar item that the cursor is over.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.outofscopehoverforeground
    */
   outOfScopeHoverForeground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the foreground of an out-of-scope calendar item that is pressed.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.outofscopepressedforeground
    */
@@ -349,11 +401,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the border of a calendar item while it's pressed.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.pressedborderbrush
    */
   pressedBorderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the foreground of a calendar item while it's pressed.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.pressedforeground
    */
@@ -361,11 +417,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the border of the currently selected calendar item.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.selectedborderbrush
    */
   selectedBorderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the border of a selected calendar item that is disabled.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.selecteddisabledborderbrush
    */
@@ -373,11 +433,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the foreground of a disabled calendar item that is selected.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.selecteddisabledforeground
    */
   selectedDisabledForeground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the foreground of a calendar item that's selected.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.selectedforeground
    */
@@ -385,11 +449,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the border of a selected calendar item while the pointer is over it.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.selectedhoverborderbrush
    */
   selectedHoverBorderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the foreground of a selected calendar item that the cursor is over.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.selectedhoverforeground
    */
@@ -397,11 +465,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the border of a selected calendar item while it's pressed.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.selectedpressedborderbrush
    */
   selectedPressedBorderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the foreground of a selected calendar item that is pressed.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.selectedpressedforeground
    */
@@ -415,11 +487,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the background of the current date in the calendar.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.todaybackground
    */
   todayBackground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the background of the current date when it can't be selected.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.todayblackoutbackground
    */
@@ -427,11 +503,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the foreground of the current date when it can't be selected.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.todayblackoutforeground
    */
   todayBlackoutForeground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the background of the current date when it is disabled.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.todaydisabledbackground
    */
@@ -439,11 +519,15 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets the font weight used to display the current date in the calendar.
    *
+   * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.todayfontweight
    */
   todayFontWeight?: FontWeightInput;
   /**
    * Gets or sets a brush that provides the foreground of the calendar item for the current date.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.todayforeground
    */
@@ -451,17 +535,23 @@ export interface CalendarViewProps extends ControlProps {
   /**
    * Gets or sets a brush that provides the background of the current date when the cursor is over it.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.todayhoverbackground
    */
   todayHoverBackground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the background of the current date when it is pressed.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.todaypressedbackground
    */
   todayPressedBackground?: BrushInput | Snippet;
   /**
    * Gets or sets a brush that provides the inner border of the current date when it is selected.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.todayselectedinnerborderbrush
    */

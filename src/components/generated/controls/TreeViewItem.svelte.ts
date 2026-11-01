@@ -29,6 +29,8 @@ export interface TreeViewItemProps extends ListViewItemProps {
   /**
    * Gets or sets the Brush used to paint node glyphs on a TreeView.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.glyphbrush
    */
   glyphBrush?: BrushInput | Snippet;

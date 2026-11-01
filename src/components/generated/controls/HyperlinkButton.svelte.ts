@@ -16,6 +16,8 @@ export interface HyperlinkButtonProps extends ButtonBaseProps {
   /**
    * Gets or sets the Uniform Resource Identifier (URI) to navigate to when the HyperlinkButton is clicked.
    *
+   * Accepts A URI string or a URI.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hyperlinkbutton.navigateuri
    */
   navigateUri?: UriInput;

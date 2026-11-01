@@ -23,6 +23,8 @@ export interface SolidColorBrushProps extends BrushProps {
   /**
    * Gets or sets the color of this SolidColorBrush. The brush's color. The default value is Transparent.
    *
+   * Accepts A color as text, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.solidcolorbrush.color
    */
   color?: ColorInput;

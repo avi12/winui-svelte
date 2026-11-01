@@ -28,11 +28,15 @@ export interface WebView2Props extends FrameworkElementProps {
   /**
    * Gets or sets the color to use as the WebView2 background when the HTML content does not specify a color.
    *
+   * Accepts A color as text, or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2.defaultbackgroundcolor
    */
   defaultBackgroundColor?: ColorInput;
   /**
    * Gets or sets the URI of the current top level document.
+   *
+   * Accepts A URI string or a URI.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2.source
    */

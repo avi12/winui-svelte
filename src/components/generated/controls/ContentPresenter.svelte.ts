@@ -58,6 +58,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets the Brush to apply to the background of content handled by the ContentPresenter. The brush used as the background brush for the contents. The default is a null brush from a pure code perspective, but system style defaults set this to White (for Light theme) or Black (for Dark theme).
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.background
    */
   background?: BrushInput | Snippet;
@@ -75,6 +77,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   backgroundTransition?: ContentPresenter["backgroundTransition"];
   /**
    * Gets or sets a brush that describes the border fill of the content presenter. The brush that is used to fill the content presenter's border. The default is null, (a null brush) which is evaluated as Transparent for rendering.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.borderbrush
    */
@@ -100,6 +104,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets the template that is used to display the content of the control. A DataTemplate that defines the visualization of the content. The default is null.
    *
+   * Accepts XAML text (see `xamlOf`) or a DataTemplate.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.contenttemplate
    */
   contentTemplate?: DataTemplateInput;
@@ -117,6 +123,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   cornerRadius?: CornerRadiusInput;
   /**
    * Gets or sets the preferred top-level font family for the text content presented by the ContentPresenter. A FontFamily object that specifies the preferred font family, or a primary preferred font family with one or more fallback font families. For information about defaults, see the FontFamily class topic.
+   *
+   * Accepts A font family name or a font family.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.fontfamily
    */
@@ -142,11 +150,15 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets the top-level font weight for the text content presented by the ContentPresenter. The requested font weight, which is a FontWeight that is obtained from one of the FontWeights property values. The default is Normal.
    *
+   * Accepts A weight by name ("bold") or number (700), or WinUI's own value.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.fontweight
    */
   fontWeight?: FontWeightInput;
   /**
    * Gets or sets the Brush to apply to the text content handled by the ContentPresenter. The brush used as the foreground brush for the text contents. The default is a null brush from a pure code perspective, but system style defaults set this to Black (for Light theme) or White (for Dark theme).
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.foreground
    */

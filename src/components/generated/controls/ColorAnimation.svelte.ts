@@ -17,6 +17,8 @@ export interface ColorAnimationProps extends TimelineProps {
   /**
    * Gets or sets the total amount by which the animation changes its starting value. The total amount by which the animation changes its starting value. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **Color?**(a nullable Color.
    *
+   * Accepts A color (see `ColorInput`), or null for unset.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation.by
    */
   by?: NullableColorInput;
@@ -35,11 +37,15 @@ export interface ColorAnimationProps extends TimelineProps {
   /**
    * Gets or sets the animation's starting value. The starting value of the animation. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **Color?**(a nullable Color.
    *
+   * Accepts A color (see `ColorInput`), or null for unset.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation.from
    */
   from?: NullableColorInput;
   /**
    * Gets or sets the animation's ending value. The ending value of the animation. The default is null. If you are programming using C# or Visual Basic, the type of this property is projected as **Color?**(a nullable Color.
+   *
+   * Accepts A color (see `ColorInput`), or null for unset.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation.to
    */

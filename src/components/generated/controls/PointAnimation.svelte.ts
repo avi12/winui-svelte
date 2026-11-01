@@ -17,6 +17,8 @@ export interface PointAnimationProps extends TimelineProps {
   /**
    * Gets or sets the total amount by which the animation changes its starting value. The total amount by which the animation changes its starting value. The default is null. If you are programming using C#or Microsoft Visual Basic, the type of this property is projected as **Point?**(a nullable Point.
    *
+   * Accepts A point, or null for unset.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation.by
    */
   by?: NullablePointInput;
@@ -35,11 +37,15 @@ export interface PointAnimationProps extends TimelineProps {
   /**
    * Gets or sets the animation's starting value. The starting value of the animation. The default is null. If you are programming using C#or Microsoft Visual Basic, the type of this property is projected as **Point?**(a nullable Point.
    *
+   * Accepts A point, or null for unset.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation.from
    */
   from?: NullablePointInput;
   /**
    * Gets or sets the animation's ending value. The ending value of the animation. The default is null. If you are programming using C#or Microsoft Visual Basic, the type of this property is projected as **Point?**(a nullable Point.
+   *
+   * Accepts A point, or null for unset.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation.to
    */

@@ -29,11 +29,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the border of the check box.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxborderbrush
    */
   checkBoxBorderBrush?: BrushInput | Snippet;
   /**
    * In a ListView in multiple selection mode, gets or sets the brush used to render an item's check box border. In a GridView, the check box background is set rather than the border, and only for unselected items.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxbrush
    */
@@ -47,11 +51,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the border of the check box when it's disabled.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxdisabledborderbrush
    */
   checkBoxDisabledBorderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the check box when it's disabled.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxdisabledbrush
    */
@@ -59,11 +67,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the border of the check box when the pointer is over it.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxpointeroverborderbrush
    */
   checkBoxPointerOverBorderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the check box when the pointer is over it.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxpointeroverbrush
    */
@@ -71,11 +83,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the border of the check box when it's pressed.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxpressedborderbrush
    */
   checkBoxPressedBorderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the check box when it's pressed.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxpressedbrush
    */
@@ -83,11 +99,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the check box when it's selected.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxselectedbrush
    */
   checkBoxSelectedBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render a disabled check box when it's selected.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxselecteddisabledbrush
    */
@@ -95,11 +115,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render a selected check box when the pointer is over it.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxselectedpointeroverbrush
    */
   checkBoxSelectedPointerOverBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render a selected check box when it's pressed.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkboxselectedpressedbrush
    */
@@ -107,17 +131,23 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the check mark on a selected item.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkbrush
    */
   checkBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the check mark on disabled check box.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkdisabledbrush
    */
   checkDisabledBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the check mark hint. This property is ignored for a Windows 10 app.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkhintbrush
    */
@@ -131,11 +161,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the check mark when it's pressed.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkpressedbrush
    */
   checkPressedBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the check mark on an item while it's being selected using a swipe interaction. This property is ignored for a Windows 10 app.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.checkselectingbrush
    */
@@ -155,11 +189,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the background of an item that's being dragged.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.dragbackground
    */
   dragBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the foreground of an item that's being dragged.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.dragforeground
    */
@@ -173,11 +211,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the border of an item that has focus. Also see FocusSecondaryBorderBrush.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.focusborderbrush
    */
   focusBorderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the second color of the border around an item that has focus. Focus is rendered as a composition of two brushes. This property is used together the FocusBorderBrush to specify these two brushes.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.focussecondaryborderbrush
    */
@@ -203,11 +245,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the placeholder background for an item.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.placeholderbackground
    */
   placeholderBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the background of an item that has the pointer over it.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.pointeroverbackground
    */
@@ -221,17 +267,23 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the border of the list view item when the pointer is over it.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.pointeroverborderbrush
    */
   pointerOverBorderBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the foreground when the pointer is over the item.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.pointeroverforeground
    */
   pointerOverForeground?: BrushInput | Snippet;
   /**
    * In a ListView, gets or sets the brush used to render the background of an unselected item while the user is pressing it. In a GridView, the item's border is set rather than the background.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.pressedbackground
    */
@@ -245,6 +297,8 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the background of the reveal effect.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.revealbackground
    */
   revealBackground?: BrushInput | Snippet;
@@ -256,6 +310,8 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   revealBackgroundShowsAboveContent?: boolean;
   /**
    * Gets or sets the brush used to render the border of the reveal effect.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.revealborderbrush
    */
@@ -269,11 +325,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the background of an item that's selected.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectedbackground
    */
   selectedBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the border of the list view item when it's selected.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectedborderbrush
    */
@@ -287,11 +347,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the background of a disabled list view item when it's selected.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selecteddisabledbackground
    */
   selectedDisabledBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the border of a disabled list view item when it's selected.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selecteddisabledborderbrush
    */
@@ -299,11 +363,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the foreground of an item that's selected.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectedforeground
    */
   selectedForeground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the inner border of a list view item when it's selected.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectedinnerborderbrush
    */
@@ -311,11 +379,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the background of an item that's selected and has the pointer over it.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectedpointeroverbackground
    */
   selectedPointerOverBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the border of an item that's selected and has the pointer over it. This property is ignored for a Windows 10 app.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectedpointeroverborderbrush
    */
@@ -323,11 +395,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * In a ListView, gets or sets the brush used to render the background of a selected item while the user is pressing it. In a GridView, the item's border is set rather than the background.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectedpressedbackground
    */
   selectedPressedBackground?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the border of a selected list view item when it's pressed.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectedpressedborderbrush
    */
@@ -341,6 +417,8 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the selection indicator of a list view item.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectionindicatorbrush
    */
   selectionIndicatorBrush?: BrushInput | Snippet;
@@ -352,6 +430,8 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   selectionIndicatorCornerRadius?: CornerRadiusInput;
   /**
    * Gets or sets the brush used to render the selection indicator of a disabled list view item.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectionindicatordisabledbrush
    */
@@ -365,11 +445,15 @@ export interface ListViewItemPresenterProps extends ContentPresenterProps {
   /**
    * Gets or sets the brush used to render the selection indicator of a list view item when the pointer is over it.
    *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectionindicatorpointeroverbrush
    */
   selectionIndicatorPointerOverBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the brush used to render the selection indicator of a list view item when it's pressed.
+   *
+   * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectionindicatorpressedbrush
    */

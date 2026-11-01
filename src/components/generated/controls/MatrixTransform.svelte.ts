@@ -16,6 +16,8 @@ export interface MatrixTransformProps extends TransformProps {
   /**
    * Gets or sets the Matrix that defines this transformation. The Matrix structure that defines this transformation. The default is an identity Matrix. An identity matrix has a value of 1 in coefficients [1,1], [2,2], and [3,3]; and a value of 0 in the rest of the coefficients.
    *
+   * Accepts A matrix: [m11, m12, m21, m22, offsetX, offsetY], or the object with those names.
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.matrixtransform.matrix
    */
   matrix?: MatrixInput;
