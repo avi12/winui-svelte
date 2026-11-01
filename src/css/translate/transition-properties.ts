@@ -4,10 +4,8 @@ import { parseEasing } from "./easing.ts";
 import type { GroupInput, Output, PropertyGroup, WriteContext } from "./property-kit.ts";
 import { parseColor } from "#src/css/parse/colors.js";
 import type { Reader } from "#src/css/parse/reader.js";
-import { parseMilliseconds, splitCommas, splitWords } from "#src/css/parse/values.js";
+import { parseLength, parseMilliseconds, splitCommas, splitWords } from "#src/css/parse/values.js";
 
-const BORDER_COLOR = "border-color";
-const BORDER_COLOR_TARGET = "border-color-transition";
 const VISIBILITY_TARGET = "visibility-transition";
 const ALLOW_DISCRETE = "allow-discrete";
 const VISIBLE = "Visible";
@@ -48,30 +46,84 @@ function duration(milliseconds: number) {
   return `0:0:${seconds}`;
 }
 
-// The color a border brush last had (the one a change is animated from).
-const borderColors = new WeakMap<object, string>();
+interface StoryboardProperty {
+  kind: TrackKind;
+  target: string;
+  brush: string | null;
+}
 
-// What each write's text stands for (the write's value is a string), as the animation group does.
-const resolved = new Map<string, BorderColorTransition>();
+// What a Storyboard animates because WinUI has no implicit transition for it: a Double, or the Color of a brush.
+const STORYBOARD_PROPERTIES = new Map<string, StoryboardProperty>([
+  ["border-color", {
+    kind: TrackKind.COLOR,
+    target: "BorderBrush.(SolidColorBrush.Color)",
+    brush: "borderBrush"
+  }],
+  ["color", {
+    kind: TrackKind.COLOR,
+    target: "Foreground.(SolidColorBrush.Color)",
+    brush: "foreground"
+  }],
+  ...[
+    ["width", "Width"],
+    ["height", "Height"],
+    ["min-width", "MinWidth"],
+    ["min-height", "MinHeight"],
+    ["max-width", "MaxWidth"],
+    ["max-height", "MaxHeight"],
+    ["font-size", "FontSize"]
+  ].map(([member = "", target = ""]) => [member, {
+    kind: TrackKind.DOUBLE,
+    target,
+    brush: null
+  }] as const)
+]);
 
-interface BorderColorTransition {
-  color: string;
+interface StoryboardTransition {
+  value: number | string;
   durationMs: number;
   delayMs: number;
   easing: string;
 }
 
-// `border-color 200ms ease-out 50ms`: a timing function and a delay may follow the duration.
-function borderColorWrite({ input, durationMs, rest }: {
+// The value each element last had for a property (the one a change is animated from).
+const lastValues = new WeakMap<object, Map<string, number | string>>();
+
+// What each write's text stands for (the write's value is a string), as the animation group does.
+const resolved = new Map<string, StoryboardTransition>();
+
+function targetOf(member: string) {
+  return `${member}-transition`;
+}
+
+// The value a rule set for the property: a color written out, or a length in px.
+function writtenValue({ input, member, kind }: {
   input: GroupInput;
+  member: string;
+  kind: TrackKind;
+}) {
+  const text = (input.computed.get(member)?.value ?? "").trim();
+  return kind === TrackKind.COLOR ? parseColor(text) : parseLength(text);
+}
+
+// `border-color 1s ease-out 50ms`: a timing function and a delay may follow the duration.
+function storyboardWrite({ input, member, durationMs, rest }: {
+  input: GroupInput;
+  member: string;
   durationMs: number;
   rest: readonly string[];
 }) {
   const reader = input.reading("transition");
-  const color = parseColor((input.computed.get(BORDER_COLOR)?.value ?? "").trim());
-  const isColorMissing = color === null;
-  if (isColorMissing) {
-    reader.warn("transition: border-color is animated between colors written out (hex, rgb(), a name) in the border-color of the rules that apply; ignored");
+  const spec = STORYBOARD_PROPERTIES.get(member);
+  const value = spec === undefined ? null : writtenValue({
+    input,
+    member,
+    kind: spec.kind
+  });
+  const isValueMissing = value === null;
+  if (isValueMissing) {
+    const written = spec?.kind === TrackKind.COLOR ? "colors written out (hex, rgb(), a name)" : "lengths written in px";
+    reader.warn(`transition: ${member} is animated between ${written} in the ${member} of the rules that apply; ignored`);
     return [];
   }
 
@@ -80,42 +132,51 @@ function borderColorWrite({ input, durationMs, rest }: {
   const unread = rest.filter(word => parseEasing(word) === null && parseMilliseconds(word) === null);
   const hasUnread = unread.length > 0;
   if (hasUnread) {
-    reader.warn(`transition: "${unread.join(" ")}" ignored (a border-color transition takes a duration, a timing function and a delay)`);
+    reader.warn(`transition: "${unread.join(" ")}" ignored (a ${member} transition takes a duration, a timing function and a delay)`);
   }
 
   const transition = {
-    color,
+    value,
     durationMs,
     delayMs: delays[0] ?? 0,
     easing
-  } satisfies BorderColorTransition;
-  const value = JSON.stringify(transition);
-  resolved.set(value, transition);
+  } satisfies StoryboardTransition;
+  const text = JSON.stringify(transition);
+  resolved.set(text, transition);
   return [{
     kind: "write",
-    target: BORDER_COLOR_TARGET,
-    value
+    target: targetOf(member),
+    value: text
   } as const];
 }
 
-// When the border color changes, its brush runs from the old color to the new one on a Storyboard.
-function animateBorderColor({ control, value, native }: WriteContext) {
+// When the property changes, a Storyboard runs it from the old value to the new one.
+function animateStoryboard({ context, member }: {
+  context: WriteContext;
+  member: string;
+}) {
+  const { control, value, native } = context;
   const transition = resolved.get(value);
-  const isUnknown = transition === undefined;
+  const spec = STORYBOARD_PROPERTIES.get(member);
+  const isUnknown = transition === undefined || spec === undefined;
   if (isUnknown) {
     return null;
   }
 
-  const { color, durationMs, delayMs, easing } = transition;
-  const from = borderColors.get(control);
-  borderColors.set(control, color);
-  const isUnchanged = from === undefined || from === color;
+  const { value: to, durationMs, delayMs, easing } = transition;
+  const lasts = lastValues.get(control) ?? new Map<string, number | string>();
+  lastValues.set(control, lasts);
+  const from = lasts.get(member);
+  lasts.set(member, to);
+  const isUnchanged = from === undefined || from === to;
   if (isUnchanged) {
     return null;
   }
 
+  const brush = spec.kind === TrackKind.COLOR ? spec.brush : null;
+  const isBrush = brush !== null;
   const xaml = storyboardXaml({
-    name: BORDER_COLOR_TARGET,
+    name: targetOf(member),
     durationMs,
     delayMs,
     easing,
@@ -124,9 +185,9 @@ function animateBorderColor({ control, value, native }: WriteContext) {
     fill: AnimationFill.FORWARDS,
     isPaused: false,
     tracks: [{
-      target: "BorderBrush.(SolidColorBrush.Color)",
-      kind: TrackKind.COLOR,
-      brush: "borderBrush",
+      target: spec.target,
+      kind: spec.kind,
+      brush: spec.brush,
       isTransform: false,
       frames: [
         {
@@ -136,7 +197,7 @@ function animateBorderColor({ control, value, native }: WriteContext) {
         },
         {
           offset: 1,
-          value: color,
+          value: to,
           easing: null
         }
       ]
@@ -149,10 +210,10 @@ function animateBorderColor({ control, value, native }: WriteContext) {
       isPaused: false
     }],
     hasTransform: false,
-    brushes: [{
-      property: "borderBrush",
-      color: from
-    }]
+    brushes: isBrush ? [{
+      property: brush,
+      color: String(from)
+    }] : []
   });
 }
 
@@ -270,11 +331,12 @@ function entryOutputs({ input, reader, entry }: {
   const [property = "", time, ...rest] = splitWords(entry);
   const name = property.toLowerCase();
   const milliseconds = time === undefined ? null : parseMilliseconds(time);
-  const isBorderColor = name === BORDER_COLOR && milliseconds !== null;
-  if (isBorderColor) {
+  const isStoryboard = STORYBOARD_PROPERTIES.has(name) && milliseconds !== null;
+  if (isStoryboard) {
     outputs.push(
-      ...borderColorWrite({
+      ...storyboardWrite({
         input,
+        member: name,
         durationMs: milliseconds,
         rest
       })
@@ -303,7 +365,7 @@ function entryOutputs({ input, reader, entry }: {
   const targets = TRANSITION_TARGETS.get(name);
   const isTargetsMissing = targets === undefined;
   if (isTargetsMissing) {
-    reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background, border-color, a shadow's depth, and display or visibility with allow-discrete); ignored`);
+    reader.warn(`transition: ${property} cannot be animated (WinUI animates opacity, translate, scale, rotate, background, color, border-color, width, height, font-size, a shadow's depth, and display or visibility with allow-discrete); ignored`);
     return outputs;
   }
 
@@ -344,13 +406,23 @@ function transition(input: GroupInput) {
     }));
 }
 
+const storyboardHandlers = Object.fromEntries(
+  [...STORYBOARD_PROPERTIES.keys()].map(member => [
+    targetOf(member),
+    (context: WriteContext) => animateStoryboard({
+      context,
+      member
+    })
+  ])
+);
+
 /** The group of `transition`: WinUI's implicit transitions, and a border color's Storyboard. */
 export function transitionProperty() {
   return {
     members: ["transition"],
     lower: transition,
     writes: {
-      [BORDER_COLOR_TARGET]: animateBorderColor,
+      ...storyboardHandlers,
       [VISIBILITY_TARGET]: animateVisibility
     }
   } satisfies PropertyGroup;

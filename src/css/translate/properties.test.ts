@@ -671,7 +671,7 @@ test("a border-color transition is a write the runtime animates, with the colors
   const [[target, value] = ["", ""]] = result.writes;
   assert.equal(target, "border-color-transition");
   assert.deepEqual(JSON.parse(value), {
-    color: "#FF0000",
+    value: "#FF0000",
     durationMs: 1000,
     delayMs: 50,
     easing: "ease-out"
@@ -906,4 +906,38 @@ test("a display transition without allow-discrete warns and is dropped", () => {
   });
   assert.deepEqual(result.writes, []);
   assert.match(result.warnings.join(), /transition: display steps instead of blending: add allow-discrete/u);
+});
+
+test("a width, height or font-size transition is a write the runtime animates, with the length in px", () => {
+  for (const [member, length] of [["width", "120px"], ["height", "40px"], ["font-size", "18px"]] as const) {
+    const result = lower({
+      elementType: null,
+      declarations: `${member}: ${length}; transition: ${member} 300ms ease-out`
+    });
+    assert.deepEqual(result.errors, []);
+    const [[target, value] = ["", ""]] = result.writes;
+    assert.equal(target, `${member}-transition`);
+    assert.equal(typeof JSON.parse(value).value, "number");
+    assert.equal(JSON.parse(value).durationMs, 300);
+  }
+});
+
+test("a color transition animates the text color written out", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "color: #00ff00; transition: color 1s"
+  });
+  assert.deepEqual(result.errors, []);
+  const [[target, value] = ["", ""]] = result.writes;
+  assert.equal(target, "color-transition");
+  assert.equal(JSON.parse(value).value, "#00FF00");
+});
+
+test("a height transition to auto warns and is dropped", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "height: auto; transition: height 1s"
+  });
+  assert.deepEqual(result.writes, []);
+  assert.match(result.warnings.join(), /height is animated between lengths written in px/u);
 });
