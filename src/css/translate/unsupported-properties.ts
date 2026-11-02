@@ -40,6 +40,8 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["content", "WinUI has no generated content"],
   ["list-style", "WinUI has no lists to mark"],
   ["text-indent", "WinUI has no text indent"],
+  ["caret-color", "WinUI's TextBox has no caret brush; the caret follows Foreground"],
+  ["text-box-trim", "no WinUI property trims the line box to the glyphs; OpticalMarginAlignment and TextLineBounds move the edges differently"],
   ["aspect-ratio", `a ratio ${OPT_IN}`],
   ["clip-path", `a clip ${OPT_IN}`],
   ["mix-blend-mode", `a blend mode ${OPT_IN}`],
