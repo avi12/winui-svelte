@@ -55,11 +55,15 @@ export interface RadialGradientBrushProps extends XamlCompositionBrushBaseProps 
   /**
    * Gets or sets the X axis radius of the ellipse that contains the gradient. The X axis radius of the ellipse that contains the gradient. The default is 0.5.
    *
+   * Also settable in CSS as `rx`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush.radiusx
    */
   radiusX?: number;
   /**
    * Gets or sets the Y axis radius of the ellipse that contains the gradient. The Y axis radius of the ellipse that contains the gradient. The default is 0.5.
+   *
+   * Also settable in CSS as `ry`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.radialgradientbrush.radiusy
    */

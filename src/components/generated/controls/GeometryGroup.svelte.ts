@@ -23,6 +23,8 @@ export interface GeometryGroupProps extends GeometryProps {
   /**
    * Gets or sets how the intersecting areas of the objects contained in this GeometryGroup are combined. One of the enumeration values that specifies how the intersecting areas are combined to form the resulting area. The default is EvenOdd.
    *
+   * Also settable in CSS as `fill-rule`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.geometrygroup.fillrule
    */
   fillRule?: EnumInput<typeof FillRule>;

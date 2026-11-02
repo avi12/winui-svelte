@@ -544,6 +544,7 @@ build error with its file and line; nothing is silently ignored
 | --- | --- |
 | `margin`, `padding`, `border-width`, `border-color`, `border-radius` | `Margin`, `Padding`, `BorderThickness`, `BorderBrush`, `CornerRadius` |
 | `color`, `background-color`, `opacity` | `Foreground`, `Background`, `Opacity` |
+| `fill`, `stroke`, `stroke-width`, `stroke-dasharray`, `stroke-dashoffset`, `stroke-linecap`, `stroke-linejoin`, `stroke-miterlimit`, `rx`, `ry`, `fill-rule` | a shape's `Fill`, `Stroke`, `StrokeThickness`, `StrokeDashArray`, `StrokeDashOffset`, `StrokeStartLineCap` and `StrokeEndLineCap`, `StrokeLineJoin`, `StrokeMiterLimit`, `RadiusX`, `RadiusY`, `FillRule` |
 | `background-image` or `background` with `linear-gradient()` or `radial-gradient()` | a `LinearGradientBrush` or `RadialGradientBrush` Background (a sheet that uses one carries the parser; one that does not, does not) |
 | `width`, `height`, `min-*`, `max-*` | `Width`, `Height`, `MinWidth`... |
 | `font-size`, `font-weight`, `font-family`, `font-style`, `line-height`, `letter-spacing`, `text-align`, `text-wrap`, `text-overflow`, `text-decoration` | the `TextBlock` and `Control` font and text properties |

@@ -20,6 +20,8 @@ export interface ShapeProps extends FrameworkElementProps {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `fill`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.fill
    */
   fill?: BrushInput | Snippet;
@@ -44,6 +46,8 @@ export interface ShapeProps extends FrameworkElementProps {
    *
    * Accepts A list of numbers (a dash pattern): numbers or text, or a `DoubleCollection`.
    *
+   * Also settable in CSS as `stroke-dasharray`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokedasharray
    */
   strokeDashArray?: DoubleCollectionInput;
@@ -55,6 +59,8 @@ export interface ShapeProps extends FrameworkElementProps {
   strokeDashCap?: EnumInput<typeof PenLineCap>;
   /**
    * Gets or sets a value that specifies the distance within the dash pattern where a dash begins. A value that represents the distance within the dash pattern where a dash begins. The default value is 0.
+   *
+   * Also settable in CSS as `stroke-dashoffset`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokedashoffset
    */
@@ -68,11 +74,15 @@ export interface ShapeProps extends FrameworkElementProps {
   /**
    * Gets or sets a PenLineJoin enumeration value that specifies the type of join that is used at the vertices of a Shape.
    *
+   * Also settable in CSS as `stroke-linejoin`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokelinejoin
    */
   strokeLineJoin?: EnumInput<typeof PenLineJoin>;
   /**
    * Gets or sets a limit on the ratio of the miter length to half the StrokeThickness of a Shape element. The limit on the ratio of the miter length to the StrokeThickness of a Shape element. This value is always a positive number that is greater than or equal to 1.
+   *
+   * Also settable in CSS as `stroke-miterlimit`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokemiterlimit
    */
