@@ -675,6 +675,7 @@ the panel; the CSS names what it does
 | `flex-wrap` | none | error: WinUI has no wrapping panel |
 | `align-self`, `justify-self`, `place-self` | `VerticalAlignment`, `HorizontalAlignment` (`start` is Top / Left) | on the child |
 | `align-items`, `justify-items`, `place-items`, `justify-content`, `align-content` | each child's `align-self` / `justify-self`, or spacer tracks | lowered into the children by the build (see Containers) |
+| `justify-content`, `align-items` on a control (`<expander>`, `<button>`, `<list-view-item>`) | `HorizontalContentAlignment`, `VerticalContentAlignment` (`start` is Left / Top) | on a panel they are lowered into the children instead (see Containers) |
 | `width`, `height` in px, `calc()` of them, `auto`, `100%` | `Width`, `Height` (NaN for auto and 100%: a stretching element fills) | another % is an error: use a `*` track |
 | `min-*`, `max-*` | `MinWidth`... | |
 | `box-sizing: border-box` | nothing: WinUI's size includes padding and border | `content-box` is an error |

@@ -182,6 +182,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets the horizontal alignment of the content. One of the HorizontalAlignment values.
    *
+   * Also settable in CSS as `justify-content`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.horizontalcontentalignment
    */
   horizontalContentAlignment?: EnumInput<typeof HorizontalAlignment>;
@@ -237,6 +239,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   textWrapping?: EnumInput<typeof TextWrapping>;
   /**
    * Gets or sets the vertical alignment of the content. One of the VerticalAlignment values.
+   *
+   * Also settable in CSS as `align-items`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.verticalcontentalignment
    */

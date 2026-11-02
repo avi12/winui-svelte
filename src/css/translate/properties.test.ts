@@ -232,6 +232,8 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ["align-self end", null, "align-self: end", [["VerticalAlignment", "Bottom"]]],
   ["justify-self start", null, "justify-self: start", [["HorizontalAlignment", "Left"]]],
   ["justify-self right", null, "justify-self: right", [["HorizontalAlignment", "Right"]]],
+  ["justify-content on a control", null, "justify-content: start", [["HorizontalContentAlignment", "Left"]]],
+  ["align-items on a control", null, "align-items: end", [["VerticalContentAlignment", "Bottom"]]],
   ["place-self", null, "place-self: center start", [
     ["VerticalAlignment", "Center"],
     ["HorizontalAlignment", "Left"]
@@ -719,7 +721,7 @@ const failures: Array<[string, string | null, string, RegExp]> = [
   ["a box-shadow without an offset", null, "box-shadow: red", /box-shadow: expected offset-x offset-y/u],
   ["an unknown property", null, "frobnicate: 1", /frobnicate has no WinUI meaning \(WinUI has no property that corresponds to it\)/u],
   ["flex sizing of a child", null, "flex: 1", /flex has no WinUI meaning \(is lowered by the component build into the children of a <stack-panel> or <grid>/u],
-  ["align-items on a container", null, "align-items: center", /align-items has no WinUI meaning \(is lowered by the component build into the children of a <stack-panel> or <grid>/u],
+  ["justify-items on a container", null, "justify-items: center", /justify-items has no WinUI meaning \(is lowered by the component build into the children of a <stack-panel> or <grid>/u],
   ["a length without a unit", null, "width: 12", /width: expected a length in px/u],
   ["a percentage length", null, "width: 50%", /width: expected a length in px/u],
   ["a bad color", null, "color: sparkly", /color: expected a color/u],

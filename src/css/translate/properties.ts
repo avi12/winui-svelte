@@ -167,6 +167,18 @@ export const propertyGroups: readonly PropertyGroup[] = [
     startName: "Left",
     endName: "Right"
   }),
+  alignmentProperty({
+    member: "align-items",
+    property: "VerticalContentAlignment",
+    startName: "Top",
+    endName: "Bottom"
+  }),
+  alignmentProperty({
+    member: "justify-content",
+    property: "HorizontalContentAlignment",
+    startName: "Left",
+    endName: "Right"
+  }),
   discreteGroup("flex-direction"),
   {
     members: ["row-gap", "column-gap"],

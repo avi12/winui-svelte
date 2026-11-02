@@ -3238,7 +3238,7 @@
             },
             {
               "name": "horizontalContentAlignment",
-              "description": "Gets or sets the horizontal alignment of the content. One of the HorizontalAlignment values.\n\nType: `HorizontalAlignment`",
+              "description": "Gets or sets the horizontal alignment of the content. One of the HorizontalAlignment values.\n\nAlso settable in CSS as `justify-content`\n\nType: `HorizontalAlignment`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -3325,7 +3325,7 @@
             },
             {
               "name": "verticalContentAlignment",
-              "description": "Gets or sets the vertical alignment of the content. One of the VerticalAlignment values.\n\nType: `VerticalAlignment`",
+              "description": "Gets or sets the vertical alignment of the content. One of the VerticalAlignment values.\n\nAlso settable in CSS as `align-items`\n\nType: `VerticalAlignment`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -3511,7 +3511,7 @@
             },
             {
               "name": "horizontalContentAlignment",
-              "description": "Gets or sets the horizontal alignment of the control's content. One of the HorizontalAlignment values. The default is Left.\n\nType: `HorizontalAlignment`",
+              "description": "Gets or sets the horizontal alignment of the control's content. One of the HorizontalAlignment values. The default is Left.\n\nAlso settable in CSS as `justify-content`\n\nType: `HorizontalAlignment`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -3592,7 +3592,7 @@
             },
             {
               "name": "verticalContentAlignment",
-              "description": "Gets or sets the vertical alignment of the control's content. One of the VerticalAlignment values. The default is Top.\n\nType: `VerticalAlignment`",
+              "description": "Gets or sets the vertical alignment of the control's content. One of the VerticalAlignment values. The default is Top.\n\nAlso settable in CSS as `align-items`\n\nType: `VerticalAlignment`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
