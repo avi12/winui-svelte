@@ -24,11 +24,15 @@ export interface EllipseGeometryProps extends GeometryProps {
   /**
    * Gets or sets the x-radius value of the EllipseGeometry.
    *
+   * Also settable in CSS as `rx`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry.radiusx
    */
   radiusX?: number;
   /**
    * Gets or sets the y-radius value of the EllipseGeometry.
+   *
+   * Also settable in CSS as `ry`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.ellipsegeometry.radiusy
    */

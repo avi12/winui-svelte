@@ -480,6 +480,26 @@ iterations start from where the last one ended
 .badge { animation: pulse 1.2s ease-in-out infinite }
 ```
 
+## Shapes: `fill`, `stroke-*`, `rx`, `ry`, `fill-rule`
+
+A WinUI Shape (`rectangle`, `ellipse`, `line`, `polyline`, `polygon`, `path`)
+draws with these, besides `stroke` and `stroke-width`:
+
+| CSS | WinUI |
+|---|---|
+| `fill` | `Fill`, a color or `var()` brush; `none` is a transparent one |
+| `stroke-dasharray` | `StrokeDashArray`; WinUI counts dashes in multiples of the stroke's thickness, so the px lengths are divided by `stroke-width` (1px when it is not written); `none` clears them |
+| `stroke-dashoffset` | `StrokeDashOffset`, in multiples of the thickness as well |
+| `stroke-linecap` | `StrokeStartLineCap` and `StrokeEndLineCap`: `butt` is Flat, `round` Round, `square` Square |
+| `stroke-linejoin` | `StrokeLineJoin`: `miter`, `bevel`, `round` |
+| `stroke-miterlimit` | `StrokeMiterLimit`, a number of at least 1 |
+| `rx`, `ry` | `RadiusX` and `RadiusY` of a `rectangle` |
+| `fill-rule` | `FillRule` of a `polygon`: `nonzero` is Nonzero, `evenodd` EvenOdd |
+
+A `path` has no `FillRule` of its own (it belongs to the `PathGeometry` in its
+`data`), so a Style cannot set it there
+Lengths are in px (`stroke-dasharray: 8px 4px`), as everywhere else
+
 ## Focus ring: `outline`
 
 `outline` styles the control's focus visual:

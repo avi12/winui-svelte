@@ -15,11 +15,15 @@ export interface RectangleProps extends ShapeProps {
   /**
    * Gets or sets the x-axis radius of the ellipse that is used to round the corners of the rectangle.
    *
+   * Also settable in CSS as `rx`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.rectangle.radiusx
    */
   radiusX?: number;
   /**
    * Gets or sets the y-axis radius of the ellipse that is used to round the corners of the rectangle.
+   *
+   * Also settable in CSS as `ry`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.rectangle.radiusy
    */

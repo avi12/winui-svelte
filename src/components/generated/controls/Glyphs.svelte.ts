@@ -26,6 +26,8 @@ export interface GlyphsProps extends FrameworkElementProps {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `fill`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.fill
    */
   fill?: BrushInput | Snippet;

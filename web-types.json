@@ -4253,7 +4253,7 @@
             },
             {
               "name": "radiusX",
-              "description": "Gets or sets the x-radius value of the EllipseGeometry.\n\nType: `number`",
+              "description": "Gets or sets the x-radius value of the EllipseGeometry.\n\nAlso settable in CSS as `rx`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -4261,7 +4261,7 @@
             },
             {
               "name": "radiusY",
-              "description": "Gets or sets the y-radius value of the EllipseGeometry.\n\nType: `number`",
+              "description": "Gets or sets the y-radius value of the EllipseGeometry.\n\nAlso settable in CSS as `ry`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -5067,7 +5067,7 @@
           "attributes": [
             {
               "name": "fillRule",
-              "description": "Gets or sets how the intersecting areas of the objects contained in this GeometryGroup are combined. One of the enumeration values that specifies how the intersecting areas are combined to form the resulting area. The default is EvenOdd.\n\nType: `FillRule`",
+              "description": "Gets or sets how the intersecting areas of the objects contained in this GeometryGroup are combined. One of the enumeration values that specifies how the intersecting areas are combined to form the resulting area. The default is EvenOdd.\n\nAlso settable in CSS as `fill-rule`\n\nType: `FillRule`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -5094,7 +5094,7 @@
             },
             {
               "name": "fill",
-              "description": "Gets or sets the Brush that is used to render the glyphs. The brush to use to render the glyphs. The default is null, which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush that is used to render the glyphs. The brush to use to render the glyphs. The default is null, which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `fill`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -9461,7 +9461,7 @@
             },
             {
               "name": "fillRule",
-              "description": "Gets or sets a value that determines how the intersecting areas contained in the PathGeometry are combined. A FillRule enumeration value that indicates how the intersecting areas of the PathGeometry are combined. The default is EvenOdd.\n\nType: `FillRule`",
+              "description": "Gets or sets a value that determines how the intersecting areas contained in the PathGeometry are combined. A FillRule enumeration value that indicates how the intersecting areas of the PathGeometry are combined. The default is EvenOdd.\n\nAlso settable in CSS as `fill-rule`\n\nType: `FillRule`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -10190,7 +10190,7 @@
           "attributes": [
             {
               "name": "fillRule",
-              "description": "Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration. The default is EvenOdd.\n\nType: `FillRule`",
+              "description": "Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration. The default is EvenOdd.\n\nAlso settable in CSS as `fill-rule`\n\nType: `FillRule`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -10217,7 +10217,7 @@
           "attributes": [
             {
               "name": "fillRule",
-              "description": "Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration that specifies the fill behavior. The default is EvenOdd.\n\nType: `FillRule`",
+              "description": "Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration that specifies the fill behavior. The default is EvenOdd.\n\nAlso settable in CSS as `fill-rule`\n\nType: `FillRule`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -10631,7 +10631,7 @@
             },
             {
               "name": "radiusX",
-              "description": "Gets or sets the X axis radius of the ellipse that contains the gradient. The X axis radius of the ellipse that contains the gradient. The default is 0.5.\n\nType: `number`",
+              "description": "Gets or sets the X axis radius of the ellipse that contains the gradient. The X axis radius of the ellipse that contains the gradient. The default is 0.5.\n\nAlso settable in CSS as `rx`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -10639,7 +10639,7 @@
             },
             {
               "name": "radiusY",
-              "description": "Gets or sets the Y axis radius of the ellipse that contains the gradient. The Y axis radius of the ellipse that contains the gradient. The default is 0.5.\n\nType: `number`",
+              "description": "Gets or sets the Y axis radius of the ellipse that contains the gradient. The Y axis radius of the ellipse that contains the gradient. The default is 0.5.\n\nAlso settable in CSS as `ry`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -11020,7 +11020,7 @@
           "attributes": [
             {
               "name": "radiusX",
-              "description": "Gets or sets the x-axis radius of the ellipse that is used to round the corners of the rectangle.\n\nType: `number`",
+              "description": "Gets or sets the x-axis radius of the ellipse that is used to round the corners of the rectangle.\n\nAlso settable in CSS as `rx`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -11028,7 +11028,7 @@
             },
             {
               "name": "radiusY",
-              "description": "Gets or sets the y-axis radius of the ellipse that is used to round the corners of the rectangle.\n\nType: `number`",
+              "description": "Gets or sets the y-axis radius of the ellipse that is used to round the corners of the rectangle.\n\nAlso settable in CSS as `ry`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -12925,7 +12925,7 @@
           "attributes": [
             {
               "name": "fill",
-              "description": "Gets or sets the Brush that paints the interior area of the shape. A Brush that paints/fills the shape interior. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush that paints the interior area of the shape. A Brush that paints/fills the shape interior. The default is null, (a null brush) which is evaluated as Transparent for rendering.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `fill`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -12952,7 +12952,7 @@
             },
             {
               "name": "strokeDashArray",
-              "description": "Gets or sets a collection of Double values that indicates the pattern of dashes and gaps that is used to outline shapes.\n\nAccepts A list of numbers (a dash pattern): numbers or text, or a `DoubleCollection`.\n\nType: `DoubleCollectionInput`",
+              "description": "Gets or sets a collection of Double values that indicates the pattern of dashes and gaps that is used to outline shapes.\n\nAccepts A list of numbers (a dash pattern): numbers or text, or a `DoubleCollection`.\n\nAlso settable in CSS as `stroke-dasharray`\n\nType: `DoubleCollectionInput`",
               "value": {
                 "type": "DoubleCollectionInput"
               },
@@ -12971,7 +12971,7 @@
             },
             {
               "name": "strokeDashOffset",
-              "description": "Gets or sets a value that specifies the distance within the dash pattern where a dash begins. A value that represents the distance within the dash pattern where a dash begins. The default value is 0.\n\nType: `number`",
+              "description": "Gets or sets a value that specifies the distance within the dash pattern where a dash begins. A value that represents the distance within the dash pattern where a dash begins. The default value is 0.\n\nAlso settable in CSS as `stroke-dashoffset`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -12990,7 +12990,7 @@
             },
             {
               "name": "strokeLineJoin",
-              "description": "Gets or sets a PenLineJoin enumeration value that specifies the type of join that is used at the vertices of a Shape.\n\nType: `PenLineJoin`",
+              "description": "Gets or sets a PenLineJoin enumeration value that specifies the type of join that is used at the vertices of a Shape.\n\nAlso settable in CSS as `stroke-linejoin`\n\nType: `PenLineJoin`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -13001,7 +13001,7 @@
             },
             {
               "name": "strokeMiterLimit",
-              "description": "Gets or sets a limit on the ratio of the miter length to half the StrokeThickness of a Shape element. The limit on the ratio of the miter length to the StrokeThickness of a Shape element. This value is always a positive number that is greater than or equal to 1.\n\nType: `number`",
+              "description": "Gets or sets a limit on the ratio of the miter length to half the StrokeThickness of a Shape element. The limit on the ratio of the miter length to the StrokeThickness of a Shape element. This value is always a positive number that is greater than or equal to 1.\n\nAlso settable in CSS as `stroke-miterlimit`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -15300,7 +15300,7 @@
           "attributes": [
             {
               "name": "fill",
-              "description": "Gets or sets the Brush that draws on the background area of the TickBar.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the Brush that draws on the background area of the TickBar.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `fill`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },

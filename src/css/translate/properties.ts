@@ -10,6 +10,7 @@ import {
 } from "./layout-properties.ts";
 import { brushProperty, COMPOSITION_PROPERTIES, lengthProperty, simple } from "./property-kit.ts";
 import type { GroupInput, Output, PropertyGroup } from "./property-kit.ts";
+import { shapePropertyGroups } from "./shape-properties.ts";
 import { fontFamily, fontWeight, letterSpacing, lineHeight } from "./text-properties.ts";
 import type { Declaration } from "./types.ts";
 import { opacity, zIndex } from "./visual-properties.ts";
@@ -198,7 +199,8 @@ export const propertyGroups: readonly PropertyGroup[] = [
     member: "z-index",
     property: "Canvas.ZIndex",
     parse: zIndex
-  })
+  }),
+  ...shapePropertyGroups
 ];
 
 function readerFor({ readers, member }: {
