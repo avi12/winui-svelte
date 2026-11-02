@@ -1,8 +1,9 @@
 name: Publish
 
 # Publishes to npm when a version tag is pushed (git tag v0.1.0 && git push --tags).
-# The token is the repository secret NPM_TOKEN (an npm automation token); it is
-# never written to a file.
+# npm trusted publishing: the workflow signs in to npm with its GitHub OIDC identity
+# (id-token: write), so no token is stored anywhere. The package's npm settings name
+# this repository, this workflow file and the environment "npm" as its trusted publisher.
 on:
   push:
     tags: ['v*']
@@ -34,5 +35,3 @@ jobs:
           $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
           if ($env:GITHUB_REF_NAME -ne "v$version") { throw "Tag $env:GITHUB_REF_NAME does not match version $version" }
       - run: pnpm publish --provenance --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
