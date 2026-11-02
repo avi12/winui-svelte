@@ -196,6 +196,15 @@
     "removeEventListener",
     "focus",
     "value",
+    // The Web API classes mirror the spec for a library written for a browser, which calls
+    // members the package itself never does.
+    "relatedTarget",
+    "preventDefault",
+    "stopPropagation",
+    "setFeedback",
+    "setDragImage",
+    "sendJson",
+    "setShownInSwitchers",
     // What a stand-in for a WinRT DeviceInformation or DeviceWatcher has because
     // the interface it implements needs it (src/devices/test-support).
     "pairing",
