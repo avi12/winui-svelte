@@ -85,6 +85,8 @@ export interface TextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets the font stretch for the text content in this element. The requested font stretch, as a FontStretch constant. The default is Normal.
    *
+   * Also settable in CSS as `font-stretch`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.fontstretch
    */
   fontStretch?: EnumInput<typeof FontStretch>;

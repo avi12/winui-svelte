@@ -10,8 +10,6 @@ import {
 } from "./layout-properties.ts";
 import { brushProperty, COMPOSITION_PROPERTIES, lengthProperty, simple } from "./property-kit.ts";
 import type { GroupInput, Output, PropertyGroup } from "./property-kit.ts";
-import { shapePropertyGroups } from "./shape-properties.ts";
-import { textControlGroups } from "./text-control-properties.ts";
 import { fontFamily, fontWeight, letterSpacing, lineHeight } from "./text-properties.ts";
 import type { Declaration } from "./types.ts";
 import { opacity, zIndex } from "./visual-properties.ts";
@@ -151,7 +149,6 @@ export const propertyGroups: readonly PropertyGroup[] = [
     property: "CharacterSpacing",
     parse: letterSpacing
   }),
-  ...textControlGroups,
   discreteGroup("text-align"),
   discreteGroup("text-wrap"),
   discreteGroup("white-space"),
@@ -167,18 +164,6 @@ export const propertyGroups: readonly PropertyGroup[] = [
   alignmentProperty({
     member: "justify-self",
     property: "HorizontalAlignment",
-    startName: "Left",
-    endName: "Right"
-  }),
-  alignmentProperty({
-    member: "align-items",
-    property: "VerticalContentAlignment",
-    startName: "Top",
-    endName: "Bottom"
-  }),
-  alignmentProperty({
-    member: "justify-content",
-    property: "HorizontalContentAlignment",
     startName: "Left",
     endName: "Right"
   }),
@@ -213,8 +198,7 @@ export const propertyGroups: readonly PropertyGroup[] = [
     member: "z-index",
     property: "Canvas.ZIndex",
     parse: zIndex
-  }),
-  ...shapePropertyGroups
+  })
 ];
 
 function readerFor({ readers, member }: {

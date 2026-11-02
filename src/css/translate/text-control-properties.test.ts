@@ -1,6 +1,7 @@
 import { computeDeclarations, resolveBuiltVariable } from "./cascade.ts";
 import { loadWinuiCatalogue } from "./catalogue.ts";
 import { lowerDeclarations } from "./properties.ts";
+import { controlGroups } from "./text-control-properties.ts";
 import { formatDiagnostic, translateStyleSheet } from "./translate.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -24,6 +25,7 @@ function lowerRule(declarations: string) {
   }
 
   const lowered = lowerDeclarations({
+    extraGroups: controlGroups(),
     computed: computeDeclarations({
       matched: [rule],
       inline: []
@@ -46,6 +48,8 @@ const rows: Array<[string, Array<[string, string]>]> = [
   ["font-stretch: semi-expanded", [["FontStretch", "SemiExpanded"]]],
   ["font-stretch: normal", [["FontStretch", "Normal"]]],
   ["direction: rtl", [["FlowDirection", "RightToLeft"]]],
+  ["justify-content: start", [["HorizontalContentAlignment", "Left"]]],
+  ["align-items: end", [["VerticalContentAlignment", "Bottom"]]],
   ["direction: ltr", [["FlowDirection", "LeftToRight"]]],
   ["background-clip: border-box", [["BackgroundSizing", "OuterBorderEdge"]]],
   ["background-clip: padding-box", [["BackgroundSizing", "InnerBorderEdge"]]],

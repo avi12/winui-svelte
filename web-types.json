@@ -3200,7 +3200,7 @@
             },
             {
               "name": "fontStretch",
-              "description": "Gets or sets the font stretch for the text content presented by the ContentPresenter. The requested font stretch, as a FontStretch constant. The default is Normal.\n\nType: `FontStretch`",
+              "description": "Gets or sets the font stretch for the text content presented by the ContentPresenter. The requested font stretch, as a FontStretch constant. The default is Normal.\n\nAlso settable in CSS as `font-stretch`\n\nType: `FontStretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -3473,7 +3473,7 @@
             },
             {
               "name": "fontStretch",
-              "description": "Gets or sets the degree to which a font is condensed or expanded on the screen. One of the values that specifies the degree to which a font is condensed or expanded on the screen. The default is Normal.\n\nType: `FontStretch`",
+              "description": "Gets or sets the degree to which a font is condensed or expanded on the screen. One of the values that specifies the degree to which a font is condensed or expanded on the screen. The default is Normal.\n\nAlso settable in CSS as `font-stretch`\n\nType: `FontStretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -5067,7 +5067,7 @@
           "attributes": [
             {
               "name": "fillRule",
-              "description": "Gets or sets how the intersecting areas of the objects contained in this GeometryGroup are combined. One of the enumeration values that specifies how the intersecting areas are combined to form the resulting area. The default is EvenOdd.\n\nAlso settable in CSS as `fill-rule`\n\nType: `FillRule`",
+              "description": "Gets or sets how the intersecting areas of the objects contained in this GeometryGroup are combined. One of the enumeration values that specifies how the intersecting areas are combined to form the resulting area. The default is EvenOdd.\n\nType: `FillRule`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -5718,7 +5718,7 @@
             },
             {
               "name": "tabIndex",
-              "description": "Gets or sets a value that determines the order in which elements receive focus when the user navigates through controls by pressing the Tab key. A value that determines the order of logical navigation for a device. The default value is MaxValue with the tab order based on declaration order in the XAML or child collections.\n\nType: `number`",
+              "description": "Gets or sets a value that determines the order in which elements receive focus when the user navigates through controls by pressing the Tab key. A value that determines the order of logical navigation for a device. The default value is MaxValue with the tab order based on declaration order in the XAML or child collections.\n\nAlso settable in CSS as `tab-index`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -9461,7 +9461,7 @@
             },
             {
               "name": "fillRule",
-              "description": "Gets or sets a value that determines how the intersecting areas contained in the PathGeometry are combined. A FillRule enumeration value that indicates how the intersecting areas of the PathGeometry are combined. The default is EvenOdd.\n\nAlso settable in CSS as `fill-rule`\n\nType: `FillRule`",
+              "description": "Gets or sets a value that determines how the intersecting areas contained in the PathGeometry are combined. A FillRule enumeration value that indicates how the intersecting areas of the PathGeometry are combined. The default is EvenOdd.\n\nType: `FillRule`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -10190,7 +10190,7 @@
           "attributes": [
             {
               "name": "fillRule",
-              "description": "Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration. The default is EvenOdd.\n\nAlso settable in CSS as `fill-rule`\n\nType: `FillRule`",
+              "description": "Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration. The default is EvenOdd.\n\nType: `FillRule`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -10217,7 +10217,7 @@
           "attributes": [
             {
               "name": "fillRule",
-              "description": "Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration that specifies the fill behavior. The default is EvenOdd.\n\nAlso settable in CSS as `fill-rule`\n\nType: `FillRule`",
+              "description": "Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration that specifies the fill behavior. The default is EvenOdd.\n\nType: `FillRule`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -11564,7 +11564,7 @@
             },
             {
               "name": "fontStretch",
-              "description": "Gets or sets the font stretch for the text content in this element. The requested font stretch, as a FontStretch constant. The default is Normal.\n\nType: `FontStretch`",
+              "description": "Gets or sets the font stretch for the text content in this element. The requested font stretch, as a FontStretch constant. The default is Normal.\n\nAlso settable in CSS as `font-stretch`\n\nType: `FontStretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -12990,7 +12990,7 @@
             },
             {
               "name": "strokeLineJoin",
-              "description": "Gets or sets a PenLineJoin enumeration value that specifies the type of join that is used at the vertices of a Shape.\n\nAlso settable in CSS as `stroke-linejoin`\n\nType: `PenLineJoin`",
+              "description": "Gets or sets a PenLineJoin enumeration value that specifies the type of join that is used at the vertices of a Shape.\n\nType: `PenLineJoin`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -14553,7 +14553,7 @@
             },
             {
               "name": "fontStretch",
-              "description": "Gets or sets the font stretch for the text content in this element. The requested font stretch, as a FontStretch constant. The default is Normal.\n\nType: `FontStretch`",
+              "description": "Gets or sets the font stretch for the text content in this element. The requested font stretch, as a FontStretch constant. The default is Normal.\n\nAlso settable in CSS as `font-stretch`\n\nType: `FontStretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -15135,7 +15135,7 @@
             },
             {
               "name": "fontStretch",
-              "description": "Gets or sets the glyph width of the font in a family to select. One of the FontStretch constant names, specifying the desired font stretch. The default is Normal.\n\nType: `FontStretch`",
+              "description": "Gets or sets the glyph width of the font in a family to select. One of the FontStretch constant names, specifying the desired font stretch. The default is Normal.\n\nAlso settable in CSS as `font-stretch`\n\nType: `FontStretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -16483,7 +16483,7 @@
             },
             {
               "name": "tabIndex",
-              "description": "Gets or sets a value that determines the order in which elements receive focus when the user navigates through controls using the _Tab_ key. A value that determines the order of logical navigation for a device. The default value is MaxValue with the tab order based on declaration order in the XAML or child collections.\n\nType: `number`",
+              "description": "Gets or sets a value that determines the order in which elements receive focus when the user navigates through controls using the _Tab_ key. A value that determines the order of logical navigation for a device. The default value is MaxValue with the tab order based on declaration order in the XAML or child collections.\n\nAlso settable in CSS as `tab-index`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -17985,6 +17985,62 @@
             {
               "name": "contents",
               "description": "Visibility: Visible"
+            }
+          ]
+        },
+        {
+          "name": "font-stretch",
+          "description": "WinUI: sets FontStretch; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "ultra-condensed",
+              "description": "FontStretch: UltraCondensed"
+            },
+            {
+              "name": "extra-condensed",
+              "description": "FontStretch: ExtraCondensed"
+            },
+            {
+              "name": "condensed",
+              "description": "FontStretch: Condensed"
+            },
+            {
+              "name": "semi-condensed",
+              "description": "FontStretch: SemiCondensed"
+            },
+            {
+              "name": "normal",
+              "description": "FontStretch: Normal"
+            },
+            {
+              "name": "semi-expanded",
+              "description": "FontStretch: SemiExpanded"
+            },
+            {
+              "name": "expanded",
+              "description": "FontStretch: Expanded"
+            },
+            {
+              "name": "extra-expanded",
+              "description": "FontStretch: ExtraExpanded"
+            },
+            {
+              "name": "ultra-expanded",
+              "description": "FontStretch: UltraExpanded"
+            }
+          ]
+        },
+        {
+          "name": "direction",
+          "description": "WinUI: sets FlowDirection; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "ltr",
+              "description": "FlowDirection: LeftToRight"
+            },
+            {
+              "name": "rtl",
+              "description": "FlowDirection: RightToLeft"
             }
           ]
         },

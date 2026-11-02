@@ -715,6 +715,8 @@ export interface UIElementProps {
   /**
    * Gets or sets a value that determines the order in which elements receive focus when the user navigates through controls using the _Tab_ key. A value that determines the order of logical navigation for a device. The default value is MaxValue with the tab order based on declaration order in the XAML or child collections.
    *
+   * Also settable in CSS as `tab-index`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.tabindex
    */
   tabIndex?: number;

@@ -1,6 +1,7 @@
 import { computeDeclarations, resolveBuiltVariable } from "./cascade.ts";
 import { loadWinuiCatalogue } from "./catalogue.ts";
 import { lowerDeclarations } from "./properties.ts";
+import { shapeGroups } from "./shape-properties.ts";
 import { formatDiagnostic, translateStyleSheet } from "./translate.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -27,6 +28,7 @@ function lower({ elementType, declarations }: {
   }
 
   const lowered = lowerDeclarations({
+    extraGroups: shapeGroups(),
     computed: computeDeclarations({
       matched: [rule],
       inline: []

@@ -11,7 +11,9 @@ import { POSITION_MEMBERS, positionGroups } from "./position-properties.ts";
 import type { PropertyGroup } from "./property-kit.ts";
 import { queryGroups } from "./query-properties.ts";
 import { resourceGroups } from "./resource-properties.ts";
+import { SHAPE_MEMBERS, shapeGroups } from "./shape-properties.ts";
 import { SURFACE_MEMBERS, surfaceGroups } from "./surface-properties.ts";
+import { CONTROL_MEMBERS, controlGroups } from "./text-control-properties.ts";
 import { transformGroups } from "./transform-properties.ts";
 import type { Rule } from "./types.ts";
 import { VISUAL_EFFECT_MEMBERS, visualEffectGroups } from "./visual-effect-properties.ts";
@@ -88,6 +90,18 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     subpath: "/cursor",
     exportName: "cursorGroups",
     groups: cursorGroups
+  },
+  {
+    isNeededBy: usesProperties(CONTROL_MEMBERS),
+    subpath: "/control",
+    exportName: "controlGroups",
+    groups: controlGroups
+  },
+  {
+    isNeededBy: usesProperties(SHAPE_MEMBERS),
+    subpath: "/shape",
+    exportName: "shapeGroups",
+    groups: shapeGroups
   },
   {
     isNeededBy: usesProperties(POSITION_MEMBERS),

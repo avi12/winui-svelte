@@ -200,6 +200,8 @@ window in, with or without a `<style>` that uses the property
 | `winui-svelte/css/filter` | `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` | Filters, blends and masks |
 | `winui-svelte/css/clip` | `clip-path` | Clip shapes |
 | `winui-svelte/css/cursor` | `cursor` | Cursor |
+| `winui-svelte/css/control` | `font-stretch`, `direction`, `background-clip`, `tab-index` | Control properties (`controlGroups`) |
+| `winui-svelte/css/shape` | `fill`, `stroke-dasharray`, `stroke-dashoffset`, `stroke-linecap`, `stroke-linejoin`, `stroke-miterlimit`, `rx`, `ry`, `fill-rule` | Shapes |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `box-shadow` | Elevation |
 | `winui-svelte/css/position` | `position`, `top`, `left`, `right`, `bottom`, `inset` | Position |
@@ -483,7 +485,8 @@ iterations start from where the last one ended
 ## Shapes: `fill`, `stroke-*`, `rx`, `ry`, `fill-rule`
 
 A WinUI Shape (`rectangle`, `ellipse`, `line`, `polyline`, `polygon`, `path`)
-draws with these, besides `stroke` and `stroke-width`:
+draws with these, besides `stroke` and `stroke-width`; a sheet that uses one
+imports `winui-svelte/css/shape` (`shapeGroups`), which the build adds:
 
 | CSS | WinUI |
 |---|---|

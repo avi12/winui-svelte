@@ -176,6 +176,14 @@
       "types": "./dist/css/filter.d.ts",
       "default": "./dist/css/filter.js"
     },
+    "./css/control": {
+      "types": "./dist/css/control.d.ts",
+      "default": "./dist/css/control.js"
+    },
+    "./css/shape": {
+      "types": "./dist/css/shape.d.ts",
+      "default": "./dist/css/shape.js"
+    },
     "./css/cursor": {
       "types": "./dist/css/cursor.d.ts",
       "default": "./dist/css/cursor.js"

@@ -73,6 +73,8 @@ export interface TextElementProps {
   /**
    * Gets or sets the glyph width of the font in a family to select. One of the FontStretch constant names, specifying the desired font stretch. The default is Normal.
    *
+   * Also settable in CSS as `font-stretch`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.fontstretch
    */
   fontStretch?: EnumInput<typeof FontStretch>;

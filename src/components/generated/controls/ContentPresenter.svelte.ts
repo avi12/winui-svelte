@@ -152,6 +152,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets the font stretch for the text content presented by the ContentPresenter. The requested font stretch, as a FontStretch constant. The default is Normal.
    *
+   * Also settable in CSS as `font-stretch`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.fontstretch
    */
   fontStretch?: EnumInput<typeof FontStretch>;

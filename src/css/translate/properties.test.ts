@@ -232,8 +232,6 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ["align-self end", null, "align-self: end", [["VerticalAlignment", "Bottom"]]],
   ["justify-self start", null, "justify-self: start", [["HorizontalAlignment", "Left"]]],
   ["justify-self right", null, "justify-self: right", [["HorizontalAlignment", "Right"]]],
-  ["justify-content on a control", null, "justify-content: start", [["HorizontalContentAlignment", "Left"]]],
-  ["align-items on a control", null, "align-items: end", [["VerticalContentAlignment", "Bottom"]]],
   ["place-self", null, "place-self: center start", [
     ["VerticalAlignment", "Center"],
     ["HorizontalAlignment", "Left"]

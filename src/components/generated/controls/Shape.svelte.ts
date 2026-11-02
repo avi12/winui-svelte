@@ -76,8 +76,6 @@ export interface ShapeProps extends FrameworkElementProps {
   /**
    * Gets or sets a PenLineJoin enumeration value that specifies the type of join that is used at the vertices of a Shape.
    *
-   * Also settable in CSS as `stroke-linejoin`
-   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.strokelinejoin
    */
   strokeLineJoin?: EnumInput<typeof PenLineJoin>;

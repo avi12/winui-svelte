@@ -5,7 +5,7 @@ import {
   setter,
   simple
 } from "./property-kit.ts";
-import type { GroupInput, PropertyGroup } from "./property-kit.ts";
+import type { GroupInput } from "./property-kit.ts";
 import type { Reader } from "#src/css/parse/reader.js";
 import { parseLength, parseNumber, splitWords } from "#src/css/parse/values.js";
 
@@ -188,48 +188,63 @@ function fillBrush(reader: Reader) {
   return reader.brush(word.toLowerCase() === NONE ? TRANSPARENT : word);
 }
 
-/** The CSS properties of an SVG shape that a WinUI Shape draws with. */
-export const shapePropertyGroups: readonly PropertyGroup[] = [
-  simple({
-    member: "fill",
-    property: "Fill",
-    parse: fillBrush
-  }),
-  {
-    members: [STROKE_DASHARRAY],
-    property: "StrokeDashArray",
-    lower: strokeDashArray
-  },
-  {
-    members: [STROKE_DASHOFFSET],
-    property: "StrokeDashOffset",
-    lower: strokeDashOffset
-  },
-  {
-    members: [STROKE_LINECAP],
-    lower: strokeLineCap
-  },
-  keywordProperty({
-    member: "stroke-linejoin",
-    property: "StrokeLineJoin",
-    choices: lineJoins
-  }),
-  simple({
-    member: "stroke-miterlimit",
-    property: "StrokeMiterLimit",
-    parse: miterLimit
-  }),
-  lengthProperty({
-    member: "rx",
-    property: "RadiusX"
-  }),
-  lengthProperty({
-    member: "ry",
-    property: "RadiusY"
-  }),
-  keywordProperty({
-    member: "fill-rule",
-    property: "FillRule",
-    choices: fillRules
-  })
+/** The members the shape groups lower, which a sheet using one opts in for. */
+export const SHAPE_MEMBERS = [
+  "fill",
+  STROKE_DASHARRAY,
+  STROKE_DASHOFFSET,
+  STROKE_LINECAP,
+  "stroke-linejoin",
+  "stroke-miterlimit",
+  "rx",
+  "ry",
+  "fill-rule"
 ];
+
+/** The CSS properties of an SVG shape that a WinUI Shape draws with. */
+export function shapeGroups() {
+  return [
+    simple({
+      member: "fill",
+      property: "Fill",
+      parse: fillBrush
+    }),
+    {
+      members: [STROKE_DASHARRAY],
+      property: "StrokeDashArray",
+      lower: strokeDashArray
+    },
+    {
+      members: [STROKE_DASHOFFSET],
+      property: "StrokeDashOffset",
+      lower: strokeDashOffset
+    },
+    {
+      members: [STROKE_LINECAP],
+      lower: strokeLineCap
+    },
+    keywordProperty({
+      member: "stroke-linejoin",
+      property: "StrokeLineJoin",
+      choices: lineJoins
+    }),
+    simple({
+      member: "stroke-miterlimit",
+      property: "StrokeMiterLimit",
+      parse: miterLimit
+    }),
+    lengthProperty({
+      member: "rx",
+      property: "RadiusX"
+    }),
+    lengthProperty({
+      member: "ry",
+      property: "RadiusY"
+    }),
+    keywordProperty({
+      member: "fill-rule",
+      property: "FillRule",
+      choices: fillRules
+    })
+  ];
+}

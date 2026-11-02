@@ -7,6 +7,7 @@ import {
   discreteWordsOf
 } from "#src/css/translate/discrete-properties.js";
 import { GRID_TRACK_PROPERTIES } from "#src/css/translate/grid-track-verdicts.js";
+import { CONTROL_KEYWORDS } from "#src/css/translate/text-control-properties.js";
 import { WINUI_ONLY_PROPERTIES } from "#src/css/translate/winui-only-properties.js";
 
 const CUSTOM_DATA_VERSION = 1.1;
@@ -62,6 +63,14 @@ export function vscodeCssData() {
         }))
       },
       ...DISCRETE_MEMBERS.map(discreteProperty),
+      ...[...CONTROL_KEYWORDS].map(([member, spec]) => ({
+        name: member,
+        description: `WinUI: sets ${spec.property}; only these keywords are accepted.`,
+        values: [...spec.choices].map(([word, value]) => ({
+          name: word,
+          description: `${spec.property}: ${value}`
+        }))
+      })),
       ...["align-items", "justify-content"].map(name => ({
         name,
         description: LAYOUT_ALIGNMENT_DESCRIPTION

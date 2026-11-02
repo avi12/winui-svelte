@@ -17,8 +17,6 @@ export interface PolylineProps extends ShapeProps {
   /**
    * Gets or sets a value that specifies how the interior fill of the shape is determined. A value of the enumeration that specifies the fill behavior. The default is EvenOdd.
    *
-   * Also settable in CSS as `fill-rule`
-   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.polyline.fillrule
    */
   fillRule?: EnumInput<typeof FillRule>;

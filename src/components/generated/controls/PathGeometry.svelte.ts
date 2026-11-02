@@ -29,8 +29,6 @@ export interface PathGeometryProps extends GeometryProps {
   /**
    * Gets or sets a value that determines how the intersecting areas contained in the PathGeometry are combined. A FillRule enumeration value that indicates how the intersecting areas of the PathGeometry are combined. The default is EvenOdd.
    *
-   * Also settable in CSS as `fill-rule`
-   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathgeometry.fillrule
    */
   fillRule?: EnumInput<typeof FillRule>;

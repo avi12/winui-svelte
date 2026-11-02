@@ -38,25 +38,6 @@ const textSelections = enumMap([
   ["none", "False"]
 ]);
 
-/** `font-stretch`, as the Windows.UI.Text.FontStretch of a control or text element. */
-const fontStretches = enumMap([
-  ["ultra-condensed", "UltraCondensed"],
-  ["extra-condensed", "ExtraCondensed"],
-  ["condensed", "Condensed"],
-  ["semi-condensed", "SemiCondensed"],
-  ["normal", "Normal"],
-  ["semi-expanded", "SemiExpanded"],
-  ["expanded", "Expanded"],
-  ["extra-expanded", "ExtraExpanded"],
-  ["ultra-expanded", "UltraExpanded"]
-]);
-
-/** `direction`, as FlowDirection. */
-const directions = enumMap([
-  ["ltr", "LeftToRight"],
-  ["rtl", "RightToLeft"]
-]);
-
 /** `object-fit`, as an image's Stretch. */
 const objectFits = enumMap([
   ["fill", "Fill"],
@@ -86,14 +67,6 @@ const DISCRETE_PROPERTIES = new Map<string, {
   ["font-style", {
     property: "FontStyle",
     choices: fontStyles
-  }],
-  ["font-stretch", {
-    property: "FontStretch",
-    choices: fontStretches
-  }],
-  ["direction", {
-    property: "FlowDirection",
-    choices: directions
   }],
   ["text-align", {
     property: "TextAlignment",

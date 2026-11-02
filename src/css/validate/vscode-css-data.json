@@ -423,6 +423,62 @@
       ]
     },
     {
+      "name": "font-stretch",
+      "description": "WinUI: sets FontStretch; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "ultra-condensed",
+          "description": "FontStretch: UltraCondensed"
+        },
+        {
+          "name": "extra-condensed",
+          "description": "FontStretch: ExtraCondensed"
+        },
+        {
+          "name": "condensed",
+          "description": "FontStretch: Condensed"
+        },
+        {
+          "name": "semi-condensed",
+          "description": "FontStretch: SemiCondensed"
+        },
+        {
+          "name": "normal",
+          "description": "FontStretch: Normal"
+        },
+        {
+          "name": "semi-expanded",
+          "description": "FontStretch: SemiExpanded"
+        },
+        {
+          "name": "expanded",
+          "description": "FontStretch: Expanded"
+        },
+        {
+          "name": "extra-expanded",
+          "description": "FontStretch: ExtraExpanded"
+        },
+        {
+          "name": "ultra-expanded",
+          "description": "FontStretch: UltraExpanded"
+        }
+      ]
+    },
+    {
+      "name": "direction",
+      "description": "WinUI: sets FlowDirection; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "ltr",
+          "description": "FlowDirection: LeftToRight"
+        },
+        {
+          "name": "rtl",
+          "description": "FlowDirection: RightToLeft"
+        }
+      ]
+    },
+    {
       "name": "align-items",
       "description": "WinUI: on a stack panel or grid the build lowers it into the children (each child's align-self or justify-self, or spacer tracks), so it applies to a container written in the component, outside an @media."
     },

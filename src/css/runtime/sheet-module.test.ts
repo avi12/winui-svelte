@@ -195,8 +195,8 @@ test("a flex row written as a grid is lowered into tracks and placed children th
 
 test("a container the build cannot lower is still the translator's error", () => {
   assert.throws(
-    () => moduleFor("<border class=\"b\"><button/></border>\n\n<style>\n  .b { align-items: center }\n</style>\n"),
-    (error: unknown) => error instanceof SheetError && /align-items has no WinUI meaning \(is lowered by the component build/u.test(error.message)
+    () => moduleFor("<border class=\"b\"><button/></border>\n\n<style>\n  .b { justify-items: center }\n</style>\n"),
+    (error: unknown) => error instanceof SheetError && /justify-items has no WinUI meaning \(is lowered by the component build/u.test(error.message)
   );
 });
 
