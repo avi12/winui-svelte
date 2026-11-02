@@ -57,6 +57,8 @@ export interface ItemsPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets the distance between the ItemsPresenter and its child objects. The dimensions of the space between the presenter and its children as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.
    *
+   * Also settable in CSS as `padding`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemspresenter.padding
    */
   padding?: ThicknessInput;

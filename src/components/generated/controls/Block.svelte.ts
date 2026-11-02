@@ -23,17 +23,23 @@ export interface BlockProps extends TextElementProps {
   /**
    * Gets or sets the height of each line of content. The pixel height of each line as modified by LineStackingStrategy. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.
    *
+   * Also settable in CSS as `line-height`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block.lineheight
    */
   lineHeight?: number;
   /**
    * Gets or sets a value that indicates how a line box is determined for each line of text in the Block.
    *
+   * Also settable in CSS as `line-height`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block.linestackingstrategy
    */
   lineStackingStrategy?: EnumInput<typeof LineStackingStrategy>;
   /**
    * Gets or sets the amount of space around a Block element.
+   *
+   * Also settable in CSS as `margin`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.block.margin
    */

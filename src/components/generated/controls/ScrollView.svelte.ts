@@ -81,6 +81,8 @@ export interface ScrollViewProps extends ControlProps {
   /**
    * Gets or sets a value that indicates whether a scroll controller should be displayed for the horizontal scrolling direction.
    *
+   * Also settable in CSS as `overflow-x`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.horizontalscrollbarvisibility
    */
   horizontalScrollBarVisibility?: EnumInput<typeof ScrollingScrollBarVisibility>;
@@ -128,6 +130,8 @@ export interface ScrollViewProps extends ControlProps {
   verticalAnchorRatio?: number;
   /**
    * Gets or sets a value that indicates whether a scroll controller should be displayed for the vertical scrolling direction.
+   *
+   * Also settable in CSS as `overflow-y`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollview.verticalscrollbarvisibility
    */

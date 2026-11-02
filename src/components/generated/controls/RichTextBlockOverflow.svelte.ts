@@ -23,6 +23,8 @@ export interface RichTextBlockOverflowProps extends FrameworkElementProps {
   /**
    * Gets or sets the maximum lines of text shown in the RichTextBlockOverflow. The maximum lines of text shown in the RichTextBlockOverflow. The default is 0, which is a special value that represents "Auto" behavior. The value cannot be negative.
    *
+   * Also settable in CSS as `line-clamp`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow.maxlines
    */
   maxLines?: number;
@@ -34,6 +36,8 @@ export interface RichTextBlockOverflowProps extends FrameworkElementProps {
   overflowContentTarget?: RichTextBlockOverflow["overflowContentTarget"];
   /**
    * Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a RichTextBlockOverflow. A Thickness structure that specifies the amount of padding to apply.
+   *
+   * Also settable in CSS as `padding`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblockoverflow.padding
    */

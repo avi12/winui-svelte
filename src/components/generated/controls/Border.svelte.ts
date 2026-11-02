@@ -68,6 +68,8 @@ export interface BorderProps extends FrameworkElementProps {
   /**
    * Gets or sets the thickness of the border. The thickness of the border, in pixels. The default is 0 on all four sides.
    *
+   * Also settable in CSS as `border-width`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border.borderthickness
    */
   borderThickness?: ThicknessInput;
@@ -80,11 +82,15 @@ export interface BorderProps extends FrameworkElementProps {
   /**
    * Gets or sets the radius for the corners of the border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
    *
+   * Also settable in CSS as `border-radius`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border.cornerradius
    */
   cornerRadius?: CornerRadiusInput;
   /**
    * Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.
+   *
+   * Also settable in CSS as `padding`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.border.padding
    */

@@ -49,6 +49,8 @@ export interface AnimatedVisualPlayerProps extends FrameworkElementProps {
   /**
    * Gets or sets a value that describes how an animated visual should be stretched to fill the destination rectangle.
    *
+   * Also settable in CSS as `object-fit`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer.stretch
    */
   stretch?: EnumInput<typeof Stretch>;

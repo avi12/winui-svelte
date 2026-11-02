@@ -74,9 +74,15 @@ test("the package names the file, and ships it", () => {
   assert.ok(manifest.files.includes("web-types.json"));
 });
 
-test("visibility names display, which like Collapsed takes no space", () => {
-  const visibility = elements.find(element => element.name === "UIElement")?.attributes.find(attribute => attribute.name === "visibility");
-  assert.match(visibility?.description ?? "", /Also settable in CSS as `display`/u);
+test("a property a shorthand sets names that shorthand", () => {
+  const border = elements.find(element => element.name === "Border");
+  function noteOf(name: string) {
+    return border?.attributes.find(attribute => attribute.name === name)?.description ?? "";
+  }
+
+  assert.match(noteOf("padding"), /Also settable in CSS as `padding`/u);
+  assert.match(noteOf("cornerRadius"), /Also settable in CSS as `border-radius`/u);
+  assert.match(noteOf("borderThickness"), /Also settable in CSS as `border-width`/u);
 });
 
 test("an enum prop names the union of its member names, so the editor offers them", () => {

@@ -28,6 +28,8 @@ export interface TileBrushProps extends BrushProps {
   /**
    * Gets or sets a value that specifies how the content of this TileBrush stretches to fit its tiles. A value that specifies how this TileBrush content is projected onto its base tile. The default value is Fill.
    *
+   * Also settable in CSS as `object-fit`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.tilebrush.stretch
    */
   stretch?: EnumInput<typeof Stretch>;

@@ -143,7 +143,7 @@ export interface TextElementProps {
   /**
    * Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.
    *
-   * Also settable in CSS as `text-decoration-line`
+   * Also settable in CSS as `text-decoration`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.textdecorations
    */
