@@ -129,6 +129,9 @@
       "types": "./dist/css/index.d.ts",
       "default": "./dist/css/index.js"
     },
+    "./css/stylesheet": {
+      "types": "./dist/css/stylesheet.ambient.d.ts"
+    },
     "./css/gradients": {
       "types": "./dist/css/gradients.d.ts",
       "default": "./dist/css/gradients.js"

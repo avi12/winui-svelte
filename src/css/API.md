@@ -86,6 +86,7 @@ text-block { font-size: 12px }
 - A custom property it declares on `:root` is an app-wide resource, and `var(--neon-cyan)` in the importing component's `<style>` resolves to it
 - Editing the file restyles the open window in place
 - The import must be relative and end in `.css`; a package's stylesheet is not touched
+- TypeScript needs to know the import: add `/// <reference types="winui-svelte/css/stylesheet" />` to a `.d.ts` of the app, or `"types": ["winui-svelte/css/stylesheet"]` to its tsconfig
 
 ## The pure side (no WinUI, no Svelte)
 

@@ -15,7 +15,7 @@ const SOURCE_FOLDER = "./src/";
 const builtExtension = /\.js$/u;
 
 const manifestSchema = z.object({
-  exports: z.record(z.string(), z.union([z.string(), z.object({ default: z.string() })]))
+  exports: z.record(z.string(), z.union([z.string(), z.object({ default: z.string().optional() })]))
 });
 
 export const ExportTarget = {
@@ -40,7 +40,7 @@ export function exportAliases(target: ExportTarget) {
   const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8")));
   return Object.entries(manifest.exports).flatMap(([subpath, entry]) => {
     const builtFile = typeof entry === "string" ? entry : entry.default;
-    const isBuilt = builtFile.startsWith(BUILT_FOLDER);
+    const isBuilt = builtFile?.startsWith(BUILT_FOLDER) === true;
     return isBuilt ? [{
       find: new RegExp(`^${PACKAGE_NAME}${subpath.slice(1)}$`, "u"),
       replacement: targetFile({

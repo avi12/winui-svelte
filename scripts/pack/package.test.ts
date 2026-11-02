@@ -61,6 +61,9 @@ test("no export points at a TypeScript source", () => {
   }
 });
 
+// An ambient declaration an app references; there is no module behind it.
+const TYPES_ONLY_EXPORT = "./css/stylesheet";
+
 test("every export has types, and a default that is JavaScript", () => {
   for (const [name, entry] of Object.entries(manifest.exports)) {
     const isPackageJson = name === "./package.json";
@@ -75,6 +78,11 @@ test("every export has types, and a default that is JavaScript", () => {
 
     const conditions = exportsSchema.parse(entry);
     assert.ok(typeof conditions["types"] === "string", `${name} has no types`);
+    const isTypesOnly = name === TYPES_ONLY_EXPORT;
+    if (isTypesOnly) {
+      continue;
+    }
+
     assert.ok(String(conditions["default"]).endsWith(".js"), `${name} has no JavaScript default`);
   }
 });

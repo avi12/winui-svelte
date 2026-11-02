@@ -10,7 +10,8 @@ export const SOURCE_FOLDER = path.join(PACKAGE_ROOT, "src");
 export const OUTPUT_FOLDER = path.join(PACKAGE_ROOT, "dist");
 
 const copiedExtensions = [".svelte", ".json"];
-const DECLARATION_SUFFIX = ".d.svelte.ts";
+// The declarations TypeScript does not emit: a .svelte file's, and an ambient one an app references.
+const DECLARATION_SUFFIXES = [".d.svelte.ts", ".ambient.d.ts"];
 // `from "./x.ts"` and `import("./x.ts")` in a .svelte script.
 const relativeTsImport = /(["'])(\.{1,2}\/[^"']*?)\.ts\1/gu;
 // `from "#src/x/y.js"`: package.json's `imports` maps #src/*.js to src/*.ts,
@@ -21,7 +22,7 @@ const sourceAliasImport = /(["'])#src\/([^"']*?)(\.js|\.svelte|\.json)\1/gu;
 const aliasedExtensions = [".js", ".ts", ".svelte"];
 
 export function isShipped(file: string) {
-  const isDeclaration = file.endsWith(DECLARATION_SUFFIX);
+  const isDeclaration = DECLARATION_SUFFIXES.some(suffix => file.endsWith(suffix));
   const isCopied = copiedExtensions.includes(path.extname(file));
   const isTestSupport = /\.fixture\.svelte$|\.test\./u.test(file);
   return (isDeclaration || isCopied) && !isTestSupport;
