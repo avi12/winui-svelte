@@ -1150,6 +1150,13 @@ The secondary option `{ "ignore": ["partial-support"] }` skips codes
 WebStorm reads the same data from `web-types.json` (no setting needed), so
 `-winui-elevation`, `-winui-based-on` and the Windows font families of
 `font-family` complete in a `<style>` and a `.css` file
+Both editors also offer the keywords of every property that takes a fixed set
+(`text-align`, `white-space`, `visibility`, `display` and the rest of the
+keyword table), each with the WinUI value it stands for, and describe
+`align-items` and `justify-content` as the build lowers them into the children
+A property's hover in WinUI's own components names the CSS property that also
+sets it, found by asking the translator, so `padding`, `border-radius` and
+`border-width` are named as well as the single-member ones
 
 A diagnostic is `{ code, severity, message, filename, start, end, frame, suggestion }`
 with Svelte's position shape (`line` from 1, `column` from 0, `character`)
