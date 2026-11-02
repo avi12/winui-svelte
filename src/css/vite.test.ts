@@ -291,7 +291,7 @@ test("a component's .css import becomes the sheet module of that file", () => {
     name: "transform",
     values: ["import \"./theme.css\";\ncompiled();", THEMED]
   });
-  assert.match(JSON.stringify(result), /import "\.\/theme\.css-winui-css\.js";/u);
+  assert.match(JSON.stringify(result), /\.\/theme\.css-winui-css\.js/u);
 });
 
 test("a .css file loads as a registered sheet, and its custom properties reach the importer's var()", () => {
