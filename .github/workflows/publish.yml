@@ -28,7 +28,7 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
       - name: Cache the restored SDK and bindings
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .winapp
           key: winapp-${{ hashFiles('winapp.yaml', 'package.json') }}

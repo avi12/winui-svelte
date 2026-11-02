@@ -23,7 +23,7 @@ jobs:
       # Fetches the Windows App SDK and generates the WinUI bindings the
       # components import (.winapp/bindings, which is not committed).
       - name: Cache the restored SDK and bindings
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .winapp
           key: winapp-${{ hashFiles('winapp.yaml', 'package.json') }}
