@@ -9,6 +9,7 @@ import { descriptionParagraphsOf } from "./member-description.ts";
 import type { ClassModel } from "./model.ts";
 import { ENUMS_MODULE, OFFERED_INPUTS } from "./tables.ts";
 import type { TypeReference } from "./tables.ts";
+import { vscodeCssData } from "#src/css/validate/vscode-data.js";
 
 // The component and prop documentation as WebStorm reads it for a package
 // (the `web-types` field of package.json): the editor's own layer shows it
@@ -109,6 +110,19 @@ function attributesOf(level: ClassModel) {
   ];
 }
 
+// The CSS only WinUI has (`-winui-elevation`) and the values it adds to one
+// CSS has (`font-family`): the editor's completion in a `<style>` and a
+// `.css` file, from the same data VS Code reads as `vscode-css-data.json`.
+function cssPropertiesOf() {
+  return vscodeCssData().properties.map(property => ({
+    name: property.name,
+    description: property.description,
+    ...("values" in property && {
+      values: property.values
+    })
+  }));
+}
+
 function elementOf(level: ClassModel) {
   const element: Element = {
     name: level.type.name,
@@ -142,6 +156,9 @@ export function emitWebTypes({ classes, version }: {
     contributions: {
       html: {
         elements
+      },
+      css: {
+        properties: cssPropertiesOf()
       }
     }
   }, null, INDENT)}\n`;

@@ -12,6 +12,111 @@
       "description": "The depth of the element's ThemeShadow, in px: a WinUI shadow that follows the theme. Units: Native, as written: px, deg, s, ms, fr. No WinUI equivalent (an error that says what to write): rem, em, ch, ex, cap, ic, lh, rlh, rch, rex, rcap, ric, pt, pc, in, cm, mm, q, vw, vh, vmin, vmax, vi, vb, svw, svh, svi, svb, lvw, lvh, lvi, lvb, dvw, dvh, dvi, dvb, cqw, cqh, cqi, cqb, cqmin, cqmax, rad, grad, turn, dppx, dpi, dpcm, x, %."
     },
     {
+      "name": "font-family",
+      "description": "WinUI: a font family installed on Windows; the names offered here ship with it, any other installed family works as well.",
+      "values": [
+        {
+          "name": "\"Arial\""
+        },
+        {
+          "name": "\"Bahnschrift\""
+        },
+        {
+          "name": "\"Calibri\""
+        },
+        {
+          "name": "\"Cambria\""
+        },
+        {
+          "name": "\"Cascadia Code\""
+        },
+        {
+          "name": "\"Cascadia Mono\""
+        },
+        {
+          "name": "\"Comic Sans MS\""
+        },
+        {
+          "name": "\"Consolas\""
+        },
+        {
+          "name": "\"Courier New\""
+        },
+        {
+          "name": "\"Ebrima\""
+        },
+        {
+          "name": "\"Franklin Gothic Medium\""
+        },
+        {
+          "name": "\"Gabriola\""
+        },
+        {
+          "name": "\"Georgia\""
+        },
+        {
+          "name": "\"Impact\""
+        },
+        {
+          "name": "\"Lucida Console\""
+        },
+        {
+          "name": "\"Malgun Gothic\""
+        },
+        {
+          "name": "\"Microsoft YaHei UI\""
+        },
+        {
+          "name": "\"Nirmala UI\""
+        },
+        {
+          "name": "\"Palatino Linotype\""
+        },
+        {
+          "name": "\"Segoe Fluent Icons\""
+        },
+        {
+          "name": "\"Segoe MDL2 Assets\""
+        },
+        {
+          "name": "\"Segoe Print\""
+        },
+        {
+          "name": "\"Segoe Script\""
+        },
+        {
+          "name": "\"Segoe UI\""
+        },
+        {
+          "name": "\"Segoe UI Emoji\""
+        },
+        {
+          "name": "\"Segoe UI Symbol\""
+        },
+        {
+          "name": "\"Segoe UI Variable\""
+        },
+        {
+          "name": "\"Sitka\""
+        },
+        {
+          "name": "\"Tahoma\""
+        },
+        {
+          "name": "\"Times New Roman\""
+        },
+        {
+          "name": "\"Trebuchet MS\""
+        },
+        {
+          "name": "\"Verdana\""
+        },
+        {
+          "name": "\"Yu Gothic UI\""
+        }
+      ]
+    },
+    {
       "name": "grid-template-columns",
       "description": "WinUI: a track is auto, a length or an fr size, and they mix freely; repeat(N, ...) is expanded when building. No WinUI equivalent: repeat(auto-fill|auto-fit, ...), subgrid, masonry, named lines and % tracks (the editor's diagnostics say what to write instead)."
     },
