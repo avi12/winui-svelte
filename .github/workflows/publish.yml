@@ -1,6 +1,7 @@
 name: Publish
 
 # Publishes to npm when a version tag is pushed (git tag v0.1.0 && git push --tags).
+# Lint and tests are ci.yml's, which must be green on the tagged commit; this builds and publishes.
 # npm trusted publishing: the workflow signs in to npm with its GitHub OIDC identity
 # (id-token: write), so no token is stored anywhere. The package's npm settings name
 # this repository, this workflow file and the environment "npm" as its trusted publisher.
@@ -26,9 +27,13 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
+      - name: Cache the restored SDK and bindings
+        uses: actions/cache@v4
+        with:
+          path: .winapp
+          key: winapp-${{ hashFiles('winapp.yaml', 'package.json') }}
       - run: pnpm restore
-      - run: pnpm lint
-      - run: pnpm test
+      - run: pnpm build
       - name: The tag must match package.json
         shell: pwsh
         run: |
