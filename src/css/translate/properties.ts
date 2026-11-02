@@ -10,6 +10,7 @@ import {
 } from "./layout-properties.ts";
 import { brushProperty, COMPOSITION_PROPERTIES, lengthProperty, simple } from "./property-kit.ts";
 import type { GroupInput, Output, PropertyGroup } from "./property-kit.ts";
+import { textControlGroups } from "./text-control-properties.ts";
 import { fontFamily, fontWeight, letterSpacing, lineHeight } from "./text-properties.ts";
 import type { Declaration } from "./types.ts";
 import { opacity, zIndex } from "./visual-properties.ts";
@@ -149,6 +150,7 @@ export const propertyGroups: readonly PropertyGroup[] = [
     property: "CharacterSpacing",
     parse: letterSpacing
   }),
+  ...textControlGroups,
   discreteGroup("text-align"),
   discreteGroup("text-wrap"),
   discreteGroup("white-space"),

@@ -547,6 +547,7 @@ build error with its file and line; nothing is silently ignored
 | `background-image` or `background` with `linear-gradient()` or `radial-gradient()` | a `LinearGradientBrush` or `RadialGradientBrush` Background (a sheet that uses one carries the parser; one that does not, does not) |
 | `width`, `height`, `min-*`, `max-*` | `Width`, `Height`, `MinWidth`... |
 | `font-size`, `font-weight`, `font-family`, `font-style`, `line-height`, `letter-spacing`, `text-align`, `text-wrap`, `text-overflow`, `text-decoration` | the `TextBlock` and `Control` font and text properties |
+| `font-stretch`, `direction`, `background-clip`, `tab-index` | `FontStretch` (`ultra-condensed` to `ultra-expanded`), `FlowDirection` (`ltr`, `rtl`), `BackgroundSizing` (`border-box` is `OuterBorderEdge`, `padding-box` is `InnerBorderEdge`), `TabIndex` (a negative value sets `IsTabStop` to false) |
 | `gap`, `row-gap`, `column-gap` | `Spacing` (a stack), `RowSpacing` and `ColumnSpacing` (a grid) |
 | `flex-direction`, `display: flex` on a stack, `align-self`, `justify-self` | `Orientation`, `VerticalAlignment`, `HorizontalAlignment` |
 | `grid-template-columns`, `grid-template-rows` (`fr`, `px`, `auto`, `minmax()`, `fit-content()`, `repeat(n, ...)`), `grid-column`, `grid-row` | `ColumnDefinitions`, `RowDefinitions`, `Grid.Column`... |
