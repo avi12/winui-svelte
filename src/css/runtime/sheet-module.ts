@@ -1,4 +1,5 @@
 import type { ResourceCatalogue } from "./resources.ts";
+import { sharedStylesheetsOf, withSharedResources } from "./shared-sheets.ts";
 import { resolveRelationalSelectors } from "#src/css/relational/relational.js";
 import { withInstancesAsElements, withScopedInstances } from "#src/css/relational/scope.js";
 import { LAZY_GROUPS } from "#src/css/translate/lazy-groups.js";
@@ -14,6 +15,7 @@ import { compile } from "svelte/compiler";
  */
 export const SHEET_SUFFIX = "-winui-css.js";
 
+const HOT_ACCEPT = "\nif (import.meta.hot) {\n  import.meta.hot.accept();\n}";
 const REGISTER_ALIAS = "registerWinuiSheet";
 const GROUPS_ALIAS = "registerWinuiGroups";
 const LAZY_ALIAS = "winuiLazyGroups";
@@ -276,14 +278,21 @@ function unusedWarnings({ source, filename }: {
  * component as the translation read it, relational selectors resolved.
  */
 export function translateComponent(input: Omit<SheetModuleInput, "isHot" | "runtimeModule">) {
-  const key = [input.filename, input.sheetId, input.source].join("|");
+  const shared = sharedStylesheetsOf(input);
+  const key = [input.filename, input.sheetId, input.source, ...shared.map(sheet => sheet.css)].join("|");
   const cached = translations.get(key);
   const isCached = cached?.resources === input.resources && cached.compilerOptions === input.compilerOptions;
   if (isCached) {
     return cached.translation;
   }
 
-  const translation = translateUncached(input);
+  const translation = translateUncached({
+    ...input,
+    resources: withSharedResources({
+      resources: input.resources,
+      shared
+    })
+  });
   translations.delete(key);
   translations.set(key, {
     resources: input.resources,
@@ -367,7 +376,7 @@ export function compileSheetModule(input: SheetModuleInput) {
     throw new SheetError(translation.diagnostics);
   }
 
-  const hot = input.isHot === true ? "\nif (import.meta.hot) {\n  import.meta.hot.accept();\n}" : "";
+  const hot = input.isHot === true ? HOT_ACCEPT : "";
   return {
     code: `${registrationCode({
       sheet,
@@ -376,5 +385,38 @@ export function compileSheetModule(input: SheetModuleInput) {
     })}${hot}\n`,
     sheet,
     diagnostics: translation.diagnostics
+  };
+}
+
+/**
+ * Compiles a plain `.css` file a component imports into its registration
+ * module: the file's rules apply to the whole window, and the custom
+ * properties it declares are app-wide resources. Throws SheetError when the
+ * CSS has something WinUI cannot say.
+ */
+export function compileCssFileModule({ source, sheetId, resources, runtimeModule, isHot }: Omit<SheetModuleInput, "filename" | "compilerOptions">) {
+  const { sheet, diagnostics } = translateStyleSheet({
+    file: sheetId,
+    css: source,
+    resources
+  });
+  const hasErrors = errorsOf({
+    sheet,
+    diagnostics
+  }).length > 0;
+  if (hasErrors) {
+    throw new SheetError(diagnostics);
+  }
+
+  const hot = isHot === true ? HOT_ACCEPT : "";
+  return {
+    code: `${registrationCode({
+      sheet,
+      markupRules: [],
+      runtimeModule
+    })}${hot}
+`,
+    sheet,
+    diagnostics
   };
 }

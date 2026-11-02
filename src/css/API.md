@@ -62,6 +62,30 @@ the class out of a Svelte compile of the same file, never a hash of our own
 Without Vite (tests, the window kit), `compileSheetModule({ filename, source,
 sheetId, resources, runtimeModule })` returns the module's code (or null for no
 `<style>`); append it to the compiled component
+`compileCssFileModule({ source, sheetId, resources, runtimeModule })` does the same for a
+shared `.css` file
+
+## Shared styles: a `.css` file
+
+A component imports a stylesheet for its side effect, and the file's rules
+apply to the whole window, as the rules of a component's `<style>` do
+
+```svelte
+<script>
+  import "./theme.css";
+</script>
+```
+
+```css
+/* theme.css */
+:root { --neon-cyan: #0ff }
+text-block { font-size: 12px }
+```
+
+- The file is translated like a `<style>` (same properties, same diagnostics), with no scoping, so its selectors are global
+- A custom property it declares on `:root` is an app-wide resource, and `var(--neon-cyan)` in the importing component's `<style>` resolves to it
+- Editing the file restyles the open window in place
+- The import must be relative and end in `.css`; a package's stylesheet is not touched
 
 ## The pure side (no WinUI, no Svelte)
 
@@ -1121,6 +1145,10 @@ The secondary option `{ "ignore": ["partial-support"] }` skips codes
   "css.customData": ["./node_modules/winui-svelte/vscode-css-data.json"]
 }
 ```
+
+WebStorm reads the same data from `web-types.json` (no setting needed), so
+`-winui-elevation`, `-winui-based-on` and the Windows font families of
+`font-family` complete in a `<style>` and a `.css` file
 
 A diagnostic is `{ code, severity, message, filename, start, end, frame, suggestion }`
 with Svelte's position shape (`line` from 1, `column` from 0, `character`)

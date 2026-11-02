@@ -1077,7 +1077,8 @@ export function translateStyleSheet(input: TranslateInput) {
       keyframes: translator.keyframes,
       resourcesXaml
     } satisfies StyleSheetData,
-    diagnostics: translator.diagnostics
+    diagnostics: translator.diagnostics,
+    declaredKinds: translator.kinds
   };
 }
 

@@ -280,3 +280,33 @@ test.after(() => {
     force: true
   });
 });
+
+const THEME = `${FOLDER}/theme.css`;
+const THEMED = `${FOLDER}/themed.svelte`;
+writeFileSync(THEME, ":root { --neon-cyan: #0ff }\ntext-block { font-size: 12px }\n");
+writeFileSync(THEMED, "<script>\n  import \"./theme.css\";\n</script>\n<text-block class=\"a\" />\n<style>\n  .a { color: var(--neon-cyan) }\n</style>\n");
+
+test("a component's .css import becomes the sheet module of that file", () => {
+  const result = run({
+    name: "transform",
+    values: ["import \"./theme.css\";\ncompiled();", THEMED]
+  });
+  assert.match(JSON.stringify(result), /import "\.\/theme\.css-winui-css\.js";/u);
+});
+
+test("a .css file loads as a registered sheet, and its custom properties reach the importer's var()", () => {
+  const loaded = String(
+    run({
+      name: "load",
+      values: [`${THEME}-winui-css.js`]
+    })
+  );
+  assert.match(loaded, /registerStyleSheet/u);
+  const component = String(
+    run({
+      name: "load",
+      values: [`${THEMED}-winui-css.js`]
+    })
+  );
+  assert.match(component, /registerStyleSheet/u);
+});

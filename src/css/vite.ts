@@ -1,4 +1,4 @@
-import { compileSheetModule, SHEET_SUFFIX, SheetError } from "./runtime/sheet-module.ts";
+import { compileCssFileModule, compileSheetModule, SHEET_SUFFIX, SheetError } from "./runtime/sheet-module.ts";
 import { loadWinuiCatalogue } from "./translate/catalogue.ts";
 import { formatDiagnostic } from "./translate/translate.ts";
 import { formatValidation } from "./validate/diagnostic.ts";
@@ -29,6 +29,8 @@ const PLUGIN_NAME = "winui-svelte:css";
 const DEFAULT_RUNTIME_MODULE = "winui-svelte/css";
 const QUERY_START = "?";
 const SVELTE_EXTENSION = ".svelte";
+const CSS_EXTENSION = ".css";
+const sharedImport = /(import\s+)(["'])(\.{1,2}\/[^"'\n]+\.css)\2/gu;
 const STYLE_OPENING = "<style";
 const styleBlocks = /<style[\s\S]*?<\/style>/gu;
 
@@ -41,7 +43,13 @@ function isComponentId(id: string) {
 }
 
 function isSheetId(id: string) {
-  return id.endsWith(`${SVELTE_EXTENSION}${SHEET_SUFFIX}`);
+  return id.endsWith(`${SVELTE_EXTENSION}${SHEET_SUFFIX}`) || id.endsWith(`${CSS_EXTENSION}${SHEET_SUFFIX}`);
+}
+
+// A `.css` a component imports is a sheet of the window, not a file for a
+// browser to inject, so the import becomes the sheet module's.
+function withSharedSheets(code: string) {
+  return code.replace(sharedImport, (_, keyword: string, quote: string, specifier: string) => `${keyword}${quote}${specifier}${SHEET_SUFFIX}${quote}`);
 }
 
 /**
@@ -84,13 +92,17 @@ export function winuiCss(options: WinuiCssOptions) {
 
       const source = readFileSync(id, "utf8");
       withoutStyles.set(id, withoutStyle(source));
+      const shared = withSharedSheets(code);
       const hasStyle = source.includes(STYLE_OPENING) || markupStyleProperties(source).length > 0;
       if (!hasStyle) {
-        return null;
+        return shared === code ? null : {
+          code: shared,
+          map: null
+        };
       }
 
       return {
-        code: `${code}\nimport ${JSON.stringify(`${id}${SHEET_SUFFIX}`)};\n`,
+        code: `${shared}\nimport ${JSON.stringify(`${id}${SHEET_SUFFIX}`)};\n`,
         map: null
       };
     },
@@ -99,6 +111,13 @@ export function winuiCss(options: WinuiCssOptions) {
     // the sheet's: the component is left running, with its state, and its live
     // elements restyle.
     hotUpdate({ file, modules }) {
+      const isSharedFile = file.endsWith(CSS_EXTENSION);
+      const sharedSheet = isSharedFile ? this.environment.moduleGraph.getModuleById(`${file}${SHEET_SUFFIX}`) : undefined;
+      const isSharedSheetLoaded = sharedSheet !== undefined;
+      if (isSharedSheetLoaded) {
+        return [sharedSheet];
+      }
+
       const sheet = this.environment.moduleGraph.getModuleById(`${file}${SHEET_SUFFIX}`);
       const isSheetMissing = sheet === undefined;
       if (isSheetMissing) {
@@ -132,6 +151,17 @@ export function winuiCss(options: WinuiCssOptions) {
 
       const filename = id.slice(0, -SHEET_SUFFIX.length);
       this.addWatchFile(filename);
+      const isSharedFile = filename.endsWith(CSS_EXTENSION);
+      if (isSharedFile) {
+        return compileCssFileModule({
+          source: readFileSync(filename, "utf8"),
+          sheetId: path.relative(root, filename).replaceAll("\\", "/"),
+          resources,
+          runtimeModule,
+          isHot: true
+        }).code;
+      }
+
       try {
         const source = readFileSync(filename, "utf8");
         const problems = validateComponent({
