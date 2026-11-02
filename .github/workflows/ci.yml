@@ -49,7 +49,7 @@ jobs:
       - name: Pack the tarball
         run: pnpm pack --pack-destination ${{ runner.temp }}
       - name: Keep the tarball
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: tarball
           path: ${{ runner.temp }}/winui-svelte-*.tgz
