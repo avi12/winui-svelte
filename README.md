@@ -1,5 +1,7 @@
 # winui-svelte
 
+[![npm version](https://img.shields.io/npm/v/winui-svelte)](https://www.npmjs.com/package/winui-svelte)
+
 WinUI 3 controls as Svelte components: native Windows apps written in Svelte,
 the way React Native writes native apps in React
 Every control is WinUI's own,
