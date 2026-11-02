@@ -29,6 +29,8 @@ export interface ViewboxProps extends FrameworkElementProps {
   /**
    * Gets or sets the Stretch mode, which determines how content fits into the available space. A Stretch mode, which determines how content fits in the available space. The default is Uniform.
    *
+   * Also settable in CSS as `object-fit`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.viewbox.stretch
    */
   stretch?: EnumInput<typeof Stretch>;

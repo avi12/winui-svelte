@@ -117,6 +117,320 @@
       ]
     },
     {
+      "name": "word-break",
+      "description": "WinUI: sets TextWrapping; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "normal",
+          "description": "TextWrapping: WrapWholeWords"
+        },
+        {
+          "name": "keep-all",
+          "description": "TextWrapping: WrapWholeWords"
+        },
+        {
+          "name": "break-all",
+          "description": "TextWrapping: Wrap"
+        },
+        {
+          "name": "break-word",
+          "description": "TextWrapping: Wrap"
+        }
+      ]
+    },
+    {
+      "name": "object-fit",
+      "description": "WinUI: sets Stretch; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "fill",
+          "description": "Stretch: Fill"
+        },
+        {
+          "name": "contain",
+          "description": "Stretch: Uniform"
+        },
+        {
+          "name": "cover",
+          "description": "Stretch: UniformToFill"
+        },
+        {
+          "name": "none",
+          "description": "Stretch: None"
+        }
+      ]
+    },
+    {
+      "name": "user-select",
+      "description": "WinUI: sets IsTextSelectionEnabled; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "auto",
+          "description": "IsTextSelectionEnabled: True"
+        },
+        {
+          "name": "text",
+          "description": "IsTextSelectionEnabled: True"
+        },
+        {
+          "name": "all",
+          "description": "IsTextSelectionEnabled: True"
+        },
+        {
+          "name": "contain",
+          "description": "IsTextSelectionEnabled: True"
+        },
+        {
+          "name": "none",
+          "description": "IsTextSelectionEnabled: False"
+        }
+      ]
+    },
+    {
+      "name": "font-style",
+      "description": "WinUI: sets FontStyle; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "normal",
+          "description": "FontStyle: Normal"
+        },
+        {
+          "name": "italic",
+          "description": "FontStyle: Italic"
+        },
+        {
+          "name": "oblique",
+          "description": "FontStyle: Oblique"
+        }
+      ]
+    },
+    {
+      "name": "text-align",
+      "description": "WinUI: sets TextAlignment; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "left",
+          "description": "TextAlignment: Left"
+        },
+        {
+          "name": "start",
+          "description": "TextAlignment: Left"
+        },
+        {
+          "name": "center",
+          "description": "TextAlignment: Center"
+        },
+        {
+          "name": "right",
+          "description": "TextAlignment: Right"
+        },
+        {
+          "name": "end",
+          "description": "TextAlignment: Right"
+        },
+        {
+          "name": "justify",
+          "description": "TextAlignment: Justify"
+        }
+      ]
+    },
+    {
+      "name": "text-wrap",
+      "description": "WinUI: sets TextWrapping; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "wrap",
+          "description": "TextWrapping: Wrap"
+        },
+        {
+          "name": "nowrap",
+          "description": "TextWrapping: NoWrap"
+        }
+      ]
+    },
+    {
+      "name": "white-space",
+      "description": "WinUI: sets TextWrapping; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "normal",
+          "description": "TextWrapping: Wrap"
+        },
+        {
+          "name": "nowrap",
+          "description": "TextWrapping: NoWrap"
+        }
+      ]
+    },
+    {
+      "name": "text-overflow",
+      "description": "WinUI: sets TextTrimming; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "ellipsis",
+          "description": "TextTrimming: CharacterEllipsis"
+        },
+        {
+          "name": "clip",
+          "description": "TextTrimming: Clip"
+        }
+      ]
+    },
+    {
+      "name": "text-decoration",
+      "description": "WinUI: sets TextDecorations; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "none",
+          "description": "TextDecorations: None"
+        },
+        {
+          "name": "underline",
+          "description": "TextDecorations: Underline"
+        },
+        {
+          "name": "line-through",
+          "description": "TextDecorations: Strikethrough"
+        }
+      ]
+    },
+    {
+      "name": "text-decoration-line",
+      "description": "WinUI: sets TextDecorations; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "none",
+          "description": "TextDecorations: None"
+        },
+        {
+          "name": "underline",
+          "description": "TextDecorations: Underline"
+        },
+        {
+          "name": "line-through",
+          "description": "TextDecorations: Strikethrough"
+        }
+      ]
+    },
+    {
+      "name": "flex-direction",
+      "description": "WinUI: sets Orientation; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "row",
+          "description": "Orientation: Horizontal"
+        },
+        {
+          "name": "column",
+          "description": "Orientation: Vertical"
+        }
+      ]
+    },
+    {
+      "name": "visibility",
+      "description": "WinUI: sets Visibility; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "visible",
+          "description": "Visibility: Visible"
+        },
+        {
+          "name": "hidden",
+          "description": "Visibility: Collapsed"
+        },
+        {
+          "name": "collapse",
+          "description": "Visibility: Collapsed"
+        }
+      ]
+    },
+    {
+      "name": "pointer-events",
+      "description": "WinUI: sets IsHitTestVisible; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "none",
+          "description": "IsHitTestVisible: False"
+        },
+        {
+          "name": "auto",
+          "description": "IsHitTestVisible: True"
+        },
+        {
+          "name": "all",
+          "description": "IsHitTestVisible: True"
+        }
+      ]
+    },
+    {
+      "name": "color-scheme",
+      "description": "WinUI: sets RequestedTheme; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "normal",
+          "description": "RequestedTheme: Default"
+        },
+        {
+          "name": "light",
+          "description": "RequestedTheme: Light"
+        },
+        {
+          "name": "dark",
+          "description": "RequestedTheme: Dark"
+        }
+      ]
+    },
+    {
+      "name": "display",
+      "description": "WinUI: sets Visibility; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "none",
+          "description": "Visibility: Collapsed"
+        },
+        {
+          "name": "block",
+          "description": "Visibility: Visible"
+        },
+        {
+          "name": "inline",
+          "description": "Visibility: Visible"
+        },
+        {
+          "name": "inline-block",
+          "description": "Visibility: Visible"
+        },
+        {
+          "name": "flex",
+          "description": "Visibility: Visible"
+        },
+        {
+          "name": "inline-flex",
+          "description": "Visibility: Visible"
+        },
+        {
+          "name": "grid",
+          "description": "Visibility: Visible"
+        },
+        {
+          "name": "inline-grid",
+          "description": "Visibility: Visible"
+        },
+        {
+          "name": "contents",
+          "description": "Visibility: Visible"
+        }
+      ]
+    },
+    {
+      "name": "align-items",
+      "description": "WinUI: on a stack panel or grid the build lowers it into the children (each child's align-self or justify-self, or spacer tracks), so it applies to a container written in the component, outside an @media."
+    },
+    {
+      "name": "justify-content",
+      "description": "WinUI: on a stack panel or grid the build lowers it into the children (each child's align-self or justify-self, or spacer tracks), so it applies to a container written in the component, outside an @media."
+    },
+    {
       "name": "grid-template-columns",
       "description": "WinUI: a track is auto, a length or an fr size, and they mix freely; repeat(N, ...) is expanded when building. No WinUI equivalent: repeat(auto-fill|auto-fit, ...), subgrid, masonry, named lines and % tracks (the editor's diagnostics say what to write instead)."
     },

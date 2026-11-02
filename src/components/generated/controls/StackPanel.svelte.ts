@@ -46,11 +46,15 @@ export interface StackPanelProps extends PanelProps {
   /**
    * Gets or sets the border thickness of the panel. The border thickness of the panel, as a Thickness value.
    *
+   * Also settable in CSS as `border-width`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.borderthickness
    */
   borderThickness?: ThicknessInput;
   /**
    * Gets or sets the radius for the corners of the panel's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
+   *
+   * Also settable in CSS as `border-radius`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.cornerradius
    */
@@ -65,6 +69,8 @@ export interface StackPanelProps extends PanelProps {
   orientation?: EnumInput<typeof Orientation>;
   /**
    * Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.
+   *
+   * Also settable in CSS as `padding`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.padding
    */

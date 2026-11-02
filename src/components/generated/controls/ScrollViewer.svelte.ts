@@ -60,6 +60,8 @@ export interface ScrollViewerProps extends ContentControlProps {
   /**
    * Gets or sets a value that indicates whether a horizontal ScrollBar should be displayed. A ScrollBarVisibility value that indicates whether a horizontal ScrollBar should be displayed. The default value is Disabled.
    *
+   * Also settable in CSS as `overflow-x`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.horizontalscrollbarvisibility
    */
   horizontalScrollBarVisibility?: EnumInput<typeof ScrollBarVisibility>;
@@ -173,6 +175,8 @@ export interface ScrollViewerProps extends ContentControlProps {
   verticalAnchorRatio?: number;
   /**
    * Gets or sets a value that indicates whether a vertical ScrollBar should be displayed. A ScrollBarVisibility value that indicates whether a vertical ScrollBar should be displayed. The default value is Visible.
+   *
+   * Also settable in CSS as `overflow-y`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.verticalscrollbarvisibility
    */

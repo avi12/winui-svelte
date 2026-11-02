@@ -194,7 +194,7 @@ export interface TextBoxProps extends ControlProps {
   /**
    * Gets or sets how line breaking occurs if a line of text extends beyond the available width of the text box. One of the TextWrapping values. The default is NoWrap.
    *
-   * Also settable in CSS as `white-space`
+   * Also settable in CSS as `text-wrap`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.textwrapping
    */

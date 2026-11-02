@@ -72,6 +72,8 @@ export interface ControlProps extends FrameworkElementProps {
   /**
    * Gets or sets the border thickness of a control.
    *
+   * Also settable in CSS as `border-width`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.borderthickness
    */
   borderThickness?: ThicknessInput;
@@ -85,6 +87,8 @@ export interface ControlProps extends FrameworkElementProps {
   characterSpacing?: number;
   /**
    * Gets or sets the radius for the corners of the control's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
+   *
+   * Also settable in CSS as `border-radius`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.cornerradius
    */
@@ -189,6 +193,8 @@ export interface ControlProps extends FrameworkElementProps {
   isTextScaleFactorEnabled?: boolean;
   /**
    * Gets or sets the padding inside a control. The amount of space between the content of a Control and its Margin or Border. The default is a Thickness with values of 0 on all four sides.
+   *
+   * Also settable in CSS as `padding`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.padding
    */

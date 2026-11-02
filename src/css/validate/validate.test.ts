@@ -4,6 +4,7 @@ import { rule, ruleName } from "./stylelint.ts";
 import { validateComponent } from "./validate.ts";
 import { vscodeCssData } from "./vscode-data.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
+import { DISCRETE_MEMBERS, discreteWordsOf } from "#src/css/translate/discrete-properties.js";
 import { BUILD_GROUPS, LAZY_GROUPS } from "#src/css/translate/lazy-groups.js";
 import { propertyGroups } from "#src/css/translate/properties.js";
 import { WINUI_ONLY_PROPERTIES } from "#src/css/translate/winui-only-properties.js";
@@ -91,6 +92,21 @@ test("the -winui-* list is the properties the table handles, and the editor data
 
   const file = JSON.parse(readFileSync(new URL("vscode-css-data.json", import.meta.url), "utf8"));
   assert.deepEqual(file, vscodeCssData());
+});
+
+test("a keyword property completes with the keywords the translator accepts, and the container alignments are described", () => {
+  const { properties } = vscodeCssData();
+  for (const member of DISCRETE_MEMBERS) {
+    const entry = properties.find(property => property.name === member);
+    const hasValues = entry !== undefined && "values" in entry;
+    const values = hasValues ? entry.values.map(value => value.name) : [];
+    assert.deepEqual(values, discreteWordsOf(member), member);
+    assert.match(entry?.description ?? "", /^WinUI: sets \w+;/u, member);
+  }
+
+  for (const name of ["align-items", "justify-content"]) {
+    assert.match(properties.find(property => property.name === name)?.description ?? "", /lowers it into the children/u, name);
+  }
 });
 
 // The three channels, one fixture: the same declaration is underlined with the same words.

@@ -28,6 +28,8 @@ export interface ShapeProps extends FrameworkElementProps {
   /**
    * Gets or sets a Stretch enumeration value that describes how the shape fills its allocated space. One of the Stretch enumeration values. The default value at run time depends on the type of Shape.
    *
+   * Also settable in CSS as `object-fit`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.shapes.shape.stretch
    */
   stretch?: EnumInput<typeof Stretch>;

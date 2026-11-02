@@ -28,6 +28,8 @@ export interface MediaPlayerPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets a value that describes how an MediaPlayerPresenter should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source visual media is rendered. The default value is Uniform.
    *
+   * Also settable in CSS as `object-fit`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerpresenter.stretch
    */
   stretch?: EnumInput<typeof Stretch>;

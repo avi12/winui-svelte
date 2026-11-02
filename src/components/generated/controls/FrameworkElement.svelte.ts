@@ -75,6 +75,8 @@ export interface FrameworkElementProps extends UIElementProps {
   /**
    * Gets or sets the outer margin of the focus visual for a FrameworkElement. Provides margin values for the focus visual. The default is a Thickness with all properties (dimensions) equal to 0. A different runtime default is often provided by individual control templates.
    *
+   * Also settable in CSS as `outline-offset`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualmargin
    */
   focusVisualMargin?: ThicknessInput;
@@ -83,11 +85,15 @@ export interface FrameworkElementProps extends UIElementProps {
    *
    * Accepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.
    *
+   * Also settable in CSS as `outline-color`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualprimarybrush
    */
   focusVisualPrimaryBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the thickness of the outer border of a HighVisibility or Reveal focus visual for a FrameworkElement.
+   *
+   * Also settable in CSS as `outline-width`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualprimarythickness
    */
@@ -102,6 +108,8 @@ export interface FrameworkElementProps extends UIElementProps {
   focusVisualSecondaryBrush?: BrushInput | Snippet;
   /**
    * Gets or sets the thickness of the inner border of a HighVisibility or Reveal focus visual for a FrameworkElement. The thickness of the inner border of a HighVisibility focus visual. The default value is 1.
+   *
+   * Also settable in CSS as `outline-width`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.focusvisualsecondarythickness
    */
@@ -130,6 +138,8 @@ export interface FrameworkElementProps extends UIElementProps {
   language?: string;
   /**
    * Gets or sets the outer margin of a FrameworkElement. Provides margin values for the object. The default value is a default Thickness with all properties (dimensions) equal to 0.
+   *
+   * Also settable in CSS as `margin`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.margin
    */

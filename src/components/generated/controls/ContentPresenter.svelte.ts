@@ -90,6 +90,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets the border thickness of the content presenter. The border thickness of the content presenter, as a Thickness value.
    *
+   * Also settable in CSS as `border-width`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.borderthickness
    */
   borderThickness?: ThicknessInput;
@@ -123,6 +125,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   contentTemplateSelector?: ContentPresenter["contentTemplateSelector"];
   /**
    * Gets or sets the radius for the corners of the content presenter's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.
+   *
+   * Also settable in CSS as `border-radius`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.cornerradius
    */
@@ -196,17 +200,23 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets the height of each line of text content presented by the ContentPresenter. The height in pixels of each line of text content. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.
    *
+   * Also settable in CSS as `line-height`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.lineheight
    */
   lineHeight?: number;
   /**
    * Gets or sets a value that indicates how a line box is determined for each line of text.
    *
+   * Also settable in CSS as `line-height`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.linestackingstrategy
    */
   lineStackingStrategy?: EnumInput<typeof LineStackingStrategy>;
   /**
    * Gets or sets the maximum lines of text shown. The maximum lines of text shown. The default is 0, which is a special value that represents "Auto" behavior. The value cannot be negative.
+   *
+   * Also settable in CSS as `line-clamp`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.maxlines
    */
@@ -220,6 +230,8 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.
    *
+   * Also settable in CSS as `padding`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.padding
    */
   padding?: ThicknessInput;
@@ -232,7 +244,7 @@ export interface ContentPresenterProps extends FrameworkElementProps {
   /**
    * Gets or sets how the element wraps text. A value that indicates how the element wraps text. The default is NoWrap.
    *
-   * Also settable in CSS as `white-space`
+   * Also settable in CSS as `text-wrap`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.textwrapping
    */

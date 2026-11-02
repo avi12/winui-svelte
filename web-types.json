@@ -185,7 +185,7 @@
             },
             {
               "name": "stretch",
-              "description": "Gets or sets a value that describes how an animated visual should be stretched to fill the destination rectangle.\n\nType: `Stretch`",
+              "description": "Gets or sets a value that describes how an animated visual should be stretched to fill the destination rectangle.\n\nAlso settable in CSS as `object-fit`\n\nType: `Stretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -839,7 +839,7 @@
             },
             {
               "name": "lineHeight",
-              "description": "Gets or sets the height of each line of content. The pixel height of each line as modified by LineStackingStrategy. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.\n\nType: `number`",
+              "description": "Gets or sets the height of each line of content. The pixel height of each line as modified by LineStackingStrategy. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.\n\nAlso settable in CSS as `line-height`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -847,7 +847,7 @@
             },
             {
               "name": "lineStackingStrategy",
-              "description": "Gets or sets a value that indicates how a line box is determined for each line of text in the Block.\n\nType: `LineStackingStrategy`",
+              "description": "Gets or sets a value that indicates how a line box is determined for each line of text in the Block.\n\nAlso settable in CSS as `line-height`\n\nType: `LineStackingStrategy`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -858,7 +858,7 @@
             },
             {
               "name": "margin",
-              "description": "Gets or sets the amount of space around a Block element.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the amount of space around a Block element.\n\nAlso settable in CSS as `margin`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -924,7 +924,7 @@
             },
             {
               "name": "borderThickness",
-              "description": "Gets or sets the thickness of the border. The thickness of the border, in pixels. The default is 0 on all four sides.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the thickness of the border. The thickness of the border, in pixels. The default is 0 on all four sides.\n\nAlso settable in CSS as `border-width`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -937,7 +937,7 @@
             },
             {
               "name": "cornerRadius",
-              "description": "Gets or sets the radius for the corners of the border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nType: `CornerRadiusInput`",
+              "description": "Gets or sets the radius for the corners of the border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nAlso settable in CSS as `border-radius`\n\nType: `CornerRadiusInput`",
               "value": {
                 "type": "CornerRadiusInput"
               },
@@ -945,7 +945,7 @@
             },
             {
               "name": "padding",
-              "description": "Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nAlso settable in CSS as `padding`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -3133,7 +3133,7 @@
             },
             {
               "name": "borderThickness",
-              "description": "Gets or sets the border thickness of the content presenter. The border thickness of the content presenter, as a Thickness value.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the border thickness of the content presenter. The border thickness of the content presenter, as a Thickness value.\n\nAlso settable in CSS as `border-width`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -3170,7 +3170,7 @@
             },
             {
               "name": "cornerRadius",
-              "description": "Gets or sets the radius for the corners of the content presenter's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nType: `CornerRadiusInput`",
+              "description": "Gets or sets the radius for the corners of the content presenter's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nAlso settable in CSS as `border-radius`\n\nType: `CornerRadiusInput`",
               "value": {
                 "type": "CornerRadiusInput"
               },
@@ -3257,7 +3257,7 @@
             },
             {
               "name": "lineHeight",
-              "description": "Gets or sets the height of each line of text content presented by the ContentPresenter. The height in pixels of each line of text content. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.\n\nType: `number`",
+              "description": "Gets or sets the height of each line of text content presented by the ContentPresenter. The height in pixels of each line of text content. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.\n\nAlso settable in CSS as `line-height`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -3265,7 +3265,7 @@
             },
             {
               "name": "lineStackingStrategy",
-              "description": "Gets or sets a value that indicates how a line box is determined for each line of text.\n\nType: `LineStackingStrategy`",
+              "description": "Gets or sets a value that indicates how a line box is determined for each line of text.\n\nAlso settable in CSS as `line-height`\n\nType: `LineStackingStrategy`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -3276,7 +3276,7 @@
             },
             {
               "name": "maxLines",
-              "description": "Gets or sets the maximum lines of text shown. The maximum lines of text shown. The default is 0, which is a special value that represents \"Auto\" behavior. The value cannot be negative.\n\nType: `number`",
+              "description": "Gets or sets the maximum lines of text shown. The maximum lines of text shown. The default is 0, which is a special value that represents \"Auto\" behavior. The value cannot be negative.\n\nAlso settable in CSS as `line-clamp`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -3295,7 +3295,7 @@
             },
             {
               "name": "padding",
-              "description": "Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nAlso settable in CSS as `padding`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -3314,7 +3314,7 @@
             },
             {
               "name": "textWrapping",
-              "description": "Gets or sets how the element wraps text. A value that indicates how the element wraps text. The default is NoWrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
+              "description": "Gets or sets how the element wraps text. A value that indicates how the element wraps text. The default is NoWrap.\n\nAlso settable in CSS as `text-wrap`\n\nType: `TextWrapping`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -3408,7 +3408,7 @@
             },
             {
               "name": "borderThickness",
-              "description": "Gets or sets the border thickness of a control.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the border thickness of a control.\n\nAlso settable in CSS as `border-width`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -3424,7 +3424,7 @@
             },
             {
               "name": "cornerRadius",
-              "description": "Gets or sets the radius for the corners of the control's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nType: `CornerRadiusInput`",
+              "description": "Gets or sets the radius for the corners of the control's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nAlso settable in CSS as `border-radius`\n\nType: `CornerRadiusInput`",
               "value": {
                 "type": "CornerRadiusInput"
               },
@@ -3554,7 +3554,7 @@
             },
             {
               "name": "padding",
-              "description": "Gets or sets the padding inside a control. The amount of space between the content of a Control and its Margin or Border. The default is a Thickness with values of 0 on all four sides.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the padding inside a control. The amount of space between the content of a Control and its Margin or Border. The default is a Thickness with values of 0 on all four sides.\n\nAlso settable in CSS as `padding`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -4846,7 +4846,7 @@
             },
             {
               "name": "focusVisualMargin",
-              "description": "Gets or sets the outer margin of the focus visual for a FrameworkElement. Provides margin values for the focus visual. The default is a Thickness with all properties (dimensions) equal to 0. A different runtime default is often provided by individual control templates.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the outer margin of the focus visual for a FrameworkElement. Provides margin values for the focus visual. The default is a Thickness with all properties (dimensions) equal to 0. A different runtime default is often provided by individual control templates.\n\nAlso settable in CSS as `outline-offset`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -4854,7 +4854,7 @@
             },
             {
               "name": "focusVisualPrimaryBrush",
-              "description": "Gets or sets the brush used to draw the outer border of a HighVisibility or Reveal focus visual for a FrameworkElement.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nType: `BrushInput`",
+              "description": "Gets or sets the brush used to draw the outer border of a HighVisibility or Reveal focus visual for a FrameworkElement.\n\nAccepts A color as text, one of WinUI's theme brushes (`ThemeBrush`), an app's own (`AppBrushes`), or a brush.\n\nAlso settable in CSS as `outline-color`\n\nType: `BrushInput`",
               "value": {
                 "type": "BrushInput"
               },
@@ -4862,7 +4862,7 @@
             },
             {
               "name": "focusVisualPrimaryThickness",
-              "description": "Gets or sets the thickness of the outer border of a HighVisibility or Reveal focus visual for a FrameworkElement.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the thickness of the outer border of a HighVisibility or Reveal focus visual for a FrameworkElement.\n\nAlso settable in CSS as `outline-width`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -4878,7 +4878,7 @@
             },
             {
               "name": "focusVisualSecondaryThickness",
-              "description": "Gets or sets the thickness of the inner border of a HighVisibility or Reveal focus visual for a FrameworkElement. The thickness of the inner border of a HighVisibility focus visual. The default value is 1.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the thickness of the inner border of a HighVisibility or Reveal focus visual for a FrameworkElement. The thickness of the inner border of a HighVisibility focus visual. The default value is 1.\n\nAlso settable in CSS as `outline-width`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -4913,7 +4913,7 @@
             },
             {
               "name": "margin",
-              "description": "Gets or sets the outer margin of a FrameworkElement. Provides margin values for the object. The default value is a default Thickness with all properties (dimensions) equal to 0.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the outer margin of a FrameworkElement. Provides margin values for the object. The default value is a default Thickness with all properties (dimensions) equal to 0.\n\nAlso settable in CSS as `margin`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -5265,7 +5265,7 @@
             },
             {
               "name": "borderThickness",
-              "description": "Gets or sets the border thickness of the panel. The border thickness of the panel, as a Thickness value.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the border thickness of the panel. The border thickness of the panel, as a Thickness value.\n\nAlso settable in CSS as `border-width`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -5281,7 +5281,7 @@
             },
             {
               "name": "cornerRadius",
-              "description": "Gets or sets the radius for the corners of the panel's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nType: `CornerRadiusInput`",
+              "description": "Gets or sets the radius for the corners of the panel's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nAlso settable in CSS as `border-radius`\n\nType: `CornerRadiusInput`",
               "value": {
                 "type": "CornerRadiusInput"
               },
@@ -5289,7 +5289,7 @@
             },
             {
               "name": "padding",
-              "description": "Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nAlso settable in CSS as `padding`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -5900,7 +5900,7 @@
             },
             {
               "name": "stretch",
-              "description": "Gets or sets a value that describes how an Image should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source image is rendered, if the Height and/or Width of the Image are not explicitly specified. The default value is Uniform.\n\nType: `Stretch`",
+              "description": "Gets or sets a value that describes how an Image should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source image is rendered, if the Height and/or Width of the Image are not explicitly specified. The default value is Uniform.\n\nAlso settable in CSS as `object-fit`\n\nType: `Stretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -6302,7 +6302,7 @@
             },
             {
               "name": "padding",
-              "description": "Gets or sets the distance between the ItemsPresenter and its child objects. The dimensions of the space between the presenter and its children as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the distance between the ItemsPresenter and its child objects. The dimensions of the space between the presenter and its children as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nAlso settable in CSS as `padding`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -6837,7 +6837,7 @@
             },
             {
               "name": "lineHeight",
-              "description": "Gets or sets the lines fixed height. The common height of all lines, and therefore of all items. The default is Double.NaN.\n\nType: `number`",
+              "description": "Gets or sets the lines fixed height. The common height of all lines, and therefore of all items. The default is Double.NaN.\n\nAlso settable in CSS as `line-height`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -7913,7 +7913,7 @@
             },
             {
               "name": "stretch",
-              "description": "Gets or sets a value that describes how an MediaPlayerElement should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source visual media is rendered. The default value is Uniform.\n\nType: `Stretch`",
+              "description": "Gets or sets a value that describes how an MediaPlayerElement should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source visual media is rendered. The default value is Uniform.\n\nAlso settable in CSS as `object-fit`\n\nType: `Stretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -7950,7 +7950,7 @@
             },
             {
               "name": "stretch",
-              "description": "Gets or sets a value that describes how an MediaPlayerPresenter should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source visual media is rendered. The default value is Uniform.\n\nType: `Stretch`",
+              "description": "Gets or sets a value that describes how an MediaPlayerPresenter should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source visual media is rendered. The default value is Uniform.\n\nAlso settable in CSS as `object-fit`\n\nType: `Stretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -11142,7 +11142,7 @@
             },
             {
               "name": "borderThickness",
-              "description": "Gets or sets the border thickness of the panel. The border thickness of the panel, as a Thickness value.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the border thickness of the panel. The border thickness of the panel, as a Thickness value.\n\nAlso settable in CSS as `border-width`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -11150,7 +11150,7 @@
             },
             {
               "name": "cornerRadius",
-              "description": "Gets or sets the radius for the corners of the panel's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nType: `CornerRadiusInput`",
+              "description": "Gets or sets the radius for the corners of the panel's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nAlso settable in CSS as `border-radius`\n\nType: `CornerRadiusInput`",
               "value": {
                 "type": "CornerRadiusInput"
               },
@@ -11158,7 +11158,7 @@
             },
             {
               "name": "padding",
-              "description": "Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nAlso settable in CSS as `padding`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -11455,7 +11455,7 @@
             },
             {
               "name": "textWrapping",
-              "description": "Gets or sets a value that indicates how text wrapping occurs if a line of text extends beyond the available width of the RichEditBox. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
+              "description": "Gets or sets a value that indicates how text wrapping occurs if a line of text extends beyond the available width of the RichEditBox. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.\n\nAlso settable in CSS as `text-wrap`\n\nType: `TextWrapping`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -11629,7 +11629,7 @@
             },
             {
               "name": "isTextSelectionEnabled",
-              "description": "Gets or sets a value that determines whether text content of the RichTextBlock can be selected for clipboard or drag purposes, or for UI styling changes that indicate selected text.\n\nType: `boolean`",
+              "description": "Gets or sets a value that determines whether text content of the RichTextBlock can be selected for clipboard or drag purposes, or for UI styling changes that indicate selected text.\n\nAlso settable in CSS as `user-select`\n\nType: `boolean`",
               "value": {
                 "type": "boolean"
               },
@@ -11637,7 +11637,7 @@
             },
             {
               "name": "lineHeight",
-              "description": "Gets or sets the height of each line of content. The height of each line in pixels. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.\n\nType: `number`",
+              "description": "Gets or sets the height of each line of content. The height of each line in pixels. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.\n\nAlso settable in CSS as `line-height`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -11645,7 +11645,7 @@
             },
             {
               "name": "lineStackingStrategy",
-              "description": "Gets or sets a value that indicates how a line box is determined for each line of text in the RichTextBlock.\n\nType: `LineStackingStrategy`",
+              "description": "Gets or sets a value that indicates how a line box is determined for each line of text in the RichTextBlock.\n\nAlso settable in CSS as `line-height`\n\nType: `LineStackingStrategy`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -11656,7 +11656,7 @@
             },
             {
               "name": "maxLines",
-              "description": "Gets or sets the maximum lines of text shown in the RichTextBlock. The maximum lines of text shown in the RichTextBlock. The default is 0, which is a special value that represents \"Auto\" behavior. The value cannot be negative.\n\nType: `number`",
+              "description": "Gets or sets the maximum lines of text shown in the RichTextBlock. The maximum lines of text shown in the RichTextBlock. The default is 0, which is a special value that represents \"Auto\" behavior. The value cannot be negative.\n\nAlso settable in CSS as `line-clamp`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -11680,7 +11680,7 @@
             },
             {
               "name": "padding",
-              "description": "Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a RichTextBlock. A Thickness structure that specifies the amount of padding to apply.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a RichTextBlock. A Thickness structure that specifies the amount of padding to apply.\n\nAlso settable in CSS as `padding`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -11709,7 +11709,7 @@
             },
             {
               "name": "textDecorations",
-              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration-line`\n\nType: `TextDecorations`",
+              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration`\n\nType: `TextDecorations`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -11761,7 +11761,7 @@
             },
             {
               "name": "textWrapping",
-              "description": "Gets or sets a value that indicates whether text wrapping occurs if a line of text extends beyond the available width of the RichTextBlock. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
+              "description": "Gets or sets a value that indicates whether text wrapping occurs if a line of text extends beyond the available width of the RichTextBlock. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.\n\nAlso settable in CSS as `text-wrap`\n\nType: `TextWrapping`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -11795,7 +11795,7 @@
           "attributes": [
             {
               "name": "maxLines",
-              "description": "Gets or sets the maximum lines of text shown in the RichTextBlockOverflow. The maximum lines of text shown in the RichTextBlockOverflow. The default is 0, which is a special value that represents \"Auto\" behavior. The value cannot be negative.\n\nType: `number`",
+              "description": "Gets or sets the maximum lines of text shown in the RichTextBlockOverflow. The maximum lines of text shown in the RichTextBlockOverflow. The default is 0, which is a special value that represents \"Auto\" behavior. The value cannot be negative.\n\nAlso settable in CSS as `line-clamp`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -11808,7 +11808,7 @@
             },
             {
               "name": "padding",
-              "description": "Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a RichTextBlockOverflow. A Thickness structure that specifies the amount of padding to apply.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a RichTextBlockOverflow. A Thickness structure that specifies the amount of padding to apply.\n\nAlso settable in CSS as `padding`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -12261,7 +12261,7 @@
             },
             {
               "name": "horizontalScrollBarVisibility",
-              "description": "Gets or sets a value that indicates whether a scroll controller should be displayed for the horizontal scrolling direction.\n\nType: `ScrollingScrollBarVisibility`",
+              "description": "Gets or sets a value that indicates whether a scroll controller should be displayed for the horizontal scrolling direction.\n\nAlso settable in CSS as `overflow-x`\n\nType: `ScrollingScrollBarVisibility`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -12340,7 +12340,7 @@
             },
             {
               "name": "verticalScrollBarVisibility",
-              "description": "Gets or sets a value that indicates whether a scroll controller should be displayed for the vertical scrolling direction.\n\nType: `ScrollingScrollBarVisibility`",
+              "description": "Gets or sets a value that indicates whether a scroll controller should be displayed for the vertical scrolling direction.\n\nAlso settable in CSS as `overflow-y`\n\nType: `ScrollingScrollBarVisibility`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -12483,7 +12483,7 @@
             },
             {
               "name": "horizontalScrollBarVisibility",
-              "description": "Gets or sets a value that indicates whether a horizontal ScrollBar should be displayed. A ScrollBarVisibility value that indicates whether a horizontal ScrollBar should be displayed. The default value is Disabled.\n\nType: `ScrollBarVisibility`",
+              "description": "Gets or sets a value that indicates whether a horizontal ScrollBar should be displayed. A ScrollBarVisibility value that indicates whether a horizontal ScrollBar should be displayed. The default value is Disabled.\n\nAlso settable in CSS as `overflow-x`\n\nType: `ScrollBarVisibility`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -12638,7 +12638,7 @@
             },
             {
               "name": "verticalScrollBarVisibility",
-              "description": "Gets or sets a value that indicates whether a vertical ScrollBar should be displayed. A ScrollBarVisibility value that indicates whether a vertical ScrollBar should be displayed. The default value is Visible.\n\nType: `ScrollBarVisibility`",
+              "description": "Gets or sets a value that indicates whether a vertical ScrollBar should be displayed. A ScrollBarVisibility value that indicates whether a vertical ScrollBar should be displayed. The default value is Visible.\n\nAlso settable in CSS as `overflow-y`\n\nType: `ScrollBarVisibility`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -12933,7 +12933,7 @@
             },
             {
               "name": "stretch",
-              "description": "Gets or sets a Stretch enumeration value that describes how the shape fills its allocated space. One of the Stretch enumeration values. The default value at run time depends on the type of Shape.\n\nType: `Stretch`",
+              "description": "Gets or sets a Stretch enumeration value that describes how the shape fills its allocated space. One of the Stretch enumeration values. The default value at run time depends on the type of Shape.\n\nAlso settable in CSS as `object-fit`\n\nType: `Stretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -13668,7 +13668,7 @@
             },
             {
               "name": "borderThickness",
-              "description": "Gets or sets the border thickness of the panel. The border thickness of the panel, as a Thickness value.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the border thickness of the panel. The border thickness of the panel, as a Thickness value.\n\nAlso settable in CSS as `border-width`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -13676,7 +13676,7 @@
             },
             {
               "name": "cornerRadius",
-              "description": "Gets or sets the radius for the corners of the panel's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nType: `CornerRadiusInput`",
+              "description": "Gets or sets the radius for the corners of the panel's border. The degree to which the corners are rounded, expressed as values of the CornerRadius structure.\n\nAlso settable in CSS as `border-radius`\n\nType: `CornerRadiusInput`",
               "value": {
                 "type": "CornerRadiusInput"
               },
@@ -13695,7 +13695,7 @@
             },
             {
               "name": "padding",
-              "description": "Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets the distance between the border and its child object. The dimensions of the space between the border and its child as a Thickness value. Thickness is a structure that stores dimension values using pixel measures.\n\nAlso settable in CSS as `padding`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -14057,7 +14057,7 @@
           "attributes": [
             {
               "name": "cornerRadius",
-              "description": "Type: `CornerRadiusInput`",
+              "description": "Also settable in CSS as `border-radius`\n\nType: `CornerRadiusInput`",
               "value": {
                 "type": "CornerRadiusInput"
               }
@@ -14618,7 +14618,7 @@
             },
             {
               "name": "isTextSelectionEnabled",
-              "description": "Gets or sets a value that indicates whether text selection is enabled in the TextBlock, either through user action or calling selection-related API.\n\nType: `boolean`",
+              "description": "Gets or sets a value that indicates whether text selection is enabled in the TextBlock, either through user action or calling selection-related API.\n\nAlso settable in CSS as `user-select`\n\nType: `boolean`",
               "value": {
                 "type": "boolean"
               },
@@ -14626,7 +14626,7 @@
             },
             {
               "name": "lineHeight",
-              "description": "Gets or sets the height of each line of content. The height of each line in pixels. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.\n\nType: `number`",
+              "description": "Gets or sets the height of each line of content. The height of each line in pixels. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.\n\nAlso settable in CSS as `line-height`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -14634,7 +14634,7 @@
             },
             {
               "name": "lineStackingStrategy",
-              "description": "Gets or sets a value that indicates how a line box is determined for each line of text in the TextBlock.\n\nType: `LineStackingStrategy`",
+              "description": "Gets or sets a value that indicates how a line box is determined for each line of text in the TextBlock.\n\nAlso settable in CSS as `line-height`\n\nType: `LineStackingStrategy`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -14645,7 +14645,7 @@
             },
             {
               "name": "maxLines",
-              "description": "Gets or sets the maximum number of lines of text shown in the TextBlock. The maximum number of lines of text shown in the TextBlock. The default is 0, which is a special value that represents \"Auto\" behavior. The value cannot be negative.\n\nType: `number`",
+              "description": "Gets or sets the maximum number of lines of text shown in the TextBlock. The maximum number of lines of text shown in the TextBlock. The default is 0, which is a special value that represents \"Auto\" behavior. The value cannot be negative.\n\nAlso settable in CSS as `line-clamp`\n\nType: `number`",
               "value": {
                 "type": "number"
               },
@@ -14664,7 +14664,7 @@
             },
             {
               "name": "padding",
-              "description": "Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a TextBlock. A Thickness structure that specifies the amount of padding to apply.\n\nType: `ThicknessInput`",
+              "description": "Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a TextBlock. A Thickness structure that specifies the amount of padding to apply.\n\nAlso settable in CSS as `padding`\n\nType: `ThicknessInput`",
               "value": {
                 "type": "ThicknessInput"
               },
@@ -14701,7 +14701,7 @@
             },
             {
               "name": "textDecorations",
-              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration-line`\n\nType: `TextDecorations`",
+              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration`\n\nType: `TextDecorations`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -14745,7 +14745,7 @@
             },
             {
               "name": "textWrapping",
-              "description": "Gets or sets how the TextBlock wraps text. A value that indicates how the TextBlock wraps text. The default is NoWrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
+              "description": "Gets or sets how the TextBlock wraps text. A value that indicates how the TextBlock wraps text. The default is NoWrap.\n\nAlso settable in CSS as `text-wrap`\n\nType: `TextWrapping`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -14985,7 +14985,7 @@
             },
             {
               "name": "textWrapping",
-              "description": "Gets or sets how line breaking occurs if a line of text extends beyond the available width of the text box. One of the TextWrapping values. The default is NoWrap.\n\nAlso settable in CSS as `white-space`\n\nType: `TextWrapping`",
+              "description": "Gets or sets how line breaking occurs if a line of text extends beyond the available width of the text box. One of the TextWrapping values. The default is NoWrap.\n\nAlso settable in CSS as `text-wrap`\n\nType: `TextWrapping`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -15224,7 +15224,7 @@
             },
             {
               "name": "textDecorations",
-              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration-line`\n\nType: `TextDecorations`",
+              "description": "Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.\n\nAlso settable in CSS as `text-decoration`\n\nType: `TextDecorations`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -15338,7 +15338,7 @@
             },
             {
               "name": "stretch",
-              "description": "Gets or sets a value that specifies how the content of this TileBrush stretches to fit its tiles. A value that specifies how this TileBrush content is projected onto its base tile. The default value is Fill.\n\nType: `Stretch`",
+              "description": "Gets or sets a value that specifies how the content of this TileBrush stretches to fit its tiles. A value that specifies how this TileBrush content is projected onto its base tile. The default value is Fill.\n\nAlso settable in CSS as `object-fit`\n\nType: `Stretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -16420,7 +16420,7 @@
             },
             {
               "name": "renderTransform",
-              "description": "Gets or sets transform information that affects the rendering position of a UIElement. Describes the specifics of the desired render transform. The default value is null.",
+              "description": "Gets or sets transform information that affects the rendering position of a UIElement. Describes the specifics of the desired render transform. The default value is null.\n\nAlso settable in CSS as `transform`",
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.rendertransform"
             },
             {
@@ -16467,7 +16467,7 @@
             },
             {
               "name": "shadow",
-              "description": "Gets or sets the shadow effect cast by the element.",
+              "description": "Gets or sets the shadow effect cast by the element.\n\nAlso settable in CSS as `box-shadow`",
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.shadow"
             },
             {
@@ -16530,7 +16530,7 @@
             },
             {
               "name": "visibility",
-              "description": "Gets or sets the visibility of a UIElement. A UIElement that is not visible is not rendered and does not communicate its desired size to layout. A value of the enumeration. The default value is Visible.\n\nAlso settable in CSS as `display`\n\nType: `Visibility`",
+              "description": "Gets or sets the visibility of a UIElement. A UIElement that is not visible is not rendered and does not communicate its desired size to layout. A value of the enumeration. The default value is Visible.\n\nAlso settable in CSS as `visibility`\n\nType: `Visibility`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -16999,7 +16999,7 @@
             },
             {
               "name": "stretch",
-              "description": "Gets or sets the Stretch mode, which determines how content fits into the available space. A Stretch mode, which determines how content fits in the available space. The default is Uniform.\n\nType: `Stretch`",
+              "description": "Gets or sets the Stretch mode, which determines how content fits into the available space. A Stretch mode, which determines how content fits in the available space. The default is Uniform.\n\nAlso settable in CSS as `object-fit`\n\nType: `Stretch`",
               "value": {
                 "type": {
                   "module": "winui-svelte/enums",
@@ -17681,6 +17681,320 @@
               "name": "\"Yu Gothic UI\""
             }
           ]
+        },
+        {
+          "name": "word-break",
+          "description": "WinUI: sets TextWrapping; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "normal",
+              "description": "TextWrapping: WrapWholeWords"
+            },
+            {
+              "name": "keep-all",
+              "description": "TextWrapping: WrapWholeWords"
+            },
+            {
+              "name": "break-all",
+              "description": "TextWrapping: Wrap"
+            },
+            {
+              "name": "break-word",
+              "description": "TextWrapping: Wrap"
+            }
+          ]
+        },
+        {
+          "name": "object-fit",
+          "description": "WinUI: sets Stretch; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "fill",
+              "description": "Stretch: Fill"
+            },
+            {
+              "name": "contain",
+              "description": "Stretch: Uniform"
+            },
+            {
+              "name": "cover",
+              "description": "Stretch: UniformToFill"
+            },
+            {
+              "name": "none",
+              "description": "Stretch: None"
+            }
+          ]
+        },
+        {
+          "name": "user-select",
+          "description": "WinUI: sets IsTextSelectionEnabled; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "auto",
+              "description": "IsTextSelectionEnabled: True"
+            },
+            {
+              "name": "text",
+              "description": "IsTextSelectionEnabled: True"
+            },
+            {
+              "name": "all",
+              "description": "IsTextSelectionEnabled: True"
+            },
+            {
+              "name": "contain",
+              "description": "IsTextSelectionEnabled: True"
+            },
+            {
+              "name": "none",
+              "description": "IsTextSelectionEnabled: False"
+            }
+          ]
+        },
+        {
+          "name": "font-style",
+          "description": "WinUI: sets FontStyle; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "normal",
+              "description": "FontStyle: Normal"
+            },
+            {
+              "name": "italic",
+              "description": "FontStyle: Italic"
+            },
+            {
+              "name": "oblique",
+              "description": "FontStyle: Oblique"
+            }
+          ]
+        },
+        {
+          "name": "text-align",
+          "description": "WinUI: sets TextAlignment; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "left",
+              "description": "TextAlignment: Left"
+            },
+            {
+              "name": "start",
+              "description": "TextAlignment: Left"
+            },
+            {
+              "name": "center",
+              "description": "TextAlignment: Center"
+            },
+            {
+              "name": "right",
+              "description": "TextAlignment: Right"
+            },
+            {
+              "name": "end",
+              "description": "TextAlignment: Right"
+            },
+            {
+              "name": "justify",
+              "description": "TextAlignment: Justify"
+            }
+          ]
+        },
+        {
+          "name": "text-wrap",
+          "description": "WinUI: sets TextWrapping; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "wrap",
+              "description": "TextWrapping: Wrap"
+            },
+            {
+              "name": "nowrap",
+              "description": "TextWrapping: NoWrap"
+            }
+          ]
+        },
+        {
+          "name": "white-space",
+          "description": "WinUI: sets TextWrapping; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "normal",
+              "description": "TextWrapping: Wrap"
+            },
+            {
+              "name": "nowrap",
+              "description": "TextWrapping: NoWrap"
+            }
+          ]
+        },
+        {
+          "name": "text-overflow",
+          "description": "WinUI: sets TextTrimming; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "ellipsis",
+              "description": "TextTrimming: CharacterEllipsis"
+            },
+            {
+              "name": "clip",
+              "description": "TextTrimming: Clip"
+            }
+          ]
+        },
+        {
+          "name": "text-decoration",
+          "description": "WinUI: sets TextDecorations; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "none",
+              "description": "TextDecorations: None"
+            },
+            {
+              "name": "underline",
+              "description": "TextDecorations: Underline"
+            },
+            {
+              "name": "line-through",
+              "description": "TextDecorations: Strikethrough"
+            }
+          ]
+        },
+        {
+          "name": "text-decoration-line",
+          "description": "WinUI: sets TextDecorations; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "none",
+              "description": "TextDecorations: None"
+            },
+            {
+              "name": "underline",
+              "description": "TextDecorations: Underline"
+            },
+            {
+              "name": "line-through",
+              "description": "TextDecorations: Strikethrough"
+            }
+          ]
+        },
+        {
+          "name": "flex-direction",
+          "description": "WinUI: sets Orientation; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "row",
+              "description": "Orientation: Horizontal"
+            },
+            {
+              "name": "column",
+              "description": "Orientation: Vertical"
+            }
+          ]
+        },
+        {
+          "name": "visibility",
+          "description": "WinUI: sets Visibility; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "visible",
+              "description": "Visibility: Visible"
+            },
+            {
+              "name": "hidden",
+              "description": "Visibility: Collapsed"
+            },
+            {
+              "name": "collapse",
+              "description": "Visibility: Collapsed"
+            }
+          ]
+        },
+        {
+          "name": "pointer-events",
+          "description": "WinUI: sets IsHitTestVisible; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "none",
+              "description": "IsHitTestVisible: False"
+            },
+            {
+              "name": "auto",
+              "description": "IsHitTestVisible: True"
+            },
+            {
+              "name": "all",
+              "description": "IsHitTestVisible: True"
+            }
+          ]
+        },
+        {
+          "name": "color-scheme",
+          "description": "WinUI: sets RequestedTheme; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "normal",
+              "description": "RequestedTheme: Default"
+            },
+            {
+              "name": "light",
+              "description": "RequestedTheme: Light"
+            },
+            {
+              "name": "dark",
+              "description": "RequestedTheme: Dark"
+            }
+          ]
+        },
+        {
+          "name": "display",
+          "description": "WinUI: sets Visibility; only these keywords are accepted.",
+          "values": [
+            {
+              "name": "none",
+              "description": "Visibility: Collapsed"
+            },
+            {
+              "name": "block",
+              "description": "Visibility: Visible"
+            },
+            {
+              "name": "inline",
+              "description": "Visibility: Visible"
+            },
+            {
+              "name": "inline-block",
+              "description": "Visibility: Visible"
+            },
+            {
+              "name": "flex",
+              "description": "Visibility: Visible"
+            },
+            {
+              "name": "inline-flex",
+              "description": "Visibility: Visible"
+            },
+            {
+              "name": "grid",
+              "description": "Visibility: Visible"
+            },
+            {
+              "name": "inline-grid",
+              "description": "Visibility: Visible"
+            },
+            {
+              "name": "contents",
+              "description": "Visibility: Visible"
+            }
+          ]
+        },
+        {
+          "name": "align-items",
+          "description": "WinUI: on a stack panel or grid the build lowers it into the children (each child's align-self or justify-self, or spacer tracks), so it applies to a container written in the component, outside an @media."
+        },
+        {
+          "name": "justify-content",
+          "description": "WinUI: on a stack panel or grid the build lowers it into the children (each child's align-self or justify-self, or spacer tracks), so it applies to a container written in the component, outside an @media."
         },
         {
           "name": "grid-template-columns",

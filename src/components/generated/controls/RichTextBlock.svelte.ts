@@ -137,11 +137,15 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets a value that determines whether text content of the RichTextBlock can be selected for clipboard or drag purposes, or for UI styling changes that indicate selected text.
    *
+   * Also settable in CSS as `user-select`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.istextselectionenabled
    */
   isTextSelectionEnabled?: boolean;
   /**
    * Gets or sets the height of each line of content. The height of each line in pixels. A value of 0 indicates that the line height is determined automatically from the current font characteristics. The default is 0.
+   *
+   * Also settable in CSS as `line-height`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.lineheight
    */
@@ -149,11 +153,15 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets a value that indicates how a line box is determined for each line of text in the RichTextBlock.
    *
+   * Also settable in CSS as `line-height`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.linestackingstrategy
    */
   lineStackingStrategy?: EnumInput<typeof LineStackingStrategy>;
   /**
    * Gets or sets the maximum lines of text shown in the RichTextBlock. The maximum lines of text shown in the RichTextBlock. The default is 0, which is a special value that represents "Auto" behavior. The value cannot be negative.
+   *
+   * Also settable in CSS as `line-clamp`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.maxlines
    */
@@ -172,6 +180,8 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   overflowContentTarget?: RichTextBlock["overflowContentTarget"];
   /**
    * Gets or sets a value that indicates the thickness of padding space between the boundaries of the content area and the content displayed by a RichTextBlock. A Thickness structure that specifies the amount of padding to apply.
+   *
+   * Also settable in CSS as `padding`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.padding
    */
@@ -199,7 +209,7 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets a value that indicates what decorations are applied to the text. A value of the enumeration. The default is None.
    *
-   * Also settable in CSS as `text-decoration-line`
+   * Also settable in CSS as `text-decoration`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textdecorations
    */
@@ -233,7 +243,7 @@ export interface RichTextBlockProps extends FrameworkElementProps {
   /**
    * Gets or sets a value that indicates whether text wrapping occurs if a line of text extends beyond the available width of the RichTextBlock. One of the TextWrapping enumeration values that specifies whether text is wrapped. The default is Wrap.
    *
-   * Also settable in CSS as `white-space`
+   * Also settable in CSS as `text-wrap`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.textwrapping
    */

@@ -28,6 +28,8 @@ export interface LinedFlowLayoutProps extends VirtualizingLayoutProps {
   /**
    * Gets or sets the lines fixed height. The common height of all lines, and therefore of all items. The default is Double.NaN.
    *
+   * Also settable in CSS as `line-height`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.linedflowlayout.lineheight
    */
   lineHeight?: number;

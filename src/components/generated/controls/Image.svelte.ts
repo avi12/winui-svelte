@@ -38,6 +38,8 @@ export interface ImageProps extends FrameworkElementProps {
   /**
    * Gets or sets a value that describes how an Image should be stretched to fill the destination rectangle. A value of the Stretch enumeration that specifies how the source image is rendered, if the Height and/or Width of the Image are not explicitly specified. The default value is Uniform.
    *
+   * Also settable in CSS as `object-fit`
+   *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.image.stretch
    */
   stretch?: EnumInput<typeof Stretch>;
