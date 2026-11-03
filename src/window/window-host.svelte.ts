@@ -256,6 +256,11 @@ function isGiven<Value>(value: Value | undefined): value is Value {
   return value !== undefined;
 }
 
+// Windows whose component is gone while the application goes on, waiting one
+// tick for the component that replaces it (a hot update re-creates it) to take
+// the same window over; a window nobody takes is closed.
+const orphans: Window[] = [];
+
 class WindowHost {
   readonly handle: WindowHandle;
   private readonly props: WindowProps;
@@ -276,13 +281,14 @@ class WindowHost {
   private isClipApplied = false;
   private isTopApplied = false;
   private hasShown = false;
+  private readonly isTakenOver: boolean;
   private readonly openSize: WindowSize | undefined;
   private appliedSize: {
     width: number | undefined;
     height: number | undefined;
   };
 
-  constructor({ content, props, titleBar, size }: AttachOptions) {
+  constructor({ content, props, titleBar, size }: AttachOptions, orphan: Window | undefined) {
     this.props = props;
     this.openSize = size;
     this.content = content;
@@ -297,10 +303,12 @@ class WindowHost {
       joinAppUserModel(appUserModelId);
     }
 
-    const window = new Window();
+    const window = orphan ?? new Window();
+    this.isTakenOver = orphan !== undefined;
     this.handle = new WindowHandle(window);
 
-    if (isBackgroundRun()) {
+    const isNewBackgroundWindow = isBackgroundRun() && !this.isTakenOver;
+    if (isNewBackgroundWindow) {
       keepInBackground(this.handle.appWindow.id.value);
     }
 
@@ -316,7 +324,11 @@ class WindowHost {
     this.keepInLine(() => this.syncLimits());
     this.keepInLine(() => this.syncFrame());
     this.keepInLine(() => this.syncShape());
-    this.placeFirst();
+
+    if (!this.isTakenOver) {
+      this.placeFirst();
+    }
+
     $effect(() => this.syncSize());
     this.syncOwner();
     this.listen();
@@ -327,9 +339,10 @@ class WindowHost {
 
   /**
    * Ends the host. `isClosedLater`: its component is going while the
-   * application goes on (a hot update re-creates it), and the new window opens
-   * after this call. The close waits a tick: WinUI aborts Window.Close (E_ABORT)
-   * when it is called while the component's teardown is still running.
+   * application goes on (a hot update re-creates it). The window is not closed
+   * but offered for one tick to the component that replaces it, which takes it
+   * over (no relaunch), and closed if nobody does. Closing it during the
+   * component's teardown is no option: WinUI aborts Window.Close (E_ABORT).
    */
   dispose(isClosedLater: boolean) {
     this.releaseBackdrop?.();
@@ -341,11 +354,22 @@ class WindowHost {
     this.handle.guardClose(() => false);
 
     if (isClosedLater) {
-      setTimeout(() => this.handle.close(), 0);
+      const { window } = this.handle;
+      orphans.push(window);
+      setTimeout(() => this.closeIfOrphan(window), 0);
       return;
     }
 
     this.handle.close();
+  }
+
+  private closeIfOrphan(window: Window) {
+    const index = orphans.indexOf(window);
+    const isOrphan = index !== -1;
+    if (isOrphan) {
+      orphans.splice(index, 1);
+      this.handle.close();
+    }
   }
 
   // Applied now, so the window opens as it is meant to, and again whenever
@@ -836,7 +860,8 @@ class WindowHost {
   // them (to reopen where the window was) needs them before the user moves it.
   private show() {
     const isHidden = this.props.isHidden === true;
-    if (!isHidden) {
+    const isToShow = !isHidden && !this.isTakenOver;
+    if (isToShow) {
       this.showWindow();
     }
 
@@ -862,7 +887,7 @@ class WindowHost {
  * where an effect can be created (a component, or an effect root).
  */
 export function attachWindow(options: AttachOptions) {
-  const host = new WindowHost(options);
+  const host = new WindowHost(options, orphans.shift());
   const forget = onTeardown(() => host.dispose(false));
   host.handle.window.onClosed(forget);
   return {
