@@ -6,6 +6,9 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: svelte
+      - dependency-name: fallow
+        update-types:
+          - version-update:semver-major
   - package-ecosystem: github-actions
     directory: /
     schedule:
