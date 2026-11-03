@@ -325,7 +325,13 @@ class WindowHost {
     $effect(() => this.syncVisibility());
   }
 
-  dispose() {
+  /**
+   * Ends the host. `isClosedLater`: its component is going while the
+   * application goes on (a hot update re-creates it), and the new window opens
+   * after this call. The close waits a tick: WinUI aborts Window.Close (E_ABORT)
+   * when it is called while the component's teardown is still running.
+   */
+  dispose(isClosedLater: boolean) {
     this.releaseBackdrop?.();
     this.releaseBackdrop = null;
     for (const unsubscribe of this.unsubscribe.splice(0)) {
@@ -333,6 +339,12 @@ class WindowHost {
     }
 
     this.handle.guardClose(() => false);
+
+    if (isClosedLater) {
+      setTimeout(() => this.handle.close(), 0);
+      return;
+    }
+
     this.handle.close();
   }
 
@@ -851,13 +863,13 @@ class WindowHost {
  */
 export function attachWindow(options: AttachOptions) {
   const host = new WindowHost(options);
-  const forget = onTeardown(() => host.dispose());
+  const forget = onTeardown(() => host.dispose(false));
   host.handle.window.onClosed(forget);
   return {
     handle: host.handle,
     dispose() {
       forget();
-      host.dispose();
+      host.dispose(true);
     }
   };
 }
