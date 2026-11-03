@@ -5,6 +5,7 @@ import type { MediaPlaybackSourceInput } from "#src/components/convert.js";
 import { call, read } from "#src/renderer/host/reflect.js";
 import { flush } from "#src/scheduling.js";
 import { startTimer } from "#src/window/timers.js";
+import type { MediaPlayerElement } from "#winui/microsoft/ui/xaml/controls/MediaPlayerElement";
 import { MediaSource } from "#winui/windows/media/core/MediaSource";
 import { IMediaPlaybackSource } from "#winui/windows/media/playback/IMediaPlaybackSource";
 import { MediaPlayer } from "#winui/windows/media/playback/MediaPlayer";
@@ -62,10 +63,11 @@ const PLAIN_KEYS = ["autoPlay", "isLoopingEnabled", "isMuted", "volume", "playba
  * not deliver an event raised there: the handlers in `options` run only
  * where WinUI raises on the UI thread, so rely on `state` and not on them.
  * Call it on the UI thread, and `dispose` when the player is no longer wanted.
- * A MediaPlayerElement that shows the player lets go of it first
- * (`element.setMediaPlayer(null)`): a closed player still held by an element
- * in a window makes WinUI abort `Window.Close` (E_ABORT), which ends the host
- * when a hot update re-creates the window.
+ * Show it in a MediaPlayerElement with `attachTo(element)`, not with the
+ * element's own `setMediaPlayer`: `dispose` then lets the element go first. A
+ * closed player still held by an element in a window makes WinUI abort
+ * `Window.Close` (E_ABORT), which ends the host when a hot update re-creates
+ * the window.
  */
 export function createMediaPlayer(options: MediaPlayerOptions = {}) {
   const player = new MediaPlayer();
@@ -102,14 +104,25 @@ export function createMediaPlayer(options: MediaPlayerOptions = {}) {
     player.source = mediaPlaybackSourceOf(source);
   }
 
+  const elements = new Set<MediaPlayerElement>();
   return {
     player,
     state,
+    /** Shows the player in `element`, until `dispose`. */
+    attachTo(element: MediaPlayerElement) {
+      element.setMediaPlayer(player);
+      elements.add(element);
+    },
     dispose() {
       for (const unsubscribe of unsubscriptions) {
         unsubscribe();
       }
 
+      for (const element of elements) {
+        call(element, "setMediaPlayer", null);
+      }
+
+      elements.clear();
       player.close();
     }
   };
