@@ -62,6 +62,10 @@ const PLAIN_KEYS = ["autoPlay", "isLoopingEnabled", "isMuted", "volume", "playba
  * not deliver an event raised there: the handlers in `options` run only
  * where WinUI raises on the UI thread, so rely on `state` and not on them.
  * Call it on the UI thread, and `dispose` when the player is no longer wanted.
+ * A MediaPlayerElement that shows the player lets go of it first
+ * (`element.setMediaPlayer(null)`): a closed player still held by an element
+ * in a window makes WinUI abort `Window.Close` (E_ABORT), which ends the host
+ * when a hot update re-creates the window.
  */
 export function createMediaPlayer(options: MediaPlayerOptions = {}) {
   const player = new MediaPlayer();
