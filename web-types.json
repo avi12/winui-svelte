@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-types",
   "name": "winui-svelte",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "framework": "svelte",
   "description-markup": "markdown",
   "contributions": {
@@ -4641,7 +4641,7 @@
             },
             {
               "name": "glyph",
-              "description": "Gets or sets the character code that identifies the icon glyph. The hexadecimal character code for the icon glyph.\n\nAccepts an icon glyph: a name of Segoe Fluent Icons (\"Save\"), a code point (`0xE74E`), code points to compose, or text.\n\nType: `GlyphInput`",
+              "description": "Gets or sets the character code that identifies the icon glyph. The hexadecimal character code for the icon glyph.\n\nAccepts an icon glyph: a Fluent name (\"Save\"), its code point (`FluentGlyph.Save`), code points to compose, or text.\n\nType: `GlyphInput`",
               "value": {
                 "type": [
                   {
@@ -4722,7 +4722,7 @@
             },
             {
               "name": "glyph",
-              "description": "Gets or sets the character code that identifies the icon glyph. The hexadecimal character code for the icon glyph.\n\nAccepts an icon glyph: a name of Segoe Fluent Icons (\"Save\"), a code point (`0xE74E`), code points to compose, or text.\n\nType: `GlyphInput`",
+              "description": "Gets or sets the character code that identifies the icon glyph. The hexadecimal character code for the icon glyph.\n\nAccepts an icon glyph: a Fluent name (\"Save\"), its code point (`FluentGlyph.Save`), code points to compose, or text.\n\nType: `GlyphInput`",
               "value": {
                 "type": [
                   {

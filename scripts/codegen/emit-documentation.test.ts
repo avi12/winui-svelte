@@ -81,7 +81,7 @@ test("a documented property carries WinUI's summary, then the page of the member
   assert.match(text, /\/\*\*\n \* Represents an icon that uses a glyph from the specified font\.\n/);
   assert.match(
     text,
-    /  \/\*\*\n {3}\* Gets or sets the character code that identifies the icon glyph\. The hexadecimal character code for the icon glyph\.\n {3}\*\n {3}\* Accepts an icon glyph: a name of Segoe Fluent Icons \("Save"\), a code point \(`0xE74E`\), code points to compose, or text\.\n {3}\*\n {3}\* @see https:\/\/learn\.microsoft\.com\/windows\/windows-app-sdk\/api\/winrt\/microsoft\.ui\.xaml\.controls\.fonticon\.glyph\n {3}\*\/\n {2}glyph\?: GlyphInput;/
+    /  \/\*\*\n {3}\* Gets or sets the character code that identifies the icon glyph\. The hexadecimal character code for the icon glyph\.\n {3}\*\n {3}\* Accepts an icon glyph: a Fluent name \("Save"\), its code point \(`FluentGlyph\.Save`\), code points to compose, or text\.\n {3}\*\n {3}\* @see https:\/\/learn\.microsoft\.com\/windows\/windows-app-sdk\/api\/winrt\/microsoft\.ui\.xaml\.controls\.fonticon\.glyph\n {3}\*\/\n {2}glyph\?: GlyphInput;/
   );
 });
 

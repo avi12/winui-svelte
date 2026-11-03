@@ -13,7 +13,7 @@ const PACKAGE_FOLDER = path.resolve(import.meta.dirname, "../..");
 const FIXTURE = path.join(PACKAGE_FOLDER, "test", "Documentation.fixture.svelte");
 const SERVER_TIMEOUT_MILLISECONDS = 300_000;
 const GLYPH_SUMMARY = "Gets or sets the character code that identifies the icon glyph.";
-const GLYPH_INPUT_SUMMARY = "Accepts an icon glyph: a name of Segoe Fluent Icons";
+const GLYPH_INPUT_SUMMARY = "Accepts an icon glyph: a Fluent name";
 const FONT_ICON_SUMMARY = "Represents an icon that uses a glyph from the specified font.";
 const DOCUMENTATION_URL = "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon";
 

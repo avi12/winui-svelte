@@ -42,7 +42,7 @@ test("a component's element carries its own props' documentation and extends its
   assert.equal(fontIcon?.extends, "/html/elements/IconElement");
   const glyph = fontIcon?.attributes.find(attribute => attribute.name === "glyph");
   assert.match(glyph?.description ?? "", /character code that identifies the icon glyph/u);
-  assert.match(glyph?.description ?? "", /Accepts an icon glyph: a name of Segoe Fluent Icons/u);
+  assert.match(glyph?.description ?? "", /Accepts an icon glyph: a Fluent name/u);
 });
 
 test("glyph names the exported GlyphInput type, so the editor can show it and offer the icon names", () => {

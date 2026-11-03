@@ -203,10 +203,7 @@ export type GeometryInput = string | Geometry;
 /** A font family name or a font family. */
 export type FontFamilyInput = FontFamilyName | (string & Record<never, never>) | FontFamily;
 
-/**
- * An icon glyph: a name of Segoe Fluent Icons ("Save"), the code point of one (`FluentGlyph.Save`), code points to
- * compose, or text.
- */
+/** An icon glyph: a Fluent name ("Save"), its code point (`FluentGlyph.Save`), code points to compose, or text. */
 export type GlyphInput =
   | FluentGlyphName
   | FluentGlyphCode
