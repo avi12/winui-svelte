@@ -13,9 +13,9 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
@@ -23,7 +23,7 @@ jobs:
       # Fetches the Windows App SDK and generates the WinUI bindings the
       # components import (.winapp/bindings, which is not committed).
       - name: Cache the restored SDK and bindings
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .winapp
           key: winapp-${{ hashFiles('winapp.yaml', 'package.json') }}
@@ -37,9 +37,9 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
@@ -49,7 +49,7 @@ jobs:
       - name: Pack the tarball
         run: pnpm pack --pack-destination ${{ runner.temp }}
       - name: Keep the tarball
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: tarball
           path: ${{ runner.temp }}/winui-svelte-*.tgz
