@@ -33,6 +33,6 @@
 
 {#key generation}
   <Window activate={false} title="Swap {generation}" bind:handle>
-    <grid />
+    <grid></grid>
   </Window>
 {/key}
