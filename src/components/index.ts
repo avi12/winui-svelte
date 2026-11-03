@@ -22,7 +22,7 @@ export type {
 export { NavigationCacheMode, NavigationMode } from "./hand-written/navigation/navigation-stack.ts";
 export { MoveDirection } from "./hand-written/items/reorder.ts";
 export { FluentGlyph } from "./fluent-glyph.ts";
-export type { FluentGlyphName } from "./fluent-glyph.ts";
+export type { FluentGlyphCode, FluentGlyphName } from "./fluent-glyph.ts";
 export type { FontFamilyName } from "./font-family-name.ts";
 export { isColorText, ticksDate, ticksMilliseconds } from "./values.ts";
 export type { ColorInput, ColorKeyword, ColorText, GridLengthText, HexColor } from "./values.ts";

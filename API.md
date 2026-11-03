@@ -1056,7 +1056,7 @@ const vertical: Orientation = 1;
 | A flag enum WinUI marks `[Flags]` (`FlagsInput`) | the same, or a list of names it combines | `modifiers={["Control", "Shift"]}` |
 | A color (`ColorInput`) | hex text (`HexColor`), a `ColorKeyword`, or WinUI's own value | `"#0078d4"`, `"transparent"` |
 | A brush (`BrushInput`) | a color, a `ThemeBrush`, a key of `AppBrushes`, or a `Brush` | `"AcrylicBackgroundFillColorDefaultBrush"` |
-| An icon glyph (`GlyphInput`, on `FontIcon` and `FontIconSource`) | a name of Segoe Fluent Icons, the code point of one, code points to compose, or the character (`fontFamily` takes a family name such as `"Segoe Fluent Icons"` or a `FontFamily`; `FluentGlyph` from `winui-svelte/components` holds the code point of each icon by name) | `glyph="Save"`, `glyph={FluentGlyph.Save}`, `glyph={[0xE700, 0xE701]}`, `glyph=""` |
+| An icon glyph (`GlyphInput`, on `FontIcon` and `FontIconSource`) | a name of Segoe Fluent Icons, the code point of one (only a `FluentGlyph` value, no other number), code points to compose, or the character (`fontFamily` takes a family name such as `"Segoe Fluent Icons"` or a `FontFamily`; `FluentGlyph` from `winui-svelte/components` holds the code point of each icon by name) | `glyph="Save"`, `glyph={FluentGlyph.Save}`, `glyph={[FluentGlyph.GlobalNavButton, FluentGlyph.Save]}`, `glyph=""` |
 | A path geometry (`GeometryInput`, on `PathIcon` and `Path`) | Path Markup Syntax text or a `Geometry` | `data="M0,0 L10,10"` |
 | A font family (`FontFamilyInput`) | a family name or a `FontFamily` | `"Segoe UI Variable"` |
 | A grid length (`GridLengthInput`) | pixels, or `GridLengthText` as XAML writes it | `"Auto"`, `"2*"`, `"120"` |

@@ -1,4 +1,4 @@
-import type { FluentGlyphName } from "./fluent-glyph.ts";
+import type { FluentGlyphCode, FluentGlyphName } from "./fluent-glyph.ts";
 import type { FontFamilyName } from "./font-family-name.ts";
 import {
   Application,
@@ -203,8 +203,15 @@ export type GeometryInput = string | Geometry;
 /** A font family name or a font family. */
 export type FontFamilyInput = FontFamilyName | (string & Record<never, never>) | FontFamily;
 
-/** An icon glyph: a name of Segoe Fluent Icons ("Save"), a code point (`0xE74E`), code points to compose, or text. */
-export type GlyphInput = FluentGlyphName | (string & Record<never, never>) | number | readonly number[];
+/**
+ * An icon glyph: a name of Segoe Fluent Icons ("Save"), the code point of one (`FluentGlyph.Save`), code points to
+ * compose, or text.
+ */
+export type GlyphInput =
+  | FluentGlyphName
+  | FluentGlyphCode
+  | (string & Record<never, never>)
+  | readonly FluentGlyphCode[];
 
 /** A URI string or a URI. */
 export type UriInput = string | Uri;
