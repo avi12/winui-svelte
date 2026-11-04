@@ -8,3 +8,8 @@ dist
 # Scratch space for checks and fresh-clone verification; deleted when done.
 .verify
 .idea
+# The WebStorm plugin's Gradle output.
+ide/webstorm/.gradle
+ide/webstorm/.intellijPlatform
+ide/webstorm/.kotlin
+ide/webstorm/build
