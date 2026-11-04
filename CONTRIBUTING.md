@@ -376,7 +376,7 @@ other may, and `without-dependency` must report nothing
 The zip is `ide/webstorm/build/distributions/winui-svelte-webstorm-<pluginVersion>.zip`
 (the version is `pluginVersion` in `ide/webstorm/gradle.properties`);
 install it with Settings, Plugins, Install Plugin from Disk
-The Kotlin is linted as in sb-companion: ktlint (formatting, `ide/webstorm/.editorconfig`)
+The Kotlin follows Google's Kotlin style guide with sb-companion's 2-space indent (the Android guide says 4; the row for `.kt` in `CLAUDE.md` says the rest) and is linted as in sb-companion: ktlint (formatting, `ide/webstorm/.editorconfig`)
 and detekt (correctness, `ide/webstorm/config/detekt/detekt.yml`), both run by the
 `ktLint` Gradle task that the check includes; `pnpm lint:fix` runs `ktLintFix`
 (detekt 1.23.8 reads Kotlin 2.4, and the ktlint Gradle plugin is 14.2.0 with ktlint 1.8.0)
