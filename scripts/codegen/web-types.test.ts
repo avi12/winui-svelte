@@ -96,12 +96,12 @@ test("a property a shorthand sets names that shorthand", () => {
   assert.match(noteOf("borderThickness"), /Also settable in CSS as `border-width`/u);
 });
 
-test("an enum prop names the union of its member names, so the editor offers them", () => {
+test("an enum prop offers its member names and also takes the member's number", () => {
   const visibility = elements.find(element => element.name === "UIElement")?.attributes.find(attribute => attribute.name === "visibility");
-  assert.deepEqual(visibility?.value?.type, {
+  assert.deepEqual(visibility?.value?.type, [{
     module: "winui-svelte/enums",
     name: "VisibilityName"
-  });
+  }, "number"]);
 });
 
 // WebStorm drops a web-types file that does not follow its schema, and every

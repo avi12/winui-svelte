@@ -35,12 +35,14 @@ interface Attribute {
   };
 }
 
+// An enum prop takes a member's name or its number (`Visibility.Collapsed`),
+// so the editor, which checks a value against this type, accepts either.
 function enumReferenceOf(enumNames: string | undefined) {
   const isEnum = enumNames !== undefined;
-  return isEnum ? {
+  return isEnum ? [{
     module: ENUMS_MODULE,
     name: enumNames
-  } : undefined;
+  }, "number"] : undefined;
 }
 
 function attributeOf({ level, key, kind, winName, inputType, displayType, enumNames }: {
