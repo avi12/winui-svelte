@@ -2,18 +2,52 @@
   <id>dev.winui.svelte</id>
   <name>winui-svelte</name>
   <vendor>Avi</vendor>
-  <description>Quick fix on a winui-svelte component's prop that rewrites it as the style directive setting the same value</description>
+  <description>Writes a winui-svelte component's props as the CSS that sets the same value, one prop, one file or a selection at a time</description>
   <depends>com.intellij.modules.platform</depends>
   <depends>JavaScript</depends>
   <depends>dev.blachut.svelte.lang</depends>
   <extensions defaultExtensionNs="com.intellij">
     <localInspection
         language="SvelteHTML"
-        shortName="WinuiPropAsStyleDirective"
+        shortName="WinuiPropCssCounterpart"
         displayName="winui-svelte prop that has a CSS counterpart"
         groupName="winui-svelte"
         level="INFO"
         enabledByDefault="true"
-        implementationClass="dev.winui.svelte.ConvertToStyleDirectiveInspection"/>
+        implementationClass="dev.winui.svelte.CssCounterpartInspection"/>
+    <intentionAction>
+      <language>SvelteHTML</language>
+      <className>dev.winui.svelte.ConvertAllInFileIntention</className>
+      <category>winui-svelte</category>
+    </intentionAction>
+    <projectConfigurable
+        parentId="editor"
+        instance="dev.winui.svelte.SettingsConfigurable"
+        id="winui.svelte.settings"
+        displayName="winui-svelte"/>
+    <notificationGroup id="winui-svelte" displayType="BALLOON"/>
   </extensions>
+  <actions>
+    <action
+        id="winui.svelte.ConvertFile"
+        class="dev.winui.svelte.ConvertFileAction"
+        text="Convert winui-svelte Attributes to CSS in This File"
+        description="Writes every winui-svelte attribute of the open file that has a CSS counterpart as CSS">
+      <keyboard-shortcut keymap="$default" first-keystroke="control alt shift K"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+    <action
+        id="winui.svelte.ConvertSelection"
+        class="dev.winui.svelte.ConvertSelectionAction"
+        text="Convert winui-svelte Attributes to CSS"
+        description="Writes the winui-svelte attributes of the selected Svelte files and folders as CSS">
+      <keyboard-shortcut keymap="$default" first-keystroke="control alt shift X"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+    </action>
+    <group id="winui.svelte.Group" text="winui-svelte" popup="true">
+      <reference ref="winui.svelte.ConvertFile"/>
+      <reference ref="winui.svelte.ConvertSelection"/>
+      <add-to-group group-id="CodeMenu" anchor="last"/>
+    </group>
+  </actions>
 </idea-plugin>

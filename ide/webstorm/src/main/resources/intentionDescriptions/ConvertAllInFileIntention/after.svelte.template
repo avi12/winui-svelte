@@ -1,0 +1,8 @@
+<TextBlock class="text-block" />
+
+<style>
+  .text-block {
+    display: none;
+    opacity: 0.5;
+  }
+</style>
