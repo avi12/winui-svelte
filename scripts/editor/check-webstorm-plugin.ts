@@ -125,10 +125,12 @@ async function reportedLines({ ideHome, sveltePlugin, zipPath, fixture }: {
     throw new Error(`the inspection of ${fixture} did not finish (exit ${exitCode ?? "killed after the timeout"})`);
   }
 
-  return readProblems({
+  const problems = readProblems({
     resultsFolder: RESULTS_FOLDER,
     inspections: [INSPECTION]
-  }).map(problem => problem.line);
+  });
+  // A line is reported once per view of the file the IDE inspects; it counts once.
+  return [...new Set(problems.map(problem => problem.line))];
 }
 
 function sameLines({ expected, actual }: {
