@@ -263,7 +263,7 @@ function defaultValueOf({ description, kind, keywords }: {
     return undefined;
   }
 
-  const defaults = new Map([
+  const defaults = new Map<ConversionKind, string | undefined>([
     [ConversionKind.KEYWORD, keywords.get(word)],
     [ConversionKind.LENGTH, `${Number(word)}px`],
     [ConversionKind.NUMBER, String(Number(word))]
