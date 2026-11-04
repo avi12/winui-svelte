@@ -356,7 +356,11 @@ WebStorm of `.verify/webstorm` and inspects two fixture projects: lines marked
 other may, and `without-dependency` must report nothing
 The zip is `ide/webstorm/build/distributions/winui-svelte-webstorm-<pluginVersion>.zip`
 (the version is `pluginVersion` in `ide/webstorm/gradle.properties`);
-install it with Settings, Plugins, Install Plugin from Disk
+install it with Settings, Plugins, Install Plugin from Disk, or run
+`pnpm install:webstorm-plugin`, which builds the plugin and unpacks it into the
+plugins folder of your own WebStorm (`--skip-build` reuses the zip); it never
+closes WebStorm, and while one runs it writes nothing and exits 2, so close
+WebStorm first and start it afterwards to load the plugin
 The Kotlin is linted as in sb-companion: ktlint (formatting, `ide/webstorm/.editorconfig`)
 and detekt (correctness, `ide/webstorm/config/detekt/detekt.yml`), both run by the
 `ktLint` Gradle task that the check includes; `pnpm lint:fix` runs `ktLintFix`

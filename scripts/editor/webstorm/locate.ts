@@ -90,6 +90,25 @@ export function inspectScriptOf(home: string) {
 }
 
 /**
+ * The plugins folder of the user's own WebStorm (the newest config folder
+ * that has one), or `undefined`: where the plugin installer unpacks.
+ */
+export function findUserPluginsFolder() {
+  const appData = process.env["APPDATA"];
+  const hasAppData = appData !== undefined;
+  if (!hasAppData) {
+    return undefined;
+  }
+
+  return foldersMatching({
+    parent: path.join(appData, "JetBrains"),
+    pattern: WEBSTORM_FOLDER_PATTERN
+  })
+    .map(folder => path.join(folder, "plugins"))
+    .find(plugins => existsSync(plugins));
+}
+
+/**
  * The Svelte plugin as the user's own WebStorm installed it (the newest
  * config folder that has one), or `undefined`. The check copies it into its
  * isolated config; it never reads or writes anything else of the user's.

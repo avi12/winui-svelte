@@ -18,27 +18,23 @@ import {
   runInspection
 } from "#scripts/editor/webstorm/isolated-ide.ts";
 import { findSveltePlugin, findWebStorm } from "#scripts/editor/webstorm/locate.ts";
-import { readProblems } from "#scripts/editor/webstorm/problems.ts";
-import { spawnSync } from "node:child_process";
 import {
-  cpSync,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  rmSync
-} from "node:fs";
+  buildPlugin,
+  builtZip,
+  PLUGIN_FOLDER_NAME,
+  PLUGIN_ROOT,
+  runGradle
+} from "#scripts/editor/webstorm/plugin-build.ts";
+import { readProblems } from "#scripts/editor/webstorm/problems.ts";
+import { cpSync, readFileSync, rmSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 
 const REPO_ROOT = path.resolve(import.meta.dirname, "../..");
-const PLUGIN_ROOT = path.join(REPO_ROOT, "ide", "webstorm");
 const FIXTURES = path.join(PLUGIN_ROOT, "fixtures");
 const WORKING_FOLDER = path.join(REPO_ROOT, ".verify", "webstorm", "plugin-fixtures");
-const GRADLE_HOME = path.join(REPO_ROOT, ".verify", "gradle-home");
 const PROFILE_PATH = path.join(import.meta.dirname, "webstorm", "plugin-profile.xml");
 const INSPECTION = "WinuiPropCssCounterpart";
-const PLUGIN_FOLDER_NAME = "winui-svelte-webstorm";
 const MARKER = "<!-- convert -->";
 const WITH_DEPENDENCY = "with-dependency";
 const WITHOUT_DEPENDENCY = "without-dependency";
@@ -50,63 +46,6 @@ function skip({ reason, isRequired }: {
 }) {
   console.log(`WebStorm plugin check ${isRequired ? "FAILED (--require)" : "skipped"}: ${reason}`);
   process.exitCode = isRequired ? 1 : 0;
-}
-
-function runGradle({ ideHome, sveltePlugin, tasks }: {
-  ideHome: string;
-  sveltePlugin: string;
-  tasks: string[];
-}) {
-  mkdirSync(GRADLE_HOME, { recursive: true });
-  const wrapper = path.join(PLUGIN_ROOT, "gradlew.bat");
-  const built = spawnSync(
-    "cmd.exe",
-    [
-      "/d",
-      "/c",
-      wrapper,
-      ...tasks,
-      "--console=plain",
-      `-PwebstormHome=${ideHome}`,
-      `-PsvelteHome=${sveltePlugin}`
-    ],
-    {
-      cwd: PLUGIN_ROOT,
-      env: {
-        ...process.env,
-        GRADLE_USER_HOME: GRADLE_HOME
-      },
-      encoding: "utf8",
-      maxBuffer: Number.MAX_SAFE_INTEGER,
-      windowsHide: true
-    }
-  );
-  const isBuilt = built.status === 0;
-  if (!isBuilt) {
-    console.error(built.stdout, built.stderr);
-  }
-
-  return isBuilt;
-}
-
-function buildPlugin(paths: {
-  ideHome: string;
-  sveltePlugin: string;
-}) {
-  rmSync(path.join(PLUGIN_ROOT, "build", "distributions"), {
-    recursive: true,
-    force: true
-  });
-  return runGradle({
-    ...paths,
-    tasks: ["test", "buildPlugin", "ktLint"]
-  });
-}
-
-function builtZip() {
-  const distributions = path.join(PLUGIN_ROOT, "build", "distributions");
-  const zip = existsSync(distributions) ? readdirSync(distributions).find(name => name.endsWith(".zip")) : undefined;
-  return zip === undefined ? undefined : path.join(distributions, zip);
 }
 
 function markedLines(fixture: string) {
@@ -197,8 +136,11 @@ async function main() {
   }
 
   const isBuilt = values["skip-build"] || buildPlugin({
-    ideHome,
-    sveltePlugin
+    paths: {
+      ideHome,
+      sveltePlugin
+    },
+    tasks: ["test", "buildPlugin", "ktLint"]
   });
   const zipPath = builtZip();
   const isReady = isBuilt && zipPath !== undefined;

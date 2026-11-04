@@ -119,17 +119,18 @@ export function prepareIsolation({ sveltePlugin }: {
 
 /**
  * Unpacks a built plugin (the zip the IntelliJ Platform Gradle plugin makes)
- * into the isolated plugin folder, replacing the folder of an earlier build.
+ * into a plugins folder (the isolated one by default), replacing the folder of an earlier build.
  */
-export function installPlugin({ zipPath, folderName }: {
+export function installPlugin({ zipPath, folderName, pluginsFolder = PLUGINS_FOLDER }: {
   zipPath: string;
   folderName: string;
+  pluginsFolder?: string;
 }) {
-  rmSync(path.join(PLUGINS_FOLDER, folderName), {
+  rmSync(path.join(pluginsFolder, folderName), {
     recursive: true,
     force: true
   });
-  const unpacked = spawnSync(WINDOWS_TAR, ["-xf", zipPath, "-C", PLUGINS_FOLDER]);
+  const unpacked = spawnSync(WINDOWS_TAR, ["-xf", zipPath, "-C", pluginsFolder]);
   const isUnpacked = unpacked.status === 0;
   if (!isUnpacked) {
     throw new Error(`could not unpack ${zipPath}: ${unpacked.stderr.toString()}`);

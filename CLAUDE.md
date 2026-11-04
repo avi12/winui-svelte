@@ -120,6 +120,10 @@ After anything that removes or rewires code, run the dead-code audit (`pnpm fall
   It runs with the TypeScript language service on, as WebStorm does by default, so type errors stay `tsc`'s and `svelte-check`'s to report; it adds the Svelte plugin's checks, unresolved references and imports, and unused and unreachable code
   `--ide-types` turns the service off so the IDE's own type evaluator reports instead; that is noisy (it disagrees with `tsc` on code `tsc` accepts) and is for looking, not gating
   A finding that is WebStorm misreading a string or template as code is silenced where it stands with `// noinspection <id>` and the reason
+- The WebStorm plugin (`ide/webstorm`, Kotlin, never in the npm package) is built and checked by `pnpm check:webstorm-plugin` (its tests, ktlint, detekt and a headless inspection in the isolated WebStorm)
+  `pnpm install:webstorm-plugin` builds it and unpacks it into the developer's own WebStorm (`scripts/editor/install-webstorm-plugin.ts`); run it when the user asks to install or update the plugin, or after a plugin change they want to try
+  Never close, restart or kill WebStorm: while one runs the script writes nothing and exits 2, then tell the user to close WebStorm and run `pnpm install:webstorm-plugin --skip-build`, or to install the printed zip with Settings, Plugins, Install Plugin from Disk
+  After it installs, the user starts WebStorm to load the plugin: a relaunch alone loads whatever zip was installed last, so a new build must be installed first
 - Every rule below is an error
   The rules live in `eslint-config/google-style.js` (ESLint, applied to `.ts` and `.svelte`) and `.oxlintrc.json`; the compiler flags in `tsconfig.json`
 
