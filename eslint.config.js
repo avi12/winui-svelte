@@ -319,7 +319,7 @@ export default [
   // where they are fixed. What does apply is checked elsewhere: tsc and
   // svelte-check (strict flags), props-strictness.ts (no prop typed any or
   // unknown), the editor check (no any hint) and gen:components:check.
-  globalIgnores(["node_modules/", "dist/", "eslint-rules/", "eslint-config/", ".winapp/", ".verify/", "src/components/generated/", "src/components/fluent-glyph.ts", ".claude/worktrees/", ".worktrees/"]),
+  globalIgnores(["node_modules/", "dist/", "eslint-rules/", "eslint-config/", ".winapp/", ".verify/", "src/components/generated/", "src/components/fluent-glyph.ts", ".claude/worktrees/", ".worktrees/", "ide/"]),
   {
     files: ["**/*.{ts,js,mjs}"],
     languageOptions: {

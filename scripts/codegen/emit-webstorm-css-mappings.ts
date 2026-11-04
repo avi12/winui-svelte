@@ -227,7 +227,7 @@ function hasSideEffects({ cssName, winName }: Candidate) {
 }
 
 function conversionOf(candidate: Candidate) {
-  const { cssName, winName, enumTypes } = candidate;
+  const { cssName, enumTypes } = candidate;
   const keywords = keywordsOf(candidate);
   const hasKeywords = keywords.size > 0;
   const isConvertible = !hasSideEffects(candidate);
@@ -247,12 +247,7 @@ function conversionOf(candidate: Candidate) {
   }
 
   if (isUnsupported) {
-    const isSolo = isConvertible && SOLO_PROBES.some(value => loweredValue({
-      cssName,
-      winName,
-      value
-    }) !== undefined);
-    conversion.reason = isSolo ? UnsupportedReason.NO_VALUE_FORM : UnsupportedReason.SEVERAL_SETTERS;
+    conversion.reason = isConvertible ? UnsupportedReason.NO_VALUE_FORM : UnsupportedReason.SEVERAL_SETTERS;
   }
 
   return conversion;

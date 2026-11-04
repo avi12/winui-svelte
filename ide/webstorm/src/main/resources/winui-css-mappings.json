@@ -270,7 +270,7 @@
       "cssProperty": "transform",
       "kind": "unsupported",
       "enumTypes": [],
-      "reason": "the CSS property sets other WinUI properties too"
+      "reason": "no plain value converts to the same WinUI value"
     },
     "requestedTheme": {
       "cssProperty": "color-scheme",
@@ -312,7 +312,7 @@
       "cssProperty": "box-shadow",
       "kind": "unsupported",
       "enumTypes": [],
-      "reason": "the CSS property sets other WinUI properties too"
+      "reason": "no plain value converts to the same WinUI value"
     },
     "stretch": {
       "cssProperty": "object-fit",
