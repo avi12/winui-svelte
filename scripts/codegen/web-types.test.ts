@@ -31,11 +31,22 @@ const webTypesSchema = z.object({
           )
         })
       )
+    }),
+    css: z.object({
+      properties: z.array(
+        z.object({
+          name: z.string(),
+          description: z.string(),
+          values: z.array(z.string()).optional()
+        })
+      )
     })
   })
 });
 
-const { elements } = webTypesSchema.parse(JSON.parse(readFileSync(path.join(PACKAGE_FOLDER, "web-types.json"), "utf8"))).contributions.html;
+const { html: { elements }, css } = webTypesSchema.parse(
+  JSON.parse(readFileSync(path.join(PACKAGE_FOLDER, "web-types.json"), "utf8"))
+).contributions;
 
 test("a component's element carries its own props' documentation and extends its parent", () => {
   const fontIcon = elements.find(element => element.name === "FontIcon");
@@ -91,4 +102,11 @@ test("an enum prop names the union of its member names, so the editor offers the
     module: "winui-svelte/enums",
     name: "VisibilityName"
   });
+});
+
+// WebStorm drops a web-types file that does not follow its schema, and every
+// component hover with it: a css property's `values` are plain strings.
+test("a css property lists its values as plain strings", () => {
+  const fontFamily = css.properties.find(property => property.name === "font-family");
+  assert.ok(fontFamily?.values?.includes("\"Segoe UI\""));
 });

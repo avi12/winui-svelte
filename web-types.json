@@ -17581,467 +17581,206 @@
           "name": "font-family",
           "description": "WinUI: a font family installed on Windows; the names offered here ship with it, any other installed family works as well.",
           "values": [
-            {
-              "name": "\"Arial\""
-            },
-            {
-              "name": "\"Bahnschrift\""
-            },
-            {
-              "name": "\"Calibri\""
-            },
-            {
-              "name": "\"Cambria\""
-            },
-            {
-              "name": "\"Cascadia Code\""
-            },
-            {
-              "name": "\"Cascadia Mono\""
-            },
-            {
-              "name": "\"Comic Sans MS\""
-            },
-            {
-              "name": "\"Consolas\""
-            },
-            {
-              "name": "\"Courier New\""
-            },
-            {
-              "name": "\"Ebrima\""
-            },
-            {
-              "name": "\"Franklin Gothic Medium\""
-            },
-            {
-              "name": "\"Gabriola\""
-            },
-            {
-              "name": "\"Georgia\""
-            },
-            {
-              "name": "\"Impact\""
-            },
-            {
-              "name": "\"Lucida Console\""
-            },
-            {
-              "name": "\"Malgun Gothic\""
-            },
-            {
-              "name": "\"Microsoft YaHei UI\""
-            },
-            {
-              "name": "\"Nirmala UI\""
-            },
-            {
-              "name": "\"Palatino Linotype\""
-            },
-            {
-              "name": "\"Segoe Fluent Icons\""
-            },
-            {
-              "name": "\"Segoe MDL2 Assets\""
-            },
-            {
-              "name": "\"Segoe Print\""
-            },
-            {
-              "name": "\"Segoe Script\""
-            },
-            {
-              "name": "\"Segoe UI\""
-            },
-            {
-              "name": "\"Segoe UI Emoji\""
-            },
-            {
-              "name": "\"Segoe UI Symbol\""
-            },
-            {
-              "name": "\"Segoe UI Variable\""
-            },
-            {
-              "name": "\"Sitka\""
-            },
-            {
-              "name": "\"Tahoma\""
-            },
-            {
-              "name": "\"Times New Roman\""
-            },
-            {
-              "name": "\"Trebuchet MS\""
-            },
-            {
-              "name": "\"Verdana\""
-            },
-            {
-              "name": "\"Yu Gothic UI\""
-            }
+            "\"Arial\"",
+            "\"Bahnschrift\"",
+            "\"Calibri\"",
+            "\"Cambria\"",
+            "\"Cascadia Code\"",
+            "\"Cascadia Mono\"",
+            "\"Comic Sans MS\"",
+            "\"Consolas\"",
+            "\"Courier New\"",
+            "\"Ebrima\"",
+            "\"Franklin Gothic Medium\"",
+            "\"Gabriola\"",
+            "\"Georgia\"",
+            "\"Impact\"",
+            "\"Lucida Console\"",
+            "\"Malgun Gothic\"",
+            "\"Microsoft YaHei UI\"",
+            "\"Nirmala UI\"",
+            "\"Palatino Linotype\"",
+            "\"Segoe Fluent Icons\"",
+            "\"Segoe MDL2 Assets\"",
+            "\"Segoe Print\"",
+            "\"Segoe Script\"",
+            "\"Segoe UI\"",
+            "\"Segoe UI Emoji\"",
+            "\"Segoe UI Symbol\"",
+            "\"Segoe UI Variable\"",
+            "\"Sitka\"",
+            "\"Tahoma\"",
+            "\"Times New Roman\"",
+            "\"Trebuchet MS\"",
+            "\"Verdana\"",
+            "\"Yu Gothic UI\""
           ]
         },
         {
           "name": "word-break",
           "description": "WinUI: sets TextWrapping; only these keywords are accepted.",
           "values": [
-            {
-              "name": "normal",
-              "description": "TextWrapping: WrapWholeWords"
-            },
-            {
-              "name": "keep-all",
-              "description": "TextWrapping: WrapWholeWords"
-            },
-            {
-              "name": "break-all",
-              "description": "TextWrapping: Wrap"
-            },
-            {
-              "name": "break-word",
-              "description": "TextWrapping: Wrap"
-            }
+            "normal",
+            "keep-all",
+            "break-all",
+            "break-word"
           ]
         },
         {
           "name": "object-fit",
           "description": "WinUI: sets Stretch; only these keywords are accepted.",
           "values": [
-            {
-              "name": "fill",
-              "description": "Stretch: Fill"
-            },
-            {
-              "name": "contain",
-              "description": "Stretch: Uniform"
-            },
-            {
-              "name": "cover",
-              "description": "Stretch: UniformToFill"
-            },
-            {
-              "name": "none",
-              "description": "Stretch: None"
-            }
+            "fill",
+            "contain",
+            "cover",
+            "none"
           ]
         },
         {
           "name": "user-select",
           "description": "WinUI: sets IsTextSelectionEnabled; only these keywords are accepted.",
           "values": [
-            {
-              "name": "auto",
-              "description": "IsTextSelectionEnabled: True"
-            },
-            {
-              "name": "text",
-              "description": "IsTextSelectionEnabled: True"
-            },
-            {
-              "name": "all",
-              "description": "IsTextSelectionEnabled: True"
-            },
-            {
-              "name": "contain",
-              "description": "IsTextSelectionEnabled: True"
-            },
-            {
-              "name": "none",
-              "description": "IsTextSelectionEnabled: False"
-            }
+            "auto",
+            "text",
+            "all",
+            "contain",
+            "none"
           ]
         },
         {
           "name": "font-style",
           "description": "WinUI: sets FontStyle; only these keywords are accepted.",
           "values": [
-            {
-              "name": "normal",
-              "description": "FontStyle: Normal"
-            },
-            {
-              "name": "italic",
-              "description": "FontStyle: Italic"
-            },
-            {
-              "name": "oblique",
-              "description": "FontStyle: Oblique"
-            }
+            "normal",
+            "italic",
+            "oblique"
           ]
         },
         {
           "name": "text-align",
           "description": "WinUI: sets TextAlignment; only these keywords are accepted.",
           "values": [
-            {
-              "name": "left",
-              "description": "TextAlignment: Left"
-            },
-            {
-              "name": "start",
-              "description": "TextAlignment: Left"
-            },
-            {
-              "name": "center",
-              "description": "TextAlignment: Center"
-            },
-            {
-              "name": "right",
-              "description": "TextAlignment: Right"
-            },
-            {
-              "name": "end",
-              "description": "TextAlignment: Right"
-            },
-            {
-              "name": "justify",
-              "description": "TextAlignment: Justify"
-            }
+            "left",
+            "start",
+            "center",
+            "right",
+            "end",
+            "justify"
           ]
         },
         {
           "name": "text-wrap",
           "description": "WinUI: sets TextWrapping; only these keywords are accepted.",
           "values": [
-            {
-              "name": "wrap",
-              "description": "TextWrapping: Wrap"
-            },
-            {
-              "name": "nowrap",
-              "description": "TextWrapping: NoWrap"
-            }
+            "wrap",
+            "nowrap"
           ]
         },
         {
           "name": "white-space",
           "description": "WinUI: sets TextWrapping; only these keywords are accepted.",
           "values": [
-            {
-              "name": "normal",
-              "description": "TextWrapping: Wrap"
-            },
-            {
-              "name": "nowrap",
-              "description": "TextWrapping: NoWrap"
-            }
+            "normal",
+            "nowrap"
           ]
         },
         {
           "name": "text-overflow",
           "description": "WinUI: sets TextTrimming; only these keywords are accepted.",
           "values": [
-            {
-              "name": "ellipsis",
-              "description": "TextTrimming: CharacterEllipsis"
-            },
-            {
-              "name": "clip",
-              "description": "TextTrimming: Clip"
-            }
+            "ellipsis",
+            "clip"
           ]
         },
         {
           "name": "text-decoration",
           "description": "WinUI: sets TextDecorations; only these keywords are accepted.",
           "values": [
-            {
-              "name": "none",
-              "description": "TextDecorations: None"
-            },
-            {
-              "name": "underline",
-              "description": "TextDecorations: Underline"
-            },
-            {
-              "name": "line-through",
-              "description": "TextDecorations: Strikethrough"
-            }
+            "none",
+            "underline",
+            "line-through"
           ]
         },
         {
           "name": "text-decoration-line",
           "description": "WinUI: sets TextDecorations; only these keywords are accepted.",
           "values": [
-            {
-              "name": "none",
-              "description": "TextDecorations: None"
-            },
-            {
-              "name": "underline",
-              "description": "TextDecorations: Underline"
-            },
-            {
-              "name": "line-through",
-              "description": "TextDecorations: Strikethrough"
-            }
+            "none",
+            "underline",
+            "line-through"
           ]
         },
         {
           "name": "flex-direction",
           "description": "WinUI: sets Orientation; only these keywords are accepted.",
           "values": [
-            {
-              "name": "row",
-              "description": "Orientation: Horizontal"
-            },
-            {
-              "name": "column",
-              "description": "Orientation: Vertical"
-            }
+            "row",
+            "column"
           ]
         },
         {
           "name": "visibility",
           "description": "WinUI: sets Visibility; only these keywords are accepted.",
           "values": [
-            {
-              "name": "visible",
-              "description": "Visibility: Visible"
-            },
-            {
-              "name": "hidden",
-              "description": "Visibility: Collapsed"
-            },
-            {
-              "name": "collapse",
-              "description": "Visibility: Collapsed"
-            }
+            "visible",
+            "hidden",
+            "collapse"
           ]
         },
         {
           "name": "pointer-events",
           "description": "WinUI: sets IsHitTestVisible; only these keywords are accepted.",
           "values": [
-            {
-              "name": "none",
-              "description": "IsHitTestVisible: False"
-            },
-            {
-              "name": "auto",
-              "description": "IsHitTestVisible: True"
-            },
-            {
-              "name": "all",
-              "description": "IsHitTestVisible: True"
-            }
+            "none",
+            "auto",
+            "all"
           ]
         },
         {
           "name": "color-scheme",
           "description": "WinUI: sets RequestedTheme; only these keywords are accepted.",
           "values": [
-            {
-              "name": "normal",
-              "description": "RequestedTheme: Default"
-            },
-            {
-              "name": "light",
-              "description": "RequestedTheme: Light"
-            },
-            {
-              "name": "dark",
-              "description": "RequestedTheme: Dark"
-            }
+            "normal",
+            "light",
+            "dark"
           ]
         },
         {
           "name": "display",
           "description": "WinUI: sets Visibility; only these keywords are accepted.",
           "values": [
-            {
-              "name": "none",
-              "description": "Visibility: Collapsed"
-            },
-            {
-              "name": "block",
-              "description": "Visibility: Visible"
-            },
-            {
-              "name": "inline",
-              "description": "Visibility: Visible"
-            },
-            {
-              "name": "inline-block",
-              "description": "Visibility: Visible"
-            },
-            {
-              "name": "flex",
-              "description": "Visibility: Visible"
-            },
-            {
-              "name": "inline-flex",
-              "description": "Visibility: Visible"
-            },
-            {
-              "name": "grid",
-              "description": "Visibility: Visible"
-            },
-            {
-              "name": "inline-grid",
-              "description": "Visibility: Visible"
-            },
-            {
-              "name": "contents",
-              "description": "Visibility: Visible"
-            }
+            "none",
+            "block",
+            "inline",
+            "inline-block",
+            "flex",
+            "inline-flex",
+            "grid",
+            "inline-grid",
+            "contents"
           ]
         },
         {
           "name": "font-stretch",
           "description": "WinUI: sets FontStretch; only these keywords are accepted.",
           "values": [
-            {
-              "name": "ultra-condensed",
-              "description": "FontStretch: UltraCondensed"
-            },
-            {
-              "name": "extra-condensed",
-              "description": "FontStretch: ExtraCondensed"
-            },
-            {
-              "name": "condensed",
-              "description": "FontStretch: Condensed"
-            },
-            {
-              "name": "semi-condensed",
-              "description": "FontStretch: SemiCondensed"
-            },
-            {
-              "name": "normal",
-              "description": "FontStretch: Normal"
-            },
-            {
-              "name": "semi-expanded",
-              "description": "FontStretch: SemiExpanded"
-            },
-            {
-              "name": "expanded",
-              "description": "FontStretch: Expanded"
-            },
-            {
-              "name": "extra-expanded",
-              "description": "FontStretch: ExtraExpanded"
-            },
-            {
-              "name": "ultra-expanded",
-              "description": "FontStretch: UltraExpanded"
-            }
+            "ultra-condensed",
+            "extra-condensed",
+            "condensed",
+            "semi-condensed",
+            "normal",
+            "semi-expanded",
+            "expanded",
+            "extra-expanded",
+            "ultra-expanded"
           ]
         },
         {
           "name": "direction",
           "description": "WinUI: sets FlowDirection; only these keywords are accepted.",
           "values": [
-            {
-              "name": "ltr",
-              "description": "FlowDirection: LeftToRight"
-            },
-            {
-              "name": "rtl",
-              "description": "FlowDirection: RightToLeft"
-            }
+            "ltr",
+            "rtl"
           ]
         },
         {

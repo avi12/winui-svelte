@@ -118,7 +118,7 @@ function cssPropertiesOf() {
     name: property.name,
     description: property.description,
     ...("values" in property && {
-      values: property.values
+      values: property.values.map(value => value.name)
     })
   }));
 }
