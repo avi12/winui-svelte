@@ -326,6 +326,17 @@ content root), including a `link:`, `file:` or `workspace:` specifier; the
 Project view action is visible when one selected path qualifies and converts the
 files that qualify
 
+The plugin also completes the Svelte plugin for classes on a component (in a
+project that depends on `winui-svelte`): the Svelte plugin already links a static
+`class="note"` and a `class:note` directive on a component to the rule in
+`<style>` (rename, find usages, go to declaration, completion), and this plugin
+adds the strings of a class array and the string keys of an object in it
+(`class={["note", { "note--collapsed": hidden }]}`), through a reference
+contributor and a `css.classOrIdUsagesProvider`, so that renaming either side
+updates the other and the HTML elements the Svelte plugin links; it also keeps
+the value of a `class:` directive when the directive is renamed with its rule (the
+IDE wrote `="{x}"` around it)
+
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each
 value lowers to, and writes `ide/webstorm/src/main/resources/winui-css-mappings.json`
