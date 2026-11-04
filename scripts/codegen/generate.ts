@@ -72,7 +72,7 @@ interface DocumentBlock {
 }
 
 // The hello example's files, which the quick start shows as they are.
-const quickStartFiles = ["vite.config.ts", "App.svelte", "window.ts", "main.ts"];
+const quickStartFiles = ["vite.config.ts", "App.svelte", "main.ts"];
 
 function exampleBlock(name: string) {
   const source = readFileSync(path.join(PACKAGE_FOLDER, "examples", "hello", name), "utf8");

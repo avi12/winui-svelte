@@ -195,99 +195,34 @@ any Svelte binding:
 
 <!-- hello/App.svelte:end -->
 
-`window.ts` runs on the UI thread
-`runOnUiThread` (the package's `/thread` entry) is a worker's first call: it
-enters the apartment before anything creates a WinRT object
-The
-window's modules come from the host's dev server through the module runner, and
-a timer takes the server's hot updates in (the thread's libuv turns between
-WinUI's messages, so `fs`, sockets, `fetch`, `WebSocket` and worker messages
-all complete there too; see [Timers and I/O](https://github.com/avi12/winui-svelte/blob/main/API.md#timers-and-io)):
-
-<!-- hello/window.ts:start -->
-
-```ts
-import { MessagePort, workerData } from "node:worker_threads";
-import { createWindowModuleRunner } from "winui-svelte/runner";
-import { runOnUiThread } from "winui-svelte/thread";
-import type * as WindowModule from "winui-svelte/window";
-import { z } from "zod";
-
-// The window: WinUI's thread. Its modules come from the host's dev server, and
-// the server's hot updates arrive as messages the window's loop delivers.
-
-const windowSize = {
-  width: 480,
-  height: 320
-};
-
-const workerDataSchema = z.object({ modules: z.instanceof(MessagePort) });
-
-await runOnUiThread(async () => {
-  const parsedData = workerDataSchema.safeParse(workerData);
-  if (!parsedData.success) {
-    throw new Error("the host passed no port to its dev server");
-  }
-
-  // Everything goes through the runner, so the window and the components
-  // share one renderer.
-  const { runner } = createWindowModuleRunner(parsedData.data.modules);
-  const { createWindow, runWindow } = await runner.import<typeof WindowModule>("winui-svelte/window");
-  const { default: appComponent } = await runner.import("/App.svelte");
-  await runWindow({
-    onStart() {
-      createWindow({
-        component: appComponent,
-        props: {},
-        title: "Hello",
-        size: windowSize,
-        // Set for an unattended run: the window opens without taking focus.
-        isBackground: process.env["WINUI_SVELTE_BACKGROUND"] === "1"
-      });
-    }
-  });
-});
-```
-
-<!-- hello/window.ts:end -->
-
-`main.ts` is the host: it starts the Windows App SDK, the dev server and the
-window:
+`main.ts` is the host: `startDev` (the package's `/dev` entry) starts the Windows
+App SDK, the dev server and the window on its own thread, so that a saved file
+updates the open window; the pieces it joins (`startModuleServer`,
+`createWindowModuleRunner`, `runOnUiThread`) stay available for a host that
+needs its own:
 
 <!-- hello/main.ts:start -->
 
 ```ts
-import path from "node:path";
-import { MessageChannel, Worker } from "node:worker_threads";
-import { initWindowsAppSdk } from "winui-svelte/bootstrap";
-import { startModuleServer } from "winui-svelte/vite";
+import { startDev } from "winui-svelte/dev";
 
-// The host: it starts the Windows App SDK, serves the window's modules from a
-// Vite dev server (so a saved .svelte file updates the open window) and starts
-// the window, which runs on a worker because WinUI keeps its thread.
+// The host: it opens App.svelte in a window and keeps it live, so a saved
+// file updates the open window.
 //
 //   node main.ts
 
-initWindowsAppSdk();
-
-const modules = new MessageChannel();
-await startModuleServer({
+process.exitCode = await startDev({
   root: import.meta.dirname,
-  configFile: path.join(import.meta.dirname, "vite.config.ts"),
-  port: modules.port1
-});
-const worker = new Worker(new URL("./window.ts", import.meta.url), {
-  workerData: {
-    modules: modules.port2
-  },
-  transferList: [modules.port2]
-});
-worker.on("error", error => {
-  process.stderr.write(`${error.stack ?? String(error)}\n`);
-  process.exitCode = 1;
-});
-worker.on("exit", code => {
-  process.exit(process.exitCode ?? code);
+  configFile: `${import.meta.dirname}/vite.config.ts`,
+  component: "/App.svelte",
+  window: {
+    title: "Hello",
+    size: {
+      width: 480,
+      height: 320
+    },
+    isBackground: process.env["WINUI_SVELTE_BACKGROUND"] === "1"
+  }
 });
 ```
 
@@ -803,6 +738,7 @@ conditions on `exports`), which your Vite compiles (`winuiSvelte()`)
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
 | `winui-svelte/messaging` | `defineMessaging`: typed request and response messages over a transport, loadable in plain Node |
 | `winui-svelte/vite` | `winuiSvelte()` for `vite.config.ts`; `startModuleServer()` for hot reload; `buildApp()` for the production bundle |
+| `winui-svelte/dev` | `startDev()`, one call that opens a component in a window and keeps it live as the files are saved |
 | `winui-svelte/runner` | `createWindowModuleRunner()`, the window thread's side of the module server |
 | `winui-svelte/window` | `runWindow`, `createWindow`, `startTimer`, `exitApplication`, `systemSettings` |
 | `winui-svelte/thread` | `runOnUiThread`, the first call of the UI thread's worker |
