@@ -17,7 +17,8 @@ data class TagContext(
   val tagNameEnd: Int,
   val attributeStart: Int,
   val attributeEnd: Int,
-  val classAttribute: ClassAttribute?
+  val classAttribute: ClassAttribute?,
+  val hasDynamicClass: Boolean = false
 )
 
 object StyleBlock {
@@ -62,7 +63,7 @@ object StyleBlock {
     declaration: Declaration
   ): List<TextEdit>? {
     val style = locate(fileText)
-    if (style == StyleLocation.Unsupported) {
+    if (style == StyleLocation.Unsupported || tag.hasDynamicClass) {
       return null
     }
 
@@ -77,9 +78,54 @@ object StyleBlock {
       edits += classEdit(tag, className)
     }
 
-    edits += styleEdit(fileText, style, className, declaration)
+    edits += styleEdit(fileText, style, listOf(Rule(className, declaration)))
     return edits
   }
+
+  fun planToggles(
+    fileText: String,
+    tag: TagContext,
+    property: String,
+    leaves: List<Leaf>
+  ): List<TextEdit>? {
+    val style = locate(fileText)
+    if (style == StyleLocation.Unsupported || leaves.isEmpty()) {
+      return null
+    }
+
+    val base = tag.classAttribute?.let { firstClassOf(it.value) } ?: kebab(tag.tagName)
+    val toggles =
+      leaves
+        .groupBy { it.modifier }
+        .map { (modifier, same) ->
+          Toggle("$base--$modifier", same.map { it.condition }, Declaration(property, same.first().value))
+        }
+    val directives = toggles.joinToString(" ") { "class:${it.name}={${it.condition}}" }
+    return listOf(
+      TextEdit(tag.attributeStart, tag.attributeEnd, directives),
+      styleEdit(fileText, style, toggles.map { Rule(it.name, it.declaration) })
+    )
+  }
+
+  fun slug(value: String) = value.replace(Regex("""[^\w-]+"""), "-").trim('-')
+
+  private class Toggle(
+    val name: String,
+    conditions: List<String>,
+    val declaration: Declaration
+  ) {
+    val condition =
+      if (conditions.size == 1) {
+        conditions.first()
+      } else {
+        conditions.joinToString(" || ") { "($it)" }
+      }
+  }
+
+  private class Rule(
+    val className: String,
+    val declaration: Declaration
+  )
 
   fun apply(
     fileText: String,
@@ -143,8 +189,7 @@ object StyleBlock {
   private fun styleEdit(
     fileText: String,
     style: StyleLocation,
-    className: String,
-    declaration: Declaration
+    rules: List<Rule>
   ): TextEdit {
     val newline =
       if (fileText.contains("\r\n")) {
@@ -154,18 +199,16 @@ object StyleBlock {
       }
     if (style is StyleLocation.Found) {
       val body = fileText.substring(style.bodyStart, style.bodyEnd)
-      return TextEdit(style.bodyStart, style.bodyEnd, withDeclaration(body, className, declaration, newline))
+      val edited = rules.fold(body) { text, rule -> withDeclaration(text, rule.className, rule.declaration, newline) }
+      return TextEdit(style.bodyStart, style.bodyEnd, edited)
     }
 
     val trimmedEnd = fileText.trimEnd().length
-    val block = "<style>$newline${rule(
-      DEFAULT_UNIT,
-      DEFAULT_UNIT,
-      className,
-      declaration,
-      newline
-    )}$newline</style>$newline"
-    return TextEdit(trimmedEnd, fileText.length, "$newline$newline$block")
+    val written =
+      rules.joinToString("$newline$newline") {
+        rule(DEFAULT_UNIT, DEFAULT_UNIT, it.className, it.declaration, newline)
+      }
+    return TextEdit(trimmedEnd, fileText.length, "$newline$newline<style>$newline$written$newline</style>$newline")
   }
 
   private fun rule(

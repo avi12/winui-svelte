@@ -24,7 +24,8 @@ data class Mapping(
   val cssProperty: String,
   val kind: ConversionKind,
   val enumTypes: Set<String>,
-  val keywords: Map<String, String>
+  val keywords: Map<String, String>,
+  val defaultValue: String?
 )
 
 class ConversionTable(
@@ -66,7 +67,8 @@ class ConversionTable(
             .getAsJsonObject("keywords")
             ?.entrySet()
             ?.associate { (key, value) -> key.lowercase() to value.asString }
-            ?: emptyMap()
+            ?: emptyMap(),
+        defaultValue = entry.get("defaultValue")?.asString
       )
   }
 }
