@@ -117,7 +117,8 @@ async function main() {
 
       for (const step of STEPS) {
         const isWaiting = step.needs.some(need => !finished.has(need));
-        const isWaitingForTheRest = step.isAlone === true && (running > 0 || finished.size < STEPS.length - 1);
+        const isWaitingForTheRest = step.isAlone === true
+          && (running > 0 || STEPS.some(other => other.isAlone !== true && !finished.has(other.name)));
         const isStartable = !started.has(step.name) && !isWaiting && !isWaitingForTheRest && running < MAX_PARALLEL;
         if (isStartable) {
           void start(step.name);

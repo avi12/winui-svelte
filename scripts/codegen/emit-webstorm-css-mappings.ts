@@ -150,7 +150,8 @@ function loweredValue({ cssName, winName, value }: {
   });
   const [only] = setters;
   const isOnlyThis = setters.length === 1 && only?.property.toLowerCase() === winName.toLowerCase();
-  return isOnlyThis ? only.value : undefined;
+  const isSetter = only?.kind === "setter" && isOnlyThis;
+  return isSetter ? only.value : undefined;
 }
 
 // The value each WinUI member is set to by a word, and by a plain number the
@@ -276,9 +277,10 @@ function candidatesOf(classes: ClassModel[]) {
     }
 
     const enumTypes = new Set(found.get(member.key)?.enumTypes);
-    const isEnum = member.enumNames !== undefined;
+    const enumName = member.enumNames?.slice(0, -ENUM_NAME_SUFFIX.length);
+    const isEnum = enumName !== undefined;
     if (isEnum) {
-      enumTypes.add(member.enumNames.slice(0, -ENUM_NAME_SUFFIX.length));
+      enumTypes.add(enumName);
     }
 
     found.set(member.key, {
