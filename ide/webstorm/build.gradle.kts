@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.winui.svelte"
-version = "0.1.0"
+version = providers.gradleProperty("pluginVersion").get()
 
 val webstormHome = providers.gradleProperty("webstormHome").orElse(providers.environmentVariable("WEBSTORM_HOME"))
 val svelteHome = providers.gradleProperty("svelteHome")

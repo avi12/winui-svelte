@@ -14,14 +14,14 @@ class ConversionTest {
 
   @Test
   fun `a keyword string becomes the CSS word`() {
-    assertEquals("style:visibility=\"hidden\"", rewrite("visibility", PropValue.Text("Collapsed")))
-    assertEquals("style:visibility=\"visible\"", rewrite("visibility", PropValue.Text("visible")))
+    assertEquals("style:display=\"none\"", rewrite("visibility", PropValue.Text("Collapsed")))
+    assertEquals("style:display=\"block\"", rewrite("visibility", PropValue.Text("Visible")))
   }
 
   @Test
   fun `an enum member becomes the CSS word`() {
     assertEquals(
-      "style:visibility=\"hidden\"",
+      "style:display=\"none\"",
       rewrite("visibility", PropValue.Member("Visibility", "Collapsed"))
     )
   }
@@ -43,7 +43,7 @@ class ConversionTest {
       PropValue.Member("Visibility", "Visible"),
       PropValue.Member("Visibility", "Collapsed")
     )
-    assertEquals("style:visibility={isOn ? \"visible\" : \"hidden\"}", rewrite("visibility", value))
+    assertEquals("style:display={isOn ? \"block\" : \"none\"}", rewrite("visibility", value))
   }
 
   @Test

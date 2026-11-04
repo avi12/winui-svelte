@@ -54,6 +54,10 @@ function buildPlugin({ ideHome, sveltePlugin }: {
   sveltePlugin: string;
 }) {
   mkdirSync(GRADLE_HOME, { recursive: true });
+  rmSync(path.join(PLUGIN_ROOT, "build", "distributions"), {
+    recursive: true,
+    force: true
+  });
   const wrapper = path.join(PLUGIN_ROOT, "gradlew.bat");
   const built = spawnSync(
     "cmd.exe",
