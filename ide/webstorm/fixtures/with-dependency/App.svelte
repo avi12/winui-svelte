@@ -17,6 +17,6 @@
 <Border isHitTestVisible={false} /> <!-- convert -->
 <TextBlock text="hello" />
 <TextBlock visibility={pick()} />
-<TextBlock visibility="Collapsed" style:display="block" />
+<TextBlock visibility="Collapsed" style:display="block" /> <!-- convert -->
 <TextBlock foreground="SystemAccentColor" />
 <div visibility="Collapsed"></div>

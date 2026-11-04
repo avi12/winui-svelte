@@ -18,6 +18,7 @@ const tableSchema = z.object({
       kind: z.string(),
       enumTypes: z.array(z.string()),
       keywords: z.record(z.string(), z.string()).optional(),
+      defaultValue: z.string().optional(),
       reason: z.string().optional()
     })
   )
@@ -30,6 +31,7 @@ test("visibility converts Collapsed to none and Visible to block, as display", (
     cssProperty: "display",
     kind: "keyword",
     enumTypes: ["Visibility"],
+    defaultValue: "block",
     keywords: Object.fromEntries([
       ["Collapsed", "none"],
       ["Visible", "block"]
@@ -73,4 +75,11 @@ test("every WinUI property with a note is a prop in the table", () => {
   const listed = new Set(Object.values(table).map(entry => entry.winuiProperty.toLowerCase()));
   const unlisted = cssNameEntries().map(entry => entry.property).filter(property => !listed.has(property));
   assert.deepEqual(unlisted, []);
+});
+
+test("a default WinUI documents is the CSS value the plugin leaves out", () => {
+  assert.equal(table["visibility"]?.defaultValue, "block");
+  assert.equal(table["opacity"]?.defaultValue, "1");
+  assert.equal(table["textAlignment"]?.defaultValue, "start");
+  assert.equal(table["width"]?.defaultValue, undefined);
 });

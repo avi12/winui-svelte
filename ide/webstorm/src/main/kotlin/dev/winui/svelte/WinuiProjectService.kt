@@ -5,7 +5,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.util.CachedValueProvider
@@ -15,27 +14,29 @@ import com.intellij.psi.util.CachedValuesManager
 class WinuiProjectService(
   private val project: Project
 ) {
-  fun isWinuiFile(file: PsiFile): Boolean =
-    CachedValuesManager.getCachedValue(file) {
-      val manifests = manifestsFor(file.virtualFile ?: file.originalFile.virtualFile)
-      val isDependent = manifests.any { dependsOnLibrary(it) }
-      CachedValueProvider.Result.create(
-        isDependent,
-        manifests + VirtualFileManager.VFS_STRUCTURE_MODIFICATIONS
-      )
-    }
+  fun isWinuiFile(file: PsiFile): Boolean = isWinuiLocation(file.virtualFile ?: file.originalFile.virtualFile)
 
-  private fun manifestsFor(file: VirtualFile?): List<PsiFile> {
+  fun isWinuiLocation(location: VirtualFile?): Boolean {
+    val start =
+      if (location?.isDirectory == true) {
+        location
+      } else {
+        location?.parent
+      }
     val nearest =
-      generateSequence(file?.parent) { it.parent }
+      generateSequence(start) { it.parent }
         .mapNotNull { it.findChild(MANIFEST_NAME) }
         .firstOrNull()
     val roots = ProjectRootManager.getInstance(project).contentRoots.mapNotNull { it.findChild(MANIFEST_NAME) }
-    val psiManager = PsiManager.getInstance(project)
-    return (listOfNotNull(nearest) + roots).distinct().mapNotNull { psiManager.findFile(it) }
+    return (listOfNotNull(nearest) + roots).distinct().any { dependsOnLibrary(it) }
   }
 
-  private fun dependsOnLibrary(manifest: PsiFile) = PackageManifest.dependsOnLibrary(manifest.text)
+  private fun dependsOnLibrary(manifest: VirtualFile): Boolean {
+    val psi = PsiManager.getInstance(project).findFile(manifest) ?: return false
+    return CachedValuesManager.getCachedValue(psi) {
+      CachedValueProvider.Result.create(PackageManifest.dependsOnLibrary(psi.text), psi)
+    }
+  }
 
   companion object {
     private const val MANIFEST_NAME = "package.json"

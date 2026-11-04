@@ -10,6 +10,7 @@ import { discretePropertyOf, discreteValueOf, discreteWordsOf } from "#src/css/t
 // and keeping a form only when it lowers to exactly this property alone.
 
 const INDENT = 2;
+const DEFAULT_SENTENCE = /[Tt]he default (?:value )?is (-?\d+(?:\.\d+)?|[A-Za-z]\w*)/u;
 const ENUM_NAME_SUFFIX = "Name";
 const EXAMPLE_LENGTH = "12px";
 const LENGTH_LIST = "1px 2px";
@@ -130,6 +131,7 @@ interface Candidate {
   winName: string;
   cssName: string;
   enumTypes: string[];
+  description: string | undefined;
 }
 
 interface Conversion {
@@ -138,6 +140,7 @@ interface Conversion {
   kind: ConversionKind;
   enumTypes: string[];
   keywords?: Record<string, string>;
+  defaultValue?: string;
   reason?: string;
 }
 
@@ -247,6 +250,29 @@ function hasSideEffects({ cssName, winName }: Candidate) {
   });
 }
 
+// The default WinUI's documentation names ("The default value is Visible"), as the CSS value the plugin
+// leaves out; read only where it is a word of the keywords or a number
+function defaultValueOf({ description, kind, keywords }: {
+  description: string | undefined;
+  kind: ConversionKind;
+  keywords: Map<string, string>;
+}) {
+  const word = DEFAULT_SENTENCE.exec(description ?? "")?.[1];
+  const hasWord = word !== undefined;
+  if (!hasWord) {
+    return undefined;
+  }
+
+  const defaults = new Map<ConversionKind, string | undefined>([
+    [ConversionKind.KEYWORD, keywords.get(word)],
+    [ConversionKind.LENGTH, `${Number(word)}px`],
+    [ConversionKind.NUMBER, String(Number(word))]
+  ]);
+  const isNumeric = !Number.isNaN(Number(word));
+  const isLiteral = kind === ConversionKind.KEYWORD || isNumeric;
+  return isLiteral ? defaults.get(kind) : undefined;
+}
+
 function conversionOf(candidate: Candidate) {
   const { cssName, winName, enumTypes } = candidate;
   const keywords = keywordsOf(candidate);
@@ -262,6 +288,16 @@ function conversionOf(candidate: Candidate) {
   };
   const isUnsupported = kind === ConversionKind.UNSUPPORTED;
   const isKeyword = kind === ConversionKind.KEYWORD;
+  const defaultValue = defaultValueOf({
+    description: candidate.description,
+    kind,
+    keywords
+  });
+  const hasDefault = defaultValue !== undefined;
+  if (hasDefault) {
+    conversion.defaultValue = defaultValue;
+  }
+
   if (isKeyword) {
     conversion.keywords = Object.fromEntries(
       [...keywords].toSorted(([first], [second]) => first.localeCompare(second))
@@ -282,12 +318,14 @@ function candidatesOf(classes: ClassModel[]) {
     ...level.properties.map(property => ({
       key: property.key,
       winName: property.winName,
-      enumNames: enumNamesTypeOf(property)
+      enumNames: enumNamesTypeOf(property),
+      description: level.documentation?.members.get(`P:${property.winName}`)
     })),
     ...level.attached.filter(attached => !attached.isSlot).map(attached => ({
       key: attached.key,
       winName: `${attached.owner.name}.${attached.name}`,
-      enumNames: enumNamesTypeOf(attached)
+      enumNames: enumNamesTypeOf(attached),
+      description: attached.documentation
     }))
   ]);
   for (const member of members) {
@@ -308,7 +346,8 @@ function candidatesOf(classes: ClassModel[]) {
       key: member.key,
       winName: member.winName,
       cssName,
-      enumTypes: [...enumTypes].toSorted()
+      enumTypes: [...enumTypes].toSorted(),
+      description: found.get(member.key)?.description ?? member.description
     });
   }
 

@@ -31,7 +31,8 @@
       "winuiProperty": "CharacterSpacing",
       "cssProperty": "letter-spacing",
       "kind": "number",
-      "enumTypes": []
+      "enumTypes": [],
+      "defaultValue": "0"
     },
     "cornerRadius": {
       "winuiProperty": "CornerRadius",
@@ -92,6 +93,7 @@
       "enumTypes": [
         "FontStretch"
       ],
+      "defaultValue": "normal",
       "keywords": {
         "Condensed": "condensed",
         "Expanded": "expanded",
@@ -111,6 +113,7 @@
       "enumTypes": [
         "FontStyle"
       ],
+      "defaultValue": "normal",
       "keywords": {
         "Italic": "italic",
         "Normal": "normal",
@@ -122,6 +125,7 @@
       "cssProperty": "font-weight",
       "kind": "keyword",
       "enumTypes": [],
+      "defaultValue": "normal",
       "keywords": {
         "100": "100",
         "200": "200",
@@ -176,6 +180,7 @@
       "enumTypes": [
         "HorizontalAlignment"
       ],
+      "defaultValue": "auto",
       "keywords": {
         "Center": "center",
         "Left": "start",
@@ -276,19 +281,22 @@
       "winuiProperty": "MinHeight",
       "cssProperty": "min-height",
       "kind": "length",
-      "enumTypes": []
+      "enumTypes": [],
+      "defaultValue": "0px"
     },
     "minWidth": {
       "winuiProperty": "MinWidth",
       "cssProperty": "min-width",
       "kind": "length",
-      "enumTypes": []
+      "enumTypes": [],
+      "defaultValue": "0px"
     },
     "opacity": {
       "winuiProperty": "Opacity",
       "cssProperty": "opacity",
       "kind": "number",
-      "enumTypes": []
+      "enumTypes": [],
+      "defaultValue": "1"
     },
     "orientation": {
       "winuiProperty": "Orientation",
@@ -298,6 +306,7 @@
         "Orientation",
         "RefreshVisualizerOrientation"
       ],
+      "defaultValue": "column",
       "keywords": {
         "Horizontal": "row",
         "Vertical": "column"
@@ -379,7 +388,8 @@
       "winuiProperty": "StrokeDashOffset",
       "cssProperty": "stroke-dashoffset",
       "kind": "length",
-      "enumTypes": []
+      "enumTypes": [],
+      "defaultValue": "0px"
     },
     "strokeMiterLimit": {
       "winuiProperty": "StrokeMiterLimit",
@@ -391,7 +401,8 @@
       "winuiProperty": "StrokeThickness",
       "cssProperty": "stroke-width",
       "kind": "length",
-      "enumTypes": []
+      "enumTypes": [],
+      "defaultValue": "0px"
     },
     "tabIndex": {
       "winuiProperty": "TabIndex",
@@ -406,6 +417,7 @@
       "enumTypes": [
         "TextAlignment"
       ],
+      "defaultValue": "start",
       "keywords": {
         "Center": "center",
         "Justify": "justify",
@@ -420,6 +432,7 @@
       "enumTypes": [
         "TextDecorations"
       ],
+      "defaultValue": "none",
       "keywords": {
         "None": "none",
         "Strikethrough": "line-through",
@@ -445,6 +458,7 @@
       "enumTypes": [
         "TextWrapping"
       ],
+      "defaultValue": "nowrap",
       "keywords": {
         "NoWrap": "nowrap",
         "Wrap": "wrap"
@@ -457,6 +471,7 @@
       "enumTypes": [
         "VerticalAlignment"
       ],
+      "defaultValue": "auto",
       "keywords": {
         "Bottom": "end",
         "Center": "center",
@@ -499,6 +514,7 @@
       "enumTypes": [
         "Visibility"
       ],
+      "defaultValue": "block",
       "keywords": {
         "Collapsed": "none",
         "Visible": "block"

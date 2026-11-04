@@ -2,7 +2,8 @@ package dev.winui.svelte
 
 sealed interface CssValue {
   data class Plain(
-    val text: String
+    val text: String,
+    val label: String? = null
   ) : CssValue
 
   data class Conditional(
@@ -12,7 +13,19 @@ sealed interface CssValue {
   ) : CssValue
 }
 
+data class Leaf(
+  val condition: String,
+  val value: String,
+  val modifier: String
+)
+
+private data class Guard(
+  val text: String,
+  val isNegated: Boolean
+)
+
 object Conversion {
+  private val simpleCondition = Regex("""[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*""")
   private val lengthPattern = Regex("""-?(\d+(\.\d+)?|\.\d+)""")
   private val pixelPattern = Regex("""(-?(?:\d+(?:\.\d+)?|\.\d+))(?:px)?""")
   private val hexPattern = Regex("""#[0-9a-fA-F]+""")
@@ -47,8 +60,19 @@ object Conversion {
         ConversionKind.TEXT -> plainText(value)
         ConversionKind.UNSUPPORTED -> null
       }
-    return text?.let { CssValue.Plain(it) }
+    val label =
+      if (mapping.kind == ConversionKind.KEYWORD) {
+        labelOf(value)
+      } else {
+        null
+      }
+    return text?.let { CssValue.Plain(it, label) }
   }
+
+  fun togglesOf(
+    mapping: Mapping,
+    value: CssValue
+  ): List<Leaf> = collect(value, emptyList(), mapping.cssProperty).filter { it.value != mapping.defaultValue }
 
   fun render(
     cssProperty: String,
@@ -67,6 +91,48 @@ object Conversion {
 
       is CssValue.Conditional -> {
         "${value.condition} ? ${expression(value.whenTrue)} : ${expression(value.whenFalse)}"
+      }
+    }
+
+  private fun labelOf(value: PropValue): String? =
+    when (value) {
+      is PropValue.Member -> value.name
+      is PropValue.Text -> value.text.trim().takeIf { it.firstOrNull()?.isLetter() == true }
+      else -> null
+    }
+
+  fun negated(condition: String): String =
+    if (simpleCondition.matches(condition)) {
+      "!$condition"
+    } else {
+      "!($condition)"
+    }
+
+  private fun collect(
+    value: CssValue,
+    path: List<Guard>,
+    cssProperty: String
+  ): List<Leaf> =
+    when (value) {
+      is CssValue.Plain -> {
+        val modifier =
+          value.label?.let { StyleBlock.kebab(it) }
+            ?: "$cssProperty-${StyleBlock.slug(value.text.removeSuffix("px"))}"
+        listOf(Leaf(conditionOf(path), value.text, modifier))
+      }
+
+      is CssValue.Conditional -> {
+        collect(value.whenTrue, path + Guard(value.condition, isNegated = false), cssProperty) +
+          collect(value.whenFalse, path + Guard(value.condition, isNegated = true), cssProperty)
+      }
+    }
+
+  private fun conditionOf(path: List<Guard>): String =
+    path.joinToString(" && ") { guard ->
+      when {
+        guard.isNegated -> negated(guard.text)
+        path.size > 1 && !simpleCondition.matches(guard.text) -> "(${guard.text})"
+        else -> guard.text
       }
     }
 
