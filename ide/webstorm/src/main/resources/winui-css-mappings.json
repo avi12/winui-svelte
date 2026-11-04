@@ -4,70 +4,89 @@
   ],
   "attributes": {
     "background": {
+      "winuiProperty": "Background",
       "cssProperty": "background-color",
       "kind": "color",
       "enumTypes": []
     },
     "borderBrush": {
+      "winuiProperty": "BorderBrush",
       "cssProperty": "border-color",
       "kind": "color",
       "enumTypes": []
     },
     "borderThickness": {
+      "winuiProperty": "BorderThickness",
       "cssProperty": "border-width",
       "kind": "thickness",
       "enumTypes": []
     },
+    "canvasZIndex": {
+      "winuiProperty": "Canvas.ZIndex",
+      "cssProperty": "z-index",
+      "kind": "number",
+      "enumTypes": []
+    },
     "characterSpacing": {
+      "winuiProperty": "CharacterSpacing",
       "cssProperty": "letter-spacing",
       "kind": "number",
       "enumTypes": []
     },
     "cornerRadius": {
+      "winuiProperty": "CornerRadius",
       "cssProperty": "border-radius",
       "kind": "cornerRadius",
       "enumTypes": []
     },
     "fill": {
+      "winuiProperty": "Fill",
       "cssProperty": "fill",
       "kind": "color",
       "enumTypes": []
     },
     "focusVisualMargin": {
+      "winuiProperty": "FocusVisualMargin",
       "cssProperty": "outline-offset",
       "kind": "unsupported",
       "enumTypes": [],
       "reason": "the CSS property sets other WinUI properties too"
     },
     "focusVisualPrimaryBrush": {
+      "winuiProperty": "FocusVisualPrimaryBrush",
       "cssProperty": "outline-color",
       "kind": "unsupported",
       "enumTypes": [],
       "reason": "the CSS property sets other WinUI properties too"
     },
     "focusVisualPrimaryThickness": {
+      "winuiProperty": "FocusVisualPrimaryThickness",
       "cssProperty": "outline-width",
       "kind": "unsupported",
       "enumTypes": [],
       "reason": "the CSS property sets other WinUI properties too"
     },
     "focusVisualSecondaryThickness": {
+      "winuiProperty": "FocusVisualSecondaryThickness",
       "cssProperty": "outline-width",
       "kind": "unsupported",
       "enumTypes": [],
       "reason": "the CSS property sets other WinUI properties too"
     },
     "fontFamily": {
+      "winuiProperty": "FontFamily",
       "cssProperty": "font-family",
       "kind": "text",
       "enumTypes": []
     },
     "fontSize": {
+      "winuiProperty": "FontSize",
       "cssProperty": "font-size",
       "kind": "length",
       "enumTypes": []
     },
     "fontStretch": {
+      "winuiProperty": "FontStretch",
       "cssProperty": "font-stretch",
       "kind": "keyword",
       "enumTypes": [
@@ -86,6 +105,7 @@
       }
     },
     "fontStyle": {
+      "winuiProperty": "FontStyle",
       "cssProperty": "font-style",
       "kind": "keyword",
       "enumTypes": [
@@ -98,6 +118,7 @@
       }
     },
     "fontWeight": {
+      "winuiProperty": "FontWeight",
       "cssProperty": "font-weight",
       "kind": "keyword",
       "enumTypes": [],
@@ -123,16 +144,33 @@
       }
     },
     "foreground": {
+      "winuiProperty": "Foreground",
       "cssProperty": "color",
       "kind": "color",
       "enumTypes": []
     },
+    "gridColumn": {
+      "winuiProperty": "Grid.Column",
+      "cssProperty": "grid-column-start",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "no plain value converts to the same WinUI value"
+    },
+    "gridRow": {
+      "winuiProperty": "Grid.Row",
+      "cssProperty": "grid-row-start",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "no plain value converts to the same WinUI value"
+    },
     "height": {
+      "winuiProperty": "Height",
       "cssProperty": "height",
       "kind": "length",
       "enumTypes": []
     },
     "horizontalAlignment": {
+      "winuiProperty": "HorizontalAlignment",
       "cssProperty": "justify-self",
       "kind": "keyword",
       "enumTypes": [
@@ -146,6 +184,7 @@
       }
     },
     "horizontalContentAlignment": {
+      "winuiProperty": "HorizontalContentAlignment",
       "cssProperty": "justify-content",
       "kind": "keyword",
       "enumTypes": [
@@ -159,6 +198,7 @@
       }
     },
     "horizontalScrollBarVisibility": {
+      "winuiProperty": "HorizontalScrollBarVisibility",
       "cssProperty": "overflow-x",
       "kind": "keyword",
       "enumTypes": [
@@ -172,6 +212,7 @@
       }
     },
     "isHitTestVisible": {
+      "winuiProperty": "IsHitTestVisible",
       "cssProperty": "pointer-events",
       "kind": "keyword",
       "enumTypes": [],
@@ -181,6 +222,7 @@
       }
     },
     "isTextSelectionEnabled": {
+      "winuiProperty": "IsTextSelectionEnabled",
       "cssProperty": "user-select",
       "kind": "keyword",
       "enumTypes": [],
@@ -190,12 +232,14 @@
       }
     },
     "lineHeight": {
+      "winuiProperty": "LineHeight",
       "cssProperty": "line-height",
       "kind": "unsupported",
       "enumTypes": [],
       "reason": "the CSS property sets other WinUI properties too"
     },
     "lineStackingStrategy": {
+      "winuiProperty": "LineStackingStrategy",
       "cssProperty": "line-height",
       "kind": "unsupported",
       "enumTypes": [
@@ -204,42 +248,50 @@
       "reason": "the CSS property sets other WinUI properties too"
     },
     "margin": {
+      "winuiProperty": "Margin",
       "cssProperty": "margin",
       "kind": "thickness",
       "enumTypes": []
     },
     "maxHeight": {
+      "winuiProperty": "MaxHeight",
       "cssProperty": "max-height",
       "kind": "length",
       "enumTypes": []
     },
     "maxLines": {
+      "winuiProperty": "MaxLines",
       "cssProperty": "line-clamp",
       "kind": "unsupported",
       "enumTypes": [],
       "reason": "the CSS property sets other WinUI properties too"
     },
     "maxWidth": {
+      "winuiProperty": "MaxWidth",
       "cssProperty": "max-width",
       "kind": "length",
       "enumTypes": []
     },
     "minHeight": {
+      "winuiProperty": "MinHeight",
       "cssProperty": "min-height",
       "kind": "length",
       "enumTypes": []
     },
     "minWidth": {
+      "winuiProperty": "MinWidth",
       "cssProperty": "min-width",
       "kind": "length",
       "enumTypes": []
     },
     "opacity": {
+      "winuiProperty": "Opacity",
       "cssProperty": "opacity",
       "kind": "number",
       "enumTypes": []
     },
     "orientation": {
+      "winuiProperty": "Orientation",
       "cssProperty": "flex-direction",
       "kind": "keyword",
       "enumTypes": [
@@ -252,27 +304,32 @@
       }
     },
     "padding": {
+      "winuiProperty": "Padding",
       "cssProperty": "padding",
       "kind": "thickness",
       "enumTypes": []
     },
     "radiusX": {
+      "winuiProperty": "RadiusX",
       "cssProperty": "rx",
       "kind": "length",
       "enumTypes": []
     },
     "radiusY": {
+      "winuiProperty": "RadiusY",
       "cssProperty": "ry",
       "kind": "length",
       "enumTypes": []
     },
     "renderTransform": {
+      "winuiProperty": "RenderTransform",
       "cssProperty": "transform",
       "kind": "unsupported",
       "enumTypes": [],
       "reason": "no plain value converts to the same WinUI value"
     },
     "requestedTheme": {
+      "winuiProperty": "RequestedTheme",
       "cssProperty": "color-scheme",
       "kind": "keyword",
       "enumTypes": [
@@ -284,37 +341,15 @@
         "Light": "light"
       }
     },
-    "scrollViewerHorizontalScrollBarVisibility": {
-      "cssProperty": "overflow-x",
-      "kind": "keyword",
-      "enumTypes": [
-        "ScrollBarVisibility"
-      ],
-      "keywords": {
-        "Auto": "auto",
-        "Disabled": "hidden",
-        "Visible": "scroll"
-      }
-    },
-    "scrollViewerVerticalScrollBarVisibility": {
-      "cssProperty": "overflow-y",
-      "kind": "keyword",
-      "enumTypes": [
-        "ScrollBarVisibility"
-      ],
-      "keywords": {
-        "Auto": "auto",
-        "Disabled": "hidden",
-        "Visible": "scroll"
-      }
-    },
     "shadow": {
+      "winuiProperty": "Shadow",
       "cssProperty": "box-shadow",
       "kind": "unsupported",
       "enumTypes": [],
       "reason": "no plain value converts to the same WinUI value"
     },
     "stretch": {
+      "winuiProperty": "Stretch",
       "cssProperty": "object-fit",
       "kind": "keyword",
       "enumTypes": [
@@ -328,37 +363,44 @@
       }
     },
     "stroke": {
+      "winuiProperty": "Stroke",
       "cssProperty": "stroke",
       "kind": "color",
       "enumTypes": []
     },
     "strokeDashArray": {
+      "winuiProperty": "StrokeDashArray",
       "cssProperty": "stroke-dasharray",
       "kind": "unsupported",
       "enumTypes": [],
       "reason": "no plain value converts to the same WinUI value"
     },
     "strokeDashOffset": {
+      "winuiProperty": "StrokeDashOffset",
       "cssProperty": "stroke-dashoffset",
       "kind": "length",
       "enumTypes": []
     },
     "strokeMiterLimit": {
+      "winuiProperty": "StrokeMiterLimit",
       "cssProperty": "stroke-miterlimit",
       "kind": "number",
       "enumTypes": []
     },
     "strokeThickness": {
+      "winuiProperty": "StrokeThickness",
       "cssProperty": "stroke-width",
       "kind": "length",
       "enumTypes": []
     },
     "tabIndex": {
+      "winuiProperty": "TabIndex",
       "cssProperty": "tab-index",
       "kind": "number",
       "enumTypes": []
     },
     "textAlignment": {
+      "winuiProperty": "TextAlignment",
       "cssProperty": "text-align",
       "kind": "keyword",
       "enumTypes": [
@@ -372,6 +414,7 @@
       }
     },
     "textDecorations": {
+      "winuiProperty": "TextDecorations",
       "cssProperty": "text-decoration",
       "kind": "keyword",
       "enumTypes": [
@@ -384,6 +427,7 @@
       }
     },
     "textTrimming": {
+      "winuiProperty": "TextTrimming",
       "cssProperty": "text-overflow",
       "kind": "keyword",
       "enumTypes": [
@@ -395,6 +439,7 @@
       }
     },
     "textWrapping": {
+      "winuiProperty": "TextWrapping",
       "cssProperty": "text-wrap",
       "kind": "keyword",
       "enumTypes": [
@@ -406,6 +451,7 @@
       }
     },
     "verticalAlignment": {
+      "winuiProperty": "VerticalAlignment",
       "cssProperty": "align-self",
       "kind": "keyword",
       "enumTypes": [
@@ -419,6 +465,7 @@
       }
     },
     "verticalContentAlignment": {
+      "winuiProperty": "VerticalContentAlignment",
       "cssProperty": "align-items",
       "kind": "keyword",
       "enumTypes": [
@@ -432,6 +479,7 @@
       }
     },
     "verticalScrollBarVisibility": {
+      "winuiProperty": "VerticalScrollBarVisibility",
       "cssProperty": "overflow-y",
       "kind": "keyword",
       "enumTypes": [
@@ -445,17 +493,19 @@
       }
     },
     "visibility": {
-      "cssProperty": "visibility",
+      "winuiProperty": "Visibility",
+      "cssProperty": "display",
       "kind": "keyword",
       "enumTypes": [
         "Visibility"
       ],
       "keywords": {
-        "Collapsed": "hidden",
-        "Visible": "visible"
+        "Collapsed": "none",
+        "Visible": "block"
       }
     },
     "width": {
+      "winuiProperty": "Width",
       "cssProperty": "width",
       "kind": "length",
       "enumTypes": []

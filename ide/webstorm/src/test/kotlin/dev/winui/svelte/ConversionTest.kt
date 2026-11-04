@@ -7,21 +7,24 @@ import org.junit.jupiter.api.Test
 class ConversionTest {
   private val table = ConversionTable.bundled
 
-  private fun rewrite(attribute: String, value: PropValue): String? {
+  private fun rewrite(
+    attribute: String,
+    value: PropValue
+  ): String? {
     val mapping = table.mappingOf(attribute) ?: return null
     return Conversion.convert(mapping, value)?.let { Conversion.render(mapping.cssProperty, it) }
   }
 
   @Test
   fun `a keyword string becomes the CSS word`() {
-    assertEquals("style:visibility=\"hidden\"", rewrite("visibility", PropValue.Text("Collapsed")))
-    assertEquals("style:visibility=\"visible\"", rewrite("visibility", PropValue.Text("visible")))
+    assertEquals("style:display=\"none\"", rewrite("visibility", PropValue.Text("Collapsed")))
+    assertEquals("style:display=\"block\"", rewrite("visibility", PropValue.Text("Visible")))
   }
 
   @Test
   fun `an enum member becomes the CSS word`() {
     assertEquals(
-      "style:visibility=\"hidden\"",
+      "style:display=\"none\"",
       rewrite("visibility", PropValue.Member("Visibility", "Collapsed"))
     )
   }
@@ -38,21 +41,23 @@ class ConversionTest {
 
   @Test
   fun `a condition of two members keeps the condition`() {
-    val value = PropValue.Conditional(
-      "isOn",
-      PropValue.Member("Visibility", "Visible"),
-      PropValue.Member("Visibility", "Collapsed")
-    )
-    assertEquals("style:visibility={isOn ? \"visible\" : \"hidden\"}", rewrite("visibility", value))
+    val value =
+      PropValue.Conditional(
+        "isOn",
+        PropValue.Member("Visibility", "Visible"),
+        PropValue.Member("Visibility", "Collapsed")
+      )
+    assertEquals("style:display={isOn ? \"block\" : \"none\"}", rewrite("visibility", value))
   }
 
   @Test
   fun `a condition with one branch that cannot convert is left alone`() {
-    val value = PropValue.Conditional(
-      "isOn",
-      PropValue.Member("Visibility", "Visible"),
-      PropValue.Member("Visibility", "Nowhere")
-    )
+    val value =
+      PropValue.Conditional(
+        "isOn",
+        PropValue.Member("Visibility", "Visible"),
+        PropValue.Member("Visibility", "Nowhere")
+      )
     assertEquals(null, rewrite("visibility", value))
   }
 

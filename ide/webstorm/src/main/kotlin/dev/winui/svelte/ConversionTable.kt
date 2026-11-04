@@ -3,7 +3,9 @@ package dev.winui.svelte
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 
-enum class ConversionKind(val jsonName: String) {
+enum class ConversionKind(
+  val jsonName: String
+) {
   KEYWORD("keyword"),
   LENGTH("length"),
   NUMBER("number"),
@@ -25,7 +27,9 @@ data class Mapping(
   val keywords: Map<String, String>
 )
 
-class ConversionTable(private val mappings: Map<String, Mapping>) {
+class ConversionTable(
+  private val mappings: Map<String, Mapping>
+) {
   val size get() = mappings.size
 
   fun mappingOf(attributeName: String): Mapping? =
@@ -37,26 +41,32 @@ class ConversionTable(private val mappings: Map<String, Mapping>) {
     private const val RESOURCE = "/winui-css-mappings.json"
 
     val bundled: ConversionTable by lazy {
-      val stream = ConversionTable::class.java.getResourceAsStream(RESOURCE)
-        ?: error("$RESOURCE is missing from the plugin")
+      val stream =
+        ConversionTable::class.java.getResourceAsStream(RESOURCE)
+          ?: error("$RESOURCE is missing from the plugin")
       parse(stream.bufferedReader().use { it.readText() })
     }
 
     fun parse(text: String): ConversionTable {
       val attributes = JsonParser.parseString(text).asJsonObject.getAsJsonObject("attributes")
-      return ConversionTable(attributes.entrySet().associate { (name, entry) ->
-        name to mappingOf(entry.asJsonObject)
-      })
+      return ConversionTable(
+        attributes.entrySet().associate { (name, entry) ->
+          name to mappingOf(entry.asJsonObject)
+        }
+      )
     }
 
-    private fun mappingOf(entry: JsonObject) = Mapping(
-      cssProperty = entry.get("cssProperty").asString,
-      kind = ConversionKind.named(entry.get("kind").asString),
-      enumTypes = entry.getAsJsonArray("enumTypes").map { it.asString }.toSet(),
-      keywords = entry.getAsJsonObject("keywords")
-        ?.entrySet()
-        ?.associate { (key, value) -> key.lowercase() to value.asString }
-        ?: emptyMap()
-    )
+    private fun mappingOf(entry: JsonObject) =
+      Mapping(
+        cssProperty = entry.get("cssProperty").asString,
+        kind = ConversionKind.named(entry.get("kind").asString),
+        enumTypes = entry.getAsJsonArray("enumTypes").map { it.asString }.toSet(),
+        keywords =
+          entry
+            .getAsJsonObject("keywords")
+            ?.entrySet()
+            ?.associate { (key, value) -> key.lowercase() to value.asString }
+            ?: emptyMap()
+      )
   }
 }

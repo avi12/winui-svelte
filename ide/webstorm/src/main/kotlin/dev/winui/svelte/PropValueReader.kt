@@ -28,30 +28,40 @@ object PropValueReader {
     }
 
     val isStatic = !text.contains(MUSTACHE_START)
-    return if (isStatic) PropValue.Text(attribute.value ?: return null) else null
+    return if (isStatic) {
+      PropValue.Text(attribute.value ?: return null)
+    } else {
+      null
+    }
   }
 
-  fun read(expression: JSExpression): PropValue? = when (expression) {
-    is JSParenthesizedExpression -> expression.innerExpression?.let { read(it) }
-    is JSLiteralExpression -> literal(expression)
-    is JSPrefixExpression -> negative(expression)
-    is JSReferenceExpression -> member(expression)
-    is JSArrayLiteralExpression -> tuple(expression)
-    is JSConditionalExpression -> conditional(expression)
-    else -> null
-  }
+  fun read(expression: JSExpression): PropValue? =
+    when (expression) {
+      is JSParenthesizedExpression -> expression.innerExpression?.let { read(it) }
+      is JSLiteralExpression -> literal(expression)
+      is JSPrefixExpression -> negative(expression)
+      is JSReferenceExpression -> member(expression)
+      is JSArrayLiteralExpression -> tuple(expression)
+      is JSConditionalExpression -> conditional(expression)
+      else -> null
+    }
 
-  private fun literal(expression: JSLiteralExpression): PropValue? = when {
-    expression.isNumericLiteral -> PropValue.Number(expression.text)
-    expression.isBooleanLiteral -> PropValue.Flag(expression.text == "true")
-    expression.isQuotedLiteral -> expression.stringValue?.let { PropValue.Text(it) }
-    else -> null
-  }
+  private fun literal(expression: JSLiteralExpression): PropValue? =
+    when {
+      expression.isNumericLiteral -> PropValue.Number(expression.text)
+      expression.isBooleanLiteral -> PropValue.Flag(expression.text == "true")
+      expression.isQuotedLiteral -> expression.stringValue?.let { PropValue.Text(it) }
+      else -> null
+    }
 
   private fun negative(expression: JSPrefixExpression): PropValue? {
     val operand = expression.expression as? JSLiteralExpression ?: return null
     val isNegation = expression.operationSign == JSTokenTypes.MINUS && operand.isNumericLiteral
-    return if (isNegation) PropValue.Number("-${operand.text}") else null
+    return if (isNegation) {
+      PropValue.Number("-${operand.text}")
+    } else {
+      null
+    }
   }
 
   private fun member(expression: JSReferenceExpression): PropValue? {
@@ -69,7 +79,11 @@ object PropValueReader {
   private fun tuple(expression: JSArrayLiteralExpression): PropValue? {
     val numbers = expression.expressions.map { (read(it) as? PropValue.Number)?.literal }
     val isNumeric = numbers.isNotEmpty() && numbers.all { it != null }
-    return if (isNumeric) PropValue.Tuple(numbers.filterNotNull()) else null
+    return if (isNumeric) {
+      PropValue.Tuple(numbers.filterNotNull())
+    } else {
+      null
+    }
   }
 
   private fun conditional(expression: JSConditionalExpression): PropValue? {
