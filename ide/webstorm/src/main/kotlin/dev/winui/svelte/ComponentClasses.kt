@@ -15,6 +15,8 @@ import com.intellij.psi.PsiReferenceContributor
 import com.intellij.psi.PsiReferenceProvider
 import com.intellij.psi.PsiReferenceRegistrar
 import com.intellij.psi.css.CssClass
+import com.intellij.psi.css.CssSelectorSuffix
+import com.intellij.psi.css.CssSelectorSuffixType
 import com.intellij.psi.css.usages.CssClassOrIdReferenceBasedUsagesProvider
 import com.intellij.psi.impl.source.tree.LeafElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -26,6 +28,7 @@ import dev.blachut.svelte.lang.psi.SvelteHtmlAttribute
 
 internal object ComponentClasses {
   private const val MUSTACHE_START = "{"
+  private const val DIRECTIVE_PREFIX = "class:"
   private val token = Regex("""-?[_a-zA-Z][\w-]*""")
 
   fun quotedTextOf(element: PsiElement): String? {
@@ -40,6 +43,18 @@ internal object ComponentClasses {
   }
 
   fun isClassHost(element: PsiElement) = quotedTextOf(element) != null
+
+  fun directiveClassOf(element: PsiElement): String? {
+    val attribute = PsiTreeUtil.getParentOfType(element, SvelteHtmlAttribute::class.java, false) ?: return null
+    val name = attribute.name.removePrefix(DIRECTIVE_PREFIX).takeIf { it != attribute.name && it.isNotEmpty() }
+    val isComponent =
+      attribute.parent
+        ?.name
+        ?.firstOrNull()
+        ?.isUpperCase() == true
+    val isWinui = WinuiProjectService.of(element.project).isWinuiFile(element.containingFile)
+    return name.takeIf { isComponent && isWinui }
+  }
 
   private fun isOnComponent(element: PsiElement): Boolean {
     val attribute = PsiTreeUtil.getParentOfType(element, XmlAttribute::class.java)
@@ -111,7 +126,18 @@ class ComponentClassReferenceContributor : PsiReferenceContributor() {
 }
 
 class ComponentClassUsagesProvider : CssClassOrIdReferenceBasedUsagesProvider() {
-  override fun acceptElement(candidate: PsiElement) = ComponentClasses.isClassHost(candidate)
+  override fun acceptElement(candidate: PsiElement) =
+    ComponentClasses.isClassHost(candidate) || ComponentClasses.directiveClassOf(candidate) != null
+
+  override fun isUsage(
+    selectorSuffix: CssSelectorSuffix,
+    candidate: PsiElement,
+    offsetInCandidate: Int
+  ): Boolean {
+    val directive =
+      ComponentClasses.directiveClassOf(candidate) ?: return super.isUsage(selectorSuffix, candidate, offsetInCandidate)
+    return selectorSuffix.type == CssSelectorSuffixType.CLASS && selectorSuffix.name?.removePrefix(".") == directive
+  }
 }
 
 class DirectiveNameManipulator : AbstractElementManipulator<SvelteHtmlAttribute>() {
