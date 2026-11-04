@@ -17,9 +17,14 @@ import com.intellij.psi.xml.XmlTokenType
 internal sealed interface Rewrite {
   val cssProperty: String
 
-  data class Directive(override val cssProperty: String, val text: String) : Rewrite
+  data class Directive(
+    override val cssProperty: String,
+    val text: String
+  ) : Rewrite
 
-  data class Rule(val declaration: Declaration) : Rewrite {
+  data class Rule(
+    val declaration: Declaration
+  ) : Rewrite {
     override val cssProperty get() = declaration.property
   }
 }
@@ -27,7 +32,10 @@ internal sealed interface Rewrite {
 internal object AttributeRewriter {
   private const val MUSTACHE_START = "{"
 
-  fun rewriteOf(attribute: XmlAttribute, table: ConversionTable = ConversionTable.bundled): Rewrite? {
+  fun rewriteOf(
+    attribute: XmlAttribute,
+    table: ConversionTable = ConversionTable.bundled
+  ): Rewrite? {
     val tag = attribute.parent ?: return null
     if (!isComponent(tag.name)) {
       return null
@@ -41,25 +49,42 @@ internal object AttributeRewriter {
     val value = PropValueReader.read(attribute) ?: return null
     val converted = Conversion.convert(mapping, value) ?: return null
     if (converted is CssValue.Plain) {
-      return staticRewrite(attribute, tag, Declaration(mapping.cssProperty, converted.text))
+      return staticRewrite(attribute, Declaration(mapping.cssProperty, converted.text))
     }
 
     return Rewrite.Directive(mapping.cssProperty, Conversion.render(mapping.cssProperty, converted))
   }
 
-  fun editsOf(attribute: XmlAttribute, declaration: Declaration): List<TextEdit>? {
+  fun editsOf(
+    attribute: XmlAttribute,
+    declaration: Declaration
+  ): List<TextEdit>? {
     val tag = attribute.parent ?: return null
     val context = contextOf(attribute, tag) ?: return null
     return StyleBlock.plan(attribute.containingFile.text, context, declaration)
   }
 
-  private fun staticRewrite(attribute: XmlAttribute, tag: XmlTag, declaration: Declaration): Rewrite? {
+  private fun staticRewrite(
+    attribute: XmlAttribute,
+    declaration: Declaration
+  ): Rewrite? {
     val edits = editsOf(attribute, declaration)
-    return if (edits == null) null else Rewrite.Rule(declaration)
+    return if (edits == null) {
+      null
+    } else {
+      Rewrite.Rule(declaration)
+    }
   }
 
-  private fun contextOf(attribute: XmlAttribute, tag: XmlTag): TagContext? {
-    val nameEnd = tag.node.findChildByType(XmlTokenType.XML_NAME)?.textRange?.endOffset ?: return null
+  private fun contextOf(
+    attribute: XmlAttribute,
+    tag: XmlTag
+  ): TagContext? {
+    val nameEnd =
+      tag.node
+        .findChildByType(XmlTokenType.XML_NAME)
+        ?.textRange
+        ?.endOffset ?: return null
     val classAttribute = tag.getAttribute("class")
     var classContext: ClassAttribute? = null
     if (classAttribute != null) {
@@ -92,7 +117,10 @@ internal object AttributeRewriter {
 }
 
 class ConvertToStyleDirectiveInspection : LocalInspectionTool() {
-  override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
+  override fun buildVisitor(
+    holder: ProblemsHolder,
+    isOnTheFly: Boolean
+  ): PsiElementVisitor {
     val isWinuiFile = WinuiProjectService.of(holder.project).isWinuiFile(holder.file)
     if (!isWinuiFile) {
       return PsiElementVisitor.EMPTY_VISITOR
@@ -102,18 +130,23 @@ class ConvertToStyleDirectiveInspection : LocalInspectionTool() {
       override fun visitXmlAttribute(attribute: XmlAttribute) {
         val rewrite = AttributeRewriter.rewriteOf(attribute) ?: return
         when (rewrite) {
-          is Rewrite.Rule -> holder.registerProblem(
-            attribute,
-            "Can be written in the style block",
-            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-            MoveToStyleBlockFix(attribute, rewrite.declaration)
-          )
-          is Rewrite.Directive -> holder.registerProblem(
-            attribute,
-            "Can be written as style:${rewrite.cssProperty}",
-            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-            ConvertToStyleDirectiveFix(attribute, rewrite.cssProperty)
-          )
+          is Rewrite.Rule -> {
+            holder.registerProblem(
+              attribute,
+              "Can be written in the style block",
+              ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+              MoveToStyleBlockFix(attribute, rewrite.declaration)
+            )
+          }
+
+          is Rewrite.Directive -> {
+            holder.registerProblem(
+              attribute,
+              "Can be written as style:${rewrite.cssProperty}",
+              ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+              ConvertToStyleDirectiveFix(attribute, rewrite.cssProperty)
+            )
+          }
         }
       }
     }
@@ -128,7 +161,12 @@ class MoveToStyleBlockFix(
 
   override fun getText() = "Move to <style> as ${declaration.property}: ${declaration.value}"
 
-  override fun invoke(project: Project, file: PsiFile, startElement: PsiElement, endElement: PsiElement) {
+  override fun invoke(
+    project: Project,
+    file: PsiFile,
+    startElement: PsiElement,
+    endElement: PsiElement
+  ) {
     val attribute = startElement as? XmlAttribute ?: return
     val edits = AttributeRewriter.editsOf(attribute, declaration) ?: return
     val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
@@ -148,7 +186,12 @@ class ConvertToStyleDirectiveFix(
 
   override fun getText() = "Convert to style:$cssProperty"
 
-  override fun invoke(project: Project, file: PsiFile, startElement: PsiElement, endElement: PsiElement) {
+  override fun invoke(
+    project: Project,
+    file: PsiFile,
+    startElement: PsiElement,
+    endElement: PsiElement
+  ) {
     val attribute = startElement as? XmlAttribute ?: return
     val rewrite = AttributeRewriter.rewriteOf(attribute) as? Rewrite.Directive ?: return
     val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return

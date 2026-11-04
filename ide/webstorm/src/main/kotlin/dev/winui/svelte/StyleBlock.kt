@@ -1,8 +1,16 @@
 package dev.winui.svelte
 
-data class TextEdit(val start: Int, val end: Int, val text: String)
+data class TextEdit(
+  val start: Int,
+  val end: Int,
+  val text: String
+)
 
-data class ClassAttribute(val valueStart: Int, val valueEnd: Int, val value: String)
+data class ClassAttribute(
+  val valueStart: Int,
+  val valueEnd: Int,
+  val value: String
+)
 
 data class TagContext(
   val tagName: String,
@@ -13,10 +21,10 @@ data class TagContext(
 )
 
 object StyleBlock {
+  private const val STYLE_CLOSE = "</style>"
   private const val DEFAULT_UNIT = "  "
   private val identifier = Regex("""-?[_a-zA-Z][\w-]*""")
   private val styleOpen = Regex("""<style\b([^>]*)>""")
-  private val styleClose = "</style>"
   private val langAttribute = Regex("""\blang\s*=\s*["']?([\w-]+)""")
   private val classAttributes = Regex("""\bclass\s*=\s*["']([^"']*)["']""")
   private val classSelectors = Regex("""\.(-?[_a-zA-Z][\w-]*)""")
@@ -24,7 +32,10 @@ object StyleBlock {
 
   fun kebab(tagName: String) = tagName.replace('.', '-').replace(upperAfterLower, "-").lowercase()
 
-  fun unusedClass(base: String, taken: Set<String>): String {
+  fun unusedClass(
+    base: String,
+    taken: Set<String>
+  ): String {
     if (base !in taken) {
       return base
     }
@@ -39,9 +50,17 @@ object StyleBlock {
   }
 
   fun firstClassOf(value: String): String? =
-    value.trim().split(Regex("""\s+""")).firstOrNull()?.takeIf { identifier.matches(it) }
+    value
+      .trim()
+      .split(Regex("""\s+"""))
+      .firstOrNull()
+      ?.takeIf { identifier.matches(it) }
 
-  fun plan(fileText: String, tag: TagContext, declaration: Declaration): List<TextEdit>? {
+  fun plan(
+    fileText: String,
+    tag: TagContext,
+    declaration: Declaration
+  ): List<TextEdit>? {
     val style = locate(fileText)
     if (style == StyleLocation.Unsupported) {
       return null
@@ -62,12 +81,18 @@ object StyleBlock {
     return edits
   }
 
-  fun apply(fileText: String, edits: List<TextEdit>): String {
+  fun apply(
+    fileText: String,
+    edits: List<TextEdit>
+  ): String {
     val ordered = edits.sortedWith(compareByDescending<TextEdit> { it.start }.thenByDescending { it.end })
     return ordered.fold(fileText) { text, edit -> text.replaceRange(edit.start, edit.end, edit.text) }
   }
 
-  private fun removal(fileText: String, tag: TagContext): TextEdit {
+  private fun removal(
+    fileText: String,
+    tag: TagContext
+  ): TextEdit {
     var start = tag.attributeStart
     while (start > 0 && fileText[start - 1].isWhitespace()) {
       start -= 1
@@ -76,7 +101,10 @@ object StyleBlock {
     return TextEdit(start, tag.attributeEnd, "")
   }
 
-  private fun classEdit(tag: TagContext, className: String): TextEdit {
+  private fun classEdit(
+    tag: TagContext,
+    className: String
+  ): TextEdit {
     val attribute = tag.classAttribute
     if (attribute != null) {
       return TextEdit(attribute.valueStart, attribute.valueEnd, className)
@@ -90,7 +118,10 @@ object StyleBlock {
 
     data object Missing : StyleLocation
 
-    data class Found(val bodyStart: Int, val bodyEnd: Int) : StyleLocation
+    data class Found(
+      val bodyStart: Int,
+      val bodyEnd: Int
+    ) : StyleLocation
   }
 
   private fun locate(fileText: String): StyleLocation {
@@ -101,8 +132,12 @@ object StyleBlock {
     }
 
     val bodyStart = open.range.last + 1
-    val bodyEnd = fileText.indexOf(styleClose, bodyStart)
-    return if (bodyEnd < 0) StyleLocation.Unsupported else StyleLocation.Found(bodyStart, bodyEnd)
+    val bodyEnd = fileText.indexOf(STYLE_CLOSE, bodyStart)
+    return if (bodyEnd < 0) {
+      StyleLocation.Unsupported
+    } else {
+      StyleLocation.Found(bodyStart, bodyEnd)
+    }
   }
 
   private fun styleEdit(
@@ -111,14 +146,25 @@ object StyleBlock {
     className: String,
     declaration: Declaration
   ): TextEdit {
-    val newline = if (fileText.contains("\r\n")) "\r\n" else "\n"
+    val newline =
+      if (fileText.contains("\r\n")) {
+        "\r\n"
+      } else {
+        "\n"
+      }
     if (style is StyleLocation.Found) {
       val body = fileText.substring(style.bodyStart, style.bodyEnd)
       return TextEdit(style.bodyStart, style.bodyEnd, withDeclaration(body, className, declaration, newline))
     }
 
     val trimmedEnd = fileText.trimEnd().length
-    val block = "<style>$newline${rule(DEFAULT_UNIT, DEFAULT_UNIT, className, declaration, newline)}$newline</style>$newline"
+    val block = "<style>$newline${rule(
+      DEFAULT_UNIT,
+      DEFAULT_UNIT,
+      className,
+      declaration,
+      newline
+    )}$newline</style>$newline"
     return TextEdit(trimmedEnd, fileText.length, "$newline$newline$block")
   }
 
@@ -130,12 +176,22 @@ object StyleBlock {
     newline: String
   ) = "$ruleIndent.$className {$newline$ruleIndent$unit${declaration.text}$newline$ruleIndent}"
 
-  private fun withDeclaration(body: String, className: String, declaration: Declaration, newline: String): String {
+  private fun withDeclaration(
+    body: String,
+    className: String,
+    declaration: Declaration,
+    newline: String
+  ): String {
     val ruleIndent = firstIndent(body)
     val existing = Regex("""(?m)^([ \t]*)\.${Regex.escape(className)}\s*\{([^}]*)\}""").find(body)
     if (existing == null) {
       val trimmed = body.trimEnd()
-      val separator = if (trimmed.isBlank()) newline else "$newline$newline"
+      val separator =
+        if (trimmed.isBlank()) {
+          newline
+        } else {
+          "$newline$newline"
+        }
       val added = rule(ruleIndent, unitOf(body, ruleIndent), className, declaration, newline)
       return "${trimmed.ifBlank { "" }}$separator$added$newline"
     }
@@ -144,13 +200,19 @@ object StyleBlock {
     val inner = existing.groupValues[2]
     val unit = unitOf(inner, indent)
     val propertyPattern = Regex("""(?<![\w-])${Regex.escape(declaration.property)}\s*:[^;]*;?""")
-    val replaced = if (propertyPattern.containsMatchIn(inner)) {
-      propertyPattern.replaceFirst(inner, Regex.escapeReplacement(declaration.text))
-    } else {
-      val content = inner.trimEnd()
-      val closed = if (content.isEmpty() || content.endsWith(";")) content else "$content;"
-      "$closed$newline$indent$unit${declaration.text}$newline$indent"
-    }
+    val replaced =
+      if (propertyPattern.containsMatchIn(inner)) {
+        propertyPattern.replaceFirst(inner, Regex.escapeReplacement(declaration.text))
+      } else {
+        val content = inner.trimEnd()
+        val closed =
+          if (content.isEmpty() || content.endsWith(";")) {
+            content
+          } else {
+            "$content;"
+          }
+        "$closed$newline$indent$unit${declaration.text}$newline$indent"
+      }
     val groupStart = existing.groups[2]!!.range
     return body.replaceRange(groupStart.first, groupStart.last + 1, replaced)
   }
@@ -160,15 +222,23 @@ object StyleBlock {
     return line.takeWhile { it == ' ' || it == '\t' }
   }
 
-  private fun unitOf(text: String, ruleIndent: String): String {
-    val declarationIndent = text.lines()
-      .filter { it.isNotBlank() && it.startsWith(ruleIndent) && it.length > ruleIndent.length }
-      .map { it.takeWhile { char -> char == ' ' || char == '\t' } }
-      .firstOrNull { it.length > ruleIndent.length }
+  private fun unitOf(
+    text: String,
+    ruleIndent: String
+  ): String {
+    val declarationIndent =
+      text
+        .lines()
+        .filter { it.isNotBlank() && it.startsWith(ruleIndent) && it.length > ruleIndent.length }
+        .map { it.takeWhile { char -> char == ' ' || char == '\t' } }
+        .firstOrNull { it.length > ruleIndent.length }
     return declarationIndent?.removePrefix(ruleIndent) ?: DEFAULT_UNIT
   }
 }
 
-data class Declaration(val property: String, val value: String) {
+data class Declaration(
+  val property: String,
+  val value: String
+) {
   val text get() = "$property: $value;"
 }

@@ -308,6 +308,10 @@ other may, and `without-dependency` must report nothing
 The zip is `ide/webstorm/build/distributions/winui-svelte-webstorm-<pluginVersion>.zip`
 (the version is `pluginVersion` in `ide/webstorm/gradle.properties`);
 install it with Settings, Plugins, Install Plugin from Disk
+The Kotlin is linted as in sb-companion: ktlint (formatting, `ide/webstorm/.editorconfig`)
+and detekt (correctness, `ide/webstorm/config/detekt/detekt.yml`), both run by the
+`ktLint` Gradle task that the check includes; `pnpm lint:fix` runs `ktLintFix`
+(detekt 1.23.8 reads Kotlin 2.4, and the ktlint Gradle plugin is 14.2.0 with ktlint 1.8.0)
 The command-line inspection cannot apply a quick fix, so the edit is covered by
 the plugin's own tests (`ide/webstorm/gradlew test`, run with the same
 `-PwebstormHome=` and `-PsvelteHome=` as the check)

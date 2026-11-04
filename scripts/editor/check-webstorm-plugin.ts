@@ -4,7 +4,10 @@
 // on winui-svelte, where each line marked `<!-- convert -->` must report and
 // no other line may, and one that does not, which must report nothing.
 //
-//   node scripts/editor/check-webstorm-plugin.ts [--require] [--skip-build]
+//   node scripts/editor/check-webstorm-plugin.ts [--require] [--skip-build] [--fix-kotlin]
+//
+// The build runs the plugin's tests and its Kotlin lint (ktlint and detekt);
+// --fix-kotlin only runs the ktlint formatter, as `pnpm lint:fix` does.
 //
 // The quick fix itself is proved by the plugin's own tests (`gradlew test`,
 // which the build runs): the command-line inspection has no way to apply it.
@@ -49,15 +52,12 @@ function skip({ reason, isRequired }: {
   process.exitCode = isRequired ? 1 : 0;
 }
 
-function buildPlugin({ ideHome, sveltePlugin }: {
+function runGradle({ ideHome, sveltePlugin, tasks }: {
   ideHome: string;
   sveltePlugin: string;
+  tasks: string[];
 }) {
   mkdirSync(GRADLE_HOME, { recursive: true });
-  rmSync(path.join(PLUGIN_ROOT, "build", "distributions"), {
-    recursive: true,
-    force: true
-  });
   const wrapper = path.join(PLUGIN_ROOT, "gradlew.bat");
   const built = spawnSync(
     "cmd.exe",
@@ -65,8 +65,7 @@ function buildPlugin({ ideHome, sveltePlugin }: {
       "/d",
       "/c",
       wrapper,
-      "test",
-      "buildPlugin",
+      ...tasks,
       "--console=plain",
       `-PwebstormHome=${ideHome}`,
       `-PsvelteHome=${sveltePlugin}`
@@ -88,6 +87,20 @@ function buildPlugin({ ideHome, sveltePlugin }: {
   }
 
   return isBuilt;
+}
+
+function buildPlugin(paths: {
+  ideHome: string;
+  sveltePlugin: string;
+}) {
+  rmSync(path.join(PLUGIN_ROOT, "build", "distributions"), {
+    recursive: true,
+    force: true
+  });
+  return runGradle({
+    ...paths,
+    tasks: ["test", "buildPlugin", "ktLint"]
+  });
 }
 
 function builtZip() {
@@ -154,6 +167,10 @@ async function main() {
       "skip-build": {
         type: "boolean",
         default: false
+      },
+      "fix-kotlin": {
+        type: "boolean",
+        default: false
       }
     }
   });
@@ -166,6 +183,16 @@ async function main() {
       reason: "WebStorm or its Svelte plugin is not installed; the check runs where they are.",
       isRequired
     });
+    return;
+  }
+
+  if (values["fix-kotlin"]) {
+    const isFixed = runGradle({
+      ideHome,
+      sveltePlugin,
+      tasks: ["ktLintFix"]
+    });
+    process.exitCode = isFixed ? 0 : 1;
     return;
   }
 

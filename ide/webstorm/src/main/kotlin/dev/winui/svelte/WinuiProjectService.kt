@@ -12,7 +12,9 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 
 @Service(Service.Level.PROJECT)
-class WinuiProjectService(private val project: Project) {
+class WinuiProjectService(
+  private val project: Project
+) {
   fun isWinuiFile(file: PsiFile): Boolean =
     CachedValuesManager.getCachedValue(file) {
       val manifests = manifestsFor(file.virtualFile ?: file.originalFile.virtualFile)
@@ -24,9 +26,10 @@ class WinuiProjectService(private val project: Project) {
     }
 
   private fun manifestsFor(file: VirtualFile?): List<PsiFile> {
-    val nearest = generateSequence(file?.parent) { it.parent }
-      .mapNotNull { it.findChild(MANIFEST_NAME) }
-      .firstOrNull()
+    val nearest =
+      generateSequence(file?.parent) { it.parent }
+        .mapNotNull { it.findChild(MANIFEST_NAME) }
+        .firstOrNull()
     val roots = ProjectRootManager.getInstance(project).contentRoots.mapNotNull { it.findChild(MANIFEST_NAME) }
     val psiManager = PsiManager.getInstance(project)
     return (listOfNotNull(nearest) + roots).distinct().mapNotNull { psiManager.findFile(it) }

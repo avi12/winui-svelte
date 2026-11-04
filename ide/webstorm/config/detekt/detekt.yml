@@ -1,0 +1,57 @@
+# detekt = the correctness half (as in sb-companion)
+# buildUponDefaultConfig=true keeps detekt default correctness rules.
+
+build:
+  maxIssues: 0   # correctness = error, like oxlint's categories.correctness
+
+# Formatting is owned by ktlint (.editorconfig); the detekt-formatting ruleset is
+# not on the classpath, so nothing here double-reports style.
+
+style:
+  # prefer-const -> flag `var` that is never reassigned.
+  VarCouldBeVal:
+    active: true
+  # curly: ["error", "all"] -> require braces on all conditionals/loops.
+  BracesOnIfStatements:
+    active: true
+    singleLine: 'always'
+    multiLine: 'always'
+  BracesOnWhenStatements:
+    active: true
+    singleLine: 'necessary'
+    multiLine: 'consistent'
+  MandatoryBracesLoops:
+    active: true
+  # object-shorthand / prefer-const spirit: encourage immutability.
+  UnusedPrivateMember:
+    active: true
+  UnusedImports:
+    active: true
+  # Line length handled by ktlint.
+  MaxLineLength:
+    active: false
+  # oxlint id-length is niche; Kotlin naming defaults are noisy here, keep relaxed.
+  MagicNumber:
+    active: false
+  # oxlint has no return-count cap; disable so detekt stays scoped to oxlint's rules.
+  ReturnCount:
+    active: false
+
+naming:
+  active: true
+  FunctionNaming:
+    active: true
+  VariableNaming:
+    active: true
+
+potential-bugs:
+  active: true
+
+complexity:
+  # Keep off by default — these are opinionated size caps not present in oxlint.
+  LongMethod:
+    active: false
+  LongParameterList:
+    active: false
+  TooManyFunctions:
+    active: false

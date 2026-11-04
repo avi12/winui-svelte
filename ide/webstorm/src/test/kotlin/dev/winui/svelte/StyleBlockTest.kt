@@ -7,20 +7,25 @@ import org.junit.jupiter.api.Test
 class StyleBlockTest {
   private val hidden = Declaration("visibility", "hidden")
 
-  private fun moved(source: String, declaration: Declaration = hidden): String? {
+  private fun moved(
+    source: String,
+    declaration: Declaration = hidden
+  ): String? {
     val attribute = source.indexOf("visibility=")
     val end = source.indexOf("\"", source.indexOf("\"", attribute) + 1) + 1
     val tagName = Regex("""<([A-Za-z.]+)""").find(source)!!.groupValues[1]
     val classMatch = Regex("""class="([^"]*)"""").find(source)
-    val context = TagContext(
-      tagName = tagName,
-      tagNameEnd = source.indexOf(tagName) + tagName.length,
-      attributeStart = attribute,
-      attributeEnd = end,
-      classAttribute = classMatch?.let {
-        ClassAttribute(it.groups[1]!!.range.first, it.groups[1]!!.range.last + 1, it.groupValues[1])
-      }
-    )
+    val context =
+      TagContext(
+        tagName = tagName,
+        tagNameEnd = source.indexOf(tagName) + tagName.length,
+        attributeStart = attribute,
+        attributeEnd = end,
+        classAttribute =
+          classMatch?.let {
+            ClassAttribute(it.groups[1]!!.range.first, it.groups[1]!!.range.last + 1, it.groupValues[1])
+          }
+      )
     val edits = StyleBlock.plan(source, context, declaration) ?: return null
     return StyleBlock.apply(source, edits)
   }
@@ -94,9 +99,10 @@ class StyleBlockTest {
 
   @Test
   fun `a property whose name ends the same is not replaced`() {
-    val moved = moved(
-      "<A class=\"a\" visibility=\"Collapsed\" />\n<style>\n  .a {\n    x-visibility: 1;\n  }\n</style>"
-    )
+    val moved =
+      moved(
+        "<A class=\"a\" visibility=\"Collapsed\" />\n<style>\n  .a {\n    x-visibility: 1;\n  }\n</style>"
+      )
     assertEquals(
       "<A class=\"a\" />\n<style>\n  .a {\n    x-visibility: 1;\n    visibility: hidden;\n  }\n</style>",
       moved

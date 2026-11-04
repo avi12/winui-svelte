@@ -1,7 +1,9 @@
 package dev.winui.svelte
 
 sealed interface CssValue {
-  data class Plain(val text: String) : CssValue
+  data class Plain(
+    val text: String
+  ) : CssValue
 
   data class Conditional(
     val condition: String,
@@ -24,51 +26,90 @@ object Conversion {
   private const val XAML_SEPARATOR = ","
   private const val MAX_SIDES = 4
 
-  fun convert(mapping: Mapping, value: PropValue): CssValue? {
+  fun convert(
+    mapping: Mapping,
+    value: PropValue
+  ): CssValue? {
     if (value is PropValue.Conditional) {
       val whenTrue = convert(mapping, value.whenTrue) ?: return null
       val whenFalse = convert(mapping, value.whenFalse) ?: return null
       return CssValue.Conditional(value.condition, whenTrue, whenFalse)
     }
 
-    val text = when (mapping.kind) {
-      ConversionKind.KEYWORD -> keyword(mapping, value)
-      ConversionKind.LENGTH -> length(value)
-      ConversionKind.NUMBER -> number(value)
-      ConversionKind.COLOR -> color(value)
-      ConversionKind.THICKNESS -> sides(value, isCorner = false)
-      ConversionKind.CORNER_RADIUS -> sides(value, isCorner = true)
-      ConversionKind.TEXT -> plainText(value)
-      ConversionKind.UNSUPPORTED -> null
-    }
+    val text =
+      when (mapping.kind) {
+        ConversionKind.KEYWORD -> keyword(mapping, value)
+        ConversionKind.LENGTH -> length(value)
+        ConversionKind.NUMBER -> number(value)
+        ConversionKind.COLOR -> color(value)
+        ConversionKind.THICKNESS -> sides(value, isCorner = false)
+        ConversionKind.CORNER_RADIUS -> sides(value, isCorner = true)
+        ConversionKind.TEXT -> plainText(value)
+        ConversionKind.UNSUPPORTED -> null
+      }
     return text?.let { CssValue.Plain(it) }
   }
 
-  fun render(cssProperty: String, value: CssValue): String = when (value) {
-    is CssValue.Plain -> "style:$cssProperty=\"${value.text}\""
-    is CssValue.Conditional -> "style:$cssProperty={${expression(value)}}"
-  }
-
-  private fun expression(value: CssValue): String = when (value) {
-    is CssValue.Plain -> "\"${value.text}\""
-    is CssValue.Conditional ->
-      "${value.condition} ? ${expression(value.whenTrue)} : ${expression(value.whenFalse)}"
-  }
-
-  private fun keyword(mapping: Mapping, value: PropValue): String? {
-    val key = when (value) {
-      is PropValue.Text -> value.text
-      is PropValue.Number -> value.literal
-      is PropValue.Flag -> if (value.isOn) "True" else "False"
-      is PropValue.Member -> value.name.takeIf { value.qualifier in mapping.enumTypes }
-      else -> null
+  fun render(
+    cssProperty: String,
+    value: CssValue
+  ): String =
+    when (value) {
+      is CssValue.Plain -> "style:$cssProperty=\"${value.text}\""
+      is CssValue.Conditional -> "style:$cssProperty={${expression(value)}}"
     }
+
+  private fun expression(value: CssValue): String =
+    when (value) {
+      is CssValue.Plain -> {
+        "\"${value.text}\""
+      }
+
+      is CssValue.Conditional -> {
+        "${value.condition} ? ${expression(value.whenTrue)} : ${expression(value.whenFalse)}"
+      }
+    }
+
+  private fun keyword(
+    mapping: Mapping,
+    value: PropValue
+  ): String? {
+    val key =
+      when (value) {
+        is PropValue.Text -> {
+          value.text
+        }
+
+        is PropValue.Number -> {
+          value.literal
+        }
+
+        is PropValue.Flag -> {
+          if (value.isOn) {
+            "True"
+          } else {
+            "False"
+          }
+        }
+
+        is PropValue.Member -> {
+          value.name.takeIf { value.qualifier in mapping.enumTypes }
+        }
+
+        else -> {
+          null
+        }
+      }
     return key?.let { mapping.keywords[it.trim().lowercase()] }
   }
 
   private fun length(value: PropValue): String? {
     val literal = (value as? PropValue.Number)?.literal ?: return null
-    return if (lengthPattern.matches(literal)) "$literal$UNIT" else null
+    return if (lengthPattern.matches(literal)) {
+      "$literal$UNIT"
+    } else {
+      null
+    }
   }
 
   private fun number(value: PropValue): String? {
@@ -104,7 +145,10 @@ object Conversion {
     return numbers.takeIf { isValid }
   }
 
-  private fun sides(value: PropValue, isCorner: Boolean): String? {
+  private fun sides(
+    value: PropValue,
+    isCorner: Boolean
+  ): String? {
     val isXaml: Boolean
     val tokens: List<String>
     when (value) {
@@ -112,19 +156,38 @@ object Conversion {
         isXaml = false
         tokens = listOf(value.literal)
       }
+
       is PropValue.Tuple -> {
         isXaml = true
         tokens = value.numbers
       }
+
       is PropValue.Text -> {
         isXaml = value.text.contains(XAML_SEPARATOR)
-        val separator = if (isXaml) XAML_SEPARATOR else " "
-        tokens = value.text.trim().split(separator).filter { it.isNotBlank() }
+        val separator =
+          if (isXaml) {
+            XAML_SEPARATOR
+          } else {
+            " "
+          }
+        tokens =
+          value.text
+            .trim()
+            .split(separator)
+            .filter { it.isNotBlank() }
       }
-      else -> return null
+
+      else -> {
+        return null
+      }
     }
     val checked = pixels(tokens) ?: return null
-    val ordered = if (isXaml && !isCorner) xamlToCss(checked) else checked
+    val ordered =
+      if (isXaml && !isCorner) {
+        xamlToCss(checked)
+      } else {
+        checked
+      }
     return shortest(ordered).joinToString(" ") { "$it$UNIT" }
   }
 

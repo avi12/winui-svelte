@@ -12,18 +12,26 @@ class ConvertToStyleDirectiveTest : BasePlatformTestCase() {
     myFixture.enableInspections(ConvertToStyleDirectiveInspection::class.java)
   }
 
-  private fun fixesAt(text: String, manifest: String? = dependent): List<String> {
+  private fun fixesAt(
+    text: String,
+    manifest: String? = dependent
+  ): List<String> {
     if (manifest != null) {
       myFixture.addFileToProject("package.json", manifest)
     }
 
     myFixture.configureByText("App.svelte", text)
     myFixture.doHighlighting()
-    return myFixture.availableIntentions.map { it.text }
+    return myFixture.availableIntentions
+      .map { it.text }
       .filter { it.startsWith(movePrefix) || it.startsWith(directivePrefix) }
   }
 
-  private fun apply(text: String, prefix: String, expected: String) {
+  private fun apply(
+    text: String,
+    prefix: String,
+    expected: String
+  ) {
     myFixture.addFileToProject("package.json", dependent)
     myFixture.configureByText("App.svelte", text)
     myFixture.doHighlighting()
@@ -31,7 +39,10 @@ class ConvertToStyleDirectiveTest : BasePlatformTestCase() {
     myFixture.checkResult(expected)
   }
 
-  private fun move(before: String, after: String) = apply(before, movePrefix, after)
+  private fun move(
+    before: String,
+    after: String
+  ) = apply(before, movePrefix, after)
 
   fun testMovesToANewRuleWhenThereIsNoClassAndNoStyleBlock() {
     move(
