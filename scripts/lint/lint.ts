@@ -34,6 +34,11 @@ const STEPS: Step[] = [
     isAlone: true
   },
   {
+    name: "check:webstorm-plugin",
+    needs: [],
+    isAlone: true
+  },
+  {
     name: BUILD,
     needs: []
   },

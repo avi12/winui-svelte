@@ -1,0 +1,10 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="WinuiSveltePlugin" />
+    <!-- The one inspection the WebStorm plugin (ide/webstorm) adds. In the
+         editor it is information level, so it only shows as a quick fix on
+         Alt+Enter; the command-line runner reports nothing below a warning, so
+         this profile raises it to one. -->
+    <inspection_tool class="WinuiPropAsStyleDirective" enabled="true" level="WARNING" enabled_by_default="true" />
+  </profile>
+</component>

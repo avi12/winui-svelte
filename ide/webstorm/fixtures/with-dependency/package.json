@@ -1,0 +1,8 @@
+{
+  "name": "fixture-with-dependency",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "winui-svelte": "link:../../../.."
+  }
+}

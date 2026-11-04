@@ -41,6 +41,10 @@ const SHADOW_FOLDER = path.join(ISOLATED_FOLDER, "project");
 export const RESULTS_FOLDER = path.join(ISOLATED_FOLDER, "results");
 const VM_OPTIONS_FILE = path.join(ISOLATED_FOLDER, "vmoptions.txt");
 const SVELTE_PLUGIN_FOLDER = "svelte";
+// The WebStorm plugin has a build and fixtures of its own, checked by check-webstorm-plugin.ts.
+const PLUGIN_FOLDER = "ide/";
+// The tar that ships with Windows reads a zip and a drive letter; a Git Bash tar earlier on PATH reads neither.
+const WINDOWS_TAR = path.join(process.env["SystemRoot"] ?? "C:Windows", "System32", "tar.exe");
 const DEPENDENCIES_FOLDER = "node_modules";
 const KEPT_IN_SHADOW = [".idea", DEPENDENCIES_FOLDER];
 // The generated WinUI bindings are reached through #winui/*, which package.json
@@ -113,6 +117,25 @@ export function prepareIsolation({ sveltePlugin }: {
   }
 }
 
+/**
+ * Unpacks a built plugin (the zip the IntelliJ Platform Gradle plugin makes)
+ * into the isolated plugin folder, replacing the folder of an earlier build.
+ */
+export function installPlugin({ zipPath, folderName }: {
+  zipPath: string;
+  folderName: string;
+}) {
+  rmSync(path.join(PLUGINS_FOLDER, folderName), {
+    recursive: true,
+    force: true
+  });
+  const unpacked = spawnSync(WINDOWS_TAR, ["-xf", zipPath, "-C", PLUGINS_FOLDER]);
+  const isUnpacked = unpacked.status === 0;
+  if (!isUnpacked) {
+    throw new Error(`could not unpack ${zipPath}: ${unpacked.stderr.toString()}`);
+  }
+}
+
 function sourceFiles() {
   const listed = spawnSync("git", ["ls-files", "-co", "--exclude-standard", "-z"], {
     cwd: REPO_ROOT,
@@ -121,7 +144,7 @@ function sourceFiles() {
   });
   return listed.stdout
     .split(NUL_SEPARATOR)
-    .filter(file => file !== "" && existsSync(path.join(REPO_ROOT, file)));
+    .filter(file => file !== "" && !file.startsWith(PLUGIN_FOLDER) && existsSync(path.join(REPO_ROOT, file)));
 }
 
 function isUpToDate({ source, target }: {
