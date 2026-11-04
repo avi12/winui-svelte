@@ -110,3 +110,9 @@ test("a css property lists its values as plain strings", () => {
   const fontFamily = css.properties.find(property => property.name === "font-family");
   assert.ok(fontFamily?.values?.includes("\"Segoe UI\""));
 });
+
+test("an attached property a class takes as a prop carries the owner's documentation", () => {
+  const uiElement = elements.find(element => element.name === "UIElement");
+  const automationId = uiElement?.attributes.find(attribute => attribute.name === "automationId");
+  assert.match(automationId?.description ?? "", /AutomationProperties\.AutomationId/u);
+});

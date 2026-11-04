@@ -5006,6 +5006,34 @@
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.width"
             },
             {
+              "name": "gridRow",
+              "description": "Gets or sets the value of the Grid.Row XAML attached property from the specified FrameworkElement. The value of the Grid.Row XAML attached property on the target element.\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "gridColumn",
+              "description": "Gets or sets the value of the Grid.Column XAML attached property from the specified FrameworkElement. The value of the Grid.Column XAML attached property on the target element. This is a zero-based index.\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "gridRowSpan",
+              "description": "Gets or sets the value of the Grid.RowSpan XAML attached property from the specified FrameworkElement. The value of the Grid.RowSpan XAML attached property on the target element.\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "gridColumnSpan",
+              "description": "Gets or sets the value of the Grid.ColumnSpan XAML attached property from the specified FrameworkElement. The value of the Grid.ColumnSpan XAML attached property on the target element.\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
               "name": "onactualthemechanged",
               "description": "Occurs when the ActualTheme property value has changed.",
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.actualthemechanged"
@@ -15407,6 +15435,24 @@
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline.speedratio"
             },
             {
+              "name": "storyboardTargetProperty",
+              "description": "Gets or sets the value of the Storyboard.TargetProperty XAML attached property from a target element.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "storyboardTargetName",
+              "description": "Gets or sets the value of the Storyboard.TargetName XAML attached property from a target element.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "storyboardTarget",
+              "description": "Gets or sets the property that should be animated."
+            },
+            {
               "name": "oncompleted",
               "description": "Occurs when the Storyboard object has completed playing.",
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline.completed"
@@ -16618,6 +16664,467 @@
                 }
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.xyfocusupnavigationstrategy"
+            },
+            {
+              "name": "canvasLeft",
+              "description": "Gets or sets the value of the Canvas.Left XAML attached property for the target element.\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "canvasTop",
+              "description": "Gets or sets the value of the Canvas.Top XAML attached property for the target element.\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "canvasZIndex",
+              "description": "Gets or sets the value of the Canvas.ZIndex XAML attached property for the target element.\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "relativePanelLeftOf",
+              "description": "Gets or sets the value of the RelativePanel.LeftOf XAML attached property for the target element. The RelativePanel.LeftOf XAML attached property value of the specified object. (The element to position this element to the left of.)\n\nType: `ElementReferenceInput`",
+              "value": {
+                "type": "ElementReferenceInput"
+              }
+            },
+            {
+              "name": "relativePanelAbove",
+              "description": "Gets or sets the value of the RelativePanel.Above XAML attached property for the target element. The RelativePanel.Above XAML attached property value of the specified object. (The element to position this element above.)\n\nType: `ElementReferenceInput`",
+              "value": {
+                "type": "ElementReferenceInput"
+              }
+            },
+            {
+              "name": "relativePanelRightOf",
+              "description": "Gets or sets the value of the RelativePanel.RightOf XAML attached property for the target element. The RelativePanel.RightOf XAML attached property value of the specified object. (The element to position this element to the right of.)\n\nType: `ElementReferenceInput`",
+              "value": {
+                "type": "ElementReferenceInput"
+              }
+            },
+            {
+              "name": "relativePanelBelow",
+              "description": "Gets or sets the value of the RelativePanel.Below XAML attached property for the target element. The RelativePanel.Below XAML attached property value of the specified object. (The element to position this element below.)\n\nType: `ElementReferenceInput`",
+              "value": {
+                "type": "ElementReferenceInput"
+              }
+            },
+            {
+              "name": "relativePanelAlignHorizontalCenterWith",
+              "description": "Gets or sets the value of the RelativePanel.AlignHorizontalCenterWith XAML attached property for the target element. The RelativePanel.AlignHorizontalCenterWith XAML attached property value of the specified object. (The element to align this element's horizontal center with.)\n\nType: `ElementReferenceInput`",
+              "value": {
+                "type": "ElementReferenceInput"
+              }
+            },
+            {
+              "name": "relativePanelAlignVerticalCenterWith",
+              "description": "Gets or sets the value of the RelativePanel.AlignVerticalCenterWith XAML attached property for the target element. The RelativePanel.AlignVerticalCenterWith XAML attached property value of the specified object. (The element to align this element's vertical center with.)\n\nType: `ElementReferenceInput`",
+              "value": {
+                "type": "ElementReferenceInput"
+              }
+            },
+            {
+              "name": "relativePanelAlignLeftWith",
+              "description": "Gets or sets the value of the RelativePanel.AlignLeftWith XAML attached property for the target element. The RelativePanel.AlignLeftWith XAML attached property value of the specified object. (The element to align this element's left edge with.)\n\nType: `ElementReferenceInput`",
+              "value": {
+                "type": "ElementReferenceInput"
+              }
+            },
+            {
+              "name": "relativePanelAlignTopWith",
+              "description": "Gets or sets the value of the RelativePanel.AlignTopWith XAML attached property for the target element. The RelativePanel.AlignTopWith XAML attached property value of the specified object. (The element to align this element's top edge with.)\n\nType: `ElementReferenceInput`",
+              "value": {
+                "type": "ElementReferenceInput"
+              }
+            },
+            {
+              "name": "relativePanelAlignRightWith",
+              "description": "Gets or sets the value of the RelativePanel.AlignRightWith XAML attached property for the target element. The RelativePanel.AlignRightWith XAML attached property value of the specified object. (The element to align this element's right edge with.)\n\nType: `ElementReferenceInput`",
+              "value": {
+                "type": "ElementReferenceInput"
+              }
+            },
+            {
+              "name": "relativePanelAlignBottomWith",
+              "description": "Gets or sets the value of the RelativePanel.AlignBottomWith XAML attached property for the target element. The RelativePanel.AlignBottomWith XAML attached property value of the specified object. (The element to align this element's bottom edge with.)\n\nType: `ElementReferenceInput`",
+              "value": {
+                "type": "ElementReferenceInput"
+              }
+            },
+            {
+              "name": "relativePanelAlignLeftWithPanel",
+              "description": "Gets or sets the value of the RelativePanel.AlignLeftWithPanel XAML attached property for the target element. The RelativePanel.AlignLeftWithPanel XAML attached property value of the specified object. (true to align this element's left edge with the panel's left edge; otherwise, false.)\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "relativePanelAlignTopWithPanel",
+              "description": "Gets or sets the value of the RelativePanel.AlignTopWithPanel XAML attached property for the target element. The RelativePanel.AlignTopWithPanel XAML attached property value of the specified object. (true to align this element's top edge with the panel's top edge; otherwise, false.)\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "relativePanelAlignRightWithPanel",
+              "description": "Gets or sets the value of the RelativePanel.AlignRightWithPanel XAML attached property for the target element. The RelativePanel.AlignRightWithPanel XAML attached property value of the specified object. (true to align this element's right edge with the panel's right edge; otherwise, false.)\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "relativePanelAlignBottomWithPanel",
+              "description": "Gets or sets the value of the RelativePanel.AlignBottomWithPanel XAML attached property for the target element. The RelativePanel.AlignBottomWithPanel XAML attached property value of the specified object. (true to align this element's bottom edge with the panel's bottom edge; otherwise, false.)\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "relativePanelAlignHorizontalCenterWithPanel",
+              "description": "Gets or sets the value of the RelativePanel.AlignHorizontalCenterWithPanel XAML attached property for the target element. The RelativePanel.AlignHorizontalCenterWithPanel XAML attached property value of the specified object. (true to horizontally center this element in the panel; otherwise, false.)\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "relativePanelAlignVerticalCenterWithPanel",
+              "description": "Gets or sets the value of the RelativePanel.AlignVerticalCenterWithPanel XAML attached property for the target element. The RelativePanel.AlignVerticalCenterWithPanel XAML attached property value of the specified object. (true to vertically center this element in the panel; otherwise, false.)\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "variableSizedWrapGridRowSpan",
+              "description": "Gets or sets the value of the VariableSizedWrapGrid.RowSpan XAML attached property from a target element. The obtained value.\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "variableSizedWrapGridColumnSpan",
+              "description": "Gets or sets the value of the VariableSizedWrapGrid.ColumnSpan XAML attached property from a target element. The obtained value.\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "scrollViewerHorizontalScrollBarVisibility",
+              "description": "Gets or sets the value of the HorizontalScrollBarVisibility dependency property / ScrollViewer.HorizontalScrollBarVisibility XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nAlso settable in CSS as `overflow-x`\n\nType: `ScrollBarVisibility`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollBarVisibilityName"
+                }
+              }
+            },
+            {
+              "name": "scrollViewerVerticalScrollBarVisibility",
+              "description": "Gets or sets the value of the VerticalScrollBarVisibility dependency property / ScrollViewer.VerticalScrollBarVisibility XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nAlso settable in CSS as `overflow-y`\n\nType: `ScrollBarVisibility`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollBarVisibilityName"
+                }
+              }
+            },
+            {
+              "name": "scrollViewerIsHorizontalRailEnabled",
+              "description": "Gets or sets the value of the IsHorizontalRailEnabled dependency property / ScrollViewer.IsHorizontalRailEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "scrollViewerIsVerticalRailEnabled",
+              "description": "Gets or sets the value of the IsVerticalRailEnabled dependency property / ScrollViewer.IsVerticalRailEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "scrollViewerIsHorizontalScrollChainingEnabled",
+              "description": "Gets or sets the value of the IsHorizontalScrollChainingEnabled dependency property / ScrollViewer.IsHorizontalScrollChainingEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "scrollViewerIsVerticalScrollChainingEnabled",
+              "description": "Gets or sets the value of the IsVerticalScrollChainingEnabled dependency property / ScrollViewer.IsVerticalScrollChainingEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "scrollViewerIsZoomChainingEnabled",
+              "description": "Gets or sets the value of the IsZoomChainingEnabled dependency property / ScrollViewer.IsZoomChainingEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "scrollViewerIsScrollInertiaEnabled",
+              "description": "Gets or sets the value of the IsScrollInertiaEnabled dependency property / ScrollViewer.IsScrollInertiaEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "scrollViewerIsZoomInertiaEnabled",
+              "description": "Gets or sets the value of the IsZoomInertiaEnabled dependency property / ScrollViewer.IsZoomInertiaEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "scrollViewerHorizontalScrollMode",
+              "description": "Gets or sets the value of the HorizontalScrollMode dependency property / ScrollViewer.HorizontalScrollMode XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `ScrollMode`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollModeName"
+                }
+              }
+            },
+            {
+              "name": "scrollViewerVerticalScrollMode",
+              "description": "Gets or sets the value of the VerticalScrollMode dependency property / ScrollViewer.VerticalScrollMode XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `ScrollMode`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ScrollModeName"
+                }
+              }
+            },
+            {
+              "name": "scrollViewerZoomMode",
+              "description": "Gets or sets the value of the ZoomMode dependency property / ScrollViewer.ZoomMode XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `ZoomMode`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "ZoomModeName"
+                }
+              }
+            },
+            {
+              "name": "scrollViewerCanContentRenderOutsideBounds",
+              "description": "Gets or sets the value of the CanContentRenderOutsideBounds dependency property / ScrollViewer.CanContentRenderOutsideBounds XAML attached property on a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "scrollViewerIsDeferredScrollingEnabled",
+              "description": "Gets or sets the value of the IsDeferredScrollingEnabled dependency property / ScrollViewer.IsDeferredScrollingInertiaEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "scrollViewerBringIntoViewOnFocusChange",
+              "description": "Gets or sets the value of the BringIntoViewOnFocusChange dependency property / ScrollViewer.BringIntoViewOnFocusChange XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "toolTipPlacement",
+              "description": "Gets or sets the ToolTipService.Placement XAML attached property value for the specified target element. The relative position of the specified tooltip.\n\nType: `PlacementMode`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "PlacementModeName"
+                }
+              }
+            },
+            {
+              "name": "toolTipPlacementTarget",
+              "description": "Gets or sets the ToolTipService.PlacementTarget XAML attached property value for the specified target element. The visual element that the tooltip is positioned relative to."
+            },
+            {
+              "name": "automationAcceleratorKey",
+              "description": "Gets or sets the value of the AutomationProperties.AcceleratorKey attached property for the specified DependencyObject. The accelerator key, as a string.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "automationAccessKey",
+              "description": "Gets or sets the value of the AutomationProperties.AccessKey attached property for the specified DependencyObject. The access key, as a string.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "automationId",
+              "description": "Gets or sets the value of the AutomationProperties.AutomationId attached property for the specified DependencyObject. The UI Automation identifier for the specified element.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "automationHelpText",
+              "description": "Gets or sets the value of the AutomationProperties.HelpText attached property for the specified DependencyObject. The help text for the specified element.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "automationIsRequiredForForm",
+              "description": "Gets or sets the value of the AutomationProperties.IsRequiredForForm attached property for the specified DependencyObject.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "automationItemStatus",
+              "description": "Gets or sets the value of the AutomationProperties.ItemStatus attached property for the specified DependencyObject. The item status of the element.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "automationItemType",
+              "description": "Gets or sets the value of the AutomationProperties.ItemType attached property for the specified DependencyObject. The item type of the element.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "automationLabeledBy",
+              "description": "Gets or sets the value of the AutomationProperties.LabeledBy attached property for the specified DependencyObject. The element that is targeted by the label."
+            },
+            {
+              "name": "automationName",
+              "description": "Gets or sets the value of the AutomationProperties.Name attached property for the specified DependencyObject.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "automationLiveSetting",
+              "description": "Gets or sets the value of the AutomationProperties.LiveSetting attached property for the specified DependencyObject. The live setting value for the specified element.\n\nType: `AutomationLiveSetting`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AutomationLiveSettingName"
+                }
+              }
+            },
+            {
+              "name": "automationAccessibilityView",
+              "description": "Gets or sets the value of the AutomationProperties.AccessibilityView attached property for the specified DependencyObject. The accessibility view setting, as a value of the enumeration.\n\nType: `AccessibilityView`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AccessibilityViewName"
+                }
+              }
+            },
+            {
+              "name": "automationPositionInSet",
+              "description": "Gets or sets the value of the property for the specified .\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "automationSizeOfSet",
+              "description": "Gets or sets the value of the property for the specified .\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "automationLevel",
+              "description": "Gets or sets the value of the property for the specified .\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "automationLandmarkType",
+              "description": "Gets or sets the value of the landmark type attached property for the specified DependencyObject.\n\nType: `AutomationLandmarkType`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AutomationLandmarkTypeName"
+                }
+              }
+            },
+            {
+              "name": "automationLocalizedLandmarkType",
+              "description": "Gets or sets the value of the localized landmark type attached property for the specified DependencyObject. The localized string defining the landmark type of the element.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "automationIsPeripheral",
+              "description": "Gets or sets a Boolean value that indicates whether the specified element represents peripheral UI.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "automationIsDataValidForForm",
+              "description": "Gets or sets a Boolean value that indicates whether the entered or selected value is valid for the form rule associated with the specified element.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "automationFullDescription",
+              "description": "Gets or sets a localized string that describes the visual appearance or contents of the specified DependencyObject. A localized string that describes the visual appearance or contents of the object specified in the element parameter.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "automationLocalizedControlType",
+              "description": "Gets or sets a localized string that indicates the type of the specified control.\n\nType: `string`",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "automationCulture",
+              "description": "Gets or sets the value of the CultureProperty attached property for the specified DependencyObject.\n\nType: `number`",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "automationHeadingLevel",
+              "description": "Gets or sets the value of the AutomationProperties.HeadingLevel property for the specified DependencyObject.\n\nType: `AutomationHeadingLevel`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AutomationHeadingLevelName"
+                }
+              }
+            },
+            {
+              "name": "automationIsDialog",
+              "description": "Gets or sets the value of the AutomationProperties.IsDialog attached property for the specified DependencyObject.\n\nType: `boolean`",
+              "value": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "automationControlType",
+              "description": "Gets or sets the AutomationControlType for the specified UI element.\n\nType: `AutomationControlType`",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "AutomationControlTypeName"
+                }
+              }
             },
             {
               "name": "onaccesskeydisplaydismissed",

@@ -6,7 +6,7 @@ import {
   memberDocsUrlOf
 } from "./emit.ts";
 import { descriptionParagraphsOf } from "./member-description.ts";
-import type { ClassModel } from "./model.ts";
+import type { AttachedModel, ClassModel } from "./model.ts";
 import { ENUMS_MODULE, OFFERED_INPUTS } from "./tables.ts";
 import type { TypeReference } from "./tables.ts";
 import { vscodeCssData } from "#src/css/validate/vscode-data.js";
@@ -85,8 +85,36 @@ function attributeOf({ level, key, kind, winName, inputType, displayType, enumNa
   return attribute;
 }
 
-// A class's own props and events: a descendant reaches the rest through
-// `extends`, so that no ancestor's attributes are written again for each.
+// An attached property a class takes as a prop (`automationId`): WinUI's class
+// documents it on the owner's accessor, which the model carries as its text.
+function attachedAttributeOf(attached: AttachedModel) {
+  const inputType = inputTypeOf(attached);
+  const displayType = displayTypeOf(attached);
+  const description = descriptionParagraphsOf({
+    text: attached.documentation,
+    kind: "P",
+    winName: attached.name,
+    inputType,
+    displayType
+  }).join("\n\n");
+  const attribute: Attribute = { name: attached.key };
+  const isDescribed = description !== "";
+  if (isDescribed) {
+    attribute.description = description;
+  }
+
+  const type = (inputType === undefined ? undefined : OFFERED_INPUTS.get(inputType))
+    ?? enumReferenceOf(enumNamesTypeOf(attached)) ?? displayType;
+  const isTyped = type !== undefined;
+  if (isTyped) {
+    attribute.value = { type };
+  }
+
+  return attribute;
+}
+
+// A class's own props, attached props and events: a descendant reaches the
+// rest through `extends`, so that no ancestor's attributes are written again for each.
 function attributesOf(level: ClassModel) {
   return [
     ...level.properties.map(property => attributeOf({
@@ -98,6 +126,7 @@ function attributesOf(level: ClassModel) {
       displayType: displayTypeOf(property),
       enumNames: enumNamesTypeOf(property)
     })),
+    ...level.attached.filter(attached => !attached.isSlot).map(attachedAttributeOf),
     ...level.events.map(event => attributeOf({
       level,
       key: event.key,
