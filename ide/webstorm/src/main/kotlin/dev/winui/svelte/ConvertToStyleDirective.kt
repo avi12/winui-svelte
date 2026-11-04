@@ -49,7 +49,7 @@ class ConvertToStyleDirectiveInspection : LocalInspectionTool() {
         holder.registerProblem(
           attribute,
           "Can be written as style:${rewrite.cssProperty}",
-          ProblemHighlightType.INFORMATION,
+          ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
           ConvertToStyleDirectiveFix(attribute, rewrite.cssProperty)
         )
       }
