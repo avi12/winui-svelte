@@ -129,11 +129,20 @@ written with it
 ## Install
 
 ```sh
+# pnpm
 pnpm add winui-svelte
+
+# npm
+npm install winui-svelte
+
+# bun
+bun add winui-svelte
 ```
 
 The WinUI bindings, the Windows App SDK bootstrapper and the Vite plugin come
 with it
+The package installs with any of the three; an app runs on Node 24 or newer
+(`node main.ts`), as the [Requirements](#requirements) say
 
 ## Quick start
 
