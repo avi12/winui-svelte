@@ -104,6 +104,7 @@
     "examples/relay/window.ts",
     "examples/sidecar/main.ts",
     "examples/hello/main.ts",
+    "src/dev/dev-window.ts",
     "examples/keys/main.ts",
     "examples/win2d/main.ts",
     "examples/data-transfer/main.ts",
@@ -113,7 +114,6 @@
     "examples/timers/main.ts",
     "examples/loop/main.ts",
     "examples/hello/App.svelte",
-    "examples/hello/window.ts",
     "src/components/index.ts",
     "examples/harness/launch.ts",
     "examples/harness/worker.ts",
@@ -161,6 +161,9 @@
   // and the package itself does not; the DOM members are what Svelte's client
   // runtime reads off the tree's nodes (renderer/tree/dom.ts).
   "usedClassMembers": [
+    "onchange",
+    "addListener",
+    "removeListener",
     "sendMalformed",
     "close",
     "minimize",

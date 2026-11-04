@@ -23,6 +23,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()`, `hostState()`, the transports (see `src/state/README.md`) |
 | `winui-svelte/messaging` | `src/messaging/index.ts` | `defineMessaging(transport)`: typed `sendMessage` / `onMessage` over a ProtocolMap, as @webext-core/messaging; the state channel is built on it |
 | `winui-svelte/vite` | `src/vite/index.ts` | `winuiSvelte()` Vite plugin, `startModuleServer()`, `buildApp()` (the production bundle), compile-error formatting |
+| `winui-svelte/dev` | `src/dev/index.ts` | `startDev()`, the dev loop in one call: Windows App SDK, dev server and the window's thread |
 | `winui-svelte/runner` | `src/vite/runner.ts` | `createWindowModuleRunner()`, the window thread's side of the module server |
 | `winui-svelte/compile` | `src/vite/compile.ts` | `compileSvelte()` for bundlers (esbuild) and tests, `WINUI_COMPILE_OPTIONS`, `withElementAnimation()` |
 | `winui-svelte/testing` | `src/vite/loader.ts` | `svelteHooks()`: Node module hooks that run `.svelte` files, with Svelte's runtime read through the package's edits (pure tests) |
@@ -325,6 +326,28 @@ function flush(): void;
 // batch. Returns what removes the listener.
 function onFlush(listener: () => void): () => void;
 ```
+
+## Dev loop (`winui-svelte/dev`)
+
+```ts
+interface DevOptions {
+  root: string;                 // the folder of the app's sources
+  component: string;            // the root component, a path under root ("/App.svelte")
+  props?: Record<string, Json>;
+  window?: object;              // title, size, backdrop and the rest of createWindow's chrome
+  configFile?: string;
+  isNative?: (file: string) => boolean;
+}
+
+// Opens the component in a window and keeps it live: a saved .svelte or .ts
+// file updates the open window without a restart. Resolves to the exit code
+// once the window has closed and the server stopped.
+function startDev(options: DevOptions): Promise<number>;
+```
+
+`startDev` joins `initWindowsAppSdk`, `startModuleServer` and a worker whose
+`runOnUiThread` creates the module runner and the window; a host that needs its
+own (a second window, a message link) uses those pieces directly
 
 ## Vite (`winui-svelte/vite`)
 

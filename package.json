@@ -217,6 +217,10 @@
       "default": "./dist/css/validate/stylelint.js"
     },
     "./vscode-css-data.json": "./dist/css/validate/vscode-css-data.json",
+    "./dev": {
+      "types": "./dist/dev/index.d.ts",
+      "default": "./dist/dev/index.js"
+    },
     "./vite": {
       "types": "./dist/vite/index.d.ts",
       "default": "./dist/vite/index.js"
