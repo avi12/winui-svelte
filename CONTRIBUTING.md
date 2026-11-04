@@ -268,25 +268,63 @@ To make your editor show what the checks see:
 
 `ide/webstorm` is a Kotlin plugin for WebStorm (Gradle Kotlin DSL, IntelliJ
 Platform Gradle plugin 2); it is not part of the npm package
-On a component's prop in a `.svelte` file, Alt+Enter offers
-"Move to <style> as display: none" (the prop's own declaration): the attribute
-is removed and the declaration lands in the rule of the element's class in the
-file's first `<style>` block
-The class is the first token of a static `class` attribute; an element
-without one gets `class="text-block"` (its tag name in kebab case, with `-2`,
-`-3` while the name is in use); a dynamic `class` gets no offer
-An existing rule gets the declaration appended (the value is replaced when the
-property is there already), a missing rule is added at the end of the block, and
-a file with no block gets one at its end; a block in another language than CSS
-gets no offer
+On a component's prop in a `.svelte` file, Alt+Enter offers to write the prop as
+CSS (the prop's own declaration); where it goes is a project setting, Settings,
+Editor, winui-svelte, saved in `.idea/winui-svelte.xml`:
+
+- "`<style>` block" (the default): "Move to <style> as display: none" removes the
+  attribute and puts the declaration in the rule of the element's class in the
+  file's first `<style>` block
+  The class is the first token of a static `class` attribute; an element
+  without one gets `class="text-block"` (its tag name in kebab case, with `-2`,
+  `-3` while the name is in use); a dynamic `class` gets no offer
+  An existing rule gets the declaration appended (the value is replaced when the
+  property is there already), a missing rule is added at the end of the block, and
+  a file with no block gets one at its end; a block in another language than CSS
+  gets no offer
+  A condition (a ternary, nested ones too) becomes one
+  `class:<base>--<modifier>={condition}` directive for each of its values and a
+  `.<base>--<modifier>` rule; the modifier is the enum member in kebab case
+  (`collapsed`) or the property and the value (`font-size-14`), the else side is
+  negated, and a value that is the property's default (the documentation's "The
+  default value is Visible") gets none, so `Visible` leaves nothing; the
+  element's `class` attribute, static or dynamic, stays as it is
+- "`style:` directive": "Convert to style:display" writes `style:display="none"`
+  or `style:display={cond ? "block" : "none"}`, nothing is left out, and a tag
+  that has the directive already gets no offer
+
 It converts `visibility="Collapsed"`, `visibility={Visibility.Collapsed}`, a
 number for a length, a color, a thickness or corner radius written as text, a
-number or a list; a condition of those (a value that is not a constant) cannot be
-a rule and is offered as "Convert to style:display", which writes the `style:`
-directive instead; whatever it cannot convert safely gets no offer
-It is active only in a project whose `package.json` (the file's nearest one, or
-one at a content root) lists `winui-svelte` as a dependency, including a `link:`,
-`file:` or `workspace:` specifier
+number or a list, and conditions of those; whatever it cannot convert safely gets
+no offer
+
+Entry points, all one undoable command each:
+
+- the quick fix on one attribute (also what "Fix all 'winui-svelte prop that has a
+  CSS counterpart' problems in file", Code Cleanup and Run Inspection by Name
+  apply: the fix works in batch mode)
+- the intention "Convert all winui-svelte attributes in this file to CSS" on
+  Alt+Enter, offered where the file has something to convert
+- "Convert winui-svelte Attributes to CSS in This File", in the editor context
+  menu and under Code, winui-svelte, default shortcut Ctrl+Alt+Shift+K
+- "Convert winui-svelte Attributes to CSS" in the Project view context menu, on a
+  selection of files and folders (folders expand to their `.svelte` files,
+  `node_modules`, `dist` and excluded folders are skipped, other files are
+  ignored), default shortcut Ctrl+Alt+Shift+X; a progress dialog shows while it
+  works and a notification gives the counts (attributes converted, files
+  changed, files skipped with the reason)
+
+Both shortcuts are free in the default keymap (checked against the installed
+WebStorm's `keymaps/$default.xml` and the shortcuts of its bundled plugins) and
+can be rebound in Settings, Keymap, under Main menu, Code, winui-svelte
+Several elements in one file get distinct class names, and a second run changes
+nothing
+Every entry point, the settings page note aside, is hidden or unavailable unless
+a `package.json` lists `winui-svelte` as a dependency, a devDependency, a
+peerDependency or an optionalDependency (the file's nearest one, or one at a
+content root), including a `link:`, `file:` or `workspace:` specifier; the
+Project view action is visible when one selected path qualifies and converts the
+files that qualify
 
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each
