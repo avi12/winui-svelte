@@ -1,4 +1,4 @@
-import type { FluentGlyphCode, FluentGlyphName } from "./fluent-glyph.ts";
+import type { FluentGlyphCode, FluentGlyphValue } from "./fluent-glyph.ts";
 import type { FontFamilyName } from "./font-family-name.ts";
 import {
   Application,
@@ -204,11 +204,7 @@ export type GeometryInput = string | Geometry;
 export type FontFamilyInput = FontFamilyName | (string & Record<never, never>) | FontFamily;
 
 /** An icon glyph: a Fluent name ("Save"), its code point (`FluentGlyph.Save`), code points to compose, or text. */
-export type GlyphInput =
-  | FluentGlyphName
-  | FluentGlyphCode
-  | (string & Record<never, never>)
-  | readonly FluentGlyphCode[];
+export type GlyphInput = FluentGlyphValue | (string & Record<never, never>) | readonly FluentGlyphCode[];
 
 /** A URI string or a URI. */
 export type UriInput = string | Uri;

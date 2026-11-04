@@ -66,6 +66,9 @@ export type FluentGlyphName = keyof typeof FluentGlyph;
 
 /** The code point of an icon of Segoe Fluent Icons: the only numbers a \`glyph\` takes. */
 export type FluentGlyphCode = (typeof FluentGlyph)[FluentGlyphName];
+
+/** An icon of Segoe Fluent Icons by its name or its code point. */
+export type FluentGlyphValue = FluentGlyphName | FluentGlyphCode;
 `
 );
 console.log(`${glyphs.size} glyphs`);
