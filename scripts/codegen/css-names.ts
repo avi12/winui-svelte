@@ -86,6 +86,10 @@ function winuiPropertiesOf(cssName: string) {
   return properties;
 }
 
+// Where the narrowest CSS setter has the wrong meaning: CSS `visibility` keeps the space of
+// a hidden element, which Collapsed does not, so Visibility is documented as `display`
+const PREFERRED_CSS_NAMES = new Map([["visibility", "display"]]);
+
 // For each WinUI property, the CSS property that sets it and the fewest others
 function buildCssNames() {
   const groups = [...propertyGroups, ...LAZY_GROUPS.flatMap(lazy => lazy.groups()), ...buildTimeGroups()];
@@ -108,8 +112,10 @@ function buildCssNames() {
 
   return new Map(
     [...setBy].map(([property, list]) => {
+      const preferred = PREFERRED_CSS_NAMES.get(property);
+      const isPreferred = list.some(entry => entry.cssName === preferred);
       const [narrowest] = list.toSorted((first, second) => first.breadth - second.breadth);
-      return [property, narrowest?.cssName] as const;
+      return [property, isPreferred ? preferred : narrowest?.cssName] as const;
     })
   );
 }

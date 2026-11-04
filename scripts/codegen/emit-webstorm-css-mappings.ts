@@ -1,6 +1,7 @@
 import { cssNameEntries, settersOf } from "./css-names.ts";
 import { enumNamesTypeOf } from "./emit.ts";
 import type { ClassModel } from "./model.ts";
+import { discretePropertyOf, discreteValueOf, discreteWordsOf } from "#src/css/translate/discrete-properties.js";
 
 // What the WebStorm plugin (ide/webstorm) reads to turn a prop into the CSS
 // that sets the same WinUI property: for each prop whose property the
@@ -132,6 +133,7 @@ interface Candidate {
 }
 
 interface Conversion {
+  winuiProperty: string;
   cssProperty: string;
   kind: ConversionKind;
   enumTypes: string[];
@@ -154,29 +156,47 @@ function loweredValue({ cssName, winName, value }: {
   return isSetter ? only.value : undefined;
 }
 
-// The value each WinUI member is set to by a word, and by a plain number the
-// translator reads as itself (a font weight).
-function keywordsOf({ cssName, winName }: Candidate) {
-  const keywords = new Map<string, string>();
-  for (const word of KEYWORD_PROBES) {
+// A word the translator reads as the default lowers to no setter, so it is asked for by name
+function discreteWordsOfCandidate({ cssName, winName }: Candidate) {
+  const isDiscrete = discretePropertyOf(cssName)?.toLowerCase() === winName.toLowerCase();
+  const words = isDiscrete ? discreteWordsOf(cssName) : [];
+  return words.flatMap(word => {
+    const lowered = discreteValueOf({
+      member: cssName,
+      word
+    });
+    return lowered === undefined ? [] : [[lowered, word] as const];
+  });
+}
+
+// What a word lowers to, and for a plain number the translator reads as itself (a font weight) the number too
+function probedWords({ cssName, winName }: Candidate) {
+  return KEYWORD_PROBES.flatMap(word => {
     const lowered = loweredValue({
       cssName,
       winName,
       value: word
     });
     const isLowered = lowered !== undefined && lowered !== "";
-    if (!isLowered) {
-      continue;
+    const isNumberWord = PLAIN_WEIGHTS.includes(word);
+    // A number the translator turns into another number is an index, not a weight
+    const isIndex = isLowered && isNumberWord && !Number.isNaN(Number(lowered));
+    const isSkipped = !isLowered || isIndex;
+    if (isSkipped) {
+      return [];
     }
 
+    return isNumberWord ? [[lowered, word] as const, [word, word] as const] : [[lowered, word] as const];
+  });
+}
+
+// The value each WinUI member is set to by a word; the first word for a member wins
+function keywordsOf(candidate: Candidate) {
+  const keywords = new Map<string, string>();
+  for (const [lowered, word] of [...probedWords(candidate), ...discreteWordsOfCandidate(candidate)]) {
     const isNew = !keywords.has(lowered);
     if (isNew) {
       keywords.set(lowered, word);
-    }
-
-    const isNumberWord = PLAIN_WEIGHTS.includes(word);
-    if (isNumberWord) {
-      keywords.set(word, word);
     }
   }
 
@@ -228,13 +248,14 @@ function hasSideEffects({ cssName, winName }: Candidate) {
 }
 
 function conversionOf(candidate: Candidate) {
-  const { cssName, enumTypes } = candidate;
+  const { cssName, winName, enumTypes } = candidate;
   const keywords = keywordsOf(candidate);
   const hasKeywords = keywords.size > 0;
   const isConvertible = !hasSideEffects(candidate);
   const wordKind = hasKeywords ? ConversionKind.KEYWORD : ConversionKind.UNSUPPORTED;
   const kind = isConvertible ? literalKindOf(candidate) ?? wordKind : ConversionKind.UNSUPPORTED;
   const conversion: Conversion = {
+    winuiProperty: winName,
     cssProperty: cssName,
     kind,
     enumTypes
@@ -265,7 +286,7 @@ function candidatesOf(classes: ClassModel[]) {
     })),
     ...level.attached.filter(attached => !attached.isSlot).map(attached => ({
       key: attached.key,
-      winName: attached.name,
+      winName: `${attached.owner.name}.${attached.name}`,
       enumNames: enumNamesTypeOf(attached)
     }))
   ]);

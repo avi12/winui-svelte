@@ -1,3 +1,4 @@
+import { cssNameEntries, cssNoteOf } from "./css-names.ts";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -12,6 +13,7 @@ const tableSchema = z.object({
   attributes: z.record(
     z.string(),
     z.object({
+      winuiProperty: z.string(),
       cssProperty: z.string(),
       kind: z.string(),
       enumTypes: z.array(z.string()),
@@ -22,14 +24,15 @@ const tableSchema = z.object({
 });
 const table = tableSchema.parse(JSON.parse(readFileSync(TABLE_FILE, "utf8"))).attributes;
 
-test("visibility converts Collapsed to hidden and Visible to visible", () => {
+test("visibility converts Collapsed to none and Visible to block, as display", () => {
   assert.deepEqual(table["visibility"], {
-    cssProperty: "visibility",
+    winuiProperty: "Visibility",
+    cssProperty: "display",
     kind: "keyword",
     enumTypes: ["Visibility"],
     keywords: Object.fromEntries([
-      ["Collapsed", "hidden"],
-      ["Visible", "visible"]
+      ["Collapsed", "none"],
+      ["Visible", "block"]
     ])
   });
 });
@@ -58,4 +61,16 @@ test("an unsupported entry says why and a converting one does not", () => {
 test("a prop with no CSS counterpart has no entry", () => {
   assert.equal(table["text"], undefined);
   assert.equal(table["content"], undefined);
+});
+
+test("the CSS property of every entry is the one the hover note names", () => {
+  for (const [key, entry] of Object.entries(table)) {
+    assert.equal(cssNoteOf(entry.winuiProperty), `Also settable in CSS as \`${entry.cssProperty}\``, key);
+  }
+});
+
+test("every WinUI property with a note is a prop in the table", () => {
+  const listed = new Set(Object.values(table).map(entry => entry.winuiProperty.toLowerCase()));
+  const unlisted = cssNameEntries().map(entry => entry.property).filter(property => !listed.has(property));
+  assert.deepEqual(unlisted, []);
 });

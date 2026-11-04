@@ -761,7 +761,7 @@ export interface UIElementProps {
   /**
    * Gets or sets the visibility of a UIElement. A UIElement that is not visible is not rendered and does not communicate its desired size to layout. A value of the enumeration. The default value is Visible.
    *
-   * Also settable in CSS as `visibility`
+   * Also settable in CSS as `display`
    *
    * @see https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.visibility
    */
