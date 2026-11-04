@@ -345,6 +345,17 @@ fixes above write is never reported or offered for removal; a rule with no user
 anywhere is still reported, and nothing changes in a project without the
 dependency
 
+Completing `glyph="..."` on a `FontIcon` or `FontIconSource` shows each Fluent
+icon drawn next to its name, with its code point (`U+E74E`) as type text, in
+a project that depends on `winui-svelte`
+The icon is the glyph in the installed "Segoe Fluent Icons" (Windows 11) or
+"Segoe MDL2 Assets" (Windows 10) font, in the editor's foreground colour; with
+neither font there is no icon and the completion is the platform's
+The names the web-types already offer are decorated, not repeated, and where
+they offer none the plugin adds the names itself; the table is
+`ide/webstorm/src/main/resources/fluent-glyphs.json`, written by `pnpm
+gen:components` from `FluentGlyph` (a test fails if they differ)
+
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each
 value lowers to, and writes `ide/webstorm/src/main/resources/winui-css-mappings.json`
