@@ -2,9 +2,9 @@ package dev.winui.svelte
 
 import com.intellij.psi.css.inspections.CssUnusedSymbolInspection
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions.assertEquals
 
 class UnusedSelectorTest : BasePlatformTestCase() {
-  private val dependent = """{"dependencies":{"winui-svelte":"link:../winui-svelte"}}"""
   private val markup =
     "<TextBlock class=\"static other\" />\n" +
       "<TextBlock class=\"note\" class:note--collapsed={x} class:dir={y} />\n" +
@@ -27,13 +27,13 @@ class UnusedSelectorTest : BasePlatformTestCase() {
   }
 
   fun testEveryFormOfUsageOnAComponentCountsAndAnUnusedRuleIsStillReported() {
-    assertEquals(listOf("unused"), unusedSelectors(dependent))
+    assertEquals(listOf("unused"), unusedSelectors(TestManifests.DEPENDENT))
   }
 
   fun testNothingChangesInAProjectWithoutTheDependency() {
     assertEquals(
       listOf("arr", "dir", "note--collapsed", "obj", "obj--mod", "unused"),
-      unusedSelectors("""{"dependencies":{"svelte":"^5"}}""")
+      unusedSelectors(TestManifests.UNRELATED)
     )
   }
 }

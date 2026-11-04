@@ -33,34 +33,34 @@ class StyleBlockTest {
     declaration: Declaration = hidden
   ): String? {
     val edits = StyleBlock.plan(source, contextOf(source), declaration) ?: return null
-    return StyleBlock.apply(source, edits)
+    return TextEdits.apply(source, edits)
   }
 
   @Test
   fun `a tag name becomes a kebab case class`() {
-    assertEquals("text-block", StyleBlock.kebab("TextBlock"))
-    assertEquals("border", StyleBlock.kebab("Border"))
-    assertEquals("navigation-view-item", StyleBlock.kebab("NavigationViewItem"))
-    assertEquals("grid-row", StyleBlock.kebab("Grid.Row"))
+    assertEquals("text-block", ClassNaming.kebab("TextBlock"))
+    assertEquals("border", ClassNaming.kebab("Border"))
+    assertEquals("navigation-view-item", ClassNaming.kebab("NavigationViewItem"))
+    assertEquals("grid-row", ClassNaming.kebab("Grid.Row"))
   }
 
   @Test
   fun `a taken name gets the first free number`() {
-    assertEquals("text-block", StyleBlock.unusedClass("text-block", emptySet()))
-    assertEquals("text-block-2", StyleBlock.unusedClass("text-block", setOf("text-block")))
-    assertEquals("text-block-3", StyleBlock.unusedClass("text-block", setOf("text-block", "text-block-2")))
+    assertEquals("text-block", ClassNaming.unusedClass("text-block", emptySet()))
+    assertEquals("text-block-2", ClassNaming.unusedClass("text-block", setOf("text-block")))
+    assertEquals("text-block-3", ClassNaming.unusedClass("text-block", setOf("text-block", "text-block-2")))
   }
 
   @Test
   fun `classes are read from class attributes and selectors`() {
     val text = "<A class=\"a b\" /><B class='c' />\n<style>\n  .d:hover { }\n</style>"
-    assertEquals(setOf("a", "b", "c", "d"), StyleBlock.classesIn(text))
+    assertEquals(setOf("a", "b", "c", "d"), ClassNaming.classesIn(text))
   }
 
   @Test
   fun `the first class token is the one used`() {
-    assertEquals("a", StyleBlock.firstClassOf("a b"))
-    assertEquals(null, StyleBlock.firstClassOf("9bad"))
+    assertEquals("a", ClassNaming.firstClassOf("a b"))
+    assertEquals(null, ClassNaming.firstClassOf("9bad"))
   }
 
   @Test
@@ -143,10 +143,10 @@ class StyleBlockTest {
 
   @Test
   fun `a plain condition is negated with a bang and any other in parentheses`() {
-    assertEquals("!hasNote", Conversion.negated("hasNote"))
-    assertEquals("!item.shown", Conversion.negated("item.shown"))
-    assertEquals("!(a && b)", Conversion.negated("a && b"))
-    assertEquals("!(!a)", Conversion.negated("!a"))
+    assertEquals("!hasNote", ConditionLeaves.negated("hasNote"))
+    assertEquals("!item.shown", ConditionLeaves.negated("item.shown"))
+    assertEquals("!(a && b)", ConditionLeaves.negated("a && b"))
+    assertEquals("!(!a)", ConditionLeaves.negated("!a"))
   }
 
   private val table = ConversionTable.bundled
@@ -154,7 +154,7 @@ class StyleBlockTest {
   private fun togglesOf(
     attribute: String,
     value: CssValue
-  ) = Conversion.togglesOf(table.mappingOf(attribute)!!, value)
+  ) = ConditionLeaves.togglesOf(table.mappingOf(attribute)!!, value)
 
   @Test
   fun `a leaf that is the default of the property is left out`() {
@@ -214,7 +214,7 @@ class StyleBlockTest {
     leaves: List<Leaf>
   ): String? {
     val edits = StyleBlock.planToggles(source, contextOf(source), "display", leaves) ?: return null
-    return StyleBlock.apply(source, edits)
+    return TextEdits.apply(source, edits)
   }
 
   private val collapsed = listOf(Leaf("!hasNote", "none", "collapsed"))

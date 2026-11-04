@@ -1,6 +1,6 @@
 package dev.winui.svelte
 
-sealed interface PropValue {
+internal sealed interface PropValue {
   data class Text(
     val text: String
   ) : PropValue

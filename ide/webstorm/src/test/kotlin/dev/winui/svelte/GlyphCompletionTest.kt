@@ -3,13 +3,12 @@ package dev.winui.svelte
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.Assume.assumeTrue
+import org.junit.jupiter.api.Assertions.assertEquals
 
 class GlyphCompletionTest : BasePlatformTestCase() {
-  private val dependent = """{"dependencies":{"winui-svelte":"link:../winui-svelte"}}"""
-
   private fun complete(
     markup: String,
-    manifest: String = dependent,
+    manifest: String = TestManifests.DEPENDENT,
     isFirst: Boolean = true
   ): List<Pair<String, LookupElementPresentation>> {
     if (isFirst) {
@@ -29,7 +28,12 @@ class GlyphCompletionTest : BasePlatformTestCase() {
     val items = complete("<FontIcon glyph=\"<caret>\" />").toMap()
     assertEquals(true, items.size > 100)
     assertEquals(emptyList<String>(), items.filter { it.value.icon == null }.keys.toList())
-    val save = complete("<FontIcon glyph=\"Sav<caret>\" />", dependent, isFirst = false).toMap().getValue("Save")
+    val save =
+      complete(
+        "<FontIcon glyph=\"Sav<caret>\" />",
+        TestManifests.DEPENDENT,
+        isFirst = false
+      ).toMap().getValue("Save")
     assertEquals("U+E74E", save.typeText)
     assertNotNull(save.icon)
   }
@@ -61,7 +65,7 @@ class GlyphCompletionTest : BasePlatformTestCase() {
   }
 
   fun testNothingIsAddedWithoutTheDependency() {
-    val items = complete("<FontIcon glyph=\"<caret>\" />", """{"dependencies":{"svelte":"^5"}}""")
+    val items = complete("<FontIcon glyph=\"<caret>\" />", TestManifests.UNRELATED)
     assertEquals(true, items.none { it.second.typeText?.startsWith("U+") == true })
   }
 }

@@ -11,7 +11,7 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 
 @Service(Service.Level.PROJECT)
-class WinuiProjectService(
+internal class WinuiProjectService(
   private val project: Project
 ) {
   fun isWinuiFile(file: PsiFile): Boolean = isWinuiLocation(file.virtualFile ?: file.originalFile.virtualFile)
@@ -25,9 +25,14 @@ class WinuiProjectService(
       }
     val nearest =
       generateSequence(start) { it.parent }
-        .mapNotNull { it.findChild(MANIFEST_NAME) }
+        .mapNotNull { it.findChild(SvelteSyntax.MANIFEST_NAME) }
         .firstOrNull()
-    val roots = ProjectRootManager.getInstance(project).contentRoots.mapNotNull { it.findChild(MANIFEST_NAME) }
+    val roots =
+      ProjectRootManager
+        .getInstance(
+          project
+        ).contentRoots
+        .mapNotNull { it.findChild(SvelteSyntax.MANIFEST_NAME) }
     return (listOfNotNull(nearest) + roots).distinct().any { dependsOnLibrary(it) }
   }
 
@@ -39,8 +44,6 @@ class WinuiProjectService(
   }
 
   companion object {
-    private const val MANIFEST_NAME = "package.json"
-
     fun of(project: Project): WinuiProjectService = project.service()
   }
 }

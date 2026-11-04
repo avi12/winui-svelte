@@ -11,23 +11,22 @@ import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.xml.XmlAttribute
 
-object PropValueReader {
-  private const val MUSTACHE_START = "{"
+internal object PropValueReader {
   private const val MUSTACHE_END = "}"
 
   fun read(attribute: XmlAttribute): PropValue? {
-    if (attribute.text.startsWith(MUSTACHE_START)) {
+    if (attribute.text.startsWith(SvelteSyntax.MUSTACHE_START)) {
       return null
     }
 
     val valueElement = attribute.valueElement ?: return PropValue.Flag(true)
     val text = valueElement.text
-    if (text.startsWith(MUSTACHE_START) && text.endsWith(MUSTACHE_END)) {
+    if (text.startsWith(SvelteSyntax.MUSTACHE_START) && text.endsWith(MUSTACHE_END)) {
       val expression = PsiTreeUtil.findChildOfType(valueElement, JSExpression::class.java)
       return expression?.let { read(it) }
     }
 
-    val isStatic = !text.contains(MUSTACHE_START)
+    val isStatic = !text.contains(SvelteSyntax.MUSTACHE_START)
     return if (isStatic) {
       PropValue.Text(attribute.value ?: return null)
     } else {

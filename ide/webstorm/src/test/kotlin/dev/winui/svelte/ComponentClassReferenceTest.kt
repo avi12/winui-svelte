@@ -2,14 +2,14 @@ package dev.winui.svelte
 
 import com.intellij.psi.css.CssClass
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions.assertEquals
 
 class ComponentClassReferenceTest : BasePlatformTestCase() {
-  private val dependent = """{"dependencies":{"winui-svelte":"link:../winui-svelte"}}"""
   private val style = "\n<style>\n  .note {\n    color: red;\n  }\n</style>\n"
 
   private fun configure(
     markup: String,
-    manifest: String = dependent
+    manifest: String = TestManifests.DEPENDENT
   ) {
     myFixture.addFileToProject("package.json", manifest)
     myFixture.configureByText("A.svelte", markup + style)
@@ -51,7 +51,7 @@ class ComponentClassReferenceTest : BasePlatformTestCase() {
   }
 
   fun testRenamingTheRuleRenamesAClassDirectiveAsAWholeToken() {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     myFixture.configureByText(
       "A.svelte",
       "<TextBlock class:note--collapsed={x} />\n<style>\n  .note--coll<caret>apsed {\n    display: none;\n  }\n</style>\n"
@@ -81,7 +81,7 @@ class ComponentClassReferenceTest : BasePlatformTestCase() {
   }
 
   fun testNoReferenceWithoutTheDependency() {
-    configure("<TextBlock class={[\"no<caret>te\"]} />", """{"dependencies":{"svelte":"^5"}}""")
+    configure("<TextBlock class={[\"no<caret>te\"]} />", TestManifests.UNRELATED)
     val references = myFixture.file.findReferenceAt(myFixture.caretOffset)
     assertEquals(false, references?.resolve() is CssClass)
   }

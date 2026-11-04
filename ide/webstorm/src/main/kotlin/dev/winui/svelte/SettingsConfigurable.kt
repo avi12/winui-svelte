@@ -2,9 +2,9 @@ package dev.winui.svelte
 
 import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.project.Project
-import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.listCellRenderer.textListCellRenderer
 
 class SettingsConfigurable(
   private val project: Project
@@ -15,7 +15,7 @@ class SettingsConfigurable(
         comment("Applies to projects whose package.json lists winui-svelte as a dependency")
       }
       row("Where converted CSS goes:") {
-        comboBox(Destination.entries, SimpleListCellRenderer.create("") { it.label })
+        comboBox(Destination.entries, textListCellRenderer { it?.label })
           .bindItem(
             { Settings.of(project).destination },
             { Settings.of(project).destination = it ?: Destination.STYLE_BLOCK }
