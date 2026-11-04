@@ -337,6 +337,14 @@ updates the other and the HTML elements the Svelte plugin links; it also keeps
 the value of a `class:` directive when the directive is renamed with its rule (the
 IDE wrote `="{x}"` around it)
 
+The CSS plugin's "Selector is never used" inspection asks the usages providers
+whether a class has a user; the Svelte plugin's provider does not count a
+`class:name` directive on a component, so this plugin's provider does (with the
+strings of a class array and the string keys of an object in it), and a rule the
+fixes above write is never reported or offered for removal; a rule with no user
+anywhere is still reported, and nothing changes in a project without the
+dependency
+
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each
 value lowers to, and writes `ide/webstorm/src/main/resources/winui-css-mappings.json`
