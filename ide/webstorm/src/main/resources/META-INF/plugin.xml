@@ -37,6 +37,10 @@
         implementationClass="dev.winui.svelte.DirectiveNameManipulator"
         order="first"/>
     <css.classOrIdUsagesProvider implementation="dev.winui.svelte.ComponentClassUsagesProvider"/>
+    <completion.contributor
+        language="any"
+        order="first"
+        implementationClass="dev.winui.svelte.GlyphCompletionContributor"/>
     <notificationGroup id="winui-svelte" displayType="BALLOON"/>
   </extensions>
   <actions>
