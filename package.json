@@ -487,6 +487,7 @@
     "check": "tsc --noEmit && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "check:editor": "node --disable-warning=ExperimentalWarning scripts/editor/check-editor.ts",
     "check:webstorm": "node --disable-warning=ExperimentalWarning scripts/editor/check-webstorm.ts",
+    "check:webstorm-plugin": "node --disable-warning=ExperimentalWarning scripts/editor/check-webstorm-plugin.ts",
     "check:svelte-matrix": "node --disable-warning=ExperimentalWarning scripts/svelte-matrix/check.ts",
     "check:package": "node --disable-warning=ExperimentalWarning scripts/pack/check-package.ts",
     "fallow": "fallow",

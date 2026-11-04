@@ -1,0 +1,19 @@
+<idea-plugin>
+  <id>dev.winui.svelte</id>
+  <name>winui-svelte</name>
+  <vendor>Avi</vendor>
+  <description>Quick fix on a winui-svelte component's prop that rewrites it as the style directive setting the same value</description>
+  <depends>com.intellij.modules.platform</depends>
+  <depends>JavaScript</depends>
+  <depends>dev.blachut.svelte.lang</depends>
+  <extensions defaultExtensionNs="com.intellij">
+    <localInspection
+        language="SvelteHTML"
+        shortName="WinuiPropAsStyleDirective"
+        displayName="winui-svelte prop that has a CSS counterpart"
+        groupName="winui-svelte"
+        level="INFO"
+        enabledByDefault="true"
+        implementationClass="dev.winui.svelte.ConvertToStyleDirectiveInspection"/>
+  </extensions>
+</idea-plugin>

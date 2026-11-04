@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "extends": ["./.oxlintrc.json"],
+  "ignorePatterns": ["ide/**"],
   "rules": {
     "typescript/no-unused-vars": "off"
   }

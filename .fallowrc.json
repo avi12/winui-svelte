@@ -3,6 +3,8 @@
   // The package.json exports are its entry points, as are the tests, the
   // scripts that package.json runs, the CSS part's surface (which the renderer
   // takes over) and the examples.
+  // The WebStorm plugin is Kotlin; its fixtures are Svelte files for the IDE to read.
+  "ignorePatterns": ["ide/**"],
   "entry": [
     "src/index.ts",
     "src/components/generated/index.ts",

@@ -1,0 +1,464 @@
+{
+  "colorKeywords": [
+    "transparent"
+  ],
+  "attributes": {
+    "background": {
+      "cssProperty": "background-color",
+      "kind": "color",
+      "enumTypes": []
+    },
+    "borderBrush": {
+      "cssProperty": "border-color",
+      "kind": "color",
+      "enumTypes": []
+    },
+    "borderThickness": {
+      "cssProperty": "border-width",
+      "kind": "thickness",
+      "enumTypes": []
+    },
+    "characterSpacing": {
+      "cssProperty": "letter-spacing",
+      "kind": "number",
+      "enumTypes": []
+    },
+    "cornerRadius": {
+      "cssProperty": "border-radius",
+      "kind": "cornerRadius",
+      "enumTypes": []
+    },
+    "fill": {
+      "cssProperty": "fill",
+      "kind": "color",
+      "enumTypes": []
+    },
+    "focusVisualMargin": {
+      "cssProperty": "outline-offset",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "the CSS property sets other WinUI properties too"
+    },
+    "focusVisualPrimaryBrush": {
+      "cssProperty": "outline-color",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "the CSS property sets other WinUI properties too"
+    },
+    "focusVisualPrimaryThickness": {
+      "cssProperty": "outline-width",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "the CSS property sets other WinUI properties too"
+    },
+    "focusVisualSecondaryThickness": {
+      "cssProperty": "outline-width",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "the CSS property sets other WinUI properties too"
+    },
+    "fontFamily": {
+      "cssProperty": "font-family",
+      "kind": "text",
+      "enumTypes": []
+    },
+    "fontSize": {
+      "cssProperty": "font-size",
+      "kind": "length",
+      "enumTypes": []
+    },
+    "fontStretch": {
+      "cssProperty": "font-stretch",
+      "kind": "keyword",
+      "enumTypes": [
+        "FontStretch"
+      ],
+      "keywords": {
+        "Condensed": "condensed",
+        "Expanded": "expanded",
+        "ExtraCondensed": "extra-condensed",
+        "ExtraExpanded": "extra-expanded",
+        "Normal": "normal",
+        "SemiCondensed": "semi-condensed",
+        "SemiExpanded": "semi-expanded",
+        "UltraCondensed": "ultra-condensed",
+        "UltraExpanded": "ultra-expanded"
+      }
+    },
+    "fontStyle": {
+      "cssProperty": "font-style",
+      "kind": "keyword",
+      "enumTypes": [
+        "FontStyle"
+      ],
+      "keywords": {
+        "Italic": "italic",
+        "Normal": "normal",
+        "Oblique": "oblique"
+      }
+    },
+    "fontWeight": {
+      "cssProperty": "font-weight",
+      "kind": "keyword",
+      "enumTypes": [],
+      "keywords": {
+        "100": "100",
+        "200": "200",
+        "300": "300",
+        "400": "400",
+        "500": "500",
+        "600": "600",
+        "700": "700",
+        "800": "800",
+        "900": "900",
+        "Black": "900",
+        "Bold": "bold",
+        "ExtraBold": "800",
+        "ExtraLight": "200",
+        "Light": "300",
+        "Medium": "500",
+        "Normal": "normal",
+        "SemiBold": "600",
+        "Thin": "100"
+      }
+    },
+    "foreground": {
+      "cssProperty": "color",
+      "kind": "color",
+      "enumTypes": []
+    },
+    "height": {
+      "cssProperty": "height",
+      "kind": "length",
+      "enumTypes": []
+    },
+    "horizontalAlignment": {
+      "cssProperty": "justify-self",
+      "kind": "keyword",
+      "enumTypes": [
+        "HorizontalAlignment"
+      ],
+      "keywords": {
+        "Center": "center",
+        "Left": "start",
+        "Right": "end",
+        "Stretch": "auto"
+      }
+    },
+    "horizontalContentAlignment": {
+      "cssProperty": "justify-content",
+      "kind": "keyword",
+      "enumTypes": [
+        "HorizontalAlignment"
+      ],
+      "keywords": {
+        "Center": "center",
+        "Left": "start",
+        "Right": "end",
+        "Stretch": "auto"
+      }
+    },
+    "horizontalScrollBarVisibility": {
+      "cssProperty": "overflow-x",
+      "kind": "keyword",
+      "enumTypes": [
+        "ScrollBarVisibility",
+        "ScrollingScrollBarVisibility"
+      ],
+      "keywords": {
+        "Auto": "auto",
+        "Disabled": "hidden",
+        "Visible": "scroll"
+      }
+    },
+    "isHitTestVisible": {
+      "cssProperty": "pointer-events",
+      "kind": "keyword",
+      "enumTypes": [],
+      "keywords": {
+        "False": "none",
+        "True": "auto"
+      }
+    },
+    "isTextSelectionEnabled": {
+      "cssProperty": "user-select",
+      "kind": "keyword",
+      "enumTypes": [],
+      "keywords": {
+        "False": "none",
+        "True": "auto"
+      }
+    },
+    "lineHeight": {
+      "cssProperty": "line-height",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "the CSS property sets other WinUI properties too"
+    },
+    "lineStackingStrategy": {
+      "cssProperty": "line-height",
+      "kind": "unsupported",
+      "enumTypes": [
+        "LineStackingStrategy"
+      ],
+      "reason": "the CSS property sets other WinUI properties too"
+    },
+    "margin": {
+      "cssProperty": "margin",
+      "kind": "thickness",
+      "enumTypes": []
+    },
+    "maxHeight": {
+      "cssProperty": "max-height",
+      "kind": "length",
+      "enumTypes": []
+    },
+    "maxLines": {
+      "cssProperty": "line-clamp",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "the CSS property sets other WinUI properties too"
+    },
+    "maxWidth": {
+      "cssProperty": "max-width",
+      "kind": "length",
+      "enumTypes": []
+    },
+    "minHeight": {
+      "cssProperty": "min-height",
+      "kind": "length",
+      "enumTypes": []
+    },
+    "minWidth": {
+      "cssProperty": "min-width",
+      "kind": "length",
+      "enumTypes": []
+    },
+    "opacity": {
+      "cssProperty": "opacity",
+      "kind": "number",
+      "enumTypes": []
+    },
+    "orientation": {
+      "cssProperty": "flex-direction",
+      "kind": "keyword",
+      "enumTypes": [
+        "Orientation",
+        "RefreshVisualizerOrientation"
+      ],
+      "keywords": {
+        "Horizontal": "row",
+        "Vertical": "column"
+      }
+    },
+    "padding": {
+      "cssProperty": "padding",
+      "kind": "thickness",
+      "enumTypes": []
+    },
+    "radiusX": {
+      "cssProperty": "rx",
+      "kind": "length",
+      "enumTypes": []
+    },
+    "radiusY": {
+      "cssProperty": "ry",
+      "kind": "length",
+      "enumTypes": []
+    },
+    "renderTransform": {
+      "cssProperty": "transform",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "no plain value converts to the same WinUI value"
+    },
+    "requestedTheme": {
+      "cssProperty": "color-scheme",
+      "kind": "keyword",
+      "enumTypes": [
+        "ElementTheme"
+      ],
+      "keywords": {
+        "Dark": "dark",
+        "Default": "normal",
+        "Light": "light"
+      }
+    },
+    "scrollViewerHorizontalScrollBarVisibility": {
+      "cssProperty": "overflow-x",
+      "kind": "keyword",
+      "enumTypes": [
+        "ScrollBarVisibility"
+      ],
+      "keywords": {
+        "Auto": "auto",
+        "Disabled": "hidden",
+        "Visible": "scroll"
+      }
+    },
+    "scrollViewerVerticalScrollBarVisibility": {
+      "cssProperty": "overflow-y",
+      "kind": "keyword",
+      "enumTypes": [
+        "ScrollBarVisibility"
+      ],
+      "keywords": {
+        "Auto": "auto",
+        "Disabled": "hidden",
+        "Visible": "scroll"
+      }
+    },
+    "shadow": {
+      "cssProperty": "box-shadow",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "no plain value converts to the same WinUI value"
+    },
+    "stretch": {
+      "cssProperty": "object-fit",
+      "kind": "keyword",
+      "enumTypes": [
+        "Stretch"
+      ],
+      "keywords": {
+        "Fill": "fill",
+        "None": "none",
+        "Uniform": "contain",
+        "UniformToFill": "cover"
+      }
+    },
+    "stroke": {
+      "cssProperty": "stroke",
+      "kind": "color",
+      "enumTypes": []
+    },
+    "strokeDashArray": {
+      "cssProperty": "stroke-dasharray",
+      "kind": "unsupported",
+      "enumTypes": [],
+      "reason": "no plain value converts to the same WinUI value"
+    },
+    "strokeDashOffset": {
+      "cssProperty": "stroke-dashoffset",
+      "kind": "length",
+      "enumTypes": []
+    },
+    "strokeMiterLimit": {
+      "cssProperty": "stroke-miterlimit",
+      "kind": "number",
+      "enumTypes": []
+    },
+    "strokeThickness": {
+      "cssProperty": "stroke-width",
+      "kind": "length",
+      "enumTypes": []
+    },
+    "tabIndex": {
+      "cssProperty": "tab-index",
+      "kind": "number",
+      "enumTypes": []
+    },
+    "textAlignment": {
+      "cssProperty": "text-align",
+      "kind": "keyword",
+      "enumTypes": [
+        "TextAlignment"
+      ],
+      "keywords": {
+        "Center": "center",
+        "Justify": "justify",
+        "Left": "start",
+        "Right": "end"
+      }
+    },
+    "textDecorations": {
+      "cssProperty": "text-decoration",
+      "kind": "keyword",
+      "enumTypes": [
+        "TextDecorations"
+      ],
+      "keywords": {
+        "None": "none",
+        "Strikethrough": "line-through",
+        "Underline": "underline"
+      }
+    },
+    "textTrimming": {
+      "cssProperty": "text-overflow",
+      "kind": "keyword",
+      "enumTypes": [
+        "TextTrimming"
+      ],
+      "keywords": {
+        "CharacterEllipsis": "ellipsis",
+        "Clip": "clip"
+      }
+    },
+    "textWrapping": {
+      "cssProperty": "text-wrap",
+      "kind": "keyword",
+      "enumTypes": [
+        "TextWrapping"
+      ],
+      "keywords": {
+        "NoWrap": "nowrap",
+        "Wrap": "wrap"
+      }
+    },
+    "verticalAlignment": {
+      "cssProperty": "align-self",
+      "kind": "keyword",
+      "enumTypes": [
+        "VerticalAlignment"
+      ],
+      "keywords": {
+        "Bottom": "end",
+        "Center": "center",
+        "Stretch": "auto",
+        "Top": "start"
+      }
+    },
+    "verticalContentAlignment": {
+      "cssProperty": "align-items",
+      "kind": "keyword",
+      "enumTypes": [
+        "VerticalAlignment"
+      ],
+      "keywords": {
+        "Bottom": "end",
+        "Center": "center",
+        "Stretch": "auto",
+        "Top": "start"
+      }
+    },
+    "verticalScrollBarVisibility": {
+      "cssProperty": "overflow-y",
+      "kind": "keyword",
+      "enumTypes": [
+        "ScrollBarVisibility",
+        "ScrollingScrollBarVisibility"
+      ],
+      "keywords": {
+        "Auto": "auto",
+        "Disabled": "hidden",
+        "Visible": "scroll"
+      }
+    },
+    "visibility": {
+      "cssProperty": "visibility",
+      "kind": "keyword",
+      "enumTypes": [
+        "Visibility"
+      ],
+      "keywords": {
+        "Collapsed": "hidden",
+        "Visible": "visible"
+      }
+    },
+    "width": {
+      "cssProperty": "width",
+      "kind": "length",
+      "enumTypes": []
+    }
+  }
+}

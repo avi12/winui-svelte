@@ -264,6 +264,44 @@ To make your editor show what the checks see:
   The `#src/*`, `#scripts/*` and
   `#examples/*` imports are read from `package.json`
 
+## The WebStorm plugin
+
+`ide/webstorm` is a Kotlin plugin for WebStorm (Gradle Kotlin DSL, IntelliJ
+Platform Gradle plugin 2); it is not part of the npm package
+On a component's prop in a `.svelte` file, Alt+Enter offers
+"Convert to style:visibility" (or the prop's own CSS property): the prop is
+rewritten as the `style:` directive that sets the same value, for
+`visibility="Collapsed"`, `visibility={Visibility.Collapsed}`, a number for a
+length, a color, a thickness or corner radius written as text, a number or a
+list, and a condition of those; whatever it cannot convert safely gets no
+offer
+It is active only in a project whose `package.json` (the file's nearest one, or
+one at a content root) lists `winui-svelte` as a dependency, including a `link:`,
+`file:` or `workspace:` specifier
+
+The props and their conversions are not written by hand: `pnpm gen:components`
+asks the translator which CSS property sets each WinUI property and what each
+value lowers to, and writes `ide/webstorm/src/main/resources/winui-css-mappings.json`
+(`pnpm gen:components:check` covers it); a prop whose CSS property also sets
+other WinUI properties, or that no plain value reaches, is listed as
+`unsupported` with the reason
+
+```sh
+pnpm check:webstorm-plugin
+```
+
+builds the plugin against the installed WebStorm and its Svelte plugin (found as
+`pnpm check:webstorm` finds them, nothing is downloaded but Gradle and Kotlin,
+into `.verify/gradle-home`), runs its tests, installs it into the isolated
+WebStorm of `.verify/webstorm` and inspects two fixture projects: lines marked
+`<!-- convert -->` in `ide/webstorm/fixtures/with-dependency` must report and no
+other may, and `without-dependency` must report nothing
+The zip is `ide/webstorm/build/distributions/winui-svelte-webstorm-0.1.0.zip`;
+install it with Settings, Plugins, Install Plugin from Disk
+The command-line inspection cannot apply a quick fix, so the edit is covered by
+the plugin's own tests (`ide/webstorm/gradlew test`, run with the same
+`-PwebstormHome=` and `-PsvelteHome=` as the check)
+
 ## The Svelte build
 
 winui-svelte runs on a published Svelte (the `svelte` devDependency is the one
