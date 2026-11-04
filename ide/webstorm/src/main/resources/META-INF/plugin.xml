@@ -5,6 +5,7 @@
   <description>Writes a winui-svelte component's props as the CSS that sets the same value, one prop, one file or a selection at a time</description>
   <depends>com.intellij.modules.platform</depends>
   <depends>JavaScript</depends>
+  <depends>com.intellij.css</depends>
   <depends>dev.blachut.svelte.lang</depends>
   <extensions defaultExtensionNs="com.intellij">
     <localInspection
@@ -25,6 +26,17 @@
         instance="dev.winui.svelte.SettingsConfigurable"
         id="winui.svelte.settings"
         displayName="winui-svelte"/>
+    <psi.referenceContributor
+        language="JavaScript"
+        implementation="dev.winui.svelte.ComponentClassReferenceContributor"/>
+    <psi.referenceContributor
+        language="TypeScript"
+        implementation="dev.winui.svelte.ComponentClassReferenceContributor"/>
+    <lang.elementManipulator
+        forClass="dev.blachut.svelte.lang.psi.SvelteHtmlAttribute"
+        implementationClass="dev.winui.svelte.DirectiveNameManipulator"
+        order="first"/>
+    <css.classOrIdUsagesProvider implementation="dev.winui.svelte.ComponentClassUsagesProvider"/>
     <notificationGroup id="winui-svelte" displayType="BALLOON"/>
   </extensions>
   <actions>

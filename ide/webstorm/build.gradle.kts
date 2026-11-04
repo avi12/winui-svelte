@@ -25,6 +25,7 @@ dependencies {
     local(webstormHome.get())
     localPlugin(svelteHome.get())
     bundledPlugin("JavaScript")
+    bundledPlugin("com.intellij.css")
     testFramework(TestFrameworkType.Platform)
   }
   testImplementation(platform("org.junit:junit-bom:5.13.4"))
