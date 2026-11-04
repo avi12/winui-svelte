@@ -104,6 +104,8 @@
     "examples/relay/window.ts",
     "examples/sidecar/main.ts",
     "examples/hello/main.ts",
+    "examples/dev-host/main.ts",
+    "examples/dev-host/App.svelte",
     "src/dev/dev-window.ts",
     "examples/keys/main.ts",
     "examples/win2d/main.ts",

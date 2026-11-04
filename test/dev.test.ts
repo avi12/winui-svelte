@@ -1,4 +1,7 @@
 import { IS_WINDOWS_APP_SDK_RESTORED } from "./example-process.ts";
+import { defineMessaging } from "#src/messaging/index.js";
+import { createStdioTransport, MessageType } from "#src/state/host.js";
+import type { StateProtocol } from "#src/state/host.js";
 import { backgroundEnvironment } from "#src/window/background-mode.js";
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
@@ -49,6 +52,52 @@ test("startDev opens the component and a saved edit updates the open window", {
     assert.equal(isExited, false, "the process survived the update");
   } finally {
     writeFileSync(COMPONENT, original);
+    spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"]);
+  }
+});
+
+test("startDev with a stdio host hands the window the host's state and ends with the link", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const entry = path.join(PACKAGE_ROOT, "examples", "dev-host", "main.ts");
+  const child = spawn(process.execPath, ["--disable-warning=ExperimentalWarning", entry], {
+    cwd: PACKAGE_ROOT,
+    env: backgroundEnvironment(),
+    stdio: ["pipe", "pipe", "pipe"]
+  });
+  let stderr = "";
+  child.stderr.on("data", chunk => {
+    stderr += String(chunk);
+  });
+  const exited = new Promise<number | null>(resolve => child.on("exit", resolve));
+  try {
+    const messaging = defineMessaging<StateProtocol>({
+      transport: createStdioTransport({
+        input: child.stdout,
+        output: child.stdin
+      }),
+      onError(error) {
+        stderr += `host: ${error.message}
+`;
+      }
+    });
+    const deadline = Date.now() + TIMEOUT_MILLISECONDS - EDIT_EVERY_MILLISECONDS * 2;
+    while (!stderr.includes("view count 3") && Date.now() < deadline) {
+      await messaging.sendMessage(MessageType.snapshot, {
+        name: "view",
+        value: {
+          count: 3
+        }
+      }).catch(() => undefined);
+      await new Promise(resolve => setTimeout(resolve, EDIT_EVERY_MILLISECONDS));
+    }
+
+    assert.ok(stderr.includes("view count 3"), `the window never showed the host's state; stderr: ${stderr.slice(-600)}`);
+    child.stdin.end();
+    const code = await Promise.race([exited, new Promise(resolve => setTimeout(() => resolve("stayed"), 20_000))]);
+    assert.equal(code, 0, "the window did not close when the host's link ended");
+  } finally {
     spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"]);
   }
 });

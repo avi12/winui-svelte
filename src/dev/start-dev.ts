@@ -1,5 +1,7 @@
 import type { DevWindowChrome, DevWindowData } from "./dev-window.ts";
 import type { Json } from "#src/messaging/json.js";
+import type { Transport } from "#src/state/host.js";
+import { createStdioTransport, reserveStdout } from "#src/state/host.js";
 import { startModuleServer } from "#src/vite/server.js";
 import { initWindowsAppSdk } from "#src/window/bootstrap.js";
 import path from "node:path";
@@ -20,6 +22,16 @@ export interface DevOptions {
   /** The window's title, size, backdrop and the other chrome `createWindow` takes, besides its content and owner. */
   window?: DevWindowChrome;
 
+  /**
+   * The app's link to the framework that starts it (a Tauri core, an Electron
+   * main process, a script): `"stdio"` when it started this process as a
+   * sidecar and speaks JSON lines on its pipes, or a transport of its own
+   * (`utilityProcess`'s parent port, say). The component then gets a
+   * `channel` prop (`hostState`, `channel.send`), and the window closes when
+   * the link ends.
+   */
+  host?: "stdio" | Transport;
+
   /** The app's Vite config, whose plugins should include `winuiSvelte()`; the plugin's defaults serve without one. */
   configFile?: string;
 
@@ -32,6 +44,28 @@ export interface DevOptions {
 const WINDOW_MODULE = path.join(import.meta.dirname, `dev-window${path.extname(import.meta.filename)}`);
 const WORKER_SOURCE = `const { workerData } = require("node:worker_threads");
 import(workerData.moduleUrl).then(module => module.runDevWindow(workerData.data));`;
+
+// The host's transport and the window's end of a MessageChannel, joined: what
+// the host sends reaches the window, what the window sends reaches the host.
+function linkTo(host: "stdio" | Transport) {
+  const isStdio = host === "stdio";
+  if (isStdio) {
+    reserveStdout();
+  }
+
+  const transport = isStdio ? createStdioTransport() : host;
+  const link = new MessageChannel();
+  transport.listen({
+    message: frame => link.port1.postMessage(frame),
+    malformed: reason => process.stderr.write(
+      `host: malformed message: ${reason}
+`
+    ),
+    closed: () => link.port1.close()
+  });
+  link.port1.on("message", frame => transport.send(frame));
+  return link;
+}
 
 /**
  * Opens the app in a window and keeps it live: a saved `.svelte` or `.ts`
@@ -51,7 +85,8 @@ import(workerData.moduleUrl).then(module => module.runDevWindow(workerData.data)
  *
  * @returns The exit code, once the window has closed and the dev server has stopped.
  */
-export async function startDev({ component, props = {}, window = {}, ...serverOptions }: DevOptions) {
+export async function startDev({ component, props = {}, window = {}, host, ...serverOptions }: DevOptions) {
+  const link = host === undefined ? null : linkTo(host);
   initWindowsAppSdk();
   const modules = new MessageChannel();
   const server = await startModuleServer({
@@ -60,6 +95,7 @@ export async function startDev({ component, props = {}, window = {}, ...serverOp
   });
   const data: DevWindowData = {
     modules: modules.port2,
+    link: link?.port2 ?? null,
     component,
     props,
     window
@@ -70,7 +106,7 @@ export async function startDev({ component, props = {}, window = {}, ...serverOp
       moduleUrl: pathToFileURL(WINDOW_MODULE).href,
       data
     },
-    transferList: [modules.port2]
+    transferList: link === null ? [modules.port2] : [modules.port2, link.port2]
   });
   worker.on("error", error => {
     process.stderr.write(`${error.stack ?? String(error)}\n`);

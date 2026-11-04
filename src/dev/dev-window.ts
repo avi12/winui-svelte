@@ -1,4 +1,5 @@
 import type { Json } from "#src/messaging/json.js";
+import type * as StateModule from "#src/state/index.js";
 import { createWindowModuleRunner } from "#src/vite/runner.js";
 import type { WindowOptions } from "#src/window/create-window.js";
 import type * as WindowModule from "#src/window/index.js";
@@ -11,6 +12,8 @@ export type DevWindowChrome = Omit<Extract<WindowOptions<object>, { component: u
 /** What the dev window's thread is started with. */
 export interface DevWindowData {
   modules: MessagePort;
+  /** The host's end of the link, when the app has one: the component then gets a `channel` prop. */
+  link: MessagePort | null;
   component: string;
   props: Record<string, Json>;
   window: DevWindowChrome;
@@ -24,14 +27,35 @@ export interface DevWindowData {
 export async function runDevWindow(data: DevWindowData) {
   await runOnUiThread(async () => {
     const { runner } = createWindowModuleRunner(data.modules);
-    const { createWindow, runWindow } = await runner.import<typeof WindowModule>("winui-svelte/window");
+    const { createWindow, exitWhenHostEnds, runWindow } = await runner.import<typeof WindowModule>("winui-svelte/window");
     const { default: component } = await runner.import(data.component);
+    const { createHostChannel, createMessagePortTransport } = await runner.import<typeof StateModule>(
+      "winui-svelte/state"
+    );
+    const { link } = data;
     await runWindow({
       onStart() {
+        const hasLink = link !== null;
+        if (!hasLink) {
+          createWindow({
+            ...data.window,
+            component,
+            props: data.props
+          });
+          return;
+        }
+
+        const channel = createHostChannel({
+          transport: createMessagePortTransport({ port: link })
+        });
+        exitWhenHostEnds({ link: channel });
         createWindow({
           ...data.window,
           component,
-          props: data.props
+          props: {
+            ...data.props,
+            channel
+          }
         });
       }
     });

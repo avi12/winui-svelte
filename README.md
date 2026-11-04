@@ -228,6 +228,12 @@ process.exitCode = await startDev({
 
 <!-- hello/main.ts:end -->
 
+A Tauri or Electron app starts a file like this as its sidecar (a Node process the
+framework owns), with `host: "stdio"` or a transport of its own; the component
+then receives the framework's state as a `channel` prop (see the [dev loop in
+API.md](https://github.com/avi12/winui-svelte/blob/main/API.md#dev-loop-winui-sveltedev) and the
+[hosts section](https://github.com/avi12/winui-svelte/blob/main/API.md#hosts-tauri-electron-and-node))
+
 ```sh
 node main.ts
 ```

@@ -334,6 +334,7 @@ interface DevOptions {
   root: string;                 // the folder of the app's sources
   component: string;            // the root component, a path under root ("/App.svelte")
   props?: Record<string, Json>;
+  host?: "stdio" | Transport; // the link to the Tauri core, Electron main process or script that started this process
   window?: object;              // title, size, backdrop and the rest of createWindow's chrome
   configFile?: string;
   isNative?: (file: string) => boolean;
@@ -344,6 +345,12 @@ interface DevOptions {
 // once the window has closed and the server stopped.
 function startDev(options: DevOptions): Promise<number>;
 ```
+
+With `host`, a Tauri core (a sidecar on `"stdio"`) or an Electron main process
+(a `utilityProcess` and a transport of its own) owns the state: the component
+gets a `channel` prop (`hostState`, `channel.send`) and the window closes when
+the link ends, so the dev loop runs under the real framework and a saved file
+still updates the open window
 
 `startDev` joins `initWindowsAppSdk`, `startModuleServer` and a worker whose
 `runOnUiThread` creates the module runner and the window; a host that needs its
