@@ -6,9 +6,9 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.TestActionEvent
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions.assertEquals
 
 class BulkConverterTest : BasePlatformTestCase() {
-  private val dependent = """{"dependencies":{"winui-svelte":"link:../winui-svelte"}}"""
   private val intentionText = "Convert all winui-svelte attributes in this file to CSS"
   private val mixed =
     "<TextBlock visibility=\"Collapsed\" />\n" +
@@ -20,27 +20,13 @@ class BulkConverterTest : BasePlatformTestCase() {
     myFixture.enableInspections(CssCounterpartInspection::class.java)
   }
 
-  private fun withDestination(
-    destination: Destination,
-    body: () -> Unit
-  ) {
-    val settings = Settings.of(project)
-    val before = settings.destination
-    settings.destination = destination
-    try {
-      body()
-    } finally {
-      settings.destination = before
-    }
-  }
-
   private fun convertFile(text: String): Int {
     myFixture.configureByText("App.svelte", text)
-    return BulkConverter.convertInCommand(project, myFixture.file)
+    return FileConverter.convertInCommand(project, myFixture.file)
   }
 
   fun testSeveralElementsWithoutAClassGetDistinctNames() {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     val count = convertFile("<TextBlock visibility=\"Collapsed\" />\n<TextBlock visibility=\"Collapsed\" />")
     assertEquals(2, count)
     myFixture.checkResult(
@@ -50,7 +36,7 @@ class BulkConverterTest : BasePlatformTestCase() {
   }
 
   fun testMixedStaticAndDynamicElementsInTheStyleBlockMode() {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     assertEquals(3, convertFile(mixed))
     myFixture.checkResult(
       "<TextBlock class=\"text-block\" />\n<Border class=\"b\" />\n" +
@@ -61,8 +47,8 @@ class BulkConverterTest : BasePlatformTestCase() {
   }
 
   fun testMixedElementsInTheDirectiveMode() {
-    myFixture.addFileToProject("package.json", dependent)
-    withDestination(Destination.STYLE_DIRECTIVE) {
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
+    withDestination(project, Destination.STYLE_DIRECTIVE) {
       assertEquals(3, convertFile(mixed))
       myFixture.checkResult(
         "<TextBlock style:display=\"none\" />\n<Border style:width=\"12px\" class=\"b\" />\n" +
@@ -72,22 +58,22 @@ class BulkConverterTest : BasePlatformTestCase() {
   }
 
   fun testASecondRunChangesNothing() {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     convertFile(mixed)
     val converted = myFixture.editor.document.text
-    assertEquals(0, BulkConverter.convertInCommand(project, myFixture.file))
+    assertEquals(0, FileConverter.convertInCommand(project, myFixture.file))
     assertEquals(converted, myFixture.editor.document.text)
   }
 
   fun testNothingChangesWithoutTheDependency() {
-    myFixture.addFileToProject("package.json", """{"dependencies":{"svelte":"^5"}}""")
+    myFixture.addFileToProject("package.json", TestManifests.UNRELATED)
     myFixture.configureByText("App.svelte", mixed)
-    assertEquals(false, BulkConverter.hasConvertible(project, myFixture.file))
+    assertEquals(false, FileConverter.hasConvertible(project, myFixture.file))
     myFixture.checkResult(mixed)
   }
 
   fun testTheIntentionIsOfferedOnlyWhereSomethingConverts() {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     myFixture.configureByText("App.svelte", "<TextBlock text=\"a\" /><caret>")
     myFixture.doHighlighting()
     assertEquals(false, myFixture.availableIntentions.any { it.text == intentionText })
@@ -101,7 +87,7 @@ class BulkConverterTest : BasePlatformTestCase() {
   }
 
   fun testTheSelectionExpandsFoldersSkipsExcludedOnesAndIgnoresOtherFiles() {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     val page = myFixture.addFileToProject("pages/a.svelte", "<Border width={12} />")
     val nested = myFixture.addFileToProject("pages/deep/b.svelte", "<Border width={5} /><Border height={6} />")
     val skipped = myFixture.addFileToProject("pages/node_modules/c.svelte", "<Border width={9} />")
@@ -109,16 +95,16 @@ class BulkConverterTest : BasePlatformTestCase() {
     val notes = myFixture.addFileToProject("pages/readme.md", "# notes")
     val other = myFixture.addFileToProject("other/d.svelte", "<Border width={1} />")
     val roots = listOf(page.parent!!.virtualFile, notes.virtualFile, other.virtualFile)
-    val files = BulkConverter.collect(project, roots)
+    val files = SvelteFiles.collect(project, roots)
     assertEquals(
       listOf(page.name, "b.svelte", "plain.svelte", "readme.md", "d.svelte"),
       files.map { it.name }
     )
-    val report = BulkConverter.convert(project, files)
+    val report = SelectionConverter.convert(project, files)
     assertEquals(4, report.attributes)
     assertEquals(3, report.changedFiles)
     assertEquals(
-      mapOf(BulkConverter.NOTHING_TO_CONVERT to 1, BulkConverter.NOT_SVELTE to 1),
+      mapOf(SkipReason.NOTHING_TO_CONVERT to 1, SkipReason.NOT_SVELTE to 1),
       report.skipped
     )
     assertEquals(true, nested.text.contains(".border-2"))
@@ -128,11 +114,11 @@ class BulkConverterTest : BasePlatformTestCase() {
   }
 
   fun testASelectionOutsideAProjectThatDependsOnTheLibraryIsSkipped() {
-    myFixture.addFileToProject("package.json", """{"dependencies":{"svelte":"^5"}}""")
+    myFixture.addFileToProject("package.json", TestManifests.UNRELATED)
     val file = myFixture.addFileToProject("a.svelte", "<Border width={12} />")
-    val report = BulkConverter.convert(project, listOf(file.virtualFile))
+    val report = SelectionConverter.convert(project, listOf(file.virtualFile))
     assertEquals(0, report.attributes)
-    assertEquals(mapOf(BulkConverter.NO_DEPENDENCY to 1), report.skipped)
+    assertEquals(mapOf(SkipReason.NO_DEPENDENCY to 1), report.skipped)
     assertEquals("<Border width={12} />", file.text)
   }
 
@@ -162,7 +148,7 @@ class BulkConverterTest : BasePlatformTestCase() {
   }
 
   fun testTheFileActionIsVisibleOnlyInAProjectThatDependsOnTheLibrary() {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     myFixture.configureByText("App.svelte", "<Border width={3} />")
     assertEquals(true, isVisible(ConvertFileAction(), listOf(myFixture.file.virtualFile), hasEditor = true))
     assertEquals(false, isVisible(ConvertFileAction(), listOf(myFixture.file.virtualFile), hasEditor = false))
@@ -175,13 +161,13 @@ class BulkConverterTest : BasePlatformTestCase() {
   }
 
   fun testTheFileActionIsHiddenOnAFileThatIsNotSvelte() {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     myFixture.configureByText("notes.txt", "x")
     assertEquals(false, isVisible(ConvertFileAction(), listOf(myFixture.file.virtualFile), hasEditor = true))
   }
 
   fun testTheSelectionActionIsVisibleWhenOneSelectedPathQualifies() {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     val page = myFixture.addFileToProject("pages/a.svelte", "<Border width={1} />")
     val notes = myFixture.addFileToProject("pages/readme.md", "x")
     assertEquals(

@@ -8,10 +8,8 @@ build:
 # not on the classpath, so nothing here double-reports style.
 
 style:
-  # prefer-const -> flag `var` that is never reassigned.
   VarCouldBeVal:
     active: true
-  # curly: ["error", "all"] -> require braces on all conditionals/loops.
   BracesOnIfStatements:
     active: true
     singleLine: 'always'
@@ -22,18 +20,24 @@ style:
     multiLine: 'consistent'
   MandatoryBracesLoops:
     active: true
-  # object-shorthand / prefer-const spirit: encourage immutability.
   UnusedPrivateMember:
+    active: true
+  UnusedPrivateProperty:
+    active: true
+  UnusedParameter:
     active: true
   UnusedImports:
     active: true
-  # Line length handled by ktlint.
+  UnnecessaryAbstractClass:
+    active: true
+  UnnecessaryLet:
+    active: true
+  CanBeNonNullable:
+    active: true
   MaxLineLength:
     active: false
-  # oxlint id-length is niche; Kotlin naming defaults are noisy here, keep relaxed.
   MagicNumber:
     active: false
-  # oxlint has no return-count cap; disable so detekt stays scoped to oxlint's rules.
   ReturnCount:
     active: false
 
@@ -46,12 +50,21 @@ naming:
 
 potential-bugs:
   active: true
+  UnsafeCallOnNullableType:
+    active: true
 
 complexity:
-  # Keep off by default — these are opinionated size caps not present in oxlint.
   LongMethod:
-    active: false
+    active: true
   LongParameterList:
-    active: false
+    active: true
   TooManyFunctions:
-    active: false
+    active: true
+  NestedBlockDepth:
+    active: true
+  ComplexCondition:
+    active: true
+  CyclomaticComplexMethod:
+    active: true
+  CognitiveComplexMethod:
+    active: true

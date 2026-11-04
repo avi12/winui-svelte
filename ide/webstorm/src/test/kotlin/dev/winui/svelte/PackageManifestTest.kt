@@ -29,7 +29,7 @@ class PackageManifestTest {
 
   @Test
   fun `another package or none does not count`() {
-    assertEquals(false, PackageManifest.dependsOnLibrary("""{"dependencies":{"svelte":"^5"}}"""))
+    assertEquals(false, PackageManifest.dependsOnLibrary(TestManifests.UNRELATED))
     assertEquals(false, PackageManifest.dependsOnLibrary("""{"name":"winui-svelte"}"""))
     assertEquals(false, PackageManifest.dependsOnLibrary("""{"scripts":{"winui-svelte":"x"}}"""))
     assertEquals(false, PackageManifest.dependsOnLibrary("{}"))

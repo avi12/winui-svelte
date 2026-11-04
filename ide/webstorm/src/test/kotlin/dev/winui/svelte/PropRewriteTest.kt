@@ -1,9 +1,9 @@
 package dev.winui.svelte
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.Assertions.assertEquals
 
 class PropRewriteTest : BasePlatformTestCase() {
-  private val dependent = """{"dependencies":{"winui-svelte":"link:../winui-svelte"}}"""
   private val movePrefix = "Move to <style>"
 
   override fun setUp() {
@@ -13,7 +13,7 @@ class PropRewriteTest : BasePlatformTestCase() {
 
   private fun fixesAt(
     text: String,
-    manifest: String? = dependent
+    manifest: String? = TestManifests.DEPENDENT
   ): List<String> {
     if (manifest != null) {
       myFixture.addFileToProject("package.json", manifest)
@@ -31,7 +31,7 @@ class PropRewriteTest : BasePlatformTestCase() {
     prefix: String,
     expected: String
   ) {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     myFixture.configureByText("App.svelte", text)
     myFixture.doHighlighting()
     myFixture.launchAction(myFixture.availableIntentions.first { it.text.startsWith(prefix) })
@@ -99,7 +99,7 @@ class PropRewriteTest : BasePlatformTestCase() {
   }
 
   fun testASecondAttributeReusesTheClassAndTheRule() {
-    myFixture.addFileToProject("package.json", dependent)
+    myFixture.addFileToProject("package.json", TestManifests.DEPENDENT)
     myFixture.configureByText("App.svelte", "<TextBlock visibility<caret>=\"Collapsed\" opacity=\"0.5\" />")
     myFixture.doHighlighting()
     myFixture.launchAction(myFixture.availableIntentions.first { it.text.startsWith(movePrefix) })
@@ -140,20 +140,6 @@ class PropRewriteTest : BasePlatformTestCase() {
   }
 
   private val ternary = "{on ? Visibility.Visible : Visibility.Collapsed}"
-
-  private fun withDestination(
-    destination: Destination,
-    body: () -> Unit
-  ) {
-    val settings = Settings.of(project)
-    val before = settings.destination
-    settings.destination = destination
-    try {
-      body()
-    } finally {
-      settings.destination = before
-    }
-  }
 
   fun testMovesAConditionToAClassDirectiveAndARule() {
     move(
@@ -227,7 +213,7 @@ class PropRewriteTest : BasePlatformTestCase() {
   }
 
   fun testTheDirectiveModeWritesAStaticValueAsAStyleDirective() {
-    withDestination(Destination.STYLE_DIRECTIVE) {
+    withDestination(project, Destination.STYLE_DIRECTIVE) {
       apply(
         "<TextBlock visibility<caret>=\"Collapsed\" />",
         "Convert to style:display",
@@ -237,7 +223,7 @@ class PropRewriteTest : BasePlatformTestCase() {
   }
 
   fun testTheDirectiveModeKeepsEveryLeafOfACondition() {
-    withDestination(Destination.STYLE_DIRECTIVE) {
+    withDestination(project, Destination.STYLE_DIRECTIVE) {
       apply(
         "<TextBlock visibility<caret>=$ternary />",
         "Convert to style:display",
@@ -247,7 +233,7 @@ class PropRewriteTest : BasePlatformTestCase() {
   }
 
   fun testTheDirectiveModeOffersNothingWhenTheDirectiveIsThere() {
-    withDestination(Destination.STYLE_DIRECTIVE) {
+    withDestination(project, Destination.STYLE_DIRECTIVE) {
       assertEquals(
         emptyList<String>(),
         fixesAt("<TextBlock visibility<caret>=\"Collapsed\" style:display=\"block\" />")
@@ -260,7 +246,7 @@ class PropRewriteTest : BasePlatformTestCase() {
       listOf("Move to <style> as display: none"),
       fixesAt("<TextBlock visibility<caret>=\"Collapsed\" />")
     )
-    withDestination(Destination.STYLE_DIRECTIVE) {
+    withDestination(project, Destination.STYLE_DIRECTIVE) {
       assertEquals(listOf("Convert to style:display"), fixesAt("<TextBlock visibility<caret>=\"Collapsed\" />", null))
     }
   }
@@ -298,7 +284,7 @@ class PropRewriteTest : BasePlatformTestCase() {
   fun testNoFixWithoutTheDependency() {
     assertEquals(
       emptyList<String>(),
-      fixesAt("<TextBlock visibility<caret>=\"Collapsed\" />", """{"dependencies":{"svelte":"^5"}}""")
+      fixesAt("<TextBlock visibility<caret>=\"Collapsed\" />", TestManifests.UNRELATED)
     )
   }
 

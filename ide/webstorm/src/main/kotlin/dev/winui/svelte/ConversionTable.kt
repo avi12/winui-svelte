@@ -3,32 +3,7 @@ package dev.winui.svelte
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 
-enum class ConversionKind(
-  val jsonName: String
-) {
-  KEYWORD("keyword"),
-  LENGTH("length"),
-  NUMBER("number"),
-  COLOR("color"),
-  THICKNESS("thickness"),
-  CORNER_RADIUS("cornerRadius"),
-  TEXT("text"),
-  UNSUPPORTED("unsupported");
-
-  companion object {
-    fun named(jsonName: String) = entries.firstOrNull { it.jsonName == jsonName } ?: UNSUPPORTED
-  }
-}
-
-data class Mapping(
-  val cssProperty: String,
-  val kind: ConversionKind,
-  val enumTypes: Set<String>,
-  val keywords: Map<String, String>,
-  val defaultValue: String?
-)
-
-class ConversionTable(
+internal class ConversionTable(
   private val mappings: Map<String, Mapping>
 ) {
   val size get() = mappings.size

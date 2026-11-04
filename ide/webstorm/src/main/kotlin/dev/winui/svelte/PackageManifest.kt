@@ -3,7 +3,7 @@ package dev.winui.svelte
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 
-object PackageManifest {
+internal object PackageManifest {
   const val LIBRARY_NAME = "winui-svelte"
 
   private val dependencyKeys =

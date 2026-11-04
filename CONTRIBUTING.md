@@ -337,6 +337,25 @@ updates the other and the HTML elements the Svelte plugin links; it also keeps
 the value of a `class:` directive when the directive is renamed with its rule (the
 IDE wrote `="{x}"` around it)
 
+The CSS plugin's "Selector is never used" inspection asks the usages providers
+whether a class has a user; the Svelte plugin's provider does not count a
+`class:name` directive on a component, so this plugin's provider does (with the
+strings of a class array and the string keys of an object in it), and a rule the
+fixes above write is never reported or offered for removal; a rule with no user
+anywhere is still reported, and nothing changes in a project without the
+dependency
+
+Completing `glyph="..."` on a `FontIcon` or `FontIconSource` shows each Fluent
+icon drawn next to its name, with its code point (`U+E74E`) as type text, in
+a project that depends on `winui-svelte`
+The icon is the glyph in the installed "Segoe Fluent Icons" (Windows 11) or
+"Segoe MDL2 Assets" (Windows 10) font, in the editor's foreground colour; with
+neither font there is no icon and the completion is the platform's
+The names the web-types already offer are decorated, not repeated, and where
+they offer none the plugin adds the names itself; the table is
+`ide/webstorm/src/main/resources/fluent-glyphs.json`, written by `pnpm
+gen:components` from `FluentGlyph` (a test fails if they differ)
+
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each
 value lowers to, and writes `ide/webstorm/src/main/resources/winui-css-mappings.json`
@@ -361,7 +380,7 @@ install it with Settings, Plugins, Install Plugin from Disk, or run
 plugins folder of your own WebStorm (`--skip-build` reuses the zip); it never
 closes WebStorm, and while one runs it writes nothing and exits 2, so close
 WebStorm first and start it afterwards to load the plugin
-The Kotlin is linted as in sb-companion: ktlint (formatting, `ide/webstorm/.editorconfig`)
+The Kotlin follows Google's Kotlin style guide with sb-companion's 2-space indent (the Android guide says 4; the row for `.kt` in `CLAUDE.md` says the rest) and is linted as in sb-companion: ktlint (formatting, `ide/webstorm/.editorconfig`)
 and detekt (correctness, `ide/webstorm/config/detekt/detekt.yml`), both run by the
 `ktLint` Gradle task that the check includes; `pnpm lint:fix` runs `ktLintFix`
 (detekt 1.23.8 reads Kotlin 2.4, and the ktlint Gradle plugin is 14.2.0 with ktlint 1.8.0)

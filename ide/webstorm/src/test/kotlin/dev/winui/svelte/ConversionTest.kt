@@ -12,7 +12,7 @@ class ConversionTest {
     value: PropValue
   ): String? {
     val mapping = table.mappingOf(attribute) ?: return null
-    return Conversion.convert(mapping, value)?.let { Conversion.render(mapping.cssProperty, it) }
+    return Conversion.convert(mapping, value)?.let { StyleDirectiveText.render(mapping.cssProperty, it) }
   }
 
   @Test
