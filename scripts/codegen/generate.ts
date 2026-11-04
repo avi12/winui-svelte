@@ -1,5 +1,6 @@
 import { packageJsonWithBindings } from "./binding-list.ts";
 import { emitWebTypes } from "./emit-web-types.ts";
+import { emitWebstormCssMappings } from "./emit-webstorm-css-mappings.ts";
 import {
   bindingModule,
   emitAttachedOwners,
@@ -43,6 +44,7 @@ import { z } from "zod";
 
 const PACKAGE_FOLDER = path.join(import.meta.dirname, "..", "..");
 const GENERATED_FOLDER = path.join(PACKAGE_FOLDER, "src", "components", "generated");
+const WEBSTORM_MAPPINGS_FILE = path.join(PACKAGE_FOLDER, "ide", "webstorm", "src", "main", "resources", "winui-css-mappings.json");
 const LOCK_PATH = [".winapp", "winmds.lock.json"];
 const BINDINGS_PATH = [".winapp", "bindings"];
 
@@ -211,6 +213,10 @@ function generatedFiles(project: string) {
         classes: [model, ...extraModels].flatMap(entry => entry.classes),
         version: versionOf(path.join(project, "package.json"))
       })
+    },
+    {
+      file: WEBSTORM_MAPPINGS_FILE,
+      text: emitWebstormCssMappings({ classes: [model, ...extraModels].flatMap(entry => entry.classes) })
     },
     updatedPackageJson({
       packagePath: path.join(project, "package.json"),

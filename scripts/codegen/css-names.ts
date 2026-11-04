@@ -37,34 +37,48 @@ const PROBE_VALUES = [
 const resources = loadWinuiCatalogue();
 const extraGroups = LAZY_GROUPS.flatMap(lazy => lazy.groups());
 
+/**
+ * What the translator lowers one CSS declaration to: the Style setters, each
+ * the WinUI property and the value it is set to; none where the declaration
+ * lowers to nothing (a value the property does not take).
+ */
+export function settersOf({ cssName, value }: {
+  cssName: string;
+  value: string;
+}) {
+  const { sheet } = translateStyleSheet({
+    file: "probe.svelte",
+    css: `.probe { ${cssName}: ${value} }`,
+    resources
+  });
+  const [rule] = sheet.rules;
+  const isMissing = rule === undefined;
+  if (isMissing) {
+    return [];
+  }
+
+  return lowerDeclarations({
+    computed: computeDeclarations({
+      matched: [rule],
+      inline: []
+    }),
+    options: {
+      elementType: null,
+      resolveVariable: resolveBuiltVariable,
+      hasStyle: () => true,
+      report() {}
+    },
+    extraGroups
+  }).setters;
+}
+
 function winuiPropertiesOf(cssName: string) {
   const properties = new Set<string>();
   for (const value of PROBE_VALUES) {
-    const { sheet } = translateStyleSheet({
-      file: "probe.svelte",
-      css: `.probe { ${cssName}: ${value} }`,
-      resources
-    });
-    const [rule] = sheet.rules;
-    const isMissing = rule === undefined;
-    if (isMissing) {
-      continue;
-    }
-
-    const lowered = lowerDeclarations({
-      computed: computeDeclarations({
-        matched: [rule],
-        inline: []
-      }),
-      options: {
-        elementType: null,
-        resolveVariable: resolveBuiltVariable,
-        hasStyle: () => true,
-        report() {}
-      },
-      extraGroups
-    });
-    for (const setter of lowered.setters) {
+    for (const setter of settersOf({
+      cssName,
+      value
+    })) {
       properties.add(setter.property.toLowerCase());
     }
   }
@@ -101,6 +115,14 @@ function buildCssNames() {
 }
 
 const cssNames = buildCssNames();
+
+/** Every WinUI property CSS can set, lowercase, with the CSS property that sets it (the narrowest one). */
+export function cssNameEntries() {
+  return [...cssNames].flatMap(([property, cssName]) => cssName === undefined ? [] : [{
+    property,
+    cssName
+  }]);
+}
 
 // The sentence of a WinUI property's documentation that names the CSS property
 // setting it, or nothing where CSS has none
