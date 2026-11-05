@@ -1,0 +1,53 @@
+name: Editors
+
+# Builds the VS Code extension and attaches it to the GitHub release of an
+# editors-vX.Y.Z tag (git tag editors-v0.0.1 && git push --tags), apart from the
+# npm package's vX.Y.Z tags
+# The WebStorm plugin is not built here: it compiles against an installed
+# WebStorm and its Svelte plugin, which a runner has none of; build it with
+# pnpm install:webstorm-plugin and attach the zip with
+# gh release upload editors-vX.Y.Z ide/webstorm/build/distributions/*.zip
+on:
+  push:
+    tags: ['editors-v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The release tag to build and attach to, such as editors-v0.0.1
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  vscode:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: The tag must match the extension's version
+        shell: pwsh
+        run: |
+          $version = (Get-Content ide/vscode/package.json -Raw | ConvertFrom-Json).version
+          if ($env:RELEASE_TAG -ne "editors-v$version") { throw "Tag $env:RELEASE_TAG does not match version $version" }
+      - run: pnpm build:vscode-extension
+      - name: Create or update the release
+        shell: pwsh
+        run: |
+          $vsix = (Get-ChildItem ide/vscode -Filter 'winui-svelte-vscode-*.vsix').FullName
+          gh release view $env:RELEASE_TAG *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $env:RELEASE_TAG --title $env:RELEASE_TAG --notes 'Editor add-ons for winui-svelte: the VS Code extension is attached; the WebStorm plugin zip is uploaded by hand'
+          }
+          gh release upload $env:RELEASE_TAG $vsix --clobber
