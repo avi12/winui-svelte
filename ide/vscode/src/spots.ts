@@ -1,7 +1,7 @@
 import { isColorAttribute, isColorProperty } from "./color-table.ts";
 import { isFontFamilyAttribute } from "./font-table.ts";
 import { isGlyphAttribute } from "./glyph-table.ts";
-import { scanAttributes } from "./markup-scan.ts";
+import { scanAttributes, scanExpressionAttributes } from "./markup-scan.ts";
 import type { AttributeValue } from "./markup-scan.ts";
 import { isTypedProp } from "./typed-prop.ts";
 import { isWinuiFile } from "./winui-project.ts";
@@ -23,6 +23,7 @@ export interface Spot {
 const STYLE = "style";
 const STYLE_DIRECTIVE = "style:";
 const FONT_FAMILY = "font-family";
+const STRING_LITERAL = /(["'\x60])([^"'\x60\\$]*)\1/gu;
 const GLYPH_INPUT = "GlyphInput";
 const FONT_FAMILY_INPUT = "FontFamilyInput";
 
@@ -106,28 +107,12 @@ function styleSpots({ value, start }: {
   });
 }
 
-async function spotsOfValue({ found, text, file }: {
-  found: AttributeValue;
+async function kindOfProp({ tag, attribute, text, file }: {
+  tag: string;
+  attribute: string;
   text: string;
   file: string;
 }) {
-  const { tag, attribute, value, valueStart } = found;
-  const isStyle = attribute === STYLE;
-  if (isStyle) {
-    return styleSpots({
-      value,
-      start: valueStart
-    });
-  }
-
-  if (attribute.startsWith(STYLE_DIRECTIVE)) {
-    return propertySpots({
-      property: attribute.slice(STYLE_DIRECTIVE.length),
-      value,
-      start: valueStart
-    });
-  }
-
   const context = {
     tag,
     attribute,
@@ -153,29 +138,106 @@ async function spotsOfValue({ found, text, file }: {
     })
   ]);
   if (isGlyph) {
-    return [trimmedSpot({
-      kind: SpotKind.GLYPH,
-      text: value,
-      start: valueStart
-    })];
+    return SpotKind.GLYPH;
   }
 
   if (isFont) {
+    return SpotKind.FONT;
+  }
+
+  return isColorAttribute(attribute) ? SpotKind.COLOR : undefined;
+}
+
+function spotsOfKind({ kind, value, start }: {
+  kind: SpotKind;
+  value: string;
+  start: number;
+}) {
+  const isFont = kind === SpotKind.FONT;
+  if (isFont) {
     return families({
+      value,
+      start
+    });
+  }
+
+  return [trimmedSpot({
+    kind,
+    text: value,
+    start
+  })];
+}
+
+async function spotsOfValue({ found, text, file }: {
+  found: AttributeValue;
+  text: string;
+  file: string;
+}) {
+  const { tag, attribute, value, valueStart } = found;
+  const isStyle = attribute === STYLE;
+  if (isStyle) {
+    return styleSpots({
       value,
       start: valueStart
     });
   }
 
-  if (!isColorAttribute(attribute)) {
+  if (attribute.startsWith(STYLE_DIRECTIVE)) {
+    return propertySpots({
+      property: attribute.slice(STYLE_DIRECTIVE.length),
+      value,
+      start: valueStart
+    });
+  }
+
+  const kind = await kindOfProp({
+    tag,
+    attribute,
+    text,
+    file
+  });
+  return kind === undefined ? [] : spotsOfKind({
+    kind,
+    value,
+    start: valueStart
+  });
+}
+
+async function spotsOfExpression({ found, text, file }: {
+  found: AttributeValue;
+  text: string;
+  file: string;
+}) {
+  const { tag, attribute, value, valueStart } = found;
+  const isStyle = attribute === STYLE;
+  if (isStyle) {
     return [];
   }
 
-  return [trimmedSpot({
-    kind: SpotKind.COLOR,
-    text: value,
-    start: valueStart
-  })];
+  const isDirective = attribute.startsWith(STYLE_DIRECTIVE);
+  const kind = isDirective ? undefined : await kindOfProp({
+    tag,
+    attribute,
+    text,
+    file
+  });
+  return [...value.matchAll(STRING_LITERAL)].flatMap(literal => {
+    const start = valueStart + literal.index + 1;
+    const content = literal[2] ?? "";
+    if (isDirective) {
+      return propertySpots({
+        property: attribute.slice(STYLE_DIRECTIVE.length),
+        value: content,
+        start
+      });
+    }
+
+    return kind === undefined ? [] : spotsOfKind({
+      kind,
+      value: content,
+      start
+    });
+  });
 }
 
 /**
@@ -192,14 +254,23 @@ export async function spotsOf({ text, file }: {
   }
 
   const found = scanAttributes(text);
-  const perValue = await Promise.all(
-    found.map(value => spotsOfValue({
-      found: value,
-      text,
-      file
-    }))
-  );
-  return perValue.flat();
+  const [perValue, perExpression] = await Promise.all([
+    Promise.all(
+      found.map(value => spotsOfValue({
+        found: value,
+        text,
+        file
+      }))
+    ),
+    Promise.all(
+      scanExpressionAttributes(text).map(value => spotsOfExpression({
+        found: value,
+        text,
+        file
+      }))
+    )
+  ]);
+  return [...perValue.flat(), ...perExpression.flat()];
 }
 
 /**

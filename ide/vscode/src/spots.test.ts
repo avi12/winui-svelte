@@ -50,6 +50,17 @@ test("a wrapper component's props typed GlyphInput and FontFamilyInput are spots
   assert.deepEqual(await found(text), ["font:Arial", "glyph:Save"]);
 });
 
+test("each string of an expression is a spot of the prop's kind", async () => {
+  assert.deepEqual(
+    await found("<FontIcon glyph={isReady ? \"Play\" : 'CheckMark'} />"),
+    ["glyph:Play", "glyph:CheckMark"]
+  );
+  assert.deepEqual(await found("<Border background={isOn ? \"red\" : count} />"), ["color:red"]);
+  assert.deepEqual(await found("<Border style:color={isOn ? \"red\" : \"blue\"} />"), ["color:red", "color:blue"]);
+  assert.deepEqual(await found("<TextBlock fontFamily={isOn ? \"Arial\" : \"Consolas\"} />"), ["font:Arial", "font:Consolas"]);
+  assert.deepEqual(await found("<TextBlock text={isOn ? \"Play\" : \"Save\"} />"), []);
+});
+
 test("a project without the dependency has no spots", async () => {
   const other = mkdtempSync(path.join(tmpdir(), "no-winui-"));
   writeFileSync(

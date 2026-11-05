@@ -250,6 +250,24 @@ export function scanAttributes(text: string) {
 }
 
 /**
+ * Every attribute whose value is an expression (`prop={...}`) in the tags of a Svelte file; the value is what sits
+ * between the braces.
+ */
+export function scanExpressionAttributes(text: string) {
+  return scanTags(text).flatMap(tag => tag.attributes.flatMap(attribute => {
+    const { value } = attribute;
+    const isClosed = value?.kind === ValueKind.EXPRESSION && value.text.endsWith("}");
+    return isClosed ? [{
+      tag: tag.name,
+      attribute: attribute.name,
+      value: value.text.slice(1, -1),
+      valueStart: value.start + 1,
+      valueEnd: value.end - 1
+    } satisfies AttributeValue] : [];
+  }));
+}
+
+/**
  * Whether the source of a component declares the prop with the given input type (`GlyphInput`).
  */
 export function declaresAsInputType({ source, prop, inputType }: {
