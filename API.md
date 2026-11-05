@@ -474,7 +474,7 @@ function createWindow<Props extends object>(options: WindowOptions<Props>): AppW
 type WindowOptions<Props> = {
   title?: string;
   size?: { width: number; height: number };   // device pixels
-  backdrop?: Backdrop;                        // "acrylic" | "acrylicBase" | "acrylicThin" | "mica" | "micaAlt" | "none"
+  backdrop?: Backdrop;                        // "acrylic" | "acrylicBase" | "acrylicThin" | "mica" | "micaAlt" | "none" | "transparent"
   extendsIntoTitleBar?: boolean;
   isBackground?: boolean;                     // shown without activating (tests, captures)
 } & ({ component: Component<Props>; props: Props } | { control: FrameworkElement });
@@ -1520,7 +1520,7 @@ the control's own nodes, and binding it undoes the key selection
 Mount it as the app's root (`mountControl({ component: App, props })` inside `runWindow`'s
 `onStart`): the component is the window
 `backdrop` is `"acrylic"`, `"acrylicBase"`,
-`"acrylicThin"`, `"mica"`, `"micaAlt"` or `"none"` (`Backdrop`, also taken by `createWindow`); it can
+`"acrylicThin"`, `"mica"`, `"micaAlt"`, `"none"` or `"transparent"` (`Backdrop`, also taken by `createWindow`); it can
 change while the window is open
 WinUI itself shows the theme's solid color
 in place of the material while the window is inactive, and restores it on
@@ -1530,6 +1530,28 @@ the other two acrylic variants: XAML's `DesktopAcrylicBackdrop` has no kind, so
 the window takes `DesktopAcrylicController` as a target instead
 (`window.systemBackdrop` reads null; the controller is closed when the backdrop
 changes or the window closes)
+`"transparent"` shows the desktop through every pixel the content leaves clear,
+with per-pixel alpha: the window gets a fully clear composition brush behind
+its content (`ICompositionSupportsSystemBackdrop`; the Windows App SDK's
+`TransparentTintBackdrop` is not in the metadata of the releases restored, 2.2
+and 2.3, so it cannot be generated)
+`window.systemBackdrop` reads null for it
+Pair it with `isBorderless` and content that sets no background of its own
+A floating card over a transparent window:
+
+```svelte
+<Window backdrop="transparent" isBorderless isShownInSwitchers={false}>
+  <border
+    background="#e61f1f1f"
+    corner-radius="12"
+    padding="16"
+    horizontal-alignment="center"
+    vertical-alignment="center">
+    <text-block foreground="white">Everything around the card is the desktop</text-block>
+  </border>
+</Window>
+```
+
 A `titleBar` snippet is shown above the content
 and set as the window's title bar (`setTitleBar`, so it is the drag region and
 the controls in it still click); it makes `extendsIntoTitleBar` true unless
@@ -1580,14 +1602,17 @@ of the frame props: `isBorderless` (no frame, no title bar),
 `isActivatable={false}` (a click never takes focus), `isClickThrough`,
 `isExcludedFromCapture` (black in screenshots and screen sharing),
 `isHidden` (opens hidden, hides and shows later) and `cornerRadius` (clips the
-window to a rounded rectangle; the edge is not anti-aliased)
+window to a rounded rectangle; the edge is not anti-aliased, so on a
+transparent window round the card's own `corner-radius` instead, which is)
 A prop left out leaves the window as it is, and dropped again it puts the
 window back
 `createWindow` takes them too
 `handle.setShownInSwitchers(isShown)` does not throw for a window that has no
 taskbar button (WinUI answers 0x80004001 there); `hideToTray` uses it
-A window with a transparent background (per-pixel alpha) is not offered:
-WinUI 3 has no transparent backdrop in the bindings
+A window with a transparent background (per-pixel alpha) is
+`backdrop="transparent"`; no web API makes a window transparent (Tauri and
+Electron take `transparent: true` when they create theirs), so the value is
+WinUI's alone
 `isActivatable` is read again whenever it changes, so an overlay can take focus
 while text is selected and give it up afterwards: `isActivatable={false}` sets
 `WS_EX_NOACTIVATE`, `true` or a dropped prop clears it (call `handle.activate()`
