@@ -30,13 +30,15 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`; imports nothing of WinRT, safe on the host's main thread |
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
-| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
+| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()` (opt-in; see App lifecycle) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
 | `winui-svelte/win2d/context-2d` | `src/win2d/context-2d/index.ts` | `Canvas2D`, `createCanvas2D`, `CanvasElement`, `Context2D`, `Path2D` and the rest of the HTML Canvas 2D API over Win2D (opt-in; see Canvas 2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
+| `winui-svelte/tray/standalone` | `src/tray/standalone/index.ts` | `createStandaloneTray()`, `NativeMenuEntryKind`, and the `winui-svelte/app` calls that start or signal the app: a tray with no window, no WinUI and no components (opt-in; see Tray with no window) |
+| `winui-svelte/notice` | `src/notice/index.ts` | `showNotice()`, `NoticeIcon`, `NoticeButtons`, `NoticeButton`: a message box with no window or app (opt-in; see Notice with no app) |
 | `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
 | `winui-svelte/devices` | `src/devices/index.ts` | device enumeration, input devices, Bluetooth, printers, power, network, display, audio, gamepads and sensors, each also at `winui-svelte/devices/<area>` (opt-in; see Windows devices) |
 
@@ -2241,6 +2243,17 @@ An opt-in subpath: an app that does not import it does not bundle it
   With package identity (an MSIX or sparse package) it is the supported case
   `ensureSingleInstance` needs no identity: `test/app.test.ts` starts a real
   second copy and checks that the first hears its arguments
+- `activateInstance({ key, activation })` is for a process that is not the
+  app (a tray, a launcher): it sends the same JSON line to the copy that
+  serves `key` and resolves with true, or with false when no copy runs
+  Unlike a later copy it never claims the pipe, so it cannot become the
+  first copy by mistake
+  The running copy's `onRedirect` receives `activation`
+- `launchApp({ command, arguments, workingDirectory })` starts a program
+  that outlives the caller: detached, no console window, no shared handles
+- `activateOrLaunch({ key, activation, launch })` is the two together: it
+  activates the running copy, or else starts the app with `launch`, and
+  resolves with true for the first and false for the second
 
 ### System tray (`winui-svelte/tray`)
 
@@ -2362,6 +2375,109 @@ window's content
 
 A Tauri or Electron host that already has a tray should keep it: two icons
 would show, and this one lives and dies with the WinUI window's process
+
+### Tray with no window (`winui-svelte/tray/standalone`)
+
+A tray that runs in a process of its own, plain Node, with no `Window`, no
+app, no WinUI and none of the component barrel: the notification-area icon
+and its menu, and a click that starts or signals the full app
+The panel then opens only when the user asks, and between clicks the tray
+holds a fraction of the memory
+`winui-svelte/tray` cannot do this: its `TrayIcon` mounts a WinUI window
+for the menu and its timers run on the dispatcher queue
+
+```ts
+import {
+  activateOrLaunch,
+  createStandaloneTray,
+  NativeMenuEntryKind
+} from "winui-svelte/tray/standalone";
+
+function openPanel() {
+  void activateOrLaunch({
+    key: "com.example.panel",
+    activation: { arguments: ["--show"], workingDirectory: process.cwd() },
+    launch: { command: "C:\\Program Files\\Panel\\panel.exe", arguments: ["--show"] }
+  });
+}
+
+createStandaloneTray({
+  icon: "tray.ico",
+  tooltip: "Panel",
+  onclick: openPanel,
+  menu: [
+    { kind: NativeMenuEntryKind.COMMAND, label: "Open", onselect: openPanel },
+    { kind: NativeMenuEntryKind.SEPARATOR },
+    { kind: NativeMenuEntryKind.COMMAND, label: "Quit", onselect: () => process.exit(0) }
+  ]
+});
+```
+
+- `createStandaloneTray(options)` takes the icon's options (`icon`,
+  `tooltip`, `isVisible`, `guid`, `onclick`, `ondoubleclick`,
+  `onmiddleclick`) and `menu`, and returns the same handle as
+  `createTrayIcon` (`update`, `notify`, `bounds`, `isRegistered`, `remove`)
+  The icon keeps the process alive; `remove()` or the process ending takes it
+  out of the tray
+- The menu is Windows' own popup menu (`TrackPopupMenuEx`), made on a right
+  click and destroyed when it closes; nothing of it exists while idle
+  A command is `{ kind, label, onselect, isEnabled }`, a line is
+  `{ kind: NativeMenuEntryKind.SEPARATOR }`
+  The menu is modal: the thread runs its own message loop until it closes
+  It does not follow a dark system theme, which a native popup menu does not
+  without an undocumented call; a menu that must match the theme belongs in
+  `winui-svelte/tray` with `TrayIcon`'s `menu` snippet
+- The same entry re-exports `activateInstance`, `activateOrLaunch` and
+  `launchApp` from `winui-svelte/app` (App lifecycle), so a tray imports from
+  one place; the app side calls `ensureSingleInstance` with the same `key`
+- The clicks are heard the way `winui-svelte/tray` hears them, by polling
+  the pointer on the process's timer (Node's `setInterval`)
+- A test bundles it (`scripts/pack/tray-only.test.ts`) and fails if any
+  component, window or renderer module, or a component's name, is in the
+  output, or if it grows past its budget
+
+### Notice with no app (`winui-svelte/notice`)
+
+`showNotice` shows a message box before there is a window or an app: the
+checks that end a run before it starts (the Windows 11 gate, a revoked
+licence) can tell the user why
+
+```ts
+import { NoticeButton, NoticeButtons, NoticeIcon, showNotice } from "winui-svelte/notice";
+
+await showNotice({
+  title: "My app",
+  message: "This app needs Windows 11",
+  icon: NoticeIcon.ERROR
+});
+const pressed = await showNotice({
+  title: "Update",
+  message: "Install now?",
+  icon: NoticeIcon.QUESTION,
+  buttons: NoticeButtons.YES_NO
+});
+const isConfirmed = pressed === NoticeButton.YES;
+```
+
+- `showNotice({ title, message, icon, buttons, owner })` resolves with the
+  `NoticeButton` pressed: `ok`, `cancel`, `yes`, `no`, `retry`, `abort` or
+  `ignore`
+  `icon` is a `NoticeIcon` (`none`, `information`, `warning`, `error`,
+  `question`), `buttons` a `NoticeButtons` (`ok`, `okCancel`, `yesNo`,
+  `yesNoCancel`, `retryCancel`, `abortRetryIgnore`)
+- It is `MessageBoxW` and nothing else: no WinUI, no `runWindow`, no
+  `initWindowsAppSdk`, so plain Node can call it first thing
+  Without an `owner` the box stays on top and takes the foreground;
+  `owner` is a window handle to center on and block
+- It is not a TaskDialog: `TaskDialogIndirect` needs Common Controls 6, which
+  `node.exe` has no manifest for, so custom button text, links and progress
+  bars are not here
+- The dialog is modal and runs its own message loop, so the calling thread
+  waits for it
+  It throws when Windows could not show the box
+  A box cannot be dismissed from a test without input, so the tests fake the
+  call; the one real call they make passes a window handle that does not
+  exist, which Windows refuses at once without showing anything
 
 ### Localization: what works unpackaged
 
