@@ -3296,6 +3296,8 @@ a `fontFamily` prop
   `has(face)` as on the web; `check(font)` and `load(font)` look at the faces of
   the set that the font shorthand names; `ready` is resolved and `status` is
   `loaded`
+- `FontLoadStatus` is the closed set of `status` (`"unloaded"`, `"loading"`,
+  `"loaded"`, `"error"`)
 - The family must be the name written inside the font file; weight, style,
   width and `unicodeRange` are kept and read back but choose nothing, because
   WinUI takes the face from the file
