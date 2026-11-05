@@ -126,6 +126,23 @@ written with it
 | Svelte | 5.51.1 to 5.57.3 (the peer range `5.51.1 - 5.57.3` is what `pnpm check:svelte-matrix` proves; the package edits a few spots of Svelte's runtime and says so, naming the file and the release, when one no longer matches) |
 | Vite | 8 (for the dev server and hot reload) |
 
+## Editor support
+
+Two optional add-ons for `.svelte` files, one for each editor:
+
+- previews and completions for icon names, colours and installed fonts
+- Alt+Enter on a component's prop converts it to the CSS that sets the same
+  value
+
+| Editor | Download | Install |
+| --- | --- | --- |
+| VS Code | `winui-svelte-vscode-<version>.vsix` | `code --install-extension winui-svelte-vscode-0.0.1.vsix`, or the Extensions view, the `...` menu, Install from VSIX |
+| WebStorm | `winui-svelte-webstorm-<version>.zip` | Settings, Plugins, the gear, Install Plugin from Disk |
+
+Both files are assets of the `editors-v*` releases, on their own tags apart
+from the package's: [open the editors releases](https://github.com/avi12/winui-svelte/releases?q=editors-v)
+and take the newest
+
 ## Install
 
 ```sh

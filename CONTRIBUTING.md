@@ -474,6 +474,19 @@ It affects only `pnpm check:editor`, never the published package
 Drop it when
 a language-server release fixes the hint
 
+## Releasing the editor add-ons
+
+The VS Code extension and the WebStorm plugin go out as assets of a GitHub
+release on an `editors-vX.Y.Z` tag, apart from the package's `vX.Y.Z`:
+
+1. Bump `version` in `ide/vscode/package.json` and `pluginVersion` in
+   `ide/webstorm/gradle.properties`, commit
+2. Tag `editors-vX.Y.Z` and push the tag; `.github/workflows/editors.yml`
+   builds the `.vsix` and creates the release with it attached
+3. The runner has no WebStorm, so the plugin is attached by hand: run
+   `pnpm install:webstorm-plugin` (it builds the zip) and then
+   `gh release upload editors-vX.Y.Z ide/webstorm/build/distributions/winui-svelte-webstorm-X.Y.Z.zip`
+
 ## Releasing
 
 Releases go out only when the maintainer asks: bump `version`, `pnpm lint`,
