@@ -66,6 +66,8 @@
     "src/web-apis/contacts.ts",
     "src/web-apis/fonts.ts",
     "src/tray/index.ts",
+    "src/tray/standalone/index.ts",
+    "scripts/pack/treeshake-app/tray-main.ts",
     "src/enums.ts",
     "test/choice-props.types.ts",
     "scripts/pack/treeshake-app/enum-main.ts",
