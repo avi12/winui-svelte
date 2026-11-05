@@ -3,6 +3,7 @@ name: Editors
 # Builds the VS Code extension and attaches it to the GitHub release of an
 # editors-vX.Y.Z tag (git tag editors-v0.0.1 && git push --tags), apart from the
 # npm package's vX.Y.Z tags
+# With a VSCE_PAT or OVSX_PAT secret set it also publishes to the VS Code Marketplace and Open VSX
 # The WebStorm plugin is not built here: it compiles against an installed
 # WebStorm and its Svelte plugin, which a runner has none of; build it with
 # pnpm install:webstorm-plugin and attach the zip with
@@ -26,6 +27,8 @@ jobs:
     env:
       RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
       GH_TOKEN: ${{ github.token }}
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -51,3 +54,11 @@ jobs:
             gh release create $env:RELEASE_TAG --title $env:RELEASE_TAG --notes 'Editor add-ons for winui-svelte: the VS Code extension is attached; the WebStorm plugin zip is uploaded by hand'
           }
           gh release upload $env:RELEASE_TAG $vsix --clobber
+      - name: Publish to the VS Code Marketplace
+        if: env.VSCE_PAT != ''
+        run: pnpm dlx @vscode/vsce publish --packagePath (Get-ChildItem ide/vscode -Filter 'winui-svelte-vscode-*.vsix').FullName
+        shell: pwsh
+      - name: Publish to Open VSX
+        if: env.OVSX_PAT != ''
+        run: pnpm dlx ovsx publish (Get-ChildItem ide/vscode -Filter 'winui-svelte-vscode-*.vsix').FullName
+        shell: pwsh

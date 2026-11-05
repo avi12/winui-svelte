@@ -487,6 +487,20 @@ release on an `editors-vX.Y.Z` tag, apart from the package's `vX.Y.Z`:
    `pnpm install:webstorm-plugin` (it builds the zip) and then
    `gh release upload editors-vX.Y.Z ide/webstorm/build/distributions/winui-svelte-webstorm-X.Y.Z.zip`
 
+### The registries
+
+Both add-ons are optional and carry their own icon and description
+(`ide/icon.svg` is the one source: `ide/vscode/images/icon.png` is its 128 px
+render, and `ide/webstorm/src/main/resources/META-INF/pluginIcon.svg` its copy
+at 40 px; render the PNG again after changing the SVG)
+
+- VS Code Marketplace and Open VSX: set the repository secrets `VSCE_PAT`
+  and `OVSX_PAT`; the workflow then publishes the `.vsix` after it attaches it
+  to the release
+- JetBrains Marketplace: upload the plugin zip by hand on the plugin's page
+  (the first upload goes through JetBrains' review; it needs the
+  `pluginIcon.svg` and the description of `plugin.xml`, both in place)
+
 ## Releasing
 
 Releases go out only when the maintainer asks: bump `version`, `pnpm lint`,
