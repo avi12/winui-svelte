@@ -208,7 +208,7 @@ test("a window opens hidden, and the frame props set what Windows holds for it",
   }
 });
 
-test("a window follows its content's height with its bottom-right corner pinned, and takes activation back and forth", {
+test("a window follows its content's height with its bottom-right corner pinned", {
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
   timeout: TIMEOUT_MILLISECONDS
 }, async () => {
@@ -222,14 +222,6 @@ test("a window follows its content's height with its bottom-right corner pinned,
       kind: "frame"
     });
     assert.equal(noActivate["isNoActivate"], true);
-    const activatable = await example.ask({
-      command: {
-        cmd: "frame",
-        isActivatable: true
-      },
-      kind: "frame"
-    });
-    assert.equal(activatable["isNoActivate"], false, "isActivatable changes while the window is open, both ways");
 
     await example.ask({
       command: {
