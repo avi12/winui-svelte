@@ -343,3 +343,25 @@ test("a style directive opts the window into the groups its property needs, with
   assert.match(withStyle?.code ?? "", /registerWinuiSheet\(/u);
   assert.equal(moduleFor("<border style:padding=\"4px\" />\n"), null, "a property with no opt-in group needs no module");
 });
+
+test("an @font-face becomes a registration of the font file before the sheet's", () => {
+  const result = moduleFor(
+    `<text-block class="icon">x</text-block>
+
+<style>
+  @font-face { font-family: "Face Sans"; src: url("./fonts/face.ttf") format("truetype") }
+  .icon { font-family: "Face Sans" }
+</style>
+`
+  );
+  assert.ok(result !== null);
+  assert.match(result.code, /registerFont as registerWinuiFont/u);
+  assert.match(result.code, /registerWinuiFont\(\{ family: "Face Sans", source: "\.\/fonts\/face\.ttf", base: import\.meta\.url \}\)/u);
+  assert.ok(result.code.indexOf("registerWinuiFont(") < result.code.indexOf("registerWinuiSheet("));
+});
+
+test("a sheet without @font-face imports no font registration", () => {
+  const result = moduleFor(SOURCE);
+  assert.ok(result !== null);
+  assert.doesNotMatch(result.code, /registerFont/u);
+});

@@ -1,6 +1,7 @@
 import { tracksOf } from "./animation-tracks.ts";
 import { computeDeclarations } from "./cascade.ts";
 import { addDarkRules } from "./dark-rules.ts";
+import { readFontFace } from "./font-face.ts";
 import { gridTrackProblem } from "./grid-track-verdicts.ts";
 import { createLayerOrder, declareLayer, layerRank, withinLayer } from "./layers.ts";
 import type { LayerOrder } from "./layers.ts";
@@ -12,6 +13,7 @@ import { ColorScheme } from "./types.ts";
 import type {
   Declaration,
   Diagnostic,
+  FontFaceRule,
   Keyframes,
   KeyframeStep,
   ResourceEntry,
@@ -96,6 +98,7 @@ interface Translator {
   kinds: Map<string, ResourceKind>;
   rules: Rule[];
   keyframes: Keyframes[];
+  fontFaces: FontFaceRule[];
   nextOrder: number;
   layers: LayerOrder;
   /** Whether the rules being read are inside `@starting-style`. */
@@ -674,6 +677,31 @@ function addProperty({ translator, block }: {
   });
 }
 
+function addFontFace({ translator, block }: {
+  translator: Translator;
+  block: AtRuleBlock;
+}) {
+  const bodies = (block.children ?? []).filter(child => child.kind === BlockKind.RULE);
+  const reading = readFontFace({
+    declarations: bodies.flatMap(body => body.declarations),
+    at: block.at
+  });
+  for (const problem of reading.problems) {
+    report({
+      translator,
+      severity: problem.severity,
+      message: problem.message,
+      position: translator.mapPosition(problem.at)
+    });
+  }
+
+  const { face } = reading;
+  const isUsable = face !== null;
+  if (isUsable) {
+    translator.fontFaces.push(face);
+  }
+}
+
 // The bounds an @media (min-width...) or an @container asks for; null for any other at-rule.
 function sizeQueryOf(block: AtRuleBlock) {
   const queries = new Map([
@@ -740,18 +768,50 @@ function addEnvironmentBlock({ translator, block, scheme }: {
   return true;
 }
 
+type SheetAtRule = (input: {
+  translator: Translator;
+  block: AtRuleBlock;
+}) => void;
+
+// The at-rules that record something for the whole sheet, wherever they are written.
+const SHEET_AT_RULES: ReadonlyMap<string, SheetAtRule> = new Map([["property", addProperty]]);
+// The ones that are only the sheet's own when not inside an @media or a color scheme.
+const TOP_LEVEL_AT_RULES: ReadonlyMap<string, SheetAtRule> = new Map([
+  ["font-face", addFontFace],
+  ["keyframes", addKeyframes]
+]);
+
+function addSheetAtRule({ translator, block, isTopLevel }: {
+  translator: Translator;
+  block: AtRuleBlock;
+  isTopLevel: boolean;
+}) {
+  const topLevel = isTopLevel ? TOP_LEVEL_AT_RULES.get(block.name) : undefined;
+  const handler = SHEET_AT_RULES.get(block.name) ?? topLevel;
+  const isHandled = handler !== undefined;
+  if (isHandled) {
+    handler({
+      translator,
+      block
+    });
+  }
+
+  return isHandled;
+}
+
 function addAtRule({ translator, block, scheme, media }: {
   translator: Translator;
   block: AtRuleBlock;
   scheme: ColorScheme;
   media: MediaCondition | null;
 }) {
-  const isProperty = block.name === "property";
-  if (isProperty) {
-    addProperty({
-      translator,
-      block
-    });
+  const isNestedMedia = scheme !== ColorScheme.DEFAULT || media !== null;
+  const isSheetAtRule = addSheetAtRule({
+    translator,
+    block,
+    isTopLevel: !isNestedMedia
+  });
+  if (isSheetAtRule) {
     return;
   }
 
@@ -777,16 +837,6 @@ function addAtRule({ translator, block, scheme, media }: {
     return;
   }
 
-  const isKeyframes = block.name === "keyframes" && scheme === ColorScheme.DEFAULT && media === null;
-  if (isKeyframes) {
-    addKeyframes({
-      translator,
-      block
-    });
-    return;
-  }
-
-  const isNestedMedia = scheme !== ColorScheme.DEFAULT || media !== null;
   const sizeQuery = isNestedMedia ? null : sizeQueryOf(block);
   const { children } = block;
   const isSizeBlock = sizeQuery !== null && children !== null;
@@ -1025,6 +1075,7 @@ export function translateStyleSheet(input: TranslateInput) {
     kinds: new Map(),
     rules: [],
     keyframes: [],
+    fontFaces: [],
     nextOrder: 0,
     layers: createLayerOrder(),
     isStartingStyle: false,
@@ -1078,6 +1129,7 @@ export function translateStyleSheet(input: TranslateInput) {
       resourcesXaml
     } satisfies StyleSheetData,
     diagnostics: translator.diagnostics,
+    fontFaces: translator.fontFaces,
     declaredKinds: translator.kinds
   };
 }
@@ -1089,6 +1141,6 @@ export function formatDiagnostic(diagnostic: Diagnostic) {
 }
 
 /** The error diagnostics of a translation. */
-export function errorsOf(translation: Translation) {
+export function errorsOf(translation: Pick<Translation, "diagnostics">) {
   return translation.diagnostics.filter(diagnostic => diagnostic.severity === "error");
 }

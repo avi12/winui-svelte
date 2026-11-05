@@ -129,8 +129,16 @@ export interface StyleSheetData {
   resourcesXaml: string | null;
 }
 
+/** An `@font-face` of a style sheet: the family name inside the font file, and the file as the sheet wrote it. */
+export interface FontFaceRule {
+  family: string;
+  source: string;
+}
+
 /** What translating a component's CSS produced. */
 export interface Translation {
   sheet: StyleSheetData;
   diagnostics: Diagnostic[];
+  /** The sheet's `@font-face` rules, registered when the sheet's module loads. */
+  fontFaces: FontFaceRule[];
 }

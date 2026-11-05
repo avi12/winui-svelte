@@ -747,3 +747,32 @@ test("env() safe-area insets are zero and titlebar-area is an error", () => {
   assert.deepEqual(declarations, ["width: 100px"]);
   assert.match(errors(".a { height: calc(100px - env(titlebar-area-height)) }").join(), /height: expected a length/u);
 });
+
+test("@font-face: the family and the first url() of src, quotes and format() dropped", () => {
+  const result = translate({
+    css: `@font-face { font-family: "Face Sans"; src: local("Face"), url('./a b/face.woff2') format("woff2"), url(face.ttf); font-display: swap }`
+  });
+  assert.deepEqual(result.fontFaces, [{
+    family: "Face Sans",
+    source: "./a b/face.woff2"
+  }]);
+  assert.deepEqual(result.diagnostics, []);
+});
+
+test("@font-face: a descriptor WinUI cannot act on is a warning", () => {
+  const result = translate({ css: `@font-face { font-family: Face; src: url(face.ttf); font-weight: 700 }` });
+  assert.equal(result.fontFaces.length, 1);
+  assert.deepEqual(result.diagnostics.map(formatDiagnostic), [
+    "card.svelte:1:53: warning: @font-face font-weight has no effect: WinUI picks the face from the font file itself"
+  ]);
+});
+
+test("@font-face: no src, no url() and a web address are errors", () => {
+  assert.match(errors(`@font-face { font-family: Face }`).join(" "), /needs a font-family and a src/u);
+  assert.match(errors(`@font-face { font-family: Face; src: local("Face") }`).join(" "), /needs a url\(\) of a font file/u);
+  assert.match(errors(`@font-face { font-family: Face; src: url(https://example.com/face.woff2) }`).join(" "), /not a file/u);
+});
+
+test("@font-face inside @media has no WinUI meaning", () => {
+  assert.equal(errors(`@media (min-width: 600px) { @font-face { font-family: Face; src: url(face.ttf) } }`).length > 0, true);
+});
