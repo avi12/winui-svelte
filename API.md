@@ -38,6 +38,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/win2d/context-2d` | `src/win2d/context-2d/index.ts` | `Canvas2D`, `createCanvas2D`, `CanvasElement`, `Context2D`, `Path2D` and the rest of the HTML Canvas 2D API over Win2D (opt-in; see Canvas 2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
 | `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
+| `winui-svelte/store` | `src/store/index.ts` | `getAppLicense`, `watchLicense`, `checkForUpdates`, `watchPackages`, `getStartupTask`, `getPackageInfo`: the Store and package APIs, answering `hasPackage: false` outside a package (opt-in) |
 | `winui-svelte/devices` | `src/devices/index.ts` | device enumeration, input devices, Bluetooth, printers, power, network, display, audio, gamepads and sensors, each also at `winui-svelte/devices/<area>` (opt-in; see Windows devices) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
@@ -4069,6 +4070,57 @@ Does not work or is not offered:
 - Geolocation: `Geolocator` needs the location consent and a capability an unpackaged app cannot declare; the bindings hold `Windows.Devices.Geolocation.Geopoint` for the values only
 - Gamepad input while the window is in the background: Windows delivers it to the focused window
 - Sensors on a desktop: there are none, so `isAvailable` is false
+
+## Store and package (`winui-svelte/store`)
+
+The Microsoft Store and package APIs (`Windows.Services.Store.StoreContext`,
+`Windows.ApplicationModel.Package`, `PackageCatalog`, `StartupTask`) as typed
+async calls and events, opt-in
+Every call that needs a package identity answers `{ hasPackage: false }` outside
+a package (plain Node.js, Electron, `pnpm dev`) and never throws for the missing
+identity; inside one it answers `{ hasPackage: true, value }`
+The check is `GetCurrentPackageFullName`, not the exception `Package.Current`
+throws
+
+| Export | What |
+|---|---|
+| `hasPackage()`, `getPackageInfo()` | whether the process has an identity; the package's name, full name, family name, publisher, version and install path, or null |
+| `getAppLicense({ window })` | `isActive`, `isTrial`, `skuStoreId`, `expirationDate` (null when it never ends) |
+| `watchLicense({ window, pollMilliseconds })` | a `LicenseWatcher` that raises `offlinelicenseschanged` (`onofflinelicenseschanged`); `close()` stops it |
+| `checkForUpdates({ window })` | `{ updates, hasMandatory, install({ onprogress }) }`: nothing is downloaded until `install` is called, and it installs exactly the updates found |
+| `watchPackages()` | a `PackageWatcher` that raises `packagestaging`, `packageinstalling` and `packageupdating` (`PackageProgressEvent`, with `progress`, `isComplete`, `errorCode`) |
+| `getStartupTask({ taskId })` | the task's `state`, `enable()` (a request: read the state it returns) and `disable()` |
+| `UpdateState`, `StartupState`, `PackageStage` | the closed sets, each a value plus a type |
+
+`window` is the owner of any Store dialog: a `WindowHandle` or the native
+`Window`; it is given to `IInitializeWithWindow` on the `StoreContext`, as a
+desktop app must
+Without it a call that shows UI is refused by Windows
+
+Events and threads: dynwinrt delivers a callback only when Windows raises it on
+the UI thread
+`OfflineLicensesChanged` and the `PackageCatalog` events come from a thread of
+their own, so they may never arrive
+`watchLicense` takes `pollMilliseconds` to read the licence on a UI-thread timer
+and raise the same event when it changed (as `winui-svelte/media` polls the
+player); `install`'s `onprogress` is an async progress callback and does arrive
+Treat `watchPackages` as a hint, not a guarantee
+
+What was checked from `node.exe` with no package identity: `hasPackage()` is
+false, `getPackageInfo()` is null, and every other call answers
+`hasPackage: false` (`src/store/store.test.ts`; it installs and downloads
+nothing)
+What cannot work without an identity: the licence, the Store update check and
+install, the package events and startup tasks all, because Windows ties them to
+the package
+Under MSIX they are expected to work as documented, but nothing here has run
+under a real package yet
+
+Replaces in the any-stt panel: with `getAppLicense`, `watchLicense`,
+`checkForUpdates`, `watchPackages` and `getStartupTask` running in the packaged
+`node.exe`, the Rust launcher no longer needs `licence.rs`, `updates.rs`,
+`store.rs` or its `--startup-task` mode
+Delete them once the calls are confirmed under the package
 
 ## Reference: the remaining exports
 
