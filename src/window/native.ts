@@ -58,6 +58,18 @@ export function scaleOf(hwnd: bigint) {
   return dpi > 0 ? dpi / BASE_DPI : 1;
 }
 
+const getForegroundWindow = bind({
+  dll: "user32.dll",
+  entryPoint: "GetForegroundWindow",
+  parameters: [],
+  returnType: "pointer"
+});
+
+/** The handle of the window the user is working in; 0 when no window has the foreground. */
+export function foregroundWindowHandle() {
+  return addressOf(getForegroundWindow.invoke([]).returnValue);
+}
+
 /**
  * Makes the window `owner` own the window `hwnd`: the owned window stays above
  * its owner, and closes, minimizes and restores with it.

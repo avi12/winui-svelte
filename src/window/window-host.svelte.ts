@@ -1,3 +1,5 @@
+import type { SizeToContent, WindowAnchor, WindowBounds, WindowSize } from "./anchor.ts";
+import { fittedBounds, SizeToContent as SizeToContentKind, WindowAnchor as WindowAnchorKind } from "./anchor.ts";
 import {
   applyCaptionButtonColors,
   applyPresentation,
@@ -13,6 +15,7 @@ import { isBackgroundRun } from "./background-mode.ts";
 import { backgroundPlacement, keepInBackground } from "./background.ts";
 import type { CaptionButtonColors, CaptionButtonProperty, TitleBarHeight, WindowRegion } from "./chrome.ts";
 import { TitleBarHeight as TitleBarHeightKind, WindowPresentation, WindowTheme } from "./chrome.ts";
+import { toDevicePixels } from "./css-pixels.ts";
 import {
   clearWindowClip,
   clipToRoundedRectangle,
@@ -33,16 +36,10 @@ import {
   WindowActivationState
 } from "#src/winui.js";
 
+export type { WindowBounds, WindowSize } from "./anchor.ts";
+
 // What <Window> (components/hand-written/Window.svelte) does: a native window
 // around the component's content, kept in line with its props.
-
-/** The window's position and size, in device pixels, as AppWindow has them. */
-export interface WindowBounds {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
 
 /**
  * Where the window opens, in device pixels; a size left out is the width or
@@ -109,6 +106,23 @@ export interface WindowProps {
    */
   width?: number;
   height?: number;
+
+  /**
+   * Which sides of the window follow its content: the content is measured
+   * after every layout pass and the window is resized to it (frame included,
+   * within the size limits) with one `AppWindow.MoveAndResize`, so a growing
+   * content never flickers. A side that follows the content ignores the
+   * `width` or `height` prop and the user's resizing. Windowed presentation
+   * only; the default is `none`.
+   */
+  sizeToContent?: SizeToContent | undefined;
+
+  /**
+   * The corner that stays where it is when the window is sized to its content
+   * (and when the scale changes the size): a window docked bottom-right whose
+   * content grows taller grows upward. The default is `topLeft`.
+   */
+  anchor?: WindowAnchor | undefined;
 
   /** The least the user can resize to, in device-independent pixels. */
   minWidth?: number;
@@ -228,12 +242,6 @@ export interface WindowProps {
   onboundschanged?: (bounds: WindowBounds) => void;
 }
 
-/** A size in device pixels. */
-export interface WindowSize {
-  width: number;
-  height: number;
-}
-
 /** What `attachWindow` opens a window around, and how. */
 export interface AttachOptions {
   content: FrameworkElement;
@@ -244,11 +252,40 @@ export interface AttachOptions {
   size?: WindowSize | undefined;
 }
 
-function round({ value, scale }: {
-  value: number;
+// A side of the window in device pixels: the prop's, unless the prop is left
+// out or the content sets that side.
+function sideOf({ value, current, isFitted, scale }: {
+  value: number | undefined;
+  current: number;
+  isFitted: boolean;
   scale: number;
 }) {
-  return Math.round(value * scale);
+  const isKept = value === undefined || isFitted;
+  if (isKept) {
+    return current;
+  }
+
+  return toDevicePixels({
+    value,
+    scale
+  });
+}
+
+// A size limit in device pixels; `fallback` when the app names none.
+function limitOf({ value, fallback, scale }: {
+  value: number | undefined;
+  fallback: number;
+  scale: number;
+}) {
+  const isNamed = value !== undefined;
+  if (!isNamed) {
+    return fallback;
+  }
+
+  return toDevicePixels({
+    value,
+    scale
+  });
 }
 
 // A prop the app left out is undefined; a guard names the test.
@@ -281,6 +318,7 @@ class WindowHost {
   private isClipApplied = false;
   private isTopApplied = false;
   private hasShown = false;
+  private isFitting = false;
   private readonly isTakenOver: boolean;
   private readonly openSize: WindowSize | undefined;
   private appliedSize: {
@@ -330,6 +368,7 @@ class WindowHost {
     }
 
     $effect(() => this.syncSize());
+    $effect(() => this.fitToContent());
     this.syncOwner();
     this.listen();
     this.watchScale();
@@ -540,28 +579,28 @@ class WindowHost {
     }
 
     if (isGiven(minWidth)) {
-      presenter.preferredMinimumWidth = round({
+      presenter.preferredMinimumWidth = toDevicePixels({
         value: minWidth,
         scale
       });
     }
 
     if (isGiven(minHeight)) {
-      presenter.preferredMinimumHeight = round({
+      presenter.preferredMinimumHeight = toDevicePixels({
         value: minHeight,
         scale
       });
     }
 
     if (isGiven(maxWidth)) {
-      presenter.preferredMaximumWidth = round({
+      presenter.preferredMaximumWidth = toDevicePixels({
         value: maxWidth,
         scale
       });
     }
 
     if (isGiven(maxHeight)) {
-      presenter.preferredMaximumHeight = round({
+      presenter.preferredMaximumHeight = toDevicePixels({
         value: maxHeight,
         scale
       });
@@ -665,7 +704,7 @@ class WindowHost {
       hwnd,
       width,
       height,
-      radius: round({
+      radius: toDevicePixels({
         value: cornerRadius,
         scale: this.handle.scale
       })
@@ -720,11 +759,11 @@ class WindowHost {
     const { scale } = this.handle;
     const current = this.openSize ?? appWindow.size;
     const size = {
-      width: props.width === undefined ? current.width : round({
+      width: props.width === undefined ? current.width : toDevicePixels({
         value: props.width,
         scale
       }),
-      height: props.height === undefined ? current.height : round({
+      height: props.height === undefined ? current.height : toDevicePixels({
         value: props.height,
         scale
       })
@@ -769,7 +808,8 @@ class WindowHost {
   }
 
   // A new width or height resizes the window; the user's own resizing is not
-  // undone, since the props did not change.
+  // undone, since the props did not change. A side that follows the content
+  // (sizeToContent) is the content's to set.
   private syncSize() {
     const { width, height } = this.props;
     const isChanged = width !== this.appliedSize.width || height !== this.appliedSize.height;
@@ -783,16 +823,106 @@ class WindowHost {
     };
     const { appWindow } = this.handle.window;
     const { scale } = this.handle;
+    const { isWidthFitted, isHeightFitted } = this.fittedSides;
     appWindow.resize({
-      width: width === undefined ? appWindow.size.width : round({
+      width: sideOf({
         value: width,
+        current: appWindow.size.width,
+        isFitted: isWidthFitted,
         scale
       }),
-      height: height === undefined ? appWindow.size.height : round({
+      height: sideOf({
         value: height,
+        current: appWindow.size.height,
+        isFitted: isHeightFitted,
         scale
       })
     });
+  }
+
+  private get fittedSides() {
+    const mode = this.props.sizeToContent ?? SizeToContentKind.none;
+    return {
+      isWidthFitted: mode === SizeToContentKind.width || mode === SizeToContentKind.both,
+      isHeightFitted: mode === SizeToContentKind.height || mode === SizeToContentKind.both
+    };
+  }
+
+  // Sizes the window to what its content asks for, whenever the prop, the
+  // limits, the scale or a layout pass changes it: one MoveAndResize, so the
+  // anchor corner never moves between the size and the position.
+  private fitToContent() {
+    const mode = this.props.sizeToContent ?? SizeToContentKind.none;
+    const anchor = this.props.anchor ?? WindowAnchorKind.topLeft;
+    const { minWidth, minHeight, maxWidth, maxHeight } = this.props;
+    const isIdle = mode === SizeToContentKind.none || !this.isWindowed || this.isFitting;
+    if (isIdle) {
+      return;
+    }
+
+    const { desiredSize } = this.content;
+    const isMeasured = desiredSize.width > 0 && desiredSize.height > 0;
+    if (!isMeasured) {
+      return;
+    }
+
+    const { appWindow, scale } = this.handle;
+    const { size, position, clientSize } = appWindow;
+    const frame = {
+      width: size.width - clientSize.width,
+      height: size.height - clientSize.height
+    };
+    const target = fittedBounds({
+      bounds: {
+        ...position,
+        ...size
+      },
+      desired: {
+        width: toDevicePixels({
+          value: desiredSize.width,
+          scale
+        }) + frame.width,
+        height: toDevicePixels({
+          value: desiredSize.height,
+          scale
+        }) + frame.height
+      },
+      mode,
+      anchor,
+      limits: {
+        minWidth: limitOf({
+          value: minWidth,
+          fallback: 0,
+          scale
+        }),
+        minHeight: limitOf({
+          value: minHeight,
+          fallback: 0,
+          scale
+        }),
+        maxWidth: limitOf({
+          value: maxWidth,
+          fallback: Infinity,
+          scale
+        }),
+        maxHeight: limitOf({
+          value: maxHeight,
+          fallback: Infinity,
+          scale
+        })
+      }
+    });
+    const hasTarget = target !== null;
+    if (!hasTarget) {
+      return;
+    }
+
+    this.isFitting = true;
+    try {
+      appWindow.moveAndResize(target);
+    } finally {
+      this.isFitting = false;
+    }
   }
 
   private isCloseRefused() {
@@ -815,6 +945,7 @@ class WindowHost {
         this.releaseBackdrop = null;
         this.props.onclosed?.();
       }),
+      this.content.onLayoutUpdated(() => this.fitToContent()),
       window.appWindow.onChanged((_sender, event) => {
         const isMoved = event.didPositionChange || event.didSizeChange;
         if (isMoved) {
@@ -836,6 +967,7 @@ class WindowHost {
         this.syncLimits();
         this.syncRegions();
         this.syncShape();
+        this.fitToContent();
         this.props.onscalechanged?.(scale);
       }
     });
