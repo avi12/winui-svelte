@@ -2533,6 +2533,7 @@ needs
 | `IdleDetector` (user and screen state) | `winui-svelte/web-apis/idle` | web plus extras | none | done |
 | `navigator.credentials`, `PasswordCredential`, `PublicKeyCredential` (Windows Hello) | `winui-svelte/web-apis/credentials` | web plus extras | none | done |
 | `EyeDropper` | `winui-svelte/web-apis/eye-dropper` | web plus extras | none | done |
+| `FontFace`, `document.fonts` (font files of the app) | `winui-svelte/web-apis/fonts` | web plus extras | none | done |
 | `navigator.contacts` (Contact Picker) | `winui-svelte/web-apis/contacts` | web plus extras | for most apps, package identity | done |
 
 Every row is built and tested; the timers (`setTimeout`, `setInterval`,
@@ -3187,6 +3188,33 @@ needs a single-threaded apartment: the window thread has one)
   resolves with `userState` (`active` or `idle`) and `screenState` (`locked` or
   `unlocked`) set; `change` fires when either moves
 - Extra: `idleMilliseconds`, the time since the last input at the last reading
+
+#### Fonts
+
+`installFontFaces()` defines `FontFace` and `document.fonts` (a `FontFaceSet`)
+over the font registry that a stylesheet's `@font-face` also fills, so a font
+file of the app is used by its family name in a `font-family` of a style and in
+a `fontFamily` prop
+
+- `new FontFace(family, source, descriptors)`: `source` is `url("...")`, a path
+  or a `file:` URL (a relative path is relative to the working folder), or the
+  bytes of a font (written to a file of the temporary folder named by their
+  hash); `load()` registers the file under the family and rejects with
+  `NetworkError` when there is no such file; `status` and `loaded` follow
+- `document.fonts.add(face)` registers at once; `delete(face)`, `clear()` and
+  `has(face)` as on the web; `check(font)` and `load(font)` look at the faces of
+  the set that the font shorthand names; `ready` is resolved and `status` is
+  `loaded`
+- The family must be the name written inside the font file; weight, style,
+  width and `unicodeRange` are kept and read back but choose nothing, because
+  WinUI takes the face from the file
+- WinUI cannot unload a font: after `delete(face)` the family stops being
+  spelled as its file, but a font already loaded stays usable by name until the
+  process ends
+- It works in a plain Node process; nothing is installed on the machine (the
+  file is handed to WinUI as `ms-appx:///` and its absolute path)
+- Extra: `registerFont({ family, source, base })` and `unregisterFont(family)`
+  from `winui-svelte/css`, the registry itself
 
 #### Other exports
 

@@ -32,4 +32,4 @@ partly or lacks
 | Wrapping link chips | missing | `flex-wrap` is a build error and there is no wrap panel; the example uses one row | none |
 | Transparent window | now offered | `backdrop="transparent"` (API.md Window); not run on screen | none; no web API makes a window transparent |
 | Size to content with the bottom-right corner pinned | now offered | `sizeToContent` with `anchor` (API.md Window); not run on screen | `ResizeObserver` offers, not used: it reports the laid-out size |
-| Material Symbols font | missing | fonts are named by family and there is no way to load a font file from the app folder; the example uses Segoe Fluent Icons | none |
+| Material Symbols font | now offered | `@font-face { font-family: "Material Symbols Rounded"; src: url("./MaterialSymbolsRounded.ttf") }` in the `<style>`, or `document.fonts.add(new FontFace(...))` (README Fonts); the file is handed to WinUI as `ms-appx:///` and its absolute path, which works in plain Node (test/fonts.test.ts); the example still uses Segoe Fluent Icons | `FontFace` and `document.fonts` (`winui-svelte/web-apis/fonts`) |

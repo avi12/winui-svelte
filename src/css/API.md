@@ -441,6 +441,23 @@ The first color an element gets is set, not animated; the border keeps a brush o
 .badge { transform: translate(4px, -4px) rotate(8deg) }
 ```
 
+## Fonts: `@font-face`
+
+`@font-face` names a font file of the app and the family it is used by:
+`@font-face { font-family: "Face"; src: url("./Face.ttf") }`
+The family must be the name written inside the file
+The first `url()` of `src` is the file, relative to the stylesheet (in a built app
+also by its name beside the bundle); a web address or a `src` with no `url()` is
+an error
+`font-weight`, `font-style`, `font-stretch` and `unicode-range` are a warning, as
+WinUI takes the face from the file; `font-display` is ignored
+The sheet's module registers the file with `registerFont` (from
+`winui-svelte/css`) before it registers the sheet, and any `font-family` of that
+name, in any sheet or prop, is then handed to WinUI as
+`ms-appx:///C:/app/Face.ttf#Face` (a `file:` URI is not read by WinUI)
+Register a font before the first window shows text: a font registered later is
+used by the controls created after it
+
 ## Animations: `animation`, `@keyframes`
 
 `@keyframes` stays inside the sheet's data (`StyleSheetData.keyframes`, global to
