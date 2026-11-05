@@ -1,4 +1,4 @@
-// Bundles the VS Code extension (ide/vscode) into ide/vscode/dist/extension.js,
+// Bundles the VS Code extension (ide/vscode) into ide/vscode/dist/extension.cjs,
 // the file its package.json names as `main`, and packs it as a .vsix next to it:
 //
 //   node scripts/editor/build-vscode-extension.ts

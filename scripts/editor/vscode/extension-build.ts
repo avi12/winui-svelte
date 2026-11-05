@@ -12,7 +12,7 @@ export function builtVsix(version: string) {
 export async function buildExtension() {
   await build({
     entryPoints: [path.join(EXTENSION_ROOT, "src/extension.ts")],
-    outfile: path.join(EXTENSION_ROOT, "dist/extension.js"),
+    outfile: path.join(EXTENSION_ROOT, "dist/extension.cjs"),
     bundle: true,
     platform: "node",
     format: "cjs",
