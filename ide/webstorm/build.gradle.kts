@@ -2,7 +2,7 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
   kotlin("jvm") version "2.4.21"
-  id("org.jetbrains.intellij.platform") version "2.19.0"
+  id("org.jetbrains.intellij.platform") version "2.20.0"
   id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
   id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
@@ -11,7 +11,6 @@ group = "dev.winui.svelte"
 version = providers.gradleProperty("pluginVersion").get()
 
 val webstormHome = providers.gradleProperty("webstormHome").orElse(providers.environmentVariable("WEBSTORM_HOME"))
-val svelteHome = providers.gradleProperty("svelteHome")
 
 repositories {
   mavenCentral()
@@ -23,7 +22,7 @@ repositories {
 dependencies {
   intellijPlatform {
     local(webstormHome.get())
-    localPlugin(svelteHome.get())
+    compatiblePlugin("dev.blachut.svelte.lang")
     bundledPlugin("JavaScript")
     bundledPlugin("com.intellij.css")
     testFramework(TestFrameworkType.Platform)
@@ -48,6 +47,11 @@ intellijPlatform {
     }
   }
   buildSearchableOptions = false
+  pluginVerification {
+    ides {
+      local(webstormHome.get())
+    }
+  }
 }
 
 tasks.test {
