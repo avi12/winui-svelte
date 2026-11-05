@@ -38,4 +38,20 @@ class GlyphInlayTest : BasePlatformTestCase() {
   fun testNothingIsDrawnWithoutTheDependency() {
     assertEquals(emptyList<Int>(), inlayOffsets("<FontIcon glyph=\"Save\" />", TestManifests.UNRELATED))
   }
+
+  fun testAWrapperComponentWhoseGlyphPropIsAGlyphInputGetsTheIcon() {
+    myFixture.addFileToProject("FeatureCard.svelte", component("glyph: GlyphInput"))
+    val markup = usage("FeatureCard")
+    assertEquals(listOf(markup.indexOf("Save")), inlayOffsets(markup))
+  }
+
+  fun testAWrapperComponentWhoseGlyphPropIsAStringGetsNoIcon() {
+    myFixture.addFileToProject("Label.svelte", component("glyph: string"))
+    assertEquals(emptyList<Int>(), inlayOffsets(usage("Label")))
+  }
+
+  private fun component(prop: String) = "<script lang=\"ts\">\n  interface Props { $prop; }\n</script>\n"
+
+  private fun usage(name: String) =
+    "<script lang=\"ts\">\n  import $name from \"./$name.svelte\";\n</script>\n<$name glyph=\"Save\" />"
 }

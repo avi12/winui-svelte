@@ -361,6 +361,9 @@ previews it, large, with its name and code point, in the same font
 (`GlyphDocumentationProvider`; nothing shows for another component, an unknown
 name or a project without the dependency)
 
+A component of your own counts too when its file declares the prop as `GlyphInput`
+(`glyph: GlyphInput` in its `Props`, found by following the import)
+
 The same icon is drawn inside the string, before the name, as an inlay (`GlyphInlayProvider`;
 switch it off in Settings, Editor, Inlay Hints)
 

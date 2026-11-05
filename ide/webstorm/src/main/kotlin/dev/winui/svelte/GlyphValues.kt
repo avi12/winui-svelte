@@ -10,8 +10,9 @@ internal object GlyphValues {
     file: PsiFile
   ): Boolean {
     val attribute = value.parent as? XmlAttribute ?: return false
-    val isGlyphOfIcon = FluentGlyphs.isGlyphAttribute(attribute.parent?.name, attribute.name)
-    return isGlyphOfIcon && WinuiProjectService.of(file.project).isWinuiFile(file)
+    val tag = attribute.parent ?: return false
+    val isGlyphProp = GlyphProps.isGlyphProp(tag, attribute.name)
+    return isGlyphProp && WinuiProjectService.of(file.project).isWinuiFile(file)
   }
 
   fun codePointOf(value: XmlAttributeValue): Int? {
