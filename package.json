@@ -91,6 +91,11 @@
       "svelte": "./dist/renderer/host/element-animation.js",
       "default": "./dist/renderer/host/element-animation.js"
     },
+    "./implicit-layout-animation": {
+      "types": "./dist/renderer/host/implicit-layout-animation.d.ts",
+      "svelte": "./dist/renderer/host/implicit-layout-animation.js",
+      "default": "./dist/renderer/host/implicit-layout-animation.js"
+    },
     "./attached-owners": {
       "types": "./dist/components/attached-owners.d.ts",
       "svelte": "./dist/components/attached-owners.js",

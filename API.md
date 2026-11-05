@@ -18,6 +18,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/host` | `src/renderer/host/host.ts` | `renderer`, the renderer WinUI controls are built through (`mountControl` makes it the active one), and the mount-target plumbing below; not for app code |
 | `winui-svelte/element-animation` | `src/renderer/host/element-animation.ts` | `enableElementAnimation()`: what Svelte's `transition:`, `in:`, `out:`, `animate:` and `svelte/motion` ask of an element, on WinUI controls (the Vite plugin calls it from a component that uses them; otherwise not bundled) |
 | `winui-svelte/attached-owners` | `src/components/attached-owners.ts` | `preloadAttachedOwners(names)`: loads the modules attached properties (`canvasLeft`, `gridRow`) are written through (the Vite plugin calls it from a component whose markup or script names one, so the property is set with the control; a prop named nowhere, built from a computed key, needs `await preloadAttachedOwners(["Canvas"])` first, or its control throws) |
+| `winui-svelte/implicit-layout-animation` | `src/renderer/host/implicit-layout-animation.ts` | `implicitLayoutAnimation({ duration, easing })`, `LayoutEasing`: children slide to their new places when the layout moves them (opt-in) |
 | `winui-svelte/connected-animation` | `src/renderer/host/connected-animation.ts` | `connectElement({ key, element })`, `startConnected({ key, element })`: WinUI's connected animation between two pages (opt-in) |
 | `winui-svelte/keyed-list` | `src/renderer/list/keyed-list.ts` | `syncKeyed()`: sync a native collection to wanted keys, touching only what changed |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()`, `hostState()`, the transports (see `src/state/README.md`) |
@@ -382,6 +383,45 @@ and `glideHeight` is that pair as one attachment:
   example): 250 ms into a 600 ms glide the height lies between the two sizes,
   both growing and shrinking, and the card ends on its content's height with no
   fixed `Height` left
+
+### Sliding siblings (`implicitLayoutAnimation`)
+
+When an expander opens, the controls below it jump; on the web a FLIP
+animation slides them, and in WinUI the Composition layer does it with an
+implicit animation on each child's `Offset`
+
+```svelte
+<script lang="ts">
+  import { implicitLayoutAnimation, LayoutEasing } from "winui-svelte/implicit-layout-animation";
+</script>
+
+<stack-panel {@attach implicitLayoutAnimation({ duration: 260, easing: LayoutEasing.EASE_OUT })}>
+  <expander header="Advanced">...</expander>
+  <button>Save</button>
+</stack-panel>
+```
+
+- It is an attachment for a panel; every child that the panel has laid out gets
+  a `Vector3KeyFrameAnimation` on `Offset` that ends at `this.FinalValue`, so
+  the composition layer starts it by itself whenever layout changes the offset
+  (no per-frame work in JavaScript, no `enableElementAnimation()`)
+- `duration` is in milliseconds (default 260); `easing` is one of
+  `LayoutEasing` (`ease`, `ease-in`, `ease-out`, `ease-in-out`, `linear`,
+  `emphasized`; default `ease-out`)
+- A child that is added slides from nowhere: the panel picks it up on its next
+  layout, after it was placed, so only the ones that were already there move
+- Reduced motion: with Windows' animation effects off the attachment does
+  nothing, and it starts when they are turned on
+- It replaces a child's own `implicitAnimations`, and it
+  is not a CSS property: the CSS part has no hook that reaches a Visual's
+  implicit animation collection cheaply, so the attachment is the one way
+- Measured in a window (`test/layout-animation.test.ts`, the
+  `examples/layout-animation` example): 800 ms into a 5 s slide the marker
+  that a growing spacer pushes down is drawn between its two places, and ends
+  in the second
+- `style:translate="0px 60px"` on a component (`<Border style:translate=...>`)
+  works: the same test reads the pixels and finds the control drawn 60 px lower
+  at once, with its layout slot left unchanged
 
 ## Connected animation (`winui-svelte/connected-animation`)
 
