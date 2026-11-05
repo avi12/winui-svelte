@@ -4,7 +4,7 @@
   "description": "Previews and completes winui-svelte's Fluent icons, colors and installed fonts in .svelte files, and turns a component's props into the CSS that sets the same value",
   "version": "0.0.1",
   "author": "Avi",
-  "publisher": "avi12",
+  "publisher": "Avi",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
   "homepage": "https://github.com/avi12/winui-svelte/tree/main/ide/vscode#readme",
