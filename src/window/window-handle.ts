@@ -1,7 +1,10 @@
 import { applyShownInSwitchers } from "./apply-chrome.ts";
+import type { DockOptions } from "./dock.ts";
+import { dockWindow } from "./dock.ts";
 import { scaleOf } from "./native.ts";
 import type { OpenFilePickerOptions, PickerOptions, SaveFilePickerOptions } from "./pickers.ts";
 import { pickFile, pickFilePaths, pickFolder, saveFile } from "./pickers.ts";
+import { WindowGeometry } from "#src/web-apis/window-geometry.js";
 import type { Window } from "#src/winui.js";
 import {
   FileOpenPicker,
@@ -18,11 +21,18 @@ import {
 export class WindowHandle {
   /** The native WinUI window. */
   readonly window: Window;
+
+  /**
+   * The window's size and place as the web has them: `outerWidth`,
+   * `screenX`, `resizeTo`, `moveBy` and the rest, in CSS pixels.
+   */
+  readonly geometry: WindowGeometry;
   private isClosed = false;
   private closeGuard = () => false;
 
   constructor(window: Window) {
     this.window = window;
+    this.geometry = new WindowGeometry(window.appWindow, () => this.scale);
     window.onClosed(() => {
       this.isClosed = true;
     });
@@ -56,6 +66,22 @@ export class WindowHandle {
     applyShownInSwitchers({
       appWindow: this.appWindow,
       isShown
+    });
+  }
+
+  /**
+   * Moves the window against a corner of a display's work area (the display
+   * minus the taskbar), `inset` device pixels in from both edges: an overlay
+   * that sits bottom-right above the taskbar of the display the user is on.
+   * With `sizeToContent` and the same `anchor` on the window, the corner stays
+   * as the content grows.
+   *
+   * @param options - The corner, the inset in device pixels and the display (the active one by default).
+   */
+  dock(options: DockOptions) {
+    dockWindow({
+      appWindow: this.appWindow,
+      ...options
     });
   }
 

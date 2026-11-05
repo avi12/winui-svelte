@@ -12,6 +12,8 @@ export { XamlKind } from "./components/xaml-source.ts";
 export { FocusKind } from "./renderer/host/focus-element.ts";
 export { TrayGesture } from "./tray/click-detector.ts";
 export { TrayBalloonIcon } from "./tray/tray-core.ts";
+export { SizeToContent, WindowAnchor } from "./window/anchor.ts";
 export { Backdrop } from "./window/backdrop.ts";
 export { TitleBarHeight, WindowPresentation, WindowTheme } from "./window/chrome.ts";
+export { DockDisplay } from "./window/dock.ts";
 export { PickerLocation } from "./window/pickers.ts";
