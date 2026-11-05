@@ -488,6 +488,7 @@
     "check:editor": "node --disable-warning=ExperimentalWarning scripts/editor/check-editor.ts",
     "check:webstorm": "node --disable-warning=ExperimentalWarning scripts/editor/check-webstorm.ts",
     "build:vscode-extension": "node --disable-warning=ExperimentalWarning scripts/editor/build-vscode-extension.ts",
+    "install:vscode-extension": "node --disable-warning=ExperimentalWarning scripts/editor/install-vscode-extension.ts",
     "install:webstorm-plugin": "node --disable-warning=ExperimentalWarning scripts/editor/install-webstorm-plugin.ts",
     "check:webstorm-plugin": "node --disable-warning=ExperimentalWarning scripts/editor/check-webstorm-plugin.ts",
     "check:svelte-matrix": "node --disable-warning=ExperimentalWarning scripts/svelte-matrix/check.ts",

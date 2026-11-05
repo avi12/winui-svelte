@@ -125,6 +125,7 @@ After anything that removes or rewires code, run the dead-code audit (`pnpm fall
   `pnpm install:webstorm-plugin` builds it and unpacks it into the developer's own WebStorm (`scripts/editor/install-webstorm-plugin.ts`); run it when the user asks to install or update the plugin, or after a plugin change they want to try
   Never close, restart or kill WebStorm: while one runs the script writes nothing and exits 2, then tell the user to close WebStorm and run `pnpm install:webstorm-plugin --skip-build`, or to install the printed zip with Settings, Plugins, Install Plugin from Disk
   After it installs, the user starts WebStorm to load the plugin: a relaunch alone loads whatever zip was installed last, so a new build must be installed first
+- The VS Code extension (`ide/vscode`, TypeScript, never in the npm package) is built and installed by `pnpm install:vscode-extension` (`scripts/editor/install-vscode-extension.ts`, which runs `code --install-extension`); run it when the user asks to install or update the extension, then tell them to reload the VS Code window
 - Every rule below is an error
   The rules live in `eslint-config/google-style.js` (ESLint, applied to `.ts` and `.svelte`) and `.oxlintrc.json`; the compiler flags in `tsconfig.json`
 
