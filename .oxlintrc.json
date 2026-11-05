@@ -60,7 +60,7 @@
     "eslint-rules/**",
     ".winapp/**",
     ".worktrees/**",
-    "ide/**",
+    "ide/webstorm/**",
     ".verify/**"
   ]
 }

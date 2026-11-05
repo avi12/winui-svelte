@@ -1,5 +1,5 @@
-import { cssColorOf } from "./css-color.ts";
 import { isColorAttribute, isColorProperty } from "./color-table.ts";
+import { cssColorOf } from "./css-color.ts";
 import { isFontFamilyAttribute } from "./font-table.ts";
 import { isGlyphAttribute } from "./glyph-table.ts";
 import { scanAttributes } from "./markup-scan.ts";
@@ -46,15 +46,18 @@ function families({ value, start }: {
   value: string;
   start: number;
 }) {
-  let at = start;
+  let cursor = start;
   return value.split(",").map(part => {
     const spot = trimmedSpot({
       kind: SpotKind.FONT,
       text: part,
-      start: at
+      start: cursor
     });
-    at += part.length + 1;
-    return { ...spot, text: spot.text.replaceAll(/^["']|["']$/gu, "") };
+    cursor += part.length + 1;
+    return {
+      ...spot,
+      text: spot.text.replaceAll(/^["']|["']$/gu, "")
+    };
   }).filter(spot => spot.text !== "");
 }
 
@@ -63,31 +66,38 @@ function propertySpots({ property, value, start }: {
   value: string;
   start: number;
 }) {
-  if (property === FONT_FAMILY) {
+  const isFontFamily = property === FONT_FAMILY;
+  if (isFontFamily) {
     return families({
       value,
       start
     });
   }
 
-  const color = isColorProperty(property) ? trimmedSpot({
+  if (!isColorProperty(property)) {
+    return [];
+  }
+
+  const color = trimmedSpot({
     kind: SpotKind.COLOR,
-    text: value.replace(/!important\s*$/u, ""),
+    text: value.replace(/!importants*$/u, ""),
     start
-  }) : undefined;
-  return color !== undefined && cssColorOf(color.text) !== undefined ? [color] : [];
+  });
+  const isColor = cssColorOf(color.text) !== undefined;
+  return isColor ? [color] : [];
 }
 
 function styleSpots({ value, start }: {
   value: string;
   start: number;
 }) {
-  let at = start;
+  let cursor = start;
   return value.split(";").flatMap(declaration => {
-    const declarationStart = at;
-    at += declaration.length + 1;
+    const declarationStart = cursor;
+    cursor += declaration.length + 1;
     const colon = declaration.indexOf(":");
-    if (colon === -1) {
+    const hasNoColon = colon === -1;
+    if (hasNoColon) {
       return [];
     }
 
@@ -105,7 +115,8 @@ async function spotsOfValue({ found, text, file }: {
   file: string;
 }) {
   const { tag, attribute, value, valueStart } = found;
-  if (attribute === STYLE) {
+  const isStyle = attribute === STYLE;
+  if (isStyle) {
     return styleSpots({
       value,
       start: valueStart
@@ -181,11 +192,13 @@ export async function spotsOf({ text, file }: {
   }
 
   const found = scanAttributes(text);
-  const perValue = await Promise.all(found.map(value => spotsOfValue({
-    found: value,
-    text,
-    file
-  })));
+  const perValue = await Promise.all(
+    found.map(value => spotsOfValue({
+      found: value,
+      text,
+      file
+    }))
+  );
   return perValue.flat();
 }
 

@@ -1,18 +1,18 @@
+import { cssColorOf } from "./css-color.ts";
+import { codePointOf, fluentCodePoints } from "./glyph-table.ts";
+import { colorMarkdown, fontMarkdown, GLYPH_FONT_STYLE, glyphMarkdown } from "./preview.ts";
+import { spotAt, SpotKind, spotsOf } from "./spots.ts";
+import type { Spot } from "./spots.ts";
 import {
   ColorThemeKind,
   Hover,
+  languages,
   MarkdownString,
   Range,
-  languages,
   window,
   workspace
 } from "vscode";
 import type { ExtensionContext, TextDocument } from "vscode";
-import { cssColorOf } from "./css-color.ts";
-import { codePointOf, fluentCodePoints } from "./glyph-table.ts";
-import { colorMarkdown, fontMarkdown, glyphMarkdown, GLYPH_FONT_STYLE } from "./preview.ts";
-import { SpotKind, spotAt, spotsOf } from "./spots.ts";
-import type { Spot } from "./spots.ts";
 
 const SVELTE = { language: "svelte" };
 const ICON_GAP = "0 3px 0 0";
@@ -37,14 +37,16 @@ function glyphPreview(codePoint: number) {
 }
 
 function previewOf(spot: Spot) {
-  if (spot.kind === SpotKind.FONT) {
+  const isFont = spot.kind === SpotKind.FONT;
+  if (isFont) {
     return new MarkdownString(fontMarkdown({
       family: spot.text,
       color: themeForeground()
     }));
   }
 
-  if (spot.kind === SpotKind.COLOR) {
+  const isColor = spot.kind === SpotKind.COLOR;
+  if (isColor) {
     const css = cssColorOf(spot.text);
     return css === undefined ? undefined : new MarkdownString(colorMarkdown(css));
   }
@@ -75,7 +77,8 @@ function glyphDecoration({ document, spot }: {
   spot: Spot;
 }) {
   const codePoint = codePointOf(spot.text);
-  if (codePoint === undefined) {
+  const hasNoCodePoint = codePoint === undefined;
+  if (hasNoCodePoint) {
     return [];
   }
 
@@ -97,7 +100,8 @@ function colorDecoration({ document, spot }: {
   spot: Spot;
 }) {
   const css = cssColorOf(spot.text);
-  if (css === undefined) {
+  const hasNoColor = css === undefined;
+  if (hasNoColor) {
     return [];
   }
 
@@ -127,7 +131,8 @@ export function activate(context: ExtensionContext) {
 
   async function decorate(document: TextDocument) {
     const editor = window.visibleTextEditors.find(visible => visible.document === document);
-    if (editor === undefined) {
+    const hasNoEditor = editor === undefined;
+    if (hasNoEditor) {
       return;
     }
 
@@ -148,9 +153,13 @@ export function activate(context: ExtensionContext) {
     );
   }
 
+  function refresh(document: TextDocument) {
+    decorate(document).catch(error => window.showErrorMessage(String(error)));
+  }
+
   function decorateVisible() {
     for (const editor of window.visibleTextEditors) {
-      void decorate(editor.document);
+      refresh(editor.document);
     }
   }
 
@@ -159,7 +168,7 @@ export function activate(context: ExtensionContext) {
     glyphType,
     colorType,
     window.onDidChangeVisibleTextEditors(decorateVisible),
-    workspace.onDidChangeTextDocument(change => void decorate(change.document)),
+    workspace.onDidChangeTextDocument(change => refresh(change.document)),
     languages.registerHoverProvider(SVELTE, {
       async provideHover(document, position) {
         const spot = await spotAtPosition({

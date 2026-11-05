@@ -1,20 +1,26 @@
+import { cssColorOf } from "./css-color.ts";
+import { spotsOf } from "./spots.ts";
 import assert from "node:assert/strict";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { cssColorOf } from "./css-color.ts";
-import { spotsOf } from "./spots.ts";
 
-const project = mkdtempSync(path.join(tmpdir(), "winui-spots-"));
-writeFileSync(path.join(project, "package.json"), JSON.stringify({ dependencies: { "winui-svelte": "*" } }));
-writeFileSync(path.join(project, "Label.svelte"), "<script lang=\"ts\">interface Props { face: FontFamilyInput; icon?: GlyphInput; }</script>");
-const file = path.join(project, "A.svelte");
+const PROJECT = mkdtempSync(path.join(tmpdir(), "winui-spots-"));
+writeFileSync(
+  path.join(PROJECT, "package.json"), JSON.stringify({
+    dependencies: {
+      "winui-svelte": "*"
+    }
+  })
+);
+writeFileSync(path.join(PROJECT, "Label.svelte"), "<script lang=\"ts\">interface Props { face: FontFamilyInput; icon?: GlyphInput; }</script>");
+const FILE = path.join(PROJECT, "A.svelte");
 
 async function found(text: string) {
   return (await spotsOf({
     text,
-    file
+    file: FILE
   })).map(spot => `${spot.kind}:${text.slice(spot.start, spot.end)}`);
 }
 
@@ -46,11 +52,17 @@ test("a wrapper component's props typed GlyphInput and FontFamilyInput are spots
 
 test("a project without the dependency has no spots", async () => {
   const other = mkdtempSync(path.join(tmpdir(), "no-winui-"));
-  writeFileSync(path.join(other, "package.json"), JSON.stringify({ dependencies: {} }));
-  assert.deepEqual(await spotsOf({
-    text: "<Border style:color=\"red\" />",
-    file: path.join(other, "A.svelte")
-  }), []);
+  writeFileSync(
+    path.join(other, "package.json"), JSON.stringify({
+      dependencies: {}
+    })
+  );
+  assert.deepEqual(
+    await spotsOf({
+      text: "<Border style:color=\"red\" />",
+      file: path.join(other, "A.svelte")
+    }), []
+  );
 });
 
 test("a CSS color becomes rrggbb", () => {

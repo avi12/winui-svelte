@@ -319,7 +319,7 @@ export default [
   // where they are fixed. What does apply is checked elsewhere: tsc and
   // svelte-check (strict flags), props-strictness.ts (no prop typed any or
   // unknown), the editor check (no any hint) and gen:components:check.
-  globalIgnores(["node_modules/", "dist/", "eslint-rules/", "eslint-config/", ".winapp/", ".verify/", "src/components/generated/", "src/components/fluent-glyph.ts", ".claude/worktrees/", ".worktrees/", "ide/"]),
+  globalIgnores(["node_modules/", "dist/", "eslint-rules/", "eslint-config/", ".winapp/", ".verify/", "src/components/generated/", "src/components/fluent-glyph.ts", ".claude/worktrees/", ".worktrees/", "ide/webstorm/", "ide/vscode/dist/"]),
   {
     files: ["**/*.{ts,js,mjs}"],
     languageOptions: {
@@ -410,6 +410,15 @@ export default [
           }
         ]
       }]
+    }
+  },
+  {
+    // The VS Code extension is a package of its own (its package.json is the extension manifest), so
+    // a "#src/*" import cannot reach the repository from it: it takes the shared tables, the
+    // translator's colour parser and the generated JSON, by relative path.
+    files: ["ide/vscode/src/**/*.ts"],
+    rules: {
+      "no-restricted-imports": "off"
     }
   }
 ];

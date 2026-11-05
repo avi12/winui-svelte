@@ -1,6 +1,6 @@
+import { declaresAsInputType, importedComponents } from "./markup-scan.ts";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { declaresAsInputType, importedComponents } from "./markup-scan.ts";
 
 /**
  * Whether a prop takes the input type: WinUI's own component lists it (`isOwn`), or a component of the project
@@ -19,7 +19,8 @@ export async function isTypedProp({ isOwn, inputType, tag, attribute, documentTe
   }
 
   const imported = importedComponents(documentText).get(tag);
-  if (imported === undefined || !imported.startsWith(".")) {
+  const isNotRelative = imported === undefined || !imported.startsWith(".");
+  if (isNotRelative) {
     return false;
   }
 

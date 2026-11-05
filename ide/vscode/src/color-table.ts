@@ -16,10 +16,12 @@ const EXTRA_COLOR_PROPERTIES = [
   "column-rule-color"
 ];
 const table = z.object({
-  attributes: z.record(z.string(), z.object({
-    cssProperty: z.string(),
-    kind: z.string()
-  }))
+  attributes: z.record(
+    z.string(), z.object({
+      cssProperty: z.string(),
+      kind: z.string()
+    })
+  )
 }).parse(raw);
 const colorEntries = Object.entries(table.attributes).filter(([, mapping]) => mapping.kind === "color");
 const colorAttributes = new Set(colorEntries.map(([name]) => name));

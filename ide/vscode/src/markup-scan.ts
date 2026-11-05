@@ -45,12 +45,12 @@ function skipBlank({ text, start }: {
   text: string;
   start: number;
 }) {
-  let at = start;
-  while (at < text.length && /\s/u.test(text.charAt(at))) {
-    at += 1;
+  let cursor = start;
+  while (cursor < text.length && /\s/u.test(text.charAt(cursor))) {
+    cursor += 1;
   }
 
-  return at;
+  return cursor;
 }
 
 function scanTag({ text, tag, start, found }: {
@@ -59,63 +59,65 @@ function scanTag({ text, tag, start, found }: {
   start: number;
   found: AttributeValue[];
 }) {
-  let at = skipBlank({
+  let cursor = skipBlank({
     text,
     start
   });
-  while (at < text.length) {
-    const char = text.charAt(at);
-    const isEnd = char === ">" || (char === "/" && text.charAt(at + 1) === ">");
+  while (cursor < text.length) {
+    const char = text.charAt(cursor);
+    const isEnd = char === ">" || (char === "/" && text.charAt(cursor + 1) === ">");
     if (isEnd) {
-      return at + 1;
+      return cursor + 1;
     }
 
-    if (char === "{") {
-      at = skipBlank({
+    const isBrace = char === "{";
+    if (isBrace) {
+      cursor = skipBlank({
         text,
         start: skipBraces({
           text,
-          start: at
+          start: cursor
         })
       });
       continue;
     }
 
-    ATTRIBUTE_NAME.lastIndex = at;
+    ATTRIBUTE_NAME.lastIndex = cursor;
     const name = ATTRIBUTE_NAME.exec(text);
-    if (name === null) {
-      at += 1;
+    const hasNoName = name === null;
+    if (hasNoName) {
+      cursor += 1;
       continue;
     }
 
-    at = skipBlank({
+    cursor = skipBlank({
       text,
-      start: at + name[0].length
+      start: cursor + name[0].length
     });
-    const hasValue = text.charAt(at) === "=";
+    const hasValue = text.charAt(cursor) === "=";
     if (!hasValue) {
       continue;
     }
 
-    at = skipBlank({
+    cursor = skipBlank({
       text,
-      start: at + 1
+      start: cursor + 1
     });
-    const quote = text.charAt(at);
+    const quote = text.charAt(cursor);
     if (QUOTES.has(quote)) {
-      const valueEnd = text.indexOf(quote, at + 1);
+      const valueEnd = text.indexOf(quote, cursor + 1);
       const isClosed = valueEnd !== -1;
       if (isClosed) {
         found.push({
           tag,
           attribute: name[0],
-          value: text.slice(at + 1, valueEnd),
-          valueStart: at + 1,
+          value: text.slice(cursor + 1, valueEnd),
+          valueStart: cursor + 1,
           valueEnd
         });
       }
 
-      at = skipBlank({
+      cursor = skipBlank({
         text,
         start: isClosed ? valueEnd + 1 : text.length
       });
@@ -125,15 +127,15 @@ function scanTag({ text, tag, start, found }: {
     const isExpression = quote === "{";
     const valueEnd = isExpression ? skipBraces({
       text,
-      start: at
-    }) : at + (/[^\s>]*/u.exec(text.slice(at))?.[0].length ?? 0);
-    at = skipBlank({
+      start: cursor
+    }) : cursor + (/[^\s>]*/u.exec(text.slice(cursor))?.[0].length ?? 0);
+    cursor = skipBlank({
       text,
       start: valueEnd
     });
   }
 
-  return at;
+  return cursor;
 }
 
 /**
@@ -142,13 +144,13 @@ function scanTag({ text, tag, start, found }: {
  */
 export function scanAttributes(text: string) {
   const found: AttributeValue[] = [];
-  let at = text.indexOf("<");
-  while (at !== -1 && at < text.length) {
-    TAG_START.lastIndex = at;
+  let cursor = text.indexOf("<");
+  while (cursor !== -1 && cursor < text.length) {
+    TAG_START.lastIndex = cursor;
     const match = TAG_START.exec(text);
     const isTag = match !== null && match[1] !== undefined;
     if (!isTag) {
-      at = text.indexOf("<", at + 1);
+      cursor = text.indexOf("<", cursor + 1);
       continue;
     }
 
@@ -157,11 +159,11 @@ export function scanAttributes(text: string) {
     const afterTag = scanTag({
       text,
       tag,
-      start: at + match[0].length,
+      start: cursor + match[0].length,
       found
     });
     const closing = isRawText ? text.indexOf(`</${tag}`, afterTag) : afterTag;
-    at = text.indexOf("<", closing === -1 ? text.length : closing);
+    cursor = text.indexOf("<", closing === -1 ? text.length : closing);
   }
 
   return found;

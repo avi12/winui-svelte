@@ -2,6 +2,7 @@ import raw from "../../webstorm/src/main/resources/fluent-glyphs.json" with { ty
 import { z } from "zod";
 
 const HEX_RADIX = 16;
+const CODE_POINT_DIGITS = 4;
 const tableSchema = z.object({
   attributes: z.record(z.string(), z.array(z.string())),
   glyphs: z.record(z.string(), z.string())
@@ -31,11 +32,12 @@ export function isGlyphAttribute({ tag, attribute }: {
  */
 export function codePointOf(value: string) {
   const named = codePoints.get(value);
-  if (named !== undefined) {
+  const hasName = named !== undefined;
+  if (hasName) {
     return named;
   }
 
-  const isSingleCharacter = [...value].length === 1;
+  const isSingleCharacter = Array.from(value).length === 1;
   const character = value.codePointAt(0);
   const isIcon = isSingleCharacter && character !== undefined && [...codePoints.values()].includes(character);
   return isIcon ? character : undefined;
@@ -45,5 +47,5 @@ export function codePointOf(value: string) {
  * The `U+E74E` a code point is written as.
  */
 export function labelOf(codePoint: number) {
-  return `U+${codePoint.toString(HEX_RADIX).toUpperCase().padStart(4, "0")}`;
+  return `U+${codePoint.toString(HEX_RADIX).toUpperCase().padStart(CODE_POINT_DIGITS, "0")}`;
 }

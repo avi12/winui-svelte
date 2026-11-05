@@ -8,7 +8,8 @@ const OPAQUE_DIGITS = 6;
  */
 export function cssColorOf(text: string) {
   const xaml = parseColor(text.trim());
-  if (xaml === null) {
+  const isNotColor = xaml === null;
+  if (isNotColor) {
     return undefined;
   }
 

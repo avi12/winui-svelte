@@ -13,15 +13,18 @@ async function exists(file: string) {
   return stat(file).then(() => true, () => false);
 }
 
-async function nearestManifest(folder: string): Promise<string | undefined> {
-  const candidate = path.join(folder, "package.json");
-  if (await exists(candidate)) {
-    return candidate;
-  }
+async function nearestManifest(start: string) {
+  for (let folder = start; ; folder = path.dirname(folder)) {
+    const candidate = path.join(folder, "package.json");
+    if (await exists(candidate)) {
+      return candidate;
+    }
 
-  const parent = path.dirname(folder);
-  const isRoot = parent === folder;
-  return isRoot ? undefined : nearestManifest(parent);
+    const isRoot = path.dirname(folder) === folder;
+    if (isRoot) {
+      return undefined;
+    }
+  }
 }
 
 /**
@@ -29,15 +32,16 @@ async function nearestManifest(folder: string): Promise<string | undefined> {
  */
 export async function isWinuiFile(file: string) {
   const manifestPath = await nearestManifest(path.dirname(file));
-  if (manifestPath === undefined) {
+  const hasNoManifest = manifestPath === undefined;
+  if (hasNoManifest) {
     return false;
   }
 
   const { mtimeMs } = await stat(manifestPath);
   const key = `${manifestPath}@${mtimeMs}`;
-  const known = gates.get(key);
-  if (known !== undefined) {
-    return known;
+  const isKnown = gates.has(key);
+  if (isKnown) {
+    return gates.get(key) === true;
   }
 
   const parsed = manifestSchema.safeParse(JSON.parse(await readFile(manifestPath, "utf8")));

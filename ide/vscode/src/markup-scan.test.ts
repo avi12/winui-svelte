@@ -1,7 +1,7 @@
+import { codePointOf, isGlyphAttribute, labelOf } from "./glyph-table.ts";
+import { declaresAsInputType, importedComponents, scanAttributes } from "./markup-scan.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { declaresAsInputType, importedComponents, scanAttributes } from "./markup-scan.ts";
-import { codePointOf, isGlyphAttribute, labelOf } from "./glyph-table.ts";
 
 test("a quoted attribute value is found with its position and its tag", () => {
   const text = "<FontIcon glyph=\"Save\" />";
@@ -29,16 +29,20 @@ test("an empty value is found, so the completion can offer names in it", () => {
 });
 
 test("a prop declared as GlyphInput is told from one declared as string", () => {
-  assert.equal(declaresAsInputType({
-    source: "interface Props { glyph?: GlyphInput; }",
-    prop: "glyph",
-    inputType: "GlyphInput"
-  }), true);
-  assert.equal(declaresAsInputType({
-    source: "interface Props { glyph: string; }",
-    prop: "glyph",
-    inputType: "GlyphInput"
-  }), false);
+  assert.equal(
+    declaresAsInputType({
+      source: "interface Props { glyph?: GlyphInput; }",
+      prop: "glyph",
+      inputType: "GlyphInput"
+    }), true
+  );
+  assert.equal(
+    declaresAsInputType({
+      source: "interface Props { glyph: string; }",
+      prop: "glyph",
+      inputType: "GlyphInput"
+    }), false
+  );
 });
 
 test("the imported svelte components are named by their import", () => {
@@ -51,12 +55,16 @@ test("Save is U+E74E, by name or by character, and FontIcon takes it in glyph", 
   assert.equal(codePointOf(""), 0xE74E);
   assert.equal(codePointOf("Nope"), undefined);
   assert.equal(labelOf(0xE74E), "U+E74E");
-  assert.equal(isGlyphAttribute({
-    tag: "FontIcon",
-    attribute: "glyph"
-  }), true);
-  assert.equal(isGlyphAttribute({
-    tag: "TextBlock",
-    attribute: "glyph"
-  }), false);
+  assert.equal(
+    isGlyphAttribute({
+      tag: "FontIcon",
+      attribute: "glyph"
+    }), true
+  );
+  assert.equal(
+    isGlyphAttribute({
+      tag: "TextBlock",
+      attribute: "glyph"
+    }), false
+  );
 });
