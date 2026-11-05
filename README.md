@@ -691,6 +691,11 @@ The animation moves the control's `Opacity`, `Translation`, `Scale`,
 See
 [API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) for the details and what WinUI cannot do
 
+A card whose content grows or shrinks glides to its new height with
+`@attach glideHeight()` (WinUI cannot animate `Height="Auto"`; this is a
+`ResizeObserver` plus `element.animate({ height })` in one attachment, and
+needs `enableElementAnimation()` once)
+
 </details>
 
 ## Wrapping chips

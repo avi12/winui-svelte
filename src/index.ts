@@ -6,6 +6,8 @@ export type { ElementSize } from "./renderer/host/element-size.svelte.ts";
 export { elementSize } from "./renderer/host/element-size.svelte.ts";
 export type { ElementThemeReader } from "./renderer/host/element-theme.svelte.ts";
 export { elementTheme } from "./renderer/host/element-theme.svelte.ts";
+export type { GlideHeightOptions } from "./renderer/host/glide-height.ts";
+export { glideHeight } from "./renderer/host/glide-height.ts";
 export type { Focusable } from "./renderer/host/focus-element.ts";
 export { focusElement, FocusKind } from "./renderer/host/focus-element.ts";
 export type { ClassHandler } from "./renderer/host/host.ts";
