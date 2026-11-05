@@ -1,17 +1,43 @@
 {
   "name": "winui-svelte-vscode",
   "displayName": "winui-svelte",
-  "description": "Previews winui-svelte's icons, colors and fonts, completes them, and converts props to the CSS that sets the same value",
+  "description": "Previews and completes winui-svelte's Fluent icons, colors and installed fonts in .svelte files, and turns a component's props into the CSS that sets the same value",
   "version": "0.0.1",
   "publisher": "avi12",
   "license": "Apache-2.0",
-  "private": true,
+  "icon": "images/icon.png",
+  "homepage": "https://github.com/avi12/winui-svelte/tree/main/ide/vscode#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/avi12/winui-svelte.git",
+    "directory": "ide/vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/avi12/winui-svelte/issues"
+  },
+  "galleryBanner": {
+    "color": "#0a3d91",
+    "theme": "dark"
+  },
+  "keywords": [
+    "svelte",
+    "winui",
+    "fluent",
+    "windows",
+    "icon",
+    "glyph",
+    "color",
+    "font",
+    "css",
+    "tauri"
+  ],
   "type": "module",
   "engines": {
     "vscode": "^1.105.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Other"
   ],
   "activationEvents": [
     "onLanguage:svelte"
