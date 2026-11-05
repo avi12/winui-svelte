@@ -58,6 +58,7 @@
   onsizechanged={(...args) => {
     const control = native;
     if (control) {
+      // noinspection JSUnresolvedReference: WebStorm 2026.3 misses CanvasControl's FrameworkElement base; tsc has it
       size = {
         width: control.actualWidth,
         height: control.actualHeight
