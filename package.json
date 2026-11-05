@@ -250,6 +250,14 @@
       "svelte": "./dist/tray/index.js",
       "default": "./dist/tray/index.js"
     },
+    "./notice": {
+      "types": "./dist/notice/index.d.ts",
+      "default": "./dist/notice/index.js"
+    },
+    "./tray/standalone": {
+      "types": "./dist/tray/standalone/index.d.ts",
+      "default": "./dist/tray/standalone/index.js"
+    },
     "./app": {
       "types": "./dist/app/index.d.ts",
       "default": "./dist/app/index.js"

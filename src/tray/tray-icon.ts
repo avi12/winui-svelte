@@ -1,10 +1,9 @@
+import { removeTrayIconsAtExit } from "./exit-hook.ts";
 import { createTrayNative } from "./native.ts";
 import type { TrayNative } from "./native.ts";
-import { createTrayIconWith, removeAllTrayIcons } from "./tray-core.ts";
+import { createTrayIconWith } from "./tray-core.ts";
 import type { TrayIconOptions, TrayScheduler } from "./tray-core.ts";
 import { startTimer } from "#src/window/timers.js";
-
-let isExitHooked = false;
 
 /** What `createTrayIcon` takes beyond the icon's own options: a test's stand-ins. */
 export interface TrayIconSeams {
@@ -22,11 +21,7 @@ export interface TrayIconSeams {
  * lists what that cannot do.
  */
 export function createTrayIcon(options: TrayIconOptions & TrayIconSeams) {
-  if (!isExitHooked) {
-    isExitHooked = true;
-    process.once("exit", removeAllTrayIcons);
-  }
-
+  removeTrayIconsAtExit();
   return createTrayIconWith({
     ...options,
     native: options.native ?? createTrayNative(),
