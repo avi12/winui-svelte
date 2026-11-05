@@ -1,7 +1,10 @@
 import { entriesOf } from "./completions.ts";
+import { registerConvertCommands } from "./convert-commands.ts";
 import { cssColorOf } from "./css-color.ts";
 import { codePointOf } from "./glyph-table.ts";
+import { SVELTE_LANGUAGE } from "./ids.ts";
 import { GLYPH_FONT_STYLE } from "./preview.ts";
+import { registerQuickActions } from "./quick-actions.ts";
 import { previewOfSpot } from "./spot-preview.ts";
 import { spotAt, SpotKind, spotsOf } from "./spots.ts";
 import type { Spot } from "./spots.ts";
@@ -18,7 +21,7 @@ import {
 } from "vscode";
 import type { ExtensionContext, Position, TextDocument } from "vscode";
 
-const SVELTE = { language: "svelte" };
+const SVELTE = { language: SVELTE_LANGUAGE };
 const ICON_GAP = "0 3px 0 0";
 const SWATCH_SIZE = "0.85em";
 const SWATCH_OUTLINE = "1px solid #88888888";
@@ -195,6 +198,8 @@ export function activate(context: ExtensionContext) {
     }
   }
 
+  registerQuickActions(context);
+  registerConvertCommands(context);
   refreshVisible();
   context.subscriptions.push(
     glyphType,

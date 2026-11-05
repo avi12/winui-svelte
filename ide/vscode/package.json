@@ -1,7 +1,7 @@
 {
   "name": "winui-svelte-vscode",
   "displayName": "winui-svelte",
-  "description": "Draws the Fluent icon of a winui-svelte glyph prop beside its name, previews it on hover and offers the icon names",
+  "description": "Previews winui-svelte's icons, colors and fonts, completes them, and converts props to the CSS that sets the same value",
   "version": "0.0.1",
   "publisher": "avi12",
   "license": "Apache-2.0",
@@ -16,5 +16,63 @@
   "activationEvents": [
     "onLanguage:svelte"
   ],
-  "main": "./dist/extension.cjs"
+  "main": "./dist/extension.cjs",
+  "contributes": {
+    "commands": [
+      {
+        "command": "winuiSvelte.convertFile",
+        "title": "Convert winui-svelte Attributes to CSS in This File"
+      },
+      {
+        "command": "winuiSvelte.convertSelection",
+        "title": "Convert winui-svelte Attributes to CSS"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "winuiSvelte.convertFile",
+          "when": "resourceLangId == svelte",
+          "group": "winuiSvelte"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "winuiSvelte.convertSelection",
+          "when": "explorerResourceIsFolder || resourceExtname == .svelte",
+          "group": "winuiSvelte"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "winuiSvelte.convertFile",
+        "key": "ctrl+alt+shift+k",
+        "when": "editorTextFocus && resourceLangId == svelte"
+      },
+      {
+        "command": "winuiSvelte.convertSelection",
+        "key": "ctrl+alt+shift+x",
+        "when": "filesExplorerFocus && !inputFocus"
+      }
+    ],
+    "configuration": {
+      "title": "winui-svelte",
+      "properties": {
+        "winuiSvelte.destination": {
+          "type": "string",
+          "enum": [
+            "styleBlock",
+            "styleDirective"
+          ],
+          "enumDescriptions": [
+            "Move a converted prop to a rule in the <style> block, with a class on the tag",
+            "Write a converted prop as a style: directive on the tag"
+          ],
+          "default": "styleBlock",
+          "description": "Where a prop that has a CSS counterpart goes when it is converted"
+        }
+      }
+    }
+  }
 }
