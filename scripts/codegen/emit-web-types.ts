@@ -10,6 +10,7 @@ import type { AttachedModel, ClassModel } from "./model.ts";
 import { ENUMS_MODULE, OFFERED_INPUTS } from "./tables.ts";
 import type { TypeReference } from "./tables.ts";
 import { vscodeCssData } from "#src/css/validate/vscode-data.js";
+import { z } from "zod";
 
 // The component and prop documentation as WebStorm reads it for a package
 // (the `web-types` field of package.json): the editor's own layer shows it
@@ -17,6 +18,42 @@ import { vscodeCssData } from "#src/css/validate/vscode-data.js";
 // the language server's hover, on a prop written as `{glyph}`, does not cover.
 
 const INDENT = 2;
+
+// WebStorm drops the whole file, and every hover with it, when it does not
+// follow its schema: the parts this generator writes are checked before it is written.
+const typeReferenceSchema = z.union([z.string(), z.strictObject({
+  module: z.string(),
+  name: z.string()
+})]);
+const webTypesSchema = z.object({
+  contributions: z.object({
+    html: z.object({
+      elements: z.array(
+        z.object({
+          name: z.string(),
+          attributes: z.array(
+            z.object({
+              name: z.string(),
+              description: z.string().optional(),
+              value: z.strictObject({
+                kind: z.literal("expression").optional(),
+                type: z.union([typeReferenceSchema, z.array(typeReferenceSchema)])
+              }).optional()
+            })
+          )
+        })
+      )
+    }),
+    css: z.object({
+      properties: z.array(
+        z.object({
+          name: z.string(),
+          values: z.array(z.string()).optional()
+        })
+      )
+    })
+  })
+});
 
 interface Element {
   name: string;
@@ -188,7 +225,7 @@ export function emitWebTypes({ classes, version }: {
   version: string;
 }) {
   const elements = classes.map(elementOf);
-  return `${JSON.stringify({
+  const webTypes = {
     $schema: "https://json.schemastore.org/web-types",
     name: "winui-svelte",
     version,
@@ -202,5 +239,7 @@ export function emitWebTypes({ classes, version }: {
         properties: cssPropertiesOf()
       }
     }
-  }, null, INDENT)}\n`;
+  };
+  webTypesSchema.parse(webTypes);
+  return `${JSON.stringify(webTypes, null, INDENT)}\n`;
 }
