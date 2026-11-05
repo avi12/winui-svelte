@@ -345,7 +345,7 @@ export class Linker {
     access: Access<Bound[Key]>;
     subscribers: readonly Subscribe[];
   }) {
-    $effect(() => {
+    const apply = () => {
       const value = bound[key];
       const isSet = value !== undefined;
       if (isSet) {
@@ -354,7 +354,8 @@ export class Linker {
           action: () => access.write(value)
         });
       }
-    });
+    };
+    $effect(apply);
     for (const subscribe of subscribers) {
       this.add(
         subscribe(
@@ -363,7 +364,8 @@ export class Linker {
             callback: () => this.changedByUser({
               bound,
               key,
-              access
+              read: access.read,
+              restore: apply
             })
           })
         )
@@ -371,48 +373,31 @@ export class Linker {
     }
   }
 
-  private changedByUser<Bound extends object, Key extends keyof Bound>({ bound, key, access }: {
+  private changedByUser<Bound extends object, Key extends keyof Bound>({ bound, key, read, restore }: {
     bound: Bound;
     key: Key;
-    access: Access<Bound[Key]>;
+    read: () => Bound[Key];
+    restore: () => void;
   }) {
     if (this.isWriting) {
       return;
     }
 
-    const current = access.read();
+    const current = read();
     const isChanged = current !== bound[key];
     if (isChanged) {
       bound[key] = current;
-      void this.settle({
-        bound,
-        key,
-        access
+      // The app has had its say on the change (its setter, its handlers):
+      // when the prop does not hold what the control shows, the app refused it.
+      void tick().then(() => {
+        const isRefused = this.isLinked && bound[key] !== read();
+        if (isRefused) {
+          restore();
+        }
       });
     }
   }
 
-  // The app has had its say on the user's change (its setter, its handlers):
-  // when what the bound prop holds is not what the control shows, the app
-  // refused it, and the prop did not change, so no effect writes it back.
-  private async settle<Bound extends object, Key extends keyof Bound>({ bound, key, access }: {
-    bound: Bound;
-    key: Key;
-    access: Access<Bound[Key]>;
-  }) {
-    await tick();
-    const wanted = bound[key];
-    const isRefused = this.isLinked && wanted !== undefined && wanted !== access.read();
-    if (isRefused) {
-      this.write({
-        origin: `refused change of bound prop "${String(key)}"`,
-        action: () => access.write(wanted)
-      });
-    }
-  }
-
-  // A property the control refuses is reported, not thrown: the effect that
-  // writes it runs inside a flush that native code is waiting on.
   private write({ origin, action }: {
     origin: string;
     action: () => void;

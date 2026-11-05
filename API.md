@@ -4310,6 +4310,7 @@ throws
 | `watchPackages()` | a `PackageWatcher` that raises `packagestaging`, `packageinstalling` and `packageupdating` (`PackageProgressEvent`, with `progress`, `isComplete`, `errorCode`) |
 | `getStartupTask({ taskId })` | the task's `state`, `enable()` (a request: read the state it returns) and `disable()` |
 | `UpdateState`, `StartupState`, `PackageStage` | the closed sets, each a value plus a type |
+| `windowsStoreBackend` | the real backend over the WinRT classes; `StoreBackend` is the interface the calls take, so a test swaps it |
 
 `window` is the owner of any Store dialog: a `WindowHandle` or the native
 `Window`; it is given to `IInitializeWithWindow` on the `StoreContext`, as a
