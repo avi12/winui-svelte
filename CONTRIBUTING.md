@@ -361,7 +361,7 @@ previews it, large, with its name and code point, in the same font
 (`GlyphDocumentationProvider`; nothing shows for another component, an unknown
 name or a project without the dependency)
 
-The same icon is drawn right after the value as an inlay (`GlyphInlayProvider`;
+The same icon is drawn inside the string, before the name, as an inlay (`GlyphInlayProvider`;
 switch it off in Settings, Editor, Inlay Hints)
 
 The props and their conversions are not written by hand: `pnpm gen:components`

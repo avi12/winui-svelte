@@ -22,9 +22,9 @@ class GlyphInlayTest : BasePlatformTestCase() {
     assumeTrue("no Fluent icon font is installed", GlyphFont.family != null)
   }
 
-  fun testAnIconNameGetsItsIconRightAfterTheValue() {
+  fun testAnIconNameGetsItsIconInsideTheStringBeforeTheName() {
     val markup = "<FontIcon glyph=\"Save\" />"
-    assertEquals(listOf(markup.indexOf("\" />") + 1), inlayOffsets(markup))
+    assertEquals(listOf(markup.indexOf("Save")), inlayOffsets(markup))
   }
 
   fun testAnotherComponentGetsNoIcon() {

@@ -15,6 +15,8 @@ import com.intellij.psi.xml.XmlAttributeValue
 import javax.swing.JComponent
 import javax.swing.JPanel
 
+private const val ICON_GAP = 3
+
 @Suppress("UnstableApiUsage")
 class GlyphInlayProvider : InlayHintsProvider<NoSettings> {
   override val key = SettingsKey<NoSettings>("winui.svelte.glyph.icons")
@@ -50,7 +52,9 @@ class GlyphInlayProvider : InlayHintsProvider<NoSettings> {
         }
 
         val codePoint = GlyphValues.codePointOf(value) ?: return true
-        sink.addInlineElement(value.textRange.endOffset, true, factory.icon(GlyphIcon(codePoint)), false)
+        val textStart = value.textRange.startOffset + value.text.indexOf(value.value)
+        val icon = factory.inset(factory.icon(GlyphIcon(codePoint)), right = ICON_GAP)
+        sink.addInlineElement(textStart, true, icon, false)
         return true
       }
     }
