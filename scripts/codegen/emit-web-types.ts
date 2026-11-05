@@ -31,8 +31,18 @@ interface Attribute {
   description?: string;
   "doc-url"?: string;
   value?: {
+    kind?: "expression";
     type: TypeReference | TypeReference[];
   };
+}
+
+// An HTML boolean attribute takes its own name as its value (`disabled="disabled"`), so the
+// editor underlined `isEnabled={isOwn}` as "Expected: isEnabled"; a Svelte prop is an expression.
+function valueOf(type: TypeReference | TypeReference[]) {
+  return type === "boolean" ? {
+    kind: "expression" as const,
+    type
+  } : { type };
 }
 
 // An enum prop takes a member's name or its number (`Visibility.Collapsed`),
@@ -72,7 +82,7 @@ function attributeOf({ level, key, kind, winName, inputType, displayType, enumNa
   const type = (hasInputType ? OFFERED_INPUTS.get(inputType) : undefined) ?? enumReferenceOf(enumNames) ?? displayType;
   const isTyped = type !== undefined;
   if (isTyped) {
-    attribute.value = { type };
+    attribute.value = valueOf(type);
   }
 
   const isDocumented = text !== undefined;
@@ -109,7 +119,7 @@ function attachedAttributeOf(attached: AttachedModel) {
     ?? enumReferenceOf(enumNamesTypeOf(attached)) ?? displayType;
   const isTyped = type !== undefined;
   if (isTyped) {
-    attribute.value = { type };
+    attribute.value = valueOf(type);
   }
 
   return attribute;

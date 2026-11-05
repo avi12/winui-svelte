@@ -16,6 +16,7 @@
               "name": "alwaysUseFallback",
               "description": "Gets or sets a value that specifies whether the brush is forced to the solid fallback color.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.acrylicbrush.alwaysusefallback"
@@ -100,6 +101,7 @@
               "name": "mirroredWhenRightToLeft",
               "description": "Gets or sets a value that indicates whether the icon is mirrored when the FlowDirection is RightToLeft.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedicon.mirroredwhenrighttoleft"
@@ -126,6 +128,7 @@
               "name": "mirroredWhenRightToLeft",
               "description": "Gets or sets a value that indicates whether the icon is mirrored when the FlowDirection is RightToLeft.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatediconsource.mirroredwhenrighttoleft"
@@ -161,6 +164,7 @@
               "name": "autoPlay",
               "description": "Gets or sets a value that indicates whether an animated visual plays immediately when it is loaded.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.animatedvisualplayer.autoplay"
@@ -267,6 +271,7 @@
               "name": "isOpen",
               "description": "Gets or sets a value that indicates whether the AppBar is open.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.isopen"
@@ -275,6 +280,7 @@
               "name": "isSticky",
               "description": "Gets or sets a value that indicates whether the AppBar does not close on light dismiss.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbar.issticky"
@@ -338,6 +344,7 @@
               "name": "isCompact",
               "description": "Gets or sets a value that indicates whether the button is shown with no label and reduced padding.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarbutton.iscompact"
@@ -392,6 +399,7 @@
               "name": "isCompact",
               "description": "Gets or sets a value that indicates whether the element is shown in its compact state.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarelementcontainer.iscompact"
@@ -416,6 +424,7 @@
               "name": "isCompact",
               "description": "Gets or sets a value that indicates whether the separator is shown with reduced padding.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbarseparator.iscompact"
@@ -445,6 +454,7 @@
               "name": "isCompact",
               "description": "Gets or sets a value that indicates whether the button is shown with no label and reduced padding.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.appbartogglebutton.iscompact"
@@ -491,6 +501,7 @@
               "name": "isLargeArc",
               "description": "Gets or sets a value that indicates whether the arc should be greater than 180 degrees.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.arcsegment.islargearc"
@@ -545,6 +556,7 @@
               "name": "autoMaximizeSuggestionArea",
               "description": "Indicates if the suggestion area should be automatically maximized.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.automaximizesuggestionarea"
@@ -569,6 +581,7 @@
               "name": "isSuggestionListOpen",
               "description": "Gets or sets a Boolean value indicating whether the drop-down portion of the AutoSuggestBox is open.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.issuggestionlistopen"
@@ -636,6 +649,7 @@
               "name": "updateTextOnSelect",
               "description": "Used in conjunction with TextMemberPath, gets or sets a value indicating whether items in the view will trigger an update of the editable text part of the AutoSuggestBox when clicked.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.autosuggestbox.updatetextonselect"
@@ -722,6 +736,7 @@
               "name": "showAsMonochrome",
               "description": "Gets or sets a value that indicates whether the bitmap is shown in a single color.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapicon.showasmonochrome"
@@ -746,6 +761,7 @@
               "name": "showAsMonochrome",
               "description": "Gets or sets a value that indicates whether the bitmap is shown in a single color.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.bitmapiconsource.showasmonochrome"
@@ -770,6 +786,7 @@
               "name": "autoPlay",
               "description": "Gets or sets a value that indicates whether an animated image should play as soon as it loads.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.imaging.bitmapimage.autoplay"
@@ -1241,6 +1258,7 @@
               "name": "isCalendarOpen",
               "description": "Gets or sets a value that indicates whether the calendar view of the CalendarDatePicker is currently shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.iscalendaropen"
@@ -1249,6 +1267,7 @@
               "name": "isGroupLabelVisible",
               "description": "Gets or sets a value that indicates whether the month name is shown with the first day of the month in the picker's CalendarView.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.isgrouplabelvisible"
@@ -1257,6 +1276,7 @@
               "name": "isOutOfScopeEnabled",
               "description": "Gets or sets a value that indicates whether out-of-scope calendar items are shown with a unique foreground color in the picker's CalendarView.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.isoutofscopeenabled"
@@ -1265,6 +1285,7 @@
               "name": "isTodayHighlighted",
               "description": "Gets or sets a value that indicates whether the current date is highlighted in the picker's CalendarView.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendardatepicker.istodayhighlighted"
@@ -1694,6 +1715,7 @@
               "name": "isGroupLabelVisible",
               "description": "Gets or sets a value that indicates whether the month name is shown with the first day of the month when the DisplayMode is Month, or whether the year name is shown with the first month of the year when the DisplayMode is Year.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.isgrouplabelvisible"
@@ -1702,6 +1724,7 @@
               "name": "isOutOfScopeEnabled",
               "description": "Gets or sets a value that indicates whether out-of-scope calendar items are shown with a unique foreground color.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.isoutofscopeenabled"
@@ -1710,6 +1733,7 @@
               "name": "isTodayHighlighted",
               "description": "Gets or sets a value that indicates whether the current date is highlighted.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarview.istodayhighlighted"
@@ -2038,6 +2062,7 @@
               "name": "isBlackout",
               "description": "Gets or sets a value that indicates whether the date is unavailable.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.calendarviewdayitem.isblackout"
@@ -2061,6 +2086,7 @@
               "name": "canHorizontallyScroll",
               "description": "Not intended for general use. Gets or sets a value that indicates whether scrolling on the horizontal axis is possible.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel.canhorizontallyscroll"
@@ -2069,6 +2095,7 @@
               "name": "canVerticallyScroll",
               "description": "Not intended for general use. Gets or sets a value that indicates whether scrolling on the vertical axis is possible.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.carouselpanel.canverticallyscroll"
@@ -2117,6 +2144,7 @@
               "name": "isSourceGrouped",
               "description": "Gets or sets a value that indicates whether source data is grouped.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.collectionviewsource.issourcegrouped"
@@ -2158,6 +2186,7 @@
               "name": "enableDependentAnimation",
               "description": "Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimation.enabledependentanimation"
@@ -2190,6 +2219,7 @@
               "name": "enableDependentAnimation",
               "description": "Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.coloranimationusingkeyframes.enabledependentanimation"
@@ -2265,6 +2295,7 @@
               "name": "isAlphaEnabled",
               "description": "Gets or sets a value that indicates whether the alpha channel can be modified.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.isalphaenabled"
@@ -2273,6 +2304,7 @@
               "name": "isAlphaSliderVisible",
               "description": "Gets or sets a value that indicates whether the slider control for the alpha channel is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.isalphaslidervisible"
@@ -2281,6 +2313,7 @@
               "name": "isAlphaTextInputVisible",
               "description": "Gets or sets a value that indicates whether the text input box for the alpha channel is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.isalphatextinputvisible"
@@ -2289,6 +2322,7 @@
               "name": "isColorChannelTextInputVisible",
               "description": "Gets or sets a value that indicates whether the text input boxes for the color channels are shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.iscolorchanneltextinputvisible"
@@ -2297,6 +2331,7 @@
               "name": "isColorPreviewVisible",
               "description": "Gets or sets a value that indicates whether the color preview bar is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.iscolorpreviewvisible"
@@ -2305,6 +2340,7 @@
               "name": "isColorSliderVisible",
               "description": "Gets or sets a value that indicates whether the slider control for the color value is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.iscolorslidervisible"
@@ -2313,6 +2349,7 @@
               "name": "isColorSpectrumVisible",
               "description": "Gets or sets a value that indicates whether the color spectrum control is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.iscolorspectrumvisible"
@@ -2321,6 +2358,7 @@
               "name": "isHexInputVisible",
               "description": "Gets or sets a value that indicates whether the text input box for a HEX color value is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.ishexinputvisible"
@@ -2329,6 +2367,7 @@
               "name": "isMoreButtonVisible",
               "description": "Gets or sets a value that indicates whether the 'more' button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.colorpicker.ismorebuttonvisible"
@@ -2600,6 +2639,7 @@
               "name": "isDropDownOpen",
               "description": "Gets or sets a value that indicates whether the drop-down portion of the ComboBox is currently open.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.isdropdownopen"
@@ -2608,6 +2648,7 @@
               "name": "isEditable",
               "description": "Gets or sets a value that indicates whether the user can edit text in the text box portion of the ComboBox. See remarks.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.iseditable"
@@ -2616,6 +2657,7 @@
               "name": "isTextSearchEnabled",
               "description": "Gets or sets a value that specifies whether a user can jump to a value by typing.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.combobox.istextsearchenabled"
@@ -2744,6 +2786,7 @@
               "name": "isDynamicOverflowEnabled",
               "description": "Gets or sets a value that indicates whether primary commands automatically move to the overflow menu when space is limited.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbar.isdynamicoverflowenabled"
@@ -2779,6 +2822,7 @@
               "name": "alwaysExpanded",
               "description": "Gets or sets a value that indicates whether or not the CommandBarFlyout should always stay in its Expanded state and block the user from entering the Collapsed state. Defaults to false.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.commandbarflyout.alwaysexpanded"
@@ -2815,6 +2859,7 @@
               "name": "isStaggeringEnabled",
               "description": "Gets or sets a Boolean value indicating if staggering is enabled for the navigation transition.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.commonnavigationtransitioninfo.isstaggeringenabled"
@@ -3087,6 +3132,7 @@
               "name": "fullSizeDesired",
               "description": "Gets or sets a value that indicates whether a request is being made to display the dialog full size.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.fullsizedesired"
@@ -3095,6 +3141,7 @@
               "name": "isPrimaryButtonEnabled",
               "description": "Gets or sets whether the dialog's primary button is enabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.isprimarybuttonenabled"
@@ -3103,6 +3150,7 @@
               "name": "isSecondaryButtonEnabled",
               "description": "Gets or sets whether the dialog's secondary button is enabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentdialog.issecondarybuttonenabled"
@@ -3383,6 +3431,7 @@
               "name": "isTextScaleFactorEnabled",
               "description": "Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.contentpresenter.istextscalefactorenabled"
@@ -3686,6 +3735,7 @@
               "name": "isEnabled",
               "description": "Gets or sets a value indicating whether the user can interact with the control.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.isenabled"
@@ -3694,6 +3744,7 @@
               "name": "isFocusEngaged",
               "description": "Get or sets a value that indicates whether focus is constrained to the control when the user presses the A/Select button on a game controller.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.isfocusengaged"
@@ -3702,6 +3753,7 @@
               "name": "isFocusEngagementEnabled",
               "description": "Get or sets a value that indicates whether focus can be constrained to the control when the user presses the A/Select button on a game controller.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.isfocusengagementenabled"
@@ -3710,6 +3762,7 @@
               "name": "isTextScaleFactorEnabled",
               "description": "Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.control.istextscalefactorenabled"
@@ -3830,6 +3883,7 @@
               "name": "dayVisible",
               "description": "Gets or sets a value that indicates whether the day selector is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker.dayvisible"
@@ -3892,6 +3946,7 @@
               "name": "monthVisible",
               "description": "Gets or sets a value that indicates whether the month selector is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker.monthvisible"
@@ -3930,6 +3985,7 @@
               "name": "yearVisible",
               "description": "Gets or sets a value that indicates whether the year selector is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepicker.yearvisible"
@@ -3980,6 +4036,7 @@
               "name": "dayVisible",
               "description": "Gets or sets a value that indicates whether the day selector is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout.dayvisible"
@@ -4012,6 +4069,7 @@
               "name": "monthVisible",
               "description": "Gets or sets a value that indicates whether the month selector is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout.monthvisible"
@@ -4028,6 +4086,7 @@
               "name": "yearVisible",
               "description": "Gets or sets a value that indicates whether the year selector is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.datepickerflyout.yearvisible"
@@ -4097,6 +4156,7 @@
               "name": "enableDependentAnimation",
               "description": "Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimation.enabledependentanimation"
@@ -4129,6 +4189,7 @@
               "name": "enableDependentAnimation",
               "description": "Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.doubleanimationusingkeyframes.enabledependentanimation"
@@ -4488,6 +4549,7 @@
               "name": "isStaggeringEnabled",
               "description": "Gets or sets a value that determines whether the transition staggers rendering of multiple items, or renders all items at once.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.entrancethemetransition.isstaggeringenabled"
@@ -4539,6 +4601,7 @@
               "name": "isExpanded",
               "description": "::: moniker range=\"winui-3.0-preview\" > [!CAUTION] > This API is in development and considered experimental in the WinUI version selected. It might be altered or unavailable in other versions. ::: moniker-end Gets or sets a value that indicates whether the content area of the Expander is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.expander.isexpanded"
@@ -4613,6 +4676,7 @@
               "name": "useTouchAnimationsForAllNavigation",
               "description": "Gets or sets a value that indicates whether transition animations are always used whether the navigation is touch-based, button-based or programmatic.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flipview.usetouchanimationsforallnavigation"
@@ -4657,6 +4721,7 @@
               "name": "allowFocusOnInteraction",
               "description": "Gets or sets a value that indicates whether the element automatically gets focus when the user interacts with it.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.allowfocusoninteraction"
@@ -4665,6 +4730,7 @@
               "name": "allowFocusWhenDisabled",
               "description": "Gets or sets a value that specifies whether the control can receive focus when it's disabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.allowfocuswhendisabled"
@@ -4673,6 +4739,7 @@
               "name": "areOpenCloseAnimationsEnabled",
               "description": "Gets or sets a value that indicates whether animations are played when the flyout is opened or closed.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.areopencloseanimationsenabled"
@@ -4728,6 +4795,7 @@
               "name": "shouldConstrainToRootBounds",
               "description": "Gets or sets a value that indicates whether the flyout should be shown within the bounds of the XAML root.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.flyoutbase.shouldconstraintorootbounds"
@@ -4787,6 +4855,7 @@
               "name": "isDefaultShadowEnabled",
               "description": "Gets or sets a value that indicates whether the default shadow effect is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.flyoutpresenter.isdefaultshadowenabled"
@@ -4863,6 +4932,7 @@
               "name": "isTextScaleFactorEnabled",
               "description": "Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon.istextscalefactorenabled"
@@ -4871,6 +4941,7 @@
               "name": "mirroredWhenRightToLeft",
               "description": "Gets or sets a value that indicates whether the icon is mirrored when the FlowDirection is RightToLeft.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticon.mirroredwhenrighttoleft"
@@ -4947,6 +5018,7 @@
               "name": "isTextScaleFactorEnabled",
               "description": "Gets or sets a value that indicates whether automatic text enlargement, to reflect the system text size setting, is enabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.istextscalefactorenabled"
@@ -4955,6 +5027,7 @@
               "name": "mirroredWhenRightToLeft",
               "description": "Gets or sets a value that indicates whether the icon is mirrored when its containing element's FlowDirection is RightToLeft.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.fonticonsource.mirroredwhenrighttoleft"
@@ -4979,6 +5052,7 @@
               "name": "isNavigationStackEnabled",
               "description": "Gets or sets a value that indicates whether navigation is recorded in the Frame's ForwardStack or BackStack.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.frame.isnavigationstackenabled"
@@ -5020,6 +5094,7 @@
               "name": "allowFocusOnInteraction",
               "description": "Gets or sets a value that indicates whether the element automatically gets focus when the user interacts with it.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.allowfocusoninteraction"
@@ -5028,6 +5103,7 @@
               "name": "allowFocusWhenDisabled",
               "description": "Gets or sets whether a disabled control can receive focus.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.frameworkelement.allowfocuswhendisabled"
@@ -5378,6 +5454,7 @@
               "name": "isColorFontEnabled",
               "description": "Gets or sets a value that determines whether font glyphs that contain color layers, such as Segoe UI Emoji, are rendered in color.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.glyphs.iscolorfontenabled"
@@ -5781,6 +5858,7 @@
               "name": "selectionCheckMarkVisualEnabled",
               "description": "Gets or sets a value that indicates whether the check mark is shown when the item is selected.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.gridviewitempresenter.selectioncheckmarkvisualenabled"
@@ -5822,6 +5900,7 @@
               "name": "hidesIfEmpty",
               "description": "Gets or sets a value that indicates whether items corresponding to empty groups should be displayed.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.groupstyle.hidesifempty"
@@ -5874,6 +5953,7 @@
               "name": "isActiveView",
               "description": "Gets or sets a value that indicates whether the Hub instance is the active view in its owning SemanticZoom.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.isactiveview"
@@ -5882,6 +5962,7 @@
               "name": "isZoomedInView",
               "description": "Gets or sets a value that indicates whether the Hub instance is the zoomed-in view in its owning SemanticZoom.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hub.iszoomedinview"
@@ -5951,6 +6032,7 @@
               "name": "isHeaderInteractive",
               "description": "Gets or sets a value that indicates whether the section header raises a SectionHeaderClick event on its containing Hub.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.hubsection.isheaderinteractive"
@@ -5981,6 +6063,7 @@
               "name": "isTabStop",
               "description": "Gets or sets a value that indicates whether the hyperlink is included in tab navigation.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.hyperlink.istabstop"
@@ -6358,6 +6441,7 @@
               "name": "isClosable",
               "description": "Gets or sets a value that indicates whether the user can close the InfoBar.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar.isclosable"
@@ -6366,6 +6450,7 @@
               "name": "isIconVisible",
               "description": "Gets or sets a value that indicates whether the icon is visible in the InfoBar.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar.isiconvisible"
@@ -6374,6 +6459,7 @@
               "name": "isOpen",
               "description": "Gets or sets a value that indicates whether the InfoBar is open.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.infobar.isopen"
@@ -6491,6 +6577,7 @@
               "name": "isSelected",
               "description": "Gets or sets a value that indicates whether the item is currently selected.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemcontainer.isselected"
@@ -6728,6 +6815,7 @@
               "name": "areStickyGroupHeadersEnabled",
               "description": "Gets or sets a value that specifies whether a group header moves with the group when the group is panned vertically.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsstackpanel.arestickygroupheadersenabled"
@@ -6802,6 +6890,7 @@
               "name": "isItemInvokedEnabled",
               "description": "Gets or sets a value that indicates whether items in the view raise the ItemInvoked event in response to interaction.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemsview.isiteminvokedenabled"
@@ -6870,6 +6959,7 @@
               "name": "areStickyGroupHeadersEnabled",
               "description": "Gets or sets a value that specifies whether a group header moves with the group when the group is panned vertically.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.itemswrapgrid.arestickygroupheadersenabled"
@@ -6954,6 +7044,7 @@
               "name": "isEnabled",
               "description": "Gets or sets whether a keyboard shortcut (accelerator) is available to the user.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.input.keyboardaccelerator.isenabled"
@@ -7263,6 +7354,7 @@
               "name": "singleSelectionFollowsFocus",
               "description": "Gets or sets a value that indicates whether item selection changes when keyboard focus changes.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listbox.singleselectionfollowsfocus"
@@ -7376,6 +7468,7 @@
               "name": "canDragItems",
               "description": "Gets or sets a value that indicates whether items in the view can be dragged as data payload.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.candragitems"
@@ -7384,6 +7477,7 @@
               "name": "canReorderItems",
               "description": "Gets or sets a value that indicates whether items in the view can be reordered through user interaction.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.canreorderitems"
@@ -7454,6 +7548,7 @@
               "name": "isActiveView",
               "description": "Gets or sets a value that indicates whether the ListViewBase instance is the active view in its owning SemanticZoom.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.isactiveview"
@@ -7462,6 +7557,7 @@
               "name": "isItemClickEnabled",
               "description": "Gets or sets a value that indicates whether items in the view fire an ItemClick event in response to interaction.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.isitemclickenabled"
@@ -7470,6 +7566,7 @@
               "name": "isMultiSelectCheckBoxEnabled",
               "description": "Gets or sets a value that indicates whether a check box is shown to enable multi-selection.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.ismultiselectcheckboxenabled"
@@ -7478,6 +7575,7 @@
               "name": "isSwipeEnabled",
               "description": "Gets or sets a value that indicates whether the view supports discrete input processing for a swipe interaction.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.isswipeenabled"
@@ -7486,6 +7584,7 @@
               "name": "isZoomedInView",
               "description": "Gets or sets a value that indicates whether the ListViewBase instance is the zoomed-in view in its owning SemanticZoom.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.iszoomedinview"
@@ -7527,6 +7626,7 @@
               "name": "showsScrollingPlaceholders",
               "description": "Gets or sets a value that indicates whether the view shows placeholder UI for items during scrolling.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.showsscrollingplaceholders"
@@ -7535,6 +7635,7 @@
               "name": "singleSelectionFollowsFocus",
               "description": "Gets or sets a value that indicates whether item selection changes when keyboard focus changes.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.listviewbase.singleselectionfollowsfocus"
@@ -7916,6 +8017,7 @@
               "name": "revealBackgroundShowsAboveContent",
               "description": "Gets or sets a value that indicates whether the reveal backgound is shown on top of the content.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.revealbackgroundshowsabovecontent"
@@ -8028,6 +8130,7 @@
               "name": "selectionCheckMarkVisualEnabled",
               "description": "Gets or sets a value that indicates whether the check mark is shown when the item is selected.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectioncheckmarkvisualenabled"
@@ -8090,6 +8193,7 @@
               "name": "selectionIndicatorVisualEnabled",
               "description": "Gets or sets a value that indicates whether the selection indicator of a list view item is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.listviewitempresenter.selectionindicatorvisualenabled"
@@ -8111,6 +8215,7 @@
               "name": "interactiveControlsVisible",
               "description": "Gets or sets a value that indicates whether the map is rendering the default interactive controls from Azure Maps as an overlay. Included controls are zoom, rotation, pitch, and style.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mapcontrol.interactivecontrolsvisible"
@@ -8230,6 +8335,7 @@
               "name": "areTransportControlsEnabled",
               "description": "Gets or sets a value that determines whether the standard transport controls are enabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement.aretransportcontrolsenabled"
@@ -8238,6 +8344,7 @@
               "name": "autoPlay",
               "description": "Gets or sets a value that indicates whether media will begin playback automatically when the Source property is set.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement.autoplay"
@@ -8246,6 +8353,7 @@
               "name": "isFullWindow",
               "description": "Gets or sets a value that specifies if the MediaPlayerElement is rendering in full window mode.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerelement.isfullwindow"
@@ -8297,6 +8405,7 @@
               "name": "isFullWindow",
               "description": "Gets or sets a value that specifies if the MediaPlayerPresenter is rendering in full window mode.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediaplayerpresenter.isfullwindow"
@@ -8346,6 +8455,7 @@
               "name": "isCompact",
               "description": "Type: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -8353,6 +8463,7 @@
               "name": "isFastForwardButtonVisible",
               "description": "Gets or sets a value that indicates whether the fast forward button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isfastforwardbuttonvisible"
@@ -8361,6 +8472,7 @@
               "name": "isFastForwardEnabled",
               "description": "Gets or sets a value that indicates whether a user can fast forward the media.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isfastforwardenabled"
@@ -8369,6 +8481,7 @@
               "name": "isFastRewindButtonVisible",
               "description": "Gets or sets a value that indicates whether the rewind button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isfastrewindbuttonvisible"
@@ -8377,6 +8490,7 @@
               "name": "isFastRewindEnabled",
               "description": "Gets or sets a value that indicates whether a user can rewind the media.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isfastrewindenabled"
@@ -8385,6 +8499,7 @@
               "name": "isNextTrackButtonVisible",
               "description": "Gets or sets a value that indicates whether the next track button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isnexttrackbuttonvisible"
@@ -8393,6 +8508,7 @@
               "name": "isPlaybackRateButtonVisible",
               "description": "Gets or sets a value that indicates whether the playback rate button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isplaybackratebuttonvisible"
@@ -8401,6 +8517,7 @@
               "name": "isPlaybackRateEnabled",
               "description": "Gets or sets a value that indicates whether a user can adjust the playback rate of the media.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isplaybackrateenabled"
@@ -8409,6 +8526,7 @@
               "name": "isPreviousTrackButtonVisible",
               "description": "Gets or sets a value that indicates whether the previous track button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isprevioustrackbuttonvisible"
@@ -8417,6 +8535,7 @@
               "name": "isRepeatButtonVisible",
               "description": "Gets or sets a value that indicates whether the repeat button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isrepeatbuttonvisible"
@@ -8425,6 +8544,7 @@
               "name": "isRepeatEnabled",
               "description": "Gets or sets a value that indicates whether a user repeat the playback of the media.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isrepeatenabled"
@@ -8433,6 +8553,7 @@
               "name": "isSeekBarVisible",
               "description": "Gets or sets a value that indicates whether the seek bar is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isseekbarvisible"
@@ -8441,6 +8562,7 @@
               "name": "isSeekEnabled",
               "description": "Gets or sets a value that indicates whether a user can use the seek bar to find a location in the media.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isseekenabled"
@@ -8449,6 +8571,7 @@
               "name": "isSkipBackwardButtonVisible",
               "description": "Gets or sets a value that indicates whether the skip backward button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isskipbackwardbuttonvisible"
@@ -8457,6 +8580,7 @@
               "name": "isSkipBackwardEnabled",
               "description": "Gets or sets a value that indicates whether a user can skip backward in the media.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isskipbackwardenabled"
@@ -8465,6 +8589,7 @@
               "name": "isSkipForwardButtonVisible",
               "description": "Gets or sets a value that indicates whether the skip forward button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isskipforwardbuttonvisible"
@@ -8473,6 +8598,7 @@
               "name": "isSkipForwardEnabled",
               "description": "Gets or sets a value that indicates whether a user can skip forward in the media.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isskipforwardenabled"
@@ -8481,6 +8607,7 @@
               "name": "isStopButtonVisible",
               "description": "Gets or sets a value that indicates whether the stop button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isstopbuttonvisible"
@@ -8489,6 +8616,7 @@
               "name": "isStopEnabled",
               "description": "Gets or sets a value that indicates whether a user can stop the media playback.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isstopenabled"
@@ -8497,6 +8625,7 @@
               "name": "isVolumeButtonVisible",
               "description": "Gets or sets a value that indicates whether the volume button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isvolumebuttonvisible"
@@ -8505,6 +8634,7 @@
               "name": "isVolumeEnabled",
               "description": "Gets or sets a value that indicates whether a user can adjust the volume of the media.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.isvolumeenabled"
@@ -8513,6 +8643,7 @@
               "name": "isZoomButtonVisible",
               "description": "Gets or sets a value that indicates whether the zoom button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.iszoombuttonvisible"
@@ -8521,6 +8652,7 @@
               "name": "isZoomEnabled",
               "description": "Gets or sets a value that indicates whether a user can zoom the media.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.iszoomenabled"
@@ -8529,6 +8661,7 @@
               "name": "showAndHideAutomatically",
               "description": "Gets or sets a value that indicates whether the controls are shown and hidden automatically.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.mediatransportcontrols.showandhideautomatically"
@@ -8650,6 +8783,7 @@
               "name": "isDefaultShadowEnabled",
               "description": "Gets or sets a value that indicates whether the default shadow effect is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.menuflyoutpresenter.isdefaultshadowenabled"
@@ -8761,6 +8895,7 @@
               "name": "alwaysShowHeader",
               "description": "Gets or sets a value that indicates whether the header is always visible.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.alwaysshowheader"
@@ -8841,6 +8976,7 @@
               "name": "isBackEnabled",
               "description": "Gets or sets a value that indicates whether the back button is enabled or disabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.isbackenabled"
@@ -8849,6 +8985,7 @@
               "name": "isPaneOpen",
               "description": "Gets or sets a value that specifies whether the NavigationView pane is expanded to its full width.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.ispaneopen"
@@ -8857,6 +8994,7 @@
               "name": "isPaneToggleButtonVisible",
               "description": "Gets or sets a value that indicates whether the menu toggle button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.ispanetogglebuttonvisible"
@@ -8865,6 +9003,7 @@
               "name": "isPaneVisible",
               "description": "Gets or sets a value that determines whether the pane is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.ispanevisible"
@@ -8873,6 +9012,7 @@
               "name": "isSettingsVisible",
               "description": "Gets or sets a value that indicates whether the settings button is shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.issettingsvisible"
@@ -8881,6 +9021,7 @@
               "name": "isTitleBarAutoPaddingEnabled",
               "description": "Gets or sets a value that indicates whether top padding is added to the navigation view's header when used with a custom title bar.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationview.istitlebarautopaddingenabled"
@@ -9084,6 +9225,7 @@
               "name": "hasUnrealizedChildren",
               "description": "Gets or sets a value that indicates whether the current item has child items that haven't been shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.hasunrealizedchildren"
@@ -9102,6 +9244,7 @@
               "name": "isChildSelected",
               "description": "Gets or sets the value that indicates whether or not descendant item is selected.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.ischildselected"
@@ -9110,6 +9253,7 @@
               "name": "isExpanded",
               "description": "Gets or sets a value that indicates whether a tree node is expanded. Ignored if there are no menu items.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.isexpanded"
@@ -9126,6 +9270,7 @@
               "name": "selectsOnInvoked",
               "description": "Gets or sets a value that indicates whether invoking a navigation menu item also selects it.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitem.selectsoninvoked"
@@ -9142,6 +9287,7 @@
               "name": "isSelected",
               "description": "Gets or sets the value that indicates whether a NavigationViewItem is selected.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.navigationviewitembase.isselected"
@@ -9197,6 +9343,7 @@
               "name": "acceptsExpression",
               "description": "Toggles whether the control will accept and evaluate a basic formulaic expression entered as input.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.acceptsexpression"
@@ -9229,6 +9376,7 @@
               "name": "isWrapEnabled",
               "description": "Toggles whether line breaking occurs if a line of text extends beyond the available width of the control.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.iswrapenabled"
@@ -9274,6 +9422,7 @@
               "name": "preventKeyboardDisplayOnProgrammaticFocus",
               "description": "Gets or sets a value that indicates whether the on-screen keyboard is shown when the control receives focus programmatically.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.numberbox.preventkeyboarddisplayonprogrammaticfocus"
@@ -9371,6 +9520,7 @@
               "name": "enableDependentAnimation",
               "description": "Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.objectanimationusingkeyframes.enabledependentanimation"
@@ -9410,6 +9560,7 @@
               "name": "canHorizontallyScroll",
               "description": "Gets or sets a value that determines how the OrientedVirtualizingPanel measures space for child elements for possible scrolling in the horizontal dimension.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.orientedvirtualizingpanel.canhorizontallyscroll"
@@ -9418,6 +9569,7 @@
               "name": "canVerticallyScroll",
               "description": "Gets or sets a value that determines how the OrientedVirtualizingPanel measures space for child elements for possible scrolling in the vertical dimension.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.orientedvirtualizingpanel.canverticallyscroll"
@@ -9586,6 +9738,7 @@
               "name": "isHorizontalShiftClamped",
               "description": "Gets or sets a value that indicates whether the horizontal parallax ratio is clampled to a specified percentage of the source scroll velocity.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.ishorizontalshiftclamped"
@@ -9594,6 +9747,7 @@
               "name": "isVerticalShiftClamped",
               "description": "Gets or sets a value that indicates whether the vertical parallax ratio is clampled to a specified percentage of the source scroll velocity.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.parallaxview.isverticalshiftclamped"
@@ -9701,6 +9855,7 @@
               "name": "isPasswordRevealButtonEnabled",
               "description": "This property is ignored. Use PasswordRevealMode instead.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox.ispasswordrevealbuttonenabled"
@@ -9755,6 +9910,7 @@
               "name": "preventKeyboardDisplayOnProgrammaticFocus",
               "description": "Gets or sets a value that indicates whether the on-screen keyboard is shown when the control receives focus programmatically.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.passwordbox.preventkeyboarddisplayonprogrammaticfocus"
@@ -9831,6 +9987,7 @@
               "name": "isClosed",
               "description": "Gets or sets a value that indicates whether this figure's first and last segments are connected.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure.isclosed"
@@ -9839,6 +9996,7 @@
               "name": "isFilled",
               "description": "Gets or sets a value that indicates whether the contained area of this PathFigure is to be used for hit-testing, rendering, and clipping.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.pathfigure.isfilled"
@@ -9985,6 +10143,7 @@
               "name": "isGroup",
               "description": "Gets or sets a value that indicates whether the PersonPicture represents a group or an individual.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.isgroup"
@@ -9993,6 +10152,7 @@
               "name": "preferSmallImage",
               "description": "Gets or sets a value that indicates whether a small image is displayed rather than a large image when both are available.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.personpicture.prefersmallimage"
@@ -10049,6 +10209,7 @@
               "name": "confirmationButtonsVisible",
               "description": "Gets or sets whether the confirmation buttons are visible.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pickerflyout.confirmationbuttonsvisible"
@@ -10229,6 +10390,7 @@
               "name": "isHeaderItemsCarouselEnabled",
               "description": "Gets or sets a value that indicates whether the selected header moves to the first position.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot.isheaderitemscarouselenabled"
@@ -10237,6 +10399,7 @@
               "name": "isLocked",
               "description": "Gets or sets whether the Pivot is locked to show only the current PivotItem. While the Pivot is locked, all other PivotItems are removed, and the user cannot navigate to them. An example of locking is when the email list is put into a multi-select mode.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.pivot.islocked"
@@ -10500,6 +10663,7 @@
               "name": "enableDependentAnimation",
               "description": "Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimation.enabledependentanimation"
@@ -10532,6 +10696,7 @@
               "name": "enableDependentAnimation",
               "description": "Gets or sets a value that declares whether animated properties that are considered dependent animations should be permitted to use this animation declaration.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.pointanimationusingkeyframes.enabledependentanimation"
@@ -10786,6 +10951,7 @@
               "name": "isLightDismissEnabled",
               "description": "Gets or sets a value that determines how the Popup can be dismissed.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup.islightdismissenabled"
@@ -10794,6 +10960,7 @@
               "name": "isOpen",
               "description": "Gets or sets whether the popup is currently displayed on the screen.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup.isopen"
@@ -10821,6 +10988,7 @@
               "name": "shouldConstrainToRootBounds",
               "description": "Gets or sets a value that indicates whether the popup should be shown within the bounds of the XAML root.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.popup.shouldconstraintorootbounds"
@@ -10903,6 +11071,7 @@
               "name": "isIndeterminate",
               "description": "Gets or sets a value that indicates whether the progress bar reports generic progress with a repeating pattern or reports progress based on the Value property.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar.isindeterminate"
@@ -10911,6 +11080,7 @@
               "name": "showError",
               "description": "Gets or sets a value that indicates whether the progress bar should use visual states that communicate an Error state to the user.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar.showerror"
@@ -10919,6 +11089,7 @@
               "name": "showPaused",
               "description": "Gets or sets a value that indicates whether the progress bar should use visual states that communicate a Paused state to the user.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressbar.showpaused"
@@ -10935,6 +11106,7 @@
               "name": "isActive",
               "description": "Gets or sets a value that indicates whether the ProgressRing is showing progress.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring.isactive"
@@ -10943,6 +11115,7 @@
               "name": "isIndeterminate",
               "description": "Gets or sets a value that indicates whether the progress ring reports generic progress with a repeating pattern or reports progress based on the Value property.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.progressring.isindeterminate"
@@ -11209,6 +11382,7 @@
               "name": "isChecked",
               "description": "Gets or sets whether the RadioMenuFlyoutItem is checked.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.radiomenuflyoutitem.ischecked"
@@ -11294,6 +11468,7 @@
               "name": "isClearEnabled",
               "description": "Gets or sets the value that determines if the user can remove the rating.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.isclearenabled"
@@ -11302,6 +11477,7 @@
               "name": "isReadOnly",
               "description": "Gets or sets the value that determines if the user can change the rating.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.ratingcontrol.isreadonly"
@@ -11703,6 +11879,7 @@
               "name": "isStaggeringEnabled",
               "description": "Gets or sets a value that determines whether the transition staggers rendering of multiple items, or renders all items at once.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.repositionthemetransition.isstaggeringenabled"
@@ -11726,6 +11903,7 @@
               "name": "acceptsReturn",
               "description": "Gets or sets a value that indicates whether the RichEditBox allows and displays the newline or return characters when the ENTER or RETURN keys are pressed.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.acceptsreturn"
@@ -11836,6 +12014,7 @@
               "name": "isColorFontEnabled",
               "description": "Gets or sets a value that determines whether font glyphs that contain color layers, such as Segoe UI Emoji, are rendered in color.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.iscolorfontenabled"
@@ -11844,6 +12023,7 @@
               "name": "isReadOnly",
               "description": "Gets or sets a value that indicates whether the user can change the text in the RichEditBox.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.isreadonly"
@@ -11852,6 +12032,7 @@
               "name": "isSpellCheckEnabled",
               "description": "Gets or sets a value that indicates whether the text input should interact with a spell check engine.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.isspellcheckenabled"
@@ -11860,6 +12041,7 @@
               "name": "isTextPredictionEnabled",
               "description": "Gets or sets a value that indicates whether text prediction features (\"autocomplete\") are enabled for this RichEditBox.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.istextpredictionenabled"
@@ -11884,6 +12066,7 @@
               "name": "preventKeyboardDisplayOnProgrammaticFocus",
               "description": "Gets or sets a value that indicates whether the on-screen keyboard is shown when the control receives focus programmatically.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richeditbox.preventkeyboarddisplayonprogrammaticfocus"
@@ -12105,6 +12288,7 @@
               "name": "isColorFontEnabled",
               "description": "Gets or sets a value that determines whether font glyphs that contain color layers, such as Segoe UI Emoji, are rendered in color.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.iscolorfontenabled"
@@ -12113,6 +12297,7 @@
               "name": "isTextScaleFactorEnabled",
               "description": "Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.istextscalefactorenabled"
@@ -12121,6 +12306,7 @@
               "name": "isTextSelectionEnabled",
               "description": "Gets or sets a value that determines whether text content of the RichTextBlock can be selected for clipboard or drag purposes, or for UI styling changes that indicate selected text.\n\nAlso settable in CSS as `user-select`\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.richtextblock.istextselectionenabled"
@@ -12496,6 +12682,7 @@
               "name": "canContentRenderOutsideBounds",
               "description": "Gets or sets a value that indicates whether scrolled content can render outside the bounds of the ScrollViewer.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter.cancontentrenderoutsidebounds"
@@ -12504,6 +12691,7 @@
               "name": "canHorizontallyScroll",
               "description": "Gets or sets a value that indicates whether scrolling on the horizontal axis is possible.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter.canhorizontallyscroll"
@@ -12512,6 +12700,7 @@
               "name": "canVerticallyScroll",
               "description": "Gets or sets a value that indicates whether scrolling on the vertical axis is possible.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter.canverticallyscroll"
@@ -12528,6 +12717,7 @@
               "name": "sizesContentToTemplatedParent",
               "description": "Gets or sets a value that indicates whether, when used in the ControlTemplate for a ScrollViewer, the presenter restricts the size of its Content to the owning ScrollViewer size.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollcontentpresenter.sizescontenttotemplatedparent"
@@ -13050,6 +13240,7 @@
               "name": "bringIntoViewOnFocusChange",
               "description": "Gets or sets a value that determines whether the ScrollViewer uses a bring-into-view scroll behavior when an item in the view gets focus.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.bringintoviewonfocuschange"
@@ -13058,6 +13249,7 @@
               "name": "canContentRenderOutsideBounds",
               "description": "Gets or sets a value that indicates whether scrolled content can render outside the bounds of the ScrollViewer.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.cancontentrenderoutsidebounds"
@@ -13130,6 +13322,7 @@
               "name": "isDeferredScrollingEnabled",
               "description": "Gets or sets a value that determines the deferred scrolling behavior for a ScrollViewer.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.isdeferredscrollingenabled"
@@ -13138,6 +13331,7 @@
               "name": "isHorizontalRailEnabled",
               "description": "Gets or sets a value that indicates whether the scroll rail is enabled for the horizontal axis.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.ishorizontalrailenabled"
@@ -13146,6 +13340,7 @@
               "name": "isHorizontalScrollChainingEnabled",
               "description": "Gets or sets a value that indicates whether scroll chaining is enabled from this child to its parent, for the horizontal axis.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.ishorizontalscrollchainingenabled"
@@ -13154,6 +13349,7 @@
               "name": "isScrollInertiaEnabled",
               "description": "Gets or sets a value that indicates whether scroll actions should include inertia in their behavior and value.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.isscrollinertiaenabled"
@@ -13162,6 +13358,7 @@
               "name": "isVerticalRailEnabled",
               "description": "Gets or sets a value that indicates whether the scroll rail is enabled for the vertical axis.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.isverticalrailenabled"
@@ -13170,6 +13367,7 @@
               "name": "isVerticalScrollChainingEnabled",
               "description": "Gets or sets a value that indicates whether scroll chaining is enabled from this child to its parent, for the vertical axis.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.isverticalscrollchainingenabled"
@@ -13178,6 +13376,7 @@
               "name": "isZoomChainingEnabled",
               "description": "Gets or sets a value that indicates whether zoom chaining is enabled from this child to its parent.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.iszoomchainingenabled"
@@ -13186,6 +13385,7 @@
               "name": "isZoomInertiaEnabled",
               "description": "Gets or sets a value that indicates whether zoom actions should include inertia in their behavior and value.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.iszoominertiaenabled"
@@ -13215,6 +13415,7 @@
               "name": "reduceViewportForCoreInputViewOcclusions",
               "description": "Gets or sets a value that indicates whether the ScrollViewer should try to adjust its content to keep it visible when a docked CoreInputView occludes part of it.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.scrollviewer.reduceviewportforcoreinputviewocclusions"
@@ -13450,6 +13651,7 @@
               "name": "isSelected",
               "description": "Gets or sets a value that indicates whether the item is selected in a selector.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.selectoritem.isselected"
@@ -13466,6 +13668,7 @@
               "name": "canChangeViews",
               "description": "Gets or sets a value that declares whether the SemanticZoom can change display views.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.canchangeviews"
@@ -13474,6 +13677,7 @@
               "name": "isZoomedInViewActive",
               "description": "Gets or sets a value that determines whether the ZoomedInView is the active view.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.iszoomedinviewactive"
@@ -13482,6 +13686,7 @@
               "name": "isZoomOutButtonEnabled",
               "description": "Gets or sets a value that indicates whether the ZoomedInView shows a button that activates the ZoomedOutView.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.semanticzoom.iszoomoutbuttonenabled"
@@ -13765,6 +13970,7 @@
               "name": "isDirectionReversed",
               "description": "Gets or sets a value that indicates the direction of increasing value.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.isdirectionreversed"
@@ -13773,6 +13979,7 @@
               "name": "isThumbToolTipEnabled",
               "description": "Gets or sets a value that determines whether the slider value is shown in a tool tip for the Thumb component of the Slider.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.slider.isthumbtooltipenabled"
@@ -14192,6 +14399,7 @@
               "name": "isPaneOpen",
               "description": "Gets or sets a value that specifies whether the SplitView pane is expanded to its full width.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.splitview.ispaneopen"
@@ -14307,6 +14515,7 @@
               "name": "areScrollSnapPointsRegular",
               "description": "Gets or sets a value that indicates whether the generated snap points used for panning in the StackPanel are equidistant from each other.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.stackpanel.arescrollsnappointsregular"
@@ -14423,6 +14632,7 @@
               "name": "isActive",
               "description": "Gets or sets a value that indicates whether the trigger should be applied.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.statetrigger.isactive"
@@ -14775,6 +14985,7 @@
               "name": "allowDropTabs",
               "description": "Gets or sets a value that determines whether the TabView can be a drop target for the purposes of drag-and-drop operations.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.allowdroptabs"
@@ -14783,6 +14994,7 @@
               "name": "canDragTabs",
               "description": "Gets or sets a value that indicates whether tabs can be dragged as a data payload.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.candragtabs"
@@ -14791,6 +15003,7 @@
               "name": "canReorderTabs",
               "description": "Gets or sets a value that indicates whether the tabs in the TabStrip can be reordered through user interaction.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.canreordertabs"
@@ -14799,6 +15012,7 @@
               "name": "canTearOutTabs",
               "description": "Gets or sets a value that indicates whether or not dragging out tabs into a new window is allowed on this TabView. `true` if tabs can be dragged out into a new window; otherwise, `false`. The default is `false`.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.cantearouttabs"
@@ -14821,6 +15035,7 @@
               "name": "isAddTabButtonVisible",
               "description": "Gets or sets whether the add (+) tab button is visible.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabview.isaddtabbuttonvisible"
@@ -15006,6 +15221,7 @@
               "name": "isClosable",
               "description": "Gets or sets the value that determines if the tab shows a close button. The default is true.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tabviewitem.isclosable"
@@ -15116,6 +15332,7 @@
               "name": "isLightDismissEnabled",
               "description": "Enables light-dismiss functionality so that a teaching tip will dismiss when a user scrolls or interacts with other elements of the application.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.islightdismissenabled"
@@ -15124,6 +15341,7 @@
               "name": "isOpen",
               "description": "Gets or sets a value that indicates whether the teaching tip is open.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.isopen"
@@ -15154,6 +15372,7 @@
               "name": "shouldConstrainToRootBounds",
               "description": "Gets or sets a value that indicates whether the teaching tip will constrain to the bounds of its xaml root.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.teachingtip.shouldconstraintorootbounds"
@@ -15313,6 +15532,7 @@
               "name": "isColorFontEnabled",
               "description": "Gets or sets a value that determines whether font glyphs that contain color layers, such as Segoe UI Emoji, are rendered in color.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.iscolorfontenabled"
@@ -15321,6 +15541,7 @@
               "name": "isTextScaleFactorEnabled",
               "description": "Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.istextscalefactorenabled"
@@ -15329,6 +15550,7 @@
               "name": "isTextSelectionEnabled",
               "description": "Gets or sets a value that indicates whether text selection is enabled in the TextBlock, either through user action or calling selection-related API.\n\nAlso settable in CSS as `user-select`\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textblock.istextselectionenabled"
@@ -15514,6 +15736,7 @@
               "name": "acceptsReturn",
               "description": "Gets or sets the value that determines whether the text box allows and displays the newline or return characters.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.acceptsreturn"
@@ -15596,6 +15819,7 @@
               "name": "isColorFontEnabled",
               "description": "Gets or sets a value that determines whether font glyphs that contain color layers, such as Segoe UI Emoji, are rendered in color.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.iscolorfontenabled"
@@ -15604,6 +15828,7 @@
               "name": "isReadOnly",
               "description": "Gets or sets the value that determines if the user can change the text in the text box.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.isreadonly"
@@ -15612,6 +15837,7 @@
               "name": "isSpellCheckEnabled",
               "description": "Gets or sets a value that specifies whether the TextBox input interacts with a spell check engine.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.isspellcheckenabled"
@@ -15620,6 +15846,7 @@
               "name": "isTextPredictionEnabled",
               "description": "Gets or sets a value that determines whether text prediction features (\"autocomplete\") should be enabled for this TextBox.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.istextpredictionenabled"
@@ -15652,6 +15879,7 @@
               "name": "preventKeyboardDisplayOnProgrammaticFocus",
               "description": "Gets or sets a value that indicates whether the on-screen keyboard is shown when the control receives focus programmatically.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.textbox.preventkeyboarddisplayonprogrammaticfocus"
@@ -15842,6 +16070,7 @@
               "name": "allowFocusOnInteraction",
               "description": "Gets or sets a value that indicates whether the element automatically gets focus when the user interacts with it.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.allowfocusoninteraction"
@@ -15858,6 +16087,7 @@
               "name": "exitDisplayModeOnAccessKeyInvoked",
               "description": "Gets or sets a value that specifies whether the access key display is dismissed when an access key is invoked.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.exitdisplaymodeonaccesskeyinvoked"
@@ -15932,6 +16162,7 @@
               "name": "isAccessKeyScope",
               "description": "Gets or sets a value that indicates whether an element defines its own access key scope.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.isaccesskeyscope"
@@ -15940,6 +16171,7 @@
               "name": "isTextScaleFactorEnabled",
               "description": "Gets or sets whether automatic text enlargement, to reflect the system text size setting, is enabled.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.documents.textelement.istextscalefactorenabled"
@@ -16131,6 +16363,7 @@
               "name": "autoReverse",
               "description": "Gets or sets a value that indicates whether the timeline plays in reverse after it completes a forward iteration.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.media.animation.timeline.autoreverse"
@@ -16332,6 +16565,7 @@
               "name": "autoRefreshDragRegions",
               "description": "Type: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -16349,6 +16583,7 @@
               "name": "isBackButtonEnabled",
               "description": "Gets or sets a value that indicates whether the button to navigate back is enabled. `true` if the button to navigate back is enabled; otherwise, `false`. The default is `true`.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.isbackbuttonenabled"
@@ -16357,6 +16592,7 @@
               "name": "isBackButtonVisible",
               "description": "Gets or sets a value that indicates whether the button to navigate back is shown. `true` if the button to navigate back is shown; otherwise, `false`. The default is `false`.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.isbackbuttonvisible"
@@ -16365,6 +16601,7 @@
               "name": "isPaneToggleButtonVisible",
               "description": "Gets or sets a value that indicates whether the button to toggle the navigation pane is shown. `true` if the button to toggle the navigation pane is shown; otherwise, `false`. The default is `false`.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.titlebar.ispanetogglebuttonvisible"
@@ -16425,6 +16662,7 @@
               "name": "isThreeState",
               "description": "Gets or sets a value that indicates whether the control supports three states.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.primitives.togglebutton.isthreestate"
@@ -16456,6 +16694,7 @@
               "name": "isChecked",
               "description": "Gets or sets whether the ToggleMenuFlyoutItem is checked.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglemenuflyoutitem.ischecked"
@@ -16472,6 +16711,7 @@
               "name": "isChecked",
               "description": "Gets or sets whether the ToggleSplitButton is checked.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.togglesplitbutton.ischecked"
@@ -16509,6 +16749,7 @@
               "name": "isOn",
               "description": "Gets or sets a value that declares whether the state of the ToggleSwitch is \"On\".\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.toggleswitch.ison"
@@ -16570,6 +16811,7 @@
               "name": "isOpen",
               "description": "Gets or sets a value that indicates whether the ToolTip is visible.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.tooltip.isopen"
@@ -16680,6 +16922,7 @@
               "name": "canDragItems",
               "description": "Gets or sets a value that indicates whether items in the view can be dragged as data payload.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview.candragitems"
@@ -16688,6 +16931,7 @@
               "name": "canReorderItems",
               "description": "Gets or sets a value that indicates whether items in the view can be reordered through user interaction.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeview.canreorderitems"
@@ -16835,6 +17079,7 @@
               "name": "hasUnrealizedChildren",
               "description": "Gets or sets a value that indicates whether the current item has child items that haven't been shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.hasunrealizedchildren"
@@ -16843,6 +17088,7 @@
               "name": "isExpanded",
               "description": "Gets or sets a value that indicates whether a tree node is expanded.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewitem.isexpanded"
@@ -16882,6 +17128,7 @@
               "name": "hasUnrealizedChildren",
               "description": "Gets or sets a value that indicates whether the current node has child items that haven't been shown.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode.hasunrealizedchildren"
@@ -16890,6 +17137,7 @@
               "name": "isExpanded",
               "description": "Gets or sets a value that indicates whether the current tree view node is expanded.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.treeviewnode.isexpanded"
@@ -17015,6 +17263,7 @@
               "name": "allowDrop",
               "description": "Gets or sets a value that determines whether this UIElement can be a drop target for purposes of drag-and-drop operations.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.allowdrop"
@@ -17028,6 +17277,7 @@
               "name": "canBeScrollAnchor",
               "description": "Gets or sets a value that indicates whether the UIElement can be a candidate for scroll anchoring.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.canbescrollanchor"
@@ -17036,6 +17286,7 @@
               "name": "canDrag",
               "description": "Gets or sets a value that indicates whether the element can be dragged as data in a drag-and-drop operation.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.candrag"
@@ -17076,6 +17327,7 @@
               "name": "exitDisplayModeOnAccessKeyInvoked",
               "description": "Gets or sets a value that specifies whether the access key display is dismissed when an access key is invoked.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.exitdisplaymodeonaccesskeyinvoked"
@@ -17098,6 +17350,7 @@
               "name": "isAccessKeyScope",
               "description": "Gets or sets a value that indicates whether an element defines its own access key scope.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.isaccesskeyscope"
@@ -17106,6 +17359,7 @@
               "name": "isDoubleTapEnabled",
               "description": "Gets or sets a value that determines whether the DoubleTapped event can originate from that element.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.isdoubletapenabled"
@@ -17114,6 +17368,7 @@
               "name": "isHitTestVisible",
               "description": "Gets or sets whether the contained area of this UIElement can return true values for hit testing.\n\nAlso settable in CSS as `pointer-events`\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.ishittestvisible"
@@ -17122,6 +17377,7 @@
               "name": "isHoldingEnabled",
               "description": "Gets or sets a value that determines whether the Holding event can originate from that element.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.isholdingenabled"
@@ -17130,6 +17386,7 @@
               "name": "isRightTapEnabled",
               "description": "Gets or sets a value that determines whether the RightTapped event can originate from that element.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.isrighttapenabled"
@@ -17138,6 +17395,7 @@
               "name": "isTabStop",
               "description": "Gets or sets a value that indicates whether a control is included in tab navigation.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.istabstop"
@@ -17146,6 +17404,7 @@
               "name": "isTapEnabled",
               "description": "Gets or sets a value that determines whether the Tapped event can originate from that element.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.istapenabled"
@@ -17345,6 +17604,7 @@
               "name": "useLayoutRounding",
               "description": "Gets or sets a value that determines whether rendering for the object and its visual subtree should use rounding behavior that aligns rendering to whole pixels.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.uselayoutrounding"
@@ -17353,6 +17613,7 @@
               "name": "useSystemFocusVisuals",
               "description": "Gets or sets a value that indicates whether the control uses focus visuals drawn by the system or focus visuals defined in the control template.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.uielement.usesystemfocusvisuals"
@@ -17561,6 +17822,7 @@
               "name": "relativePanelAlignLeftWithPanel",
               "description": "Gets or sets the value of the RelativePanel.AlignLeftWithPanel XAML attached property for the target element. The RelativePanel.AlignLeftWithPanel XAML attached property value of the specified object. (true to align this element's left edge with the panel's left edge; otherwise, false.)\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17568,6 +17830,7 @@
               "name": "relativePanelAlignTopWithPanel",
               "description": "Gets or sets the value of the RelativePanel.AlignTopWithPanel XAML attached property for the target element. The RelativePanel.AlignTopWithPanel XAML attached property value of the specified object. (true to align this element's top edge with the panel's top edge; otherwise, false.)\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17575,6 +17838,7 @@
               "name": "relativePanelAlignRightWithPanel",
               "description": "Gets or sets the value of the RelativePanel.AlignRightWithPanel XAML attached property for the target element. The RelativePanel.AlignRightWithPanel XAML attached property value of the specified object. (true to align this element's right edge with the panel's right edge; otherwise, false.)\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17582,6 +17846,7 @@
               "name": "relativePanelAlignBottomWithPanel",
               "description": "Gets or sets the value of the RelativePanel.AlignBottomWithPanel XAML attached property for the target element. The RelativePanel.AlignBottomWithPanel XAML attached property value of the specified object. (true to align this element's bottom edge with the panel's bottom edge; otherwise, false.)\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17589,6 +17854,7 @@
               "name": "relativePanelAlignHorizontalCenterWithPanel",
               "description": "Gets or sets the value of the RelativePanel.AlignHorizontalCenterWithPanel XAML attached property for the target element. The RelativePanel.AlignHorizontalCenterWithPanel XAML attached property value of the specified object. (true to horizontally center this element in the panel; otherwise, false.)\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17596,6 +17862,7 @@
               "name": "relativePanelAlignVerticalCenterWithPanel",
               "description": "Gets or sets the value of the RelativePanel.AlignVerticalCenterWithPanel XAML attached property for the target element. The RelativePanel.AlignVerticalCenterWithPanel XAML attached property value of the specified object. (true to vertically center this element in the panel; otherwise, false.)\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17643,6 +17910,7 @@
               "name": "scrollViewerIsHorizontalRailEnabled",
               "description": "Gets or sets the value of the IsHorizontalRailEnabled dependency property / ScrollViewer.IsHorizontalRailEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17650,6 +17918,7 @@
               "name": "scrollViewerIsVerticalRailEnabled",
               "description": "Gets or sets the value of the IsVerticalRailEnabled dependency property / ScrollViewer.IsVerticalRailEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17657,6 +17926,7 @@
               "name": "scrollViewerIsHorizontalScrollChainingEnabled",
               "description": "Gets or sets the value of the IsHorizontalScrollChainingEnabled dependency property / ScrollViewer.IsHorizontalScrollChainingEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17664,6 +17934,7 @@
               "name": "scrollViewerIsVerticalScrollChainingEnabled",
               "description": "Gets or sets the value of the IsVerticalScrollChainingEnabled dependency property / ScrollViewer.IsVerticalScrollChainingEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17671,6 +17942,7 @@
               "name": "scrollViewerIsZoomChainingEnabled",
               "description": "Gets or sets the value of the IsZoomChainingEnabled dependency property / ScrollViewer.IsZoomChainingEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17678,6 +17950,7 @@
               "name": "scrollViewerIsScrollInertiaEnabled",
               "description": "Gets or sets the value of the IsScrollInertiaEnabled dependency property / ScrollViewer.IsScrollInertiaEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17685,6 +17958,7 @@
               "name": "scrollViewerIsZoomInertiaEnabled",
               "description": "Gets or sets the value of the IsZoomInertiaEnabled dependency property / ScrollViewer.IsZoomInertiaEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17731,6 +18005,7 @@
               "name": "scrollViewerCanContentRenderOutsideBounds",
               "description": "Gets or sets the value of the CanContentRenderOutsideBounds dependency property / ScrollViewer.CanContentRenderOutsideBounds XAML attached property on a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17738,6 +18013,7 @@
               "name": "scrollViewerIsDeferredScrollingEnabled",
               "description": "Gets or sets the value of the IsDeferredScrollingEnabled dependency property / ScrollViewer.IsDeferredScrollingInertiaEnabled XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17745,6 +18021,7 @@
               "name": "scrollViewerBringIntoViewOnFocusChange",
               "description": "Gets or sets the value of the BringIntoViewOnFocusChange dependency property / ScrollViewer.BringIntoViewOnFocusChange XAML attached property from a specified element. The value of the property, as obtained from the property store.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17797,6 +18074,7 @@
               "name": "automationIsRequiredForForm",
               "description": "Gets or sets the value of the AutomationProperties.IsRequiredForForm attached property for the specified DependencyObject.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17896,6 +18174,7 @@
               "name": "automationIsPeripheral",
               "description": "Gets or sets a Boolean value that indicates whether the specified element represents peripheral UI.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17903,6 +18182,7 @@
               "name": "automationIsDataValidForForm",
               "description": "Gets or sets a Boolean value that indicates whether the entered or selected value is valid for the form rule associated with the specified element.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -17944,6 +18224,7 @@
               "name": "automationIsDialog",
               "description": "Gets or sets the value of the AutomationProperties.IsDialog attached property for the specified DependencyObject.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               }
             },
@@ -18410,6 +18691,7 @@
               "name": "areScrollSnapPointsRegular",
               "description": "Gets or sets a value that indicates whether the generated snap points used for panning in the VirtualizingStackPanel are equidistant from each other.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.virtualizingstackpanel.arescrollsnappointsregular"
@@ -18515,6 +18797,7 @@
               "name": "canGoBack",
               "description": "Gets or sets a value that indicates whether backward navigation is possible.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2.cangoback"
@@ -18523,6 +18806,7 @@
               "name": "canGoForward",
               "description": "Gets or sets a value that indicates whether forward navigation is possible.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls.webview2.cangoforward"
@@ -18747,6 +19031,7 @@
               "name": "forceSoftwareRenderer",
               "description": "Gets or sets the whether the devices that this control creates will be forced to software rendering.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_ForceSoftwareRenderer.htm"
@@ -18755,6 +19040,7 @@
               "name": "isFixedTimeStep",
               "description": "Indicates whether the game loop is running in fixed or variable timing mode.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_IsFixedTimeStep.htm"
@@ -18763,6 +19049,7 @@
               "name": "paused",
               "description": "Indicates whether the control's game loop is paused.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_Paused.htm"
@@ -18787,6 +19074,7 @@
               "name": "useSharedDevice",
               "description": "Gets or sets whether this control should create a new device each time, or use a device which may common between other controls.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasAnimatedControl_UseSharedDevice.htm"
@@ -18849,6 +19137,7 @@
               "name": "forceSoftwareRenderer",
               "description": "Gets or sets the whether the devices that this control creates will be forced to software rendering.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasControl_ForceSoftwareRenderer.htm"
@@ -18857,6 +19146,7 @@
               "name": "useSharedDevice",
               "description": "Gets or sets whether this control should create a new device each time, or use a device which may common between other controls.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasControl_UseSharedDevice.htm"
@@ -18917,6 +19207,7 @@
               "name": "forceSoftwareRenderer",
               "description": "Gets or sets the whether the devices that this control creates will be forced to software rendering.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl_ForceSoftwareRenderer.htm"
@@ -18925,6 +19216,7 @@
               "name": "useSharedDevice",
               "description": "Gets or sets whether this control should create a new device each time, or use a device which may common between other controls.\n\nType: `boolean`",
               "value": {
+                "kind": "expression",
                 "type": "boolean"
               },
               "doc-url": "https://microsoft.github.io/Win2D/WinUI3/html/P_Microsoft_Graphics_Canvas_UI_Xaml_CanvasVirtualControl_UseSharedDevice.htm"

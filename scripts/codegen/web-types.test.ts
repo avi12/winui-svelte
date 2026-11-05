@@ -25,6 +25,7 @@ const webTypesSchema = z.object({
               name: z.string(),
               description: z.string().optional(),
               value: z.object({
+                kind: z.literal("expression").optional(),
                 type: z.union([typeReferenceSchema, z.array(typeReferenceSchema)])
               }).optional()
             })
@@ -115,4 +116,9 @@ test("an attached property a class takes as a prop carries the owner's documenta
   const uiElement = elements.find(element => element.name === "UIElement");
   const automationId = uiElement?.attributes.find(attribute => attribute.name === "automationId");
   assert.match(automationId?.description ?? "", /AutomationProperties\.AutomationId/u);
+});
+
+test("a boolean prop is an expression, not an HTML boolean attribute that takes its own name", () => {
+  const isEnabled = elements.find(element => element.name === "Control")?.attributes.find(attribute => attribute.name === "isEnabled");
+  assert.equal(isEnabled?.value?.kind, "expression");
 });
