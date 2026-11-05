@@ -1,0 +1,20 @@
+{
+  "name": "winui-svelte-vscode",
+  "displayName": "winui-svelte",
+  "description": "Draws the Fluent icon of a winui-svelte glyph prop beside its name, previews it on hover and offers the icon names",
+  "version": "0.0.1",
+  "publisher": "avi12",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "vscode": "^1.105.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:svelte"
+  ],
+  "main": "./dist/extension.js"
+}
