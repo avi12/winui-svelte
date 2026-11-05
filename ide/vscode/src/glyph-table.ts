@@ -1,12 +1,10 @@
 import raw from "../../webstorm/src/main/resources/fluent-glyphs.json" with { type: "json" };
+import { listsProp, typedPropsTableSchema } from "./typed-props-table.ts";
 import { z } from "zod";
 
 const HEX_RADIX = 16;
 const CODE_POINT_DIGITS = 4;
-const tableSchema = z.object({
-  attributes: z.record(z.string(), z.array(z.string())),
-  glyphs: z.record(z.string(), z.string())
-});
+const tableSchema = typedPropsTableSchema.extend({ glyphs: z.record(z.string(), z.string()) });
 const table = tableSchema.parse(raw);
 const codePoints = new Map(Object.entries(table.glyphs).map(([name, hex]) => [name, Number.parseInt(hex, HEX_RADIX)]));
 
@@ -24,7 +22,11 @@ export function isGlyphAttribute({ tag, attribute }: {
   tag: string;
   attribute: string;
 }) {
-  return table.attributes[tag]?.includes(attribute) === true;
+  return listsProp({
+    table,
+    tag,
+    attribute
+  });
 }
 
 /**
