@@ -10,52 +10,122 @@ import {
   workspace
 } from "vscode";
 import type { ExtensionContext, TextDocument } from "vscode";
-import { GLYPH_FONT_STYLE, previewMarkdown } from "./glyph-preview.ts";
+import { cssColorOf } from "./css-color.ts";
 import { codePointOf, fluentCodePoints, labelOf } from "./glyph-table.ts";
-import { glyphValueAt, glyphValues } from "./glyph-values.ts";
+import { colorMarkdown, fontMarkdown, glyphMarkdown, GLYPH_FONT_STYLE } from "./preview.ts";
+import { SpotKind, spotAt, spotsOf } from "./spots.ts";
+import type { Spot } from "./spots.ts";
 
 const SVELTE = { language: "svelte" };
 const ICON_GAP = "0 3px 0 0";
+const SWATCH_SIZE = "0.85em";
+const SWATCH_OUTLINE = "1px solid #88888888";
 const DARK_FOREGROUND = "#d4d4d4";
 const LIGHT_FOREGROUND = "#333333";
 
-function previewColor() {
+function themeForeground() {
   const { kind } = window.activeColorTheme;
   const isLight = kind === ColorThemeKind.Light || kind === ColorThemeKind.HighContrastLight;
   return isLight ? LIGHT_FOREGROUND : DARK_FOREGROUND;
 }
 
-function previewOf(codePoint: number) {
+function glyphPreview(codePoint: number) {
   const name = [...fluentCodePoints()].find(([, point]) => point === codePoint)?.[0];
-  return new MarkdownString(previewMarkdown({
+  return new MarkdownString(glyphMarkdown({
     codePoint,
     name,
-    color: previewColor()
+    color: themeForeground()
   }));
 }
 
-async function valuesOf(document: TextDocument) {
-  return glyphValues({
+function previewOf(spot: Spot) {
+  if (spot.kind === SpotKind.FONT) {
+    return new MarkdownString(fontMarkdown({
+      family: spot.text,
+      color: themeForeground()
+    }));
+  }
+
+  if (spot.kind === SpotKind.COLOR) {
+    const css = cssColorOf(spot.text);
+    return css === undefined ? undefined : new MarkdownString(colorMarkdown(css));
+  }
+
+  const codePoint = codePointOf(spot.text);
+  return codePoint === undefined ? undefined : glyphPreview(codePoint);
+}
+
+async function spotsOfDocument(document: TextDocument) {
+  return spotsOf({
     text: document.getText(),
     file: document.uri.fsPath
   });
 }
 
-async function valueAt({ document, offset }: {
+async function spotAtPosition({ document, offset }: {
   document: TextDocument;
   offset: number;
 }) {
-  return glyphValueAt({
-    values: await valuesOf(document),
+  return spotAt({
+    spots: await spotsOfDocument(document),
     offset
   });
 }
 
+function glyphDecoration({ document, spot }: {
+  document: TextDocument;
+  spot: Spot;
+}) {
+  const codePoint = codePointOf(spot.text);
+  if (codePoint === undefined) {
+    return [];
+  }
+
+  const position = document.positionAt(spot.start);
+  return [{
+    range: new Range(position, position),
+    renderOptions: {
+      before: {
+        contentText: String.fromCodePoint(codePoint),
+        textDecoration: GLYPH_FONT_STYLE,
+        margin: ICON_GAP
+      }
+    }
+  }];
+}
+
+function colorDecoration({ document, spot }: {
+  document: TextDocument;
+  spot: Spot;
+}) {
+  const css = cssColorOf(spot.text);
+  if (css === undefined) {
+    return [];
+  }
+
+  const position = document.positionAt(spot.start);
+  return [{
+    range: new Range(position, position),
+    renderOptions: {
+      before: {
+        contentText: " ",
+        backgroundColor: css,
+        border: SWATCH_OUTLINE,
+        width: SWATCH_SIZE,
+        height: SWATCH_SIZE,
+        margin: ICON_GAP
+      }
+    }
+  }];
+}
+
 /**
- * Starts the extension: the icon beside each glyph value, the hover preview and the icon-name completion.
+ * Starts the extension: the icon and color beside their values, the hover previews of glyphs, colors and font
+ * families, and the icon-name completion.
  */
 export function activate(context: ExtensionContext) {
-  const iconType = window.createTextEditorDecorationType({});
+  const glyphType = window.createTextEditorDecorationType({});
+  const colorType = window.createTextEditorDecorationType({});
 
   async function decorate(document: TextDocument) {
     const editor = window.visibleTextEditors.find(visible => visible.document === document);
@@ -63,25 +133,21 @@ export function activate(context: ExtensionContext) {
       return;
     }
 
-    const values = await valuesOf(document);
-    editor.setDecorations(iconType, values.flatMap(value => {
-      const codePoint = codePointOf(value.value);
-      if (codePoint === undefined) {
-        return [];
-      }
-
-      const position = document.positionAt(value.valueStart);
-      return [{
-        range: new Range(position, position),
-        renderOptions: {
-          before: {
-            contentText: String.fromCodePoint(codePoint),
-            textDecoration: GLYPH_FONT_STYLE,
-            margin: ICON_GAP
-          }
-        }
-      }];
-    }));
+    const spots = await spotsOfDocument(document);
+    editor.setDecorations(
+      glyphType,
+      spots.filter(spot => spot.kind === SpotKind.GLYPH).flatMap(spot => glyphDecoration({
+        document,
+        spot
+      }))
+    );
+    editor.setDecorations(
+      colorType,
+      spots.filter(spot => spot.kind === SpotKind.COLOR).flatMap(spot => colorDecoration({
+        document,
+        spot
+      }))
+    );
   }
 
   function decorateVisible() {
@@ -92,34 +158,35 @@ export function activate(context: ExtensionContext) {
 
   decorateVisible();
   context.subscriptions.push(
-    iconType,
+    glyphType,
+    colorType,
     window.onDidChangeVisibleTextEditors(decorateVisible),
     workspace.onDidChangeTextDocument(change => void decorate(change.document)),
     languages.registerHoverProvider(SVELTE, {
       async provideHover(document, position) {
-        const value = await valueAt({
+        const spot = await spotAtPosition({
           document,
           offset: document.offsetAt(position)
         });
-        const codePoint = value === undefined ? undefined : codePointOf(value.value);
-        return codePoint === undefined ? undefined : new Hover(previewOf(codePoint));
+        const preview = spot === undefined ? undefined : previewOf(spot);
+        return preview === undefined ? undefined : new Hover(preview);
       }
     }),
     languages.registerCompletionItemProvider(SVELTE, {
       async provideCompletionItems(document, position) {
-        const value = await valueAt({
+        const spot = await spotAtPosition({
           document,
           offset: document.offsetAt(position)
         });
-        if (value === undefined) {
+        if (spot === undefined || spot.kind !== SpotKind.GLYPH) {
           return [];
         }
 
-        const range = new Range(document.positionAt(value.valueStart), document.positionAt(value.valueEnd));
+        const range = new Range(document.positionAt(spot.start), document.positionAt(spot.end));
         return [...fluentCodePoints()].map(([name, codePoint]) => {
           const item = new CompletionItem(name, CompletionItemKind.Value);
           item.detail = labelOf(codePoint);
-          item.documentation = previewOf(codePoint);
+          item.documentation = glyphPreview(codePoint);
           item.range = range;
           return item;
         });

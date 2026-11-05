@@ -168,14 +168,15 @@ export function scanAttributes(text: string) {
 }
 
 /**
- * Whether the source of a component declares the prop with the type `GlyphInput`.
+ * Whether the source of a component declares the prop with the given input type (`GlyphInput`).
  */
-export function declaresAsGlyphInput({ source, prop }: {
+export function declaresAsInputType({ source, prop, inputType }: {
   source: string;
   prop: string;
+  inputType: string;
 }) {
   const escaped = prop.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
-  return new RegExp(`\\b${escaped}\\??\\s*:\\s*GlyphInput\\b`, "u").test(source);
+  return new RegExp(`\\b${escaped}\\??\\s*:\\s*${inputType}\\b`, "u").test(source);
 }
 
 /**

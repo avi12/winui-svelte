@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { declaresAsGlyphInput, importedComponents, scanAttributes } from "./glyph-scan.ts";
+import { declaresAsInputType, importedComponents, scanAttributes } from "./markup-scan.ts";
 import { codePointOf, isGlyphAttribute, labelOf } from "./glyph-table.ts";
 
 test("a quoted attribute value is found with its position and its tag", () => {
@@ -29,13 +29,15 @@ test("an empty value is found, so the completion can offer names in it", () => {
 });
 
 test("a prop declared as GlyphInput is told from one declared as string", () => {
-  assert.equal(declaresAsGlyphInput({
+  assert.equal(declaresAsInputType({
     source: "interface Props { glyph?: GlyphInput; }",
-    prop: "glyph"
+    prop: "glyph",
+    inputType: "GlyphInput"
   }), true);
-  assert.equal(declaresAsGlyphInput({
+  assert.equal(declaresAsInputType({
     source: "interface Props { glyph: string; }",
-    prop: "glyph"
+    prop: "glyph",
+    inputType: "GlyphInput"
   }), false);
 });
 
