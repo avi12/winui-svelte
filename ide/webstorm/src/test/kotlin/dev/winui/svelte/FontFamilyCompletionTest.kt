@@ -38,4 +38,17 @@ class FontFamilyCompletionTest : BasePlatformTestCase() {
   fun testTheFontFamilyOfAStyleBlockIsRecognised() {
     assertEquals(true, isFontFamilyAtCaret("<style>\n.a { font-family: Ari<caret> }\n</style>"))
   }
+
+  fun testAPropTypedFontFamilyInputIsRecognisedOnWinuiAndOnWrapperComponents() {
+    assertEquals(true, isFontFamilyAtCaret("<TextBlock fontFamily=\"Ari<caret>\" />"))
+    myFixture.addFileToProject("Label.svelte", component("face: FontFamilyInput"))
+    val markup = usage("face")
+    assertEquals(true, isFontFamilyAtCaret(markup))
+    assertEquals(false, isFontFamilyAtCaret(usage("other")))
+  }
+
+  private fun component(prop: String) = "<script lang=\"ts\">\n  interface Props { $prop; }\n</script>\n"
+
+  private fun usage(prop: String) =
+    "<script lang=\"ts\">\n  import Label from \"./Label.svelte\";\n</script>\n<Label $prop=\"Ari<caret>\" />"
 }

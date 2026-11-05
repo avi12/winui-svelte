@@ -1,5 +1,6 @@
 import { packageJsonWithBindings } from "./binding-list.ts";
 import { emitFluentGlyphs } from "./emit-fluent-glyphs.ts";
+import { emitFontFamilyProps } from "./emit-font-family-props.ts";
 import { emitWebTypes } from "./emit-web-types.ts";
 import { emitWebstormCssMappings } from "./emit-webstorm-css-mappings.ts";
 import {
@@ -46,6 +47,7 @@ import { z } from "zod";
 const PACKAGE_FOLDER = path.join(import.meta.dirname, "..", "..");
 const GENERATED_FOLDER = path.join(PACKAGE_FOLDER, "src", "components", "generated");
 const WEBSTORM_MAPPINGS_FILE = path.join(PACKAGE_FOLDER, "ide", "webstorm", "src", "main", "resources", "winui-css-mappings.json");
+const WEBSTORM_FONT_FAMILY_FILE = path.join(PACKAGE_FOLDER, "ide", "webstorm", "src", "main", "resources", "font-family-props.json");
 const WEBSTORM_GLYPHS_FILE = path.join(PACKAGE_FOLDER, "ide", "webstorm", "src", "main", "resources", "fluent-glyphs.json");
 const LOCK_PATH = [".winapp", "winmds.lock.json"];
 const BINDINGS_PATH = [".winapp", "bindings"];
@@ -219,6 +221,10 @@ function generatedFiles(project: string) {
     {
       file: WEBSTORM_GLYPHS_FILE,
       text: emitFluentGlyphs({ classes: [model, ...extraModels].flatMap(entry => entry.classes) })
+    },
+    {
+      file: WEBSTORM_FONT_FAMILY_FILE,
+      text: emitFontFamilyProps({ classes: [model, ...extraModels].flatMap(entry => entry.classes) })
     },
     {
       file: WEBSTORM_MAPPINGS_FILE,

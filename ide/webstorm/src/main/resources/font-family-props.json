@@ -1,0 +1,395 @@
+{
+  "attributes": {
+    "AnnotatedScrollBar": [
+      "fontFamily"
+    ],
+    "AppBar": [
+      "fontFamily"
+    ],
+    "AppBarButton": [
+      "fontFamily"
+    ],
+    "AppBarElementContainer": [
+      "fontFamily"
+    ],
+    "AppBarSeparator": [
+      "fontFamily"
+    ],
+    "AppBarToggleButton": [
+      "fontFamily"
+    ],
+    "AutoSuggestBox": [
+      "fontFamily"
+    ],
+    "Bold": [
+      "fontFamily"
+    ],
+    "BreadcrumbBar": [
+      "fontFamily"
+    ],
+    "BreadcrumbBarItem": [
+      "fontFamily"
+    ],
+    "Button": [
+      "fontFamily"
+    ],
+    "CalendarDatePicker": [
+      "fontFamily"
+    ],
+    "CalendarView": [
+      "dayItemFontFamily",
+      "firstOfMonthLabelFontFamily",
+      "firstOfYearDecadeLabelFontFamily",
+      "fontFamily",
+      "monthYearItemFontFamily"
+    ],
+    "CalendarViewDayItem": [
+      "fontFamily"
+    ],
+    "CanvasAnimatedControl": [
+      "fontFamily"
+    ],
+    "CanvasControl": [
+      "fontFamily"
+    ],
+    "CanvasVirtualControl": [
+      "fontFamily"
+    ],
+    "CheckBox": [
+      "fontFamily"
+    ],
+    "ColorPicker": [
+      "fontFamily"
+    ],
+    "ColorPickerSlider": [
+      "fontFamily"
+    ],
+    "ColorSpectrum": [
+      "fontFamily"
+    ],
+    "ComboBox": [
+      "fontFamily"
+    ],
+    "ComboBoxItem": [
+      "fontFamily"
+    ],
+    "CommandBar": [
+      "fontFamily"
+    ],
+    "CommandBarFlyoutCommandBar": [
+      "fontFamily"
+    ],
+    "CommandBarOverflowPresenter": [
+      "fontFamily"
+    ],
+    "ContentControl": [
+      "fontFamily"
+    ],
+    "ContentDialog": [
+      "fontFamily"
+    ],
+    "ContentPresenter": [
+      "fontFamily"
+    ],
+    "DatePicker": [
+      "fontFamily"
+    ],
+    "DropDownButton": [
+      "fontFamily"
+    ],
+    "Expander": [
+      "fontFamily"
+    ],
+    "FlipView": [
+      "fontFamily"
+    ],
+    "FlipViewItem": [
+      "fontFamily"
+    ],
+    "FlyoutPresenter": [
+      "fontFamily"
+    ],
+    "FontIcon": [
+      "fontFamily"
+    ],
+    "FontIconSource": [
+      "fontFamily"
+    ],
+    "Frame": [
+      "fontFamily"
+    ],
+    "GridView": [
+      "fontFamily"
+    ],
+    "GridViewHeaderItem": [
+      "fontFamily"
+    ],
+    "GridViewItem": [
+      "fontFamily"
+    ],
+    "GridViewItemPresenter": [
+      "fontFamily"
+    ],
+    "GroupItem": [
+      "fontFamily"
+    ],
+    "Hub": [
+      "fontFamily"
+    ],
+    "HubSection": [
+      "fontFamily"
+    ],
+    "Hyperlink": [
+      "fontFamily"
+    ],
+    "HyperlinkButton": [
+      "fontFamily"
+    ],
+    "InfoBadge": [
+      "fontFamily"
+    ],
+    "InfoBar": [
+      "fontFamily"
+    ],
+    "InlineUIContainer": [
+      "fontFamily"
+    ],
+    "Italic": [
+      "fontFamily"
+    ],
+    "ItemContainer": [
+      "fontFamily"
+    ],
+    "ItemsControl": [
+      "fontFamily"
+    ],
+    "ItemsView": [
+      "fontFamily"
+    ],
+    "LineBreak": [
+      "fontFamily"
+    ],
+    "ListBox": [
+      "fontFamily"
+    ],
+    "ListBoxItem": [
+      "fontFamily"
+    ],
+    "ListView": [
+      "fontFamily"
+    ],
+    "ListViewHeaderItem": [
+      "fontFamily"
+    ],
+    "ListViewItem": [
+      "fontFamily"
+    ],
+    "ListViewItemPresenter": [
+      "fontFamily"
+    ],
+    "MapControl": [
+      "fontFamily"
+    ],
+    "MediaPlayerElement": [
+      "fontFamily"
+    ],
+    "MediaTransportControls": [
+      "fontFamily"
+    ],
+    "MenuBar": [
+      "fontFamily"
+    ],
+    "MenuBarItem": [
+      "fontFamily"
+    ],
+    "MenuFlyoutItem": [
+      "fontFamily"
+    ],
+    "MenuFlyoutPresenter": [
+      "fontFamily"
+    ],
+    "MenuFlyoutSeparator": [
+      "fontFamily"
+    ],
+    "MenuFlyoutSubItem": [
+      "fontFamily"
+    ],
+    "NavigationView": [
+      "fontFamily"
+    ],
+    "NavigationViewItem": [
+      "fontFamily"
+    ],
+    "NavigationViewItemHeader": [
+      "fontFamily"
+    ],
+    "NavigationViewItemPresenter": [
+      "fontFamily"
+    ],
+    "NavigationViewItemSeparator": [
+      "fontFamily"
+    ],
+    "NumberBox": [
+      "fontFamily"
+    ],
+    "Page": [
+      "fontFamily"
+    ],
+    "Paragraph": [
+      "fontFamily"
+    ],
+    "PasswordBox": [
+      "fontFamily"
+    ],
+    "PersonPicture": [
+      "fontFamily"
+    ],
+    "PipsPager": [
+      "fontFamily"
+    ],
+    "Pivot": [
+      "fontFamily"
+    ],
+    "PivotItem": [
+      "fontFamily"
+    ],
+    "ProgressBar": [
+      "fontFamily"
+    ],
+    "ProgressRing": [
+      "fontFamily"
+    ],
+    "RadioButton": [
+      "fontFamily"
+    ],
+    "RadioButtons": [
+      "fontFamily"
+    ],
+    "RadioMenuFlyoutItem": [
+      "fontFamily"
+    ],
+    "RatingControl": [
+      "fontFamily"
+    ],
+    "RefreshContainer": [
+      "fontFamily"
+    ],
+    "RefreshVisualizer": [
+      "fontFamily"
+    ],
+    "RepeatButton": [
+      "fontFamily"
+    ],
+    "RevealListViewItemPresenter": [
+      "fontFamily"
+    ],
+    "RichEditBox": [
+      "fontFamily"
+    ],
+    "RichTextBlock": [
+      "fontFamily"
+    ],
+    "Run": [
+      "fontFamily"
+    ],
+    "ScrollBar": [
+      "fontFamily"
+    ],
+    "ScrollContentPresenter": [
+      "fontFamily"
+    ],
+    "ScrollView": [
+      "fontFamily"
+    ],
+    "ScrollViewer": [
+      "fontFamily"
+    ],
+    "SelectorBar": [
+      "fontFamily"
+    ],
+    "SelectorBarItem": [
+      "fontFamily"
+    ],
+    "SemanticZoom": [
+      "fontFamily"
+    ],
+    "Slider": [
+      "fontFamily"
+    ],
+    "Span": [
+      "fontFamily"
+    ],
+    "SplitButton": [
+      "fontFamily"
+    ],
+    "SplitMenuFlyoutItem": [
+      "fontFamily"
+    ],
+    "SplitView": [
+      "fontFamily"
+    ],
+    "SwipeControl": [
+      "fontFamily"
+    ],
+    "TabView": [
+      "fontFamily"
+    ],
+    "TabViewItem": [
+      "fontFamily"
+    ],
+    "TabViewListView": [
+      "fontFamily"
+    ],
+    "TeachingTip": [
+      "fontFamily"
+    ],
+    "TextBlock": [
+      "fontFamily"
+    ],
+    "TextBox": [
+      "fontFamily"
+    ],
+    "Thumb": [
+      "fontFamily"
+    ],
+    "TimePicker": [
+      "fontFamily"
+    ],
+    "TitleBar": [
+      "fontFamily"
+    ],
+    "ToggleButton": [
+      "fontFamily"
+    ],
+    "ToggleMenuFlyoutItem": [
+      "fontFamily"
+    ],
+    "ToggleSplitButton": [
+      "fontFamily"
+    ],
+    "ToggleSwitch": [
+      "fontFamily"
+    ],
+    "ToolTip": [
+      "fontFamily"
+    ],
+    "TreeView": [
+      "fontFamily"
+    ],
+    "TreeViewItem": [
+      "fontFamily"
+    ],
+    "TreeViewList": [
+      "fontFamily"
+    ],
+    "TwoPaneView": [
+      "fontFamily"
+    ],
+    "Underline": [
+      "fontFamily"
+    ],
+    "UserControl": [
+      "fontFamily"
+    ]
+  }
+}

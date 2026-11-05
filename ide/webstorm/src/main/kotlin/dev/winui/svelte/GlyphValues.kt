@@ -11,7 +11,7 @@ internal object GlyphValues {
   ): Boolean {
     val attribute = value.parent as? XmlAttribute ?: return false
     val tag = attribute.parent ?: return false
-    val isGlyphProp = GlyphProps.isGlyphProp(tag, attribute.name)
+    val isGlyphProp = TypedProps.glyph.isProp(tag, attribute.name)
     return isGlyphProp && WinuiProjectService.of(file.project).isWinuiFile(file)
   }
 

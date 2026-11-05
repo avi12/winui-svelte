@@ -5,6 +5,7 @@ import com.intellij.psi.css.CssDeclaration
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.xml.XmlAttribute
 import com.intellij.psi.xml.XmlAttributeValue
+import com.intellij.psi.xml.XmlTag
 
 internal object FontFamilyContext {
   private const val FONT_FAMILY = "font-family"
@@ -24,18 +25,18 @@ internal object FontFamilyContext {
     val value = position.parent as? XmlAttributeValue ?: return false
     val attribute = value.parent as? XmlAttribute ?: return false
     val before = value.text.take(caretOffset - value.textRange.startOffset)
-    return isFontFamilyAttribute(attribute.name, before)
+    val tag = attribute.parent ?: return false
+    return isFontFamilyAttribute(tag, attribute.name, before)
   }
 
   private fun isFontFamilyAttribute(
+    tag: XmlTag,
     name: String,
     textBeforeCaret: String
-  ): Boolean {
-    val isMappedProp = ConversionTable.bundled.mappingOf(name)?.cssProperty == FONT_FAMILY
-    return when {
-      isMappedProp || name == STYLE_FONT_FAMILY -> true
+  ): Boolean =
+    when {
+      name == STYLE_FONT_FAMILY || TypedProps.fontFamily.isProp(tag, name) -> true
       name == STYLE -> styleDeclaration.containsMatchIn(textBeforeCaret)
       else -> false
     }
-  }
 }

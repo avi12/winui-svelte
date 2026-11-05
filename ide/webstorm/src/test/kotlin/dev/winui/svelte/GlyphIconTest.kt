@@ -38,8 +38,8 @@ class GlyphIconTest {
   fun `the table has the code point of Save and the label is U plus four digits`() {
     assertEquals(0xE74E, FluentGlyphs.codePoints["Save"])
     assertEquals("U+E74E", FluentGlyphs.label(0xE74E))
-    assertEquals(true, FluentGlyphs.isGlyphAttribute("FontIcon", "glyph"))
-    assertEquals(false, FluentGlyphs.isGlyphAttribute("TextBlock", "glyph"))
+    assertEquals(true, TypedProps.glyph.isOwn("FontIcon", "glyph"))
+    assertEquals(false, TypedProps.glyph.isOwn("TextBlock", "glyph"))
   }
 
   private companion object {

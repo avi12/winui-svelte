@@ -13,17 +13,6 @@ internal object FluentGlyphs {
     JsonParser.parseString(stream.bufferedReader().use { it.readText() }).asJsonObject
   }
 
-  private val glyphAttributes: Map<String, Set<String>> by lazy {
-    table.getAsJsonObject("attributes").entrySet().associate { (tag, keys) ->
-      tag to keys.asJsonArray.map { it.asString }.toSet()
-    }
-  }
-
-  fun isGlyphAttribute(
-    tag: String?,
-    attribute: String
-  ) = glyphAttributes[tag]?.contains(attribute) == true
-
   val codePoints: Map<String, Int> by lazy {
     table.getAsJsonObject("glyphs").entrySet().associate { (name, code) -> name to code.asString.toInt(HEX_RADIX) }
   }

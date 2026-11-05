@@ -1,4 +1,4 @@
-import { inputTypeOf } from "./emit.ts";
+import { propsOfInputType } from "./input-type-props.ts";
 import type { ClassModel } from "./model.ts";
 import { FluentGlyph } from "#src/components/fluent-glyph.js";
 
@@ -10,16 +10,6 @@ const INDENT = 2;
 const GLYPH_INPUT = "GlyphInput";
 const HEX_RADIX = 16;
 
-function glyphKeysOf(component: ClassModel) {
-  const keys: string[] = [];
-  for (let level: ClassModel | null = component; level !== null; level = level.parent) {
-    const glyphProperties = level.properties.filter(property => inputTypeOf(property) === GLYPH_INPUT);
-    keys.push(...glyphProperties.map(property => property.key));
-  }
-
-  return keys;
-}
-
 /**
  * The Fluent icon names with their code points (in hex, as Microsoft's table writes
  * them) and the props of each component that take them as JSON.
@@ -28,13 +18,10 @@ export function emitFluentGlyphs({ classes }: { classes: ClassModel[] }) {
   const glyphs = Object.fromEntries(
     Object.entries(FluentGlyph).map(([name, codePoint]) => [name, codePoint.toString(HEX_RADIX).toUpperCase()])
   );
-  const attributes = Object.fromEntries(
-    classes
-      .filter(level => level.isComponent)
-      .map(level => [level.type.name, glyphKeysOf(level).toSorted()] as const)
-      .filter(([, keys]) => keys.length > 0)
-      .toSorted(([first], [second]) => first.localeCompare(second))
-  );
+  const attributes = propsOfInputType({
+    classes,
+    inputType: GLYPH_INPUT
+  });
   return `${JSON.stringify({
     attributes,
     glyphs
