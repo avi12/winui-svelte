@@ -1,4 +1,6 @@
+import type { Report } from "./example-process.ts";
 import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED, numberOf } from "./example-process.ts";
+import type { Json } from "#src/messaging/json.js";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { test } from "node:test";
@@ -11,6 +13,48 @@ const TIMEOUT_MILLISECONDS = 300_000;
 const ROWS_WITH_TITLE_BAR = 2;
 const CORNER_RADIUS = 12;
 const HOST_GONE_MILLISECONDS = 30_000;
+const LAYOUT_MILLISECONDS = 900;
+const DOCK_INSET = 6;
+const GROWN_LINES = 8;
+const MOVE_BY = 40;
+
+function recordOf(value: Json | undefined) {
+  assert.ok(typeof value === "object" && value !== null && !Array.isArray(value), "the report carries a record");
+  return value;
+}
+
+function boundsOf(report: Report) {
+  const bounds = recordOf(report["bounds"]);
+  return {
+    x: numberOf({
+      report: bounds,
+      field: "x"
+    }),
+    y: numberOf({
+      report: bounds,
+      field: "y"
+    }),
+    width: numberOf({
+      report: bounds,
+      field: "width"
+    }),
+    height: numberOf({
+      report: bounds,
+      field: "height"
+    })
+  };
+}
+
+// The window after the layout pass that follows a command has resized it.
+async function settledInfo(example: ExampleProcess) {
+  await new Promise(resolve => setTimeout(resolve, LAYOUT_MILLISECONDS));
+  return example.ask({
+    command: {
+      cmd: "info"
+    },
+    kind: "info"
+  });
+}
 
 test("a bare Window with a title bar opens with no control registered by hand", {
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
@@ -156,6 +200,98 @@ test("a window opens hidden, and the frame props set what Windows holds for it",
       kind: "frame"
     });
     assert.equal(rehidden["isVisible"], false, "isHidden={true} hides an open window");
+
+    example.send({ cmd: "close" });
+    assert.equal(await example.exited, 0, "closing the window ends the example");
+  } finally {
+    example.kill();
+  }
+});
+
+test("a window follows its content's height with its bottom-right corner pinned, and takes activation back and forth", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const example = ExampleProcess.start({ entry: "examples/window-frame/main.ts" });
+  try {
+    const noActivate = await example.ask({
+      command: {
+        cmd: "frame",
+        isActivatable: false
+      },
+      kind: "frame"
+    });
+    assert.equal(noActivate["isNoActivate"], true);
+    const activatable = await example.ask({
+      command: {
+        cmd: "frame",
+        isActivatable: true
+      },
+      kind: "frame"
+    });
+    assert.equal(activatable["isNoActivate"], false, "isActivatable changes while the window is open, both ways");
+
+    await example.ask({
+      command: {
+        cmd: "frame",
+        sizeToContent: "height",
+        anchor: "bottomRight",
+        isBorderless: true
+      },
+      kind: "frame"
+    });
+    await example.ask({
+      command: {
+        cmd: "dock",
+        anchor: "bottomRight",
+        inset: DOCK_INSET
+      },
+      kind: "docked"
+    });
+    const before = boundsOf(await settledInfo(example));
+    await example.ask({
+      command: {
+        cmd: "grow",
+        lines: GROWN_LINES
+      },
+      kind: "grown"
+    });
+    const grown = boundsOf(await settledInfo(example));
+    assert.ok(grown.height > before.height, "more content makes the window taller");
+    assert.equal(grown.width, before.width, "height mode keeps the width");
+    assert.equal(grown.x + grown.width, before.x + before.width, "the right edge stays");
+    assert.equal(grown.y + grown.height, before.y + before.height, "the bottom edge stays: the window grew upward");
+
+    await example.ask({
+      command: {
+        cmd: "grow",
+        lines: 0
+      },
+      kind: "grown"
+    });
+    const shrunk = boundsOf(await settledInfo(example));
+    assert.equal(shrunk.height, before.height, "less content shrinks it back");
+    assert.equal(shrunk.y + shrunk.height, before.y + before.height);
+
+    const moved = await example.ask({
+      command: {
+        cmd: "move",
+        x: -MOVE_BY,
+        y: 0
+      },
+      kind: "moved"
+    });
+    const geometry = recordOf(moved["geometry"]);
+    assert.equal(
+      Math.round(
+        boundsOf(moved).x / numberOf({
+          report: geometry,
+          field: "devicePixelRatio"
+        })
+      ),
+      geometry["screenX"],
+      "screenX is the left edge in CSS pixels"
+    );
 
     example.send({ cmd: "close" });
     assert.equal(await example.exited, 0, "closing the window ends the example");

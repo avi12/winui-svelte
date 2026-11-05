@@ -8,10 +8,11 @@
   import { TextBlock, Window } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
   import { hideToTray, restoreFromTray } from "winui-svelte/tray";
-  import { exitApplication, exitWhenHostEnds } from "winui-svelte/window";
+  import { exitApplication, exitWhenHostEnds, SizeToContent, WindowAnchor } from "winui-svelte/window";
 
   type WindowFrame = Pick<
     WindowProps,
+    | "anchor"
     | "cornerRadius"
     | "isActivatable"
     | "isAlwaysOnTop"
@@ -21,6 +22,7 @@
     | "isHidden"
     | "isShownInSwitchers"
     | "isToolWindow"
+    | "sizeToContent"
   >;
 
   const { host }: { host: ExampleHost } = $props();
@@ -42,9 +44,21 @@
   const size = elementSize();
   let isTrayOnClose = false;
   let closeRequests = 0;
+  let extraLines = $state(0);
+  function extraText() {
+    return Array.from({ length: extraLines }, (_, iLine) => `Line ${iLine}`).join("\n");
+  }
 
   function optionalBoolean(value: Json | undefined) {
     return typeof value === "boolean" ? value : undefined;
+  }
+
+  function optionalAnchor(value: Json | undefined) {
+    return Object.values(WindowAnchor).find(anchor => anchor === value);
+  }
+
+  function optionalSizeToContent(value: Json | undefined) {
+    return Object.values(SizeToContent).find(mode => mode === value);
   }
 
   function optionalNumber(value: Json | undefined) {
@@ -84,7 +98,20 @@
       hasBorder: overlapped?.hasBorder,
       hasTitleBar: overlapped?.hasTitleBar,
       isAlwaysOnTop: overlapped?.isAlwaysOnTop,
-      presenterKind: presenter.kind
+      presenterKind: presenter.kind,
+      bounds: {
+        x: appWindow.position.x,
+        y: appWindow.position.y,
+        width: appWindow.size.width,
+        height: appWindow.size.height
+      },
+      geometry: handle === undefined ? null : {
+        outerWidth: handle.geometry.outerWidth,
+        outerHeight: handle.geometry.outerHeight,
+        screenX: handle.geometry.screenX,
+        screenY: handle.geometry.screenY,
+        devicePixelRatio: handle.geometry.devicePixelRatio
+      }
     };
   }
 
@@ -121,6 +148,8 @@
     ["info", () => report("info")],
     ["frame", command => {
       frame = {
+        anchor: optionalAnchor(command["anchor"]),
+        sizeToContent: optionalSizeToContent(command["sizeToContent"]),
         cornerRadius: optionalNumber(command["cornerRadius"]),
         isActivatable: optionalBoolean(command["isActivatable"]),
         isAlwaysOnTop: optionalBoolean(command["isAlwaysOnTop"]),
@@ -132,6 +161,23 @@
         isToolWindow: optionalBoolean(command["isToolWindow"])
       };
       report("frame");
+    }],
+    ["grow", command => {
+      extraLines = optionalNumber(command["lines"]) ?? 0;
+      flush();
+      report("grown");
+    }],
+    ["dock", command => {
+      handle?.dock({
+        anchor: optionalAnchor(command["anchor"]) ?? WindowAnchor.bottomRight,
+        inset: optionalNumber(command["inset"]) ?? 0
+      });
+      report("docked");
+    }],
+    ["move", command => {
+      handle?.geometry.moveBy(optionalNumber(command["x"]) ?? 0, optionalNumber(command["y"]) ?? 0);
+      handle?.geometry.resizeBy(optionalNumber(command["width"]) ?? 0, optionalNumber(command["height"]) ?? 0);
+      report("moved");
     }],
     ["trayOnClose", command => {
       isTrayOnClose = command["value"] === true;
@@ -160,6 +206,7 @@
 
 <Window
   activate={false}
+  anchor={frame.anchor}
   cornerRadius={frame.cornerRadius}
   isActivatable={frame.isActivatable}
   isAlwaysOnTop={frame.isAlwaysOnTop}
@@ -171,6 +218,7 @@
   isToolWindow={frame.isToolWindow}
   onclosed={() => exitApplication()}
   onclosing={refuseClose}
+  sizeToContent={frame.sizeToContent}
   title="Window frame example"
   bind:handle
 >
@@ -179,6 +227,9 @@
   {/snippet}
   <grid class="content" {@attach size.attach}>
     <TextBlock>Rows and columns of a grid, with nothing registered by hand.</TextBlock>
+    {#if extraLines > 0}
+      <TextBlock grid.row={1}>{extraText()}</TextBlock>
+    {/if}
   </grid>
 </Window>
 
