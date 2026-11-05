@@ -3,7 +3,6 @@
   import type { Json } from "#src/messaging/json.js";
   import {
     AppWindowPresenterKind,
-    CompositionColorBrush,
     DesktopAcrylicBackdrop,
     ElementTheme,
     FrameworkElement,
@@ -14,6 +13,7 @@
     MicaKind,
     NonClientRegionKind,
     projectAs,
+    SystemCompositionColorBrush,
     TitleBarHeightOption
   } from "#src/winui.js";
   import { flush } from "winui-svelte";
@@ -86,7 +86,7 @@
     }
 
     try {
-      return projectAs(brush, CompositionColorBrush).color.a;
+      return projectAs(brush, SystemCompositionColorBrush).color.a;
     } catch {
       return null;
     }

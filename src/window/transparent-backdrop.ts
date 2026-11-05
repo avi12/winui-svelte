@@ -1,14 +1,16 @@
 import { write } from "#src/renderer/host/reflect.js";
 import type { Window } from "#src/winui.js";
-import { ICompositionSupportsSystemBackdrop } from "#src/winui.js";
+import { ICompositionSupportsSystemBackdrop, SystemCompositor } from "#src/winui.js";
 
 // The Windows App SDK's own Microsoft.UI.Xaml.Media.TransparentTintBackdrop is
 // not in the metadata of any release this package restores (2.2 and 2.3 have
 // DesktopAcrylicBackdrop, MicaBackdrop and the abstract SystemBackdrop only),
 // so it cannot be generated. What it does is what a window offers through
 // ICompositionSupportsSystemBackdrop: a composition brush placed behind the
-// content. A color brush with alpha 0 there makes the window show the desktop
-// through every pixel the content leaves clear, with per-pixel alpha.
+// content, one of the system's (Windows.UI.Composition) and not of the window's
+// own compositor (Microsoft.UI.Composition), which is what the interface takes.
+// A color brush with alpha 0 there makes the window show the desktop through
+// every pixel the content leaves clear, with per-pixel alpha.
 
 const CLEAR = {
   a: 0,
@@ -27,7 +29,7 @@ const CLEAR = {
  */
 export function attachTransparentBackdrop(window: Window) {
   const target = window.as(ICompositionSupportsSystemBackdrop);
-  target.systemBackdrop = window.compositor.createColorBrush(CLEAR);
+  target.systemBackdrop = new SystemCompositor().createColorBrush(CLEAR);
   return () => {
     // The binding types the property as non-null, but null is how the target
     // lets a backdrop go.

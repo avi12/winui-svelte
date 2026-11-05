@@ -1118,6 +1118,13 @@
           ]
         },
         {
+          "namespace": "Windows.UI.Composition",
+          "classes": [
+            "CompositionColorBrush",
+            "Compositor"
+          ]
+        },
+        {
           "namespace": "Windows.UI.ViewManagement",
           "classes": [
             "AccessibilitySettings",
