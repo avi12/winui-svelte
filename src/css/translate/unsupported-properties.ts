@@ -29,7 +29,7 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["forced-color-adjust", "WinUI's high contrast theme recolors controls through theme resources, which an element cannot opt out of; set its colors in an @media (forced-colors: active) rule with a system color (Canvas, CanvasText, ButtonFace...) or var(--system-color-...-color)"],
   ["accent-color", "WinUI's accent color is the system's; override its resources instead (--accent-fill-color-default)"],
   ["float", "WinUI has no float; use a grid or a stack-panel"],
-  ["flex-wrap", "WinUI has no wrapping stack (WrapPanel is in the Community Toolkit)"],
+  ["flex-wrap", "WinUI has no wrapping stack (WrapPanel is in the Community Toolkit); wrap chips of different widths in a <rich-text-block> with a <paragraph> of <inline-ui-container>s, or equal cells in a <variable-sized-wrap-grid>"],
   ["background-image", `a gradient ${OPT_IN}`],
   ["box-shadow", `a shadow ${OPT_IN}`],
   ["filter", `a filter ${OPT_IN}`],

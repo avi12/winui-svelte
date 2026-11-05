@@ -691,6 +691,37 @@ The animation moves the control's `Opacity`, `Translation`, `Scale`,
 See
 [API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) for the details and what WinUI cannot do
 
+A card whose content grows or shrinks glides to its new height with
+`@attach glideHeight()` (WinUI cannot animate `Height="Auto"`; this is a
+`ResizeObserver` plus `element.animate({ height })` in one attachment, and
+needs `enableElementAnimation()` once)
+
+</details>
+
+## Wrapping chips
+
+<details>
+<summary>A row that wraps onto further lines</summary>
+
+WinUI has no `flex-wrap`; a `RichTextBlock` wraps its inline children like
+words, and an `InlineUIContainer` makes a chip one of them, so chips of any width
+wrap (`VariableSizedWrapGrid` wraps too, with one cell size for all):
+
+```svelte
+<RichTextBlock>
+  <Paragraph>
+    {#each links as link (link.href)}
+      <InlineUIContainer>
+        <HyperlinkButton navigateUri={link.href}>{link.label}</HyperlinkButton>
+      </InlineUIContainer>
+    {/each}
+  </Paragraph>
+</RichTextBlock>
+```
+
+See
+[API.md](https://github.com/avi12/winui-svelte/blob/main/API.md) for the measured comparison
+
 </details>
 
 ## Accessibility and theming
@@ -941,7 +972,7 @@ Stated plainly, so nobody finds them by surprise:
   against the component's markup at build time
   A Style cannot reach an element's parent, children or siblings, so these are
   build errors that say what to write instead: `float`, `position: sticky`,
-  `right` and `bottom`, `flex-wrap` (WinUI has no wrapping panel), a % size other than
+  `right` and `bottom`, `flex-wrap` (WinUI has no wrapping panel; see "Wrapping chips"), a % size other than
   100%, `calc()` with a % or a variable, any unit but px, deg, s, ms, fr, auto and unitless numbers (the compiler and
   stylelint both refuse it), container style queries, `:has()`, `:focus-within`,
   `clip-path` as

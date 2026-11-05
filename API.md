@@ -12,7 +12,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 
 | Specifier | File | What |
 |---|---|---|
-| `winui-svelte` | `src/index.ts` | `control`, `withControl`, `elementRef`, `elementSize`, `elementTheme`, `focusElement`, `mountControl`, `registerControls`, `setClassHandler`, `dispatch` / `flush` / `onFlush`, the value helpers |
+| `winui-svelte` | `src/index.ts` | `control`, `withControl`, `elementRef`, `elementSize`, `elementTheme`, `focusElement`, `glideHeight`, `mountControl`, `registerControls`, `setClassHandler`, `dispatch` / `flush` / `onFlush`, the value helpers |
 | `winui-svelte/components` | `src/components/generated/index.ts` | every WinUI 3 control as a component (`StackPanel`, `ToggleSwitch`, ...) and its props type (`ToggleSwitchComponentProps`); `xamlOf`, `goToState`, `installXaml`, `resourceDictionaryOf`; importing it registers the generated bindings with the renderer |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()` (its `messaging` is the typed link), `hostState()`, `StateProtocol`, the transports (stdio, MessagePort, in-memory), `diff` / `applyOps` (see `src/state/README.md`) |
 | `winui-svelte/host` | `src/renderer/host/host.ts` | `renderer`, the renderer WinUI controls are built through (`mountControl` makes it the active one), and the mount-target plumbing below; not for app code |
@@ -197,6 +197,57 @@ handed over as it is and read once, when the element is made)
 A property that
 changes is set through `{@attach control(...)}`, as components do
 
+## Wrapping chips
+
+CSS `flex-wrap: wrap` has no WinUI panel to become: the element's tag decides
+the panel, the build does not swap it, and `flex-wrap` stays a build error whose
+message names the two ways below (WinUI 3 has no `WrapPanel`; the Community
+Toolkit's is a separate package)
+Measured in a 300 wide window (`test/chip-tray.test.ts`, the
+`examples/chip-tray` example)
+
+| Way | Wraps | Chip widths | Use it for |
+|---|---|---|---|
+| `RichTextBlock`, a `Paragraph`, each chip in an `InlineUIContainer` | yes, like words in a sentence | each chip keeps its own | link chips, tags, any tray whose items differ in width |
+| `VariableSizedWrapGrid` | yes, at its width or `maximumRowsOrColumns` | one cell for all (the first chip sets it, or `itemWidth` and `itemHeight`) | equal tiles |
+| `ItemsRepeater` with `UniformGridLayout`, `GridView` | yes | one cell for all | the same, with virtualization and selection |
+
+The first row is the answer to `flex-wrap`:
+
+```svelte
+<script lang="ts">
+  import { Border, HyperlinkButton, InlineUIContainer, Paragraph, RichTextBlock } from "winui-svelte/components";
+</script>
+
+<RichTextBlock>
+  <Paragraph>
+    {#each links as link (link.href)}
+      <InlineUIContainer>
+        <Border class="chip">
+          <HyperlinkButton navigateUri={link.href}>{link.label}</HyperlinkButton>
+        </Border>
+      </InlineUIContainer>
+    {/each}
+  </Paragraph>
+</RichTextBlock>
+
+<style>
+  .chip {
+    margin: 0 6px 6px 0;
+  }
+</style>
+```
+
+- The gap between chips is each chip's margin: a `RichTextBlock` has no `gap`
+- Chips sit on the text baseline; `RichTextBlock` has `textAlignment`, which
+  centres or right-aligns the lines
+- The tray is text: a `RichTextBlock` is read-only and takes `isTextSelectionEnabled`
+- Not covered: a CSS rule cannot turn `display: flex; flex-wrap: wrap` into this
+  (a flex container is a `<stack-panel>` or `<grid>` and the build never changes
+  a tag), and `ItemsRepeater` has no layout that flows items of different widths
+  (`UniformGridLayout` is uniform, `LinedFlowLayout` needs one line height and
+  aspect ratios from its items)
+
 ## Transitions (`winui-svelte/element-animation`, `winui-svelte/element-effects`)
 
 Svelte's `transition:`, `in:`, `out:` and `animate:` run unchanged: Svelte's
@@ -293,6 +344,44 @@ What it does:
   control) and Svelte raises them as the transition begins and ends
 - `getComputedStyle` is defined as a global for WinUI's elements; any other
   argument goes to the one that was there, if any
+
+### Gliding a height (`glideHeight`)
+
+WinUI cannot animate `Height="Auto"`, so a card whose content grows or shrinks
+jumps; the web's answer is a `ResizeObserver` plus `element.animate({ height })`,
+and `glideHeight` is that pair as one attachment:
+
+```svelte
+<script lang="ts">
+  import { glideHeight } from "winui-svelte";
+  import { enableElementAnimation } from "winui-svelte/element-animation";
+
+  enableElementAnimation();
+</script>
+
+<border class="card" {@attach glideHeight({ duration: 300, easing: "ease-out" })}>
+  <text-block textWrapping="Wrap">{text}</text-block>
+</border>
+```
+
+- It listens to the element's `SizeChanged`; on a change it runs
+  `element.animate([{ height: from }, { height: to }])`, which sets `Height`
+  explicitly for the glide and gives `Auto` back when it ends (`element.animate`
+  animates `height` and `width` like it does `Opacity` and `Translation`)
+- Needs `enableElementAnimation()` once (a `transition:` directive in the
+  app turns it on too); without it `glideHeight` throws and says so
+- Can: grow and shrink, any easing and duration, a change made during a glide
+  (picked up when it ends), a hot update or removal (the glide is cancelled);
+  reduced motion makes it instant
+- Cannot: glide the first layout, an element with a fixed `height` (it never
+  changes by itself), or the content inside; the layout is already at the new
+  height when the glide starts, so the frame before the first step can show it,
+  and content that would overflow a shrinking card is clipped only if the card
+  clips it (`clip-to-bounds`, a `ScrollViewer`)
+- Measured in a window (`test/card-glide.test.ts`, the `examples/card-glide`
+  example): 250 ms into a 600 ms glide the height lies between the two sizes,
+  both growing and shrinking, and the card ends on its content's height with no
+  fixed `Height` left
 
 ## Connected animation (`winui-svelte/connected-animation`)
 

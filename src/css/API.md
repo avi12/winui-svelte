@@ -695,7 +695,7 @@ the panel; the CSS names what it does
 | `display: grid` on `<grid>`, `grid-template-*` | the grid's definitions | see Grid tracks |
 | `grid-column`, `grid-row`, `grid-area` | `Grid.Column`, `Grid.Row`, `Grid.ColumnSpan`, `Grid.RowSpan` (lines are 1-based in CSS, 0-based in WinUI) | named areas, auto-placement and implicit tracks are errors |
 | `flex: 1`, `flex-grow`, `flex-basis` on a child | a `*`, `Auto` or px track | lowered by the build when the container is a `<grid>` with `display: flex` (see Containers); on a `<stack-panel>` an error that points to it |
-| `flex-wrap` | none | error: WinUI has no wrapping panel |
+| `flex-wrap` | none | error: WinUI has no wrapping panel; the message names the two ways, a `<rich-text-block>` holding each chip in an `<inline-ui-container>` (any widths) or a `<variable-sized-wrap-grid>` (one cell size) |
 | `align-self`, `justify-self`, `place-self` | `VerticalAlignment`, `HorizontalAlignment` (`start` is Top / Left) | on the child |
 | `align-items`, `justify-items`, `place-items`, `justify-content`, `align-content` | each child's `align-self` / `justify-self`, or spacer tracks | lowered into the children by the build (see Containers) |
 | `justify-content`, `align-items` on a control (`<expander>`, `<button>`, `<list-view-item>`) | `HorizontalContentAlignment`, `VerticalContentAlignment` (`start` is Left / Top) | on a panel they are lowered into the children instead (see Containers) |

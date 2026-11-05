@@ -14,8 +14,13 @@ type Cleanup = () => void;
  */
 export type NodeAttachment = (node: object) => void | Cleanup;
 
-// A <host> that holds no control (yet) has nothing to hand over.
-function nativeControl(node: object) {
+/**
+ * The native control of an element of the tree.
+ *
+ * @param node - The tree's element.
+ * @returns The control, or undefined for a `<host>` that holds none (yet).
+ */
+export function nativeControl(node: object) {
   return read(read(node, "native"), "control");
 }
 
