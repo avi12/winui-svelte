@@ -119,10 +119,13 @@
     flush();
     const content = handle?.window.content;
     const isOpen = content !== undefined;
+    // A window sized to its content holds its root in a scroll viewer.
+    const isContained = frame.sizeToContent !== undefined && frame.sizeToContent !== SizeToContent.none;
+    const hasGrid = isOpen && !isContained;
     host.report({
       kind,
       isOpen,
-      rowCount: isOpen ? projectAs(content, Grid).rowDefinitions.size : 0,
+      rowCount: hasGrid ? projectAs(content, Grid).rowDefinitions.size : 0,
       isVisible: handle?.appWindow.isVisible,
       scale: handle?.scale,
       elementHeight: size.height,

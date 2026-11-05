@@ -31,7 +31,11 @@ import type { FrameworkElement } from "#src/winui.js";
 import {
   DisplayArea,
   DisplayAreaFallback,
+  Grid,
   NonClientRegionKind,
+  ScrollBarVisibility,
+  ScrollMode,
+  ScrollViewer,
   Window,
   WindowActivationState
 } from "#src/winui.js";
@@ -319,6 +323,7 @@ class WindowHost {
   private isTopApplied = false;
   private hasShown = false;
   private isFitting = false;
+  private scroller: ScrollViewer | null = null;
   private readonly isTakenOver: boolean;
   private readonly openSize: WindowSize | undefined;
   private appliedSize: {
@@ -352,6 +357,7 @@ class WindowHost {
 
     this.handle.guardClose(() => this.isCloseRefused());
     window.content = content;
+    this.keepInLine(() => this.syncContainer());
     this.keepInLine(() => this.syncText());
     this.keepInLine(() => this.syncBackdrop());
     this.keepInLine(() => this.syncTheme());
@@ -416,6 +422,51 @@ class WindowHost {
   private keepInLine(sync: () => void) {
     sync();
     $effect(sync);
+  }
+
+  // A measure offers an element the space it has and clamps what it asks for
+  // to that, so a root as large as the window could never ask for more or
+  // less than the window is. Inside a ScrollViewer that may scroll along a
+  // side the content sets, the root is offered all the room there (the
+  // scroll bars stay hidden), and what it asks for is what it needs.
+  private syncContainer() {
+    const { isWidthFitted, isHeightFitted } = this.fittedSides;
+    const isAnySideFitted = isWidthFitted || isHeightFitted;
+    const isFitted = isAnySideFitted && this.isWindowed;
+    const { window } = this.handle;
+    if (!isFitted) {
+      this.uncontain();
+      return;
+    }
+
+    const scroller = this.scroller ?? new ScrollViewer();
+    scroller.horizontalScrollBarVisibility = isWidthFitted ? ScrollBarVisibility.Hidden : ScrollBarVisibility.Disabled;
+    scroller.horizontalScrollMode = isWidthFitted ? ScrollMode.Enabled : ScrollMode.Disabled;
+    scroller.verticalScrollBarVisibility = isHeightFitted ? ScrollBarVisibility.Hidden : ScrollBarVisibility.Disabled;
+    scroller.verticalScrollMode = isHeightFitted ? ScrollMode.Enabled : ScrollMode.Disabled;
+    const isContained = this.scroller !== null;
+    if (isContained) {
+      return;
+    }
+
+    window.content = new Grid();
+    scroller.content = this.content;
+    window.content = scroller;
+    this.scroller = scroller;
+  }
+
+  private uncontain() {
+    const { scroller } = this;
+    const isContained = scroller !== null;
+    if (!isContained) {
+      return;
+    }
+
+    const { window } = this.handle;
+    window.content = new Grid();
+    scroller.content = null;
+    window.content = this.content;
+    this.scroller = null;
   }
 
   private syncText() {

@@ -53,6 +53,8 @@ test("every class src/winui.ts imports is among the classes the bindings are gen
     "microsoft/ui/windowing/titlebartheme",
     "microsoft/ui/input/nonclientregionkind",
     "microsoft/ui/xaml/elementtheme",
+    "microsoft/ui/xaml/controls/scrollbarvisibility",
+    "microsoft/ui/xaml/controls/scrollmode",
     "microsoft/ui/xaml/focusstate",
     "windows/ui/view-management/uicolortype",
     "microsoft/windows/storage/pickers/pickerlocationid",
