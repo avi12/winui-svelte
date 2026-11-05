@@ -490,7 +490,7 @@ release on an `editors-vX.Y.Z` tag, apart from the package's `vX.Y.Z`:
 ### The registries
 
 Both add-ons are optional and carry their own icon and description
-(`ide/icon.svg` is the one source: `ide/vscode/images/icon.png` is its 128 px
+(`ide/icon.svg` is the one source: `ide/vscode/images/icon.png` is its 256 px
 render, and `ide/webstorm/src/main/resources/META-INF/pluginIcon.svg` its copy
 at 40 px; render the PNG again after changing the SVG)
 
