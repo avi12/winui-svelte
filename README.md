@@ -60,6 +60,12 @@ signature
 - **Web APIs** (`Notification`, `navigator.geolocation`, the clipboard and the
   rest) are the browser's own, backed by Windows; call them as on the web
   ([Web APIs](#web-apis))
+- **Overlays:** `sizeToContent` and `anchor` on `<Window>` size a window to its
+  content with one corner pinned (a bottom-right pill grows upward),
+  `isActivatable` can change while the window is open, and `handle.dock()`
+  puts a window against a corner of the active display's work area; the window's
+  own `outerWidth`, `screenX`, `resizeTo` and `moveBy` are on `handle.geometry`
+  ([API.md](https://github.com/avi12/winui-svelte/blob/main/API.md))
 - **Errors** thrown in an event handler or a prop are caught on the UI thread,
   written to stderr with their stack and handed to `runWindow({ onerror })`;
   the app goes on ([API.md](https://github.com/avi12/winui-svelte/blob/main/API.md))

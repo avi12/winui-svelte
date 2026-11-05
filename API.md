@@ -1588,6 +1588,63 @@ window back
 taskbar button (WinUI answers 0x80004001 there); `hideToTray` uses it
 A window with a transparent background (per-pixel alpha) is not offered:
 WinUI 3 has no transparent backdrop in the bindings
+`isActivatable` is read again whenever it changes, so an overlay can take focus
+while text is selected and give it up afterwards: `isActivatable={false}` sets
+`WS_EX_NOACTIVATE`, `true` or a dropped prop clears it (call `handle.activate()`
+to take focus once it is set)
+
+`sizeToContent` (`"none"`, the default, `"width"`, `"height"` or `"both"`; the
+`SizeToContent` set) makes the window follow its content: after every layout
+pass the root's desired size, plus the frame, is clamped to `minWidth`,
+`minHeight`, `maxWidth` and `maxHeight` and applied with one
+`AppWindow.MoveAndResize`, so the size and the position never show half done
+`anchor` (`"topLeft"`, the default, `"topRight"`, `"bottomLeft"` or
+`"bottomRight"`; the `WindowAnchor` set) is the corner that stays where it is:
+anchored bottom-right, a window whose content grows taller grows upward
+A side the content sets ignores the `width` or `height` prop
+The scale is applied (the desired size is in device-independent pixels), so a
+move to a display with another scale refits
+The root is measured with `FrameworkElement.DesiredSize` on `LayoutUpdated`:
+a `ResizeObserver` reports the laid-out size, which a stretched root keeps
+while its content grows
+`createWindow` takes both props
+
+```svelte
+<Window
+  isBorderless
+  isActivatable={false}
+  sizeToContent="height"
+  anchor="bottomRight"
+  width={504}
+  bind:handle
+>
+  <Card />
+</Window>
+```
+
+```ts
+// device pixels, from the work area of the display the user is on
+handle.dock({ anchor: "bottomRight", inset: 6 })
+```
+
+`handle.dock({ anchor, inset, display })` moves the window against a corner of
+a display's work area (`DisplayArea.WorkArea`: the display without the
+taskbar) with one `MoveAndResize`; `inset` is in device pixels (0 by default)
+`display` is `"active"` (the default: the display of the foreground window),
+`"current"` (the one the window is on) or `"primary"` (the `DockDisplay` set)
+A window moved to a display with another scale goes there first and is docked
+at the size it has after Windows rescaled it
+`dockWindow({ appWindow, ... })` and `displayAreaOf({ appWindow, display })`
+(`winui-svelte/window`) do the same for a bare `AppWindow`
+The arithmetic is plain functions (`anchoredBounds`, `dockedBounds`,
+`fittedBounds` in `src/window/anchor.ts`) over device pixels
+
+`handle.geometry` is the window's own `window.outerWidth`, `outerHeight`,
+`screenX`, `screenY`, `devicePixelRatio`, `resizeTo(width, height)`,
+`resizeBy`, `moveTo(x, y)` and `moveBy`, in CSS pixels (WinUI's
+device-independent pixels at the window's scale), over `AppWindow.Resize` and
+`AppWindow.Move`
+A process has many windows, so there is no `window` global for them
 
 `owner` (another window's `WindowHandle`) and `isModal`
 (blocks the owner until this window closes) are read once, before the window
