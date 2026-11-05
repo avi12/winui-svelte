@@ -5,6 +5,15 @@ An optional companion for projects that use
 Svelte components for native Windows apps; it does nothing in a project that
 does not depend on it
 
+## Install
+
+- From the Extensions view: search for `winui-svelte` and choose Install
+- From a file: download `winui-svelte-vscode-<version>.vsix` from the
+  [editors releases](https://github.com/avi12/winui-svelte/releases?q=editors-v),
+  then run `code --install-extension winui-svelte-vscode-<version>.vsix`, or
+  use the Extensions view, the `...` menu, Install from VSIX
+- Reload the window; the extension starts when you open a `.svelte` file
+
 ## What it does in a `.svelte` file
 
 - **Icons**: a Fluent icon name in a `glyph` prop, or in any prop typed
