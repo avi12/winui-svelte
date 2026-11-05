@@ -4,7 +4,6 @@ import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.CompletionType
-import com.intellij.psi.xml.XmlAttribute
 import com.intellij.psi.xml.XmlAttributeValue
 
 class GlyphCompletionContributor : CompletionContributor() {
@@ -28,8 +27,6 @@ class GlyphCompletionContributor : CompletionContributor() {
 
   private fun isGlyphValue(parameters: CompletionParameters): Boolean {
     val value = parameters.position.parent as? XmlAttributeValue ?: return false
-    val attribute = value.parent as? XmlAttribute ?: return false
-    val isGlyphOfIcon = attribute.name == "glyph" && attribute.parent?.name in FluentGlyphs.components
-    return isGlyphOfIcon && WinuiProjectService.of(parameters.position.project).isWinuiFile(parameters.originalFile)
+    return GlyphValues.isGlyphValue(value, parameters.originalFile)
   }
 }

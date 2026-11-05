@@ -356,6 +356,11 @@ they offer none the plugin adds the names itself; the table is
 `ide/webstorm/src/main/resources/fluent-glyphs.json`, written by `pnpm
 gen:components` from `FluentGlyph` (a test fails if they differ)
 
+Hovering a Fluent icon's name in `glyph="..."` (or a single icon character)
+previews it, large, with its name and code point, in the same font
+(`GlyphDocumentationProvider`; nothing shows for another component, an unknown
+name or a project without the dependency)
+
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each
 value lowers to, and writes `ide/webstorm/src/main/resources/winui-css-mappings.json`
