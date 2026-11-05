@@ -1,3 +1,4 @@
+import { ensureSystemDispatcherQueue } from "./system-dispatcher-queue.ts";
 import { write } from "#src/renderer/host/reflect.js";
 import type { Window } from "#src/winui.js";
 import { ICompositionSupportsSystemBackdrop, SystemCompositor } from "#src/winui.js";
@@ -28,6 +29,7 @@ const CLEAR = {
  * @returns What takes the backdrop away again.
  */
 export function attachTransparentBackdrop(window: Window) {
+  ensureSystemDispatcherQueue();
   const target = window.as(ICompositionSupportsSystemBackdrop);
   target.systemBackdrop = new SystemCompositor().createColorBrush(CLEAR);
   return () => {
