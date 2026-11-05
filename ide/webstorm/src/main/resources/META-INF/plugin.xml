@@ -45,6 +45,9 @@
         language="SvelteHTML"
         order="first"
         implementationClass="dev.winui.svelte.GlyphDocumentationProvider"/>
+    <codeInsight.inlayProvider
+        language="SvelteHTML"
+        implementationClass="dev.winui.svelte.GlyphInlayProvider"/>
     <notificationGroup id="winui-svelte" displayType="BALLOON"/>
   </extensions>
   <actions>

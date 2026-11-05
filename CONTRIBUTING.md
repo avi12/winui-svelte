@@ -361,6 +361,9 @@ previews it, large, with its name and code point, in the same font
 (`GlyphDocumentationProvider`; nothing shows for another component, an unknown
 name or a project without the dependency)
 
+The same icon is drawn right after the value as an inlay (`GlyphInlayProvider`;
+switch it off in Settings, Editor, Inlay Hints)
+
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each
 value lowers to, and writes `ide/webstorm/src/main/resources/winui-css-mappings.json`
