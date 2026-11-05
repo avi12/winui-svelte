@@ -32,9 +32,9 @@ test("a style directive and a style attribute give a spot for each color", async
   );
 });
 
-test("a color prop is a spot, an unknown color is not", async () => {
+test("a color prop is a spot, and so is a half-typed one, so that its names can be completed", async () => {
   assert.deepEqual(await found("<Border background=\"red\" />"), ["color:red"]);
-  assert.deepEqual(await found("<Border background=\"notacolor\" />"), []);
+  assert.deepEqual(await found("<Border background=\"notacolor\" />"), ["color:notacolor"]);
 });
 
 test("a font family list gives a spot for each family, quotes aside", async () => {

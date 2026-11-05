@@ -1,5 +1,4 @@
 import { isColorAttribute, isColorProperty } from "./color-table.ts";
-import { cssColorOf } from "./css-color.ts";
 import { isFontFamilyAttribute } from "./font-table.ts";
 import { isGlyphAttribute } from "./glyph-table.ts";
 import { scanAttributes } from "./markup-scan.ts";
@@ -58,7 +57,7 @@ function families({ value, start }: {
       ...spot,
       text: spot.text.replaceAll(/^["']|["']$/gu, "")
     };
-  }).filter(spot => spot.text !== "");
+  });
 }
 
 function propertySpots({ property, value, start }: {
@@ -78,13 +77,11 @@ function propertySpots({ property, value, start }: {
     return [];
   }
 
-  const color = trimmedSpot({
+  return [trimmedSpot({
     kind: SpotKind.COLOR,
-    text: value.replace(/!importants*$/u, ""),
+    text: value.replace(/!important\s*$/u, ""),
     start
-  });
-  const isColor = cssColorOf(color.text) !== undefined;
-  return isColor ? [color] : [];
+  })];
 }
 
 function styleSpots({ value, start }: {
@@ -170,12 +167,15 @@ async function spotsOfValue({ found, text, file }: {
     });
   }
 
-  const isColor = isColorAttribute(attribute) && cssColorOf(value) !== undefined;
-  return isColor ? [trimmedSpot({
+  if (!isColorAttribute(attribute)) {
+    return [];
+  }
+
+  return [trimmedSpot({
     kind: SpotKind.COLOR,
     text: value,
     start: valueStart
-  })] : [];
+  })];
 }
 
 /**

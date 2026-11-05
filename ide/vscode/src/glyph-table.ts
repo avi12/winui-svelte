@@ -44,6 +44,13 @@ export function codePointOf(value: string) {
 }
 
 /**
+ * The Fluent name of a code point, if it has one.
+ */
+export function glyphNameOf(codePoint: number) {
+  return [...codePoints].find(([, point]) => point === codePoint)?.[0];
+}
+
+/**
  * The `U+E74E` a code point is written as.
  */
 export function labelOf(codePoint: number) {

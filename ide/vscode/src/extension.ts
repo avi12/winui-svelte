@@ -1,6 +1,8 @@
+import { entriesOf } from "./completions.ts";
 import { cssColorOf } from "./css-color.ts";
-import { codePointOf, fluentCodePoints, labelOf } from "./glyph-table.ts";
-import { colorMarkdown, fontMarkdown, GLYPH_FONT_STYLE, glyphMarkdown } from "./preview.ts";
+import { codePointOf } from "./glyph-table.ts";
+import { GLYPH_FONT_STYLE } from "./preview.ts";
+import { previewOfSpot } from "./spot-preview.ts";
 import { spotAt, SpotKind, spotsOf } from "./spots.ts";
 import type { Spot } from "./spots.ts";
 import {
@@ -14,7 +16,7 @@ import {
   window,
   workspace
 } from "vscode";
-import type { ExtensionContext, TextDocument } from "vscode";
+import type { ExtensionContext, Position, TextDocument } from "vscode";
 
 const SVELTE = { language: "svelte" };
 const ICON_GAP = "0 3px 0 0";
@@ -22,6 +24,7 @@ const SWATCH_SIZE = "0.85em";
 const SWATCH_OUTLINE = "1px solid #88888888";
 const DARK_FOREGROUND = "#d4d4d4";
 const LIGHT_FOREGROUND = "#333333";
+const TRIGGER_CHARACTERS = ["\"", "'", ":", " ", ","];
 
 function themeForeground() {
   const { kind } = window.activeColorTheme;
@@ -29,49 +32,31 @@ function themeForeground() {
   return isLight ? LIGHT_FOREGROUND : DARK_FOREGROUND;
 }
 
-function glyphPreview(codePoint: number) {
-  const name = [...fluentCodePoints()].find(([, point]) => point === codePoint)?.[0];
-  return new MarkdownString(glyphMarkdown({
-    codePoint,
-    name,
-    color: themeForeground()
-  }));
-}
-
-function previewOf(spot: Spot) {
-  const isFont = spot.kind === SpotKind.FONT;
-  if (isFont) {
-    return new MarkdownString(fontMarkdown({
-      family: spot.text,
-      color: themeForeground()
-    }));
-  }
-
-  const isColor = spot.kind === SpotKind.COLOR;
-  if (isColor) {
-    const css = cssColorOf(spot.text);
-    return css === undefined ? undefined : new MarkdownString(colorMarkdown(css));
-  }
-
-  const codePoint = codePointOf(spot.text);
-  return codePoint === undefined ? undefined : glyphPreview(codePoint);
-}
-
-async function spotsOfDocument(document: TextDocument) {
-  return spotsOf({
-    text: document.getText(),
-    file: document.uri.fsPath
-  });
-}
-
-async function spotAtPosition({ document, offset }: {
+async function spotAtPosition({ document, position }: {
   document: TextDocument;
-  offset: number;
+  position: Position;
 }) {
   return spotAt({
-    spots: await spotsOfDocument(document),
-    offset
+    spots: await spotsOf({
+      text: document.getText(),
+      file: document.uri.fsPath
+    }),
+    offset: document.offsetAt(position)
   });
+}
+
+function beforeDecoration({ document, spot, before }: {
+  document: TextDocument;
+  spot: Spot;
+  before: object;
+}) {
+  const position = document.positionAt(spot.start);
+  return {
+    range: new Range(position, position),
+    renderOptions: {
+      before
+    }
+  };
 }
 
 function glyphDecoration({ document, spot }: {
@@ -84,17 +69,15 @@ function glyphDecoration({ document, spot }: {
     return [];
   }
 
-  const position = document.positionAt(spot.start);
-  return [{
-    range: new Range(position, position),
-    renderOptions: {
-      before: {
-        contentText: String.fromCodePoint(codePoint),
-        textDecoration: GLYPH_FONT_STYLE,
-        margin: ICON_GAP
-      }
+  return [beforeDecoration({
+    document,
+    spot,
+    before: {
+      contentText: String.fromCodePoint(codePoint),
+      textDecoration: GLYPH_FONT_STYLE,
+      margin: ICON_GAP
     }
-  }];
+  })];
 }
 
 function colorDecoration({ document, spot }: {
@@ -107,25 +90,69 @@ function colorDecoration({ document, spot }: {
     return [];
   }
 
-  const position = document.positionAt(spot.start);
-  return [{
-    range: new Range(position, position),
-    renderOptions: {
-      before: {
-        contentText: " ",
-        backgroundColor: css,
-        border: SWATCH_OUTLINE,
-        width: SWATCH_SIZE,
-        height: SWATCH_SIZE,
-        margin: ICON_GAP
-      }
+  return [beforeDecoration({
+    document,
+    spot,
+    before: {
+      contentText: " ",
+      backgroundColor: css,
+      border: SWATCH_OUTLINE,
+      width: SWATCH_SIZE,
+      height: SWATCH_SIZE,
+      margin: ICON_GAP
     }
-  }];
+  })];
 }
 
+function documentationOf(entry: {
+  color: string | undefined;
+  markdown: string | undefined;
+}) {
+  const hasColor = entry.color !== undefined;
+  if (hasColor) {
+    return entry.color;
+  }
+
+  return entry.markdown === undefined ? undefined : new MarkdownString(entry.markdown);
+}
+
+async function completionItems({ document, position }: {
+  document: TextDocument;
+  position: Position;
+}) {
+  const spot = await spotAtPosition({
+    document,
+    position
+  });
+  const hasNoSpot = spot === undefined;
+  if (hasNoSpot) {
+    return [];
+  }
+
+  const range = new Range(document.positionAt(spot.start), document.positionAt(spot.end));
+  const entries = await entriesOf({
+    spot,
+    foreground: themeForeground()
+  });
+  return entries.map(entry => {
+    const isColor = entry.color !== undefined;
+    const item = new CompletionItem(entry.label, isColor ? CompletionItemKind.Color : CompletionItemKind.Value);
+    item.insertText = entry.insertText;
+    item.detail = entry.detail;
+    const documentation = documentationOf(entry);
+    const hasDocumentation = documentation !== undefined;
+    if (hasDocumentation) {
+      item.documentation = documentation;
+    }
+
+    item.sortText = `0${entry.label}`;
+    item.range = range;
+    return item;
+  });
+}
 /**
- * Starts the extension: the icon and color beside their values, the hover previews of glyphs, colors and font
- * families, and the icon names with their preview.
+ * Starts the extension: the icon and color beside their values, and for glyphs, colors and font families the
+ * hover preview and the completion with the preview beside each option.
  */
 export function activate(context: ExtensionContext) {
   const glyphType = window.createTextEditorDecorationType({});
@@ -138,7 +165,10 @@ export function activate(context: ExtensionContext) {
       return;
     }
 
-    const spots = await spotsOfDocument(document);
+    const spots = await spotsOf({
+      text: document.getText(),
+      file: document.uri.fsPath
+    });
     editor.setDecorations(
       glyphType,
       spots.filter(spot => spot.kind === SpotKind.GLYPH).flatMap(spot => glyphDecoration({
@@ -159,49 +189,36 @@ export function activate(context: ExtensionContext) {
     decorate(document).catch(error => window.showErrorMessage(String(error)));
   }
 
-  function decorateVisible() {
+  function refreshVisible() {
     for (const editor of window.visibleTextEditors) {
       refresh(editor.document);
     }
   }
 
-  decorateVisible();
+  refreshVisible();
   context.subscriptions.push(
     glyphType,
     colorType,
-    window.onDidChangeVisibleTextEditors(decorateVisible),
+    window.onDidChangeVisibleTextEditors(refreshVisible),
     workspace.onDidChangeTextDocument(change => refresh(change.document)),
     languages.registerHoverProvider(SVELTE, {
       async provideHover(document, position) {
         const spot = await spotAtPosition({
           document,
-          offset: document.offsetAt(position)
+          position
         });
-        const preview = spot === undefined ? undefined : previewOf(spot);
-        return preview === undefined ? undefined : new Hover(preview);
+        const markdown = spot === undefined ? undefined : previewOfSpot({
+          spot,
+          foreground: themeForeground()
+        });
+        return markdown === undefined ? undefined : new Hover(new MarkdownString(markdown));
       }
     }),
     languages.registerCompletionItemProvider(SVELTE, {
-      async provideCompletionItems(document, position) {
-        const spot = await spotAtPosition({
-          document,
-          offset: document.offsetAt(position)
-        });
-        const isNotGlyph = spot === undefined || spot.kind !== SpotKind.GLYPH;
-        if (isNotGlyph) {
-          return [];
-        }
-
-        const range = new Range(document.positionAt(spot.start), document.positionAt(spot.end));
-        return [...fluentCodePoints()].map(([name, codePoint]) => {
-          const item = new CompletionItem(name, CompletionItemKind.Value);
-          item.detail = labelOf(codePoint);
-          item.documentation = glyphPreview(codePoint);
-          item.sortText = `0${name}`;
-          item.range = range;
-          return item;
-        });
-      }
-    }, "\"", "'")
+      provideCompletionItems: (document, position) => completionItems({
+        document,
+        position
+      })
+    }, ...TRIGGER_CHARACTERS)
   );
 }
