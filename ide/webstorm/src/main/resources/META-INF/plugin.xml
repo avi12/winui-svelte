@@ -1,8 +1,22 @@
 <idea-plugin>
   <id>dev.winui.svelte</id>
   <name>winui-svelte</name>
-  <vendor>Avi</vendor>
-  <description>Writes a winui-svelte component's props as the CSS that sets the same value, one prop, one file or a selection at a time</description>
+  <vendor url="https://github.com/avi12/winui-svelte">Avi</vendor>
+  <description><![CDATA[
+    An optional companion for projects that use
+    <a href="https://github.com/avi12/winui-svelte">winui-svelte</a>, the WinUI 3 controls as Svelte components for
+    native Windows apps; it does nothing in a project that does not depend on it.
+    <ul>
+      <li><b>Icons</b>: a Fluent icon name in a <code>glyph</code> prop, or in any prop typed
+        <code>GlyphInput</code>, shows the icon inside the string, in the documentation popup and in completion</li>
+      <li><b>Colors</b>: a color in <code>style:color</code>, in <code>style="..."</code> or in a color prop shows
+        a swatch beside it</li>
+      <li><b>Fonts</b>: the font-family completion lists the installed fonts, each in its own face</li>
+      <li><b>Convert to CSS</b>: Alt+Enter on a prop that has a CSS counterpart moves it into the
+        <code>&lt;style&gt;</code> block or a <code>style:</code> directive; actions convert a whole file or the
+        selected files and folders, and the class names it writes can be found and renamed</li>
+    </ul>
+  ]]></description>
   <depends>com.intellij.modules.platform</depends>
   <depends>JavaScript</depends>
   <depends>com.intellij.css</depends>
