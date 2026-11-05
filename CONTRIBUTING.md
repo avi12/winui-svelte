@@ -367,6 +367,16 @@ A component of your own counts too when its file declares the prop as `GlyphInpu
 The same icon is drawn inside the string, before the name, as an inlay (`GlyphInlayProvider`;
 switch it off in Settings, Editor, Inlay Hints)
 
+A colour is drawn as a swatch before it, inside the string, wherever it is written:
+a colour prop (`background="red"`), a `style:color="yellow"` directive and each
+colour declaration of a `style="..."` attribute (names, hex, `rgb()` and `hsl()`;
+the names come from the same table as the translator's, in
+`winui-css-mappings.json`)
+
+In the completion of a font family (the `fontFamily` prop, `style:font-family`,
+a `style` attribute and a `font-family` in `<style>`) each installed family is
+shown with an "Aa" sample drawn in it
+
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each
 value lowers to, and writes `ide/webstorm/src/main/resources/winui-css-mappings.json`
