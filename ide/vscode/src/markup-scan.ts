@@ -1,3 +1,31 @@
+export const ValueKind = {
+  QUOTED: "quoted",
+  EXPRESSION: "expression",
+  BARE: "bare"
+} as const;
+export type ValueKind = (typeof ValueKind)[keyof typeof ValueKind];
+
+export interface ValueNode {
+  kind: ValueKind;
+  start: number;
+  end: number;
+  text: string;
+}
+
+export interface AttributeNode {
+  name: string;
+  start: number;
+  end: number;
+  value: ValueNode | undefined;
+}
+
+export interface TagNode {
+  name: string;
+  start: number;
+  nameEnd: number;
+  attributes: AttributeNode[];
+}
+
 export interface AttributeValue {
   tag: string;
   attribute: string;
@@ -10,6 +38,7 @@ const QUOTES = new Set(["\"", "'"]);
 const RAW_TEXT_TAGS = new Set(["script", "style"]);
 const TAG_START = /<([A-Za-z][\w.:-]*)/y;
 const ATTRIBUTE_NAME = /[^\s=/>{]+/y;
+const BARE_VALUE = /[^\s>]*/y;
 const IMPORT = /import\s+(\w+)\s+from\s+["']([^"']+\.svelte)["']/g;
 
 function skipBraces({ text, start }: {
@@ -53,15 +82,53 @@ function skipBlank({ text, start }: {
   return cursor;
 }
 
-function scanTag({ text, tag, start, found }: {
+function scanValue({ text, start }: {
   text: string;
-  tag: string;
   start: number;
-  found: AttributeValue[];
+}) {
+  const first = text.charAt(start);
+  if (QUOTES.has(first)) {
+    const closing = text.indexOf(first, start + 1);
+    const end = closing === -1 ? text.length : closing + 1;
+    return {
+      kind: ValueKind.QUOTED,
+      start,
+      end,
+      text: text.slice(start, end)
+    };
+  }
+
+  const isExpression = first === "{";
+  if (isExpression) {
+    const end = skipBraces({
+      text,
+      start
+    });
+    return {
+      kind: ValueKind.EXPRESSION,
+      start,
+      end,
+      text: text.slice(start, end)
+    };
+  }
+
+  BARE_VALUE.lastIndex = start;
+  const end = start + (BARE_VALUE.exec(text)?.[0].length ?? 0);
+  return {
+    kind: ValueKind.BARE,
+    start,
+    end,
+    text: text.slice(start, end)
+  };
+}
+
+function scanTag({ text, tag }: {
+  text: string;
+  tag: TagNode;
 }) {
   let cursor = skipBlank({
     text,
-    start
+    start: tag.nameEnd
   });
   while (cursor < text.length) {
     const char = text.charAt(cursor);
@@ -90,48 +157,39 @@ function scanTag({ text, tag, start, found }: {
       continue;
     }
 
+    const attributeStart = cursor;
+    const nameEnd = cursor + name[0].length;
     cursor = skipBlank({
       text,
-      start: cursor + name[0].length
+      start: nameEnd
     });
     const hasValue = text.charAt(cursor) === "=";
     if (!hasValue) {
-      continue;
-    }
-
-    cursor = skipBlank({
-      text,
-      start: cursor + 1
-    });
-    const quote = text.charAt(cursor);
-    if (QUOTES.has(quote)) {
-      const valueEnd = text.indexOf(quote, cursor + 1);
-      const isClosed = valueEnd !== -1;
-      if (isClosed) {
-        found.push({
-          tag,
-          attribute: name[0],
-          value: text.slice(cursor + 1, valueEnd),
-          valueStart: cursor + 1,
-          valueEnd
-        });
-      }
-
-      cursor = skipBlank({
-        text,
-        start: isClosed ? valueEnd + 1 : text.length
+      tag.attributes.push({
+        name: name[0],
+        start: attributeStart,
+        end: nameEnd,
+        value: undefined
       });
       continue;
     }
 
-    const isExpression = quote === "{";
-    const valueEnd = isExpression ? skipBraces({
+    const value = scanValue({
       text,
-      start: cursor
-    }) : cursor + (/[^\s>]*/u.exec(text.slice(cursor))?.[0].length ?? 0);
+      start: skipBlank({
+        text,
+        start: cursor + 1
+      })
+    });
+    tag.attributes.push({
+      name: name[0],
+      start: attributeStart,
+      end: value.end,
+      value
+    });
     cursor = skipBlank({
       text,
-      start: valueEnd
+      start: value.end
     });
   }
 
@@ -139,11 +197,10 @@ function scanTag({ text, tag, start, found }: {
 }
 
 /**
- * Every attribute with a quoted value in the tags of a Svelte file, with where the value sits, skipping
- * the contents of `script` and `style`.
+ * Every tag of a Svelte file with its attributes and where each sits, skipping the contents of `script` and `style`.
  */
-export function scanAttributes(text: string) {
-  const found: AttributeValue[] = [];
+export function scanTags(text: string) {
+  const tags: TagNode[] = [];
   let cursor = text.indexOf("<");
   while (cursor !== -1 && cursor < text.length) {
     TAG_START.lastIndex = cursor;
@@ -154,19 +211,42 @@ export function scanAttributes(text: string) {
       continue;
     }
 
-    const tag = match[1] ?? "";
-    const isRawText = RAW_TEXT_TAGS.has(tag.toLowerCase());
+    const name = match[1] ?? "";
+    const tag: TagNode = {
+      name,
+      start: cursor,
+      nameEnd: cursor + match[0].length,
+      attributes: []
+    };
+    tags.push(tag);
     const afterTag = scanTag({
       text,
-      tag,
-      start: cursor + match[0].length,
-      found
+      tag
     });
-    const closing = isRawText ? text.indexOf(`</${tag}`, afterTag) : afterTag;
+    const isRawText = RAW_TEXT_TAGS.has(name.toLowerCase());
+    const closing = isRawText ? text.indexOf(`</${name}`, afterTag) : afterTag;
     cursor = text.indexOf("<", closing === -1 ? text.length : closing);
   }
 
-  return found;
+  return tags;
+}
+
+/**
+ * Every attribute with a quoted value in the tags of a Svelte file, with where the value sits.
+ */
+export function scanAttributes(text: string) {
+  return scanTags(text).flatMap(tag => tag.attributes.flatMap(attribute => {
+    const { value } = attribute;
+    const isClosed = value?.kind === ValueKind.QUOTED && value.text.length >= 2;
+    const isQuoted = isClosed && value.text.endsWith(value.text.charAt(0));
+    return isQuoted ? [{
+      tag: tag.name,
+      attribute: attribute.name,
+      value: value.text.slice(1, -1),
+      valueStart: value.start + 1,
+      valueEnd: value.end - 1
+    } satisfies AttributeValue] : [];
+  }));
 }
 
 /**
