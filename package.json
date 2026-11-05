@@ -549,7 +549,7 @@
     "oxlint": "1.90.0",
     "oxlint-tsgolint": "^7.0.2004",
     "postcss": "^8.5.32",
-    "postcss-html": "^1.8.1",
+    "postcss-html": "^2.0.0",
     "publint": "^0.3.25",
     "simple-git-hooks": "^2.14.0",
     "stylelint": "^17.16.0",
