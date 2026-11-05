@@ -197,6 +197,57 @@ handed over as it is and read once, when the element is made)
 A property that
 changes is set through `{@attach control(...)}`, as components do
 
+## Wrapping chips
+
+CSS `flex-wrap: wrap` has no WinUI panel to become: the element's tag decides
+the panel, the build does not swap it, and `flex-wrap` stays a build error whose
+message names the two ways below (WinUI 3 has no `WrapPanel`; the Community
+Toolkit's is a separate package)
+Measured in a 300 wide window (`test/chip-tray.test.ts`, the
+`examples/chip-tray` example)
+
+| Way | Wraps | Chip widths | Use it for |
+|---|---|---|---|
+| `RichTextBlock`, a `Paragraph`, each chip in an `InlineUIContainer` | yes, like words in a sentence | each chip keeps its own | link chips, tags, any tray whose items differ in width |
+| `VariableSizedWrapGrid` | yes, at its width or `maximumRowsOrColumns` | one cell for all (the first chip sets it, or `itemWidth` and `itemHeight`) | equal tiles |
+| `ItemsRepeater` with `UniformGridLayout`, `GridView` | yes | one cell for all | the same, with virtualization and selection |
+
+The first row is the answer to `flex-wrap`:
+
+```svelte
+<script lang="ts">
+  import { Border, HyperlinkButton, InlineUIContainer, Paragraph, RichTextBlock } from "winui-svelte/components";
+</script>
+
+<RichTextBlock>
+  <Paragraph>
+    {#each links as link (link.href)}
+      <InlineUIContainer>
+        <Border class="chip">
+          <HyperlinkButton navigateUri={link.href}>{link.label}</HyperlinkButton>
+        </Border>
+      </InlineUIContainer>
+    {/each}
+  </Paragraph>
+</RichTextBlock>
+
+<style>
+  .chip {
+    margin: 0 6px 6px 0;
+  }
+</style>
+```
+
+- The gap between chips is each chip's margin: a `RichTextBlock` has no `gap`
+- Chips sit on the text baseline; `RichTextBlock` has `textAlignment`, which
+  centres or right-aligns the lines
+- The tray is text: a `RichTextBlock` is read-only and takes `isTextSelectionEnabled`
+- Not covered: a CSS rule cannot turn `display: flex; flex-wrap: wrap` into this
+  (a flex container is a `<stack-panel>` or `<grid>` and the build never changes
+  a tag), and `ItemsRepeater` has no layout that flows items of different widths
+  (`UniformGridLayout` is uniform, `LinedFlowLayout` needs one line height and
+  aspect ratios from its items)
+
 ## Transitions (`winui-svelte/element-animation`, `winui-svelte/element-effects`)
 
 Svelte's `transition:`, `in:`, `out:` and `animate:` run unchanged: Svelte's

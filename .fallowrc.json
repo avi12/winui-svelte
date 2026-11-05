@@ -125,6 +125,7 @@
     "examples/harness/run-example.ts",
     "examples/lists/main.ts",
     "examples/transitions/main.ts",
+    "examples/chip-tray/main.ts",
     "examples/items/main.ts",
     "examples/interaction/main.ts",
     "examples/navigation/main.ts",
