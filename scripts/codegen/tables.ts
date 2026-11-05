@@ -412,6 +412,16 @@ export const lateClasses = [
   },
   {
     winmd: "Windows.Foundation.UniversalApiContract.winmd",
+    namespace: "Windows.Services.Store",
+    classes: ["StoreContext", "StoreAppLicense", "StorePackageUpdate", "StorePackageUpdateResult", "StorePackageUpdateState", "StorePackageUpdateStatus"]
+  },
+  {
+    winmd: "Windows.Foundation.UniversalApiContract.winmd",
+    namespace: "Windows.ApplicationModel",
+    classes: ["Package", "PackageCatalog", "PackageUpdatingEventArgs", "PackageStagingEventArgs", "PackageInstallingEventArgs", "StartupTask", "StartupTaskState"]
+  },
+  {
+    winmd: "Windows.Foundation.UniversalApiContract.winmd",
     namespace: "Windows.Storage.Streams",
     classes: ["DataReader"]
   },
