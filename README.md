@@ -10,6 +10,24 @@ controls animate and are accessible as WinUI makes them, and acrylic is a real
 backdrop
 No browser engine is involved; there is no DOM
 
+## Install
+
+```sh
+# pnpm
+pnpm add winui-svelte
+
+# npm
+npm install winui-svelte
+
+# bun
+bun add winui-svelte
+```
+
+The WinUI bindings, the Windows App SDK bootstrapper and the Vite plugin come
+with it
+The package installs with any of the three; an app runs on Node 24 or newer
+(`node main.ts`), as the [Requirements](#requirements) say
+
 ## Using it, at a glance
 
 Everything an app needs, in the order a new project hits it
@@ -142,24 +160,6 @@ Two optional add-ons for `.svelte` files, one for each editor:
 Both files are assets of the `editors-v*` releases, on their own tags apart
 from the package's: [open the editors releases](https://github.com/avi12/winui-svelte/releases?q=editors-v)
 and take the newest
-
-## Install
-
-```sh
-# pnpm
-pnpm add winui-svelte
-
-# npm
-npm install winui-svelte
-
-# bun
-bun add winui-svelte
-```
-
-The WinUI bindings, the Windows App SDK bootstrapper and the Vite plugin come
-with it
-The package installs with any of the three; an app runs on Node 24 or newer
-(`node main.ts`), as the [Requirements](#requirements) say
 
 ## Quick start
 
