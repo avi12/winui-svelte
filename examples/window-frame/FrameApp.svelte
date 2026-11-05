@@ -228,7 +228,7 @@
   <grid class="content" {@attach size.attach}>
     <TextBlock>Rows and columns of a grid, with nothing registered by hand.</TextBlock>
     {#if extraLines > 0}
-      <TextBlock grid.row={1}>{extraText()}</TextBlock>
+      <text-block grid.row={1}>{extraText()}</text-block>
     {/if}
   </grid>
 </Window>
