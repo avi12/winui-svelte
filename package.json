@@ -490,6 +490,7 @@
     "build:vscode-extension": "node --disable-warning=ExperimentalWarning scripts/editor/build-vscode-extension.ts",
     "install:vscode-extension": "node --disable-warning=ExperimentalWarning scripts/editor/install-vscode-extension.ts",
     "install:webstorm-plugin": "node --disable-warning=ExperimentalWarning scripts/editor/install-webstorm-plugin.ts",
+    "check:webstorm-plugin-compat": "node --disable-warning=ExperimentalWarning scripts/editor/check-webstorm-plugin.ts --verify",
     "check:webstorm-plugin": "node --disable-warning=ExperimentalWarning scripts/editor/check-webstorm-plugin.ts",
     "check:svelte-matrix": "node --disable-warning=ExperimentalWarning scripts/svelte-matrix/check.ts",
     "check:package": "node --disable-warning=ExperimentalWarning scripts/pack/check-package.ts",

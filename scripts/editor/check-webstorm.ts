@@ -15,7 +15,7 @@ import {
   runInspection,
   syncShadowProject
 } from "#scripts/editor/webstorm/isolated-ide.ts";
-import { findSveltePlugin, findWebStorm } from "#scripts/editor/webstorm/locate.ts";
+import { findWebStorm, sveltePluginFor } from "#scripts/editor/webstorm/locate.ts";
 import { enabledInspections, readProblems } from "#scripts/editor/webstorm/problems.ts";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -86,7 +86,7 @@ async function main() {
     return;
   }
 
-  const sveltePlugin = findSveltePlugin();
+  const sveltePlugin = ideHome === undefined ? undefined : await sveltePluginFor(ideHome);
   const hasSveltePlugin = sveltePlugin !== undefined;
   if (!hasSveltePlugin) {
     skip({

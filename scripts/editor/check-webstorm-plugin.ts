@@ -4,10 +4,13 @@
 // on winui-svelte, where each line marked `<!-- convert -->` must report and
 // no other line may, and one that does not, which must report nothing.
 //
-//   node scripts/editor/check-webstorm-plugin.ts [--require] [--skip-build] [--fix-kotlin]
+//   node scripts/editor/check-webstorm-plugin.ts [--require] [--skip-build] [--fix-kotlin] [--verify]
 //
 // The build runs the plugin's tests and its Kotlin lint (ktlint and detekt);
-// --fix-kotlin only runs the ktlint formatter, as `pnpm lint:fix` does.
+// --fix-kotlin only runs the ktlint formatter, as `pnpm lint:fix` does; --verify
+// only runs JetBrains' Plugin Verifier over the built plugin against the installed
+// WebStorm (API removed or changed, and the experimental and deprecated API it
+// still uses), which is how a plugin learns it will break before an IDE update does.
 //
 // The quick fix itself is proved by the plugin's own tests (`gradlew test`,
 // which the build runs): the command-line inspection has no way to apply it.
@@ -17,7 +20,7 @@ import {
   RESULTS_FOLDER,
   runInspection
 } from "#scripts/editor/webstorm/isolated-ide.ts";
-import { findSveltePlugin, findWebStorm } from "#scripts/editor/webstorm/locate.ts";
+import { findWebStorm, sveltePluginFor } from "#scripts/editor/webstorm/locate.ts";
 import {
   buildPlugin,
   builtZip,
@@ -96,60 +99,22 @@ function sameLines({ expected, actual }: {
   return JSON.stringify(expected) === JSON.stringify(actual);
 }
 
-async function main() {
-  const { values } = parseArgs({
-    options: {
-      require: {
-        type: "boolean",
-        default: false
-      },
-      "skip-build": {
-        type: "boolean",
-        default: false
-      },
-      "fix-kotlin": {
-        type: "boolean",
-        default: false
-      }
-    }
-  });
-  const isRequired = values.require;
-  const ideHome = findWebStorm();
-  const sveltePlugin = findSveltePlugin();
-  const isInstalled = ideHome !== undefined && sveltePlugin !== undefined;
-  if (!isInstalled) {
-    skip({
-      reason: "WebStorm or its Svelte plugin is not installed; the check runs where they are.",
-      isRequired
-    });
-    return;
+function singleRunTasks(values: {
+  verify: boolean;
+  "fix-kotlin": boolean;
+}) {
+  if (values.verify) {
+    return ["buildPlugin", "verifyPlugin"];
   }
 
-  if (values["fix-kotlin"]) {
-    const isFixed = runGradle({
-      ideHome,
-      sveltePlugin,
-      tasks: ["ktLintFix"]
-    });
-    process.exitCode = isFixed ? 0 : 1;
-    return;
-  }
+  return values["fix-kotlin"] ? ["ktLintFix"] : undefined;
+}
 
-  const isBuilt = values["skip-build"] || buildPlugin({
-    paths: {
-      ideHome,
-      sveltePlugin
-    },
-    tasks: ["test", "buildPlugin", "ktLint"]
-  });
-  const zipPath = builtZip();
-  const isReady = isBuilt && zipPath !== undefined;
-  if (!isReady) {
-    console.error("WebStorm plugin check FAILED: the plugin did not build or its tests failed.");
-    process.exitCode = 1;
-    return;
-  }
-
+async function inspectFixtures({ ideHome, sveltePlugin, zipPath }: {
+  ideHome: string;
+  sveltePlugin: string;
+  zipPath: string;
+}) {
   const cases = [
     {
       fixture: WITH_DEPENDENCY,
@@ -177,6 +142,71 @@ async function main() {
       process.exitCode = 1;
     }
   }
+}
+
+async function main() {
+  const { values } = parseArgs({
+    options: {
+      require: {
+        type: "boolean",
+        default: false
+      },
+      "skip-build": {
+        type: "boolean",
+        default: false
+      },
+      "fix-kotlin": {
+        type: "boolean",
+        default: false
+      },
+      verify: {
+        type: "boolean",
+        default: false
+      }
+    }
+  });
+  const isRequired = values.require;
+  const ideHome = findWebStorm();
+  const sveltePlugin = ideHome === undefined ? undefined : await sveltePluginFor(ideHome);
+  const isInstalled = ideHome !== undefined && sveltePlugin !== undefined;
+  if (!isInstalled) {
+    skip({
+      reason: "WebStorm or its Svelte plugin is not installed; the check runs where they are.",
+      isRequired
+    });
+    return;
+  }
+
+  const singleRun = singleRunTasks(values);
+  const isSingleRun = singleRun !== undefined;
+  if (isSingleRun) {
+    const isDone = runGradle({
+      ideHome,
+      tasks: singleRun
+    });
+    process.exitCode = isDone ? 0 : 1;
+    return;
+  }
+
+  const isBuilt = values["skip-build"] || buildPlugin({
+    paths: {
+      ideHome
+    },
+    tasks: ["test", "buildPlugin", "ktLint"]
+  });
+  const zipPath = builtZip();
+  const isReady = isBuilt && zipPath !== undefined;
+  if (!isReady) {
+    console.error("WebStorm plugin check FAILED: the plugin did not build or its tests failed.");
+    process.exitCode = 1;
+    return;
+  }
+
+  await inspectFixtures({
+    ideHome,
+    sveltePlugin,
+    zipPath
+  });
 }
 
 await main();

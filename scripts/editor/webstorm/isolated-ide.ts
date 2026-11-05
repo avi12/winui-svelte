@@ -90,7 +90,8 @@ function vmOptions() {
 
 /**
  * Creates the isolated folders and the VM options that point the IDE at them,
- * and puts the Svelte plugin in the isolated plugin folder once.
+ * and puts the Svelte plugin in the isolated plugin folder, replacing the copy of an
+ * earlier run, which may belong to another IDE build.
  */
 export function prepareIsolation({ sveltePlugin }: {
   sveltePlugin: string;
@@ -112,9 +113,11 @@ export function prepareIsolation({ sveltePlugin }: {
 
   writeFileSync(VM_OPTIONS_FILE, vmOptions());
   const installedPlugin = path.join(PLUGINS_FOLDER, SVELTE_PLUGIN_FOLDER);
-  if (!existsSync(installedPlugin)) {
-    cpSync(sveltePlugin, installedPlugin, { recursive: true });
-  }
+  rmSync(installedPlugin, {
+    recursive: true,
+    force: true
+  });
+  cpSync(sveltePlugin, installedPlugin, { recursive: true });
 }
 
 /**

@@ -1,5 +1,6 @@
-// Builds the WebStorm plugin (ide/webstorm) against the WebStorm and the Svelte
-// plugin found on this machine; shared by the check and the installer.
+// Builds the WebStorm plugin (ide/webstorm) against the WebStorm found on this
+// machine; Gradle fetches the Svelte plugin build that fits it from the
+// JetBrains Marketplace. Shared by the check and the installer.
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import path from "node:path";
@@ -15,14 +16,13 @@ export const PLUGIN_FOLDER_NAME = "winui-svelte-webstorm";
 const GRADLE_HOME = path.join(REPO_ROOT, ".verify", "gradle-home");
 const DISTRIBUTIONS = path.join(PLUGIN_ROOT, "build", "distributions");
 
-/** The paths a plugin build needs: the IDE it compiles against and the Svelte plugin it depends on. */
+/** The path a plugin build needs: the IDE it compiles against. */
 export interface PluginBuildPaths {
   ideHome: string;
-  sveltePlugin: string;
 }
 
 /** Runs Gradle tasks of the plugin with its caches inside the repository; true when they succeeded. */
-export function runGradle({ ideHome, sveltePlugin, tasks }: PluginBuildPaths & { tasks: string[] }) {
+export function runGradle({ ideHome, tasks }: PluginBuildPaths & { tasks: string[] }) {
   mkdirSync(GRADLE_HOME, { recursive: true });
   const wrapper = path.join(PLUGIN_ROOT, "gradlew.bat");
   const built = spawnSync(
@@ -33,8 +33,7 @@ export function runGradle({ ideHome, sveltePlugin, tasks }: PluginBuildPaths & {
       wrapper,
       ...tasks,
       "--console=plain",
-      `-PwebstormHome=${ideHome}`,
-      `-PsvelteHome=${sveltePlugin}`
+      `-PwebstormHome=${ideHome}`
     ],
     {
       cwd: PLUGIN_ROOT,

@@ -10,7 +10,7 @@
 // then start WebStorm. This is the only script that writes outside the
 // repository, and only when someone asks for the plugin to be installed.
 import { installPlugin } from "#scripts/editor/webstorm/isolated-ide.ts";
-import { findSveltePlugin, findUserPluginsFolder, findWebStorm } from "#scripts/editor/webstorm/locate.ts";
+import { findUserPluginsFolder, findWebStorm } from "#scripts/editor/webstorm/locate.ts";
 import { buildPlugin, builtZip, PLUGIN_FOLDER_NAME } from "#scripts/editor/webstorm/plugin-build.ts";
 import { spawnSync } from "node:child_process";
 import { parseArgs } from "node:util";
@@ -33,19 +33,17 @@ function main() {
     }
   });
   const ideHome = findWebStorm();
-  const sveltePlugin = findSveltePlugin();
   const pluginsFolder = findUserPluginsFolder();
-  const isInstalled = ideHome !== undefined && sveltePlugin !== undefined && pluginsFolder !== undefined;
+  const isInstalled = ideHome !== undefined && pluginsFolder !== undefined;
   if (!isInstalled) {
-    console.error("WebStorm, its Svelte plugin or its config folder was not found on this machine.");
+    console.error("WebStorm or its config folder was not found on this machine.");
     process.exitCode = 1;
     return;
   }
 
   const isBuilt = values["skip-build"] || buildPlugin({
     paths: {
-      ideHome,
-      sveltePlugin
+      ideHome
     },
     tasks: ["buildPlugin"]
   });
