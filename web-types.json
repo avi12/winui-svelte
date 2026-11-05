@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-types",
   "name": "winui-svelte",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "framework": "svelte",
   "description-markup": "markdown",
   "contributions": {
