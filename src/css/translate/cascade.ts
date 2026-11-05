@@ -1,5 +1,6 @@
 import type { LoweredStyle } from "./properties.ts";
 import type { Declaration, PseudoState, Rule } from "./types.ts";
+import { fontFamilySource } from "#src/font-files.js";
 
 /**
  * CSS's cascade for one element: which rules apply to it (its type, classes
@@ -22,6 +23,8 @@ export interface ElementFacts {
   /** Whether the element is still in its starting state, which the `@starting-style` rules style. */
   isStarting?: boolean;
 }
+
+const FONT_FAMILY_PROPERTY = "FontFamily";
 
 /** The namespace XAML's controls, templates and styles are written in. */
 export const PRESENTATION_NAMESPACE = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
@@ -159,7 +162,8 @@ export function styleXaml({ key, elementType, lowered }: {
   const setters = lowered.setters.map(entry => {
     const isSetter = entry.kind === "setter";
     if (isSetter) {
-      return `  <Setter Property="${entry.property}" Value="${escapeAttribute(entry.value)}"/>`;
+      const value = entry.property === FONT_FAMILY_PROPERTY ? fontFamilySource(entry.value) : entry.value;
+      return `  <Setter Property="${entry.property}" Value="${escapeAttribute(value)}"/>`;
     }
 
     return `  <Setter Property="${entry.property}"><Setter.Value>${entry.xaml}</Setter.Value></Setter>`;
