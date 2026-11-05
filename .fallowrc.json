@@ -23,6 +23,7 @@
     "src/vite/loader.ts",
     "src/win2d/index.ts",
     "src/data-transfer/index.ts",
+    "src/input/index.ts",
     "src/win2d/Canvas.d.svelte.ts",
     "src/win2d/context-2d/index.ts",
     "src/win2d/context-2d/Canvas2D.d.svelte.ts",

@@ -110,6 +110,11 @@
       "types": "./dist/data-transfer/index.d.ts",
       "default": "./dist/data-transfer/index.js"
     },
+    "./input": {
+      "types": "./dist/input/index.d.ts",
+      "svelte": "./dist/input/index.js",
+      "default": "./dist/input/index.js"
+    },
     "./media": {
       "types": "./dist/media/index.d.ts",
       "svelte": "./dist/media/index.js",
