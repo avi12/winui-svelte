@@ -82,6 +82,7 @@ export function ownWindow({ hwnd, owner }: {
 }
 
 const EXTENDED_STYLE_INDEX = -20;
+const STYLE_INDEX = -16;
 const NO_STYLES = 0n;
 const UNSIGNED_BITS = 64;
 const VIRTUAL_SCREEN_LEFT = 76;
@@ -129,9 +130,33 @@ export const ExtendedStyle = {
   layered: 0x80000n
 } as const;
 
-function extendedStylesOf(hwnd: bigint) {
-  const current = getWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(EXTENDED_STYLE_INDEX)]).returnValue;
+/**
+ * The window style bits (`WS_*`) of the frame: `dialogFrame` is the 3 pixel
+ * frame (white, in the light theme) that a window keeps after WinUI's
+ * presenter has taken its border and title bar away.
+ */
+export const WindowStyle = { dialogFrame: 0x400000n } as const;
+
+function styleBitsOf({ hwnd, index }: {
+  hwnd: bigint;
+  index: number;
+}) {
+  const current = getWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(index)]).returnValue;
   return current === null ? NO_STYLES : DynWin32.toBigint(current);
+}
+
+function changeStyleBits({ hwnd, index, styles, isOn }: {
+  hwnd: bigint;
+  index: number;
+  styles: bigint;
+  isOn: boolean;
+}) {
+  const held = styleBitsOf({
+    hwnd,
+    index
+  });
+  const changed = isOn ? held | styles : BigInt.asUintN(UNSIGNED_BITS, held & ~styles);
+  setWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(index), DynWin32.i64(changed)]);
 }
 
 /** Whether the window `hwnd` has every extended style bit of `styles` on. */
@@ -139,7 +164,10 @@ export function hasExtendedStyles({ hwnd, styles }: {
   hwnd: bigint;
   styles: bigint;
 }) {
-  return (extendedStylesOf(hwnd) & styles) === styles;
+  return (styleBitsOf({
+    hwnd,
+    index: EXTENDED_STYLE_INDEX
+  }) & styles) === styles;
 }
 
 /** Turns the extended window style bits `styles` of the window `hwnd` on or off, keeping the rest. */
@@ -148,9 +176,53 @@ export function changeExtendedStyles({ hwnd, styles, isOn }: {
   styles: bigint;
   isOn: boolean;
 }) {
-  const held = extendedStylesOf(hwnd);
-  const changed = isOn ? held | styles : BigInt.asUintN(UNSIGNED_BITS, held & ~styles);
-  setWindowLongPointer.invoke([DynWin32.handle(hwnd), DynWin32.i32(EXTENDED_STYLE_INDEX), DynWin32.i64(changed)]);
+  changeStyleBits({
+    hwnd,
+    index: EXTENDED_STYLE_INDEX,
+    styles,
+    isOn
+  });
+}
+
+const setWindowPosition = bind({
+  dll: "user32.dll",
+  entryPoint: "SetWindowPos",
+  parameters: ["handle", "handle", "i32", "i32", "i32", "i32", "u32"],
+  returnType: "i32"
+});
+
+const SWP_NOSIZE = 0x0001;
+const SWP_NOMOVE = 0x0002;
+const SWP_NOZORDER = 0x0004;
+const SWP_NOACTIVATE = 0x0010;
+const SWP_FRAMECHANGED = 0x0020;
+const FRAME_CHANGED_FLAGS = SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED;
+const NO_WINDOW_ABOVE = 0n;
+
+/**
+ * Turns the window style bits `styles` (`WindowStyle`) of the window `hwnd` on
+ * or off and has Windows draw the frame again, so the client area follows.
+ */
+export function changeStyles({ hwnd, styles, isOn }: {
+  hwnd: bigint;
+  styles: bigint;
+  isOn: boolean;
+}) {
+  changeStyleBits({
+    hwnd,
+    index: STYLE_INDEX,
+    styles,
+    isOn
+  });
+  setWindowPosition.invoke([
+    DynWin32.handle(hwnd),
+    DynWin32.handle(NO_WINDOW_ABOVE),
+    DynWin32.i32(0),
+    DynWin32.i32(0),
+    DynWin32.i32(0),
+    DynWin32.i32(0),
+    DynWin32.u32(FRAME_CHANGED_FLAGS)
+  ]);
 }
 
 const WDA_NONE = 0;

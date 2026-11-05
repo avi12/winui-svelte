@@ -17,12 +17,14 @@ import type { CaptionButtonColors, CaptionButtonProperty, TitleBarHeight, Window
 import { TitleBarHeight as TitleBarHeightKind, WindowPresentation, WindowTheme } from "./chrome.ts";
 import { toDevicePixels } from "./css-pixels.ts";
 import {
+  changeStyles,
   clearWindowClip,
   clipToRoundedRectangle,
   excludeFromCapture,
   ExtendedStyle,
   joinAppUserModel,
-  ownWindow
+  ownWindow,
+  WindowStyle
 } from "./native.ts";
 import { createScaleTracker } from "./scale.ts";
 import { onTeardown } from "./teardown.ts";
@@ -729,6 +731,18 @@ class WindowHost {
 
     const hasFrame = isBorderless !== true;
     this.handle.presenter.setBorderAndTitleBar(hasFrame, hasFrame);
+
+    if (!hasFrame) {
+      // The presenter leaves the dialog frame: a white 3 pixel edge inside the
+      // window that the content does not cover, and a client area smaller
+      // than the window.
+      changeStyles({
+        hwnd: this.handle.appWindow.id.value,
+        styles: WindowStyle.dialogFrame,
+        isOn: false
+      });
+    }
+
     this.isBorderApplied = isGivenNow;
   }
 

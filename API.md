@@ -1597,7 +1597,9 @@ The size limits and
 `isAlwaysOnTop` are the windowed presentation's, and are set again when the
 window returns to it
 A window that is only its content (a pill, an overlay, a splash screen) is made
-of the frame props: `isBorderless` (no frame, no title bar),
+of the frame props: `isBorderless` (no frame, no title bar; the window keeps its
+8 device pixel resize frame, which shrinks the client area and paints a strip
+along the top, until `isResizable={false}` takes it away),
 `isShownInSwitchers` and `isToolWindow` (no taskbar button or Alt+Tab entry),
 `isActivatable={false}` (a click never takes focus), `isClickThrough`,
 `isExcludedFromCapture` (black in screenshots and screen sharing),
