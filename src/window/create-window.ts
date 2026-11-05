@@ -21,6 +21,8 @@ interface WindowChrome extends Pick<
   | "isShownInSwitchers"
   | "isToolWindow"
   | "owner"
+  | "anchor"
+  | "sizeToContent"
   | "title"
 > {
   /** In device pixels. */
@@ -123,7 +125,9 @@ export function createWindow<Props extends object>(options: WindowOptions<Props>
       isExcludedFromCapture: options.isExcludedFromCapture,
       isHidden: options.isHidden,
       isShownInSwitchers: options.isShownInSwitchers,
-      isToolWindow: options.isToolWindow
+      isToolWindow: options.isToolWindow,
+      sizeToContent: options.sizeToContent,
+      anchor: options.anchor
     },
     titleBar: () => null,
     size: options.size
