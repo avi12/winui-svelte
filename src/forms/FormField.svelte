@@ -2,6 +2,7 @@
   import { formOf } from "./form-controller.svelte.ts";
   import { panelProps } from "./form-field-props.ts";
   import type { FormFieldProps } from "./form-field-props.ts";
+  import { liveRegion } from "#src/accessibility/live-region.js";
   import StackPanel from "#src/components/generated/StackPanel.svelte";
   import TextBlock from "#src/components/generated/TextBlock.svelte";
 
@@ -34,7 +35,7 @@
   {/if}
   {@render props.children?.()}
   {#if errorText()}
-    <TextBlock automationLiveSetting="Polite" foreground={ERROR_COLOR}>{errorText()}</TextBlock>
+    <TextBlock {@attach liveRegion()} foreground={ERROR_COLOR}>{errorText()}</TextBlock>
   {:else if props.description}
     <TextBlock opacity={HINT_OPACITY}>{props.description}</TextBlock>
   {/if}

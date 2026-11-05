@@ -54,6 +54,15 @@
       "svelte": "./dist/components/index.js",
       "default": "./dist/components/index.js"
     },
+    "./accessibility": {
+      "types": "./dist/accessibility/index.d.ts",
+      "svelte": "./dist/accessibility/index.js",
+      "default": "./dist/accessibility/index.js"
+    },
+    "./accessibility/audit": {
+      "types": "./dist/accessibility/audit/index.d.ts",
+      "default": "./dist/accessibility/audit/index.js"
+    },
     "./enums": {
       "types": "./dist/enums.d.ts",
       "default": "./dist/enums.js"
