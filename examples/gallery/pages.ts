@@ -13,6 +13,7 @@ import ListsPage from "./pages/ListsPage.svelte";
 import MediaPage from "./pages/MediaPage.svelte";
 import OverlaysPage from "./pages/OverlaysPage.svelte";
 import ServicesPage from "./pages/ServicesPage.svelte";
+import SettingsPage from "./pages/SettingsPage.svelte";
 import StatePage from "./pages/StatePage.svelte";
 import TemplatesPage from "./pages/TemplatesPage.svelte";
 import TextPage from "./pages/TextPage.svelte";
@@ -134,6 +135,11 @@ export const GALLERY_PAGES: readonly GalleryPage[] = [
     key: "devices",
     title: "Devices",
     page: DevicesPage
+  },
+  {
+    key: "settings-cards",
+    title: "Settings cards",
+    page: SettingsPage
   },
   {
     key: "tray",

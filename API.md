@@ -18,6 +18,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/host` | `src/renderer/host/host.ts` | `renderer`, the renderer WinUI controls are built through (`mountControl` makes it the active one), and the mount-target plumbing below; not for app code |
 | `winui-svelte/element-animation` | `src/renderer/host/element-animation.ts` | `enableElementAnimation()`: what Svelte's `transition:`, `in:`, `out:`, `animate:` and `svelte/motion` ask of an element, on WinUI controls (the Vite plugin calls it from a component that uses them; otherwise not bundled) |
 | `winui-svelte/attached-owners` | `src/components/attached-owners.ts` | `preloadAttachedOwners(names)`: loads the modules attached properties (`canvasLeft`, `gridRow`) are written through (the Vite plugin calls it from a component whose markup or script names one, so the property is set with the control; a prop named nowhere, built from a computed key, needs `await preloadAttachedOwners(["Canvas"])` first, or its control throws) |
+| `winui-svelte/settings` | `src/settings/index.ts` | `SettingsCard`, `SettingsExpander`: Fluent settings cards after the Community Toolkit's (opt-in) |
 | `winui-svelte/implicit-layout-animation` | `src/renderer/host/implicit-layout-animation.ts` | `implicitLayoutAnimation({ duration, easing })`, `LayoutEasing`: children slide to their new places when the layout moves them (opt-in) |
 | `winui-svelte/connected-animation` | `src/renderer/host/connected-animation.ts` | `connectElement({ key, element })`, `startConnected({ key, element })`: WinUI's connected animation between two pages (opt-in) |
 | `winui-svelte/keyed-list` | `src/renderer/list/keyed-list.ts` | `syncKeyed()`: sync a native collection to wanted keys, touching only what changed |
@@ -422,6 +423,54 @@ implicit animation on each child's `Offset`
 - `style:translate="0px 60px"` on a component (`<Border style:translate=...>`)
   works: the same test reads the pixels and finds the control drawn 60 px lower
   at once, with its layout slot left unchanged
+
+## Settings cards (`winui-svelte/settings`)
+
+The Windows Community Toolkit's `SettingsCard` and `SettingsExpander` are
+managed code with no projectable metadata, so these are built from WinUI's own
+controls (`Border`, `Button`, `Grid`, `FontIcon`, `TextBlock`, `Expander`) and
+the card theme resources (`CardBackgroundFillColorDefaultBrush` and
+`CardStrokeColorDefaultBrush`), so light, dark and high contrast follow Windows
+
+```svelte
+<script lang="ts">
+  import { ToggleSwitch } from "winui-svelte/components";
+  import { SettingsCard, SettingsExpander } from "winui-svelte/settings";
+
+  let isExpanded = $state(false);
+</script>
+
+<SettingsCard description="Start with Windows" header="Run at startup" headerIcon="PowerButton">
+  <ToggleSwitch />
+</SettingsCard>
+<SettingsCard header="Open the logs" isClickEnabled onclick={openLogs} />
+<SettingsExpander header="Appearance" bind:isExpanded>
+  {#snippet items()}
+    <SettingsCard header="Theme">...</SettingsCard>
+  {/snippet}
+</SettingsExpander>
+```
+
+| Prop | Meaning |
+|---|---|
+| `header`, `description` | the name and the line under it |
+| `headerIcon` | a Fluent glyph name or code, or a snippet that draws an icon |
+| children | the control on the right (the toolkit's `Content`) |
+| `isClickEnabled`, `onclick` | the card is a `Button`: focus, Enter and Space, a pressed state |
+| `actionIcon`, `action` | the glyph at the end of a clickable card (default `ChevronRight`), or a snippet that replaces it |
+| `isEnabled`, `automationId` | as on any control |
+| `SettingsExpander`: `isExpanded`, `items` | `bind:isExpanded`; the items are `SettingsCard`s, which draw flat inside |
+
+- Accessibility: a clickable card carries its header as the UI Automation name
+  and its description as the help text, and the expander is named after its
+  header; a card that is not clickable is a plain container whose texts are read
+- Measured in a window (`test/settings-cards.test.ts`, the
+  `examples/settings-cards` example): a card is at least 68 px high, the
+  clickable card is named after its header, the items of a closed expander take
+  no room and show once it is open; the gallery has a `Settings cards` page
+- Not there: the toolkit's `SettingsCard.ContentAlignment`, `IsActionIconVisible`
+  and its automatic wrapping into two rows on a narrow window; the content sits
+  on the right at its own size
 
 ## Connected animation (`winui-svelte/connected-animation`)
 
