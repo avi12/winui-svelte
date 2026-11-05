@@ -1,7 +1,7 @@
 <script lang="ts">
   import GearMenu from "./GearMenu.svelte";
   import GlyphButton from "./GlyphButton.svelte";
-  import { PillColumn } from "./pill-view.ts";
+  import { PillColumn, PillSize } from "./pill-view.ts";
   import { send, view } from "./view.svelte.ts";
   import { fade } from "svelte/transition";
   import { FontIcon, MenuFlyout, RadioMenuFlyoutItem, TextBlock } from "winui-svelte/components";
@@ -57,7 +57,7 @@
   `gridColumn`, and centers itself (the translator cannot give a component
   the class that `align-items` would lower into)
 -->
-<grid class="pill">
+<grid style:height="{PillSize.height}px" class="pill">
   <GlyphButton
     column={PillColumn.share}
     flyout={displayPicker}
@@ -100,7 +100,6 @@
   .pill {
     display: grid;
     grid-template-columns: auto auto 1fr auto auto;
-    height: 48px;
     padding: 0 8px;
     border-color: rgb(255 255 255 / 0.2);
     border-width: 1px;

@@ -2,8 +2,9 @@
 
 What the Gemini Live pill needs from winui-svelte, checked against the code, the
 docs and the tests (HANDOFF-gemini-live.md, "Looks covered")
-Nothing was launched in a window: a "yes" rests on the docs, the code and the
-existing tests, not on a run of this example
+The example now runs as one transparent window (`test/pill-ground.test.ts`, off
+screen and never activated, read back with PrintWindow); a row says what that
+run showed, and the rows that predate it rest on the docs and the code
 
 The web API column says whether the package offers the web form: offers,
 partly or lacks
@@ -18,7 +19,7 @@ partly or lacks
 | `Hyperlink` | yes | an inline in a `TextBlock` with `navigateUri` | `<a>` lacks; `window.open` offers, and the link chips use it |
 | `isTextSelectionEnabled` | yes | `TextBlock` prop, or `user-select` in CSS; selecting and Ctrl+C need the window activatable first | `getSelection` lacks; `navigator.clipboard` offers |
 | `filter: blur()` | yes, a real Gaussian blur | Win2D on the Composition visual (`css/filter`, `test/effects.test.ts`); it draws up to 3 radii outside the element and paints over later siblings; `@keyframes` cannot animate `filter`, only Svelte's `blur` transition animates the radius | `filter` offers in CSS; `element.animate` on `filter` lacks |
-| A blurred gradient band as a glow | yes, statically | a gradient plus `filter: blur(24px)` in `Glow.svelte`; the window is not transparent, so the bleed past the pill is clipped | CSS offers |
+| A blurred gradient band as a glow | yes | a gradient plus `filter: blur(24px)` in `Glow.svelte`; on the transparent window the blur bleeds past the pill into the room under it (`PillSize.glowRoom`, part of the content), which the test sees; faint at the resting opacity | CSS offers |
 | WinUI-parity glow alternatives | n/a | `ThemeShadow` and `-winui-elevation` have no colour, blur or offset, so they are a shadow and not a glow; `AcrylicBrush` and the window `backdrop` are materials; `filter: drop-shadow(0 0 24px colour)` is the nearest coloured glow | `box-shadow` partly (depth only) |
 | `linear-gradient` | yes | `to right` and 0, 90, 180, 270 degrees are exact, other angles warn; stops must be plain colours | CSS offers |
 | `transition` | yes | implicit transitions on `Translation`, `Scale`, `Rotation`, `opacity` and `border-color`; `height: auto` and `box-shadow` do not animate | CSS offers; `element.animate` offers |
@@ -30,6 +31,6 @@ partly or lacks
 | Per-element opacity and translate animation | yes | CSS animation, Svelte transitions and `element.animate` all land on `Opacity`, `Translation`, `Scale` and `Rotation`; the engine writes about every 16 ms on the UI thread | `element.animate` offers |
 | Card height glide | missing | `auto` height has nothing for CSS to animate; use `ResizeObserver` plus `element.animate({height})`, not built | `ResizeObserver` and `element.animate` offer |
 | Wrapping link chips | missing | `flex-wrap` is a build error and there is no wrap panel; the example uses one row | none |
-| Transparent window | now offered | `backdrop="transparent"` (API.md Window); not run on screen | none; no web API makes a window transparent |
-| Size to content with the bottom-right corner pinned | now offered | `sizeToContent` with `anchor` (API.md Window); not run on screen | `ResizeObserver` offers, not used: it reports the laid-out size |
+| Transparent window | yes | `backdrop="transparent"`; clear corners and gaps read black in PrintWindow (it has no alpha) where `--backdrop mica` paints the theme color; it failed at startup until the package gave the thread a Windows.System dispatcher queue (`system-dispatcher-queue.ts`) | none; no web API makes a window transparent |
+| Size to content with the bottom-right corner pinned | yes | `sizeToContent="height" anchor="bottomRight"` and `handle.dock({ anchor, inset: 6 })`: the window grows upward with the corner fixed and sits 6 device pixels inside the work area of the display it is on; `isBorderless` kept a 3 pixel dialog frame (now removed) and the 8 pixel resize frame goes with `isResizable={false}`; which display `dock` picks is not observable off screen | `ResizeObserver` offers, not used: it reports the laid-out size |
 | Material Symbols font | missing | fonts are named by family and there is no way to load a font file from the app folder; the example uses Segoe Fluent Icons | none |

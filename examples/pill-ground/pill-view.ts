@@ -113,6 +113,11 @@ export type PillAction =
 
 export const API_KEY_PAGE = "https://aistudio.google.com/apikey";
 
+export const PillSize = {
+  height: 48,
+  glowRoom: 24
+} as const;
+
 export const PillColumn = {
   share: 1,
   microphone: 2,

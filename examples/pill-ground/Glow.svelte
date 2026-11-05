@@ -1,6 +1,9 @@
 <script lang="ts">
-  import { GlowMode } from "./pill-view.ts";
+  import { GlowMode, PillSize } from "./pill-view.ts";
   import { view } from "./view.svelte.ts";
+  import type { Snippet } from "svelte";
+
+  const { children }: { children: Snippet } = $props();
 
   const REST_OPACITY = 0.25;
   const MAX_OPACITY = 1;
@@ -52,14 +55,23 @@
   from the host and sets the opacity below, and when the host sends levels at
   60 fps the write is the whole job. If the app has to produce frames itself,
   use `requestAnimationFrame` (installTiming), not `startTimer`
-  GAP: the blur draws up to three radii outside the element, and the window is
-  not transparent (API.md, Window), so what leaves the window is clipped and
-  the part under the pill's edge shows the window's solid color
+  The window is transparent, so the blur bleeds past the pill onto the
+  desktop; it draws up to three radii outside the band, so the room under the
+  pill (`PillSize.glowRoom`) is part of the window's content. The band comes
+  first in the grid, so the pill is drawn over it
 -->
-<border style:opacity={glow.opacity} class="glow" {@attach breathe}></border>
+<grid style:grid-template-rows="auto {PillSize.glowRoom}px" class="glow-and-pill">
+  <border style:opacity={glow.opacity} class="glow" {@attach breathe}></border>
+  {@render children()}
+</grid>
 
 <style>
+  .glow-and-pill {
+    display: grid;
+  }
+
   .glow {
+    grid-row: 2;
     height: 14px;
     margin-top: -10px;
     margin-right: 24px;
