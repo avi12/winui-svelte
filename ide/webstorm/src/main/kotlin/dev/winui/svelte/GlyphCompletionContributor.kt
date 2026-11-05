@@ -4,14 +4,27 @@ import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.CompletionType
-import com.intellij.psi.xml.XmlAttributeValue
+import com.intellij.lang.injection.InjectedLanguageManager
 
 class GlyphCompletionContributor : CompletionContributor() {
   override fun fillCompletionVariants(
     parameters: CompletionParameters,
     result: CompletionResultSet
   ) {
-    if (parameters.completionType != CompletionType.BASIC || !isGlyphValue(parameters) || GlyphFont.family == null) {
+    val isBasic = parameters.completionType == CompletionType.BASIC
+    val value = GlyphValues.valueAt(parameters.position)
+    if (!isBasic || value == null || GlyphFont.family == null) {
+      return
+    }
+
+    val file = InjectedLanguageManager.getInstance(value.project).getTopLevelFile(parameters.originalFile)
+    if (!GlyphValues.isGlyphValue(value, file)) {
+      return
+    }
+
+    if (GlyphValues.isInsideString(parameters.position)) {
+      offerEvery(result)
+      result.stopHere()
       return
     }
 
@@ -21,12 +34,11 @@ class GlyphCompletionContributor : CompletionContributor() {
       result.passResult(offering.withLookupElement(GlyphLookup.decorate(offering.lookupElement)))
     }
     if (offered == 0) {
-      FluentGlyphs.codePoints.forEach { (name, codePoint) -> result.addElement(GlyphLookup.own(name, codePoint)) }
+      offerEvery(result)
     }
   }
 
-  private fun isGlyphValue(parameters: CompletionParameters): Boolean {
-    val value = parameters.position.parent as? XmlAttributeValue ?: return false
-    return GlyphValues.isGlyphValue(value, parameters.originalFile)
+  private fun offerEvery(result: CompletionResultSet) {
+    FluentGlyphs.codePoints.forEach { (name, codePoint) -> result.addElement(GlyphLookup.own(name, codePoint)) }
   }
 }

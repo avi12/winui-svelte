@@ -24,6 +24,14 @@ class GlyphCompletionTest : BasePlatformTestCase() {
     assumeTrue("no Fluent icon font is installed", GlyphFont.family != null)
   }
 
+  fun testAStringInAnExpressionIsCompletedWithTheIconNamesOnly() {
+    val items = complete("<FontIcon glyph={isReady ? \"<caret>\" : \"Play\"} />").toMap()
+    assertEquals(true, items.size > 100)
+    assertEquals(emptyList<String>(), items.filter { it.value.icon == null }.keys.toList())
+    val typed = complete("<FontIcon glyph={isReady ? \"Sav<caret>\" : \"Play\"} />", isFirst = false)
+    assertEquals(true, typed.any { it.first == "Save" })
+  }
+
   fun testTheNamesCarryTheIconAndTheCodePoint() {
     val items = complete("<FontIcon glyph=\"<caret>\" />").toMap()
     assertEquals(true, items.size > 100)

@@ -1,7 +1,10 @@
 package dev.winui.svelte
 
+import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.xml.XmlAttribute
 import com.intellij.psi.xml.XmlAttributeValue
 
@@ -12,6 +15,20 @@ internal data class GlyphSpot(
 
 internal object GlyphValues {
   private val STRING_LITERAL = Regex("""(["'`])([^"'`\$]*)\1""")
+
+  private const val QUOTES = "\"'`"
+
+  /** The attribute value the position is in, also when it is inside the JavaScript of an expression. */
+  fun valueAt(position: PsiElement): XmlAttributeValue? {
+    val host = InjectedLanguageManager.getInstance(position.project).getInjectionHost(position)
+    return PsiTreeUtil.getParentOfType(host ?: position, XmlAttributeValue::class.java, false)
+  }
+
+  /** Whether the position is a string of an expression, as opposed to the plain value of the attribute. */
+  fun isInsideString(position: PsiElement): Boolean {
+    val first = position.text.firstOrNull() ?: return false
+    return first in QUOTES
+  }
 
   fun isGlyphValue(
     value: XmlAttributeValue,
