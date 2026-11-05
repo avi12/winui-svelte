@@ -12,7 +12,7 @@ import type { NativeValue } from "#src/native-value.js";
 import { ElementNode } from "#src/renderer/tree/dom.js";
 import { listenersOf } from "#src/renderer/tree/tree.js";
 import { flush } from "#src/scheduling.js";
-import { systemSettingsStore } from "#src/window/settings-store.js";
+import { isMotionReducedBySystem } from "#src/window/reduced-motion.js";
 
 // The Web Animations a stock Svelte asks its elements for, on WinUI's
 // controls. Svelte's `transition:`, `in:`, `out:` and `animate:` call
@@ -208,15 +208,6 @@ function isMotionNode(value: NativeValue): value is MotionNode {
 function keepsMotion(node: MotionNode) {
   const classes = read(node, "className");
   return typeof classes === "string" && classes.split(" ").includes(MOTION_ALWAYS_CLASS);
-}
-
-function isMotionReducedBySystem() {
-  // No settings (off the UI thread, or no Windows) leaves the motion as asked.
-  try {
-    return !systemSettingsStore().source.animationsEnabled;
-  } catch {
-    return false;
-  }
 }
 
 function isCallable(value: NativeValue): value is (...values: NativeValue[]) => NativeValue {

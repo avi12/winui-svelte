@@ -63,6 +63,11 @@
       "svelte": "./dist/forms/index.js",
       "default": "./dist/forms/index.js"
     },
+    "./settings": {
+      "types": "./dist/settings/index.d.ts",
+      "svelte": "./dist/settings/index.js",
+      "default": "./dist/settings/index.js"
+    },
     "./state": {
       "types": "./dist/state/index.d.ts",
       "svelte": "./dist/state/index.js",
@@ -90,6 +95,11 @@
       "types": "./dist/renderer/host/element-animation.d.ts",
       "svelte": "./dist/renderer/host/element-animation.js",
       "default": "./dist/renderer/host/element-animation.js"
+    },
+    "./implicit-layout-animation": {
+      "types": "./dist/renderer/host/implicit-layout-animation.d.ts",
+      "svelte": "./dist/renderer/host/implicit-layout-animation.js",
+      "default": "./dist/renderer/host/implicit-layout-animation.js"
     },
     "./attached-owners": {
       "types": "./dist/components/attached-owners.d.ts",

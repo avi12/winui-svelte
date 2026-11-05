@@ -3,6 +3,7 @@ import type { FlagsInput } from "./convert.ts";
 import type { AttachedModules } from "./generated/attached/owners.ts";
 import { eventPropName } from "#src/renderer/tree/markup.js";
 import { guarded, reportUiError } from "#src/ui-errors.js";
+import { tick } from "svelte";
 import type { Snippet } from "svelte";
 
 // What a generated component links its control to its props with. A prop
@@ -82,6 +83,7 @@ export class Linker {
   // True while this class writes a property, so the change event that write
   // raises is not taken for the user's.
   private isWriting = false;
+  private isLinked = true;
 
   /** Runs `cleanup` when the control is unlinked. */
   add(cleanup: Unsubscribe) {
@@ -361,7 +363,7 @@ export class Linker {
             callback: () => this.changedByUser({
               bound,
               key,
-              read: access.read
+              access
             })
           })
         )
@@ -369,19 +371,43 @@ export class Linker {
     }
   }
 
-  private changedByUser<Bound extends object, Key extends keyof Bound>({ bound, key, read }: {
+  private changedByUser<Bound extends object, Key extends keyof Bound>({ bound, key, access }: {
     bound: Bound;
     key: Key;
-    read: () => Bound[Key];
+    access: Access<Bound[Key]>;
   }) {
     if (this.isWriting) {
       return;
     }
 
-    const current = read();
+    const current = access.read();
     const isChanged = current !== bound[key];
     if (isChanged) {
       bound[key] = current;
+      void this.settle({
+        bound,
+        key,
+        access
+      });
+    }
+  }
+
+  // The app has had its say on the user's change (its setter, its handlers):
+  // when what the bound prop holds is not what the control shows, the app
+  // refused it, and the prop did not change, so no effect writes it back.
+  private async settle<Bound extends object, Key extends keyof Bound>({ bound, key, access }: {
+    bound: Bound;
+    key: Key;
+    access: Access<Bound[Key]>;
+  }) {
+    await tick();
+    const wanted = bound[key];
+    const isRefused = this.isLinked && wanted !== undefined && wanted !== access.read();
+    if (isRefused) {
+      this.write({
+        origin: `refused change of bound prop "${String(key)}"`,
+        action: () => access.write(wanted)
+      });
     }
   }
 
@@ -407,6 +433,7 @@ export class Linker {
 
   /** Unlinks the control: every subscription ends. */
   dispose() {
+    this.isLinked = false;
     for (const cleanup of this.cleanups.splice(0)) {
       cleanup();
     }
