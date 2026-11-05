@@ -4,7 +4,7 @@ import { resolveRelationalSelectors } from "#src/css/relational/relational.js";
 import { withInstancesAsElements, withScopedInstances } from "#src/css/relational/scope.js";
 import { LAZY_GROUPS } from "#src/css/translate/lazy-groups.js";
 import { errorsOf, formatDiagnostic, translateStyleSheet } from "#src/css/translate/translate.js";
-import type { Diagnostic, Rule, StyleSheetData } from "#src/css/translate/types.js";
+import type { Diagnostic, FontFaceRule, Rule, StyleSheetData } from "#src/css/translate/types.js";
 import { markupStyleProperties } from "#src/css/validate/markup-declarations.js";
 import type { CompileOptions, Warning } from "svelte/compiler";
 import { compile } from "svelte/compiler";
@@ -19,6 +19,7 @@ const HOT_ACCEPT = "\nif (import.meta.hot) {\n  import.meta.hot.accept();\n}";
 const REGISTER_ALIAS = "registerWinuiSheet";
 const GROUPS_ALIAS = "registerWinuiGroups";
 const LAZY_ALIAS = "winuiLazyGroups";
+const FONT_ALIAS = "registerWinuiFont";
 const UNUSED_SELECTOR = "css_unused_selector";
 const PROBE = "<i></i><style>i{color:red}</style>";
 
@@ -151,14 +152,36 @@ function groupRegistration({ sheet, markupRules, runtimeModule }: {
   ];
 }
 
+// The calls that register the font files a sheet's `@font-face` rules name,
+// each relative to this module (the sheet's own folder).
+function fontRegistration({ fontFaces, runtimeModule }: {
+  fontFaces: readonly FontFaceRule[];
+  runtimeModule: string;
+}) {
+  const hasFonts = fontFaces.length > 0;
+  if (!hasFonts) {
+    return [];
+  }
+
+  return [
+    `import { registerFont as ${FONT_ALIAS} } from ${JSON.stringify(runtimeModule)};`,
+    ...fontFaces.map(({ family, source }) => `${FONT_ALIAS}({ family: ${JSON.stringify(family)}, source: ${JSON.stringify(source)}, base: import.meta.url });`)
+  ];
+}
+
 // The statements that register a sheet. They name nothing a component might
 // (the import is aliased), so they can be appended to a compiled component.
-function registrationCode({ sheet, markupRules, runtimeModule }: {
+function registrationCode({ sheet, fontFaces, markupRules, runtimeModule }: {
   sheet: StyleSheetData;
+  fontFaces: readonly FontFaceRule[];
   markupRules: readonly Rule[];
   runtimeModule: string;
 }) {
   return [
+    ...fontRegistration({
+      fontFaces,
+      runtimeModule
+    }),
     `import { registerStyleSheet as ${REGISTER_ALIAS} } from ${JSON.stringify(runtimeModule)};`,
     ...groupRegistration({
       sheet,
@@ -316,6 +339,7 @@ function translateUncached(input: Omit<SheetModuleInput, "isHot" | "runtimeModul
   if (hasRelationalErrors) {
     return {
       sheet: null,
+      fontFaces: [],
       markup: input.source,
       diagnostics: relational.diagnostics
     };
@@ -368,10 +392,7 @@ export function compileSheetModule(input: SheetModuleInput) {
 
   const sheet = translation.sheet;
   const isSheetMissing = sheet === null;
-  const hasErrors = isSheetMissing || errorsOf({
-    sheet,
-    diagnostics: translation.diagnostics
-  }).length > 0;
+  const hasErrors = isSheetMissing || errorsOf(translation).length > 0;
   if (hasErrors) {
     throw new SheetError(translation.diagnostics);
   }
@@ -380,6 +401,7 @@ export function compileSheetModule(input: SheetModuleInput) {
   return {
     code: `${registrationCode({
       sheet,
+      fontFaces: translation.fontFaces,
       markupRules: markupRulesOf(input.source),
       runtimeModule: input.runtimeModule
     })}${hot}\n`,
@@ -395,15 +417,12 @@ export function compileSheetModule(input: SheetModuleInput) {
  * CSS has something WinUI cannot say.
  */
 export function compileCssFileModule({ source, sheetId, resources, runtimeModule, isHot }: Omit<SheetModuleInput, "filename" | "compilerOptions">) {
-  const { sheet, diagnostics } = translateStyleSheet({
+  const { sheet, diagnostics, fontFaces } = translateStyleSheet({
     file: sheetId,
     css: source,
     resources
   });
-  const hasErrors = errorsOf({
-    sheet,
-    diagnostics
-  }).length > 0;
+  const hasErrors = errorsOf({ diagnostics }).length > 0;
   if (hasErrors) {
     throw new SheetError(diagnostics);
   }
@@ -412,6 +431,7 @@ export function compileCssFileModule({ source, sheetId, resources, runtimeModule
   return {
     code: `${registrationCode({
       sheet,
+      fontFaces,
       markupRules: [],
       runtimeModule
     })}${hot}

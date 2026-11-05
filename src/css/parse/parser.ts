@@ -49,7 +49,7 @@ export class CssSyntaxError extends Error {
 
 const NESTING_SELECTOR = "&";
 // At-rules whose body is declarations, not rules: it is read as one rule body.
-const DECLARATION_AT_RULES: ReadonlySet<string> = new Set(["property"]);
+const DECLARATION_AT_RULES: ReadonlySet<string> = new Set(["property", "font-face"]);
 const quoteCharacters = new Set(["\"", "'"]);
 const NEWLINE = "\n";
 

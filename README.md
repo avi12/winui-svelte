@@ -552,6 +552,44 @@ is an error too, in the build and the editor, at the rule and naming the element
 that uses it, instead of a failure when the window opens
 The table of every unit is in [`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md#length-units)
 
+### Fonts
+
+A font file of the app is used by its family name: an `@font-face` whose `src`
+is a `url()` of the file, then the family in `font-family`
+
+```svelte
+<style>
+  @font-face {
+    font-family: "Material Symbols Rounded";
+    src: url("./fonts/MaterialSymbolsRounded.ttf");
+  }
+
+  .icon {
+    font-family: "Material Symbols Rounded";
+  }
+</style>
+```
+
+- The family must be the name written inside the font file; WinUI finds the
+  file by that name, and a different name falls back to the default font
+  without an error
+- A relative `url()` is relative to the stylesheet; in a built app the sheet is
+  part of the bundle, so the file is also looked for by its name beside the
+  bundle (copy the fonts there); a file that is not found is an error naming the
+  places looked
+- Only `font-family` and `src` mean something: WinUI takes the weight, style and
+  width from the font file itself, so `font-weight`, `font-style`,
+  `font-stretch` and `unicode-range` are a warning; the first `url()` of `src`
+  is used, and a web address is an error (a font is a file next to the app)
+- One file per family name; registering a name again replaces its file
+- It works in a plain Node process, the case that is tested (a packaged app is
+  not): the file is handed to WinUI as `ms-appx:///` and its absolute path, with
+  the family name after a `#`; nothing is installed on the machine
+- The same from code: `registerFont({ family, source })` from
+  `winui-svelte/css`, or the web `FontFace` and `document.fonts.add(face)` once
+  `installFontFaces()` from `winui-svelte/web-apis/fonts` has run; a family
+  added later is used by the controls created after it
+
 ### Scoping
 
 A rule in a component's `<style>` reaches only the elements and the component

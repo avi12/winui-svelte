@@ -94,6 +94,7 @@ import {
 } from "./values.ts";
 import { xamlSeam } from "./xaml-seam.ts";
 import { styleOfClasses } from "#src/css/index.js";
+import { fontFamilySource } from "#src/font-files.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
 import { classNameOf } from "#src/renderer/host/host.js";
@@ -761,10 +762,10 @@ export function uriOf(input: UriInput) {
   return isText ? new Uri(input) : input;
 }
 
-/** A font family prop as a `FontFamily`. */
+/** A font family prop as a `FontFamily`; a family registered with `registerFont` is spelled as its file. */
 export function fontFamilyOf(input: FontFamilyInput) {
   const isText = typeof input === "string";
-  return isText ? new FontFamily(input) : input;
+  return isText ? new FontFamily(fontFamilySource(input)) : input;
 }
 
 /**

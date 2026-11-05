@@ -358,6 +358,10 @@
       "types": "./dist/web-apis/file-system.d.ts",
       "default": "./dist/web-apis/file-system.js"
     },
+    "./web-apis/fonts": {
+      "types": "./dist/web-apis/fonts.d.ts",
+      "default": "./dist/web-apis/fonts.js"
+    },
     "./web-apis/gamepad": {
       "types": "./dist/web-apis/gamepad.d.ts",
       "default": "./dist/web-apis/gamepad.js"
