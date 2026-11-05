@@ -1,0 +1,100 @@
+[
+  {
+    "id": "unnamed-button",
+    "appliesTo": [
+      "Button",
+      "SplitButton"
+    ],
+    "message": "The button has no accessible name: a screen reader says only \"button\" (an icon-only button has no text to fall back on)",
+    "suggestion": "Set automationName, or give the button text or a label"
+  },
+  {
+    "id": "unlabeled-input",
+    "appliesTo": [
+      "Edit",
+      "ComboBox",
+      "Slider",
+      "Spinner",
+      "CheckBox",
+      "RadioButton"
+    ],
+    "message": "The input has no label: a screen reader cannot say what to enter",
+    "suggestion": "Set a header, automationName or automationLabeledBy (an elementRef of the label)"
+  },
+  {
+    "id": "duplicate-access-key",
+    "appliesTo": [
+      "Button",
+      "SplitButton",
+      "Edit",
+      "ComboBox",
+      "Slider",
+      "Spinner",
+      "CheckBox",
+      "RadioButton",
+      "Hyperlink",
+      "MenuItem",
+      "TabItem",
+      "ListItem",
+      "TreeItem"
+    ],
+    "message": "Another element has the same access key: Alt shortcuts reach only one of them",
+    "suggestion": "Give each element in the window its own accessKey"
+  },
+  {
+    "id": "zero-size-focusable",
+    "appliesTo": [
+      "Button",
+      "SplitButton",
+      "Edit",
+      "ComboBox",
+      "Slider",
+      "Spinner",
+      "CheckBox",
+      "RadioButton",
+      "Hyperlink",
+      "MenuItem",
+      "TabItem",
+      "ListItem",
+      "TreeItem"
+    ],
+    "message": "The element takes focus but has no size: keyboard focus lands on nothing visible",
+    "suggestion": "Give it a width and height, collapse it, or set isTabStop to false"
+  },
+  {
+    "id": "unreachable-by-keyboard",
+    "appliesTo": [
+      "Button",
+      "SplitButton",
+      "Edit",
+      "ComboBox",
+      "Slider",
+      "Spinner",
+      "CheckBox",
+      "RadioButton",
+      "Hyperlink",
+      "MenuItem",
+      "TabItem",
+      "ListItem",
+      "TreeItem"
+    ],
+    "message": "The control is no tab stop and has no access key or keyboard accelerator: a keyboard user cannot reach it",
+    "suggestion": "Set isTabStop to true, or give it an accessKey or a keyboardAccelerator"
+  },
+  {
+    "id": "low-contrast-text",
+    "appliesTo": [
+      "Text",
+      "Button",
+      "SplitButton",
+      "Edit",
+      "ComboBox",
+      "Slider",
+      "Spinner",
+      "CheckBox",
+      "RadioButton"
+    ],
+    "message": "The text is below the WCAG AA contrast (4.5 to 1, or 3 to 1 for large text) against its background",
+    "suggestion": "Use a darker or lighter foreground, or a theme brush"
+  }
+]

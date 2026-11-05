@@ -63,6 +63,7 @@
       "types": "./dist/accessibility/audit/index.d.ts",
       "default": "./dist/accessibility/audit/index.js"
     },
+    "./accessibility/rules.json": "./dist/accessibility/audit/accessibility-rules.json",
     "./enums": {
       "types": "./dist/enums.d.ts",
       "default": "./dist/enums.js"
@@ -513,6 +514,8 @@
     "fetch:documentation": "node --disable-warning=ExperimentalWarning scripts/codegen/fetch-documentation.ts",
     "gen:components": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts",
     "gen:css-data": "node --disable-warning=ExperimentalWarning scripts/css/export-vscode-css-data.ts",
+    "gen:accessibility-rules": "node --disable-warning=ExperimentalWarning scripts/accessibility/export-audit-rules.ts",
+    "gen:accessibility-rules:check": "node --disable-warning=ExperimentalWarning scripts/accessibility/export-audit-rules.ts --check",
     "gen:css-data:check": "node --disable-warning=ExperimentalWarning scripts/css/export-vscode-css-data.ts --check",
     "gen:components:check": "node --disable-warning=ExperimentalWarning scripts/codegen/generate.ts --check",
     "lint": "node --disable-warning=ExperimentalWarning scripts/lint/lint.ts",
