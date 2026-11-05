@@ -1,7 +1,5 @@
 import {
   ColorThemeKind,
-  CompletionItem,
-  CompletionItemKind,
   Hover,
   MarkdownString,
   Range,
@@ -11,7 +9,7 @@ import {
 } from "vscode";
 import type { ExtensionContext, TextDocument } from "vscode";
 import { cssColorOf } from "./css-color.ts";
-import { codePointOf, fluentCodePoints, labelOf } from "./glyph-table.ts";
+import { codePointOf, fluentCodePoints } from "./glyph-table.ts";
 import { colorMarkdown, fontMarkdown, glyphMarkdown, GLYPH_FONT_STYLE } from "./preview.ts";
 import { SpotKind, spotAt, spotsOf } from "./spots.ts";
 import type { Spot } from "./spots.ts";
@@ -121,7 +119,7 @@ function colorDecoration({ document, spot }: {
 
 /**
  * Starts the extension: the icon and color beside their values, the hover previews of glyphs, colors and font
- * families, and the icon-name completion.
+ * families.
  */
 export function activate(context: ExtensionContext) {
   const glyphType = window.createTextEditorDecorationType({});
@@ -171,26 +169,6 @@ export function activate(context: ExtensionContext) {
         const preview = spot === undefined ? undefined : previewOf(spot);
         return preview === undefined ? undefined : new Hover(preview);
       }
-    }),
-    languages.registerCompletionItemProvider(SVELTE, {
-      async provideCompletionItems(document, position) {
-        const spot = await spotAtPosition({
-          document,
-          offset: document.offsetAt(position)
-        });
-        if (spot === undefined || spot.kind !== SpotKind.GLYPH) {
-          return [];
-        }
-
-        const range = new Range(document.positionAt(spot.start), document.positionAt(spot.end));
-        return [...fluentCodePoints()].map(([name, codePoint]) => {
-          const item = new CompletionItem(name, CompletionItemKind.Value);
-          item.detail = labelOf(codePoint);
-          item.documentation = glyphPreview(codePoint);
-          item.range = range;
-          return item;
-        });
-      }
-    }, "\"", "'")
+    })
   );
 }
