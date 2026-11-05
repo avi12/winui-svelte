@@ -12,6 +12,7 @@
   const { host }: { host: ExampleHost } = $props();
   const custom = elementRef<NativeTextBlock>();
   const fallback = elementRef<NativeTextBlock>();
+  // svelte-ignore state_referenced_locally
   document.fonts.add(new FontFace(FONT_FAMILY, `url("${host.options["file"] ?? ""}")`));
 
   // svelte-ignore state_referenced_locally

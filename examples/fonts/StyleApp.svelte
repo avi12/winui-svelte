@@ -49,6 +49,8 @@
 <style>
   @font-face {
     font-family: "Winui Test Face";
+    font-style: normal;
+    font-display: swap;
     src: url("../../test/fixtures/winui-test-face.ttf") format("truetype");
   }
 

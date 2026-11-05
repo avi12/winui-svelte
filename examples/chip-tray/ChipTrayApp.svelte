@@ -32,8 +32,12 @@
     chips: FrameworkElement[];
     container: FrameworkElement | undefined;
   }) {
+    if (!container) {
+      return [];
+    }
+
     return chips.map(chip => {
-      const point = chip.transformToVisual(container ?? null).transformPoint({
+      const point = chip.transformToVisual(container).transformPoint({
         x: 0,
         y: 0
       });
@@ -100,7 +104,8 @@
   }
 
   .chip {
-    margin: 0 6px 6px 0;
+    margin-right: 6px;
+    margin-bottom: 6px;
     padding: 4px 10px;
   }
 </style>

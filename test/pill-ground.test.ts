@@ -45,8 +45,13 @@ function rectangleOf({ report, name }: {
   report: Report;
   name: string;
 }) {
-  const rectangle = report[name];
-  assert.ok(typeof rectangle === "object" && rectangle !== null && !Array.isArray(rectangle), `the report carries ${name}`);
+  const reported = report[name];
+  const isRecord = typeof reported === "object" && reported !== null && !Array.isArray(reported);
+  if (!isRecord) {
+    throw new Error(`the report carries ${name}`);
+  }
+
+  const rectangle: Report = reported;
   function field(side: string) {
     return numberOf({
       report: rectangle,
