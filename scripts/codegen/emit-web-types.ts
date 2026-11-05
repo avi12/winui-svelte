@@ -1,3 +1,4 @@
+import { windowElement } from "./emit-window-web-types.ts";
 import {
   displayTypeOf,
   docsUrlOf,
@@ -182,13 +183,14 @@ function elementOf(level: ClassModel) {
 }
 
 /**
- * The web-types file of the components: one element for each class, with its own attributes and the class it extends.
+ * The web-types file of the components: one element for each class, with its own attributes and the class it extends,
+ * and the hand-written `Window`'s.
  */
 export function emitWebTypes({ classes, version }: {
   classes: ClassModel[];
   version: string;
 }) {
-  const elements = classes.map(elementOf);
+  const elements = [...classes.map(elementOf), windowElement()];
   const webTypes = {
     $schema: "https://json.schemastore.org/web-types",
     name: "winui-svelte",

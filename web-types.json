@@ -19233,6 +19233,294 @@
             }
           ],
           "extends": "/html/elements/UserControl"
+        },
+        {
+          "name": "Window",
+          "description": "A native window around the component's content, kept in line with its props",
+          "doc-url": "https://github.com/avi12/winui-svelte/blob/main/API.md#window",
+          "attributes": [
+            {
+              "name": "title",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "backdrop",
+              "description": "The material behind the content; none (the default) is the theme's color.",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "Backdrop"
+                }
+              }
+            },
+            {
+              "name": "theme",
+              "description": "Light, dark, or the system's (the default): the theme of the content and of the caption buttons.",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "WindowTheme"
+                }
+              }
+            },
+            {
+              "name": "extendsIntoTitleBar",
+              "description": "The content runs up into the title bar. On by default with a `titleBar`.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "titleBarHeight",
+              "description": "The title bar's height, and the caption buttons': tall fits a search box or tabs. It applies when the content extends into the title bar.",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "TitleBarHeight"
+                }
+              }
+            },
+            {
+              "name": "captionButtons",
+              "description": "The colors of the minimize, maximize and close buttons."
+            },
+            {
+              "name": "dragRegions",
+              "description": "Where a press drags the window, in device-independent pixels from the window's top-left corner: a custom title bar's own areas. Without it the `titleBar` snippet (or the system's title bar) is the drag area."
+            },
+            {
+              "name": "passthroughRegions",
+              "description": "Parts of a drag area that take the pointer themselves (a search box in the title bar), in device-independent pixels."
+            },
+            {
+              "name": "icon",
+              "description": "The path of an .ico file, for the title bar and the taskbar.",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "appUserModelId",
+              "description": "Groups the process's windows on the taskbar (see `joinAppUserModel`). Read once, before the window opens.",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "width",
+              "description": "The size in device-independent pixels (the scale of the window's display applied); the window opens at it and follows it when it changes. Without them the window has the system's default size.",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "height",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "sizeToContent",
+              "description": "Which sides of the window follow its content: the content is measured after every layout pass and the window is resized to it (frame included, within the size limits) with one `AppWindow.MoveAndResize`, so a growing content never flickers. A side that follows the content ignores the `width` or `height` prop and the user's resizing. Windowed presentation only; the default is `none`.",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "SizeToContent"
+                }
+              }
+            },
+            {
+              "name": "anchor",
+              "description": "The corner that stays where it is when the window is sized to its content (and when the scale changes the size): a window docked bottom-right whose content grows taller grows upward. The default is `topLeft`.",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "WindowAnchor"
+                }
+              }
+            },
+            {
+              "name": "minWidth",
+              "description": "The least the user can resize to, in device-independent pixels.",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "minHeight",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "maxWidth",
+              "description": "The most the user can resize to, in device-independent pixels.",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "maxHeight",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "isBorderless",
+              "description": "No frame and no title bar: the window is only its content, as a pill, a toast or a splash screen is. Windowed presentation only.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "isShownInSwitchers",
+              "description": "The taskbar button and the Alt+Tab entry. false hides both (the window keeps running); the default shows them.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "isToolWindow",
+              "description": "A tool window: no taskbar button and no Alt+Tab entry, from the first frame. The same effect as `isShownInSwitchers={false}`, as a window style.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "isActivatable",
+              "description": "false: a click never activates the window, and it never takes focus from what the user is typing in (an overlay, a pill). The default activates.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "isClickThrough",
+              "description": "Clicks go to whatever is behind the window.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "isExcludedFromCapture",
+              "description": "Screenshots, screen recordings and screen sharing show the window black (or not at all).",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "isHidden",
+              "description": "true opens the window without showing it, and hides it later; false (the default) shows it. Showing it again gives it focus unless `activate` is false.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "cornerRadius",
+              "description": "Clips the window to a rounded rectangle with this corner radius in device-independent pixels: what is outside the corners shows the desktop. The edge is not anti-aliased.",
+              "value": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "isAlwaysOnTop",
+              "description": "The window stays above the other windows. Windowed presentation only.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "presentation",
+              "description": "In its frame (the default), full screen, or a small always-on-top overlay. The size limits and the buttons below are for the windowed one, and are set again when the window goes back to it.",
+              "value": {
+                "type": {
+                  "module": "winui-svelte/enums",
+                  "name": "WindowPresentation"
+                }
+              }
+            },
+            {
+              "name": "isResizable",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "isMaximizable",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "isMinimizable",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "placement",
+              "description": "Where it opens; without it the window opens centered on its display (`isCentered={false}` leaves it where the system puts it)."
+            },
+            {
+              "name": "isCentered",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "owner",
+              "description": "The window this one belongs to: it stays above it, and closes, minimizes and restores with it. Read once, before the window opens."
+            },
+            {
+              "name": "isModal",
+              "description": "Blocks the `owner` until this window closes. Needs an `owner`. Read once, before the window opens.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "activate",
+              "description": "false opens the window without taking focus from whatever the user is doing (tests, captures, background starts). Read once.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "onactivechanged",
+              "description": "The window became the active one (true) or lost that to another (false)."
+            },
+            {
+              "name": "onclosing",
+              "description": "The window is about to close (the user's close button, Alt+F4, or `handle.close()`). Returning true keeps it open: ask the user, then close it again from code. Anything else lets it close."
+            },
+            {
+              "name": "onclosed"
+            },
+            {
+              "name": "onscalechanged",
+              "description": "The window's scale changed (it moved to a display with another DPI, or the user changed the display's scale): device pixels per device-independent pixel. The size limits and regions follow it."
+            },
+            {
+              "name": "onboundschanged",
+              "description": "The bounds the window opens with, then whenever it is moved or resized, by the user or by code; in device pixels."
+            }
+          ]
         }
       ]
     },

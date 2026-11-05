@@ -31,6 +31,19 @@ test("glyph names the exported GlyphInput type, so the editor can show it and of
   }, "string", "number", "number[]"]);
 });
 
+test("the hand-written Window has an element whose backdrop names the closed set the editor offers", () => {
+  const window = elements.find(element => element.name === "Window");
+  const backdrop = window?.attributes.find(attribute => attribute.name === "backdrop");
+  assert.deepEqual(backdrop?.value?.type, {
+    module: "winui-svelte/enums",
+    name: "Backdrop"
+  });
+  assert.match(backdrop?.description ?? "", /material behind the content/u);
+  const isBorderless = window?.attributes.find(attribute => attribute.name === "isBorderless");
+  assert.equal(isBorderless?.value?.kind, "expression");
+  assert.equal(window?.attributes.some(attribute => attribute.name === "handle"), false);
+});
+
 test("a prop names its type beside its name", () => {
   const opacity = elements.find(element => element.name === "UIElement")?.attributes.find(attribute => attribute.name === "opacity");
   assert.equal(opacity?.value?.type, "number");
