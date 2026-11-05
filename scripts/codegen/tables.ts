@@ -427,6 +427,11 @@ export const lateClasses = [
   },
   {
     winmd: COMPONENT_WINMD,
+    namespace: "Microsoft.UI.Xaml.Automation.Peers",
+    classes: ["AutomationPeer", "FrameworkElementAutomationPeer"]
+  },
+  {
+    winmd: COMPONENT_WINMD,
     namespace: "Microsoft.UI.Xaml.Hosting",
     classes: ["ElementCompositionPreview"]
   },
