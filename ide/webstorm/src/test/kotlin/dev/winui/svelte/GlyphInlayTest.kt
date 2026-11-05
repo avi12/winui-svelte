@@ -27,6 +27,15 @@ class GlyphInlayTest : BasePlatformTestCase() {
     assertEquals(listOf(markup.indexOf("Save")), inlayOffsets(markup))
   }
 
+  fun testEveryKnownNameInAnExpressionGetsItsIcon() {
+    val markup = "<FontIcon glyph={isReady ? \"Save\" : 'Play'} />"
+    assertEquals(listOf(markup.indexOf("Save"), markup.indexOf("Play")), inlayOffsets(markup))
+  }
+
+  fun testAnUnknownNameInAnExpressionGetsNoIcon() {
+    assertEquals(emptyList<Int>(), inlayOffsets("<FontIcon glyph={isReady ? \"Nope\" : count} />"))
+  }
+
   fun testAnotherComponentGetsNoIcon() {
     assertEquals(emptyList<Int>(), inlayOffsets("<TextBlock glyph=\"Save\" />"))
   }

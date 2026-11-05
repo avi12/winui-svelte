@@ -51,10 +51,11 @@ class GlyphInlayProvider : InlayHintsProvider<NoSettings> {
           return true
         }
 
-        val codePoint = GlyphValues.codePointOf(value) ?: return true
-        val textStart = value.textRange.startOffset + value.text.indexOf(value.value)
-        val icon = factory.inset(factory.icon(GlyphIcon(codePoint)), right = ICON_GAP)
-        sink.addInlineElement(textStart, true, icon, false)
+        for (spot in GlyphValues.spotsOf(value)) {
+          val icon = factory.inset(factory.icon(GlyphIcon(spot.codePoint)), right = ICON_GAP)
+          sink.addInlineElement(spot.range.startOffset, true, icon, false)
+        }
+
         return true
       }
     }

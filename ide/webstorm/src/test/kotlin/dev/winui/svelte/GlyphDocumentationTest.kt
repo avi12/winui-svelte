@@ -30,6 +30,11 @@ class GlyphDocumentationTest : BasePlatformTestCase() {
     assertEquals(true, doc?.contains("U+E74E") == true)
   }
 
+  fun testAStringInAnExpressionPreviewsItsOwnIcon() {
+    val doc = hover("<FontIcon glyph={isReady ? \"Save\" : \"Pl<caret>ay\"} />")
+    assertEquals(true, doc?.contains("U+E768") == true)
+  }
+
   fun testAnotherComponentGetsNoPreview() {
     assertEquals(null, hover("<TextBlock glyph=\"Sa<caret>ve\" />"))
   }

@@ -1,10 +1,18 @@
 package dev.winui.svelte
 
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.xml.XmlAttribute
 import com.intellij.psi.xml.XmlAttributeValue
 
+internal data class GlyphSpot(
+  val range: TextRange,
+  val codePoint: Int
+)
+
 internal object GlyphValues {
+  private val STRING_LITERAL = Regex("""(["'`])([^"'`\$]*)\1""")
+
   fun isGlyphValue(
     value: XmlAttributeValue,
     file: PsiFile
@@ -15,8 +23,26 @@ internal object GlyphValues {
     return isGlyphProp && WinuiProjectService.of(file.project).isWinuiFile(file)
   }
 
-  fun codePointOf(value: XmlAttributeValue): Int? {
-    val text = value.value
+  /** Every icon name in the value, as a range in the file: the value itself, or each string of an expression. */
+  fun spotsOf(value: XmlAttributeValue): List<GlyphSpot> {
+    val start = value.textRange.startOffset
+    val isExpression = value.text.contains('{')
+    if (!isExpression) {
+      val codePoint = codePointOf(value.value) ?: return emptyList()
+      val nameStart = start + value.text.indexOf(value.value)
+      return listOf(GlyphSpot(TextRange.from(nameStart, value.value.length), codePoint))
+    }
+
+    return STRING_LITERAL
+      .findAll(value.text)
+      .mapNotNull { literal ->
+        val name = literal.groups[2] ?: return@mapNotNull null
+        val codePoint = codePointOf(name.value) ?: return@mapNotNull null
+        GlyphSpot(TextRange.from(start + name.range.first, name.value.length), codePoint)
+      }.toList()
+  }
+
+  private fun codePointOf(text: String): Int? {
     FluentGlyphs.codePoints[text]?.let { return it }
     val isSingleGlyph = text.isNotEmpty() && text.codePointCount(0, text.length) == 1
     if (!isSingleGlyph) {
