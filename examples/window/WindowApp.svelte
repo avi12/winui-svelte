@@ -3,10 +3,12 @@
   import type { Json } from "#src/messaging/json.js";
   import {
     AppWindowPresenterKind,
+    CompositionColorBrush,
     DesktopAcrylicBackdrop,
     ElementTheme,
     FrameworkElement,
     Grid,
+    ICompositionSupportsSystemBackdrop,
     InputNonClientPointerSource,
     MicaBackdrop,
     MicaKind,
@@ -74,6 +76,22 @@
     }
   }
 
+  // The alpha of the window's composition backdrop when that is a color brush
+  // (the transparent backdrop); null for any other material.
+  function backdropBrushAlpha() {
+    const brush = handle?.window.as(ICompositionSupportsSystemBackdrop).systemBackdrop;
+    const isUnset = brush === undefined || brush === null;
+    if (isUnset) {
+      return null;
+    }
+
+    try {
+      return projectAs(brush, CompositionColorBrush).color.a;
+    } catch {
+      return null;
+    }
+  }
+
   // What WinUI holds for the window's chrome, read back from the native objects.
   function chromeReadback() {
     const appWindow = handle?.appWindow;
@@ -121,6 +139,7 @@
     host.report({
       kind,
       backdrop: backdropName(),
+      backdropBrushAlpha: backdropBrushAlpha(),
       ...chromeReadback(),
       title: handle?.window.title,
       scale: handle?.scale,

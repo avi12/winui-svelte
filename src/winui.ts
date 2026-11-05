@@ -18,6 +18,7 @@ export { DesktopAcrylicKind } from "#winui/microsoft/ui/composition/system-backd
 export { SystemBackdropConfiguration } from "#winui/microsoft/ui/composition/system-backdrops/SystemBackdropConfiguration";
 export { SystemBackdropTheme } from "#winui/microsoft/ui/composition/system-backdrops/SystemBackdropTheme";
 export { ICompositionSupportsSystemBackdrop } from "#winui/microsoft/ui/composition/ICompositionSupportsSystemBackdrop";
+export { CompositionColorBrush } from "#winui/microsoft/ui/composition/CompositionColorBrush";
 export { MicaKind } from "#winui/microsoft/ui/composition/system-backdrops/MicaKind";
 export { AppWindow } from "#winui/microsoft/ui/windowing/AppWindow";
 export { AppWindowPresenterKind } from "#winui/microsoft/ui/windowing/AppWindowPresenterKind";

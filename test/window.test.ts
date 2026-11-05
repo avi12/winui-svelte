@@ -79,8 +79,9 @@ test("a window opens as its props say, follows them, and reports what happens to
     }
 
     // The controller's variants take the XAML backdrop away: the material is
-    // the controller's, which WinUI does not hand back.
-    for (const backdrop of ["acrylicBase", "acrylicThin"]) {
+    // the controller's, which WinUI does not hand back; transparent is a
+    // clear composition brush on the window, which XAML does not report.
+    for (const backdrop of ["acrylicBase", "acrylicThin", "transparent"]) {
       const changed = await example.ask({
         command: {
           cmd: "backdrop",
@@ -89,6 +90,9 @@ test("a window opens as its props say, follows them, and reports what happens to
         kind: "backdrop"
       });
       assert.equal(changed["backdrop"], "none", `${backdrop} leaves no XAML backdrop on the window`);
+      assert.equal(
+        changed["backdropBrushAlpha"], backdrop === "transparent" ? 0 : null, `${backdrop}: only the transparent backdrop is a clear color brush`
+      );
     }
 
     const dark = await example.ask({

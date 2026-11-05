@@ -1,4 +1,5 @@
 import { AcrylicVariant, attachAcrylic } from "./acrylic-controller.ts";
+import { attachTransparentBackdrop } from "./transparent-backdrop.ts";
 import { write } from "#src/renderer/host/reflect.js";
 import type { FrameworkElement, Window } from "#src/winui.js";
 import { DesktopAcrylicBackdrop, MicaBackdrop, MicaKind } from "#src/winui.js";
@@ -7,7 +8,9 @@ import { DesktopAcrylicBackdrop, MicaBackdrop, MicaKind } from "#src/winui.js";
  * The material behind a window's content. Acrylic blurs and tints what is
  * behind the window (`acrylicBase` and `acrylicThin` are its other two
  * variants, made by the system backdrop controller); Mica tints with the desktop wallpaper (Mica Alt more
- * strongly, as a tabbed title bar has it); none leaves the theme's solid color.
+ * strongly, as a tabbed title bar has it); transparent shows the desktop
+ * through every pixel the content leaves clear (with per-pixel alpha; pair it
+ * with `isBorderless`); none leaves the theme's solid color.
  */
 export const Backdrop = {
   acrylic: "acrylic",
@@ -15,7 +18,8 @@ export const Backdrop = {
   acrylicThin: "acrylicThin",
   mica: "mica",
   micaAlt: "micaAlt",
-  none: "none"
+  none: "none",
+  transparent: "transparent"
 } as const;
 
 /** One of `Backdrop`'s values. */
@@ -64,6 +68,7 @@ export function applyBackdrop({ window, content, backdrop }: {
 }) {
   const variant = controllerVariants.get(backdrop);
   const isControlled = variant !== undefined;
+  const isTransparent = backdrop === Backdrop.transparent;
   const systemBackdrop = isControlled ? null : systemBackdropFor(backdrop);
   const isRemoved = systemBackdrop === null;
   if (isRemoved) {
@@ -72,6 +77,10 @@ export function applyBackdrop({ window, content, backdrop }: {
     write(window, "systemBackdrop", null);
   } else {
     window.systemBackdrop = systemBackdrop;
+  }
+
+  if (isTransparent) {
+    return attachTransparentBackdrop(window);
   }
 
   if (isControlled) {
