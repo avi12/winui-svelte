@@ -388,9 +388,12 @@ other WinUI properties, or that no plain value reaches, is listed as
 pnpm check:webstorm-plugin
 ```
 
-builds the plugin against the installed WebStorm and its Svelte plugin (found as
-`pnpm check:webstorm` finds them, nothing is downloaded but Gradle and Kotlin,
-into `.verify/gradle-home`), runs its tests, installs it into the isolated
+builds the plugin against the installed WebStorm and the Svelte plugin build that
+the JetBrains Marketplace serves for that WebStorm's build (Gradle fetches it for
+the tests with `compatiblePlugin`, the check downloads it into
+`.verify/svelte-plugin`; the Svelte plugin of your own WebStorm is not read, so a
+WebStorm that has just updated and not yet updated Svelte still checks, and
+offline that copy stands in), runs its tests, installs it into the isolated
 WebStorm of `.verify/webstorm` and inspects two fixture projects: lines marked
 `<!-- convert -->` in `ide/webstorm/fixtures/with-dependency` must report and no
 other may, and `without-dependency` must report nothing
@@ -401,6 +404,15 @@ install it with Settings, Plugins, Install Plugin from Disk, or run
 plugins folder of your own WebStorm (`--skip-build` reuses the zip); it never
 closes WebStorm, and while one runs it writes nothing and exits 2, so close
 WebStorm first and start it afterwards to load the plugin
+The plugin states no upper build (`untilBuild` is unset), so it loads in every
+later WebStorm until one breaks it; `pnpm check:webstorm-plugin-compat` is how to
+learn that first: JetBrains' Plugin Verifier runs the built zip against the
+installed WebStorm and lists the API that is gone, changed or experimental
+(today only the old inlay hints API of `GlyphInlayProvider` and
+`ColorInlayProvider`, kept because the declarative one cannot draw an icon);
+run it after every WebStorm update, and add `recommended()` to the `ides` block
+of `pluginVerification` in `ide/webstorm/build.gradle.kts` to verify against
+every recommended release (it downloads each IDE)
 The Kotlin follows Google's Kotlin style guide with sb-companion's 2-space indent (the Android guide says 4; the row for `.kt` in `CLAUDE.md` says the rest) and is linted as in sb-companion: ktlint (formatting, `ide/webstorm/.editorconfig`)
 and detekt (correctness, `ide/webstorm/config/detekt/detekt.yml`), both run by the
 `ktLint` Gradle task that the check includes; `pnpm lint:fix` runs `ktLintFix`
