@@ -2029,6 +2029,20 @@ The animation target is attached on every timeline: `storyboardTarget`,
 `storyboardTargetName` and `storyboardTargetProperty` call
 `Storyboard.SetTarget`, `SetTargetName` and `SetTargetProperty`
 
+### A refused change
+
+A bound property (`bind:isOn`, `bind:isChecked`, `bind:value` and the rest) is
+two-way: the user's change is written to the bound prop, and the prop's value
+is written to the control
+When the app refuses the change (a function binding whose setter leaves the
+state as it was, or a handler that puts it back) the prop does not change, so
+nothing would write it to the control; after the app has been told, in the next
+Svelte tick, the control is set back to what the prop holds, so a refused
+toggle snaps back with no `await tick()` and no write to the control in the
+handler
+`test/refused-toggle.test.ts` proves it in a window for a `ToggleSwitch` and a
+`CheckBox`
+
 ### Observed state
 
 Read-only state WinUI reports by an event is a bindable prop the control

@@ -130,6 +130,7 @@
     "examples/chip-tray/main.ts",
     "examples/card-glide/main.ts",
     "examples/layout-animation/main.ts",
+    "examples/refused-toggle/main.ts",
     "examples/items/main.ts",
     "examples/interaction/main.ts",
     "examples/navigation/main.ts",

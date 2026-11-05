@@ -8,6 +8,8 @@ import { test } from "node:test";
 registerHooks(svelteHooks());
 const { Linker } = await import("./runtime.svelte.ts");
 const { observe } = await import("./observed.ts");
+const { inEffectRoot } = await import("./hand-written/overlay/overlay-test-support.svelte.ts");
+const { tick } = await import("svelte");
 
 interface Bound {
   canGoBack?: boolean | undefined;
@@ -176,4 +178,72 @@ test("an event prop that was not given subscribes to nothing, and an unlinked co
   stopped.dispose();
   raised.raise();
   assert.equal(calls, 0);
+});
+
+// A switch the user flips: the control holds its value, raises its event, and
+// the app's side is a bound prop whose setter the test decides about.
+function bindable({ isRefusing }: { isRefusing: boolean }) {
+  const link = new Linker();
+  const raised = new Raised();
+  const control = { isOn: false };
+  const app = { isOn: false };
+  const setterCalls: boolean[] = [];
+  const bound = {
+    get isOn() {
+      return app.isOn;
+    },
+    set isOn(isNext) {
+      setterCalls.push(isNext);
+
+      if (!isRefusing) {
+        app.isOn = isNext;
+      }
+    }
+  };
+  inEffectRoot(() => link.bindable({
+    bound,
+    key: "isOn",
+    access: {
+      read: () => control.isOn,
+      write(isNext) {
+        control.isOn = isNext;
+      }
+    },
+    subscribers: [handler => raised.subscribe(handler)]
+  }));
+  return {
+    app,
+    control,
+    link,
+    raised,
+    setterCalls
+  };
+}
+
+test("a bound prop the app accepts a change to keeps the user's value on the control", async () => {
+  const { control, raised, setterCalls } = bindable({ isRefusing: false });
+  control.isOn = true;
+  raised.raise();
+  await tick();
+  assert.deepEqual(setterCalls, [true]);
+  assert.equal(control.isOn, true);
+});
+
+test("a change the app refuses, by leaving the bound prop as it was, is taken back by the control", async () => {
+  const { control, raised, setterCalls } = bindable({ isRefusing: true });
+  control.isOn = true;
+  raised.raise();
+  assert.equal(control.isOn, true, "until the app has had its say, the control shows the user's value");
+  await tick();
+  assert.deepEqual(setterCalls, [true], "the app was told once");
+  assert.equal(control.isOn, false, "the control shows what the app holds");
+});
+
+test("a refusal that arrives after the control was unlinked touches nothing", async () => {
+  const { control, link, raised } = bindable({ isRefusing: true });
+  control.isOn = true;
+  raised.raise();
+  link.dispose();
+  await tick();
+  assert.equal(control.isOn, true);
 });
