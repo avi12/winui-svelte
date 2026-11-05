@@ -1,6 +1,7 @@
 import { cssNameEntries, settersOf } from "./css-names.ts";
 import { enumNamesTypeOf } from "./emit.ts";
 import type { ClassModel } from "./model.ts";
+import { namedColors } from "#src/css/parse/named-colors.js";
 import { discretePropertyOf, discreteValueOf, discreteWordsOf } from "#src/css/translate/discrete-properties.js";
 
 // What the WebStorm plugin (ide/webstorm) reads to turn a prop into the CSS
@@ -366,6 +367,7 @@ export function emitWebstormCssMappings({ classes }: { classes: ClassModel[] }) 
   );
   return `${JSON.stringify({
     colorKeywords: COLOR_KEYWORDS,
+    namedColors: Object.fromEntries(namedColors),
     attributes
   }, null, INDENT)}\n`;
 }

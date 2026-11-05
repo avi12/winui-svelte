@@ -11,17 +11,30 @@ internal class ConversionTable(
   fun mappingOf(attributeName: String): Mapping? =
     mappings[attributeName]?.takeIf { it.kind != ConversionKind.UNSUPPORTED }
 
+  fun isColorProperty(cssProperty: String) =
+    cssProperty in EXTRA_COLOR_PROPERTIES ||
+      mappings.values.any { it.kind == ConversionKind.COLOR && it.cssProperty == cssProperty }
+
   fun countOf(kind: ConversionKind) = mappings.values.count { it.kind == kind }
 
   companion object {
-    private const val RESOURCE = "/winui-css-mappings.json"
+    private val EXTRA_COLOR_PROPERTIES =
+      setOf(
+        "color",
+        "fill",
+        "stroke",
+        "outline-color",
+        "caret-color",
+        "accent-color",
+        "text-decoration-color",
+        "border-top-color",
+        "border-right-color",
+        "border-bottom-color",
+        "border-left-color",
+        "column-rule-color"
+      )
 
-    val bundled: ConversionTable by lazy {
-      val stream =
-        ConversionTable::class.java.getResourceAsStream(RESOURCE)
-          ?: error("$RESOURCE is missing from the plugin")
-      parse(stream.bufferedReader().use { it.readText() })
-    }
+    val bundled: ConversionTable by lazy { parse(MappingResource.text) }
 
     fun parse(text: String): ConversionTable {
       val attributes = JsonParser.parseString(text).asJsonObject.getAsJsonObject("attributes")

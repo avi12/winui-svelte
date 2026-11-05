@@ -48,6 +48,13 @@
     <codeInsight.inlayProvider
         language="SvelteHTML"
         implementationClass="dev.winui.svelte.GlyphInlayProvider"/>
+    <codeInsight.inlayProvider
+        language="SvelteHTML"
+        implementationClass="dev.winui.svelte.ColorInlayProvider"/>
+    <completion.contributor
+        language="any"
+        order="first"
+        implementationClass="dev.winui.svelte.FontFamilyCompletionContributor"/>
     <notificationGroup id="winui-svelte" displayType="BALLOON"/>
   </extensions>
   <actions>
