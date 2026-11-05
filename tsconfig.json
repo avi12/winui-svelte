@@ -5,6 +5,7 @@
     "moduleResolution": "NodeNext",
     "allowImportingTsExtensions": true,
     "allowArbitraryExtensions": true,
+    "resolveJsonModule": true,
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
@@ -36,6 +37,7 @@
     "test/**/*.svelte.ts",
     "test/**/*.svelte",
     "scripts/**/*.ts",
+    "ide/vscode/**/*.ts",
     "scripts/pack/treeshake-app/**/*.svelte"
   ]
 }

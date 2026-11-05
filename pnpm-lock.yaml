@@ -33,6 +33,9 @@ importers:
       '@types/node':
         specifier: ^24.10.0
         version: 24.19.2
+      '@types/vscode':
+        specifier: 1.105.0
+        version: 1.105.0
       esbuild:
         specifier: ~0.25.12
         version: 0.25.12
@@ -866,6 +869,9 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
+  '@types/vscode@1.105.0':
+    resolution: {integrity: sha512-Lotk3CTFlGZN8ray4VxJE7axIyLZZETQJVWi/lYoUVQuqfRxlQhVOfoejsD2V3dVXPSbS15ov5ZyowMAzgUqcw==}
 
   '@typescript-eslint/eslint-plugin@8.72.1':
     resolution: {integrity: sha512-5CokTWXpmbylfFabsbvHC0CAw3XLaGnoa+nFJX5FR592h/LoZsENUE6p/rg5xvkKrFEXz6pYmgI29AgXc2N3BQ==}
@@ -3182,6 +3188,8 @@ snapshots:
       undici-types: 7.24.6
 
   '@types/trusted-types@2.0.7': {}
+
+  '@types/vscode@1.105.0': {}
 
   '@typescript-eslint/eslint-plugin@8.72.1(@typescript-eslint/parser@8.72.1(eslint@10.14.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.14.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)':
     dependencies:
