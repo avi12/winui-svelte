@@ -1,3 +1,4 @@
+import { webTypesSchema } from "./web-types-schema.ts";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -9,42 +10,6 @@ import { z } from "zod";
 // each class and of its own props, and each class names its parent.
 
 const PACKAGE_FOLDER = path.resolve(import.meta.dirname, "../..");
-const typeReferenceSchema = z.union([z.string(), z.object({
-  module: z.string(),
-  name: z.string()
-})]);
-const webTypesSchema = z.object({
-  contributions: z.object({
-    html: z.object({
-      elements: z.array(
-        z.object({
-          name: z.string(),
-          extends: z.string().optional(),
-          attributes: z.array(
-            z.object({
-              name: z.string(),
-              description: z.string().optional(),
-              value: z.object({
-                kind: z.literal("expression").optional(),
-                type: z.union([typeReferenceSchema, z.array(typeReferenceSchema)])
-              }).optional()
-            })
-          )
-        })
-      )
-    }),
-    css: z.object({
-      properties: z.array(
-        z.object({
-          name: z.string(),
-          description: z.string(),
-          values: z.array(z.string()).optional()
-        })
-      )
-    })
-  })
-});
-
 const { html: { elements }, css } = webTypesSchema.parse(
   JSON.parse(readFileSync(path.join(PACKAGE_FOLDER, "web-types.json"), "utf8"))
 ).contributions;
