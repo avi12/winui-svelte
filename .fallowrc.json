@@ -73,6 +73,7 @@
     "src/forms/Form.d.svelte.ts",
     "src/forms/FormField.d.svelte.ts",
     "examples/form/main.ts",
+    "examples/pill-ground/main.ts",
     "**/*.test.ts",
     "src/state/test-support/echo-host.ts",
     "test/mount-all.svelte.ts",
