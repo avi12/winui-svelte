@@ -1,6 +1,6 @@
-import raw from "../../webstorm/src/main/resources/winui-css-mappings.json" with { type: "json" };
-import { z } from "zod";
+import { mappingEntries } from "./conversion-table.ts";
 
+const COLOR_KIND = "color";
 const EXTRA_COLOR_PROPERTIES = [
   "color",
   "fill",
@@ -15,15 +15,7 @@ const EXTRA_COLOR_PROPERTIES = [
   "border-left-color",
   "column-rule-color"
 ];
-const table = z.object({
-  attributes: z.record(
-    z.string(), z.object({
-      cssProperty: z.string(),
-      kind: z.string()
-    })
-  )
-}).parse(raw);
-const colorEntries = Object.entries(table.attributes).filter(([, mapping]) => mapping.kind === "color");
+const colorEntries = mappingEntries().filter(([, mapping]) => mapping.kind === COLOR_KIND);
 const colorAttributes = new Set(colorEntries.map(([name]) => name));
 const colorProperties = new Set([...EXTRA_COLOR_PROPERTIES, ...colorEntries.map(([, mapping]) => mapping.cssProperty)]);
 
