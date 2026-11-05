@@ -10,7 +10,7 @@ internal object GlyphValues {
     file: PsiFile
   ): Boolean {
     val attribute = value.parent as? XmlAttribute ?: return false
-    val isGlyphOfIcon = attribute.name == "glyph" && attribute.parent?.name in FluentGlyphs.components
+    val isGlyphOfIcon = FluentGlyphs.isGlyphAttribute(attribute.parent?.name, attribute.name)
     return isGlyphOfIcon && WinuiProjectService.of(file.project).isWinuiFile(file)
   }
 

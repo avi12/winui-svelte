@@ -345,7 +345,7 @@ fixes above write is never reported or offered for removal; a rule with no user
 anywhere is still reported, and nothing changes in a project without the
 dependency
 
-Completing `glyph="..."` on a `FontIcon` or `FontIconSource` shows each Fluent
+Completing a prop typed `GlyphInput` (`glyph="..."` on a `FontIcon` or `FontIconSource`) shows each Fluent
 icon drawn next to its name, with its code point (`U+E74E`) as type text, in
 a project that depends on `winui-svelte`
 The icon is the glyph in the installed "Segoe Fluent Icons" (Windows 11) or

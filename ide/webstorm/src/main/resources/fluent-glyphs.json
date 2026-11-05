@@ -1,8 +1,12 @@
 {
-  "components": [
-    "FontIcon",
-    "FontIconSource"
-  ],
+  "attributes": {
+    "FontIcon": [
+      "glyph"
+    ],
+    "FontIconSource": [
+      "glyph"
+    ]
+  },
   "glyphs": {
     "Accept": "E8FB",
     "AcceptMedium": "F78C",

@@ -11,7 +11,7 @@ import { z } from "zod";
 const TABLE_FILE = path.resolve(import.meta.dirname, "../../ide/webstorm/src/main/resources/fluent-glyphs.json");
 const HEX_RADIX = 16;
 const table = z.object({
-  components: z.array(z.string()),
+  attributes: z.record(z.string(), z.array(z.string())),
   glyphs: z.record(z.string(), z.string())
 }).parse(JSON.parse(readFileSync(TABLE_FILE, "utf8")));
 
@@ -22,8 +22,8 @@ test("every Fluent name has its code point in the table, and the table has no ot
   assert.deepEqual(table.glyphs, expected);
 });
 
-test("the icon components are the ones whose glyph is a GlyphInput", () => {
-  assert.deepEqual(table.components, ["FontIcon", "FontIconSource"]);
+test("the props that take an icon are the ones that are a GlyphInput", () => {
+  assert.deepEqual(Object.entries(table.attributes), [["FontIcon", ["glyph"]], ["FontIconSource", ["glyph"]]]);
 });
 
 test("Save is U+E74E", () => {
