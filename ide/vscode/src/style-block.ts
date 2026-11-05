@@ -19,11 +19,17 @@ export interface TagContext {
   hasDynamicClass: boolean;
 }
 
+const StyleLocationKind = {
+  UNSUPPORTED: "unsupported",
+  MISSING: "missing",
+  FOUND: "found"
+} as const;
+
 type StyleLocation =
-  | { kind: "unsupported" }
-  | { kind: "missing" }
+  | { kind: typeof StyleLocationKind.UNSUPPORTED }
+  | { kind: typeof StyleLocationKind.MISSING }
   | {
-    kind: "found";
+    kind: typeof StyleLocationKind.FOUND;
     bodyStart: number;
     bodyEnd: number;
   };
@@ -42,7 +48,7 @@ function locateStyle(fileText: string) {
   const open = OPENING.exec(fileText);
   const hasNoOpen = open === null;
   if (hasNoOpen) {
-    return { kind: "missing" } satisfies StyleLocation;
+    return { kind: StyleLocationKind.MISSING } satisfies StyleLocation;
   }
 
   const written = LANGUAGE.exec(open[1] ?? "")?.[1];
@@ -51,11 +57,11 @@ function locateStyle(fileText: string) {
   const bodyEnd = fileText.indexOf(CLOSING_TAG, bodyStart);
   const isUnsupported = isOtherLanguage || bodyEnd < 0;
   if (isUnsupported) {
-    return { kind: "unsupported" } satisfies StyleLocation;
+    return { kind: StyleLocationKind.UNSUPPORTED } satisfies StyleLocation;
   }
 
   return {
-    kind: "found",
+    kind: StyleLocationKind.FOUND,
     bodyStart,
     bodyEnd
   } satisfies StyleLocation;
@@ -71,7 +77,7 @@ function styleEdit({ fileText, style, rules }: {
   rules: StyleRule[];
 }) {
   const newline = newlineOf(fileText);
-  const isFound = style.kind === "found";
+  const isFound = style.kind === StyleLocationKind.FOUND;
   if (isFound) {
     const body = fileText.slice(style.bodyStart, style.bodyEnd);
     let edited = body;
@@ -155,7 +161,7 @@ export function planRule({ fileText, tag, declaration }: {
   const written = tag.classAttribute;
   const existing = written === undefined ? undefined : firstClassOf(written.value);
   const hasUnusableClass = written !== undefined && written.value.trim() !== "" && existing === undefined;
-  const isUnusable = style.kind === "unsupported" || tag.hasDynamicClass || hasUnusableClass;
+  const isUnusable = style.kind === StyleLocationKind.UNSUPPORTED || tag.hasDynamicClass || hasUnusableClass;
   if (isUnusable) {
     return undefined;
   }
@@ -207,7 +213,7 @@ export function planToggles({ fileText, tag, property, leaves }: {
   leaves: Leaf[];
 }) {
   const style = locateStyle(fileText);
-  const isUnusable = style.kind === "unsupported" || leaves.length === 0;
+  const isUnusable = style.kind === StyleLocationKind.UNSUPPORTED || leaves.length === 0;
   if (isUnusable) {
     return undefined;
   }

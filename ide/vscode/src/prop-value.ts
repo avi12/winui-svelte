@@ -1,30 +1,40 @@
 import { ValueKind } from "./markup-scan.ts";
 import type { AttributeNode } from "./markup-scan.ts";
 
+export const PropKind = {
+  TEXT: "text",
+  NUMBER: "number",
+  FLAG: "flag",
+  MEMBER: "member",
+  TUPLE: "tuple",
+  CONDITIONAL: "conditional"
+} as const;
+export type PropKind = (typeof PropKind)[keyof typeof PropKind];
+
 export type PropValue =
   | {
-    kind: "text";
+    kind: typeof PropKind.TEXT;
     text: string;
   }
   | {
-    kind: "number";
+    kind: typeof PropKind.NUMBER;
     literal: string;
   }
   | {
-    kind: "flag";
+    kind: typeof PropKind.FLAG;
     isOn: boolean;
   }
   | {
-    kind: "member";
+    kind: typeof PropKind.MEMBER;
     qualifier: string;
     name: string;
   }
   | {
-    kind: "tuple";
+    kind: typeof PropKind.TUPLE;
     numbers: string[];
   }
   | {
-    kind: "conditional";
+    kind: typeof PropKind.CONDITIONAL;
     condition: string;
     whenTrue: PropValue;
     whenFalse: PropValue;
@@ -126,7 +136,7 @@ function stripParentheses(source: string) {
 function readLiteral(source: string) {
   if (NUMBER.test(source)) {
     return {
-      kind: "number",
+      kind: PropKind.NUMBER,
       literal: source
     };
   }
@@ -134,7 +144,7 @@ function readLiteral(source: string) {
   const isNegative = source.startsWith("-") && NUMBER.test(source.slice(1).trim());
   if (isNegative) {
     return {
-      kind: "number",
+      kind: PropKind.NUMBER,
       literal: `-${source.slice(1).trim()}`
     };
   }
@@ -142,7 +152,7 @@ function readLiteral(source: string) {
   const isFlag = source === "true" || source === "false";
   if (isFlag) {
     return {
-      kind: "flag",
+      kind: PropKind.FLAG,
       isOn: source === "true"
     };
   }
@@ -153,7 +163,7 @@ function readLiteral(source: string) {
   const isPlain = !inner.includes(first) && !inner.includes("\\");
   const isPlainString = isString && isPlain;
   return isPlainString ? {
-    kind: "text",
+    kind: PropKind.TEXT,
     text: inner
   } : undefined;
 }
@@ -165,10 +175,10 @@ function readTuple(source: string) {
   }
 
   const parts = source.slice(1, -1).split(",").map(part => readExpression(part.trim()));
-  const numbers = parts.flatMap(part => part?.kind === "number" ? [part.literal] : []);
+  const numbers = parts.flatMap(part => part?.kind === PropKind.NUMBER ? [part.literal] : []);
   const isNumeric = numbers.length > 0 && numbers.length === parts.length;
   return isNumeric ? {
-    kind: "tuple",
+    kind: PropKind.TUPLE,
     numbers
   } : undefined;
 }
@@ -184,7 +194,7 @@ function readExpression(expression: string) {
     const whenFalse = readExpression(ternary.whenFalse);
     const isComplete = whenTrue !== undefined && whenFalse !== undefined && ternary.condition !== "";
     return isComplete ? {
-      kind: "conditional",
+      kind: PropKind.CONDITIONAL,
       condition: ternary.condition,
       whenTrue,
       whenFalse
@@ -195,7 +205,7 @@ function readExpression(expression: string) {
   const hasMember = member !== null;
   if (hasMember) {
     return {
-      kind: "member",
+      kind: PropKind.MEMBER,
       qualifier: member[1] ?? "",
       name: member[2] ?? ""
     };
@@ -213,7 +223,7 @@ export function readAttribute(attribute: AttributeNode) {
   const hasNoValue = value === undefined;
   if (hasNoValue) {
     return {
-      kind: "flag",
+      kind: PropKind.FLAG,
       isOn: true
     } satisfies PropValue;
   }
@@ -226,7 +236,7 @@ export function readAttribute(attribute: AttributeNode) {
   const text = value.kind === ValueKind.QUOTED ? value.text.slice(1, -1) : value.text;
   const isStatic = !text.includes("{");
   return isStatic ? {
-    kind: "text",
+    kind: PropKind.TEXT,
     text
   } satisfies PropValue : undefined;
 }

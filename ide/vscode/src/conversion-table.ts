@@ -1,7 +1,18 @@
 import raw from "../../webstorm/src/main/resources/winui-css-mappings.json" with { type: "json" };
 import { z } from "zod";
 
-const UNSUPPORTED = "unsupported";
+export const MappingKind = {
+  KEYWORD: "keyword",
+  LENGTH: "length",
+  NUMBER: "number",
+  COLOR: "color",
+  THICKNESS: "thickness",
+  CORNER_RADIUS: "cornerRadius",
+  TEXT: "text",
+  UNSUPPORTED: "unsupported"
+} as const;
+export type MappingKind = (typeof MappingKind)[keyof typeof MappingKind];
+
 const mappingSchema = z.object({
   cssProperty: z.string(),
   kind: z.string(),
@@ -28,7 +39,7 @@ export function mappingEntries() {
  */
 export function mappingOf(attribute: string) {
   const mapping = table[attribute];
-  const isConvertible = mapping !== undefined && mapping.kind !== UNSUPPORTED;
+  const isConvertible = mapping !== undefined && mapping.kind !== MappingKind.UNSUPPORTED;
   return isConvertible ? {
     ...mapping,
     keywords: new Map(Object.entries(mapping.keywords ?? {}).map(([key, value]) => [key.toLowerCase(), value]))

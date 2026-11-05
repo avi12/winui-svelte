@@ -1,14 +1,22 @@
+import { MappingKind } from "./conversion-table.ts";
 import type { Mapping } from "./conversion-table.ts";
+import { PropKind } from "./prop-value.ts";
 import type { PropValue } from "./prop-value.ts";
+
+export const CssKind = {
+  PLAIN: "plain",
+  CONDITIONAL: "conditional"
+} as const;
+export type CssKind = (typeof CssKind)[keyof typeof CssKind];
 
 export type CssValue =
   | {
-    kind: "plain";
+    kind: typeof CssKind.PLAIN;
     text: string;
     label: string | undefined;
   }
   | {
-    kind: "conditional";
+    kind: typeof CssKind.CONDITIONAL;
     condition: string;
     whenTrue: CssValue;
     whenFalse: CssValue;
@@ -28,7 +36,7 @@ const LAST_SIDE = 3;
 const TRANSPARENT = "transparent";
 
 function colorOf(value: PropValue) {
-  const text = value.kind === "text" ? value.text.trim() : undefined;
+  const text = value.kind === PropKind.TEXT ? value.text.trim() : undefined;
   const hasNoText = text === undefined;
   if (hasNoText) {
     return undefined;
@@ -53,13 +61,13 @@ function colorOf(value: PropValue) {
 }
 
 function numberOf(value: PropValue) {
-  const literal = value.kind === "number" ? value.literal : undefined;
+  const literal = value.kind === PropKind.NUMBER ? value.literal : undefined;
   const isLength = literal !== undefined && LENGTH.test(literal);
   return isLength ? literal : undefined;
 }
 
 function plainTextOf(value: PropValue) {
-  const text = value.kind === "text" ? value.text.trim() : undefined;
+  const text = value.kind === PropKind.TEXT ? value.text.trim() : undefined;
   const isSafe = text !== undefined && text !== "" && !UNSAFE_TEXT.test(text);
   return isSafe ? text : undefined;
 }
@@ -69,29 +77,29 @@ function keywordOf({ mapping, value }: {
   value: PropValue;
 }) {
   const key = (() => {
-    const isText = value.kind === "text";
+    const isText = value.kind === PropKind.TEXT;
     if (isText) {
       return value.text;
     }
 
-    const isNumber = value.kind === "number";
+    const isNumber = value.kind === PropKind.NUMBER;
     if (isNumber) {
       return value.literal;
     }
 
-    const isFlag = value.kind === "flag";
+    const isFlag = value.kind === PropKind.FLAG;
     if (isFlag) {
       return value.isOn ? "True" : "False";
     }
 
-    const isEnumMember = value.kind === "member" && mapping.enumTypes.includes(value.qualifier);
+    const isEnumMember = value.kind === PropKind.MEMBER && mapping.enumTypes.includes(value.qualifier);
     return isEnumMember ? value.name : undefined;
   })();
   return key === undefined ? undefined : mapping.keywords.get(key.trim().toLowerCase());
 }
 
 function tokensOf(value: PropValue) {
-  const isNumber = value.kind === "number";
+  const isNumber = value.kind === PropKind.NUMBER;
   if (isNumber) {
     return {
       tokens: [value.literal],
@@ -99,7 +107,7 @@ function tokensOf(value: PropValue) {
     };
   }
 
-  const isTuple = value.kind === "tuple";
+  const isTuple = value.kind === PropKind.TUPLE;
   if (isTuple) {
     return {
       tokens: value.numbers,
@@ -107,7 +115,7 @@ function tokensOf(value: PropValue) {
     };
   }
 
-  const isNotText = value.kind !== "text";
+  const isNotText = value.kind !== PropKind.TEXT;
   if (isNotText) {
     return undefined;
   }
@@ -171,31 +179,31 @@ function textOf({ mapping, value }: {
   value: PropValue;
 }) {
   switch (mapping.kind) {
-    case "keyword":
+    case MappingKind.KEYWORD:
       return keywordOf({
         mapping,
         value
       });
-    case "length": {
+    case MappingKind.LENGTH: {
       const length = numberOf(value);
       return length === undefined ? undefined : `${length}${PIXEL_UNIT}`;
     }
 
-    case "number":
+    case MappingKind.NUMBER:
       return numberOf(value);
-    case "color":
+    case MappingKind.COLOR:
       return colorOf(value);
-    case "thickness":
+    case MappingKind.THICKNESS:
       return sidesOf({
         value,
         isCorner: false
       });
-    case "cornerRadius":
+    case MappingKind.CORNER_RADIUS:
       return sidesOf({
         value,
         isCorner: true
       });
-    case "text":
+    case MappingKind.TEXT:
       return plainTextOf(value);
     default:
       return undefined;
@@ -203,12 +211,12 @@ function textOf({ mapping, value }: {
 }
 
 function labelOf(value: PropValue) {
-  const isMember = value.kind === "member";
+  const isMember = value.kind === PropKind.MEMBER;
   if (isMember) {
     return value.name;
   }
 
-  const text = value.kind === "text" ? value.text.trim() : "";
+  const text = value.kind === PropKind.TEXT ? value.text.trim() : "";
   return /^\p{L}/u.test(text) ? text : undefined;
 }
 
@@ -225,7 +233,7 @@ export function convertValue({ mapping, value }: {
   mapping: Mapping;
   value: PropValue;
 }) {
-  const isConditional = value.kind === "conditional";
+  const isConditional = value.kind === PropKind.CONDITIONAL;
   if (isConditional) {
     const whenTrue = convertValue({
       mapping,
@@ -237,7 +245,7 @@ export function convertValue({ mapping, value }: {
     });
     const isComplete = whenTrue !== undefined && whenFalse !== undefined;
     return isComplete ? {
-      kind: "conditional",
+      kind: CssKind.CONDITIONAL,
       condition: value.condition,
       whenTrue,
       whenFalse
@@ -249,8 +257,8 @@ export function convertValue({ mapping, value }: {
     value
   });
   return text === undefined ? undefined : {
-    kind: "plain",
+    kind: CssKind.PLAIN,
     text,
-    label: mapping.kind === "keyword" ? labelOf(value) : undefined
+    label: mapping.kind === MappingKind.KEYWORD ? labelOf(value) : undefined
   };
 }

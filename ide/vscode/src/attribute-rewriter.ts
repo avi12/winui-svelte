@@ -1,6 +1,6 @@
 import { mappingOf } from "./conversion-table.ts";
 import { convertValue } from "./conversion.ts";
-import { rewriteOf, STYLE_DIRECTIVE_PREFIX } from "./css-rewrite.ts";
+import { RewriteKind, rewriteOf, STYLE_DIRECTIVE_PREFIX } from "./css-rewrite.ts";
 import type { Rewrite } from "./css-rewrite.ts";
 import { scanTags, ValueKind } from "./markup-scan.ts";
 import type { AttributeNode, TagNode } from "./markup-scan.ts";
@@ -68,7 +68,7 @@ function editsOf({ fileText, tag, attribute, rewrite }: {
   attribute: AttributeNode;
   rewrite: Rewrite;
 }) {
-  const isDirective = rewrite.kind === "directive";
+  const isDirective = rewrite.kind === RewriteKind.DIRECTIVE;
   if (isDirective) {
     return [{
       start: attribute.start,
@@ -81,7 +81,7 @@ function editsOf({ fileText, tag, attribute, rewrite }: {
     tag,
     attribute
   });
-  const isRule = rewrite.kind === "rule";
+  const isRule = rewrite.kind === RewriteKind.RULE;
   if (isRule) {
     return planRule({
       fileText,

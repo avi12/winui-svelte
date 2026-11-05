@@ -1,9 +1,16 @@
 import { kebab, slug } from "./class-naming.ts";
-import { PIXEL_UNIT } from "./conversion.ts";
+import { CssKind, PIXEL_UNIT } from "./conversion.ts";
 import type { CssValue } from "./conversion.ts";
 
 export const STYLE_DIRECTIVE_PREFIX = "style:";
 export const CLASS_DIRECTIVE_PREFIX = "class:";
+
+export const RewriteKind = {
+  RULE: "rule",
+  TOGGLES: "toggles",
+  DIRECTIVE: "directive"
+} as const;
+export type RewriteKind = (typeof RewriteKind)[keyof typeof RewriteKind];
 
 export interface Declaration {
   property: string;
@@ -18,16 +25,16 @@ export interface Leaf {
 
 export type Rewrite =
   | {
-    kind: "rule";
+    kind: typeof RewriteKind.RULE;
     declaration: Declaration;
   }
   | {
-    kind: "toggles";
+    kind: typeof RewriteKind.TOGGLES;
     cssProperty: string;
     leaves: Leaf[];
   }
   | {
-    kind: "directive";
+    kind: typeof RewriteKind.DIRECTIVE;
     cssProperty: string;
     text: string;
   };
@@ -55,7 +62,7 @@ function conditionOf(path: Guard[]) {
 }
 
 function modifierOf({ value, cssProperty }: {
-  value: Extract<CssValue, { kind: "plain" }>;
+  value: Extract<CssValue, { kind: typeof CssKind.PLAIN }>;
   cssProperty: string;
 }) {
   const { label, text } = value;
@@ -79,7 +86,7 @@ function collect({ value, path, cssProperty }: {
   path: Guard[];
   cssProperty: string;
 }) {
-  const isPlain = value.kind === "plain";
+  const isPlain = value.kind === CssKind.PLAIN;
   if (isPlain) {
     return [{
       condition: conditionOf(path),
@@ -113,7 +120,7 @@ function collect({ value, path, cssProperty }: {
 // A function that calls itself needs its return type written: TypeScript cannot infer one that refers to itself
 function expressionOf(value: CssValue): string;
 function expressionOf(value: CssValue) {
-  const isPlain = value.kind === "plain";
+  const isPlain = value.kind === CssKind.PLAIN;
   if (isPlain) {
     return `"${value.text}"`;
   }
@@ -128,7 +135,7 @@ function directiveText({ cssProperty, value }: {
   value: CssValue;
 }) {
   const name = `${STYLE_DIRECTIVE_PREFIX}${cssProperty}`;
-  return value.kind === "plain" ? `${name}="${value.text}"` : `${name}={${expressionOf(value)}}`;
+  return value.kind === CssKind.PLAIN ? `${name}="${value.text}"` : `${name}={${expressionOf(value)}}`;
 }
 
 /**
@@ -143,7 +150,7 @@ export function rewriteOf({ cssProperty, defaultValue, value, isDirective }: {
 }) {
   if (isDirective) {
     return {
-      kind: "directive",
+      kind: RewriteKind.DIRECTIVE,
       cssProperty,
       text: directiveText({
         cssProperty,
@@ -152,10 +159,10 @@ export function rewriteOf({ cssProperty, defaultValue, value, isDirective }: {
     } satisfies Rewrite;
   }
 
-  const isPlain = value.kind === "plain";
+  const isPlain = value.kind === CssKind.PLAIN;
   if (isPlain) {
     return {
-      kind: "rule",
+      kind: RewriteKind.RULE,
       declaration: {
         property: cssProperty,
         value: value.text
@@ -169,7 +176,7 @@ export function rewriteOf({ cssProperty, defaultValue, value, isDirective }: {
     cssProperty
   }).filter(leaf => leaf.value !== defaultValue);
   return leaves.length === 0 ? undefined : {
-    kind: "toggles",
+    kind: RewriteKind.TOGGLES,
     cssProperty,
     leaves
   } satisfies Rewrite;
@@ -179,12 +186,12 @@ export function rewriteOf({ cssProperty, defaultValue, value, isDirective }: {
  * The words of the quick fix's title.
  */
 export function titleOf(rewrite: Rewrite) {
-  const isDirective = rewrite.kind === "directive";
+  const isDirective = rewrite.kind === RewriteKind.DIRECTIVE;
   if (isDirective) {
     return `Convert to ${STYLE_DIRECTIVE_PREFIX}${rewrite.cssProperty}`;
   }
 
-  const isRule = rewrite.kind === "rule";
+  const isRule = rewrite.kind === RewriteKind.RULE;
   if (isRule) {
     return `Move to <style> as ${rewrite.declaration.property}: ${rewrite.declaration.value}`;
   }
