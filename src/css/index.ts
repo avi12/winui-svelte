@@ -2,7 +2,8 @@
 // (translateStyleSheet, the Vite plugin) is imported from its own modules so
 // the window's bundle does not carry it.
 
-export { registerFont, unregisterFont } from "#src/font-files.js";
+export { registerFont } from "#src/font-files.js";
+export { unregisterFont } from "#src/font-registry.js";
 export { createCssNative, installCss } from "./runtime/native.ts";
 export type { CssWinui } from "./runtime/native.ts";
 export {

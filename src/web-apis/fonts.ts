@@ -1,7 +1,8 @@
 import { bytesOfBufferSource } from "./buffer-source.ts";
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { defineProperty } from "./install.ts";
-import { registerFont, unregisterFont } from "#src/font-files.js";
+import { registerFont } from "#src/font-files.js";
+import { unregisterFont } from "#src/font-registry.js";
 import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";

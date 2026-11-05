@@ -1,4 +1,6 @@
-import { fontFamilySource, isFontRegistered, registerFont, unregisterFont } from "./font-files.ts";
+import { registerFont } from "./font-files.ts";
+import { isFontRegistered, unregisterFont } from "./font-registry.ts";
+import { fontFamilySource } from "./font-spelling.ts";
 import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";

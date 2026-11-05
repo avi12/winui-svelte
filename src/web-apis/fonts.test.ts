@@ -1,4 +1,5 @@
-import { fontFamilySource, isFontRegistered } from "#src/font-files.js";
+import { isFontRegistered } from "#src/font-registry.js";
+import { fontFamilySource } from "#src/font-spelling.js";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";

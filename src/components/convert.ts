@@ -94,7 +94,7 @@ import {
 } from "./values.ts";
 import { xamlSeam } from "./xaml-seam.ts";
 import { styleOfClasses } from "#src/css/index.js";
-import { fontFamilySource } from "#src/font-files.js";
+import { fontFamilySource } from "#src/font-spelling.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
 import { classNameOf } from "#src/renderer/host/host.js";

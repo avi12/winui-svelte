@@ -1,6 +1,6 @@
 import type { LoweredStyle } from "./properties.ts";
 import type { Declaration, PseudoState, Rule } from "./types.ts";
-import { fontFamilySource } from "#src/font-files.js";
+import { fontFamilySource } from "#src/font-spelling.js";
 
 /**
  * CSS's cascade for one element: which rules apply to it (its type, classes
