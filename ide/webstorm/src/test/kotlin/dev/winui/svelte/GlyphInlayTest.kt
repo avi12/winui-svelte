@@ -54,6 +54,12 @@ class GlyphInlayTest : BasePlatformTestCase() {
     assertEquals(listOf(markup.indexOf("Save")), inlayOffsets(markup))
   }
 
+  fun testAWrapperComponentsGlyphInputPropTakesAnExpression() {
+    myFixture.addFileToProject("FeatureCard.svelte", component("glyph: GlyphInput"))
+    val markup = usage("FeatureCard").replace("glyph=\"Save\"", "glyph={isReady ? \"Save\" : \"Play\"}")
+    assertEquals(listOf(markup.indexOf("Save"), markup.indexOf("Play")), inlayOffsets(markup))
+  }
+
   fun testAWrapperComponentWhoseGlyphPropIsAStringGetsNoIcon() {
     myFixture.addFileToProject("Label.svelte", component("glyph: string"))
     assertEquals(emptyList<Int>(), inlayOffsets(usage("Label")))

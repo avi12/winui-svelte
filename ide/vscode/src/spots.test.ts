@@ -61,6 +61,11 @@ test("each string of an expression is a spot of the prop's kind", async () => {
   assert.deepEqual(await found("<TextBlock text={isOn ? \"Play\" : \"Save\"} />"), []);
 });
 
+test("a wrapper component's GlyphInput and FontFamilyInput props take expressions too", async () => {
+  const text = "<script lang=\"ts\">import Label from \"./Label.svelte\";</script><Label face={isOn ? \"Arial\" : \"Consolas\"} icon={isOn ? \"Save\" : \"Play\"} other={isOn ? \"x\" : \"y\"} />";
+  assert.deepEqual(await found(text), ["font:Arial", "font:Consolas", "glyph:Save", "glyph:Play"]);
+});
+
 test("a project without the dependency has no spots", async () => {
   const other = mkdtempSync(path.join(tmpdir(), "no-winui-"));
   writeFileSync(
