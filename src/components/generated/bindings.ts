@@ -337,6 +337,7 @@ export { FocusState } from "#winui/microsoft/ui/xaml/FocusState";
 export { FrameworkElement } from "#winui/microsoft/ui/xaml/FrameworkElement";
 export { GridUnitType } from "#winui/microsoft/ui/xaml/GridUnitType";
 export { HorizontalAlignment } from "#winui/microsoft/ui/xaml/HorizontalAlignment";
+export { FocusNavigationDirection } from "#winui/microsoft/ui/xaml/input/FocusNavigationDirection";
 export { InputScope } from "#winui/microsoft/ui/xaml/input/InputScope";
 export { InputScopeName } from "#winui/microsoft/ui/xaml/input/InputScopeName";
 export { InputScopeNameValue } from "#winui/microsoft/ui/xaml/input/InputScopeNameValue";
