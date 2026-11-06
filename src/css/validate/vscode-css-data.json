@@ -9,7 +9,22 @@
     {
       "name": "-winui-elevation",
       "syntax": "<length>",
-      "description": "The depth of the element's ThemeShadow, in px: a WinUI shadow that follows the theme. Units: Native, as written: px, deg, s, ms, fr. No WinUI equivalent (an error that says what to write): rem, em, ch, ex, cap, ic, lh, rlh, rch, rex, rcap, ric, pt, pc, in, cm, mm, q, vw, vh, vmin, vmax, vi, vb, svw, svh, svi, svb, lvw, lvh, lvi, lvb, dvw, dvh, dvi, dvb, cqw, cqh, cqi, cqb, cqmin, cqmax, rad, grad, turn, dppx, dpi, dpcm, x, %."
+      "description": "The depth of the element's ThemeShadow, in px: a WinUI shadow that follows the theme. It has no colour, offset or blur; -winui-shadow: composition draws box-shadow with those. Units: Native, as written: px, deg, s, ms, fr. No WinUI equivalent (an error that says what to write): rem, em, ch, ex, cap, ic, lh, rlh, rch, rex, rcap, ric, pt, pc, in, cm, mm, q, vw, vh, vmin, vmax, vi, vb, svw, svh, svi, svb, lvw, lvh, lvi, lvb, dvw, dvh, dvi, dvb, cqw, cqh, cqi, cqb, cqmin, cqmax, rad, grad, turn, dppx, dpi, dpcm, x, %."
+    },
+    {
+      "name": "-winui-shadow",
+      "syntax": "theme | composition",
+      "description": "How box-shadow is drawn: theme (the default) is a ThemeShadow whose depth is the blur; composition is a Composition DropShadow that keeps the colour, x and y offset, blur and spread (not inset), cut out under the element."
+    },
+    {
+      "name": "-winui-shadow-receiver",
+      "syntax": "<name>",
+      "description": "Makes the element a receiver of the ThemeShadows whose elements name the same group in -winui-shadow-cast-on (before Windows 11 a ThemeShadow draws only on its receivers)."
+    },
+    {
+      "name": "-winui-shadow-cast-on",
+      "syntax": "<name>",
+      "description": "Sets the Receivers of the element's ThemeShadow (set by -winui-elevation) to the elements that name the same group in -winui-shadow-receiver."
     },
     {
       "name": "font-family",

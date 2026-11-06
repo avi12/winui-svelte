@@ -225,6 +225,10 @@
       "types": "./dist/css/typography.d.ts",
       "default": "./dist/css/typography.js"
     },
+    "./css/shadow": {
+      "types": "./dist/css/shadow.d.ts",
+      "default": "./dist/css/shadow.js"
+    },
     "./css/shape": {
       "types": "./dist/css/shape.d.ts",
       "default": "./dist/css/shape.js"

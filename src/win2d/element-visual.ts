@@ -1,7 +1,10 @@
+import { childSlotOf } from "./child-slot.ts";
 import { createGeometricClip } from "./clip-geometry.ts";
 import { effectSource } from "./composition.ts";
 import { BLUR_PROPERTY, buildEffectGraph, shadowName } from "./effect-graph.ts";
 import { parentElementOf } from "./element-guard.ts";
+import { controllerOf, ElementFollower } from "./element-lifecycle.ts";
+import type { ElementSize } from "./element-lifecycle.ts";
 import { createMaskBrush } from "./mask-brush.ts";
 import { resolveClipShape } from "#src/css/parse/clip-shapes.js";
 import type { ClipShape } from "#src/css/parse/clip-shapes.js";
@@ -10,7 +13,6 @@ import type { VisualEffects } from "#src/css/parse/visual-effects.js";
 import { releaseProjected } from "#winui/lifetime";
 import type { CompositionEffectBrush } from "#winui/microsoft/ui/composition/CompositionEffectBrush";
 import type { CompositionVisualSurface } from "#winui/microsoft/ui/composition/CompositionVisualSurface";
-import type { CompositionContainerVisual } from "#winui/microsoft/ui/composition/ContainerVisual";
 import type { SpriteVisual } from "#winui/microsoft/ui/composition/SpriteVisual";
 import type { FrameworkElement } from "#winui/microsoft/ui/xaml/FrameworkElement";
 import { ElementCompositionPreview } from "#winui/microsoft/ui/xaml/hosting/ElementCompositionPreview";
@@ -42,10 +44,6 @@ export interface ElementVisual {
   setBlur(radius: number | null): void;
 }
 
-interface Slot {
-  container: CompositionContainerVisual;
-}
-
 // A sprite that is drawing the element through its effects.
 interface Shown {
   sprite: SpriteVisual;
@@ -63,14 +61,11 @@ interface Shown {
   stop(): void;
 }
 
-const slots = new Map<string, Slot>();
 const controllers = new WeakMap<UIElement, Controller>();
-const SLOT_COMMENT = "winui-svelte effects ";
 const BLEED_SIGMAS = 3;
 const SHADOW_SIGMA_PER_RADIUS = 2;
 const NO_BLUR_RADIUS = 0;
 const UNCLIPPED_INSET = 1_000_000;
-const NEWLINE = "\n";
 const TRANSPARENT = {
   a: 0,
   r: 0,
@@ -80,31 +75,6 @@ const TRANSPARENT = {
 
 function compositorOf(element: UIElement) {
   return ElementCompositionPreview.getElementVisual(element).compositor;
-}
-
-// The child-visual slot of `owner`, shared by every sprite that wants it; null when someone else's visual holds it.
-// A new object stands for the same parent each time, so a slot is told by the comment its owner's visual carries.
-function slotOf(owner: UIElement) {
-  const ownerVisual = ElementCompositionPreview.getElementVisual(owner);
-  const known = slots.get(ownerVisual.comment);
-  const hasKnown = known !== undefined;
-  if (hasKnown) {
-    return known;
-  }
-
-  const foreign: unknown = ElementCompositionPreview.getElementChildVisual(owner);
-  const isForeign = foreign !== null && foreign !== undefined;
-  if (isForeign) {
-    return null;
-  }
-
-  const container = ownerVisual.compositor.createContainerVisual();
-  ElementCompositionPreview.setElementChildVisual(owner, container);
-  const comment = `${SLOT_COMMENT}${slots.size}`;
-  ownerVisual.comment = comment;
-  const slot = { container };
-  slots.set(comment, slot);
-  return slot;
 }
 
 // How far one step of the filter draws outside the element: three deviations of a blur, and a shadow's offset and blur
@@ -162,11 +132,16 @@ class Controller implements ElementVisual {
   private clip: ClipShape | null = null;
   private blur: number | null = null;
   private shown: Shown | null = null;
-  private stopWatching: (() => void) | null = null;
+  private readonly follower: ElementFollower;
   private isElementClipSet = false;
 
   constructor(element: FrameworkElement) {
     this.element = element;
+    this.follower = new ElementFollower({
+      element,
+      arrange: size => this.arrange(size),
+      onUnload: () => this.hide()
+    });
   }
 
   setEffects(effects: VisualEffects) {
@@ -195,8 +170,7 @@ class Controller implements ElementVisual {
   private refresh() {
     const isIdle = isNoEffect(this.wanted) && this.clip === null;
     if (isIdle) {
-      this.stopWatching?.();
-      this.stopWatching = null;
+      this.follower.stop();
       this.hide();
       this.placeClip({
         width: 0,
@@ -206,45 +180,10 @@ class Controller implements ElementVisual {
       return;
     }
 
-    this.watch();
-    this.layout();
+    this.follower.start();
   }
 
-  private watch() {
-    const isWatching = this.stopWatching !== null;
-    if (isWatching) {
-      return;
-    }
-
-    const stops = [
-      this.element.onLayoutUpdated(() => this.layout()),
-      this.element.onUnloaded(() => this.hide()),
-      this.element.onLoaded(() => this.layout())
-    ];
-    this.stopWatching = () => {
-      for (const stop of stops) {
-        stop();
-      }
-    };
-  }
-
-  // A failure here is raised from a WinUI event, which would only say that a callback failed.
-  private layout() {
-    try {
-      this.arrange();
-    } catch (error) {
-      process.stderr.write(`winui-svelte css: ${error instanceof Error ? error.message : String(error)}${NEWLINE}`);
-    }
-  }
-
-  private arrange() {
-    const { element } = this;
-    const { x: width, y: height } = element.actualSize;
-    const isMeasured = width > 0 && height > 0;
-    if (!isMeasured) {
-      return;
-    }
-
+  private arrange({ width, height }: ElementSize) {
     const { wanted } = this;
     const isEffect = !isNoEffect(wanted);
     if (isEffect) {
@@ -307,7 +246,7 @@ class Controller implements ElementVisual {
     const parent = parentElementOf(element);
     const isHosted = parent !== null;
     const owner = parent ?? element;
-    const slot = slotOf(owner);
+    const slot = childSlotOf(owner);
     const isSlotMissing = slot === null;
     if (isSlotMissing) {
       throw new Error("the element or its parent already holds a Composition child visual of its own");
@@ -382,7 +321,7 @@ class Controller implements ElementVisual {
       }
     };
     this.shown = shown;
-    this.layout();
+    this.follower.arrange();
   }
 
   private async placeMask({ shown, wanted }: {
@@ -532,13 +471,9 @@ class Controller implements ElementVisual {
  * none of them wants anything of the element.
  */
 export function elementVisualOf(element: FrameworkElement) {
-  const known = controllers.get(element);
-  const hasKnown = known !== undefined;
-  if (hasKnown) {
-    return known;
-  }
-
-  const controller = new Controller(element);
-  controllers.set(element, controller);
-  return controller;
+  return controllerOf({
+    controllers,
+    element,
+    create: () => new Controller(element)
+  });
 }
