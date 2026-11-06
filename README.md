@@ -850,6 +850,8 @@ conditions on `exports`), which your Vite compiles (`winuiSvelte()`)
 | `winui-svelte/state` | the window's side of host state |
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
 | `winui-svelte/messaging` | `defineMessaging`: typed request and response messages over a transport, loadable in plain Node |
+| `winui-svelte/messaging/web-view2`, `/messaging/page` | `webView2Transport` and the `WebView2` helpers (scripts, cookies, downloads, permissions); the web page's end of the link, free of WinUI (both opt-in) |
+| `winui-svelte/messaging/web-view2`, `/messaging/page` | `webView2Transport` and the `WebView2` helpers (scripts, cookies, downloads, permissions); the web page's end of the link, free of WinUI (both opt-in) |
 | `winui-svelte/vite` | `winuiSvelte()` for `vite.config.ts`; `startModuleServer()` for hot reload; `buildApp()` for the production bundle |
 | `winui-svelte/dev` | `startDev()`, one call that opens a component in a window and keeps it live as the files are saved |
 | `winui-svelte/runner` | `createWindowModuleRunner()`, the window thread's side of the module server |

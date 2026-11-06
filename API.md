@@ -24,6 +24,8 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/keyed-list` | `src/renderer/list/keyed-list.ts` | `syncKeyed()`: sync a native collection to wanted keys, touching only what changed |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()`, `hostState()`, the transports (see `src/state/README.md`) |
 | `winui-svelte/messaging` | `src/messaging/index.ts` | `defineMessaging(transport)`: typed `sendMessage` / `onMessage` over a ProtocolMap, as @webext-core/messaging; the state channel is built on it |
+| `winui-svelte/messaging/web-view2` | `src/messaging/web-view2/index.ts` | `webView2Transport({ control })` and the typed `CoreWebView2` helpers (opt-in, see "WebView2 bridge") |
+| `winui-svelte/messaging/page` | `src/messaging/page.ts` | `createPageTransport()`: the web page's end of the link, no WinUI import, safe for a browser bundle |
 | `winui-svelte/vite` | `src/vite/index.ts` | `winuiSvelte()` Vite plugin, `startModuleServer()`, `buildApp()` (the production bundle), compile-error formatting |
 | `winui-svelte/dev` | `src/dev/index.ts` | `startDev()`, the dev loop in one call: Windows App SDK, dev server and the window's thread |
 | `winui-svelte/runner` | `src/vite/runner.ts` | `createWindowModuleRunner()`, the window thread's side of the module server |
@@ -1542,6 +1544,63 @@ A page loads as it
 does in any WinUI app, except that WebView2 blocks a `data:` URL as the top
 frame
 `test/web.test.ts` loads one in a real window; it needs an ordinary
+desktop session (a sandboxed process cannot launch the browser, 0x8007139F)
+
+### WebView2 bridge (`winui-svelte/messaging/web-view2`)
+
+A Svelte app and the web content in a `WebView2` talk with the same
+request and response frames as every other transport, over
+`CoreWebView2.PostWebMessageAsJson` and `WebMessageReceived`
+Both are raised on the UI thread, where dynwinrt delivers callbacks
+
+```ts
+import { defineMessaging } from "winui-svelte/messaging";
+import { webView2Transport } from "winui-svelte/messaging/web-view2";
+
+// control is the WebView2 (the sender of oncorewebview2initialized)
+const transport = webView2Transport({ control, allowedOrigins: ["https://app.example"] });
+const bridge = defineMessaging<AppProtocol>({ transport });
+bridge.onMessage("save", ({ data }) => save(data));
+const title = await bridge.sendMessage("title");
+transport.dispose();
+```
+
+```ts
+// in the web page's bundle
+import { createPageTransport, defineMessaging } from "winui-svelte/messaging/page";
+
+const bridge = defineMessaging<AppProtocol>({ transport: createPageTransport() });
+```
+
+- The transport starts the browser (`EnsureCoreWebView2Async`) and waits for
+  it (a control with no `source` does not start on its own, and a page set
+  from `oncorewebview2initialized` can be overtaken by the `source` navigation;
+  the example loads its page from the first `onnavigationcompleted`); frames sent before it is ready are kept and posted in order
+- `dispose()` stops listening, drops the queue and closes the link
+- `window.chrome.webview` is in every page WebView2 loads, so the page needs
+  no injected script; `addDocumentCreatedScript` is for the scripts an app adds
+  of its own
+- Every incoming message is parsed as JSON and checked against
+  `allowedOrigins` (the origin of the page that posted it); a message that
+  fails either is dropped and reported through the listener's `malformed`
+  Without `allowedOrigins` every page is trusted, which suits only content the
+  app ships; a page that is not the app's own needs the list
+- Nothing received is evaluated, and `AreHostObjectsAllowed` is switched off;
+  the bridge never calls `AddHostObjectToScript`
+
+| Helper | What |
+|---|---|
+| `waitForCoreWebView2(control)` | resolves with the `CoreWebView2` once the browser started |
+| `executeScript({ control, code })` | runs script in the page and resolves with its JSON value, checked |
+| `addDocumentCreatedScript({ control, code })` | runs script before every page script; resolves with the function that removes it |
+| `openDevTools(control)` | opens the developer tools window |
+| `getCookies`, `setCookie`, `deleteCookie` | the profile's cookies as plain data (`CookieSameSite`) |
+| `onPermissionRequested({ control, decide })` | answers permission requests with a `PermissionState` (`default`, `allow`, `deny`) for a `PermissionKind` |
+| `onDownloadStarting({ control, pathFor })` | sends a download to a path with no dialog, or cancels it with `null` |
+| `onNavigationStarting({ control, isAllowed })` | cancels the navigations `isAllowed` refuses |
+
+`examples/web-bridge` is an app talking to a hosted page, and
+`test/web-bridge.test.ts` runs it in a real window; it needs an ordinary
 desktop session (a sandboxed process cannot launch the browser, 0x8007139F)
 
 ### ListView and GridView
