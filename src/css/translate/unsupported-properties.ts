@@ -65,3 +65,8 @@ const UNSUPPORTED_AT_RULES: ReadonlyMap<string, string> = new Map([
 export function unsupportedAtRuleReason(name: string) {
   return UNSUPPORTED_AT_RULES.get(name) ?? "";
 }
+
+/** Every property with a written reason it has no WinUI meaning, with that reason. */
+export function unsupportedReasonEntries() {
+  return [...UNSUPPORTED_REASONS];
+}

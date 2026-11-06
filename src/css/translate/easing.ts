@@ -162,3 +162,8 @@ export function stepLevels(easing: StepsEasing) {
   ]).get(jump);
   return Array.from({ length: count }, (_, i) => level?.(i) ?? 0);
 }
+
+/** Every timing function keyword CSS spells, `linear` included. */
+export function easingKeywords() {
+  return ["linear", ...BEZIER_KEYWORDS.keys(), ...STEP_KEYWORDS.keys()];
+}

@@ -1,4 +1,5 @@
 import { attachmentData, entryApi, webEventData } from "./attachment-data.ts";
+import { easingData, shadowDepthData, unsupportedPropertyData } from "./css-preview-data.ts";
 import { enumData } from "./enum-data.ts";
 import { parsedIdeData } from "./ide-data.ts";
 import { resourceData } from "./resource-data.ts";
@@ -45,7 +46,10 @@ export function ideDataText() {
     translateKeys: [...handledMembers()].toSorted((left, right) => compareNames({
       left,
       right
-    }))
+    })),
+    easings: easingData(),
+    shadowDepths: shadowDepthData(),
+    unsupportedProperties: byName(unsupportedPropertyData())
   });
   return `{\n${Object.entries(data).map(([key, entries]) => section({
     key,
