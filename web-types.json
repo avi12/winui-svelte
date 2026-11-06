@@ -26496,13 +26496,7 @@
             },
             {
               "name": "iconShowOptions",
-              "description": "Whether the title bar shows the window's icon, and opens the system menu on a click on it; `hideIconAndSystemMenu` takes both away. The default shows them.",
-              "value": {
-                "type": {
-                  "module": "winui-svelte/enums",
-                  "name": "IconShowOptions"
-                }
-              }
+              "description": "Whether the title bar shows the window's icon, and opens the system menu on a click on it; `hideIconAndSystemMenu` takes both away. The default shows them."
             },
             {
               "name": "captionButtons",
@@ -27051,118 +27045,6 @@
       ]
     },
     "js": {
-      "symbols": [
-        {
-          "name": "checkField",
-          "kind": "Function",
-          "description": "Joins a CheckBox, a ToggleButton or another control with `isChecked`.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "colorField",
-          "kind": "Function",
-          "description": "Joins a ColorPicker to the surrounding `Form`; the value is \"#rrggbb\".\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "control",
-          "kind": "Function",
-          "description": "Hands an element's native control to code, typed by the caller: `@attach control<ToggleSwitch>(toggle => { ...; return () => ...\n\nImport it from `winui-svelte` and write it after `@attach`"
-        },
-        {
-          "name": "dateField",
-          "kind": "Function",
-          "description": "Joins a DatePicker or a CalendarDatePicker to the surrounding `Form`; the value is a Date.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "draggable",
-          "kind": "Function",
-          "description": "Makes an element draggable out of the window, to other apps and to Explorer: `draggable({ text: \"hello\" })` after `@attach` on the element.\n\nImport it from `winui-svelte/data-transfer` and write it after `@attach`"
-        },
-        {
-          "name": "dropzone",
-          "kind": "Function",
-          "description": "Makes an element take drops, with `dropzone({ accept: \".png\", onDrop })` after `@attach` on the element.\n\nImport it from `winui-svelte/data-transfer` and write it after `@attach`"
-        },
-        {
-          "name": "filePicker",
-          "kind": "Function",
-          "description": "Makes a button open the file dialog when clicked, like a web `<input type=file>`, with `filePicker({ accept: \"image/*\", multiple: true, onPick })` after `@attach` on the button.\n\nImport it from `winui-svelte/data-transfer` and write it after `@attach`"
-        },
-        {
-          "name": "formButton",
-          "kind": "Function",
-          "description": "Makes a Button (or any control with `onClick`) a button of the surrounding `Form`: `submit` validates and submits, `reset` puts the fields back, `button` does nothing to the form.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "glideHeight",
-          "kind": "Function",
-          "description": "Makes an element glide to its new height when its content grows or shrinks, where WinUI cannot animate `Height=\"Auto\"`: what a `ResizeObserver` and `element.animate({ height })` do on the web.\n\nImport it from `winui-svelte` and write it after `@attach`"
-        },
-        {
-          "name": "implicitLayoutAnimation",
-          "kind": "Function",
-          "description": "Makes the children of a panel slide to their new places instead of jumping when the layout moves them (an expander above them opens, an item is removed): the animation WinUI runs on a visual's `Offset` property, started by the composition layer itself whenever the offset changes.\n\nImport it from `winui-svelte/implicit-layout-animation` and write it after `@attach`"
-        },
-        {
-          "name": "liveRegion",
-          "kind": "Function",
-          "description": "Makes an element a live region, as `aria-live`: a screen reader speaks the element's text when it changes (`AutomationProperties.LiveSetting`).\n\nImport it from `winui-svelte/accessibility` and write it after `@attach`"
-        },
-        {
-          "name": "numberField",
-          "kind": "Function",
-          "description": "Joins a NumberBox to the surrounding `Form`; an empty box collects null.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "passwordField",
-          "kind": "Function",
-          "description": "Joins a PasswordBox to the surrounding `Form`.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "placedControl",
-          "kind": "Function",
-          "description": "Hands an element's control to code like `control` does, with where the element is placed.\n\nImport it from `winui-svelte` and write it after `@attach`"
-        },
-        {
-          "name": "ratingField",
-          "kind": "Function",
-          "description": "Joins a RatingControl to the surrounding `Form`; no rating collects null.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "selectField",
-          "kind": "Function",
-          "description": "Joins a ComboBox or a RadioButtons to the surrounding `Form`; nothing selected collects null.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "sliderField",
-          "kind": "Function",
-          "description": "Joins a Slider to the surrounding `Form`.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "switchField",
-          "kind": "Function",
-          "description": "Joins a ToggleSwitch to the surrounding `Form`.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "textField",
-          "kind": "Function",
-          "description": "Joins a TextBox (or an AutoSuggestBox) to the surrounding `Form`.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "timeField",
-          "kind": "Function",
-          "description": "Joins a TimePicker to the surrounding `Form`; the value is \"HH:mm\".\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
-        },
-        {
-          "name": "trapFocus",
-          "kind": "Function",
-          "description": "Keeps keyboard focus inside an element, for a dialog or a wizard step: `@attach trapFocus()` on the element.\n\nImport it from `winui-svelte/input` and write it after `@attach`"
-        },
-        {
-          "name": "withControl",
-          "kind": "Function",
-          "description": "Hands an element's control to code, checked against a class: `@attach withControl({ type: StackPanel, use: panel => ...\n\nImport it from `winui-svelte` and write it after `@attach`"
-        }
-      ],
       "events": [
         {
           "name": "drag",
