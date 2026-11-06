@@ -14,6 +14,7 @@ export { CookieSameSite } from "./messaging/web-view2/cookies.ts";
 export { PermissionKind, PermissionState } from "./messaging/web-view2/policy.ts";
 export { ColorKeyword } from "./components/values.ts";
 export { XamlKind } from "./components/xaml-source.ts";
+export { ConnectedAnimationKind } from "./renderer/host/connected-configuration.ts";
 export { FocusKind } from "./renderer/host/focus-element.ts";
 export { HotkeyModifier } from "./app/hotkeys/keys.ts";
 export { KeyCode } from "./key-code.ts";

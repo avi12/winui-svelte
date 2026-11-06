@@ -55,6 +55,7 @@
     "src/web-apis/page.ts",
     "test/page-window.ts",
     "src/web-apis/animations.ts",
+    "src/web-apis/view-transitions.ts",
     "src/web-apis/observers.ts",
     "src/web-apis/timing.ts",
     "src/web-apis/media-devices.ts",
