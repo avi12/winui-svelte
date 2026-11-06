@@ -22,6 +22,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/settings` | `src/settings/index.ts` | `SettingsCard`, `SettingsExpander`: Fluent settings cards after the Community Toolkit's (opt-in) |
 | `winui-svelte/implicit-layout-animation` | `src/renderer/host/implicit-layout-animation.ts` | `implicitLayoutAnimation({ duration, easing })`, `LayoutEasing`: children slide to their new places when the layout moves them (opt-in) |
 | `winui-svelte/connected-animation` | `src/renderer/host/connected-animation.ts` | `connectElement({ key, element })`, `startConnected({ key, element })`: WinUI's connected animation between two pages (opt-in) |
+| `winui-svelte/composition` | `src/composition/index.ts` | `animateOnCompositor`, `compositorAnimation`, `visualReference`, `createPropertySet`, the typed expression builder and `scalarSpring` / `vector2Spring` / `vector3Spring`: expression and spring animations on the compositor (opt-in, see "Composition animations") |
 | `winui-svelte/keyed-list` | `src/renderer/list/keyed-list.ts` | `syncKeyed()`: sync a native collection to wanted keys, touching only what changed |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()`, `hostState()`, the transports (see `src/state/README.md`) |
 | `winui-svelte/messaging` | `src/messaging/index.ts` | `defineMessaging(transport)`: typed `sendMessage` / `onMessage` over a ProtocolMap, as @webext-core/messaging; the state channel is built on it |
@@ -496,6 +497,79 @@ import { connectElement, startConnected } from "winui-svelte/connected-animation
 connectElement({ key: "photo", element: thumbnail });
 startConnected({ key: "photo", element: hero });
 ```
+
+## Composition animations (`winui-svelte/composition`)
+
+Expression and spring animations that the compositor runs on its own thread,
+typed end to end: an expression is built from typed parts and prints its own
+text, so a member a visual does not have, or an animation of the wrong kind
+for its property, fails `tsc`
+The scroll-linked animations of `animation-timeline` are built with the same
+expression builder
+
+- `visualReference(element)`: an element's visual for expressions to read;
+  its members are `VISUAL_MEMBERS` (`offset`, `scale`, `translation`,
+  `centerPoint` are three-component, `size` and `anchorPoint` two-component,
+  `opacity` and `rotationAngleInDegrees` scalars), and a vector member gives
+  its components (`offset.y`): a member is a `Vector2Member` or
+  `Vector3Member`, the expression of its kind with `x`, `y` (and `z`)
+- An expression is a `ScalarExpression`, `Vector2Expression` or
+  `Vector3Expression`, each with `plus`, `minus` (its own kind, or a plain
+  number, `{ x, y }` or `{ x, y, z }`), `times`, `dividedBy` (a scalar),
+  `negated()` and `lerp({ to, amount })`; a scalar also has
+  `clamped({ min, max })`
+  `scalar(1)`, `vector2({ x, y })` and `vector3({ x, y, z })` make literals,
+  `reference({ name, members, source })` names any Composition object with the
+  members it declares (`ExpressionKind` gives each one's kind)
+- `rawExpression({ kind, text, references })` is the escape hatch: expression
+  text as it is, with the kind it gives and the objects it names
+- `scalarSpring`, `vector2Spring`, `vector3Spring` take `SpringOptions`:
+  `finalValue`, and optionally `initialValue`, `initialVelocity`,
+  `dampingRatio` (below 1 overshoots), `period` and `delay` in milliseconds
+- `animateOnCompositor({ element, property, animation })` starts an expression
+  or a spring on a property of the element's visual (`offset`, `offset.x`,
+  `opacity`...; `translation` is enabled on the element when it is used) and
+  returns a `RunningAnimation`: `stop()`, and `finished`, which settles when a
+  spring comes to rest or the animation is stopped
+  `compositorAnimation({ property, animation })` is the same as an attachment,
+  stopped when the element goes or the attachment runs again
+- `createPropertySet({ element, values })` makes a `CompositionPropertySet`
+  whose members are the keys of `values`, each a number, `{ x, y }` or
+  `{ x, y, z }`: `reference` reads them in expressions, `insert(changes)`
+  writes new values from the UI thread, `animate({ property, animation })`
+  drives one on the compositor, `close()` releases it
+
+```svelte
+<script lang="ts">
+  import type { Border as BorderControl } from "#winui/microsoft/ui/xaml/controls/Border";
+  import { elementRef } from "winui-svelte";
+  import { Border } from "winui-svelte/components";
+  import { compositorAnimation, vector3Spring, visualReference } from "winui-svelte/composition";
+
+  const leader = elementRef<BorderControl>();
+</script>
+
+<Border
+  {@attach compositorAnimation({
+    property: "offset",
+    animation: vector3Spring({ finalValue: { x: 200, y: 0, z: 0 }, dampingRatio: 0.4, period: 80 })
+  })}
+  {@attach leader.attach}
+/>
+<Border
+  {@attach leader.current && compositorAnimation({
+    property: "offset",
+    animation: visualReference(leader.current).offset.plus({ x: 0, y: 120, z: 0 })
+  })}
+/>
+```
+
+- Values read on the UI thread (`Visual.Offset`) are the last ones set there,
+  not the animated ones; read an animated value back from what is drawn
+- Not there yet: `InteractionTracker` (input-driven inertia, which needs a
+  `VisualInteractionSource` redirected from a pointer press and bindings not
+  generated today) and springs as a CSS easing (`transition-timing-function`
+  has no spring function on the web to map)
 
 ## Scheduling (`winui-svelte`)
 

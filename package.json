@@ -129,6 +129,10 @@
       "svelte": "./dist/win2d/element-effects.js",
       "default": "./dist/win2d/element-effects.js"
     },
+    "./composition": {
+      "types": "./dist/composition/index.d.ts",
+      "default": "./dist/composition/index.js"
+    },
     "./connected-animation": {
       "types": "./dist/renderer/host/connected-animation.d.ts",
       "svelte": "./dist/renderer/host/connected-animation.js",
