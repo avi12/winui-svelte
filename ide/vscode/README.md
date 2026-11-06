@@ -26,10 +26,51 @@ does not depend on it
 - **Resources**: a `var(--card-background-fill-color-default)` completes from
   the resources WinUI defines, and a color shows its light and its dark value as
   two swatches in the hover and beside each name in the list
+- **CSS and layout previews**: see the next section
 - **Convert to CSS**: a prop that has a CSS counterpart gets a quick fix
   (Ctrl+.) that moves it into the `<style>` block, or writes it as a `style:`
   directive; one command converts the whole file, and another converts the
   selected files and folders in the Explorer
+
+## CSS and layout previews
+
+Each preview is in the `<style>` block, in `style="..."`, in `style:`
+directives and, where it fits, in the props; native units only, so a length is
+in pixels
+
+- **Gradient**: a bar of the stops beside `linear-gradient()`,
+  `radial-gradient()` and a `LinearGradientBrush` of `GradientStop`s; a stop
+  without a percentage is spaced evenly, as CSS does
+- **Contrast**: the WCAG ratio and its verdict after a text color that sits
+  with a background color in the same rule or tag, for example `4.5:1 AA`
+  (cut to a tenth, never rounded up; AAA from 7, AA from 4.5, AA for large
+  text from 3)
+- **Easing**: a curve beside `cubic-bezier()`, `steps()`, `linear()`, a
+  named easing and a `KeySpline`; the hover adds the duration and delay
+  timeline of a `transition` or `animation`
+- **Box model and grid tracks**: the hover of `padding`, `margin`,
+  `border-width` and `border-radius` draws the four values around the box;
+  `grid-template-columns`, `grid-template-rows` and the `columns` and `rows`
+  props draw `auto`, pixel and `fr` tracks in proportion
+- **Declaration**: the hover of a CSS property says which WinUI property it
+  sets and where the rule applies, or why it has no WinUI meaning
+- **Media query**: an `@media` condition shows `now: yes` or `now: no`
+  against the assumed environment below, and the hover lists each part
+- **Shadow and material**: the hover of `-winui-elevation` and
+  `box-shadow` places the depth on the ladder WinUI uses, and `backdrop`
+  shows the material in the light and the dark theme
+
+`winuiSvelte.previews.gradient`, `.contrast`, `.easing`, `.box`,
+`.declaration`, `.media` and `.shadow` turn each one off (all on by
+default)
+
+The media answer reads `winuiSvelte.media.theme`, `.reducedMotion`, `.width`
+and `.height` (dark, motion not reduced, 1024 by 768) and never asks the
+system
+
+The logic of every preview is tested against `ide/css-previews.spec.json`, the
+same file the WebStorm plugin is tested against; the easings, shadow depths,
+materials and unsupported properties come from `winui-ide-data.json`
 
 ## Commands and settings
 

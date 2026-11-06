@@ -14,6 +14,10 @@
       <li><b>Fonts</b>: the font-family completion lists the installed fonts, each in its own face</li>
       <li><b>Resources</b>: a <code>var(--card-background-fill-color-default)</code> completes from the resources
         WinUI defines, each color with a swatch, and the documentation shows its light and dark value</li>
+      <li><b>CSS and layout previews</b>: a bar beside a gradient, a curve beside an easing, the WCAG contrast
+        ratio of a text and background color, whether an <code>@media</code> condition holds in an assumed
+        environment, and in the popup the box model, grid tracks, shadow depth, material and what a declaration
+        becomes in WinUI; each can be turned off</li>
       <li><b>Convert to CSS</b>: Alt+Enter on a prop that has a CSS counterpart moves it into the
         <code>&lt;style&gt;</code> block or a <code>style:</code> directive; actions convert a whole file or the
         selected files and folders, and the class names it writes can be found and renamed</li>
@@ -67,6 +71,9 @@
     <codeInsight.inlayProvider
         language="SvelteHTML"
         implementationClass="dev.winui.svelte.ColorInlayProvider"/>
+    <codeInsight.inlayProvider
+        language="SvelteHTML"
+        implementationClass="dev.winui.svelte.CssPreviewInlayProvider"/>
     <completion.contributor
         language="any"
         order="first"
@@ -79,6 +86,10 @@
         language="any"
         order="first"
         implementationClass="dev.winui.svelte.ResourceDocumentationProvider"/>
+    <lang.documentationProvider
+        language="any"
+        order="first"
+        implementationClass="dev.winui.svelte.CssPreviewDocumentationProvider"/>
     <notificationGroup id="winui-svelte" displayType="BALLOON"/>
   </extensions>
   <actions>

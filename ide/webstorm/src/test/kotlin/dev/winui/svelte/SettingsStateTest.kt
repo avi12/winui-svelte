@@ -33,4 +33,20 @@ class SettingsStateTest {
     val element = XmlSerializer.serialize(state)
     assertEquals(false, XmlSerializer.deserialize(element, SettingsState::class.java).isResourceHintsEnabled)
   }
+
+  @Test
+  fun `every preview is on by default and a turned off one survives being written and read`() {
+    assertEquals(emptyList<String>(), SettingsState().disabledPreviews)
+    val state = SettingsState().apply { disabledPreviews = mutableListOf(PreviewFeature.MEDIA.id) }
+    val element = XmlSerializer.serialize(state)
+    assertEquals(listOf("media"), XmlSerializer.deserialize(element, SettingsState::class.java).disabledPreviews)
+  }
+
+  @Test
+  fun `the media query assumes a dark window of 1024 by 768 pixels with motion`() {
+    val state = SettingsState()
+    assertEquals(Theme.DARK.id, state.mediaTheme)
+    assertEquals(false, state.isMediaReducedMotion)
+    assertEquals(MediaDefaults.WIDTH to MediaDefaults.HEIGHT, state.mediaWidth to state.mediaHeight)
+  }
 }

@@ -4,6 +4,23 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.jupiter.api.Assertions.assertEquals
 
 class ColorInlayTest : BasePlatformTestCase() {
+  override fun setUp() {
+    super.setUp()
+    for (feature in PreviewFeature.entries) {
+      Settings.of(project).setPreviewEnabled(feature, false)
+    }
+  }
+
+  override fun tearDown() {
+    try {
+      for (feature in PreviewFeature.entries) {
+        Settings.of(project).setPreviewEnabled(feature, true)
+      }
+    } finally {
+      super.tearDown()
+    }
+  }
+
   private fun inlayOffsets(
     markup: String,
     manifest: String = TestManifests.DEPENDENT

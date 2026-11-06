@@ -2,6 +2,7 @@ package dev.winui.svelte
 
 import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.ui.dsl.builder.bindIntText
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
@@ -30,5 +31,46 @@ class SettingsConfigurable(
             { Settings.of(project).isResourceHintsEnabled = it }
           )
       }
+      group("CSS and layout previews") {
+        for (feature in PreviewFeature.entries) {
+          row {
+            checkBox(feature.label)
+              .comment(feature.description)
+              .bindSelected(
+                { Settings.of(project).isPreviewEnabled(feature) },
+                { Settings.of(project).setPreviewEnabled(feature, it) }
+              )
+          }
+        }
+      }
+      group("Environment the media query answer assumes") {
+        row("Theme:") {
+          comboBox(Theme.entries, textListCellRenderer { it?.id })
+            .bindItem({ Settings.of(project).mediaTheme }, { Settings.of(project).mediaTheme = it ?: Theme.DARK })
+        }
+        row {
+          checkBox("Reduced motion")
+            .bindSelected({ Settings.of(project).isMediaReducedMotion }, {
+              Settings.of(project).isMediaReducedMotion =
+                it
+            })
+        }
+        row("Window width in pixels:") {
+          intTextField(1..MAX_PIXELS).bindIntText({ Settings.of(project).mediaWidth }, {
+            Settings.of(project).mediaWidth =
+              it
+          })
+        }
+        row("Window height in pixels:") {
+          intTextField(1..MAX_PIXELS).bindIntText({ Settings.of(project).mediaHeight }, {
+            Settings.of(project).mediaHeight =
+              it
+          })
+        }
+      }
     }
+
+  private companion object {
+    const val MAX_PIXELS = 20_000
+  }
 }
