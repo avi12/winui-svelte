@@ -18,6 +18,12 @@ internal class Settings : PersistentStateComponent<SettingsState> {
       current.destination = value
     }
 
+  var isResourceHintsEnabled: Boolean
+    get() = current.isResourceHintsEnabled
+    set(value) {
+      current.isResourceHintsEnabled = value
+    }
+
   override fun getState() = current
 
   override fun loadState(state: SettingsState) {

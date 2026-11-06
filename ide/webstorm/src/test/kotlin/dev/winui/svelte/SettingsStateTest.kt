@@ -25,4 +25,12 @@ class SettingsStateTest {
   fun `the default is not written`() {
     assertEquals(0, XmlSerializer.serialize(SettingsState(), SkipDefaultsSerializationFilter()).children.size)
   }
+
+  @Test
+  fun `the resource hints are on by default and survive being turned off`() {
+    assertEquals(true, SettingsState().isResourceHintsEnabled)
+    val state = SettingsState().apply { isResourceHintsEnabled = false }
+    val element = XmlSerializer.serialize(state)
+    assertEquals(false, XmlSerializer.deserialize(element, SettingsState::class.java).isResourceHintsEnabled)
+  }
 }
