@@ -356,3 +356,56 @@ test("a keyword property in @keyframes fails the build on a word it does not kno
   const { errors } = translate("@keyframes x { to { text-align: sideways } }");
   assert.match(errors.join(), /@keyframes x: text-align: expected one of left, start, center, right, end, justify, found "sideways"/u);
 });
+
+const FADE_FRAMES = "@keyframes fade { from { opacity: 0 } to { opacity: 1 } }";
+
+test("an animation on scroll() builds, and the animation shorthand reads the timeline", () => {
+  const { errors } = translate(`${FADE_FRAMES}\n.a { animation: fade linear both scroll(root block); animation-range: 10% 90% }`);
+  assert.deepEqual(errors, []);
+  const values = longhands(".a { animation: fade linear view(inline 10px) --hero }");
+  assert.equal(values["animation-timeline"], "--hero");
+});
+
+test("animation-range sets its start and end, a lone name is that whole part", () => {
+  const values = longhands(".a { animation-range: entry 10% exit 90% }");
+  assert.deepEqual([values["animation-range-start"], values["animation-range-end"]], ["entry 10%", "exit 90%"]);
+  const whole = longhands(".a { animation-range: cover }");
+  assert.deepEqual([whole["animation-range-start"], whole["animation-range-end"]], ["cover", "cover"]);
+});
+
+test("scroll-timeline and view-timeline expand to their longhands", () => {
+  const scroll = longhands(".a { scroll-timeline: --page inline }");
+  assert.deepEqual([scroll["scroll-timeline-name"], scroll["scroll-timeline-axis"]], ["--page", "inline"]);
+  const view = longhands(".a { view-timeline: --card x 10px 20px }");
+  assert.deepEqual([view["view-timeline-name"], view["view-timeline-axis"], view["view-timeline-inset"]], ["--card", "x", "10px 20px"]);
+});
+
+test("an animation-timeline that is no timeline fails the build with what it can be", () => {
+  const { errors } = translate(`${FADE_FRAMES}\n.a { animation-name: fade; animation-timing-function: linear; animation-timeline: sideways }`);
+  assert.deepEqual(errors, ["a.svelte:2:63: animation-timeline: expected auto, none, scroll(), view() or a dashed name such as --hero, found \"sideways\""]);
+});
+
+test("a scroll-linked animation says what Composition cannot drive", () => {
+  const { errors } = translate("@keyframes grow { from { width: 10px } to { width: 99px } }\n.a { animation: grow linear scroll() }");
+  assert.match(errors.join("\n"), /animation-timeline: @keyframes grow animates Width, which Composition cannot drive from a scroll position \(it drives opacity, translate, scale and rotate/u);
+});
+
+test("a scroll-linked animation asks for linear easing, one iteration and a plain direction", () => {
+  const eased = translate(`${FADE_FRAMES}\n.a { animation: fade ease scroll() }`).errors.join("\n");
+  assert.match(eased, /animation-timing-function: a scroll-linked animation maps the scroll position straight onto its key frames; write linear \(found "ease"\)/u);
+  const repeated = translate(`${FADE_FRAMES}\n.a { animation: fade linear 3 scroll() }`).errors.join("\n");
+  assert.match(repeated, /animation-iteration-count: a scroll-linked animation runs once across its range; write 1/u);
+  const alternating = translate(`${FADE_FRAMES}\n.a { animation: fade linear alternate scroll() }`).errors.join("\n");
+  assert.match(alternating, /animation-direction: a scroll-linked animation runs forwards or in reverse/u);
+});
+
+test("a range name belongs to a view timeline", () => {
+  const { errors } = translate(`${FADE_FRAMES}\n.a { animation: fade linear scroll(); animation-range: entry }`);
+  assert.match(errors.join("\n"), /animation-range: a range name \(cover, entry, exit\.\.\.\) belongs to a view timeline/u);
+  assert.deepEqual(translate(`${FADE_FRAMES}\n.a { animation: fade linear view(); animation-range: entry exit }`).errors, []);
+});
+
+test("an animation-range that is not a range fails the build", () => {
+  const { errors } = translate(`${FADE_FRAMES}\n.a { animation: fade linear view(); animation-range: middle 10% }`);
+  assert.match(errors.join("\n"), /animation-range-start: expected normal, a range name/u);
+});

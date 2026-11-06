@@ -18,6 +18,10 @@ function unitsOf(kind: LengthUnitKind) {
 
 const TRACK_DESCRIPTION = "WinUI: a track is auto, a length or an fr size, and they mix freely; repeat(N, ...) is expanded when building. No WinUI equivalent: repeat(auto-fill|auto-fit, ...), subgrid, masonry, named lines and % tracks (the editor's diagnostics say what to write instead).";
 
+const TIMELINE_DESCRIPTION = "WinUI: links an animation to a scroll viewer through Composition. Values: auto, none, scroll([nearest | root | self] [block | inline | x | y]), view([axis] [inset]) or a name a scroll-timeline-name or view-timeline-name gave. It drives opacity, translate, scale and rotate only, straight (animation-timing-function: linear).";
+
+const RANGE_DESCRIPTION = "WinUI: the part of a scroll or view timeline the animation spans. normal, a length in px or a percentage; a view timeline also takes cover, contain, entry, exit, entry-crossing and exit-crossing with an offset.";
+
 const LAYOUT_ALIGNMENT_DESCRIPTION = "WinUI: on a stack panel or grid the build lowers it into the children (each child's align-self or justify-self, or spacer tracks), so it applies to a container written in the component, outside an @media.";
 
 function discreteProperty(member: string) {
@@ -70,6 +74,14 @@ export function vscodeCssData() {
           name: word,
           description: `${spec.property}: ${value}`
         }))
+      })),
+      {
+        name: "animation-timeline",
+        description: TIMELINE_DESCRIPTION
+      },
+      ...["animation-range", "animation-range-start", "animation-range-end"].map(name => ({
+        name,
+        description: RANGE_DESCRIPTION
       })),
       ...["align-items", "justify-content"].map(name => ({
         name,

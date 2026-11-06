@@ -479,6 +479,22 @@
       ]
     },
     {
+      "name": "animation-timeline",
+      "description": "WinUI: links an animation to a scroll viewer through Composition. Values: auto, none, scroll([nearest | root | self] [block | inline | x | y]), view([axis] [inset]) or a name a scroll-timeline-name or view-timeline-name gave. It drives opacity, translate, scale and rotate only, straight (animation-timing-function: linear)."
+    },
+    {
+      "name": "animation-range",
+      "description": "WinUI: the part of a scroll or view timeline the animation spans. normal, a length in px or a percentage; a view timeline also takes cover, contain, entry, exit, entry-crossing and exit-crossing with an offset."
+    },
+    {
+      "name": "animation-range-start",
+      "description": "WinUI: the part of a scroll or view timeline the animation spans. normal, a length in px or a percentage; a view timeline also takes cover, contain, entry, exit, entry-crossing and exit-crossing with an offset."
+    },
+    {
+      "name": "animation-range-end",
+      "description": "WinUI: the part of a scroll or view timeline the animation spans. normal, a length in px or a percentage; a view timeline also takes cover, contain, entry, exit, entry-crossing and exit-crossing with an offset."
+    },
+    {
       "name": "align-items",
       "description": "WinUI: on a stack panel or grid the build lowers it into the children (each child's align-self or justify-self, or spacer tracks), so it applies to a container written in the component, outside an @media."
     },

@@ -4,10 +4,10 @@ import type { AnimationClock } from "./frame-clock.ts";
 import { dispatcherClock } from "./frame-clock.ts";
 import type { Keyframe, Pose, PoseValue, Vector } from "./keyframes.ts";
 import { poseAt, PoseField, readKeyframe, touchedFields } from "./keyframes.ts";
+import { keepsMotion } from "./motion-preference.ts";
 import { isRecord, read, write } from "./reflect.ts";
 import { shapeLength } from "./shape-length.ts";
 import { doubleCollection } from "./values.ts";
-import { MOTION_ALWAYS_CLASS } from "#src/motion.js";
 import type { NativeValue } from "#src/native-value.js";
 import { ElementNode } from "#src/renderer/tree/dom.js";
 import { listenersOf } from "#src/renderer/tree/tree.js";
@@ -203,11 +203,6 @@ function isMotionControl(value: NativeValue): value is MotionControl {
 
 function isMotionNode(value: NativeValue): value is MotionNode {
   return isRecord(value) && isRecord(read(value, "native"));
-}
-
-function keepsMotion(node: MotionNode) {
-  const classes = read(node, "className");
-  return typeof classes === "string" && classes.split(" ").includes(MOTION_ALWAYS_CLASS);
 }
 
 function isCallable(value: NativeValue): value is (...values: NativeValue[]) => NativeValue {
