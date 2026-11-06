@@ -1,4 +1,4 @@
-import { contrastRatio, parseRgba, rgbaOfBrush } from "./contrast.ts";
+import { composite, contrastRatio, parseRgba, rgbaOfBrush } from "./contrast.ts";
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
@@ -75,5 +75,16 @@ describe("rgbaOfBrush", () => {
     );
     assert.equal(rgbaOfBrush({}), null);
     assert.equal(rgbaOfBrush(null), null);
+  });
+});
+
+describe("composite", () => {
+  test("half-opaque black over white is mid grey, and the result is opaque", () => {
+    const result = composite({
+      top: color("rgba(0, 0, 0, 0.5)"),
+      bottom: color("white")
+    });
+    assert.equal(result.alpha, 255);
+    assert.ok(Math.abs(result.red - 127.5) < 1.5);
   });
 });

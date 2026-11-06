@@ -15,12 +15,24 @@ import {
 import type { DependencyObject } from "#src/components/generated/bindings.js";
 import type { NativeValue } from "#src/native-value.js";
 import { projectAs, releaseProjected } from "#winui/lifetime";
+import type { AutomationPeer } from "#winui/microsoft/ui/xaml/automation/peers/AutomationPeer";
 import {
   FrameworkElementAutomationPeer
 } from "#winui/microsoft/ui/xaml/automation/peers/FrameworkElementAutomationPeer";
 
 const DEFAULT_FONT_SIZE = 14;
 const DEFAULT_FONT_WEIGHT = 400;
+
+const NO_PEER_FACTS = {
+  className: "Element",
+  controlType: "Group",
+  name: "",
+  automationId: "",
+  hasLabeledBy: false,
+  accessKey: "",
+  isEnabled: true,
+  isKeyboardFocusable: false
+};
 
 const controlTypeNames = new Map<NativeValue, string>(
   Object.entries(AutomationControlType).map(([name, value]) => [value, name])
@@ -107,6 +119,25 @@ function peerOf(element: UIElement) {
   return existing ?? FrameworkElementAutomationPeer.createPeerForElement(element);
 }
 
+/** What UI Automation says of an element; a layout panel has no peer, and says nothing. */
+function automationFactsOf(peer: AutomationPeer | null) {
+  const isPeerMissing = peer == null;
+  if (isPeerMissing) {
+    return NO_PEER_FACTS;
+  }
+
+  return {
+    className: peer.getClassName(),
+    controlType: controlTypeNames.get(peer.getAutomationControlType()) ?? "Custom",
+    name: peer.getName(),
+    automationId: peer.getAutomationId(),
+    hasLabeledBy: peer.getLabeledBy() != null,
+    accessKey: peer.getAccessKey(),
+    isEnabled: peer.isEnabled(),
+    isKeyboardFocusable: peer.isKeyboardFocusable()
+  };
+}
+
 /** What UI Automation and the element's brushes say of one element; null for a collapsed one. */
 function factsOf(element: DependencyObject) {
   const visual = projectAs(element, UIElement);
@@ -117,17 +148,9 @@ function factsOf(element: DependencyObject) {
       return null;
     }
 
-    const peer = peerOf(visual);
     return {
-      className: peer.getClassName(),
-      controlType: controlTypeNames.get(peer.getAutomationControlType()) ?? "Custom",
-      name: peer.getName(),
-      automationId: peer.getAutomationId(),
-      hasLabeledBy: peer.getLabeledBy() != null,
-      accessKey: peer.getAccessKey(),
-      isEnabled: peer.isEnabled(),
+      ...automationFactsOf(peerOf(visual)),
       isTabStop: visual.isTabStop,
-      isKeyboardFocusable: peer.isKeyboardFocusable(),
       hasAccelerator: (visual.keyboardAccelerators?.size ?? 0) > 0,
       width: framework.actualWidth,
       height: framework.actualHeight,

@@ -186,6 +186,21 @@ describe("auditTree", () => {
     assert.deepEqual(ruleIds(pale, translucent), []);
   });
 
+  test("a translucent background is mixed with the solid one behind it", () => {
+    const veil = element({
+      facts: {
+        background: color("white")
+      },
+      children: [element({
+        facts: {
+          background: color("rgba(0, 0, 0, 0.5)")
+        },
+        children: [text({ foreground: color("#000000") }), text({ foreground: color("#ffffff") })]
+      })]
+    });
+    assert.deepEqual(ruleIds(veil), ["low-contrast-text"]);
+  });
+
   test("a collapsed element and what is under it are skipped", () => {
     const collapsed = element({
       facts: null,

@@ -1,4 +1,4 @@
-import { contrastRatio } from "./contrast.ts";
+import { composite, contrastRatio } from "./contrast.ts";
 import type { Rgba } from "./contrast.ts";
 import { accessibilityRules } from "./rules.ts";
 import type { AccessibilityRuleId } from "./rules.ts";
@@ -61,6 +61,26 @@ function isLargeText({ fontSize, fontWeight }: ElementFacts) {
   return fontSize >= LARGE_TEXT_SIZE || isLargeBold;
 }
 
+// A translucent background shows as it falls on the one behind it; none is known without a solid one under it.
+function backgroundOver({ layer, inherited }: {
+  layer: Rgba | null;
+  inherited: Rgba | null;
+}) {
+  const isTransparent = layer === null || layer.alpha === 0;
+  if (isTransparent) {
+    return inherited;
+  }
+
+  if (isOpaque(layer)) {
+    return layer;
+  }
+
+  return inherited === null ? null : composite({
+    top: layer,
+    bottom: inherited
+  });
+}
+
 function contrastOf({ facts, background }: Visited) {
   const { foreground } = facts;
   const isResolvable = isOpaque(foreground) && background !== null;
@@ -84,12 +104,15 @@ function walk<Element extends object>({ host, element, parent, index, visited }:
   }
 
   const inherited = parent?.background ?? null;
-  const own = isOpaque(facts.background) ? facts.background : null;
+  const own = backgroundOver({
+    layer: facts.background,
+    inherited
+  });
   const prefix = parent === null ? "" : `${parent.path}/`;
   const here = {
     path: `${prefix}${facts.className}[${index}]`,
     facts,
-    background: own ?? inherited
+    background: own
   };
   visited.push(here);
   for (const [iChild, child] of host.childrenOf(element).entries()) {

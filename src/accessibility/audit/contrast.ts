@@ -128,3 +128,22 @@ export function contrastRatio({ foreground, background }: {
   const second = luminance(background);
   return (Math.max(first, second) + LUMINANCE_FLARE) / (Math.min(first, second) + LUMINANCE_FLARE);
 }
+
+/**
+ * The colour a translucent colour shows as over an opaque one.
+ *
+ * @param layers - The colour on top and the opaque colour under it.
+ * @returns The opaque result.
+ */
+export function composite({ top, bottom }: {
+  top: Rgba;
+  bottom: Rgba;
+}) {
+  const weight = top.alpha / MAX_CHANNEL;
+  return {
+    alpha: MAX_CHANNEL,
+    red: top.red * weight + bottom.red * (1 - weight),
+    green: top.green * weight + bottom.green * (1 - weight),
+    blue: top.blue * weight + bottom.blue * (1 - weight)
+  };
+}
