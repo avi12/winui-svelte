@@ -34,6 +34,7 @@ export { ElementTheme } from "#winui/microsoft/ui/xaml/ElementTheme";
 export { DisplayArea } from "#winui/microsoft/ui/windowing/DisplayArea";
 export { DisplayAreaFallback } from "#winui/microsoft/ui/windowing/DisplayAreaFallback";
 export { OverlappedPresenter } from "#winui/microsoft/ui/windowing/OverlappedPresenter";
+export { OverlappedPresenterState } from "#winui/microsoft/ui/windowing/OverlappedPresenterState";
 export { WindowActivationState } from "#winui/microsoft/ui/xaml/WindowActivationState";
 export { FrameworkElement } from "#winui/microsoft/ui/xaml/FrameworkElement";
 export { projectAs } from "#winui/lifetime";

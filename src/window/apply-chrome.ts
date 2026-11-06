@@ -55,6 +55,13 @@ export function applyPresentation({ appWindow, presentation }: {
   appWindow.setPresenterByKind(PRESENTER_KINDS[presentation]);
 }
 
+/** The presentation the window has now, read back from its presenter. */
+export function presentationOf(appWindow: AppWindow) {
+  const { kind } = appWindow.presenter;
+  const found = Object.values(WindowPresentation).find(presentation => PRESENTER_KINDS[presentation] === kind);
+  return found ?? WindowPresentation.windowed;
+}
+
 /** Makes the content, and the caption buttons, light or dark, or the system's. */
 export function applyTheme({ appWindow, content, theme }: {
   appWindow: AppWindow;

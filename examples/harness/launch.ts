@@ -44,6 +44,9 @@ const { values, positionals } = parseArgs({
     hidden: {
       type: "string"
     },
+    stateKey: {
+      type: "string"
+    },
     "host-process": {
       type: "string"
     }

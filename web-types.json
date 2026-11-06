@@ -19482,6 +19482,13 @@
               }
             },
             {
+              "name": "stateKey",
+              "description": "Keeps the window where its user leaves it: a name (the same on every run) under which its bounds, maximized or minimized state and presentation are saved in the app's local data folder, and restored before the window first shows, inside the work area of the nearest display (a display that is gone, or a smaller one, never leaves it off screen; a changed scale resizes it to match). The first run, and a file that is missing or unreadable, use `placement` or the centered default. Read once, before the window opens.",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
               "name": "owner",
               "description": "The window this one belongs to: it stays above it, and closes, minimizes and restores with it. Read once, before the window opens."
             },

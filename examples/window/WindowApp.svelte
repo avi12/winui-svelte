@@ -12,6 +12,7 @@
     MicaBackdrop,
     MicaKind,
     NonClientRegionKind,
+    OverlappedPresenterState,
     projectAs,
     SystemCompositionColorBrush,
     TitleBarHeightOption
@@ -44,6 +45,9 @@
 
   // svelte-ignore state_referenced_locally
   let backdrop = $state(backdropOf(host.options["backdrop"]));
+  // Read once, as the prop is: a window with a state key restores its place.
+  // svelte-ignore state_referenced_locally
+  const STATE_KEY = host.options["stateKey"];
   let title = $state("Window example");
   let presentation = $state<WindowPresentation | undefined>();
   let theme = $state<WindowTheme | undefined>();
@@ -150,6 +154,7 @@
       y: appWindow?.position.y,
       minimumWidth: overlappedPresenter()?.preferredMinimumWidth,
       isMaximizable: overlappedPresenter()?.isMaximizable,
+      isMaximized: overlappedPresenter()?.state === OverlappedPresenterState.Maximized,
       boundsReports,
       lastBounds,
       activations,
@@ -213,6 +218,17 @@
       });
       report("moved");
     }],
+    ["resize", command => {
+      handle?.appWindow.resize({
+        width: Number(command["width"]),
+        height: Number(command["height"])
+      });
+      report("resized");
+    }],
+    ["maximize", () => {
+      handle?.maximize();
+      report("maximized");
+    }],
     ["blockClose", command => {
       isCloseBlocked = command["value"] === true;
       report("blockClose");
@@ -254,7 +270,7 @@
   {captionButtons}
   {dragRegions}
   height={WINDOW_HEIGHT}
-  isMaximizable={false}
+  isMaximizable={STATE_KEY !== undefined}
   minWidth={WINDOW_MIN_WIDTH}
   onactivechanged={isActive => {
     if (isActive) {
@@ -277,6 +293,7 @@
     scaleChanges++;
   }}
   {presentation}
+  stateKey={STATE_KEY}
   {theme}
   {title}
   {titleBarHeight}

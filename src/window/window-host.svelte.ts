@@ -29,6 +29,7 @@ import {
 import { createScaleTracker } from "./scale.ts";
 import { onTeardown } from "./teardown.ts";
 import { WindowHandle } from "./window-handle.ts";
+import { windowStateFile, WindowStateKeeper } from "./window-state-keeper.ts";
 import type { FrameworkElement } from "#src/winui.js";
 import {
   DisplayArea,
@@ -206,6 +207,17 @@ export interface WindowProps {
   isCentered?: boolean;
 
   /**
+   * Keeps the window where its user leaves it: a name (the same on every run)
+   * under which its bounds, maximized or minimized state and presentation are
+   * saved in the app's local data folder, and restored before the window first
+   * shows, inside the work area of the nearest display (a display that is gone,
+   * or a smaller one, never leaves it off screen; a changed scale resizes it to
+   * match). The first run, and a file that is missing or unreadable, use
+   * `placement` or the centered default. Read once, before the window opens.
+   */
+  stateKey?: string | undefined;
+
+  /**
    * The window this one belongs to: it stays above it, and closes, minimizes
    * and restores with it. Read once, before the window opens.
    */
@@ -324,6 +336,7 @@ class WindowHost {
   private isClipApplied = false;
   private isTopApplied = false;
   private hasShown = false;
+  private readonly keeper: WindowStateKeeper | null;
   private isFitting = false;
   private scroller: ScrollViewer | null = null;
   private readonly isTakenOver: boolean;
@@ -351,6 +364,11 @@ class WindowHost {
     const window = orphan ?? new Window();
     this.isTakenOver = orphan !== undefined;
     this.handle = new WindowHandle(window);
+    const { stateKey } = props;
+    this.keeper = isGiven(stateKey) ? new WindowStateKeeper({
+      handle: this.handle,
+      file: windowStateFile(stateKey)
+    }) : null;
 
     const isNewBackgroundWindow = isBackgroundRun() && !this.isTakenOver;
     if (isNewBackgroundWindow) {
@@ -398,6 +416,7 @@ class WindowHost {
       unsubscribe();
     }
 
+    this.keeper?.cancel();
     this.handle.guardClose(() => false);
 
     if (isClosedLater) {
@@ -822,6 +841,11 @@ class WindowHost {
     const { props } = this;
     const { appWindow } = this.handle.window;
     const { scale } = this.handle;
+    const isRestored = this.keeper?.restore({ isPresentationFree: props.presentation === undefined }) === true;
+    if (isRestored) {
+      return;
+    }
+
     const current = this.openSize ?? appWindow.size;
     const size = {
       width: props.width === undefined ? current.width : toDevicePixels({
@@ -990,8 +1014,15 @@ class WindowHost {
     }
   }
 
+  // Asked on both ways a window closes (handle.close() does not raise
+  // AppWindow.Closing); a window that is going is saved where it stands.
   private isCloseRefused() {
-    return this.props.onclosing?.() === true;
+    const isRefused = this.props.onclosing?.() === true;
+    if (!isRefused) {
+      this.keeper?.saveNow();
+    }
+
+    return isRefused;
   }
 
   private listen() {
@@ -1015,6 +1046,11 @@ class WindowHost {
         const isMoved = event.didPositionChange || event.didSizeChange;
         if (isMoved) {
           this.reportBounds();
+        }
+
+        const isStateChange = isMoved || event.didPresenterChange;
+        if (isStateChange) {
+          this.keeper?.changed();
         }
 
         if (event.didSizeChange) {
@@ -1060,6 +1096,7 @@ class WindowHost {
     const isToShow = !isHidden && !this.isTakenOver;
     if (isToShow) {
       this.showWindow();
+      this.keeper?.restoreState();
     }
 
     this.hasShown = true;

@@ -14,7 +14,8 @@ import { test } from "node:test";
 // the quota, the debounced atomic write to a file, reload, corrupt files,
 // events and uninstall. A manual scheduler stands in for the timers.
 
-const { atomicFile, installWebStorage, StorageEvent } = await import("./web-storage.ts");
+const { installWebStorage, StorageEvent } = await import("./web-storage.ts");
+const { atomicFile } = await import("./atomic-file.ts");
 
 type Options = NonNullable<Parameters<typeof installWebStorage>[0]>;
 
