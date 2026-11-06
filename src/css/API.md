@@ -202,6 +202,7 @@ window in, with or without a `<style>` that uses the property
 | `winui-svelte/css/clip` | `clip-path` | Clip shapes |
 | `winui-svelte/css/cursor` | `cursor` | Cursor |
 | `winui-svelte/css/control` | `font-stretch`, `direction`, `background-clip`, `tab-index` | Control properties (`controlGroups`) |
+| `winui-svelte/css/typography` | `font-variant`, `font-variant-*`, `font-kerning`, `font-feature-settings`, `font-optical-sizing` | Typography (`typographyGroups`) |
 | `winui-svelte/css/shape` | `fill`, `stroke-dasharray`, `stroke-dashoffset`, `stroke-linecap`, `stroke-linejoin`, `stroke-miterlimit`, `rx`, `ry`, `fill-rule` | Shapes |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `box-shadow` | Elevation |
@@ -458,6 +459,72 @@ name, in any sheet or prop, is then handed to WinUI as
 `ms-appx:///C:/app/Face.ttf#Face` (a `file:` URI is not read by WinUI)
 Register a font before the first window shows text: a font registered later is
 used by the controls created after it
+
+## Typography: OpenType features and the type ramp
+
+WinUI draws a TextBlock's OpenType features through the `Typography` attached
+properties (`Typography.Capitals`, `Typography.StylisticSet1`...), and the
+module `winui-svelte/css/typography` lowers the CSS properties onto them
+A sheet imports it when it has one of these properties; one that has none
+bundles none of it
+
+| Property | Typography property it sets |
+|---|---|
+| `font-variant-caps` | `Capitals`: `small-caps`, `all-small-caps`, `petite-caps`, `all-petite-caps`, `unicase`, `titling-caps` |
+| `font-variant-numeric` | `NumeralStyle` (`lining-nums`, `oldstyle-nums`), `NumeralAlignment` (`proportional-nums`, `tabular-nums`), `Fraction` (`diagonal-fractions`, `stacked-fractions`), `Variants` (`ordinal`), `SlashedZero` |
+| `font-variant-position` | `Variants`: `sub`, `super` |
+| `font-variant-ligatures` | `StandardLigatures`, `ContextualLigatures`, `DiscretionaryLigatures`, `HistoricalLigatures`, `ContextualAlternates`; `none` turns all five off |
+| `font-variant-alternates` | `HistoricalForms` (`historical-forms`) |
+| `font-variant-east-asian` | `EastAsianLanguage`, `EastAsianWidths`, `Variants` (`ruby`) |
+| `font-kerning` | `Kerning`: `none` turns it off, `auto` and `normal` on |
+| `font-feature-settings` | any OpenType tag WinUI has a property for, as `"tag"`, `"tag" on`, `"tag" off` or `"tag" 2`: `ss01` to `ss20`, `smcp`, `c2sc`, `pcap`, `c2pc`, `unic`, `titl`, `lnum`, `onum`, `pnum`, `tnum`, `frac`, `afrc`, `sups`, `subs`, `ordn`, `sinf`, `ruby`, `zero`, `liga`, `clig`, `dlig`, `hlig`, `calt`, `kern`, `case`, `cpsp`, `hist`, `mgrk`, `expt`, the East Asian forms and widths, and the counts `salt`, `swsh`, `cswh` and `nalt` |
+| `font-variant` | the shorthand: each keyword goes to the longhand that takes it, and the longhands it does not name go back to `normal` |
+| `font-optical-sizing` | `auto` only |
+
+`normal` puts a property back to its default, and does not undo what another
+longhand of the same rule sets on a property
+`font-feature-settings` applies after the `font-variant` properties, as in CSS,
+so where both set a property the feature wins
+WinUI holds one value per property: two words that set `Typography.Variants`
+differently (`font-variant-position: super` with `font-variant-numeric:
+ordinal`) are an error
+
+Rejected, each with the reason in the message:
+
+| Value | Why |
+|---|---|
+| `font-variation-settings` | WinUI has no API for a variable font's axes; name an instance in `font-family` (`"Segoe UI Variable Display"`), and set `font-weight` and `font-stretch` |
+| `font-optical-sizing: none` | DirectWrite applies a variable font's optical size axis from the font size, and nothing turns it off |
+| a functional `font-variant-alternates` (`stylistic()`, `styleset()`, `character-variant()`, `swash()`, `ornaments()`, `annotation()`) | each names an `@font-feature-values` entry, which WinUI has no counterpart for; write the feature in `font-feature-settings` (`"ss02"`, `"salt" 2`, `"swsh" 1`) |
+| `font-feature-settings` with a tag WinUI has no property for (`cv01`, `aalt`...) | the message lists the tags it sets |
+
+```css
+.price { font-variant-numeric: oldstyle-nums tabular-nums }
+.label { font-variant-caps: all-small-caps; font-feature-settings: "ss06", "salt" 2 }
+```
+
+A font that lacks a feature draws without it, as in a browser
+
+### The type ramp: `font: var(--type-body)`
+
+`font` takes a step of WinUI's type ramp as `var(--type-<step>)`, and sets the
+font size resource of WinUI's style for it (`{ThemeResource TitleTextBlockFontSize}`)
+and the weight of that style, so the size follows WinUI's
+
+| Step | Style it matches | Weight |
+|---|---|---|
+| `--type-caption` | `CaptionTextBlockStyle` | normal |
+| `--type-body` | `BodyTextBlockStyle` | normal |
+| `--type-body-strong` | `BodyStrongTextBlockStyle` | semi bold |
+| `--type-body-large` | `BodyLargeTextBlockStyle` | normal |
+| `--type-subtitle` | `SubtitleTextBlockStyle` | semi bold |
+| `--type-title` | `TitleTextBlockStyle` | semi bold |
+| `--type-title-large` | `TitleLargeTextBlockStyle` | semi bold |
+| `--type-display` | `DisplayTextBlockStyle` | semi bold |
+
+Any other `var(--type-...)` is an error that lists the steps
+The step is a build-time shorthand (it needs no module), and the rest of
+`font` is as before: `font: italic bold 16px Georgia`
 
 ## Animations: `animation`, `@keyframes`
 
@@ -1332,6 +1399,7 @@ Declarations like these fail the build with it:
 | `text-transform: uppercase`, `lowercase`, `capitalize` | the text an element shows is written through the change, in a `<text-block>`, a `<run>`, a button's content and the text of an inline element: the tree keeps the text as written, and the control reports the changed one (`none` is no change; an inherited transform is not: write it on the element that holds the text) |
 | `user-select`, `object-fit`, `line-clamp` (`-webkit-line-clamp`), `word-break` | `IsTextSelectionEnabled`, an image's `Stretch` (`contain` is `Uniform`, `cover` `UniformToFill`; `scale-down` is an error), `MaxLines` (with `Wrap` and an ellipsis, which `text-wrap` and `text-overflow` override), `TextWrapping` |
 | `caret-color`, `text-box-trim`, `background-clip: content-box` and `text` | the bindings have no `CaretBrush`, and no WinUI property trims the line box the way `text-box-trim` does; a WinUI background paints to the `OuterBorderEdge` (`border-box`) or the `InnerBorderEdge` (`padding-box`) only |
+| `font-variation-settings` | WinUI has no API for a variable font's axes (see Typography) |
 | `float`, `flex-wrap` other than `nowrap`, `content`, `list-style`, `text-indent` | no WinUI equivalent in a Style; each message names the nearest WinUI way |
 | `text-transform: full-width` and `full-size-kana` | WinUI has no such transform of a string (`uppercase`, `lowercase` and `capitalize` work) |
 | the container properties in an `@media`, in a stylesheet that is not a component, or on a container that is a component | the build lowers them against the component's markup; elsewhere the message says where they work |
