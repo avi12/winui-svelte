@@ -1,3 +1,4 @@
+import { ExpressionKind, numberText, reference, scalar } from "#src/composition/expression.js";
 import { RangeName, ScrollAxis } from "#src/css/parse/scroll-timeline.js";
 import type {
   Offset,
@@ -71,7 +72,6 @@ export const LinkProperty = {
   PROGRESS: "Progress"
 } as const;
 
-const FRACTION_DIGITS = 6;
 const MIN_SPAN = 0.001;
 
 function resolved({ offset, whole }: {
@@ -172,8 +172,26 @@ export function rangeOffsets({ geometry, start, end }: {
   };
 }
 
-function numberText(value: number) {
-  return String(Number(value.toFixed(FRACTION_DIGITS)));
+// The scroll viewer's manipulation property set and the link's own, as
+// expressions read them; the link binds both by name when it starts.
+function scrollerReference() {
+  return reference({
+    name: ExpressionParameter.SCROLLER,
+    members: {
+      translation: ExpressionKind.VECTOR3
+    }
+  });
+}
+
+function linkReference() {
+  return reference({
+    name: ExpressionParameter.LINK,
+    members: {
+      [LinkProperty.START]: ExpressionKind.SCALAR,
+      [LinkProperty.END]: ExpressionKind.SCALAR,
+      [LinkProperty.PROGRESS]: ExpressionKind.SCALAR
+    }
+  });
 }
 
 /**
@@ -186,11 +204,15 @@ export function progressExpression({ axis, isReversed }: {
   axis: ScrollAxis;
   isReversed: boolean;
 }) {
-  const component = axis === ScrollAxis.HORIZONTAL ? "X" : "Y";
-  const offset = `-${ExpressionParameter.SCROLLER}.Translation.${component}`;
-  const link = ExpressionParameter.LINK;
-  const progress = `Clamp((${offset} - ${link}.${LinkProperty.START}) / (${link}.${LinkProperty.END} - ${link}.${LinkProperty.START}), 0, 1)`;
-  return isReversed ? `1 - ${progress}` : progress;
+  const { translation } = scrollerReference();
+  const link = linkReference();
+  const start = link[LinkProperty.START];
+  const offset = (axis === ScrollAxis.HORIZONTAL ? translation.x : translation.y).negated();
+  const progress = offset.minus(start).dividedBy(link[LinkProperty.END].minus(start)).clamped({
+    min: 0,
+    max: 1
+  });
+  return isReversed ? scalar(1).minus(progress).text : progress.text;
 }
 
 /**
@@ -219,16 +241,33 @@ export function trackExpression({ track, underlying }: {
       value: underlying
     }] : []
   ];
-  const progress = `${ExpressionParameter.LINK}.${LinkProperty.PROGRESS}`;
+  const progress = linkReference()[LinkProperty.PROGRESS];
   const segments = points.slice(1).map((point, i) => {
     const previous = points[i];
     const from = previous?.value ?? 0;
     const span = point.offset - (previous?.offset ?? 0);
     const isFirst = i === 0;
-    const amount = `Clamp((${progress} - ${numberText(previous?.offset ?? 0)}) / ${numberText(Math.max(span, MIN_SPAN))}, 0, 1)`;
-    return isFirst ? `Lerp(${numberText(from)}, ${numberText(point.value)}, ${amount})` : `Lerp(0, ${numberText(point.value - from)}, ${amount})`;
+    const amount = progress.minus(previous?.offset ?? 0).dividedBy(Math.max(span, MIN_SPAN)).clamped({
+      min: 0,
+      max: 1
+    });
+    return scalar(isFirst ? from : 0).lerp({
+      to: isFirst ? point.value : point.value - from,
+      amount
+    });
   });
-  return segments.length === 0 ? numberText(underlying) : segments.join(" + ");
+  const [head, ...rest] = segments;
+  const isEmpty = head === undefined;
+  if (isEmpty) {
+    return numberText(underlying);
+  }
+
+  let sum = head;
+  for (const segment of rest) {
+    sum = sum.plus(segment);
+  }
+
+  return sum.text;
 }
 
 /** One animation linked to a scroll or view timeline, resolved by the build. */
