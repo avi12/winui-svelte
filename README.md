@@ -543,7 +543,7 @@ build error with its file and line; nothing is silently ignored
 | `translate`, `scale`, `rotate`, `transform-origin`, `transition`; `transform` (translate, scale, rotate, skew, matrix) | the UIElement transforms, their pivot (`CenterPoint`, 50% 50% as in CSS) and their implicit transitions; `transition` also runs a Storyboard for `width`, `height`, `min-` and `max-` sizes, `font-size`, `color` and `border-color` between values written out, and `allow-discrete` steps any keyword property: `display 200ms allow-discrete` keeps a hidden element shown until the transition ends, `text-align 200ms allow-discrete` changes it at the middle |
 | `var(--card-background-fill-color-default)` | `{ThemeResource CardBackgroundFillColorDefault}`: WinUI's own resources, so light and dark follow Windows |
 | `--name: value` on `:root`, or on a class | an app-wide resource, or one only the elements with that class (and their templates) see: `.danger { --button-background-pointer-over: red }` |
-| `.class`, `type`, `:hover`, `:focus`, `:active`, `:root`, `:where()` | class and type matching, the control's events, custom properties |
+| `.class`, `type`, `:hover`, `:focus`, `:active`, `:root`, `:where()` | class and type matching, the control's events (a Button's `:hover`, `:active` and `:disabled` brushes as the visual states of its template, see [`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md#pseudo-classes-on-a-templated-control-visual-states)), custom properties |
 
 </details>
 
@@ -887,7 +887,7 @@ conditions on `exports`), which your Vite compiles (`winuiSvelte()`)
 | `winui-svelte/view-transitions` | `installViewTransitions`: `document.startViewTransition` over WinUI's connected animations, paired by `view-transition-name` (opt-in) |
 | `winui-svelte/connected-animation` | `connectElement` and `startConnected`, WinUI's connected animation between pages |
 | `winui-svelte/composition` | `animateOnCompositor`, `compositorAnimation`, `visualReference`, `createPropertySet` and springs: typed expression and spring animations the compositor runs off the UI thread (opt-in; [`API.md`](https://github.com/avi12/winui-svelte/blob/main/API.md#composition-animations-winui-sveltecomposition)) |
-| `winui-svelte/css/transform`, `/css/animation`, `/css/scroll-timeline`, `/css/typography`, `/css/effects`, `/css/filter`, `/css/clip`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/queries`, `/css/environment`, `/css/compat`, `/css/resources`, `/css/view-transition` | the opt-in CSS groups: 2D transform, animations, OpenType typography, aspect ratio, filters and masks, clip shapes, focus visuals, surfaces, position and inset, media and container queries, media preferences and display features, browser-stylesheet properties, theme resources, view transition names ([`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md)) |
+| `winui-svelte/css/transform`, `/css/animation`, `/css/scroll-timeline`, `/css/typography`, `/css/visual-states`, `/css/effects`, `/css/filter`, `/css/clip`, `/css/focus`, `/css/surface`, `/css/position`, `/css/container`, `/css/queries`, `/css/environment`, `/css/compat`, `/css/resources`, `/css/view-transition` | the opt-in CSS groups: 2D transform, animations, OpenType typography, the state brushes of a Button, aspect ratio, filters and masks, clip shapes, focus visuals, surfaces, position and inset, media and container queries, media preferences and display features, browser-stylesheet properties, theme resources, view transition names ([`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md)) |
 | `winui-svelte/css`, `/css/vite`, `/css/sheet-module`, `/css/gradients`, `/css/shape`, `/css/control`, `/css/stylesheet` | the CSS runtime, its Vite plugin, the sheet module compiler, the gradient parser a sheet with a gradient imports and the type declaration for a `.css` import ([`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md)) |
 | `winui-svelte/preprocess`, `winui-svelte/stylelint`, `winui-svelte/vscode-css-data.json` | the editor side of the CSS: a Svelte preprocessor, a stylelint rule and VS Code custom data, all from the same validator and tables, so the editor, the linter and the build say the same thing ([`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md#diagnostics-in-the-editor-the-linter-and-the-build)) |
 
@@ -988,13 +988,16 @@ Stated plainly, so nobody finds them by surprise:
 - **A property whose name starts with "on"** (`ToggleSwitch.OnContent`) is a
   prop on components, but on a raw element Svelte takes the attribute for an
   event: write it as `On-content="On"` or `on-content={() => "On"}`
-- **No `:hover` or `:active` miracles on templated controls.** A pseudo-class
-  applies a Style when the control reports the event, but WinUI's own template
-  states (a Button's pointer-over and pressed brushes) take over from a Style's
-  setters while they are active, and a control that handles an event itself (a
-  Button handles `PointerPressed`) never reports it, so `:active` does nothing
-  there
-  Override the control's theme resources instead
+- **`:hover`, `:active` and `:disabled` reach a templated control as visual
+  states for a Button, not for every control.** On a `button`,
+  `repeat-button`, `hyperlink-button` and `drop-down-button` a rule's
+  `background-color`, `background-image`, `color` and `border-color` become
+  the `PointerOver`, `Pressed` and `Disabled` states of its template, so
+  `:active` works where the control handles the pointer itself
+  Any other control, any other property, `:checked` and a Button's `:focus`
+  stay a Style when the control reports the event, which WinUI's template
+  states take over from while they are active; override the control's theme
+  resources there ([`src/css/API.md`](https://github.com/avi12/winui-svelte/blob/main/src/css/API.md#pseudo-classes-on-a-templated-control-visual-states))
 - **Transitions on a raw element.** `blur` and `draw` need
   `winui-svelte/element-effects` (the Vite plugin turns it on for a component
   that imports either), and without it `blur` only fades; a directive goes on a
