@@ -27028,6 +27028,104 @@
           ]
         },
         {
+          "name": "font-variant-numeric",
+          "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+          "values": [
+            "normal",
+            "lining-nums",
+            "oldstyle-nums",
+            "proportional-nums",
+            "tabular-nums",
+            "diagonal-fractions",
+            "stacked-fractions",
+            "ordinal",
+            "slashed-zero"
+          ]
+        },
+        {
+          "name": "font-variant-caps",
+          "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+          "values": [
+            "normal",
+            "small-caps",
+            "all-small-caps",
+            "petite-caps",
+            "all-petite-caps",
+            "unicase",
+            "titling-caps"
+          ]
+        },
+        {
+          "name": "font-variant-position",
+          "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+          "values": [
+            "normal",
+            "sub",
+            "super"
+          ]
+        },
+        {
+          "name": "font-variant-ligatures",
+          "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+          "values": [
+            "normal",
+            "none",
+            "common-ligatures",
+            "no-common-ligatures",
+            "discretionary-ligatures",
+            "no-discretionary-ligatures",
+            "historical-ligatures",
+            "no-historical-ligatures",
+            "contextual",
+            "no-contextual"
+          ]
+        },
+        {
+          "name": "font-variant-alternates",
+          "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+          "values": [
+            "normal",
+            "historical-forms"
+          ]
+        },
+        {
+          "name": "font-variant-east-asian",
+          "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+          "values": [
+            "normal",
+            "jis78",
+            "jis83",
+            "jis90",
+            "jis04",
+            "simplified",
+            "traditional",
+            "full-width",
+            "proportional-width",
+            "ruby"
+          ]
+        },
+        {
+          "name": "font-kerning",
+          "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+          "values": [
+            "auto",
+            "normal",
+            "none"
+          ]
+        },
+        {
+          "name": "font-feature-settings",
+          "description": "WinUI: sets the Typography attached properties for these OpenType features, written as \"tag\" on, off or a whole number: ss01, ss02, ss03, ss04, ss05, ss06, ss07, ss08, ss09, ss10, ss11, ss12, ss13, ss14, ss15, ss16, ss17, ss18, ss19, ss20, smcp, c2sc, pcap, c2pc, unic, titl, lnum, onum, pnum, tnum, frac, afrc, sups, subs, ordn, sinf, ruby, jp78, jp83, jp90, jp04, hojo, nlck, smpl, trad, tnam, fwid, hwid, pwid, qwid, twid, zero, liga, clig, dlig, hlig, calt, kern, case, cpsp, hist, mgrk, expt, salt, swsh, cswh, nalt. Any other tag is an error."
+        },
+        {
+          "name": "font-optical-sizing",
+          "description": "WinUI: only auto, since DirectWrite applies a variable font's optical size axis from the font size and nothing turns it off."
+        },
+        {
+          "name": "font-variant",
+          "description": "WinUI: sets the Typography attached properties of the font-variant-* longhands it names (caps, numeric, ligatures, position, alternates, east-asian) and puts the others back to normal."
+        },
+        {
           "name": "animation-timeline",
           "description": "WinUI: links an animation to a scroll viewer through Composition. Values: auto, none, scroll([nearest | root | self] [block | inline | x | y]), view([axis] [inset]) or a name a scroll-timeline-name or view-timeline-name gave. It drives opacity, translate, scale and rotate only, straight (animation-timing-function: linear)."
         },

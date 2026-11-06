@@ -8,6 +8,8 @@ import {
 } from "#src/css/translate/discrete-properties.js";
 import { GRID_TRACK_PROPERTIES } from "#src/css/translate/grid-track-verdicts.js";
 import { CONTROL_KEYWORDS } from "#src/css/translate/text-control-properties.js";
+import { TYPOGRAPHY_KEYWORDS, typographyFeatures } from "#src/css/translate/typography-properties.js";
+import type { TypographyKeywords } from "#src/css/translate/typography-properties.js";
 import { WINUI_ONLY_PROPERTIES } from "#src/css/translate/winui-only-properties.js";
 
 const CUSTOM_DATA_VERSION = 1.1;
@@ -23,6 +25,23 @@ const TIMELINE_DESCRIPTION = "WinUI: links an animation to a scroll viewer throu
 const RANGE_DESCRIPTION = "WinUI: the part of a scroll or view timeline the animation spans. normal, a length in px or a percentage; a view timeline also takes cover, contain, entry, exit, entry-crossing and exit-crossing with an offset.";
 
 const LAYOUT_ALIGNMENT_DESCRIPTION = "WinUI: on a stack panel or grid the build lowers it into the children (each child's align-self or justify-self, or spacer tracks), so it applies to a container written in the component, outside an @media.";
+
+const FEATURE_SETTINGS_DESCRIPTION = `WinUI: sets the Typography attached properties for these OpenType features, written as "tag" on, off or a whole number: ${[...typographyFeatures().keys()].join(", ")}. Any other tag is an error.`;
+
+const OPTICAL_SIZING_DESCRIPTION = "WinUI: only auto, since DirectWrite applies a variable font's optical size axis from the font size and nothing turns it off.";
+
+const VARIANT_DESCRIPTION = "WinUI: sets the Typography attached properties of the font-variant-* longhands it names (caps, numeric, ligatures, position, alternates, east-asian) and puts the others back to normal.";
+
+function typographyProperty([member, spec]: readonly [string, TypographyKeywords]) {
+  return {
+    name: member,
+    description: "WinUI: sets Typography attached properties; only these keywords are accepted.",
+    values: [...spec.normalWords, ...spec.keywords.keys()].map(word => ({
+      name: word,
+      description: spec.keywords.get(word)?.map(([property, value]) => `Typography.${property}: ${value}`).join(", ") ?? "the defaults"
+    }))
+  };
+}
 
 function discreteProperty(member: string) {
   return {
@@ -75,6 +94,19 @@ export function vscodeCssData() {
           description: `${spec.property}: ${value}`
         }))
       })),
+      ...[...TYPOGRAPHY_KEYWORDS].map(typographyProperty),
+      {
+        name: "font-feature-settings",
+        description: FEATURE_SETTINGS_DESCRIPTION
+      },
+      {
+        name: "font-optical-sizing",
+        description: OPTICAL_SIZING_DESCRIPTION
+      },
+      {
+        name: "font-variant",
+        description: VARIANT_DESCRIPTION
+      },
       {
         name: "animation-timeline",
         description: TIMELINE_DESCRIPTION
