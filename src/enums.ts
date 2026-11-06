@@ -8,6 +8,7 @@ export { LivePriority } from "./accessibility/live-priority.ts";
 export { ActivationKind } from "./app/activation/kinds.ts";
 export { RestartCondition } from "./app/restart-after-crash.ts";
 export * from "./components/generated/enums.ts";
+export { ExpressionKind } from "./composition/expression.ts";
 export { MoveDirection } from "./components/hand-written/items/reorder.ts";
 export { NavigationCacheMode, NavigationMode } from "./components/hand-written/navigation/navigation-stack.ts";
 export { CookieSameSite } from "./messaging/web-view2/cookies.ts";
