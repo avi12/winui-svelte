@@ -287,6 +287,10 @@
       "types": "./dist/app/index.d.ts",
       "default": "./dist/app/index.js"
     },
+    "./app/activation": {
+      "types": "./dist/app/activation/index.d.ts",
+      "default": "./dist/app/activation/index.js"
+    },
     "./window": {
       "types": "./dist/window/index.d.ts",
       "svelte": "./dist/window/index.js",

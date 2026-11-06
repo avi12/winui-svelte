@@ -33,6 +33,8 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()` (opt-in; see App lifecycle) |
+| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
+| `winui-svelte/app/activation` | `src/app/activation/index.ts` | `installProtocolHandlers()`, `registerFileTypes()`, `launchAtLogin()`, `startActivation()`, `ActivationKind` (opt-in; see Activation) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
@@ -2373,6 +2375,96 @@ An opt-in subpath: an app that does not import it does not bundle it
   activates the running copy, or else starts the app with `launch`, and
   resolves with true for the first and false for the second
 
+### Activation (`winui-svelte/app/activation`)
+
+Starting the app from a link, a file or sign-in, without an installer
+An opt-in subpath: an app that does not import it does not bundle it, and
+nothing is written to Windows until a registration function is called
+
+```ts
+import {
+  ActivationKind,
+  installProtocolHandlers,
+  launchAtLogin,
+  registerFileTypes,
+  startActivation,
+} from "winui-svelte/app/activation";
+
+installProtocolHandlers();
+navigator.registerProtocolHandler("note", "https://notes.example/open?uri=%s");
+registerFileTypes({ id: "com.example.notes", extensions: [".note"] });
+launchAtLogin({ id: "com.example.notes", isEnabled: true });
+
+const single = startActivation({
+  key: "com.example.notes",
+  window: mainWindow,
+  extensions: [".note"],
+  onActivation(event) {
+    if (event.kind === ActivationKind.protocol) open(new URL(event.uri));
+    if (event.kind === ActivationKind.file) openFiles(event.files);
+  },
+});
+if (!single.isPrimary) {
+  exitApplication();
+}
+```
+
+| Web API or extra | Windows | Notes |
+|---|---|---|
+| `navigator.registerProtocolHandler(scheme, url)` | `HKCU\Software\Classes\<scheme>` with `URL Protocol` and `shell\open\command` | `url` must hold `%s` (`SyntaxError` otherwise) and is not used further: the handler is always this app |
+| `navigator.unregisterProtocolHandler(scheme, url)` | deletes that key | only a key the package wrote; another program's is left alone |
+| `registerFileTypes({ id, extensions, description })` | a ProgID `<id><extension>` and the extension's `OpenWithProgids` | the app is listed in Open with; the default stays the user's choice |
+| `unregisterFileTypes({ id, extensions })` | deletes both and the empty keys left | returns the extensions removed |
+| `launchAtLogin({ id, isEnabled, arguments })` | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` value `id` | listed in Settings, Apps, Startup; the start arrives as `startup` |
+| `getLaunchAtLogin({ id })` | reads that value | `{ isEnabled, commandLine }`; the user's switch in Settings is not read |
+| `startActivation({ key, onActivation })` | `ensureSingleInstance` and the command line | one `ActivationEvent` per start or redirect |
+
+- `ActivationEvent` is a union on `kind` (`ActivationKind`, also from
+  `winui-svelte/enums`): `launch` (started by hand), `file` (`files`, absolute
+  paths of existing files), `protocol` (`uri`, `scheme`), `startup` (started
+  at sign-in) and `redirect` (a later copy with nothing to open)
+  Every event has `isRedirect`, `arguments` and `workingDirectory`; a link
+  sent by a later copy is `protocol` with `isRedirect: true`
+- A link wins over files, files win over the startup marker; an argument
+  that fits none stays in `arguments`
+  Arguments are checked with a schema (up to 1024 of them, up to 32767
+  characters each, no NUL); a failure goes to `onError`, the rest go on
+- Events arrive in order, one at a time, in the first copy; the later copy
+  gets `isPrimary: false` and exits
+  Redirects are also handed to `launchQueue.enqueueActivation` when you pass
+  `launchQueue`; the first start's command line reaches `launchQueue` through
+  `installLaunch`
+- The command Windows runs is this process's `node.exe`, its flags and its
+  entry script, then `"%1"`; pass `command: { program, arguments }` for a
+  bundled executable
+  The Windows App SDK's `ActivationRegistrationManager` takes an executable path
+  and no arguments, so for `node.exe` it cannot name the script; the registry route is the one it writes underneath, and needs
+  no package identity
+- Security: only `HKEY_CURRENT_USER` is ever opened, never
+  `HKEY_LOCAL_MACHINE`
+  Schemes follow RFC 3986 (a letter, then letters, digits, `+`, `-` and `.`,
+  two characters or more) and `http`, `https`, `file`, `ftp`, `mailto`, `ms-*`
+  and the other system and browser schemes are a `SecurityError`; so are
+  extensions that run code (`.exe`, `.bat`, `.js`, `.lnk` and so on)
+  Every key the package creates carries a `WinuiSvelte` value, and it
+  overwrites or deletes only keys that carry it; a scheme or ProgID that
+  another program owns is an `InvalidStateError`
+  A received link is data: it is validated (no control characters, 8192
+  characters at most) and handed to your code, never run
+  Windows can pass a quote in a link through `"%1"` unescaped, so treat the
+  whole of `uri` as untrusted
+- Needs packaging for: the share target and a default-app claim (a package
+  manifest declares them); unpackaged, the app is offered in Open with and the
+  user picks the default
+- `installProtocolHandlers()` returns the function that removes the two
+  navigator methods; the registrations stay until you unregister them
+  Each registration function takes `registry` (a fake in tests) and `command`
+- `src/app/activation/native.test.ts` registers a protocol, a file type and a
+  startup entry under HKCU with a unique name, reads them with `reg query`,
+  removes them and checks nothing is left, even when it fails;
+  `test/activation.test.ts` starts real second copies with a link, a file and
+  nothing, and checks the first hears each as one event
+
 ### System tray (`winui-svelte/tray`)
 
 WinUI and the Windows App SDK have no notification-area API (apps call
@@ -3143,7 +3235,7 @@ silent failure
   `LaunchParams.targetURL` is the first `scheme:` argument, `files` are the
   existing paths, as the file-system API's own `FileSystemFileHandle` (`name`, `getFile()`, the WinUI-only `path`)
   Launches wait for the consumer; registering the protocol or file type with
-  Windows is the installer's job
+  Windows is `winui-svelte/app/activation`'s job (see Activation)
 
 ### Location and device state
 

@@ -238,7 +238,7 @@ const tsStyleRules = {
   "local/no-padded-tag": "error",
   // Flat Win32 calls are bound in the native.ts files only (src/window/native.ts,
   // src/tray/native.ts, src/tray/standalone/native.ts, src/notice/native.ts
-  // and src/devices/native.ts, and the shared src/win32-calls.ts,
+  // and src/devices/native.ts, src/app/activation/native.ts, and the shared src/win32-calls.ts,
   // exempt below), as a WinUI app keeps every
   // [DllImport] in its Native folder.
   "no-restricted-imports": [
@@ -401,7 +401,7 @@ export default [
   },
   {
     // The files that bind Win32 exports.
-    files: ["src/window/native.ts", "src/notice/native.ts", "src/tray/native.ts", "src/tray/standalone/native.ts", "src/devices/native.ts", "src/web-apis/native.ts", "src/win32-calls.ts", "src/win32-icons.ts"],
+    files: ["src/window/native.ts", "src/notice/native.ts", "src/tray/native.ts", "src/tray/standalone/native.ts", "src/devices/native.ts", "src/web-apis/native.ts", "src/app/activation/native.ts", "src/win32-calls.ts", "src/win32-icons.ts"],
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [
