@@ -226,15 +226,12 @@ function cssPropertiesOf() {
   }));
 }
 
-// The helpers that go after `{@attach}` and the web event names an `enable...` call wires up
-// (`ondrop`), from the data set the editors share.
+// The web event names an `enable...` call wires up (`ondrop`), from the data
+// set the editors share. The `{@attach}` helpers are not listed as JavaScript
+// symbols: WebStorm reads those as globals, and a global named like a local
+// (`const control`) leaves the local reported as unused.
 function jsContributionsOf(data: IdeData) {
   return {
-    symbols: data.attachments.map(attachment => ({
-      name: attachment.name,
-      kind: "Function" as const,
-      description: `${attachment.description}\n\nImport it from \`${attachment.module}\` and write it after \`@attach\``
-    })),
     events: data.webEvents.map(event => ({
       name: event.name,
       description: `The web event, written \`on${event.name}\`; call \`${event.enabledBy}()\` from \`${event.module}\` once at start-up`

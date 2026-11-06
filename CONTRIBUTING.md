@@ -386,8 +386,10 @@ of each theme (`ResourceDocumentationProvider`); the data is `winui-ide-data.jso
 winui-svelte turns the feature off
 
 `web-types.json` also lists the members of every enum prop as completion values
-(`backdrop="mi"` offers `mica`), the `@attach` helpers as JavaScript symbols and
-the web event names as events, all from `winui-ide-data.json`
+(`backdrop="mi"` offers `mica`) and the web event names as events, both from
+`winui-ide-data.json`; the `@attach` helpers are left out, because WebStorm
+reads a JavaScript symbol there as a global, and a local of the same name
+(`const control`) is then reported as unused
 
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each

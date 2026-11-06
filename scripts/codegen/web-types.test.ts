@@ -100,10 +100,9 @@ test("an enum prop completes the values the editors' data set lists, so that bac
   assert.match(clickMode?.values?.[0]?.description ?? "", /^Specifies that the Click event/u);
 });
 
-test("the attachment helpers and the web events are contributions to the JavaScript namespace", () => {
-  const dropzone = js?.symbols.find(symbol => symbol.name === "dropzone");
-  assert.match(dropzone?.description ?? "", /winui-svelte\/data-transfer/u);
+test("the web events are contributions to the JavaScript namespace, the attachment helpers are not", () => {
   assert.equal(js?.events.some(event => event.name === "drop"), true);
+  assert.equal(js !== undefined && "symbols" in js, false);
 });
 
 // WebStorm drops a web-types file that does not follow its schema, and every

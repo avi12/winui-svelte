@@ -36,13 +36,6 @@ export const webTypesSchema = z.object({
       )
     }),
     js: z.object({
-      symbols: z.array(
-        z.strictObject({
-          name: z.string(),
-          kind: z.literal("Function"),
-          description: z.string()
-        })
-      ),
       events: z.array(
         z.strictObject({
           name: z.string(),
