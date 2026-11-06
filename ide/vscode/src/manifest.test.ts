@@ -1,4 +1,5 @@
 import { Destination } from "./attribute-rewriter.ts";
+import { PreviewFeature } from "./css-previews.ts";
 import { Command, Setting } from "./ids.ts";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -42,4 +43,15 @@ test("every setting the code reads is contributed, and the resource hints are on
 
   const hints = manifest.contributes.configuration.properties[`${Setting.SECTION}.${Setting.RESOURCE_HINTS}`];
   assert.equal(hints?.default, true);
+});
+
+test("every preview has a setting that is on by default, and the media environment has its own", () => {
+  const { properties } = manifest.contributes.configuration;
+  for (const feature of Object.values(PreviewFeature)) {
+    assert.equal(properties[`${Setting.SECTION}.${Setting.PREVIEWS}.${feature}`]?.default, true, feature);
+  }
+
+  for (const setting of ["theme", "reducedMotion", "width", "height"]) {
+    assert.equal(`${Setting.SECTION}.${Setting.MEDIA}.${setting}` in properties, true, setting);
+  }
 });

@@ -103,6 +103,67 @@
           "type": "boolean",
           "default": true,
           "description": "Complete the WinUI resource names written as var(--name), and show a light and dark swatch of a color resource in the hover and the list"
+        },
+        "winuiSvelte.previews.gradient": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a bar of the stops beside a linear-gradient() or radial-gradient() and a LinearGradientBrush"
+        },
+        "winuiSvelte.previews.contrast": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the WCAG contrast ratio and its AA or AAA verdict after a text color that sits with a background color in the same rule or tag"
+        },
+        "winuiSvelte.previews.easing": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the curve of a cubic-bezier(), steps(), linear(), named easing or KeySpline, and the timeline of a transition or animation in the hover"
+        },
+        "winuiSvelte.previews.box": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the box model of padding, margin, border-width and border-radius, and the tracks of a grid, in the hover (pixels only)"
+        },
+        "winuiSvelte.previews.declaration": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show in the hover of a CSS declaration the WinUI property it becomes, or why it has no WinUI meaning"
+        },
+        "winuiSvelte.previews.media": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show after an @media condition whether it holds in the assumed environment below"
+        },
+        "winuiSvelte.previews.shadow": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the shadow depth ladder in the hover of -winui-elevation and box-shadow, and the material of a backdrop"
+        },
+        "winuiSvelte.media.theme": {
+          "type": "string",
+          "enum": [
+            "dark",
+            "light"
+          ],
+          "default": "dark",
+          "description": "The theme the @media preview assumes (prefers-color-scheme)"
+        },
+        "winuiSvelte.media.reducedMotion": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the @media preview assumes reduced motion (prefers-reduced-motion)"
+        },
+        "winuiSvelte.media.width": {
+          "type": "number",
+          "default": 1024,
+          "minimum": 1,
+          "description": "The window width in pixels the @media preview assumes"
+        },
+        "winuiSvelte.media.height": {
+          "type": "number",
+          "default": 768,
+          "minimum": 1,
+          "description": "The window height in pixels the @media preview assumes"
         }
       }
     }
