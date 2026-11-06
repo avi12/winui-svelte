@@ -857,7 +857,7 @@ conditions on `exports`), which your Vite compiles (`winuiSvelte()`)
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
 | `winui-svelte/attached-owners` | `preloadAttachedOwners` (the Vite plugin calls it for a component that names `canvasLeft`, `gridRow` and the like, so a placed control has its place at its first layout; a prop named nowhere needs the call by hand) |
 | `winui-svelte/element-effects` | `enableElementEffects` (the Vite plugin calls it from a component that imports `blur` or `draw`): the blur transition blurs for real and `draw` measures a `path`, with Composition and Win2D |
-| `winui-svelte/app` | single-instance handling over a named pipe, and app notifications |
+| `winui-svelte/app` | single-instance handling over a named pipe, app notifications, `relaunch` and restart after a crash |
 | `winui-svelte/bindings/*` | Every bound WinRT and Windows App SDK class as it is named there, for the as-is kind (`winui-svelte/bindings/windows/storage/StorageFolder`) |
 | `winui-svelte/web-apis`, `/web-apis/notification`, `/web-apis/media-devices`, `/web-apis/speech`, `/web-apis/media-session` | `installWebApis`, `installPermissions` and the Web APIs as opt-in installers: `Notification` over app notifications, media devices, speech and the media session (opt-in; [`API.md`](https://github.com/avi12/winui-svelte/blob/main/API.md#web-apis-winui-svelteweb-apis)) |
 | `winui-svelte/data-transfer` | web-shaped drag and drop, `NativeFile`, pickers, the clipboard and the launcher (opt-in) |

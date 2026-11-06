@@ -30,7 +30,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`; imports nothing of WinRT, safe on the host's main thread |
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
-| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
+| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `relaunch()`, `restartAfterCrash()` (opt-in; see App lifecycle) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
@@ -2180,7 +2180,7 @@ read and write the file with `node:fs`
 ### App lifecycle (`winui-svelte/app`)
 
 ```ts
-import { ensureSingleInstance, notify } from "winui-svelte/app";
+import { ensureSingleInstance, notify, relaunch, restartAfterCrash } from "winui-svelte/app";
 
 const single = ensureSingleInstance({
   key: "com.example.notes",
@@ -2200,6 +2200,9 @@ notify({
   iconPath: "C:\notes\icon.png",
   appUserModelId: "com.example.notes",
 });
+
+relaunch({ arguments: ["--after-update"], instance: single });
+restartAfterCrash({ arguments: ["--recovered"] });
 ```
 
 An opt-in subpath: an app that does not import it does not bundle it
@@ -2241,6 +2244,26 @@ An opt-in subpath: an app that does not import it does not bundle it
   With package identity (an MSIX or sparse package) it is the supported case
   `ensureSingleInstance` needs no identity: `test/app.test.ts` starts a real
   second copy and checks that the first hears its arguments
+- `relaunch({ arguments })` starts the same Node with the same flags, entry
+  script (`process.argv[1]`) and then `arguments`, detached, and calls
+  `exitApplication`, so the new copy outlives this one
+  Pass `instance` (the `ensureSingleInstance` result) to release the claim
+  first; otherwise the new copy finds the old one still serving the key and
+  redirects to it
+  An app whose windows run in a worker thread passes `entryScript`, the script
+  that starts the process, because `process.argv[1]` there is the worker's
+- `restartAfterCrash({ arguments, conditions })` is
+  `RegisterApplicationRestart`: Windows starts the same Node and entry
+  script with `arguments` after a crash, a hang, an update that closes the
+  app or a reboot for one; `conditions` is a subset of `RestartCondition`
+  (`crash`, `hang`, `update`, `reboot`; all by default)
+  Limits: no callback (a crashed Node cannot run code, so
+  `RegisterApplicationRecoveryCallback` is not offered); Windows restarts
+  only an app that ran for 60 seconds; after a crash or a hang the user is
+  offered the restart, and only after an update is it automatic; a normal
+  exit is never restarted; a command line too long for Windows throws
+  `test/app.test.ts` checks the registration and that a normal exit starts
+  nothing, and `relaunch` with a real second process (no crash is caused)
 
 ### System tray (`winui-svelte/tray`)
 

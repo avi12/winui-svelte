@@ -2,3 +2,7 @@ export type { NotificationInvocation, NotifyOptions } from "./notify.ts";
 export { notify } from "./notify.ts";
 export type { Activation, SingleInstance, SingleInstanceOptions } from "./single-instance.ts";
 export { ensureSingleInstance } from "./single-instance.ts";
+export type { RelaunchOptions } from "./relaunch.ts";
+export { relaunch } from "./relaunch.ts";
+export type { RestartAfterCrashOptions } from "./restart-after-crash.ts";
+export { restartAfterCrash, RestartCondition } from "./restart-after-crash.ts";

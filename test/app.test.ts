@@ -1,5 +1,6 @@
 import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED } from "./example-process.ts";
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { test } from "node:test";
 
@@ -11,6 +12,8 @@ import { test } from "node:test";
 // App SDK was not restored.
 
 const TIMEOUT_MILLISECONDS = 300_000;
+const WAIT_STEP_MILLISECONDS = 500;
+const QUIET_MILLISECONDS = 3000;
 
 test("a second copy redirects to the first, which hears it", {
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
@@ -85,5 +88,100 @@ test("the application ends cleanly when its last window closes, with its timers 
     assert.equal(await example.exited, 0, "no tick reads a control that is gone");
   } finally {
     example.kill();
+  }
+});
+
+// The processes whose command line holds `marker`, by process id; the marker
+// travels in the environment so the query does not match itself.
+function processesWith(marker: string) {
+  const output = execFileSync("powershell.exe", [
+    "-NoProfile",
+    "-Command",
+    `Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like ('*' + $env:APP_TEST_MARKER + '*') } | ForEach-Object { $_.ProcessId }`
+  ], {
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      APP_TEST_MARKER: marker
+    }
+  });
+  return output.split(/s+/u).filter(Boolean).map(Number);
+}
+
+async function waitFor({ isDone, milliseconds }: {
+  isDone(): boolean;
+  milliseconds: number;
+}) {
+  const deadline = Date.now() + milliseconds;
+  while (Date.now() < deadline && !isDone()) {
+    await new Promise(resolve => setTimeout(resolve, WAIT_STEP_MILLISECONDS));
+  }
+
+  return isDone();
+}
+
+test("the app registers for a restart, and a normal exit is not restarted", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const marker = randomUUID();
+  const example = ExampleProcess.start({
+    entry: "examples/app/main.ts",
+    flags: ["--key", `dev.winui-svelte.test.${randomUUID()}`]
+  });
+  try {
+    const registered = await example.ask({
+      command: {
+        cmd: "registerRestart",
+        key: marker
+      },
+      kind: "restartRegistered"
+    });
+    assert.equal(registered["error"], undefined, "Windows accepts the registration");
+
+    example.send({ cmd: "close" });
+    assert.equal(await example.exited, 0);
+    await new Promise(resolve => setTimeout(resolve, QUIET_MILLISECONDS));
+    assert.deepEqual(processesWith(marker), [], "a normal exit starts no copy");
+  } finally {
+    example.kill();
+  }
+});
+
+test("relaunch starts a new copy with the given arguments and ends this one", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const marker = randomUUID();
+  const example = ExampleProcess.start({
+    entry: "examples/app/main.ts",
+    flags: ["--key", `dev.winui-svelte.test.${randomUUID()}`]
+  });
+  let copies: number[] = [];
+  try {
+    await example.ask({
+      command: {
+        cmd: "stats"
+      },
+      kind: "stats"
+    });
+    example.send({
+      cmd: "relaunch",
+      key: marker
+    });
+    assert.equal(await example.exited, 0, "the first copy exits cleanly");
+    const isStarted = await waitFor({
+      isDone() {
+        copies = processesWith(marker);
+        return copies.length > 0;
+      },
+      milliseconds: TIMEOUT_MILLISECONDS / 4
+    });
+    assert.ok(isStarted, "the new copy runs");
+  } finally {
+    example.kill();
+    for (const copy of processesWith(marker)) {
+      process.kill(copy);
+    }
   }
 });

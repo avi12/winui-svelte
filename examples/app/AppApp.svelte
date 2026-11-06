@@ -1,7 +1,9 @@
 <script lang="ts">
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
+  import { fileURLToPath } from "node:url";
   import { flush } from "winui-svelte";
-  import { ensureSingleInstance, notify } from "winui-svelte/app";
+  import { ensureSingleInstance, notify, relaunch, restartAfterCrash } from "winui-svelte/app";
+  import type { SingleInstance } from "winui-svelte/app";
   import { StackPanel, TextBlock, Window } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
   import { exitApplication, systemSettings } from "winui-svelte/window";
@@ -21,11 +23,12 @@
   let isPrimary: boolean | undefined = $state();
   let redirects = $state(0);
   let lastArguments = $state("");
+  let single: SingleInstance | undefined;
   let handle: WindowHandle | undefined = $state();
   let isExitOnClose = true;
 
   function claim() {
-    const single = ensureSingleInstance({
+    single = ensureSingleInstance({
       key: host.options["key"] ?? DEFAULT_KEY,
       onRedirect(activation) {
         redirects += 1;
@@ -43,6 +46,31 @@
     }
   }
   claim();
+
+  // The windows run in the harness's worker, so the script that starts the
+  // process is the launcher; a copy gets the same entry and the key it is told.
+  const LAUNCHER = fileURLToPath(new URL("../harness/launch.ts", import.meta.url));
+
+  function nextCopyArguments(command: ExampleCommand) {
+    return [process.argv[2] ?? "", "--key", String(command["key"])];
+  }
+
+  function register(command: ExampleCommand) {
+    try {
+      restartAfterCrash({
+        arguments: nextCopyArguments(command),
+        entryScript: LAUNCHER
+      });
+      host.report({
+        kind: "restartRegistered"
+      });
+    } catch (error) {
+      host.report({
+        kind: "restartRegistered",
+        error: String(error)
+      });
+    }
+  }
 
   function showNotification() {
     try {
@@ -84,6 +112,12 @@
   const commands = new Map<string, (command: ExampleCommand) => void>([
     ["stats", report],
     ["notify", showNotification],
+    ["registerRestart", register],
+    ["relaunch", command => relaunch({
+      arguments: nextCopyArguments(command),
+      entryScript: LAUNCHER,
+      instance: single
+    })],
     ["close", () => exitApplication()],
     ["closeWindowOnly", closeWindowOnly]
   ]);
