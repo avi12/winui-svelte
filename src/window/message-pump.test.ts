@@ -182,10 +182,11 @@ test("a slice that throws is followed by another", () => {
   assert.equal(fakes.log.length, 2, "the pump kept going");
 });
 
-function createQueue({ isWaiting, isQuit = false, isConsumed = false }: {
+function createQueue({ isWaiting, isQuit = false, isConsumed = false, isHooked = false }: {
   isWaiting: boolean;
   isQuit?: boolean;
   isConsumed?: boolean;
+  isHooked?: boolean;
 }) {
   const calls: string[] = [];
   return {
@@ -198,6 +199,10 @@ function createQueue({ isWaiting, isQuit = false, isConsumed = false }: {
       isQuit() {
         calls.push("isQuit");
         return isQuit;
+      },
+      isHandledByHook() {
+        calls.push("hook");
+        return isHooked;
       },
       isConsumedByContent() {
         calls.push("content");
@@ -213,7 +218,7 @@ function createQueue({ isWaiting, isQuit = false, isConsumed = false }: {
 test("a message is offered to the content first, then translated and dispatched", () => {
   const { queue, calls } = createQueue({ isWaiting: true });
   assert.equal(dispatchNextMessage(queue), Dispatched.MESSAGE);
-  assert.deepEqual(calls, ["take", "isQuit", "content", "deliver"]);
+  assert.deepEqual(calls, ["take", "isQuit", "hook", "content", "deliver"]);
 });
 
 test("a message the content consumed is neither translated nor dispatched", () => {
@@ -222,7 +227,16 @@ test("a message the content consumed is neither translated nor dispatched", () =
     isConsumed: true
   });
   assert.equal(dispatchNextMessage(queue), Dispatched.MESSAGE);
-  assert.deepEqual(calls, ["take", "isQuit", "content"]);
+  assert.deepEqual(calls, ["take", "isQuit", "hook", "content"]);
+});
+
+test("a message a hook handled reaches neither the content nor the window", () => {
+  const { queue, calls } = createQueue({
+    isWaiting: true,
+    isHooked: true
+  });
+  assert.equal(dispatchNextMessage(queue), Dispatched.MESSAGE);
+  assert.deepEqual(calls, ["take", "isQuit", "hook"]);
 });
 
 test("an empty queue and the quit message reach neither the content nor the window", () => {
