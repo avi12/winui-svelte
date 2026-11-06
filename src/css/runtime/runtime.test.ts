@@ -4,6 +4,7 @@ import type { CssNative } from "./runtime.ts";
 import {
   installCssRuntime,
   provideEnvironment,
+  provideVisualStates,
   registerPropertyGroups,
   registerStyleSheet,
   styledElement as styledElementOf,
@@ -11,6 +12,7 @@ import {
   unregisterStyleSheet
 } from "./runtime.ts";
 import { textTransforms } from "./text-transforms.ts";
+import { visualStatesWith } from "./visual-states.ts";
 import { fakeInputs } from "#src/css/media/fake-inputs.js";
 import type { MediaChange, MediaInputs, MediaStore } from "#src/css/media/features.js";
 import type { ClipShape } from "#src/css/parse/clip-shapes.js";
@@ -38,6 +40,18 @@ import { test } from "node:test";
 // the XAML of the dictionary it was looked up in.
 
 queryGroups();
+provideVisualStates(
+  visualStatesWith(({ control, part, states }) => {
+    const fakeControl = fake(control);
+    for (const { state, brushes } of states) {
+      fakeControl.states[state] = brushes.map(({ property, source }) => `${part}.${property}=${source}`).join(" ");
+    }
+
+    return () => {
+      fakeControl.states = {};
+    };
+  })
+);
 
 const environment: {
   inputs: Partial<MediaInputs>;
@@ -76,9 +90,11 @@ interface FakeControl {
   properties: Record<string, NativeValue>;
   animations: string[];
   brushes: string[];
+  states: Partial<Record<string, string>>;
 }
 
 function control(properties: Record<string, NativeValue> = {}) {
+  const states: FakeControl["states"] = {};
   return {
     style: null,
     styleChanges: 0,
@@ -89,7 +105,8 @@ function control(properties: Record<string, NativeValue> = {}) {
     handlers: new Map(),
     properties,
     animations: [],
-    brushes: []
+    brushes: [],
+    states
   };
 }
 
@@ -996,4 +1013,58 @@ test("a text-transform sets what the control's text is shown with and asks for i
   element.dispose();
   assert.equal(textTransforms.has(target), false);
   unregisterStyleSheet("text-transform.svelte");
+});
+
+test("a Button's :hover and :active brushes go to its template's visual states, and the rest stays a Style", () => {
+  registerStyleSheet(
+    sheet({
+      id: "visual-states.svelte",
+      css: [
+        ".cta.svelte-9 { background-color: #123456 }",
+        ".cta.svelte-9:hover { background-color: #abcdef; opacity: 0.5 }",
+        ".cta.svelte-9:active { color: #ff0000; border-color: #00ff00 }",
+        ".cta.svelte-9:focus { color: #0000ff }"
+      ].join("\n")
+    })
+  );
+  const target = control();
+  const element = styledElement({
+    control: target,
+    elementType: "button"
+  });
+  element.setClasses("cta svelte-9");
+  assert.deepEqual(Object.keys(target.states).sort((left, right) => left.localeCompare(right)), ["PointerOver", "Pressed"]);
+  assert.match(target.states["PointerOver"] ?? "", /^ContentPresenter\.Background=#ABCDEF$/u);
+  assert.match(target.states["Pressed"] ?? "", /^ContentPresenter\.BorderBrush=#00FF00 ContentPresenter\.Foreground=#FF0000$/u);
+  assert.match(target.style ?? "", /<Setter Property="Background" Value="#123456"\/>/u);
+  assert.doesNotMatch(target.style ?? "", /#ABCDEF/u);
+  assert.deepEqual([...target.handlers.keys()].sort((left, right) => left.localeCompare(right)), ["GotFocus", "LostFocus", "PointerEntered", "PointerExited"]);
+
+  target.handlers.get("PointerEntered")?.();
+  assert.match(target.style ?? "", /<Setter Property="Opacity" Value="0.5"\/>/u);
+
+  element.setClasses("");
+  assert.deepEqual(target.states, {});
+  element.dispose();
+  unregisterStyleSheet("visual-states.svelte");
+});
+
+test("a control whose template is not driven keeps its state rules as Style setters", () => {
+  registerStyleSheet(
+    sheet({
+      id: "visual-states-plain.svelte",
+      css: ".plain.svelte-8:hover { background-color: #abcdef }"
+    })
+  );
+  const target = control();
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("plain svelte-8");
+  assert.deepEqual(target.states, {});
+  target.handlers.get("PointerEntered")?.();
+  assert.match(target.style ?? "", /#ABCDEF/u);
+  element.dispose();
+  unregisterStyleSheet("visual-states-plain.svelte");
 });

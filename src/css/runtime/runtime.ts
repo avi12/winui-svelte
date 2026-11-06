@@ -30,6 +30,36 @@ export function provideQueries(factory: NonNullable<typeof createQueries>) {
   createQueries = factory;
 }
 
+/** The element whose rules the visual states of a templated control are given each time they are matched. */
+export interface StateElement {
+  readonly control: object;
+  readonly elementType: string;
+  /** Whether a rule's `@media` and `@container` conditions hold now; null when the sheets have none. */
+  readonly queries: ElementQueries | null;
+}
+
+/**
+ * What the runtime does to drive the visual states of a templated control:
+ * takes the rules it draws out of the ones the Style is built from, and
+ * returns the rest (null when it drives nothing of this element).
+ */
+export interface VisualStates {
+  /** The rules that match the element, state rules included; returns the rest. */
+
+  drive(element: StateElement, rules: RankedRule[], seam: WriteSeam): RankedRule[] | null;
+}
+
+let visualStates: VisualStates | null = null;
+
+/**
+ * Gives the runtime the visual states of a templated control. The
+ * `visual-states` subpath calls it, so a window whose sheets have no
+ * `:hover` or `:active` rule that sets a brush carries none of it.
+ */
+export function provideVisualStates(provided: VisualStates) {
+  visualStates = provided;
+}
+
 type EnvironmentInput = Omit<ConstructorParameters<typeof ElementEnvironment>[0], "store">;
 
 let createEnvironment: ((input: EnvironmentInput) => ElementEnvironment) | null = null;
@@ -224,7 +254,7 @@ const stylesByXaml = new Map<string, object>();
 // Each element type's Default<Type>Style, or null where WinUI has none.
 const defaultStyles = new Map<string, string | null>();
 // The groups beyond the built-in ones that sheets have opted into, by member.
-const extraGroups = new Map<string, PropertyGroup>();
+export const extraGroups = new Map<string, PropertyGroup>();
 // The `@keyframes` of every sheet, by name (a later sheet's replaces an earlier one's).
 let keyframesByName = new Map<string, Keyframes>();
 let keyframesSignature = "";
@@ -260,11 +290,14 @@ function warnOnce(message: string) {
   }
 }
 
-// A rule's id and its sheet's version, to tell it from the rule of the same
-// name in the sheet a hot reload replaced.
-function versionedId(id: string) {
-  const sheetId = id.slice(0, id.lastIndexOf(ID_SEPARATOR));
-  return `${id}@${sheets.get(sheetId)?.version ?? 0}`;
+// The id of the sheet a rule's id names.
+function sheetIdOf(id: string) {
+  return id.slice(0, id.lastIndexOf(ID_SEPARATOR));
+}
+
+/** A rule's id with its sheet's version, to tell it from the same rule of a sheet a hot reload replaced. */
+export function versionedId(id: string) {
+  return `${id}@${sheets.get(sheetIdOf(id))?.version ?? 0}`;
 }
 
 function rebuildRules() {
@@ -369,7 +402,8 @@ export function installCssRuntime(implementation: CssNative) {
   refreshAll();
 }
 
-function lowerOptions({ elementType, problems }: {
+/** What lowering declarations for an element type needs: variables, keyframes and where problems go. */
+export function lowerOptions({ elementType, problems }: {
   elementType: string;
   problems: string[];
 }) {
@@ -400,16 +434,17 @@ const SCOPE_CLASS = /^svelte-/u;
 // selector, and the properties it sets.
 function describeRule(ranked: RankedRule) {
   const { rule } = ranked;
-  const file = ranked.id.slice(0, ranked.id.lastIndexOf(ID_SEPARATOR));
+  const file = sheetIdOf(ranked.id);
   const line = rule.declarations[0]?.at.line ?? 0;
   const classes = rule.classes.filter(name => !SCOPE_CLASS.test(name)).map(name => `.${name}`);
   const state = rule.state === null ? "" : `:${rule.state}`;
   const selector = `${rule.elementType ?? ""}${classes.join("")}${state}`;
   const properties = rule.declarations.map(declaration => declaration.property).join(", ");
-  return `${file}:${line} ${selector === "" ? "*" : selector} { ${properties} }`;
+  return `${file}:${line} ${selector || "*"} { ${properties} }`;
 }
 
-function describeRules(matched: readonly RankedRule[]) {
+/** The rules as an author wrote them, for an error. */
+export function describeRules(matched: readonly RankedRule[]) {
   return matched.length === 0 ? "its style attribute" : matched.map(describeRule).join("; ");
 }
 
@@ -529,15 +564,15 @@ function builtFor({ key, elementType, matched, inline }: {
 }
 
 class ElementStyle implements StyledElement {
-  private readonly control: object;
-  private readonly elementType: string;
+  readonly control: object;
+  readonly elementType: string;
   private classes = new Set<string>();
   private inlineText: string | null = null;
   private readonly states = new Set<PseudoState>();
   private readonly subscriptions = new Map<PseudoState, Array<() => void>>();
   private appliedKey: string | null = null;
   private appliedStyle: object | null = null;
-  private queries: ElementQueries | null = null;
+  queries: ElementQueries | null = null;
   private appliedWrites = "";
   private writeUndos: Array<() => void> = [];
   private isDisposed = false;
@@ -610,7 +645,7 @@ class ElementStyle implements StyledElement {
         this.refresh();
       }
     }) ?? null;
-    const candidates = matchingRanked({
+    const every = matchingRanked({
       rules,
       facts: {
         elementType: this.elementType,
@@ -621,8 +656,9 @@ class ElementStyle implements StyledElement {
       isStateIgnored: true,
       isMediaIgnored: true
     });
-    this.syncStates(new Set(candidates.flatMap(({ rule }) => (rule.state === null ? [] : [rule.state]))));
-    this.queries?.sync(candidates.map(({ rule }) => rule));
+    const candidates = visualStates?.drive(this, every, currentNative) ?? every;
+    this.syncStates(new Set(candidates.flatMap(({ rule }) => rule.state ?? [])));
+    this.queries?.sync(every.map(({ rule }) => rule));
     const matched = candidates.filter(({ rule }) => this.isRuleActive(rule));
     const inline = this.inlineDeclarations();
     const inlineKey = inline.map(({ property, value }) => `${property}:${value}`).join(";");
