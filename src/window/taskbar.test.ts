@@ -4,7 +4,8 @@ import { test } from "node:test";
 // The taskbar button over a stand-in for the shell: state mapping, value
 // clamping, flash flags, and the badge as pixels.
 
-const { flashCall, progressCall, TaskbarButton, TaskbarFlashUntil, TaskbarProgressState, taskbarBadgeBackend } = await import("./taskbar.ts");
+const { flashCall, progressCall } = await import("./taskbar-calls.ts");
+const { TaskbarButton, TaskbarFlashUntil, TaskbarProgressState, taskbarBadgeBackend } = await import("./taskbar.ts");
 const { badgeDescription, badgeLabel, renderBadgeIcon } = await import("./badge-icon.ts");
 
 const HWND = 42n;

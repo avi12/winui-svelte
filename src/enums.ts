@@ -24,4 +24,4 @@ export { Backdrop } from "./window/backdrop.ts";
 export { IconShowOptions, TitleBarHeight, WindowPresentation, WindowTheme } from "./window/chrome.ts";
 export { DockDisplay } from "./window/dock.ts";
 export { PickerLocation } from "./window/pickers.ts";
-export { TaskbarFlashUntil, TaskbarProgressState } from "./window/taskbar.ts";
+export { TaskbarFlashUntil, TaskbarProgressState } from "./window/taskbar-calls.ts";
