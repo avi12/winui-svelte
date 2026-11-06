@@ -3359,7 +3359,7 @@ with `registerPermission({ name, provider })` and calls
   `im`, `mail`, `reminder`, `sms`, `alarm` to `alarm10`, `call` to `call10`),
   `attribution`
 - Listing and clearing: `notificationRegistration().getNotifications({ tag })`
-  (the notification members of a `ServiceWorkerRegistration`, which has no
+  (`NotificationRegistration`, the notification members of a `ServiceWorkerRegistration`, which has no
   service worker here) lists what this run showed and Windows still holds
   (`AppNotificationManager.GetAllAsync`), so one the user dismissed in the
   notification center is not listed; one an earlier run showed has no object
@@ -4683,7 +4683,7 @@ Everything here was checked to work from `node.exe` with no package identity;
 - A list is a keyed reactive collection (`KeyedCollection`): `{#each collection.items as device (device.id)}`, with `get(key)`, `has(key)`, `keys` and `size`
 - A change makes a new snapshot object, so a keyed block redraws the row
 - Every rune reads through a `source` (or `defaults`, `list`, `createSource`) option whose default is the Windows end: `windowsInputSource`, `windowsPowerSource`, `windowsNetworkSource`, `windowsAudioDefaults`, `windowsDisplaySource`, `windowsGamepadSource` and `windowsPrinterSource` are those defaults, exported so a test or a wrapper can use or replace them
-- The WinRT enums the results are made of are re-exported under their own names: `AudioDeviceRole`, `BatteryStatus`, `BluetoothCacheMode`, `BluetoothLEScanningMode`, `DisplayMonitorConnectionKind`, `EnergySaverStatus`, `GamepadButtons`, `NetworkConnectivityLevel`, `NetworkCostType`, `PointerDeviceType`, `PowerSupplyStatus`, `RadioAccessStatus`, `RadioKind`, `RadioState`
+- The WinRT enums the results are made of are re-exported under their own names: `AudioDeviceRole`, `BatteryStatus`, `BluetoothCacheMode`, `BluetoothLEScanningMode`, `DisplayMonitorConnectionKind`, `DisplayStatus`, `EffectivePowerMode`, `EnergySaverStatus`, `GamepadButtons`, `NetworkConnectivityLevel`, `NetworkCostType`, `PointerDeviceType`, `PowerSupplyStatus`, `RadioAccessStatus`, `RadioKind`, `RadioState`, `UserPresenceStatus`
 
 ### Device enumeration
 
