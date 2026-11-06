@@ -11,7 +11,7 @@ import { addMessageHook } from "#src/window/message-hooks.js";
 // hotkey is registered, so an app that never registers one pays for none of it.
 
 export type { HotkeyChord, HotkeyKeyName, HotkeyKeys } from "./keys.ts";
-export { HotkeyKey, HotkeyModifier } from "./keys.ts";
+export { HotkeyModifier } from "./keys.ts";
 export { HotkeyConflictError, HotkeyError, HotkeyParseError, HotkeyRefusedError } from "./errors.ts";
 export type { Hotkey, HotkeyEvent, HotkeyOptions } from "./registry.ts";
 

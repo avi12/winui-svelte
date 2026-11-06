@@ -2551,8 +2551,9 @@ const hotkey = registerHotkey({
   `digit0` to `digit9` (a bare `5` works in a string), `f1` to `f24`, `numpad0`
   to `numpad9`, `arrowleft`, `escape`, `space`, `minus`, `equal`,
   `bracketleft`, the media and volume keys
-  `HotkeyKey` (also in `winui-svelte/enums`) is the table, each name mapped to
-  its virtual-key code, and `HotkeyModifier` holds the modifiers
+  `KeyCode` (in `winui-svelte/enums`, spelled as `KeyboardEvent.code` is) is the
+  table every key name maps from to its virtual-key code, the same one the
+  input events name keys with, and `HotkeyModifier` holds the modifiers
   A few aliases are accepted in a string (`esc`, `del`, `left`, `pgup`)
   A modifier named twice, no key, two keys or an unknown name throws
   `HotkeyParseError`

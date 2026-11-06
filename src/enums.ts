@@ -14,7 +14,8 @@ export { PermissionKind, PermissionState } from "./messaging/web-view2/policy.ts
 export { ColorKeyword } from "./components/values.ts";
 export { XamlKind } from "./components/xaml-source.ts";
 export { FocusKind } from "./renderer/host/focus-element.ts";
-export { HotkeyKey, HotkeyModifier } from "./app/hotkeys/keys.ts";
+export { HotkeyModifier } from "./app/hotkeys/keys.ts";
+export { KeyCode } from "./key-code.ts";
 export { TrayGesture } from "./tray/click-detector.ts";
 export { TrayBalloonIcon } from "./tray/tray-core.ts";
 export { SizeToContent, WindowAnchor } from "./window/anchor.ts";

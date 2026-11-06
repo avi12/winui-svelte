@@ -1,5 +1,6 @@
 import { HotkeyParseError } from "./errors.ts";
-import { HotkeyKey, HotkeyModifier, parseHotkey } from "./keys.ts";
+import { HotkeyModifier, parseHotkey } from "./keys.ts";
+import { KeyCode } from "#src/key-code.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -12,7 +13,7 @@ test("a string names modifiers and one key, in any case and spacing", () => {
   const parsed = parseHotkey(" Ctrl + ALT +K ");
   assert.deepEqual(parsed.modifiers, [HotkeyModifier.control, HotkeyModifier.alt]);
   assert.equal(parsed.keyName, "k");
-  assert.equal(parsed.virtualKey, HotkeyKey.k);
+  assert.equal(parsed.virtualKey, KeyCode.keyK);
   assert.equal(parsed.virtualKey, 0x4b);
   assert.equal(parsed.modifierFlags, MOD_CONTROL | MOD_ALT);
   assert.equal(parsed.keys, "control+alt+k");

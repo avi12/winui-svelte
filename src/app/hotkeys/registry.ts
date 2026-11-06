@@ -32,7 +32,7 @@ export interface HotkeyEvent {
   /** The canonical spelling of the combination: `"control+alt+k"`. */
   readonly keys: string;
 
-  /** The key, named as `HotkeyKey` names it (like `KeyboardEvent.code`, lowercase). */
+  /** The key, named as `KeyCode` names it, in lowercase. */
   readonly key: HotkeyKeyName;
   readonly modifiers: readonly HotkeyModifier[];
   readonly ctrlKey: boolean;

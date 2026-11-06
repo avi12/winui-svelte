@@ -1,3 +1,4 @@
+import { KeyCode, webCodeOf } from "#src/key-code.js";
 import { VirtualKey } from "#winui/windows/system/VirtualKey";
 
 // A WinUI VirtualKey as the web names it: `key` (what the key means) and
@@ -17,9 +18,17 @@ interface KeyName {
   readonly code: string;
 }
 
-function named({ key, code = key }: {
+const CODES = new Map<number, string>(
+  Object.entries(KeyCode).map(([name, virtualKey]) => [virtualKey, webCodeOf(name)])
+);
+
+function codeOf(virtualKey: number) {
+  return CODES.get(virtualKey) ?? UNIDENTIFIED_KEY;
+}
+
+function named({ key, code }: {
   key: string;
-  code?: string;
+  code: string;
 }) {
   return {
     key,
@@ -27,42 +36,45 @@ function named({ key, code = key }: {
   } satisfies KeyName;
 }
 
+function tabled({ virtualKey, key = codeOf(virtualKey) }: {
+  virtualKey: number;
+  key?: string;
+}) {
+  return named({
+    key,
+    code: codeOf(virtualKey)
+  });
+}
+
+const SIDELESS_KEYS = [
+  VirtualKey.Enter, VirtualKey.Escape, VirtualKey.Tab, VirtualKey.Delete, VirtualKey.Insert, VirtualKey.Home,
+  VirtualKey.End, VirtualKey.PageUp, VirtualKey.PageDown, VirtualKey.Left, VirtualKey.Up, VirtualKey.Right,
+  VirtualKey.Down, VirtualKey.Pause
+];
+
+const RENAMED_KEYS = new Map<number, string>([
+  [VirtualKey.Back, "Backspace"],
+  [VirtualKey.Space, SPACE],
+  [VirtualKey.Snapshot, "PrintScreen"],
+  [VirtualKey.CapitalLock, "CapsLock"],
+  [VirtualKey.NumberKeyLock, "NumLock"],
+  [VirtualKey.Scroll, "ScrollLock"],
+  [VirtualKey.Multiply, "*"],
+  [VirtualKey.Add, "+"],
+  [VirtualKey.Subtract, "-"],
+  [VirtualKey.Decimal, "."],
+  [VirtualKey.Divide, "/"]
+]);
+
 const NAMED_KEYS = new Map<number, KeyName>([
-  [VirtualKey.Enter, named({ key: "Enter" })],
-  [VirtualKey.Escape, named({ key: "Escape" })],
-  [VirtualKey.Tab, named({ key: "Tab" })],
-  [VirtualKey.Back, named({
-    key: "Backspace"
-  })],
-  [VirtualKey.Space, named({
-    key: SPACE,
-    code: "Space"
-  })],
-  [VirtualKey.Delete, named({ key: "Delete" })],
-  [VirtualKey.Insert, named({ key: "Insert" })],
-  [VirtualKey.Home, named({ key: "Home" })],
-  [VirtualKey.End, named({ key: "End" })],
-  [VirtualKey.PageUp, named({ key: "PageUp" })],
-  [VirtualKey.PageDown, named({ key: "PageDown" })],
-  [VirtualKey.Left, named({ key: "ArrowLeft" })],
-  [VirtualKey.Up, named({ key: "ArrowUp" })],
-  [VirtualKey.Right, named({ key: "ArrowRight" })],
-  [VirtualKey.Down, named({ key: "ArrowDown" })],
-  [VirtualKey.Pause, named({ key: "Pause" })],
-  [VirtualKey.Snapshot, named({
-    key: "PrintScreen"
-  })],
+  ...SIDELESS_KEYS.map(virtualKey => [virtualKey, tabled({ virtualKey })] as const),
+  ...[...RENAMED_KEYS].map(([virtualKey, key]) => [virtualKey, tabled({
+    virtualKey,
+    key
+  })] as const),
   [VirtualKey.Application, named({
-    key: "ContextMenu"
-  })],
-  [VirtualKey.CapitalLock, named({
-    key: "CapsLock"
-  })],
-  [VirtualKey.NumberKeyLock, named({
-    key: "NumLock"
-  })],
-  [VirtualKey.Scroll, named({
-    key: "ScrollLock"
+    key: "ContextMenu",
+    code: "ContextMenu"
   })],
   [VirtualKey.LeftWindows, named({
     key: "Meta",
@@ -95,26 +107,6 @@ const NAMED_KEYS = new Map<number, KeyName>([
   [VirtualKey.RightMenu, named({
     key: "Alt",
     code: "AltRight"
-  })],
-  [VirtualKey.Multiply, named({
-    key: "*",
-    code: "NumpadMultiply"
-  })],
-  [VirtualKey.Add, named({
-    key: "+",
-    code: "NumpadAdd"
-  })],
-  [VirtualKey.Subtract, named({
-    key: "-",
-    code: "NumpadSubtract"
-  })],
-  [VirtualKey.Decimal, named({
-    key: ".",
-    code: "NumpadDecimal"
-  })],
-  [VirtualKey.Divide, named({
-    key: "/",
-    code: "NumpadDivide"
   })]
 ]);
 
@@ -165,7 +157,7 @@ function letterName({ key, isUpper }: {
   const letter = String.fromCharCode(key);
   return named({
     key: isUpper ? letter : letter.toLowerCase(),
-    code: `Key${letter}`
+    code: codeOf(key)
   });
 }
 
@@ -206,7 +198,7 @@ export function keyNameOf({ key, isUpper, isRight }: {
     const digit = String(resolved - VirtualKey.Number0);
     return named({
       key: digit,
-      code: `Digit${digit}`
+      code: codeOf(resolved)
     });
   }
 
@@ -219,7 +211,7 @@ export function keyNameOf({ key, isUpper, isRight }: {
     const digit = String(resolved - VirtualKey.NumberPad0);
     return named({
       key: digit,
-      code: `Numpad${digit}`
+      code: codeOf(resolved)
     });
   }
 
@@ -229,10 +221,11 @@ export function keyNameOf({ key, isUpper, isRight }: {
     last: LAST_FUNCTION_KEY
   });
   if (isFunction) {
-    return named({
-      key: `F${resolved - FIRST_FUNCTION_KEY + 1}`
-    });
+    return tabled({ virtualKey: resolved });
   }
 
-  return NAMED_KEYS.get(resolved) ?? named({ key: UNIDENTIFIED_KEY });
+  return NAMED_KEYS.get(resolved) ?? named({
+    key: UNIDENTIFIED_KEY,
+    code: UNIDENTIFIED_KEY
+  });
 }
