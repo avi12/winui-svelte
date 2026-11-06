@@ -1,6 +1,6 @@
 # winui-svelte
 
-![The winui-svelte logo](https://raw.githubusercontent.com/avi12/winui-svelte/main/ide/icon.svg)
+<img src="https://raw.githubusercontent.com/avi12/winui-svelte/main/ide/icon.svg" alt="The winui-svelte logo" width="96" height="96">
 
 [![npm version](https://img.shields.io/npm/v/winui-svelte)](https://www.npmjs.com/package/winui-svelte)
 
