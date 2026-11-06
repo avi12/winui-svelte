@@ -16,5 +16,6 @@ export const SVELTE_LANGUAGE = "svelte";
  */
 export const Setting = {
   SECTION: "winuiSvelte",
-  DESTINATION: "destination"
+  DESTINATION: "destination",
+  RESOURCE_HINTS: "resourceHints"
 } as const;

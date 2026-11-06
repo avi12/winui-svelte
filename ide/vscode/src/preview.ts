@@ -11,6 +11,9 @@ const SAMPLE_TEXT = "Aa Bb Cc 0123 The quick brown fox";
 const SAMPLE_SIZE = 22;
 const SAMPLE_WIDTH = 460;
 const SAMPLE_HEIGHT = 40;
+const SWATCH_GAP = 12;
+const LABEL_OFFSET = 14;
+const LABEL_SIZE = 10;
 
 /**
  * The CSS that draws a glyph in the icon font, for a decoration's `textDecoration` hook.
@@ -71,4 +74,53 @@ export function fontMarkdown({ family, color }: {
     svg,
     alt: name
   })}\n\n**${name}**`;
+}
+
+function themeSwatch({ label, css, x }: {
+  label: string;
+  css: string | undefined;
+  x: number;
+}) {
+  const fill = css === undefined ? "none" : css;
+  return `<rect x="${x}" width="${SWATCH_WIDTH}" height="${SWATCH_HEIGHT}" rx="${SWATCH_RADIUS}" fill="${fill}" `
+    + `stroke="${SWATCH_OUTLINE}"/><text x="${x + SWATCH_WIDTH / 2}" y="${SWATCH_HEIGHT + LABEL_OFFSET}" `
+    + `font-size="${LABEL_SIZE}" fill="${SWATCH_OUTLINE}" text-anchor="middle">${label}</text>`;
+}
+
+/**
+ * Markdown that previews a WinUI resource: its name and kind and, for a color, a swatch of it in the light theme and
+ * in the dark one, each with its value.
+ */
+export function resourceMarkdown(resource: {
+  name: string;
+  kind: string;
+  light?: string | undefined;
+  dark?: string | undefined;
+}) {
+  const heading = `**${resource.name}** ${resource.kind}`;
+  const { light, dark } = resource;
+  const hasSwatch = light !== undefined || dark !== undefined;
+  if (!hasSwatch) {
+    return heading;
+  }
+
+  const width = 2 * SWATCH_WIDTH + SWATCH_GAP;
+  const height = SWATCH_HEIGHT + LABEL_OFFSET + LABEL_SIZE;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">`
+    + themeSwatch({
+      label: "light",
+      css: light,
+      x: 0
+    })
+    + themeSwatch({
+      label: "dark",
+      css: dark,
+      x: SWATCH_WIDTH + SWATCH_GAP
+    })
+    + "</svg>";
+  const values = [`light \`${light ?? "follows the system"}\``, `dark \`${dark ?? "follows the system"}\``];
+  return `${imageOf({
+    svg,
+    alt: resource.name
+  })}\n\n${heading}\n\n${values.join(" · ")}`;
 }
