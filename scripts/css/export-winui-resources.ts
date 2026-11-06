@@ -1,3 +1,4 @@
+import { themeSwatches } from "./winui-swatches.ts";
 import { ResourceKind } from "#src/css/runtime/resources.js";
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -10,11 +11,15 @@ import { z } from "zod";
 //
 //   node scripts/css/export-winui-resources.ts [path/to/generic.xaml]
 //
+// It also writes scripts/css/winui-swatches.g.json: the light and dark color of each
+// color and brush, which the editors show beside a `var(--name)`.
+//
 // The default is the Windows App SDK WinUI package that .winapp/winmds.lock.json
 // (`pnpm restore` writes it) names, from the NuGet cache it lists.
 
 const SOURCE_FOLDER = import.meta.dirname;
 const OUTPUT_FILE = path.join(SOURCE_FOLDER, "..", "..", "src", "css", "winui-resources.g.json");
+const SWATCHES_FILE = path.join(SOURCE_FOLDER, "winui-swatches.g.json");
 const LOCK_FILE = path.join(SOURCE_FOLDER, "..", "..", ".winapp", "winmds.lock.json");
 const WINUI_PACKAGE = "Microsoft.WindowsAppSDK.WinUI";
 const GENERIC_XAML_IN_PACKAGE = path.join("lib", "native", "Microsoft.UI", "Themes", "generic.xaml");
@@ -161,5 +166,16 @@ writeFileSync(
       }))
     )
   })}\n`
+);
+writeFileSync(
+  SWATCHES_FILE, `${JSON.stringify(
+    Object.fromEntries(
+      [...themeSwatches(XAML)].sort((left, right) => compareKeys({
+        left: left[0],
+        right: right[0]
+      }))
+    )
+  )}
+`
 );
 process.stdout.write(`${[...byKind].map(([kind, keys]) => `${kind} ${keys.size}`).join(", ")}\n`);

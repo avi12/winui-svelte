@@ -36,17 +36,25 @@ function targetFile({ builtFile, target }: {
   return path.join(PACKAGE_ROOT, file);
 }
 
-export function exportAliases(target: ExportTarget) {
+// The entry points: the specifier an app imports (`winui-svelte/host`) and the file that holds it.
+export function exportEntries(target: ExportTarget) {
   const manifest = manifestSchema.parse(JSON.parse(readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8")));
   return Object.entries(manifest.exports).flatMap(([subpath, entry]) => {
     const builtFile = typeof entry === "string" ? entry : entry.default;
     const isBuilt = builtFile?.startsWith(BUILT_FOLDER) === true;
     return isBuilt ? [{
-      find: new RegExp(`^${PACKAGE_NAME}${subpath.slice(1)}$`, "u"),
-      replacement: targetFile({
+      specifier: `${PACKAGE_NAME}${subpath.slice(1)}`,
+      file: targetFile({
         builtFile,
         target
       })
     }] : [];
   });
+}
+
+export function exportAliases(target: ExportTarget) {
+  return exportEntries(target).map(({ specifier, file }) => ({
+    find: new RegExp(`^${specifier}$`, "u"),
+    replacement: file
+  }));
 }

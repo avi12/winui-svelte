@@ -5,8 +5,7 @@ import { validateComponent } from "./validate.ts";
 import { vscodeCssData } from "./vscode-data.ts";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import { DISCRETE_MEMBERS, discreteWordsOf } from "#src/css/translate/discrete-properties.js";
-import { BUILD_GROUPS, LAZY_GROUPS } from "#src/css/translate/lazy-groups.js";
-import { propertyGroups } from "#src/css/translate/properties.js";
+import { handledMembers } from "#src/css/translate/handled-members.js";
 import { WINUI_ONLY_PROPERTIES } from "#src/css/translate/winui-only-properties.js";
 import { winuiCss } from "#src/css/vite.js";
 import assert from "node:assert/strict";
@@ -75,12 +74,7 @@ test("a property and an at-rule WinUI lacks are reported with the build's reason
 });
 
 test("the -winui-* list is the properties the table handles, and the editor data is derived from it", () => {
-  const groups = [
-    ...propertyGroups,
-    ...LAZY_GROUPS.flatMap(lazy => lazy.groups()),
-    ...BUILD_GROUPS.flatMap(build => build())
-  ];
-  const members = new Set(groups.flatMap(group => group.members));
+  const members = handledMembers();
   const documented = new Set(WINUI_ONLY_PROPERTIES.map(property => property.name));
   assert.equal(documented.has("-winui-based-on"), true);
   for (const name of documented) {
