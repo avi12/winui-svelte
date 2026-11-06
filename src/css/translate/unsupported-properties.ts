@@ -42,6 +42,7 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["text-indent", "WinUI has no text indent"],
   ["caret-color", "the caret follows Foreground"],
   ["text-box-trim", "WinUI cannot trim the line box"],
+  ["font-variation-settings", "WinUI has no API for a variable font's axes; name a named instance in font-family (\"Segoe UI Variable Display\"), set the weight with font-weight and the width with font-stretch, and WinUI applies the optical size from the font size"],
   ["aspect-ratio", `a ratio ${OPT_IN}`],
   ["clip-path", `a clip ${OPT_IN}`],
   ["mix-blend-mode", `a blend mode ${OPT_IN}`],

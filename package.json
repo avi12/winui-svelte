@@ -217,6 +217,10 @@
       "types": "./dist/css/control.d.ts",
       "default": "./dist/css/control.js"
     },
+    "./css/typography": {
+      "types": "./dist/css/typography.d.ts",
+      "default": "./dist/css/typography.js"
+    },
     "./css/shape": {
       "types": "./dist/css/shape.d.ts",
       "default": "./dist/css/shape.js"
