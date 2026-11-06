@@ -250,6 +250,10 @@
       "svelte": "./dist/tray/index.js",
       "default": "./dist/tray/index.js"
     },
+    "./app/hotkeys": {
+      "types": "./dist/app/hotkeys/index.d.ts",
+      "default": "./dist/app/hotkeys/index.js"
+    },
     "./app": {
       "types": "./dist/app/index.d.ts",
       "default": "./dist/app/index.js"
