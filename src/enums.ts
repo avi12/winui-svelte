@@ -7,6 +7,8 @@
 export * from "./components/generated/enums.ts";
 export { MoveDirection } from "./components/hand-written/items/reorder.ts";
 export { NavigationCacheMode, NavigationMode } from "./components/hand-written/navigation/navigation-stack.ts";
+export { CookieSameSite } from "./messaging/web-view2/cookies.ts";
+export { PermissionKind, PermissionState } from "./messaging/web-view2/policy.ts";
 export { ColorKeyword } from "./components/values.ts";
 export { XamlKind } from "./components/xaml-source.ts";
 export { FocusKind } from "./renderer/host/focus-element.ts";

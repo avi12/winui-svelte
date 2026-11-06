@@ -1,0 +1,126 @@
+import { jsonSchema } from "#src/messaging/json.js";
+
+// The part of WinUI's WebView2 and CoreWebView2 these helpers use, as shapes:
+// the generated classes satisfy them, and a test hands in a fake.
+
+/** What `WebMessageReceived` hands over. */
+export interface WebMessageArguments {
+  /** The URI of the page that posted the message. */
+  readonly source: string;
+  readonly webMessageAsJson: string;
+}
+
+/** What `NavigationStarting` hands over. */
+export interface NavigationArguments {
+  readonly uri: string;
+  readonly isUserInitiated: boolean;
+  cancel: boolean;
+}
+
+/** What `DownloadStarting` hands over. */
+export interface DownloadArguments {
+  readonly downloadOperation: { readonly uri: string };
+  cancel: boolean;
+  handled: boolean;
+  resultFilePath: string;
+}
+
+/** What `PermissionRequested` hands over. */
+export interface PermissionArguments {
+  readonly uri: string;
+  readonly permissionKind: number;
+  readonly isUserInitiated: boolean;
+  state: number;
+  handled: boolean;
+  savesInProfile: boolean;
+}
+
+/** One cookie of the browser profile. */
+export interface CookieLike {
+  readonly name: string;
+  readonly domain: string;
+  readonly path: string;
+  readonly isSession: boolean;
+  value: string;
+  expires: number;
+  isHttpOnly: boolean;
+  isSecure: boolean;
+  sameSite: number;
+}
+
+/** The profile's cookie store. */
+export interface CookieManagerLike {
+  getCookiesAsync(uri: string): Promise<{ toArray(): CookieLike[] } | null>;
+  createCookie(name: string, value: string, domain: string, path: string): CookieLike;
+  addOrUpdateCookie(cookie: CookieLike): void;
+  deleteCookiesWithDomainAndPath(name: string, domain: string, path: string): void;
+  deleteAllCookies(): void;
+}
+
+/** What the helpers use of `CoreWebView2`; every `on...` returns its unsubscribe. */
+export interface CoreWebView2Like {
+  readonly cookieManager: CookieManagerLike;
+  readonly settings: {
+    areHostObjectsAllowed: boolean;
+  };
+  postWebMessageAsJson(webMessageAsJson: string): void;
+  executeScriptAsync(javaScript: string): Promise<string>;
+  addScriptToExecuteOnDocumentCreatedAsync(javaScript: string): Promise<string>;
+  removeScriptToExecuteOnDocumentCreated(id: string): void;
+  openDevToolsWindow(): void;
+  onWebMessageReceived(callback: (sender: unknown, args: WebMessageArguments) => void): () => void;
+  onNavigationStarting(callback: (sender: unknown, args: NavigationArguments) => void): () => void;
+  onDownloadStarting(callback: (sender: unknown, args: DownloadArguments) => void): () => void;
+  onPermissionRequested(callback: (sender: unknown, args: PermissionArguments) => void): () => void;
+}
+
+/** What the helpers use of the `WebView2` control. */
+export interface WebView2Like {
+  readonly coreWebView2: CoreWebView2Like;
+  ensureCoreWebView2Async(): Promise<void>;
+}
+
+/**
+ * Starts the control's browser if it is not started and resolves with its
+ * `CoreWebView2` once it is ready (`CoreWebView2Initialized` has been
+ * raised); resolves at once when it already is
+ * The control must be in a window for the browser to start
+ */
+export async function waitForCoreWebView2(control: WebView2Like) {
+  await control.ensureCoreWebView2Async();
+  return control.coreWebView2;
+}
+
+/**
+ * Runs `code` in the page and resolves with its value as JSON (`null` for
+ * `undefined`); rejects when the page's script threw or returned a value that
+ * is not JSON
+ * The result is the page's, so it is checked, not trusted
+ */
+export async function executeScript({ control, code }: {
+  control: WebView2Like;
+  code: string;
+}) {
+  const core = await waitForCoreWebView2(control);
+  const text = await core.executeScriptAsync(code);
+  return jsonSchema.parse(JSON.parse(text));
+}
+
+/**
+ * Runs `code` before every page script in every document the control loads,
+ * from now on; resolves with the function that removes it
+ */
+export async function addDocumentCreatedScript({ control, code }: {
+  control: WebView2Like;
+  code: string;
+}) {
+  const core = await waitForCoreWebView2(control);
+  const identifier = await core.addScriptToExecuteOnDocumentCreatedAsync(code);
+  return () => core.removeScriptToExecuteOnDocumentCreated(identifier);
+}
+
+/** Opens the browser's developer tools window for the page. */
+export async function openDevTools(control: WebView2Like) {
+  const core = await waitForCoreWebView2(control);
+  core.openDevToolsWindow();
+}

@@ -76,6 +76,14 @@
       "types": "./dist/messaging/index.d.ts",
       "default": "./dist/messaging/index.js"
     },
+    "./messaging/page": {
+      "types": "./dist/messaging/page.d.ts",
+      "default": "./dist/messaging/page.js"
+    },
+    "./messaging/web-view2": {
+      "types": "./dist/messaging/web-view2/index.d.ts",
+      "default": "./dist/messaging/web-view2/index.js"
+    },
     "./host": {
       "types": "./dist/renderer/host/host.d.ts",
       "svelte": "./dist/renderer/host/host.js",
