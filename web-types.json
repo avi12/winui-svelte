@@ -27088,6 +27088,16 @@
           "description": "Makes an element glide to its new height when its content grows or shrinks, where WinUI cannot animate `Height=\"Auto\"`: what a `ResizeObserver` and `element.animate({ height })` do on the web.\n\nImport it from `winui-svelte` and write it after `@attach`"
         },
         {
+          "name": "implicitLayoutAnimation",
+          "kind": "Function",
+          "description": "Makes the children of a panel slide to their new places instead of jumping when the layout moves them (an expander above them opens, an item is removed): the animation WinUI runs on a visual's `Offset` property, started by the composition layer itself whenever the offset changes.\n\nImport it from `winui-svelte/implicit-layout-animation` and write it after `@attach`"
+        },
+        {
+          "name": "liveRegion",
+          "kind": "Function",
+          "description": "Makes an element a live region, as `aria-live`: a screen reader speaks the element's text when it changes (`AutomationProperties.LiveSetting`).\n\nImport it from `winui-svelte/accessibility` and write it after `@attach`"
+        },
+        {
           "name": "numberField",
           "kind": "Function",
           "description": "Joins a NumberBox to the surrounding `Form`; an empty box collects null.\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
@@ -27131,6 +27141,11 @@
           "name": "timeField",
           "kind": "Function",
           "description": "Joins a TimePicker to the surrounding `Form`; the value is \"HH:mm\".\n\nImport it from `winui-svelte/forms` and write it after `@attach`"
+        },
+        {
+          "name": "trapFocus",
+          "kind": "Function",
+          "description": "Keeps keyboard focus inside an element, for a dialog or a wizard step: `@attach trapFocus()` on the element.\n\nImport it from `winui-svelte/input` and write it after `@attach`"
         },
         {
           "name": "withControl",
