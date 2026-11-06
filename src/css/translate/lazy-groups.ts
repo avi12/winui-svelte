@@ -1,4 +1,4 @@
-import { ANIMATION_MEMBERS, animationGroups } from "./animation-properties.ts";
+import { ANIMATION_MEMBERS, animationGroups, TIMELINE_MEMBERS } from "./animation-properties.ts";
 import { gradientGroups } from "./background-properties.ts";
 import { buildShorthandGroups } from "./build-shorthands.ts";
 import { CLIP_MEMBERS, clipGroups } from "./clip-properties.ts";
@@ -11,6 +11,7 @@ import { POSITION_MEMBERS, positionGroups } from "./position-properties.ts";
 import type { PropertyGroup } from "./property-kit.ts";
 import { queryGroups } from "./query-properties.ts";
 import { resourceGroups } from "./resource-properties.ts";
+import { SCROLL_TIMELINE_MEMBERS, scrollTimelineGroups } from "./scroll-timeline-properties.ts";
 import { SHAPE_MEMBERS, shapeGroups } from "./shape-properties.ts";
 import { SURFACE_MEMBERS, surfaceGroups } from "./surface-properties.ts";
 import { CONTROL_MEMBERS, controlGroups } from "./text-control-properties.ts";
@@ -66,6 +67,12 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     subpath: "/animation",
     exportName: "animationGroups",
     groups: animationGroups
+  },
+  {
+    isNeededBy: usesProperties([...SCROLL_TIMELINE_MEMBERS, ...TIMELINE_MEMBERS]),
+    subpath: "/scroll-timeline",
+    exportName: "scrollTimelineGroups",
+    groups: scrollTimelineGroups
   },
   {
     isNeededBy: usesProperties(EFFECT_MEMBERS),

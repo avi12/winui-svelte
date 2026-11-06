@@ -24,6 +24,8 @@ import { containerGroups } from "#src/css/translate/container-properties.js";
 import { focusGroups } from "#src/css/translate/focus-properties.js";
 import { queryGroups } from "#src/css/translate/query-properties.js";
 import { resourceGroups } from "#src/css/translate/resource-properties.js";
+import { scrollTimelineGroups } from "#src/css/translate/scroll-timeline-properties.js";
+import type { ScrollHost } from "#src/css/translate/scroll-timeline-properties.js";
 import { transformGroups } from "#src/css/translate/transform-properties.js";
 import { translateStyleSheet } from "#src/css/translate/translate.js";
 import { visualEffectGroups } from "#src/css/translate/visual-effect-properties.js";
@@ -833,6 +835,49 @@ test("an animation that names no @keyframes fails when the element is styled", (
   assert.throws(() => element.setClasses("gone"), /@keyframes nowhere is not declared in any stylesheet/u);
   element.dispose();
   unregisterStyleSheet("missing.svelte");
+});
+
+function recordingScrollHost() {
+  const calls: string[] = [];
+  const host = {
+    define({ definition }) {
+      calls.push(`define ${definition.kind} ${definition.name} ${definition.axis}`);
+      return () => calls.push(`undefine ${definition.name}`);
+    },
+    link({ animations }) {
+      calls.push(`link ${animations.map(({ timeline, tracks, start }) => `${timeline.kind} ${tracks.map(track => track.property).join("+")} ${start?.name ?? "normal"}`).join(", ")}`);
+      return () => calls.push("unlink");
+    }
+  } satisfies ScrollHost;
+  return {
+    calls,
+    host
+  };
+}
+
+test("an animation on a scroll timeline links with its host and unlinks when the class goes, without a Storyboard", () => {
+  const { calls, host } = recordingScrollHost();
+  registerPropertyGroups(animationGroups());
+  registerPropertyGroups(scrollTimelineGroups(host));
+  registerStyleSheet(
+    sheet({
+      id: "scrolled.svelte",
+      css: "@keyframes shrink { from { opacity: 1; translate: 0 0 } to { opacity: 0; translate: 0 -40px } }\n.shrink { animation: shrink linear both scroll(root); animation-range: 10% 90% }\n.named { scroll-timeline: --page inline; view-timeline: --card y 10px }"
+    })
+  );
+  const target = control();
+  const element = styledElement({
+    control: target,
+    elementType: "border"
+  });
+  element.setClasses("shrink");
+  assert.deepEqual(calls, ["link scroll Opacity+Translation.X+Translation.Y normal"]);
+  assert.deepEqual(target.animations, []);
+  element.setClasses("named");
+  assert.deepEqual(calls.slice(1), ["unlink", "define scroll --page x", "define view --card y"]);
+  element.dispose();
+  assert.deepEqual(calls.slice(-2), ["undefine --page", "undefine --card"]);
+  unregisterStyleSheet("scrolled.svelte");
 });
 
 // What a window would draw with, as the calls it was given.

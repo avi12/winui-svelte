@@ -164,6 +164,10 @@
       "types": "./dist/css/resources.d.ts",
       "default": "./dist/css/resources.js"
     },
+    "./css/scroll-timeline": {
+      "types": "./dist/css/scroll-timeline.d.ts",
+      "default": "./dist/css/scroll-timeline.js"
+    },
     "./css/animation": {
       "types": "./dist/css/animation.d.ts",
       "default": "./dist/css/animation.js"

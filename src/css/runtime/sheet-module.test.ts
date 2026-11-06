@@ -131,6 +131,28 @@ test("a sheet opts into the animation module for an animation", () => {
   assert.doesNotMatch(moduleFor(SOURCE)?.code ?? "", /css\/animation/u);
 });
 
+test("a sheet opts into the scroll-timeline module only for a scroll or view timeline", () => {
+  const linked = moduleFor(
+    `<border class="card"></border>
+<style>
+  @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+  .card { animation: fade linear scroll() }
+</style>
+`
+  );
+  assert.match(linked?.code ?? "", /import \{ scrollTimelineGroups as \w+ \} from "winui-svelte\/css\/scroll-timeline"/u);
+  assert.match(linked?.code ?? "", /import \{ animationGroups as \w+ \} from "winui-svelte\/css\/animation"/u);
+  const timed = moduleFor(
+    `<border class="card"></border>
+<style>
+  @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+  .card { animation: fade 1s }
+</style>
+`
+  );
+  assert.doesNotMatch(timed?.code ?? "", /css\/scroll-timeline/u);
+});
+
 test("a sheet opts into the transform module for a transition", () => {
   const transitioned = moduleFor(
     `<border class="card"></border>
