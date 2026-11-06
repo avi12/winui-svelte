@@ -24,6 +24,8 @@ import type { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
 
 const DEFINITION_PREFIX = "timeline";
 const NOT_DEFINED = 0;
+const MAX_SEARCHED = 400;
+const HEX_RADIX = 16;
 const NO_INSET: ViewInset = {
   start: {
     isAuto: true,
@@ -93,11 +95,24 @@ function ancestorsOf(element: FrameworkElement) {
   return found;
 }
 
+// A property set's names are identifiers: the dashes of `--page` are spelled out in hex.
+function definitionKey(name: string) {
+  return `${DEFINITION_PREFIX}${Array.from(name, character => character.charCodeAt(0).toString(HEX_RADIX)).join("")}`;
+}
+
+function childrenOf(element: FrameworkElement) {
+  const count = VisualTreeHelper.getChildrenCount(element);
+  return Array.from({ length: count }, (_unused, i) => projectedOrNull({
+    value: VisualTreeHelper.getChild(element, i),
+    type: FrameworkElement
+  })).filter(child => child !== null);
+}
+
 function definitionOf({ element, name }: {
   element: FrameworkElement;
   name: string;
 }) {
-  const [id, status] = ElementCompositionPreview.getElementVisual(element).properties.tryGetScalar(`${DEFINITION_PREFIX}${name}`);
+  const [id, status] = ElementCompositionPreview.getElementVisual(element).properties.tryGetScalar(definitionKey(name));
   const isDefined = status === 0 && id !== NOT_DEFINED;
   return isDefined ? definitions.get(id) ?? null : null;
 }
@@ -118,6 +133,19 @@ function scrollerAmong({ ancestors, scroller }: {
   }
 
   return null;
+}
+
+/**
+ * The scroll viewer an element scrolls in: the nearest one among its ancestors.
+ *
+ * @param element - The element.
+ * @returns The scroll viewer, a projection the caller releases with `releaseProjected`, or null.
+ */
+export function nearestScrollViewer(element: FrameworkElement) {
+  return scrollerAmong({
+    ancestors: ancestorsOf(element),
+    scroller: Scroller.NEAREST
+  });
 }
 
 interface Resolution {
@@ -166,25 +194,54 @@ function resolveView({ control, animation, timeline }: {
   } satisfies Resolution;
 }
 
+// The first element under `root` (breadth first, `root` itself included) that defines the timeline: a name is
+// found beside the animated element too, as `timeline-scope: all` would on the web.
+function findDefinition({ root, name }: {
+  root: FrameworkElement;
+  name: string;
+}) {
+  const queue = [root];
+  for (let searched = 0; searched < MAX_SEARCHED && queue.length > 0; searched++) {
+    const element = queue.shift();
+    const definition = element === undefined ? null : definitionOf({
+      element,
+      name
+    });
+    const isDefined = element !== undefined && definition !== null;
+    if (isDefined) {
+      return {
+        element,
+        definition
+      };
+    }
+
+    for (const child of element === undefined ? [] : childrenOf(element)) {
+      queue.push(child);
+    }
+  }
+
+  return null;
+}
+
 function resolveNamed({ control, animation, name }: {
   control: FrameworkElement;
   animation: LinkedAnimation;
   name: string;
 }) {
-  const chain = [control, ...ancestorsOf(control)];
-  for (const [i, element] of chain.entries()) {
-    const definition = definitionOf({
-      element,
+  for (const root of [control, ...ancestorsOf(control)]) {
+    const found = findDefinition({
+      root,
       name
     });
-    const isUndefined = definition === null;
-    if (isUndefined) {
+    const isMissing = found === null;
+    if (isMissing) {
       continue;
     }
 
+    const { element, definition } = found;
     const isScroll = definition.kind === TimelineKind.SCROLL;
     const scroller = isScroll ? asScrollViewer(element) : scrollerAmong({
-      ancestors: chain.slice(i + 1),
+      ancestors: ancestorsOf(element),
       scroller: Scroller.NEAREST
     });
     return scroller === null ? null : {
@@ -287,7 +344,7 @@ export const nativeScrollHost = {
     const id = lastDefinitionId;
     definitions.set(id, definition);
     const { properties } = ElementCompositionPreview.getElementVisual(element);
-    const key = `${DEFINITION_PREFIX}${definition.name}`;
+    const key = definitionKey(definition.name);
     properties.insertScalar(key, id);
     for (const retry of waiting) {
       retry();

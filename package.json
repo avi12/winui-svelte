@@ -326,6 +326,10 @@
       "types": "./dist/web-apis/index.d.ts",
       "default": "./dist/web-apis/index.js"
     },
+    "./scroll-timeline": {
+      "types": "./dist/web-apis/scroll-timeline.d.ts",
+      "default": "./dist/web-apis/scroll-timeline.js"
+    },
     "./web-apis/animations": {
       "types": "./dist/web-apis/animations.d.ts",
       "default": "./dist/web-apis/animations.js"

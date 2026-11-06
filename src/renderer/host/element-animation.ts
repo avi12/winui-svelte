@@ -205,9 +205,24 @@ function isMotionNode(value: NativeValue): value is MotionNode {
   return isRecord(value) && isRecord(read(value, "native"));
 }
 
-function keepsMotion(node: MotionNode) {
+function keepsMotion(node: object) {
   const classes = read(node, "className");
   return typeof classes === "string" && classes.split(" ").includes(MOTION_ALWAYS_CLASS);
+}
+
+/**
+ * Whether reduced motion takes the motion from an element: Windows' animation
+ * effects are off (or the setting `isMotionReduced` reads) and the element does
+ * not carry the `winui-motion-always` class.
+ *
+ * @param input - The tree's element, and the reduced-motion setting when it is not Windows'.
+ * @returns True when the element's animations skip to nothing.
+ */
+export function isMotionReducedFor({ node, isMotionReduced = isMotionReducedBySystem }: {
+  node: object;
+  isMotionReduced?: () => boolean;
+}) {
+  return isMotionReduced() && !keepsMotion(node);
 }
 
 function isMotionReducedBySystem() {

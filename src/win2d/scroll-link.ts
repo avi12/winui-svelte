@@ -81,14 +81,37 @@ function restore({ visual, property, value }: {
   restorers.get(property)?.();
 }
 
-function geometryOf({ scroller, link }: {
+/**
+ * How far the scroll viewer is scrolled along the axis, in pixels.
+ *
+ * @param input - The scroll viewer and the axis.
+ * @returns The offset.
+ */
+export function scrollOffset({ scroller, axis }: {
   scroller: ScrollViewer;
-  link: ResolvedLink;
+  axis: ScrollAxis;
+}) {
+  return axis === ScrollAxis.HORIZONTAL ? scroller.horizontalOffset : scroller.verticalOffset;
+}
+
+/**
+ * What a timeline measures now: the scroll range and the viewport along its
+ * axis and, for a view timeline, where its subject sits in the scrolled content.
+ *
+ * @param input - The scroll viewer and the link's axis, subject and inset.
+ * @returns The geometry `rangeOffsets` reads.
+ */
+export function scrollGeometry({ scroller, link }: {
+  scroller: ScrollViewer;
+  link: Pick<ResolvedLink, "axis" | "inset" | "subject">;
 }) {
   const isHorizontal = link.axis === ScrollAxis.HORIZONTAL;
   const { subject } = link;
   const position = subject?.transformToVisual(scroller).transformPoint(ORIGIN) ?? ORIGIN;
-  const offset = isHorizontal ? scroller.horizontalOffset : scroller.verticalOffset;
+  const offset = scrollOffset({
+    scroller,
+    axis: link.axis
+  });
   return {
     scrollExtent: isHorizontal ? scroller.scrollableWidth : scroller.scrollableHeight,
     viewport: isHorizontal ? scroller.viewportWidth : scroller.viewportHeight,
@@ -160,7 +183,7 @@ export function linkScroll({ target, scroller, links }: {
   function refresh() {
     for (const [i, link] of links.entries()) {
       const range = rangeOffsets({
-        geometry: geometryOf({
+        geometry: scrollGeometry({
           scroller,
           link
         }),

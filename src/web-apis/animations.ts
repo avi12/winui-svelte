@@ -61,7 +61,13 @@ function isKeyframeList(input: KeyframeInput): input is readonly Keyframe[] {
   return Array.isArray(input);
 }
 
-function normalizeKeyframes(input: KeyframeInput | null) {
+/**
+ * The keyframes of `animate()` as a list of keyframes, whichever form they were written in.
+ *
+ * @param input - A list of keyframes, an object of property value lists, or null.
+ * @returns One object for each keyframe.
+ */
+export function normalizeKeyframes(input: KeyframeInput | null) {
   const isEmpty = input === null;
   if (isEmpty) {
     return [];
