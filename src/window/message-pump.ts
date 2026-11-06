@@ -52,6 +52,9 @@ export interface MessageQueue {
   /** Whether the message taken is the quit message. */
   isQuit(): boolean;
 
+  /** Offers the message taken to the message hooks (message-hooks.ts); true when one handled it. */
+  isHandledByHook(): boolean;
+
   /**
    * Offers the message taken to the content that owns the keyboard
    * (`ContentPreTranslateMessage`): accelerators, access keys, focus
@@ -66,7 +69,7 @@ export interface MessageQueue {
 
 /**
  * Handles the next message of `queue` the way WinUI's own loop does: the
- * content sees it first, and only a message it left alone is translated
+ * hooks and then the content see it first, and only a message it left alone is translated
  * (WM_KEYDOWN to WM_CHAR) and dispatched.
  */
 export function dispatchNextMessage(queue: MessageQueue) {
@@ -77,6 +80,10 @@ export function dispatchNextMessage(queue: MessageQueue) {
 
   if (queue.isQuit()) {
     return Dispatched.QUIT;
+  }
+
+  if (queue.isHandledByHook()) {
+    return Dispatched.MESSAGE;
   }
 
   if (!queue.isConsumedByContent()) {

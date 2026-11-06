@@ -2465,6 +2465,70 @@ if (!single.isPrimary) {
   `test/activation.test.ts` starts real second copies with a link, a file and
   nothing, and checks the first hears each as one event
 
+### Global hotkeys (`winui-svelte/app/hotkeys`)
+
+A system-wide key combination, heard whichever app has the focus
+A web page cannot own a global key, so there is no web API to mirror; the
+callback is told a `KeyboardEvent`-like object and the prop is the lowercase
+`onpressed`
+An opt-in subpath: an app that does not import it does not bundle it
+
+```ts
+import { registerHotkey } from "winui-svelte/app/hotkeys";
+
+const hotkey = registerHotkey({
+  keys: "ctrl+alt+k",
+  onpressed: ({ keys }) => togglePalette(),
+});
+// later: hotkey.isRegistered, hotkey.unregister()
+```
+
+- `keys` is a string of modifiers and one key joined by `+`, in any case
+  (`ctrl+alt+k`, `win+shift+f23`, `ctrl+5`, `f9`), or a typed object
+  `{ modifiers: [HotkeyModifier.control], key: "k" }`
+  Modifiers: `ctrl`/`control`, `alt`/`option`, `shift`, `win`/`windows`/`meta`/`super`
+  Keys are named as `KeyboardEvent.code` names them, lowercase: letters,
+  `digit0` to `digit9` (a bare `5` works in a string), `f1` to `f24`, `numpad0`
+  to `numpad9`, `arrowleft`, `escape`, `space`, `minus`, `equal`,
+  `bracketleft`, the media and volume keys
+  `HotkeyKey` (also in `winui-svelte/enums`) is the table, each name mapped to
+  its virtual-key code, and `HotkeyModifier` holds the modifiers
+  A few aliases are accepted in a string (`esc`, `del`, `left`, `pgup`)
+  A modifier named twice, no key, two keys or an unknown name throws
+  `HotkeyParseError`
+- `onpressed` runs on the UI thread with `{ keys, key, modifiers, ctrlKey,
+  altKey, shiftKey, metaKey }`; holding the keys down presses once, because
+  `MOD_NOREPEAT` is the default (`isRepeatAllowed: true` lifts it)
+  An error thrown by the callback goes to `onUiError` and the hotkey stays
+- Failures are typed and all extend `HotkeyError`: `HotkeyConflictError` when
+  another app (or this one) owns the combination
+  (`ERROR_HOTKEY_ALREADY_REGISTERED`), `HotkeyRefusedError` (with `code`) when
+  Windows refuses it, `HotkeyParseError` for the string
+- `unregister()` gives the combination back and may be called twice
+  In a component, register in an `$effect` and return the unregister, so a
+  closed window releases it; Windows frees the rest when the thread ends
+- How it works: `RegisterHotKey` with no window posts `WM_HOTKEY` to the
+  registering thread's queue, where no window procedure ever sees it
+  The message pump (`createMessageSource`) offers each message it takes to a
+  short list of hooks (`src/window/message-hooks.ts`) before the content and
+  `DispatchMessage`, and the hotkey registry is one hook
+  Any thread that runs the package's pump hears the hotkeys registered on it,
+  a tray-only app with no window included; the registry and the hook list are
+  one per thread
+- Limits:
+  - Nothing is heard while the pump is not running (before `runWindow` has
+    started it, or after it stopped), and a callback waits for the message in
+    front of it
+  - Register on the thread whose pump runs, the UI thread
+  - Windows reserves some combinations (`win+l`, `ctrl+alt+delete`, and others
+    the shell owns): they throw `HotkeyRefusedError` or `HotkeyConflictError`
+  - The first app to register a combination owns it; the only way to know is
+    to try, and to ask the user for another when it throws
+  - A key with no modifier (`f9`) is taken from every app
+- `test/hotkeys.test.ts` registers `ctrl+alt+shift+f23` in a real window and
+  posts `WM_HOTKEY` to the thread itself with `PostThreadMessageW`; no key is
+  pressed
+
 ### System tray (`winui-svelte/tray`)
 
 WinUI and the Windows App SDK have no notification-area API (apps call

@@ -1,5 +1,6 @@
 import type { HostExitRequest } from "./host-exit.ts";
 import type { LibuvWake } from "./libuv-wake.ts";
+import { runMessageHooks } from "./message-hooks.ts";
 import type { MessageQueue, MessageSource } from "./message-pump.ts";
 import { dispatchNextMessage } from "./message-pump.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
@@ -382,7 +383,10 @@ export function clipSizeOf(hwnd: bigint) {
 
 const MESSAGE_BYTES = 48;
 const MESSAGE_ALIGNMENT = 8;
+const MESSAGE_HWND_OFFSET = 0;
 const MESSAGE_ID_OFFSET = 8;
+const MESSAGE_WPARAM_OFFSET = 16;
+const MESSAGE_LPARAM_OFFSET = 24;
 const WM_QUIT = 0x12;
 const PM_REMOVE = 1;
 const QS_ALLINPUT = 0x4ff;
@@ -453,6 +457,14 @@ export function createMessageSource({ wake, hostExit }: {
     },
     isQuit() {
       return message.readI32(MESSAGE_ID_OFFSET) === WM_QUIT;
+    },
+    isHandledByHook() {
+      return runMessageHooks({
+        hwnd: message.readU64(MESSAGE_HWND_OFFSET),
+        id: message.readU32(MESSAGE_ID_OFFSET),
+        wParam: message.readU64(MESSAGE_WPARAM_OFFSET),
+        lParam: message.readU64(MESSAGE_LPARAM_OFFSET)
+      });
     },
     isConsumedByContent() {
       return numberOf(preTranslateMessage.invoke([messagePointer]).returnValue) !== 0;

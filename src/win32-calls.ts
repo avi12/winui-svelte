@@ -16,6 +16,9 @@ interface BindOptions {
   entryPoint: string;
   parameters: string[];
   returnType: string;
+
+  /** Keep the thread's last error of the call, which `invoke` then reports as `lastError`. */
+  shouldCaptureLastError?: boolean;
 }
 
 /**
@@ -24,7 +27,7 @@ interface BindOptions {
  * @param options - The function.
  * @returns The bound function: `invoke([...values])`.
  */
-export function bind({ dll, entryPoint, parameters, returnType }: BindOptions) {
+export function bind({ dll, entryPoint, parameters, returnType, shouldCaptureLastError = false }: BindOptions) {
   return DynWin32Unsafe.bind({
     dll,
     entryPoint,
@@ -33,7 +36,8 @@ export function bind({ dll, entryPoint, parameters, returnType }: BindOptions) {
       direction: "in",
       nullable: type === "pointer"
     })),
-    returnType
+    returnType,
+    captureLastError: shouldCaptureLastError
   });
 }
 

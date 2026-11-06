@@ -283,6 +283,10 @@
       "types": "./dist/tray/standalone/index.d.ts",
       "default": "./dist/tray/standalone/index.js"
     },
+    "./app/hotkeys": {
+      "types": "./dist/app/hotkeys/index.d.ts",
+      "default": "./dist/app/hotkeys/index.js"
+    },
     "./app": {
       "types": "./dist/app/index.d.ts",
       "default": "./dist/app/index.js"
