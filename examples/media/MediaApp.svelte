@@ -117,10 +117,8 @@
 <style>
   :root {
     --media-card: #ffffff;
-  }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
+    @media (prefers-color-scheme: dark) {
       --media-card: #000000;
     }
   }
@@ -134,22 +132,16 @@
     background-color: light-dark(#ffffff, #000000);
     opacity: 1;
     transition: opacity 300ms;
-  }
 
-  @media (prefers-color-scheme: dark) {
-    .media-probe {
+    @media (prefers-color-scheme: dark) {
       width: 111px;
     }
-  }
 
-  @media (forced-colors: active) {
-    .media-probe {
+    @media (forced-colors: active) {
       height: 77px;
     }
-  }
 
-  @media (prefers-reduced-transparency: reduce) {
-    .media-probe {
+    @media (prefers-reduced-transparency: reduce) {
       min-width: 55px;
     }
   }

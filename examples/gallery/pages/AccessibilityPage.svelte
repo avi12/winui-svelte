@@ -46,17 +46,13 @@
   :root {
     --access-card: #ffffff;
     --access-card-text: #06182b;
-  }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
+    @media (prefers-color-scheme: dark) {
       --access-card: #202020;
       --access-card-text: #ffffff;
     }
-  }
 
-  @media (forced-colors: active) {
-    :root {
+    @media (forced-colors: active) {
       --access-card: Canvas;
       --access-card-text: CanvasText;
     }
@@ -70,6 +66,11 @@
   .access-card {
     padding: 16px;
     background-color: var(--access-card);
+
+    @media (prefers-contrast: more) {
+      border-color: var(--access-card-text);
+      border-width: 2px;
+    }
   }
 
   .access-card-text {
@@ -85,18 +86,9 @@
   .access-glass {
     padding: 16px;
     background-color: rgb(128 128 128 / 0.5);
-  }
 
-  @media (prefers-reduced-transparency: reduce) {
-    .access-glass {
+    @media (prefers-reduced-transparency: reduce) {
       background-color: var(--access-card);
-    }
-  }
-
-  @media (prefers-contrast: more) {
-    .access-card {
-      border-color: var(--access-card-text);
-      border-width: 2px;
     }
   }
 

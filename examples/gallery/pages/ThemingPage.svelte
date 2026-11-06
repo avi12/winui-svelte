@@ -35,16 +35,12 @@
 <style>
   :root {
     --theme-card: #ffffff;
-  }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
+    @media (prefers-color-scheme: dark) {
       --theme-card: #202020;
     }
-  }
 
-  @media (forced-colors: active) {
-    :root {
+    @media (forced-colors: active) {
       --theme-card: Canvas;
     }
   }

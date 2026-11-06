@@ -58,10 +58,8 @@
   .css-responsive {
     padding: 8px;
     background-color: #d5e4f0;
-  }
 
-  @media (width >= 700px) {
-    .css-responsive {
+    @media (width >= 700px) {
       padding: 24px;
       background-color: oklch(0.85 0.1 150deg);
     }
@@ -75,10 +73,8 @@
   .css-badge {
     padding: 8px;
     background-color: #d5e4f0;
-  }
 
-  @container card (min-width: 500px) {
-    .css-badge {
+    @container card (min-width: 500px) {
       padding: 20px;
       background-color: oklch(0.8 0.12 60deg);
     }
