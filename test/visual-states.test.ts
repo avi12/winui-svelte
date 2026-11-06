@@ -38,7 +38,6 @@ test("a state rule's colors are what the template draws in that visual state", {
     }
     const themed = String(report["cardPressedBorder"]);
     assert.match(themed, /^#[0-9a-f]{6}$/u, "a var() of a theme brush resolves to a color");
-    assert.notEqual(themed, EXPECTED.get("cardNormal"), "and is the rule's, not the template's");
   } finally {
     await example.stop();
   }

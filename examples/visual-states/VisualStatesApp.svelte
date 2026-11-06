@@ -98,19 +98,19 @@
   .cta {
     background-color: #0a6cff;
     color: #ffffff;
-  }
 
-  .cta:hover {
-    background-color: #0050c8;
-  }
+    &:hover {
+      background-color: #0050c8;
+    }
 
-  .cta:active {
-    background-color: #003a8f;
-    color: #e0e8ff;
-  }
+    &:active {
+      background-color: #003a8f;
+      color: #e0e8ff;
+    }
 
-  .cta:disabled {
-    background-color: #888888;
+    &:disabled {
+      background-color: #888888;
+    }
   }
 
   .card {
@@ -118,19 +118,19 @@
     border-color: #cccccc;
     border-width: 1px;
     background-color: #ffffff;
-  }
 
-  .card:hover {
-    border-color: #0a6cff;
-    background-color: #eef4ff;
-  }
+    &:hover {
+      border-color: #0a6cff;
+      background-color: #eef4ff;
+    }
 
-  .card:active {
-    border-color: var(--text-fill-color-primary-brush);
-    background-color: #dbe7ff;
-  }
+    &:active {
+      border-color: var(--text-fill-color-primary-brush);
+      background-color: #dbe7ff;
+    }
 
-  .card:disabled {
-    background-color: #eeeeee;
+    &:disabled {
+      background-color: #eeeeee;
+    }
   }
 </style>
