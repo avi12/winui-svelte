@@ -97,7 +97,7 @@
 <style>
   .cta {
     background-color: #0a6cff;
-    color: #fff;
+    color: #ffffff;
   }
 
   .cta:hover {
@@ -110,27 +110,27 @@
   }
 
   .cta:disabled {
-    background-color: #888;
+    background-color: #888888;
   }
 
   .card {
-    background-color: #fff;
-    border-color: #ccc;
-    border-width: 1px;
     padding: 16px;
+    border-color: #cccccc;
+    border-width: 1px;
+    background-color: #ffffff;
   }
 
   .card:hover {
-    background-color: #eef4ff;
     border-color: #0a6cff;
+    background-color: #eef4ff;
   }
 
   .card:active {
-    background-color: #dbe7ff;
     border-color: var(--text-fill-color-primary-brush);
+    background-color: #dbe7ff;
   }
 
   .card:disabled {
-    background-color: #eee;
+    background-color: #eeeeee;
   }
 </style>
