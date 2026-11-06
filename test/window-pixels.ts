@@ -3,12 +3,15 @@ import path from "node:path";
 import { z } from "zod";
 
 // The colors of points of an example's window, as Windows draws it
-// (examples/harness/window-pixels.ps1, window-capture.ps1): what a test looks
+// (examples/harness/window-pixels.ps1, window-capture.ps1), or of the screen
+// itself (screen-capture.ps1, for what a window with alpha blends over): what a test looks
 // at to see an effect that Composition draws, which no XAML control reports.
 
 const HARNESS_FOLDER = path.join(import.meta.dirname, "..", "examples", "harness");
 const SCRIPT = path.join(HARNESS_FOLDER, "window-pixels.ps1");
 const CAPTURE_SCRIPT = path.join(HARNESS_FOLDER, "window-capture.ps1");
+const SCREEN_CAPTURE_SCRIPT = path.join(HARNESS_FOLDER, "screen-capture.ps1");
+const SCREEN_AREAS_SCRIPT = path.join(HARNESS_FOLDER, "screen-areas.ps1");
 const PIXELS_TIMEOUT_MILLISECONDS = 60_000;
 const colorsSchema = z.array(z.string());
 const HEX_RADIX = 16;
@@ -109,4 +112,78 @@ export function windowCapture({ pid, points, savePath = "" }: CaptureRequest) {
       savePath
     ]
   });
+}
+
+/** What `screen-capture.ps1` is asked. */
+export interface ScreenCaptureRequest {
+  /** In device pixels of the virtual screen. */
+  rectangle: Rectangle;
+
+  /** In device pixels from the rectangle's top left. */
+  points: readonly Point[];
+
+  /** A PNG file to write the capture to, to look at. */
+  savePath?: string;
+}
+
+/** A rectangle of the screen, in device pixels. */
+export interface Rectangle {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * The colors of the points of the screen as Windows composes it, in the order
+ * they were asked: every window above a point counts, and a window with
+ * per-pixel alpha is blended over what is behind it. It reads pixels only.
+ */
+export function screenCapture({ rectangle, points, savePath = "" }: ScreenCaptureRequest) {
+  return colorsOf({
+    script: SCREEN_CAPTURE_SCRIPT,
+    args: [
+      "-X",
+      String(rectangle.x),
+      "-Y",
+      String(rectangle.y),
+      "-Width",
+      String(rectangle.width),
+      "-Height",
+      String(rectangle.height),
+      "-Points",
+      formatted(points),
+      "-Save",
+      savePath
+    ]
+  });
+}
+
+const rectanglesSchema = z.array(
+  z.object({
+    x: z.number(),
+    y: z.number(),
+    width: z.number(),
+    height: z.number()
+  })
+);
+
+/** The work area of every display, in device pixels of the virtual screen. */
+export function screenAreas() {
+  const result = spawnSync("powershell.exe", [
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    SCREEN_AREAS_SCRIPT
+  ], {
+    encoding: "utf8",
+    timeout: PIXELS_TIMEOUT_MILLISECONDS
+  });
+  const isFailed = result.status !== 0;
+  if (isFailed) {
+    throw new Error(`screen-areas.ps1 failed: ${result.stderr.trim() || result.stdout.trim()}`);
+  }
+
+  return rectanglesSchema.parse(JSON.parse(result.stdout.trim()));
 }
