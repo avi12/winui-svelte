@@ -1,26 +1,10 @@
+import { BadgeGlyph } from "./badge-glyph.ts";
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { defineNavigatorProperty } from "./install.ts";
 import { BadgeNotificationGlyph } from "#winui/microsoft/windows/badge-notifications/BadgeNotificationGlyph";
 import { BadgeNotificationManager } from "#winui/microsoft/windows/badge-notifications/BadgeNotificationManager";
 
-/** The status glyphs Windows can draw on the app's taskbar button; WinUI-only. */
-export const BadgeGlyph = {
-  NONE: "none",
-  ACTIVITY: "activity",
-  ALARM: "alarm",
-  ALERT: "alert",
-  ATTENTION: "attention",
-  AVAILABLE: "available",
-  AWAY: "away",
-  BUSY: "busy",
-  ERROR: "error",
-  NEW_MESSAGE: "newMessage",
-  PAUSED: "paused",
-  PLAYING: "playing",
-  UNAVAILABLE: "unavailable"
-} as const;
-/** One of the values of `BadgeGlyph`. */
-export type BadgeGlyph = (typeof BadgeGlyph)[keyof typeof BadgeGlyph];
+export { BadgeGlyph } from "./badge-glyph.ts";
 
 const glyphValues = {
   [BadgeGlyph.NONE]: BadgeNotificationGlyph.None,
@@ -51,6 +35,13 @@ export interface BadgeBackend {
 export interface BadgingInstallOptions {
   /** Draws the badge; the default is `BadgeNotificationManager`. */
   readonly backend?: BadgeBackend;
+
+  /**
+   * Draws the badge when `backend` throws, as Windows does for a process
+   * with no package identity. `taskbarBadgeBackend` of
+   * `winui-svelte/window/taskbar` draws it on a window's taskbar button.
+   */
+  readonly fallback?: BadgeBackend;
 }
 
 /** The members `navigator` gains beyond the standard two; WinUI-only. */
@@ -70,6 +61,30 @@ function windowsBadgeBackend() {
     setCount: (count: number) => BadgeNotificationManager.current.setBadgeAsCount(count),
     setGlyph: (glyph: BadgeGlyph) => BadgeNotificationManager.current.setBadgeAsGlyph(glyphValues[glyph]),
     clear: () => BadgeNotificationManager.current.clearBadge()
+  } satisfies BadgeBackend;
+}
+
+function withFallback({ primary, fallback }: {
+  primary: BadgeBackend;
+  fallback: BadgeBackend | undefined;
+}) {
+  if (!fallback) {
+    return primary;
+  }
+
+  const spare = fallback;
+  function attempt(act: (backend: BadgeBackend) => void) {
+    try {
+      act(primary);
+    } catch {
+      act(spare);
+    }
+  }
+
+  return {
+    setCount: count => attempt(backend => backend.setCount(count)),
+    setGlyph: glyph => attempt(backend => backend.setGlyph(glyph)),
+    clear: () => attempt(backend => backend.clear())
   } satisfies BadgeBackend;
 }
 
@@ -105,7 +120,10 @@ function countOf(contents: number) {
  * @returns The function that takes them away again.
  */
 export function installBadging(options: BadgingInstallOptions = {}) {
-  const backend = options.backend ?? windowsBadgeBackend();
+  const backend = withFallback({
+    primary: options.backend ?? windowsBadgeBackend(),
+    fallback: options.fallback
+  });
   async function setAppBadge(contents?: number) {
     const isFlag = contents === undefined;
     if (isFlag) {
