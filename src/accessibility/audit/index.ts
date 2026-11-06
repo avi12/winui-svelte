@@ -6,7 +6,6 @@ export { accessibilityRules, ruleDescriptions } from "./rules.ts";
 export type { AccessibilityRule, AccessibilityRuleId, AuditNode } from "./rules.ts";
 export { auditTree } from "./audit-tree.ts";
 export type { AccessibilityFinding, AuditHost, ElementFacts } from "./audit-tree.ts";
-export { AA_CONTRAST, contrastRatio, parseRgba } from "./contrast.ts";
 export type { Rgba } from "./contrast.ts";
 
 /**

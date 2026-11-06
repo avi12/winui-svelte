@@ -22,11 +22,9 @@ const globalSchema = z.object({
   })
 });
 
-/**
- * The `window.chrome.webview` WebView2 injects into every page it loads;
- * throws in a page that is not in a WebView2.
- */
-export function hostWebView() {
+// The `window.chrome.webview` WebView2 injects into every page it loads;
+// throws in a page that is not in a WebView2.
+function hostWebView() {
   return globalSchema.parse(globalThis).chrome.webview;
 }
 
