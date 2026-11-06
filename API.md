@@ -5129,6 +5129,12 @@ event announces, such as an unreferenced timer) and uses next to no CPU
 The one thing nobody can ask libuv from outside is when its next timer fires:
 while Node itself holds a timer (a socket timeout) the pump wakes every 16 ms
 The timers an app makes go through the scheduler, which the dispatcher drives
+Measured idle cost, over 20 seconds after a minute of settling, on Windows 11
+(build 26300) with a 32-thread CPU and the Windows App SDK 2.2 build of this
+repository: `examples/hello` used 0.15 percent of one core and `examples/tray`
+(a tray icon and no window) used 0.23 percent, so nothing in the idle path needs
+fixing; the first seconds after start cost more (about 2 percent of a core) while
+the window loads
 A host that calls `process.exit` while the window runs would end the process
 under WinUI's thread (a delegate then finds the Node environment closing, and
 the process can end with 0xC000027B); `initWindowsAppSdk` therefore installs
