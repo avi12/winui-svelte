@@ -16,6 +16,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/components` | `src/components/generated/index.ts` | every WinUI 3 control as a component (`StackPanel`, `ToggleSwitch`, ...) and its props type (`ToggleSwitchComponentProps`); `xamlOf`, `goToState`, `installXaml`, `resourceDictionaryOf`; importing it registers the generated bindings with the renderer |
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()` (its `messaging` is the typed link), `hostState()`, `StateProtocol`, the transports (stdio, MessagePort, in-memory), `diff` / `applyOps` (see `src/state/README.md`) |
 | `winui-svelte/host` | `src/renderer/host/host.ts` | `renderer`, the renderer WinUI controls are built through (`mountControl` makes it the active one), and the mount-target plumbing below; not for app code |
+| `winui-svelte/scroll-timeline` | `src/web-apis/scroll-timeline.ts` | `installScrollTimeline()`: `ScrollTimeline`, `ViewTimeline` and `element.animate(keyframes, { timeline })` over Composition (the CSS side is `winui-svelte/css/scroll-timeline`, which a sheet that uses `animation-timeline` imports) |
 | `winui-svelte/element-animation` | `src/renderer/host/element-animation.ts` | `enableElementAnimation()`: what Svelte's `transition:`, `in:`, `out:`, `animate:` and `svelte/motion` ask of an element, on WinUI controls (the Vite plugin calls it from a component that uses them; otherwise not bundled) |
 | `winui-svelte/attached-owners` | `src/components/attached-owners.ts` | `preloadAttachedOwners(names)`: loads the modules attached properties (`canvasLeft`, `gridRow`) are written through (the Vite plugin calls it from a component whose markup or script names one, so the property is set with the control; a prop named nowhere, built from a computed key, needs `await preloadAttachedOwners(["Canvas"])` first, or its control throws) |
 | `winui-svelte/connected-animation` | `src/renderer/host/connected-animation.ts` | `connectElement({ key, element })`, `startConnected({ key, element })`: WinUI's connected animation between two pages (opt-in) |
@@ -2613,6 +2614,7 @@ needs
 | `requestAnimationFrame`, `requestIdleCallback` | `winui-svelte/web-apis/timing` | web | none | done |
 | `ResizeObserver`, `IntersectionObserver`, `MutationObserver` | `winui-svelte/web-apis/observers` | web plus extras | none | done |
 | `element.animate()`, `Animation`, `KeyframeEffect` | `winui-svelte/web-apis/animations` | web plus extras | none | done |
+| `ScrollTimeline`, `ViewTimeline`, `element.animate(keyframes, { timeline })` | `winui-svelte/scroll-timeline` | web | none | done |
 | `navigator.mediaDevices` (`getUserMedia`, `getDisplayMedia`, `enumerateDevices`), `MediaStream`, `MediaRecorder` | `winui-svelte/web-apis/media-devices` | web plus extras | none (a camera or microphone needs the Windows privacy switch on) | done |
 | `speechSynthesis`, `SpeechSynthesisUtterance`, `SpeechRecognition` (SSML, silences, scenario, phrases) | `winui-svelte/web-apis/speech` | web plus extras | none | done |
 | `navigator.mediaSession`, `MediaMetadata` | `winui-svelte/web-apis/media-session` | web plus extras | none | done |
@@ -3027,12 +3029,46 @@ tree's elements `animate()` and `getAnimations()`, and the global scope
   rotation, size, margin, padding, border, shape dashes); the keyframes are
   evenly spaced, so a keyframe `offset` or `easing` is ignored, and anything
   else warns once
-- Not covered: `document.getAnimations()`, composite modes, pseudo-elements and
-  scroll timelines
+- Not covered: `document.getAnimations()`, composite modes and
+  pseudo-elements; scroll timelines are `winui-svelte/scroll-timeline`, below
 - Extras (WinUI only): `element.prepareConnectedAnimation(key)` and
   `element.startConnectedAnimation(key)` over `ConnectedAnimationService`;
   implicit animations are the CSS `transition:` the translator already maps to
   `OpacityTransition` and its siblings
+
+#### Scroll timelines (`winui-svelte/scroll-timeline`)
+
+`installScrollTimeline()` defines `ScrollTimeline` and `ViewTimeline` on the
+global scope and lets `element.animate(keyframes, { timeline })` follow a scroll
+position instead of the clock; install `installAnimations()` first for the rest
+of the Web Animations API (a call without a timeline goes on to it)
+It is not part of `installWebApis`; `"ScrollTimeline" in globalThis` tells
+whether it was installed
+
+- `new ScrollTimeline({ source, axis })`: `source` is a `<scroll-viewer>`
+  element, `axis` is `block` (the default), `inline`, `x` or `y`;
+  `currentTime` is `{ value, unit: "percent" }` of the scrollable range, or
+  `null` while the source is no scroll viewer in a window, and `duration` is 100
+  percent
+- `new ViewTimeline({ subject, axis, inset })`: `currentTime` is how far the
+  subject has crossed the nearest scroll viewer, from entering (0) to leaving
+  (100); `inset` is `"10px"` or `["10px", "20%"]`
+- `element.animate(keyframes, { timeline, rangeStart, rangeEnd, direction })`
+  returns a `ScrollLinkedAnimation` with `timeline`, `playState`
+  (`running` or `idle`) and `cancel()`; `rangeStart` and `rangeEnd` are the
+  CSS `animation-range` words (`"entry 10%"`, `"25%"`)
+- The same rules as the CSS: the keyframes go through the CSS build's reader,
+  so opacity, translate, scale, rotate and a transform of them work, and a
+  width, a color, a keyword or a skew is a `NotSupportedError`, as is an easing
+  other than `linear` and an iteration count other than 1; a keyframe `offset`
+  is honoured, the rest are evenly spaced
+- Under reduced motion (Windows' animation effects off, or the
+  `isMotionReduced` option) the animation does not start and `playState` is
+  `idle`; an element with the class `winui-motion-always` keeps it
+- The compositor runs the animation, so the UI thread cannot read its value
+  back: `Visual.Opacity` stays at its resting value (the pixels are what shows)
+- Not covered: `getAnimations()` for these, `pause()`, `play()` and
+  `currentTime` of the animation, and `timeline-scope`
 
 ### Media devices (`winui-svelte/web-apis/media-devices`)
 
@@ -4088,7 +4124,7 @@ entry point is named nowhere in the docs
 | `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
 | `classNameOf` | `winui-svelte/host` | the class name (`ListView`) of a control, from the tag it was registered under, so it holds when a minifier renames classes |
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet`, `textTransforms` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, removal of a stylesheet, and the text each element's `text-transform` shows (the renderer reads it) |
-| `animationGroups`, `effectGroups`, `visualEffectGroups`, `clipGroups`, `cursorGroups`, `environmentGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
+| `animationGroups`, `effectGroups`, `visualEffectGroups`, `clipGroups`, `cursorGroups`, `environmentGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `scrollTimelineGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
 | `translateComponent` | `winui-svelte/css/sheet-module` | the build's translation of a component's `<style>`, which the validator and the Vite plugin share |
 | `unusedSelectorMessages` | `winui-svelte/css/sheet-module` | the messages of Svelte's unused-selector warnings for a component read with its instances as elements, which `winuiWarningFilter` keeps |

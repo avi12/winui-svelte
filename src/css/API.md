@@ -196,6 +196,7 @@ window in, with or without a `<style>` that uses the property
 | `winui-svelte/css/gradients` | `background-image` | Gradients |
 | `winui-svelte/css/transform` | `transform`, `translate`, `scale`, `rotate`, `transform-origin`, `transition` | Transforms |
 | `winui-svelte/css/animation` | `animation`, `animation-*`, `@keyframes` | Animations |
+| `winui-svelte/css/scroll-timeline` | `animation-timeline`, `animation-range*`, `scroll-timeline*`, `view-timeline*` | Scroll-driven animation |
 | `winui-svelte/css/effects` | `aspect-ratio` | Aspect ratio |
 | `winui-svelte/css/filter` | `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` | Filters, blends and masks |
 | `winui-svelte/css/clip` | `clip-path` | Clip shapes |
@@ -498,6 +499,93 @@ iterations start from where the last one ended
 @keyframes pulse { 0% { opacity: 1 } 50% { opacity: 0.4 } 100% { opacity: 1 } }
 .badge { animation: pulse 1.2s ease-in-out infinite }
 ```
+
+## Scroll-driven animation: `animation-timeline`, `scroll-timeline`, `view-timeline`
+
+An animation can follow a scroll position instead of the clock
+`animation-timeline` binds a `@keyframes` rule to a scroll viewer, and
+Composition runs it on the compositor: the scroll viewer's manipulation
+property set (`ElementCompositionPreview.GetScrollViewerManipulationPropertySet`)
+feeds one `ExpressionAnimation` that gives the progress through the animation
+range, and one more for each animated property that turns the progress into a
+clamped `Lerp` of its key frames; the UI thread stays idle while the user
+scrolls
+The module is `winui-svelte/css/scroll-timeline`, which a sheet imports when it
+has one of these properties (`animation-timeline`, `animation-range`,
+`scroll-timeline*`, `view-timeline*`)
+
+| Property | Meaning |
+|---|---|
+| `animation-timeline` | `auto` (the clock, the default), `none` (the animation does not play), `scroll([nearest \| root \| self] [block \| inline \| x \| y])`, `view([block \| inline \| x \| y] [inset])` or a dashed name; a comma list matches `animation-name` |
+| `animation-range`, `animation-range-start`, `animation-range-end` | `normal` (the whole scroll range, or the whole cover range of a view), a length in px or a percentage, and for a view timeline a range name (`cover`, `contain`, `entry`, `exit`, `entry-crossing`, `exit-crossing`) with an offset into it: `animation-range: entry 10% exit 90%` |
+| `scroll-timeline`, `scroll-timeline-name`, `scroll-timeline-axis` | the scroll viewer this rule styles defines a timeline that `animation-timeline: --name` finds |
+| `view-timeline`, `view-timeline-name`, `view-timeline-axis`, `view-timeline-inset` | the element this rule styles defines a view timeline: its passage through the nearest scroll viewer |
+
+`block` and `y` are vertical, `inline` and `x` horizontal (WinUI scrolls in the
+left to right layout only)
+`scroll()` measures the nearest scroll viewer above the element, the outermost
+one (`root`) or the element itself (`self`)
+`view()` measures the element itself against its nearest scroll viewer; its
+inset (`auto`, or one or two lengths in px or percentages of the scrollport)
+shrinks the scrollport the element is measured against
+
+```css
+.page { scroll-timeline: --page block }
+
+.header {
+  animation: collapse linear both;
+  animation-timeline: --page;
+  animation-range: 0 400px;
+}
+
+@keyframes collapse {
+  to { opacity: 0; translate: 0 -30px; scale: 1 0.5 }
+}
+
+.hero { animation: drift linear both view() }
+@keyframes drift {
+  from { translate: 0 -40px }
+  to { translate: 0 40px }
+}
+```
+
+A name is found from the element that uses it: the timeline defined on the
+element itself, on an ancestor, or anywhere below an ancestor (so a header
+beside the scroll viewer finds the viewer's `--page`, which on the web
+`timeline-scope` does)
+An animation whose scroll viewer or name is not in the tree yet links when it
+is
+
+Limits, each reported by the build with what to write instead:
+
+- only what Composition drives from a scroll position: `opacity`, `translate`,
+  `scale`, `rotate` and a `transform` of `translate()`, `scale()` and
+  `rotate()`; a width, a color, a keyword or a skew in the key frames is an
+  error (use a time-based animation for it)
+- the key frames map straight onto the range: write
+  `animation-timing-function: linear` (the default `ease` is an error), and
+  no easing in a key frame
+- one iteration, in the `normal` or `reverse` direction; the duration, the
+  delay and `animation-play-state` mean nothing to a scroll position
+- the first and last values hold outside the range, as `animation-fill-mode:
+  both` does; a property a key frame leaves out holds the element's own value
+- scale and rotate turn about the element's centre; `transform-origin` is not
+  read for them
+- a range name needs a view timeline; `timeline-scope` is not supported
+- the sizes are measured again at every layout; a scroll viewer that zooms is
+  measured at zoom factor 1
+
+Reduced motion: the copy of the rule that sets `animation: none` under
+`prefers-reduced-motion: reduce` (see Reduced motion is automatic) also takes
+the timeline away, so the element shows its own, unanimated values and not an
+end state; an element with the class `winui-motion-always` keeps the link
+
+`ParallaxView` is the control for a background that moves slower than its
+scroll viewer, with a speed ratio: use it for that one effect, since it also
+handles the layers for you
+Use a view timeline when the effect is anything else (a fade or a scale as an
+element crosses the viewport, a header that collapses, a progress bar) or when
+the movement is not a ratio of the scroll
 
 ## Shapes: `fill`, `stroke-*`, `rx`, `ry`, `fill-rule`
 
@@ -1240,6 +1328,7 @@ Declarations like these fail the build with it:
 | `clip-path` as `rect()`, `xywh()` or `url()` | `inset()`, `circle()`, `ellipse()`, `polygon()` and `path()` have one (see Clip shapes) |
 | `cursor` as a `url()` image, `none`, `copy`, `alias`, `zoom-in` and `zoom-out` | WinUI's cursors are the sixteen system shapes of `InputSystemCursorShape`; the other keywords have one (see Cursor) |
 | `animation` without its module | see Animations |
+| `animation-timeline` on a width, a color or a keyword, `timeline-scope`, `animation-timing-function` other than `linear` on a scroll-linked animation | Composition drives opacity, translate, scale and rotate from a scroll position, straight (see Scroll-driven animation) |
 | `text-transform: uppercase`, `lowercase`, `capitalize` | the text an element shows is written through the change, in a `<text-block>`, a `<run>`, a button's content and the text of an inline element: the tree keeps the text as written, and the control reports the changed one (`none` is no change; an inherited transform is not: write it on the element that holds the text) |
 | `user-select`, `object-fit`, `line-clamp` (`-webkit-line-clamp`), `word-break` | `IsTextSelectionEnabled`, an image's `Stretch` (`contain` is `Uniform`, `cover` `UniformToFill`; `scale-down` is an error), `MaxLines` (with `Wrap` and an ellipsis, which `text-wrap` and `text-overflow` override), `TextWrapping` |
 | `caret-color`, `text-box-trim`, `background-clip: content-box` and `text` | the bindings have no `CaretBrush`, and no WinUI property trims the line box the way `text-box-trim` does; a WinUI background paints to the `OuterBorderEdge` (`border-box`) or the `InnerBorderEdge` (`padding-box`) only |
