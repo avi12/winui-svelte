@@ -9,7 +9,7 @@ import {
   wideMemory,
   withMemory
 } from "#src/win32-calls.js";
-import { createIconCalls } from "#src/win32-icons.js";
+import { createIconFileCalls } from "#src/win32-icons.js";
 
 /** The Shell_NotifyIcon operations. */
 export const NotifyOperation = {
@@ -302,7 +302,7 @@ export function createTrayNative() {
     parameters: ["pointer"],
     returnType: "i32"
   });
-  const icons = createIconCalls();
+  const icons = createIconFileCalls();
   const shellNotify = bind({
     dll: "shell32.dll",
     entryPoint: "Shell_NotifyIconW",

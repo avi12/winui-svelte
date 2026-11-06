@@ -27,11 +27,12 @@ export interface IconPixels {
 }
 
 /**
- * The icon calls, bound when this is called, never when the module loads.
+ * The calls for an icon loaded from an .ico file, bound when this is called,
+ * never when the module loads.
  *
- * @returns The calls: load, build, destroy and the shell's icon size.
+ * @returns The calls: load, destroy and the shell's icon size.
  */
-export function createIconCalls() {
+export function createIconFileCalls() {
   const loadImage = bind({
     dll: "user32.dll",
     entryPoint: "LoadImageW",
@@ -44,6 +45,49 @@ export function createIconCalls() {
     parameters: ["pointer"],
     returnType: "i32"
   });
+  const systemDpi = bind({
+    dll: "user32.dll",
+    entryPoint: "GetDpiForSystem",
+    parameters: [],
+    returnType: "u32"
+  });
+  const metricsForDpi = bind({
+    dll: "user32.dll",
+    entryPoint: "GetSystemMetricsForDpi",
+    parameters: ["i32", "u32"],
+    returnType: "i32"
+  });
+
+  return {
+    /** Loads an .ico file at `size` pixels square; 0n when it cannot. */
+    loadIconFile({ path, size }: {
+      path: string;
+      size: number;
+    }) {
+      const loaded = loadImage.invoke([
+        pointerOf(null), DynWin32.wideString(path), DynWin32.u32(IMAGE_ICON),
+        DynWin32.i32(size), DynWin32.i32(size), DynWin32.u32(LOAD_FROM_FILE)
+      ]);
+      return addressOf(loaded.returnValue);
+    },
+    destroyIcon(icon: bigint) {
+      destroyIcon.invoke([DynWin32Unsafe.pointer(icon)]);
+    },
+    /** Pixels of a small icon (a tray icon, a taskbar overlay) at the system scale. */
+    smallIconSize() {
+      const dpi = numberOf(systemDpi.invoke([]).returnValue);
+      return numberOf(metricsForDpi.invoke([DynWin32.i32(SM_CXSMICON), DynWin32.u32(dpi)]).returnValue);
+    }
+  };
+}
+
+/**
+ * The call that builds an icon from pixels, bound when this is called; apart
+ * from the file calls, so a tray that only loads files does not bundle it.
+ *
+ * @returns The call; destroy what it makes with `destroyIcon` of the file calls.
+ */
+export function createPixelIconCalls() {
   const createBitmap = bind({
     dll: "gdi32.dll",
     entryPoint: "CreateBitmap",
@@ -61,18 +105,6 @@ export function createIconCalls() {
     entryPoint: "CreateIconIndirect",
     parameters: ["pointer"],
     returnType: "pointer"
-  });
-  const systemDpi = bind({
-    dll: "user32.dll",
-    entryPoint: "GetDpiForSystem",
-    parameters: [],
-    returnType: "u32"
-  });
-  const metricsForDpi = bind({
-    dll: "user32.dll",
-    entryPoint: "GetSystemMetricsForDpi",
-    parameters: ["i32", "u32"],
-    returnType: "i32"
   });
 
   function bitmapOf({ width, height, bitsPerPixel, bits }: {
@@ -94,17 +126,6 @@ export function createIconCalls() {
   }
 
   return {
-    /** Loads an .ico file at `size` pixels square; 0n when it cannot. */
-    loadIconFile({ path, size }: {
-      path: string;
-      size: number;
-    }) {
-      const loaded = loadImage.invoke([
-        pointerOf(null), DynWin32.wideString(path), DynWin32.u32(IMAGE_ICON),
-        DynWin32.i32(size), DynWin32.i32(size), DynWin32.u32(LOAD_FROM_FILE)
-      ]);
-      return addressOf(loaded.returnValue);
-    },
     /** Builds an icon from pixels with alpha; 0n when Windows refuses. Destroy it with `destroyIcon`. */
     createIcon({ size, bgra }: IconPixels) {
       const maskRowBytes = Math.ceil(size / MASK_ROW_ALIGNMENT_BITS) * MASK_ROW_ALIGNMENT_BYTES;
@@ -131,14 +152,6 @@ export function createIconCalls() {
         deleteObject.invoke([DynWin32Unsafe.pointer(color)]);
         deleteObject.invoke([DynWin32Unsafe.pointer(mask)]);
       }
-    },
-    destroyIcon(icon: bigint) {
-      destroyIcon.invoke([DynWin32Unsafe.pointer(icon)]);
-    },
-    /** Pixels of a small icon (a tray icon, a taskbar overlay) at the system scale. */
-    smallIconSize() {
-      const dpi = numberOf(systemDpi.invoke([]).returnValue);
-      return numberOf(metricsForDpi.invoke([DynWin32.i32(SM_CXSMICON), DynWin32.u32(dpi)]).returnValue);
     }
   };
 }

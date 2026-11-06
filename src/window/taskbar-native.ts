@@ -3,7 +3,7 @@ import { DynWinRtValue, WinGuid } from "@microsoft/dynwinrt";
 import { DynCom, DynComMethodSig, DynComUnsafe } from "@microsoft/dynwinrt/com/unsafe";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { bind, pointerOf } from "#src/win32-calls.js";
-import { createIconCalls } from "#src/win32-icons.js";
+import { createIconFileCalls, createPixelIconCalls } from "#src/win32-icons.js";
 
 // ITaskbarList3 (shobjidl_core.h) has no WinRT form, so its methods are
 // declared here by hand at their vtable slots: ITaskbarList's HrInit is 3,
@@ -56,7 +56,10 @@ function taskbarMethods() {
  * @returns A backend for `TaskbarButton`.
  */
 export function createTaskbarNative() {
-  const icons = createIconCalls();
+  const icons = {
+    ...createIconFileCalls(),
+    ...createPixelIconCalls()
+  };
   const flashWindow = bind({
     dll: "user32.dll",
     entryPoint: "FlashWindowEx",
