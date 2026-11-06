@@ -167,7 +167,7 @@ Two optional add-ons for `.svelte` files, one for each editor:
 | Editor | Download | Install |
 | --- | --- | --- |
 | VS Code | `winui-svelte-vscode-<version>.vsix` | `code --install-extension winui-svelte-vscode-0.0.1.vsix`, or the Extensions view, the `...` menu, Install from VSIX |
-| WebStorm | `winui-svelte-webstorm-<version>.zip` | Settings, Plugins, the gear, Install Plugin from Disk |
+| WebStorm | `winui-svelte-webstorm-<version>.zip`, or [the JetBrains Marketplace page](https://plugins.jetbrains.com/plugin/35835-winui-svelte) | Settings, Plugins, the gear, Install Plugin from Disk |
 
 Both files are assets of the `editors-v*` releases, on their own tags apart
 from the package's: [open the editors releases](https://github.com/avi12/winui-svelte/releases?q=editors-v)
