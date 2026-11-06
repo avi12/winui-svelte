@@ -207,6 +207,7 @@ window in, with or without a `<style>` that uses the property
 | `winui-svelte/css/shape` | `fill`, `stroke-dasharray`, `stroke-dashoffset`, `stroke-linecap`, `stroke-linejoin`, `stroke-miterlimit`, `rx`, `ry`, `fill-rule` | Shapes |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
 | `winui-svelte/css/surface` | `-winui-elevation`, `box-shadow` | Elevation |
+| `winui-svelte/css/shadow` | `-winui-shadow`, `-winui-shadow-receiver`, `-winui-shadow-cast-on` (and the `box-shadow` they read) | Composition shadows and receivers (`shadowGroups`) |
 | `winui-svelte/css/position` | `position`, `top`, `left`, `right`, `bottom`, `inset` | Position |
 | `winui-svelte/css/queries` | `@media`, `@container` and `@starting-style` rules (a group with no property of its own) | Responsive rules |
 | `winui-svelte/css/environment` | the `@media` features beyond the size (preferences, display, input; a group with no property of its own) | Media features |
@@ -722,6 +723,54 @@ Every use warns of that; it is not verified without a window
 ```
 
 Both are in `winui-svelte/css/surface`
+
+## Composition shadows: `-winui-shadow`, `-winui-shadow-receiver`, `-winui-shadow-cast-on`
+
+`-winui-shadow: composition` in the rule that sets `box-shadow` draws it with a
+Composition `DropShadow` instead of a ThemeShadow, so the colour, the x and y
+offset, the blur and the spread are kept; `theme` is the default and the
+ThemeShadow described above
+Every layer of a comma list is drawn (the first on top), each as a sprite
+visual in the element's own child visual slot, with the element's border box cut
+out of it as CSS does; the sprite has no brush of its own, so the shadow is a
+rectangle (the corner radius of the element does not round it)
+
+| `box-shadow` part | Composition |
+|---|---|
+| `offset-x`, `offset-y` | the shadow's `Offset` |
+| `blur` | the shadow's `BlurRadius` |
+| `spread` | the sprite grows by it on every side (a spread that eats the element draws nothing) |
+| color | the shadow's `Color`, written out (`#rrggbb`, `rgb()`, `hsl()`, a name); the default is 50% black |
+| `inset` | an error: an inner shadow needs the element's own pixels |
+| `var()` as the color | an error: a theme resource is not read when the sheet is built |
+
+```css
+.card {
+  -winui-shadow: composition;
+  box-shadow: 0 8px 16px 2px rgba(0, 0, 255, 0.4), 4px 4px 0 #f00;
+}
+```
+
+`-winui-elevation` and `-winui-shadow: composition` together give both: the
+ThemeShadow follows the element's lift, the DropShadow draws `box-shadow`
+A `transition` on `box-shadow` still animates only the lift, not a Composition shadow
+An element that has an effect (`filter`, `mask-image`) as well shares its child visual slot with
+the shadow, and the effect samples the shadow too
+
+A ThemeShadow draws before Windows 11 only on its `Receivers`, which a Style cannot
+name: `-winui-shadow-receiver: <name>` makes the element a receiver of a group
+and `-winui-shadow-cast-on: <name>` on an element with a ThemeShadow
+(`-winui-elevation`) sets its Receivers to the group's elements
+The element gets a ThemeShadow of its own, which wins over the Style's; the
+`-winui-elevation` warning about receivers is not reported for it
+
+```css
+.page { -winui-shadow-receiver: surface }
+.flyout { -winui-elevation: 32px; -winui-shadow-cast-on: surface }
+```
+
+All three are in `winui-svelte/css/shadow`, which loads Win2D for the clip and
+only for a sheet that uses one of them
 
 ## Filters, blends and masks: `filter`, `backdrop-filter`, `mix-blend-mode`, `mask-image`
 
@@ -1424,6 +1473,7 @@ Declarations like these fail the build with it:
 | `user-select`, `object-fit`, `line-clamp` (`-webkit-line-clamp`), `word-break` | `IsTextSelectionEnabled`, an image's `Stretch` (`contain` is `Uniform`, `cover` `UniformToFill`; `scale-down` is an error), `MaxLines` (with `Wrap` and an ellipsis, which `text-wrap` and `text-overflow` override), `TextWrapping` |
 | `caret-color`, `text-box-trim`, `background-clip: content-box` and `text` | the bindings have no `CaretBrush`, and no WinUI property trims the line box the way `text-box-trim` does; a WinUI background paints to the `OuterBorderEdge` (`border-box`) or the `InnerBorderEdge` (`padding-box`) only |
 | `font-variation-settings` | WinUI has no API for a variable font's axes (see Typography) |
+| `box-shadow` with `inset`, or a `var()` color, under `-winui-shadow: composition` | an inner shadow needs the element's own pixels, and a theme resource is not read when the sheet is built (see Composition shadows) |
 | `float`, `flex-wrap` other than `nowrap`, `content`, `list-style`, `text-indent` | no WinUI equivalent in a Style; each message names the nearest WinUI way |
 | `text-transform: full-width` and `full-size-kana` | WinUI has no such transform of a string (`uppercase`, `lowercase` and `capitalize` work) |
 | the container properties in an `@media`, in a stylesheet that is not a component, or on a container that is a component | the build lowers them against the component's markup; elsewhere the message says where they work |
