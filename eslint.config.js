@@ -400,7 +400,7 @@ export default [
   },
   {
     // The files that bind Win32 exports.
-    files: ["src/window/native.ts", "src/tray/native.ts", "src/devices/native.ts", "src/web-apis/native.ts", "src/win32-calls.ts"],
+    files: ["src/window/native.ts", "src/tray/native.ts", "src/devices/native.ts", "src/web-apis/native.ts", "src/win32-calls.ts", "src/win32-icons.ts"],
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [

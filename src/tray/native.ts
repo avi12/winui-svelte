@@ -9,6 +9,7 @@ import {
   wideMemory,
   withMemory
 } from "#src/win32-calls.js";
+import { createIconCalls } from "#src/win32-icons.js";
 
 /** The Shell_NotifyIcon operations. */
 export const NotifyOperation = {
@@ -162,9 +163,6 @@ const BALLOON_SILENT = 0x10;
 const NOTIFY_VERSION_4 = 4;
 const CALLBACK_MESSAGE = 0x8001;
 const WS_POPUP = 0x80000000;
-const IMAGE_ICON = 1;
-const LOAD_FROM_FILE = 0x10;
-const SM_CXSMICON = 49;
 const GA_ROOT = 2;
 const VK_LBUTTON = 1;
 const VK_RBUTTON = 2;
@@ -304,30 +302,7 @@ export function createTrayNative() {
     parameters: ["pointer"],
     returnType: "i32"
   });
-  const loadImage = bind({
-    dll: "user32.dll",
-    entryPoint: "LoadImageW",
-    parameters: ["pointer", "pointer", "u32", "i32", "i32", "u32"],
-    returnType: "pointer"
-  });
-  const destroyIcon = bind({
-    dll: "user32.dll",
-    entryPoint: "DestroyIcon",
-    parameters: ["pointer"],
-    returnType: "i32"
-  });
-  const systemDpi = bind({
-    dll: "user32.dll",
-    entryPoint: "GetDpiForSystem",
-    parameters: [],
-    returnType: "u32"
-  });
-  const metricsForDpi = bind({
-    dll: "user32.dll",
-    entryPoint: "GetSystemMetricsForDpi",
-    parameters: ["i32", "u32"],
-    returnType: "i32"
-  });
+  const icons = createIconCalls();
   const shellNotify = bind({
     dll: "shell32.dll",
     entryPoint: "Shell_NotifyIconW",
@@ -559,20 +534,9 @@ export function createTrayNative() {
     destroyWindow(hwnd) {
       destroyWindow.invoke([DynWin32Unsafe.pointer(hwnd)]);
     },
-    loadIcon({ path, size }) {
-      const loaded = loadImage.invoke([
-        pointerOf(null), DynWin32.wideString(path), DynWin32.u32(IMAGE_ICON),
-        DynWin32.i32(size), DynWin32.i32(size), DynWin32.u32(LOAD_FROM_FILE)
-      ]);
-      return addressOf(loaded.returnValue);
-    },
-    destroyIcon(icon) {
-      destroyIcon.invoke([DynWin32Unsafe.pointer(icon)]);
-    },
-    iconSize() {
-      const dpi = numberOf(systemDpi.invoke([]).returnValue);
-      return numberOf(metricsForDpi.invoke([DynWin32.i32(SM_CXSMICON), DynWin32.u32(dpi)]).returnValue);
-    },
+    loadIcon: icons.loadIconFile,
+    destroyIcon: icons.destroyIcon,
+    iconSize: icons.smallIconSize,
     notify({ operation, data }) {
       return withMemory({
         size: NOTIFY_ICON_DATA_SIZE,
