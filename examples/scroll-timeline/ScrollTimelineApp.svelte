@@ -101,20 +101,20 @@
     background-color: #ff0000;
     animation: collapse linear both;
     animation-timeline: --page;
-    animation-range: 0px 400px;
+    animation-range: 0 400px;
   }
 
   @keyframes collapse {
     from {
       opacity: 1;
-      translate: 0 0;
       scale: 1 1;
+      translate: 0 0;
     }
 
     to {
       opacity: 0;
-      translate: 0 -30px;
       scale: 1 0.5;
+      translate: 0 -30px;
     }
   }
 
