@@ -5,6 +5,7 @@ import { codePointOf } from "./glyph-table.ts";
 import { SVELTE_LANGUAGE } from "./ids.ts";
 import { GLYPH_FONT_STYLE } from "./preview.ts";
 import { registerQuickActions } from "./quick-actions.ts";
+import { registerResourceHints } from "./resource-hints.ts";
 import { previewOfSpot } from "./spot-preview.ts";
 import { spotAt, SpotKind, spotsOf } from "./spots.ts";
 import type { Spot } from "./spots.ts";
@@ -200,6 +201,7 @@ export function activate(context: ExtensionContext) {
 
   registerQuickActions(context);
   registerConvertCommands(context);
+  registerResourceHints(context);
   refreshVisible();
   context.subscriptions.push(
     glyphType,

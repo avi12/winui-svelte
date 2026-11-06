@@ -67,6 +67,7 @@ Build once before `pnpm check` or the examples
 | `pnpm bindings` | the WinUI bindings in `.winapp/bindings`: winapp's run, then WebView2's (`scripts/bindings/`) |
 | `pnpm test:windows` | every `test/*.test.ts` that opens real windows (all but the mount test), one file at a time, in the background (see below). Needs an ordinary desktop session |
 | `pnpm gen:components` | regenerates `src/components/generated`, the class list in `package.json` and the tables in the README from WinUI's metadata. Never edit those files by hand |
+| `pnpm gen:ide-data` | writes `ide/webstorm/src/main/resources/winui-ide-data.json`, the one data set both editor plugins read and `web-types.json` is derived from (`pnpm gen:ide-data:check` is a step of `pnpm lint`): the WinUI resource names with their light and dark swatches (`scripts/css/export-winui-resources.ts` writes the swatches), every `winui-svelte/enums` set with its members, the `@attach` helpers and web event names of the entry points, and the CSS properties the translation handles. Run it, then `pnpm gen:components`, after changing any of them |
 | `pnpm fetch:documentation` | by hand, never in `gen:components`: reads Microsoft's published reference for each member the NuGet XML does not document and records its text in `scripts/codegen/documentation-fallback.json` (pinned to a commit; CC BY 4.0, credited in `NOTICE`), then run `pnpm gen:components` |
 | `pnpm check:svelte-matrix` | runs the Svelte-facing tests against every release of the peer range (slow; see "Svelte versions") |
 | `pnpm check:package` | packs the tarball and runs publint and Are The Types Wrong on it |
@@ -376,6 +377,17 @@ the names come from the same table as the translator's, in
 In the completion of a font family (the `fontFamily` prop, `style:font-family`,
 a `style` attribute and a `font-family` in `<style>`) each installed family is
 shown with an "Aa" sample drawn in it
+
+Typing `var(--` in a `<style>` block (or a `style` attribute) completes the
+resources WinUI defines (`ResourceCompletionContributor`); each color has a swatch
+in the list and the documentation shows its light and dark value over the ground
+of each theme (`ResourceDocumentationProvider`); the data is `winui-ide-data.json`
+(`WinuiIdeData`), the VS Code extension reads the same file, and Settings,
+winui-svelte turns the feature off
+
+`web-types.json` also lists the members of every enum prop as completion values
+(`backdrop="mi"` offers `mica`), the `@attach` helpers as JavaScript symbols and
+the web event names as events, all from `winui-ide-data.json`
 
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each

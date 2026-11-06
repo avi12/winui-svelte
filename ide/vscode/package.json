@@ -98,6 +98,11 @@
           ],
           "default": "styleBlock",
           "description": "Where a prop that has a CSS counterpart goes when it is converted"
+        },
+        "winuiSvelte.resourceHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "Complete the WinUI resource names written as var(--name), and show a light and dark swatch of a color resource in the hover and the list"
         }
       }
     }

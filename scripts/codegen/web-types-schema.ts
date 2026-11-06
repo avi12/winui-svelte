@@ -23,9 +23,30 @@ export const webTypesSchema = z.object({
               value: z.strictObject({
                 kind: z.literal("expression").optional(),
                 type: z.union([typeReferenceSchema, z.array(typeReferenceSchema)])
-              }).optional()
+              }).optional(),
+              values: z.array(
+                z.strictObject({
+                  name: z.string(),
+                  description: z.string().optional()
+                })
+              ).optional()
             })
           )
+        })
+      )
+    }),
+    js: z.object({
+      symbols: z.array(
+        z.strictObject({
+          name: z.string(),
+          kind: z.literal("Function"),
+          description: z.string()
+        })
+      ),
+      events: z.array(
+        z.strictObject({
+          name: z.string(),
+          description: z.string()
         })
       )
     }),

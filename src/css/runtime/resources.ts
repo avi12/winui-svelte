@@ -55,8 +55,8 @@ export function resourceNameOf(customProperty: string) {
     .join("");
 }
 
-// "CardBackgroundFillColorDefault" as "--card-background-fill-color-default".
-function customPropertyOf(resourceName: string) {
+/** "CardBackgroundFillColorDefault" as "--card-background-fill-color-default". */
+export function customPropertyOf(resourceName: string) {
   const words = resourceName.replace(/([a-z0-9])([A-Z])/gu, "$1-$2").toLowerCase();
   return `--${words}`;
 }

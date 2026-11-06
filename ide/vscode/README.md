@@ -23,6 +23,9 @@ does not depend on it
   shows a swatch beside it, in the hover and in the completion list
 - **Fonts**: the font-family completion lists the fonts installed on the
   machine, and the preview shows the font set in its own face
+- **Resources**: a `var(--card-background-fill-color-default)` completes from
+  the resources WinUI defines, and a color shows its light and its dark value as
+  two swatches in the hover and beside each name in the list
 - **Convert to CSS**: a prop that has a CSS counterpart gets a quick fix
   (Ctrl+.) that moves it into the `<style>` block, or writes it as a `style:`
   directive; one command converts the whole file, and another converts the
@@ -37,5 +40,9 @@ does not depend on it
 
 `winuiSvelte.destination` picks where a converted prop goes: `styleBlock` (a
 rule in `<style>`) or `styleDirective` (a `style:` directive)
+
+`winuiSvelte.resourceHints` (on by default) turns the `var(--...)` completion
+and hover off; the names and colors come from `winui-ide-data.json`, which
+`pnpm gen:ide-data` writes for both editors
 
 The same features exist for WebStorm, in the plugin of this repository
