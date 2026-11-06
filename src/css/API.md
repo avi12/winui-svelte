@@ -407,7 +407,7 @@ attribute works only once some sheet of the app has the module
 A third (z) value is an error
 
 ```css
-.card:hover { scale: 1.05 }                  /* grows from the centre, as CSS */
+.card { &:hover { scale: 1.05 } }            /* grows from the centre, as CSS */
 .fan { rotate: 8deg; transform-origin: left bottom }
 ```
 
@@ -1270,10 +1270,14 @@ the pointer, the keyboard and `Disabled`: the control reports no event for it,
 so a Button's `:active` works too (a Button handles `PointerPressed` itself)
 
 ```css
-.cta { background-color: #0a6cff; color: #fff }
-.cta:hover { background-color: #0050c8 }
-.cta:active { background-color: #003a8f; color: #e0e8ff }
-.cta:disabled { background-color: #888 }
+.cta {
+  background-color: #0a6cff;
+  color: #fff;
+
+  &:hover { background-color: #0050c8 }
+  &:active { background-color: #003a8f; color: #e0e8ff }
+  &:disabled { background-color: #888 }
+}
 ```
 
 | Pseudo-class | Visual state | Group |
