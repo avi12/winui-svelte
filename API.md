@@ -1653,6 +1653,18 @@ taking focus
 `onboundschanged` hears the bounds the window opened with and
 then every move or resize (device pixels), so an app that reopens the window
 where it was has them before the user touches it
+`stateKey` keeps the window where its user leaves it: the bounds (the normal
+ones, also while it is maximized), the maximized or minimized state and the
+presentation are saved in `%LOCALAPPDATA%\<app>\window-state\<stateKey>.json`,
+written a moment after each move, resize or state change and again when the
+window closes, and restored before the window first shows
+The restored bounds are kept whole inside the work area of the display nearest
+to them (a display that is gone, or smaller, never leaves the window off
+screen) and are resized to the scale of the display they land on
+On the first run, and when the file is missing, corrupt or from another
+version, `placement` or the centered default applies; a saved place wins over
+`placement`, and a `presentation` prop wins over the saved presentation
+`stateKey` is read once, before the window opens
 `onclosing` runs when the window is asked to close (the close button, Alt+F4,
 `handle.close()`): returning `true` keeps it open (ask the user, then close it
 again from code); `onclosed` follows a close that went through

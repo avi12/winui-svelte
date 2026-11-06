@@ -68,6 +68,10 @@ signature
   puts a window against a corner of the active display's work area; the window's
   own `outerWidth`, `screenX`, `resizeTo` and `moveBy` are on `handle.geometry`
   ([API.md](https://github.com/avi12/winui-svelte/blob/main/API.md))
+- **Window place:** `stateKey` on `<Window>` saves its bounds, maximized state
+  and presentation under that name and restores them on the next run, inside
+  the nearest display so a disconnected monitor never strands it
+  ([API.md](https://github.com/avi12/winui-svelte/blob/main/API.md))
 - **Errors** thrown in an event handler or a prop are caught on the UI thread,
   written to stderr with their stack and handed to `runWindow({ onerror })`;
   the app goes on ([API.md](https://github.com/avi12/winui-svelte/blob/main/API.md))
