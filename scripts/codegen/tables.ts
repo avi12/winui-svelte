@@ -476,6 +476,11 @@ export const lateClasses = [
     classes: ["PowerManager"]
   },
   {
+    winmd: "Microsoft.Windows.System.Power.winmd",
+    namespace: "Microsoft.Windows.System.Power",
+    classes: ["PowerManager"]
+  },
+  {
     winmd: DEVICES_WINMD,
     namespace: "Windows.UI.Notifications",
     classes: ["ScheduledToastNotification", "ToastNotificationManager"]

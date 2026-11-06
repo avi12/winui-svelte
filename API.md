@@ -2996,8 +2996,16 @@ called (`runWindow({ webApis: [installPage, installTiming] })`)
 that `usePageWindow(handle)` is given (`bind:handle` on `<Window>`)
 
 - `document.visibilityState`, `hidden`, `hasFocus()` and `visibilitychange`:
-  hidden means minimized or hidden (to the tray); the window being active is
-  focus
+  hidden means minimized, hidden (to the tray) or the display turned off; the
+  window being active is focus
+- `document` `freeze` and `resume` (Page Lifecycle, with `onfreeze` and
+  `onresume`): once per wake of the machine from sleep, `freeze` then
+  `resume` together, because a sleeping process cannot see itself go to sleep;
+  the wake is found by a gap of over ten seconds between two ticks of a
+  one-second timer, so it is also counted after a long stall of the process;
+  never exercised with a real sleep here (the tests use a stand-in clock)
+- The display and the wake come from `windowsSystemPowerSource` (see Devices,
+  power); a machine where it cannot be read counts as awake with the display on
 - `window` `focus`, `blur`, `beforeunload` (call `preventDefault()` to keep the
   window open; there is no prompt), `pagehide` and `unload`, with `onfocus` and
   the other handler properties; `window.close()`, `window.closed` and
@@ -3911,7 +3919,7 @@ Each area is an opt-in subpath, so an app that imports none of them bundles none
 | `winui-svelte/devices/input` | `inputDevices`, `readInputCapabilities` |
 | `winui-svelte/devices/bluetooth` | adapter, devices, `bluetoothScanner`, `scanBluetoothAdvertisements`, GATT, UUIDs, radios |
 | `winui-svelte/devices/printers` | `printers`, `listPrinters`, `printFile` |
-| `winui-svelte/devices/power` | `battery` |
+| `winui-svelte/devices/power` | `battery`, `systemPower` |
 | `winui-svelte/devices/network` | `networkInformation` |
 | `winui-svelte/devices/audio` | `audioDevices` |
 | `winui-svelte/devices/display` | `displays`, `getDisplayMonitors` |
@@ -4075,6 +4083,7 @@ build; print the document to a file and use `printFile`, or draw it with Win2D
 | Rune | Reads | Fields |
 |---|---|---|
 | `battery()` | `Battery.AggregateBattery`, `PowerManager` | `hasBattery`, `percent`, `isCharging`, `isDischarging`, `isOnAcPower`, `isEnergySaverOn`, `remainingDischargeMilliseconds`, `healthPercent`, `reading` |
+| `systemPower()` | `Microsoft.Windows.System.Power.PowerManager` (Windows App SDK) | `displayStatus`, `isDisplayOn`, `effectivePowerMode`, `isUserPresent`, `resumeCount`, `reading` |
 | `networkInformation()` | `NetworkInformation` | `isOnline`, `connectivity`, `profileName`, `isMetered`, `isRoaming`, `isWifi`, `isMobile`, `signalBars`, `reading` (with every profile name) |
 | `displays()` | `DisplayArea` and its watcher | `areas` (bounds and work area), `primary`, `count`; needs the Windows App SDK, which a window has |
 | `getDisplayMonitors()` | `DisplayMonitor` | name, native resolution, physical size, DPI, luminance; needs no window |
@@ -4088,6 +4097,14 @@ build; print the document to a file and use `printFile`, or draw it with Win2D
 - A GATT call that does not succeed throws `BluetoothLowEnergyError` with the `GattCommunicationStatus` (`Unreachable`, `ProtocolError`, `AccessDenied`)
 - `getBluetoothAdapter()` resolves to `null` and `radios` is empty when the machine has no adapter
 - An event Windows refuses to an app without a package identity is left unsubscribed: the value is still read live, it only does not update by itself
+- `systemPower` polls once a second and does not subscribe to `PowerManager`'s
+  events: any subscription (even one removed again) keeps the Node process from
+  exiting, and Windows raises them on a thread of its own, which dynwinrt does
+  not deliver; `SystemSuspendStatus` cannot be read before its event has fired,
+  so `resumeCount` counts a wake as a gap of over ten seconds between two
+  ticks; `userPresenceStatus` reads 2 until Windows has said (a value the
+  bindings do not name); `EnergySaverStatus` is the one `battery` already
+  reads (`isEnergySaverOn`); the properties need the Windows App SDK
 - A machine without a sensor, gamepad, battery or printer reports it (`isAvailable` false, an empty list, `hasBattery` false), never an error
 - The radio state, pairing prompts, Bluetooth consent and the microphone are the user's: reading a list needs no consent, using a device can
 

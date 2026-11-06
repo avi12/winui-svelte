@@ -15,6 +15,8 @@ const { installPage, usePageWindow } = await import("./page.ts");
 function fakeWindow(overrides: Partial<PageSnapshot> = {}) {
   let snapshot: PageSnapshot = {
     isVisible: true,
+    isDisplayOn: true,
+    resumeCount: 0,
     isFocused: true,
     state: "normal",
     title: "Window",
@@ -133,6 +135,40 @@ test("visibility and focus follow the window, with their events", () => {
   });
   window.set({ title: "Same visibility, same focus" });
   assert.deepEqual(events, ["visibility hidden", "blur", "visibility visible", "focus"]);
+  uninstall();
+});
+
+test("a display turned off makes the page hidden, and on again visible", () => {
+  const window = fakeWindow();
+  const uninstall = installPage({ backend: window.backend });
+  const events: string[] = [];
+  document.addEventListener("visibilitychange", () => events.push(document.visibilityState));
+  window.set({ isDisplayOn: false });
+  assert.equal(document.hidden, true);
+  window.set({ isVisible: false });
+  window.set({ isDisplayOn: true });
+  assert.equal(document.hidden, true, "the window is still minimized");
+  window.set({ isVisible: true });
+  assert.deepEqual(events, ["hidden", "visible"]);
+  uninstall();
+});
+
+test("each wake from sleep is a freeze and a resume", () => {
+  const window = fakeWindow();
+  const uninstall = installPage({ backend: window.backend });
+  const events = listen({
+    target: document,
+    types: ["freeze", "resume"]
+  });
+  const handled: string[] = [];
+  document.onresume = () => handled.push("onresume");
+  window.set({ title: "Not a wake" });
+  assert.deepEqual(events, []);
+  window.set({ resumeCount: 1 });
+  assert.deepEqual(events, ["freeze", "resume"]);
+  assert.deepEqual(handled, ["onresume"]);
+  window.set({ resumeCount: 2 });
+  assert.deepEqual(events, ["freeze", "resume", "freeze", "resume"]);
   uninstall();
 });
 

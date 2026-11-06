@@ -2,6 +2,10 @@ import { DomErrorName, domException } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineProperty } from "./install.ts";
 import { launchUri } from "#src/data-transfer/launcher.js";
+import { DisplayStatus } from "#src/devices/bindings.js";
+import { listenIfAllowed } from "#src/devices/subscription.js";
+import { windowsSystemPowerSource } from "#src/devices/system-power.js";
+import type { SystemPowerSource } from "#src/devices/system-power.js";
 import { ElementNode } from "#src/renderer/tree/dom.js";
 import { flush } from "#src/scheduling.js";
 import type { WindowHandle } from "#src/window/window-handle.js";
@@ -22,6 +26,12 @@ export type WindowState = (typeof WindowState)[keyof typeof WindowState];
 export interface PageSnapshot {
   /** Shown and not minimized. */
   readonly isVisible: boolean;
+
+  /** The display is on or dimmed; false when Windows turned it off, which makes the page `hidden` as well. */
+  readonly isDisplayOn: boolean;
+
+  /** How many times the machine has woken from sleep; each wake is a `freeze` and a `resume`. */
+  readonly resumeCount: number;
 
   /** The window is the active one. */
   readonly isFocused: boolean;
@@ -64,6 +74,12 @@ export interface PageInstallOptions {
 declare global {
   // The window-state extras join the standard document wherever this module is imported.
   interface Document {
+    /** Page Lifecycle: the machine woke from sleep (always followed by `onresume`). */
+    onfreeze: ((event: Event) => void) | null;
+
+    /** Page Lifecycle: the machine woke from sleep. */
+    onresume: ((event: Event) => void) | null;
+
     /** WinUI only: `normal`, `minimized`, `maximized`, `fullscreen` or `compact-overlay`. */
     readonly windowState?: WindowState;
 
@@ -81,9 +97,11 @@ const OVERLAPPED_MINIMIZED = 1;
 const VISIBLE = "visible";
 const HIDDEN = "hidden";
 const EVENT_VISIBILITY = "visibilitychange";
+const EVENT_FREEZE = "freeze";
+const EVENT_RESUME = "resume";
 const EVENT_FULLSCREEN = "fullscreenchange";
 const EVENT_FULLSCREEN_ERROR = "fullscreenerror";
-const DOCUMENT_HANDLERS = ["onvisibilitychange", "onfullscreenchange", "onfullscreenerror"] as const;
+const DOCUMENT_HANDLERS = ["onvisibilitychange", "onfullscreenchange", "onfullscreenerror", "onfreeze", "onresume"] as const;
 const WINDOW_HANDLERS = ["onfocus", "onblur", "onbeforeunload", "onpagehide", "onunload"] as const;
 
 /** An event target whose `on...` properties other code can reach. */
@@ -154,6 +172,11 @@ export class WindowPageBackend implements PageBackend {
   private isClosed = false;
   private readonly listeners = new Set<PageListener>();
   private stops: Array<() => void> = [];
+  private readonly power: SystemPowerSource;
+
+  constructor(power: SystemPowerSource = windowsSystemPowerSource()) {
+    this.power = power;
+  }
 
   /** Follows this window from now on; returns what stops following it. */
   attach(handle: PageWindow) {
@@ -179,7 +202,11 @@ export class WindowPageBackend implements PageBackend {
         for (const listener of this.listeners) {
           listener.closed();
         }
-      })
+      }),
+      ...this.power.subscriptions.map(subscription => listenIfAllowed({
+        subscription,
+        notify: () => this.notifyChanged()
+      }))
     ];
     this.notifyChanged();
     return () => this.detach();
@@ -191,6 +218,8 @@ export class WindowPageBackend implements PageBackend {
     if (!isOpen) {
       return {
         isVisible: false,
+        isDisplayOn: true,
+        resumeCount: 0,
         isFocused: false,
         state: WindowState.NORMAL,
         title: "",
@@ -199,8 +228,11 @@ export class WindowPageBackend implements PageBackend {
     }
 
     const state = stateOf(handle);
+    const { displayStatus, resumeCount } = this.readPower();
     return {
       isVisible: handle.appWindow.isVisible && state !== WindowState.MINIMIZED,
+      isDisplayOn: displayStatus !== DisplayStatus.Off,
+      resumeCount,
       isFocused: this.isFocused,
       state,
       title: handle.appWindow.title,
@@ -275,6 +307,18 @@ export class WindowPageBackend implements PageBackend {
     handle.restore();
   }
 
+  // A machine whose session power state cannot be read is taken as awake with its display on.
+  private readPower() {
+    try {
+      return this.power.read();
+    } catch {
+      return {
+        displayStatus: DisplayStatus.On,
+        resumeCount: 0
+      };
+    }
+  }
+
   private notifyChanged() {
     for (const listener of this.listeners) {
       listener.changed();
@@ -322,6 +366,11 @@ function dispatchOn({ target, type }: {
   target.dispatchEvent(new Event(type));
 }
 
+// Hidden for the page API also means the display is off.
+function isPageVisible(snapshot: PageSnapshot) {
+  return snapshot.isVisible && snapshot.isDisplayOn;
+}
+
 function refresh() {
   const known = requireContext();
   const previous = known.snapshot;
@@ -334,12 +383,23 @@ function refresh() {
     known.fullscreenElement = null;
   }
 
-  const isVisibilityChanged = previous.isVisible !== next.isVisible;
+  const isVisibilityChanged = isPageVisible(previous) !== isPageVisible(next);
   if (isVisibilityChanged) {
     dispatchOn({
       target: known.documentEvents,
       type: EVENT_VISIBILITY
     });
+  }
+
+  const hasResumed = next.resumeCount > previous.resumeCount;
+  if (hasResumed) {
+    // A sleep stops the process, so the wake is all that is seen of it: the pair arrives together.
+    for (const type of [EVENT_FREEZE, EVENT_RESUME]) {
+      dispatchOn({
+        target: known.documentEvents,
+        type
+      });
+    }
   }
 
   const isFullscreenChanged = hasBeenFullscreen !== isFullscreen;
@@ -454,10 +514,10 @@ function documentMembers(known: PageContext) {
       names: DOCUMENT_HANDLERS
     }),
     visibilityState: {
-      get: () => known.snapshot.isVisible ? VISIBLE : HIDDEN
+      get: () => isPageVisible(known.snapshot) ? VISIBLE : HIDDEN
     },
     hidden: {
-      get: () => !known.snapshot.isVisible
+      get: () => !isPageVisible(known.snapshot)
     },
     hasFocus: {
       value: () => known.snapshot.isFocused
@@ -542,12 +602,14 @@ function defineMembers({ target, members }: {
 
 /**
  * Defines the page on the global scope: `document.visibilityState`, `hidden`,
- * `hasFocus()`, `visibilitychange`; the Fullscreen API (`element.requestFullscreen()`,
- * `document.fullscreenElement`, `exitFullscreen()`, `fullscreenchange`); `document.title`;
+ * `hasFocus()`, `visibilitychange`; the Page Lifecycle `freeze` and `resume` on
+ * `document`, together, once per wake of the machine from sleep; the Fullscreen
+ * API (`element.requestFullscreen()`, `document.fullscreenElement`,
+ * `exitFullscreen()`, `fullscreenchange`); `document.title`;
  * `window` events (`focus`, `blur`, `beforeunload`, `pagehide`, `unload`),
  * `window.close()` and `window.open(url)` (hands the address to Windows; there is
  * no second window to return). The window is the one `usePageWindow` was given.
- * Hidden means minimized or hidden (to the tray); fullscreen takes the whole
+ * Hidden means minimized, hidden (to the tray) or the display turned off; fullscreen takes the whole
  * window, whatever element asked. A `beforeunload` listener keeps the window
  * open by calling `preventDefault()`, with no prompt. Beyond the web:
  * `document.windowState` and `document.requestWindowState(state)`, which also

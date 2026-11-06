@@ -5,9 +5,12 @@ import {
   PowerManager,
   PowerSupplyStatus
 } from "./bindings.ts";
+import { DisplayStatus, UserPresenceStatus } from "./bindings.ts";
 import type { Delivery } from "./delivery.ts";
 import type { Subscription } from "./live.svelte.ts";
 import { liveReader, subscriptionOfStaticEvent } from "./live.svelte.ts";
+import { windowsSystemPowerSource } from "./system-power.ts";
+import type { SystemPowerSource } from "./system-power.ts";
 
 const TICKS_PER_MILLISECOND = 10_000n;
 const UNKNOWN_DURATION = 9_223_372_036_854_775_807n;
@@ -142,6 +145,54 @@ export function battery(options: BatteryOptions = {}) {
       const { fullChargeCapacityMilliwattHours: full, designCapacityMilliwattHours: design } = read();
       const isKnown = full !== null && design !== null && design > 0;
       return isKnown ? Math.round(full / design * FULL_PERCENT) : null;
+    }
+  };
+}
+
+/** What `systemPower` takes. */
+export interface SystemPowerOptions {
+  /** Where the reads come from; the default is Windows. */
+  readonly source?: SystemPowerSource;
+
+  /** How a change reaches the UI thread; the default runs on its dispatcher queue. */
+  readonly deliver?: Delivery;
+}
+
+/**
+ * The session and power state, read live: whether the display is on, the
+ * power mode, whether the user is at the machine, and how many times the
+ * machine has woken from sleep. Every field is reactive. The Windows source
+ * polls once a second instead of listening to `PowerManager`'s events (see
+ * `windowsSystemPowerSource`), so a change shows up within about a second.
+ *
+ * @param options - Where the reads come from, and how a change is delivered.
+ * @returns The state as reactive getters, and `reading` as one object.
+ */
+export function systemPower(options: SystemPowerOptions = {}) {
+  const source = options.source ?? windowsSystemPowerSource();
+  const read = liveReader({
+    read: () => source.read(),
+    subscriptions: source.subscriptions,
+    deliver: options.deliver
+  });
+  return {
+    get reading() {
+      return read();
+    },
+    get displayStatus() {
+      return read().displayStatus;
+    },
+    get isDisplayOn() {
+      return read().displayStatus !== DisplayStatus.Off;
+    },
+    get effectivePowerMode() {
+      return read().effectivePowerMode;
+    },
+    get isUserPresent() {
+      return read().userPresenceStatus === UserPresenceStatus.Present;
+    },
+    get resumeCount() {
+      return read().resumeCount;
     }
   };
 }

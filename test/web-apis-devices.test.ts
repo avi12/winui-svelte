@@ -1,4 +1,5 @@
 import { roInitialize } from "@microsoft/dynwinrt";
+import { windowsSystemPowerSource } from "#src/devices/system-power.js";
 import { installBattery } from "#src/web-apis/battery.js";
 import { installGamepad } from "#src/web-apis/gamepad.js";
 import { installGeolocation } from "#src/web-apis/geolocation.js";
@@ -59,4 +60,20 @@ test("sensors and gamepads report what is present, and geolocation only installs
     uninstallGamepad();
     uninstallSensors();
   }
+});
+
+test("the session power state is read, and its tick starts and stops", context => {
+  const source = windowsSystemPowerSource();
+  const reading = source.read();
+  assert.equal(typeof reading.displayStatus, "number");
+  assert.equal(typeof reading.effectivePowerMode, "number");
+  assert.equal(typeof reading.userPresenceStatus, "number");
+  assert.equal(reading.resumeCount, 0);
+  const stops = source.subscriptions.map(subscription => subscription(() => undefined));
+  assert.equal(stops.length, source.subscriptions.length);
+  for (const stop of stops) {
+    stop();
+  }
+
+  context.diagnostic(`display ${reading.displayStatus}, power mode ${reading.effectivePowerMode}, presence ${reading.userPresenceStatus}, ${reading.resumeCount} wakes`);
 });
