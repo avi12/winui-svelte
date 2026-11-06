@@ -433,7 +433,7 @@ export const lateClasses = [
   {
     winmd: COMPONENT_WINMD,
     namespace: "Microsoft.UI.Xaml.Input",
-    classes: ["FocusManager"]
+    classes: ["FocusManager", "FindNextElementOptions"]
   },
   {
     winmd: DEVICES_WINMD,

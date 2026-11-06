@@ -12,11 +12,21 @@
     Window
   } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
-  import { VirtualKey, VirtualKeyModifiers } from "winui-svelte/enums";
+  import { FocusNavigationDirection, VirtualKey, VirtualKeyModifiers } from "winui-svelte/enums";
+  import { activeElement, moveFocus, trapFocus } from "winui-svelte/input";
   import { exitApplication } from "winui-svelte/window";
 
-  const WINDOW_HEIGHT = 420;
+  const WINDOW_HEIGHT = 520;
   const WINDOW_WIDTH = 480;
+
+  const directions = new Map([
+    ["down", FocusNavigationDirection.Down],
+    ["up", FocusNavigationDirection.Up]
+  ]);
+
+  interface FrameworkElementControl {
+    readonly tabFocusNavigation: number;
+  }
 
   interface Props {
     host: ExampleHost;
@@ -24,6 +34,7 @@
 
   const { host }: Props = $props();
 
+  const root = elementRef<Parameters<typeof moveFocus>[0]["within"]>();
   const first = elementRef<Focusable>();
   const input = elementRef<Focusable>();
   const last = elementRef<Focusable>();
@@ -44,6 +55,9 @@
   let isDialogOpen = $state(false);
   let results = $state<string[]>([]);
   let focusLog = $state<string[]>([]);
+  let isTrapOn = $state(false);
+  const trap = elementRef<FrameworkElementControl>();
+  const active = activeElement();
 
   function recordFocus(id: string) {
     return () => {
@@ -62,6 +76,15 @@
     }
   }
 
+  function moveFocusIn(direction: string) {
+    const within = root.current;
+    const isReady = within !== undefined;
+    return isReady && moveFocus({
+      direction: directions.get(direction) ?? FocusNavigationDirection.None,
+      within
+    });
+  }
+
   const commands = new Map<string, (command: ExampleCommand) => void>([
     ["activate", () => handle?.activate()],
     ["focus", command => focusControl(String(command["id"]))],
@@ -75,7 +98,15 @@
       accessInvocations,
       isDialogOpen,
       results: results.join(","),
-      focusLog: focusLog.join(",")
+      focusLog: focusLog.join(","),
+      activeName: active.current?.name ?? "",
+      trapNavigation: trap.current?.tabFocusNavigation ?? -1,
+      isTrapOn
+    })],
+    ["trap", command => (isTrapOn = command["isOn"] === true)],
+    ["moveFocus", command => host.report({
+      kind: "moved",
+      isMoved: moveFocusIn(String(command["direction"]))
     })],
     ["clearLogs", () => {
       focusLog = [];
@@ -94,8 +125,9 @@
   width={WINDOW_WIDTH}
   bind:handle
 >
-  <StackPanel class="keys">
+  <StackPanel class="keys" {@attach root.attach}>
     <Button
+      name="first"
       {@attach first.attach}
       automationId="first"
       onclick={() => clicks++}
@@ -111,6 +143,7 @@
       {/snippet}
     </Button>
     <TextBox
+      name="input"
       {@attach input.attach}
       automationId="input"
       ongotfocus={recordFocus("input")}
@@ -119,6 +152,7 @@
       bind:text
     />
     <Button
+      name="last"
       {@attach last.attach}
       accessKey="F"
       automationId="last"
@@ -128,6 +162,7 @@
       File
     </Button>
     <Button
+      name="open-dialog"
       {@attach openDialog.attach}
       automationId="open-dialog"
       onclick={() => (isDialogOpen = true)}
@@ -135,6 +170,12 @@
     >
       Open the dialog
     </Button>
+    {#if isTrapOn}
+      <StackPanel {@attach trap.attach} {@attach trapFocus()}>
+        <Button name="trap-a" automationId="trap-a">Trap A</Button>
+        <Button name="trap-b" automationId="trap-b">Trap B</Button>
+      </StackPanel>
+    {/if}
     <TextBlock automationId="status">{results.join(",")}</TextBlock>
     <ContentDialog
       closeButtonText="Cancel"
