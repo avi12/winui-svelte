@@ -15,6 +15,15 @@ internal class ConversionTable(
     cssProperty in EXTRA_COLOR_PROPERTIES ||
       mappings.values.any { it.kind == ConversionKind.COLOR && it.cssProperty == cssProperty }
 
+  /** The CSS property of every prop that has a counterpart, by the prop's name. */
+  fun cssPropertiesByAttribute() = mappings.mapValues { it.value.cssProperty }
+
+  /** The WinUI properties a CSS property sets, for every one that converts. */
+  fun winuiTargets() =
+    mappings.values
+      .filter { it.kind != ConversionKind.UNSUPPORTED }
+      .groupBy({ it.cssProperty }, { it.winuiProperty })
+
   fun countOf(kind: ConversionKind) = mappings.values.count { it.kind == kind }
 
   companion object {
@@ -48,6 +57,7 @@ internal class ConversionTable(
     private fun mappingOf(entry: JsonObject) =
       Mapping(
         cssProperty = entry.get("cssProperty").asString,
+        winuiProperty = entry.get("winuiProperty").asString,
         kind = ConversionKind.named(entry.get("kind").asString),
         enumTypes = entry.getAsJsonArray("enumTypes").map { it.asString }.toSet(),
         keywords =

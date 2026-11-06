@@ -28,6 +28,52 @@ internal object WinuiIdeData {
     }
   }
 
+  /** The named easings (`ease`, `step-end`) with the curve each draws. */
+  val easings: List<NamedEasing> by lazy {
+    data.getAsJsonArray("easings").map { entry ->
+      val easing = entry.asJsonObject
+      NamedEasing(
+        name = easing.string("name") ?: error("an easing has no name"),
+        kind = EasingKind.entries.first { it.id == easing.string("kind") },
+        points = easing.getAsJsonArray("points")?.map { it.asDouble }.orEmpty(),
+        count = easing.get("count")?.asInt ?: 1,
+        jump = easing.string("jump") ?: "end"
+      )
+    }
+  }
+
+  /** The shadow depths WinUI uses, shallow to deep. */
+  val shadowDepths: List<ShadowDepth> by lazy {
+    data.getAsJsonArray("shadowDepths").map { entry ->
+      ShadowDepth(entry.asJsonObject.get("depth").asInt, entry.asJsonObject.string("use").orEmpty())
+    }
+  }
+
+  /** The window materials with the light and dark color each shows. */
+  val materials: List<WindowMaterial> by lazy {
+    data.getAsJsonArray("materials").map { entry ->
+      val material = entry.asJsonObject
+      WindowMaterial(
+        name = material.string("name").orEmpty(),
+        light = material.string("light").orEmpty(),
+        dark = material.string("dark").orEmpty(),
+        isTranslucent = material.get("isTranslucent").asBoolean
+      )
+    }
+  }
+
+  /** Why a CSS property has no WinUI meaning, for every property the library names a reason for. */
+  val unsupportedReasons: Map<String, String> by lazy {
+    data.getAsJsonArray("unsupportedProperties").associate {
+      it.asJsonObject.string("name").orEmpty() to it.asJsonObject.string("reason").orEmpty()
+    }
+  }
+
+  private val translateKeys: Set<String> by lazy { data.getAsJsonArray("translateKeys").map { it.asString }.toSet() }
+
+  /** Whether the CSS translation handles a property. */
+  fun isHandledProperty(property: String) = property in translateKeys
+
   private val byProperty by lazy { resources.associateBy { it.property } }
 
   fun resourceOf(property: String) = byProperty[property]
