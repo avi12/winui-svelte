@@ -84,3 +84,18 @@ test("both CSS data files name only properties the translation handles", () => {
     assert.equal(handled.has(cssProperty), true, `winui-css-mappings.json maps ${prop} to ${cssProperty}`);
   }
 });
+
+test("the CSS previews draw the library's own easings, shadow depths and unsupported properties", () => {
+  const ease = data.easings.find(easing => easing.name === "ease");
+  assert.deepEqual(ease?.points, [0.25, 0.1, 0.25, 1]);
+  assert.equal(data.easings.find(easing => easing.name === "step-end")?.kind, "steps");
+  assert.deepEqual(data.shadowDepths.map(shadow => shadow.depth), [4, 16, 32, 128]);
+  assert.match(data.unsupportedProperties.find(property => property.name === "float")?.reason ?? "", /grid/u);
+});
+
+test("a window material has the light and dark color of its base", () => {
+  const mica = data.materials.find(material => material.name === "mica");
+  assert.equal(mica?.light, "#f3f3f3");
+  assert.equal(mica?.dark, "#202020");
+  assert.equal(data.materials.find(material => material.name === "acrylic")?.isTranslucent, true);
+});

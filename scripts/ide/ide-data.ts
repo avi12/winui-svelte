@@ -43,12 +43,41 @@ const webEventSchema = z.strictObject({
   description: z.string()
 });
 
+const easingSchema = z.strictObject({
+  name: z.string(),
+  kind: z.enum(["bezier", "steps"]),
+  points: z.array(z.number()).optional(),
+  count: z.number().optional(),
+  jump: z.string().optional()
+});
+
+const shadowDepthSchema = z.strictObject({
+  depth: z.number(),
+  use: z.string()
+});
+
+const unsupportedPropertySchema = z.strictObject({
+  name: z.string(),
+  reason: z.string()
+});
+
+const materialSchema = z.strictObject({
+  name: z.string(),
+  light: z.string(),
+  dark: z.string(),
+  isTranslucent: z.boolean()
+});
+
 const ideDataSchema = z.strictObject({
   resources: z.array(resourceSchema),
   enums: z.array(enumSchema),
   attachments: z.array(attachmentSchema),
   webEvents: z.array(webEventSchema),
-  translateKeys: z.array(z.string())
+  translateKeys: z.array(z.string()),
+  easings: z.array(easingSchema),
+  shadowDepths: z.array(shadowDepthSchema),
+  unsupportedProperties: z.array(unsupportedPropertySchema),
+  materials: z.array(materialSchema)
 });
 
 export type IdeData = z.infer<typeof ideDataSchema>;

@@ -15,6 +15,7 @@ export type MappingKind = (typeof MappingKind)[keyof typeof MappingKind];
 
 const mappingSchema = z.object({
   cssProperty: z.string(),
+  winuiProperty: z.string(),
   kind: z.string(),
   enumTypes: z.array(z.string()),
   keywords: z.record(z.string(), z.string()).optional(),

@@ -2,6 +2,7 @@ package dev.winui.svelte
 
 import com.google.gson.JsonParser
 import java.awt.Color
+import kotlin.math.roundToInt
 
 internal object CssColors {
   private const val HEX_RADIX = 16
@@ -60,7 +61,7 @@ internal object CssColors {
     val alpha = numbers.getOrNull(3)?.let { channel(it, 1f) } ?: 1f
     if (name.startsWith("rgb")) {
       val (red, green, blue) = numbers.take(3).map { channel(it, BYTE.toFloat()).toInt().coerceIn(0, BYTE) }
-      return Color(red, green, blue, (alpha * BYTE).toInt().coerceIn(0, BYTE))
+      return Color(red, green, blue, (alpha * BYTE).roundToInt().coerceIn(0, BYTE))
     }
 
     return hsl(numbers[0].removeSuffix("%").toFloat(), channel(numbers[1], 1f), channel(numbers[2], 1f), alpha)
@@ -99,6 +100,6 @@ internal object CssColors {
     val shift = lightness - chroma / 2
 
     fun byte(value: Float) = ((value + shift) * BYTE).toInt().coerceIn(0, BYTE)
-    return Color(byte(red), byte(green), byte(blue), (alpha * BYTE).toInt().coerceIn(0, BYTE))
+    return Color(byte(red), byte(green), byte(blue), (alpha * BYTE).roundToInt().coerceIn(0, BYTE))
   }
 }

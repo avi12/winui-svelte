@@ -1,0 +1,1020 @@
+{
+  "gradients": [
+    {
+      "value": "linear-gradient(90deg, red, #0000ff 60%)",
+      "expected": [
+        {
+          "kind": "linear",
+          "stops": [
+            [
+              "#ff0000ff",
+              0
+            ],
+            [
+              "#0000ffff",
+              0.6
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "value": "radial-gradient(circle at center, rgba(0, 0, 0, 0.5) 0%, white, blue)",
+      "expected": [
+        {
+          "kind": "radial",
+          "stops": [
+            [
+              "#00000080",
+              0
+            ],
+            [
+              "#ffffffff",
+              0.5
+            ],
+            [
+              "#0000ffff",
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "value": "linear-gradient(to right, red, yellow, lime, blue)",
+      "expected": [
+        {
+          "kind": "linear",
+          "stops": [
+            [
+              "#ff0000ff",
+              0
+            ],
+            [
+              "#ffff00ff",
+              0.3333
+            ],
+            [
+              "#00ff00ff",
+              0.6667
+            ],
+            [
+              "#0000ffff",
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "value": "linear-gradient(red 20%, blue 10%)",
+      "expected": [
+        {
+          "kind": "linear",
+          "stops": [
+            [
+              "#ff0000ff",
+              0.2
+            ],
+            [
+              "#0000ffff",
+              0.2
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "value": "linear-gradient(red)",
+      "expected": []
+    },
+    {
+      "value": "red",
+      "expected": []
+    }
+  ],
+  "brushes": [
+    {
+      "text": "<LinearGradientBrush><GradientStop color=\"#00e5ff\" offset={0} /><GradientStop color=\"#06182b\" offset={1} /></LinearGradientBrush>",
+      "expected": [
+        {
+          "kind": "linear",
+          "stops": [
+            [
+              "#00e5ffff",
+              0
+            ],
+            [
+              "#06182bff",
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "text": "<RadialGradientBrush><GradientStop color=\"red\" /><GradientStop color=\"blue\" offset=\"0.25\" /><GradientStop color=\"lime\" /></RadialGradientBrush>",
+      "expected": [
+        {
+          "kind": "radial",
+          "stops": [
+            [
+              "#ff0000ff",
+              0
+            ],
+            [
+              "#0000ffff",
+              0.25
+            ],
+            [
+              "#00ff00ff",
+              1
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "contrasts": [
+    {
+      "foreground": "#000",
+      "background": "#fff",
+      "label": "21.0:1 AAA"
+    },
+    {
+      "foreground": "#767676",
+      "background": "#fff",
+      "label": "4.5:1 AA"
+    },
+    {
+      "foreground": "#777",
+      "background": "#fff",
+      "label": "4.4:1 AA large"
+    },
+    {
+      "foreground": "white",
+      "background": "#0078d4",
+      "label": "4.5:1 AA"
+    },
+    {
+      "foreground": "#00000080",
+      "background": "white",
+      "label": "4.0:1 AA large"
+    },
+    {
+      "foreground": "#fff",
+      "background": "#fff",
+      "label": "1.0:1 fail"
+    }
+  ],
+  "easings": [
+    {
+      "value": "ease",
+      "samples": [
+        0,
+        0.409,
+        0.802,
+        0.96,
+        1
+      ]
+    },
+    {
+      "value": "cubic-bezier(0.25, 0.1, 0.25, 1)",
+      "samples": [
+        0,
+        0.409,
+        0.802,
+        0.96,
+        1
+      ]
+    },
+    {
+      "value": "steps(4, end)",
+      "samples": [
+        0,
+        0.25,
+        0.5,
+        0.75,
+        1
+      ]
+    },
+    {
+      "value": "steps(2, jump-start)",
+      "samples": [
+        0.5,
+        0.5,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "value": "linear(0, 0.25 75%, 1)",
+      "samples": [
+        0,
+        0.083,
+        0.167,
+        0.25,
+        1
+      ]
+    },
+    {
+      "value": "step-start",
+      "samples": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "value": "ease-in-out",
+      "samples": [
+        0,
+        0.129,
+        0.5,
+        0.871,
+        1
+      ]
+    },
+    {
+      "value": "red",
+      "samples": null
+    }
+  ],
+  "keySplines": [
+    {
+      "value": "0.1,0.9 0.2,1",
+      "samples": [
+        0,
+        0.849,
+        0.966,
+        0.995,
+        1
+      ]
+    },
+    {
+      "value": "1,2",
+      "samples": null
+    }
+  ],
+  "timings": [
+    {
+      "property": "transition",
+      "value": "opacity 200ms ease-in 100ms, transform 0.3s",
+      "expected": [
+        {
+          "name": "opacity",
+          "durationMs": 200,
+          "delayMs": 100,
+          "easing": "ease-in"
+        },
+        {
+          "name": "transform",
+          "durationMs": 300,
+          "delayMs": 0,
+          "easing": "ease"
+        }
+      ]
+    },
+    {
+      "property": "animation",
+      "value": "slide 2s ease-out 1s infinite",
+      "expected": [
+        {
+          "name": "slide",
+          "durationMs": 2000,
+          "delayMs": 1000,
+          "easing": "ease-out"
+        }
+      ]
+    },
+    {
+      "property": "color",
+      "value": "red",
+      "expected": []
+    }
+  ],
+  "boxes": [
+    {
+      "property": "padding",
+      "value": "8px 12px",
+      "expected": {
+        "kind": "sides",
+        "values": [
+          8,
+          12,
+          8,
+          12
+        ]
+      }
+    },
+    {
+      "property": "margin",
+      "value": "1px 2px 3px",
+      "expected": {
+        "kind": "sides",
+        "values": [
+          1,
+          2,
+          3,
+          2
+        ]
+      }
+    },
+    {
+      "property": "border-radius",
+      "value": "4",
+      "expected": {
+        "kind": "corners",
+        "values": [
+          4,
+          4,
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "property": "border-radius",
+      "value": "4px 8px 12px 16px",
+      "expected": {
+        "kind": "corners",
+        "values": [
+          4,
+          8,
+          12,
+          16
+        ]
+      }
+    },
+    {
+      "property": "padding",
+      "value": "8, 4",
+      "expected": {
+        "kind": "sides",
+        "values": [
+          8,
+          4,
+          8,
+          4
+        ]
+      }
+    },
+    {
+      "property": "padding",
+      "value": "1em",
+      "expected": null
+    },
+    {
+      "property": "color",
+      "value": "4px",
+      "expected": null
+    }
+  ],
+  "tracks": [
+    {
+      "value": "auto 100px 1fr 2fr",
+      "expected": [
+        [
+          "auto",
+          0,
+          0.2
+        ],
+        [
+          "px",
+          100,
+          0.417
+        ],
+        [
+          "fr",
+          1,
+          0.128
+        ],
+        [
+          "fr",
+          2,
+          0.256
+        ]
+      ]
+    },
+    {
+      "value": "1fr 1fr",
+      "expected": [
+        [
+          "fr",
+          1,
+          0.5
+        ],
+        [
+          "fr",
+          1,
+          0.5
+        ]
+      ]
+    },
+    {
+      "value": "200px 400px",
+      "expected": [
+        [
+          "px",
+          200,
+          0.333
+        ],
+        [
+          "px",
+          400,
+          0.667
+        ]
+      ]
+    },
+    {
+      "value": "* 2*",
+      "expected": [
+        [
+          "fr",
+          1,
+          0.333
+        ],
+        [
+          "fr",
+          2,
+          0.667
+        ]
+      ]
+    },
+    {
+      "value": "minmax(1px, 2px)",
+      "expected": null
+    },
+    {
+      "value": "50%",
+      "expected": null
+    }
+  ],
+  "media": [
+    {
+      "environment": {
+        "theme": "dark",
+        "isReducedMotion": false,
+        "width": 1024,
+        "height": 768
+      },
+      "condition": "(prefers-color-scheme: dark)",
+      "matches": true,
+      "parts": [
+        [
+          "(prefers-color-scheme: dark)",
+          true
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "dark",
+        "isReducedMotion": false,
+        "width": 1024,
+        "height": 768
+      },
+      "condition": "(min-width: 600px) and (max-width: 900px)",
+      "matches": false,
+      "parts": [
+        [
+          "(min-width: 600px)",
+          true
+        ],
+        [
+          "(max-width: 900px)",
+          false
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "dark",
+        "isReducedMotion": false,
+        "width": 1024,
+        "height": 768
+      },
+      "condition": "(width >= 600px)",
+      "matches": true,
+      "parts": [
+        [
+          "(width >= 600px)",
+          true
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "dark",
+        "isReducedMotion": false,
+        "width": 1024,
+        "height": 768
+      },
+      "condition": "(400px <= width <= 800px)",
+      "matches": false,
+      "parts": [
+        [
+          "(400px <= width <= 800px)",
+          false
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "dark",
+        "isReducedMotion": false,
+        "width": 1024,
+        "height": 768
+      },
+      "condition": "print",
+      "matches": false,
+      "parts": [
+        [
+          "print",
+          false
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "dark",
+        "isReducedMotion": false,
+        "width": 1024,
+        "height": 768
+      },
+      "condition": "(hover: hover)",
+      "matches": null,
+      "parts": [
+        [
+          "(hover: hover)",
+          null
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "dark",
+        "isReducedMotion": false,
+        "width": 1024,
+        "height": 768
+      },
+      "condition": "not (prefers-reduced-motion: reduce)",
+      "matches": true,
+      "parts": [
+        [
+          "(prefers-reduced-motion: reduce)",
+          false
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "dark",
+        "isReducedMotion": false,
+        "width": 1024,
+        "height": 768
+      },
+      "condition": "screen and (max-height: 800px), print",
+      "matches": true,
+      "parts": [
+        [
+          "screen",
+          true
+        ],
+        [
+          "(max-height: 800px)",
+          true
+        ],
+        [
+          "print",
+          false
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "light",
+        "isReducedMotion": true,
+        "width": 500,
+        "height": 900
+      },
+      "condition": "(prefers-color-scheme: dark)",
+      "matches": false,
+      "parts": [
+        [
+          "(prefers-color-scheme: dark)",
+          false
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "light",
+        "isReducedMotion": true,
+        "width": 500,
+        "height": 900
+      },
+      "condition": "(min-width: 600px) and (max-width: 900px)",
+      "matches": false,
+      "parts": [
+        [
+          "(min-width: 600px)",
+          false
+        ],
+        [
+          "(max-width: 900px)",
+          true
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "light",
+        "isReducedMotion": true,
+        "width": 500,
+        "height": 900
+      },
+      "condition": "(width >= 600px)",
+      "matches": false,
+      "parts": [
+        [
+          "(width >= 600px)",
+          false
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "light",
+        "isReducedMotion": true,
+        "width": 500,
+        "height": 900
+      },
+      "condition": "(400px <= width <= 800px)",
+      "matches": true,
+      "parts": [
+        [
+          "(400px <= width <= 800px)",
+          true
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "light",
+        "isReducedMotion": true,
+        "width": 500,
+        "height": 900
+      },
+      "condition": "print",
+      "matches": false,
+      "parts": [
+        [
+          "print",
+          false
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "light",
+        "isReducedMotion": true,
+        "width": 500,
+        "height": 900
+      },
+      "condition": "(hover: hover)",
+      "matches": null,
+      "parts": [
+        [
+          "(hover: hover)",
+          null
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "light",
+        "isReducedMotion": true,
+        "width": 500,
+        "height": 900
+      },
+      "condition": "not (prefers-reduced-motion: reduce)",
+      "matches": false,
+      "parts": [
+        [
+          "(prefers-reduced-motion: reduce)",
+          true
+        ]
+      ]
+    },
+    {
+      "environment": {
+        "theme": "light",
+        "isReducedMotion": true,
+        "width": 500,
+        "height": 900
+      },
+      "condition": "screen and (max-height: 800px), print",
+      "matches": false,
+      "parts": [
+        [
+          "screen",
+          true
+        ],
+        [
+          "(max-height: 800px)",
+          false
+        ],
+        [
+          "print",
+          false
+        ]
+      ]
+    }
+  ],
+  "shadows": [
+    {
+      "property": "-winui-elevation",
+      "value": "16px",
+      "depth": 16
+    },
+    {
+      "property": "box-shadow",
+      "value": "0 8px 16px rgba(0,0,0,.3)",
+      "depth": 16
+    },
+    {
+      "property": "box-shadow",
+      "value": "4px 2px #000",
+      "depth": 4
+    },
+    {
+      "property": "box-shadow",
+      "value": "inset 0 0 4px red",
+      "depth": 4
+    },
+    {
+      "property": "color",
+      "value": "16px",
+      "depth": null
+    }
+  ],
+  "ladder": [
+    {
+      "depth": 0,
+      "nearest": 0
+    },
+    {
+      "depth": 4,
+      "nearest": 0
+    },
+    {
+      "depth": 10,
+      "nearest": 0
+    },
+    {
+      "depth": 16,
+      "nearest": 1
+    },
+    {
+      "depth": 23,
+      "nearest": 1
+    },
+    {
+      "depth": 24,
+      "nearest": 1
+    },
+    {
+      "depth": 100,
+      "nearest": 3
+    },
+    {
+      "depth": 500,
+      "nearest": 3
+    }
+  ],
+  "materials": [
+    {
+      "value": "mica",
+      "name": "mica"
+    },
+    {
+      "value": "acrylic",
+      "name": "acrylic"
+    },
+    {
+      "value": "none",
+      "name": null
+    }
+  ],
+  "attributeProperties": {
+    "padding": "padding",
+    "foreground": "color"
+  },
+  "declarations": [
+    {
+      "text": "<style>\n.a { color: #000; background: #fff; }\n@media (min-width: 600px) {\n  .b { padding: 8px; }\n}\n</style>\n<Border style=\"color: red; width: 4px\" style:opacity=\"0.5\" padding=\"4\" columns=\"auto 1fr\" />",
+      "expected": [
+        [
+          "color",
+          "#000",
+          0,
+          "rule",
+          ".a",
+          [],
+          "#000"
+        ],
+        [
+          "background",
+          "#fff",
+          0,
+          "rule",
+          ".a",
+          [],
+          "#fff"
+        ],
+        [
+          "padding",
+          "8px",
+          1,
+          "rule",
+          ".b",
+          [
+            "(min-width: 600px)"
+          ],
+          "8px"
+        ],
+        [
+          "color",
+          "red",
+          2,
+          "style",
+          "",
+          [],
+          "red"
+        ],
+        [
+          "width",
+          "4px",
+          2,
+          "style",
+          "",
+          [],
+          "4px"
+        ],
+        [
+          "opacity",
+          "0.5",
+          2,
+          "directive",
+          "",
+          [],
+          "0.5"
+        ],
+        [
+          "padding",
+          "4",
+          2,
+          "attribute",
+          "",
+          [],
+          "4"
+        ],
+        [
+          "grid-template-columns",
+          "auto 1fr",
+          2,
+          "attribute",
+          "",
+          [],
+          "auto 1fr"
+        ]
+      ]
+    },
+    {
+      "text": "<script>const x = \"style='color: red'\";</script>\n<Border style=\"margin: 4px 8px !important\" />\n<style>/* color: blue; */ .c { transition: all 1s cubic-bezier(0, 0, 1, 1); } @keyframes k { from { opacity: 0 } }</style>",
+      "expected": [
+        [
+          "margin",
+          "4px 8px",
+          0,
+          "style",
+          "",
+          [],
+          "4px 8px"
+        ],
+        [
+          "transition",
+          "all 1s cubic-bezier(0, 0, 1, 1)",
+          1,
+          "rule",
+          ".c",
+          [],
+          "all 1s cubic-bezier(0, 0, 1, 1)"
+        ],
+        [
+          "opacity",
+          "0",
+          2,
+          "rule",
+          "from",
+          [],
+          "0"
+        ]
+      ]
+    }
+  ],
+  "mediaQueries": [
+    {
+      "text": "<style>@media (min-width: 600px) { .a { color: red } }\n@media screen and (prefers-color-scheme: dark) { @media (hover: hover) { .b { color: blue } } }</style>",
+      "expected": [
+        [
+          "(min-width: 600px)",
+          "(min-width: 600px)"
+        ],
+        [
+          "screen and (prefers-color-scheme: dark)",
+          "screen and (prefers-color-scheme: dark)"
+        ],
+        [
+          "(hover: hover)",
+          "(hover: hover)"
+        ]
+      ]
+    }
+  ],
+  "infos": [
+    {
+      "property": "float",
+      "source": "rule",
+      "expected": {
+        "isSupported": false,
+        "targets": [],
+        "reason": "WinUI has no float; use a grid or a stack-panel",
+        "scope": ""
+      }
+    },
+    {
+      "property": "padding",
+      "source": "rule",
+      "expected": {
+        "isSupported": true,
+        "targets": [
+          "Padding"
+        ],
+        "reason": "",
+        "scope": "the rule `.a` is written against the component's markup, scoped by the component's own class"
+      }
+    },
+    {
+      "property": "border-radius",
+      "source": "style",
+      "expected": {
+        "isSupported": true,
+        "targets": [
+          "CornerRadius"
+        ],
+        "reason": "",
+        "scope": "a style written on the tag applies to this element only"
+      }
+    },
+    {
+      "property": "-winui-elevation",
+      "source": "directive",
+      "expected": {
+        "isSupported": true,
+        "targets": [],
+        "reason": "",
+        "scope": "a style written on the tag applies to this element only"
+      }
+    },
+    {
+      "property": "--my-own",
+      "source": "rule",
+      "expected": null
+    },
+    {
+      "property": "padding",
+      "source": "attribute",
+      "expected": null
+    },
+    {
+      "property": "padding",
+      "source": "rule",
+      "media": [
+        "(min-width: 600px)"
+      ],
+      "expected": {
+        "isSupported": true,
+        "targets": [
+          "Padding"
+        ],
+        "reason": "",
+        "scope": "the rule `.a` is written against the component's markup, scoped by the component's own class, inside @media (min-width: 600px)"
+      }
+    }
+  ]
+}

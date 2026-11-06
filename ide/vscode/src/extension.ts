@@ -1,6 +1,7 @@
 import { entriesOf } from "./completions.ts";
 import { registerConvertCommands } from "./convert-commands.ts";
 import { cssColorOf } from "./css-color.ts";
+import { registerCssPreviews } from "./css-preview-hints.ts";
 import { codePointOf } from "./glyph-table.ts";
 import { SVELTE_LANGUAGE } from "./ids.ts";
 import { GLYPH_FONT_STYLE } from "./preview.ts";
@@ -202,6 +203,7 @@ export function activate(context: ExtensionContext) {
   registerQuickActions(context);
   registerConvertCommands(context);
   registerResourceHints(context);
+  registerCssPreviews(context);
   refreshVisible();
   context.subscriptions.push(
     glyphType,

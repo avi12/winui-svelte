@@ -20,7 +20,7 @@ const LABEL_SIZE = 10;
  */
 export const GLYPH_FONT_STYLE = `none; font-family: ${ICON_FONT_FAMILY};`;
 
-function imageOf({ svg, alt }: {
+export function imageOf({ svg, alt }: {
   svg: string;
   alt: string;
 }) {
