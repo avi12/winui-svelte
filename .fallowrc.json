@@ -114,6 +114,7 @@
     "examples/dev-host/App.svelte",
     "src/dev/dev-window.ts",
     "examples/keys/main.ts",
+    "examples/hotkeys/main.ts",
     "examples/win2d/main.ts",
     "examples/data-transfer/main.ts",
     "examples/effects/main.ts",
