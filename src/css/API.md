@@ -201,6 +201,7 @@ window in, with or without a `<style>` that uses the property
 | `winui-svelte/css/filter` | `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` | Filters, blends and masks |
 | `winui-svelte/css/clip` | `clip-path` | Clip shapes |
 | `winui-svelte/css/cursor` | `cursor` | Cursor |
+| `winui-svelte/css/view-transition` | `view-transition-name` | View transitions |
 | `winui-svelte/css/control` | `font-stretch`, `direction`, `background-clip`, `tab-index` | Control properties (`controlGroups`) |
 | `winui-svelte/css/shape` | `fill`, `stroke-dasharray`, `stroke-dashoffset`, `stroke-linecap`, `stroke-linejoin`, `stroke-miterlimit`, `rx`, `ry`, `fill-rule` | Shapes |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
@@ -755,6 +756,28 @@ QueryInterface from outside; the value is an `InputSystemCursor` made by
 | `nw-resize`, `se-resize`, `nwse-resize` | SizeNorthwestSoutheast |
 
 Removing the rule gives the element no cursor of its own again
+
+## View transitions: `view-transition-name`
+
+`view-transition-name` names an element for `document.startViewTransition`
+(`winui-svelte/view-transitions`, in the main `API.md`): a sheet or a style
+attribute that sets it imports `winui-svelte/css/view-transition`
+No Style sets the name; the runtime keeps it beside the control, and the
+transition pairs the control named alike before and after its update into one
+of WinUI's connected animations
+
+```svelte
+<border class="thumbnail" style="view-transition-name: photo-{photo.id}" />
+```
+
+The value is `none` or one name; `auto` and `match-element` are build errors,
+since a connected animation is found by its name alone and the runtime makes
+none up
+A name set by a `style:view-transition-name={name}` directive alone does not
+opt the window in: write it in a style attribute's text, as above, or in a
+sheet
+The `::view-transition-*` pseudo-elements and `view-transition-class` have no
+counterpart (the picture WinUI flies is not an element a rule can match)
 
 ## Aspect ratio: `aspect-ratio`
 
@@ -1327,6 +1350,7 @@ Declarations like these fail the build with it:
 | `filter`, `backdrop-filter`, `mix-blend-mode`, `mask`, `mask-image` in a style attribute | they are read from a component's `<style>` block, which opts the window into `winui-svelte/css/filter` (see Filters, blends and masks); `url()` filters, `mask-position`, `mask-size`, `mask-repeat` and `mask-mode` have no counterpart |
 | `clip-path` as `rect()`, `xywh()` or `url()` | `inset()`, `circle()`, `ellipse()`, `polygon()` and `path()` have one (see Clip shapes) |
 | `cursor` as a `url()` image, `none`, `copy`, `alias`, `zoom-in` and `zoom-out` | WinUI's cursors are the sixteen system shapes of `InputSystemCursorShape`; the other keywords have one (see Cursor) |
+| `view-transition-class`, `view-transition-name: auto` and `match-element` | a connected animation flies a picture no rule can match, found by a name the app gives (see View transitions) |
 | `animation` without its module | see Animations |
 | `animation-timeline` on a width, a color or a keyword, `timeline-scope`, `animation-timing-function` other than `linear` on a scroll-linked animation | Composition drives opacity, translate, scale and rotate from a scroll position, straight (see Scroll-driven animation) |
 | `text-transform: uppercase`, `lowercase`, `capitalize` | the text an element shows is written through the change, in a `<text-block>`, a `<run>`, a button's content and the text of an inline element: the tree keeps the text as written, and the control reports the changed one (`none` is no change; an inherited transform is not: write it on the element that holds the text) |

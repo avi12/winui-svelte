@@ -225,6 +225,10 @@
       "types": "./dist/css/cursor.d.ts",
       "default": "./dist/css/cursor.js"
     },
+    "./css/view-transition": {
+      "types": "./dist/css/view-transition.d.ts",
+      "default": "./dist/css/view-transition.js"
+    },
     "./css/clip": {
       "types": "./dist/css/clip.d.ts",
       "default": "./dist/css/clip.js"

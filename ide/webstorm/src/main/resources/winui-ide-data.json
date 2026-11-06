@@ -3636,6 +3636,7 @@
     "view-timeline-axis",
     "view-timeline-inset",
     "view-timeline-name",
+    "view-transition-name",
     "visibility",
     "white-space",
     "width",
@@ -3700,7 +3701,8 @@
     {"name":"text-indent","reason":"WinUI has no text indent"},
     {"name":"top","reason":"is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot. A <canvas> child places by canvas-left and canvas-top"},
     {"name":"transform","reason":"a transform is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot"},
-    {"name":"transition","reason":"a transition is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot"}
+    {"name":"transition","reason":"a transition is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot"},
+    {"name":"view-transition-class","reason":"the picture a WinUI connected animation flies is no element a rule can match; view-transition-name pairs the elements"}
   ],
   "materials": [
     {"name":"mica","light":"#f3f3f3","dark":"#202020","isTranslucent":false},
