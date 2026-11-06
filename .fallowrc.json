@@ -74,6 +74,7 @@
     "src/forms/Form.d.svelte.ts",
     "src/forms/FormField.d.svelte.ts",
     "examples/form/main.ts",
+    "examples/accessibility/main.ts",
     "examples/fonts/main.ts",
     "examples/pill-ground/main.ts",
     "**/*.test.ts",
