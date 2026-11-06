@@ -170,7 +170,8 @@ function expandBackground({ declaration, reader }: ExpansionInput) {
   })];
 }
 
-function expandFont({ declaration, reader }: ExpansionInput) {
+/** `font`: [style] [weight] size[/line-height] family, as its longhands. */
+export function expandFont({ declaration, reader }: ExpansionInput) {
   const words = reader.words;
   const sizeIndex = words.findIndex(word => parseLength(splitSlash(word)[0] ?? "") !== null);
   const isSizeMissing = sizeIndex === -1;
@@ -400,10 +401,10 @@ const expansions = new Map<string, Expansion>([
 export function expandDeclaration({ declaration, options, extra = new Map() }: {
   declaration: Declaration;
   options: LowerOptions;
-  /** The shorthands of the groups an app opted into. */
+  /** The shorthands of the groups an app opted into, and the build's; one refines a built-in of its name (`font`). */
   extra?: ReadonlyMap<string, Expansion>;
 }) {
-  const expansion = expansions.get(declaration.property) ?? extra.get(declaration.property);
+  const expansion = extra.get(declaration.property) ?? expansions.get(declaration.property);
   const isExpansionMissing = expansion === undefined;
   if (isExpansionMissing) {
     return [declaration];

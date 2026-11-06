@@ -1,5 +1,6 @@
 import type { Expansion, ExpansionInput, PropertyGroup } from "./property-kit.ts";
 import { expandPair, longhand, MAX_BOX_VALUES } from "./shorthands.ts";
+import { expandTypeRamp } from "./type-ramp.ts";
 import { splitSlash } from "#src/css/parse/values.js";
 
 const GRID_LINE = /^(auto|\d+|span\s+\d+)$/iu;
@@ -61,12 +62,13 @@ function expandArea({ declaration, reader }: ExpansionInput) {
   }));
 }
 
-const buildExpansions = new Map<string, Expansion>([...logicalExpansions, ["grid-area", expandArea]]);
+const buildExpansions = new Map<string, Expansion>([...logicalExpansions, ["grid-area", expandArea], ["font", expandTypeRamp]]);
 
 /**
  * The shorthands only the build expands: the logical properties (`margin-inline`,
- * `padding-block-start`, `inline-size`...) as their physical counterparts, and
- * `grid-area`. A sheet reaches a window already expanded, so these are no part of
+ * `padding-block-start`, `inline-size`...) as their physical counterparts,
+ * `grid-area`, and `font: var(--type-title)`, a step of WinUI's type ramp. A
+ * sheet reaches a window already expanded, so these are no part of
  * its runtime; a `style` attribute has no use of them.
  */
 export function buildShorthandGroups() {

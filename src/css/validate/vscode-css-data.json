@@ -479,6 +479,236 @@
       ]
     },
     {
+      "name": "font-variant-numeric",
+      "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "normal",
+          "description": "the defaults"
+        },
+        {
+          "name": "lining-nums",
+          "description": "Typography.NumeralStyle: Lining"
+        },
+        {
+          "name": "oldstyle-nums",
+          "description": "Typography.NumeralStyle: OldStyle"
+        },
+        {
+          "name": "proportional-nums",
+          "description": "Typography.NumeralAlignment: Proportional"
+        },
+        {
+          "name": "tabular-nums",
+          "description": "Typography.NumeralAlignment: Tabular"
+        },
+        {
+          "name": "diagonal-fractions",
+          "description": "Typography.Fraction: Slashed"
+        },
+        {
+          "name": "stacked-fractions",
+          "description": "Typography.Fraction: Stacked"
+        },
+        {
+          "name": "ordinal",
+          "description": "Typography.Variants: Ordinal"
+        },
+        {
+          "name": "slashed-zero",
+          "description": "Typography.SlashedZero: True"
+        }
+      ]
+    },
+    {
+      "name": "font-variant-caps",
+      "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "normal",
+          "description": "the defaults"
+        },
+        {
+          "name": "small-caps",
+          "description": "Typography.Capitals: SmallCaps"
+        },
+        {
+          "name": "all-small-caps",
+          "description": "Typography.Capitals: AllSmallCaps"
+        },
+        {
+          "name": "petite-caps",
+          "description": "Typography.Capitals: PetiteCaps"
+        },
+        {
+          "name": "all-petite-caps",
+          "description": "Typography.Capitals: AllPetiteCaps"
+        },
+        {
+          "name": "unicase",
+          "description": "Typography.Capitals: Unicase"
+        },
+        {
+          "name": "titling-caps",
+          "description": "Typography.Capitals: Titling"
+        }
+      ]
+    },
+    {
+      "name": "font-variant-position",
+      "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "normal",
+          "description": "the defaults"
+        },
+        {
+          "name": "sub",
+          "description": "Typography.Variants: Subscript"
+        },
+        {
+          "name": "super",
+          "description": "Typography.Variants: Superscript"
+        }
+      ]
+    },
+    {
+      "name": "font-variant-ligatures",
+      "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "normal",
+          "description": "the defaults"
+        },
+        {
+          "name": "none",
+          "description": "Typography.StandardLigatures: False, Typography.ContextualLigatures: False, Typography.DiscretionaryLigatures: False, Typography.HistoricalLigatures: False, Typography.ContextualAlternates: False"
+        },
+        {
+          "name": "common-ligatures",
+          "description": "Typography.StandardLigatures: True, Typography.ContextualLigatures: True"
+        },
+        {
+          "name": "no-common-ligatures",
+          "description": "Typography.StandardLigatures: False, Typography.ContextualLigatures: False"
+        },
+        {
+          "name": "discretionary-ligatures",
+          "description": "Typography.DiscretionaryLigatures: True"
+        },
+        {
+          "name": "no-discretionary-ligatures",
+          "description": "Typography.DiscretionaryLigatures: False"
+        },
+        {
+          "name": "historical-ligatures",
+          "description": "Typography.HistoricalLigatures: True"
+        },
+        {
+          "name": "no-historical-ligatures",
+          "description": "Typography.HistoricalLigatures: False"
+        },
+        {
+          "name": "contextual",
+          "description": "Typography.ContextualAlternates: True"
+        },
+        {
+          "name": "no-contextual",
+          "description": "Typography.ContextualAlternates: False"
+        }
+      ]
+    },
+    {
+      "name": "font-variant-alternates",
+      "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "normal",
+          "description": "the defaults"
+        },
+        {
+          "name": "historical-forms",
+          "description": "Typography.HistoricalForms: True"
+        }
+      ]
+    },
+    {
+      "name": "font-variant-east-asian",
+      "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "normal",
+          "description": "the defaults"
+        },
+        {
+          "name": "jis78",
+          "description": "Typography.EastAsianLanguage: Jis78"
+        },
+        {
+          "name": "jis83",
+          "description": "Typography.EastAsianLanguage: Jis83"
+        },
+        {
+          "name": "jis90",
+          "description": "Typography.EastAsianLanguage: Jis90"
+        },
+        {
+          "name": "jis04",
+          "description": "Typography.EastAsianLanguage: Jis04"
+        },
+        {
+          "name": "simplified",
+          "description": "Typography.EastAsianLanguage: Simplified"
+        },
+        {
+          "name": "traditional",
+          "description": "Typography.EastAsianLanguage: Traditional"
+        },
+        {
+          "name": "full-width",
+          "description": "Typography.EastAsianWidths: Full"
+        },
+        {
+          "name": "proportional-width",
+          "description": "Typography.EastAsianWidths: Proportional"
+        },
+        {
+          "name": "ruby",
+          "description": "Typography.Variants: Ruby"
+        }
+      ]
+    },
+    {
+      "name": "font-kerning",
+      "description": "WinUI: sets Typography attached properties; only these keywords are accepted.",
+      "values": [
+        {
+          "name": "auto",
+          "description": "the defaults"
+        },
+        {
+          "name": "normal",
+          "description": "the defaults"
+        },
+        {
+          "name": "none",
+          "description": "Typography.Kerning: False"
+        }
+      ]
+    },
+    {
+      "name": "font-feature-settings",
+      "description": "WinUI: sets the Typography attached properties for these OpenType features, written as \"tag\" on, off or a whole number: ss01, ss02, ss03, ss04, ss05, ss06, ss07, ss08, ss09, ss10, ss11, ss12, ss13, ss14, ss15, ss16, ss17, ss18, ss19, ss20, smcp, c2sc, pcap, c2pc, unic, titl, lnum, onum, pnum, tnum, frac, afrc, sups, subs, ordn, sinf, ruby, jp78, jp83, jp90, jp04, hojo, nlck, smpl, trad, tnam, fwid, hwid, pwid, qwid, twid, zero, liga, clig, dlig, hlig, calt, kern, case, cpsp, hist, mgrk, expt, salt, swsh, cswh, nalt. Any other tag is an error."
+    },
+    {
+      "name": "font-optical-sizing",
+      "description": "WinUI: only auto, since DirectWrite applies a variable font's optical size axis from the font size and nothing turns it off."
+    },
+    {
+      "name": "font-variant",
+      "description": "WinUI: sets the Typography attached properties of the font-variant-* longhands it names (caps, numeric, ligatures, position, alternates, east-asian) and puts the others back to normal."
+    },
+    {
       "name": "animation-timeline",
       "description": "WinUI: links an animation to a scroll viewer through Composition. Values: auto, none, scroll([nearest | root | self] [block | inline | x | y]), view([axis] [inset]) or a name a scroll-timeline-name or view-timeline-name gave. It drives opacity, translate, scale and rotate only, straight (animation-timing-function: linear)."
     },
