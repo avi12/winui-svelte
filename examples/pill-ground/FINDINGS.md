@@ -3,8 +3,11 @@
 What the Gemini Live pill needs from winui-svelte, checked against the code, the
 docs and the tests (HANDOFF-gemini-live.md, "Looks covered")
 The example now runs as one transparent window (`test/pill-ground.test.ts`, off
-screen and never activated, read back with PrintWindow); a row says what that
-run showed, and the rows that predate it rest on the docs and the code
+screen and never activated, read back with PrintWindow, which has no alpha: a
+clear pixel and an opaque black one read the same there, so what is transparent
+is proved by `test/transparent-window.test.ts` on the screen itself); a row
+says what that run showed, and the rows that predate it rest on the docs and
+the code
 
 The web API column says whether the package offers the web form: offers,
 partly or lacks
@@ -31,6 +34,6 @@ partly or lacks
 | Per-element opacity and translate animation | yes | CSS animation, Svelte transitions and `element.animate` all land on `Opacity`, `Translation`, `Scale` and `Rotation`; the engine writes about every 16 ms on the UI thread | `element.animate` offers |
 | Card height glide | now offered | `glideHeight` (API.md, Gliding a height): an attachment that listens to `SizeChanged` and runs `element.animate({ height })`; it cannot glide the first layout or an element with a fixed `height`; proven in a window (`test/card-glide.test.ts`) | `ResizeObserver` and `element.animate` offer |
 | Wrapping link chips | recipe | CSS `flex-wrap` stays a build error; a `RichTextBlock` whose `Paragraph` holds `InlineUIContainer` chips wraps chips of different widths (API.md, Wrapping chips; `examples/chip-tray`, `test/chip-tray.test.ts`); `VariableSizedWrapGrid` wraps with one cell size | none |
-| Transparent window | yes | `backdrop="transparent"`; clear corners and gaps read black in PrintWindow (it has no alpha) where `--backdrop mica` paints the theme color; it failed at startup until the package gave the thread a Windows.System dispatcher queue (`system-dispatcher-queue.ts`) | none; no web API makes a window transparent |
+| Transparent window | yes, since the frame fix | `backdrop="transparent"`; it drew an opaque rectangle (black, or the theme color) over the desktop until the package made the whole window the window manager's frame (`DwmExtendFrameIntoClientArea`, `transparent-backdrop.ts`), which PrintWindow could not show because it has no alpha: clear pixels read black there either way; `test/transparent-window.test.ts` now reads the screen over a bright window and sees the desktop around the card, with no outline or shadow; it failed at startup until the package gave the thread a Windows.System dispatcher queue (`system-dispatcher-queue.ts`) | none; no web API makes a window transparent |
 | Size to content with the bottom-right corner pinned | yes | `sizeToContent="height" anchor="bottomRight"` and `handle.dock({ anchor, inset: 6 })`: the window grows upward with the corner fixed and sits 6 device pixels inside the work area of the display it is on; `isBorderless` kept a 3 pixel dialog frame (now removed) and the 8 pixel resize frame goes with `isResizable={false}`; which display `dock` picks is not observable off screen | `ResizeObserver` offers, not used: it reports the laid-out size |
 | Material Symbols font | now offered | `@font-face { font-family: "Material Symbols Rounded"; src: url("./MaterialSymbolsRounded.ttf") }` in the `<style>`, or `document.fonts.add(new FontFace(...))` (README Fonts); the file is handed to WinUI as `ms-appx:///` and its absolute path, which works in plain Node (test/fonts.test.ts); the example still uses Segoe Fluent Icons | `FontFace` and `document.fonts` (`winui-svelte/web-apis/fonts`) |
