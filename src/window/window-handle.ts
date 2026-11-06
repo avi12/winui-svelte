@@ -4,6 +4,7 @@ import { dockWindow } from "./dock.ts";
 import { scaleOf } from "./native.ts";
 import type { OpenFilePickerOptions, PickerOptions, SaveFilePickerOptions } from "./pickers.ts";
 import { pickFile, pickFilePaths, pickFolder, saveFile } from "./pickers.ts";
+import { WindowControlsOverlay, windowTitleBarSource } from "#src/web-apis/window-controls-overlay.js";
 import { WindowGeometry } from "#src/web-apis/window-geometry.js";
 import type { Window } from "#src/winui.js";
 import {
@@ -29,6 +30,7 @@ export class WindowHandle {
   readonly geometry: WindowGeometry;
   private isClosed = false;
   private closeGuard = () => false;
+  private overlay: WindowControlsOverlay | undefined;
 
   constructor(window: Window) {
     this.window = window;
@@ -38,9 +40,31 @@ export class WindowHandle {
     });
   }
 
+  /**
+   * The title bar area the content may use, as `navigator.windowControlsOverlay`
+   * has it: `visible` (the content extends into the title bar),
+   * `getTitlebarAreaRect()` in CSS pixels and `ongeometrychange`. It follows the
+   * window from the first read of this property until the window closes.
+   */
+  get windowControlsOverlay() {
+    this.overlay ??= this.createOverlay();
+    return this.overlay;
+  }
+
   /** The native AppWindow: position, size, icon and the rest of the windowing API. */
   get appWindow() {
     return this.window.appWindow;
+  }
+
+  private createOverlay() {
+    const { window } = this;
+    const overlay = new WindowControlsOverlay(windowTitleBarSource({
+      window,
+      appWindow: window.appWindow,
+      readScale: () => this.scale
+    }));
+    window.onClosed(() => overlay.dispose());
+    return overlay;
   }
 
   /** Device pixels per device-independent pixel (the window's DPI over 96). */

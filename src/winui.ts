@@ -26,6 +26,7 @@ export { CompositionColorBrush as SystemCompositionColorBrush } from "#winui/win
 export { MicaKind } from "#winui/microsoft/ui/composition/system-backdrops/MicaKind";
 export { AppWindow } from "#winui/microsoft/ui/windowing/AppWindow";
 export { AppWindowPresenterKind } from "#winui/microsoft/ui/windowing/AppWindowPresenterKind";
+export { IconShowOptions as TitleBarIconShowOptions } from "#winui/microsoft/ui/windowing/IconShowOptions";
 export { TitleBarHeightOption } from "#winui/microsoft/ui/windowing/TitleBarHeightOption";
 export { TitleBarTheme } from "#winui/microsoft/ui/windowing/TitleBarTheme";
 export { InputNonClientPointerSource } from "#winui/microsoft/ui/input/InputNonClientPointerSource";

@@ -1665,6 +1665,10 @@ content's requested theme and the caption buttons'
 `titleBarHeight` is
 `"standard"` or `"tall"` (for a title bar that holds a search box or tabs; it
 applies when the content extends into the title bar)
+`iconShowOptions` is `"showIconAndSystemMenu"` (the default) or
+`"hideIconAndSystemMenu"`: whether the title bar shows the window's icon and
+opens the system menu on a click on it (`AppWindowTitleBar.IconShowOptions`;
+it is set again to the default when the prop is dropped)
 `captionButtons` sets
 the colors of the minimize, maximize and close buttons: `foreground`,
 `background`, `hover*`, `pressed*` and `inactive*` (each `Foreground` or
@@ -1761,6 +1765,22 @@ The arithmetic is plain functions (`anchoredBounds`, `dockedBounds`,
 device-independent pixels at the window's scale), over `AppWindow.Resize` and
 `AppWindow.Move`
 A process has many windows, so there is no `window` global for them
+
+`handle.windowControlsOverlay` is `navigator.windowControlsOverlay` for the
+window: `visible` (the content extends into the title bar),
+`getTitlebarAreaRect()` (the part of the title bar the content may use, from
+the system's icon to the caption buttons, as `x`, `y`, `width`, `height`,
+`left`, `top`, `right` and `bottom` in CSS pixels, all zeros while `visible`
+is false) and `ongeometrychange` (a `geometrychange` event with
+`titlebarAreaRect` and `visible`, fired when the area or `visible` changes)
+It reads `AppWindowTitleBar.LeftInset`, `RightInset` and `Height` (device
+pixels, divided by the scale) and the client width; the left inset is the
+caption buttons in a right-to-left window
+It follows the window from the first read of the property until the window
+closes, on `AppWindow.Changed` (a size, DPI or presenter change)
+Limits: the CSS `env(titlebar-area-x)`, `titlebar-area-width` and the rest are
+not supported (WinUI has no run-time lengths, so the translator reports them
+as an error); lay the title bar out from `getTitlebarAreaRect()` instead
 
 `owner` (another window's `WindowHandle`) and `isModal`
 (blocks the owner until this window closes) are read once, before the window

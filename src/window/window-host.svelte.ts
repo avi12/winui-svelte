@@ -2,6 +2,7 @@ import type { SizeToContent, WindowAnchor, WindowBounds, WindowSize } from "./an
 import { fittedBounds, SizeToContent as SizeToContentKind, WindowAnchor as WindowAnchorKind } from "./anchor.ts";
 import {
   applyCaptionButtonColors,
+  applyIconShowOptions,
   applyPresentation,
   applyRegions,
   applyShownInSwitchers,
@@ -13,8 +14,19 @@ import type { Backdrop } from "./backdrop.ts";
 import { applyBackdrop, Backdrop as BackdropKind } from "./backdrop.ts";
 import { isBackgroundRun } from "./background-mode.ts";
 import { backgroundPlacement, keepInBackground } from "./background.ts";
-import type { CaptionButtonColors, CaptionButtonProperty, TitleBarHeight, WindowRegion } from "./chrome.ts";
-import { TitleBarHeight as TitleBarHeightKind, WindowPresentation, WindowTheme } from "./chrome.ts";
+import type {
+  CaptionButtonColors,
+  CaptionButtonProperty,
+  IconShowOptions,
+  TitleBarHeight,
+  WindowRegion
+} from "./chrome.ts";
+import {
+  IconShowOptions as IconShowOptionsKind,
+  TitleBarHeight as TitleBarHeightKind,
+  WindowPresentation,
+  WindowTheme
+} from "./chrome.ts";
 import { toDevicePixels } from "./css-pixels.ts";
 import {
   changeStyles,
@@ -79,6 +91,13 @@ export interface WindowProps {
    * or tabs. It applies when the content extends into the title bar.
    */
   titleBarHeight?: TitleBarHeight | undefined;
+
+  /**
+   * Whether the title bar shows the window's icon, and opens the system menu
+   * on a click on it; `hideIconAndSystemMenu` takes both away. The default
+   * shows them.
+   */
+  iconShowOptions?: IconShowOptions | undefined;
 
   /** The colors of the minimize, maximize and close buttons. */
   captionButtons?: CaptionButtonColors | undefined;
@@ -315,6 +334,7 @@ class WindowHost {
   private isThemeApplied = false;
   private isPresentationApplied = false;
   private appliedHeight: TitleBarHeight | null = null;
+  private appliedIconOptions: IconShowOptions | null = null;
   private appliedCaptionButtons: ReadonlySet<CaptionButtonProperty> = new Set();
   private readonly appliedRegions = new Set<NonClientRegionKind>();
   private readonly appliedStyles = new Set<bigint>();
@@ -533,6 +553,16 @@ class WindowHost {
         height: titleBarHeight ?? TitleBarHeightKind.standard
       });
       this.appliedHeight = titleBarHeight ?? null;
+    }
+
+    const { iconShowOptions } = this.props;
+    const isIconSet = iconShowOptions !== undefined || this.appliedIconOptions !== null;
+    if (isIconSet) {
+      applyIconShowOptions({
+        appWindow,
+        options: iconShowOptions ?? IconShowOptionsKind.showIconAndSystemMenu
+      });
+      this.appliedIconOptions = iconShowOptions ?? null;
     }
 
     this.appliedCaptionButtons = applyCaptionButtonColors({

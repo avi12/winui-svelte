@@ -2,6 +2,7 @@ import { isBackgroundRun } from "./background-mode.ts";
 import type { CaptionButtonColors, CaptionButtonProperty } from "./chrome.ts";
 import {
   captionButtonChanges,
+  IconShowOptions,
   scaledRegion,
   TitleBarHeight,
   WindowPresentation,
@@ -15,6 +16,7 @@ import {
   ElementTheme,
   InputNonClientPointerSource,
   TitleBarHeightOption,
+  TitleBarIconShowOptions,
   TitleBarTheme
 } from "#src/winui.js";
 
@@ -38,11 +40,24 @@ const TITLE_BAR_HEIGHTS = {
   [TitleBarHeight.tall]: TitleBarHeightOption.Tall
 } as const satisfies Record<TitleBarHeight, TitleBarHeightOption>;
 
+const ICON_SHOW_OPTIONS = {
+  [IconShowOptions.showIconAndSystemMenu]: TitleBarIconShowOptions.ShowIconAndSystemMenu,
+  [IconShowOptions.hideIconAndSystemMenu]: TitleBarIconShowOptions.HideIconAndSystemMenu
+} as const satisfies Record<IconShowOptions, TitleBarIconShowOptions>;
+
 const PRESENTER_KINDS = {
   [WindowPresentation.windowed]: AppWindowPresenterKind.Overlapped,
   [WindowPresentation.fullScreen]: AppWindowPresenterKind.FullScreen,
   [WindowPresentation.compactOverlay]: AppWindowPresenterKind.CompactOverlay
 } as const satisfies Record<WindowPresentation, AppWindowPresenterKind>;
+
+/** Shows or hides the window's icon and system menu in the title bar. */
+export function applyIconShowOptions({ appWindow, options }: {
+  appWindow: AppWindow;
+  options: IconShowOptions;
+}) {
+  appWindow.titleBar.iconShowOptions = ICON_SHOW_OPTIONS[options];
+}
 
 /**
  * Presents the window as `presentation`. Back to windowed it is a new

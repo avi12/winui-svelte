@@ -7,7 +7,7 @@ export { SizeToContent, WindowAnchor } from "./anchor.ts";
 export type { DockOptions } from "./dock.ts";
 export { displayAreaOf, DockDisplay, dockWindow } from "./dock.ts";
 export type { CaptionButtonColors, WindowRegion } from "./chrome.ts";
-export { TitleBarHeight, WindowPresentation, WindowTheme } from "./chrome.ts";
+export { IconShowOptions, TitleBarHeight, WindowPresentation, WindowTheme } from "./chrome.ts";
 export { createWindow } from "./create-window.ts";
 export type { HostEndOptions, HostLink } from "./host-link.ts";
 export { exitWhenHostEnds } from "./host-link.ts";
