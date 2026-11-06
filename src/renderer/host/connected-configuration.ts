@@ -1,8 +1,16 @@
-import { call } from "./reflect.ts";
-import { DynWinRtMethodSig, DynWinRtType, DynWinRtValue, WinGuid } from "@microsoft/dynwinrt";
+import { projectAs } from "#src/winui.js";
+import {
+  BasicConnectedAnimationConfiguration
+} from "#winui/microsoft/ui/xaml/media/animation/BasicConnectedAnimationConfiguration";
 import {
   ConnectedAnimationConfiguration
 } from "#winui/microsoft/ui/xaml/media/animation/ConnectedAnimationConfiguration";
+import {
+  DirectConnectedAnimationConfiguration
+} from "#winui/microsoft/ui/xaml/media/animation/DirectConnectedAnimationConfiguration";
+import {
+  GravityConnectedAnimationConfiguration
+} from "#winui/microsoft/ui/xaml/media/animation/GravityConnectedAnimationConfiguration";
 
 /**
  * How a connected animation moves, as the ConnectedAnimationConfiguration
@@ -18,17 +26,11 @@ export const ConnectedAnimationKind = {
 /** One of the values of `ConnectedAnimationKind`. */
 export type ConnectedAnimationKind = (typeof ConnectedAnimationKind)[keyof typeof ConnectedAnimationKind];
 
-// The three configuration classes are not in the generated bindings, so each
-// is activated by its class name through IActivationFactory.ActivateInstance
-// (the slot after IInspectable's) and wrapped as the base class they share.
-const CONFIGURATION_CLASSES = new Map<ConnectedAnimationKind, string>([
-  [ConnectedAnimationKind.GRAVITY, "Microsoft.UI.Xaml.Media.Animation.GravityConnectedAnimationConfiguration"],
-  [ConnectedAnimationKind.DIRECT, "Microsoft.UI.Xaml.Media.Animation.DirectConnectedAnimationConfiguration"],
-  [ConnectedAnimationKind.BASIC, "Microsoft.UI.Xaml.Media.Animation.BasicConnectedAnimationConfiguration"]
+const CONFIGURATION_CLASSES = new Map([
+  [ConnectedAnimationKind.GRAVITY, GravityConnectedAnimationConfiguration],
+  [ConnectedAnimationKind.DIRECT, DirectConnectedAnimationConfiguration],
+  [ConnectedAnimationKind.BASIC, BasicConnectedAnimationConfiguration]
 ]);
-const ACTIVATION_FACTORY = "00000035-0000-0000-c000-000000000046";
-const ACTIVATE_INSTANCE_SLOT = 6;
-const FROM_NATIVE = "_fromNative";
 
 /**
  * A new ConnectedAnimationConfiguration of the kind, to set as a connected
@@ -38,21 +40,10 @@ const FROM_NATIVE = "_fromNative";
  * @returns The configuration.
  */
 export function connectedConfiguration(kind: ConnectedAnimationKind) {
-  const className = CONFIGURATION_CLASSES.get(kind);
-  const isKnown = className !== undefined;
-  if (!isKnown) {
+  const configurationClass = CONFIGURATION_CLASSES.get(kind);
+  if (!configurationClass) {
     throw new RangeError(`${kind} is not a ConnectedAnimationKind`);
   }
 
-  const factory = DynWinRtType.registerInterface("IActivationFactory", WinGuid.parse(ACTIVATION_FACTORY))
-    .addMethod("ActivateInstance", new DynWinRtMethodSig().addOut(DynWinRtType.object()));
-  const instance = factory.method(ACTIVATE_INSTANCE_SLOT).invoke(DynWinRtValue.activationFactory(className), []);
-  // The generated class makes its wrapper from a native value in a static the types do not show.
-  const wrapped = call(ConnectedAnimationConfiguration, FROM_NATIVE, instance);
-  const isConfiguration = wrapped instanceof ConnectedAnimationConfiguration;
-  if (!isConfiguration) {
-    throw new TypeError(`${className} gave no ConnectedAnimationConfiguration`);
-  }
-
-  return wrapped;
+  return projectAs(new configurationClass(), ConnectedAnimationConfiguration);
 }

@@ -432,6 +432,15 @@ export const lateClasses = [
   },
   {
     winmd: COMPONENT_WINMD,
+    namespace: "Microsoft.UI.Xaml.Media.Animation",
+    classes: [
+      "BasicConnectedAnimationConfiguration",
+      "DirectConnectedAnimationConfiguration",
+      "GravityConnectedAnimationConfiguration"
+    ]
+  },
+  {
+    winmd: COMPONENT_WINMD,
     namespace: "Microsoft.UI.Xaml.Media.Imaging",
     classes: ["WriteableBitmap"]
   },
