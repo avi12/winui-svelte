@@ -1,6 +1,8 @@
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineProperty } from "./install.ts";
+import { normalizeKeyframes } from "./keyframe-input.ts";
+import type { KeyframeInput } from "./keyframe-input.ts";
 import type { EffectTiming, EffectTimingInput } from "#src/renderer/host/animation-timing.js";
 import { activeDuration, endTime, progressAt, resolveTiming } from "#src/renderer/host/animation-timing.js";
 import type { ConnectedAnimationHost } from "#src/renderer/host/connected-animation.js";
@@ -12,8 +14,9 @@ import { isRecord, read } from "#src/renderer/host/reflect.js";
 import { ElementNode } from "#src/renderer/tree/dom.js";
 import type { UIElement } from "#src/winui.js";
 
+export type { KeyframeInput } from "./keyframe-input.ts";
+
 const NO_COMPOSITE = "replace";
-const KEYFRAME_OFFSET = "offset";
 
 /** What `installAnimations` takes: the engine's options, and a stand-in for WinUI's connected animations. */
 export interface AnimationsInstallOptions extends ElementAnimationOptions {
@@ -26,11 +29,6 @@ export interface KeyframeEffectOptions extends EffectTimingInput {
   /** The animation's `id`, which `element.animate` copies. */
   readonly id?: string;
 }
-
-type PropertyValues = ReadonlyArray<string | number | null> | string | number | null;
-
-/** The keyframes of `animate()`: a list of them, or properties with the list of their values. */
-export type KeyframeInput = readonly Keyframe[] | Record<string, PropertyValues>;
 
 type NativeAnimate = (this: object, keyframes: Keyframe[], options: EffectTimingInput) => ElementAnimationHandle;
 
@@ -55,37 +53,6 @@ function requireContext() {
 
 function isNativeAnimate(value: unknown): value is NativeAnimate {
   return typeof value === "function";
-}
-
-function isKeyframeList(input: KeyframeInput): input is readonly Keyframe[] {
-  return Array.isArray(input);
-}
-
-/**
- * The keyframes of `animate()` as a list of keyframes, whichever form they were written in.
- *
- * @param input - A list of keyframes, an object of property value lists, or null.
- * @returns One object for each keyframe.
- */
-export function normalizeKeyframes(input: KeyframeInput | null) {
-  const isEmpty = input === null;
-  if (isEmpty) {
-    return [];
-  }
-
-  if (isKeyframeList(input)) {
-    return input.map(keyframe => ({ ...keyframe }));
-  }
-
-  const properties = Object.entries(input).filter(([name]) => name !== KEYFRAME_OFFSET);
-  const lists = properties.map(([name, values]) => [name, [values].flat()] as const);
-  const count = Math.max(0, ...lists.map(([, values]) => values.length));
-  return Array.from({ length: count }, (_, i) => Object.fromEntries(
-    lists.flatMap(([name, values]) => {
-      const value = values[Math.min(i, values.length - 1)];
-      return value === undefined ? [] : [[name, value]];
-    })
-  ));
 }
 
 function timingInputOf(options: number | KeyframeEffectOptions | undefined) {

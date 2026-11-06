@@ -4,15 +4,14 @@ import type { AnimationClock } from "./frame-clock.ts";
 import { dispatcherClock } from "./frame-clock.ts";
 import type { Keyframe, Pose, PoseValue, Vector } from "./keyframes.ts";
 import { poseAt, PoseField, readKeyframe, touchedFields } from "./keyframes.ts";
+import { isMotionReducedBySystem, keepsMotion } from "./motion-preference.ts";
 import { isRecord, read, write } from "./reflect.ts";
 import { shapeLength } from "./shape-length.ts";
 import { doubleCollection } from "./values.ts";
-import { MOTION_ALWAYS_CLASS } from "#src/motion.js";
 import type { NativeValue } from "#src/native-value.js";
 import { ElementNode } from "#src/renderer/tree/dom.js";
 import { listenersOf } from "#src/renderer/tree/tree.js";
 import { flush } from "#src/scheduling.js";
-import { systemSettingsStore } from "#src/window/settings-store.js";
 
 // The Web Animations a stock Svelte asks its elements for, on WinUI's
 // controls. Svelte's `transition:`, `in:`, `out:` and `animate:` call
@@ -203,35 +202,6 @@ function isMotionControl(value: NativeValue): value is MotionControl {
 
 function isMotionNode(value: NativeValue): value is MotionNode {
   return isRecord(value) && isRecord(read(value, "native"));
-}
-
-function keepsMotion(node: object) {
-  const classes = read(node, "className");
-  return typeof classes === "string" && classes.split(" ").includes(MOTION_ALWAYS_CLASS);
-}
-
-/**
- * Whether reduced motion takes the motion from an element: Windows' animation
- * effects are off (or the setting `isMotionReduced` reads) and the element does
- * not carry the `winui-motion-always` class.
- *
- * @param input - The tree's element, and the reduced-motion setting when it is not Windows'.
- * @returns True when the element's animations skip to nothing.
- */
-export function isMotionReducedFor({ node, isMotionReduced = isMotionReducedBySystem }: {
-  node: object;
-  isMotionReduced?: () => boolean;
-}) {
-  return isMotionReduced() && !keepsMotion(node);
-}
-
-function isMotionReducedBySystem() {
-  // No settings (off the UI thread, or no Windows) leaves the motion as asked.
-  try {
-    return !systemSettingsStore().source.animationsEnabled;
-  } catch {
-    return false;
-  }
 }
 
 function isCallable(value: NativeValue): value is (...values: NativeValue[]) => NativeValue {

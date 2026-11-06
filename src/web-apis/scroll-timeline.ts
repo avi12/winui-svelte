@@ -1,7 +1,7 @@
-import { normalizeKeyframes } from "./animations.ts";
-import type { KeyframeInput } from "./animations.ts";
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { defineProperty } from "./install.ts";
+import { normalizeKeyframes } from "./keyframe-input.ts";
+import type { KeyframeInput } from "./keyframe-input.ts";
 import {
   parseAxis,
   parseRangePoint,
@@ -17,7 +17,7 @@ import { linkedTracksOf } from "#src/css/translate/linked-tracks.js";
 import { rangeOffsets } from "#src/css/translate/scroll-link.js";
 import type { LinkedAnimation } from "#src/css/translate/scroll-link.js";
 import { nativeControl } from "#src/renderer/host/control.js";
-import { isMotionReducedFor } from "#src/renderer/host/element-animation.js";
+import { isMotionReducedFor } from "#src/renderer/host/motion-preference.js";
 import { read } from "#src/renderer/host/reflect.js";
 import { ElementNode } from "#src/renderer/tree/dom.js";
 import { isFrameworkElement } from "#src/win2d/element-guard.js";
