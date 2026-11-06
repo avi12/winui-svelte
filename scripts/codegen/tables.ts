@@ -428,7 +428,7 @@ export const lateClasses = [
   {
     winmd: "Microsoft.UI.winmd",
     namespace: "Microsoft.UI.Input",
-    classes: ["InputSystemCursor"]
+    classes: ["InputSystemCursor", "InputKeyboardSource"]
   },
   {
     winmd: COMPONENT_WINMD,
@@ -444,6 +444,11 @@ export const lateClasses = [
     winmd: COMPONENT_WINMD,
     namespace: "Microsoft.UI.Xaml.Hosting",
     classes: ["ElementCompositionPreview"]
+  },
+  {
+    winmd: COMPONENT_WINMD,
+    namespace: "Microsoft.UI.Xaml.Input",
+    classes: ["FocusManager", "FindNextElementOptions"]
   },
   {
     winmd: DEVICES_WINMD,
@@ -1344,6 +1349,10 @@ export const supportEnums: TypeName[] = [
   {
     namespace: "Microsoft.UI.Xaml",
     name: "FocusState"
+  },
+  {
+    namespace: "Microsoft.UI.Xaml.Input",
+    name: "FocusNavigationDirection"
   },
   {
     namespace: "Microsoft.UI.Xaml",

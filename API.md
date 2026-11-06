@@ -34,6 +34,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()` (opt-in; see App lifecycle) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
+| `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
@@ -2802,6 +2803,127 @@ name the events `enableDragEvents` adds
 takes drops, through the handlers a real drop reaches, and resolves with the
 operation the control accepted (`0` when it refused); it sends no input, so an
 app can test its drop handling in a real window
+
+## Input events and focus (`winui-svelte/input`)
+
+The web's pointer, wheel, keyboard and focus events on any element, and focus
+management, over `Microsoft.UI.Xaml.Input`
+Opt-in: nothing is bundled until an app imports it, and importing does no work
+Everything runs on the UI thread
+
+### Events as on the web
+
+```svelte
+<script lang="ts">
+  import { enableInputEvents, setPointerCapture, PointerType } from "winui-svelte/input";
+  import type { KeyboardEvent, PointerEvent } from "winui-svelte/input";
+
+  enableInputEvents();   // once, before the first window
+</script>
+
+<border
+  onpointerdown={(event: PointerEvent) => {
+    setPointerCapture({ control: event.currentTarget, pointerId: event.pointerId });
+    const isPen = event.pointerType === PointerType.pen;
+    console.log(event.clientX, event.clientY, isPen ? event.pressure : 1);
+  }}
+  onpointermove={(event: PointerEvent) => {
+    for (const point of event.getCoalescedEvents()) {
+      console.log(point.x, point.y);
+    }
+  }}
+  onkeydown={(event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+    }
+  }}
+>
+  <text-block>Draw here</text-block>
+</border>
+```
+
+`enableInputEvents()` adds the eleven names to the renderer's event-alias table
+(`src/renderer/host/event-adapters.ts`, the one `enableDragEvents()` fills), so a
+raw element takes them
+A WinUI-named event on the same element (`onpointerpressed`) keeps WinUI's own
+arguments, and so does every component prop: components get no new props
+`onkeydown` is the one name both share; on a raw element it takes the web's
+`KeyboardEvent` once the events are enabled
+
+| Web event | WinUI | Notes |
+|---|---|---|
+| `pointerdown`, `pointerup`, `pointermove` | `PointerPressed`, `PointerReleased`, `PointerMoved` | `pointerId`, `pointerType` (`PointerType.mouse`, `pen`, `touch`; a touchpad is a mouse), `isPrimary`, `pressure`, `tiltX`, `tiltY`, `twist`, `button`, `buttons`, `clientX`, `clientY` (also `offsetX`, `pageX`, `x`), the four modifiers |
+| `pointerenter`, `pointerleave` | `PointerEntered`, `PointerExited` | WinUI bubbles them, the web does not |
+| `pointercancel` | `PointerCanceled` | |
+| `wheel` | `PointerWheelChanged` | `deltaX`, `deltaY` (positive when the wheel turns toward the user), `deltaMode` (always 0, pixels; WinUI gives 120 per notch) |
+| `keydown`, `keyup` | `KeyDown`, `KeyUp` | `key` and `code` mapped from `VirtualKey`, `repeat`, the modifiers read from the keyboard state |
+| `focusin`, `focusout` | `GotFocus`, `LostFocus` | `target`, `currentTarget`; no `relatedTarget` |
+
+`event.getCoalescedEvents()` lists the points the pointer passed since the last
+event, oldest first, as plain field objects (`x`, `y`, `pressure` and the rest)
+`event.preventDefault()` and `stopPropagation()` both mark the WinUI event
+handled, so it goes no further up the tree and the control skips its own
+handling (a handled `keydown` for Tab does not move focus)
+`event.target` is `originalSource` (the element the event started at) and
+`event.currentTarget` the element the handler is written on
+
+Limits:
+
+- `key` and `code` assume the US layout, because WinUI's `VirtualKey` has no
+  punctuation keys (they are `Unidentified`) and Shift does not turn `1` into
+  `!`; read text from a `TextBox`, not from `keydown`
+- `isComposing` is always false: WinUI sends input method text to the text
+  controls, not to `KeyDown`
+- `mouse*` and `click` are not provided; use the pointer names, or the
+  `click` prop of a component
+- `getCoalescedEvents` entries are field objects, not full events
+
+### Pointer capture
+
+```ts
+setPointerCapture({ control, pointerId });     // returns true when WinUI took it
+hasPointerCapture({ control, pointerId });
+releasePointerCapture({ control, pointerId });
+```
+
+WinUI captures a `Pointer` object where the web captures an id, so the element
+remembers every pointer its input events carried; capturing an id that has not
+reached the element yet throws
+Call it from a `pointerdown` handler, as on the web
+
+The Canvas 2D of `winui-svelte/win2d/context-2d` reads the same fields (one
+implementation), so a drawing library on a canvas sees the same `pointerType`,
+`pressure`, tilt and coalesced events
+
+### Focus
+
+```svelte
+<script lang="ts">
+  import { activeElement, moveFocus, trapFocus } from "winui-svelte/input";
+  import { FocusNavigationDirection } from "winui-svelte/enums";
+
+  const active = activeElement();   // active.current: the focused FrameworkElement or null
+</script>
+
+<StackPanel {@attach trapFocus()}>
+  <Button onclick={sender => moveFocus({ direction: FocusNavigationDirection.Down, within: sender })}>
+    Down
+  </Button>
+</StackPanel>
+```
+
+| API | Web | Notes |
+|---|---|---|
+| `activeElement().current` | `document.activeElement` | reactive; kept by `FocusManager`'s `GotFocus` and `LostFocus`, so it is null until focus first moves after the call; call it while a component initialises |
+| `moveFocus({ direction, within })` | none | `Up`, `Down`, `Left`, `Right` over XY focus navigation; `within` is any loaded element of the window; WinUI refuses `Next` and `Previous` in a desktop app, so those throw |
+| `trapFocus({ shouldFocusFirst })` | a focus trap | an attachment: sets `TabFocusNavigation` to `Cycle` (Tab after the last control goes to the first, Shift+Tab before the first to the last), moves focus in when the element is shown, gives it back to where it was when the element goes |
+| `FocusNavigationDirection` | none | in `winui-svelte/enums` |
+| `focusElement` | `element.focus()` | in `winui-svelte`, see Reactive readers of an element |
+
+`FocusManager.GetFocusedElement()` without a window returns nothing in a desktop
+app, which is why `moveFocus` takes `within` and `trapFocus` reads the focus by
+the element's own window
+A trap cannot stop focus leaving through the title bar or another window
 
 ## Web APIs (`winui-svelte/web-apis`)
 
