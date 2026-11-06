@@ -1,9 +1,10 @@
 import { appDataFolder, AppDataLocation } from "./app-data-folder.ts";
 import type { AppDataEnvironment } from "./app-data-folder.ts";
+import { atomicFile } from "./atomic-file.ts";
+import type { StorageFile } from "./atomic-file.ts";
 import { DomErrorName } from "./dom-exception.ts";
 import { defineProperty } from "./install.ts";
 import { startTimer } from "#src/window/timers.js";
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
 
@@ -16,40 +17,6 @@ const QUOTA_CHARACTERS = QUOTA_MEBIBYTES * BYTES_PER_MEBIBYTE;
 const STORAGE_EVENT = "storage";
 
 const storedItems = z.record(z.string(), z.string());
-
-/** Where `localStorage` is kept; the tests give a stand-in. */
-export interface StorageFile {
-  /** The stored text, or undefined when there is none. */
-  read(): string | undefined;
-
-  /** Replaces the stored text; a reader sees the old text or the new, never half. */
-  write(text: string): void;
-}
-
-/**
- * A file that is replaced atomically: the text goes to a sibling file that is
- * then renamed over the target.
- *
- * @param location - The file's path; its folder is made on the first write.
- * @returns The storage file.
- */
-export function atomicFile(location: string) {
-  return {
-    read() {
-      try {
-        return readFileSync(location, "utf8");
-      } catch {
-        return undefined;
-      }
-    },
-    write(text) {
-      const swap = `${location}.swap`;
-      mkdirSync(path.dirname(location), { recursive: true });
-      writeFileSync(swap, text);
-      renameSync(swap, location);
-    }
-  } satisfies StorageFile;
-}
 
 /** Runs a callback after a delay, and gives back the way to cancel it. */
 export type Schedule = (options: {
