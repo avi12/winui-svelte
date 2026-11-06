@@ -2596,6 +2596,44 @@ const isConfirmed = pressed === NoticeButton.YES;
   A box cannot be dismissed from a test without input, so the tests fake the
   call; the one real call they make passes a window handle that does not
   exist, which Windows refuses at once without showing anything
+### Taskbar button (`winui-svelte/window/taskbar`)
+
+`handle.taskbar` is the window's button on the taskbar: a progress bar, an
+overlay icon and flashing, over `ITaskbarList3` and `FlashWindowEx`
+No package identity is needed; call it on the UI thread
+The shell calls need the real desktop shell, so a window on a desktop of its
+own gets `E_NOTIMPL`; a window that has no taskbar button (a background or
+tray window) accepts the calls and shows nothing
+
+```ts
+import { TaskbarProgressState } from "winui-svelte/window/taskbar";
+
+handle.taskbar.setProgress({ state: TaskbarProgressState.NORMAL, value: 0.4 });
+handle.taskbar.setOverlayBadge({ count: 3 });
+handle.taskbar.flash({ count: 2 });
+```
+
+- `setProgress({ state, value })`: `state` is a `TaskbarProgressState`
+  (`none`, `indeterminate`, `normal`, `error`, `paused`); `value` is 0 to 1,
+  clamped, and ignored for `none` and `indeterminate`; a value that is not a
+  number is a `TypeError`
+- `setOverlayIcon({ icon, description })`: `icon` is the path of an .ico file
+  or `null` to remove it; `description` is what a screen reader says
+- `setOverlayBadge({ count })` or `setOverlayBadge({ glyph })`: draws the badge
+  as pixels (a disc with the digits, or the `BadgeGlyph`'s colour and mark) at
+  the system's small icon size; `clearOverlay()` takes any overlay away
+- `flash({ count, until })`: `until` is a `TaskbarFlashUntil` (`count`, the
+  default, flashes `count` times, 3 by default; `foreground` until the window is
+  brought forward; `stopped` until `stopFlashing()`)
+- `createTaskbarButton(hwnd)` and `TaskbarButton` take a window handle
+  (`appWindow.id.value`) directly; `taskbarBadgeBackend(button)` is the
+  `fallback` for `installBadging`
+- `examples/taskbar`: a download bar mirrored on the button and an unread count
+- `ITaskbarList3` has no WinRT form, so its methods are declared by hand at
+  their vtable slots over dynwinrt's `DynComUnsafe`, as the share interop is
+- The shell offers no way to read a bar or an overlay back, so the window test
+  (`test/taskbar.test.ts`, on the default desktop with an off-screen window)
+  checks that every call returns `S_OK`
 
 ### Localization: what works unpackaged
 
@@ -3093,8 +3131,11 @@ silent failure
   count is a `TypeError`
   WinUI-only: `navigator.setAppBadgeGlyph(glyph)` with a `BadgeGlyph`
   (`alert`, `available`, `away`, `busy`, `newMessage` and so on)
-  The unpackaged fallback (an overlay icon through `ITaskbarList3`) is not
-  built; without identity Windows refuses and the call rejects
+  Without identity Windows refuses and the call rejects, unless
+  `installBadging({ fallback: taskbarBadgeBackend(handle.taskbar) })` is given:
+  the badge is then drawn as an overlay icon on that window's taskbar button
+  (a red disc with the count, 99+ above 99, or the glyph's colour and mark),
+  see "Taskbar button"
 - `installLaunch({ initialArguments })` defines `launchQueue` (a `LaunchQueue`) with `setConsumer`
   The start's command line is the first launch; each later copy's is handed
   over with `launchQueue.enqueueActivation(activation)` (WinUI-only), which

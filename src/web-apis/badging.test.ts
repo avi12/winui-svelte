@@ -71,3 +71,20 @@ test("uninstall takes the members away", () => {
   uninstall();
   assert.equal("setAppBadge" in navigator, false);
 });
+
+test("a refusing Windows draws the badge through the fallback", async () => {
+  const refusing = fakeBackend({ isFailing: true });
+  const spare = fakeBackend();
+  const uninstall = installBadging({
+    backend: refusing.backend,
+    fallback: spare.backend
+  });
+  try {
+    await navigator.setAppBadge(2);
+    await navigator.setAppBadgeGlyph("busy");
+    await navigator.clearAppBadge();
+    assert.deepEqual(spare.calls, ["count 2", "glyph busy", "clear"]);
+  } finally {
+    uninstall();
+  }
+});

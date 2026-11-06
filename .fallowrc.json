@@ -155,6 +155,7 @@
     "examples/window-frame/main.ts",
     "examples/window-swap/main.ts",
     "examples/tray/main.ts",
+    "examples/taskbar/main.ts",
     "examples/gallery/main.ts",
     "examples/todo/main.ts",
     "examples/settings/main.ts",

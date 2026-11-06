@@ -4,6 +4,8 @@ import { dockWindow } from "./dock.ts";
 import { scaleOf } from "./native.ts";
 import type { OpenFilePickerOptions, PickerOptions, SaveFilePickerOptions } from "./pickers.ts";
 import { pickFile, pickFilePaths, pickFolder, saveFile } from "./pickers.ts";
+import { createTaskbarButton } from "./taskbar.ts";
+import type { TaskbarButton } from "./taskbar.ts";
 import { WindowGeometry } from "#src/web-apis/window-geometry.js";
 import type { Window } from "#src/winui.js";
 import {
@@ -28,6 +30,7 @@ export class WindowHandle {
    */
   readonly geometry: WindowGeometry;
   private isClosed = false;
+  private taskbarButton: TaskbarButton | null = null;
   private closeGuard = () => false;
 
   constructor(window: Window) {
@@ -36,6 +39,15 @@ export class WindowHandle {
     window.onClosed(() => {
       this.isClosed = true;
     });
+  }
+
+  /**
+   * The window's button on the taskbar: a progress bar, an overlay icon and
+   * flashing. Needs no package identity.
+   */
+  get taskbar() {
+    this.taskbarButton ??= createTaskbarButton(this.appWindow.id.value);
+    return this.taskbarButton;
   }
 
   /** The native AppWindow: position, size, icon and the rest of the windowing API. */
