@@ -80,6 +80,7 @@
     "src/settings/SettingsCard.d.svelte.ts",
     "src/settings/SettingsExpander.d.svelte.ts",
     "examples/form/main.ts",
+    "examples/accessibility/main.ts",
     "examples/fonts/main.ts",
     "examples/pill-ground/main.ts",
     "**/*.test.ts",

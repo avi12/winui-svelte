@@ -1,5 +1,5 @@
 import { jsonSchema } from "#src/messaging/json.js";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import path from "node:path";
 import { z } from "zod";
 
@@ -103,4 +103,74 @@ export function names({ pid, pattern }: {
   });
   const listed = z.union([z.array(z.string()), z.string().transform(single => [single])]).parse(found);
   return listed.filter(name => pattern.test(name));
+}
+
+const NOTIFICATIONS_SCRIPT = path.join(import.meta.dirname, "..", "examples", "harness", "uia-notifications.ps1");
+const READY_LINE = "ready";
+
+const notificationSchema = z.array(
+  z.object({
+    kind: z.number(),
+    processing: z.number(),
+    text: z.string(),
+    activityId: z.string()
+  })
+);
+
+/**
+ * Listens on the example's window for UI Automation notifications with this activity id
+ * (what Narrator hears from `RaiseNotificationEvent`) for a while. `ready`
+ * settles once the listener is subscribed: make the example announce after it.
+ */
+export function listenForNotifications({ pid, activityId, milliseconds }: {
+  pid: number;
+  activityId: string;
+  milliseconds: number;
+}) {
+  const child = spawn("powershell.exe", [
+    "-MTA",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    NOTIFICATIONS_SCRIPT,
+    "-ProcessId",
+    String(pid),
+    "-ActivityId",
+    activityId,
+    "-Milliseconds",
+    String(milliseconds)
+  ], {
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+  let output = "";
+  let errors = "";
+  const ready = new Promise<void>(resolve => {
+    child.stdout.on("data", (chunk: Buffer) => {
+      output += chunk.toString("utf8");
+      const isReady = output.includes(READY_LINE);
+      if (isReady) {
+        resolve();
+      }
+    });
+  });
+  child.stderr.on("data", (chunk: Buffer) => {
+    errors += chunk.toString("utf8");
+  });
+  const notifications = new Promise<z.infer<typeof notificationSchema>>((resolve, reject) => {
+    child.on("close", code => {
+      const isFailed = code !== 0;
+      if (isFailed) {
+        reject(new Error(`uia notifications failed: ${errors.trim() || output.trim()}`));
+        return;
+      }
+
+      const json = output.slice(output.indexOf(READY_LINE) + READY_LINE.length).trim();
+      resolve(notificationSchema.parse(JSON.parse(json)));
+    });
+  });
+  return {
+    ready,
+    notifications
+  };
 }

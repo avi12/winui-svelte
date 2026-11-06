@@ -77,6 +77,10 @@ const STEPS: Step[] = [
   {
     name: "gen:css-data:check",
     needs: []
+  },
+  {
+    name: "gen:accessibility-rules:check",
+    needs: []
   }
 ];
 

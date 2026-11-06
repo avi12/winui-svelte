@@ -43,6 +43,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/notice` | `src/notice/index.ts` | `showNotice()`, `NoticeIcon`, `NoticeButtons`, `NoticeButton`: a message box with no window or app (opt-in; see Notice with no app) |
 | `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
 | `winui-svelte/store` | `src/store/index.ts` | `getAppLicense`, `watchLicense`, `checkForUpdates`, `watchPackages`, `getStartupTask`, `getPackageInfo`: the Store and package APIs, answering `hasPackage: false` outside a package (opt-in) |
+| `winui-svelte/accessibility`, `/accessibility/audit` | `src/accessibility/index.ts`, `src/accessibility/audit/index.ts` | `announce`, `liveRegion`, `LivePriority`; `auditAccessibility`, `accessibilityRules` (opt-in; see Accessibility) |
 | `winui-svelte/devices` | `src/devices/index.ts` | device enumeration, input devices, Bluetooth, printers, power, network, display, audio, gamepads and sensors, each also at `winui-svelte/devices/<area>` (opt-in; see Windows devices) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
@@ -3616,6 +3617,82 @@ the five properties
 - Extra: `commitButtonText` in the options
 - `ContactChooser` is the one interface the real picker (`windowsContactChooser`)
   and the tests implement
+
+## Accessibility (`winui-svelte/accessibility`)
+
+Tell a screen reader what happened, and check the window for what it would
+trip on; each is opt-in, and the audit is for development only
+
+```svelte
+<script lang="ts">
+  import { announce, LivePriority, liveRegion } from "winui-svelte/accessibility";
+  import { elementRef } from "winui-svelte";
+  import { TextBlock } from "winui-svelte/components";
+
+  const status = elementRef<TextBlock>();
+</script>
+
+<!-- a live region: a change of its text is spoken -->
+<TextBlock {@attach liveRegion({ priority: LivePriority.POLITE })} {@attach status.attach}>{saved}</TextBlock>
+```
+
+```ts
+announce({ message: "Saved", element: status.current, priority: LivePriority.POLITE });
+```
+
+| Web API | Here |
+|---|---|
+| `aria-live="polite"` and `role="status"` | `LivePriority.POLITE`: waits for the user, a newer message replaces an older one |
+| `aria-live="assertive"` and `role="alert"` | `LivePriority.ASSERTIVE`: interrupts |
+| `aria-live="off"` | `LivePriority.OFF`: says nothing |
+| writing text into a live region | `announce({ message, element, priority })`: `AutomationPeer.RaiseNotificationEvent` (kind Other; polite is `MostRecent`, assertive is `ImportantMostRecent`) |
+| the `aria-live` attribute | `liveRegion({ priority })`: `AutomationProperties.LiveSetting` of the element |
+
+- `FormField` marks its error text with the same `liveRegion`, so a form error
+  is spoken when it appears
+- `announce` raises the notification from `element`, or from the nearest
+  element above it that has an automation peer (a layout panel has none; a
+  `TextBlock` does), so keep a small status element for it
+- `LivePriority` is also in `winui-svelte/enums`
+
+### Audit (`winui-svelte/accessibility/audit`)
+
+`auditAccessibility(root)` walks the visual tree of a laid-out window and returns
+typed findings; call it from `onloaded` or a button in development, and never
+import the entry in a production build
+
+```ts
+import { auditAccessibility } from "winui-svelte/accessibility/audit";
+
+for (const finding of auditAccessibility(content)) {
+  console.warn(`${finding.path}: ${finding.message} - ${finding.suggestion}`);
+}
+```
+
+| Rule id | Applies to | Finds |
+|---|---|---|
+| `unnamed-button` | buttons | no accessible name (an icon-only button with no `automationName`) |
+| `unlabeled-input` | text boxes, combo boxes, sliders, check boxes | no name, header or `automationLabeledBy` |
+| `duplicate-access-key` | interactive controls | the same `accessKey` on two elements |
+| `zero-size-focusable` | interactive controls | takes focus but has no width or height |
+| `unreachable-by-keyboard` | interactive controls | not a tab stop and no access key or keyboard accelerator |
+| `low-contrast-text` | text, buttons, inputs | below WCAG AA (4.5 to 1, 3 to 1 for large text) on a solid background the tree can resolve |
+
+- The name is what UI Automation computes (`AutomationPeer.GetName`), so it
+  counts `automationName`, a button's text, a header and a label alike
+- Contrast is measured only where the foreground is a solid brush and a solid
+  background lies behind the text (a translucent one is mixed with it);
+  gradients, acrylic and images are left alone
+- The rules are one table, `accessibilityRules`; `ruleDescriptions()` is the
+  table without its predicates, and `winui-svelte/accessibility/rules.json`
+  is the same as JSON for an editor (`pnpm gen:accessibility-rules`, checked by
+  `pnpm gen:accessibility-rules:check` in the lint gate)
+- `auditTree({ root, host })` runs the rules over any tree a host describes,
+  which is how the unit tests run them without WinUI
+- `examples/accessibility` holds a failing and a fixed form;
+  `test/accessibility.test.ts` audits it in a real window and hears
+  `announce` through a UI Automation event handler, and the gallery page
+  "Live regions and the audit" shows both
 
 ## Forms (`winui-svelte/forms`)
 

@@ -1,3 +1,4 @@
+import AccessibilityLivePage from "./pages/AccessibilityLivePage.svelte";
 import AccessibilityPage from "./pages/AccessibilityPage.svelte";
 import AnimationPage from "./pages/AnimationPage.svelte";
 import CssLayoutPage from "./pages/CssLayoutPage.svelte";
@@ -65,6 +66,11 @@ export const GALLERY_PAGES: readonly GalleryPage[] = [
     key: "accessibility",
     title: "Accessibility and theming",
     page: AccessibilityPage
+  },
+  {
+    key: "accessibility-live",
+    title: "Live regions and the audit",
+    page: AccessibilityLivePage
   },
   {
     key: "theming",
