@@ -17,6 +17,7 @@ import { SURFACE_MEMBERS, surfaceGroups } from "./surface-properties.ts";
 import { CONTROL_MEMBERS, controlGroups } from "./text-control-properties.ts";
 import { transformGroups } from "./transform-properties.ts";
 import type { Rule } from "./types.ts";
+import { VIEW_TRANSITION_MEMBERS, viewTransitionGroups } from "./view-transition-properties.ts";
 import { VISUAL_EFFECT_MEMBERS, visualEffectGroups } from "./visual-effect-properties.ts";
 
 /**
@@ -73,6 +74,12 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     subpath: "/scroll-timeline",
     exportName: "scrollTimelineGroups",
     groups: scrollTimelineGroups
+  },
+  {
+    isNeededBy: usesProperties(VIEW_TRANSITION_MEMBERS),
+    subpath: "/view-transition",
+    exportName: "viewTransitionGroups",
+    groups: viewTransitionGroups
   },
   {
     isNeededBy: usesProperties(EFFECT_MEMBERS),

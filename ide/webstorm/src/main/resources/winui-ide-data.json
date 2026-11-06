@@ -3300,6 +3300,7 @@
     {"name":"CommandBarLabelPosition","isNumeric":true,"members":[{"name":"Default","value":0,"description":"The placement and visibility of the app bar button's label is determined by the value of the CommandBar.DefaultLabelPosition property."},{"name":"Collapsed","value":1,"description":"The app bar button's label is always hidden whether the command bar is open or closed."}]},
     {"name":"CommandBarOverflowButtonVisibility","isNumeric":true,"members":[{"name":"Auto","value":0,"description":"The overflow button automatically hides when there are no secondary commands and the closed state of the CommandBar is the same as the open state."},{"name":"Visible","value":1,"description":"The overflow button is always shown."},{"name":"Collapsed","value":2,"description":"The overflow button is never shown."}]},
     {"name":"CompositionColorSpace","isNumeric":true,"members":[{"name":"Auto","value":0,"description":"Use the default color space for interpolation."},{"name":"Hsl","value":1,"description":"Use the HSL color space for interpolation."},{"name":"Rgb","value":2,"description":"Use the ARGB color space for interpolation."},{"name":"HslLinear","value":3,"description":"Use the linear HSL color space for interpolation."},{"name":"RgbLinear","value":4,"description":"Use the linear ARGB color space for interpolation."}]},
+    {"name":"ConnectedAnimationKind","isNumeric":false,"members":[{"name":"GRAVITY","value":"gravity"},{"name":"DIRECT","value":"direct"},{"name":"BASIC","value":"basic"}]},
     {"name":"ContentDialogButton","isNumeric":true,"members":[{"name":"None","value":0,"description":"No button is specified as the default."},{"name":"Primary","value":1,"description":"The primary button is the default."},{"name":"Secondary","value":2,"description":"The secondary button is the default."},{"name":"Close","value":3,"description":"The close button is the default."}]},
     {"name":"ContentDialogResult","isNumeric":true,"members":[{"name":"None","value":0,"description":"No button was tapped."},{"name":"Primary","value":1,"description":"The primary button was tapped by the user."},{"name":"Secondary","value":2,"description":"The secondary button was tapped by the user."}]},
     {"name":"CookieSameSite","isNumeric":false,"members":[{"name":"NONE","value":"none"},{"name":"LAX","value":"lax"},{"name":"STRICT","value":"strict"}]},
@@ -3636,6 +3637,7 @@
     "view-timeline-axis",
     "view-timeline-inset",
     "view-timeline-name",
+    "view-transition-name",
     "visibility",
     "white-space",
     "width",
@@ -3700,7 +3702,8 @@
     {"name":"text-indent","reason":"WinUI has no text indent"},
     {"name":"top","reason":"is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot. A <canvas> child places by canvas-left and canvas-top"},
     {"name":"transform","reason":"a transform is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot"},
-    {"name":"transition","reason":"a transition is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot"}
+    {"name":"transition","reason":"a transition is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot"},
+    {"name":"view-transition-class","reason":"the picture a WinUI connected animation flies is no element a rule can match; view-transition-name pairs the elements"}
   ],
   "materials": [
     {"name":"mica","light":"#f3f3f3","dark":"#202020","isTranslucent":false},

@@ -42,6 +42,7 @@ const UNSUPPORTED_REASONS: ReadonlyMap<string, string> = new Map([
   ["text-indent", "WinUI has no text indent"],
   ["caret-color", "the caret follows Foreground"],
   ["text-box-trim", "WinUI cannot trim the line box"],
+  ["view-transition-class", "the picture a WinUI connected animation flies is no element a rule can match; view-transition-name pairs the elements"],
   ["aspect-ratio", `a ratio ${OPT_IN}`],
   ["clip-path", `a clip ${OPT_IN}`],
   ["mix-blend-mode", `a blend mode ${OPT_IN}`],

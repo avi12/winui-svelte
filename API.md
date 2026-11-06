@@ -17,6 +17,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/state` | `src/state/index.ts` | `createHostChannel()` (its `messaging` is the typed link), `hostState()`, `StateProtocol`, the transports (stdio, MessagePort, in-memory), `diff` / `applyOps` (see `src/state/README.md`) |
 | `winui-svelte/host` | `src/renderer/host/host.ts` | `renderer`, the renderer WinUI controls are built through (`mountControl` makes it the active one), and the mount-target plumbing below; not for app code |
 | `winui-svelte/scroll-timeline` | `src/web-apis/scroll-timeline.ts` | `installScrollTimeline()`: `ScrollTimeline`, `ViewTimeline` and `element.animate(keyframes, { timeline })` over Composition (the CSS side is `winui-svelte/css/scroll-timeline`, which a sheet that uses `animation-timeline` imports) |
+| `winui-svelte/view-transitions` | `src/web-apis/view-transitions.ts` | `installViewTransitions()`: `document.startViewTransition` and `ViewTransition` over WinUI's connected animations (the CSS side is `winui-svelte/css/view-transition`, which a sheet or style attribute that sets `view-transition-name` imports) |
 | `winui-svelte/element-animation` | `src/renderer/host/element-animation.ts` | `enableElementAnimation()`: what Svelte's `transition:`, `in:`, `out:`, `animate:` and `svelte/motion` ask of an element, on WinUI controls (the Vite plugin calls it from a component that uses them; otherwise not bundled) |
 | `winui-svelte/attached-owners` | `src/components/attached-owners.ts` | `preloadAttachedOwners(names)`: loads the modules attached properties (`canvasLeft`, `gridRow`) are written through (the Vite plugin calls it from a component whose markup or script names one, so the property is set with the control; a prop named nowhere, built from a computed key, needs `await preloadAttachedOwners(["Canvas"])` first, or its control throws) |
 | `winui-svelte/settings` | `src/settings/index.ts` | `SettingsCard`, `SettingsExpander`: Fluent settings cards after the Community Toolkit's (opt-in) |
@@ -1353,7 +1354,7 @@ const vertical: Orientation = 1;
 | A path geometry (`GeometryInput`, on `PathIcon` and `Path`) | Path Markup Syntax text or a `Geometry` | `data="M0,0 L10,10"` |
 | A font family (`FontFamilyInput`) | a family name or a `FontFamily` | `"Segoe UI Variable"` |
 | A grid length (`GridLengthInput`) | pixels, or `GridLengthText` as XAML writes it | `"Auto"`, `"2*"`, `"120"` |
-| The package's own | `Backdrop`, `WindowTheme`, `TitleBarHeight`, `WindowPresentation`, `PickerLocation`, `NavigationCacheMode`, `NavigationMode`, `MoveDirection`, `XamlKind`, `FocusKind`, `TrayGesture`, `TrayBalloonIcon` | `backdrop={Backdrop.mica}` |
+| The package's own | `Backdrop`, `WindowTheme`, `TitleBarHeight`, `WindowPresentation`, `PickerLocation`, `NavigationCacheMode`, `NavigationMode`, `MoveDirection`, `XamlKind`, `FocusKind`, `TrayGesture`, `TrayBalloonIcon`, `ConnectedAnimationKind` | `backdrop={Backdrop.mica}` |
 
 A WinUI enum's members keep WinUI's names and case (`"Minimal"`, not
 `"minimal"`), as the metadata and the docs have them; the package's own sets
@@ -3342,6 +3343,7 @@ needs
 | `ResizeObserver`, `IntersectionObserver`, `MutationObserver` | `winui-svelte/web-apis/observers` | web plus extras | none | done |
 | `element.animate()`, `Animation`, `KeyframeEffect` | `winui-svelte/web-apis/animations` | web plus extras | none | done |
 | `ScrollTimeline`, `ViewTimeline`, `element.animate(keyframes, { timeline })` | `winui-svelte/scroll-timeline` | web | none | done |
+| `document.startViewTransition`, `ViewTransition`, `view-transition-name` | `winui-svelte/view-transitions` | web plus extras | none | done |
 | `navigator.mediaDevices` (`getUserMedia`, `getDisplayMedia`, `enumerateDevices`), `MediaStream`, `MediaRecorder` | `winui-svelte/web-apis/media-devices` | web plus extras | none (a camera or microphone needs the Windows privacy switch on) | done |
 | `speechSynthesis`, `SpeechSynthesisUtterance`, `SpeechRecognition` (SSML, silences, scenario, phrases) | `winui-svelte/web-apis/speech` | web plus extras | none | done |
 | `navigator.mediaSession`, `MediaMetadata` | `winui-svelte/web-apis/media-session` | web plus extras | none | done |
@@ -3824,6 +3826,66 @@ whether it was installed
   back: `Visual.Opacity` stays at its resting value (the pixels are what shows)
 - Not covered: `getAnimations()` for these, `pause()`, `play()` and
   `currentTime` of the animation, and `timeline-scope`
+
+#### View transitions (`winui-svelte/view-transitions`)
+
+`installViewTransitions()` defines `document.startViewTransition` and
+`ViewTransition` over WinUI's connected animations
+An element takes part through `view-transition-name` in a sheet or a style
+attribute (`winui-svelte/css/view-transition`, see `src/css/API.md`): before
+the update runs, each named element is prepared under its name
+(`ConnectedAnimationService.PrepareToAnimate`); after it, the element with the
+same name starts that animation (`TryStart`), and WinUI flies a picture of the
+old element to the new one
+
+```svelte
+<script lang="ts">
+  import { installViewTransitions } from "winui-svelte/view-transitions";
+
+  installViewTransitions();
+  let selected = $state<Photo | null>(null);
+
+  function open(photo: Photo) {
+    document.startViewTransition(() => {
+      selected = photo;
+    });
+  }
+</script>
+
+{#if selected}
+  <border class="hero" style="view-transition-name: photo-{selected.id}" />
+{:else}
+  {#each photos as photo (photo.id)}
+    <border style="view-transition-name: photo-{photo.id}" />
+  {/each}
+{/if}
+```
+
+- `startViewTransition(update)` or `startViewTransition({ update, types })`
+  returns a `ViewTransition` with `updateCallbackDone`, `ready`, `finished`,
+  `types` and `skipTransition()`; the update may return a promise, and runs in
+  a microtask after the old elements are prepared
+- After the update the transition waits one turn of the event loop for Svelte
+  to apply it, then pairs the names; `ready` resolves once the animations
+  start, `finished` once WinUI reports each one completed
+- Like the web: a name two elements share skips the transition (`ready`
+  rejects with an `InvalidStateError`), `skipTransition()` rejects `ready`
+  with an `AbortError` and lets `finished` follow the update, an update that
+  throws rejects all three promises with its error, and a new transition skips
+  the one still running
+- Extras (WinUI only): `configuration` in the options object picks the
+  motion, a `ConnectedAnimationKind` from `winui-svelte/enums`: `gravity`
+  (WinUI's default, for going forward), `direct` (for going back) or `basic`
+- Limits: only a name both states have moves; a name only the old state has
+  gets no exit and one only the new state has no entrance (the web would fade
+  them), and there is no cross-fade of the whole window (the web's `root`)
+  An element that keeps its name and stays in the tree does not move: WinUI
+  will not animate an element to itself (`implicitLayoutAnimation` slides
+  children the layout moves)
+  The duration and easing are WinUI's (`ConnectedAnimationService`), not CSS;
+  the `::view-transition-*` pseudo-elements, `view-transition-class` and
+  `:active-view-transition-type()` have no counterpart, and `types` is carried
+  but read by nothing
 
 ### Media devices (`winui-svelte/web-apis/media-devices`)
 
@@ -5016,7 +5078,7 @@ entry point is named nowhere in the docs
 | `releaseFragment`, `rootControl`, `watchRoot`, `unwatchRoot`, `swapControl` | `winui-svelte/host` | the renderer's mount-target plumbing: release what nodes hold, find the root, watch and unwatch it, replace a control in place |
 | `classNameOf` | `winui-svelte/host` | the class name (`ListView`) of a control, from the tag it was registered under, so it holds when a minifier renames classes |
 | `createCssNative`, `installCssRuntime`, `unregisterStyleSheet`, `textTransforms` | `winui-svelte/css` | the CSS runtime's WinUI boundary, its installer, removal of a stylesheet, and the text each element's `text-transform` shows (the renderer reads it) |
-| `animationGroups`, `effectGroups`, `visualEffectGroups`, `clipGroups`, `cursorGroups`, `environmentGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `scrollTimelineGroups`, `surfaceGroups`, `transformGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
+| `animationGroups`, `effectGroups`, `visualEffectGroups`, `clipGroups`, `cursorGroups`, `environmentGroups`, `gradientGroups`, `containerGroups`, `compatGroups`, `focusGroups`, `positionGroups`, `queryGroups`, `resourceGroups`, `scrollTimelineGroups`, `surfaceGroups`, `transformGroups`, `viewTransitionGroups` | `winui-svelte/css/*` | the property groups each opt-in subpath adds |
 | `SHEET_SUFFIX`, `SheetError` | `winui-svelte/css/sheet-module` | the module-name suffix of a compiled stylesheet; a stylesheet WinUI cannot say |
 | `translateComponent` | `winui-svelte/css/sheet-module` | the build's translation of a component's `<style>`, which the validator and the Vite plugin share |
 | `unusedSelectorMessages` | `winui-svelte/css/sheet-module` | the messages of Svelte's unused-selector warnings for a component read with its instances as elements, which `winuiWarningFilter` keeps |

@@ -229,6 +229,10 @@
       "types": "./dist/css/cursor.d.ts",
       "default": "./dist/css/cursor.js"
     },
+    "./css/view-transition": {
+      "types": "./dist/css/view-transition.d.ts",
+      "default": "./dist/css/view-transition.js"
+    },
     "./css/clip": {
       "types": "./dist/css/clip.d.ts",
       "default": "./dist/css/clip.js"
@@ -391,6 +395,10 @@
     "./scroll-timeline": {
       "types": "./dist/web-apis/scroll-timeline.d.ts",
       "default": "./dist/web-apis/scroll-timeline.js"
+    },
+    "./view-transitions": {
+      "types": "./dist/web-apis/view-transitions.d.ts",
+      "default": "./dist/web-apis/view-transitions.js"
     },
     "./web-apis/animations": {
       "types": "./dist/web-apis/animations.d.ts",
