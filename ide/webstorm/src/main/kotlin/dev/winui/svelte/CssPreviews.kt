@@ -82,7 +82,8 @@ internal object CssPreviews {
       val pair = Contrast.ofGroup(group) ?: return@flatMap emptyList()
       val html =
         ColorPreviewHtml.sample(pair) +
-          "<p><b>${pair.label}</b> between <code>${pair.foreground.value}</code> and <code>${pair.background.value}</code></p>" +
+          "<p><b>${pair.label}</b> between <code>${pair.foreground.value}</code> " +
+          "and <code>${pair.background.value}</code></p>" +
           "<p>AA needs 4.5:1 (3:1 for large text), AAA needs 7:1</p>"
       listOf(pair.foreground, pair.background).map { declaration ->
         val isForeground = declaration == pair.foreground

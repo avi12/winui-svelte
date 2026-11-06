@@ -24,7 +24,8 @@ private const val INLAY_GAP = 3
 class CssPreviewInlayProvider : InlayHintsProvider<NoSettings> {
   override val key = SettingsKey<NoSettings>("winui.svelte.css.previews")
   override val name = "winui-svelte CSS previews"
-  override val previewText = "<style>\n.a { color: #767676; background: #fff; background-image: linear-gradient(red, blue) }\n</style>"
+  override val previewText =
+    "<style>\n.a { color: #767676; background: #fff; background-image: linear-gradient(red, blue) }\n</style>"
 
   override fun createSettings() = NoSettings()
 

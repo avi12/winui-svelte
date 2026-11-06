@@ -15,7 +15,8 @@ internal data class DeclarationMeaning(
  */
 internal object DeclarationInfo {
   private const val MEDIA = "@media"
-  private const val RULE_SCOPE = "the rule `%s` is written against the component's markup, scoped by the component's own class"
+  private const val RULE_SCOPE =
+    "the rule `%s` is written against the component's markup, scoped by the component's own class"
   private const val TAG_SCOPE = "a style written on the tag applies to this element only"
 
   fun of(
