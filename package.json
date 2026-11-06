@@ -259,6 +259,10 @@
       "svelte": "./dist/window/index.js",
       "default": "./dist/window/index.js"
     },
+    "./window/taskbar": {
+      "types": "./dist/window/taskbar.d.ts",
+      "default": "./dist/window/taskbar.js"
+    },
     "./devices": {
       "types": "./dist/devices/index.d.ts",
       "svelte": "./dist/devices/index.js",
