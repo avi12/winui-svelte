@@ -4,3 +4,7 @@ export type { Activation, SingleInstance, SingleInstanceOptions } from "./single
 export { ensureSingleInstance } from "./single-instance.ts";
 export type { LaunchOptions } from "./activate.ts";
 export { activateInstance, activateOrLaunch, launchApp } from "./activate.ts";
+export type { RelaunchOptions } from "./relaunch.ts";
+export { relaunch } from "./relaunch.ts";
+export type { RestartAfterCrashOptions } from "./restart-after-crash.ts";
+export { restartAfterCrash, RestartCondition } from "./restart-after-crash.ts";

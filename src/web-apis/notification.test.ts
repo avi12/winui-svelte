@@ -6,19 +6,24 @@ import { test } from "node:test";
 // kind (an option, an event field and a method). Real toasts are for
 // test/web-apis.test.ts.
 
-const { installNotification, Notification, NotificationClickEvent } = await import("./notification.ts");
+const { installNotification, Notification, NotificationClickEvent, notificationRegistration, TimestampTrigger } = await import("./notification.ts");
 const { installPermissions, Permissions } = await import("./permissions.ts");
 const { installWebApis } = await import("./install.ts");
 
 type Backend = NonNullable<Parameters<typeof installNotification>[0]>["backend"];
 
-function fakeBackend({ isEnabled = true, isSupported = true, isRegisterFailing = false } = {}) {
+function fakeBackend({ isEnabled = true, isSupported = true, isRegisterFailing = false, canSchedule = false } = {}) {
   const calls: string[] = [];
   const shown: Array<{
     id: number;
     spec: Parameters<NonNullable<Backend>["show"]>[0];
   }> = [];
   const updates: unknown[] = [];
+  const scheduled: Array<{
+    showAt: number;
+    isCancelled: boolean;
+  }> = [];
+  const dismissed = new Set<number>();
   let invoked: ((invocation: Parameters<Parameters<NonNullable<Backend>["onInvoked"]>[0]>[0]) => void) | undefined;
   const backend = {
     isSupported: () => isSupported,
@@ -42,6 +47,33 @@ function fakeBackend({ isEnabled = true, isSupported = true, isRegisterFailing =
       calls.push(`remove ${id}`);
       return Promise.resolve();
     },
+    list() {
+      return Promise.resolve(
+        shown.filter(item => !dismissed.has(item.id)).map(item => ({
+          id: item.id,
+          tag: item.spec.tag ?? "",
+          group: item.spec.group ?? ""
+        }))
+      );
+    },
+    removeAll() {
+      calls.push("removeAll");
+      return Promise.resolve();
+    },
+    canSchedule: () => canSchedule,
+    schedule({ spec, showAt }) {
+      const entry = {
+        showAt,
+        isCancelled: false
+      };
+      scheduled.push(entry);
+      calls.push(`schedule ${spec.title}`);
+      return {
+        cancel() {
+          entry.isCancelled = true;
+        }
+      };
+    },
     updateProgress(update) {
       updates.push(update);
       return Promise.resolve(true);
@@ -54,6 +86,8 @@ function fakeBackend({ isEnabled = true, isSupported = true, isRegisterFailing =
   return {
     backend,
     calls,
+    dismissed,
+    scheduled,
     shown,
     updates,
     click({ token, action, input = {} }: {
@@ -368,4 +402,79 @@ test("the global exists only while installed", () => {
   assert.equal(globalThis.Notification, Notification);
   uninstall();
   assert.equal("Notification" in globalThis, isPresent);
+});
+
+test("getNotifications lists what Windows still holds, filtered by tag", async () => {
+  const fake = fakeBackend();
+  await withNotification({
+    fake,
+    async run() {
+      await Notification.requestPermission();
+      const first = new Notification("one", { tag: "a" });
+      const second = new Notification("two", { tag: "b" });
+      await tick();
+      const registration = notificationRegistration();
+      assert.deepEqual(await registration.getNotifications(), [first, second]);
+      assert.deepEqual(await registration.getNotifications({ tag: "b" }), [second]);
+      fake.dismissed.add(1);
+      assert.deepEqual(await registration.getNotifications(), [second], "a dismissal in the notification center is seen");
+    }
+  });
+});
+
+test("closeAll closes what this run holds and clears the rest from Windows", async () => {
+  const fake = fakeBackend();
+  await withNotification({
+    fake,
+    async run() {
+      await Notification.requestPermission();
+      const notification = new Notification("one");
+      const closed: string[] = [];
+      notification.onclose = () => closed.push("close");
+      await tick();
+      await Notification.closeAll();
+      await tick();
+      assert.deepEqual(closed, ["close"]);
+      assert.ok(fake.calls.includes("remove 1"));
+      assert.equal(fake.calls.at(-1), "removeAll");
+      assert.deepEqual(await notificationRegistration().getNotifications(), []);
+    }
+  });
+});
+
+test("showTrigger schedules instead of showing, and close takes it back", async () => {
+  const fake = fakeBackend({ canSchedule: true });
+  await withNotification({
+    fake,
+    async run() {
+      await Notification.requestPermission();
+      const showAt = Date.now() + 60_000;
+      const notification = new Notification("later", { showTrigger: new TimestampTrigger(showAt) });
+      const events: string[] = [];
+      notification.onshow = () => events.push("show");
+      await tick();
+      assert.deepEqual(fake.shown, []);
+      assert.deepEqual(fake.scheduled, [{
+        showAt,
+        isCancelled: false
+      }]);
+      assert.deepEqual(events, []);
+      notification.close();
+      assert.equal(fake.scheduled[0]?.isCancelled, true);
+    }
+  });
+});
+
+test("showTrigger without package identity throws NotSupportedError", async () => {
+  const fake = fakeBackend({ canSchedule: false });
+  await withNotification({
+    fake,
+    run() {
+      assert.throws(
+        () => new Notification("later", { showTrigger: new TimestampTrigger(Date.now() + 1) }),
+        { name: "NotSupportedError" }
+      );
+      return Promise.resolve();
+    }
+  });
 });

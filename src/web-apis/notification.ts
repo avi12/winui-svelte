@@ -3,7 +3,7 @@ import { HandlerEventTarget } from "./event-handlers.ts";
 import { defineProperty } from "./install.ts";
 import { announcePermissionChange, PermissionName, PermissionStateName, registerPermission } from "./permissions.ts";
 import { windowsNotificationSource } from "#src/app/notification-source.js";
-import { notifierState, registerNotifier, showNotification } from "#src/app/notify.js";
+import { notifierState, registerNotifier, scheduleNotification, showNotification } from "#src/app/notify.js";
 import type {
   NotificationBackend,
   NotificationButtonStyle,
@@ -33,6 +33,15 @@ export const NotificationPermission = {
 } as const;
 /** One of the values of `NotificationPermission`. */
 export type NotificationPermission = (typeof NotificationPermission)[keyof typeof NotificationPermission];
+
+/** When a scheduled notification shows: milliseconds since 1970, as `Date.now()` counts. */
+export class TimestampTrigger {
+  readonly timestamp: number;
+
+  constructor(timestamp: number) {
+    this.timestamp = timestamp;
+  }
+}
 
 /** A button of the standard `actions` list. */
 export interface NotificationAction {
@@ -100,6 +109,13 @@ export interface NotificationExtras {
 
   /** Small text naming the source, at the bottom. */
   readonly attribution?: string;
+
+  /**
+   * Shows the notification at a moment, even if the app has exited by then
+   * (`new TimestampTrigger(Date.now() + 60_000)`). Only a process with package
+   * identity can schedule; without it the constructor throws `NotSupportedError`.
+   */
+  readonly showTrigger?: TimestampTrigger;
 }
 
 /** The standard options of `new Notification(title, options)`, with the extras. */
@@ -324,6 +340,7 @@ export class Notification extends HandlerEventTarget {
   private currentProgress: NotificationProgress | undefined;
   private sequence = 1;
   private platformId: number | undefined;
+  private scheduled: { cancel(): void } | undefined;
   private isClosed = false;
 
   /**
@@ -367,6 +384,14 @@ export class Notification extends HandlerEventTarget {
       throw new TypeError("Notification: renotify requires a tag");
     }
 
+    const isUnschedulable = options.showTrigger !== undefined && !known.backend.canSchedule();
+    if (isUnschedulable) {
+      throw domException({
+        name: DomErrorName.NOT_SUPPORTED,
+        message: "Notification: showTrigger needs a process with package identity"
+      });
+    }
+
     known.live.set(this.token, this);
     queueMicrotask(() => this.present());
   }
@@ -389,6 +414,20 @@ export class Notification extends HandlerEventTarget {
     const permission = await resolvePermission(requireContext());
     callback?.(permission);
     return permission;
+  }
+
+  /**
+   * Removes every notification of this app from the screen and the
+   * notification center, including ones an earlier run showed, and fires
+   * `close` on those this run still holds. WinUI-only.
+   */
+  static async closeAll() {
+    const known = requireContext();
+    for (const notification of known.live.values()) {
+      notification.close();
+    }
+
+    await known.backend.removeAll();
   }
 
   get onclick() {
@@ -452,6 +491,7 @@ export class Notification extends HandlerEventTarget {
 
     this.isClosed = true;
     this.forget();
+    this.scheduled?.cancel();
     const { platformId } = this;
     const hasPlatformId = platformId !== undefined;
     if (hasPlatformId) {
@@ -496,6 +536,12 @@ export class Notification extends HandlerEventTarget {
     }
 
     this.currentProgress = merged;
+  }
+
+  /** Whether Windows still holds this notification, given the ids it listed; not for apps. */
+  isListedIn(ids: ReadonlySet<number>) {
+    const { platformId } = this;
+    return platformId !== undefined && ids.has(platformId);
   }
 
   /** Called with a click on the notification; not for apps. */
@@ -608,6 +654,13 @@ export class Notification extends HandlerEventTarget {
     }
 
     this.replacePrevious();
+    const trigger = this.extras.showTrigger;
+    const isScheduled = trigger !== undefined && trigger.timestamp > Date.now();
+    if (isScheduled) {
+      this.schedule(trigger.timestamp);
+      return;
+    }
+
     try {
       this.platformId = showNotification({
         source: known.backend,
@@ -622,6 +675,21 @@ export class Notification extends HandlerEventTarget {
     }
 
     this.dispatchEvent(new Event("show"));
+  }
+
+  private schedule(showAt: number) {
+    try {
+      this.scheduled = scheduleNotification({
+        source: this.known.backend,
+        state: this.known.state,
+        notification: this.spec(),
+        showAt
+      });
+    } catch {
+      this.forget();
+      this.isClosed = true;
+      this.dispatchEvent(new Event("error"));
+    }
   }
 
   private replacePrevious() {
@@ -670,7 +738,44 @@ export class Notification extends HandlerEventTarget {
 }
 
 /**
- * Defines `globalThis.Notification` and answers the Permissions API's
+ * The notification members of a `ServiceWorkerRegistration`, for code that
+ * lists the notifications it showed. There is no service worker here:
+ * `notificationRegistration()` is the object to hand such code.
+ */
+export class NotificationRegistration {
+  /**
+   * The notifications this run showed that Windows still holds (on screen or
+   * in the notification center), so one the user dismissed is not listed.
+   * One an earlier run showed is not listed either: `Notification.closeAll()`
+   * removes those. A scheduled notification is listed once it has shown, which
+   * only the platform knows, so it is not listed here.
+   *
+   * @param filter - Only the notifications with this `tag`.
+   * @returns The notifications.
+   */
+  async getNotifications(filter: { tag?: string } = {}) {
+    const known = requireContext();
+    const listed = await known.backend.list();
+    const ids = new Set(listed.map(item => item.id));
+    return [...known.live.values()].filter(notification => {
+      const isTagMatch = filter.tag === undefined || filter.tag === "" || notification.tag === filter.tag;
+      return isTagMatch && notification.isListedIn(ids);
+    });
+  }
+}
+
+/**
+ * The registration that lists the notifications; needs `installNotification()`.
+ *
+ * @returns The registration.
+ */
+export function notificationRegistration() {
+  requireContext();
+  return new NotificationRegistration();
+}
+
+/**
+ * Defines `globalThis.Notification` and `TimestampTrigger`, and answers the Permissions API's
  * `notifications`. Nothing is defined until this is called; call it on the
  * thread the app's code runs on.
  *
@@ -690,9 +795,13 @@ export function installNotification(options: NotificationInstallOptions = {}) {
     nextToken: 1
   };
   context = installed;
-  const uninstallGlobal = defineProperty({
+  const uninstallNotification = defineProperty({
     name: "Notification",
     value: Notification
+  });
+  const uninstallTrigger = defineProperty({
+    name: "TimestampTrigger",
+    value: TimestampTrigger
   });
   const unregister = registerPermission({
     name: PermissionName.NOTIFICATIONS,
@@ -710,7 +819,8 @@ export function installNotification(options: NotificationInstallOptions = {}) {
   });
   return () => {
     unregister();
-    uninstallGlobal();
+    uninstallTrigger();
+    uninstallNotification();
     context = previousContext;
   };
 }

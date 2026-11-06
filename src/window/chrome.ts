@@ -31,6 +31,18 @@ export const TitleBarHeight = {
 export type TitleBarHeight = (typeof TitleBarHeight)[keyof typeof TitleBarHeight];
 
 /**
+ * Whether the title bar shows the window's icon (and opens the system menu on
+ * a click on it): the icon and menu are shown by default.
+ */
+export const IconShowOptions = {
+  showIconAndSystemMenu: "showIconAndSystemMenu",
+  hideIconAndSystemMenu: "hideIconAndSystemMenu"
+} as const;
+
+/** One of `IconShowOptions`' values. */
+export type IconShowOptions = (typeof IconShowOptions)[keyof typeof IconShowOptions];
+
+/**
  * How a window is presented: in its frame (windowed, the default), over the
  * whole display (fullScreen), or as a small always-on-top window
  * (compactOverlay, as a video player's picture in picture). The size limits

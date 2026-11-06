@@ -1,9 +1,10 @@
 import type { DisplayMonitorConnectionKind } from "./bindings.ts";
-import { DisplayArea, DisplayMonitor } from "./bindings.ts";
+import { DisplayMonitor } from "./bindings.ts";
 import type { Delivery } from "./delivery.ts";
 import { findAllDevices } from "./find-devices.ts";
 import type { Subscription } from "./live.svelte.ts";
 import { liveReader } from "./live.svelte.ts";
+import { DisplayArea } from "#src/winui.js";
 
 /** A rectangle in screen pixels. */
 export interface PixelRectangle {

@@ -125,6 +125,8 @@ test("with the page module installed, minimizing the window releases the locks",
   const fake = fakeBackend();
   let snapshot: PageSnapshot = {
     isVisible: true,
+    isDisplayOn: true,
+    resumeCount: 0,
     isFocused: true,
     state: "normal",
     title: "Window",

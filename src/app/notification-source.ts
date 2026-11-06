@@ -1,5 +1,8 @@
+import { createPackageIdentityProbe } from "./native.ts";
 import type { NotificationContent, NotificationControl } from "./notification-content.ts";
+import { scheduleToast } from "./notification-schedule.ts";
 import type { NotificationBackend, NotificationSpec } from "./notify.ts";
+import { ticksOf } from "./windows-time.ts";
 import {
   AppNotificationBuilder,
   AppNotificationButton,
@@ -18,9 +21,6 @@ import { pathToFileURL } from "node:url";
 
 const ARGUMENT_SEPARATOR = ";";
 const PAIR_SEPARATOR = "=";
-// 100-nanosecond ticks from 1601-01-01 to 1970-01-01 is this many milliseconds.
-const WINDOWS_EPOCH_OFFSET_MILLISECONDS = 11_644_473_600_000;
-const TICKS_PER_MILLISECOND = 10_000;
 
 const scenarios = {
   reminder: AppNotificationScenario.Reminder,
@@ -52,11 +52,6 @@ export function argumentsOf(argument: string) {
     return [pair.slice(0, iSeparator), pair.slice(iSeparator + 1)] as const;
   });
   return new Map<string, string>(pairs);
-}
-
-function ticksOf(milliseconds: number) {
-  const milliseconds1601 = Math.round(milliseconds + WINDOWS_EPOCH_OFFSET_MILLISECONDS);
-  return { universalTime: BigInt(milliseconds1601) * BigInt(TICKS_PER_MILLISECOND) };
 }
 
 function soundEventOf(name: string) {
@@ -196,6 +191,8 @@ export function windowsNotificationSource() {
     return AppNotificationManager.default_;
   }
 
+  const hasPackageIdentity = createPackageIdentityProbe();
+
   return {
     isSupported: () => AppNotificationManager.isSupported(),
     isEnabled: () => manager().setting === AppNotificationSetting.Enabled,
@@ -214,6 +211,24 @@ export function windowsNotificationSource() {
       return notification.id;
     },
     remove: id => manager().removeByIdAsync(id),
+    async list() {
+      const all = await manager().getAllAsync();
+      return (all?.toArray() ?? []).map(item => ({
+        id: item.id,
+        tag: item.tag,
+        group: item.group
+      }));
+    },
+    removeAll: () => manager().removeAllAsync(),
+    canSchedule: () => hasPackageIdentity(),
+    schedule({ spec, showAt }) {
+      return scheduleToast({
+        payload: buildNotification(spec).payload,
+        showAt,
+        tag: spec.tag ?? "",
+        group: spec.group ?? ""
+      });
+    },
     async updateProgress({ tag, group, sequence, progress }) {
       const data = progressDataOf({
         progress: progress ?? {},

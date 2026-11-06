@@ -35,8 +35,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`; imports nothing of WinRT, safe on the host's main thread |
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
-| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()` (opt-in; see App lifecycle) |
-| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()` (opt-in; see App lifecycle) |
+| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()`, `relaunch()`, `restartAfterCrash()` (opt-in; see App lifecycle) |
 | `winui-svelte/app/activation` | `src/app/activation/index.ts` | `installProtocolHandlers()`, `registerFileTypes()`, `launchAtLogin()`, `startActivation()`, `ActivationKind` (opt-in; see Activation) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
@@ -1833,6 +1832,10 @@ content's requested theme and the caption buttons'
 `titleBarHeight` is
 `"standard"` or `"tall"` (for a title bar that holds a search box or tabs; it
 applies when the content extends into the title bar)
+`iconShowOptions` is `"showIconAndSystemMenu"` (the default) or
+`"hideIconAndSystemMenu"`: whether the title bar shows the window's icon and
+opens the system menu on a click on it (`AppWindowTitleBar.IconShowOptions`;
+it is set again to the default when the prop is dropped)
 `captionButtons` sets
 the colors of the minimize, maximize and close buttons: `foreground`,
 `background`, `hover*`, `pressed*` and `inactive*` (each `Foreground` or
@@ -1929,6 +1932,22 @@ The arithmetic is plain functions (`anchoredBounds`, `dockedBounds`,
 device-independent pixels at the window's scale), over `AppWindow.Resize` and
 `AppWindow.Move`
 A process has many windows, so there is no `window` global for them
+
+`handle.windowControlsOverlay` is `navigator.windowControlsOverlay` for the
+window: `visible` (the content extends into the title bar),
+`getTitlebarAreaRect()` (the part of the title bar the content may use, from
+the system's icon to the caption buttons, as `x`, `y`, `width`, `height`,
+`left`, `top`, `right` and `bottom` in CSS pixels, all zeros while `visible`
+is false) and `ongeometrychange` (a `geometrychange` event with
+`titlebarAreaRect` and `visible`, fired when the area or `visible` changes)
+It reads `AppWindowTitleBar.LeftInset`, `RightInset` and `Height` (device
+pixels, divided by the scale) and the client width; the left inset is the
+caption buttons in a right-to-left window
+It follows the window from the first read of the property until the window
+closes, on `AppWindow.Changed` (a size, DPI or presenter change)
+Limits: the CSS `env(titlebar-area-x)`, `titlebar-area-width` and the rest are
+not supported (WinUI has no run-time lengths, so the translator reports them
+as an error); lay the title bar out from `getTitlebarAreaRect()` instead
 
 `owner` (another window's `WindowHandle`) and `isModal`
 (blocks the owner until this window closes) are read once, before the window
@@ -2362,7 +2381,7 @@ read and write the file with `node:fs`
 ### App lifecycle (`winui-svelte/app`)
 
 ```ts
-import { ensureSingleInstance, notify } from "winui-svelte/app";
+import { ensureSingleInstance, notify, relaunch, restartAfterCrash } from "winui-svelte/app";
 
 const single = ensureSingleInstance({
   key: "com.example.notes",
@@ -2382,6 +2401,9 @@ notify({
   iconPath: "C:\notes\icon.png",
   appUserModelId: "com.example.notes",
 });
+
+relaunch({ arguments: ["--after-update"], instance: single });
+restartAfterCrash({ arguments: ["--recovered"] });
 ```
 
 An opt-in subpath: an app that does not import it does not bundle it
@@ -2434,6 +2456,26 @@ An opt-in subpath: an app that does not import it does not bundle it
 - `activateOrLaunch({ key, activation, launch })` is the two together: it
   activates the running copy, or else starts the app with `launch`, and
   resolves with true for the first and false for the second
+- `relaunch({ arguments })` starts the same Node with the same flags, entry
+  script (`process.argv[1]`) and then `arguments`, detached, and calls
+  `exitApplication`, so the new copy outlives this one
+  Pass `instance` (the `ensureSingleInstance` result) to release the claim
+  first; otherwise the new copy finds the old one still serving the key and
+  redirects to it
+  An app whose windows run in a worker thread passes `entryScript`, the script
+  that starts the process, because `process.argv[1]` there is the worker's
+- `restartAfterCrash({ arguments, conditions })` is
+  `RegisterApplicationRestart`: Windows starts the same Node and entry
+  script with `arguments` after a crash, a hang, an update that closes the
+  app or a reboot for one; `conditions` is a subset of `RestartCondition`
+  (`crash`, `hang`, `update`, `reboot`; all by default)
+  Limits: no callback (a crashed Node cannot run code, so
+  `RegisterApplicationRecoveryCallback` is not offered); Windows restarts
+  only an app that ran for 60 seconds; after a crash or a hang the user is
+  offered the restart, and only after an update is it automatic; a normal
+  exit is never restarted; a command line too long for Windows throws
+  `test/app.test.ts` checks the registration and that a normal exit starts
+  nothing, and `relaunch` with a real second process (no crash is caused)
 
 ### Activation (`winui-svelte/app/activation`)
 
@@ -3316,6 +3358,23 @@ with `registerPermission({ name, provider })` and calls
   `incomingCall`, `urgent`), `expiration`, `group`, `hero`, `audio` (`default`,
   `im`, `mail`, `reminder`, `sms`, `alarm` to `alarm10`, `call` to `call10`),
   `attribution`
+- Listing and clearing: `notificationRegistration().getNotifications({ tag })`
+  (the notification members of a `ServiceWorkerRegistration`, which has no
+  service worker here) lists what this run showed and Windows still holds
+  (`AppNotificationManager.GetAllAsync`), so one the user dismissed in the
+  notification center is not listed; one an earlier run showed has no object
+  to return and is not listed; `Notification.closeAll()` (WinUI-only) closes
+  the ones this run holds and calls `RemoveAllAsync`, which clears the earlier
+  run's as well
+- Scheduling: `showTrigger: new TimestampTrigger(Date.now() + 60_000)` shows
+  the notification at that moment, even after the app has exited
+  (`Windows.UI.Notifications`' `ScheduledToastNotification`, built from the
+  same toast XML; the App SDK manager has no schedule); only a process with
+  package identity can schedule, and without it the constructor throws
+  `NotSupportedError`; a scheduled notification fires no `show`, and
+  `close()` before the moment takes it out of the schedule; not exercised for
+  real here (`node.exe` has no identity), so the tests cover it with a fake
+  backend
 - Package identity: not needed to show; an unpackaged app registers with
   `identity` (name and icon file) and `appUserModelId`; the `urgent` scenario
   and tooltips need a recent Windows build; a click after the process has gone
@@ -3570,8 +3629,16 @@ called (`runWindow({ webApis: [installPage, installTiming] })`)
 that `usePageWindow(handle)` is given (`bind:handle` on `<Window>`)
 
 - `document.visibilityState`, `hidden`, `hasFocus()` and `visibilitychange`:
-  hidden means minimized or hidden (to the tray); the window being active is
-  focus
+  hidden means minimized, hidden (to the tray) or the display turned off; the
+  window being active is focus
+- `document` `freeze` and `resume` (Page Lifecycle, with `onfreeze` and
+  `onresume`): once per wake of the machine from sleep, `freeze` then
+  `resume` together, because a sleeping process cannot see itself go to sleep;
+  the wake is found by a gap of over ten seconds between two ticks of a
+  one-second timer, so it is also counted after a long stall of the process;
+  never exercised with a real sleep here (the tests use a stand-in clock)
+- The display and the wake come from `windowsSystemPowerSource` (see Devices,
+  power); a machine where it cannot be read counts as awake with the display on
 - `window` `focus`, `blur`, `beforeunload` (call `preventDefault()` to keep the
   window open; there is no prompt), `pagehide` and `unload`, with `onfocus` and
   the other handler properties; `window.close()`, `window.closed` and
@@ -4595,7 +4662,7 @@ Each area is an opt-in subpath, so an app that imports none of them bundles none
 | `winui-svelte/devices/input` | `inputDevices`, `readInputCapabilities` |
 | `winui-svelte/devices/bluetooth` | adapter, devices, `bluetoothScanner`, `scanBluetoothAdvertisements`, GATT, UUIDs, radios |
 | `winui-svelte/devices/printers` | `printers`, `listPrinters`, `printFile` |
-| `winui-svelte/devices/power` | `battery` |
+| `winui-svelte/devices/power` | `battery`, `systemPower` |
 | `winui-svelte/devices/network` | `networkInformation` |
 | `winui-svelte/devices/audio` | `audioDevices` |
 | `winui-svelte/devices/display` | `displays`, `getDisplayMonitors` |
@@ -4759,6 +4826,7 @@ build; print the document to a file and use `printFile`, or draw it with Win2D
 | Rune | Reads | Fields |
 |---|---|---|
 | `battery()` | `Battery.AggregateBattery`, `PowerManager` | `hasBattery`, `percent`, `isCharging`, `isDischarging`, `isOnAcPower`, `isEnergySaverOn`, `remainingDischargeMilliseconds`, `healthPercent`, `reading` |
+| `systemPower()` | `Microsoft.Windows.System.Power.PowerManager` (Windows App SDK) | `displayStatus`, `isDisplayOn`, `effectivePowerMode`, `isUserPresent`, `resumeCount`, `reading` |
 | `networkInformation()` | `NetworkInformation` | `isOnline`, `connectivity`, `profileName`, `isMetered`, `isRoaming`, `isWifi`, `isMobile`, `signalBars`, `reading` (with every profile name) |
 | `displays()` | `DisplayArea` and its watcher | `areas` (bounds and work area), `primary`, `count`; needs the Windows App SDK, which a window has |
 | `getDisplayMonitors()` | `DisplayMonitor` | name, native resolution, physical size, DPI, luminance; needs no window |
@@ -4772,6 +4840,14 @@ build; print the document to a file and use `printFile`, or draw it with Win2D
 - A GATT call that does not succeed throws `BluetoothLowEnergyError` with the `GattCommunicationStatus` (`Unreachable`, `ProtocolError`, `AccessDenied`)
 - `getBluetoothAdapter()` resolves to `null` and `radios` is empty when the machine has no adapter
 - An event Windows refuses to an app without a package identity is left unsubscribed: the value is still read live, it only does not update by itself
+- `systemPower` polls once a second and does not subscribe to `PowerManager`'s
+  events: any subscription (even one removed again) keeps the Node process from
+  exiting, and Windows raises them on a thread of its own, which dynwinrt does
+  not deliver; `SystemSuspendStatus` cannot be read before its event has fired,
+  so `resumeCount` counts a wake as a gap of over ten seconds between two
+  ticks; `userPresenceStatus` reads 2 until Windows has said (a value the
+  bindings do not name); `EnergySaverStatus` is the one `battery` already
+  reads (`isEnergySaverOn`); the properties need the Windows App SDK
 - A machine without a sensor, gamepad, battery or printer reports it (`isAvailable` false, an empty list, `hasBattery` false), never an error
 - The radio state, pairing prompts, Bluetooth consent and the microphone are the user's: reading a list needs no consent, using a device can
 

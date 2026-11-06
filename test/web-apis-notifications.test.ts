@@ -1,4 +1,5 @@
 import { roInitialize } from "@microsoft/dynwinrt";
+import { windowsNotificationSource } from "#src/app/notification-source.js";
 import { installBadging } from "#src/web-apis/badging.js";
 import { installLaunch } from "#src/web-apis/launch.js";
 import { installPermissions } from "#src/web-apis/permissions.js";
@@ -36,4 +37,14 @@ test("push reports its support through the permission, badging clears, launch in
       uninstall();
     }
   }
+});
+
+test("an unpackaged process cannot schedule, and listing what Windows holds is reported", async context => {
+  const source = windowsNotificationSource();
+  assert.equal(source.canSchedule(), false, "node.exe has no package identity");
+  const outcome = await source.list().then(
+    held => `${held.length} held`,
+    (error: unknown) => `refused: ${String(error)}`
+  );
+  context.diagnostic(`list: ${outcome}`);
 });

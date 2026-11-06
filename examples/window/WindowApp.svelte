@@ -15,13 +15,20 @@
     OverlappedPresenterState,
     projectAs,
     SystemCompositionColorBrush,
-    TitleBarHeightOption
+    TitleBarHeightOption,
+    TitleBarIconShowOptions
   } from "#src/winui.js";
   import { flush } from "winui-svelte";
   import { isColorText, Window } from "winui-svelte/components";
   import type { CaptionButtonColors, WindowBounds, WindowHandle, WindowRegion } from "winui-svelte/components";
   import { createWindow, exitApplication } from "winui-svelte/window";
-  import { Backdrop, TitleBarHeight, WindowPresentation, WindowTheme } from "winui-svelte/window";
+  import {
+    Backdrop,
+    IconShowOptions,
+    TitleBarHeight,
+    WindowPresentation,
+    WindowTheme
+  } from "winui-svelte/window";
 
   const WINDOW_WIDTH = 520;
   const WINDOW_HEIGHT = 360;
@@ -52,6 +59,7 @@
   let presentation = $state<WindowPresentation | undefined>();
   let theme = $state<WindowTheme | undefined>();
   let titleBarHeight = $state<TitleBarHeight | undefined>();
+  let iconShowOptions = $state<IconShowOptions | undefined>();
   let captionButtons = $state<CaptionButtonColors | undefined>();
   let dragRegions = $state<readonly WindowRegion[] | undefined>();
   let width = $state(WINDOW_WIDTH);
@@ -119,6 +127,16 @@
         table: TitleBarHeightOption,
         value: titleBar.preferredHeightOption
       }),
+      iconShowOptions: nameOf({
+        table: TitleBarIconShowOptions,
+        value: titleBar.iconShowOptions
+      }),
+      overlay: {
+        visible: handle?.windowControlsOverlay.visible,
+        rect: handle?.windowControlsOverlay.getTitlebarAreaRect(),
+        leftInset: titleBar.leftInset,
+        rightInset: titleBar.rightInset
+      },
       captionForeground: titleBar.buttonForegroundColor,
       captionHoverBackground: titleBar.buttonHoverBackgroundColor,
       dragRegions: InputNonClientPointerSource.getForWindowId(appWindow.id).getRegionRects(NonClientRegionKind.Caption)
@@ -185,6 +203,10 @@
     ["titleBarHeight", command => {
       titleBarHeight = Object.values(TitleBarHeight).find(candidate => candidate === command["value"]);
       report("titleBarHeight");
+    }],
+    ["iconShowOptions", command => {
+      iconShowOptions = Object.values(IconShowOptions).find(candidate => candidate === command["value"]);
+      report("iconShowOptions");
     }],
     ["captionButtons", command => {
       const foreground = String(command["foreground"]);
@@ -270,6 +292,7 @@
   {captionButtons}
   {dragRegions}
   height={WINDOW_HEIGHT}
+  {iconShowOptions}
   isMaximizable={STATE_KEY !== undefined}
   minWidth={WINDOW_MIN_WIDTH}
   onactivechanged={isActive => {

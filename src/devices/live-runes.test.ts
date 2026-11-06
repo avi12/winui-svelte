@@ -1,14 +1,18 @@
 import {
   BatteryStatus,
+  DisplayStatus,
+  EffectivePowerMode,
   EnergySaverStatus,
   NetworkConnectivityLevel,
   NetworkCostType,
-  PowerSupplyStatus
+  PowerSupplyStatus,
+  UserPresenceStatus
 } from "./bindings.ts";
 import type { NetworkReading } from "./network-information.svelte.ts";
 import type { PowerReading } from "./power.svelte.ts";
 import type { PrinterRecord } from "./printer-source.ts";
 import { PrinterAttribute, PrinterStatus } from "./printer-source.ts";
+import type { SystemPowerReading } from "./system-power.ts";
 import { FakeInformation, FakeWatcher } from "./test-support/fake-watcher.ts";
 import "#src/state/test-support/svelte-runes.js";
 import assert from "node:assert/strict";
@@ -20,7 +24,8 @@ import { test } from "node:test";
 
 const { flushSync, tick } = await import("svelte");
 const { track } = await import("#src/state/test-support/track.svelte.js");
-const { battery } = await import("./power.svelte.ts");
+const { battery, systemPower } = await import("./power.svelte.ts");
+const { createWakeDetector } = await import("./system-power.ts");
 const { networkInformation } = await import("./network-information.svelte.ts");
 const { printers } = await import("./printers.svelte.ts");
 const { audioDevices } = await import("./audio-devices.svelte.ts");
@@ -103,6 +108,48 @@ test("the battery reads live and follows a change in the power state", async () 
 
   charging.stop();
   percent.stop();
+  await tick();
+  assert.equal(trigger.listenerCount, 0);
+});
+
+test("the session power state reads live: display, user, power mode and wakes", async () => {
+  const trigger = new Trigger();
+  let reading: SystemPowerReading = {
+    displayStatus: DisplayStatus.On,
+    effectivePowerMode: EffectivePowerMode.Balanced,
+    userPresenceStatus: UserPresenceStatus.Present,
+    resumeCount: 0
+  };
+  const session = systemPower({
+    source: {
+      read: () => reading,
+      subscriptions: [trigger.subscription]
+    },
+    deliver
+  });
+  assert.equal(session.isDisplayOn, true);
+  const isOn = track(() => session.isDisplayOn);
+  const isPresent = track(() => session.isUserPresent);
+  const resumes = track(() => session.resumeCount);
+  reading = {
+    ...reading,
+    displayStatus: DisplayStatus.Off,
+    userPresenceStatus: UserPresenceStatus.Absent
+  };
+  trigger.fire();
+  reading = {
+    ...reading,
+    displayStatus: DisplayStatus.On,
+    resumeCount: 1
+  };
+  trigger.fire();
+  assert.deepEqual(isOn.values, [true, false, true]);
+  assert.deepEqual(isPresent.values, [true, false, false], "an effect re-runs on each event");
+  assert.deepEqual(resumes.values, [0, 0, 1]);
+  assert.equal(session.effectivePowerMode, EffectivePowerMode.Balanced);
+  isOn.stop();
+  isPresent.stop();
+  resumes.stop();
   await tick();
   assert.equal(trigger.listenerCount, 0);
 });
@@ -400,4 +447,23 @@ test("the input capabilities are read again when an input device comes or goes",
   assert.deepEqual(seen.values.at(-1), [true, true, true]);
   assert.equal(input.hasKeyboard, true);
   seen.stop();
+});
+
+test("a tick that comes long after the last one is a wake from sleep", () => {
+  let time = 0;
+  const wakes = createWakeDetector({
+    now: () => time,
+    gapMilliseconds: 10_000
+  });
+  for (let tick = 0; tick < 5; tick += 1) {
+    time += 1000;
+    wakes.tick();
+  }
+
+  assert.equal(wakes.count, 0);
+  time += 3_600_000;
+  wakes.tick();
+  time += 1000;
+  wakes.tick();
+  assert.equal(wakes.count, 1);
 });

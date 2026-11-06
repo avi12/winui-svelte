@@ -111,6 +111,20 @@ test("a window opens as its props say, follows them, and reports what happens to
       kind: "titleBarHeight"
     });
     assert.equal(tall["titleBarHeightOption"], "Tall");
+    const hidden = await example.ask({
+      command: {
+        cmd: "iconShowOptions",
+        value: "hideIconAndSystemMenu"
+      },
+      kind: "iconShowOptions"
+    });
+    assert.equal(hidden["iconShowOptions"], "HideIconAndSystemMenu", "the iconShowOptions prop reaches the title bar");
+    const titleBarOverlay = hidden["overlay"];
+    assert.ok(typeof titleBarOverlay === "object" && titleBarOverlay !== null && !Array.isArray(titleBarOverlay));
+    assert.equal(titleBarOverlay["visible"], true, "the content extends into the title bar");
+    const rect = titleBarOverlay["rect"];
+    assert.ok(typeof rect === "object" && rect !== null && !Array.isArray(rect));
+    assert.ok(Number(rect["width"]) > 0 && Number(rect["height"]) > 0, "the area the content may use has a size");
     const colored = await example.ask({
       command: {
         cmd: "captionButtons",

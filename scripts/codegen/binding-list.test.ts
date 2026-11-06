@@ -50,6 +50,7 @@ test("every class src/winui.ts imports is among the classes the bindings are gen
     "microsoft/ui/windowing/displayareafallback",
     "microsoft/ui/windowing/appwindowpresenterkind",
     "microsoft/ui/windowing/titlebarheightoption",
+    "microsoft/ui/windowing/iconshowoptions",
     "microsoft/ui/windowing/titlebartheme",
     "microsoft/ui/input/nonclientregionkind",
     "microsoft/ui/xaml/elementtheme",
