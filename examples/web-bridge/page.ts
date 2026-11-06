@@ -1,6 +1,7 @@
 // The hosted web content, as the page's own script sees the link: plain
 // window.chrome.webview and messaging's frames, no bundle (an app that bundles
 // its page imports createPageTransport from winui-svelte/messaging/page).
+// noinspection JSUnresolvedReference,JSValidateTypes: the hosted page's own script, in a string
 export const PAGE_HTML = `<!doctype html>
 <html lang="en">
 <head>

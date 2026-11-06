@@ -23,7 +23,7 @@
 
   let handle: WindowHandle | undefined = $state();
   let progress = $state(0);
-  let state = $state<TaskbarProgressState>(TaskbarProgressState.NONE);
+  let progressState = $state<TaskbarProgressState>(TaskbarProgressState.NONE);
   let unread = $state(0);
   let stopTimer: (() => void) | undefined;
   let uninstallBadging: (() => void) | undefined;
@@ -39,7 +39,7 @@
   }
 
   function show(next: TaskbarProgressState) {
-    state = next;
+    progressState = next;
     requireWindow().taskbar.setProgress({
       state: next,
       value: progress
@@ -98,7 +98,7 @@
       host.report({
         kind: "done",
         error: null,
-        state,
+        state: progressState,
         progress,
         unread
       });
@@ -139,7 +139,7 @@
 
 <Window height={WINDOW_HEIGHT} onclosed={exitApplication} title="Taskbar example" width={WINDOW_WIDTH} bind:handle>
   <StackPanel class="page">
-    <TextBlock class="heading">Download {Math.round(progress * PERCENT)}% ({state})</TextBlock>
+    <TextBlock class="heading">Download {Math.round(progress * PERCENT)}% ({progressState})</TextBlock>
     <ProgressBar maximum={FULL} value={progress} />
     <StackPanel class="row">
       <Button onclick={startDownload}>Start</Button>
