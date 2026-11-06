@@ -26496,7 +26496,24 @@
             },
             {
               "name": "iconShowOptions",
-              "description": "Whether the title bar shows the window's icon, and opens the system menu on a click on it; `hideIconAndSystemMenu` takes both away. The default shows them."
+              "description": "Whether the title bar shows the window's icon, and opens the system menu on a click on it; `hideIconAndSystemMenu` takes both away. The default shows them.",
+              "value": {
+                "type": [
+                  "enum",
+                  {
+                    "module": "winui-svelte/enums",
+                    "name": "IconShowOptions"
+                  }
+                ]
+              },
+              "values": [
+                {
+                  "name": "showIconAndSystemMenu"
+                },
+                {
+                  "name": "hideIconAndSystemMenu"
+                }
+              ]
             },
             {
               "name": "captionButtons",
