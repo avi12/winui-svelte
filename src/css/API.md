@@ -203,6 +203,7 @@ window in, with or without a `<style>` that uses the property
 | `winui-svelte/css/cursor` | `cursor` | Cursor |
 | `winui-svelte/css/view-transition` | `view-transition-name` | View transitions |
 | `winui-svelte/css/control` | `font-stretch`, `direction`, `background-clip`, `tab-index` | Control properties (`controlGroups`) |
+| `winui-svelte/css/visual-states` | `background-color`, `background-image`, `color` and `border-color` in a `:hover`, `:active` or `:disabled` rule of a Button (a group with no property of its own) | Visual states of a templated control (`visualStateGroups`) |
 | `winui-svelte/css/typography` | `font-variant`, `font-variant-*`, `font-kerning`, `font-feature-settings`, `font-optical-sizing` | Typography (`typographyGroups`) |
 | `winui-svelte/css/shape` | `fill`, `stroke-dasharray`, `stroke-dashoffset`, `stroke-linecap`, `stroke-linejoin`, `stroke-miterlimit`, `rx`, `ry`, `fill-rule` | Shapes |
 | `winui-svelte/css/focus` | `outline`, `outline-offset` | Focus ring |
@@ -1256,6 +1257,72 @@ the block axis vertical: `margin-inline`, `margin-block`, `padding-inline`,
 bottom longhands, and `inline-size` and `block-size` (with `min-` and `max-`) are
 the width and height
 `text-align: start` and `end` are Left and Right
+
+## Pseudo-classes on a templated control: visual states
+
+A Button's template draws its own `PointerOver`, `Pressed` and `Disabled`
+states by animating the brushes of its `ContentPresenter`, and an animation
+beats a Style setter, so a `:hover { background-color }` that only changed
+the control's Style never showed
+A rule that sets a brush in one of those states now goes to the state itself,
+in the template's own `VisualStateManager` groups, where WinUI enters it for
+the pointer, the keyboard and `Disabled`: the control reports no event for it,
+so a Button's `:active` works too (a Button handles `PointerPressed` itself)
+
+```css
+.cta { background-color: #0a6cff; color: #fff }
+.cta:hover { background-color: #0050c8 }
+.cta:active { background-color: #003a8f; color: #e0e8ff }
+.cta:disabled { background-color: #888 }
+```
+
+| Pseudo-class | Visual state | Group |
+|---|---|---|
+| `:hover` | `PointerOver` | `CommonStates` |
+| `:active` | `Pressed` | `CommonStates` |
+| `:disabled` | `Disabled` | `CommonStates` |
+| `:focus` | `Focused` and `PointerFocused` | `FocusStates` |
+| `:focus-visible` | `Focused` | `FocusStates` |
+
+The base rule is the `Normal` state: it stays the control's Style
+Only these four properties move to a state, since they are what a template's
+states override: `background-color`, `background-image` (a gradient),
+`color` and `border-color` (WinUI's `Background`, `Foreground` and
+`BorderBrush` of the `ContentPresenter`)
+Every other property of a state rule (`opacity`, `scale`, a size) stays a
+Style setter on the control, driven by the control's events as before, since
+a template leaves it alone
+A value is a color, a `var()` of a WinUI brush or a gradient, and the state
+keeps it until the rules change: a class that comes or goes puts the
+template's own animation back and writes the new one, and a sheet that is
+replaced does the same
+
+It is opt-in per sheet, like the other groups: a sheet that has such a rule
+imports `winui-svelte/css/visual-states` (the build adds it) and a window
+whose sheets have none carries none of it
+
+What is refused, and why:
+
+- **`:checked`** keeps the Style route: a ToggleButton's checked look is a
+  combination with the pointer (`CheckedPointerOver`, `CheckedPressed`), which
+  one pseudo-class cannot name
+- **`:focus` and `:focus-visible` on a Button** keep the Style route: the
+  Button family's templates define `CommonStates` and no `FocusStates`, so
+  there is no state to enter; the table of driven controls
+  (`TEMPLATE_STATES`) lists the states each defines, and a control whose
+  template has `FocusStates` takes them by being added there
+- **Other controls** (`toggle-button`, `check-box`, `combo-box`, `list-view-item`
+  and the rest) keep the Style route, since each template names its parts
+  differently; the driven ones are `button`, `repeat-button`, `hyperlink-button`
+  and `drop-down-button`
+- **A custom property** on a pseudo-class rule is still an error (see Custom
+  properties): override the resource the template reads instead
+- **`:hover:active` and other combinations** are one state per selector, as
+  before; a state is entered by WinUI, so a rule cannot ask for two at once
+
+Because WinUI enters the state, a test needs no pointer: call
+`goToState({ control, name: "PointerOver" })` and read the template part's
+brush (`test/visual-states.test.ts` does, on `examples/visual-states`)
 
 ## Selectors
 

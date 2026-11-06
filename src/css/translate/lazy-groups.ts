@@ -14,6 +14,7 @@ import { resourceGroups } from "./resource-properties.ts";
 import { SCROLL_TIMELINE_MEMBERS, scrollTimelineGroups } from "./scroll-timeline-properties.ts";
 import { SHADOW_MEMBERS, shadowGroups } from "./shadow-properties.ts";
 import { SHAPE_MEMBERS, shapeGroups } from "./shape-properties.ts";
+import { STATE_TARGETS, VISUAL_STATE_MEMBERS } from "./state-properties.ts";
 import { SURFACE_MEMBERS, surfaceGroups } from "./surface-properties.ts";
 import { CONTROL_MEMBERS, controlGroups } from "./text-control-properties.ts";
 import { transformGroups } from "./transform-properties.ts";
@@ -37,6 +38,13 @@ export interface LazyGroups {
 
 function usesProperties(members: readonly string[]) {
   return (rule: Rule) => rule.declarations.some(declaration => members.includes(declaration.property));
+}
+
+const usesVisualStateMembers = usesProperties(VISUAL_STATE_MEMBERS);
+
+function isVisualStateRule(rule: Rule) {
+  const isStateMapped = rule.state !== null && STATE_TARGETS.has(rule.state);
+  return isStateMapped && usesVisualStateMembers(rule);
 }
 
 /** Every opt-in set; the one place that lists them (the build validates with them, a sheet module imports them). */
@@ -124,6 +132,12 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
     subpath: "/shadow",
     exportName: "shadowGroups",
     groups: shadowGroups
+  },
+  {
+    isNeededBy: isVisualStateRule,
+    subpath: "/visual-states",
+    exportName: "visualStateGroups",
+    groups: () => []
   },
   {
     isNeededBy: usesProperties(SHAPE_MEMBERS),
