@@ -477,6 +477,16 @@ export const lateClasses = [
   },
   {
     winmd: DEVICES_WINMD,
+    namespace: "Windows.UI.Notifications",
+    classes: ["ScheduledToastNotification", "ToastNotificationManager"]
+  },
+  {
+    winmd: DEVICES_WINMD,
+    namespace: "Windows.Data.Xml.Dom",
+    classes: ["XmlDocument"]
+  },
+  {
+    winmd: DEVICES_WINMD,
     namespace: "Windows.Devices.Display",
     classes: ["DisplayMonitor"]
   },

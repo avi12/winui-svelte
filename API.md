@@ -2728,6 +2728,23 @@ with `registerPermission({ name, provider })` and calls
   `incomingCall`, `urgent`), `expiration`, `group`, `hero`, `audio` (`default`,
   `im`, `mail`, `reminder`, `sms`, `alarm` to `alarm10`, `call` to `call10`),
   `attribution`
+- Listing and clearing: `notificationRegistration().getNotifications({ tag })`
+  (the notification members of a `ServiceWorkerRegistration`, which has no
+  service worker here) lists what this run showed and Windows still holds
+  (`AppNotificationManager.GetAllAsync`), so one the user dismissed in the
+  notification center is not listed; one an earlier run showed has no object
+  to return and is not listed; `Notification.closeAll()` (WinUI-only) closes
+  the ones this run holds and calls `RemoveAllAsync`, which clears the earlier
+  run's as well
+- Scheduling: `showTrigger: new TimestampTrigger(Date.now() + 60_000)` shows
+  the notification at that moment, even after the app has exited
+  (`Windows.UI.Notifications`' `ScheduledToastNotification`, built from the
+  same toast XML; the App SDK manager has no schedule); only a process with
+  package identity can schedule, and without it the constructor throws
+  `NotSupportedError`; a scheduled notification fires no `show`, and
+  `close()` before the moment takes it out of the schedule; not exercised for
+  real here (`node.exe` has no identity), so the tests cover it with a fake
+  backend
 - Package identity: not needed to show; an unpackaged app registers with
   `identity` (name and icon file) and `appUserModelId`; the `urgent` scenario
   and tooltips need a recent Windows build; a click after the process has gone

@@ -70,6 +70,13 @@ export interface NotificationSource {
   onInvoked(callback: (invocation: NotificationInvocation) => void): () => void;
 }
 
+/** A notification Windows holds for the app. */
+export interface PlatformNotification {
+  readonly id: number;
+  readonly tag: string;
+  readonly group: string;
+}
+
 /** What the web `Notification` needs beyond showing: removing, updating a bar, and the user's setting. */
 export interface NotificationBackend extends NotificationSource {
   /** Whether this process can show app notifications at all. */
@@ -79,6 +86,23 @@ export interface NotificationBackend extends NotificationSource {
   isEnabled(): boolean;
 
   remove(id: number): Promise<void>;
+
+  /** What Windows still holds for this app: on screen or in the notification center. */
+  list(): Promise<readonly PlatformNotification[]>;
+
+  /** Removes everything Windows holds for this app, including what an earlier run showed. */
+  removeAll(): Promise<void>;
+
+  /** Whether `schedule` works: only a process with package identity can schedule. */
+  canSchedule(): boolean;
+
+  /** Shows the notification at `showAt` (milliseconds since 1970), even after the app has exited. */
+  schedule(options: {
+    spec: NotificationSpec;
+    showAt: number;
+  }): {
+    cancel(): void;
+  };
 
   /** Changes the progress bar of the notification with this tag and group; false when it is gone. */
   updateProgress(update: {
@@ -126,15 +150,7 @@ export function registerNotifier({ source, identity, onInvoked, state }: {
   state.isRegistered = true;
 }
 
-/**
- * Shows a notification over any source of them, registering once.
- * `notify` is this over `AppNotificationManager`.
- *
- * @param options - The source, the notification, and the notifier's state.
- * @returns The id the platform gave the notification.
- * @throws {Error} When only one of `displayName` and `iconPath` is given.
- */
-export function showNotification({ source, notification, state }: {
+function registerAndSpecify({ source, notification, state }: {
   source: NotificationSource;
   notification: NotifyOptions;
   state: { isRegistered: boolean };
@@ -149,9 +165,48 @@ export function showNotification({ source, notification, state }: {
       ...iconPath === undefined ? {} : { iconPath }
     }
   });
-  return source.show({
+  return {
     ...content,
     arguments: new Map(Object.entries(argumentRecord ?? {}))
+  } satisfies NotificationSpec;
+}
+
+/**
+ * Shows a notification over any source of them, registering once.
+ * `notify` is this over `AppNotificationManager`.
+ *
+ * @param options - The source, the notification, and the notifier's state.
+ * @returns The id the platform gave the notification.
+ * @throws {Error} When only one of `displayName` and `iconPath` is given.
+ */
+export function showNotification(options: {
+  source: NotificationSource;
+  notification: NotifyOptions;
+  state: { isRegistered: boolean };
+}) {
+  return options.source.show(registerAndSpecify(options));
+}
+
+/**
+ * Schedules a notification over a backend that can, registering once.
+ *
+ * @param options - The backend, the notification, when to show it, and the notifier's state.
+ * @returns The handle that takes it out of the schedule.
+ * @throws {Error} When only one of `displayName` and `iconPath` is given.
+ */
+export function scheduleNotification({ source, notification, state, showAt }: {
+  source: NotificationBackend;
+  notification: NotifyOptions;
+  state: { isRegistered: boolean };
+  showAt: number;
+}) {
+  return source.schedule({
+    spec: registerAndSpecify({
+      source,
+      notification,
+      state
+    }),
+    showAt
   });
 }
 
