@@ -1,4 +1,5 @@
 import { parseDegrees } from "./angles.ts";
+import { DEFAULT_SHADOW_COLOR } from "./box-shadow.ts";
 import { parseColor } from "./colors.ts";
 import { splitWords } from "./split.ts";
 import { parseLength, parseNumber, parsePercent } from "./values.ts";
@@ -38,7 +39,6 @@ const MATRIX_COLUMNS = 5;
 const ALPHA_ROW = 3;
 const OFFSET_COLUMN = 4;
 const CHANNELS = 3;
-const DEFAULT_SHADOW_COLOR = "#80000000";
 const MIN_SHADOW_LENGTHS = 2;
 const MAX_SHADOW_LENGTHS = 3;
 const HALF = 0.5;

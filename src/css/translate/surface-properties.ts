@@ -1,13 +1,13 @@
 import { translation } from "./motion-properties.ts";
 import { setter } from "./property-kit.ts";
 import type { GroupInput, PropertyGroup } from "./property-kit.ts";
+import { SHADOW_CAST_ON, SHADOW_MODE, ShadowMode } from "./shadow-mode.ts";
+import { parseShadowLayer } from "#src/css/parse/box-shadow.js";
 import { Reader } from "#src/css/parse/reader.js";
-import { parseLength, splitCommas, splitWords } from "#src/css/parse/values.js";
+import { splitCommas } from "#src/css/parse/values.js";
 
 const ELEVATION = "-winui-elevation";
 const BOX_SHADOW = "box-shadow";
-const MIN_SHADOW_LENGTHS = 2;
-const MAX_SHADOW_LENGTHS = 4;
 
 // The Z of Translation is a ThemeShadow's depth; the X and Y are what `translate`
 // says, read again without reporting (the translate group has reported already).
@@ -35,7 +35,11 @@ function themeShadow({ input, reader, depth }: {
   reader: Reader;
   depth: number;
 }) {
-  reader.warn(`${reader.declaration.property}: a ThemeShadow draws with no receivers on Windows 11 and later; earlier, it draws only on elements named in its Receivers, which a Style cannot set`);
+  const hasReceivers = input.computed.has(SHADOW_CAST_ON);
+  if (!hasReceivers) {
+    reader.warn(`${reader.declaration.property}: a ThemeShadow draws with no receivers on Windows 11 and later; earlier, it draws only on elements named in its Receivers, which a Style cannot set (-winui-shadow-cast-on names a group of them)`);
+  }
+
   return [
     {
       kind: "content",
@@ -78,32 +82,33 @@ function elevation(input: GroupInput) {
  * `box-shadow`: the first shadow of the list becomes a ThemeShadow whose depth
  * is its blur radius (or its larger offset when it has no blur). WinUI's shadow
  * takes no offset, spread or color, which a warning says; `inset` has no
- * counterpart. `-winui-elevation` wins where both are written.
+ * counterpart. `-winui-elevation` wins where both are written. With
+ * `-winui-shadow: composition` the shadow group draws it instead, and this
+ * group lowers nothing.
  */
 function boxShadow(input: GroupInput) {
   const reader = input.reading(BOX_SHADOW);
+  const isComposition = input.computed.get(SHADOW_MODE)?.value.trim().toLowerCase() === ShadowMode.COMPOSITION;
   const [first = ""] = splitCommas(reader.declaration.value);
-  const words = splitWords(first);
-  const isNone = words.length === 1 && words[0]?.toLowerCase() === "none";
-  if (isNone) {
+  const isNone = first.trim().toLowerCase() === "none";
+  const isLoweredElsewhere = isComposition || isNone;
+  if (isLoweredElsewhere) {
     return [];
   }
 
-  const isInset = words.some(word => word.toLowerCase() === "inset");
-  if (isInset) {
-    reader.error(`${BOX_SHADOW}: inset has no WinUI meaning (a ThemeShadow is cast outside the element)`);
-    return [];
-  }
-
-  const lengths = words.map(word => parseLength(word)).filter(length => length !== null);
-  const isShadowRead = lengths.length >= MIN_SHADOW_LENGTHS && lengths.length <= MAX_SHADOW_LENGTHS;
-  if (!isShadowRead) {
+  const shadow = parseShadowLayer(first);
+  const isShadowMissing = shadow === null;
+  if (isShadowMissing) {
     reader.expected("offset-x offset-y [blur [spread]] [color]");
     return [];
   }
 
-  const [offsetX = 0, offsetY = 0, blur = 0] = lengths;
-  const depth = blur > 0 ? blur : Math.max(Math.abs(offsetX), Math.abs(offsetY));
+  if (shadow.isInset) {
+    reader.error(`${BOX_SHADOW}: inset has no WinUI meaning (a ThemeShadow is cast outside the element)`);
+    return [];
+  }
+
+  const depth = shadow.blur > 0 ? shadow.blur : Math.max(Math.abs(shadow.x), Math.abs(shadow.y));
   const hasMore = splitCommas(reader.declaration.value).length > 1;
   if (hasMore) {
     reader.warn(`${BOX_SHADOW}: only the first shadow is used (an element has one Shadow)`);
