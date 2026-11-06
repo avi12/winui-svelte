@@ -4,6 +4,7 @@
 // exports only, so an app bundles just the sets it imports and `import type`
 // costs nothing.
 
+export { ActivationKind } from "./app/activation/kinds.ts";
 export * from "./components/generated/enums.ts";
 export { MoveDirection } from "./components/hand-written/items/reorder.ts";
 export { NavigationCacheMode, NavigationMode } from "./components/hand-written/navigation/navigation-stack.ts";
