@@ -89,6 +89,7 @@
     "examples/accessibility/main.ts",
     "examples/fonts/main.ts",
     "examples/pill-ground/main.ts",
+    "examples/composition/main.ts",
     "**/*.test.ts",
     "src/state/test-support/echo-host.ts",
     "test/mount-all.svelte.ts",

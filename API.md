@@ -556,12 +556,14 @@ expression builder
   })}
   {@attach leader.attach}
 />
-<Border
-  {@attach leader.current && compositorAnimation({
-    property: "offset",
-    animation: visualReference(leader.current).offset.plus({ x: 0, y: 120, z: 0 })
-  })}
-/>
+{#if leader.current}
+  <Border
+    {@attach compositorAnimation({
+      property: "offset",
+      animation: visualReference(leader.current).offset.plus({ x: 0, y: 120, z: 0 })
+    })}
+  />
+{/if}
 ```
 
 - Values read on the UI thread (`Visual.Offset`) are the last ones set there,
