@@ -140,6 +140,7 @@
     "examples/media/main.ts",
     "examples/media-elements/main.ts",
     "examples/app/main.ts",
+    "examples/activation/main.ts",
     "examples/web/main.ts",
     "examples/window/main.ts",
     "examples/window-frame/main.ts",
