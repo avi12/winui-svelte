@@ -135,6 +135,7 @@
     "examples/scroll-timeline/main.ts",
     "examples/view-transitions/main.ts",
     "examples/typography/main.ts",
+    "examples/visual-states/main.ts",
     "test/scoped-styles/main.ts",
     "examples/stores/main.ts",
     "examples/timers/main.ts",
