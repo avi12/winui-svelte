@@ -1,3 +1,4 @@
+import type { IdeData } from "./ide-data.ts";
 import { resourceData } from "./resource-data.ts";
 import { easingKeywords, parseEasing } from "#src/css/translate/easing.js";
 import { unsupportedReasonEntries } from "#src/css/translate/unsupported-properties.js";
@@ -28,7 +29,7 @@ const SHADOW_DEPTHS = [
 
 /** The easing keywords as the editors draw them: a bezier's control points or a steps function. */
 export function easingData() {
-  return easingKeywords().flatMap(name => {
+  return easingKeywords().flatMap<IdeData["easings"][number]>(name => {
     const easing = parseEasing(name);
     const isUnknown = easing === null;
     if (isUnknown) {
