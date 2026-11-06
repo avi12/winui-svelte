@@ -3652,5 +3652,12 @@
     {"name":"top","reason":"is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot. A <canvas> child places by canvas-left and canvas-top"},
     {"name":"transform","reason":"a transform is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot"},
     {"name":"transition","reason":"a transition is read from a component's <style> block, which opts the window into its parser; a style attribute alone cannot"}
+  ],
+  "materials": [
+    {"name":"mica","light":"#f3f3f3","dark":"#202020","isTranslucent":false},
+    {"name":"micaAlt","light":"#dadada","dark":"#0a0a0a","isTranslucent":false},
+    {"name":"acrylic","light":"#f3f3f3","dark":"#202020","isTranslucent":true},
+    {"name":"acrylicBase","light":"#f3f3f3","dark":"#202020","isTranslucent":true},
+    {"name":"acrylicThin","light":"#f3f3f3","dark":"#202020","isTranslucent":true}
   ]
 }

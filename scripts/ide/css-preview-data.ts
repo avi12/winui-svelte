@@ -1,3 +1,4 @@
+import { resourceData } from "./resource-data.ts";
 import { easingKeywords, parseEasing } from "#src/css/translate/easing.js";
 import { unsupportedReasonEntries } from "#src/css/translate/unsupported-properties.js";
 
@@ -63,4 +64,56 @@ export function unsupportedPropertyData() {
     name,
     reason
   }));
+}
+
+// The Backdrop values and the resource whose color the material shows on a
+// window: the acrylics are translucent, so they show the base the light and
+// dark grounds have.
+const MATERIALS = [
+  {
+    name: "mica",
+    resource: "SolidBackgroundFillColorBase",
+    isTranslucent: false
+  },
+  {
+    name: "micaAlt",
+    resource: "SolidBackgroundFillColorBaseAlt",
+    isTranslucent: false
+  },
+  {
+    name: "acrylic",
+    resource: "SolidBackgroundFillColorBase",
+    isTranslucent: true
+  },
+  {
+    name: "acrylicBase",
+    resource: "SolidBackgroundFillColorBase",
+    isTranslucent: true
+  },
+  {
+    name: "acrylicThin",
+    resource: "SolidBackgroundFillColorBase",
+    isTranslucent: true
+  }
+];
+
+/** The window materials with the light and dark color each shows, from the resources. */
+export function materialData() {
+  const resources = resourceData();
+  return MATERIALS.map(({ name, resource, isTranslucent }) => {
+    const found = resources.find(candidate => candidate.name === resource);
+    const light = found?.light;
+    const dark = found?.dark;
+    const hasNoColors = light === undefined || dark === undefined;
+    if (hasNoColors) {
+      throw new Error(`the resource ${resource} of the material ${name} has no light and dark color`);
+    }
+
+    return {
+      name,
+      light,
+      dark,
+      isTranslucent
+    };
+  });
 }

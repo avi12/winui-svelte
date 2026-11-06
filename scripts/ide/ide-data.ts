@@ -61,6 +61,13 @@ const unsupportedPropertySchema = z.strictObject({
   reason: z.string()
 });
 
+const materialSchema = z.strictObject({
+  name: z.string(),
+  light: z.string(),
+  dark: z.string(),
+  isTranslucent: z.boolean()
+});
+
 const ideDataSchema = z.strictObject({
   resources: z.array(resourceSchema),
   enums: z.array(enumSchema),
@@ -69,7 +76,8 @@ const ideDataSchema = z.strictObject({
   translateKeys: z.array(z.string()),
   easings: z.array(easingSchema),
   shadowDepths: z.array(shadowDepthSchema),
-  unsupportedProperties: z.array(unsupportedPropertySchema)
+  unsupportedProperties: z.array(unsupportedPropertySchema),
+  materials: z.array(materialSchema)
 });
 
 export type IdeData = z.infer<typeof ideDataSchema>;

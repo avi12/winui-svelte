@@ -92,3 +92,10 @@ test("the CSS previews draw the library's own easings, shadow depths and unsuppo
   assert.deepEqual(data.shadowDepths.map(shadow => shadow.depth), [4, 16, 32, 128]);
   assert.match(data.unsupportedProperties.find(property => property.name === "float")?.reason ?? "", /grid/u);
 });
+
+test("a window material has the light and dark color of its base", () => {
+  const mica = data.materials.find(material => material.name === "mica");
+  assert.equal(mica?.light, "#f3f3f3");
+  assert.equal(mica?.dark, "#202020");
+  assert.equal(data.materials.find(material => material.name === "acrylic")?.isTranslucent, true);
+});
