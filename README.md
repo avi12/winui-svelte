@@ -971,10 +971,13 @@ Stated plainly, so nobody finds them by surprise:
   `acrylicThin` put WinUI's `DesktopAcrylicController` behind the window, so
   `window.systemBackdrop` reads null for them (the controller holds the
   material)
-- **Transparent windows are a composition brush.** `backdrop="transparent"`
-  puts a fully clear brush behind the content, since the Windows App SDK's
-  `TransparentTintBackdrop` is not in the metadata of the releases restored;
-  `window.systemBackdrop` reads null for it, and the window wants `isBorderless`
+- **Transparent windows are a composition brush and a window frame.**
+  `backdrop="transparent"` puts a fully clear brush behind the content, since
+  the Windows App SDK's `TransparentTintBackdrop` is in no runtime from 2.3 to
+  2.6.5 and not in the metadata restored, and makes the whole window the window
+  manager's frame with square corners, which is what makes the clear pixels
+  show the desktop; `window.systemBackdrop` reads null for it, and the window
+  wants `isBorderless`
 - **Svelte is held to the releases checked.** The package reads a few spots of
   Svelte's runtime with edits, so the peer range is the span of releases the
   matrix (`pnpm check:svelte-matrix`) runs the tests against, and it widens

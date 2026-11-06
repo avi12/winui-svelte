@@ -40,6 +40,7 @@ import {
 } from "./native.ts";
 import { createScaleTracker } from "./scale.ts";
 import { onTeardown } from "./teardown.ts";
+import { applyTransparentFrame } from "./transparent-backdrop.ts";
 import { WindowHandle } from "./window-handle.ts";
 import { windowStateFile, WindowStateKeeper } from "./window-state-keeper.ts";
 import type { FrameworkElement } from "#src/winui.js";
@@ -793,6 +794,10 @@ class WindowHost {
     }
 
     this.isBorderApplied = isGivenNow;
+    const isTransparent = this.appliedBackdrop === BackdropKind.transparent;
+    if (isTransparent) {
+      applyTransparentFrame(this.handle.appWindow.id.value);
+    }
   }
 
   // Clipped to its rounded rectangle; again whenever the size or the scale

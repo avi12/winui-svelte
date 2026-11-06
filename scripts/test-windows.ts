@@ -32,6 +32,7 @@ const DESKTOP_RUNNER = path.join(PACKAGE_ROOT, "scripts", "desktop", "run-on-des
 const DEFAULT_DESKTOP_TESTS = new Map([
   ["tray-shell.test.ts", "the notification area belongs to the shell, on the default desktop"],
   ["taskbar.test.ts", "ITaskbarList3 answers E_NOTIMPL without the shell, which runs on the default desktop only; the window has no taskbar button"],
+  ["transparent-window.test.ts", "a desktop of its own is never composed, so a screen capture of it reads black and cannot show a window through another; the windows are never activated"],
   ["web-bridge.test.ts", "WebView2 needs an ordinary desktop session to start its browser"]
 ]);
 // The mount test is `pnpm test`'s; every other test/*.test.ts opens windows.

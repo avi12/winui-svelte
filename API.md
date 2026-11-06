@@ -1854,9 +1854,26 @@ changes or the window closes)
 `"transparent"` shows the desktop through every pixel the content leaves clear,
 with per-pixel alpha: the window gets a fully clear composition brush behind
 its content (`ICompositionSupportsSystemBackdrop`; the Windows App SDK's
-`TransparentTintBackdrop` is not in the metadata of the releases restored, 2.2
-and 2.3, so it cannot be generated)
+`TransparentTintBackdrop` is in no runtime from 2.3 to 2.6.5 and not in the
+metadata restored, 2.2, so it cannot be generated), and the whole window
+becomes the window manager's frame (`DwmExtendFrameIntoClientArea` with every
+margin -1) with square corners (`DWMWA_WINDOW_CORNER_PREFERENCE` do-not-round),
+which also drops the outline and the shadow Windows 11 draws round a rounded
+window
+Without the frame step the clear pixels read black, not the desktop; it is
+applied again whenever `isBorderless` changes, since WinUI's presenter undoes
+the corner preference
 `window.systemBackdrop` reads null for it
+Measured on Windows 11 build 26300 with the Windows App SDK runtimes 2.3 to
+2.6.5 installed; no other Windows build has been run, and the corner preference
+exists on Windows 11 only
+A window on a desktop of its own (a hidden desktop) is never composed by
+Windows, so there is nothing to see through to: `test/transparent-window.test.ts`
+reads the screen of the ordinary desktop for that reason
+Not checked: a filter or a drop shadow (`filter: drop-shadow()`) on content
+over a transparent window
+The window's own `cornerRadius` clips with an edge that is not anti-aliased, so
+round the card's own `corner-radius` instead
 Pair it with `isBorderless` and content that sets no background of its own
 A floating card over a transparent window:
 

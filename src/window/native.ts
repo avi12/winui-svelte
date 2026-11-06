@@ -356,6 +356,78 @@ export function clipToRoundedRectangle({ hwnd, width, height, radius }: {
   setWindowRegion.invoke([DynWin32.handle(hwnd), region, DynWin32.i32(REDRAW)]);
 }
 
+const MARGINS_BYTES = 16;
+const MARGINS_ALIGNMENT = 4;
+const WHOLE_WINDOW_MARGIN = -1;
+const NO_MARGIN = 0;
+const DWMWA_WINDOW_CORNER_PREFERENCE = 33;
+const DWMWCP_DEFAULT = 0;
+const DWMWCP_DONOTROUND = 1;
+const PREFERENCE_BYTES = 4;
+const PREFERENCE_ALIGNMENT = 4;
+
+const extendFrameIntoClientArea = bind({
+  dll: "dwmapi.dll",
+  entryPoint: "DwmExtendFrameIntoClientArea",
+  parameters: ["handle", "pointer"],
+  returnType: "i32"
+});
+
+const setWindowAttribute = bind({
+  dll: "dwmapi.dll",
+  entryPoint: "DwmSetWindowAttribute",
+  parameters: ["handle", "u32", "pointer", "u32"],
+  returnType: "i32"
+});
+
+/**
+ * Lets the window manager draw the whole window `hwnd` as its frame
+ * (`DwmExtendFrameIntoClientArea` with every margin -1), or takes that away.
+ * Without it the window's own surface is opaque, and the pixels a transparent
+ * backdrop leaves clear show black instead of the desktop; with it they are
+ * clear.
+ */
+export function extendFrameIntoWholeWindow({ hwnd, isExtended }: {
+  hwnd: bigint;
+  isExtended: boolean;
+}) {
+  const margin = isExtended ? WHOLE_WINDOW_MARGIN : NO_MARGIN;
+  withMemory({
+    size: MARGINS_BYTES,
+    alignment: MARGINS_ALIGNMENT,
+    use(memory) {
+      memory.writeBytes(0, Buffer.from(new Int32Array([margin, margin, margin, margin]).buffer));
+      return extendFrameIntoClientArea.invoke([DynWin32.handle(hwnd), pointerOf(memory)]);
+    }
+  });
+}
+
+/**
+ * Tells the window manager whether to round the corners of the window `hwnd`
+ * and draw the shadow and outline that go with them (Windows 11; the default
+ * rounds them). A window that is see-through right to its edges wants them
+ * square and bare.
+ */
+export function setRoundedCorners({ hwnd, isRounded }: {
+  hwnd: bigint;
+  isRounded: boolean;
+}) {
+  const preference = isRounded ? DWMWCP_DEFAULT : DWMWCP_DONOTROUND;
+  withMemory({
+    size: PREFERENCE_BYTES,
+    alignment: PREFERENCE_ALIGNMENT,
+    use(memory) {
+      memory.writeBytes(0, Buffer.from(new Int32Array([preference]).buffer));
+      return setWindowAttribute.invoke([
+        DynWin32.handle(hwnd),
+        DynWin32.u32(DWMWA_WINDOW_CORNER_PREFERENCE),
+        pointerOf(memory),
+        DynWin32.u32(PREFERENCE_BYTES)
+      ]);
+    }
+  });
+}
+
 /** Takes the clip of `clipToRoundedRectangle` away: the window is whole again. */
 export function clearWindowClip(hwnd: bigint) {
   setWindowRegion.invoke([DynWin32.handle(hwnd), DynWin32Unsafe.pointer(null), DynWin32.i32(REDRAW)]);
