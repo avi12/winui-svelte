@@ -1,4 +1,7 @@
+import type { Vector3Value } from "#src/components/values.js";
 import type { CompositionObject } from "#winui/microsoft/ui/composition/CompositionObject";
+
+export type { Vector3Value } from "#src/components/values.js";
 
 // Composition expressions built from typed parts, apart from WinUI so the text
 // they make is tested under `node --test`: a reference's members, number and
@@ -21,11 +24,6 @@ export type ExpressionKind = (typeof ExpressionKind)[keyof typeof ExpressionKind
 export interface Vector2Value {
   readonly x: number;
   readonly y: number;
-}
-
-/** A three-component value: an offset, a scale, a translation. */
-export interface Vector3Value extends Vector2Value {
-  readonly z: number;
 }
 
 /** The plain value of each kind. */

@@ -71,9 +71,15 @@ test("the CSS property of every entry is the one the hover note names", () => {
   }
 });
 
+// Typography.* are attached properties of a TextBlock or a Control that no component takes as a prop
+// (the bindings have no Typography class), so CSS sets them and the table has no entry for them.
+const PROPLESS_OWNER = "typography.";
+
 test("every WinUI property with a note is a prop in the table", () => {
   const listed = new Set(Object.values(table).map(entry => entry.winuiProperty.toLowerCase()));
-  const unlisted = cssNameEntries().map(entry => entry.property).filter(property => !listed.has(property));
+  const unlisted = cssNameEntries()
+    .map(entry => entry.property)
+    .filter(property => !listed.has(property) && !property.startsWith(PROPLESS_OWNER));
   assert.deepEqual(unlisted, []);
 });
 
