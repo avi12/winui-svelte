@@ -6,11 +6,14 @@ import {
   inputTypeOf,
   memberDocsUrlOf
 } from "./emit.ts";
+import { enumSetsOf, enumValuesOf } from "./enum-values.ts";
 import { descriptionParagraphsOf } from "./member-description.ts";
 import type { AttachedModel, ClassModel } from "./model.ts";
 import { ENUMS_MODULE, OFFERED_INPUTS } from "./tables.ts";
 import type { TypeReference } from "./tables.ts";
 import { webTypesSchema } from "./web-types-schema.ts";
+import type { IdeData } from "#scripts/ide/ide-data.ts";
+import { readIdeData } from "#scripts/ide/ide-data.ts";
 import { vscodeCssData } from "#src/css/validate/vscode-data.js";
 
 // The component and prop documentation as WebStorm reads it for a package
@@ -36,7 +39,18 @@ interface Attribute {
     kind?: "expression";
     type: TypeReference | TypeReference[];
   };
+  // The enum members the editor completes, beside the `enum` type of the value.
+  values?: Array<{
+    name: string;
+    description?: string;
+  }>;
 }
+
+type EnumSets = ReadonlyMap<string, IdeData["enums"][number]>;
+
+// The editor completes the members listed in `values` for a value of the `enum` type, and checks
+// the value against the exported type that follows it.
+const ENUM_TYPE = "enum";
 
 // An HTML boolean attribute takes its own name as its value (`disabled="disabled"`), so the
 // editor underlined `isEnabled={isOwn}` as "Expected: isEnabled"; a Svelte prop is an expression.
@@ -49,15 +63,28 @@ function valueOf(type: TypeReference | TypeReference[]) {
 
 // An enum prop takes a member's name or its number (`Visibility.Collapsed`),
 // so the editor, which checks a value against this type, accepts either.
-function enumReferenceOf(enumNames: string | undefined) {
+function enumContributionOf({ enumNames, sets }: {
+  enumNames: string | undefined;
+  sets: EnumSets;
+}) {
   const isEnum = enumNames !== undefined;
-  return isEnum ? [{
-    module: ENUMS_MODULE,
-    name: enumNames
-  }, "number"] : undefined;
+  if (!isEnum) {
+    return undefined;
+  }
+
+  return {
+    type: [ENUM_TYPE, {
+      module: ENUMS_MODULE,
+      name: enumNames
+    }, "number"],
+    values: enumValuesOf({
+      sets,
+      typeName: enumNames
+    })
+  };
 }
 
-function attributeOf({ level, key, kind, winName, inputType, displayType, enumNames }: {
+function attributeOf({ level, key, kind, winName, inputType, displayType, enumNames, sets }: {
   level: ClassModel;
   key: string;
   kind: string;
@@ -65,6 +92,7 @@ function attributeOf({ level, key, kind, winName, inputType, displayType, enumNa
   inputType: string | undefined;
   displayType: string | undefined;
   enumNames: string | undefined;
+  sets: EnumSets;
 }) {
   const text = level.documentation?.members.get(`${kind}:${winName}`);
   const hasInputType = inputType !== undefined;
@@ -81,10 +109,21 @@ function attributeOf({ level, key, kind, winName, inputType, displayType, enumNa
     attribute.description = description;
   }
 
-  const type = (hasInputType ? OFFERED_INPUTS.get(inputType) : undefined) ?? enumReferenceOf(enumNames) ?? displayType;
+  const offered = hasInputType ? OFFERED_INPUTS.get(inputType) : undefined;
+  const enumContribution = offered === undefined ? enumContributionOf({
+    enumNames,
+    sets
+  }) : undefined;
+  const type = offered ?? enumContribution?.type ?? displayType;
   const isTyped = type !== undefined;
   if (isTyped) {
     attribute.value = valueOf(type);
+  }
+
+  const values = enumContribution?.values;
+  const hasValues = values !== undefined;
+  if (hasValues) {
+    attribute.values = values;
   }
 
   const isDocumented = text !== undefined;
@@ -101,7 +140,10 @@ function attributeOf({ level, key, kind, winName, inputType, displayType, enumNa
 
 // An attached property a class takes as a prop (`automationId`): WinUI's class
 // documents it on the owner's accessor, which the model carries as its text.
-function attachedAttributeOf(attached: AttachedModel) {
+function attachedAttributeOf({ attached, sets }: {
+  attached: AttachedModel;
+  sets: EnumSets;
+}) {
   const inputType = inputTypeOf(attached);
   const displayType = displayTypeOf(attached);
   const description = descriptionParagraphsOf({
@@ -117,11 +159,21 @@ function attachedAttributeOf(attached: AttachedModel) {
     attribute.description = description;
   }
 
-  const type = (inputType === undefined ? undefined : OFFERED_INPUTS.get(inputType))
-    ?? enumReferenceOf(enumNamesTypeOf(attached)) ?? displayType;
+  const offered = inputType === undefined ? undefined : OFFERED_INPUTS.get(inputType);
+  const enumContribution = offered === undefined ? enumContributionOf({
+    enumNames: enumNamesTypeOf(attached),
+    sets
+  }) : undefined;
+  const type = offered ?? enumContribution?.type ?? displayType;
   const isTyped = type !== undefined;
   if (isTyped) {
     attribute.value = valueOf(type);
+  }
+
+  const values = enumContribution?.values;
+  const hasValues = values !== undefined;
+  if (hasValues) {
+    attribute.values = values;
   }
 
   return attribute;
@@ -129,7 +181,10 @@ function attachedAttributeOf(attached: AttachedModel) {
 
 // A class's own props, attached props and events: a descendant reaches the
 // rest through `extends`, so that no ancestor's attributes are written again for each.
-function attributesOf(level: ClassModel) {
+function attributesOf({ level, sets }: {
+  level: ClassModel;
+  sets: EnumSets;
+}) {
   return [
     ...level.properties.map(property => attributeOf({
       level,
@@ -138,9 +193,13 @@ function attributesOf(level: ClassModel) {
       winName: property.winName,
       inputType: inputTypeOf(property),
       displayType: displayTypeOf(property),
-      enumNames: enumNamesTypeOf(property)
+      enumNames: enumNamesTypeOf(property),
+      sets
     })),
-    ...level.attached.filter(attached => !attached.isSlot).map(attachedAttributeOf),
+    ...level.attached.filter(attached => !attached.isSlot).map(attached => attachedAttributeOf({
+      attached,
+      sets
+    })),
     ...level.events.map(event => attributeOf({
       level,
       key: event.key,
@@ -148,7 +207,8 @@ function attributesOf(level: ClassModel) {
       winName: event.winName,
       inputType: undefined,
       displayType: undefined,
-      enumNames: undefined
+      enumNames: undefined,
+      sets
     }))
   ];
 }
@@ -166,12 +226,34 @@ function cssPropertiesOf() {
   }));
 }
 
-function elementOf(level: ClassModel) {
+// The helpers that go after `{@attach}` and the web event names an `enable...` call wires up
+// (`ondrop`), from the data set the editors share.
+function jsContributionsOf(data: IdeData) {
+  return {
+    symbols: data.attachments.map(attachment => ({
+      name: attachment.name,
+      kind: "Function" as const,
+      description: `${attachment.description}\n\nImport it from \`${attachment.module}\` and write it after \`@attach\``
+    })),
+    events: data.webEvents.map(event => ({
+      name: event.name,
+      description: `The web event, written \`on${event.name}\`; call \`${event.enabledBy}()\` from \`${event.module}\` once at start-up`
+    }))
+  };
+}
+
+function elementOf({ level, sets }: {
+  level: ClassModel;
+  sets: EnumSets;
+}) {
   const element: Element = {
     name: level.type.name,
     description: level.documentation?.summary ?? undefined,
     "doc-url": docsUrlOf(level.type),
-    attributes: attributesOf(level)
+    attributes: attributesOf({
+      level,
+      sets
+    })
   };
   const { parent } = level;
   const hasParent = parent !== null;
@@ -190,7 +272,12 @@ export function emitWebTypes({ classes, version }: {
   classes: ClassModel[];
   version: string;
 }) {
-  const elements = [...classes.map(elementOf), windowElement()];
+  const data = readIdeData();
+  const sets = enumSetsOf(data);
+  const elements = [...classes.map(level => elementOf({
+    level,
+    sets
+  })), windowElement(sets)];
   const webTypes = {
     $schema: "https://json.schemastore.org/web-types",
     name: "winui-svelte",
@@ -203,7 +290,8 @@ export function emitWebTypes({ classes, version }: {
       },
       css: {
         properties: cssPropertiesOf()
-      }
+      },
+      js: jsContributionsOf(data)
     }
   };
   webTypesSchema.parse(webTypes);

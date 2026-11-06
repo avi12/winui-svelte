@@ -1,4 +1,6 @@
+import { enumValuesOf } from "./enum-values.ts";
 import { ENUMS_MODULE } from "./tables.ts";
+import type { IdeData } from "#scripts/ide/ide-data.ts";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import typescript from "typescript";
@@ -11,7 +13,6 @@ import typescript from "typescript";
 
 const PACKAGE_ROOT = path.resolve(import.meta.dirname, "../..");
 const PROPS_FILE = path.join(PACKAGE_ROOT, "src", "window", "window-host.svelte.ts");
-const ENUMS_FILE = path.join(PACKAGE_ROOT, "src", "enums.ts");
 const PROPS_INTERFACE = "WindowProps";
 const API_DOCUMENT = "https://github.com/avi12/winui-svelte/blob/main/API.md#window";
 const UNDEFINED_SUFFIX = / \| undefined$/u;
@@ -19,22 +20,6 @@ const PRIMITIVES = new Set(["boolean", "number", "string"]);
 
 function sourceOf(file: string) {
   return typescript.createSourceFile(file, readFileSync(file, "utf8"), typescript.ScriptTarget.Latest, true);
-}
-
-// The names `src/enums.ts` re-exports: the closed sets a prop can be typed with.
-function exportedEnumNames() {
-  const names = new Set<string>();
-  for (const statement of sourceOf(ENUMS_FILE).statements) {
-    const isReExport = typescript.isExportDeclaration(statement) && statement.exportClause !== undefined
-      && typescript.isNamedExports(statement.exportClause);
-    if (isReExport) {
-      for (const element of statement.exportClause.elements) {
-        names.add(element.name.text);
-      }
-    }
-  }
-
-  return names;
 }
 
 function propsInterface() {
@@ -54,51 +39,65 @@ function descriptionOf(member: typescript.PropertySignature) {
   return text.replaceAll(/\s*\n\s*/gu, " ");
 }
 
-function valueOf({ typeText, enumNames }: {
+function valueOf({ typeText, sets }: {
   typeText: string;
-  enumNames: Set<string>;
+  sets: ReadonlyMap<string, IdeData["enums"][number]>;
 }) {
   const bare = typeText.replace(UNDEFINED_SUFFIX, "");
   const isBoolean = bare === "boolean";
   if (isBoolean) {
     return {
-      kind: "expression" as const,
-      type: bare
+      value: {
+        kind: "expression" as const,
+        type: bare
+      }
     };
   }
 
   if (PRIMITIVES.has(bare)) {
-    return { type: bare };
+    return {
+      value: {
+        type: bare
+      }
+    };
   }
 
-  return enumNames.has(bare) ? {
-    type: {
-      module: ENUMS_MODULE,
-      name: bare
-    }
-  } : undefined;
+  const isSet = sets.has(bare);
+  if (!isSet) {
+    return undefined;
+  }
+
+  return {
+    value: {
+      type: ["enum", {
+        module: ENUMS_MODULE,
+        name: bare
+      }]
+    },
+    values: enumValuesOf({
+      sets,
+      typeName: bare
+    })
+  };
 }
 
 /**
  * The web-types element of `<Window>`: one attribute for each member of `WindowProps`, with its documentation, and
  * its type where the editor can check it (a boolean, a number, a string or one of the package's closed sets).
  */
-export function windowElement() {
-  const enumNames = exportedEnumNames();
+export function windowElement(sets: ReadonlyMap<string, IdeData["enums"][number]>) {
   const attributes = propsInterface().members.filter(typescript.isPropertySignature).map(member => {
     const description = descriptionOf(member);
-    const value = member.type === undefined ? undefined : valueOf({
+    const contribution = member.type === undefined ? undefined : valueOf({
       typeText: member.type.getText(),
-      enumNames
+      sets
     });
     return {
       name: member.name.getText(),
       ...description !== "" && {
         description
       },
-      ...value !== undefined && {
-        value
-      }
+      ...contribution
     };
   });
   return {

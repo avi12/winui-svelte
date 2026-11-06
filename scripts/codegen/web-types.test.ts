@@ -10,7 +10,7 @@ import { z } from "zod";
 // each class and of its own props, and each class names its parent.
 
 const PACKAGE_FOLDER = path.resolve(import.meta.dirname, "../..");
-const { html: { elements }, css } = webTypesSchema.parse(
+const { html: { elements }, css, js } = webTypesSchema.parse(
   JSON.parse(readFileSync(path.join(PACKAGE_FOLDER, "web-types.json"), "utf8"))
 ).contributions;
 
@@ -34,10 +34,10 @@ test("glyph names the exported GlyphInput type, so the editor can show it and of
 test("the hand-written Window has an element whose backdrop names the closed set the editor offers", () => {
   const window = elements.find(element => element.name === "Window");
   const backdrop = window?.attributes.find(attribute => attribute.name === "backdrop");
-  assert.deepEqual(backdrop?.value?.type, {
+  assert.deepEqual(backdrop?.value?.type, ["enum", {
     module: "winui-svelte/enums",
     name: "Backdrop"
-  });
+  }]);
   assert.match(backdrop?.description ?? "", /material behind the content/u);
   const isBorderless = window?.attributes.find(attribute => attribute.name === "isBorderless");
   assert.equal(isBorderless?.value?.kind, "expression");
@@ -77,10 +77,33 @@ test("a property a shorthand sets names that shorthand", () => {
 
 test("an enum prop offers its member names and also takes the member's number", () => {
   const visibility = elements.find(element => element.name === "UIElement")?.attributes.find(attribute => attribute.name === "visibility");
-  assert.deepEqual(visibility?.value?.type, [{
+  assert.deepEqual(visibility?.value?.type, ["enum", {
     module: "winui-svelte/enums",
     name: "VisibilityName"
   }, "number"]);
+  assert.deepEqual(visibility?.values?.map(value => value.name), ["Visible", "Collapsed"]);
+});
+
+test("an enum prop completes the values the editors' data set lists, so that backdrop=\"mi\" offers mica", () => {
+  const window = elements.find(element => element.name === "Window");
+  const backdrop = window?.attributes.find(attribute => attribute.name === "backdrop");
+  assert.deepEqual(backdrop?.values?.map(value => value.name), [
+    "acrylic",
+    "acrylicBase",
+    "acrylicThin",
+    "mica",
+    "micaAlt",
+    "none",
+    "transparent"
+  ]);
+  const clickMode = elements.flatMap(element => element.attributes).find(attribute => attribute.name === "clickMode");
+  assert.match(clickMode?.values?.[0]?.description ?? "", /^Specifies that the Click event/u);
+});
+
+test("the attachment helpers and the web events are contributions to the JavaScript namespace", () => {
+  const dropzone = js?.symbols.find(symbol => symbol.name === "dropzone");
+  assert.match(dropzone?.description ?? "", /winui-svelte\/data-transfer/u);
+  assert.equal(js?.events.some(event => event.name === "drop"), true);
 });
 
 // WebStorm drops a web-types file that does not follow its schema, and every
