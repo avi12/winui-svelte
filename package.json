@@ -147,6 +147,10 @@
       "svelte": "./dist/incremental/index.js",
       "default": "./dist/incremental/index.js"
     },
+    "./chrome/permissions": {
+      "types": "./dist/chrome/permissions/index.d.ts",
+      "default": "./dist/chrome/permissions/index.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
