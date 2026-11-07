@@ -1,3 +1,4 @@
+import { splitJumpListArgument } from "./jump-list-argument.ts";
 import { ActivationKind } from "./kinds.ts";
 import type { ActivationEvent } from "./kinds.ts";
 import { STARTUP_ARGUMENT } from "./registration.ts";
@@ -68,10 +69,11 @@ async function existingFiles({ candidates, workingDirectory, extensions }: {
 }
 
 /**
- * Turns what a start or a redirect carried into the one typed event: the
- * first valid address is a `protocol` activation, else existing files are a
- * `file` one, else `startup` when the startup marker is there, else `redirect`
- * or `launch` by who sent it. An argument that fits none is left in `arguments`.
+ * Turns what a start or a redirect carried into the one typed event: a jump
+ * list task marker is a `jumpList` activation, else the first valid address is
+ * a `protocol` activation, else existing files are a `file` one, else
+ * `startup` when the startup marker is there, else `redirect` or `launch` by
+ * who sent it. An argument that fits none is left in `arguments`.
  *
  * @param options - The raw activation, whether a later copy sent it, and the
  *   extensions a file must have (any when omitted).
@@ -86,12 +88,21 @@ export async function classifyActivation({ activation, isRedirect, extensions }:
   const { workingDirectory } = activation;
   const all = argumentsSchema.parse(activation.arguments);
   const isStartup = !isRedirect && all.includes(STARTUP_ARGUMENT);
-  const values = all.filter(value => value !== STARTUP_ARGUMENT);
+  const { taskId, rest: values } = splitJumpListArgument(all.filter(value => value !== STARTUP_ARGUMENT));
   const base = {
     isRedirect,
     arguments: values,
     workingDirectory
   };
+  const isJumpListTask = taskId !== undefined;
+  if (isJumpListTask) {
+    return {
+      ...base,
+      taskId,
+      kind: ActivationKind.jumpList
+    } satisfies ActivationEvent;
+  }
+
   const address = firstProtocol(values);
   const isProtocol = address !== undefined;
   if (isProtocol) {
