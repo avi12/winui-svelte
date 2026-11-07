@@ -3695,6 +3695,9 @@ by an atomic write
 | any other name | never | `contains` and `request` reject with an `Error` |
 | origins (`<all_urls>` and match patterns) | always | nothing; a native app has no host permissions, a bad pattern rejects, `remove` answers false |
 
+- The table is data you can read: `NATIVE_PERMISSIONS` (a `Map` from a Chrome
+  name to the Web permissions behind it), `GRANTED_BY_DEFAULT` (a `Set` of the
+  always-held names) and `ALL_URLS` (`<all_urls>`)
 - `request` checks each missing native permission: a state of `prompt` calls
   the provider's `request` (location shows the Windows prompt through
   `Geolocator.RequestAccessAsync`); camera and microphone are asked by the
