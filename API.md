@@ -3718,6 +3718,9 @@ const [item] = await downloads.search({ id });
   what changed (`state`, `paused`, `bytesReceived`, `totalBytes`, `error`,
   `canResume`, `filename`, and so on) and `onErased` the id; they have
   `addListener`, `removeListener`, `hasListener` and `hasListeners`
+- The closed sets are `DownloadState` (`in_progress`, `interrupted`,
+  `complete`), `FilenameConflictAction`, `HttpMethod` and `InterruptReason`,
+  and `ChromeEvent` is the class of the three events
 - `DownloadItem.totalBytes` and `fileSize` are -1 while unknown, as in Chrome;
   the `error` values are `InterruptReason`'s, and an HTTP status maps to
   `SERVER_UNAUTHORIZED`, `SERVER_FORBIDDEN`, `SERVER_BAD_CONTENT` or
