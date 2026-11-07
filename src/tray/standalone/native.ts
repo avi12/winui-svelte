@@ -4,7 +4,7 @@ import { MenuItemKind } from "#src/tray/menu/types.js";
 import type { ResolvedCheck, ResolvedCommand, ResolvedMenuItem, ResolvedRadio } from "#src/tray/menu/types.js";
 import {
   addressOf,
-  bind,
+  bindDll,
   numberOf,
   pointerOf,
   wideMemory
@@ -104,23 +104,13 @@ function typeOf(item: ResolvedMenuItem) {
 
 /** The Win32 calls that make a menu from resolved lines, bound when this is called, never when the module loads. */
 export function createMenuBuilder() {
-  const createPopup = bind({
+  const { createPopup, destroyMenu, insertItem } = bindDll({
     dll: "user32.dll",
-    entryPoint: "CreatePopupMenu",
-    parameters: [],
-    returnType: "pointer"
-  });
-  const destroyMenu = bind({
-    dll: "user32.dll",
-    entryPoint: "DestroyMenu",
-    parameters: ["pointer"],
-    returnType: "i32"
-  });
-  const insertItem = bind({
-    dll: "user32.dll",
-    entryPoint: "InsertMenuItemW",
-    parameters: ["pointer", "u32", "i32", "pointer"],
-    returnType: "i32"
+    functions: {
+      createPopup: ["CreatePopupMenu", [], "pointer"],
+      destroyMenu: ["DestroyMenu", ["pointer"], "i32"],
+      insertItem: ["InsertMenuItemW", ["pointer", "u32", "i32", "pointer"], "i32"]
+    }
   });
 
   function popup() {
@@ -208,17 +198,12 @@ export function createMenuBuilder() {
 /** The real popup menu. Its Win32 functions are bound when this is called, never when the module loads. */
 export function createNativeMenu() {
   const builder = createMenuBuilder();
-  const trackPopup = bind({
+  const { trackPopup, postMessage } = bindDll({
     dll: "user32.dll",
-    entryPoint: "TrackPopupMenuEx",
-    parameters: ["pointer", "u32", "i32", "i32", "pointer", "pointer"],
-    returnType: "i32"
-  });
-  const postMessage = bind({
-    dll: "user32.dll",
-    entryPoint: "PostMessageW",
-    parameters: ["pointer", "u32", "pointer", "pointer"],
-    returnType: "i32"
+    functions: {
+      trackPopup: ["TrackPopupMenuEx", ["pointer", "u32", "i32", "i32", "pointer", "pointer"], "i32"],
+      postMessage: ["PostMessageW", ["pointer", "u32", "pointer", "pointer"], "i32"]
+    }
   });
 
   const native: NativeMenu = {

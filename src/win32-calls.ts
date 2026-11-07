@@ -41,6 +41,29 @@ export function bind({ dll, entryPoint, parameters, returnType, shouldCaptureLas
   });
 }
 
+/** A function of a DLL as a table row: its entry point, parameter types and return type. */
+type Signature = readonly [entryPoint: string, parameters: readonly string[], returnType: string];
+
+/**
+ * Binds several functions of one DLL, each under the name of its row.
+ *
+ * @param options - `dll`: the DLL; `functions`: one `[entryPoint, parameters, returnType]` row per name.
+ * @returns The bound functions by name, each as `bind` makes it.
+ */
+export function bindDll<const Name extends string>({ dll, functions }: {
+  readonly dll: string;
+  readonly functions: Readonly<Record<Name, Signature>>;
+}) {
+  const rows = Object.entries<Signature>(functions).map(([name, [entryPoint, parameters, returnType]]) => [name, bind({
+    dll,
+    entryPoint,
+    parameters: [...parameters],
+    returnType
+  })] as const);
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- Object.fromEntries loses the names of `functions`
+  return Object.fromEntries(rows) as Record<Name, ReturnType<typeof bind>>;
+}
+
 /**
  * A pointer argument for some memory.
  *

@@ -1,4 +1,10 @@
-import { addressOf, bind, numberOf, pointerOf } from "./win32-calls.ts";
+import {
+  addressOf,
+  bind,
+  bindDll,
+  numberOf,
+  pointerOf
+} from "./win32-calls.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 
@@ -33,29 +39,14 @@ export interface IconPixels {
  * @returns The calls: load, destroy and the shell's icon size.
  */
 export function createIconFileCalls() {
-  const loadImage = bind({
+  const { loadImage, destroyIcon, systemDpi, metricsForDpi } = bindDll({
     dll: "user32.dll",
-    entryPoint: "LoadImageW",
-    parameters: ["pointer", "pointer", "u32", "i32", "i32", "u32"],
-    returnType: "pointer"
-  });
-  const destroyIcon = bind({
-    dll: "user32.dll",
-    entryPoint: "DestroyIcon",
-    parameters: ["pointer"],
-    returnType: "i32"
-  });
-  const systemDpi = bind({
-    dll: "user32.dll",
-    entryPoint: "GetDpiForSystem",
-    parameters: [],
-    returnType: "u32"
-  });
-  const metricsForDpi = bind({
-    dll: "user32.dll",
-    entryPoint: "GetSystemMetricsForDpi",
-    parameters: ["i32", "u32"],
-    returnType: "i32"
+    functions: {
+      loadImage: ["LoadImageW", ["pointer", "pointer", "u32", "i32", "i32", "u32"], "pointer"],
+      destroyIcon: ["DestroyIcon", ["pointer"], "i32"],
+      systemDpi: ["GetDpiForSystem", [], "u32"],
+      metricsForDpi: ["GetSystemMetricsForDpi", ["i32", "u32"], "i32"]
+    }
   });
 
   return {
