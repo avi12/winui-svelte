@@ -231,6 +231,8 @@
     "minimize",
     "maximize",
     "bringToFront",
+    "dock",
+    "windowControlsOverlay",
     "pickFile",
     "pickFiles",
     "pickFolder",
