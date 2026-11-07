@@ -3715,6 +3715,58 @@ by an atomic write
 - Options of the constructor: `file`, `appName`, `location`, `environment`
   and `openSettings`, the stand-ins for tests
 
+## ChromeContextMenus (`winui-svelte/chrome/context-menus`)
+
+`chrome.contextMenus` for a native app, with Chrome's names and shapes:
+`create(properties)` (answers the id), `update(id, properties)`,
+`remove(id)`, `removeAll()` and `onClicked` (a `ChromeEvent`); the item
+types `normal`, `checkbox`, `radio` and `separator`, and `title`, `id`,
+`checked`, `enabled`, `visible`, `contexts`, `parentId` and `onclick`
+Opt-in: nothing is bundled until an app imports it, importing does no work,
+and no global is installed
+
+The items live in one list and are drawn by the tray menu model
+(`winui-svelte/tray/menu`), not by a second menu implementation:
+`menu(surface)` answers the lines for `TrayIcon` (`menu={...}`) or for a
+window's context flyout, in the same `MenuItem` shape
+The array is the same object each time and is rewritten in place when an item
+changes, so a menu that reads it when it opens shows the current items
+
+```ts
+import { ChromeContextMenus, ContextMenuSurface } from "winui-svelte/chrome/context-menus";
+
+const menus = new ChromeContextMenus();
+menus.create({ id: "pause", title: "Pause", type: "checkbox", contexts: ["action"] });
+menus.onClicked.addListener(({ menuItemId, checked }) => console.log(menuItemId, checked));
+const lines = menus.menu(ContextMenuSurface.TRAY);
+```
+
+| Context | Surface | Shown |
+| --- | --- | --- |
+| `action`, `browser_action`, `page_action` | `tray` | in the tray icon's menu |
+| `page` | `window` | in the context flyout of a window |
+| `all` | both | in both |
+| `frame`, `selection`, `link`, `editable`, `image`, `video`, `audio`, `launcher` | none | accepted and ignored; there is no page under a native menu |
+
+- `contexts` is `["page"]` when left out, as in Chrome
+- `documentUrlPatterns` and `targetUrlPatterns` are accepted and ignored
+- A radio belongs to the run of radios next to it among its siblings; a pick
+  ticks it and unticks the others of the run
+- A pick of a checkbox flips it; `onclick` runs first, then `onClicked`
+  fires with `menuItemId`, `parentMenuItemId`, `checked`, `wasChecked` and
+  `editable` (always false); there is no `pageUrl`, `selectionText` or tab
+- An item with children is drawn as a submenu; a hidden item leaves out its
+  children
+- `create` throws, and `update` and `remove` reject, with an `Error` for a
+  duplicate id, an unknown id or parent, a parent under the item, a missing
+  title, or a key Chrome does not know
+- Not mirrored: the callback arguments (use the promises), Chrome's grouping of
+  several top-level items under the extension's name, and the limit of six
+  top-level `action` items
+- Public exports: `ChromeContextMenus`, `ContextItemType`,
+  `ContextMenuSurface`, `ContextType`, `ChromeEvent`, and the types
+  `CreateProperties`, `OnClickData` and `UpdateProperties`
+
 ## Downloads (`winui-svelte/downloads`)
 
 Downloads on the two APIs an app already knows: the web's `fetch` with the File
