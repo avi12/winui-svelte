@@ -1,9 +1,10 @@
-import { activateOrLaunch, createStandaloneTray, NativeMenuEntryKind } from "winui-svelte/tray/standalone";
+import { activateOrLaunch, createStandaloneTray, MenuItemKind } from "winui-svelte/tray/standalone";
 
 createStandaloneTray({
   icon: "tray.ico",
   menu: [{
-    kind: NativeMenuEntryKind.COMMAND,
+    kind: MenuItemKind.COMMAND,
+    id: "open",
     label: "Open",
     onselect() {
       void activateOrLaunch({

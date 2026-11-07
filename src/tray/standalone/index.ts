@@ -1,11 +1,9 @@
 export type { LaunchOptions } from "#src/app/activate.js";
 export { activateInstance, activateOrLaunch, launchApp } from "#src/app/activate.js";
-export type { NativeMenu, NativeMenuEntry } from "./native.ts";
-export { NativeMenuEntryKind } from "./native.ts";
+export type { NativeChoice, NativeMenu } from "./native.ts";
+export { MenuItemKind, MenuLevel } from "#src/tray/menu/types.js";
+export type { MenuItem, MenuProfile } from "#src/tray/menu/types.js";
 export type {
-  StandaloneMenuCommand,
-  StandaloneMenuItem,
-  StandaloneMenuSeparator,
   StandaloneTrayOptions,
   StandaloneTraySeams
 } from "./standalone-tray.ts";

@@ -1,7 +1,9 @@
-import { NativeMenuEntryKind } from "./native.ts";
-import type { NativeMenu, NativeMenuEntry } from "./native.ts";
+import type { NativeChoice, NativeMenu } from "./native.ts";
 import { createStandaloneTray } from "./standalone-tray.ts";
-import type { StandaloneMenuItem } from "./standalone-tray.ts";
+import type { StandaloneTrayOptions } from "./standalone-tray.ts";
+import { defaultProfile } from "#src/tray/menu/default-profile.js";
+import { MenuItemKind } from "#src/tray/menu/types.js";
+import type { MenuItem, ResolvedMenuItem } from "#src/tray/menu/types.js";
 import type {
   ButtonSample,
   PointerSample,
@@ -13,7 +15,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 // The tray-only icon against a fake Win32 layer and a fake popup menu: which
-// entries the menu is given, what a choice runs, and what is made when.
+// lines the menu is given, what a pick runs and when, and what is made when.
 
 const OWNER = 5n;
 const ICON_RECT: ScreenRect = {
@@ -78,32 +80,74 @@ function fakeNative() {
   };
 }
 
-function start({ menu, choose }: {
-  menu: readonly StandaloneMenuItem[] | undefined;
-  choose: (entries: readonly NativeMenuEntry[]) => number;
+// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
+function find({ items, id }: {
+  readonly items: readonly ResolvedMenuItem[];
+  readonly id: string;
+}): NativeChoice | undefined {
+  for (const item of items) {
+    const isSubmenu = item.kind === MenuItemKind.SUBMENU;
+    if (isSubmenu) {
+      const inner = find({
+        items: item.items,
+        id
+      });
+      if (inner) {
+        return inner;
+      }
+
+      continue;
+    }
+
+    const isPickable = item.kind !== MenuItemKind.SEPARATOR && item.kind !== MenuItemKind.HEADER;
+    const isWanted = isPickable && item.id === id;
+    if (isWanted) {
+      return item;
+    }
+  }
+
+  return undefined;
+}
+
+// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
+function names(items: readonly ResolvedMenuItem[]): string[] {
+  return items.map(item => (item.kind === MenuItemKind.SUBMENU ? `${item.id}[${names(item.items).join(",")}]` : item.id));
+}
+
+function start<const ItemId extends string>({ menu, picks, profile }: {
+  readonly menu: StandaloneTrayOptions<ItemId>["menu"];
+  readonly picks: ReadonlyArray<string | undefined>;
+  readonly profile?: StandaloneTrayOptions<ItemId>["profile"];
 }) {
   const fake = fakeNative();
   let tick = noop;
   const shown: Array<{
-    owner: bigint;
-    point: {
-      x: number;
-      y: number;
+    readonly owner: bigint;
+    readonly point: {
+      readonly x: number;
+      readonly y: number;
     };
-    entries: readonly NativeMenuEntry[];
+    readonly items: readonly ResolvedMenuItem[];
   }> = [];
+  const deferred: Array<() => void> = [];
   const nativeMenu: NativeMenu = {
     choose(options) {
       fake.calls.push("choose");
       shown.push(options);
-      return choose(options.entries);
+      const pick = picks[shown.length - 1];
+      return pick === undefined ? undefined : find({
+        items: options.items,
+        id: pick
+      });
     }
   };
   const handle = createStandaloneTray({
     icon: "a.ico",
     menu,
+    ...profile ? { profile } : {},
     native: fake.native,
     nativeMenu,
+    defer: run => deferred.push(run),
     schedule({ onTick }) {
       tick = onTick;
       return () => {};
@@ -118,37 +162,40 @@ function start({ menu, choose }: {
   return {
     ...fake,
     shown,
+    deferred,
     handle,
-    rightClick,
-    leftClick() {
-      fake.press("left");
-      tick();
-      fake.release();
-      tick();
-    }
+    rightClick
   };
 }
 
-const COMMAND = NativeMenuEntryKind.COMMAND;
-const SEPARATOR = NativeMenuEntryKind.SEPARATOR;
+function command<const ItemId extends string>({ id, onselect = noop }: {
+  readonly id: ItemId;
+  readonly onselect?: () => void;
+}) {
+  return {
+    kind: MenuItemKind.COMMAND,
+    id,
+    label: id,
+    onselect
+  } satisfies MenuItem;
+}
 
-test("a right click shows the menu at the pointer, numbering the commands from 1", () => {
+test("a right click shows the resolved menu at the pointer", () => {
   const { shown, rightClick, handle } = start({
     menu: [
+      command({ id: "open" }),
       {
-        kind: COMMAND,
-        label: "Open",
-        onselect() {}
+        kind: MenuItemKind.SEPARATOR,
+        id: "line"
       },
-      { kind: SEPARATOR },
       {
-        kind: COMMAND,
+        kind: MenuItemKind.COMMAND,
+        id: "quit",
         label: "Quit",
-        isEnabled: false,
-        onselect() {}
+        isEnabled: false
       }
     ],
-    choose: () => 0
+    picks: [undefined]
   });
   rightClick();
   assert.equal(shown.length, 1);
@@ -156,69 +203,70 @@ test("a right click shows the menu at the pointer, numbering the commands from 1
     x: 110,
     y: 112
   });
-  assert.deepEqual(shown[0]?.entries, [
-    {
-      kind: COMMAND,
-      id: 1,
-      label: "Open",
-      isEnabled: true
-    },
-    { kind: SEPARATOR },
-    {
-      kind: COMMAND,
-      id: 2,
-      label: "Quit",
-      isEnabled: false
-    }
-  ]);
+  assert.deepEqual(names(shown[0]?.items ?? []), ["open", "line", "quit"]);
+  const quit = shown[0]?.items[2];
+  assert.equal(quit?.kind === MenuItemKind.COMMAND && quit.isEnabled, false);
   handle.remove();
 });
 
-test("the chosen command runs, and only that one", () => {
+test("the chosen command runs on a later turn, and only that one", () => {
   const ran: string[] = [];
-  const { rightClick, handle } = start({
-    menu: [
-      {
-        kind: COMMAND,
-        label: "Open",
-        onselect: () => ran.push("open")
-      },
-      {
-        kind: COMMAND,
-        label: "Quit",
-        onselect: () => ran.push("quit")
-      }
-    ],
-    choose: () => 2
+  const { rightClick, deferred, handle } = start({
+    menu: [command({
+      id: "open",
+      onselect: () => ran.push("open")
+    }), command({
+      id: "quit",
+      onselect: () => ran.push("quit")
+    })],
+    picks: ["quit"]
   });
   rightClick();
+  assert.deepEqual(ran, [], "not while the menu is closing");
+  for (const run of deferred) {
+    run();
+  }
+
   assert.deepEqual(ran, ["quit"]);
+  handle.remove();
+});
+
+test("a command with closeThenRun false runs at once, after the menu is gone", () => {
+  const calls: string[] = [];
+  const { rightClick, handle, calls: fakeCalls } = start({
+    menu: [{
+      kind: MenuItemKind.COMMAND,
+      id: "now",
+      label: "Now",
+      closeThenRun: false,
+      onselect: () => calls.push("ran")
+    }],
+    picks: ["now"]
+  });
+  rightClick();
+  assert.deepEqual(calls, ["ran"]);
+  assert.equal(fakeCalls.at(-1), `destroyWindow ${OWNER}`);
   handle.remove();
 });
 
 test("closing the menu with no choice runs nothing", () => {
   const ran: string[] = [];
-  const { rightClick, handle } = start({
-    menu: [{
-      kind: COMMAND,
-      label: "Open",
+  const { rightClick, deferred, handle } = start({
+    menu: [command({
+      id: "open",
       onselect: () => ran.push("open")
-    }],
-    choose: () => 0
+    })],
+    picks: [undefined]
   });
   rightClick();
-  assert.deepEqual(ran, []);
+  assert.deepEqual([ran, deferred.length], [[], 0]);
   handle.remove();
 });
 
-test("the menu's owner window exists only while the menu is open, and takes the foreground first", () => {
+test("the owner window exists only while the menu is open, and takes the foreground first", () => {
   const { calls, rightClick, handle } = start({
-    menu: [{
-      kind: COMMAND,
-      label: "Open",
-      onselect() {}
-    }],
-    choose: () => 0
+    menu: [command({ id: "open" })],
+    picks: [undefined]
   });
   assert.equal(calls.includes("createOwnerWindow"), true, "the icon's own owner window");
   const before = calls.length;
@@ -230,25 +278,131 @@ test("the menu's owner window exists only while the menu is open, and takes the 
 test("no menu items, no popup: a right click does nothing", () => {
   const { shown, rightClick, handle } = start({
     menu: undefined,
-    choose: () => 0
+    picks: []
   });
   rightClick();
   assert.equal(shown.length, 0);
   handle.remove();
 });
 
-test("the owner window is destroyed even when a command throws", () => {
+test("the owner window is destroyed even when a stay-open command throws", () => {
   const { calls, rightClick, handle } = start({
     menu: [{
-      kind: COMMAND,
+      kind: MenuItemKind.COMMAND,
+      id: "boom",
       label: "Boom",
+      staysOpen: true,
       onselect() {
         throw new Error("boom");
       }
     }],
-    choose: () => 1
+    picks: ["boom"]
   });
   assert.throws(rightClick, /boom/u);
   assert.equal(calls.at(-1), `destroyWindow ${OWNER}`);
   handle.remove();
+});
+
+test("a stay-open check runs, then the menu reopens at the same point with the new tick", () => {
+  let isOn = false;
+  const { shown, rightClick, deferred, handle } = start({
+    menu: [{
+      kind: MenuItemKind.CHECK,
+      id: "mute",
+      label: "Mute",
+      staysOpen: true,
+      isChecked: () => isOn,
+      onselect() {
+        isOn = !isOn;
+      }
+    }, command({ id: "quit" })],
+    picks: ["mute", "mute", undefined]
+  });
+  rightClick();
+  assert.equal(shown.length, 3);
+  assert.deepEqual(shown.map(({ point }) => point), [shown[0]?.point, shown[0]?.point, shown[0]?.point]);
+  const ticks = shown.map(({ items }) => {
+    const [first] = items;
+    return first?.kind === MenuItemKind.CHECK && first.isChecked;
+  });
+  assert.deepEqual(ticks, [false, true, false]);
+  assert.equal(deferred.length, 0);
+  handle.remove();
+});
+
+test("submenus reach the popup with their children, lazy ones made when the menu opens", () => {
+  let count = 0;
+  const { shown, rightClick, handle } = start({
+    menu: [{
+      kind: MenuItemKind.SUBMENU,
+      id: "recent",
+      label: "Recent",
+      items() {
+        count += 1;
+        return [command({ id: "first" })];
+      }
+    }],
+    picks: [undefined, undefined]
+  });
+  assert.equal(count, 0, "nothing exists while idle");
+  rightClick();
+  rightClick();
+  assert.equal(count, 2);
+  assert.deepEqual(names(shown[1]?.items ?? []), ["recent[first]"]);
+  handle.remove();
+});
+
+test("the profile, or a function that gives it, decides what shows each time", () => {
+  let hidden: ReadonlyArray<"open" | "quit"> = ["open"];
+  const { shown, rightClick, handle } = start({
+    menu: [command({ id: "open" }), command({ id: "quit" })],
+    picks: [undefined, undefined],
+    profile: () => ({
+      ...defaultProfile<"open" | "quit">(),
+      hidden
+    })
+  });
+  rightClick();
+  hidden = [];
+  rightClick();
+  assert.deepEqual(shown.map(({ items }) => names(items)), [["quit"], ["open", "quit"]]);
+  handle.remove();
+});
+
+test("a profile with an id that is not in the menu, or a line of the wrong shape, does not compile", () => {
+  const { native } = fakeNative();
+  function schedule() {
+    return noop;
+  }
+
+  createStandaloneTray({
+    icon: "a.ico",
+    menu: [command({ id: "open" })],
+    profile: {
+      ...defaultProfile(),
+      // @ts-expect-error "nope" is not an id of the menu
+      hidden: ["nope"]
+    },
+    native,
+    schedule
+  }).remove();
+  createStandaloneTray({
+    icon: "a.ico",
+    menu: [{
+      kind: MenuItemKind.COMMAND,
+      id: "open",
+      label: "Open",
+      // @ts-expect-error a command has no group
+      group: "a"
+    }],
+    native,
+    schedule
+  }).remove();
+  createStandaloneTray({
+    icon: "a.ico",
+    // @ts-expect-error a separator needs an id like every line
+    menu: [{ kind: MenuItemKind.SEPARATOR }],
+    native,
+    schedule
+  }).remove();
 });
