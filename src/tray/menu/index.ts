@@ -10,6 +10,7 @@ export type {
   MenuSelectEvent,
   MenuSeparatorItem,
   MenuSubmenuItem,
+  MenuValue,
   ResolvedCheck,
   ResolvedCommand,
   ResolvedHeader,
