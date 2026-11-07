@@ -147,6 +147,10 @@
       "svelte": "./dist/incremental/index.js",
       "default": "./dist/incremental/index.js"
     },
+    "./chrome/runtime": {
+      "types": "./dist/chrome/runtime/index.d.ts",
+      "default": "./dist/chrome/runtime/index.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
