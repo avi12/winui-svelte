@@ -18,6 +18,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/host` | `src/renderer/host/host.ts` | `renderer`, the renderer WinUI controls are built through (`mountControl` makes it the active one), and the mount-target plumbing below; not for app code |
 | `winui-svelte/scroll-timeline` | `src/web-apis/scroll-timeline.ts` | `installScrollTimeline()`: `ScrollTimeline`, `ViewTimeline` and `element.animate(keyframes, { timeline })` over Composition (the CSS side is `winui-svelte/css/scroll-timeline`, which a sheet that uses `animation-timeline` imports) |
 | `winui-svelte/view-transitions` | `src/web-apis/view-transitions.ts` | `installViewTransitions()`: `document.startViewTransition` and `ViewTransition` over WinUI's connected animations (the CSS side is `winui-svelte/css/view-transition`, which a sheet or style attribute that sets `view-transition-name` imports) |
+| `winui-svelte/dialogs` | `src/web-apis/dialogs.ts` | `installDialogs()`, `showDialog()`, `useDialogWindow()`, `DialogResult`, `DialogButton`: `alert`, `confirm` and `prompt` over `ContentDialog`, as promises (opt-in; see Dialogs) |
 | `winui-svelte/element-animation` | `src/renderer/host/element-animation.ts` | `enableElementAnimation()`: what Svelte's `transition:`, `in:`, `out:`, `animate:` and `svelte/motion` ask of an element, on WinUI controls (the Vite plugin calls it from a component that uses them; otherwise not bundled) |
 | `winui-svelte/attached-owners` | `src/components/attached-owners.ts` | `preloadAttachedOwners(names)`: loads the modules attached properties (`canvasLeft`, `gridRow`) are written through (the Vite plugin calls it from a component whose markup or script names one, so the property is set with the control; a prop named nowhere, built from a computed key, needs `await preloadAttachedOwners(["Canvas"])` first, or its control throws) |
 | `winui-svelte/settings` | `src/settings/index.ts` | `SettingsCard`, `SettingsExpander`: Fluent settings cards after the Community Toolkit's (opt-in) |
@@ -1354,7 +1355,7 @@ const vertical: Orientation = 1;
 | A path geometry (`GeometryInput`, on `PathIcon` and `Path`) | Path Markup Syntax text or a `Geometry` | `data="M0,0 L10,10"` |
 | A font family (`FontFamilyInput`) | a family name or a `FontFamily` | `"Segoe UI Variable"` |
 | A grid length (`GridLengthInput`) | pixels, or `GridLengthText` as XAML writes it | `"Auto"`, `"2*"`, `"120"` |
-| The package's own | `Backdrop`, `WindowTheme`, `TitleBarHeight`, `WindowPresentation`, `PickerLocation`, `NavigationCacheMode`, `NavigationMode`, `MoveDirection`, `XamlKind`, `FocusKind`, `TrayGesture`, `TrayBalloonIcon`, `ConnectedAnimationKind` | `backdrop={Backdrop.mica}` |
+| The package's own | `Backdrop`, `WindowTheme`, `TitleBarHeight`, `WindowPresentation`, `PickerLocation`, `NavigationCacheMode`, `NavigationMode`, `MoveDirection`, `XamlKind`, `FocusKind`, `TrayGesture`, `TrayBalloonIcon`, `ConnectedAnimationKind`, `DialogResult`, `DialogButton` | `backdrop={Backdrop.mica}` |
 
 A WinUI enum's members keep WinUI's names and case (`"Minimal"`, not
 `"minimal"`), as the metadata and the docs have them; the package's own sets
@@ -3361,6 +3362,7 @@ needs
 | `element.animate()`, `Animation`, `KeyframeEffect` | `winui-svelte/web-apis/animations` | web plus extras | none | done |
 | `ScrollTimeline`, `ViewTimeline`, `element.animate(keyframes, { timeline })` | `winui-svelte/scroll-timeline` | web | none | done |
 | `document.startViewTransition`, `ViewTransition`, `view-transition-name` | `winui-svelte/view-transitions` | web plus extras | none | done |
+| `alert`, `confirm`, `prompt` | `winui-svelte/dialogs` | web (as promises) plus extras | none | done |
 | `navigator.mediaDevices` (`getUserMedia`, `getDisplayMedia`, `enumerateDevices`), `MediaStream`, `MediaRecorder` | `winui-svelte/web-apis/media-devices` | web plus extras | none (a camera or microphone needs the Windows privacy switch on) | done |
 | `speechSynthesis`, `SpeechSynthesisUtterance`, `SpeechRecognition` (SSML, silences, scenario, phrases) | `winui-svelte/web-apis/speech` | web plus extras | none | done |
 | `navigator.mediaSession`, `MediaMetadata` | `winui-svelte/web-apis/media-session` | web plus extras | none | done |
@@ -3903,6 +3905,71 @@ old element to the new one
   the `::view-transition-*` pseudo-elements, `view-transition-class` and
   `:active-view-transition-type()` have no counterpart, and `types` is carried
   but read by nothing
+
+#### Dialogs (`winui-svelte/dialogs`)
+
+`installDialogs()` defines `alert`, `confirm` and `prompt` on the global scope
+over WinUI's `ContentDialog`
+
+```svelte
+<script lang="ts">
+  import { installDialogs, useDialogWindow } from "winui-svelte/dialogs";
+  import type { WindowHandle } from "winui-svelte/window";
+
+  installDialogs();
+  let handle = $state<WindowHandle>();
+
+  $effect(() => {
+    if (handle) {
+      return useDialogWindow(handle);
+    }
+  });
+
+  async function remove() {
+    const isSure = await confirm("Delete this file?");
+    if (isSure) {
+      await alert("Deleted");
+    }
+  }
+</script>
+```
+
+- Decision: they return promises, where the browser's block, because a
+  `ContentDialog` is asynchronous and the thread that would block is the one
+  that pumps the window, so a blocking version would freeze the dialog it
+  waits for; the web names are kept, so that a library written for a browser still calls them,
+  and the result is awaited: `await confirm(text)`. The other way (new names
+  and no globals) would make every such library need a patch; the cost of this
+  way is that `if (confirm(text))` is always true, because a promise is
+  truthy, and `lib.dom` still types the globals as synchronous; in your own
+  code call `showAlert`, `showConfirm` and `showPrompt` (the same functions,
+  typed as promises) and leave the globals to libraries
+- `alert(message)` resolves when the dialog closes, `confirm(message)`
+  resolves `true` for OK, `prompt(message, default)` resolves with the text or
+  `null` for Cancel, Escape or the close button; a message that is not a
+  string is shown as `String(message)`
+- `showDialog({ content, title, primaryButtonText, secondaryButtonText,
+  closeButtonText, defaultButton, input, signal })` is the WinUI form: three
+  buttons, the button Enter presses (`DialogButton`), a text box
+  (`{ value, placeholder, isMultiline }`) and an `AbortSignal` that closes the
+  dialog like Escape; it resolves with `{ result, text }`, where `result` is a
+  `DialogResult` (`primary`, `secondary` or `none`) and `text` is the box when
+  the primary button closed a dialog that had one
+- Which window: `useDialogWindow(handle)` takes the handle `bind:handle`
+  gives, for each window; the dialog opens in the one activated last, and the
+  function it returns stops following the window
+- One at a time: WinUI shows one `ContentDialog` per window, so a dialog asked
+  for while another is open waits, in order, in the same line the
+  `ContentDialog` components use; a dialog that fails does not hold the line,
+  and an aborted one that still waits is rejected with an `AbortError`
+- No window: `alert` and `confirm` show a message box (`showNotice`, with the
+  installed `title`), and `prompt` and `showDialog` reject with an
+  `InvalidStateError`, because a message box has no text box and no third
+  button
+- `installDialogs({ title, okText, cancelText })` sets the title and the
+  button texts (English by default; WinUI does not translate them)
+- Not covered: a dialog that blocks the caller, and the prompt of
+  `beforeunload`
 
 ### Media devices (`winui-svelte/web-apis/media-devices`)
 
