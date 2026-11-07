@@ -3757,6 +3757,62 @@ const [item] = await downloads.search({ id });
 - `src/downloads/fetch-to-file.test.ts` and `chrome-downloads.test.ts` run
   against a local HTTP server with Range support
 
+## Chrome storage (`winui-svelte/chrome/storage`)
+
+`chrome.storage` with the same areas, names and shapes; where Chrome takes a
+callback, a method returns a promise
+Opt-in: nothing is bundled until an app imports it, and importing does no work
+
+```ts
+import { ChromeStorage } from "winui-svelte/chrome/storage";
+
+const storage = new ChromeStorage();
+storage.onChanged.addListener((changes, areaName) => {
+  console.log(areaName, changes);
+});
+await storage.local.set({ theme: "dark", volume: 0.8 });
+const { theme } = await storage.local.get({ theme: "light" });
+await storage.session.set({ token: "abc" });
+await storage.local.remove(["volume"]);
+const bytes = await storage.local.getBytesInUse();
+```
+
+- Areas: `local`, `sync`, `session` and `managed`, each a `StorageArea` with
+  `get`, `getKeys`, `getBytesInUse`, `set`, `remove`, `clear`,
+  `setAccessLevel` and `onChanged`; `ChromeStorage.onChanged` fires for every
+  area with `(changes, areaName)`
+- `get(keys)` takes a key, an array of keys, an object of defaults, or null or
+  nothing for every item; arguments are checked with zod and a wrong one
+  rejects
+- Values are JSON, as in Chrome: a value JSON cannot hold (a function,
+  `undefined`) is left out, `NaN` becomes `null` and a `Date` becomes its
+  string; the stored files are checked with zod and a corrupt one reads as
+  empty
+- `local` is a JSON file in the app's local data folder, next to
+  `localStorage` (`chrome-storage-local.json`, written atomically after every
+  change); `session` is in memory and ends with the process; the file is read
+  on the first call to the area
+- `sync` is a local fallback: Windows has no sync service an unpackaged app
+  can use (roaming settings are deprecated), so `chrome-storage-sync.json`
+  lives beside the local file and values never reach another PC; Chrome's
+  `sync` limits apply (`QUOTA_BYTES` 102400, `QUOTA_BYTES_PER_ITEM` 8192,
+  `MAX_ITEMS` 512) so code meets the same errors; the write-rate constants are
+  published and not enforced
+- `managed` is read-only and always empty: `set`, `remove` and `clear` reject
+  with `This is a read-only store.`, and `get` answers the defaults
+- `QUOTA_BYTES` is 10485760 for `local` and `session`, and a write that would
+  pass a quota rejects and stores nothing; `getBytesInUse` counts each key's
+  length plus its JSON text, as Chrome does
+- `onChanged` gets `{ key: { oldValue, newValue } }` only for keys that
+  changed (`oldValue` is missing for a new key, `newValue` for a removed one);
+  a write that changes nothing fires nothing
+- `setAccessLevel({ accessLevel })` takes `AccessLevel`'s values and keeps
+  them; every context of a native app is trusted, so it changes nothing
+- A change made by another process is not seen, and `ChromeStorage` takes
+  `appName`, `environment`, `localFile` and `syncFile` (the tests give an
+  in-memory file); the closed sets are `StorageAreaName` and `AccessLevel`
+- `src/chrome/storage/chrome-storage.test.ts` runs against an in-memory file
+
 ## Data transfer (`winui-svelte/data-transfer`)
 
 Drag and drop, file dialogs, the clipboard and the launcher, in the web's
