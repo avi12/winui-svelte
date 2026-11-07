@@ -46,6 +46,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
 | `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
 | `winui-svelte/chrome/runtime` | `src/chrome/runtime/index.ts` | `Runtime` (`chrome.runtime`), `Port`, `InstallReason`, the native messaging codec (opt-in; see Chrome runtime) |
+| `winui-svelte/chrome/notifications` | `src/chrome/notifications/index.ts` | `ChromeNotifications` (`chrome.notifications`), `NotificationTemplateType`, `NotificationPermissionLevel` (opt-in; see Chrome notifications) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
@@ -3955,6 +3956,65 @@ const answer = await runtime.sendMessage({ hello: "world" });
   first (`startActivation`); contexts of one copy talk over their transports
 - `src/chrome/runtime/runtime.test.ts` runs it over in-memory links and a child
   process that echoes in the native messaging protocol
+
+## Chrome notifications (`winui-svelte/chrome/notifications`)
+
+`chrome.notifications` for a native app, with Chrome's names and shapes; where
+Chrome takes a callback, a method returns a promise
+It delegates to the web `Notification` (`winui-svelte/web-apis/notification`),
+so there is one notification pipeline: the same permission, the same Windows
+app notifications and the same progress bar
+Opt-in: nothing is bundled until an app imports it, importing does no work, and
+no global is installed
+`installNotification()` must have run, as for the web `Notification`
+
+```ts
+import { ChromeNotifications } from "winui-svelte/chrome/notifications";
+
+const notifications = new ChromeNotifications();
+notifications.onButtonClicked.addListener((id, index) => console.log(id, index));
+await notifications.create("sync", {
+  type: "progress",
+  title: "Syncing",
+  message: "Uploading photos",
+  progress: 10,
+  buttons: [{ title: "Pause" }]
+});
+await notifications.update("sync", { progress: 60 });
+```
+
+- Exports: `ChromeNotifications`, `ChromeEvent`, `NotificationTemplateType`
+  (`basic`, `image`, `list`, `progress`) and `NotificationPermissionLevel`
+  (`granted`, `denied`), and the option types
+- `create(id, options)` resolves with the id (made up for a missing or empty
+  one); the same id replaces the notification that is up, without `onClosed`
+  The first call asks Windows for the permission and rejects with an `Error`
+  when it is refused
+- `type`, `title` and `message` are required, and so is `imageUrl` for `image`,
+  `items` for `list` and `progress` (0 to 100) for `progress`; `iconUrl` is
+  optional, since an unpackaged app may have none; options are checked with a
+  schema and a bad one rejects with an `Error`
+- `update(id, options)` merges into the notification and answers false when
+  there is none; a change of `progress` alone moves the bar in place
+  (`Notification.update`), anything else shows it again under its id
+- `clear(id)` removes it and answers false when there is none; `getAll()`
+  answers an object with each id as a key and `true` as the value, for the
+  notifications this run holds
+- `getPermissionLevel()` reads `Notification.permission`: `granted`, else
+  `denied` (including "not asked yet", which the first `create` settles)
+- `onClicked(id)`, `onButtonClicked(id, buttonIndex)` and `onClosed(id, byUser)`
+  are `ChromeEvent`s; Windows removes a clicked toast, so a click is followed
+  by `onClosed(id, true)`, `clear` fires `onClosed(id, false)`, and a swipe away
+  is not reported
+- `isClickable: false` silences `onClicked` for the body, not the buttons
+- Mapping: `message` is the body, `list` adds one `title: message` line per
+  item, `image` uses `imageUrl`, `contextMessage` is the attribution,
+  `eventTime` the timestamp, `buttons` (at most 2) become actions named by
+  their index, `priority` below 0 is silent and 2 requires interaction, and
+  `requireInteraction` and `silent` pass through
+- Not mirrored: `onPermissionLevelChanged` and `onShowSettings`
+- `src/chrome/notifications/chrome-notifications.test.ts` runs the web
+  `Notification` over a stand-in for the Windows App SDK; no toast is shown
 
 ## Data transfer (`winui-svelte/data-transfer`)
 
