@@ -3651,6 +3651,69 @@ handle.taskbar.flash({ count: 2 });
 The working example is `examples/services` (`test/services.test.ts` runs it in
 a real window; the dialogs themselves need a person and are not opened there)
 
+## ChromePermissions (`winui-svelte/chrome/permissions`)
+
+`chrome.permissions` for a native app, with Chrome's names and shapes:
+`getAll()`, `contains(permissions)`, `request(permissions)`,
+`remove(permissions)`, `onAdded` and `onRemoved` (a `ChromeEvent`), and
+`Permissions { permissions, origins }`
+Opt-in: nothing is bundled until an app imports it, importing does no work,
+and no global is installed
+
+```ts
+import { ChromePermissions } from "winui-svelte/chrome/permissions";
+
+const permissions = new ChromePermissions();
+permissions.onAdded.addListener(({ permissions: names }) => console.log(names));
+const isAllowed = await permissions.request({
+  permissions: ["geolocation"],
+  openSettings: true
+});
+```
+
+There is no per-site prompt in a native app; a permission is the OS consent
+the Permissions API already reports (`registerPermission` providers, so the
+Web APIs stay the single source of truth)
+The app holds a native permission when it asked for it and Windows allows it
+now; if either side takes it back, `contains` turns false
+The names the app asked for are saved in `chrome-permissions.json` in the
+app's data folder (`appDataFolder`, the folder `localStorage` uses), kept
+by an atomic write
+
+| Chrome name | Held when | Backed by |
+| --- | --- | --- |
+| `audioCapture` | allowed | `microphone` |
+| `videoCapture` | allowed | `camera` |
+| `geolocation` | allowed | `geolocation` |
+| `notifications` | allowed | `notifications` |
+| `clipboardRead`, `clipboardWrite` | allowed | `clipboard-read`, `clipboard-write` |
+| `idle` | allowed | `idle-detection` |
+| `bluetooth` | allowed | `bluetooth` |
+| `gcm` | allowed | `push` |
+| `power` | allowed | `screen-wake-lock` |
+| `unlimitedStorage` | allowed | `persistent-storage` |
+| `activeTab`, `alarms`, `background`, `contextMenus`, `cookies`, `declarativeNetRequest`, `downloads`, `offscreen`, `scripting`, `storage`, `tabs`, `webRequest`, `windows` | always | nothing; no native meaning, and `remove` answers false |
+| any other name | never | `contains` and `request` reject with an `Error` |
+| origins (`<all_urls>` and match patterns) | always | nothing; a native app has no host permissions, a bad pattern rejects, `remove` answers false |
+
+- The table is data you can read: `NATIVE_PERMISSIONS` (a `Map` from a Chrome
+  name to the Web permissions behind it), `GRANTED_BY_DEFAULT` (a `Set` of the
+  always-held names) and `ALL_URLS` (`<all_urls>`)
+- `request` checks each missing native permission: a state of `prompt` calls
+  the provider's `request` (location shows the Windows prompt through
+  `Geolocator.RequestAccessAsync`); camera and microphone are asked by the
+  first device open, so they stay refused until Windows allows them
+- All requested permissions must be allowed, or `request` answers false and
+  saves nothing; `onAdded` fires with the new ones
+- WinUI-only extra: `openSettings: true` in the object of `request` opens the
+  Settings page with the switch (`ms-settings:privacy-webcam`,
+  `privacy-microphone`, `privacy-location`, `notifications`, `bluetooth`,
+  else `privacy`) when a permission stays refused; the answer is still false
+- `remove` forgets the saved grant and fires `onRemoved`; Windows keeps its own
+  switch
+- Options of the constructor: `file`, `appName`, `location`, `environment`
+  and `openSettings`, the stand-ins for tests
+
 ## Downloads (`winui-svelte/downloads`)
 
 Downloads on the two APIs an app already knows: the web's `fetch` with the File
@@ -4362,7 +4425,9 @@ names the APIs register: `geolocation`, `accelerometer`, `screen-wake-lock`
 and so on) and `PermissionStateName` (`granted`, `denied`, `prompt`) are the
 spec's; an API registers its permission
 with `registerPermission({ name, provider })` and calls
-`announcePermissionChange(name)` when it moves, so open statuses fire `change`
+`announcePermissionChange(name)` when it moves, so open statuses fire `change`; a provider may add `request()` (the system
+prompt), which `requestPermission(name)` calls and `readPermission(name)` reads
+back, as `chrome.permissions` does
 
 ### The three kinds and the extras convention
 

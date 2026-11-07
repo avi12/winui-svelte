@@ -35,6 +35,9 @@ export type PermissionName = (typeof PermissionName)[keyof typeof PermissionName
 /** What answers `navigator.permissions.query({ name })` for one permission. */
 export interface PermissionProvider {
   state(): PermissionStateName;
+
+  /** Asks the system for the permission (its prompt); absent when there is none to show. */
+  request?(): Promise<PermissionStateName>;
 }
 
 const providers = new Map<string, PermissionProvider>();
@@ -85,6 +88,34 @@ export function registerPermission({ name, provider }: {
   return () => {
     providers.delete(name);
   };
+}
+
+/**
+ * Reads a registered permission.
+ *
+ * @param name - The permission's name.
+ * @returns Its state; undefined when no API registered it.
+ */
+export function readPermission(name: string) {
+  return providers.get(name)?.state();
+}
+
+/**
+ * Asks the system for a registered permission through its provider's
+ * `request`, then reads it again.
+ *
+ * @param name - The permission's name.
+ * @returns Its state afterwards; undefined when no API registered it.
+ */
+export async function requestPermission(name: string) {
+  const provider = providers.get(name);
+  const isUnknown = provider === undefined;
+  if (isUnknown) {
+    return undefined;
+  }
+
+  const answer = await provider.request?.();
+  return answer ?? provider.state();
 }
 
 /**
