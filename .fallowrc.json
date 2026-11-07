@@ -37,6 +37,7 @@
     "src/app/index.ts",
     "src/app/activation/index.ts",
     "src/app/hotkeys/index.ts",
+    "src/app/schedule/index.ts",
     "src/web-apis/index.ts",
     "src/web-apis/notification.ts",
     "src/web-apis/launch.ts",
