@@ -50,6 +50,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 
 | `winui-svelte/chrome/commands` | `src/chrome/commands/index.ts` | `ChromeCommands` (`chrome.commands`), `parseShortcut()` (opt-in; see Chrome commands) |
 | `winui-svelte/chrome/action` | `src/chrome/action/index.ts` | `ChromeAction` (`chrome.action`), `createChromeAction()` (opt-in; see Chrome action) |
+| `winui-svelte/chrome/i18n` | `src/chrome/i18n/index.ts` | `ChromeI18n` (`chrome.i18n`), `installLanguageDefaults()` (opt-in; see Chrome i18n) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
@@ -4123,6 +4124,48 @@ const all = await commands.getAll();
 - Not mirrored: `onChanged`, and the shortcut customisation page
 - `src/chrome/commands/chrome-commands.test.ts` runs it over a fake registrar,
   so no real hotkey is registered
+
+## Chrome i18n (`winui-svelte/chrome/i18n`)
+
+`chrome.i18n` for a native app: `getMessage` is synchronous, over the
+standard `_locales/<locale>/messages.json` files, so an unmodified
+extension's locale folder works
+Opt-in: nothing is bundled until an app imports it, importing does no work, and
+no global `chrome` is installed
+
+```ts
+import { ChromeI18n, installLanguageDefaults } from "winui-svelte/chrome/i18n";
+
+const i18n = new ChromeI18n();
+i18n.getMessage("greeting", ["Ann", "3"]);
+installLanguageDefaults(i18n);
+```
+
+- `getMessage(name, substitutions)` takes a string or up to nine strings;
+  `$1` to `$9` are the substitutions, `$NAME$` is the content of the
+  message's `placeholders` entry of that name (which may hold `$1`), and `$$`
+  is a dollar sign; names are matched without case; an unknown name gives an
+  empty string, as in Chrome
+- Lookup is per message: the exact locale (`pt-BR` is the folder `pt_BR`),
+  then its language (`pt`), then the `default_locale` of `manifest.json`
+  beside the folder; `localesFolder`, `root`, `defaultLocale`, `uiLanguage` and
+  `acceptLanguages` override the defaults (the app's root, `_locales` in it,
+  the system language)
+- The predefined messages are `@@extension_id`, `@@ui_locale` (`en_US`),
+  `@@bidi_dir`, `@@bidi_reversed_dir`, `@@bidi_start_edge` and
+  `@@bidi_end_edge`
+- `getUILanguage()` is a BCP 47 tag; `getAcceptLanguages()` resolves with the
+  list; `detectLanguage(text)` tells scripts apart (Arabic, Hebrew, Cyrillic,
+  Greek, Thai, Devanagari, Hangul, kana and Han) and answers `und` for
+  Latin-script text, where Chrome uses a trained model
+- Every `messages.json` is checked with zod; a malformed one throws from
+  `getMessage`
+- `installLanguageDefaults(source)` makes `navigator.language`,
+  `navigator.languages`, the default locale of the `Intl` formats and of
+  `toLocaleString` (and its date and time forms) follow the same source, so
+  they agree with `chrome.i18n`; a locale a caller passes still wins; it
+  returns the function that undoes it
+- `src/chrome/i18n/chrome-i18n.test.ts` runs it over in-memory files
 
 ## Chrome action (`winui-svelte/chrome/action`)
 

@@ -175,6 +175,10 @@
       "types": "./dist/chrome/action/index.d.ts",
       "default": "./dist/chrome/action/index.js"
     },
+    "./chrome/i18n": {
+      "types": "./dist/chrome/i18n/index.d.ts",
+      "default": "./dist/chrome/i18n/index.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
