@@ -14,8 +14,10 @@ export const STARTUP_ARGUMENT = "--winui-svelte-startup";
 
 const CLASSES = "Software\\Classes";
 const RUN_KEY = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
-const OWNER_VALUE = "WinuiSvelte";
-const OWNED = "1";
+/** The value every key this package creates carries. */
+export const OWNER_VALUE = "WinuiSvelte";
+/** What `OWNER_VALUE` holds. */
+export const OWNED = "1";
 const OPEN_COMMAND = "shell\\open\\command";
 const OPEN_WITH_PROGIDS = "OpenWithProgids";
 const URL_PROTOCOL_VALUE = "URL Protocol";
@@ -39,7 +41,13 @@ export interface LaunchAtLoginState {
   readonly commandLine: string | undefined;
 }
 
-function isOwned({ registry, key }: {
+/**
+ * Whether this package created a key: it carries the marker value.
+ *
+ * @param options - The registry and the key.
+ * @returns True when the key has the marker.
+ */
+export function isOwned({ registry, key }: {
   registry: RegistryBackend;
   key: string;
 }) {
