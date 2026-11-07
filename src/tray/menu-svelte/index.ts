@@ -1,0 +1,13 @@
+export { collectMenu } from "./collect.ts";
+export type {
+  TrayMenuHeaderProps,
+  TrayMenuItemProps,
+  TrayMenuProps,
+  TrayMenuSeparatorProps,
+  TrayMenuSubmenuProps
+} from "./menu-props.ts";
+export { default as TrayMenu } from "./TrayMenu.svelte";
+export { default as TrayMenuHeader } from "./TrayMenuHeader.svelte";
+export { default as TrayMenuItem } from "./TrayMenuItem.svelte";
+export { default as TrayMenuSeparator } from "./TrayMenuSeparator.svelte";
+export { default as TrayMenuSubmenu } from "./TrayMenuSubmenu.svelte";
