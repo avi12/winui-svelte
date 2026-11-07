@@ -3822,6 +3822,11 @@ const answer = await runtime.sendMessage({ hello: "world" });
   has; `suspendSource` changes what it listens to; `dispose()` stops it and
   closes the links
 - `reload()` is `relaunch` of `winui-svelte/app`
+- The protocol's pieces are exported for a host written in Node:
+  `encodeNativeMessage(message)`, `NativeMessageDecoder` (`push(chunk)` returns
+  the messages a chunk completed), `NativeMessageError`, `MAX_HOST_MESSAGE_BYTES`
+  and `NATIVE_HOST_REGISTRY_KEY`, the registry key below `HKEY_CURRENT_USER`
+  that holds the hosts
 - Not mirrored: `onMessageExternal`, `onConnectExternal`, `onSuspendCanceled`,
   `onUpdateAvailable`, `requestUpdateCheck`, `restart`, `setUninstallURL`,
   `openOptionsPage`, `getContexts`, `getPackageDirectoryEntry`
