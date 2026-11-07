@@ -147,6 +147,10 @@
       "svelte": "./dist/incremental/index.js",
       "default": "./dist/incremental/index.js"
     },
+    "./chrome/storage": {
+      "types": "./dist/chrome/storage/index.d.ts",
+      "default": "./dist/chrome/storage/index.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
