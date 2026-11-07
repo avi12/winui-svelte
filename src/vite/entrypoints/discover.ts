@@ -13,21 +13,32 @@ type Entrypoint = typeof Entrypoint[keyof typeof Entrypoint];
 export const ENTRYPOINTS_FOLDER = "entrypoints";
 
 const EXTENSIONS = [".ts", ".js"];
+const MARKUP_EXTENSIONS = {
+  [Entrypoint.MAIN]: [],
+  [Entrypoint.WINDOW]: [],
+  [Entrypoint.TRAY]: [".svelte"]
+} as const;
 
 function fileOf({ folder, name }: {
   folder: string;
-  name: string;
+  name: Entrypoint;
 }) {
-  const candidates = EXTENSIONS.flatMap(extension => [
+  const candidates = [...EXTENSIONS, ...MARKUP_EXTENSIONS[name]].flatMap(extension => [
     path.join(folder, `${name}${extension}`),
     path.join(folder, name, `index${extension}`)
-  ]);
-  return candidates.find(candidate => existsSync(candidate));
+  ]).filter(candidate => existsSync(candidate));
+  const [first, second] = candidates;
+  if (second) {
+    throw new Error(`the ${name} entrypoint is declared twice: ${first} and ${second}`);
+  }
+
+  return first;
 }
 
 /**
  * Finds the entries an app declares by convention: `entrypoints/main.ts`,
- * `window.ts` and `tray.ts` (or `tray/index.ts`; `.js` works too).
+ * `window.ts` and `tray.ts` (or `tray/index.ts`; `.js` works too, and the tray
+ * can be `tray.svelte`, the menu written as markup).
  *
  * @param root - The app's folder.
  * @returns The absolute path of each entry that exists.

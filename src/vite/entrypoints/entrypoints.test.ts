@@ -32,6 +32,18 @@ test("discovery finds main, window and tray by name, and tray/index.ts too", () 
   rmSync(root, { recursive: true });
 });
 
+test("discovery finds a tray written as markup, and refuses two trays", () => {
+  const root = appFolder(["entrypoints/tray.svelte"]);
+  assert.deepEqual(discoverEntrypoints(root), { tray: path.join(root, "entrypoints", "tray.svelte") });
+  rmSync(root, { recursive: true });
+  const both = appFolder(["entrypoints/tray.svelte", "entrypoints/tray.ts"]);
+  assert.throws(() => discoverEntrypoints(both), /tray entrypoint is declared twice/u);
+  rmSync(both, { recursive: true });
+  const window = appFolder(["entrypoints/window.svelte"]);
+  assert.deepEqual(discoverEntrypoints(window), {});
+  rmSync(window, { recursive: true });
+});
+
 test("discovery of a folder with no entrypoints is empty", () => {
   const root = appFolder(["main.ts"]);
   assert.deepEqual(discoverEntrypoints(root), {});
