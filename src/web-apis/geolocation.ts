@@ -584,16 +584,18 @@ export interface GeolocationInstallOptions {
  */
 export function installGeolocation(options: GeolocationInstallOptions = {}) {
   let access: GeolocationAccess = GeolocationAccess.UNSPECIFIED;
-  const geolocation = new Geolocation({
-    backend: options.backend ?? windowsGeolocationBackend(),
-    onAccess(latest) {
-      const hasChanged = latest !== access;
-      access = latest;
+  const backend = options.backend ?? windowsGeolocationBackend();
+  function onAccess(latest: GeolocationAccess) {
+    const hasChanged = latest !== access;
+    access = latest;
 
-      if (hasChanged) {
-        announcePermissionChange(PermissionName.GEOLOCATION);
-      }
+    if (hasChanged) {
+      announcePermissionChange(PermissionName.GEOLOCATION);
     }
+  }
+  const geolocation = new Geolocation({
+    backend,
+    onAccess
   });
   const uninstalls = [
     defineNavigatorProperty({
@@ -620,6 +622,10 @@ export function installGeolocation(options: GeolocationInstallOptions = {}) {
       name: PermissionName.GEOLOCATION,
       provider: {
         state() {
+          return PERMISSION_BY_ACCESS.get(access) ?? PermissionStateName.PROMPT;
+        },
+        async request() {
+          onAccess(await backend.requestAccess());
           return PERMISSION_BY_ACCESS.get(access) ?? PermissionStateName.PROMPT;
         }
       }
