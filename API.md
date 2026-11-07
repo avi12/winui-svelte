@@ -2661,6 +2661,55 @@ if (!single.isPrimary) {
   `test/activation.test.ts` starts real second copies with a link, a file and
   nothing, and checks the first hears each as one event
 
+### Scheduled launch (`winui-svelte/app/schedule`)
+
+Starts the app at sign-in, every day, every few minutes or once, through Task
+Scheduler
+A web page cannot schedule its own start (Periodic Background Sync needs a
+service worker), so there is no web API to mirror
+An opt-in subpath: an app that does not import it does not bundle it
+
+```ts
+import { listScheduledLaunches, scheduleLaunch, unscheduleLaunch } from "winui-svelte/app/schedule";
+
+scheduleLaunch({
+  id: "nightly-sync",
+  trigger: { kind: "daily", at: "03:00" },
+  arguments: ["--sync"],
+});
+listScheduledLaunches(); // ["nightly-sync"]
+unscheduleLaunch({ id: "nightly-sync" }); // true
+```
+
+- `trigger` is a union on `kind` (`TriggerKind` holds the names)
+  - `logon`: at sign-in, with an optional `delaySeconds`
+  - `daily`: at `at` (`"09:30"`, local time), every `everyDays` days (1 by default)
+  - `interval`: every `everyMinutes` minutes (1 to 1440), counted from midnight
+  - `once`: at the `Date` `at`, in local time
+  A wrong kind, field or range throws
+- `id` is letters, digits, `.`, `_` and `-`; scheduling an id again replaces
+  its task
+  Tasks live in the `winui-svelte` folder of Task Scheduler, so a task of
+  another program can neither be listed nor removed from here
+- `arguments` reach the started copy after the entry script, like
+  `relaunch`; `command` names a bundled executable instead of Node
+  A started copy hears nothing special: pass an argument of your own to tell
+  a scheduled start from a manual one
+- How it works: the package writes a Task Scheduler 1.2 XML definition to a
+  private temporary file and runs `schtasks.exe /Create /XML` (found by
+  `SystemRoot`), so no COM is involved; the task runs as the signed-in user
+  with normal rights (no administrator), on battery too, with no time limit,
+  and a start missed while the PC was off is made up when it is next on
+- Limits:
+  - The task runs only while the user is signed in
+  - `schtasks` is the only gate: Group Policy can forbid task creation, and
+    then `scheduleLaunch` throws with its message
+  - Moving or reinstalling the app leaves a task that points at the old path
+    until it is scheduled again
+- `src/app/schedule/schedule.test.ts` checks the XML of each trigger, the
+  quoting and escaping of arguments and the three calls over a fake backend;
+  no real task is made
+
 ### Global hotkeys (`winui-svelte/app/hotkeys`)
 
 A system-wide key combination, heard whichever app has the focus
