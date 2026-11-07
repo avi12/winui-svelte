@@ -1,6 +1,6 @@
 import type { DataKind } from "./accept.ts";
 import { DataKind as Kinds } from "./accept.ts";
-import type { DataSnapshot } from "./data-transfer.ts";
+import type { DataSnapshot, DeferredProvider } from "./data-transfer.ts";
 import { DataTransfer, FormatType } from "./data-transfer.ts";
 import { fragmentOfHtmlFormat } from "./html-format.ts";
 import type { NativeFile } from "./native-file.ts";
@@ -36,6 +36,33 @@ export interface PackageTarget {
   }): void;
   setFiles(files: readonly NativeFile[]): Promise<void>;
   setBitmap(file: NativeFile): Promise<void>;
+  /** Offers a format whose data is made when a paste or a drop asks for it. */
+  setDeferred(options: {
+    type: string;
+    provider: DeferredProvider;
+  }): void;
+}
+
+const IMAGE_PREFIX = "image/";
+
+/**
+ * Whether a type is a picture format.
+ *
+ * @param type - A web type.
+ * @returns True for `image/...`.
+ */
+export function isImageType(type: string) {
+  return type.startsWith(IMAGE_PREFIX);
+}
+
+/**
+ * The address a `text/uri-list` holds: its first line that is not a comment.
+ *
+ * @param list - The list text.
+ * @returns The address, or the whole text when there is none.
+ */
+export function uriOfList(list: string) {
+  return list.split(/\r?\n/u).find(line => line !== "" && !line.startsWith("#")) ?? list;
 }
 
 const KINDS_BY_TYPE = [
@@ -177,13 +204,20 @@ export async function fillPackage({ transfer, target }: {
     } else if (type === FormatType.html) {
       target.setHtml(value);
     } else if (type === FormatType.uri) {
-      target.setUri(value.split(/\r?\n/u).find(line => line !== "" && !line.startsWith("#")) ?? value);
+      target.setUri(uriOfList(value));
     } else {
       target.setCustom({
         format: type,
         value
       });
     }
+  }
+
+  for (const [type, provider] of transfer.deferredEntries()) {
+    target.setDeferred({
+      type,
+      provider
+    });
   }
 
   const hasFiles = transfer.files.length > 0;

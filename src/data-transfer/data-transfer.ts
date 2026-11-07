@@ -14,6 +14,13 @@ export const FormatType = {
 /** One of `FormatType`'s values. */
 export type FormatType = (typeof FormatType)[keyof typeof FormatType];
 
+/**
+ * Makes the data of one format when something asks for it: a paste, or a
+ * drop. A picture format (`image/...`) gives a `NativeFile`; every other
+ * format gives text.
+ */
+export type DeferredProvider = () => Promise<string | NativeFile>;
+
 /** What a drop or the clipboard held, read in full. */
 export interface DataSnapshot {
   /** The text-like formats by type (`text/plain`, `text/html`, `text/uri-list`, the custom ones). */
@@ -113,6 +120,7 @@ export class DataTransfer {
   /** A picture to drag (a path or an in-memory file): WinUI shows its own preview of the data. */
   bitmap: NativeFile | undefined;
   private readonly strings = new Map<string, string>();
+  private readonly deferred = new Map<string, DeferredProvider>();
   private readonly fileList: NativeFile[] = [];
   private readonly offered: readonly string[];
 
@@ -127,7 +135,7 @@ export class DataTransfer {
 
   /** The formats on offer: media types, `Files` when there are files, custom formats as named. */
   get types() {
-    const set = new Set([...this.offered, ...this.strings.keys()]);
+    const set = new Set([...this.offered, ...this.strings.keys(), ...this.deferred.keys()]);
     const hasFiles = this.fileList.length > 0;
     if (hasFiles) {
       set.add(FormatType.files);
@@ -154,7 +162,20 @@ export class DataTransfer {
   /** Puts the text of a format; a source does this in `ondragstart`. */
   // eslint-disable-next-line no-restricted-syntax -- the web's DataTransfer.setData(type, value)
   setData(type: string, value: string) {
+    this.deferred.delete(type);
     this.strings.set(type, value);
+  }
+
+  /**
+   * Offers a format whose data is made only when a paste or a drop asks for
+   * it (WinUI's `SetDataProvider`); a source does this in `ondragstart`.
+   */
+  setDeferredData({ type, provider }: {
+    type: string;
+    provider: DeferredProvider;
+  }) {
+    this.strings.delete(type);
+    this.deferred.set(type, provider);
   }
 
   /** Removes a format, or all of them (and the files) when none is named. */
@@ -162,11 +183,13 @@ export class DataTransfer {
     const isAll = type === undefined;
     if (isAll) {
       this.strings.clear();
+      this.deferred.clear();
       this.fileList.length = 0;
       return;
     }
 
     this.strings.delete(type);
+    this.deferred.delete(type);
   }
 
   /** Adds a file or folder to drag; a source does this in `ondragstart`. */
@@ -177,6 +200,11 @@ export class DataTransfer {
   /** The text formats set so far, as [type, text] pairs. */
   entries() {
     return [...this.strings];
+  }
+
+  /** The formats offered with deferred data, as [type, provider] pairs. */
+  deferredEntries() {
+    return [...this.deferred];
   }
 
   /** Accepted for the web's signature; WinUI draws its own preview of the data, so the element is not used. */

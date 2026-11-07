@@ -1,5 +1,6 @@
 import { DataKind } from "./accept.ts";
 import { DataTransfer, FormatType } from "./data-transfer.ts";
+import type { DeferredProvider } from "./data-transfer.ts";
 import type { NativeFile } from "./native-file.ts";
 import { fillPackage, previewOf, snapshotOf } from "./package-io.ts";
 import { sourceOf, targetOf } from "./winrt-package.ts";
@@ -18,6 +19,13 @@ export interface ClipboardContent {
   bitmap?: NativeFile;
   /** Text under custom format ids. */
   custom?: Readonly<Record<string, string>>;
+  /**
+   * Formats made when something pastes, not when you write: the type (a web
+   * type, a custom format id, or `image/...` for a picture) and what makes
+   * its data. The provider runs on the UI thread at the paste; one that
+   * fails leaves that format empty. `shouldPersist` runs them at once.
+   */
+  deferred?: Readonly<Record<string, DeferredProvider>>;
   /** Keep the content after the app exits (can fail when the window is not focused). Default false. */
   shouldPersist?: boolean;
 }
@@ -54,6 +62,13 @@ export function dataTransferOf(content: ClipboardContent) {
 
   for (const [format, value] of Object.entries(content.custom ?? {})) {
     transfer.setData(format, value);
+  }
+
+  for (const [type, provider] of Object.entries(content.deferred ?? {})) {
+    transfer.setDeferredData({
+      type,
+      provider
+    });
   }
 
   for (const file of content.files ?? []) {

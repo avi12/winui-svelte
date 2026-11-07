@@ -111,7 +111,8 @@ test("filling a package sends each format to its setter", async () => {
     setBitmap(file) {
       calls.push(`bitmap:${file.name}`);
       return Promise.resolve();
-    }
+    },
+    setDeferred: ({ type }) => calls.push(`deferred:${type}`)
   };
   const transfer = new DataTransfer();
   transfer.setData("text/plain", "hi");
@@ -130,6 +131,10 @@ test("filling a package sends each format to its setter", async () => {
     type: "image/png",
     content: new Uint8Array()
   });
+  transfer.setDeferredData({
+    type: "text/x-late",
+    provider: () => Promise.resolve("late")
+  });
   await fillPackage({
     transfer,
     target
@@ -139,9 +144,34 @@ test("filling a package sends each format to its setter", async () => {
     "html:<i>hi</i>",
     "uri:https://example.com/a",
     "custom:application/x-note=n",
+    "deferred:text/x-late",
     "files:f.bin",
     "bitmap:pic"
   ]);
+});
+
+test("deferred data is offered as a type, never read, and replaced by setData", async () => {
+  let runs = 0;
+  const transfer = new DataTransfer();
+  transfer.setDeferredData({
+    type: "text/plain",
+    provider() {
+      runs += 1;
+      return Promise.resolve("made");
+    }
+  });
+  assert.deepEqual(transfer.types, ["text/plain"]);
+  assert.equal(transfer.getData("text/plain"), "");
+  assert.equal(runs, 0);
+  assert.equal(await transfer.deferredEntries()[0]?.[1](), "made");
+  transfer.setData("text/plain", "now");
+  assert.deepEqual(transfer.deferredEntries(), []);
+  transfer.setDeferredData({
+    type: "a",
+    provider: () => Promise.resolve("")
+  });
+  transfer.clearData("a");
+  assert.deepEqual(transfer.deferredEntries(), []);
 });
 
 test("clearData removes one format or all of them", () => {
