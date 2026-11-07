@@ -45,6 +45,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
 | `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
+| `winui-svelte/chrome/runtime` | `src/chrome/runtime/index.ts` | `Runtime` (`chrome.runtime`), `Port`, `InstallReason`, the native messaging codec (opt-in; see Chrome runtime) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
@@ -3756,6 +3757,78 @@ const [item] = await downloads.search({ id });
   `onDeterminingFilename` and the danger types, a download here is always safe
 - `src/downloads/fetch-to-file.test.ts` and `chrome-downloads.test.ts` run
   against a local HTTP server with Range support
+
+## Chrome runtime (`winui-svelte/chrome/runtime`)
+
+`chrome.runtime` for a native app: the manifest, messages and ports between the
+app's own contexts, native messaging hosts, and the install and exit events
+Opt-in: nothing is bundled until an app imports it, importing does no work, and
+no global `chrome` is installed; make one `Runtime` in each context that wants
+one
+
+```ts
+import { Runtime } from "winui-svelte/chrome/runtime";
+
+const runtime = new Runtime();
+runtime.addLink(transport);
+runtime.onMessage.addListener((message, sender, sendResponse) => {
+  sendResponse({ echo: message });
+});
+const answer = await runtime.sendMessage({ hello: "world" });
+```
+
+- Where Chrome sets `chrome.runtime.lastError`, a promise rejects or a `Port`
+  has an `error`; there is no `lastError`
+- `getManifest()` gives `{ manifest_version: 3, name, version, description }`
+  from the package identity when the app has one, else from the nearest
+  `package.json` above the entry script; `id` is the package family name, or
+  the `package.json` name; `getURL(path)` is `ms-appx:///path` in a package and
+  a `file:` URL under the folder of `package.json` otherwise;
+  `getPlatformInfo()` is `{ os: "win", arch }` with Chrome's architecture names
+- Contexts are joined by `addLink(transport)`, with any transport of
+  `winui-svelte/state` (a worker's message port, stdio, memory); the call
+  returns how to leave; messages are `defineMessaging` requests, so framing,
+  timeouts (`timeoutMilliseconds`) and a closed link are the messaging layer's
+  own, and every frame is checked with zod
+- `sendMessage(message)` reaches every other linked context and resolves with
+  the first answer; a listener answers with `sendResponse`, by returning `true`
+  and calling it later, or by returning a promise; it resolves `undefined` when
+  listeners heard it and none answered, and rejects with Chrome's own "Receiving end does not exist" error when no
+  context is linked or none listens; a listener that throws or rejects rejects the sender
+- `connect({ name })` opens a `Port` to every other linked context, which hears
+  it in `onConnect`; `Port` has `postMessage`, `onMessage`, `onDisconnect`,
+  `disconnect()`, `name` and `sender`; a port ends when the link closes, and
+  `error` says why when something failed
+- `connectNative(application)` and `sendNativeMessage({ application, message })`
+  start a registered host and speak the native messaging protocol on its stdio
+  (four bytes of length, then JSON; a host's message is limited to 1 MiB)
+- A host is registered as in Chrome: a key
+  `Software\winui-svelte\NativeMessagingHosts\<name>` below
+  `HKEY_CURRENT_USER` whose default value is the path of the manifest (`name`,
+  `path`, `type: "stdio"`, `allowed_origins`); the host gets the app's origin,
+  `winui-svelte://<id>/`, as its first argument, and an `allowed_origins` that
+  omits it refuses the host; a host is an executable, not a script;
+  `resolveHost`, `registry` and `spawnHost` stand in for the lookup and the
+  start in a test
+- `onInstalled` fires from `detectInstalled()`, which an app calls once at
+  start: `{ reason: "install" }` on a first run, `{ reason: "update",
+  previousVersion }` when the version changed, nothing when it is the same; the
+  last version is kept in `%LOCALAPPDATA%\winui-svelte\runtime\<id>.json`, or
+  in the `versionStore` you give
+- `onStartup` is the `onStartup` of `winui-svelte/app/schedule`, fired by
+  `startActivation` for a `startup` activation (see `launchAtLogin`), not a
+  second source
+- `onSuspend` fires when the process exits, the only suspend a desktop app
+  has; `suspendSource` changes what it listens to; `dispose()` stops it and
+  closes the links
+- `reload()` is `relaunch` of `winui-svelte/app`
+- Not mirrored: `onMessageExternal`, `onConnectExternal`, `onSuspendCanceled`,
+  `onUpdateAvailable`, `requestUpdateCheck`, `restart`, `setUninstallURL`,
+  `openOptionsPage`, `getContexts`, `getPackageDirectoryEntry`
+- The single-instance pipe stays the way a second copy of the app reaches the
+  first (`startActivation`); contexts of one copy talk over their transports
+- `src/chrome/runtime/runtime.test.ts` runs it over in-memory links and a child
+  process that echoes in the native messaging protocol
 
 ## Data transfer (`winui-svelte/data-transfer`)
 
