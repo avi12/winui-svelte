@@ -1,4 +1,4 @@
-import { defaultProfile } from "#src/tray/menu/profile.js";
+import { defaultProfile } from "#src/tray/menu/default-profile.js";
 import type { MenuItemDescription, MenuLevel, MenuProfile } from "#src/tray/menu/types.js";
 import { isLevelShown } from "#src/tray/menu/values.js";
 

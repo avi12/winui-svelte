@@ -8,8 +8,8 @@ import {
   setItemShown,
   setLevel
 } from "./edit-profile.ts";
+import { defaultProfile } from "#src/tray/menu/default-profile.js";
 import { describeMenu } from "#src/tray/menu/describe.js";
-import { defaultProfile } from "#src/tray/menu/profile.js";
 import { resolveMenu } from "#src/tray/menu/resolve.js";
 import { MenuItemKind, MenuLevel } from "#src/tray/menu/types.js";
 import type { MenuItem } from "#src/tray/menu/types.js";

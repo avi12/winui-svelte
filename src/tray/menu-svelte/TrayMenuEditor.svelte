@@ -21,8 +21,8 @@
   import RadioButtons from "#src/components/generated/RadioButtons.svelte";
   import StackPanel from "#src/components/generated/StackPanel.svelte";
   import TextBlock from "#src/components/generated/TextBlock.svelte";
+  import { defaultProfile } from "#src/tray/menu/default-profile.js";
   import { describeMenu } from "#src/tray/menu/describe.js";
-  import { defaultProfile } from "#src/tray/menu/profile.js";
   import { MenuItemKind, MenuLevel } from "#src/tray/menu/types.js";
   import type { MenuProfile } from "#src/tray/menu/types.js";
 

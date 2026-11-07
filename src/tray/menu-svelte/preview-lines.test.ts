@@ -1,5 +1,5 @@
 import { previewLines } from "./preview-lines.ts";
-import { defaultProfile } from "#src/tray/menu/profile.js";
+import { defaultProfile } from "#src/tray/menu/default-profile.js";
 import { MenuItemKind, MenuLevel } from "#src/tray/menu/types.js";
 import type { MenuItem } from "#src/tray/menu/types.js";
 import assert from "node:assert/strict";
