@@ -43,6 +43,7 @@ import { onTeardown } from "./teardown.ts";
 import { applyTransparentFrame } from "./transparent-backdrop.ts";
 import { WindowHandle } from "./window-handle.ts";
 import { windowStateFile, WindowStateKeeper } from "./window-state-keeper.ts";
+import type { PictureSource } from "#src/picture-source.js";
 import type { FrameworkElement } from "#src/winui.js";
 import {
   DisplayArea,
@@ -118,7 +119,7 @@ export interface WindowProps {
   passthroughRegions?: readonly WindowRegion[] | undefined;
 
   /** The path of an .ico file, for the title bar and the taskbar. */
-  icon?: string;
+  icon?: PictureSource;
 
   /**
    * Groups the process's windows on the taskbar (see `joinAppUserModel`). Read

@@ -3,6 +3,7 @@ import { badgeDescription, renderBadgeIcon } from "./badge-icon.ts";
 import type { TaskbarFlashOptions, TaskbarProgressOptions } from "./taskbar-calls.ts";
 import { FLASH_STOP, flashCall, progressCall } from "./taskbar-calls.ts";
 import { createTaskbarNative } from "./taskbar-native.ts";
+import type { PictureSource } from "#src/picture-source.js";
 import { BadgeGlyph } from "#src/web-apis/badge-glyph.js";
 import type { BadgeBackend } from "#src/web-apis/badging.js";
 import type { IconPixels } from "#src/win32-icons.js";
@@ -42,7 +43,7 @@ export interface TaskbarBackend {
 /** What `setOverlayIcon` takes. */
 export interface TaskbarOverlayOptions {
   /** The path of an .ico file, or null to remove the overlay. */
-  icon: string | null;
+  icon: PictureSource | null;
 
   /** What a screen reader says for the overlay. */
   description?: string;

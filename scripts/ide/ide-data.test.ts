@@ -1,7 +1,7 @@
 import { readIdeData } from "./ide-data.ts";
 import { handledMembers } from "#src/css/translate/handled-members.js";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 import { z } from "zod";
@@ -98,4 +98,71 @@ test("a window material has the light and dark color of its base", () => {
   assert.equal(mica?.light, "#f3f3f3");
   assert.equal(mica?.dark, "#202020");
   assert.equal(data.materials.find(material => material.name === "acrylic")?.isTranslucent, true);
+});
+
+// The picture previews read only `pictureProps`, so a member typed with the alias
+// must be in it, and nothing in it may name a member that is gone.
+
+const SOURCE_FOLDER = path.join(PACKAGE_FOLDER, "src");
+const PICTURE_ALIAS = "PictureSource";
+const sources = readdirSync(SOURCE_FOLDER, {
+  recursive: true,
+  encoding: "utf8"
+})
+  .filter(file => file.endsWith(".ts") && !file.endsWith(".test.ts") && !file.endsWith(".d.svelte.ts"))
+  .map(file => ({
+    file,
+    text: readFileSync(path.join(SOURCE_FOLDER, file), "utf8")
+  }));
+
+function aliasesOfPicture() {
+  const aliases = new Set([PICTURE_ALIAS]);
+  const declaration = /export type (\w+)\s*=\s*([^;]*);/gu;
+  for (const { text } of sources) {
+    for (const [, name, body] of text.matchAll(declaration)) {
+      const isPicture = name !== undefined && body !== undefined && [...aliases].some(alias => new RegExp(String.raw`\b${alias}\b`, "u").test(body));
+      if (isPicture) {
+        aliases.add(name);
+      }
+    }
+  }
+
+  return aliases;
+}
+
+test("every member typed with PictureSource, directly or through an alias of it, is in the picture data", () => {
+  const aliases = [...aliasesOfPicture()].join("|");
+  const member = new RegExp(String.raw`^\s*(?:readonly\s+)?(\w+)\??:\s*[^;{]*\b(?:${aliases})\b`, "gmu");
+  const listed = new Set(data.pictureProps.map(prop => prop.name));
+  const written = sources.flatMap(({ text }) => [...text.matchAll(member)].map(match => match[1] ?? ""));
+  assert.equal(written.length > 0, true);
+  for (const name of written) {
+    assert.equal(listed.has(name), true, `${name} is typed with PictureSource but not in pictureProps`);
+  }
+});
+
+test("every picture prop in the data still names its owner and a member of it", () => {
+  for (const { owner, name } of data.pictureProps) {
+    const ownerSource = sources.find(({ text }) => new RegExp(String.raw`(?:interface|type)\s+${owner}\b`, "u").test(text));
+    assert.notEqual(ownerSource, undefined, `${owner} is gone`);
+    assert.match(ownerSource?.text ?? "", new RegExp(String.raw`\b${name}\??:`, "u"), `${owner}.${name} is gone`);
+  }
+});
+
+test("picture data lists the components that take the tray and window pictures, and the taskbar variants", () => {
+  const icon = data.pictureProps.find(prop => prop.owner === "MenuLabelledItem" && prop.name === "icon");
+  assert.deepEqual(icon?.components, ["TrayMenuItem", "TrayMenuSubmenu"]);
+  assert.deepEqual(icon?.forms, ["string", "pixels"]);
+  assert.deepEqual(data.pictureProps.find(prop => prop.owner === "TrayIconOptions")?.forms, ["string", "pair"]);
+  assert.equal(data.pictureProps.find(prop => prop.owner === "ImageProps")?.components[0], "Image");
+  assert.deepEqual(data.pictureVariants, [
+    {
+      name: "forDarkTaskbar",
+      theme: "dark"
+    },
+    {
+      name: "forLightTaskbar",
+      theme: "light"
+    }
+  ]);
 });

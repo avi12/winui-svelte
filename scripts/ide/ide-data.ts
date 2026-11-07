@@ -68,6 +68,20 @@ const materialSchema = z.strictObject({
   isTranslucent: z.boolean()
 });
 
+const pictureFormSchema = z.enum(["string", "pair", "pixels"]);
+
+const picturePropSchema = z.strictObject({
+  owner: z.string(),
+  name: z.string(),
+  forms: z.array(pictureFormSchema),
+  components: z.array(z.string())
+});
+
+const pictureVariantSchema = z.strictObject({
+  name: z.string(),
+  theme: z.enum(["light", "dark"])
+});
+
 const ideDataSchema = z.strictObject({
   resources: z.array(resourceSchema),
   enums: z.array(enumSchema),
@@ -77,7 +91,9 @@ const ideDataSchema = z.strictObject({
   easings: z.array(easingSchema),
   shadowDepths: z.array(shadowDepthSchema),
   unsupportedProperties: z.array(unsupportedPropertySchema),
-  materials: z.array(materialSchema)
+  materials: z.array(materialSchema),
+  pictureProps: z.array(picturePropSchema),
+  pictureVariants: z.array(pictureVariantSchema)
 });
 
 export type IdeData = z.infer<typeof ideDataSchema>;

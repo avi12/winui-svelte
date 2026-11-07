@@ -96,6 +96,7 @@ import { xamlSeam } from "./xaml-seam.ts";
 import { styleOfClasses } from "#src/css/index.js";
 import { fontFamilySource } from "#src/font-spelling.js";
 import type { BoxedValue, NativeValue } from "#src/native-value.js";
+import type { PictureSource } from "#src/picture-source.js";
 import type { NodeAttachment } from "#src/renderer/host/control.js";
 import { classNameOf } from "#src/renderer/host/host.js";
 import { call, read, write } from "#src/renderer/host/reflect.js";
@@ -193,7 +194,7 @@ export type BrushInput = ColorText | ThemeBrush | keyof AppBrushes | Brush;
  * A URI string (a `.svg` is an SVG image, any other a bitmap), an image source,
  * or the bytes of an image file (SVG text is told by its `<svg` element).
  */
-export type ImageSourceInput = string | ImageSource | Uint8Array | ArrayBuffer;
+export type ImageSourceInput = PictureSource<ImageSource | Uint8Array | ArrayBuffer>;
 
 /** A media URI or a playback source (a MediaPlayerElement's `source`). */
 export type MediaPlaybackSourceInput = string | IMediaPlaybackSource;

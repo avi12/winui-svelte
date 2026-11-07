@@ -3,6 +3,7 @@
 // audio. The `Image`, `ImageBrush`, `ImageIcon` and `MediaPlayerElement`
 // components themselves come from `winui-svelte/components`.
 
+export type { PictureSource, TaskbarPictures } from "#src/picture-source.js";
 export type { DataUriContent } from "./data-uri.ts";
 export { decodeDataUri, isDataUri } from "./data-uri.ts";
 export type { BitmapImageOptions, ImageInput, SvgImageSourceOptions } from "./images.ts";

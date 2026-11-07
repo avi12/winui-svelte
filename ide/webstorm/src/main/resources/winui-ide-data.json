@@ -3730,5 +3730,35 @@
     {"name":"acrylic","light":"#f3f3f3","dark":"#202020","isTranslucent":true},
     {"name":"acrylicBase","light":"#f3f3f3","dark":"#202020","isTranslucent":true},
     {"name":"acrylicThin","light":"#f3f3f3","dark":"#202020","isTranslucent":true}
+  ],
+  "pictureProps": [
+    {"owner":"ImageBrushProps","name":"imageSource","forms":["string"],"components":["ImageBrush"]},
+    {"owner":"ImageIconProps","name":"source","forms":["string"],"components":["ImageIcon"]},
+    {"owner":"ImageIconSourceProps","name":"imageSource","forms":["string"],"components":["ImageIconSource"]},
+    {"owner":"ImageProps","name":"source","forms":["string"],"components":["Image"]},
+    {"owner":"MediaPlayerElementProps","name":"posterSource","forms":["string"],"components":["MediaPlayerElement"]},
+    {"owner":"MenuLabelledItem","name":"icon","forms":["string","pixels"],"components":["TrayMenuItem","TrayMenuSubmenu"]},
+    {"owner":"NotificationAction","name":"icon","forms":["string"],"components":[]},
+    {"owner":"NotificationButton","name":"icon","forms":["string"],"components":[]},
+    {"owner":"NotificationInit","name":"icon","forms":["string"],"components":[]},
+    {"owner":"NotificationInit","name":"image","forms":["string"],"components":[]},
+    {"owner":"PersonPictureProps","name":"badgeImageSource","forms":["string"],"components":["PersonPicture"]},
+    {"owner":"PersonPictureProps","name":"profilePicture","forms":["string"],"components":["PersonPicture"]},
+    {"owner":"RatingItemImageInfoProps","name":"disabledImage","forms":["string"],"components":["RatingItemImageInfo"]},
+    {"owner":"RatingItemImageInfoProps","name":"image","forms":["string"],"components":["RatingItemImageInfo"]},
+    {"owner":"RatingItemImageInfoProps","name":"placeholderImage","forms":["string"],"components":["RatingItemImageInfo"]},
+    {"owner":"RatingItemImageInfoProps","name":"pointerOverImage","forms":["string"],"components":["RatingItemImageInfo"]},
+    {"owner":"RatingItemImageInfoProps","name":"pointerOverPlaceholderImage","forms":["string"],"components":["RatingItemImageInfo"]},
+    {"owner":"RatingItemImageInfoProps","name":"unsetImage","forms":["string"],"components":["RatingItemImageInfo"]},
+    {"owner":"TaskbarOverlayOptions","name":"icon","forms":["string"],"components":[]},
+    {"owner":"TaskbarPictures","name":"forDarkTaskbar","forms":["string"],"components":[]},
+    {"owner":"TaskbarPictures","name":"forLightTaskbar","forms":["string"],"components":[]},
+    {"owner":"TrayIconChanges","name":"icon","forms":["string","pair"],"components":[]},
+    {"owner":"TrayIconOptions","name":"icon","forms":["string","pair"],"components":["TrayIcon"]},
+    {"owner":"WindowProps","name":"icon","forms":["string"],"components":["Window"]}
+  ],
+  "pictureVariants": [
+    {"name":"forDarkTaskbar","theme":"dark"},
+    {"name":"forLightTaskbar","theme":"light"}
   ]
 }
