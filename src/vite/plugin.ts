@@ -1,5 +1,7 @@
 import { barrelImports } from "./barrel.ts";
 import { WINUI_COMPILE_OPTIONS } from "./compile.ts";
+import { trayDevelopmentPlugin } from "./entrypoints/tray-dev-plugin.ts";
+import { hasSideEffects } from "./externals.ts";
 import { svelteCompiler } from "./svelte-plugin.ts";
 import { winuiCss } from "#src/css/vite.js";
 import type { CompileOptions } from "svelte/compiler";
@@ -23,19 +25,6 @@ const SVELTE_CONDITION = "svelte";
 // source, so Vite compiles them for the runner rather than leaving them to
 // Node.
 const compiledPackages = [/^svelte(?:\/|$)/u, "esm-env", "winui-svelte"];
-// The package's bindings (#winui/*, shipped in dist/bindings) declare
-// `"sideEffects": false`, but a bundler takes
-// an external module for one with side effects and keeps an empty import of
-// every binding a barrel re-exports. Said here, an app bundles only the
-// bindings of the controls it uses.
-const bindingModule = /^#winui\/|dist[\\/]bindings/u;
-
-// Rollup's own signature: the module, and whether it is external.
-// eslint-disable-next-line no-restricted-syntax -- Rollup's treeshake.moduleSideEffects calls it with two arguments
-function hasSideEffects(id: string, isExternal: boolean) {
-  return !isExternal || !bindingModule.test(id);
-}
-
 // One copy of Svelte: an app that links this package (a workspace or a link:
 // dependency) resolves its own Svelte and the package's own, and components
 // from one would register on a runtime the renderer of the other never sees.
@@ -107,5 +96,5 @@ export function winuiSvelte() {
     compilerOptions: compile,
     onError: "report-when-serving"
   });
-  return [environment, ...svelteCompiler(compile), css, barrelImports()];
+  return [environment, ...svelteCompiler(compile), css, barrelImports(), trayDevelopmentPlugin()];
 }
