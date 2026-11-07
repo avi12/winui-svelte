@@ -4,7 +4,7 @@ import { test } from "node:test";
 // The taskbar button over a stand-in for the shell: state mapping, value
 // clamping, flash flags, and the badge as pixels.
 
-const { flashCall, progressCall } = await import("./taskbar-calls.ts");
+const { flashCall, progressCall, thumbnailClipCall, thumbnailTooltipOf } = await import("./taskbar-calls.ts");
 const { TaskbarButton, TaskbarFlashUntil, TaskbarProgressState, taskbarBadgeBackend } = await import("./taskbar.ts");
 const { badgeDescription, badgeLabel, renderBadgeIcon } = await import("./badge-icon.ts");
 
@@ -35,7 +35,9 @@ function fakeShell() {
     flash: ({ flags, count }: {
       flags: number;
       count: number;
-    }) => calls.push(`flash ${flags} ${count}`)
+    }) => calls.push(`flash ${flags} ${count}`),
+    setThumbnailTooltip: ({ text }: { text: string }) => calls.push(`tooltip "${text}"`),
+    setThumbnailClip: ({ rectangle }: { rectangle: object | null }) => calls.push(`clip ${JSON.stringify(rectangle)}`)
   };
   return {
     calls,
@@ -188,4 +190,53 @@ test("the badge backend maps count, glyph and clear to the overlay", () => {
     "overlay none \"\""
   ]);
   assert.equal(shell.icon(), null);
+});
+
+test("the thumbnail tooltip passes through and its length is bounded", () => {
+  const { button, calls } = fakeShell();
+  button.setThumbnailTooltip("3 unread");
+  button.setThumbnailTooltip("");
+  assert.deepEqual(calls, ["tooltip \"3 unread\"", "tooltip \"\""]);
+  assert.equal(thumbnailTooltipOf("x".repeat(259)).length, 259);
+  assert.throws(() => button.setThumbnailTooltip("x".repeat(260)), RangeError);
+});
+
+test("the thumbnail clip becomes edges, null clears it, and a bad rectangle throws", () => {
+  const { button, calls } = fakeShell();
+  button.setThumbnailClip({
+    x: 10,
+    y: 20,
+    width: 300,
+    height: 100
+  });
+  button.setThumbnailClip(null);
+  assert.deepEqual(calls, ["clip {\"left\":10,\"top\":20,\"right\":310,\"bottom\":120}", "clip null"]);
+  for (const bad of [
+    {
+      x: -1,
+      y: 0,
+      width: 5,
+      height: 5
+    },
+    {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 5
+    },
+    {
+      x: 0.5,
+      y: 0,
+      width: 5,
+      height: 5
+    },
+    {
+      x: 0,
+      y: 0,
+      width: 5,
+      height: Number.NaN
+    }
+  ]) {
+    assert.throws(() => thumbnailClipCall(bad), TypeError);
+  }
 });

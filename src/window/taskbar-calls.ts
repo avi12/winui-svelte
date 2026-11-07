@@ -109,3 +109,50 @@ export function flashCall({ count = DEFAULT_FLASH_COUNT, until = TaskbarFlashUnt
     count: until === TaskbarFlashUntil.COUNT ? count : 0
   };
 }
+
+/** The part of the window the taskbar's thumbnail shows, in pixels of its client area. */
+export interface TaskbarThumbnailClip {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
+const MAX_TOOLTIP_CHARACTERS = 259;
+
+/**
+ * The rectangle ITaskbarList3 takes for a thumbnail clip.
+ *
+ * @param clip - The part to show.
+ * @returns The left, top, right and bottom edges.
+ * @throws {TypeError} When a number is not an integer, a size is not positive or an edge is negative.
+ */
+export function thumbnailClipCall({ x, y, width, height }: TaskbarThumbnailClip) {
+  const isRectangle = [x, y, width, height].every(Number.isSafeInteger) && x >= 0 && y >= 0 && width > 0 && height > 0;
+  if (!isRectangle) {
+    throw new TypeError("the thumbnail clip needs whole numbers: x and y from 0, width and height above 0");
+  }
+
+  return {
+    left: x,
+    top: y,
+    right: x + width,
+    bottom: y + height
+  };
+}
+
+/**
+ * Checks the text of a thumbnail tooltip.
+ *
+ * @param text - The tooltip.
+ * @returns The text.
+ * @throws {RangeError} When it is longer than Windows shows (259 characters).
+ */
+export function thumbnailTooltipOf(text: string) {
+  const isTooLong = text.length > MAX_TOOLTIP_CHARACTERS;
+  if (isTooLong) {
+    throw new RangeError(`a thumbnail tooltip holds ${MAX_TOOLTIP_CHARACTERS} characters at most`);
+  }
+
+  return text;
+}

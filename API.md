@@ -3289,7 +3289,8 @@ const isConfirmed = pressed === NoticeButton.YES;
 ### Taskbar button (`winui-svelte/window/taskbar`)
 
 `handle.taskbar` is the window's button on the taskbar: a progress bar, an
-overlay icon and flashing, over `ITaskbarList3` and `FlashWindowEx`
+overlay icon, flashing and the thumbnail's tooltip and clip, over
+`ITaskbarList3` and `FlashWindowEx`
 No package identity is needed; call it on the UI thread
 The shell calls need the real desktop shell, so a window on a desktop of its
 own gets `E_NOTIMPL`; a window that has no taskbar button (a background or
@@ -3315,6 +3316,15 @@ handle.taskbar.flash({ count: 2 });
 - `flash({ count, until })`: `until` is a `TaskbarFlashUntil` (`count`, the
   default, flashes `count` times, 3 by default; `foreground` until the window is
   brought forward; `stopped` until `stopFlashing()`)
+- `setThumbnailTooltip(text)`: the text above the window's thumbnail on hover
+  (259 characters at most, else a `RangeError`; empty shows the title again)
+- `setThumbnailClip({ x, y, width, height })`: shows only that part of the
+  window in the thumbnail, in pixels of the client area, inside it; `null`
+  shows all of it; whole numbers with a positive size, else a `TypeError`
+  `SetThumbnailClip` gets `E_NOTIMPL` on a desktop of its own, so only a fake
+  tests it
+- Thumbnail toolbar buttons are not offered: their click is a sent message
+  that Node cannot receive; use jump list tasks (`winui-svelte/app/jump-list`)
 - `createTaskbarButton(hwnd)` and `TaskbarButton` take a window handle
   (`appWindow.id.value`) directly; `taskbarBadgeBackend(button)` is the
   `fallback` for `installBadging`

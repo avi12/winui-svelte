@@ -17,6 +17,13 @@ const HR_INIT_SLOT = 3;
 const SET_PROGRESS_VALUE_SLOT = 9;
 const SET_PROGRESS_STATE_SLOT = 10;
 const SET_OVERLAY_ICON_SLOT = 18;
+const SET_THUMBNAIL_TOOLTIP_SLOT = 19;
+const SET_THUMBNAIL_CLIP_SLOT = 20;
+const RECT_SIZE = 16;
+const OFFSET_LEFT = 0;
+const OFFSET_TOP = 4;
+const OFFSET_RIGHT = 8;
+const OFFSET_BOTTOM = 12;
 const FLASH_INFO_SIZE = 32;
 const POINTER_BYTES = 8;
 const NO_ICON = 0n;
@@ -46,6 +53,16 @@ function taskbarMethods() {
       SET_OVERLAY_ICON_SLOT,
       "SetOverlayIcon",
       new DynComMethodSig().addIn(pointer()).addNullableIn(pointer()).addNullableIn(pointer())
+    )
+    .addMethodAt(
+      SET_THUMBNAIL_TOOLTIP_SLOT,
+      "SetThumbnailTooltip",
+      new DynComMethodSig().addIn(pointer()).addNullableIn(pointer())
+    )
+    .addMethodAt(
+      SET_THUMBNAIL_CLIP_SLOT,
+      "SetThumbnailClip",
+      new DynComMethodSig().addIn(pointer()).addNullableIn(pointer())
     );
 }
 
@@ -121,6 +138,31 @@ export function createTaskbarNative() {
         if (hasIcon) {
           icons.destroyIcon(handle);
         }
+      }
+    },
+    setThumbnailTooltip({ hwnd, text }) {
+      methods.method(SET_THUMBNAIL_TOOLTIP_SLOT).invoke(taskbarList(), [
+        DynComUnsafe.pointer(hwnd),
+        DynComUnsafe.wideStringPointer(text === "" ? null : text)
+      ]);
+    },
+    setThumbnailClip({ hwnd, rectangle }) {
+      const rect = DynComRawMemory.allocate(RECT_SIZE, POINTER_BYTES);
+      try {
+        const isWhole = rectangle === null;
+        if (!isWhole) {
+          rect.writeI32(OFFSET_LEFT, rectangle.left);
+          rect.writeI32(OFFSET_TOP, rectangle.top);
+          rect.writeI32(OFFSET_RIGHT, rectangle.right);
+          rect.writeI32(OFFSET_BOTTOM, rectangle.bottom);
+        }
+
+        methods.method(SET_THUMBNAIL_CLIP_SLOT).invoke(taskbarList(), [
+          DynComUnsafe.pointer(hwnd),
+          DynComUnsafe.pointer(isWhole ? null : rect.pointer().address)
+        ]);
+      } finally {
+        rect.release();
       }
     },
     flash({ hwnd, flags, count }) {
