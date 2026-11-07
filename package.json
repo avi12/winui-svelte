@@ -633,7 +633,7 @@
     "@microsoft/dynwinrt-codegen": "0.1.0-preview.23",
     "@microsoft/winappcli": "0.7.1",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@types/node": "^24.10.0",
+    "@types/node": "^26.6.6",
     "@types/vscode": "1.105.0",
     "esbuild": "~0.25.12",
     "eslint": "^10.14.0",
