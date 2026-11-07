@@ -147,6 +147,10 @@
       "svelte": "./dist/incremental/index.js",
       "default": "./dist/incremental/index.js"
     },
+    "./downloads": {
+      "types": "./dist/downloads/index.d.ts",
+      "default": "./dist/downloads/index.js"
+    },
     "./input": {
       "types": "./dist/input/index.d.ts",
       "svelte": "./dist/input/index.js",
