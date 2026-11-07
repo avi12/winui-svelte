@@ -38,6 +38,7 @@
     "src/app/index.ts",
     "src/app/activation/index.ts",
     "src/app/jump-list/index.ts",
+    "src/app/shell/index.ts",
     "src/app/hotkeys/index.ts",
     "src/tray/menu/index.ts",
     "src/tray/menu-svelte/index.ts",

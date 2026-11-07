@@ -1,0 +1,11 @@
+export type { AppPathOptions } from "./app-paths.ts";
+export { registerAppPath, unregisterAppPath } from "./app-paths.ts";
+export type { ShellBackend, ShortcutProperties } from "./backend.ts";
+export type { ShellResult } from "./kinds.ts";
+export { ShellFailure } from "./kinds.ts";
+export type { OpenWithBackend, OpenWithOptions } from "./open-with.ts";
+export { openWith } from "./open-with.ts";
+export type { ShortcutInfo, ShortcutOptions } from "./shortcut.ts";
+export { createShortcut, readShortcut } from "./shortcut.ts";
+export type { TrashOptions } from "./trash.ts";
+export { trash } from "./trash.ts";
