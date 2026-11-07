@@ -2624,10 +2624,12 @@ if (!single.isPrimary) {
   `winui-svelte/enums`): `launch` (started by hand), `file` (`files`, absolute
   paths of existing files), `protocol` (`uri`, `scheme`), `startup` (started
   at sign-in), `redirect` (a later copy with nothing to open) and `jumpList`
-  (`taskId`, a task of the jump list was chosen; see Jump list tasks)
+  (`taskId`, a task of the jump list was chosen; see Jump list tasks) and
+  `alarm` (`alarm`, an alarm of `winui-svelte/app/schedule` went off; it also
+  reaches `onAlarm`)
   Every event has `isRedirect`, `arguments` and `workingDirectory`; a link
   sent by a later copy is `protocol` with `isRedirect: true`
-- A jump list task wins over a link, a link wins over files, files win over the startup marker; an argument
+- An alarm wins over a jump list task, a jump list task wins over a link, a link wins over files, files win over the startup marker; an argument
   that fits none stays in `arguments`
   Arguments are checked with a schema (up to 1024 of them, up to 32767
   characters each, no NUL); a failure goes to `onError`, the rest go on
@@ -2780,54 +2782,76 @@ registerAppPath({ name: "notes", program: "C:\\Apps\\notes.exe" });
   shortcut in a folder it creates under the temp directory and removes, and
   registers and removes an App Paths alias with a unique name
 
-### Scheduled launch (`winui-svelte/app/schedule`)
+### Alarms (`winui-svelte/app/schedule`)
 
-Starts the app at sign-in, every day, every few minutes or once, through Task
-Scheduler
-A web page cannot schedule its own start (Periodic Background Sync needs a
-service worker), so there is no web API to mirror
+Starts the app at a time, once or on a repeat, through Task Scheduler, and
+tells it which alarm went off
+The shape is `chrome.alarms` (`create`, `get`, `getAll`, `clear`, `clearAll`,
+`onAlarm`, the `Alarm` type) with promises instead of callbacks, and
+`chrome.runtime.onStartup` for the start at sign-in
 An opt-in subpath: an app that does not import it does not bundle it
 
 ```ts
-import { listScheduledLaunches, scheduleLaunch, unscheduleLaunch } from "winui-svelte/app/schedule";
+import { ActivationKind, startActivation } from "winui-svelte/app/activation";
+import * as alarms from "winui-svelte/app/schedule";
 
-scheduleLaunch({
-  id: "nightly-sync",
-  trigger: { kind: "daily", at: "03:00" },
-  arguments: ["--sync"],
-});
-listScheduledLaunches(); // ["nightly-sync"]
-unscheduleLaunch({ id: "nightly-sync" }); // true
+alarms.onAlarm.addListener(alarm => sync(alarm.name));
+alarms.onStartup.addListener(() => restoreSession());
+startActivation({ key: "my-app", onActivation: () => {} });
+
+await alarms.create("nightly-sync", { when: Date.now() + 3_600_000, periodInMinutes: 1440 });
+await alarms.get("nightly-sync"); // { name, scheduledTime, periodInMinutes: 1440 }
+await alarms.getAll(); // every alarm this package made
+await alarms.clear("nightly-sync"); // true
+await alarms.clearAll(); // false
 ```
 
-- `trigger` is a union on `kind` (`TriggerKind` holds the names)
-  - `logon`: at sign-in, with an optional `delaySeconds`
-  - `daily`: at `at` (`"09:30"`, local time), every `everyDays` days (1 by default)
-  - `interval`: every `everyMinutes` minutes (1 to 1440), counted from midnight
-  - `once`: at the `Date` `at`, in local time
-  A wrong kind, field or range throws
-- `id` is letters, digits, `.`, `_` and `-`; scheduling an id again replaces
-  its task
-  Tasks live in the `winui-svelte` folder of Task Scheduler, so a task of
-  another program can neither be listed nor removed from here
-- `arguments` reach the started copy after the entry script, like
-  `relaunch`; `command` names a bundled executable instead of Node
-  A started copy hears nothing special: pass an argument of your own to tell
-  a scheduled start from a manual one
+- `create(name, { when, delayInMinutes, periodInMinutes })` is Chrome's:
+  `when` is milliseconds since 1970, `delayInMinutes` counts from now, and
+  with only `periodInMinutes` the first run is one period away; `when` and
+  `delayInMinutes` together, or none of the three, throw; creating a name again
+  replaces its alarm
+  - `name` is letters, digits, `.`, `_` and `-` (a task name, not free text)
+  - Chrome's one-minute minimum for `delayInMinutes` is not applied: a delay
+    can be seconds, and a time in the past runs at once
+  - `periodInMinutes` is 1 to 44640 (Task Scheduler cannot repeat faster than
+    a minute, nor slower than 31 days)
+  - Extras, optional members of the same object: `arguments` (reach the
+    started copy after the entry script), `runWhenOnBattery` (true by
+    default), `command` (a bundled executable instead of Node) and `backend`
+    (a test)
+- `get`, `getAll`, `clear` and `clearAll` read and remove only the tasks in the
+  `winui-svelte` folder of Task Scheduler, so a task of another program can
+  neither be listed nor removed from here; `scheduledTime` is the next run
+- `onAlarm` and `onStartup` have `addListener`, `removeListener` and
+  `hasListener`; they are called by `startActivation`, so call it for the
+  alarms to arrive
+  - A task runs the app again with a marker argument, which becomes an `alarm`
+    activation (`event.alarm`) and also reaches `onAlarm`; if the app is open,
+    the new copy hands the activation to it and exits, so the listener of the
+    running app hears it, and if it is closed, the started copy hears it
+  - `onStartup` is called for a `startup` activation, that is when Windows
+    starts the app at sign-in; turning that start on or off is `launchAtLogin`
+    of `winui-svelte/app/activation` (the Run key listed in Settings, Apps,
+    Startup), which this module does not repeat
 - How it works: the package writes a Task Scheduler 1.2 XML definition to a
   private temporary file and runs `schtasks.exe /Create /XML` (found by
   `SystemRoot`), so no COM is involved; the task runs as the signed-in user
-  with normal rights (no administrator), on battery too, with no time limit,
-  and a start missed while the PC was off is made up when it is next on
+  with normal rights (no administrator), with no time limit, and a start
+  missed while the PC was off is made up when it is next on; the alarm's first
+  time and period are kept in the task's description, which is how `get`
+  reads them back
+- A one-shot alarm's task deletes itself a day after its time
 - Limits:
   - The task runs only while the user is signed in
   - `schtasks` is the only gate: Group Policy can forbid task creation, and
-    then `scheduleLaunch` throws with its message
+    then `create` rejects with its message
   - Moving or reinstalling the app leaves a task that points at the old path
-    until it is scheduled again
-- `src/app/schedule/schedule.test.ts` checks the XML of each trigger, the
-  quoting and escaping of arguments and the three calls over a fake backend;
-  no real task is made
+    until the alarm is created again
+- `src/app/schedule/schedule.test.ts` checks the generated XML, the quoting
+  and escaping of arguments, the marker argument and the activation it
+  becomes, and an alarm's round trip to a task and back over a fake backend; no
+  real task is made
 
 ### Global hotkeys (`winui-svelte/app/hotkeys`)
 
