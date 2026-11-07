@@ -78,22 +78,37 @@ function isPictureNode({ node, checker }: {
   });
 }
 
-function isPictureMember({ member, checker }: {
-  member: typescript.Node;
+function pictureMemberOf({ node, checker }: {
+  node: typescript.Node;
   checker: typescript.TypeChecker;
-}): member is typescript.PropertySignature {
-  return typescript.isPropertySignature(member)
-    && member.type !== undefined
-    && isPictureNode({
-      node: member.type,
-      checker
-    });
+}) {
+  const isProperty = typescript.isPropertySignature(node);
+  if (!isProperty) {
+    return undefined;
+  }
+
+  const declared = node.type;
+  const isPicture = declared !== undefined && isPictureNode({
+    node: declared,
+    checker
+  });
+  if (!isPicture) {
+    return undefined;
+  }
+
+  return {
+    member: node,
+    type: declared
+  };
+}
+
+function isNamedType(node: typescript.Node): node is typescript.InterfaceDeclaration | typescript.TypeAliasDeclaration {
+  return typescript.isInterfaceDeclaration(node) || typescript.isTypeAliasDeclaration(node);
 }
 
 function ownerName(member: typescript.Node) {
   for (let parent = member.parent; !typescript.isSourceFile(parent); parent = parent.parent) {
-    const isNamed = typescript.isInterfaceDeclaration(parent) || typescript.isTypeAliasDeclaration(parent);
-    if (isNamed) {
+    if (isNamedType(parent)) {
       return parent.name.text;
     }
   }
@@ -101,11 +116,11 @@ function ownerName(member: typescript.Node) {
   return undefined;
 }
 
-function formsOf({ member, checker }: {
-  member: typescript.PropertySignature;
+function formsOf({ typeNode, checker }: {
+  typeNode: typescript.TypeNode;
   checker: typescript.TypeChecker;
 }) {
-  const type = checker.getTypeFromTypeNode(member.type ?? member);
+  const type = checker.getTypeFromTypeNode(typeNode);
   const parts = type.isUnion() ? type.types : [type];
   const forms = new Set<PictureForm>([PictureForm.STRING]);
   for (const part of parts) {
@@ -145,18 +160,19 @@ function membersOf({ program, checker }: Pick<EntryApi, "program" | "checker">) 
   const found: Array<{
     owner: string;
     member: typescript.PropertySignature;
+    type: typescript.TypeNode;
   }> = [];
   function visit(node: typescript.Node) {
-    const isPicture = isPictureMember({
-      member: node,
+    const picture = pictureMemberOf({
+      node,
       checker
     });
-    const owner = isPicture ? ownerName(node) : undefined;
-    const isOwned = isPicture && owner !== undefined;
+    const owner = picture === undefined ? undefined : ownerName(picture.member);
+    const isOwned = picture !== undefined && owner !== undefined;
     if (isOwned) {
       found.push({
         owner,
-        member: node
+        ...picture
       });
     }
 
@@ -197,11 +213,13 @@ export function pictureData({ program, checker }: Pick<EntryApi, "program" | "ch
     checker
   })) {
     for (const property of checker.getPropertiesOfType(propsType)) {
-      const declaration = property.declarations?.find(candidate => isPictureMember({
-        member: candidate,
-        checker
-      }));
-      const owner = declaration === undefined ? undefined : ownerName(declaration);
+      const picture = property.declarations
+        ?.map(candidate => pictureMemberOf({
+          node: candidate,
+          checker
+        }))
+        .find(candidate => candidate !== undefined);
+      const owner = picture === undefined ? undefined : ownerName(picture.member);
       const isOwned = owner !== undefined;
       if (isOwned) {
         const key = `${owner}.${property.name}`;
@@ -211,13 +229,13 @@ export function pictureData({ program, checker }: Pick<EntryApi, "program" | "ch
   }
 
   const props = new Map<string, PictureProp>();
-  for (const { owner, member } of members) {
+  for (const { owner, member, type } of members) {
     const name = member.name.getText();
     props.set(`${owner}.${name}`, {
       owner,
       name,
       forms: formsOf({
-        member,
+        typeNode: type,
         checker
       }),
       components: [...tags.get(`${owner}.${name}`) ?? []].toSorted()
