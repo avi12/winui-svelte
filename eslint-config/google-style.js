@@ -209,7 +209,7 @@ export const sourceRules = {
   "jsdoc/require-description": ["error", { contexts: ["any"] }],
   // The types are TypeScript's, not JSDoc's.
   "jsdoc/no-types": "error",
-  "jsdoc/check-tag-names": ["error", { typed: true }]
+  "jsdoc/check-tag-names": ["error", { typed: true, definedTags: ["taskbarTheme"] }]
 };
 
 // Tree shaking: importing a module does no work. A statement at the top of a

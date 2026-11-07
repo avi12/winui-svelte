@@ -15,6 +15,7 @@ import type {
   NotificationScenario,
   NotificationSound
 } from "#src/app/notify.js";
+import type { PictureSource } from "#src/picture-source.js";
 import { joinAppUserModel } from "#src/window/native.js";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -47,7 +48,7 @@ export class TimestampTrigger {
 export interface NotificationAction {
   readonly action: string;
   readonly title: string;
-  readonly icon?: string;
+  readonly icon?: PictureSource;
 }
 
 /**
@@ -61,7 +62,7 @@ export type NotificationButton =
     readonly title: string;
     readonly style?: NotificationButtonStyle;
     readonly tooltip?: string;
-    readonly icon?: string;
+    readonly icon?: PictureSource;
 
     /** The `id` of a `text-input` or `selection`; the button then sends what it holds. */
     readonly inputId?: string;
@@ -122,8 +123,8 @@ export interface NotificationExtras {
 export interface NotificationInit extends NotificationExtras {
   readonly body?: string;
   readonly tag?: string;
-  readonly icon?: string;
-  readonly image?: string;
+  readonly icon?: PictureSource;
+  readonly image?: PictureSource;
   readonly badge?: string;
   readonly data?: unknown;
   readonly dir?: "auto" | "ltr" | "rtl";

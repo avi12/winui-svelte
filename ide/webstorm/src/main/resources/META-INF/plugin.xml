@@ -18,6 +18,12 @@
         ratio of a text and background color, whether an <code>@media</code> condition holds in an assumed
         environment, and in the popup the box model, grid tracks, shadow depth, material and what a declaration
         becomes in WinUI; each can be turned off</li>
+      <li><b>Pictures</b>: the picture beside the path of every prop, option or object key the library types as a
+        picture (a tray menu item or tray icon, a thumbnail button, an <code>Image</code> source), also for
+        <code>.ico</code> (best frame, all frame sizes in the popup), <code>.png</code>, <code>.svg</code>,
+        <code>.jpg</code>, <code>.gif</code>, <code>.bmp</code> and <code>.webp</code>; a larger popup with name,
+        pixel size and file size, the light and dark taskbar pictures side by side, a warning for a missing file;
+        remote pictures only with "Preview remote pictures" on</li>
       <li><b>Convert to CSS</b>: Alt+Enter on a prop that has a CSS counterpart moves it into the
         <code>&lt;style&gt;</code> block or a <code>style:</code> directive; actions convert a whole file or the
         selected files and folders, and the class names it writes can be found and renamed</li>
@@ -74,6 +80,26 @@
     <codeInsight.inlayProvider
         language="SvelteHTML"
         implementationClass="dev.winui.svelte.CssPreviewInlayProvider"/>
+    <codeInsight.inlayProvider
+        language="SvelteHTML"
+        implementationClass="dev.winui.svelte.PictureInlayProvider"/>
+    <codeInsight.inlayProvider
+        language="TypeScript"
+        implementationClass="dev.winui.svelte.TypeScriptPictureInlayProvider"/>
+    <codeInsight.inlayProvider
+        language="JavaScript"
+        implementationClass="dev.winui.svelte.JavaScriptPictureInlayProvider"/>
+    <lang.documentationProvider
+        language="any"
+        order="first"
+        implementationClass="dev.winui.svelte.PictureDocumentationProvider"/>
+    <localInspection
+        shortName="WinuiMissingPicture"
+        displayName="winui-svelte picture file that is not there"
+        groupName="winui-svelte"
+        level="WARNING"
+        enabledByDefault="true"
+        implementationClass="dev.winui.svelte.MissingPictureInspection"/>
     <completion.contributor
         language="any"
         order="first"

@@ -161,6 +161,10 @@ written with it
 Two optional add-ons for `.svelte` files, one for each editor:
 
 - previews and completions for icon names, colours and installed fonts
+- previews of the pictures an `icon` or image `source` points to (tray menu
+  items, tray icons, thumbnail buttons, `Image`): `.ico`, `.png`, `.svg`,
+  `.jpg`, `.gif`, `.bmp`, with the light and dark taskbar pictures side by
+  side; remote pictures only when you turn them on
 - Alt+Enter on a component's prop converts it to the CSS that sets the same
   value
 

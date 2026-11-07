@@ -1,3 +1,4 @@
+import type { PictureSource } from "#src/picture-source.js";
 import type { IconPixels } from "#src/win32-icons.js";
 
 /** The kinds of line a tray menu holds. */
@@ -53,7 +54,7 @@ interface MenuLabelledItem<ItemId extends string = string> extends MenuItemBase<
    * A path to an `.ico` or `.png`, a glyph string, or square BGRA pixels
    * (`IconPixels`); each renderer decides what it can draw.
    */
-  readonly icon?: string | IconPixels;
+  readonly icon?: PictureSource<IconPixels>;
 
   /** Small trailing text, such as a count. */
   readonly badge?: MenuValue<string>;

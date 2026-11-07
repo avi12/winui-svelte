@@ -55,3 +55,9 @@ test("every preview has a setting that is on by default, and the media environme
     assert.equal(`${Setting.SECTION}.${Setting.MEDIA}.${setting}` in properties, true, setting);
   }
 });
+
+test("the picture previews are on by default and the remote ones are off", () => {
+  const { properties } = manifest.contributes.configuration;
+  assert.equal(properties[`${Setting.SECTION}.${Setting.PREVIEWS}.picture`]?.default, true);
+  assert.equal(properties[`${Setting.SECTION}.${Setting.PREVIEWS}.remotePictures`]?.default, false);
+});

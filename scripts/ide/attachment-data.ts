@@ -1,5 +1,6 @@
 import { sourceProgram } from "./source-program.ts";
 import { exportEntries, ExportTarget } from "#scripts/export-aliases.ts";
+import { readdirSync } from "node:fs";
 import path from "node:path";
 import typescript from "typescript";
 
@@ -10,12 +11,13 @@ import typescript from "typescript";
 // sources of the entry points package.json lists.
 
 const SOURCE_FOLDER = path.join(import.meta.dirname, "..", "..", "src").replaceAll("\\", "/");
+const COMPONENT_DECLARATION = ".d.svelte.ts";
 const ATTACH_TAG = /put after\s+`?@attach`?/iu;
 const SENTENCE_END = /(?<=[.!?])\s/u;
 const EVENT_ADAPTERS_SET = "eventAdapters.set(";
 const OBJECT_VALUES = "Object.values";
 
-interface EntryApi {
+export interface EntryApi {
   program: typescript.Program;
   checker: typescript.TypeChecker;
   exports: Array<{
@@ -23,6 +25,16 @@ interface EntryApi {
     name: string;
     symbol: typescript.Symbol;
   }>;
+}
+
+// The props of a component are declared in its `.d.svelte.ts`, which no entry point imports as a file.
+function componentDeclarations() {
+  return readdirSync(SOURCE_FOLDER, {
+    recursive: true,
+    encoding: "utf8"
+  })
+    .filter(file => file.endsWith(COMPONENT_DECLARATION))
+    .map(file => path.join(SOURCE_FOLDER, file));
 }
 
 function firstSentence(text: string) {
@@ -40,7 +52,7 @@ function resolvedSymbol({ checker, symbol }: {
 /** The program over the entry points of package.json, and what each one exports. */
 export function entryApi() {
   const entries = exportEntries(ExportTarget.SOURCE);
-  const program = sourceProgram(entries.map(entry => entry.file));
+  const program = sourceProgram([...entries.map(entry => entry.file), ...componentDeclarations()]);
   const checker = program.getTypeChecker();
   const exports = entries.flatMap(({ specifier, file }) => {
     const source = program.getSourceFile(file);

@@ -16,6 +16,7 @@ import type {
   TrayHandle
 } from "./tray-extras.ts";
 import type { ImageOf } from "./tray-extras.ts";
+import type { PictureSource, TaskbarPictures } from "#src/picture-source.js";
 import { z } from "zod";
 
 const GUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu;
@@ -34,13 +35,7 @@ const NO_ICON = 0n;
 const FIRST_ID = 1;
 
 /** The picture of a tray icon: one .ico path, or one for each taskbar theme. */
-export type TrayIconImage = string | {
-  /** Shown while the taskbar is light (so a dark glyph). */
-  readonly forLightTaskbar: string;
-
-  /** Shown while the taskbar is dark (so a light glyph). */
-  readonly forDarkTaskbar: string;
-};
+export type TrayIconImage = PictureSource<TaskbarPictures>;
 
 /** Starts a repeating timer; returns what stops it. */
 export type TrayScheduler = (options: {

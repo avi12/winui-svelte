@@ -2,6 +2,7 @@ import { attachmentData, entryApi, webEventData } from "./attachment-data.ts";
 import { easingData, materialData, shadowDepthData, unsupportedPropertyData } from "./css-preview-data.ts";
 import { enumData } from "./enum-data.ts";
 import { parsedIdeData } from "./ide-data.ts";
+import { pictureData, pictureVariantData } from "./picture-data.ts";
 import { resourceData } from "./resource-data.ts";
 import { handledMembers } from "#src/css/translate/handled-members.js";
 
@@ -50,7 +51,12 @@ export function ideDataText() {
     easings: easingData(),
     shadowDepths: shadowDepthData(),
     unsupportedProperties: byName(unsupportedPropertyData()),
-    materials: materialData()
+    materials: materialData(),
+    pictureProps: pictureData(api).toSorted((left, right) => compareNames({
+      left: `${left.owner}.${left.name}`,
+      right: `${right.owner}.${right.name}`
+    })),
+    pictureVariants: byName(pictureVariantData(api))
   });
   return `{\n${Object.entries(data).map(([key, entries]) => section({
     key,

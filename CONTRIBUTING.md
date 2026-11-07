@@ -391,6 +391,50 @@ winui-svelte turns the feature off
 reads a JavaScript symbol there as a global, and a local of the same name
 (`const control`) is then reported as unused
 
+### Picture previews
+
+Both add-ons draw the picture beside a path or URL written in an `icon` or
+an image `source`, and a larger popup (name, pixel size, file size, the frames
+of an `.ico`); a light and dark taskbar pair is drawn side by side on the
+taskbar colors, a local file that is not there gets a marker and a warning, and
+a remote picture is fetched only when "Preview remote pictures" (WebStorm) or
+`winuiSvelte.previews.remotePictures` (VS Code) is on, with a timeout, a size
+cap and a cache on disk
+
+No add-on knows a component: to make a new prop previewable, type it with
+`PictureSource` (`src/picture-source.ts`, exported from `winui-svelte/media`
+and `winui-svelte/tray`) and run `pnpm gen:ide-data`
+
+`PictureSource<Extra>` is a string plus the other forms the prop takes
+(`IconPixels`, `TaskbarPictures`); a generated prop is typed through
+`ImageSourceInput`, which the codegen table already names for WinUI's
+`ImageSource`, so a new WinUI picture prop needs no edit at all
+
+The generator (`scripts/ide/picture-data.ts`) finds every member with that
+type through the TypeScript checker, follows the aliases (`TrayIconImage`,
+`ImageSourceInput`) and the props of every component, and writes
+`pictureProps` (owner, name, forms, the components that take it) and
+`pictureVariants` (the keys of a light and dark pair, tagged
+`@taskbarTheme`) into `winui-ide-data.json`; `scripts/ide/ide-data.test.ts`
+fails when a member typed with the alias is not in the data, and when a listed
+member is gone
+
+The rules both add-ons share are in `ide/picture-previews.spec.json`: the image
+formats, the `ms-appx:///`, `data:` and remote schemes, the size limits, the
+remote policy, the taskbar colors, and the cases that pin path resolution, image
+sizes and which strings are pictures; the WebStorm plugin loads it as a
+resource and both test suites run its cases
+
+A markup attribute is a picture when the component takes it in `pictureProps`
+(or a wrapper component declares it `PictureSource`); `key: "..."` in a script
+is one for any key in `pictureProps`, and a value is a picture only when it is
+a path with an image extension, an `ms-appx` path, a data URI or a URL
+
+Pictures decode as far as the IDE can: `.ico` (the best frame; PNG frames and
+32 and 24 bit bitmap frames in WebStorm), `.png`, `.jpg`, `.gif` (first
+frame), `.bmp`, `.svg`, and `.webp` where the IDE reads it; any other kind
+shows a marker with its type and size
+
 The props and their conversions are not written by hand: `pnpm gen:components`
 asks the translator which CSS property sets each WinUI property and what each
 value lowers to, and writes `ide/webstorm/src/main/resources/winui-css-mappings.json`

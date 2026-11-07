@@ -54,6 +54,10 @@ intellijPlatform {
   }
 }
 
+tasks.processResources {
+  from("../picture-previews.spec.json")
+}
+
 tasks.test {
   useJUnitPlatform()
 }

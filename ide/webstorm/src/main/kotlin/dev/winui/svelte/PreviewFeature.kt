@@ -36,5 +36,10 @@ internal enum class PreviewFeature(
     "shadow",
     "Shadow depth and material",
     "The shadow depth ladder of -winui-elevation and box-shadow, and the material of a backdrop"
+  ),
+  PICTURE(
+    "picture",
+    "Picture previews",
+    "The picture beside the path of an icon or image (a tray menu item, a thumbnail button, an Image source), larger in the popup"
   )
 }

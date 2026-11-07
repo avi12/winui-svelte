@@ -69,6 +69,36 @@ internal object WinuiIdeData {
     }
   }
 
+  private val pictureComponents: Map<String, Set<String>> by lazy {
+    data
+      .getAsJsonArray("pictureProps")
+      .groupBy({ it.asJsonObject.string("name").orEmpty() }) { entry ->
+        entry.asJsonObject.getAsJsonArray("components").map { it.asString }
+      }.mapValues { (_, lists) -> lists.flatten().toSet() }
+  }
+
+  /** The member names the library types as a picture, and which of them are for one taskbar theme. */
+  val pictureNames: PictureNames by lazy {
+    PictureNames(
+      pictureComponents.keys,
+      data.getAsJsonArray("pictureVariants").associate {
+        it.asJsonObject.string("name").orEmpty() to
+          PictureVariant.valueOf(
+            it.asJsonObject
+              .string("theme")
+              .orEmpty()
+              .uppercase()
+          )
+      }
+    )
+  }
+
+  /** Whether the component takes the attribute as a picture. */
+  fun isPictureProp(
+    tag: String,
+    attribute: String
+  ) = pictureComponents[attribute]?.contains(tag) == true
+
   private val translateKeys: Set<String> by lazy { data.getAsJsonArray("translateKeys").map { it.asString }.toSet() }
 
   /** Whether the CSS translation handles a property. */

@@ -2,6 +2,7 @@ package dev.winui.svelte
 
 import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.bindIntText
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindSelected
@@ -43,6 +44,7 @@ class SettingsConfigurable(
           }
         }
       }
+      remotePicturesGroup()
       group("Environment the media query answer assumes") {
         row("Theme:") {
           comboBox(Theme.entries, textListCellRenderer { it?.id })
@@ -69,6 +71,20 @@ class SettingsConfigurable(
         }
       }
     }
+
+  private fun Panel.remotePicturesGroup() {
+    group("Remote pictures") {
+      row {
+        checkBox("Preview remote pictures")
+          .comment(
+            "Fetches an http or https picture named in a prop, with a timeout, a size cap and a cache on disk; off, nothing is fetched"
+          ).bindSelected(
+            { Settings.of(project).isRemotePicturesEnabled },
+            { Settings.of(project).isRemotePicturesEnabled = it }
+          )
+      }
+    }
+  }
 
   private companion object {
     const val MAX_PIXELS = 20_000

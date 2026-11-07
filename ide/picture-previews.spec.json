@@ -1,0 +1,382 @@
+{
+  "tables": {
+    "formats": [
+      {
+        "extension": "ico",
+        "mime": "image/x-icon"
+      },
+      {
+        "extension": "png",
+        "mime": "image/png"
+      },
+      {
+        "extension": "svg",
+        "mime": "image/svg+xml"
+      },
+      {
+        "extension": "jpg",
+        "mime": "image/jpeg"
+      },
+      {
+        "extension": "jpeg",
+        "mime": "image/jpeg"
+      },
+      {
+        "extension": "bmp",
+        "mime": "image/bmp"
+      },
+      {
+        "extension": "gif",
+        "mime": "image/gif"
+      },
+      {
+        "extension": "webp",
+        "mime": "image/webp"
+      }
+    ],
+    "schemes": {
+      "appx": "ms-appx:///",
+      "data": "data:image/",
+      "remote": [
+        "https://",
+        "http://"
+      ]
+    },
+    "limits": {
+      "maxFileBytes": 2097152,
+      "inlineSize": 16,
+      "hoverSize": 96
+    },
+    "remote": {
+      "maxBytes": 2097152,
+      "timeoutMillis": 5000,
+      "maxAgeHours": 24,
+      "cacheFolder": "winui-svelte-pictures"
+    },
+    "backgrounds": {
+      "light": "#f3f3f3",
+      "dark": "#202020"
+    }
+  },
+  "cases": {
+    "resolutions": [
+      {
+        "value": "tray.ico",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "local",
+          "extension": "ico",
+          "candidates": [
+            "/p/src/tray.ico",
+            "/p/tray.ico"
+          ]
+        }
+      },
+      {
+        "value": "./assets/a.PNG",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "local",
+          "extension": "png",
+          "candidates": [
+            "/p/src/assets/a.PNG",
+            "/p/assets/a.PNG"
+          ]
+        }
+      },
+      {
+        "value": "../img/b.svg",
+        "file": "/p/src/ui/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "local",
+          "extension": "svg",
+          "candidates": [
+            "/p/src/img/b.svg",
+            "/img/b.svg"
+          ]
+        }
+      },
+      {
+        "value": "ms-appx:///Assets/c.png",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "appx",
+          "extension": "png",
+          "candidates": [
+            "/p/Assets/c.png",
+            "/p/src/Assets/c.png"
+          ]
+        }
+      },
+      {
+        "value": "C:\\art\\d.ico",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "local",
+          "extension": "ico",
+          "candidates": [
+            "C:/art/d.ico"
+          ]
+        }
+      },
+      {
+        "value": "https://example.com/e.webp?x=1",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "remote",
+          "extension": "webp",
+          "candidates": []
+        }
+      },
+      {
+        "value": "http://example.com/icon",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "remote",
+          "extension": "",
+          "candidates": []
+        }
+      },
+      {
+        "value": "data:image/png;base64,AAAA",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "data",
+          "extension": "png",
+          "candidates": []
+        }
+      },
+      {
+        "value": "Save",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "none",
+          "extension": "",
+          "candidates": []
+        }
+      },
+      {
+        "value": "notes.txt",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "none",
+          "extension": "",
+          "candidates": []
+        }
+      }
+    ],
+    "headers": [
+      {
+        "name": "png",
+        "extension": "png",
+        "hex": "89504e470d0a1a0a0000000d4948445200000040000000300806000000",
+        "expected": {
+          "width": 64,
+          "height": 48,
+          "frames": []
+        }
+      },
+      {
+        "name": "gif",
+        "extension": "gif",
+        "hex": "4749463839610a001400000000",
+        "expected": {
+          "width": 10,
+          "height": 20,
+          "frames": []
+        }
+      },
+      {
+        "name": "bmp",
+        "extension": "bmp",
+        "hex": "424d000000000000000036000000280000001e0000002800000001001800",
+        "expected": {
+          "width": 30,
+          "height": 40,
+          "frames": []
+        }
+      },
+      {
+        "name": "jpg",
+        "extension": "jpg",
+        "hex": "ffd8ffe000040000ffc0000b0800c8014001011100",
+        "expected": {
+          "width": 320,
+          "height": 200,
+          "frames": []
+        }
+      },
+      {
+        "name": "webp",
+        "extension": "webp",
+        "hex": "524946461600000057454250565038580a00000000000000630000310000",
+        "expected": {
+          "width": 100,
+          "height": 50,
+          "frames": []
+        }
+      },
+      {
+        "name": "ico",
+        "extension": "ico",
+        "hex": "000001000300101000000100200004000000360000000000000001002000040000003a0000002020000001000800040000003e000000010203040102030401020304",
+        "expected": {
+          "width": 256,
+          "height": 256,
+          "frames": [
+            [
+              16,
+              16
+            ],
+            [
+              256,
+              256
+            ],
+            [
+              32,
+              32
+            ]
+          ],
+          "best": 1
+        }
+      },
+      {
+        "name": "svg size",
+        "extension": "svg",
+        "text": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24px\" height=\"12\"></svg>",
+        "expected": {
+          "width": 24,
+          "height": 12,
+          "frames": []
+        }
+      },
+      {
+        "name": "svg viewBox",
+        "extension": "svg",
+        "text": "<svg viewBox=\"0 0 48 96\"></svg>",
+        "expected": {
+          "width": 48,
+          "height": 96,
+          "frames": []
+        }
+      },
+      {
+        "name": "not an image",
+        "extension": "png",
+        "hex": "0102",
+        "expected": {
+          "width": 0,
+          "height": 0,
+          "frames": []
+        }
+      }
+    ],
+    "spots": [
+      {
+        "kind": "plain",
+        "attribute": "icon",
+        "text": "tray.ico",
+        "expected": [
+          {
+            "value": "tray.ico",
+            "variant": "any"
+          }
+        ]
+      },
+      {
+        "kind": "plain",
+        "attribute": "forDarkTaskbar",
+        "text": "d.png",
+        "expected": [
+          {
+            "value": "d.png",
+            "variant": "dark"
+          }
+        ]
+      },
+      {
+        "kind": "expression",
+        "attribute": "icon",
+        "text": "{isOn ? \"on.ico\" : 'off.ico'}",
+        "expected": [
+          {
+            "value": "on.ico",
+            "variant": "any"
+          },
+          {
+            "value": "off.ico",
+            "variant": "any"
+          }
+        ]
+      },
+      {
+        "kind": "expression",
+        "attribute": "icon",
+        "text": "{{ forLightTaskbar: \"l.ico\", forDarkTaskbar: \"d.ico\" }}",
+        "expected": [
+          {
+            "value": "l.ico",
+            "variant": "light"
+          },
+          {
+            "value": "d.ico",
+            "variant": "dark"
+          }
+        ]
+      },
+      {
+        "kind": "expression",
+        "attribute": "icon",
+        "text": "{`a${b}.ico`}",
+        "expected": []
+      },
+      {
+        "kind": "keys",
+        "attribute": "",
+        "text": "const tray = createStandaloneTray({ icon: \"t.ico\", tooltip: 'x' });\nconst item = { label: \"Open\", icon: 'Save' };",
+        "expected": [
+          {
+            "value": "t.ico",
+            "variant": "any"
+          }
+        ]
+      },
+      {
+        "kind": "keys",
+        "attribute": "",
+        "text": "update({ icon: { forLightTaskbar: \"a.ico\", forDarkTaskbar: 'b.ico' } })",
+        "expected": [
+          {
+            "value": "a.ico",
+            "variant": "light"
+          },
+          {
+            "value": "b.ico",
+            "variant": "dark"
+          }
+        ]
+      },
+      {
+        "kind": "keys",
+        "attribute": "",
+        "text": "const note = { image: \"https://x.y/p.png\", other: \"q.png\" }",
+        "expected": [
+          {
+            "value": "https://x.y/p.png",
+            "variant": "any"
+          }
+        ]
+      }
+    ]
+  }
+}
