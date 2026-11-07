@@ -3,26 +3,31 @@ import type { ExpandedItem } from "./expand.ts";
 import { defaultProfile } from "./profile.ts";
 import { MenuItemKind, MenuLevel } from "./types.ts";
 import type {
-  MenuHeaderItem,
+  MenuCheckItem,
+  MenuCommandItem,
   MenuItem,
   MenuProfile,
-  MenuSeparatorItem,
+  MenuRadioItem,
+  MenuSubmenuItem,
   ResolvedCommand,
   ResolvedMenuItem
 } from "./types.ts";
 import { isLevelShown, valueOf } from "./values.ts";
 
-type LabelledItem = Exclude<MenuItem, MenuSeparatorItem | MenuHeaderItem>;
+type LabelledItem<ItemId extends string> = MenuCommandItem<ItemId>
+  | MenuCheckItem<ItemId>
+  | MenuRadioItem<ItemId>
+  | MenuSubmenuItem<ItemId>;
 
-const EMPTY_SUFFIX = ".empty";
+const EMPTY_SUFFIX = ".empty" as const;
 
-function isContent(entry: ResolvedMenuItem) {
+function isContent<ItemId extends string>(entry: ResolvedMenuItem<ItemId>) {
   return entry.kind !== MenuItemKind.SEPARATOR && entry.kind !== MenuItemKind.HEADER;
 }
 
-function isShown({ item, profile }: {
-  readonly item: MenuItem;
-  readonly profile: MenuProfile;
+function isShown<ItemId extends string>({ item, profile }: {
+  readonly item: MenuItem<ItemId>;
+  readonly profile: MenuProfile<ItemId>;
 }) {
   const isLabelled = item.kind !== MenuItemKind.SEPARATOR && item.kind !== MenuItemKind.HEADER;
   const isHiddenByApp = isLabelled && !valueOf(item.isVisible ?? true);
@@ -43,10 +48,10 @@ function isShown({ item, profile }: {
   return !isHiddenByUser && (isShownByLevel || isShownByUser);
 }
 
-function ordered({ nodes, profile, parentId }: {
-  readonly nodes: readonly ExpandedItem[];
-  readonly profile: MenuProfile;
-  readonly parentId: string;
+function ordered<ItemId extends string>({ nodes, profile, parentId }: {
+  readonly nodes: ReadonlyArray<ExpandedItem<ItemId>>;
+  readonly profile: MenuProfile<ItemId>;
+  readonly parentId: ItemId | typeof ROOT_ID;
 }) {
   const wanted = profile.order[parentId] ?? [];
   const first = new Set(wanted.flatMap(id => nodes.filter(node => node.item.id === id)));
@@ -54,7 +59,7 @@ function ordered({ nodes, profile, parentId }: {
   return [...first, ...rest];
 }
 
-function labelled(item: LabelledItem) {
+function labelled<ItemId extends string>(item: LabelledItem<ItemId>) {
   const badge = item.badge && valueOf(item.badge);
   return {
     id: item.id,
@@ -66,7 +71,7 @@ function labelled(item: LabelledItem) {
   };
 }
 
-function actionOf(item: LabelledItem) {
+function actionOf<ItemId extends string>(item: LabelledItem<ItemId>) {
   return {
     closeThenRun: item.closeThenRun !== false,
     select() {
@@ -75,24 +80,24 @@ function actionOf(item: LabelledItem) {
   };
 }
 
-function emptyPlaceholder({ id, label }: {
-  readonly id: string;
+function emptyPlaceholder<ItemId extends string>({ id, label }: {
+  readonly id: ItemId;
   readonly label: string;
 }) {
   return {
     kind: MenuItemKind.COMMAND,
-    id: `${id}${EMPTY_SUFFIX}`,
+    id: `${id}${EMPTY_SUFFIX}` as const,
     label,
     isEnabled: false,
     isBold: false,
     staysOpen: true,
     closeThenRun: false,
     select() {}
-  } satisfies ResolvedCommand;
+  } satisfies ResolvedCommand<ItemId>;
 }
 
-function tidy(entries: readonly ResolvedMenuItem[]) {
-  const result: ResolvedMenuItem[] = [];
+function tidy<ItemId extends string>(entries: ReadonlyArray<ResolvedMenuItem<ItemId>>) {
+  const result: Array<ResolvedMenuItem<ItemId>> = [];
   for (const [i, entry] of entries.entries()) {
     const next = entries[i + 1];
     const isEmptyHeader = entry.kind === MenuItemKind.HEADER && (!next || !isContent(next));
@@ -112,9 +117,9 @@ function tidy(entries: readonly ResolvedMenuItem[]) {
   return result;
 }
 
-function resolveSubmenu({ node, profile }: {
-  readonly node: ExpandedItem;
-  readonly profile: MenuProfile;
+function resolveSubmenu<ItemId extends string>({ node, profile }: {
+  readonly node: ExpandedItem<ItemId>;
+  readonly profile: MenuProfile<ItemId>;
 }) {
   const { item, children } = node;
   const isSubmenu = item.kind === MenuItemKind.SUBMENU;
@@ -145,12 +150,12 @@ function resolveSubmenu({ node, profile }: {
     ...actionOf(item),
     autoExpand: Boolean(item.autoExpand),
     items
-  } satisfies ResolvedMenuItem;
+  } satisfies ResolvedMenuItem<ItemId>;
 }
 
-function resolveNode({ node, profile }: {
-  readonly node: ExpandedItem;
-  readonly profile: MenuProfile;
+function resolveNode<ItemId extends string>({ node, profile }: {
+  readonly node: ExpandedItem<ItemId>;
+  readonly profile: MenuProfile<ItemId>;
 }) {
   const { item } = node;
   switch (item.kind) {
@@ -158,13 +163,13 @@ function resolveNode({ node, profile }: {
       return {
         kind: item.kind,
         id: item.id
-      } satisfies ResolvedMenuItem;
+      } satisfies ResolvedMenuItem<ItemId>;
     case MenuItemKind.HEADER:
       return {
         kind: item.kind,
         id: item.id,
         label: valueOf(item.label)
-      } satisfies ResolvedMenuItem;
+      } satisfies ResolvedMenuItem<ItemId>;
     case MenuItemKind.SUBMENU:
       return resolveSubmenu({
         node,
@@ -177,7 +182,7 @@ function resolveNode({ node, profile }: {
         ...actionOf(item),
         staysOpen: Boolean(item.staysOpen),
         ...item.shortcut ? { shortcut: item.shortcut } : {}
-      } satisfies ResolvedMenuItem;
+      } satisfies ResolvedMenuItem<ItemId>;
     case MenuItemKind.CHECK:
       return {
         kind: item.kind,
@@ -186,7 +191,7 @@ function resolveNode({ node, profile }: {
         staysOpen: Boolean(item.staysOpen),
         ...item.shortcut ? { shortcut: item.shortcut } : {},
         isChecked: valueOf(item.isChecked ?? false)
-      } satisfies ResolvedMenuItem;
+      } satisfies ResolvedMenuItem<ItemId>;
     case MenuItemKind.RADIO:
       return {
         kind: item.kind,
@@ -196,16 +201,16 @@ function resolveNode({ node, profile }: {
         staysOpen: Boolean(item.staysOpen),
         ...item.shortcut ? { shortcut: item.shortcut } : {},
         isChecked: valueOf(item.isChecked ?? false)
-      } satisfies ResolvedMenuItem;
+      } satisfies ResolvedMenuItem<ItemId>;
   }
 }
 
 // eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
-function resolveList({ nodes, profile, parentId }: {
-  readonly nodes: readonly ExpandedItem[];
-  readonly profile: MenuProfile;
-  readonly parentId: string;
-}): ResolvedMenuItem[] {
+function resolveList<ItemId extends string>({ nodes, profile, parentId }: {
+  readonly nodes: ReadonlyArray<ExpandedItem<ItemId>>;
+  readonly profile: MenuProfile<ItemId>;
+  readonly parentId: ItemId | typeof ROOT_ID;
+}): Array<ResolvedMenuItem<ItemId>> {
   const shown = nodes.filter(({ item }) => isShown({
     item,
     profile
@@ -236,9 +241,9 @@ function resolveList({ nodes, profile, parentId }: {
  * @returns The lines to draw.
  * @throws MenuModelError - An id is used twice, or a radio has no group.
  */
-export function resolveMenu({ items, profile = defaultProfile() }: {
-  readonly items: readonly MenuItem[];
-  readonly profile?: MenuProfile;
+export function resolveMenu<const ItemId extends string>({ items, profile = defaultProfile() }: {
+  readonly items: ReadonlyArray<MenuItem<ItemId>>;
+  readonly profile?: MenuProfile<NoInfer<ItemId>>;
 }) {
   return resolveList({
     nodes: expandMenu({ items }),

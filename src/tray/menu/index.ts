@@ -3,6 +3,7 @@ export type {
   MenuCheckItem,
   MenuCommandItem,
   MenuHeaderItem,
+  MenuIds,
   MenuItem,
   MenuItemDescription,
   MenuProfile,
@@ -14,6 +15,7 @@ export type {
   ResolvedCheck,
   ResolvedCommand,
   ResolvedHeader,
+  ResolvedId,
   ResolvedMenuItem,
   ResolvedRadio,
   ResolvedSeparator,
@@ -24,3 +26,4 @@ export { defaultProfile, parseProfile, profileSchema } from "./profile.ts";
 export { loadProfile, saveProfile } from "./profile-file.ts";
 export { resolveMenu } from "./resolve.ts";
 export { MenuModelError } from "./values.ts";
+export { defineMenu } from "./define.ts";

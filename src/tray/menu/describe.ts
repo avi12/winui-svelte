@@ -4,12 +4,14 @@ import { MenuItemKind, MenuLevel } from "./types.ts";
 import type { MenuItem, MenuItemDescription } from "./types.ts";
 import { valueOf } from "./values.ts";
 
-function labelOf(item: MenuItem) {
+function labelOf<ItemId extends string>(item: MenuItem<ItemId>) {
   return item.kind === MenuItemKind.SEPARATOR ? "" : valueOf(item.label);
 }
 
 // eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
-function describeList(nodes: readonly ExpandedItem[]): MenuItemDescription[] {
+function describeList<ItemId extends string>(
+  nodes: ReadonlyArray<ExpandedItem<ItemId>>
+): Array<MenuItemDescription<ItemId>> {
   return nodes.flatMap(({ item, parentId, children }) => [
     {
       id: item.id,
@@ -30,6 +32,8 @@ function describeList(nodes: readonly ExpandedItem[]): MenuItemDescription[] {
  * @param options - `items`: the declared menu.
  * @returns One row per item, separators included.
  */
-export function describeMenu({ items }: { readonly items: readonly MenuItem[] }) {
+export function describeMenu<const ItemId extends string>({ items }: {
+  readonly items: ReadonlyArray<MenuItem<ItemId>>;
+}) {
   return describeList(expandMenu({ items }));
 }

@@ -5,13 +5,13 @@ import { MenuModelError } from "./values.ts";
 export const ROOT_ID = "";
 
 /** A declared item with its dynamic children made, and the id of the menu that holds it. */
-export interface ExpandedItem {
-  readonly item: MenuItem;
-  readonly parentId: string;
-  readonly children: readonly ExpandedItem[];
+export interface ExpandedItem<ItemId extends string> {
+  readonly item: MenuItem<ItemId>;
+  readonly parentId: ItemId | typeof ROOT_ID;
+  readonly children: ReadonlyArray<ExpandedItem<ItemId>>;
 }
 
-function childrenOf(item: MenuItem) {
+function childrenOf<ItemId extends string>(item: MenuItem<ItemId>) {
   const isSubmenu = item.kind === MenuItemKind.SUBMENU;
   if (!isSubmenu) {
     return [];
@@ -39,13 +39,13 @@ function childrenOf(item: MenuItem) {
  * @param options - `items`: the declared menu.
  * @returns The tree with each dynamic list made.
  */
-export function expandMenu({ items }: { readonly items: readonly MenuItem[] }) {
+export function expandMenu<ItemId extends string>({ items }: { readonly items: ReadonlyArray<MenuItem<ItemId>> }) {
   const seen = new Set<string>();
   // eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
   function expandList({ list, parentId }: {
-    readonly list: readonly MenuItem[];
-    readonly parentId: string;
-  }): ExpandedItem[] {
+    readonly list: ReadonlyArray<MenuItem<ItemId>>;
+    readonly parentId: ItemId | typeof ROOT_ID;
+  }): Array<ExpandedItem<ItemId>> {
     return list.map(item => {
       if (seen.has(item.id)) {
         throw new MenuModelError(`Menu item id "${item.id}" is used more than once; ids must be unique`);

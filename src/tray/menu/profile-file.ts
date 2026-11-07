@@ -21,11 +21,11 @@ function parseJson(text: string | undefined) {
  * @param options - `file`: the path; `level`: the level to use for what the file lacks.
  * @returns The profile; the default one when the file is missing or unreadable.
  */
-export function loadProfile({ file, level = MenuLevel.SIMPLE }: {
+export function loadProfile<ItemId extends string = string>({ file, level = MenuLevel.SIMPLE }: {
   readonly file: string;
   readonly level?: MenuLevel;
 }) {
-  return parseProfile({
+  return parseProfile<ItemId>({
     value: parseJson(atomicFile(file).read()),
     level
   });
@@ -36,9 +36,9 @@ export function loadProfile({ file, level = MenuLevel.SIMPLE }: {
  *
  * @param options - `file`: the path; `profile`: what to write.
  */
-export function saveProfile({ file, profile }: {
+export function saveProfile<ItemId extends string>({ file, profile }: {
   readonly file: string;
-  readonly profile: MenuProfile;
+  readonly profile: MenuProfile<ItemId>;
 }) {
   atomicFile(file).write(`${JSON.stringify(profile, undefined, 2)}\n`);
 }
