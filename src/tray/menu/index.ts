@@ -19,3 +19,8 @@ export type {
   ResolvedSeparator,
   ResolvedSubmenu
 } from "./types.ts";
+export { describeMenu } from "./describe.ts";
+export { defaultProfile, parseProfile, profileSchema } from "./profile.ts";
+export { loadProfile, saveProfile } from "./profile-file.ts";
+export { resolveMenu } from "./resolve.ts";
+export { MenuModelError } from "./values.ts";
