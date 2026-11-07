@@ -1,10 +1,7 @@
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
-import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 import {
-  addressOf,
   bind,
   bindDll,
-  numberOf,
   pointerOf,
   WIDE_CHAR_BYTES,
   wideMemory,
@@ -310,17 +307,13 @@ export function createWorkAreaReader() {
   });
   const reader: TrayWorkArea = {
     workAreaAt(point) {
-      const found = monitorFromPoint.invoke([
-        DynWin32.i64(packPoint(point)),
-        DynWin32.u32(MONITOR_DEFAULT_TO_NEAREST)
-      ]);
-      const monitor = addressOf(found.returnValue);
+      const monitor = monitorFromPoint(packPoint(point), MONITOR_DEFAULT_TO_NEAREST);
       return withMemory({
         size: MONITOR_INFO_SIZE,
         alignment: DWORD_BYTES,
         use(info) {
           info.writeU32(OFFSET_SIZE, MONITOR_INFO_SIZE);
-          monitorInfo.invoke([DynWin32Unsafe.pointer(monitor), pointerOf(info)]);
+          monitorInfo(monitor, info);
           return {
             left: info.readI32(MONITOR_WORK_OFFSET),
             top: info.readI32(MONITOR_WORK_OFFSET + DWORD_BYTES),
@@ -383,7 +376,7 @@ export function createTrayNative() {
   const classBuffer = DynComRawMemory.allocate(CLASS_NAME_CHARS * WIDE_CHAR_BYTES, WIDE_CHAR_BYTES);
 
   function readButton(key: number) {
-    const state = numberOf(user32.keyState.invoke([DynWin32.i32(key)]).returnValue);
+    const state = user32.keyState(key);
     return {
       isDown: (state & KEY_DOWN_BIT) !== 0,
       wasPressed: (state & KEY_PRESSED_BIT) !== 0
@@ -398,9 +391,8 @@ export function createTrayNative() {
       x,
       y
     });
-    const window = addressOf(user32.windowFromPoint.invoke([DynWin32.i64(packed)]).returnValue);
-    const root = addressOf(user32.ancestor.invoke([DynWin32Unsafe.pointer(window), DynWin32.u32(GA_ROOT)]).returnValue);
-    user32.className.invoke([DynWin32Unsafe.pointer(root), pointerOf(classBuffer), DynWin32.i32(CLASS_NAME_CHARS)]);
+    const root = user32.ancestor(user32.windowFromPoint(packed), GA_ROOT);
+    user32.className(root, classBuffer, CLASS_NAME_CHARS);
     const name = classBuffer.readBytes(0, CLASS_NAME_CHARS * WIDE_CHAR_BYTES).toString("utf16le").split("\0")[0] ?? "";
     return TRAY_WINDOW_CLASSES.has(name);
   }
@@ -424,8 +416,7 @@ export function createTrayNative() {
           size: RECT_SIZE,
           alignment: DWORD_BYTES,
           use(rect) {
-            const result = shell32.iconRect.invoke([pointerOf(identifier), pointerOf(rect)]);
-            const isFound = numberOf(result.returnValue) === 0;
+            const isFound = shell32.iconRect(identifier, rect) === 0;
             const bounds = {
               left: rect.readI32(0),
               top: rect.readI32(DWORD_BYTES),
@@ -442,13 +433,11 @@ export function createTrayNative() {
   }
 
   function takeForeground(hwnd: bigint) {
-    const foreground = addressOf(user32.foregroundWindow.invoke([]).returnValue);
-    const threadOfForeground = user32.windowThread.invoke([DynWin32Unsafe.pointer(foreground), pointerOf(null)]);
-    const foregroundThread = numberOf(threadOfForeground.returnValue);
-    const ownThread = numberOf(currentThread.invoke([]).returnValue);
-    user32.attachInput.invoke([DynWin32.u32(ownThread), DynWin32.u32(foregroundThread), DynWin32.i32(1)]);
-    user32.setForeground.invoke([DynWin32Unsafe.pointer(hwnd)]);
-    user32.attachInput.invoke([DynWin32.u32(ownThread), DynWin32.u32(foregroundThread), DynWin32.i32(0)]);
+    const foregroundThread = user32.windowThread(user32.foregroundWindow(), null);
+    const ownThread = currentThread();
+    user32.attachInput(ownThread, foregroundThread, 1);
+    user32.setForeground(hwnd);
+    user32.attachInput(ownThread, foregroundThread, 0);
   }
 
   function readLightTheme() {
@@ -460,12 +449,16 @@ export function createTrayNative() {
         const subKey = wideMemory(PERSONALIZE_KEY);
         const valueName = wideMemory(LIGHT_THEME_VALUE);
         try {
-          const result = registryValue.invoke([
-            DynWin32Unsafe.pointer(HKEY_CURRENT_USER), pointerOf(subKey), pointerOf(valueName),
-            DynWin32.u32(REG_DWORD_ONLY), pointerOf(null), pointerOf(buffer),
-            DynWin32Unsafe.pointer(buffer.pointer(DWORD_BYTES).address)
-          ]);
-          return numberOf(result.returnValue) === 0 && buffer.readU32(0) !== 0;
+          const result = registryValue(
+            HKEY_CURRENT_USER,
+            subKey,
+            valueName,
+            REG_DWORD_ONLY,
+            null,
+            buffer,
+            buffer.pointer(DWORD_BYTES).address
+          );
+          return result === 0 && buffer.readU32(0) !== 0;
         } finally {
           subKey.release();
           valueName.release();
@@ -478,18 +471,13 @@ export function createTrayNative() {
     createOwnerWindow() {
       const classText = wideMemory("STATIC");
       try {
-        const created = user32.createWindow.invoke([
-          DynWin32.u32(0), pointerOf(classText), pointerOf(classText), DynWin32.u32(WS_POPUP),
-          DynWin32.i32(0), DynWin32.i32(0), DynWin32.i32(0), DynWin32.i32(0),
-          pointerOf(null), pointerOf(null), pointerOf(null), pointerOf(null)
-        ]);
-        return addressOf(created.returnValue);
+        return user32.createWindow(0, classText, classText, WS_POPUP, 0, 0, 0, 0, null, null, null, null);
       } finally {
         classText.release();
       }
     },
     destroyWindow(hwnd) {
-      user32.destroyWindow.invoke([DynWin32Unsafe.pointer(hwnd)]);
+      user32.destroyWindow(hwnd);
     },
     loadIcon: icons.loadIconFile,
     destroyIcon: icons.destroyIcon,
@@ -504,14 +492,13 @@ export function createTrayNative() {
             operation,
             data
           });
-          const result = shell32.notify.invoke([DynWin32.u32(operation), pointerOf(memory)]);
-          return numberOf(result.returnValue) !== 0;
+          return shell32.notify(operation, memory) !== 0;
         }
       });
     },
     iconRect: readIconRect,
     readPointer() {
-      user32.cursorPosition.invoke([pointerOf(pointBuffer)]);
+      user32.cursorPosition(pointBuffer);
       const point = {
         x: pointBuffer.readI32(0),
         y: pointBuffer.readI32(DWORD_BYTES)

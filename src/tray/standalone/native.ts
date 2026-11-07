@@ -1,14 +1,7 @@
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
-import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 import { MenuItemKind } from "#src/tray/menu/types.js";
 import type { ResolvedCheck, ResolvedCommand, ResolvedMenuItem, ResolvedRadio } from "#src/tray/menu/types.js";
-import {
-  addressOf,
-  bindDll,
-  numberOf,
-  pointerOf,
-  wideMemory
-} from "#src/win32-calls.js";
+import { bindDll, wideMemory } from "#src/win32-calls.js";
 
 const MIIM_STATE = 0x1;
 const MIIM_ID = 0x2;
@@ -114,7 +107,7 @@ export function createMenuBuilder() {
   });
 
   function popup() {
-    return addressOf(createPopup.invoke([]).returnValue);
+    return createPopup();
   }
 
   function fill({ menu, items, choices }: {
@@ -148,12 +141,7 @@ export function createMenuBuilder() {
         info.writeU32(OFFSET_ID, id);
         info.writeU64(OFFSET_SUBMENU, submenu);
         info.writeU64(OFFSET_TEXT, text.pointer().address);
-        insertItem.invoke([
-          DynWin32Unsafe.pointer(menu),
-          DynWin32.u32(position),
-          DynWin32.i32(BY_POSITION),
-          pointerOf(info)
-        ]);
+        insertItem(menu, position, BY_POSITION, info);
       } finally {
         info.release();
         text.release();
@@ -172,7 +160,7 @@ export function createMenuBuilder() {
       const menu = popup();
       const choices = new Map<number, NativeChoice>();
       function destroy() {
-        destroyMenu.invoke([DynWin32Unsafe.pointer(menu)]);
+        destroyMenu(menu);
       }
 
       try {
@@ -210,16 +198,16 @@ export function createNativeMenu() {
     choose({ owner, point, items }) {
       const built = builder.build({ items });
       try {
-        const chosen = trackPopup.invoke([
-          DynWin32Unsafe.pointer(built.menu),
-          DynWin32.u32(TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON | TPM_BOTTOMALIGN),
-          DynWin32.i32(point.x),
-          DynWin32.i32(point.y),
-          DynWin32Unsafe.pointer(owner),
-          pointerOf(null)
-        ]);
-        postMessage.invoke([DynWin32Unsafe.pointer(owner), DynWin32.u32(WM_NULL), pointerOf(null), pointerOf(null)]);
-        return built.choices.get(numberOf(chosen.returnValue));
+        const chosen = trackPopup(
+          built.menu,
+          TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON | TPM_BOTTOMALIGN,
+          point.x,
+          point.y,
+          owner,
+          null
+        );
+        postMessage(owner, WM_NULL, null, null);
+        return built.choices.get(chosen);
       } finally {
         built.destroy();
       }

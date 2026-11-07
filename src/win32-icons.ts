@@ -1,10 +1,4 @@
-import {
-  addressOf,
-  bind,
-  bindDll,
-  numberOf,
-  pointerOf
-} from "./win32-calls.ts";
+import { addressOf, bind, bindDll, pointerOf } from "./win32-calls.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 
@@ -55,19 +49,14 @@ export function createIconFileCalls() {
       path: string;
       size: number;
     }) {
-      const loaded = loadImage.invoke([
-        pointerOf(null), DynWin32.wideString(path), DynWin32.u32(IMAGE_ICON),
-        DynWin32.i32(size), DynWin32.i32(size), DynWin32.u32(LOAD_FROM_FILE)
-      ]);
-      return addressOf(loaded.returnValue);
+      return loadImage(null, path, IMAGE_ICON, size, size, LOAD_FROM_FILE);
     },
     destroyIcon(icon: bigint) {
-      destroyIcon.invoke([DynWin32Unsafe.pointer(icon)]);
+      destroyIcon(icon);
     },
     /** Pixels of a small icon (a tray icon, a taskbar overlay) at the system scale. */
     smallIconSize() {
-      const dpi = numberOf(systemDpi.invoke([]).returnValue);
-      return numberOf(metricsForDpi.invoke([DynWin32.i32(SM_CXSMICON), DynWin32.u32(dpi)]).returnValue);
+      return metricsForDpi(SM_CXSMICON, systemDpi());
     }
   };
 }
