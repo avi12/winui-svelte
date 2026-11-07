@@ -77,6 +77,7 @@
     "src/web-apis/eye-dropper.ts",
     "src/web-apis/contacts.ts",
     "src/web-apis/fonts.ts",
+    "src/web-apis/images.ts",
     "src/tray/index.ts",
     "src/tray/standalone/index.ts",
     "src/notice/index.ts",

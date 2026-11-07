@@ -481,6 +481,10 @@
       "types": "./dist/web-apis/idle.d.ts",
       "default": "./dist/web-apis/idle.js"
     },
+    "./web-apis/images": {
+      "types": "./dist/web-apis/images.d.ts",
+      "default": "./dist/web-apis/images.js"
+    },
     "./web-apis/launch": {
       "types": "./dist/web-apis/launch.d.ts",
       "default": "./dist/web-apis/launch.js"
