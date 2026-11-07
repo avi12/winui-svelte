@@ -44,7 +44,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/app/jump-list` | `src/app/jump-list/index.ts` | `setJumpListTasks()`, `clearJumpList()` (opt-in; see Jump list tasks) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
-| `winui-svelte/downloads` | `src/downloads/index.ts` | `downloadFile()`, `markOfTheWeb()`, `zoneIdentifierText()`, `DownloadError` (opt-in; see Downloads) |
+| `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
@@ -3628,41 +3628,107 @@ a real window; the dialogs themselves need a person and are not opened there)
 
 ## Downloads (`winui-svelte/downloads`)
 
-`downloadFile` streams a URL to disk over `fetch`, resumes an interrupted
-download with a Range request, marks the finished file as downloaded from the
-Internet and can show the progress on a window's taskbar button
+Downloads on the two APIs an app already knows: the web's `fetch` with the File
+System Access API, and `chrome.downloads`
+Opt-in: nothing is bundled until an app imports it, and importing does no work
+
+### Web layer: `fetchToFile`
+
+`fetchToFile` streams a URL into the file handle `showSaveFilePicker` gave
+(`installFileSystem` defines it), resumes with a Range request and marks the
+finished file as downloaded from the Internet
 
 ```ts
-import { downloadFile } from "winui-svelte/downloads";
+import { fetchToFile } from "winui-svelte/downloads";
 
-await downloadFile({
+const handle = await showSaveFilePicker({ suggestedName: "setup.exe" });
+await fetchToFile({
   url: "https://example.com/setup.exe",
-  path: "C:\Users\me\Downloads\setup.exe",
-  onprogress: ({ loaded, total }) => console.log(loaded, total),
-  resume: true,
-  taskbar: handle.taskbar
+  handle,
+  onprogress: ({ loaded, total }) => console.log(loaded, total)
 });
 ```
 
-- The bytes arrive in `path` + `.part` and are renamed to `path` on success;
-  `resume: true` sends `Range: bytes=<size of the .part>-` and appends to it
+- The body goes through `FileSystemWritableFileStream`; when it is whole the
+  file gets a `Zone.Identifier` alternate data stream with `ZoneId=3` and
+  `HostUrl` (the final address, without credentials), as a browser's download
+  would, so Explorer and SmartScreen warn before it runs; a volume with no
+  streams (FAT, a share) stays unmarked
+- A failed or cancelled (`signal`) read keeps the bytes that arrived;
+  `resume: true` sends `Range: bytes=<size of the file>-` and appends to it
   when the server answers 206 with the matching `Content-Range`; a server that
   ignores the range (200) or refuses it (416) makes the download start over
-- The finished file gets a `Zone.Identifier` alternate data stream with
-  `ZoneId=3` and `HostUrl` (the final address, without credentials), so
-  Explorer and SmartScreen warn before it runs; a volume with no streams (FAT,
-  a share) stays unmarked; `markOfTheWeb({ path, hostUrl })` does the same for
-  a file you saved another way; `zoneIdentifierText(hostUrl)` is the stream's
-  text
 - `onprogress({ loaded, total })` runs after every chunk; `total` is undefined
   when the server sends no length or compresses the body
-- `taskbar` takes `handle.taskbar`: a bar that fills as the download goes
-  (a marquee when `total` is unknown), removed when it ends, red when it fails;
-  a cancel through `signal` removes it and keeps the `.part` for a later resume
-- A non-2xx answer throws `DownloadError` with the `status`; `headers` adds
-  request headers and `fetch` stands in for the global one (the tests do)
-- `src/downloads/download-file.test.ts` runs it against a local HTTP server
-  with Range support
+- A non-2xx answer throws `DownloadError` with the `status`; `headers`,
+  `method` and `body` shape the request and `fetch` stands in for the global
+  one (the tests do)
+- `requestDownload` and `streamToFile` are the two halves of `fetchToFile`, for
+  an app that decides the file after the headers arrive;
+  `markOfTheWeb({ path, hostUrl })` marks a file saved another way and
+  `zoneIdentifierText(hostUrl)` is the stream's text
+
+### Chrome layer: `Downloads`
+
+`Downloads` is `chrome.downloads` with the same names and shapes; where Chrome
+takes a callback, a method returns a promise
+
+```ts
+import { Downloads } from "winui-svelte/downloads";
+
+const downloads = new Downloads();
+downloads.onChanged.addListener(({ id, state }) => {
+  if (state?.current === "complete") {
+    console.log(`download ${id} is done`);
+  }
+});
+const id = await downloads.download({
+  url: "https://example.com/setup.exe",
+  filename: "installers/setup.exe",
+  conflictAction: "uniquify",
+  taskbar: handle.taskbar
+});
+await downloads.pause(id);
+await downloads.resume(id);
+const [item] = await downloads.search({ id });
+```
+
+- `download({ url, filename, saveAs, conflictAction, headers, method, body })`
+  returns the id once the download has started; the options are checked with
+  zod, so a bad `url`, `method` or an unknown key rejects; `filename` is
+  relative to the downloads folder (`directory` of the constructor, the user's
+  Downloads folder by default) and may not leave it
+- The file name is `filename`, else the server's `Content-Disposition`, else
+  the last part of the address; `conflictAction` is `uniquify` (the default,
+  `name (1).ext`), `overwrite` or `prompt`; `saveAs` and `prompt` ask with the
+  global `showSaveFilePicker` (or `pickSaveFile` of the constructor)
+- The bytes arrive in the file's name plus `.part`, renamed when whole, with
+  the Mark of the Web
+- `pause(id)` keeps the bytes (`paused: true`, `canResume: true`) and
+  `resume(id)` asks for the rest with a Range request; a dropped connection
+  ends `interrupted` with `NETWORK_FAILED` and can resume too; `cancel(id)`
+  deletes the bytes and ends `interrupted` with `USER_CANCELED`
+- `search(query)` takes Chrome's `DownloadQuery` (`query` terms, with a leading
+  `-` to exclude, `filenameRegex`, `urlRegex`, `startedBefore` and the other
+  time bounds, `totalBytesGreater`, `limit`, `orderBy` and every field as an
+  exact match); `erase(query)` removes the ones that are not running from the
+  list and returns their ids, the files stay; `removeFile(id)` deletes the file
+- `show(id)` and `showDefaultFolder()` open Explorer through `revealInExplorer`
+- `onCreated` gets the `DownloadItem`, `onChanged` a `DownloadDelta` with only
+  what changed (`state`, `paused`, `bytesReceived`, `totalBytes`, `error`,
+  `canResume`, `filename`, and so on) and `onErased` the id; they have
+  `addListener`, `removeListener`, `hasListener` and `hasListeners`
+- `DownloadItem.totalBytes` and `fileSize` are -1 while unknown, as in Chrome;
+  the `error` values are `InterruptReason`'s, and an HTTP status maps to
+  `SERVER_UNAUTHORIZED`, `SERVER_FORBIDDEN`, `SERVER_BAD_CONTENT` or
+  `SERVER_FAILED`
+- `taskbar` is the one extra member of the options object: `handle.taskbar`
+  shows a bar that fills as the download goes (a marquee when the size is
+  unknown), yellow while paused, removed when it ends and red when it fails
+- Not mirrored: `open`, `getFileIcon`, `acceptDanger`, `setShelfEnabled`,
+  `onDeterminingFilename` and the danger types, a download here is always safe
+- `src/downloads/fetch-to-file.test.ts` and `chrome-downloads.test.ts` run
+  against a local HTTP server with Range support
 
 ## Data transfer (`winui-svelte/data-transfer`)
 
