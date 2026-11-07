@@ -47,6 +47,9 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
 | `winui-svelte/chrome/runtime` | `src/chrome/runtime/index.ts` | `Runtime` (`chrome.runtime`), `Port`, `InstallReason`, the native messaging codec (opt-in; see Chrome runtime) |
 | `winui-svelte/chrome/notifications` | `src/chrome/notifications/index.ts` | `ChromeNotifications` (`chrome.notifications`), `NotificationTemplateType`, `NotificationPermissionLevel` (opt-in; see Chrome notifications) |
+
+| `winui-svelte/chrome/commands` | `src/chrome/commands/index.ts` | `ChromeCommands` (`chrome.commands`), `parseShortcut()` (opt-in; see Chrome commands) |
+| `winui-svelte/chrome/action` | `src/chrome/action/index.ts` | `ChromeAction` (`chrome.action`), `createChromeAction()` (opt-in; see Chrome action) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
@@ -4067,6 +4070,105 @@ await notifications.update("sync", { progress: 60 });
 - Not mirrored: `onPermissionLevelChanged` and `onShowSettings`
 - `src/chrome/notifications/chrome-notifications.test.ts` runs the web
   `Notification` over a stand-in for the Windows App SDK; no toast is shown
+
+## Chrome commands (`winui-svelte/chrome/commands`)
+
+`chrome.commands` for a native app: the manifest's `commands` key as global
+hotkeys, over `registerHotkey` of `winui-svelte/app/hotkeys`
+Opt-in: nothing is bundled until an app imports it, importing does no work, and
+no global `chrome` is installed
+
+```ts
+import { ChromeCommands } from "winui-svelte/chrome/commands";
+
+const commands = new ChromeCommands({
+  commands: {
+    toggle: {
+      suggested_key: { default: "Ctrl+Shift+Y", mac: "Command+Shift+Y" },
+      description: "Toggle the panel"
+    }
+  }
+});
+commands.onCommand.addListener(name => console.log(name));
+const failures = commands.start();
+const all = await commands.getAll();
+```
+
+- `start()` registers every shortcut (call it on the UI thread, where
+  `registerHotkey` belongs) and returns the commands whose shortcut was
+  refused, as `{ name, error }`; a clash with another app leaves that command
+  unassigned, so its `getAll` shortcut is empty, as in Chrome; `stop()` gives
+  the shortcuts back
+- `getAll()` resolves with `{ name, description, shortcut }` for each command
+  in the manifest's order, the shortcut spelled `"Ctrl+Shift+Y"`
+- `suggested_key` is a string or one per platform; `windows` then `default`
+  is used, and `mac`, `linux` and `chromeos` are ignored
+- `Ctrl`, `Alt` and `Shift` are as in Chrome; `Command` and `MacCtrl` mean
+  Ctrl; keys are `A` to `Z`, `0` to `9`, `F1` to `F12`, `Comma`, `Period`,
+  `Home`, `End`, `PageUp`, `PageDown`, `Space`, `Insert`, `Delete`, `Up`,
+  `Down`, `Left`, `Right` and the four media keys; `parseShortcut(text)`
+  reads one into the `HotkeyChord` and the display spelling, and throws for
+  anything else
+- A bad manifest (a shortcut Chrome would not take, or a wrong shape, checked
+  with zod) throws from the constructor
+- Chrome keeps most shortcuts inside the browser; a native app has no such
+  scope, so every shortcut with a key is system-wide and `global` changes
+  nothing
+- `_execute_action` (and `_execute_browser_action`, `_execute_page_action`)
+  call `onExecuteAction` when you give it, as Chrome treats them as a click on
+  the action (pass `() => action.click()` of `winui-svelte/chrome/action`),
+  and fire `onCommand` otherwise
+- `onCommand` is a `ChromeEvent` and is called with the name only, there is no
+  tab; `register` stands in for `registerHotkey` in a test
+- Not mirrored: `onChanged`, and the shortcut customisation page
+- `src/chrome/commands/chrome-commands.test.ts` runs it over a fake registrar,
+  so no real hotkey is registered
+
+## Chrome action (`winui-svelte/chrome/action`)
+
+`chrome.action` for a native app, over the tray icon (`winui-svelte/tray`)
+Opt-in: nothing is bundled until an app imports it, importing does no work, and
+no global `chrome` is installed
+
+```ts
+import { createChromeAction } from "winui-svelte/chrome/action";
+
+const { action, tray } = createChromeAction({
+  icon: "app.ico",
+  title: "Inbox",
+  guid: "0b3c0a53-2a8f-4a5e-9d57-1c2f7c1a9f10"
+});
+action.onClicked.addListener(() => console.log("clicked"));
+await action.setBadgeText({ text: "3" });
+```
+
+- `createChromeAction(options)` takes the options of `createTrayIcon` (except
+  `onclick`) and `title`, makes the tray icon and returns `{ action, tray }`;
+  call it on the UI thread; the left click is `onClicked`, the other gestures
+  go to the tray as given; `createTray` stands in for `createTrayIcon` in a test
+- `new ChromeAction({ title, tray })` is the same without making the tray: give
+  the tray's `onclick` to `action.click()`, then `attach(tray)` (a tray from
+  `defineTray` fits), through the `ActionTray` shape
+- `setTitle({ title })` and `getTitle()` are the tooltip, kept to what the shell
+  holds (127 characters)
+- `setIcon({ path })` swaps the icon file; `path` is a string or
+  `{ forLightTaskbar, forDarkTaskbar }`; Chrome's `imageData` and size maps
+  are rejected
+- `setBadgeText({ text })` and `getBadgeText()`: the tray cannot paint on an
+  icon (icons are files loaded by path, and drawing needs a new icon file on
+  every change), so the badge is a tooltip suffix, `"Inbox (3)"`; empty text
+  clears it
+- `setBadgeBackgroundColor({ color })` and `getBadgeBackgroundColor()` keep the
+  color (four channels, or `#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`; Chrome's
+  red until set) and nothing draws it
+- `enable()`, `disable()` and `isEnabled()`: a disabled action still shows
+  (the tray cannot grey an icon) but a click on it is ignored
+- Every method returns a promise and rejects on a bad argument (zod); `tabId`
+  is accepted and ignored, there are no tabs, so everything is global
+- `onClicked` is a `ChromeEvent` and is called with no argument
+- Not mirrored: `setPopup`, `getPopup`, `openPopup`, `getUserSettings`,
+  `setBadgeTextColor`, `onUserSettingsChanged`
+- `src/chrome/action/chrome-action.test.ts` runs it over a fake tray
 
 ## Data transfer (`winui-svelte/data-transfer`)
 

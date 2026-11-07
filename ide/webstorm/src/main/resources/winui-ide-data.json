@@ -3739,6 +3739,7 @@
     {"name":"acrylicThin","light":"#f3f3f3","dark":"#202020","isTranslucent":true}
   ],
   "pictureProps": [
+    {"owner":"ActionTray","name":"icon","forms":["string","pair"],"components":[]},
     {"owner":"ImageBrushProps","name":"imageSource","forms":["string"],"components":["ImageBrush"]},
     {"owner":"ImageIconProps","name":"source","forms":["string"],"components":["ImageIcon"]},
     {"owner":"ImageIconSourceProps","name":"imageSource","forms":["string"],"components":["ImageIconSource"]},

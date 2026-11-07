@@ -167,6 +167,14 @@
       "types": "./dist/chrome/context-menus/index.d.ts",
       "default": "./dist/chrome/context-menus/index.js"
     },
+    "./chrome/commands": {
+      "types": "./dist/chrome/commands/index.d.ts",
+      "default": "./dist/chrome/commands/index.js"
+    },
+    "./chrome/action": {
+      "types": "./dist/chrome/action/index.d.ts",
+      "default": "./dist/chrome/action/index.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
