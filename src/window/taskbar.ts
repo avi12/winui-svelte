@@ -1,14 +1,20 @@
 import type { BadgeFace } from "./badge-icon.ts";
 import { badgeDescription, renderBadgeIcon } from "./badge-icon.ts";
-import type { TaskbarFlashOptions, TaskbarProgressOptions } from "./taskbar-calls.ts";
-import { FLASH_STOP, flashCall, progressCall } from "./taskbar-calls.ts";
+import type { TaskbarFlashOptions, TaskbarProgressOptions, TaskbarThumbnailClip } from "./taskbar-calls.ts";
+import {
+  FLASH_STOP,
+  flashCall,
+  progressCall,
+  thumbnailClipCall,
+  thumbnailTooltipOf
+} from "./taskbar-calls.ts";
 import { createTaskbarNative } from "./taskbar-native.ts";
 import type { PictureSource } from "#src/picture-source.js";
 import { BadgeGlyph } from "#src/web-apis/badge-glyph.js";
 import type { BadgeBackend } from "#src/web-apis/badging.js";
 import type { IconPixels } from "#src/win32-icons.js";
 
-export type { TaskbarFlashOptions, TaskbarProgressOptions } from "./taskbar-calls.ts";
+export type { TaskbarFlashOptions, TaskbarProgressOptions, TaskbarThumbnailClip } from "./taskbar-calls.ts";
 export { TaskbarFlashUntil, TaskbarProgressState } from "./taskbar-calls.ts";
 
 /** The icon on an overlay: an .ico file, or pixels already drawn. */
@@ -38,6 +44,21 @@ export interface TaskbarBackend {
     flags: number;
     count: number;
   }): void;
+  setThumbnailTooltip(options: {
+    hwnd: bigint;
+    text: string;
+  }): void;
+
+  /** `rectangle` null shows the whole window again. */
+  setThumbnailClip(options: {
+    hwnd: bigint;
+    rectangle: {
+      left: number;
+      top: number;
+      right: number;
+      bottom: number;
+    } | null;
+  }): void;
 }
 
 /** What `setOverlayIcon` takes. */
@@ -50,8 +71,8 @@ export interface TaskbarOverlayOptions {
 }
 
 /**
- * One window's button on the taskbar: its progress bar, its overlay icon and
- * its flashing. Needs no package identity. Call it on the UI thread.
+ * One window's button on the taskbar: its progress bar, its overlay icon, its
+ * flashing and its thumbnail's tooltip and clip. Needs no package identity. Call it on the UI thread.
  */
 export class TaskbarButton {
   private readonly hwnd: bigint;
@@ -123,6 +144,33 @@ export class TaskbarButton {
     this.backend.flash({
       hwnd: this.hwnd,
       ...flashCall(options)
+    });
+  }
+
+  /**
+   * Sets the text shown above the window's thumbnail on hover, instead of
+   * the window's title.
+   *
+   * @param text - The tooltip, 259 characters at most; empty shows the title again.
+   */
+  setThumbnailTooltip(text: string) {
+    this.backend.setThumbnailTooltip({
+      hwnd: this.hwnd,
+      text: thumbnailTooltipOf(text)
+    });
+  }
+
+  /**
+   * Shows only part of the window in its thumbnail, or all of it again.
+   * The clip must lie inside the window's client area.
+   *
+   * @param clip - The part, in pixels of the client area; null shows the whole window.
+   */
+  setThumbnailClip(clip: TaskbarThumbnailClip | null) {
+    const isWhole = clip === null;
+    this.backend.setThumbnailClip({
+      hwnd: this.hwnd,
+      rectangle: isWhole ? null : thumbnailClipCall(clip)
     });
   }
 

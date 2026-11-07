@@ -4,7 +4,8 @@ export const ActivationKind = {
   file: "file",
   protocol: "protocol",
   startup: "startup",
-  redirect: "redirect"
+  redirect: "redirect",
+  jumpList: "jumpList"
 } as const;
 /** One of the values of `ActivationKind`. */
 export type ActivationKind = (typeof ActivationKind)[keyof typeof ActivationKind];
@@ -54,10 +55,19 @@ export interface RedirectActivation extends ActivationBase {
   readonly kind: typeof ActivationKind.redirect;
 }
 
+/** A task of the taskbar button's jump list was chosen (see `setJumpListTasks`). */
+export interface JumpListActivation extends ActivationBase {
+  readonly kind: typeof ActivationKind.jumpList;
+
+  /** The `id` of the chosen task; its own `arguments` are in `arguments`. */
+  readonly taskId: string;
+}
+
 /** Every way the app is activated, as one event. */
 export type ActivationEvent =
   | LaunchActivation
   | FileActivation
   | ProtocolActivation
   | StartupActivation
-  | RedirectActivation;
+  | RedirectActivation
+  | JumpListActivation;
