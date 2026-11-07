@@ -4170,6 +4170,56 @@ await action.setBadgeText({ text: "3" });
   `setBadgeTextColor`, `onUserSettingsChanged`
 - `src/chrome/action/chrome-action.test.ts` runs it over a fake tray
 
+## Chrome system (`winui-svelte/chrome/system`)
+
+`chrome.system` for a native app: `cpu`, `memory`, `storage` and `display`
+with Chrome's names and promises, over Node's `os` and the display areas
+that `winui-svelte/devices/display` and the web `screen` read
+Opt-in: nothing is bundled until an app imports it, importing does no work, and
+no global `chrome` is installed
+
+```ts
+import { createChromeSystem } from "winui-svelte/chrome/system";
+
+const system = createChromeSystem();
+const cpu = await system.cpu.getInfo();
+const memory = await system.memory.getInfo();
+const drives = await system.storage.getInfo();
+const displays = await system.display.getInfo();
+system.display.onDisplayChanged.addListener(() => console.log("changed"));
+```
+
+- `createChromeSystem(options)` returns `{ cpu, memory, storage, display }`
+  (`SystemCpu`, `SystemMemory`, `SystemStorage`, `SystemDisplay`); nothing is
+  read until a method is called; `backend` stands in for the machine in a
+  test, and `windowsSystemBackend()` is the default (`SystemBackend` is its
+  shape)
+- `cpu.getInfo()` resolves with `numOfProcessors`, `archName` (`x86-64`,
+  `arm64`, `x86-32`, `arm`), `modelName`, `features`, `processors` (the
+  `kernel`, `user`, `idle` and `total` milliseconds of each) and an empty
+  `temperatures`; `features` is `mmx`, `sse` and `sse2` on x64 and empty
+  elsewhere, as Node reports no others
+- `memory.getInfo()` resolves with `capacity` and `availableCapacity` in bytes
+- `storage.getInfo()` resolves with `{ id, name, type, capacity }` for each
+  drive letter, `type` one of `StorageUnitType` (`fixed`, `removable`,
+  `unknown`), read with `GetDriveTypeW`
+- `storage.onAttached` and `storage.onDetached` are not mirrored: Windows
+  tells an app about a drive coming or going only through a hidden window's
+  `WM_DEVICECHANGE` or a `DeviceWatcher` that needs a package identity; call
+  `getInfo` again
+- `display.getInfo(flags)` resolves with one record per display area, the
+  primary first: `id`, `name` (`Display 1` and so on), `isPrimary`,
+  `isEnabled`, `dpiX`, `dpiY` (the system scale times 96), `bounds` and
+  `workArea` as `{ left, top, width, height }` in screen pixels;
+  `mirroringSourceId` is empty and `rotation` 0, as Windows tells an app
+  neither; `singleUnified` is accepted and ignored; a flag of the wrong
+  type rejects (zod)
+- `display.onDisplayChanged` is a `ChromeEvent` called with no argument; the
+  display watcher runs only while a listener is added
+- Not here on purpose: `chrome.idle` is the web `IdleDetector` and
+  `chrome.desktopCapture` the web `getDisplayMedia`, both already covered
+- `src/chrome/system/chrome-system.test.ts` runs it over a fake backend
+
 ## Data transfer (`winui-svelte/data-transfer`)
 
 Drag and drop, file dialogs, the clipboard and the launcher, in the web's
