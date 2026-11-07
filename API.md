@@ -3811,6 +3811,8 @@ const bytes = await storage.local.getBytesInUse();
 - A change made by another process is not seen, and `ChromeStorage` takes
   `appName`, `environment`, `localFile` and `syncFile` (the tests give an
   in-memory file); the closed sets are `StorageAreaName` and `AccessLevel`
+- `LOCAL_QUOTA`, `SESSION_QUOTA` and `SYNC_QUOTA` hold the numbers each area
+  publishes, for code that wants them without making a `ChromeStorage`
 - `src/chrome/storage/chrome-storage.test.ts` runs against an in-memory file
 
 ## Data transfer (`winui-svelte/data-transfer`)
