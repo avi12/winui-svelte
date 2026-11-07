@@ -1,15 +1,16 @@
 import { createNativeMenu } from "./native.ts";
 import type { NativeChoice, NativeMenu } from "./native.ts";
 import { removeTrayIconsAtExit } from "#src/tray/exit-hook.js";
-import { resolveMenu } from "#src/tray/menu/resolve.js";
+import { resolveLite } from "#src/tray/menu/resolve-lite.js";
+import type { MenuResolver } from "#src/tray/menu/resolve-lite.js";
 import type { MenuItem, MenuProfile } from "#src/tray/menu/types.js";
 import { createTrayNative } from "#src/tray/native.js";
 import type { TrayNative } from "#src/tray/native.js";
 import { createTrayIconWith } from "#src/tray/tray-core.js";
 import type { TrayIconOptions, TrayScheduler } from "#src/tray/tray-core.js";
 
-/** What `createStandaloneTray` takes beyond the icon's own options; `ItemId` is the union of the ids of `menu`. */
-export interface StandaloneTrayOptions<ItemId extends string = string> extends Omit<TrayIconOptions, "oncontextmenu"> {
+/** The menu of `createStandaloneTray`; `ItemId` is the union of the ids of `menu`. */
+interface StandaloneMenuOptions<ItemId extends string = string> extends Omit<TrayIconOptions, "oncontextmenu"> {
   /**
    * The menu a right click opens, in the model of `winui-svelte/tray/menu`: commands, checks, radios,
    * submenus to any depth, separators and headers. A separator needs an `id` like every line. On this
@@ -18,12 +19,33 @@ export interface StandaloneTrayOptions<ItemId extends string = string> extends O
    */
   readonly menu?: ReadonlyArray<MenuItem<ItemId>> | undefined;
 
+}
+
+/** Levels, a user profile and ordering: what `resolve: resolveMenu` adds to the default. */
+interface StandaloneProfileOptions<ItemId extends string = string> {
+  /** The resolver that applies levels and a profile: `resolveMenu` of `winui-svelte/tray/standalone`. */
+  readonly resolve: MenuResolver<ItemId>;
+
   /**
    * What the user chose to show, or a function that gives it each time the menu opens (read from a
    * file with `loadProfile`); every id must be one of `menu`'s. Everything at the `simple` level when left out.
    */
   readonly profile?: MenuProfile<NoInfer<ItemId>> | (() => MenuProfile<NoInfer<ItemId>>) | undefined;
 }
+
+/** The default: every item is shown, in declared order, and a `profile` is a type error. */
+interface StandaloneLiteOptions {
+  readonly resolve?: undefined;
+  readonly profile?: undefined;
+}
+
+/**
+ * What `createStandaloneTray` takes beyond the icon's own options. With no `resolve` the menu is drawn
+ * by the lite resolver, which ignores levels and profiles and so leaves them out of the bundle; pass
+ * `resolve: resolveMenu` (and then `profile`) to use them.
+ */
+export type StandaloneTrayOptions<ItemId extends string = string> = StandaloneMenuOptions<ItemId>
+  & (StandaloneLiteOptions | StandaloneProfileOptions<ItemId>);
 
 /** What `createStandaloneTray` takes beyond the options: a test's stand-ins. */
 export interface StandaloneTraySeams {
@@ -65,7 +87,7 @@ export function createStandaloneTray<const ItemId extends string>(
   function resolved() {
     const { profile } = options;
     const chosen = typeof profile === "function" ? profile() : profile;
-    return resolveMenu({
+    return (options.resolve ?? resolveLite)({
       items,
       ...chosen ? { profile: chosen } : {}
     });

@@ -1,6 +1,8 @@
 export type { LaunchOptions } from "#src/app/activate.js";
 export { activateInstance, activateOrLaunch, launchApp } from "#src/app/activate.js";
 export type { NativeChoice, NativeMenu } from "./native.ts";
+export { resolveMenu } from "#src/tray/menu/resolve.js";
+export type { MenuResolver } from "#src/tray/menu/resolve-lite.js";
 export { MenuItemKind, MenuLevel } from "#src/tray/menu/types.js";
 export type { MenuItem, MenuProfile } from "#src/tray/menu/types.js";
 export type {

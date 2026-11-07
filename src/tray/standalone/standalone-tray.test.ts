@@ -2,6 +2,7 @@ import type { NativeChoice, NativeMenu } from "./native.ts";
 import { createStandaloneTray } from "./standalone-tray.ts";
 import type { StandaloneTrayOptions } from "./standalone-tray.ts";
 import { defaultProfile } from "#src/tray/menu/default-profile.js";
+import { resolveMenu } from "#src/tray/menu/resolve.js";
 import { MenuItemKind } from "#src/tray/menu/types.js";
 import type { MenuItem, ResolvedMenuItem } from "#src/tray/menu/types.js";
 import type {
@@ -116,7 +117,7 @@ function names(items: readonly ResolvedMenuItem[]): string[] {
 function start<const ItemId extends string>({ menu, picks, profile }: {
   readonly menu: StandaloneTrayOptions<ItemId>["menu"];
   readonly picks: ReadonlyArray<string | undefined>;
-  readonly profile?: StandaloneTrayOptions<ItemId>["profile"];
+  readonly profile?: NonNullable<Extract<StandaloneTrayOptions<ItemId>, { readonly resolve: unknown }>["profile"]>;
 }) {
   const fake = fakeNative();
   let tick = noop;
@@ -140,17 +141,25 @@ function start<const ItemId extends string>({ menu, picks, profile }: {
       });
     }
   };
-  const handle = createStandaloneTray({
-    icon: "a.ico",
-    menu,
-    ...profile ? { profile } : {},
+  const seams = {
     native: fake.native,
     nativeMenu,
-    defer: run => deferred.push(run),
-    schedule({ onTick }) {
+    defer: (run: () => void) => deferred.push(run),
+    schedule({ onTick }: { readonly onTick: () => void }) {
       tick = onTick;
       return () => {};
     }
+  };
+  const handle = profile ? createStandaloneTray({
+    icon: "a.ico",
+    menu,
+    resolve: resolveMenu,
+    profile,
+    ...seams
+  }) : createStandaloneTray({
+    icon: "a.ico",
+    menu,
+    ...seams
   });
   function rightClick() {
     fake.press("right");
@@ -382,6 +391,22 @@ test("a profile with an id that is not in the menu, or a line of the wrong shape
       // @ts-expect-error "nope" is not an id of the menu
       hidden: ["nope"]
     },
+    native,
+    schedule
+  }).remove();
+  // @ts-expect-error a profile without the full resolver would be ignored
+  createStandaloneTray({
+    icon: "a.ico",
+    menu: [command({ id: "open" })],
+    profile: defaultProfile(),
+    native,
+    schedule
+  }).remove();
+  createStandaloneTray({
+    icon: "a.ico",
+    menu: [command({ id: "open" })],
+    resolve: resolveMenu,
+    profile: defaultProfile(),
     native,
     schedule
   }).remove();

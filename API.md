@@ -2984,7 +2984,7 @@ createStandaloneTray({
 
 - `createStandaloneTray(options)` takes the icon's options (`icon`,
   `tooltip`, `isVisible`, `guid`, `onclick`, `ondoubleclick`,
-  `onmiddleclick`), `menu` and `profile`, and returns the same handle as
+  `onmiddleclick`), `menu`, and `resolve` with `profile`, and returns the same handle as
   `createTrayIcon` (`update`, `notify`, `bounds`, `isRegistered`, `remove`)
   The icon keeps the process alive; `remove()` or the process ending takes it
   out of the tray
@@ -2994,10 +2994,18 @@ createStandaloneTray({
   commands, checks, radios, submenus to any depth, separators and headers,
   each with an `id` (a separator too), and values that are functions are read
   each time the menu opens, as are lazy submenu `items`
-  The ids are literal types: `profile`, the user's choice of level, hidden,
-  shown and order (a `MenuProfile` with a `MenuLevel`, or a function that gives one, for example
-  from `loadProfile`), accepts only ids of `menu`, and a wrong one fails to
-  compile
+  The menu is drawn by the lite resolver by default: every item is shown in
+  declared order, with dynamic values, `isVisible`, `emptyLabel`, `sort` and
+  `maxItems` applied, and `level` and `isRequired` ignored; it leaves the
+  level and profile code out of the bundle
+  For levels, a user profile and ordering, opt in with one import:
+  `resolve: resolveMenu` from the same entry, and then `profile`, the user's
+  choice of level, hidden, shown and order (a `MenuProfile` with a
+  `MenuLevel`, or a function that gives one, for example from
+  `loadProfile`)
+  The ids are literal types: `profile` accepts only ids of `menu`, and a
+  wrong one fails to compile; a `profile` without `resolve: resolveMenu` also
+  fails to compile, so a profile is never ignored in silence
   Windows draws a check as a tick, a radio as a dot, a header as a disabled
   bold line, a shortcut right-aligned and a badge after the label
   `staysOpen` closes and reopens the menu at the same point, with fresh
