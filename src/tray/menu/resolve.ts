@@ -14,10 +14,7 @@ import type {
 } from "./types.ts";
 import { isLevelShown, valueOf } from "./values.ts";
 
-type LabelledItem<ItemId extends string> = MenuCommandItem<ItemId>
-  | MenuCheckItem<ItemId>
-  | MenuRadioItem<ItemId>
-  | MenuSubmenuItem<ItemId>;
+type ActionItem<ItemId extends string> = MenuCommandItem<ItemId> | MenuCheckItem<ItemId> | MenuRadioItem<ItemId>;
 
 const EMPTY_SUFFIX = ".empty" as const;
 
@@ -29,8 +26,7 @@ function isShown<ItemId extends string>({ item, profile }: {
   readonly item: MenuItem<ItemId>;
   readonly profile: MenuProfile<ItemId>;
 }) {
-  const isLabelled = item.kind !== MenuItemKind.SEPARATOR && item.kind !== MenuItemKind.HEADER;
-  const isHiddenByApp = isLabelled && !valueOf(item.isVisible ?? true);
+  const isHiddenByApp = "isVisible" in item && !valueOf(item.isVisible ?? true);
   if (isHiddenByApp) {
     return false;
   }
@@ -39,13 +35,12 @@ function isShown<ItemId extends string>({ item, profile }: {
     return true;
   }
 
-  const isHiddenByUser = profile.hidden.includes(item.id);
   const isShownByLevel = isLevelShown({
     itemLevel: item.level ?? MenuLevel.SIMPLE,
     level: profile.level
   });
-  const isShownByUser = profile.shown.includes(item.id);
-  return !isHiddenByUser && (isShownByLevel || isShownByUser);
+  const isHiddenByUser = profile.hidden.includes(item.id);
+  return !isHiddenByUser && (isShownByLevel || profile.shown.includes(item.id));
 }
 
 function ordered<ItemId extends string>({ nodes, profile, parentId }: {
@@ -59,24 +54,27 @@ function ordered<ItemId extends string>({ nodes, profile, parentId }: {
   return [...first, ...rest];
 }
 
-function labelled<ItemId extends string>(item: LabelledItem<ItemId>) {
+function labelled<ItemId extends string>(item: ActionItem<ItemId> | MenuSubmenuItem<ItemId>) {
   const badge = item.badge && valueOf(item.badge);
   return {
     id: item.id,
     label: valueOf(item.label),
     isEnabled: valueOf(item.isEnabled ?? true),
     isBold: valueOf(item.isBold ?? false),
+    closeThenRun: item.closeThenRun !== false,
+    select() {
+      item.onselect?.({ item });
+    },
     ...item.icon ? { icon: item.icon } : {},
     ...badge ? { badge } : {}
   };
 }
 
-function actionOf<ItemId extends string>(item: LabelledItem<ItemId>) {
+function actionOf<ItemId extends string>(item: ActionItem<ItemId>) {
   return {
-    closeThenRun: item.closeThenRun !== false,
-    select() {
-      item.onselect?.({ item });
-    }
+    ...labelled(item),
+    staysOpen: Boolean(item.staysOpen),
+    ...item.shortcut ? { shortcut: item.shortcut } : {}
   };
 }
 
@@ -100,9 +98,9 @@ function tidy<ItemId extends string>(entries: ReadonlyArray<ResolvedMenuItem<Ite
   const result: Array<ResolvedMenuItem<ItemId>> = [];
   for (const [i, entry] of entries.entries()) {
     const next = entries[i + 1];
-    const isEmptyHeader = entry.kind === MenuItemKind.HEADER && (!next || !isContent(next));
+    const isEmptyHeader = entry.kind === MenuItemKind.HEADER && !(next && isContent(next));
     const isRedundantSeparator = entry.kind === MenuItemKind.SEPARATOR
-      && (result.length === 0 || result.at(-1)?.kind === MenuItemKind.SEPARATOR);
+      && (result.at(-1)?.kind ?? MenuItemKind.SEPARATOR) === MenuItemKind.SEPARATOR;
     const isKept = !isEmptyHeader && !isRedundantSeparator;
     if (isKept) {
       result.push(entry);
@@ -147,7 +145,6 @@ function resolveSubmenu<ItemId extends string>({ node, profile }: {
   return {
     kind: MenuItemKind.SUBMENU,
     ...labelled(item),
-    ...actionOf(item),
     autoExpand: Boolean(item.autoExpand),
     items
   } satisfies ResolvedMenuItem<ItemId>;
@@ -178,28 +175,19 @@ function resolveNode<ItemId extends string>({ node, profile }: {
     case MenuItemKind.COMMAND:
       return {
         kind: item.kind,
-        ...labelled(item),
-        ...actionOf(item),
-        staysOpen: Boolean(item.staysOpen),
-        ...item.shortcut ? { shortcut: item.shortcut } : {}
+        ...actionOf(item)
       } satisfies ResolvedMenuItem<ItemId>;
     case MenuItemKind.CHECK:
       return {
         kind: item.kind,
-        ...labelled(item),
         ...actionOf(item),
-        staysOpen: Boolean(item.staysOpen),
-        ...item.shortcut ? { shortcut: item.shortcut } : {},
         isChecked: valueOf(item.isChecked ?? false)
       } satisfies ResolvedMenuItem<ItemId>;
     case MenuItemKind.RADIO:
       return {
         kind: item.kind,
         group: item.group,
-        ...labelled(item),
         ...actionOf(item),
-        staysOpen: Boolean(item.staysOpen),
-        ...item.shortcut ? { shortcut: item.shortcut } : {},
         isChecked: valueOf(item.isChecked ?? false)
       } satisfies ResolvedMenuItem<ItemId>;
   }
