@@ -2945,6 +2945,76 @@ const lines = resolveMenu({
 - Not in the model: the actions of the icon itself (left, double and middle
   click) stay on the tray icon options
 
+### The tray menu in a window (`winui-svelte/tray/menu/svelte`)
+
+The model of `winui-svelte/tray/menu` drawn by `<TrayIcon>` as a WinUI
+`MenuFlyout`, from an array or from markup
+An opt-in subpath; a consumer that imports only `winui-svelte/tray/menu`
+bundles no Svelte and no component
+
+```svelte
+<script lang="ts">
+  import { MenuLevel } from "winui-svelte/enums";
+  import { TrayIcon } from "winui-svelte/tray";
+  import { TrayMenu, TrayMenuItem, TrayMenuSeparator, TrayMenuSubmenu } from "winui-svelte/tray/menu/svelte";
+
+  let isAutostart = $state(false);
+  let recent = $state(["a.png", "b.png"]);
+</script>
+
+<TrayIcon icon="app.ico" tooltip="My app">
+  <TrayMenu profile={savedProfile}>
+    <TrayMenuItem id="open" label="Open" onselect={showWindow} />
+    <TrayMenuItem id="autostart" kind="check" label="Start with Windows"
+      isChecked={isAutostart} level={MenuLevel.STANDARD} staysOpen
+      onselect={() => (isAutostart = !isAutostart)} />
+    <TrayMenuSubmenu id="recent" label="Recent" emptyLabel="Nothing yet">
+      {#each recent as name (name)}
+        <TrayMenuItem id={`recent.${name}`} label={name} />
+      {/each}
+    </TrayMenuSubmenu>
+    <TrayMenuSeparator id="line" />
+    <TrayMenuItem id="quit" label="Quit" isRequired onselect={quit} />
+  </TrayMenu>
+</TrayIcon>
+```
+
+- `<TrayIcon menu={items} profile={profile}>` takes the array of
+  `defineMenu` instead of markup, or the `menu` snippet of a hand-written
+  flyout as before; the three never mix
+  The ids of the array stay literal, so `profile` rejects an id the menu does
+  not have
+- `<TrayMenu>` and its children are inert elements: they draw nothing, the
+  tray walks the tree each time the menu opens, so order, nesting, `{#if}`,
+  keyed `{#each}` and reactive props all work, with no second renderer
+- The props are the fields of the model's own items (`TrayMenuItem` takes a
+  `kind` of `command`, `check` or `radio`; a tick on a command or a radio with
+  no `group` fails `svelte-check`), and an unknown attribute fails too
+- Markup cannot carry a literal union, so ids written in markup are plain
+  `string`; the exported `collectMenu` reads a `TrayMenu` element into the same
+  `MenuItem[]`
+- A `TrayMenu` has a `profile` of its own, used for its lines
+  `profile` on `TrayIcon` applies to `menu={items}`
+- The flyout is built from `resolveMenu` each time the menu opens: a command is
+  a `MenuFlyoutItem`, a check a `ToggleMenuFlyoutItem`, a radio a
+  `RadioMenuFlyoutItem` (its `group` is the `GroupName`), a submenu a
+  `MenuFlyoutSubItem`, a header a disabled bold item
+  `isBold` is the font weight; `icon` is drawn as a glyph (`FontIcon`) or, for
+  a path to an `.ico` or `.png`, an `ImageIcon`; `IconPixels` is not drawn
+  A flyout has one trailing column, the keyboard accelerator's, so it shows
+  the `badge` and then the `shortcut` as text
+- `onselect` runs after the flyout has closed, on the next turn
+  (`closeThenRun`, true unless set to false)
+- `staysOpen`: WinUI closes a flyout when an item is invoked, and offers no
+  property to keep it open, so the item runs after the close and the flyout is
+  built again from the model, at the same point, with the new labels and ticks
+  The menu blinks once; every other pick closes the menu
+- `TrayMenuFlyout` (from `winui-svelte/tray`) is that flyout on its own: put
+  it in a `menu` snippet with `resolve={() => resolveMenu({ items })}` and
+  `onclose={close}`; `onflyout` hands over the native `MenuFlyout` to read
+- Not drawn by WinUI: a submenu row's own `onselect` (a `MenuFlyoutSubItem` has
+  no click) and `autoExpand` (it has no member to open it from code)
+
 ### Tray with no window (`winui-svelte/tray/standalone`)
 
 A tray that runs in a process of its own, plain Node, with no `Window`, no

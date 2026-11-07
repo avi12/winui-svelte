@@ -31,6 +31,7 @@
     "src/win2d/context-2d/index.ts",
     "src/win2d/context-2d/Canvas2D.d.svelte.ts",
     "src/tray/TrayIcon.d.svelte.ts",
+    "src/tray/TrayMenuFlyout.d.svelte.ts",
     "src/window/bootstrap.ts",
     "src/window/thread.ts",
     "src/window/index.ts",
@@ -38,6 +39,8 @@
     "src/app/activation/index.ts",
     "src/app/hotkeys/index.ts",
     "src/tray/menu/index.ts",
+    "src/tray/menu-svelte/index.ts",
+    "src/tray/menu-svelte/*.d.svelte.ts",
     "src/web-apis/index.ts",
     "src/web-apis/notification.ts",
     "src/web-apis/launch.ts",
@@ -77,8 +80,10 @@
     "src/tray/standalone/index.ts",
     "src/notice/index.ts",
     "scripts/pack/treeshake-app/tray-main.ts",
+    "scripts/pack/treeshake-app/menu-model-main.ts",
     "src/enums.ts",
     "test/choice-props.types.ts",
+    "test/tray-menu-props.types.ts",
     "scripts/pack/treeshake-app/enum-main.ts",
     "scripts/pack/treeshake-app/five-main.ts",
     "src/forms/index.ts",
@@ -172,6 +177,7 @@
     "examples/window-frame/main.ts",
     "examples/window-swap/main.ts",
     "examples/tray/main.ts",
+    "examples/tray-menu/main.ts",
     "examples/taskbar/main.ts",
     "examples/gallery/main.ts",
     "examples/todo/main.ts",
@@ -272,6 +278,10 @@
     },
     {
       "file": "src/tray/*.d.svelte.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/tray/menu-svelte/*.d.svelte.ts",
       "exports": ["*"]
     }
   ],

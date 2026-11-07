@@ -1,6 +1,18 @@
 import type { TrayIconComponentProps } from "./tray-icon-props.ts";
-import type { Component } from "svelte";
+import type { ComponentConstructorOptions, ComponentInternals, SvelteComponent } from "svelte";
 
-declare const TrayIcon: Component<TrayIconComponentProps, Record<string, never>, "handle" | "menuAt">;
+// Generic over the ids of a model menu, so that `profile` is checked against them. svelte-check infers a generic
+// component from a construct signature, as it does for a component it compiles itself.
+interface TrayIconComponent {
+  new <const ItemId extends string = string>(
+    options: ComponentConstructorOptions<TrayIconComponentProps<ItemId>>
+  ): SvelteComponent<TrayIconComponentProps<ItemId>>;
+  <const ItemId extends string = string>(
+    internals: ComponentInternals,
+    props: TrayIconComponentProps<ItemId>
+  ): Record<string, never>;
+}
+
+declare const TrayIcon: TrayIconComponent;
 // eslint-disable-next-line no-restricted-exports -- Svelte declares a component as the default export
 export default TrayIcon;

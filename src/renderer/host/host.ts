@@ -118,6 +118,9 @@ const HOST_TAG = "host";
 // <SplitView.Pane> does. A generated component renders its children and its
 // snippet props in these.
 const PROPERTY_TAG = "property";
+// An element named inert-... draws nothing: it keeps its place, attributes and
+// children in the tree, for code that reads the tree (the tray menu's markup).
+const INERT_TAG_PREFIX = "inert-";
 const PROPERTY_NAME_ATTRIBUTE = "name";
 // <property name="transitions" collection="transition-collection">: the tag of
 // the class to make the property's collection from when it holds none, as
@@ -1024,20 +1027,7 @@ function keepPopupInWindow(control: object) {
   }
 }
 
-function createNative(name: string) {
-  // <host> holds a control made elsewhere, <property> fills its parent's: no
-  // control of their own.
-  const isControlless = name === HOST_TAG || name === PROPERTY_TAG;
-  if (isControlless) {
-    return {
-      control: null,
-      styled: null,
-      placed: [],
-      properties: new Map(),
-      hasLooseChildren: false
-    };
-  }
-
+function createControl(name: string) {
   const type = controls.get(kebabCase(name));
   if (!isControlClass(type)) {
     throw new Error(`<${name}> is not a WinUI control registerControls was given`);
@@ -1045,8 +1035,15 @@ function createNative(name: string) {
 
   const control = new type();
   keepPopupInWindow(control);
+  return control;
+}
+
+function createNative(name: string) {
+  // <host> holds a control made elsewhere, <property> fills its parent's, an
+  // inert element is read, never drawn: no control of their own.
+  const isControlless = name === HOST_TAG || name === PROPERTY_TAG || name.startsWith(INERT_TAG_PREFIX);
   return {
-    control,
+    control: isControlless ? null : createControl(name),
     styled: null,
     placed: [],
     properties: new Map(),

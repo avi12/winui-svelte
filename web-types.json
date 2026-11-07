@@ -26808,6 +26808,392 @@
               "description": "The bounds the window opens with, then whenever it is moved or resized, by the user or by code; in device pixels."
             }
           ]
+        },
+        {
+          "name": "TrayIcon",
+          "description": "A notification-area icon with its menu: a flyout snippet, a menu model or TrayMenu markup",
+          "doc-url": "https://github.com/avi12/winui-svelte/blob/main/API.md#system-tray-winui-sveltetray",
+          "attributes": [
+            {
+              "name": "handle",
+              "description": "`bind:handle` gives `notify`, `bounds` and `remove`."
+            },
+            {
+              "name": "menu",
+              "description": "The menu: a flyout (`MenuFlyout`, `CommandBarFlyout`, any `Flyout`) written with `open`, or the lines of the shared menu model (`winui-svelte/tray/menu`), which `TrayIcon` draws as a `MenuFlyout`. It opens at the pointer on a right click, in a one-pixel window that exists only while the menu is open."
+            },
+            {
+              "name": "profile",
+              "description": "The user's choice of what a model menu (`menu={items}`) shows; a `TrayMenu` in the children has a `profile` of its own."
+            },
+            {
+              "name": "children",
+              "description": "A menu written as markup: a `TrayMenu` with its lines. It is read each time the menu opens."
+            },
+            {
+              "name": "menuAt",
+              "description": "Where the menu is open, in screen pixels; null while it is closed. A right click sets it. Set it to open the menu from code, set it to null to close it: `bind:menuAt`."
+            },
+            {
+              "name": "shouldActivateMenu",
+              "description": "False opens the menu's window without taking focus: for tests. Default true.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "icon"
+            },
+            {
+              "name": "guid",
+              "description": "Keeps the icon in the same place in the tray across runs, so the user's \"always show\" choice sticks: a GUID that is yours alone and never changes. The shell also ties it to the program's path, so a moved or unsigned build can lose it.",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "onclick",
+              "description": "Told of a left click."
+            },
+            {
+              "name": "ondoubleclick",
+              "description": "Told of a double click (after the second click's own `onclick`)."
+            },
+            {
+              "name": "oncontextmenu",
+              "description": "Told of a right click; the coordinates are where to put a menu."
+            },
+            {
+              "name": "onmiddleclick",
+              "description": "Told of a middle click."
+            },
+            {
+              "name": "tooltip",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "isVisible",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            }
+          ]
+        },
+        {
+          "name": "TrayMenu",
+          "description": "The root of a tray menu written as markup, inside a TrayIcon",
+          "doc-url": "https://github.com/avi12/winui-svelte/blob/main/API.md#one-tray-menu-for-every-renderer-winui-sveltetraymenu",
+          "attributes": [
+            {
+              "name": "profile",
+              "description": "The user's choice of what the menu shows; a `profile` on `TrayIcon` is used when this is left out."
+            },
+            {
+              "name": "children"
+            }
+          ]
+        },
+        {
+          "name": "TrayMenuItem",
+          "description": "A command, check or radio line of a tray menu",
+          "doc-url": "https://github.com/avi12/winui-svelte/blob/main/API.md#one-tray-menu-for-every-renderer-winui-sveltetraymenu",
+          "attributes": [
+            {
+              "name": "shortcut",
+              "description": "Display text only, such as `Ctrl+Shift+4`; the menu does not bind the key.",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "onselect"
+            },
+            {
+              "name": "staysOpen",
+              "description": "True keeps the menu open after the pick (a check or radio toggled several times in one visit); the renderer then refreshes only labels and ticks.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "closeThenRun",
+              "description": "True unless set to false: `onselect` runs after the menu has closed, on the next turn, so that a dialog can open.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "icon",
+              "description": "A path to an `.ico` or `.png`, a glyph string, or square BGRA pixels (`IconPixels`); each renderer decides what it can draw."
+            },
+            {
+              "name": "badge",
+              "description": "Small trailing text, such as a count."
+            },
+            {
+              "name": "isEnabled",
+              "description": "True unless set to false."
+            },
+            {
+              "name": "isVisible",
+              "description": "False leaves the item out for this opening, whatever the profile says; true unless set to false."
+            },
+            {
+              "name": "isBold",
+              "description": "True draws the label in bold, for example the item that is on."
+            },
+            {
+              "name": "id",
+              "description": "Unique in the whole menu and stable across versions of the app: the user's profile is keyed by it.",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "level",
+              "description": "The lowest detail level that shows the item; `simple` when left out.",
+              "value": {
+                "type": [
+                  "enum",
+                  {
+                    "module": "winui-svelte/enums",
+                    "name": "MenuLevel"
+                  }
+                ]
+              },
+              "values": [
+                {
+                  "name": "simple"
+                },
+                {
+                  "name": "standard"
+                },
+                {
+                  "name": "full"
+                }
+              ]
+            },
+            {
+              "name": "isRequired",
+              "description": "True for an item the user cannot hide, such as Quit.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "kind"
+            },
+            {
+              "name": "isChecked"
+            },
+            {
+              "name": "group"
+            }
+          ]
+        },
+        {
+          "name": "TrayMenuSubmenu",
+          "description": "A tray menu line that opens the lines written inside it",
+          "doc-url": "https://github.com/avi12/winui-svelte/blob/main/API.md#one-tray-menu-for-every-renderer-winui-sveltetraymenu",
+          "attributes": [
+            {
+              "name": "onselect",
+              "description": "Runs when the row itself is picked, not only its children."
+            },
+            {
+              "name": "closeThenRun",
+              "description": "As on a command.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "icon",
+              "description": "A path to an `.ico` or `.png`, a glyph string, or square BGRA pixels (`IconPixels`); each renderer decides what it can draw."
+            },
+            {
+              "name": "badge",
+              "description": "Small trailing text, such as a count."
+            },
+            {
+              "name": "isEnabled",
+              "description": "True unless set to false."
+            },
+            {
+              "name": "isVisible",
+              "description": "False leaves the item out for this opening, whatever the profile says; true unless set to false."
+            },
+            {
+              "name": "isBold",
+              "description": "True draws the label in bold, for example the item that is on."
+            },
+            {
+              "name": "id",
+              "description": "Unique in the whole menu and stable across versions of the app: the user's profile is keyed by it.",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "level",
+              "description": "The lowest detail level that shows the item; `simple` when left out.",
+              "value": {
+                "type": [
+                  "enum",
+                  {
+                    "module": "winui-svelte/enums",
+                    "name": "MenuLevel"
+                  }
+                ]
+              },
+              "values": [
+                {
+                  "name": "simple"
+                },
+                {
+                  "name": "standard"
+                },
+                {
+                  "name": "full"
+                }
+              ]
+            },
+            {
+              "name": "isRequired",
+              "description": "True for an item the user cannot hide, such as Quit.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "emptyLabel",
+              "description": "When the submenu would be empty: a disabled line with this text takes its place, instead of the submenu being dropped (for example \"No windows found\").",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "autoExpand",
+              "description": "True opens the submenu when the menu appears.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "children"
+            }
+          ]
+        },
+        {
+          "name": "TrayMenuSeparator",
+          "description": "A line between groups of tray menu items",
+          "doc-url": "https://github.com/avi12/winui-svelte/blob/main/API.md#one-tray-menu-for-every-renderer-winui-sveltetraymenu",
+          "attributes": [
+            {
+              "name": "id",
+              "description": "Unique in the whole menu and stable across versions of the app: the user's profile is keyed by it.",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "level",
+              "description": "The lowest detail level that shows the item; `simple` when left out.",
+              "value": {
+                "type": [
+                  "enum",
+                  {
+                    "module": "winui-svelte/enums",
+                    "name": "MenuLevel"
+                  }
+                ]
+              },
+              "values": [
+                {
+                  "name": "simple"
+                },
+                {
+                  "name": "standard"
+                },
+                {
+                  "name": "full"
+                }
+              ]
+            },
+            {
+              "name": "isRequired",
+              "description": "True for an item the user cannot hide, such as Quit.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            }
+          ]
+        },
+        {
+          "name": "TrayMenuHeader",
+          "description": "A caption for the tray menu items under it",
+          "doc-url": "https://github.com/avi12/winui-svelte/blob/main/API.md#one-tray-menu-for-every-renderer-winui-sveltetraymenu",
+          "attributes": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "id",
+              "description": "Unique in the whole menu and stable across versions of the app: the user's profile is keyed by it.",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "level",
+              "description": "The lowest detail level that shows the item; `simple` when left out.",
+              "value": {
+                "type": [
+                  "enum",
+                  {
+                    "module": "winui-svelte/enums",
+                    "name": "MenuLevel"
+                  }
+                ]
+              },
+              "values": [
+                {
+                  "name": "simple"
+                },
+                {
+                  "name": "standard"
+                },
+                {
+                  "name": "full"
+                }
+              ]
+            },
+            {
+              "name": "isRequired",
+              "description": "True for an item the user cannot hide, such as Quit.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            }
+          ]
         }
       ]
     },
