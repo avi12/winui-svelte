@@ -84,6 +84,7 @@
     "src/enums.ts",
     "test/choice-props.types.ts",
     "test/tray-menu-props.types.ts",
+    "test/tray-menu-editor-props.types.ts",
     "scripts/pack/treeshake-app/enum-main.ts",
     "scripts/pack/treeshake-app/five-main.ts",
     "src/forms/index.ts",
