@@ -46,7 +46,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
 | `winui-svelte/win2d/context-2d` | `src/win2d/context-2d/index.ts` | `Canvas2D`, `createCanvas2D`, `CanvasElement`, `Context2D`, `Path2D` and the rest of the HTML Canvas 2D API over Win2D (opt-in; see Canvas 2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
-| `winui-svelte/tray/standalone` | `src/tray/standalone/index.ts` | `createStandaloneTray()`, `NativeMenuEntryKind`, and the `winui-svelte/app` calls that start or signal the app: a tray with no window, no WinUI and no components (opt-in; see Tray with no window) |
+| `winui-svelte/tray/standalone` | `src/tray/standalone/index.ts` | `createStandaloneTray()`, `MenuItemKind`, `MenuLevel`, and the `winui-svelte/app` calls that start or signal the app: a tray with no window, no WinUI and no components (opt-in; see Tray with no window) |
 | `winui-svelte/notice` | `src/notice/index.ts` | `showNotice()`, `NoticeIcon`, `NoticeButtons`, `NoticeButton`: a message box with no window or app (opt-in; see Notice with no app) |
 | `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
 | `winui-svelte/store` | `src/store/index.ts` | `getAppLicense`, `watchLicense`, `checkForUpdates`, `watchPackages`, `getStartupTask`, `getPackageInfo`: the Store and package APIs, answering `hasPackage: false` outside a package (opt-in) |
@@ -2959,7 +2959,7 @@ for the menu and its timers run on the dispatcher queue
 import {
   activateOrLaunch,
   createStandaloneTray,
-  NativeMenuEntryKind
+  MenuItemKind
 } from "winui-svelte/tray/standalone";
 
 function openPanel() {
@@ -2975,23 +2975,38 @@ createStandaloneTray({
   tooltip: "Panel",
   onclick: openPanel,
   menu: [
-    { kind: NativeMenuEntryKind.COMMAND, label: "Open", onselect: openPanel },
-    { kind: NativeMenuEntryKind.SEPARATOR },
-    { kind: NativeMenuEntryKind.COMMAND, label: "Quit", onselect: () => process.exit(0) }
+    { kind: MenuItemKind.COMMAND, id: "open", label: "Open", onselect: openPanel },
+    { kind: MenuItemKind.SEPARATOR, id: "line" },
+    { kind: MenuItemKind.COMMAND, id: "quit", label: "Quit", onselect: () => process.exit(0) }
   ]
 });
 ```
 
 - `createStandaloneTray(options)` takes the icon's options (`icon`,
   `tooltip`, `isVisible`, `guid`, `onclick`, `ondoubleclick`,
-  `onmiddleclick`) and `menu`, and returns the same handle as
+  `onmiddleclick`), `menu` and `profile`, and returns the same handle as
   `createTrayIcon` (`update`, `notify`, `bounds`, `isRegistered`, `remove`)
   The icon keeps the process alive; `remove()` or the process ending takes it
   out of the tray
 - The menu is Windows' own popup menu (`TrackPopupMenuEx`), made on a right
   click and destroyed when it closes; nothing of it exists while idle
-  A command is `{ kind, label, onselect, isEnabled }`, a line is
-  `{ kind: NativeMenuEntryKind.SEPARATOR }`
+  `menu` is the same model as the windowed tray's (`winui-svelte/tray/menu`):
+  commands, checks, radios, submenus to any depth, separators and headers,
+  each with an `id` (a separator too), and values that are functions are read
+  each time the menu opens, as are lazy submenu `items`
+  The ids are literal types: `profile`, the user's choice of level, hidden,
+  shown and order (a `MenuProfile` with a `MenuLevel`, or a function that gives one, for example
+  from `loadProfile`), accepts only ids of `menu`, and a wrong one fails to
+  compile
+  Windows draws a check as a tick, a radio as a dot, a header as a disabled
+  bold line, a shortcut right-aligned and a badge after the label
+  `staysOpen` closes and reopens the menu at the same point, with fresh
+  labels and ticks, right after the line runs; `onselect` otherwise runs on
+  the next turn after the menu is gone (`closeThenRun: false` runs it as the
+  menu closes)
+  A submenu's own `onselect` and `autoExpand`, and every `icon`, do nothing
+  here: Windows opens a submenu row without reporting a pick, and no pixel
+  or file icon is drawn
   The menu is modal: the thread runs its own message loop until it closes
   It does not follow a dark system theme, which a native popup menu does not
   without an undocumented call; a menu that must match the theme belongs in
