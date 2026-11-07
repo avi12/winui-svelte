@@ -1,6 +1,6 @@
 /** Chrome's `chrome.events.Event`: listeners are added and removed, never replaced. */
 export class ChromeEvent<Listener extends (...parameters: never[]) => void> {
-  private readonly listeners = new Set<Listener>();
+  protected readonly listeners = new Set<Listener>();
 
   /** Calls `listener` every time the event fires. */
   addListener(listener: Listener) {
