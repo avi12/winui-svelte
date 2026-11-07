@@ -40,6 +40,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()`, `relaunch()`, `restartAfterCrash()` (opt-in; see App lifecycle) |
 | `winui-svelte/app/activation` | `src/app/activation/index.ts` | `installProtocolHandlers()`, `registerFileTypes()`, `launchAtLogin()`, `startActivation()`, `ActivationKind` (opt-in; see Activation) |
+| `winui-svelte/app/jump-list` | `src/app/jump-list/index.ts` | `setJumpListTasks()`, `clearJumpList()` (opt-in; see Jump list tasks) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
@@ -2619,10 +2620,11 @@ if (!single.isPrimary) {
 - `ActivationEvent` is a union on `kind` (`ActivationKind`, also from
   `winui-svelte/enums`): `launch` (started by hand), `file` (`files`, absolute
   paths of existing files), `protocol` (`uri`, `scheme`), `startup` (started
-  at sign-in) and `redirect` (a later copy with nothing to open)
+  at sign-in), `redirect` (a later copy with nothing to open) and `jumpList`
+  (`taskId`, a task of the jump list was chosen; see Jump list tasks)
   Every event has `isRedirect`, `arguments` and `workingDirectory`; a link
   sent by a later copy is `protocol` with `isRedirect: true`
-- A link wins over files, files win over the startup marker; an argument
+- A jump list task wins over a link, a link wins over files, files win over the startup marker; an argument
   that fits none stays in `arguments`
   Arguments are checked with a schema (up to 1024 of them, up to 32767
   characters each, no NUL); a failure goes to `onError`, the rest go on
@@ -2661,6 +2663,62 @@ if (!single.isPrimary) {
   removes them and checks nothing is left, even when it fails;
   `test/activation.test.ts` starts real second copies with a link, a file and
   nothing, and checks the first hears each as one event
+
+### Jump list tasks (`winui-svelte/app/jump-list`)
+
+Entries in the Tasks section of the taskbar button's right-click menu
+(`ICustomDestinationList`, `IObjectCollection` and `IShellLink`)
+No package identity is needed; an opt-in subpath
+Thumbnail toolbar buttons cannot be built from Node (their click is a sent
+message that no hook receives), so a task is the way to put a command there
+
+```ts
+import { startActivation } from "winui-svelte/app/activation";
+import { setJumpListTasks } from "winui-svelte/app/jump-list";
+
+const list = setJumpListTasks({
+  tasks: [
+    { id: "new-note", title: "New note", arguments: ["--new"] },
+    { id: "inbox", title: "Open inbox", arguments: ["--inbox"], icon: "inbox.ico" },
+  ],
+});
+
+startActivation({
+  key: "com.example.notes",
+  window: mainWindow,
+  onActivation(event) {
+    const task = list.taskOf(event);
+    if (task?.id === "new-note") newNote();
+  },
+});
+```
+
+- `setJumpListTasks({ tasks, appUserModelId, command })` replaces the Tasks
+  of the list and returns `{ tasks, taskOf(event) }`; `tasks` is a `const`
+  generic, so `task.id` is the union of your ids
+- `clearJumpList({ appUserModelId })` deletes the whole list
+- A `JumpListTask` is `{ id, title, arguments, description, icon, iconIndex,
+  workingDirectory }`; `id` is letters, digits, `_`, `.` and `-`, 64 at most,
+  and unique; `icon` is a file path (`PictureSource`, but a `data:`, `http(s)`
+  or `ms-appx` URI is a `TypeError`): an .ico, or an .exe or .dll with
+  `iconIndex`
+- A click starts `command` (this process's Node and entry script by default,
+  as `registerFileTypes` does; a bundled executable passes its own) with the
+  marker `--winui-svelte-jump-list=<id>` and then the task's `arguments`,
+  quoted for `CommandLineToArgvW`
+  `startActivation` hands that to the running copy through the single
+  instance redirect as a `jumpList` event: `taskId` is the id and `arguments`
+  are the task's own; a first start gets the same event with `isRedirect:
+  false`
+- The list belongs to the process's AppUserModelID and Windows shows nothing,
+  without an error, when a window has another; so the call throws when the
+  process has none (give `<Window>` an `appUserModelId`, or call
+  `joinAppUserModel`) or when `appUserModelId` differs from it
+- Keep the tasks static, as Microsoft advises: set them once at start
+- Call it on a thread with COM (the UI thread of a window has it)
+- `src/app/jump-list/native.test.ts` commits a list under a unique
+  AppUserModelID in the test process, checks that Windows wrote its
+  custom destinations file, and deletes the list, even when it fails
 
 ### Global hotkeys (`winui-svelte/app/hotkeys`)
 
