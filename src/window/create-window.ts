@@ -1,3 +1,4 @@
+import type { WindowHandle } from "./window-handle.ts";
 import type { WindowProps, WindowSize } from "./window-host.svelte.ts";
 import { attachStandaloneWindow } from "./window-host.svelte.ts";
 import type { Mounted } from "#src/renderer/host/mount.svelte.js";
@@ -53,6 +54,9 @@ export type WindowOptions<Props extends object> = WindowChrome & (ComponentConte
 export interface AppWindow<Props extends object> {
   /** The native WinUI window. */
   readonly window: Window;
+
+  /** The window's handle: what `chromeWindowSurface` and the rest of the window API take. */
+  readonly handle: WindowHandle;
 
   /** The mounted component; null when the content was a control. */
   readonly mounted: Mounted<Props> | null;
@@ -135,6 +139,7 @@ export function createWindow<Props extends object>(options: WindowOptions<Props>
   const { window } = handle;
   const appWindow: AppWindow<Props> = {
     window,
+    handle,
     mounted,
     close() {
       handle.close();

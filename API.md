@@ -755,6 +755,7 @@ type WindowOptions<Props> = {
 
 interface AppWindow<Props> {
   readonly window: Window;
+  readonly handle: WindowHandle;              // what chromeWindowSurface and the rest of the window API take
   readonly mounted: Mounted<Props> | null;    // null for a control
   close(): void;
   onClosed(listener: () => void): void;
@@ -4219,6 +4220,66 @@ system.display.onDisplayChanged.addListener(() => console.log("changed"));
 - Not here on purpose: `chrome.idle` is the web `IdleDetector` and
   `chrome.desktopCapture` the web `getDisplayMedia`, both already covered
 - `src/chrome/system/chrome-system.test.ts` runs it over a fake backend
+
+## Chrome windows (`winui-svelte/chrome/windows`)
+
+`chrome.windows` for the windows of a native app, over `WindowHandle`
+Opt-in: nothing is bundled until an app imports it, importing does no work, and
+no global `chrome` is installed
+
+```ts
+import { createWindow } from "winui-svelte/window";
+import { chromeWindowSurface, createChromeWindows, WindowState } from "winui-svelte/chrome/windows";
+
+const windows = createChromeWindows({
+  open: () => chromeWindowSurface(createWindow({ component: Panel, props: {} }).handle)
+});
+windows.track({
+  surface: chromeWindowSurface(mainHandle),
+  isCurrent: true
+});
+windows.onFocusChanged.addListener(windowId => console.log(windowId));
+const panel = await windows.create({ width: 400, height: 300 });
+await windows.update(panel.id, { state: WindowState.maximized });
+await windows.remove(panel.id);
+```
+
+- `createChromeWindows(options)` makes a `ChromeWindows`; make one and share
+  it, since the windows it knows and their ids live in it; no process-wide
+  list of windows exists, so the app hands it the windows
+- `track({ surface, isCurrent })` starts reporting a window, gives it an id
+  from 1 and fires `onCreated`; `chromeWindowSurface(handle)` makes a
+  `ChromeWindowSurface` of a `WindowHandle` (`bind:handle` on `<Window>`, or
+  the `handle` of what `createWindow` returns); a window leaves when it
+  closes, firing `onRemoved`
+- `create(createData)` calls the `open` option, which makes the content,
+  tracks what it returns and then applies `left`, `top`, `width`, `height`,
+  `state` and `focused`; without `open` it rejects; `url`, `tabId`, `type`,
+  `incognito` and `setSelfAsOpener` reach `open` and nothing else
+- `get(windowId)`, `getCurrent()`, `getLastFocused()` and `getAll()` resolve
+  with a `ChromeWindow`: `id`, `focused`, `top`, `left`, `width`, `height`,
+  `state`, `alwaysOnTop`, `incognito` (always false) and `type` (always
+  `normal`); places and sizes are in device pixels, as `AppWindow` has them;
+  `populate` and `windowTypes` are accepted and ignored, there are no tabs
+- `WINDOW_ID_CURRENT` (-2) names the window `track` marked current, else the
+  last focused; `WINDOW_ID_NONE` (-1) is what `onFocusChanged` reports when
+  focus leaves the app's windows
+- `update(windowId, updateInfo)` takes `left`, `top`, `width`, `height`,
+  `state` (`WindowState`: `normal`, `minimized`, `maximized`, `fullscreen`,
+  `locked-fullscreen`, the last as full screen), `focused` (true brings the
+  window forward; false changes nothing) and `drawAttention` (flashes the
+  taskbar button until the window is brought forward); as in Chrome a place
+  or size cannot go with a state other than `normal`, and `focused` cannot go
+  with `minimized`
+- `remove(windowId)` closes the window; `onRemoved` fires once it has closed,
+  so a close guard on the window keeps it
+- Every method returns a promise and rejects on a bad argument (zod) or an
+  unknown id; `WindowType` lists Chrome's types, and every window is `normal`
+- `onCreated`, `onRemoved`, `onFocusChanged` and `onBoundsChanged` are
+  `ChromeEvent`s; `onBoundsChanged` fires after a move or a resize
+- Not mirrored: `tabs` in a window, `create`'s `focused: false` and `incognito`
+  effects, and `onBoundsChanged`'s separate move and resize
+- `src/chrome/windows/chrome-windows.test.ts` runs it over fake windows
 
 ## Data transfer (`winui-svelte/data-transfer`)
 
