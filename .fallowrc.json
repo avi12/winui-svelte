@@ -44,6 +44,7 @@
     "src/tray/menu/index.ts",
     "src/tray/menu-svelte/index.ts",
     "src/tray/menu-svelte/*.d.svelte.ts",
+    "src/app/schedule/index.ts",
     "src/web-apis/index.ts",
     "src/web-apis/notification.ts",
     "src/web-apis/launch.ts",
