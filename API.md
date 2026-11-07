@@ -757,6 +757,7 @@ type WindowOptions<Props> = {
 
 interface AppWindow<Props> {
   readonly window: Window;
+  readonly handle: WindowHandle;              // what chromeWindowSurface and the rest of the window API take
   readonly mounted: Mounted<Props> | null;    // null for a control
   close(): void;
   onClosed(listener: () => void): void;
@@ -4248,6 +4249,116 @@ await action.setBadgeText({ text: "3" });
 - Not mirrored: `setPopup`, `getPopup`, `openPopup`, `getUserSettings`,
   `setBadgeTextColor`, `onUserSettingsChanged`
 - `src/chrome/action/chrome-action.test.ts` runs it over a fake tray
+
+## Chrome system (`winui-svelte/chrome/system`)
+
+`chrome.system` for a native app: `cpu`, `memory`, `storage` and `display`
+with Chrome's names and promises, over Node's `os` and the display areas
+that `winui-svelte/devices/display` and the web `screen` read
+Opt-in: nothing is bundled until an app imports it, importing does no work, and
+no global `chrome` is installed
+
+```ts
+import { createChromeSystem } from "winui-svelte/chrome/system";
+
+const system = createChromeSystem();
+const cpu = await system.cpu.getInfo();
+const memory = await system.memory.getInfo();
+const drives = await system.storage.getInfo();
+const displays = await system.display.getInfo();
+system.display.onDisplayChanged.addListener(() => console.log("changed"));
+```
+
+- `createChromeSystem(options)` returns `{ cpu, memory, storage, display }`
+  (`SystemCpu`, `SystemMemory`, `SystemStorage`, `SystemDisplay`); nothing is
+  read until a method is called; `backend` stands in for the machine in a
+  test, and `windowsSystemBackend()` is the default (`SystemBackend` is its
+  shape)
+- `cpu.getInfo()` resolves with `numOfProcessors`, `archName` (`x86-64`,
+  `arm64`, `x86-32`, `arm`), `modelName`, `features`, `processors` (the
+  `kernel`, `user`, `idle` and `total` milliseconds of each) and an empty
+  `temperatures`; `features` is `mmx`, `sse` and `sse2` on x64 and empty
+  elsewhere, as Node reports no others
+- `memory.getInfo()` resolves with `capacity` and `availableCapacity` in bytes
+- `storage.getInfo()` resolves with `{ id, name, type, capacity }` for each
+  drive letter, `type` one of `StorageUnitType` (`fixed`, `removable`,
+  `unknown`), read with `GetDriveTypeW`
+- `storage.onAttached` and `storage.onDetached` are not mirrored: Windows
+  tells an app about a drive coming or going only through a hidden window's
+  `WM_DEVICECHANGE` or a `DeviceWatcher` that needs a package identity; call
+  `getInfo` again
+- `display.getInfo(flags)` resolves with one record per display area, the
+  primary first: `id`, `name` (`Display 1` and so on), `isPrimary`,
+  `isEnabled`, `dpiX`, `dpiY` (the system scale times 96), `bounds` and
+  `workArea` as `{ left, top, width, height }` in screen pixels;
+  `mirroringSourceId` is empty and `rotation` 0, as Windows tells an app
+  neither; `singleUnified` is accepted and ignored; a flag of the wrong
+  type rejects (zod)
+- `display.onDisplayChanged` is a `ChromeEvent` called with no argument; the
+  display watcher runs only while a listener is added
+- Not here on purpose: `chrome.idle` is the web `IdleDetector` and
+  `chrome.desktopCapture` the web `getDisplayMedia`, both already covered
+- `src/chrome/system/chrome-system.test.ts` runs it over a fake backend
+
+## Chrome windows (`winui-svelte/chrome/windows`)
+
+`chrome.windows` for the windows of a native app, over `WindowHandle`
+Opt-in: nothing is bundled until an app imports it, importing does no work, and
+no global `chrome` is installed
+
+```ts
+import { createWindow } from "winui-svelte/window";
+import { chromeWindowSurface, createChromeWindows, WindowState } from "winui-svelte/chrome/windows";
+
+const windows = createChromeWindows({
+  open: () => chromeWindowSurface(createWindow({ component: Panel, props: {} }).handle)
+});
+windows.track({
+  surface: chromeWindowSurface(mainHandle),
+  isCurrent: true
+});
+windows.onFocusChanged.addListener(windowId => console.log(windowId));
+const panel = await windows.create({ width: 400, height: 300 });
+await windows.update(panel.id, { state: WindowState.maximized });
+await windows.remove(panel.id);
+```
+
+- `createChromeWindows(options)` makes a `ChromeWindows`; make one and share
+  it, since the windows it knows and their ids live in it; no process-wide
+  list of windows exists, so the app hands it the windows
+- `track({ surface, isCurrent })` starts reporting a window, gives it an id
+  from 1 and fires `onCreated`; `chromeWindowSurface(handle)` makes a
+  `ChromeWindowSurface` of a `WindowHandle` (`bind:handle` on `<Window>`, or
+  the `handle` of what `createWindow` returns); a window leaves when it
+  closes, firing `onRemoved`
+- `create(createData)` calls the `open` option, which makes the content,
+  tracks what it returns and then applies `left`, `top`, `width`, `height`,
+  `state` and `focused`; without `open` it rejects; `url`, `tabId`, `type`,
+  `incognito` and `setSelfAsOpener` reach `open` and nothing else
+- `get(windowId)`, `getCurrent()`, `getLastFocused()` and `getAll()` resolve
+  with a `ChromeWindow`: `id`, `focused`, `top`, `left`, `width`, `height`,
+  `state`, `alwaysOnTop`, `incognito` (always false) and `type` (always
+  `normal`); places and sizes are in device pixels, as `AppWindow` has them;
+  `populate` and `windowTypes` are accepted and ignored, there are no tabs
+- `WINDOW_ID_CURRENT` (-2) names the window `track` marked current, else the
+  last focused; `WINDOW_ID_NONE` (-1) is what `onFocusChanged` reports when
+  focus leaves the app's windows
+- `update(windowId, updateInfo)` takes `left`, `top`, `width`, `height`,
+  `state` (`WindowState`: `normal`, `minimized`, `maximized`, `fullscreen`,
+  `locked-fullscreen`, the last as full screen), `focused` (true brings the
+  window forward; false changes nothing) and `drawAttention` (flashes the
+  taskbar button until the window is brought forward); as in Chrome a place
+  or size cannot go with a state other than `normal`, and `focused` cannot go
+  with `minimized`
+- `remove(windowId)` closes the window; `onRemoved` fires once it has closed,
+  so a close guard on the window keeps it
+- Every method returns a promise and rejects on a bad argument (zod) or an
+  unknown id; `WindowType` lists Chrome's types, and every window is `normal`
+- `onCreated`, `onRemoved`, `onFocusChanged` and `onBoundsChanged` are
+  `ChromeEvent`s; `onBoundsChanged` fires after a move or a resize
+- Not mirrored: `tabs` in a window, `create`'s `focused: false` and `incognito`
+  effects, and `onBoundsChanged`'s separate move and resize
+- `src/chrome/windows/chrome-windows.test.ts` runs it over fake windows
 
 ## Data transfer (`winui-svelte/data-transfer`)
 

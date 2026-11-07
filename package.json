@@ -183,6 +183,14 @@
       "types": "./dist/chrome/install.d.ts",
       "default": "./dist/chrome/install.js"
     },
+    "./chrome/system": {
+      "types": "./dist/chrome/system/index.d.ts",
+      "default": "./dist/chrome/system/index.js"
+    },
+    "./chrome/windows": {
+      "types": "./dist/chrome/windows/index.d.ts",
+      "default": "./dist/chrome/windows/index.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
