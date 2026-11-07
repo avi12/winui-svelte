@@ -58,7 +58,6 @@ function fakeNative() {
     iconRect: (_identity: TrayIdentity) => ICON_RECT,
     readPointer: () => pointer,
     isTaskbarLight: () => false,
-    workAreaAt: () => ICON_RECT,
     focusWindow: hwnd => calls.push(`focusWindow ${hwnd}`)
   };
   return {

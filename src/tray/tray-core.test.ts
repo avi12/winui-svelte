@@ -106,10 +106,6 @@ class FakeNative implements TrayNative {
     return this.isLight;
   }
 
-  workAreaAt() {
-    return ICON_RECT;
-  }
-
   focusWindow(hwnd: bigint) {
     this.calls.push(`focusWindow ${hwnd}`);
   }

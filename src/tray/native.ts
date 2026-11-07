@@ -113,12 +113,6 @@ export interface TrayNative {
   readPointer(): PointerSample;
   isTaskbarLight(): boolean;
 
-  /** The work area (the display less the taskbar) of the monitor nearest the point. */
-  workAreaAt(point: {
-    x: number;
-    y: number;
-  }): ScreenRect;
-
   /**
    * Makes `hwnd` the foreground window. A process that was not just given the
    * foreground (a tray click it polled for rather than received) is refused by
@@ -286,6 +280,60 @@ function writeNotifyData({ memory, operation, data }: {
   memory.writeU32(OFFSET_BALLOON_FLAGS, balloon.icon | (balloon.isSilent ? BALLOON_SILENT : 0));
 }
 
+function packPoint({ x, y }: {
+  x: number;
+  y: number;
+}) {
+  return (BigInt(y) << POINT_SHIFT) | (BigInt(x) & POINT_MASK);
+}
+
+/** What the tray menu needs to place its window: the work area of a monitor. */
+export interface TrayWorkArea {
+  /** The work area (the display less the taskbar) of the monitor nearest the point. */
+  workAreaAt(point: {
+    x: number;
+    y: number;
+  }): ScreenRect;
+}
+
+/**
+ * The Win32 call behind `workAreaAt`, bound when this is called; apart from
+ * `createTrayNative`, so a tray with no window to place does not bundle it.
+ */
+export function createWorkAreaReader() {
+  const { monitorFromPoint, monitorInfo } = bindDll({
+    dll: "user32.dll",
+    functions: {
+      monitorFromPoint: ["MonitorFromPoint", ["i64", "u32"], "pointer"],
+      monitorInfo: ["GetMonitorInfoW", ["pointer", "pointer"], "i32"]
+    }
+  });
+  const reader: TrayWorkArea = {
+    workAreaAt(point) {
+      const found = monitorFromPoint.invoke([
+        DynWin32.i64(packPoint(point)),
+        DynWin32.u32(MONITOR_DEFAULT_TO_NEAREST)
+      ]);
+      const monitor = addressOf(found.returnValue);
+      return withMemory({
+        size: MONITOR_INFO_SIZE,
+        alignment: DWORD_BYTES,
+        use(info) {
+          info.writeU32(OFFSET_SIZE, MONITOR_INFO_SIZE);
+          monitorInfo.invoke([DynWin32Unsafe.pointer(monitor), pointerOf(info)]);
+          return {
+            left: info.readI32(MONITOR_WORK_OFFSET),
+            top: info.readI32(MONITOR_WORK_OFFSET + DWORD_BYTES),
+            right: info.readI32(MONITOR_WORK_OFFSET + MONITOR_WORK_RIGHT),
+            bottom: info.readI32(MONITOR_WORK_OFFSET + MONITOR_WORK_BOTTOM)
+          };
+        }
+      });
+    }
+  };
+  return reader;
+}
+
 /**
  * The real Win32 calls for the tray. They are bound when this is called, never
  * when the module loads.
@@ -305,8 +353,6 @@ export function createTrayNative() {
       windowFromPoint: ["WindowFromPoint", ["i64"], "pointer"],
       ancestor: ["GetAncestor", ["pointer", "u32"], "pointer"],
       className: ["GetClassNameW", ["pointer", "pointer", "i32"], "i32"],
-      monitorFromPoint: ["MonitorFromPoint", ["i64", "u32"], "pointer"],
-      monitorInfo: ["GetMonitorInfoW", ["pointer", "pointer"], "i32"],
       foregroundWindow: ["GetForegroundWindow", [], "pointer"],
       windowThread: ["GetWindowThreadProcessId", ["pointer", "pointer"], "u32"],
       attachInput: ["AttachThreadInput", ["u32", "u32", "i32"], "i32"],
@@ -395,38 +441,6 @@ export function createTrayNative() {
     });
   }
 
-  function packPoint({ x, y }: {
-    x: number;
-    y: number;
-  }) {
-    return (BigInt(y) << POINT_SHIFT) | (BigInt(x) & POINT_MASK);
-  }
-
-  function readWorkArea(point: {
-    x: number;
-    y: number;
-  }) {
-    const found = user32.monitorFromPoint.invoke([
-      DynWin32.i64(packPoint(point)),
-      DynWin32.u32(MONITOR_DEFAULT_TO_NEAREST)
-    ]);
-    const monitor = addressOf(found.returnValue);
-    return withMemory({
-      size: MONITOR_INFO_SIZE,
-      alignment: DWORD_BYTES,
-      use(info) {
-        info.writeU32(OFFSET_SIZE, MONITOR_INFO_SIZE);
-        user32.monitorInfo.invoke([DynWin32Unsafe.pointer(monitor), pointerOf(info)]);
-        return {
-          left: info.readI32(MONITOR_WORK_OFFSET),
-          top: info.readI32(MONITOR_WORK_OFFSET + DWORD_BYTES),
-          right: info.readI32(MONITOR_WORK_OFFSET + MONITOR_WORK_RIGHT),
-          bottom: info.readI32(MONITOR_WORK_OFFSET + MONITOR_WORK_BOTTOM)
-        };
-      }
-    });
-  }
-
   function takeForeground(hwnd: bigint) {
     const foreground = addressOf(user32.foregroundWindow.invoke([]).returnValue);
     const threadOfForeground = user32.windowThread.invoke([DynWin32Unsafe.pointer(foreground), pointerOf(null)]);
@@ -511,7 +525,6 @@ export function createTrayNative() {
       };
     },
     isTaskbarLight: readLightTheme,
-    workAreaAt: readWorkArea,
     focusWindow: takeForeground
   };
   return native;

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createTrayNative } from "./native.ts";
+  import { createTrayNative, createWorkAreaReader } from "./native.ts";
   import type { TrayIconComponentProps } from "./tray-icon-props.ts";
   import { createTrayIcon } from "./tray-icon.ts";
   import { createTrayMenu } from "./tray-menu.ts";
@@ -26,7 +26,7 @@
   const native = createTrayNative();
   let placement = $state.raw<MenuPlacement | null>(null);
   const trayMenu = createTrayMenu({
-    native,
+    native: createWorkAreaReader(),
     onChange(changed) {
       placement = changed;
       const isClosed = changed === null;

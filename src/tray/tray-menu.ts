@@ -1,4 +1,4 @@
-import type { TrayNative } from "./native.ts";
+import type { TrayWorkArea } from "./native.ts";
 
 const HOST_SIZE = 1;
 
@@ -54,7 +54,7 @@ export function placeMenuWindow({ point, size, workArea }: {
  * `onChange` hears the placement to open a host window at, or null to close it.
  */
 export function createTrayMenu({ native, onChange }: {
-  native: Pick<TrayNative, "workAreaAt">;
+  native: TrayWorkArea;
   onChange: (placement: MenuPlacement | null) => void;
 }) {
   let current: MenuPlacement | null = null;
