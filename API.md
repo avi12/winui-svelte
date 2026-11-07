@@ -39,6 +39,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()`, `relaunch()`, `restartAfterCrash()` (opt-in; see App lifecycle) |
+| `winui-svelte/app/shell` | `src/app/shell/index.ts` | `trash()`, `openWith()`, `createShortcut()`, `readShortcut()`, `registerAppPath()`, `ShellFailure` (opt-in; see Shell verbs) |
 | `winui-svelte/app/activation` | `src/app/activation/index.ts` | `installProtocolHandlers()`, `registerFileTypes()`, `launchAtLogin()`, `startActivation()`, `ActivationKind` (opt-in; see Activation) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
@@ -2661,6 +2662,63 @@ if (!single.isPrimary) {
   removes them and checks nothing is left, even when it fails;
   `test/activation.test.ts` starts real second copies with a link, a file and
   nothing, and checks the first hears each as one event
+
+### Shell verbs (`winui-svelte/app/shell`)
+
+What Explorer's context menu does, from code
+There is no web API for these; the names follow the launcher helpers of
+`winui-svelte/data-transfer`, which stay the home of `launchUri`,
+`launchFile`, `openFolder` and `revealInExplorer`
+An opt-in subpath: an app that does not import it does not bundle it
+
+```ts
+import { createShortcut, openWith, readShortcut, registerAppPath, trash } from "winui-svelte/app/shell";
+
+const result = trash({ paths: ["C:\\Users\\me\\old.txt"] });
+if (!result.ok) console.warn(result.reason, result.message);
+
+createShortcut({
+  path: "C:\\Users\\me\\Desktop\\Notes.lnk",
+  target: "C:\\Apps\\notes.exe",
+  arguments: ["--open", "my notes.txt"],
+  workingDirectory: "C:\\Apps",
+  icon: { path: "C:\\Apps\\notes.exe", index: 0 },
+  description: "Open my notes",
+});
+const link = readShortcut({ path: "C:\\Users\\me\\Desktop\\Notes.lnk" });
+await openWith({ path: "C:\\Users\\me\\photo.png" });
+registerAppPath({ name: "notes", program: "C:\\Apps\\notes.exe" });
+```
+
+- Every verb returns `{ ok: true }` or `{ ok: false, reason, message }`;
+  `reason` is a `ShellFailure` (`invalid`, `not-found`, `exists`,
+  `owned-by-another`, `aborted`, `failed`)
+- These act on the user's own files; they check and then act, and none
+  asks the user first
+- Paths are data: each must be a full path with no control character and not a
+  device path; none is built into a command line
+- `trash` sends to the Recycle Bin (`SHFileOperationW` with
+  `FOF_ALLOWUNDO`) and never deletes for good; when Windows would have to
+  (a drive without a bin, a file too big for it) it asks, and nothing goes
+  unless the user agrees; all the paths are checked before any is touched
+- `openWith` shows the Windows "Open with" list for a file
+  (`LauncherOptions.DisplayApplicationPicker`), so it takes a file and never a
+  program; it opens a dialog and is only unit-tested with a fake
+- `createShortcut` writes only the `.lnk` file (`IShellLink` and
+  `IPersistFile`); each argument is quoted by the same rule as the
+  activation registrations, and an existing file is kept unless
+  `shouldOverwrite` is set; the target is not required to exist
+- `readShortcut` gives the target as stored, without searching for a moved
+  one and without running anything
+- `registerAppPath` writes a key under `HKEY_CURRENT_USER` (App Paths) with a
+  marker value, only when the key is free or the package made it;
+  `unregisterAppPath` removes only a key with the marker; the name is an
+  identifier that is not a name Windows or a common tool answers to, and the
+  program is a full path ending in `.exe`; the machine-wide hive is out of reach
+- A shortcut that carries an AUMID (for toast identity) is not offered yet
+- `src/app/shell/native.test.ts` recycles a file, writes and reads a
+  shortcut in a folder it creates under the temp directory and removes, and
+  registers and removes an App Paths alias with a unique name
 
 ### Global hotkeys (`winui-svelte/app/hotkeys`)
 

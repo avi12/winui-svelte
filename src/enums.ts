@@ -6,6 +6,7 @@
 
 export { LivePriority } from "./accessibility/live-priority.ts";
 export { ActivationKind } from "./app/activation/kinds.ts";
+export { ShellFailure } from "./app/shell/kinds.ts";
 export { RestartCondition } from "./app/restart-after-crash.ts";
 export * from "./components/generated/enums.ts";
 export { ExpressionKind } from "./composition/expression.ts";
