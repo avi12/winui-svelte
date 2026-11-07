@@ -412,6 +412,10 @@
       "types": "./dist/web-apis/view-transitions.d.ts",
       "default": "./dist/web-apis/view-transitions.js"
     },
+    "./dialogs": {
+      "types": "./dist/web-apis/dialogs.d.ts",
+      "default": "./dist/web-apis/dialogs.js"
+    },
     "./web-apis/animations": {
       "types": "./dist/web-apis/animations.d.ts",
       "default": "./dist/web-apis/animations.js"

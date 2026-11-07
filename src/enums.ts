@@ -27,3 +27,4 @@ export { IconShowOptions, TitleBarHeight, WindowPresentation, WindowTheme } from
 export { DockDisplay } from "./window/dock.ts";
 export { PickerLocation } from "./window/pickers.ts";
 export { TaskbarFlashUntil, TaskbarProgressState } from "./window/taskbar-calls.ts";
+export { DialogButton, DialogResult } from "./web-apis/dialog-types.ts";

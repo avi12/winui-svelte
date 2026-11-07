@@ -71,3 +71,10 @@ export { AppNotificationSoundEvent } from "#winui/microsoft/windows/app-notifica
 export { AppNotificationProgressData } from "#winui/microsoft/windows/app-notifications/AppNotificationProgressData";
 export { AppNotificationProgressResult } from "#winui/microsoft/windows/app-notifications/AppNotificationProgressResult";
 export { AppNotificationSetting } from "#winui/microsoft/windows/app-notifications/AppNotificationSetting";
+export { ContentDialog } from "#winui/microsoft/ui/xaml/controls/ContentDialog";
+export { ContentDialogButton } from "#winui/microsoft/ui/xaml/controls/ContentDialogButton";
+export { ContentDialogResult } from "#winui/microsoft/ui/xaml/controls/ContentDialogResult";
+export { StackPanel } from "#winui/microsoft/ui/xaml/controls/StackPanel";
+export { TextBlock } from "#winui/microsoft/ui/xaml/controls/TextBlock";
+export { TextBox } from "#winui/microsoft/ui/xaml/controls/TextBox";
+export { TextWrapping } from "#winui/microsoft/ui/xaml/TextWrapping";
