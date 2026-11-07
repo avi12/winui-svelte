@@ -8,3 +8,5 @@ export type { RelaunchOptions } from "./relaunch.ts";
 export { relaunch } from "./relaunch.ts";
 export type { RestartAfterCrashOptions } from "./restart-after-crash.ts";
 export { restartAfterCrash, RestartCondition } from "./restart-after-crash.ts";
+export type { StartTrayOptions } from "./tray-instance.ts";
+export { claimTrayInstance, startTray, trayInstanceKey } from "./tray-instance.ts";

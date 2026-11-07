@@ -1,5 +1,9 @@
+import { buildTray } from "./entrypoints/build-tray.ts";
+import { discoverEntrypoints, Entrypoint, ENTRYPOINTS_FOLDER } from "./entrypoints/discover.ts";
+import { NATIVE_MODULE } from "./externals.ts";
 import { windowConfig, winuiSvelte } from "./plugin.ts";
 import { writeRuntimeKit } from "./runtime-kit.ts";
+import path from "node:path";
 import type { InlineConfig } from "vite";
 import { build, mergeConfig } from "vite";
 
@@ -12,8 +16,12 @@ export interface BuildAppOptions {
    * `main` and the UI thread's worker file are two entries
    * (`{ main: "main.ts", window: "window.ts" }` writes `main.js` and
    * `window.js` next to each other, so `new Worker("window.js")` finds it).
+   * Left out, or in addition, the files of `entrypoints/` (`main.ts`,
+   * `window.ts`, `tray.ts`) are entries by their names; a name given here
+   * wins. The `tray` entry is built apart, into the small bundle of the tray
+   * process (see `buildTray`), and the other entries never import it.
    */
-  entries: Record<string, string>;
+  entries?: Record<string, string>;
   /** Where the files are written; emptied first. Each entry is one self-contained file. */
   outDirectory: string;
   /** Whether to minify. Off by default: the Win2D overloads read parameter names, which a minifier renames. */
@@ -21,10 +29,6 @@ export interface BuildAppOptions {
   /** Vite settings merged over these, for an `alias` or another plugin. */
   config?: InlineConfig;
 }
-
-// The native module is loaded by Node, from the node_modules the build writes
-// beside the bundle (runtime-kit.ts); its subpaths are imports too.
-const NATIVE_MODULE = /^@microsoft\/dynwinrt(?:\/|$)/u;
 
 // One build per entry, each a single file: the host's main thread and the UI
 // thread's worker are separate JavaScript realms and cannot share a module, and
@@ -92,9 +96,19 @@ function configOf({ root, name, file, outDirectory, isMinified, isFirst }: {
  * @param options - The app's folder, entries and output.
  * @returns The names of the files written, relative to `outDirectory`.
  */
-export async function buildApp({ root, entries, outDirectory, isMinified = false, config = {} }: BuildAppOptions) {
+export async function buildApp({ root, entries = {}, outDirectory, isMinified = false, config = {} }: BuildAppOptions) {
+  const { [Entrypoint.TRAY]: trayFile, ...appEntries } = {
+    ...discoverEntrypoints(root),
+    ...entries
+  };
+  const isTrayOnly = Object.keys(appEntries).length === 0;
+  const isEmpty = isTrayOnly && trayFile === undefined;
+  if (isEmpty) {
+    throw new Error(`no entries: pass \`entries\` or add files to ${path.join(root, ENTRYPOINTS_FOLDER)}`);
+  }
+
   const files: string[] = [];
-  for (const [i, [name, file]] of Object.entries(entries).entries()) {
+  for (const [i, [name, file]] of Object.entries(appEntries).entries()) {
     const result = await build(
       mergeConfig(
         configOf({
@@ -109,6 +123,20 @@ export async function buildApp({ root, entries, outDirectory, isMinified = false
     );
     const outputs = Array.isArray(result) ? result : [result];
     files.push(...outputs.flatMap(output => "output" in output ? output.output.map(item => item.fileName) : []));
+  }
+
+  const hasTray = trayFile !== undefined;
+  if (hasTray) {
+    files.push(
+      ...await buildTray({
+        root,
+        file: trayFile,
+        outDirectory,
+        isFirst: isTrayOnly,
+        isMinified,
+        config
+      })
+    );
   }
 
   writeRuntimeKit(outDirectory);

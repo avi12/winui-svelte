@@ -32,6 +32,7 @@ to keep every window off screen and unactivated (what the tests do)
 | `todo` | A real app: host state saved to a file, a keyed ListView, a confirm dialog and an InfoBar |
 | `settings` | App structure: NavigationView pages, forms, a theme switch, a window with its own title bar |
 | `stores` | Svelte's stores and `$store`, `svelte/motion` and `svelte/reactivity` on WinUI controls, with the subscriptions counted |
+| `tray-entrypoint` | An app whose tray is `entrypoints/tray.ts`, built apart into `tray.js`, with a menu in levels; `main.ts` and `window.ts` never import it |
 | `hotkeys` | A window hidden and shown by a global hotkey, with no tray icon |
 | `counter`, `hello`, `lists`, ... | The focused examples the tests drive |
 
