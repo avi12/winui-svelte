@@ -136,6 +136,7 @@
     "examples/effects/main.ts",
     "examples/scroll-timeline/main.ts",
     "examples/view-transitions/main.ts",
+    "examples/web-dialogs/main.ts",
     "examples/typography/main.ts",
     "examples/shadows/main.ts",
     "examples/visual-states/main.ts",
