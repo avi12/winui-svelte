@@ -6,11 +6,16 @@ import type { ChromeNotifications } from "./notifications/chrome-notifications.t
 import type { ChromePermissions } from "./permissions/chrome-permissions.ts";
 import type { Runtime } from "./runtime/runtime.ts";
 import type { ChromeStorage } from "./storage/chrome-storage.ts";
+import type { createChromeSystem } from "./system/create-chrome-system.ts";
+import type { ChromeWindows } from "./windows/chrome-windows.ts";
 import type * as schedule from "#src/app/schedule/index.js";
 import type { Downloads } from "#src/downloads/chrome-downloads.js";
 
 /** `chrome.alarms`: the calls and events of `winui-svelte/app/schedule`, so `import * as alarms` is one. */
 export type ChromeAlarms = Pick<typeof schedule, "clear" | "clearAll" | "create" | "get" | "getAll" | "onAlarm">;
+
+/** `chrome.system`: what `createChromeSystem` returns (`cpu`, `memory`, `storage` and `display`). */
+export type ChromeSystem = ReturnType<typeof createChromeSystem>;
 
 /**
  * The namespaces of `globalThis.chrome`. Each is optional: an app gives the
@@ -28,6 +33,8 @@ export interface ChromeGlobal {
   readonly i18n?: ChromeI18n;
   readonly alarms?: ChromeAlarms;
   readonly downloads?: Downloads;
+  readonly system?: ChromeSystem;
+  readonly windows?: ChromeWindows;
 }
 
 const globalScope: Record<string, unknown> = globalThis;

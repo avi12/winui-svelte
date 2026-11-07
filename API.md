@@ -51,7 +51,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/chrome/commands` | `src/chrome/commands/index.ts` | `ChromeCommands` (`chrome.commands`), `parseShortcut()` (opt-in; see Chrome commands) |
 | `winui-svelte/chrome/action` | `src/chrome/action/index.ts` | `ChromeAction` (`chrome.action`), `createChromeAction()` (opt-in; see Chrome action) |
 | `winui-svelte/chrome/i18n` | `src/chrome/i18n/index.ts` | `ChromeI18n` (`chrome.i18n`), `installLanguageDefaults()` (opt-in; see Chrome i18n) |
-| `winui-svelte/chrome/install` | `src/chrome/install.ts` | `installChromeApis()`, `ChromeGlobal`, `ChromeAlarms` (opt-in; see Chrome global) |
+| `winui-svelte/chrome/install` | `src/chrome/install.ts` | `installChromeApis()`, `ChromeGlobal`, `ChromeAlarms`, `ChromeSystem` (opt-in; see Chrome global) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
@@ -4192,7 +4192,7 @@ await chrome.storage.local.set({ theme: "dark" });
 
 - `ChromeGlobal` is the options object and the type of `globalThis.chrome`; its
   members are `storage`, `runtime`, `permissions`, `contextMenus`, `commands`,
-  `action`, `notifications`, `i18n`, `alarms` and `downloads`, each optional,
+  `action`, `notifications`, `i18n`, `alarms`, `downloads`, `system` and `windows`, each optional,
   each an instance (or, for `alarms`, the `ChromeAlarms` calls and events of
   `winui-svelte/app/schedule`); the object is open to more namespaces as they
   are mirrored
