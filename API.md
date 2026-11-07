@@ -3373,6 +3373,7 @@ needs
 | `navigator.credentials`, `PasswordCredential`, `PublicKeyCredential` (Windows Hello) | `winui-svelte/web-apis/credentials` | web plus extras | none | done |
 | `EyeDropper` | `winui-svelte/web-apis/eye-dropper` | web plus extras | none | done |
 | `FontFace`, `document.fonts` (font files of the app) | `winui-svelte/web-apis/fonts` | web plus extras | none | done |
+| `createImageBitmap`, `ImageBitmap`, `ImageDecoder`, canvas `toBlob`, `convertToBlob`, `toDataURL` (PNG, JPEG, GIF, BMP, TIFF) | `winui-svelte/web-apis/images` | web plus extras | none | done |
 | `navigator.contacts` (Contact Picker) | `winui-svelte/web-apis/contacts` | web plus extras | for most apps, package identity | done |
 
 Every row is built and tested; the timers (`setTimeout`, `setInterval`,
@@ -4250,6 +4251,42 @@ anywhere on the screen
 - `ScreenPicker` is the one interface the polling picker (`windowsScreenPicker`)
   and the tests implement
 
+#### Images (`winui-svelte/web-apis/images`)
+
+`installImageCodecs()` defines `createImageBitmap`, `ImageBitmap` and
+`ImageDecoder`, and adds `toBlob`, `convertToBlob` and `toDataURL` to
+`CanvasElement`; all of it runs on `Windows.Graphics.Imaging`, which needs no
+window and no package identity
+
+- `createImageBitmap(source, options?)` and `createImageBitmap(source, sx, sy,
+  sw, sh, options?)` take a `Blob`, `File` or `NativeFile` of an image file,
+  `ImageData`, an `ImageBitmap` or a canvas; `imageOrientation` (`from-image`,
+  `none`, `flipY`), `resizeWidth`, `resizeHeight` and `resizeQuality` work;
+  `premultiplyAlpha` and `colorSpaceConversion` are read and ignored (images are
+  color managed to sRGB); a file Windows cannot decode rejects with
+  `InvalidStateError`
+- `ImageBitmap` has `width`, `height` and `close()`; `drawImage` and
+  `createPattern` take it; extra: `toImageData()` (RGBA, not premultiplied)
+- `new ImageDecoder({ data, type })` takes bytes or a stream; `tracks` (an
+  `ImageTrackList` of one `ImageTrack`), `complete`, `completed`, `decode({ frameIndex })`, `reset()`,
+  `close()` and `ImageDecoder.isTypeSupported(type)`; `image` is an
+  `ImageBitmap`, not a `VideoFrame`, and `duration` is not reported; a GIF
+  frame is what the file stores, so an optimized GIF gives the changed area
+- Decoders: BMP, GIF, ICO, JPEG, PNG, TIFF, JPEG XR, and WebP, AVIF and HEIC
+  where Windows has the codec; `isTypeSupported` asks Windows' own list
+- Encoders: PNG, JPEG (`quality` 0 to 1 is `ImageQuality`, 0.92 by default;
+  transparency is drawn over black), GIF, BMP and TIFF; WebP has no Windows
+  encoder, so `toBlob`, `convertToBlob` and `toDataURLAsync` give a PNG for
+  `image/webp` and for any type Windows cannot write, as the platform does
+- `toDataURL(type, quality)` is synchronous and every Windows encoder is
+  asynchronous, so it always returns a PNG; extra: `toDataURLAsync(type,
+  quality)` encodes any type above
+- A canvas with no pixels gives `data:,`, `null` from `toBlob` and rejects
+  `convertToBlob`
+- `ImageCodec` is the one interface the Windows codec (`windowsImageCodec`)
+  and the tests implement; `ImageMimeType`, `ImageOrientation` and
+  `ResizeQuality` are in `winui-svelte/enums`
+
 #### Contacts (`winui-svelte/web-apis/contacts`)
 
 `installContacts()` defines `navigator.contacts` (a `ContactsManager`) with
@@ -4714,7 +4751,7 @@ and resets the context, as in a browser), `getContext("2d")` (the same
 `display` and any other property, with `setProperty`), `getBoundingClientRect()`,
 `clientWidth`, `clientHeight`, `offsetWidth`, `offsetHeight`, `addEventListener`,
 `removeEventListener` and `dispatchEvent`
-It has no document: there is no `ownerDocument` and no `toDataURL`, and
+It has no document: there is no `ownerDocument`, and `toDataURL` and `toBlob` exist only after `installImageCodecs()`, and
 `parentNode` is `null`
 
 Pointer events of the control reach the canvas as DOM events: `pointerdown`,
@@ -4785,8 +4822,8 @@ Not tried: the events need a real pointer, which a test must not inject
 | `globalCompositeOperation` of `multiply`, `screen`, `overlay`, `darken`, `lighten`, `color-dodge`, `color-burn`, `hard-light`, `soft-light`, `difference`, `exclusion`, `hue`, `saturation`, `color`, `luminosity` | Win2D blends an effect's inputs, not a shape with the canvas; the value is ignored |
 | `filter` | it is always `none`; use a Win2D effect on the image |
 | `letterSpacing`, `wordSpacing`, `fontKerning`, `fontStretch`, `fontVariantCaps`, `textRendering` | No Win2D equivalent set per draw call |
-| `drawImage` of an `HTMLImageElement`, `ImageBitmap`, `HTMLVideoElement` or `OffscreenCanvas` | There is no DOM; decode with `loadBitmap`, or draw another `CanvasElement` |
-| `toDataURL`, `toBlob`, `transferControlToOffscreen`, `captureStream` | No encoder is exposed on the canvas; `canvas.target.saveAsync` writes a PNG or JPEG file |
+| `drawImage` of an `HTMLImageElement`, `HTMLVideoElement` or `OffscreenCanvas` | There is no DOM; decode with `loadBitmap`, or draw another `CanvasElement`; an `ImageBitmap` from `winui-svelte/web-apis/images` draws |
+| `transferControlToOffscreen`, `captureStream` | There is no `OffscreenCanvas` or media stream; `toBlob`, `convertToBlob` and `toDataURL` come with `winui-svelte/web-apis/images` |
 | `getContext` of `webgl`, `webgl2`, `bitmaprenderer`; the `alpha`, `desynchronized` and `willReadFrequently` options | One 2D context, always with an alpha channel |
 | `scrollPathIntoView` | There is no element tree to scroll; the method is absent |
 | `requestAnimationFrame`, `devicePixelRatio`, `document`, `window` | Globals of a browser, defined by the opt-in `winui-svelte/web-apis/timing`, `/screen` and `/page`; `getComputedStyle` has no counterpart |
