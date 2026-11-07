@@ -179,6 +179,10 @@
       "types": "./dist/chrome/i18n/index.d.ts",
       "default": "./dist/chrome/i18n/index.js"
     },
+    "./chrome/install": {
+      "types": "./dist/chrome/install.d.ts",
+      "default": "./dist/chrome/install.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"

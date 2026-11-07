@@ -51,6 +51,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/chrome/commands` | `src/chrome/commands/index.ts` | `ChromeCommands` (`chrome.commands`), `parseShortcut()` (opt-in; see Chrome commands) |
 | `winui-svelte/chrome/action` | `src/chrome/action/index.ts` | `ChromeAction` (`chrome.action`), `createChromeAction()` (opt-in; see Chrome action) |
 | `winui-svelte/chrome/i18n` | `src/chrome/i18n/index.ts` | `ChromeI18n` (`chrome.i18n`), `installLanguageDefaults()` (opt-in; see Chrome i18n) |
+| `winui-svelte/chrome/install` | `src/chrome/install.ts` | `installChromeApis()`, `ChromeGlobal`, `ChromeAlarms` (opt-in; see Chrome global) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
@@ -4166,6 +4167,41 @@ installLanguageDefaults(i18n);
   they agree with `chrome.i18n`; a locale a caller passes still wins; it
   returns the function that undoes it
 - `src/chrome/i18n/chrome-i18n.test.ts` runs it over in-memory files
+
+## Chrome global (`winui-svelte/chrome/install`)
+
+`installChromeApis` defines `globalThis.chrome` for code written for a Chrome
+extension
+Opt-in: importing does no work, and the global holds exactly the namespaces the
+app passes, so the bundle holds only what the app imported to make them
+
+```ts
+import { installChromeApis } from "winui-svelte/chrome/install";
+import { ChromeI18n } from "winui-svelte/chrome/i18n";
+import { ChromeStorage } from "winui-svelte/chrome/storage";
+import * as alarms from "winui-svelte/app/schedule";
+
+const uninstall = installChromeApis({
+  storage: new ChromeStorage(),
+  i18n: new ChromeI18n(),
+  alarms
+});
+await chrome.storage.local.set({ theme: "dark" });
+```
+
+- `ChromeGlobal` is the options object and the type of `globalThis.chrome`; its
+  members are `storage`, `runtime`, `permissions`, `contextMenus`, `commands`,
+  `action`, `notifications`, `i18n`, `alarms` and `downloads`, each optional,
+  each an instance (or, for `alarms`, the `ChromeAlarms` calls and events of
+  `winui-svelte/app/schedule`); the object is open to more namespaces as they
+  are mirrored
+- The package declares no global type; to type `chrome` in your app, declare
+  `var chrome: ChromeGlobal` in your own `declare global`
+- A `chrome` object that is already there keeps its other members; the
+  returned function puts the previous one back
+- It does not call `installLanguageDefaults`; do that where you want
+  `navigator.language` and `Intl` to follow `chrome.i18n`
+- `src/chrome/install.test.ts` covers it
 
 ## Chrome action (`winui-svelte/chrome/action`)
 
