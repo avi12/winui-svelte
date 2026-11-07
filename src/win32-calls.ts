@@ -41,6 +41,92 @@ export function bind({ dll, entryPoint, parameters, returnType, shouldCaptureLas
   });
 }
 
+/** The types a parameter of a bound function can have. */
+type ValueType = "pointer" | "u32" | "i32" | "i64";
+
+/** What a call passes for each type; a `pointer` takes memory, an address, null or a string (wide). */
+interface Arguments {
+  readonly pointer: bigint | string | DynComRawMemory | null;
+  readonly u32: number;
+  readonly i32: number;
+  readonly i64: bigint;
+}
+
+/** What a call returns for each type: an address for a `pointer`, a number for an integer. */
+interface Results {
+  readonly pointer: bigint;
+  readonly u32: number;
+  readonly i32: number;
+}
+
+/** A function of a DLL as a table row: its entry point, parameter types and return type. */
+type Signature = readonly [entryPoint: string, parameters: readonly ValueType[], returnType: keyof Results];
+
+type Argument = Arguments[ValueType];
+
+type ArgumentsOf<Parameters extends readonly ValueType[]> = {
+  readonly [Index in keyof Parameters]: Arguments[Parameters[Index]];
+};
+
+function argumentOf({ type, value }: {
+  readonly type: ValueType;
+  readonly value: Argument;
+}) {
+  const isText = typeof value === "string";
+  if (isText) {
+    return DynWin32.wideString(value);
+  }
+
+  const isMemory = value === null || value instanceof DynComRawMemory;
+  if (isMemory) {
+    return pointerOf(value);
+  }
+
+  const isWide = typeof value === "bigint";
+  if (isWide) {
+    return type === "pointer" ? DynWin32Unsafe.pointer(value) : DynWin32.i64(value);
+  }
+
+  return type === "u32" ? DynWin32.u32(value) : DynWin32.i32(value);
+}
+
+/**
+ * Binds several functions of one DLL, each under the name of its row. A
+ * call takes plain values, one per parameter in the row's types, and gives
+ * back the number or the address, so no call site wraps or unwraps.
+ *
+ * @param options - `dll`: the DLL; `functions`: one `[entryPoint, parameters, returnType]` row per name.
+ * @returns The functions by name.
+ */
+export function bindDll<const Functions extends Readonly<Record<string, Signature>>>({ dll, functions }: {
+  readonly dll: string;
+  readonly functions: Functions;
+}) {
+  const rows = Object.entries<Signature>(functions).map(([name, [entryPoint, parameters, returnType]]) => {
+    const bound = bind({
+      dll,
+      entryPoint,
+      parameters: [...parameters],
+      returnType
+    });
+    function call(...values: readonly Argument[]) {
+      const wrapped = parameters.map((type, i) => argumentOf({
+        type,
+        value: values[i] ?? null
+      }));
+      const { returnValue } = bound.invoke(wrapped);
+      return returnType === "pointer" ? addressOf(returnValue) : numberOf(returnValue);
+    }
+
+    return [name, call] as const;
+  });
+  type Called = {
+    readonly [Name in keyof Functions]: (...values: ArgumentsOf<Functions[Name][1]>) => Results[Functions[Name][2]];
+  };
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- Object.fromEntries loses the types of each row
+  return Object.fromEntries(rows) as unknown as Called;
+}
+
 /**
  * A pointer argument for some memory.
  *

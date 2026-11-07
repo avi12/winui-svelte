@@ -1,4 +1,4 @@
-import { addressOf, bind, numberOf, pointerOf } from "./win32-calls.ts";
+import { addressOf, bind, bindDll, pointerOf } from "./win32-calls.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 
@@ -33,29 +33,14 @@ export interface IconPixels {
  * @returns The calls: load, destroy and the shell's icon size.
  */
 export function createIconFileCalls() {
-  const loadImage = bind({
+  const { loadImage, destroyIcon, systemDpi, metricsForDpi } = bindDll({
     dll: "user32.dll",
-    entryPoint: "LoadImageW",
-    parameters: ["pointer", "pointer", "u32", "i32", "i32", "u32"],
-    returnType: "pointer"
-  });
-  const destroyIcon = bind({
-    dll: "user32.dll",
-    entryPoint: "DestroyIcon",
-    parameters: ["pointer"],
-    returnType: "i32"
-  });
-  const systemDpi = bind({
-    dll: "user32.dll",
-    entryPoint: "GetDpiForSystem",
-    parameters: [],
-    returnType: "u32"
-  });
-  const metricsForDpi = bind({
-    dll: "user32.dll",
-    entryPoint: "GetSystemMetricsForDpi",
-    parameters: ["i32", "u32"],
-    returnType: "i32"
+    functions: {
+      loadImage: ["LoadImageW", ["pointer", "pointer", "u32", "i32", "i32", "u32"], "pointer"],
+      destroyIcon: ["DestroyIcon", ["pointer"], "i32"],
+      systemDpi: ["GetDpiForSystem", [], "u32"],
+      metricsForDpi: ["GetSystemMetricsForDpi", ["i32", "u32"], "i32"]
+    }
   });
 
   return {
@@ -64,19 +49,14 @@ export function createIconFileCalls() {
       path: string;
       size: number;
     }) {
-      const loaded = loadImage.invoke([
-        pointerOf(null), DynWin32.wideString(path), DynWin32.u32(IMAGE_ICON),
-        DynWin32.i32(size), DynWin32.i32(size), DynWin32.u32(LOAD_FROM_FILE)
-      ]);
-      return addressOf(loaded.returnValue);
+      return loadImage(null, path, IMAGE_ICON, size, size, LOAD_FROM_FILE);
     },
     destroyIcon(icon: bigint) {
-      destroyIcon.invoke([DynWin32Unsafe.pointer(icon)]);
+      destroyIcon(icon);
     },
     /** Pixels of a small icon (a tray icon, a taskbar overlay) at the system scale. */
     smallIconSize() {
-      const dpi = numberOf(systemDpi.invoke([]).returnValue);
-      return numberOf(metricsForDpi.invoke([DynWin32.i32(SM_CXSMICON), DynWin32.u32(dpi)]).returnValue);
+      return metricsForDpi(SM_CXSMICON, systemDpi());
     }
   };
 }

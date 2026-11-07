@@ -8,6 +8,7 @@ import {
   resolveMenu
 } from "./index.ts";
 import type { MenuItem, MenuProfile, ResolvedMenuItem } from "./index.ts";
+import { resolveLite } from "./resolve-lite.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -271,4 +272,56 @@ test("describeMenu lists every item with its parent", () => {
   });
   assert.equal(rows.find(row => row.id === "window")?.parentId, "capture");
   assert.equal(rows.find(row => row.id === "window")?.level, MenuLevel.STANDARD);
+});
+
+test("the lite resolver gives what resolveMenu gives for a menu with no profile at the simple level", () => {
+  const items = [
+    command({ id: "open" }),
+    separator("sep1"),
+    separator("sep2"),
+    {
+      kind: MenuItemKind.SUBMENU,
+      id: "recent",
+      label: "Recent",
+      emptyLabel: "None",
+      items: () => []
+    },
+    {
+      kind: MenuItemKind.SUBMENU,
+      id: "empty",
+      label: "Empty",
+      items: []
+    },
+    {
+      kind: MenuItemKind.SUBMENU,
+      id: "list",
+      label: () => "List",
+      maxItems: 1,
+      items: () => [command({ id: "b" }), command({ id: "a" })],
+      sort: (left: MenuItem, right: MenuItem) => left.id.localeCompare(right.id)
+    },
+    {
+      kind: MenuItemKind.CHECK,
+      id: "gone",
+      label: "Gone",
+      isVisible: () => false
+    },
+    {
+      kind: MenuItemKind.HEADER,
+      id: "lonely",
+      label: "Lonely"
+    },
+    command({ id: "quit" })
+  ] satisfies MenuItem[];
+  assert.equal(JSON.stringify(resolveLite({ items })), JSON.stringify(resolveMenu({ items })));
+  assert.deepEqual(resolveLite({ items }).map(({ id }) => id), ["open", "sep1", "recent", "list", "lonely", "quit"]);
+});
+
+test("the lite resolver ignores levels, which resolveMenu applies", () => {
+  const items = [command({ id: "open" }), command({
+    id: "advanced",
+    level: MenuLevel.FULL
+  })];
+  assert.deepEqual(resolveLite({ items }).map(({ id }) => id), ["open", "advanced"]);
+  assert.deepEqual(resolveMenu({ items }).map(({ id }) => id), ["open"]);
 });

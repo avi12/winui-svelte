@@ -162,8 +162,6 @@ function runPipeWorker() {
   listen(data.attempts);
 }
 
-const WORKER_SOURCE = `(${runPipeWorker.toString()})()`;
-
 /** The first copy's end of the link: what arrives, and how to close it. */
 export interface PipeServer {
   readonly isPrimary: true;
@@ -201,7 +199,7 @@ export function openPipe({ pipeName, payload }: {
     status,
     port: port2
   };
-  const worker = new Worker(WORKER_SOURCE, {
+  const worker = new Worker(`(${runPipeWorker.toString()})()`, {
     eval: true,
     workerData,
     transferList: [port2]

@@ -1,9 +1,7 @@
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
-import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 import {
-  addressOf,
   bind,
-  numberOf,
+  bindDll,
   pointerOf,
   WIDE_CHAR_BYTES,
   wideMemory,
@@ -45,6 +43,12 @@ export interface Balloon {
   readonly icon: BalloonIcon;
   readonly isSilent: boolean;
 }
+
+/** Writes the balloon fields of a NOTIFYICONDATAW; the `balloons` extra supplies it. */
+export type BalloonWriter = (options: {
+  memory: DynComRawMemory;
+  balloon: Balloon;
+}) => void;
 
 /** What one Shell_NotifyIcon call carries. */
 export interface NotifyData {
@@ -110,13 +114,6 @@ export interface TrayNative {
   /** Where the shell draws the icon; null when it has none (not added, hidden, or the shell restarted). */
   iconRect(identity: TrayIdentity): ScreenRect | null;
   readPointer(): PointerSample;
-  isTaskbarLight(): boolean;
-
-  /** The work area (the display less the taskbar) of the monitor nearest the point. */
-  workAreaAt(point: {
-    x: number;
-    y: number;
-  }): ScreenRect;
 
   /**
    * Makes `hwnd` the foreground window. A process that was not just given the
@@ -131,35 +128,32 @@ const NOTIFY_ICON_DATA_SIZE = 976;
 const ICON_IDENTIFIER_SIZE = 40;
 const RECT_SIZE = 16;
 const TOOLTIP_CHARS = 128;
-const BALLOON_BODY_CHARS = 256;
-const BALLOON_TITLE_CHARS = 64;
 const OFFSET_SIZE = 0;
 const OFFSET_OWNER = 8;
 const OFFSET_ID = 16;
-const OFFSET_FLAGS = 20;
+export const OFFSET_FLAGS = 20;
 const OFFSET_IDENTIFIER_GUID = 20;
 const OFFSET_CALLBACK = 24;
 const OFFSET_ICON = 32;
 const OFFSET_TOOLTIP = 40;
-const OFFSET_BODY = 304;
 const OFFSET_VERSION = 816;
-const OFFSET_TITLE = 820;
-const OFFSET_BALLOON_FLAGS = 948;
 const OFFSET_GUID = 952;
-const GUID_BYTES = 16;
 const GUID_FIRST_FIELD_END = 4;
 const GUID_SECOND_FIELD_END = 6;
 const GUID_THIRD_FIELD_END = 8;
+const GUID_LITTLE_ENDIAN_FIELDS = [
+  [0, GUID_FIRST_FIELD_END],
+  [GUID_FIRST_FIELD_END, GUID_SECOND_FIELD_END],
+  [GUID_SECOND_FIELD_END, GUID_THIRD_FIELD_END]
+] as const;
 const POINT_BYTES = 8;
 const RECT_RIGHT_OFFSET = 8;
 const RECT_BOTTOM_OFFSET = 12;
 const FLAG_MESSAGE = 0x1;
 const FLAG_ICON = 0x2;
 const FLAG_TIP = 0x4;
-const FLAG_INFO = 0x10;
 const FLAG_GUID = 0x20;
 const FLAG_SHOW_TIP = 0x80;
-const BALLOON_SILENT = 0x10;
 const NOTIFY_VERSION_4 = 4;
 const CALLBACK_MESSAGE = 0x8001;
 const WS_POPUP = 0x80000000;
@@ -169,8 +163,6 @@ const VK_RBUTTON = 2;
 const VK_MBUTTON = 4;
 const KEY_DOWN_BIT = 0x8000;
 const KEY_PRESSED_BIT = 0x1;
-const HKEY_CURRENT_USER = 0x80000001n;
-const REG_DWORD_ONLY = 0x10;
 const CLASS_NAME_CHARS = 128;
 const POINT_SHIFT = 32n;
 const POINT_MASK = 0xFFFFFFFFn;
@@ -186,8 +178,6 @@ const TRAY_WINDOW_CLASSES: ReadonlySet<string> = new Set([
   "NotifyIconOverflowWindow",
   "TopLevelWindowForOverflowXamlIsland"
 ]);
-const PERSONALIZE_KEY = String.raw`Software\Microsoft\Windows\CurrentVersion\Themes\Personalize`;
-const LIGHT_THEME_VALUE = "SystemUsesLightTheme";
 
 /**
  * Starts reading the cursor position, read only: the reader gives screen
@@ -211,8 +201,8 @@ export function createCursorReader() {
   };
 }
 
-// A fixed-size UTF-16 field, cut to leave room for the terminator.
-function writeWide({ memory, offset, text, chars }: {
+/** Writes a fixed-size UTF-16 field, cut to leave room for the terminator. */
+export function writeWide({ memory, offset, text, chars }: {
   memory: DynComRawMemory;
   offset: number;
   text: string;
@@ -224,28 +214,27 @@ function writeWide({ memory, offset, text, chars }: {
 
 // A GUID string as the 16 bytes Windows keeps: the first three fields little endian.
 function guidBytes(guid: string) {
-  const hex = Buffer.from(guid.replaceAll("-", ""), "hex");
-  return Buffer.concat([
-    Buffer.from(hex.subarray(0, GUID_FIRST_FIELD_END)).reverse(),
-    Buffer.from(hex.subarray(GUID_FIRST_FIELD_END, GUID_SECOND_FIELD_END)).reverse(),
-    Buffer.from(hex.subarray(GUID_SECOND_FIELD_END, GUID_THIRD_FIELD_END)).reverse(),
-    hex.subarray(GUID_THIRD_FIELD_END, GUID_BYTES)
-  ]);
+  const bytes = Buffer.from(guid.replaceAll("-", ""), "hex");
+  for (const [start, end] of GUID_LITTLE_ENDIAN_FIELDS) {
+    bytes.subarray(start, end).reverse();
+  }
+
+  return bytes;
 }
 
 // NOTIFYICONDATAW (the version 4 layout) for one call.
-function writeNotifyData({ memory, operation, data }: {
+function writeNotifyData({ memory, operation, data, writeBalloon }: {
   memory: DynComRawMemory;
   operation: NotifyOperation;
   data: NotifyData;
+  writeBalloon: BalloonWriter | undefined;
 }) {
   const { identity, balloon } = data;
   const guidFlag = identity.guid === null ? 0 : FLAG_GUID;
-  const infoFlag = balloon === null ? 0 : FLAG_INFO;
   memory.writeU32(OFFSET_SIZE, NOTIFY_ICON_DATA_SIZE);
   memory.writeU64(OFFSET_OWNER, identity.owner);
   memory.writeU32(OFFSET_ID, identity.id);
-  memory.writeU32(OFFSET_FLAGS, FLAG_MESSAGE | FLAG_ICON | FLAG_TIP | FLAG_SHOW_TIP | infoFlag | guidFlag);
+  memory.writeU32(OFFSET_FLAGS, FLAG_MESSAGE | FLAG_ICON | FLAG_TIP | FLAG_SHOW_TIP | guidFlag);
   memory.writeU32(OFFSET_CALLBACK, CALLBACK_MESSAGE);
   memory.writeU64(OFFSET_ICON, data.icon);
   writeWide({
@@ -266,138 +255,108 @@ function writeNotifyData({ memory, operation, data }: {
   }
 
   const hasBalloon = balloon !== null;
-  if (!hasBalloon) {
-    return;
+  if (hasBalloon) {
+    writeBalloon?.({
+      memory,
+      balloon
+    });
   }
+}
 
-  writeWide({
-    memory,
-    offset: OFFSET_BODY,
-    text: balloon.body,
-    chars: BALLOON_BODY_CHARS
+function packPoint({ x, y }: {
+  x: number;
+  y: number;
+}) {
+  return (BigInt(y) << POINT_SHIFT) | (BigInt(x) & POINT_MASK);
+}
+
+/** What the tray menu needs to place its window: the work area of a monitor. */
+export interface TrayWorkArea {
+  /** The work area (the display less the taskbar) of the monitor nearest the point. */
+  workAreaAt(point: {
+    x: number;
+    y: number;
+  }): ScreenRect;
+}
+
+/**
+ * The Win32 call behind `workAreaAt`, bound when this is called; apart from
+ * `createTrayNative`, so a tray with no window to place does not bundle it.
+ */
+export function createWorkAreaReader() {
+  const { monitorFromPoint, monitorInfo } = bindDll({
+    dll: "user32.dll",
+    functions: {
+      monitorFromPoint: ["MonitorFromPoint", ["i64", "u32"], "pointer"],
+      monitorInfo: ["GetMonitorInfoW", ["pointer", "pointer"], "i32"]
+    }
   });
-  writeWide({
-    memory,
-    offset: OFFSET_TITLE,
-    text: balloon.title,
-    chars: BALLOON_TITLE_CHARS
-  });
-  memory.writeU32(OFFSET_BALLOON_FLAGS, balloon.icon | (balloon.isSilent ? BALLOON_SILENT : 0));
+  const reader: TrayWorkArea = {
+    workAreaAt(point) {
+      const monitor = monitorFromPoint(packPoint(point), MONITOR_DEFAULT_TO_NEAREST);
+      return withMemory({
+        size: MONITOR_INFO_SIZE,
+        alignment: DWORD_BYTES,
+        use(info) {
+          info.writeU32(OFFSET_SIZE, MONITOR_INFO_SIZE);
+          monitorInfo(monitor, info);
+          return {
+            left: info.readI32(MONITOR_WORK_OFFSET),
+            top: info.readI32(MONITOR_WORK_OFFSET + DWORD_BYTES),
+            right: info.readI32(MONITOR_WORK_OFFSET + MONITOR_WORK_RIGHT),
+            bottom: info.readI32(MONITOR_WORK_OFFSET + MONITOR_WORK_BOTTOM)
+          };
+        }
+      });
+    }
+  };
+  return reader;
 }
 
 /**
  * The real Win32 calls for the tray. They are bound when this is called, never
  * when the module loads.
  */
-export function createTrayNative() {
-  const createWindow = bind({
+export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWriter | undefined } = {}) {
+  const user32 = bindDll({
     dll: "user32.dll",
-    entryPoint: "CreateWindowExW",
-    parameters: ["u32", "pointer", "pointer", "u32", "i32", "i32", "i32", "i32", "pointer", "pointer", "pointer", "pointer"],
-    returnType: "pointer"
+    functions: {
+      createWindow: [
+        "CreateWindowExW",
+        ["u32", "pointer", "pointer", "u32", "i32", "i32", "i32", "i32", "pointer", "pointer", "pointer", "pointer"],
+        "pointer"
+      ],
+      destroyWindow: ["DestroyWindow", ["pointer"], "i32"],
+      cursorPosition: ["GetCursorPos", ["pointer"], "i32"],
+      keyState: ["GetAsyncKeyState", ["i32"], "i32"],
+      windowFromPoint: ["WindowFromPoint", ["i64"], "pointer"],
+      ancestor: ["GetAncestor", ["pointer", "u32"], "pointer"],
+      className: ["GetClassNameW", ["pointer", "pointer", "i32"], "i32"],
+      foregroundWindow: ["GetForegroundWindow", [], "pointer"],
+      windowThread: ["GetWindowThreadProcessId", ["pointer", "pointer"], "u32"],
+      attachInput: ["AttachThreadInput", ["u32", "u32", "i32"], "i32"],
+      setForeground: ["SetForegroundWindow", ["pointer"], "i32"]
+    }
   });
-  const destroyWindow = bind({
-    dll: "user32.dll",
-    entryPoint: "DestroyWindow",
-    parameters: ["pointer"],
-    returnType: "i32"
+  const shell32 = bindDll({
+    dll: "shell32.dll",
+    functions: {
+      notify: ["Shell_NotifyIconW", ["u32", "pointer"], "i32"],
+      iconRect: ["Shell_NotifyIconGetRect", ["pointer", "pointer"], "i32"]
+    }
+  });
+  const { currentThread } = bindDll({
+    dll: "kernel32.dll",
+    functions: {
+      currentThread: ["GetCurrentThreadId", [], "u32"]
+    }
   });
   const icons = createIconFileCalls();
-  const shellNotify = bind({
-    dll: "shell32.dll",
-    entryPoint: "Shell_NotifyIconW",
-    parameters: ["u32", "pointer"],
-    returnType: "i32"
-  });
-  const shellIconRect = bind({
-    dll: "shell32.dll",
-    entryPoint: "Shell_NotifyIconGetRect",
-    parameters: ["pointer", "pointer"],
-    returnType: "i32"
-  });
-  const cursorPosition = bind({
-    dll: "user32.dll",
-    entryPoint: "GetCursorPos",
-    parameters: ["pointer"],
-    returnType: "i32"
-  });
-  const keyState = bind({
-    dll: "user32.dll",
-    entryPoint: "GetAsyncKeyState",
-    parameters: ["i32"],
-    returnType: "i32"
-  });
-  const windowFromPoint = bind({
-    dll: "user32.dll",
-    entryPoint: "WindowFromPoint",
-    parameters: ["i64"],
-    returnType: "pointer"
-  });
-  const ancestor = bind({
-    dll: "user32.dll",
-    entryPoint: "GetAncestor",
-    parameters: ["pointer", "u32"],
-    returnType: "pointer"
-  });
-  const className = bind({
-    dll: "user32.dll",
-    entryPoint: "GetClassNameW",
-    parameters: ["pointer", "pointer", "i32"],
-    returnType: "i32"
-  });
-  const registryValue = bind({
-    dll: "advapi32.dll",
-    entryPoint: "RegGetValueW",
-    parameters: ["pointer", "pointer", "pointer", "u32", "pointer", "pointer", "pointer"],
-    returnType: "i32"
-  });
-  const monitorFromPoint = bind({
-    dll: "user32.dll",
-    entryPoint: "MonitorFromPoint",
-    parameters: ["i64", "u32"],
-    returnType: "pointer"
-  });
-  const monitorInfo = bind({
-    dll: "user32.dll",
-    entryPoint: "GetMonitorInfoW",
-    parameters: ["pointer", "pointer"],
-    returnType: "i32"
-  });
-  const foregroundWindow = bind({
-    dll: "user32.dll",
-    entryPoint: "GetForegroundWindow",
-    parameters: [],
-    returnType: "pointer"
-  });
-  const windowThread = bind({
-    dll: "user32.dll",
-    entryPoint: "GetWindowThreadProcessId",
-    parameters: ["pointer", "pointer"],
-    returnType: "u32"
-  });
-  const currentThread = bind({
-    dll: "kernel32.dll",
-    entryPoint: "GetCurrentThreadId",
-    parameters: [],
-    returnType: "u32"
-  });
-  const attachInput = bind({
-    dll: "user32.dll",
-    entryPoint: "AttachThreadInput",
-    parameters: ["u32", "u32", "i32"],
-    returnType: "i32"
-  });
-  const setForeground = bind({
-    dll: "user32.dll",
-    entryPoint: "SetForegroundWindow",
-    parameters: ["pointer"],
-    returnType: "i32"
-  });
   const pointBuffer = DynComRawMemory.allocate(POINT_BYTES, DWORD_BYTES);
   const classBuffer = DynComRawMemory.allocate(CLASS_NAME_CHARS * WIDE_CHAR_BYTES, WIDE_CHAR_BYTES);
 
   function readButton(key: number) {
-    const state = numberOf(keyState.invoke([DynWin32.i32(key)]).returnValue);
+    const state = user32.keyState(key);
     return {
       isDown: (state & KEY_DOWN_BIT) !== 0,
       wasPressed: (state & KEY_PRESSED_BIT) !== 0
@@ -412,9 +371,8 @@ export function createTrayNative() {
       x,
       y
     });
-    const window = addressOf(windowFromPoint.invoke([DynWin32.i64(packed)]).returnValue);
-    const root = addressOf(ancestor.invoke([DynWin32Unsafe.pointer(window), DynWin32.u32(GA_ROOT)]).returnValue);
-    className.invoke([DynWin32Unsafe.pointer(root), pointerOf(classBuffer), DynWin32.i32(CLASS_NAME_CHARS)]);
+    const root = user32.ancestor(user32.windowFromPoint(packed), GA_ROOT);
+    user32.className(root, classBuffer, CLASS_NAME_CHARS);
     const name = classBuffer.readBytes(0, CLASS_NAME_CHARS * WIDE_CHAR_BYTES).toString("utf16le").split("\0")[0] ?? "";
     return TRAY_WINDOW_CLASSES.has(name);
   }
@@ -438,8 +396,7 @@ export function createTrayNative() {
           size: RECT_SIZE,
           alignment: DWORD_BYTES,
           use(rect) {
-            const result = shellIconRect.invoke([pointerOf(identifier), pointerOf(rect)]);
-            const isFound = numberOf(result.returnValue) === 0;
+            const isFound = shell32.iconRect(identifier, rect) === 0;
             const bounds = {
               left: rect.readI32(0),
               top: rect.readI32(DWORD_BYTES),
@@ -455,84 +412,25 @@ export function createTrayNative() {
     });
   }
 
-  function packPoint({ x, y }: {
-    x: number;
-    y: number;
-  }) {
-    return (BigInt(y) << POINT_SHIFT) | (BigInt(x) & POINT_MASK);
-  }
-
-  function readWorkArea(point: {
-    x: number;
-    y: number;
-  }) {
-    const found = monitorFromPoint.invoke([DynWin32.i64(packPoint(point)), DynWin32.u32(MONITOR_DEFAULT_TO_NEAREST)]);
-    const monitor = addressOf(found.returnValue);
-    return withMemory({
-      size: MONITOR_INFO_SIZE,
-      alignment: DWORD_BYTES,
-      use(info) {
-        info.writeU32(OFFSET_SIZE, MONITOR_INFO_SIZE);
-        monitorInfo.invoke([DynWin32Unsafe.pointer(monitor), pointerOf(info)]);
-        return {
-          left: info.readI32(MONITOR_WORK_OFFSET),
-          top: info.readI32(MONITOR_WORK_OFFSET + DWORD_BYTES),
-          right: info.readI32(MONITOR_WORK_OFFSET + MONITOR_WORK_RIGHT),
-          bottom: info.readI32(MONITOR_WORK_OFFSET + MONITOR_WORK_BOTTOM)
-        };
-      }
-    });
-  }
-
   function takeForeground(hwnd: bigint) {
-    const foreground = addressOf(foregroundWindow.invoke([]).returnValue);
-    const threadOfForeground = windowThread.invoke([DynWin32Unsafe.pointer(foreground), pointerOf(null)]);
-    const foregroundThread = numberOf(threadOfForeground.returnValue);
-    const ownThread = numberOf(currentThread.invoke([]).returnValue);
-    attachInput.invoke([DynWin32.u32(ownThread), DynWin32.u32(foregroundThread), DynWin32.i32(1)]);
-    setForeground.invoke([DynWin32Unsafe.pointer(hwnd)]);
-    attachInput.invoke([DynWin32.u32(ownThread), DynWin32.u32(foregroundThread), DynWin32.i32(0)]);
-  }
-
-  function readLightTheme() {
-    return withMemory({
-      size: 2 * DWORD_BYTES,
-      alignment: DWORD_BYTES,
-      use(buffer) {
-        buffer.writeU32(DWORD_BYTES, DWORD_BYTES);
-        const subKey = wideMemory(PERSONALIZE_KEY);
-        const valueName = wideMemory(LIGHT_THEME_VALUE);
-        try {
-          const result = registryValue.invoke([
-            DynWin32Unsafe.pointer(HKEY_CURRENT_USER), pointerOf(subKey), pointerOf(valueName),
-            DynWin32.u32(REG_DWORD_ONLY), pointerOf(null), pointerOf(buffer),
-            DynWin32Unsafe.pointer(buffer.pointer(DWORD_BYTES).address)
-          ]);
-          return numberOf(result.returnValue) === 0 && buffer.readU32(0) !== 0;
-        } finally {
-          subKey.release();
-          valueName.release();
-        }
-      }
-    });
+    const foregroundThread = user32.windowThread(user32.foregroundWindow(), null);
+    const ownThread = currentThread();
+    user32.attachInput(ownThread, foregroundThread, 1);
+    user32.setForeground(hwnd);
+    user32.attachInput(ownThread, foregroundThread, 0);
   }
 
   const native: TrayNative = {
     createOwnerWindow() {
       const classText = wideMemory("STATIC");
       try {
-        const created = createWindow.invoke([
-          DynWin32.u32(0), pointerOf(classText), pointerOf(classText), DynWin32.u32(WS_POPUP),
-          DynWin32.i32(0), DynWin32.i32(0), DynWin32.i32(0), DynWin32.i32(0),
-          pointerOf(null), pointerOf(null), pointerOf(null), pointerOf(null)
-        ]);
-        return addressOf(created.returnValue);
+        return user32.createWindow(0, classText, classText, WS_POPUP, 0, 0, 0, 0, null, null, null, null);
       } finally {
         classText.release();
       }
     },
     destroyWindow(hwnd) {
-      destroyWindow.invoke([DynWin32Unsafe.pointer(hwnd)]);
+      user32.destroyWindow(hwnd);
     },
     loadIcon: icons.loadIconFile,
     destroyIcon: icons.destroyIcon,
@@ -545,16 +443,16 @@ export function createTrayNative() {
           writeNotifyData({
             memory,
             operation,
-            data
+            data,
+            writeBalloon
           });
-          const result = shellNotify.invoke([DynWin32.u32(operation), pointerOf(memory)]);
-          return numberOf(result.returnValue) !== 0;
+          return shell32.notify(operation, memory) !== 0;
         }
       });
     },
     iconRect: readIconRect,
     readPointer() {
-      cursorPosition.invoke([pointerOf(pointBuffer)]);
+      user32.cursorPosition(pointBuffer);
       const point = {
         x: pointBuffer.readI32(0),
         y: pointBuffer.readI32(DWORD_BYTES)
@@ -567,8 +465,6 @@ export function createTrayNative() {
         isOnTray: isTrayWindowAt(point)
       };
     },
-    isTaskbarLight: readLightTheme,
-    workAreaAt: readWorkArea,
     focusWindow: takeForeground
   };
   return native;

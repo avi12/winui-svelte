@@ -1,37 +1,67 @@
-import { createNativeMenu, NativeMenuEntryKind } from "./native.ts";
-import type { NativeMenu, NativeMenuEntry } from "./native.ts";
+import { createNativeMenu } from "./native.ts";
+import type { NativeChoice, NativeMenu } from "./native.ts";
 import { removeTrayIconsAtExit } from "#src/tray/exit-hook.js";
+import { resolveLite } from "#src/tray/menu/resolve-lite.js";
+import type { MenuResolver } from "#src/tray/menu/resolve-lite.js";
+import type { MenuItem, MenuProfile } from "#src/tray/menu/types.js";
 import { createTrayNative } from "#src/tray/native.js";
 import type { TrayNative } from "#src/tray/native.js";
-import { createTrayIconWith } from "#src/tray/tray-core.js";
+import { createTrayCore } from "#src/tray/tray-core.js";
 import type { TrayIconOptions, TrayScheduler } from "#src/tray/tray-core.js";
+import type { BalloonsExtra, ImageOf, TrayExtra, TrayHandle } from "#src/tray/tray-extras.js";
 
-const FIRST_COMMAND_ID = 1;
+/** The menu of `createStandaloneTray`; `ItemId` is the union of the ids of `menu`. */
+interface StandaloneMenuOptions<ItemId extends string, Extras extends readonly TrayExtra[]>
+  extends Omit<TrayIconOptions, "icon" | "oncontextmenu"> {
+  /** A path to an `.ico`; a `{ forLightTaskbar, forDarkTaskbar }` pair only with the `themedIcon` extra in `extras`. */
+  readonly icon: ImageOf<Extras>;
 
-/** A command in the menu: its text and what choosing it does. */
-export interface StandaloneMenuCommand {
-  readonly kind: typeof NativeMenuEntryKind.COMMAND;
-  readonly label: string;
+  /**
+   * The optional parts of the icon, each one import: `balloons` adds `notify`, `bounds` adds `bounds`,
+   * `themedIcon` lets `icon` follow the taskbar theme. None of their code is in the bundle unless passed.
+   */
+  readonly extras?: Extras;
 
-  /** Runs when the user chooses the command. */
-  readonly onselect: () => void;
+  /**
+   * The menu a right click opens, in the model of `winui-svelte/tray/menu`: commands, checks, radios,
+   * submenus to any depth, separators and headers. A separator needs an `id` like every line. On this
+   * renderer a submenu's own `onselect` and `autoExpand` do nothing (Windows opens a submenu row and
+   * reports no pick) and an `icon` is not drawn. None means a right click does nothing.
+   */
+  readonly menu?: ReadonlyArray<MenuItem<ItemId>> | undefined;
 
-  /** Default true; false shows the command grayed and unchoosable. */
-  readonly isEnabled?: boolean;
 }
 
-/** A line between groups of commands. */
-export interface StandaloneMenuSeparator {
-  readonly kind: typeof NativeMenuEntryKind.SEPARATOR;
+/** Levels, a user profile and ordering: what `resolve: resolveMenu` adds to the default. */
+interface StandaloneProfileOptions<ItemId extends string = string> {
+  /** The resolver that applies levels and a profile: `resolveMenu` of `winui-svelte/tray/standalone`. */
+  readonly resolve: MenuResolver<ItemId>;
+
+  /**
+   * What the user chose to show, or a function that gives it each time the menu opens (read from a
+   * file with `loadProfile`); every id must be one of `menu`'s. Everything at the `simple` level when left out.
+   */
+  readonly profile?: MenuProfile<NoInfer<ItemId>> | (() => MenuProfile<NoInfer<ItemId>>) | undefined;
 }
 
-/** A line of the menu a right click opens. */
-export type StandaloneMenuItem = StandaloneMenuCommand | StandaloneMenuSeparator;
+/** The default: every item is shown, in declared order, and a `profile` is a type error. */
+interface StandaloneLiteOptions {
+  readonly resolve?: undefined;
+  readonly profile?: undefined;
+}
 
-/** What `createStandaloneTray` takes beyond the icon's own options. */
-export interface StandaloneTrayOptions extends Omit<TrayIconOptions, "oncontextmenu"> {
-  /** The commands of the menu a right click opens; none means a right click does nothing. */
-  readonly menu?: readonly StandaloneMenuItem[] | undefined;
+/**
+ * What `createStandaloneTray` takes beyond the icon's own options. With no `resolve` the menu is drawn
+ * by the lite resolver, which ignores levels and profiles and so leaves them out of the bundle; pass
+ * `resolve: resolveMenu` (and then `profile`) to use them.
+ */
+export type StandaloneTrayOptions<
+  ItemId extends string = string,
+  Extras extends readonly TrayExtra[] = readonly []
+> = StandaloneMenuOptions<ItemId, Extras> & (StandaloneLiteOptions | StandaloneProfileOptions<ItemId>);
+
+function isBalloons(extra: TrayExtra): extra is BalloonsExtra {
+  return extra.kind === "balloons";
 }
 
 /** What `createStandaloneTray` takes beyond the options: a test's stand-ins. */
@@ -44,36 +74,14 @@ export interface StandaloneTraySeams {
 
   /** The timer that polls the pointer; Node's `setInterval` by default. */
   readonly schedule?: TrayScheduler;
+
+  /** Runs a function on a later turn, once the menu is gone; Node's `setImmediate` by default. */
+  readonly defer?: (run: () => void) => void;
 }
 
 function scheduleWithNode({ milliseconds, onTick }: Parameters<TrayScheduler>[0]) {
   const timer = setInterval(onTick, milliseconds);
   return () => clearInterval(timer);
-}
-
-function entriesOf(items: readonly StandaloneMenuItem[]) {
-  let nextId = FIRST_COMMAND_ID;
-  const handlers = new Map<number, () => void>();
-  const entries = items.map(item => {
-    const isSeparator = item.kind === NativeMenuEntryKind.SEPARATOR;
-    if (isSeparator) {
-      return item;
-    }
-
-    const id = nextId++;
-    handlers.set(id, item.onselect);
-    const entry: NativeMenuEntry = {
-      kind: NativeMenuEntryKind.COMMAND,
-      id,
-      label: item.label,
-      isEnabled: item.isEnabled ?? true
-    };
-    return entry;
-  });
-  return {
-    entries,
-    handlers
-  };
 }
 
 /**
@@ -85,40 +93,70 @@ function entriesOf(items: readonly StandaloneMenuItem[]) {
  * it from the thread that keeps running; the icon is removed on `remove`
  * and at process exit.
  */
-export function createStandaloneTray(options: StandaloneTrayOptions & StandaloneTraySeams) {
-  const native = options.native ?? createTrayNative();
+export function createStandaloneTray<
+  const ItemId extends string,
+  const Extras extends readonly TrayExtra[] = readonly []
+>(options: StandaloneTrayOptions<ItemId, Extras> & StandaloneTraySeams) {
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- no extras is the empty tuple, Extras' default
+  const extras = (options.extras ?? []) as unknown as Extras;
+  const native = options.native ?? createTrayNative({ writeBalloon: extras.find(isBalloons)?.writeBalloon });
+  const defer = options.defer ?? setImmediate;
+  const items = options.menu ?? [];
   let menu = options.nativeMenu;
 
-  function showMenu({ x, y }: {
-    x: number;
-    y: number;
+  function resolved() {
+    const { profile } = options;
+    const chosen = typeof profile === "function" ? profile() : profile;
+    return (options.resolve ?? resolveLite)({
+      items,
+      ...chosen ? { profile: chosen } : {}
+    });
+  }
+
+  function showMenu(point: {
+    readonly x: number;
+    readonly y: number;
   }) {
-    const { entries, handlers } = entriesOf(options.menu ?? []);
     menu ??= createNativeMenu();
     const owner = native.createOwnerWindow();
+    let choice: NativeChoice | undefined;
     try {
       native.focusWindow(owner);
-      const chosen = menu.choose({
-        owner,
-        point: {
-          x,
-          y
-        },
-        entries
-      });
-      handlers.get(chosen)?.();
+      do {
+        choice = menu.choose({
+          owner,
+          point,
+          items: resolved()
+        });
+
+        if (choice?.staysOpen) {
+          choice.select();
+        }
+      } while (choice?.staysOpen);
     } finally {
       native.destroyWindow(owner);
     }
+
+    if (choice?.closeThenRun) {
+      defer(choice.select);
+      return;
+    }
+
+    choice?.select();
   }
 
-  const hasMenu = (options.menu ?? []).length > 0;
+  const hasMenu = items.length > 0;
   removeTrayIconsAtExit();
-  return createTrayIconWith({
+  const handle: TrayHandle<Extras> = createTrayCore({
     ...options,
+    extras,
     native,
     schedule: options.schedule ?? scheduleWithNode,
     now: Date.now,
-    oncontextmenu: hasMenu ? event => showMenu(event) : undefined
+    oncontextmenu: hasMenu ? ({ x, y }) => showMenu({
+      x,
+      y
+    }) : undefined
   });
+  return handle;
 }
