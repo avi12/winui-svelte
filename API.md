@@ -43,6 +43,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/app/activation` | `src/app/activation/index.ts` | `installProtocolHandlers()`, `registerFileTypes()`, `launchAtLogin()`, `startActivation()`, `ActivationKind` (opt-in; see Activation) |
 | `winui-svelte/app/jump-list` | `src/app/jump-list/index.ts` | `setJumpListTasks()`, `clearJumpList()` (opt-in; see Jump list tasks) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
+| `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
@@ -3679,6 +3680,78 @@ name the events `enableDragEvents` adds
 takes drops, through the handlers a real drop reaches, and resolves with the
 operation the control accepted (`0` when it refused); it sends no input, so an
 app can test its drop handling in a real window
+
+## Incremental loading (`winui-svelte/incremental`)
+
+A list that loads its next batch as the user scrolls near the end, for
+`ListView`, `GridView`, `ItemsRepeater`, `ItemsView` and `BreadcrumbBar`
+Opt-in: nothing is bundled until an app imports it, and importing does no work
+
+```svelte
+<script lang="ts">
+  import { ListView } from "winui-svelte/components";
+  import { createIncrementalSource, IncrementalStatus } from "winui-svelte/incremental";
+
+  const source = createIncrementalSource<Post>({
+    batchSize: 25,
+    load: ({ offset, count, signal }) => fetchPosts({ offset, count, signal })
+  });
+</script>
+
+<ListView incremental={source} item={postRow} items={source.items} key={post => post.id} />
+{#if source.state.status === IncrementalStatus.ERROR}
+  <button onclick={() => source.retry()}>Try again</button>
+{/if}
+```
+
+`createIncrementalSource({ load, batchSize, threshold, isLast })` (options:
+`IncrementalSourceOptions`) returns an `IncrementalSource`, generic over the item;
+`IncrementalLoading` is what a list asks of its `incremental` prop
+`load({ offset, count, signal })` resolves with the next items; fewer than
+`count` (or none) is the last batch, and `isLast({ batch, items })` decides when
+the size cannot (a server that sends a cursor)
+`batchSize` is 20 and `threshold` is 5 by default: the next batch loads when
+the control realizes an item within `threshold` of the end
+The source holds `items` and `state`, both reactive
+`state` is `{ status: "idle" | "loading" | "done" }` or
+`{ status: "error", error }`; `IncrementalStatus` names the four (also in
+`winui-svelte/enums`)
+
+- `loadMore()` loads now; while a load is in flight it returns that load's
+  promise, so a load never runs twice, and it never rejects
+- A failure is the `error` state and stays until `retry()`; the list does not
+  retry by itself
+- `cancel()` aborts the load in flight through its `AbortSignal` and drops its
+  result; `reset()` also clears the items, and a bound list loads the first
+  batch again; `dispose()` aborts for good
+- A list bound to a source starts it, so the first batch needs no call
+
+### The mechanism, and why
+
+WinUI's own is `ISupportIncrementalLoading` on the items source, which the
+list calls when it nears its end (`IncrementalLoadingTrigger`)
+winui-svelte does not use it: the items of these lists are a native vector of
+keys (see Items), and the interface belongs on the collection itself, which
+would have to be a JavaScript-made `IBindableVector`,
+`INotifyCollectionChanged` and `ISupportIncrementalLoading` returning an
+`IAsyncOperation`
+dynwinrt (0.1.0-preview.23) can make a COM object from a callback
+(`createComObject`), but nothing in this package has proved that WinUI binds it
+as an items source, and the same table would have to answer a bindable vector's
+every call, so it was not built
+Instead the control's own realization tells the source: ListView and GridView
+report each container's index through `ContainerContentChanging`, the repeaters
+through `ElementPrepared`, and the source loads when that index is within
+`threshold` of the end
+The report is made after the layout pass (a timer of zero, the furthest index of
+the pass), because a source that changes `state` during it changes the app's
+markup (a footer) while WinUI measures, which WinUI refuses
+`ScrollViewer.ChangeView` and a real scroll reach the source the same way
+(`test/incremental-list.test.ts`)
+
+A loading footer, an error row or a "no more" line is markup of the app, beside
+the list, from `source.state`; the list has no footer snippet of its own
+The example is `examples/incremental-list`
 
 ## Input events and focus (`winui-svelte/input`)
 

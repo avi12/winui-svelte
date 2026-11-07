@@ -222,6 +222,8 @@ class ItemsHost<Item> implements ListHandle {
       return;
     }
 
+    this.rows.realized(args.itemIndex);
+
     const key = keyText(args.item);
     const item = this.rows.show({
       container,

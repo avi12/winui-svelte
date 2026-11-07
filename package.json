@@ -142,6 +142,11 @@
       "types": "./dist/data-transfer/index.d.ts",
       "default": "./dist/data-transfer/index.js"
     },
+    "./incremental": {
+      "types": "./dist/incremental/index.d.ts",
+      "svelte": "./dist/incremental/index.js",
+      "default": "./dist/incremental/index.js"
+    },
     "./input": {
       "types": "./dist/input/index.d.ts",
       "svelte": "./dist/input/index.js",

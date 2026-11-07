@@ -8,9 +8,11 @@ import { NativeGroups } from "./native-groups.ts";
 import { DynWinRtType, DynWinRtValue } from "@microsoft/dynwinrt";
 import type { ContentControl, FrameworkElement } from "#src/components/generated/bindings.js";
 import { AutomationProperties, IVector_Object, PropertyValue } from "#src/components/generated/bindings.js";
+import type { IncrementalLoading } from "#src/incremental/state.js";
 import type { BoxedValue } from "#src/native-value.js";
 import { unboxed } from "#src/renderer/host/values.js";
 import type { Snippet } from "svelte";
+import { untrack } from "svelte";
 
 // What every control that shows a flat list of the app's items by a snippet
 // shares: the keys the control holds as its items, and the rows (keyed-rows.svelte.ts)
@@ -36,6 +38,9 @@ export interface ItemRowsProps<Item> {
   key: (item: Item) => string;
   // The row of an item.
   item?: Snippet<[Item]>;
+  // An incremental source (`winui-svelte/incremental`) that `items` come from:
+  // the control tells it which item it realizes, and it loads more near the end.
+  incremental?: IncrementalLoading;
 }
 
 /** What a control takes to name the container of an item for assistive technology. */
@@ -96,6 +101,8 @@ export class ItemRows<Item> {
   private readonly props: FlatRowsProps<Item>;
   private readonly rows: KeyedRows<Entry<Item>>;
 
+  private realizedTimer: ReturnType<typeof setTimeout> | undefined;
+  private furthestRealized = 0;
   private keyOrder: string[] = [];
   private isChangingKeys = false;
 
@@ -110,6 +117,8 @@ export class ItemRows<Item> {
     $effect(() => {
       this.sync(props.items ?? []);
       onSynced?.();
+      // A list bound to a source starts it, and starts it again after a reset.
+      untrack(() => props.incremental?.realized({ index: 0 }));
     });
   }
 
@@ -217,8 +226,36 @@ export class ItemRows<Item> {
     this.rows.release(container);
   }
 
+  /**
+   * A container shows the item at `index`: the incremental source hears of it
+   * once the layout pass is over (a source that changes state during it would
+   * change the app's markup while WinUI measures), the furthest index of the
+   * pass only.
+   */
+  realized(index: number) {
+    const { incremental } = this.props;
+    const hasSource = incremental !== undefined;
+    if (!hasSource) {
+      return;
+    }
+
+    const isWaiting = this.realizedTimer !== undefined;
+    this.furthestRealized = isWaiting ? Math.max(this.furthestRealized, index) : index;
+
+    if (isWaiting) {
+      return;
+    }
+
+    this.realizedTimer = setTimeout(() => {
+      this.realizedTimer = undefined;
+      incremental.realized({ index: this.furthestRealized });
+    });
+  }
+
   /** Ends every row. */
   clear() {
+    clearTimeout(this.realizedTimer);
+    this.realizedTimer = undefined;
     this.rows.clear();
   }
 
