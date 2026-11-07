@@ -51,6 +51,7 @@ test("svelte-check passes the example tray.svelte", { timeout: CHECK_TIMEOUT_MIL
 });
 
 test("svelte-check fails an attribute the menu model lacks and a value of the wrong type", { timeout: CHECK_TIMEOUT_MILLISECONDS }, () => {
+  // noinspection JSUnresolvedReference: Svelte markup in a string
   const errors = errorsOf(
     `<script module lang="ts">
   export const options = { icon: "tray.ico", guid: "g" };

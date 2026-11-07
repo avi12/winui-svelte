@@ -43,6 +43,7 @@ function load(markup: string) {
     .replace(/^import .*$/mu, "")
     .replace(/^export function/mu, "function")
     .replace("export default", "const tray =");
+  // oxlint-disable-next-line typescript/no-implied-eval -- runs the lowered tray module to read the menu it builds
   const make = new Function("defineTray", "LoweredMenuItemKind", `${code}
 return { menu: tray.menu, toggleAutostart };`);
   const loaded: {
@@ -63,6 +64,7 @@ function messageOf(markup: string) {
 }
 
 test("a small menu lowers to the exact plain code", () => {
+  // noinspection JSUnresolvedReference: Svelte markup in a string
   const code = lowerTraySvelte({
     source: `<script module lang="ts">
   export const options = { icon: "tray.ico", guid: "g" };
@@ -105,6 +107,7 @@ test("the lowered module keeps the script, drops the component import, and the b
 });
 
 test("if, each, const and submenu lower to the model a hand-written menu has", () => {
+  // noinspection JSUnresolvedReference: Svelte markup in a string
   const { menu } = load(
     `<TrayMenu>
   <TrayMenuHeader id="title" label="Recorder" />
@@ -158,6 +161,7 @@ test("if, each, const and submenu lower to the model a hand-written menu has", (
 });
 
 test("a check's tick is read when the menu opens", () => {
+  // noinspection JSUnresolvedReference: Svelte markup in a string
   const { menu, toggleAutostart } = load(`<TrayMenu><TrayMenuItem id="auto" kind="check" label="Auto" isChecked={() => isAutostart} /></TrayMenu>`);
   function tick() {
     const [line] = menu();
@@ -182,6 +186,7 @@ test("a rune in the script is refused with the reason and the line", () => {
 });
 
 test("unsupported markup is refused, naming the line and the construct", () => {
+  // noinspection JSUnresolvedReference: Svelte markup in a string
   const cases = [
     [`<TrayMenu>\n  {#await load}\n  {/await}\n</TrayMenu>`, /:\d+:\d+: \{#await\} is not supported/u],
     [`<TrayMenu>\n  <TrayMenuItem id="a" label="A" bind:this={node} />\n</TrayMenu>`, /bind: is not supported/u],

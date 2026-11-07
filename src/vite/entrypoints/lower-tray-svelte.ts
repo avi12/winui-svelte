@@ -295,6 +295,7 @@ export function lowerTraySvelte({ source: text, file }: {
     scripts: [ast.module, ast.instance]
   });
   if (!properties) {
+    // noinspection JSUnresolvedReference: the construct text is prose, not code
     throw errorAt({
       source,
       offset: 0,
