@@ -17,6 +17,14 @@ does not depend on it
 - **Resources**: a `var(--card-background-fill-color-default)` completes from the
   resources WinUI defines, each color with a swatch, and the documentation popup
   shows its light and its dark value
+- **Pictures**: the picture beside the path of every prop, option or object
+  key the library types as a picture (a tray menu item or tray icon icon, an
+  `Image` source, a thumbnail button), also for `.ico` (best frame, all
+  frame sizes in the popup), `.png`, `.svg`, `.jpg`, `.gif` and `.bmp`;
+  the popup shows the larger picture with its name, pixel size and file size,
+  a light and dark taskbar pair side by side on their backgrounds, and a
+  missing file gets a warning; remote pictures are fetched only with
+  Settings, winui-svelte, "Preview remote pictures" on
 - **CSS and layout previews**: see the next section
 - **Convert to CSS**: Alt+Enter on a prop that has a CSS counterpart moves it into
   the `<style>` block or a `style:` directive

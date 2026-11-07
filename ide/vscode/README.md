@@ -26,6 +26,14 @@ does not depend on it
 - **Resources**: a `var(--card-background-fill-color-default)` completes from
   the resources WinUI defines, and a color shows its light and its dark value as
   two swatches in the hover and beside each name in the list
+- **Pictures**: the picture beside the path of every prop, option or object
+  key the library types as a picture (a tray menu item or tray icon icon, an
+  `Image` source, a thumbnail button), also for `.ico` (best frame, all
+  frame sizes in the hover), `.png`, `.svg`, `.jpg`, `.gif`, `.bmp` and
+  `.webp`; the hover shows the larger picture with its name, pixel size and
+  file size, a light and dark taskbar pair side by side on their backgrounds,
+  and a missing file gets a warning; remote pictures are fetched only with
+  `winuiSvelte.previews.remotePictures` on
 - **CSS and layout previews**: see the next section
 - **Convert to CSS**: a prop that has a CSS counterpart gets a quick fix
   (Ctrl+.) that moves it into the `<style>` block, or writes it as a `style:`
