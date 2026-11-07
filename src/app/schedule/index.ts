@@ -1,5 +1,6 @@
-export type { ScheduleTrigger } from "./trigger.ts";
-export { TriggerKind } from "./trigger.ts";
+export type { Alarm } from "./alarm.ts";
+export type { AlarmCreateInfo, AlarmOptions } from "./alarms.ts";
+export { clear, clearAll, create, get, getAll } from "./alarms.ts";
 export type { TaskBackend } from "./backend.ts";
-export type { ScheduleLaunchOptions, ScheduleOptions } from "./tasks.ts";
-export { listScheduledLaunches, scheduleLaunch, unscheduleLaunch } from "./tasks.ts";
+export type { ListenerEvent } from "./events.ts";
+export { onAlarm, onStartup } from "./events.ts";

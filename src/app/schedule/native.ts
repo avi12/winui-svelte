@@ -55,6 +55,13 @@ export function createSchtasksBackend() {
         });
       }
     },
+    read(name) {
+      try {
+        return schtasks(["/Query", "/TN", name, "/XML"]);
+      } catch {
+        return undefined;
+      }
+    },
     list() {
       return [...new Set(listedNames())];
     },

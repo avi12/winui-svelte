@@ -12,6 +12,9 @@ export interface TaskBackend {
     xml: string;
   }): void;
 
+  /** The XML a task was registered with; undefined when there is no such task. */
+  read(name: string): string | undefined;
+
   /** The full names of the tasks in `TASK_FOLDER`. */
   list(): readonly string[];
 
