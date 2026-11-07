@@ -1,5 +1,7 @@
 import { classifyActivation } from "./classify.ts";
+import { ActivationKind } from "./kinds.ts";
 import type { ActivationEvent } from "./kinds.ts";
+import { dispatchAlarm, dispatchStartup } from "#src/app/schedule/events.js";
 import { ensureSingleInstance } from "#src/app/single-instance.js";
 import type { Activation, SingleInstance, SingleInstanceOptions } from "#src/app/single-instance.js";
 
@@ -56,7 +58,9 @@ function rethrowLater(error: unknown) {
  * `scheme:` link, the startup entry, plain) and for every later copy, which
  * `ensureSingleInstance` hands to the first. A later copy exits (its
  * `isPrimary` is false) and gets no event; the first copy gets one for it.
- * Events arrive in order, one at a time. Nothing is registered with Windows
+ * An `alarm` activation also reaches the `onAlarm` listeners and a `startup`
+ * one the `onStartup` listeners of `winui-svelte/app/schedule`, before
+ * `onActivation`. Events arrive in order, one at a time. Nothing is registered with Windows
  * here; see `installProtocolHandlers`, `registerFileTypes` and `launchAtLogin`.
  *
  * @param options - The key, the listener and what to bring along.
@@ -78,6 +82,16 @@ export function startActivation(options: ActivationOptions) {
       });
       if (isRedirect) {
         await launchQueue?.enqueueActivation(activation);
+      }
+
+      const isAlarm = event.kind === ActivationKind.alarm;
+      if (isAlarm) {
+        dispatchAlarm(event.alarm);
+      }
+
+      const isStartup = event.kind === ActivationKind.startup;
+      if (isStartup) {
+        dispatchStartup();
       }
 
       await onActivation(event);

@@ -1,9 +1,11 @@
+import { splitAlarmArgument } from "./alarm-argument.ts";
 import { splitJumpListArgument } from "./jump-list-argument.ts";
 import { ActivationKind } from "./kinds.ts";
 import type { ActivationEvent } from "./kinds.ts";
 import { STARTUP_ARGUMENT } from "./registration.ts";
 import { isRegistrableScheme } from "./scheme.ts";
 import type { Activation } from "#src/app/redirect.js";
+import { latestOccurrence } from "#src/app/schedule/occurrence.js";
 import { stat } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
@@ -70,7 +72,7 @@ async function existingFiles({ candidates, workingDirectory, extensions }: {
 
 /**
  * Turns what a start or a redirect carried into the one typed event: a jump
- * list task marker is a `jumpList` activation, else the first valid address is
+ * list task marker is an `alarm` activation, else a `jumpList` one, else the first valid address is
  * a `protocol` activation, else existing files are a `file` one, else
  * `startup` when the startup marker is there, else `redirect` or `launch` by
  * who sent it. An argument that fits none is left in `arguments`.
@@ -88,12 +90,30 @@ export async function classifyActivation({ activation, isRedirect, extensions }:
   const { workingDirectory } = activation;
   const all = argumentsSchema.parse(activation.arguments);
   const isStartup = !isRedirect && all.includes(STARTUP_ARGUMENT);
-  const { taskId, rest: values } = splitJumpListArgument(all.filter(value => value !== STARTUP_ARGUMENT));
+  const { marker, rest: withoutAlarm } = splitAlarmArgument(all);
+  const { taskId, rest: values } = splitJumpListArgument(withoutAlarm.filter(value => value !== STARTUP_ARGUMENT));
   const base = {
     isRedirect,
     arguments: values,
     workingDirectory
   };
+  const isAlarm = marker !== undefined;
+  if (isAlarm) {
+    return {
+      ...base,
+      kind: ActivationKind.alarm,
+      alarm: {
+        name: marker.name,
+        scheduledTime: latestOccurrence({
+          firstTime: marker.firstTime,
+          periodInMinutes: marker.periodInMinutes,
+          now: Date.now()
+        }),
+        ...marker.periodInMinutes === undefined ? {} : { periodInMinutes: marker.periodInMinutes }
+      }
+    } satisfies ActivationEvent;
+  }
+
   const isJumpListTask = taskId !== undefined;
   if (isJumpListTask) {
     return {

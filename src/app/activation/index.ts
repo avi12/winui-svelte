@@ -1,4 +1,4 @@
-export type { ActivationEvent, FileActivation, JumpListActivation, LaunchActivation, ProtocolActivation, RedirectActivation, StartupActivation } from "./kinds.ts";
+export type { ActivationEvent, AlarmActivation, FileActivation, JumpListActivation, LaunchActivation, ProtocolActivation, RedirectActivation, StartupActivation } from "./kinds.ts";
 export { ActivationKind } from "./kinds.ts";
 export type { ProgramCommand } from "./command.ts";
 export type { RegistrationOptions } from "./context.ts";

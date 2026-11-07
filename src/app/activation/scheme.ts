@@ -83,6 +83,16 @@ export function normalizeExtension(extension: string) {
 }
 
 /**
+ * Whether a name is an identifier (see `requireIdentifier`), without throwing.
+ *
+ * @param identifier - The name.
+ * @returns True when it is one.
+ */
+export function isIdentifier(identifier: string) {
+  return IDENTIFIER_PATTERN.test(identifier) && identifier.length <= MAX_IDENTIFIER_LENGTH;
+}
+
+/**
  * Checks the name an app picks for itself (a startup entry, a file type's
  * ProgID prefix): letters, digits, `.`, `_` and `-`, starting with a letter or digit.
  *
@@ -91,7 +101,7 @@ export function normalizeExtension(extension: string) {
  * @throws {TypeError} When it is empty, too long or has another character.
  */
 export function requireIdentifier(identifier: string) {
-  const isValid = IDENTIFIER_PATTERN.test(identifier) && identifier.length <= MAX_IDENTIFIER_LENGTH;
+  const isValid = isIdentifier(identifier);
   if (!isValid) {
     throw new TypeError(`'${identifier}' is not an identifier: letters, digits, . _ and -, up to ${MAX_IDENTIFIER_LENGTH} characters`);
   }
