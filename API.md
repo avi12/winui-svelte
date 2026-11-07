@@ -46,7 +46,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
 | `winui-svelte/win2d/context-2d` | `src/win2d/context-2d/index.ts` | `Canvas2D`, `createCanvas2D`, `CanvasElement`, `Context2D`, `Path2D` and the rest of the HTML Canvas 2D API over Win2D (opt-in; see Canvas 2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
-| `winui-svelte/tray/standalone` | `src/tray/standalone/index.ts` | `createStandaloneTray()`, `MenuItemKind`, `MenuLevel`, and the `winui-svelte/app` calls that start or signal the app: a tray with no window, no WinUI and no components (opt-in; see Tray with no window) |
+| `winui-svelte/tray/standalone` | `src/tray/standalone/index.ts` | `createStandaloneTray()`, its opt-in parts `balloons`, `bounds` and `themedIcon`, `MenuItemKind`, `MenuLevel`, and the `winui-svelte/app` calls that start or signal the app: a tray with no window, no WinUI and no components (opt-in; see Tray with no window) |
 | `winui-svelte/notice` | `src/notice/index.ts` | `showNotice()`, `NoticeIcon`, `NoticeButtons`, `NoticeButton`: a message box with no window or app (opt-in; see Notice with no app) |
 | `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
 | `winui-svelte/store` | `src/store/index.ts` | `getAppLicense`, `watchLicense`, `checkForUpdates`, `watchPackages`, `getStartupTask`, `getPackageInfo`: the Store and package APIs, answering `hasPackage: false` outside a package (opt-in) |
@@ -2984,10 +2984,32 @@ createStandaloneTray({
 
 - `createStandaloneTray(options)` takes the icon's options (`icon`,
   `tooltip`, `isVisible`, `guid`, `onclick`, `ondoubleclick`,
-  `onmiddleclick`), `menu`, and `resolve` with `profile`, and returns the same handle as
-  `createTrayIcon` (`update`, `notify`, `bounds`, `isRegistered`, `remove`)
+  `onmiddleclick`), `menu`, `extras`, and `resolve` with `profile`, and returns
+  a handle with `update`, `isRegistered` and `remove`, plus `notify` and
+  `bounds` when their extras are passed
   The icon keeps the process alive; `remove()` or the process ending takes it
   out of the tray
+- The default is the smallest tray: an icon from one `.ico` path, clicks,
+  `update`, `remove` and the menu
+  Three parts are opt-in, each one import from the same entry, passed in
+  `extras`, and none of their code is in the bundle unless passed:
+  `balloons` adds `notify`, `bounds` adds `bounds()`, and `themedIcon` lets
+  `icon` be `{ forLightTaskbar, forDarkTaskbar }`, swapped as the taskbar theme
+  changes
+  The handle has `notify` or `bounds` only when its extra is passed, and a
+  theme pair is accepted only with `themedIcon`; otherwise it fails to compile
+  `createTrayIcon` and `TrayIcon` of `winui-svelte/tray` include all three
+
+```ts
+import { balloons, bounds, createStandaloneTray, themedIcon } from "winui-svelte/tray/standalone";
+
+const tray = createStandaloneTray({
+  icon: { forLightTaskbar: "dark.ico", forDarkTaskbar: "light.ico" },
+  extras: [balloons, bounds, themedIcon]
+});
+tray.notify({ title: "Ready" });
+```
+
 - The menu is Windows' own popup menu (`TrackPopupMenuEx`), made on a right
   click and destroyed when it closes; nothing of it exists while idle
   `menu` is the same model as the windowed tray's (`winui-svelte/tray/menu`):
