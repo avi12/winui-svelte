@@ -159,6 +159,10 @@
       "types": "./dist/chrome/permissions/index.d.ts",
       "default": "./dist/chrome/permissions/index.js"
     },
+    "./chrome/notifications": {
+      "types": "./dist/chrome/notifications/index.d.ts",
+      "default": "./dist/chrome/notifications/index.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
