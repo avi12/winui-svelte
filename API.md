@@ -3914,15 +3914,17 @@ over WinUI's `ContentDialog`
 ```svelte
 <script lang="ts">
   import { installDialogs, useDialogWindow } from "winui-svelte/dialogs";
-  import type { WindowHandle } from "winui-svelte/window";
+  import type { WindowHandle } from "winui-svelte/components";
 
   installDialogs();
   let handle = $state<WindowHandle>();
 
   $effect(() => {
-    if (handle) {
-      return useDialogWindow(handle);
+    if (!handle) {
+      return;
     }
+
+    return useDialogWindow(handle);
   });
 
   async function remove() {
