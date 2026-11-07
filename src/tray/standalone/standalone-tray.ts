@@ -26,9 +26,10 @@ interface StandaloneMenuOptions<ItemId extends string, Extras extends readonly T
    * The menu a right click opens, in the model of `winui-svelte/tray/menu`: commands, checks, radios,
    * submenus to any depth, separators and headers. A separator needs an `id` like every line. On this
    * renderer a submenu's own `onselect` and `autoExpand` do nothing (Windows opens a submenu row and
-   * reports no pick) and an `icon` is not drawn. None means a right click does nothing.
+   * reports no pick) and an `icon` is not drawn. None means a right click does nothing. A function makes
+   * the lines each time the menu opens, which is how a tray written as markup keeps its variables current.
    */
-  readonly menu?: ReadonlyArray<MenuItem<ItemId>> | undefined;
+  readonly menu?: ReadonlyArray<MenuItem<ItemId>> | (() => ReadonlyArray<MenuItem<ItemId>>) | undefined;
 
 }
 
@@ -101,14 +102,14 @@ export function createStandaloneTray<
   const extras = (options.extras ?? []) as unknown as Extras;
   const native = options.native ?? createTrayNative({ writeBalloon: extras.find(isBalloons)?.writeBalloon });
   const defer = options.defer ?? setImmediate;
-  const items = options.menu ?? [];
+  const { menu: source } = options;
   let menu = options.nativeMenu;
 
   function resolved() {
     const { profile } = options;
     const chosen = typeof profile === "function" ? profile() : profile;
     return (options.resolve ?? resolveLite)({
-      items,
+      items: (typeof source === "function" ? source() : source) ?? [],
       ...chosen ? { profile: chosen } : {}
     });
   }
@@ -145,7 +146,6 @@ export function createStandaloneTray<
     choice?.select();
   }
 
-  const hasMenu = items.length > 0;
   removeTrayIconsAtExit();
   const handle: TrayHandle<Extras> = createTrayCore({
     ...options,
@@ -153,7 +153,7 @@ export function createStandaloneTray<
     native,
     schedule: options.schedule ?? scheduleWithNode,
     now: Date.now,
-    oncontextmenu: hasMenu ? ({ x, y }) => showMenu({
+    oncontextmenu: source ? ({ x, y }) => showMenu({
       x,
       y
     }) : undefined

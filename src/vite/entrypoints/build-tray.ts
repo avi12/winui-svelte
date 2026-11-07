@@ -1,9 +1,10 @@
 import { isInsideFolder } from "./discover.ts";
 import { extractTrayManifest } from "./extract-tray.ts";
 import { TRAY_VIRTUAL_ID, trayModule } from "./tray-module.ts";
+import { traySourceOf } from "./tray-source.ts";
 import { TRAY_BUNDLE_FILE, TRAY_MANIFEST_FILE } from "#src/tray/tray-manifest.js";
 import { hasSideEffects, NATIVE_MODULE } from "#src/vite/externals.js";
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import type { InlineConfig } from "vite";
 import { build, mergeConfig } from "vite";
@@ -34,7 +35,7 @@ export interface BuildTrayOptions {
  * @throws {Error} When the file is not a readable `defineTray`, or its icon leaves its folder.
  */
 export async function buildTray({ root, file, outDirectory, isFirst, isMinified, config = {} }: BuildTrayOptions) {
-  const manifest = extractTrayManifest(readFileSync(file, "utf8"));
+  const manifest = extractTrayManifest(traySourceOf(file));
   const source = path.resolve(path.dirname(file), manifest.icon);
   const isIconInside = isInsideFolder({
     folder: path.dirname(file),

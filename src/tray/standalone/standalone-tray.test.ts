@@ -219,6 +219,19 @@ test("a right click shows the resolved menu at the pointer", () => {
   handle.remove();
 });
 
+test("a menu given as a function is read each time the menu opens", () => {
+  let currentIds = ["one"];
+  const { shown, rightClick, handle } = start({
+    menu: () => currentIds.map(id => command({ id })),
+    picks: [undefined, undefined]
+  });
+  rightClick();
+  currentIds = ["one", "two"];
+  rightClick();
+  assert.deepEqual(shown.map(entry => names(entry.items)), [["one"], ["one", "two"]]);
+  handle.remove();
+});
+
 test("the chosen command runs on a later turn, and only that one", () => {
   const ran: string[] = [];
   const { rightClick, deferred, handle } = start({

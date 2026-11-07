@@ -3365,11 +3365,93 @@ export default defineTray({
 - The bundle holds no component and no window runtime; most of its size is
   zod, which a bundle for Node carries (`scripts/pack/tray-entrypoint.test.ts`
   keeps its budget)
-- Not built yet: `entrypoints/tray.svelte`, the menu written as markup and
-  lowered to plain code at build; the discovery in `src/vite/entrypoints` is
-  where that file kind goes
+- `tray.svelte` is the same entrypoint written as markup (next section); a
+  folder with both `tray.ts` and `tray.svelte` is an error
 
 The working example is `examples/tray-entrypoint`
+
+#### The tray written as markup (`entrypoints/tray.svelte`)
+
+The menu can be written with the components of
+`winui-svelte/tray/menu/svelte`; the build reads the file with Svelte's parser
+and lowers the markup to the plain model of `tray.ts`, so none of Svelte's
+runtime is in `tray.js` (about 40 KB that a tray-only process cannot carry)
+
+```svelte
+<script module lang="ts">
+  import { activateOrLaunch, resolveMenu } from "winui-svelte/tray/standalone";
+
+  let isAutostart = false;
+
+  function openApp() {
+    void activateOrLaunch({ key: "my-app", activation: { arguments: [], workingDirectory: "." }, launch: { command: process.execPath, arguments: ["main.js"] } });
+  }
+
+  function recentCaptures() {
+    return ["a.png", "b.png"];
+  }
+
+  export const options = {
+    icon: "tray.ico",
+    tooltip: "My app",
+    guid: "7d1c5a52-3f1b-4a63-9f5e-2f4d6b0c8a11",
+    onactivate: openApp,
+    resolve: resolveMenu
+  };
+</script>
+
+<script lang="ts">
+  import { TrayMenu, TrayMenuItem, TrayMenuSubmenu } from "winui-svelte/tray/menu/svelte";
+</script>
+
+<TrayMenu>
+  <TrayMenuItem id="open" label="Open" isRequired onselect={openApp} />
+  <TrayMenuSubmenu id="recent" label="Recent" emptyLabel="Nothing yet">
+    {#each recentCaptures() as name, iCapture (name)}
+      <TrayMenuItem id={`recent.${iCapture}`} label={name} />
+    {/each}
+  </TrayMenuSubmenu>
+  {#if isAutostart}
+    <TrayMenuItem id="delay" label="Delay at sign-in" />
+  {/if}
+</TrayMenu>
+```
+
+- `<script module>` holds `export const options = { ... }`, the options of
+  `defineTray` except `menu` (the markup is the menu); the build reads `icon`,
+  `tooltip` and `guid` from its literals as it does for `tray.ts`, and
+  everything `options` uses (functions, imports) lives in the same script,
+  because Svelte keeps a module script apart from the instance script; a
+  `satisfies` on the object is read through
+- The menu is read each time it opens, like the dynamic values of the model, so
+  a plain `let` and a plain function are always current; there is no `$state`,
+  `$derived`, `$effect`, `$props`, `$bindable`, `$inspect` or `$host` (the build
+  refuses them, since nothing would re-run)
+- Supported: `TrayMenu` (once, the root, no attributes), `TrayMenuItem` (a
+  command, or `kind="check"` or `kind="radio"`), `TrayMenuSubmenu`,
+  `TrayMenuSeparator` and `TrayMenuHeader`, imported by name; attributes as
+  `label="text"`, `label="x {y}"`, `label={expression}`, `{shorthand}`, a bare
+  boolean (`isRequired`), `{...spread}` and `onselect={handler}`; `{#if}`,
+  `{:else if}` and `{:else}`; `{#each list as item, index (key)}` over an array
+  (the key is not used, the `id` is the identity); `{@const}`; the children of
+  a submenu become its `items` function
+- Refused with an error that names the file, the line and the construct:
+  components of your own, other elements, `{#await}`, `{#key}`, `{#snippet}`,
+  `{@render}`, `{@html}`, `{@debug}`, `bind:`, `use:`, `on:`, `class:`,
+  `style:`, `let:`, transitions, `animate:`, `{@attach}`, `<svelte:*>`, text
+  between the lines, `{:else}` of an `{#each}` (give the submenu an
+  `emptyLabel`), a `<style>` block and importing a `.svelte` file
+- Each line becomes an object literal and `menu` the function that returns
+  them: `{#if}` spreads a conditional array, `{#each}` spreads `flatMap`, so
+  `defineTray` receives `menu: () => [ ... ]` (a function is accepted wherever
+  an array is, by `createStandaloneTray` too)
+- `svelte-check` and the editor check the markup against the props of the
+  components, so a wrong attribute or value is an error there; the build
+  checks nothing, as for any `.svelte` file
+- A `tray.svelte` built to `tray.js` is within a few dozen bytes of the same
+  tray written in `tray.ts` (`scripts/pack/tray-svelte-entrypoint.test.ts`)
+
+The working example is `examples/tray-entrypoint-svelte`
 
 ### Notice with no app (`winui-svelte/notice`)
 
