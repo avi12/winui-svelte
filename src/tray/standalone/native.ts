@@ -106,10 +106,6 @@ export function createMenuBuilder() {
     }
   });
 
-  function popup() {
-    return createPopup();
-  }
-
   function fill({ menu, items, choices }: {
     readonly menu: bigint;
     readonly items: readonly ResolvedMenuItem[];
@@ -117,7 +113,7 @@ export function createMenuBuilder() {
   }) {
     for (const [position, item] of items.entries()) {
       const isSubmenu = item.kind === MenuItemKind.SUBMENU;
-      const submenu = isSubmenu ? popup() : NO_SUBMENU;
+      const submenu = isSubmenu ? createPopup() : NO_SUBMENU;
       if (isSubmenu) {
         fill({
           menu: submenu,
@@ -126,8 +122,9 @@ export function createMenuBuilder() {
         });
       }
 
-      const id = isChoice(item) ? FIRST_COMMAND_ID + choices.size : 0;
-      if (isChoice(item)) {
+      const isPick = isChoice(item);
+      const id = isPick ? FIRST_COMMAND_ID + choices.size : 0;
+      if (isPick) {
         choices.set(id, item);
       }
 
@@ -157,7 +154,7 @@ export function createMenuBuilder() {
      * frees the menu and its submenus.
      */
     build({ items }: { readonly items: readonly ResolvedMenuItem[] }) {
-      const menu = popup();
+      const menu = createPopup();
       const choices = new Map<number, NativeChoice>();
       function destroy() {
         destroyMenu(menu);

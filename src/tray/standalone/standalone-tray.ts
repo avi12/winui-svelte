@@ -71,15 +71,15 @@ export function createStandaloneTray<const ItemId extends string>(
     });
   }
 
-  function chooseWhileOpen(point: {
+  function showMenu(point: {
     readonly x: number;
     readonly y: number;
   }) {
     menu ??= createNativeMenu();
     const owner = native.createOwnerWindow();
+    let choice: NativeChoice | undefined;
     try {
       native.focusWindow(owner);
-      let choice: NativeChoice | undefined;
       do {
         choice = menu.choose({
           owner,
@@ -91,17 +91,10 @@ export function createStandaloneTray<const ItemId extends string>(
           choice.select();
         }
       } while (choice?.staysOpen);
-      return choice;
     } finally {
       native.destroyWindow(owner);
     }
-  }
 
-  function showMenu(point: {
-    readonly x: number;
-    readonly y: number;
-  }) {
-    const choice = chooseWhileOpen(point);
     if (choice?.closeThenRun) {
       defer(choice.select);
       return;
