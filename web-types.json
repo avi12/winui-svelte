@@ -27194,6 +27194,41 @@
               }
             }
           ]
+        },
+        {
+          "name": "TrayMenuEditor",
+          "description": "A settings control where the user picks how much of the tray menu shows: its level, items and order",
+          "doc-url": "https://github.com/avi12/winui-svelte/blob/main/API.md#letting-the-user-customize-the-tray-menu",
+          "attributes": [
+            {
+              "name": "items",
+              "description": "The menu the app declares: the same lines the `TrayIcon` draws."
+            },
+            {
+              "name": "profile",
+              "description": "The user's choice; `bind:profile` keeps it in step with the editor. The default profile when left out."
+            },
+            {
+              "name": "onchange",
+              "description": "Runs with the new profile after every edit. The editor never reads or writes a file: the app saves it."
+            },
+            {
+              "name": "onsave",
+              "description": "Adds a Save button that runs this with the current profile, for an app that saves on request."
+            },
+            {
+              "name": "labels",
+              "description": "The strings of the editor; each one left out stays English."
+            },
+            {
+              "name": "isPreviewShown",
+              "description": "True lists the menu as it resolves under the profile, as plain rows. Default false.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            }
+          ]
         }
       ]
     },
