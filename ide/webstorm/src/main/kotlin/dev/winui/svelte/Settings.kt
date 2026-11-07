@@ -24,6 +24,12 @@ internal class Settings : PersistentStateComponent<SettingsState> {
       current.isResourceHintsEnabled = value
     }
 
+  var isRemotePicturesEnabled: Boolean
+    get() = current.isRemotePicturesEnabled
+    set(value) {
+      current.isRemotePicturesEnabled = value
+    }
+
   var mediaTheme: Theme
     get() = Theme.named(current.mediaTheme)
     set(value) {
