@@ -311,6 +311,10 @@
       "types": "./dist/notice/index.d.ts",
       "default": "./dist/notice/index.js"
     },
+    "./tray/menu": {
+      "types": "./dist/tray/menu/index.d.ts",
+      "default": "./dist/tray/menu/index.js"
+    },
     "./tray/standalone": {
       "types": "./dist/tray/standalone/index.d.ts",
       "default": "./dist/tray/standalone/index.js"
