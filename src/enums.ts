@@ -19,6 +19,7 @@ export { ConnectedAnimationKind } from "./renderer/host/connected-configuration.
 export { FocusKind } from "./renderer/host/focus-element.ts";
 export { HotkeyModifier } from "./app/hotkeys/keys.ts";
 export { KeyCode } from "./key-code.ts";
+export { MenuItemKind, MenuLevel } from "./tray/menu/types.ts";
 export { TrayGesture } from "./tray/click-detector.ts";
 export { TrayBalloonIcon } from "./tray/tray-core.ts";
 export { SizeToContent, WindowAnchor } from "./window/anchor.ts";

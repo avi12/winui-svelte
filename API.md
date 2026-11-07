@@ -2847,6 +2847,104 @@ window's content
 A Tauri or Electron host that already has a tray should keep it: two icons
 would show, and this one lives and dies with the WinUI window's process
 
+### One tray menu for every renderer (`winui-svelte/tray/menu`)
+
+A pure model of a tray menu: no WinUI, no Win32, so it runs under
+`node --test` and in a tray-only bundle
+You declare items once; the user picks how much of the menu to see, from the
+simple menu of a dictation app to the long one of a screenshot tool, and then
+hides, shows and reorders single items; a renderer draws what `resolveMenu`
+returns
+An opt-in subpath: an app that does not import it does not bundle it
+
+```ts
+import { defineMenu, MenuItemKind, MenuLevel, resolveMenu } from "winui-svelte/tray/menu";
+
+// The simple style: three commands and a separator, no levels set
+const simple = defineMenu([
+  { kind: MenuItemKind.COMMAND, id: "toggle", label: "Start dictation" },
+  { kind: MenuItemKind.COMMAND, id: "settings", label: "Settings" },
+  { kind: MenuItemKind.SEPARATOR, id: "line" },
+  { kind: MenuItemKind.COMMAND, id: "quit", label: "Quit", isRequired: true }
+]);
+
+// The complex style: the same model with levels
+const complex = defineMenu([
+  { kind: MenuItemKind.HEADER, id: "capture-header", label: "Capture" },
+  {
+    kind: MenuItemKind.SUBMENU,
+    id: "capture",
+    label: "Capture",
+    items: [
+      { kind: MenuItemKind.COMMAND, id: "region", label: "Region", shortcut: "Ctrl+Shift+4" },
+      { kind: MenuItemKind.COMMAND, id: "scroll", label: "Scrolling", level: MenuLevel.FULL }
+    ]
+  },
+  {
+    kind: MenuItemKind.SUBMENU,
+    id: "recent",
+    label: "Recent uploads",
+    level: MenuLevel.STANDARD,
+    emptyLabel: "Nothing uploaded yet",
+    maxItems: 10,
+    items: () => recentUploads().map(({ name }) => ({ kind: MenuItemKind.COMMAND, id: `recent-${name}`, label: name }))
+  },
+  {
+    kind: MenuItemKind.CHECK,
+    id: "autostart",
+    label: "Start with Windows",
+    level: MenuLevel.STANDARD,
+    isChecked: () => isAutostart(),
+    staysOpen: true
+  },
+  { kind: MenuItemKind.COMMAND, id: "quit", label: "Quit", isRequired: true }
+]);
+
+// Call it each time the menu opens: functions are read now
+const lines = resolveMenu({
+  items: complex,
+  profile: { level: MenuLevel.STANDARD, hidden: ["region"], shown: [], order: {} }
+});
+```
+
+- `MenuItem` is a union on `kind`: `command`, `check`, `radio`, `submenu`,
+  `separator` and `header` (`MenuItemKind`); a field belongs to the kinds that
+  have it, so a command with `isChecked` or a radio with no `group` fails to
+  compile
+- Every item has a unique, stable `id`; the profile of the user is keyed by it
+  `defineMenu` keeps the ids as literal types, and `MenuProfile` typed with
+  `MenuIds` of the menu (and the `profile` of `resolveMenu`) rejects an id
+  that is not in the menu
+- `level` is the lowest detail level that shows the item (`MenuLevel`:
+  `simple`, `standard`, `full`; `simple` when left out); `isRequired` cannot
+  be hidden by the user
+- `label`, `isEnabled`, `isVisible`, `isChecked`, `isBold` and `badge` may be
+  a value or a function, read each time `resolveMenu` runs
+- `items` of a submenu may be a function that makes the children each time;
+  `sort` and `maxItems` order and cap such a list, and `emptyLabel` shows a
+  disabled line when it is empty instead of dropping the submenu
+- `staysOpen` keeps the menu open after the pick (the renderer then refreshes
+  labels and ticks only); `closeThenRun` (true unless set to false) runs
+  `onselect` after the menu has closed, so that a dialog can open
+- A submenu may have its own `onselect` and `autoExpand`
+- `icon` is a path, a glyph or `IconPixels`; `shortcut` is display text only,
+  the menu does not bind the key
+- `MenuProfile` is plain JSON: `level`, `hidden` (ids the level shows that
+  the user hid), `shown` (ids above the level that the user turned on) and
+  `order` (child ids in the user order, keyed by parent id, `""` for the root)
+- `resolveMenu({ items, profile })` returns `ResolvedMenuItem[]`: final text,
+  booleans and a `select()` per line, with separators collapsed, headers with
+  nothing under them dropped and empty submenus dropped; it throws
+  `MenuModelError` for a repeated id or a radio with no group
+- `describeMenu({ items })` lists every item with its id, kind, label, level,
+  parent id and `isRequired`, for an editor
+- `defaultProfile({ level })`, `parseProfile({ value })` and `profileSchema`
+  (a field that is wrong falls back to its default, nothing throws),
+  `loadProfile({ file })` and `saveProfile({ file, profile })` (the file is
+  replaced atomically)
+- Not in the model: the actions of the icon itself (left, double and middle
+  click) stay on the tray icon options
+
 ### Tray with no window (`winui-svelte/tray/standalone`)
 
 A tray that runs in a process of its own, plain Node, with no `Window`, no
