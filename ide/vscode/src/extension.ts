@@ -4,6 +4,7 @@ import { cssColorOf } from "./css-color.ts";
 import { registerCssPreviews } from "./css-preview-hints.ts";
 import { codePointOf } from "./glyph-table.ts";
 import { SVELTE_LANGUAGE } from "./ids.ts";
+import { registerPictureViews } from "./picture-previews.ts";
 import { GLYPH_FONT_STYLE } from "./preview.ts";
 import { registerQuickActions } from "./quick-actions.ts";
 import { registerResourceHints } from "./resource-hints.ts";
@@ -204,6 +205,7 @@ export function activate(context: ExtensionContext) {
   registerConvertCommands(context);
   registerResourceHints(context);
   registerCssPreviews(context);
+  registerPictureViews(context);
   refreshVisible();
   context.subscriptions.push(
     glyphType,

@@ -50,3 +50,11 @@ export async function isWinuiFile(file: string) {
   gates.set(key, isDependent);
   return isDependent;
 }
+
+/**
+ * The folder of the nearest package.json above a file, which a picture path may be relative to.
+ */
+export async function projectRootOf(file: string) {
+  const manifestPath = await nearestManifest(path.dirname(file));
+  return manifestPath === undefined ? path.dirname(file) : path.dirname(manifestPath);
+}

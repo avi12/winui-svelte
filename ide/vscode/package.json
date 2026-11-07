@@ -139,6 +139,16 @@
           "default": true,
           "description": "Show the shadow depth ladder in the hover of -winui-elevation and box-shadow, and the material of a backdrop"
         },
+        "winuiSvelte.previews.picture": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the picture beside the path of every prop, option or object key the library types as a picture (an icon, an image source), and a larger hover with its name, size and frames; a missing file gets a warning"
+        },
+        "winuiSvelte.previews.remotePictures": {
+          "type": "boolean",
+          "default": false,
+          "description": "Preview remote pictures (http and https URLs): fetched with a timeout, a size cap and an on-disk cache; off by default so that nothing is fetched without your say"
+        },
         "winuiSvelte.media.theme": {
           "type": "string",
           "enum": [
