@@ -5,6 +5,7 @@ import { PermissionName, PermissionStateName, registerPermission } from "./permi
 import type { ClipboardContent, ClipboardReadOptions } from "#src/data-transfer/clipboard.js";
 import { clipboard } from "#src/data-transfer/clipboard.js";
 import { DataTransfer, FormatType } from "#src/data-transfer/data-transfer.js";
+import type { DeferredProvider } from "#src/data-transfer/data-transfer.js";
 import { nativeFileOfBytes } from "#src/data-transfer/native-file.js";
 import { snapshotOf } from "#src/data-transfer/package-io.js";
 import { sourceOf } from "#src/data-transfer/winrt-package.js";
@@ -65,6 +66,9 @@ export function windowsClipboardBackend() {
 /** What `ClipboardItem` is made from: a `Blob`, text or a promise of either, per type. */
 export type ClipboardItemData = Record<string, Blob | string | Promise<Blob | string>>;
 
+// The types of an item whose value is a promise: `write` hands those to the clipboard unresolved.
+const promisedTypes = new WeakMap<object, ReadonlySet<string>>();
+
 /** The standard `ClipboardItem`: one value per media type. */
 export class ClipboardItem {
   readonly presentationStyle: "unspecified" | "inline" | "attachment";
@@ -86,6 +90,10 @@ export class ClipboardItem {
     }
 
     this.entries = items;
+    promisedTypes.set(
+      this,
+      new Set(Object.entries(items).filter(([, value]) => value instanceof Promise).map(([type]) => type))
+    );
     this.presentationStyle = options.presentationStyle ?? "unspecified";
   }
 
@@ -132,9 +140,40 @@ export class ClipboardItem {
   }
 }
 
+async function valueOf({ item, type }: {
+  item: ClipboardItem;
+  type: string;
+}) {
+  const blob = await item.getType(type);
+  const isImage = type.startsWith(IMAGE_PREFIX);
+  if (isImage) {
+    return nativeFileOfBytes({
+      name: IMAGE_NAME,
+      type,
+      content: new Uint8Array(await blob.arrayBuffer())
+    });
+  }
+
+  return blob.text();
+}
+
+function valueProvider(options: {
+  item: ClipboardItem;
+  type: string;
+}) {
+  return () => valueOf(options);
+}
+
+// The format id a type is put under: custom types lose their `web ` prefix.
+function formatOf(type: string) {
+  const isCustom = type.startsWith(WEB_CUSTOM_PREFIX);
+  return isCustom ? type.slice(WEB_CUSTOM_PREFIX.length) : type;
+}
+
 async function contentOf(item: ClipboardItem) {
   const content: ClipboardContent = {};
   const custom: Record<string, string> = {};
+  const deferred: Record<string, DeferredProvider> = {};
   for (const type of item.types) {
     const isSupported = ClipboardItem.supports(type);
     if (!isSupported) {
@@ -144,30 +183,38 @@ async function contentOf(item: ClipboardItem) {
       });
     }
 
-    const blob = await item.getType(type);
-    const isText = type === FormatType.text;
-    if (isText) {
-      content.text = await blob.text();
+    const provider = valueProvider({
+      item,
+      type
+    });
+    const isPromised = promisedTypes.get(item)?.has(type) === true;
+    if (isPromised) {
+      deferred[formatOf(type)] = provider;
+      continue;
+    }
+
+    const value = await provider();
+    const isPicture = typeof value !== "string";
+    if (isPicture) {
+      content.bitmap = value;
+    } else if (type === FormatType.text) {
+      content.text = value;
     } else if (type === FormatType.html) {
-      content.html = await blob.text();
+      content.html = value;
     } else if (type === FormatType.uri) {
-      content.uri = await blob.text();
-    } else if (type.startsWith(IMAGE_PREFIX)) {
-      content.bitmap = nativeFileOfBytes({
-        name: IMAGE_NAME,
-        type,
-        content: new Uint8Array(await blob.arrayBuffer())
-      });
+      content.uri = value;
     } else {
-      custom[type.slice(WEB_CUSTOM_PREFIX.length)] = await blob.text();
+      custom[formatOf(type)] = value;
     }
   }
 
   const hasCustom = Object.keys(custom).length > 0;
-  return hasCustom ? {
+  const hasDeferred = Object.keys(deferred).length > 0;
+  return {
     ...content,
-    custom
-  } : content;
+    ...hasCustom ? { custom } : {},
+    ...hasDeferred ? { deferred } : {}
+  } satisfies ClipboardContent;
 }
 
 async function itemOf(data: ClipboardData) {

@@ -87,7 +87,7 @@ test("write takes a ClipboardItem of text and html, read gives it back", () => w
   await navigator.clipboard.write([
     new ClipboardItem({
       "text/plain": new Blob(["plain"], { type: "text/plain" }),
-      "text/html": Promise.resolve("<b>bold</b>")
+      "text/html": "<b>bold</b>"
     })
   ]);
   assert.deepEqual(fake.written[0], {
@@ -97,6 +97,33 @@ test("write takes a ClipboardItem of text and html, read gives it back", () => w
   const [item] = await navigator.clipboard.read();
   assert.deepEqual(item?.types, ["text/plain", "text/html"]);
   assert.equal(await (await item?.getType("text/plain"))?.text(), "plain");
+}));
+
+test("a promised type reaches the backend unresolved, and runs only when asked", () => withClipboard(async fake => {
+  let runs = 0;
+  const promised = new Promise<string>(resolve => {
+    setTimeout(() => {
+      runs += 1;
+      resolve("<b>later</b>");
+    }, 0);
+  });
+  await navigator.clipboard.write([
+    new ClipboardItem({
+      "text/plain": "now",
+      "text/html": promised,
+      "web text/x-note": Promise.resolve("n"),
+      "image/png": Promise.resolve(new Blob([new Uint8Array([7])], { type: "image/png" }))
+    })
+  ]);
+  const [content] = fake.written;
+  assert.equal(content?.text, "now");
+  assert.equal(content?.html, undefined);
+  assert.deepEqual(Object.keys(content?.deferred ?? {}), ["text/html", "text/x-note", "image/png"]);
+  assert.equal(await content?.deferred?.["text/html"]?.(), "<b>later</b>");
+  assert.equal(await content?.deferred?.["text/x-note"]?.(), "n");
+  const picture = await content?.deferred?.["image/png"]?.();
+  assert.deepEqual(typeof picture === "string" ? undefined : await picture?.bytes(), new Uint8Array([7]));
+  assert.equal(runs, 1);
 }));
 
 test("an image item becomes a bitmap and reads back as a blob", () => withClipboard(async fake => {

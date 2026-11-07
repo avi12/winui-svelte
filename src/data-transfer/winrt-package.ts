@@ -1,16 +1,19 @@
 import { DataKind } from "./accept.ts";
 import type { DataTransfer } from "./data-transfer.ts";
+import { FormatType } from "./data-transfer.ts";
+import type { DeferredProvider } from "./data-transfer.ts";
 import { htmlFormatOf } from "./html-format.ts";
 import { imageTypeOf } from "./mime.ts";
 import { FileKind, nativeFileAt, nativeFileOfBytes } from "./native-file.ts";
 import type { NativeFile } from "./native-file.ts";
-import { fillPackage } from "./package-io.ts";
+import { fillPackage, isImageType, uriOfList } from "./package-io.ts";
 import type { PackageSource, PackageTarget } from "./package-io.ts";
 import { streamOf } from "#src/components/byte-stream.js";
 import { unboxed } from "#src/renderer/host/values.js";
 import { PropertyValue, Uri } from "#src/winui.js";
 import { DataPackage } from "#winui/windows/application-model/data-transfer/DataPackage";
 import type { DataPackageView } from "#winui/windows/application-model/data-transfer/DataPackageView";
+import type { DataProviderRequest } from "#winui/windows/application-model/data-transfer/DataProviderRequest";
 import { StandardDataFormats } from "#winui/windows/application-model/data-transfer/StandardDataFormats";
 import { StorageFile } from "#winui/windows/storage/StorageFile";
 import { StorageFolder } from "#winui/windows/storage/StorageFolder";
@@ -100,6 +103,58 @@ async function referenceOf(file: NativeFile) {
   return RandomAccessStreamReference.createFromStream(await streamOf(await file.bytes()));
 }
 
+function formatOfType(type: string) {
+  const formats = new Map<string, string>([
+    [FormatType.text, StandardDataFormats.text],
+    [FormatType.html, StandardDataFormats.html],
+    [FormatType.uri, StandardDataFormats.uri]
+  ]);
+  return formats.get(type) ?? (isImageType(type) ? StandardDataFormats.bitmap : type);
+}
+
+// What `DataProviderRequest.setData` takes for the format a type maps to.
+async function providedValue({ type, value }: {
+  type: string;
+  value: string | NativeFile;
+}) {
+  const isFile = typeof value !== "string";
+  if (isFile) {
+    return referenceOf(value);
+  }
+
+  switch (type) {
+    case FormatType.text:
+      return value;
+    case FormatType.html:
+      return htmlFormatOf(value);
+    case FormatType.uri:
+      return new Uri(uriOfList(value));
+    default:
+      return PropertyValue.createString(value);
+  }
+}
+
+// A provider that fails leaves the request without data: the paste or drop gets nothing for that format.
+async function provide({ request, type, provider }: {
+  request: DataProviderRequest;
+  type: string;
+  provider: DeferredProvider;
+}) {
+  const deferral = request.getDeferral();
+  try {
+    request.setData(
+      await providedValue({
+        type,
+        value: await provider()
+      })
+    );
+  } catch {
+    // Left empty, as above.
+  } finally {
+    deferral.complete();
+  }
+}
+
 /**
  * A package as a `PackageTarget`.
  *
@@ -127,6 +182,15 @@ export function targetOf(data: DataPackage) {
     },
     async setBitmap(file) {
       data.setBitmap(await referenceOf(file));
+    },
+    setDeferred({ type, provider }) {
+      data.setDataProvider(formatOfType(type), request => {
+        provide({
+          request,
+          type,
+          provider
+        }).catch(() => undefined);
+      });
     }
   } satisfies PackageTarget;
 }

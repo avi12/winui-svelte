@@ -3725,8 +3725,17 @@ picker code in `src/window/pickers.ts` is the one used)
 
 `clipboard.readText()`, `readHtml()`, `read({ formats })` (a `DataTransfer`),
 `types()`, `writeText(text)`, `write({ text, html, uri, files, bitmap, custom,
-shouldPersist })`, `clear()` and `onChange(callback)` (returns what stops it)
+shouldPersist, deferred })`, `clear()` and `onChange(callback)` (returns what
+stops it)
 `write` replaces the clipboard's whole content
+`deferred` maps a type to a provider (`() => Promise<string | NativeFile>`) that
+Windows runs when something pastes, through `DataPackage.SetDataProvider`; a
+source does the same for a drag with `event.dataTransfer.setDeferredData({
+type, provider })` in `dragstart`, and the data is made at the drop
+A type starting with `image/` is a picture, so its provider gives a `NativeFile`
+A provider that rejects leaves its format empty
+Windows runs a provider on the UI thread, and `shouldPersist` runs them at
+once, before the app exits
 
 ### Launcher and share
 
@@ -4294,8 +4303,11 @@ Each is `install<Name>()` from its own subpath and takes an optional `backend`
   the always granted `clipboard-read` and `clipboard-write` permissions
   More than one item, or a type the clipboard cannot take, rejects with
   `NotAllowedError`
+  A type whose value is a promise (`new ClipboardItem({ "text/html": promise })`)
+  is delayed-rendered: `write` resolves at once and the promise is awaited
+  when something pastes
   Extras: `readContent({ formats })` (copied files in `files`, custom formats
-  as text), `writeContent({ files, custom, bitmap, shouldPersist })`,
+  as text), `writeContent({ files, custom, bitmap, deferred, shouldPersist })`,
   `formats()` and `history()` (Win+V, empty when history is off)
   `windowsClipboardBackend()` is the real backend, for a test to wrap
 - `winui-svelte/web-apis/share`: `installShare()` defines `navigator.share`
