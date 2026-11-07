@@ -10,3 +10,5 @@ export type { TrayWindow } from "./window-tray.ts";
 export { hideToTray, restoreFromTray, toggleInTray } from "./window-tray.ts";
 export { default as TrayIcon } from "./TrayIcon.svelte";
 export type { TrayIconComponentProps } from "./tray-icon-props.ts";
+export { default as TrayMenuFlyout } from "./TrayMenuFlyout.svelte";
+export type { TrayMenuFlyoutProps } from "./tray-menu-flyout-props.ts";
