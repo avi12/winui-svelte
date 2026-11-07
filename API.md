@@ -3015,6 +3015,71 @@ bundles no Svelte and no component
 - Not drawn by WinUI: a submenu row's own `onselect` (a `MenuFlyoutSubItem` has
   no click) and `autoExpand` (it has no member to open it from code)
 
+### Letting the user customize the tray menu (`winui-svelte/tray/menu/svelte`)
+
+`<TrayMenuEditor>` is the settings control for a tray menu: the user picks how
+much of it shows, from three lines to a ShareX-like menu "and everything in
+between"
+It edits a `MenuProfile` and says so; it never reads or writes a file
+
+The three levels are the `level` of each item (`simple` when left out):
+
+| Level | The user gets | Shown items |
+|---|---|---|
+| Simple | The few lines every user needs | Items of level `simple` |
+| Standard | The usual set | `simple` and `standard` |
+| Full | Everything the app can do | All |
+
+```svelte
+<script lang="ts">
+  import { TrayIcon } from "winui-svelte/tray";
+  import { loadProfile, saveProfile } from "winui-svelte/tray/menu";
+  import { TrayMenuEditor } from "winui-svelte/tray/menu/svelte";
+  import { items } from "./menu.ts";
+
+  const FILE = "tray-menu.json";
+  let profile = $state(loadProfile({ file: FILE }));
+</script>
+
+<TrayMenuEditor {items} isPreviewShown bind:profile
+  onchange={next => saveProfile({ file: FILE, profile: next })} />
+
+<TrayIcon icon="app.ico" menu={items} {profile} />
+```
+
+| Prop | Meaning |
+|---|---|
+| `items` | The menu `defineMenu` declares; the ids stay literal |
+| `profile` | The user's choice, bindable; the default profile when left out |
+| `onchange(profile)` | Runs with the new profile after every edit; save it here |
+| `onsave(profile)` | Adds a Save button that runs this, for an app that saves on request |
+| `labels` | The strings of the editor, each optional and English by default (`DEFAULT_EDITOR_LABELS`); `{name}` stands for an item's label |
+| `isPreviewShown` | Lists the menu as it resolves under the profile, as plain rows |
+
+- The detail level is three radio buttons: Simple, Standard, Full
+  Changing it keeps the user's tweaks: an item the user hid stays hidden at
+  every level, and one the user turned on above the level stays on
+  The word "Custom" appears beside the level while the profile has any tweak
+  (a hidden or shown item, or a menu in another order); the level alone is not
+  a tweak
+- Below it is a tree of every item (`describeMenu`), submenus with their
+  children indented
+  Each row has a check for "shown" (what the level, `hidden` and `shown` make
+  of it), the lowest level that includes the item as text, and Up and Down
+  buttons that move it within its own menu (the whole tree is reachable with
+  Tab, Space and Enter, and no operation needs a drag)
+- An item with `isRequired` is locked on and says "Always shown"
+- "Reset to default" returns to `defaultProfile()` and is disabled while the
+  profile already is that
+- Every control has an `automationName`, the title and sections are headings,
+  and no state is told by color alone
+- The functions behind it are pure and tested without a window:
+  `src/tray/menu-svelte/edit-profile.ts` (`setLevel`, `setItemShown`,
+  `moveItem`, `editorRows`, `hasTweaks`)
+- `examples/tray-menu-editor` puts the editor beside the tray icon it edits, on
+  a ShareX-like menu with Capture, Upload and Tools submenus, a dynamic recent
+  list, a check item and a required Exit; its simple level is a three-line menu
+
 ### Tray with no window (`winui-svelte/tray/standalone`)
 
 A tray that runs in a process of its own, plain Node, with no `Window`, no
