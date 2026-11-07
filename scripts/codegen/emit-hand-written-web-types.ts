@@ -15,6 +15,7 @@ import typescript from "typescript";
 const PACKAGE_ROOT = path.resolve(import.meta.dirname, "../..");
 const API_DOCUMENT = "https://github.com/avi12/winui-svelte/blob/main/API.md";
 const TRAY_MENU_ANCHOR = "one-tray-menu-for-every-renderer-winui-sveltetraymenu";
+const TRAY_EDITOR_ANCHOR = "letting-the-user-customize-the-tray-menu";
 const MENU_PROPS_FILE = "src/tray/menu-svelte/menu-props.ts";
 const PRIMITIVES = new Set(["boolean", "number", "string"]);
 const PRINT_FLAGS = typescript.TypeFormatFlags.NoTruncation
@@ -77,6 +78,13 @@ const COMPONENTS: readonly HandWrittenComponent[] = [
     anchor: TRAY_MENU_ANCHOR,
     file: MENU_PROPS_FILE,
     typeName: "TrayMenuHeaderProps"
+  },
+  {
+    name: "TrayMenuEditor",
+    description: "A settings control where the user picks how much of the tray menu shows: its level, items and order",
+    anchor: TRAY_EDITOR_ANCHOR,
+    file: "src/tray/menu-svelte/editor-props.ts",
+    typeName: "TrayMenuEditorProps"
   }
 ];
 
