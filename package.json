@@ -142,6 +142,10 @@
       "types": "./dist/data-transfer/index.d.ts",
       "default": "./dist/data-transfer/index.js"
     },
+    "./downloads": {
+      "types": "./dist/downloads/index.d.ts",
+      "default": "./dist/downloads/index.js"
+    },
     "./input": {
       "types": "./dist/input/index.d.ts",
       "svelte": "./dist/input/index.js",
