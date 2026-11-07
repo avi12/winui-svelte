@@ -38,7 +38,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`; imports nothing of WinRT, safe on the host's main thread |
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
-| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()`, `relaunch()`, `restartAfterCrash()` (opt-in; see App lifecycle) |
+| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()`, `startTray()`, `relaunch()`, `restartAfterCrash()` (opt-in; see App lifecycle) |
 | `winui-svelte/app/activation` | `src/app/activation/index.ts` | `installProtocolHandlers()`, `registerFileTypes()`, `launchAtLogin()`, `startActivation()`, `ActivationKind` (opt-in; see Activation) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
@@ -47,7 +47,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
 | `winui-svelte/win2d/context-2d` | `src/win2d/context-2d/index.ts` | `Canvas2D`, `createCanvas2D`, `CanvasElement`, `Context2D`, `Path2D` and the rest of the HTML Canvas 2D API over Win2D (opt-in; see Canvas 2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
-| `winui-svelte/tray/standalone` | `src/tray/standalone/index.ts` | `createStandaloneTray()`, its opt-in parts `balloons`, `bounds` and `themedIcon`, `MenuItemKind`, `MenuLevel`, and the `winui-svelte/app` calls that start or signal the app: a tray with no window, no WinUI and no components (opt-in; see Tray with no window) |
+| `winui-svelte/tray/standalone` | `src/tray/standalone/index.ts` | `createStandaloneTray()`, `defineTray()`, its opt-in parts `balloons`, `bounds` and `themedIcon`, `MenuItemKind`, `MenuLevel`, and the `winui-svelte/app` calls that start or signal the app: a tray with no window, no WinUI and no components (opt-in; see Tray with no window) |
 | `winui-svelte/notice` | `src/notice/index.ts` | `showNotice()`, `NoticeIcon`, `NoticeButtons`, `NoticeButton`: a message box with no window or app (opt-in; see Notice with no app) |
 | `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
 | `winui-svelte/store` | `src/store/index.ts` | `getAppLicense`, `watchLicense`, `checkForUpdates`, `watchPackages`, `getStartupTask`, `getPackageInfo`: the Store and package APIs, answering `hasPackage: false` outside a package (opt-in) |
@@ -3185,6 +3185,74 @@ tray.notify({ title: "Ready" });
 - A test bundles it (`scripts/pack/tray-only.test.ts`) and fails if any
   component, window or renderer module, or a component's name, is in the
   output, or if it grows past its budget
+
+### Tray as an entrypoint (`entrypoints/tray.ts`)
+
+The app does not have to know it has a tray; the tray is its own file, found
+by its name and built into a small bundle for a process of its own
+
+```text
+my-app/
+  entrypoints/
+    main.ts      -> dist/main.js
+    window.ts    -> dist/window.js
+    tray.ts      -> dist/tray.js, dist/tray.json, dist/tray.ico
+```
+
+`main.ts` and `window.ts` never import `tray.ts`; `buildApp` (and the dev
+server of `winuiSvelte()`) discover the folder, so `entries` is optional, and a
+name given in `entries` wins over the file found
+
+```ts
+import { activateOrLaunch, defineTray, MenuItemKind, MenuLevel, resolveMenu } from "winui-svelte/tray/standalone";
+
+export default defineTray({
+  icon: "tray.ico",
+  tooltip: "My app",
+  guid: "7d1c5a52-3f1b-4a63-9f5e-2f4d6b0c8a11",
+  onactivate: openApp,
+  resolve: resolveMenu,
+  menu: [
+    { kind: MenuItemKind.COMMAND, id: "open", label: "Open", isRequired: true, onselect: openApp },
+    { kind: MenuItemKind.COMMAND, id: "capture", label: "Capture", level: MenuLevel.STANDARD }
+  ]
+});
+```
+
+- `defineTray` returns its argument; it takes the options of
+  `createStandaloneTray` (`menu`, `resolve`, `profile`, `extras`, the click
+  handlers) with the ids of `menu` as a literal union, so a `profile` that names
+  an id the menu lacks is a type error, and `profile` needs `resolve`
+- `guid` is required: it keeps the icon's place in the tray and names the one
+  tray process, so a second `tray.js` exits at once
+- `onactivate` runs on a left click when `onclick` is not given
+- The build reads `icon`, `tooltip` and `guid` from the syntax tree, never by
+  running the file, so a top-level import of WinRT in `tray.ts` does not
+  execute at build; `icon` and `guid` must be string literals, and the icon a
+  file inside the folder of `tray.ts` (written there as `icon: "tray.ico"`,
+  copied to the same relative path in the output)
+- `tray.js` is the wrapper the build writes (a virtual module, like WXT's
+  background): it imports the default export, calls `claimTrayInstance({ guid })`
+  (the right to be the one tray for the `guid`; false in a second copy) and then
+  `createStandaloneTray`; `tray.json` holds what was read
+- `startTray()` from `winui-svelte/app` starts `tray.js` detached once; it is
+  optional, for an installer, a launcher or the app's own start; it reads
+  `tray.json` for the `guid`, so the key is derived in one place
+  (`trayInstanceKey(guid)`); `activateOrLaunch` is how the tray reaches the app
+- Under the dev server the tray is built into `.winui/tray` and started; a
+  change to it rebuilds and restarts the process (no HMR, as WXT's background)
+  after stopping the Node process whose pid `.winui/tray.pid` holds
+- The icon of a stopped process stays in the notification area until the
+  pointer passes over it; that is how Windows handles an icon whose process
+  was ended
+- The bundle holds no component and no window runtime; most of its size is
+  zod, which a bundle for Node carries (`scripts/pack/tray-entrypoint.test.ts`
+  keeps its budget)
+- Not built yet: `entrypoints/tray.svelte`, the menu written as markup and
+  lowered to plain code at build; the discovery in `src/vite/entrypoints` is
+  where that file kind goes
+
+The working example is `examples/tray-entrypoint`
 
 ### Notice with no app (`winui-svelte/notice`)
 
