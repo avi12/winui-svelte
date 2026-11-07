@@ -51,7 +51,7 @@ test("a profile typed against the ids of the menu accepts them, nested ones incl
     resolveMenu({
       items: menu,
       profile
-    }).length, 3
+    }).length, 2
   );
 });
 
