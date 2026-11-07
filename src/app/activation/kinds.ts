@@ -1,3 +1,5 @@
+import type { Alarm } from "#src/app/schedule/alarm.js";
+
 /** What an activation of the app was: the one field to switch on. */
 export const ActivationKind = {
   launch: "launch",
@@ -5,7 +7,8 @@ export const ActivationKind = {
   protocol: "protocol",
   startup: "startup",
   redirect: "redirect",
-  jumpList: "jumpList"
+  jumpList: "jumpList",
+  alarm: "alarm"
 } as const;
 /** One of the values of `ActivationKind`. */
 export type ActivationKind = (typeof ActivationKind)[keyof typeof ActivationKind];
@@ -63,6 +66,14 @@ export interface JumpListActivation extends ActivationBase {
   readonly taskId: string;
 }
 
+/** An alarm of `winui-svelte/app/schedule` went off; its task started this copy or handed over to it. */
+export interface AlarmActivation extends ActivationBase {
+  readonly kind: typeof ActivationKind.alarm;
+
+  /** The alarm, as `onAlarm` hears it. */
+  readonly alarm: Alarm;
+}
+
 /** Every way the app is activated, as one event. */
 export type ActivationEvent =
   | LaunchActivation
@@ -70,4 +81,5 @@ export type ActivationEvent =
   | ProtocolActivation
   | StartupActivation
   | RedirectActivation
-  | JumpListActivation;
+  | JumpListActivation
+  | AlarmActivation;
