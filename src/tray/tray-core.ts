@@ -115,13 +115,6 @@ interface CoreOptions extends TrayIconOptions {
   readonly now: () => number;
 }
 
-const BALLOON_ICONS = {
-  [TrayBalloonIcon.NONE]: BalloonIcon.none,
-  [TrayBalloonIcon.INFO]: BalloonIcon.info,
-  [TrayBalloonIcon.WARNING]: BalloonIcon.warning,
-  [TrayBalloonIcon.ERROR]: BalloonIcon.error
-} as const;
-
 let nextId = FIRST_ID;
 
 // The icons alive in this process, so the process can remove them all.
@@ -374,7 +367,7 @@ export function createTrayIconWith(options: CoreOptions) {
         balloon: {
           title: balloon.title,
           body: balloon.body ?? "",
-          icon: BALLOON_ICONS[balloon.icon ?? TrayBalloonIcon.INFO],
+          icon: BalloonIcon[balloon.icon ?? TrayBalloonIcon.INFO],
           isSilent: balloon.isSilent ?? false
         }
       });
