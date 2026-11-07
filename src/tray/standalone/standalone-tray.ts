@@ -6,11 +6,22 @@ import type { MenuResolver } from "#src/tray/menu/resolve-lite.js";
 import type { MenuItem, MenuProfile } from "#src/tray/menu/types.js";
 import { createTrayNative } from "#src/tray/native.js";
 import type { TrayNative } from "#src/tray/native.js";
-import { createTrayIconWith } from "#src/tray/tray-core.js";
+import { createTrayCore } from "#src/tray/tray-core.js";
 import type { TrayIconOptions, TrayScheduler } from "#src/tray/tray-core.js";
+import type { BalloonsExtra, ImageOf, TrayExtra, TrayHandle } from "#src/tray/tray-extras.js";
 
 /** The menu of `createStandaloneTray`; `ItemId` is the union of the ids of `menu`. */
-interface StandaloneMenuOptions<ItemId extends string = string> extends Omit<TrayIconOptions, "oncontextmenu"> {
+interface StandaloneMenuOptions<ItemId extends string, Extras extends readonly TrayExtra[]>
+  extends Omit<TrayIconOptions, "icon" | "oncontextmenu"> {
+  /** A path to an `.ico`; a `{ forLightTaskbar, forDarkTaskbar }` pair only with the `themedIcon` extra in `extras`. */
+  readonly icon: ImageOf<Extras>;
+
+  /**
+   * The optional parts of the icon, each one import: `balloons` adds `notify`, `bounds` adds `bounds`,
+   * `themedIcon` lets `icon` follow the taskbar theme. None of their code is in the bundle unless passed.
+   */
+  readonly extras?: Extras;
+
   /**
    * The menu a right click opens, in the model of `winui-svelte/tray/menu`: commands, checks, radios,
    * submenus to any depth, separators and headers. A separator needs an `id` like every line. On this
@@ -44,8 +55,14 @@ interface StandaloneLiteOptions {
  * by the lite resolver, which ignores levels and profiles and so leaves them out of the bundle; pass
  * `resolve: resolveMenu` (and then `profile`) to use them.
  */
-export type StandaloneTrayOptions<ItemId extends string = string> = StandaloneMenuOptions<ItemId>
-  & (StandaloneLiteOptions | StandaloneProfileOptions<ItemId>);
+export type StandaloneTrayOptions<
+  ItemId extends string = string,
+  Extras extends readonly TrayExtra[] = readonly []
+> = StandaloneMenuOptions<ItemId, Extras> & (StandaloneLiteOptions | StandaloneProfileOptions<ItemId>);
+
+function isBalloons(extra: TrayExtra): extra is BalloonsExtra {
+  return extra.kind === "balloons";
+}
 
 /** What `createStandaloneTray` takes beyond the options: a test's stand-ins. */
 export interface StandaloneTraySeams {
@@ -76,10 +93,13 @@ function scheduleWithNode({ milliseconds, onTick }: Parameters<TrayScheduler>[0]
  * it from the thread that keeps running; the icon is removed on `remove`
  * and at process exit.
  */
-export function createStandaloneTray<const ItemId extends string>(
-  options: StandaloneTrayOptions<ItemId> & StandaloneTraySeams
-) {
-  const native = options.native ?? createTrayNative();
+export function createStandaloneTray<
+  const ItemId extends string,
+  const Extras extends readonly TrayExtra[] = readonly []
+>(options: StandaloneTrayOptions<ItemId, Extras> & StandaloneTraySeams) {
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- no extras is the empty tuple, Extras' default
+  const extras = (options.extras ?? []) as unknown as Extras;
+  const native = options.native ?? createTrayNative({ writeBalloon: extras.find(isBalloons)?.writeBalloon });
   const defer = options.defer ?? setImmediate;
   const items = options.menu ?? [];
   let menu = options.nativeMenu;
@@ -127,8 +147,9 @@ export function createStandaloneTray<const ItemId extends string>(
 
   const hasMenu = items.length > 0;
   removeTrayIconsAtExit();
-  return createTrayIconWith({
+  const handle: TrayHandle<Extras> = createTrayCore({
     ...options,
+    extras,
     native,
     schedule: options.schedule ?? scheduleWithNode,
     now: Date.now,
@@ -137,4 +158,5 @@ export function createStandaloneTray<const ItemId extends string>(
       y
     }) : undefined
   });
+  return handle;
 }

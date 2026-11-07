@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { createTrayNative, createWorkAreaReader } from "./native.ts";
+  import { createWorkAreaReader } from "./native.ts";
   import type { TrayIconComponentProps } from "./tray-icon-props.ts";
-  import { createTrayIcon } from "./tray-icon.ts";
+  import { createTrayIcon, createWindowedTrayNative } from "./tray-icon.ts";
   import { createTrayMenu } from "./tray-menu.ts";
   import type { MenuPlacement } from "./tray-menu.ts";
   import TrayMenuWindow from "./TrayMenuWindow.svelte";
@@ -23,7 +23,7 @@
     oncontextmenu,
     onmiddleclick
   }: TrayIconComponentProps = $props();
-  const native = createTrayNative();
+  const native = createWindowedTrayNative();
   let placement = $state.raw<MenuPlacement | null>(null);
   const trayMenu = createTrayMenu({
     native: createWorkAreaReader(),

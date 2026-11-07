@@ -1,3 +1,5 @@
+import { balloons } from "./balloons.ts";
+import { bounds } from "./bounds.ts";
 import type {
   ButtonSample,
   NotifyData,
@@ -8,8 +10,9 @@ import type {
   TrayNative
 } from "./native.ts";
 import { BalloonIcon, NotifyOperation as Operation } from "./native.ts";
-import { createTrayIconWith, removeAllTrayIcons } from "./tray-core.ts";
+import { createTrayCore, removeAllTrayIcons } from "./tray-core.ts";
 import type { TrayIconOptions } from "./tray-core.ts";
+import type { ThemedIconExtra } from "./tray-extras.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -102,10 +105,6 @@ class FakeNative implements TrayNative {
     return this.pointer;
   }
 
-  isTaskbarLight() {
-    return this.isLight;
-  }
-
   focusWindow(hwnd: bigint) {
     this.calls.push(`focusWindow ${hwnd}`);
   }
@@ -119,13 +118,18 @@ function noop() {}
 
 function start(options: Partial<TrayIconOptions> = {}) {
   const native = new FakeNative();
+  const themedIcon: ThemedIconExtra = {
+    kind: "themedIcon",
+    createReader: () => () => native.isLight
+  };
   let tick = noop;
   let isStopped = false;
   const intervals: number[] = [];
   let stops = 0;
-  const handle = createTrayIconWith({
+  const handle = createTrayCore({
     icon: "a.ico",
     ...options,
+    extras: [balloons, bounds, themedIcon],
     native,
     now: () => 0,
     schedule({ onTick, milliseconds }) {

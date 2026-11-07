@@ -44,6 +44,12 @@ export interface Balloon {
   readonly isSilent: boolean;
 }
 
+/** Writes the balloon fields of a NOTIFYICONDATAW; the `balloons` extra supplies it. */
+export type BalloonWriter = (options: {
+  memory: DynComRawMemory;
+  balloon: Balloon;
+}) => void;
+
 /** What one Shell_NotifyIcon call carries. */
 export interface NotifyData {
   readonly identity: TrayIdentity;
@@ -108,7 +114,6 @@ export interface TrayNative {
   /** Where the shell draws the icon; null when it has none (not added, hidden, or the shell restarted). */
   iconRect(identity: TrayIdentity): ScreenRect | null;
   readPointer(): PointerSample;
-  isTaskbarLight(): boolean;
 
   /**
    * Makes `hwnd` the foreground window. A process that was not just given the
@@ -123,20 +128,15 @@ const NOTIFY_ICON_DATA_SIZE = 976;
 const ICON_IDENTIFIER_SIZE = 40;
 const RECT_SIZE = 16;
 const TOOLTIP_CHARS = 128;
-const BALLOON_BODY_CHARS = 256;
-const BALLOON_TITLE_CHARS = 64;
 const OFFSET_SIZE = 0;
 const OFFSET_OWNER = 8;
 const OFFSET_ID = 16;
-const OFFSET_FLAGS = 20;
+export const OFFSET_FLAGS = 20;
 const OFFSET_IDENTIFIER_GUID = 20;
 const OFFSET_CALLBACK = 24;
 const OFFSET_ICON = 32;
 const OFFSET_TOOLTIP = 40;
-const OFFSET_BODY = 304;
 const OFFSET_VERSION = 816;
-const OFFSET_TITLE = 820;
-const OFFSET_BALLOON_FLAGS = 948;
 const OFFSET_GUID = 952;
 const GUID_FIRST_FIELD_END = 4;
 const GUID_SECOND_FIELD_END = 6;
@@ -152,10 +152,8 @@ const RECT_BOTTOM_OFFSET = 12;
 const FLAG_MESSAGE = 0x1;
 const FLAG_ICON = 0x2;
 const FLAG_TIP = 0x4;
-const FLAG_INFO = 0x10;
 const FLAG_GUID = 0x20;
 const FLAG_SHOW_TIP = 0x80;
-const BALLOON_SILENT = 0x10;
 const NOTIFY_VERSION_4 = 4;
 const CALLBACK_MESSAGE = 0x8001;
 const WS_POPUP = 0x80000000;
@@ -165,8 +163,6 @@ const VK_RBUTTON = 2;
 const VK_MBUTTON = 4;
 const KEY_DOWN_BIT = 0x8000;
 const KEY_PRESSED_BIT = 0x1;
-const HKEY_CURRENT_USER = 0x80000001n;
-const REG_DWORD_ONLY = 0x10;
 const CLASS_NAME_CHARS = 128;
 const POINT_SHIFT = 32n;
 const POINT_MASK = 0xFFFFFFFFn;
@@ -182,8 +178,6 @@ const TRAY_WINDOW_CLASSES: ReadonlySet<string> = new Set([
   "NotifyIconOverflowWindow",
   "TopLevelWindowForOverflowXamlIsland"
 ]);
-const PERSONALIZE_KEY = String.raw`Software\Microsoft\Windows\CurrentVersion\Themes\Personalize`;
-const LIGHT_THEME_VALUE = "SystemUsesLightTheme";
 
 /**
  * Starts reading the cursor position, read only: the reader gives screen
@@ -207,8 +201,8 @@ export function createCursorReader() {
   };
 }
 
-// A fixed-size UTF-16 field, cut to leave room for the terminator.
-function writeWide({ memory, offset, text, chars }: {
+/** Writes a fixed-size UTF-16 field, cut to leave room for the terminator. */
+export function writeWide({ memory, offset, text, chars }: {
   memory: DynComRawMemory;
   offset: number;
   text: string;
@@ -229,18 +223,18 @@ function guidBytes(guid: string) {
 }
 
 // NOTIFYICONDATAW (the version 4 layout) for one call.
-function writeNotifyData({ memory, operation, data }: {
+function writeNotifyData({ memory, operation, data, writeBalloon }: {
   memory: DynComRawMemory;
   operation: NotifyOperation;
   data: NotifyData;
+  writeBalloon: BalloonWriter | undefined;
 }) {
   const { identity, balloon } = data;
   const guidFlag = identity.guid === null ? 0 : FLAG_GUID;
-  const infoFlag = balloon === null ? 0 : FLAG_INFO;
   memory.writeU32(OFFSET_SIZE, NOTIFY_ICON_DATA_SIZE);
   memory.writeU64(OFFSET_OWNER, identity.owner);
   memory.writeU32(OFFSET_ID, identity.id);
-  memory.writeU32(OFFSET_FLAGS, FLAG_MESSAGE | FLAG_ICON | FLAG_TIP | FLAG_SHOW_TIP | infoFlag | guidFlag);
+  memory.writeU32(OFFSET_FLAGS, FLAG_MESSAGE | FLAG_ICON | FLAG_TIP | FLAG_SHOW_TIP | guidFlag);
   memory.writeU32(OFFSET_CALLBACK, CALLBACK_MESSAGE);
   memory.writeU64(OFFSET_ICON, data.icon);
   writeWide({
@@ -261,23 +255,12 @@ function writeNotifyData({ memory, operation, data }: {
   }
 
   const hasBalloon = balloon !== null;
-  if (!hasBalloon) {
-    return;
+  if (hasBalloon) {
+    writeBalloon?.({
+      memory,
+      balloon
+    });
   }
-
-  writeWide({
-    memory,
-    offset: OFFSET_BODY,
-    text: balloon.body,
-    chars: BALLOON_BODY_CHARS
-  });
-  writeWide({
-    memory,
-    offset: OFFSET_TITLE,
-    text: balloon.title,
-    chars: BALLOON_TITLE_CHARS
-  });
-  memory.writeU32(OFFSET_BALLOON_FLAGS, balloon.icon | (balloon.isSilent ? BALLOON_SILENT : 0));
 }
 
 function packPoint({ x, y }: {
@@ -334,7 +317,7 @@ export function createWorkAreaReader() {
  * The real Win32 calls for the tray. They are bound when this is called, never
  * when the module loads.
  */
-export function createTrayNative() {
+export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWriter | undefined } = {}) {
   const user32 = bindDll({
     dll: "user32.dll",
     functions: {
@@ -360,12 +343,6 @@ export function createTrayNative() {
     functions: {
       notify: ["Shell_NotifyIconW", ["u32", "pointer"], "i32"],
       iconRect: ["Shell_NotifyIconGetRect", ["pointer", "pointer"], "i32"]
-    }
-  });
-  const { registryValue } = bindDll({
-    dll: "advapi32.dll",
-    functions: {
-      registryValue: ["RegGetValueW", ["pointer", "pointer", "pointer", "u32", "pointer", "pointer", "pointer"], "i32"]
     }
   });
   const { currentThread } = bindDll({
@@ -443,33 +420,6 @@ export function createTrayNative() {
     user32.attachInput(ownThread, foregroundThread, 0);
   }
 
-  function readLightTheme() {
-    return withMemory({
-      size: 2 * DWORD_BYTES,
-      alignment: DWORD_BYTES,
-      use(buffer) {
-        buffer.writeU32(DWORD_BYTES, DWORD_BYTES);
-        const subKey = wideMemory(PERSONALIZE_KEY);
-        const valueName = wideMemory(LIGHT_THEME_VALUE);
-        try {
-          const result = registryValue(
-            HKEY_CURRENT_USER,
-            subKey,
-            valueName,
-            REG_DWORD_ONLY,
-            null,
-            buffer,
-            buffer.pointer(DWORD_BYTES).address
-          );
-          return result === 0 && buffer.readU32(0) !== 0;
-        } finally {
-          subKey.release();
-          valueName.release();
-        }
-      }
-    });
-  }
-
   const native: TrayNative = {
     createOwnerWindow() {
       const classText = wideMemory("STATIC");
@@ -493,7 +443,8 @@ export function createTrayNative() {
           writeNotifyData({
             memory,
             operation,
-            data
+            data,
+            writeBalloon
           });
           return shell32.notify(operation, memory) !== 0;
         }
@@ -514,7 +465,6 @@ export function createTrayNative() {
         isOnTray: isTrayWindowAt(point)
       };
     },
-    isTaskbarLight: readLightTheme,
     focusWindow: takeForeground
   };
   return native;

@@ -10,7 +10,17 @@ export type {
   StandaloneTraySeams
 } from "./standalone-tray.ts";
 export { createStandaloneTray } from "./standalone-tray.ts";
-export type { BalloonOptions, TrayIconChanges, TrayIconHandle, TrayIconImage, TrayIconOptions, TrayScheduler } from "#src/tray/tray-core.js";
+export { balloons } from "#src/tray/balloons.js";
+export { bounds } from "#src/tray/bounds.js";
+export { themedIcon } from "#src/tray/themed-icon.js";
+export type {
+  BalloonsExtra,
+  BoundsExtra,
+  ThemedIconExtra,
+  TrayExtra,
+  TrayHandle
+} from "#src/tray/tray-extras.js";
+export type { BalloonOptions, TrayIconImage, TrayScheduler } from "#src/tray/tray-core.js";
 export { TrayBalloonIcon } from "#src/tray/tray-core.js";
 export type { TrayPointerEvent } from "#src/tray/click-detector.js";
 export { TrayGesture } from "#src/tray/click-detector.js";

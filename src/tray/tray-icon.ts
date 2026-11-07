@@ -1,8 +1,11 @@
+import { balloons } from "./balloons.ts";
+import { bounds } from "./bounds.ts";
 import { removeTrayIconsAtExit } from "./exit-hook.ts";
 import { createTrayNative } from "./native.ts";
 import type { TrayNative } from "./native.ts";
-import { createTrayIconWith } from "./tray-core.ts";
-import type { TrayIconOptions, TrayScheduler } from "./tray-core.ts";
+import { themedIcon } from "./themed-icon.ts";
+import { createTrayCore } from "./tray-core.ts";
+import type { TrayIconHandle, TrayIconOptions, TrayScheduler } from "./tray-core.ts";
 import { startTimer } from "#src/window/timers.js";
 
 /** What `createTrayIcon` takes beyond the icon's own options: a test's stand-ins. */
@@ -14,6 +17,13 @@ export interface TrayIconSeams {
   readonly schedule?: TrayScheduler;
 }
 
+const WINDOWED_EXTRAS = [balloons, bounds, themedIcon] as const;
+
+/** The Win32 calls of a windowed tray icon: the real ones, with the balloon writer of the `balloons` extra. */
+export function createWindowedTrayNative() {
+  return createTrayNative({ writeBalloon: balloons.writeBalloon });
+}
+
 /**
  * Puts an icon in the notification area (the system tray). Call it on the UI
  * thread. The icon is removed when you call `remove`, and at process exit.
@@ -22,10 +32,12 @@ export interface TrayIconSeams {
  */
 export function createTrayIcon(options: TrayIconOptions & TrayIconSeams) {
   removeTrayIconsAtExit();
-  return createTrayIconWith({
+  const handle: TrayIconHandle = createTrayCore({
     ...options,
-    native: options.native ?? createTrayNative(),
+    extras: WINDOWED_EXTRAS,
+    native: options.native ?? createWindowedTrayNative(),
     schedule: options.schedule ?? startTimer,
     now: Date.now
   });
+  return handle;
 }

@@ -1,6 +1,8 @@
 import type { NativeChoice, NativeMenu } from "./native.ts";
 import { createStandaloneTray } from "./standalone-tray.ts";
 import type { StandaloneTrayOptions } from "./standalone-tray.ts";
+import { balloons } from "#src/tray/balloons.js";
+import { bounds } from "#src/tray/bounds.js";
 import { defaultProfile } from "#src/tray/menu/default-profile.js";
 import { resolveMenu } from "#src/tray/menu/resolve.js";
 import { MenuItemKind } from "#src/tray/menu/types.js";
@@ -12,6 +14,7 @@ import type {
   TrayIdentity,
   TrayNative
 } from "#src/tray/native.js";
+import { themedIcon } from "#src/tray/themed-icon.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -58,7 +61,6 @@ function fakeNative() {
     notify: () => true,
     iconRect: (_identity: TrayIdentity) => ICON_RECT,
     readPointer: () => pointer,
-    isTaskbarLight: () => false,
     focusWindow: hwnd => calls.push(`focusWindow ${hwnd}`)
   };
   return {
@@ -429,4 +431,49 @@ test("a profile with an id that is not in the menu, or a line of the wrong shape
     native,
     schedule
   }).remove();
+});
+
+test("notify and bounds exist on the handle only with their extras, and a themed icon only with its extra", () => {
+  const { native } = fakeNative();
+  function schedule() {
+    return noop;
+  }
+
+  const plain = createStandaloneTray({
+    icon: "a.ico",
+    native,
+    schedule
+  });
+  function usePlain() {
+    // @ts-expect-error notify needs the balloons extra
+    plain.notify({ title: "x" });
+    // @ts-expect-error bounds needs the bounds extra
+    plain.bounds();
+  }
+
+  assert.equal("notify" in plain, false);
+  assert.equal("bounds" in plain, false);
+  assert.equal(typeof usePlain, "function");
+  plain.remove();
+  createStandaloneTray({
+    // @ts-expect-error a light and dark pair needs the themedIcon extra
+    icon: {
+      forLightTaskbar: "dark.ico",
+      forDarkTaskbar: "light.ico"
+    },
+    native,
+    schedule
+  }).remove();
+  const full = createStandaloneTray({
+    icon: {
+      forLightTaskbar: "dark.ico",
+      forDarkTaskbar: "light.ico"
+    },
+    extras: [balloons, bounds, themedIcon],
+    native,
+    schedule
+  });
+  full.notify({ title: "x" });
+  assert.deepEqual(full.bounds(), ICON_RECT);
+  full.remove();
 });

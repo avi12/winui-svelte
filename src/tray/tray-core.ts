@@ -1,6 +1,6 @@
 import { createClickDetector } from "./click-detector.ts";
 import type { TrayPointerEvent } from "./click-detector.ts";
-import { BalloonIcon, NotifyOperation } from "./native.ts";
+import { NotifyOperation } from "./native.ts";
 import type {
   Balloon,
   PointerSample,
@@ -8,6 +8,14 @@ import type {
   TrayIdentity,
   TrayNative
 } from "./native.ts";
+import type {
+  ThemedIconExtra,
+  TrayChanges,
+  TrayContext,
+  TrayExtra,
+  TrayHandle
+} from "./tray-extras.ts";
+import type { ImageOf } from "./tray-extras.ts";
 import { z } from "zod";
 
 const GUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu;
@@ -109,7 +117,9 @@ export interface TrayIconHandle {
   bounds(): ScreenRect | null;
 }
 
-interface CoreOptions extends TrayIconOptions {
+interface CoreOptions<Extras extends readonly TrayExtra[]> extends Omit<TrayIconOptions, "icon"> {
+  readonly icon: ImageOf<Extras>;
+  readonly extras: Extras;
   readonly native: TrayNative;
   readonly schedule: TrayScheduler;
   readonly now: () => number;
@@ -139,22 +149,28 @@ function pathOf({ image, isLight }: {
   return isLight ? image.forLightTaskbar : image.forDarkTaskbar;
 }
 
+function isThemedIcon(extra: TrayExtra): extra is ThemedIconExtra {
+  return extra.kind === "themedIcon";
+}
+
 /**
- * The tray icon with its Win32 layer and its clock handed in. Use
- * `createTrayIcon` in an app; a test calls this with fakes.
+ * The tray icon with its Win32 layer and its clock handed in, and only the extras given: `balloons`
+ * adds `notify`, `bounds` adds `bounds`, `themedIcon` lets `icon` follow the taskbar theme. Use
+ * `createTrayIcon` in an app (it has all three); a test calls this with fakes.
  */
-export function createTrayIconWith(options: CoreOptions) {
+export function createTrayCore<const Extras extends readonly TrayExtra[]>(options: CoreOptions<Extras>) {
   const { native } = options;
+  const readIsLight = options.extras.find(isThemedIcon)?.createReader() ?? (() => false);
   const guid = options.guid === undefined ? null : guidSchema.parse(options.guid);
   const identity: TrayIdentity = {
     owner: native.createOwnerWindow(),
     id: nextId++,
     guid
   };
-  let image = options.icon;
+  let image: TrayIconImage = options.icon;
   let tooltip = options.tooltip ?? "";
   let isVisible = options.isVisible ?? true;
-  let isLight = native.isTaskbarLight();
+  let isLight = readIsLight();
   let iconSize = native.iconSize();
   let icon = NO_ICON;
   let isRegistered = false;
@@ -226,7 +242,7 @@ export function createTrayIconWith(options: CoreOptions) {
   }
 
   function maintain() {
-    const isNextLight = native.isTaskbarLight();
+    const isNextLight = readIsLight();
     const nextSize = native.iconSize();
     const isThemed = typeof image !== "string" && isNextLight !== isLight;
     const isResized = nextSize !== iconSize;
@@ -321,8 +337,13 @@ export function createTrayIconWith(options: CoreOptions) {
 
   let stopTimer = isVisible ? startTimer() : noStop;
   liveIcons.add(remove);
-  const handle: TrayIconHandle = {
-    update(changes) {
+  const context: TrayContext = {
+    send,
+    isRegistered: () => isRegistered,
+    iconRect: () => native.iconRect(identity)
+  };
+  const base = {
+    update(changes: TrayChanges<Extras>) {
       if (isRemoved) {
         return;
       }
@@ -357,28 +378,12 @@ export function createTrayIconWith(options: CoreOptions) {
         send({ operation: NotifyOperation.modify });
       }
     },
-    notify(balloon) {
-      if (!isRegistered) {
-        return;
-      }
-
-      send({
-        operation: NotifyOperation.modify,
-        balloon: {
-          title: balloon.title,
-          body: balloon.body ?? "",
-          icon: BalloonIcon[balloon.icon ?? TrayBalloonIcon.INFO],
-          isSilent: balloon.isSilent ?? false
-        }
-      });
-    },
     remove,
     get isRegistered() {
       return isRegistered;
-    },
-    bounds() {
-      return isRegistered ? native.iconRect(identity) : null;
     }
   };
-  return handle;
+  const added = options.extras.flatMap(extra => "extend" in extra ? [extra.extend(context)] : []);
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- Object.assign loses the members the extras add
+  return Object.assign(base, ...added) as TrayHandle<Extras>;
 }
