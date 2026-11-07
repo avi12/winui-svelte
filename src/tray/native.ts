@@ -138,10 +138,14 @@ const OFFSET_VERSION = 816;
 const OFFSET_TITLE = 820;
 const OFFSET_BALLOON_FLAGS = 948;
 const OFFSET_GUID = 952;
-const GUID_BYTES = 16;
 const GUID_FIRST_FIELD_END = 4;
 const GUID_SECOND_FIELD_END = 6;
 const GUID_THIRD_FIELD_END = 8;
+const GUID_LITTLE_ENDIAN_FIELDS = [
+  [0, GUID_FIRST_FIELD_END],
+  [GUID_FIRST_FIELD_END, GUID_SECOND_FIELD_END],
+  [GUID_SECOND_FIELD_END, GUID_THIRD_FIELD_END]
+] as const;
 const POINT_BYTES = 8;
 const RECT_RIGHT_OFFSET = 8;
 const RECT_BOTTOM_OFFSET = 12;
@@ -216,13 +220,12 @@ function writeWide({ memory, offset, text, chars }: {
 
 // A GUID string as the 16 bytes Windows keeps: the first three fields little endian.
 function guidBytes(guid: string) {
-  const hex = Buffer.from(guid.replaceAll("-", ""), "hex");
-  return Buffer.concat([
-    Buffer.from(hex.subarray(0, GUID_FIRST_FIELD_END)).reverse(),
-    Buffer.from(hex.subarray(GUID_FIRST_FIELD_END, GUID_SECOND_FIELD_END)).reverse(),
-    Buffer.from(hex.subarray(GUID_SECOND_FIELD_END, GUID_THIRD_FIELD_END)).reverse(),
-    hex.subarray(GUID_THIRD_FIELD_END, GUID_BYTES)
-  ]);
+  const bytes = Buffer.from(guid.replaceAll("-", ""), "hex");
+  for (const [start, end] of GUID_LITTLE_ENDIAN_FIELDS) {
+    bytes.subarray(start, end).reverse();
+  }
+
+  return bytes;
 }
 
 // NOTIFYICONDATAW (the version 4 layout) for one call.
