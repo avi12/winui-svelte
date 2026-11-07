@@ -151,6 +151,7 @@ class RepeaterHost<Item> {
     const key = this.rows.order[index];
     const isKnown = key !== undefined;
     if (isKnown) {
+      this.rows.realized(index);
       this.rows.show({
         container: projectAs(element, FrameworkElement),
         slot: slotOf({
