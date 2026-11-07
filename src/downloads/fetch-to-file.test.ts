@@ -6,10 +6,10 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 
-// downloadFile against a local HTTP server that honours Range, with a stand-in
-// for the taskbar button.
+// fetchToFile against a local HTTP server that honours Range.
 
-const { downloadFile, DownloadError } = await import("./download-file.ts");
+const { fetchToFile, DownloadError } = await import("./fetch-to-file.ts");
+const { FileSystemFileHandle } = await import("#src/web-apis/file-system.js");
 const { zoneIdentifierText } = await import("./zone-identifier.ts");
 
 const BODY = Buffer.from("0123456789".repeat(100));
@@ -83,46 +83,26 @@ function serveRanges({ request, response }: Exchange) {
   }).end(slice);
 }
 
-function fakeTaskbar() {
-  const calls: Array<{
-    state: string;
-    value?: number | undefined;
-  }> = [];
-  return {
-    calls,
-    setProgress(options: {
-      state: string;
-      value?: number | undefined;
-    }) {
-      calls.push(options);
-    }
-  };
-}
-
-test("downloads the file, marks it from the Internet and shows progress", async () => {
+test("downloads the file and marks it from the Internet", async () => {
   await withServer({
     handler: serveRanges,
     async run({ url, folder }) {
       const target = path.join(folder, "out.bin");
-      const taskbar = fakeTaskbar();
       const loadedValues: number[] = [];
-      const result = await downloadFile({
+      const bytes = await fetchToFile({
         url,
-        path: target,
-        taskbar,
+        handle: new FileSystemFileHandle(target),
         onprogress({ loaded, total }) {
           assert.equal(total, BODY.length);
           loadedValues.push(loaded);
         }
       });
 
-      assert.equal(result.bytes, BODY.length);
+      assert.equal(bytes, BODY.length);
       assert.deepEqual(await readFile(target), BODY);
       assert.equal(loadedValues.at(-1), BODY.length);
       assert.equal(await readFile(`${target}:Zone.Identifier`, "utf8"), zoneIdentifierText(url));
       assert.match(zoneIdentifierText(url), /^\[ZoneTransfer\]\r\nZoneId=3\r\nHostUrl=http:\/\/127\.0\.0\.1:\d+\/file\.bin\r\n$/);
-      assert.equal(taskbar.calls[0]?.state, "normal");
-      assert.equal(taskbar.calls.at(-1)?.state, "none");
     }
   });
 });
@@ -132,11 +112,11 @@ test("resume asks for the rest with a Range request and appends it", async () =>
     handler: serveRanges,
     async run({ url, folder, seen }) {
       const target = path.join(folder, "out.bin");
-      await writeFile(`${target}.part`, BODY.subarray(0, PARTIAL_BYTES));
+      await writeFile(target, BODY.subarray(0, PARTIAL_BYTES));
       const first: number[] = [];
-      await downloadFile({
+      await fetchToFile({
         url,
-        path: target,
+        handle: new FileSystemFileHandle(target),
         resume: true,
         onprogress: ({ loaded }) => first.push(loaded)
       });
@@ -148,6 +128,45 @@ test("resume asks for the rest with a Range request and appends it", async () =>
   });
 });
 
+test("a cancel keeps what arrived so a later resume finishes the file", async () => {
+  await withServer({
+    handler({ request, response }) {
+      const isFirst = request.headers.range === undefined;
+      if (!isFirst) {
+        serveRanges({
+          request,
+          response
+        });
+        return;
+      }
+
+      response.writeHead(200, { "content-length": BODY.length });
+      response.write(BODY.subarray(0, PARTIAL_BYTES));
+    },
+    async run({ url, folder }) {
+      const target = path.join(folder, "out.bin");
+      const controller = new AbortController();
+      await assert.rejects(
+        fetchToFile({
+          url,
+          handle: new FileSystemFileHandle(target),
+          signal: controller.signal,
+          onprogress: () => controller.abort()
+        })
+      );
+      assert.ok((await readFile(target)).length > 0);
+      assert.ok((await readFile(target)).length < BODY.length);
+
+      await fetchToFile({
+        url,
+        handle: new FileSystemFileHandle(target),
+        resume: true
+      });
+      assert.deepEqual(await readFile(target), BODY);
+    }
+  });
+});
+
 test("a server that ignores Range restarts from the beginning", async () => {
   await withServer({
     handler({ response }) {
@@ -155,10 +174,10 @@ test("a server that ignores Range restarts from the beginning", async () => {
     },
     async run({ url, folder }) {
       const target = path.join(folder, "out.bin");
-      await writeFile(`${target}.part`, Buffer.from("stale bytes"));
-      await downloadFile({
+      await writeFile(target, Buffer.from("stale bytes"));
+      await fetchToFile({
         url,
-        path: target,
+        handle: new FileSystemFileHandle(target),
         resume: true
       });
 
@@ -172,10 +191,10 @@ test("a refused Range (416) is retried from the start", async () => {
     handler: serveRanges,
     async run({ url, folder, seen }) {
       const target = path.join(folder, "out.bin");
-      await writeFile(`${target}.part`, Buffer.concat([BODY, BODY]));
-      await downloadFile({
+      await writeFile(target, Buffer.concat([BODY, BODY]));
+      await fetchToFile({
         url,
-        path: target,
+        handle: new FileSystemFileHandle(target),
         resume: true
       });
 
@@ -186,22 +205,19 @@ test("a refused Range (416) is retried from the start", async () => {
   });
 });
 
-test("a failing status throws DownloadError and shows the error state", async () => {
+test("a failing status throws DownloadError", async () => {
   await withServer({
     handler({ response }) {
       response.writeHead(404).end();
     },
     async run({ url, folder }) {
-      const taskbar = fakeTaskbar();
       await assert.rejects(
-        downloadFile({
+        fetchToFile({
           url,
-          path: path.join(folder, "out.bin"),
-          taskbar
+          handle: new FileSystemFileHandle(path.join(folder, "out.bin"))
         }),
         error => error instanceof DownloadError && error.status === 404
       );
-      assert.equal(taskbar.calls.at(-1)?.state, "error");
     }
   });
 });
