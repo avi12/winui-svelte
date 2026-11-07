@@ -40,6 +40,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()`, `relaunch()`, `restartAfterCrash()` (opt-in; see App lifecycle) |
 | `winui-svelte/app/activation` | `src/app/activation/index.ts` | `installProtocolHandlers()`, `registerFileTypes()`, `launchAtLogin()`, `startActivation()`, `ActivationKind` (opt-in; see Activation) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
+| `winui-svelte/downloads` | `src/downloads/index.ts` | `downloadFile()`, `markOfTheWeb()`, `zoneIdentifierText()`, `DownloadError` (opt-in; see Downloads) |
 | `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
@@ -3019,6 +3020,44 @@ handle.taskbar.flash({ count: 2 });
 
 The working example is `examples/services` (`test/services.test.ts` runs it in
 a real window; the dialogs themselves need a person and are not opened there)
+
+## Downloads (`winui-svelte/downloads`)
+
+`downloadFile` streams a URL to disk over `fetch`, resumes an interrupted
+download with a Range request, marks the finished file as downloaded from the
+Internet and can show the progress on a window's taskbar button
+
+```ts
+import { downloadFile } from "winui-svelte/downloads";
+
+await downloadFile({
+  url: "https://example.com/setup.exe",
+  path: "C:\Users\me\Downloads\setup.exe",
+  onprogress: ({ loaded, total }) => console.log(loaded, total),
+  resume: true,
+  taskbar: handle.taskbar
+});
+```
+
+- The bytes arrive in `path` + `.part` and are renamed to `path` on success;
+  `resume: true` sends `Range: bytes=<size of the .part>-` and appends to it
+  when the server answers 206 with the matching `Content-Range`; a server that
+  ignores the range (200) or refuses it (416) makes the download start over
+- The finished file gets a `Zone.Identifier` alternate data stream with
+  `ZoneId=3` and `HostUrl` (the final address, without credentials), so
+  Explorer and SmartScreen warn before it runs; a volume with no streams (FAT,
+  a share) stays unmarked; `markOfTheWeb({ path, hostUrl })` does the same for
+  a file you saved another way; `zoneIdentifierText(hostUrl)` is the stream's
+  text
+- `onprogress({ loaded, total })` runs after every chunk; `total` is undefined
+  when the server sends no length or compresses the body
+- `taskbar` takes `handle.taskbar`: a bar that fills as the download goes
+  (a marquee when `total` is unknown), removed when it ends, red when it fails;
+  a cancel through `signal` removes it and keeps the `.part` for a later resume
+- A non-2xx answer throws `DownloadError` with the `status`; `headers` adds
+  request headers and `fetch` stands in for the global one (the tests do)
+- `src/downloads/download-file.test.ts` runs it against a local HTTP server
+  with Range support
 
 ## Data transfer (`winui-svelte/data-transfer`)
 
