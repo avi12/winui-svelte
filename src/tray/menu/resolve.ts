@@ -1,6 +1,6 @@
+import { defaultProfile } from "./default-profile.ts";
 import { expandMenu, ROOT_ID } from "./expand.ts";
 import type { ExpandedItem } from "./expand.ts";
-import { defaultProfile } from "./profile.ts";
 import { MenuItemKind, MenuLevel } from "./types.ts";
 import type {
   MenuCheckItem,
