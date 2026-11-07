@@ -24,3 +24,5 @@ export type { BalloonOptions, TrayIconImage, TrayScheduler } from "#src/tray/tra
 export { TrayBalloonIcon } from "#src/tray/tray-core.js";
 export type { TrayPointerEvent } from "#src/tray/click-detector.js";
 export { TrayGesture } from "#src/tray/click-detector.js";
+export type { TrayEntrypoint } from "./define-tray.ts";
+export { defineTray } from "./define-tray.ts";
