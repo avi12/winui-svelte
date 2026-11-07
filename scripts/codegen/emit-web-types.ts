@@ -1,4 +1,4 @@
-import { windowElement } from "./emit-window-web-types.ts";
+import { handWrittenElements } from "./emit-hand-written-web-types.ts";
 import {
   displayTypeOf,
   docsUrlOf,
@@ -263,7 +263,7 @@ function elementOf({ level, sets }: {
 
 /**
  * The web-types file of the components: one element for each class, with its own attributes and the class it extends,
- * and the hand-written `Window`'s.
+ * and the hand-written components'.
  */
 export function emitWebTypes({ classes, version }: {
   classes: ClassModel[];
@@ -274,7 +274,7 @@ export function emitWebTypes({ classes, version }: {
   const elements = [...classes.map(level => elementOf({
     level,
     sets
-  })), windowElement(sets)];
+  })), ...handWrittenElements(sets)];
   const webTypes = {
     $schema: "https://json.schemastore.org/web-types",
     name: "winui-svelte",
