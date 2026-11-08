@@ -1,4 +1,6 @@
 import { markOfTheWeb } from "./zone-identifier.ts";
+import type { ProgressOperationOptions } from "#src/progress/progress-operation.js";
+import { trackOperation } from "#src/progress/track-operation.js";
 import type { FileSystemFileHandle } from "#src/web-apis/file-system.js";
 
 const HTTP_PARTIAL_CONTENT = 206;
@@ -212,7 +214,7 @@ export async function streamToFile({ download, handle, onprogress }: StreamToFil
 }
 
 /** What `fetchToFile` takes. */
-export interface FetchToFileOptions extends Omit<DownloadRequestOptions, "offset">, Pick<StreamToFileOptions, "handle" | "onprogress"> {
+export interface FetchToFileOptions extends Omit<DownloadRequestOptions, "offset">, Pick<StreamToFileOptions, "handle" | "onprogress">, Omit<ProgressOperationOptions, "onprogress" | "total" | "signal"> {
   /**
    * Continue the file the handle already holds with a Range request, as an
    * earlier, interrupted call left it; false by default, which starts over.
@@ -223,24 +225,52 @@ export interface FetchToFileOptions extends Omit<DownloadRequestOptions, "offset
 /**
  * Downloads an address into a file the way a browser page does: `fetch`
  * streamed into the handle `showSaveFilePicker` gave, with an optional Range
- * resume and the Mark of the Web on the finished file.
+ * resume and the Mark of the Web on the finished file. It returns at once
+ * with a `ProgressOperation`: `await` it for the size of the finished file,
+ * bind `download.barProps` to a `ProgressBar`, `download.cancel()` to stop
+ * (the bytes that arrived stay, for `resume: true`), and it shows on
+ * `<TaskbarProgress />` and the tray lines with no setup.
  *
- * @param options - The address, the file handle and the optional resume, progress and cancel hooks.
- * @returns The size of the finished file.
- * @throws {DownloadError} When the server answers with a failing status.
+ * @param options - The address, the file handle and the optional resume, label, group and event handlers.
+ * @returns The operation; it settles with the size of the finished file.
+ * @throws {DownloadError} When the server answers with a failing status (the operation rejects).
  */
-export async function fetchToFile({ handle, resume: shouldResume, onprogress, ...request }: FetchToFileOptions) {
-  const isResuming = shouldResume === true;
-  const offset = isResuming ? (await handle.getFile()).size : 0;
-  const download = await requestDownload({
-    ...request,
-    offset
-  });
-  return streamToFile({
-    download,
-    handle,
-    ...onprogress && {
-      onprogress
+export function fetchToFile({ handle, resume: shouldResume, onprogress, signal, ...rest }: FetchToFileOptions) {
+  const { url, headers, method, body, fetch: fetchImpl, label, ...operationOptions } = rest;
+  return trackOperation({
+    label: label ?? handle.name,
+    ...operationOptions,
+    ...signal && {
+      signal
+    },
+    async run(operation) {
+      const isResuming = shouldResume === true;
+      const offset = isResuming ? (await handle.getFile()).size : 0;
+      const download = await requestDownload({
+        url,
+        offset,
+        signal: operation.signal,
+        ...headers !== undefined && {
+          headers
+        },
+        ...method !== undefined && {
+          method
+        },
+        ...body !== undefined && {
+          body
+        },
+        ...fetchImpl && {
+          fetch: fetchImpl
+        }
+      });
+      return streamToFile({
+        download,
+        handle,
+        onprogress(progress) {
+          operation.update(progress);
+          onprogress?.(progress);
+        }
+      });
     }
   });
 }

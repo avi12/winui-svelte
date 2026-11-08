@@ -146,14 +146,12 @@ test("a cancel keeps what arrived so a later resume finishes the file", async ()
     async run({ url, folder }) {
       const target = path.join(folder, "out.bin");
       const controller = new AbortController();
-      await assert.rejects(
-        fetchToFile({
-          url,
-          handle: new FileSystemFileHandle(target),
-          signal: controller.signal,
-          onprogress: () => controller.abort()
-        })
-      );
+      await assert.rejects(async () => await fetchToFile({
+        url,
+        handle: new FileSystemFileHandle(target),
+        signal: controller.signal,
+        onprogress: () => controller.abort()
+      }));
       assert.ok((await readFile(target)).length > 0);
       assert.ok((await readFile(target)).length < BODY.length);
 
@@ -212,7 +210,7 @@ test("a failing status throws DownloadError", async () => {
     },
     async run({ url, folder }) {
       await assert.rejects(
-        fetchToFile({
+        async () => await fetchToFile({
           url,
           handle: new FileSystemFileHandle(path.join(folder, "out.bin"))
         }),

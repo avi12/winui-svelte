@@ -1,4 +1,5 @@
 import { DomErrorName, domException } from "./dom-exception.ts";
+import { readInChunks } from "./file-read.ts";
 import { defineProperty } from "./install.ts";
 import { pickerExtensionsOf } from "#src/data-transfer/accept.js";
 import { mediaTypeOf } from "#src/data-transfer/mime.js";
@@ -6,6 +7,8 @@ import type { NativeFile } from "#src/data-transfer/native-file.js";
 import { nativeFileAt } from "#src/data-transfer/native-file.js";
 import type { PickerOwner } from "#src/data-transfer/pickers.js";
 import { pickFiles, pickSaveFile } from "#src/data-transfer/pickers.js";
+import type { ProgressOperation, ProgressOperationOptions } from "#src/progress/progress-operation.js";
+import { trackOperation } from "#src/progress/track-operation.js";
 import type { PickerOptions } from "#src/window/pickers.js";
 import { PickerLocation } from "#src/window/pickers.js";
 import {
@@ -24,6 +27,7 @@ import {
   unlinkSync,
   writeSync
 } from "node:fs";
+import { stat } from "node:fs/promises";
 import path from "node:path";
 
 const PERMISSION_GRANTED = "granted";
@@ -281,6 +285,14 @@ export class FileSystemWritableFileStream extends WritableStream<FileSystemWrite
 export interface FileSystemFileHandleExtras {
   /** The file as a `NativeFile`, with its path. */
   getNativeFile(): NativeFile;
+
+  /**
+   * Reads the file in chunks as a `ProgressOperation`: `await` it for the
+   * `File` (as `getFile()` gives), bind `operation.barProps` to a
+   * `ProgressBar`, `cancel()` to stop. The `onprogress`, `label` and `group`
+   * options are those of `ProgressOperation`.
+   */
+  read(options?: ProgressOperationOptions): ProgressOperation<File>;
 }
 
 declare global {
@@ -323,6 +335,27 @@ export class FileSystemFileHandle extends FileSystemHandle implements FileSystem
 
   getNativeFile() {
     return nativeFileAt(this.path);
+  }
+
+  read(options: ProgressOperationOptions = {}) {
+    return trackOperation<File>({
+      label: this.name,
+      ...options,
+      run: async operation => {
+        try {
+          const content = await readInChunks({
+            location: this.path,
+            operation
+          });
+          return new File([content], this.name, {
+            type: mediaTypeOf(this.name),
+            lastModified: Math.round((await stat(this.path)).mtimeMs)
+          });
+        } catch (error) {
+          throw translated(error);
+        }
+      }
+    });
   }
 
   get [Symbol.toStringTag]() {
