@@ -97,6 +97,9 @@ export type ChromeDownloadOptions = z.input<typeof downloadOptionsSchema>;
 export interface DownloadOptions extends ChromeDownloadOptions {
   /** A window's taskbar button (`handle.taskbar`) to show this download's progress on. */
   readonly taskbar?: DownloadTaskbar;
+
+  /** A group name to scope by: `<TaskbarProgress group="downloads" />` shows only these. WinUI extra. */
+  readonly group?: string;
 }
 
 /** What `search` and `erase` take, as `chrome.downloads.DownloadQuery`. */

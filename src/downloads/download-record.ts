@@ -1,6 +1,6 @@
 import type { ChromeDownloadOptions, DownloadDelta, DownloadItem, InterruptReason } from "./download-types.ts";
 import { DownloadState } from "./download-types.ts";
-import type { taskbarReporter } from "./taskbar-progress.ts";
+import type { ProgressOperation } from "#src/progress/progress-operation.js";
 
 /** What a caller of `pause` or `cancel` asked for, so the transfer's abort is read the right way. */
 export const DownloadIntent = {
@@ -20,7 +20,8 @@ export interface StoredItem extends Omit<DownloadItem, "endTime" | "error"> {
 export interface DownloadRecord {
   item: StoredItem;
   readonly options: ChromeDownloadOptions;
-  readonly report: ReturnType<typeof taskbarReporter>;
+  /** What the download reports its progress, pause, failure and end through. */
+  readonly operation: ProgressOperation;
 
   /** Where the bytes arrive: the final path plus ".part", or the final path itself when the user picked it. */
   partialPath: string | undefined;

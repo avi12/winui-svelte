@@ -2,6 +2,8 @@ export { collectMenu } from "./collect.ts";
 export type {
   TrayMenuHeaderProps,
   TrayMenuItemProps,
+  TrayMenuOperationsProps,
+  TrayMenuProgressProps,
   TrayMenuProps,
   TrayMenuSeparatorProps,
   TrayMenuSubmenuProps
@@ -9,6 +11,8 @@ export type {
 export { default as TrayMenu } from "./TrayMenu.svelte";
 export { default as TrayMenuHeader } from "./TrayMenuHeader.svelte";
 export { default as TrayMenuItem } from "./TrayMenuItem.svelte";
+export { default as TrayMenuOperations } from "./TrayMenuOperations.svelte";
+export { default as TrayMenuProgress } from "./TrayMenuProgress.svelte";
 export { default as TrayMenuSeparator } from "./TrayMenuSeparator.svelte";
 export { default as TrayMenuSubmenu } from "./TrayMenuSubmenu.svelte";
 export { DEFAULT_EDITOR_LABELS } from "./editor-labels.ts";

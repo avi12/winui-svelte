@@ -1,3 +1,5 @@
+import type { ProgressRegistry } from "#src/progress/progress-registry.js";
+import type { ProgressSource } from "#src/progress/progress-source.js";
 import type {
   MenuCheckItem,
   MenuCommandItem,
@@ -50,3 +52,21 @@ export interface TrayMenuProps {
   readonly profile?: MenuProfile;
   readonly children?: Snippet;
 }
+
+/** The props of `TrayMenuProgress`: a command line that shows progress and is hidden when there is none. */
+export type TrayMenuProgressProps = Omit<Fields<MenuCommandItem>, "label" | "isVisible"> & {
+  /** What to show: an operation or a registry; every running operation when left out. */
+  readonly of?: ProgressSource;
+
+  /** Shows only the operations of this group, when `of` is left out. */
+  readonly group?: string;
+};
+
+/** The props of `TrayMenuOperations`: a submenu with a line per running operation, which cancels it when picked. */
+export type TrayMenuOperationsProps = Fields<Omit<MenuSubmenuItem, "items" | "sort" | "maxItems">> & {
+  /** Lists the operations of this registry; every running operation when left out. */
+  readonly of?: ProgressRegistry;
+
+  /** Lists only the operations of this group, when `of` is left out. */
+  readonly group?: string;
+};

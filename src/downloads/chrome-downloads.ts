@@ -8,10 +8,11 @@ import { transfer } from "./download-transfer.ts";
 import type { DownloadDelta, DownloadItem, DownloadOptions, DownloadQuery } from "./download-types.ts";
 import { DownloadState, InterruptReason, parseDownloadOptions, parseDownloadQuery } from "./download-types.ts";
 import { interruptionOf } from "./interrupt-reason.ts";
-import { taskbarReporter } from "./taskbar-progress.ts";
 import { revealInExplorer } from "#src/data-transfer/launcher.js";
+import { ProgressOperation } from "#src/progress/progress-operation.js";
+import type { ProgressRegistry } from "#src/progress/progress-registry.js";
+import { bindTaskbarProgress } from "#src/progress/taskbar-progress.js";
 import { FileSystemFileHandle } from "#src/web-apis/file-system.js";
-import { TaskbarProgressState } from "#src/window/taskbar-calls.js";
 import { existsSync } from "node:fs";
 import { rm, unlink } from "node:fs/promises";
 import { homedir } from "node:os";
@@ -28,6 +29,12 @@ export interface DownloadsOptions {
 
   /** Stands in for the global `fetch`; the tests give one. */
   readonly fetch?: typeof fetch;
+
+  /**
+   * Where each download lists its progress operation: the app-wide registry by
+   * default (so `<TaskbarProgress />` shows it), `false` for none.
+   */
+  readonly progress?: ProgressRegistry | false;
 
   /** Opens Explorer on a file or folder; `revealInExplorer` by default, the tests give a fake. */
   readonly reveal?: (location: string) => void;
@@ -83,12 +90,14 @@ export class Downloads {
   private readonly records = new Map<number, DownloadRecord>();
   private readonly directory: string;
   private readonly reveal: (location: string) => void;
+  private readonly progress: ProgressRegistry | false | undefined;
   private readonly context: TransferContext;
   private nextId = 1;
 
   constructor(options: DownloadsOptions = {}) {
     this.directory = options.directory ?? path.join(homedir(), DOWNLOADS_FOLDER);
     this.reveal = options.reveal ?? revealInExplorer;
+    this.progress = options.progress;
     this.context = {
       directory: this.directory,
       fetch: options.fetch,
@@ -118,6 +127,15 @@ export class Downloads {
 
     const id = this.nextId;
     this.nextId += 1;
+    const operation = new ProgressOperation({
+      label: filename ?? parsed.url,
+      ...options.group !== undefined && {
+        group: options.group
+      },
+      ...this.progress !== undefined && {
+        registry: this.progress
+      }
+    });
     const record: DownloadRecord = {
       item: newItem({
         id,
@@ -125,7 +143,7 @@ export class Downloads {
         startTime: new Date().toISOString()
       }),
       options: parsed,
-      report: taskbarReporter(options.taskbar),
+      operation,
       partialPath: undefined,
       finalPath: undefined,
       intent: undefined,
@@ -133,6 +151,16 @@ export class Downloads {
       running: Promise.resolve()
     };
     this.records.set(id, record);
+
+    const hasTaskbar = options.taskbar !== undefined;
+    if (hasTaskbar) {
+      bindTaskbarProgress({
+        source: operation,
+        taskbar: options.taskbar
+      });
+    }
+
+    operation.signal.addEventListener("abort", () => this.cancelFromOperation(record), { once: true });
     this.onCreated.dispatch(publicItem(record.item));
     this.start({
       record,
@@ -343,6 +371,8 @@ export class Downloads {
         error: undefined
       }
     });
+    record.operation.start();
+    record.operation.resume();
     record.running = this.run({
       record,
       isResuming
@@ -367,6 +397,15 @@ export class Downloads {
     }
   }
 
+  private cancelFromOperation(record: DownloadRecord) {
+    const isCanceling = record.intent === DownloadIntent.CANCEL;
+    if (isCanceling) {
+      return;
+    }
+
+    void this.cancel(record.item.id);
+  }
+
   private async stop({ record, intent }: {
     record: DownloadRecord;
     intent: DownloadIntent;
@@ -383,7 +422,7 @@ export class Downloads {
     const { intent } = record;
     const isPausing = intent === DownloadIntent.PAUSE;
     if (isPausing) {
-      record.report.end(TaskbarProgressState.PAUSED);
+      record.operation.pause();
       this.update({
         record,
         changes: {
@@ -401,7 +440,7 @@ export class Downloads {
     }
 
     const { reason, canResume } = interruptionOf(error);
-    record.report.end(TaskbarProgressState.ERROR);
+    record.operation.fail(error);
     this.update({
       record,
       changes: {
@@ -420,7 +459,8 @@ export class Downloads {
       await rm(partialPath, { force: true });
     }
 
-    record.report.end(TaskbarProgressState.NONE);
+    record.intent = DownloadIntent.CANCEL;
+    record.operation.cancel();
     this.update({
       record,
       changes: {

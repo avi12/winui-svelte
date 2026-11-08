@@ -195,6 +195,11 @@
       "types": "./dist/chrome/windows/index.d.ts",
       "default": "./dist/chrome/windows/index.js"
     },
+    "./progress": {
+      "types": "./dist/progress/index.d.ts",
+      "svelte": "./dist/progress/index.js",
+      "default": "./dist/progress/index.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"

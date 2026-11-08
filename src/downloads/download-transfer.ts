@@ -4,7 +4,6 @@ import { DownloadState, FilenameConflictAction } from "./download-types.ts";
 import type { DownloadResponse } from "./fetch-to-file.ts";
 import { requestDownload, streamToFile } from "./fetch-to-file.ts";
 import { FileSystemFileHandle } from "#src/web-apis/file-system.js";
-import { TaskbarProgressState } from "#src/window/taskbar-calls.js";
 import { mkdir, rename, stat } from "node:fs/promises";
 import path from "node:path";
 
@@ -116,6 +115,7 @@ export async function transfer({ record, isResuming, context }: {
     throw new Error("The download has no place to go");
   }
 
+  record.operation.label = path.basename(finalPath);
   context.update({
     record,
     changes: {
@@ -135,7 +135,7 @@ export async function transfer({ record, isResuming, context }: {
           totalBytes: progress.total ?? -1
         }
       });
-      record.report.update(progress);
+      record.operation.update(progress);
     }
   });
   const isMoved = partialPath !== finalPath;
@@ -143,7 +143,7 @@ export async function transfer({ record, isResuming, context }: {
     await rename(partialPath, finalPath);
   }
 
-  record.report.end(TaskbarProgressState.NONE);
+  record.operation.complete();
   context.update({
     record,
     changes: {

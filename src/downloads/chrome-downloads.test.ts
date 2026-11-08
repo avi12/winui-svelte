@@ -164,7 +164,8 @@ test("download completes, names the file, marks it and reports the deltas", asyn
       assert.equal(existsSync(`${target}.part`), false);
       assert.ok(deltas.some(delta => delta.state?.current === "complete"));
       assert.ok(deltas.every(delta => delta.id === id));
-      assert.equal(taskbar.calls[0], "normal");
+      assert.equal(taskbar.calls[0], "indeterminate");
+      assert.ok(taskbar.calls.includes("normal"));
       assert.equal(taskbar.calls.at(-1), "none");
     }
   });

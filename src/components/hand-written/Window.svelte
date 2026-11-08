@@ -3,12 +3,14 @@
   import type { FrameworkElement } from "#src/components/generated/bindings.js";
   import { ColumnDefinition, Grid, RowDefinition } from "#src/components/generated/bindings.js";
   import { control, registerControls } from "#src/components/runtime.js";
+  import { provideWindowHandle } from "#src/components/window-context.js";
   import { attachWindow } from "#src/window/window-host.svelte.js";
   import { untrack } from "svelte";
 
   // A native window around its content. Mount it as the app's root (the
   // component itself is the window, nothing is placed in a page).
   let { handle = $bindable(), titleBar, children, ...rest }: WindowComponentProps = $props();
+  provideWindowHandle(() => handle);
   registerControls({
     "column-definition": ColumnDefinition,
     grid: Grid,
