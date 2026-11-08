@@ -4,7 +4,7 @@ import { createForegroundSource, startShellHook } from "./foreground-native.ts";
 import { addMessageHook } from "./message-hooks.ts";
 import { startTimer } from "./timers.ts";
 
-export { bringWindowToFront } from "./foreground-native.ts";
+export { bringWindowToFront } from "#src/win32-foreground.js";
 export { ForegroundShellClass, shouldRestore } from "./foreground-filter.ts";
 export type { ForegroundSnapshot } from "./foreground-filter.ts";
 

@@ -8,8 +8,8 @@ import {
   wideMemory,
   withMemory
 } from "#src/win32-calls.js";
+import { bringWindowToFront } from "#src/win32-foreground.js";
 import { createIconFileCalls } from "#src/win32-icons.js";
-import { bringWindowToFront } from "#src/window/foreground-native.js";
 
 /** The Shell_NotifyIcon operations. */
 export const NotifyOperation = {
