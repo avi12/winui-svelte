@@ -11,7 +11,9 @@ import { build } from "vite";
 // against the built package; dynwinrt stays external, as a native module.
 
 const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
-const ENTRY = path.join(import.meta.dirname, "treeshake-app", "tray-main.ts");
+const APP_FOLDER = path.join(import.meta.dirname, "treeshake-app");
+const ENTRY = path.join(APP_FOLDER, "tray-main.ts");
+const TWO_TRAYS_ENTRY = path.join(APP_FOLDER, "tray-two-main.ts");
 const IS_BUILT = existsSync(path.join(PACKAGE_ROOT, "dist"));
 const BUNDLE_TIMEOUT_MILLISECONDS = 120_000;
 const externalModule = new RegExp(String.raw`^#winui/|dist[\/]bindings|@microsoft[\/]dynwinrt`, "u");
@@ -23,10 +25,19 @@ const BUDGET_BYTES = 16_700;
 const WINDOW_RUNTIME_FOLDERS = ["components", "renderer", "window", "css"];
 const COMPONENT_NAMES = ["NavigationView", "ComboBox", "TextBlock", "ScrollViewer", "MenuFlyout", "ContentDialog"];
 
-async function bundle() {
+// The paths Rollup reports use slashes; normalized so they compare with path.sep.
+function ownFilesOf(sourceFiles: readonly string[]) {
+  const distFolder = path.join(PACKAGE_ROOT, "dist") + path.sep;
+  return sourceFiles
+    .map(file => path.normalize(file))
+    .filter(file => file.startsWith(distFolder))
+    .map(file => file.slice(distFolder.length));
+}
+
+async function bundle(entry: string) {
   const result = await build({
     configFile: false,
-    root: path.dirname(ENTRY),
+    root: path.dirname(entry),
     logLevel: "warn",
     resolve: {
       alias: exportAliases(ExportTarget.BUILT)
@@ -36,7 +47,7 @@ async function bundle() {
       ssr: true,
       minify: true,
       rollupOptions: {
-        input: ENTRY,
+        input: entry,
         external: (id: string) => externalModule.test(id)
       }
     }
@@ -55,16 +66,39 @@ test("a tray-only process bundles no component and no window runtime", {
   skip: !IS_BUILT,
   timeout: BUNDLE_TIMEOUT_MILLISECONDS
 }, async () => {
-  const { code, sourceFiles } = await bundle();
+  const { code, sourceFiles } = await bundle(ENTRY);
   const bytes = Buffer.byteLength(code);
   console.log(`tray-only: ${bytes} bytes, ${sourceFiles.length} modules`);
   assert.ok(bytes <= BUDGET_BYTES, `${bytes} bytes is over the ${BUDGET_BYTES} budget`);
 
-  const distFolder = path.join(PACKAGE_ROOT, "dist") + path.sep;
-  const ownFiles = sourceFiles.filter(file => file.startsWith(distFolder)).map(file => file.slice(distFolder.length));
+  const ownFiles = ownFilesOf(sourceFiles);
   const heavy = ownFiles.filter(file => WINDOW_RUNTIME_FOLDERS.includes(file.split(path.sep)[0] ?? ""));
   assert.deepEqual(heavy, [], "the window runtime or the components were bundled");
 
   const found = COMPONENT_NAMES.filter(name => code.includes(name));
   assert.deepEqual(found, [], "a component's name is in the bundle");
+});
+
+// Two icons in one process, each with its own color scheme, one of them
+// reading the progress registry in its menu: still no component, no window
+// runtime and no taskbar code. Measured: the whole bundle today.
+const TWO_TRAYS_BUDGET_BYTES = 19_000;
+const TASKBAR_NAMES = ["TaskbarProgress", "taskbar-calls", "ITaskbarList"];
+
+test("a tray-only process with two trays and the progress registry bundles no window runtime and no taskbar code", {
+  skip: !IS_BUILT,
+  timeout: BUNDLE_TIMEOUT_MILLISECONDS
+}, async () => {
+  const { code, sourceFiles } = await bundle(TWO_TRAYS_ENTRY);
+  const bytes = Buffer.byteLength(code);
+  console.log(`two trays: ${bytes} bytes, ${sourceFiles.length} modules`);
+  assert.ok(bytes <= TWO_TRAYS_BUDGET_BYTES, `${bytes} bytes is over the ${TWO_TRAYS_BUDGET_BYTES} budget`);
+
+  const ownFiles = ownFilesOf(sourceFiles);
+  const heavy = ownFiles.filter(file => WINDOW_RUNTIME_FOLDERS.includes(file.split(path.sep)[0] ?? ""));
+  assert.deepEqual(heavy, [], "the window runtime or the components were bundled");
+  assert.deepEqual(COMPONENT_NAMES.filter(name => code.includes(name)), [], "a component's name is in the bundle");
+  assert.deepEqual(TASKBAR_NAMES.filter(name => code.includes(name)), [], "taskbar code is in the bundle");
+  assert.deepEqual(ownFiles.filter(file => file.includes("taskbar")), [], "a taskbar module was bundled");
+  assert.deepEqual(sourceFiles.filter(file => /[/]svelte[/]/u.test(file)), [], "a Svelte module was bundled");
 });
