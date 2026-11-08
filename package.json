@@ -415,6 +415,10 @@
       "types": "./dist/window/taskbar.d.ts",
       "default": "./dist/window/taskbar.js"
     },
+    "./window/foreground": {
+      "types": "./dist/window/foreground.d.ts",
+      "default": "./dist/window/foreground.js"
+    },
     "./devices": {
       "types": "./dist/devices/index.d.ts",
       "svelte": "./dist/devices/index.js",

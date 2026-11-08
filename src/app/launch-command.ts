@@ -1,3 +1,5 @@
+import { isSea } from "node:sea";
+
 const SPACE = " ";
 const QUOTE = "\"";
 const BACKSLASH = "\\";
@@ -55,17 +57,29 @@ export function commandOf({ executable, nodeFlags, script, appArguments }: {
 
 /**
  * The command that starts this app again, copied from the running process.
+ * A single executable application (a Node `node:sea` build) is its own
+ * program: `process.execPath` is the exe, it has no entry script and takes no
+ * Node flags, so the command is the exe and the app's arguments.
  *
- * @param options - The arguments the new copy gets, and the entry script when
- *   it is not `process.argv[1]`.
+ * @param options - The arguments the new copy gets, the entry script when it
+ *   is not `process.argv[1]`, and `isSingleExecutable` (the running process's
+ *   answer by default; a test stands in).
  * @returns The program and its arguments.
- * @throws {Error} When the process has no entry script (an interactive
- *   session).
+ * @throws {Error} When the process has no entry script and is not a single
+ *   executable (an interactive session).
  */
-export function launchCommand({ appArguments, entryScript = process.argv[1] }: {
+export function launchCommand({ appArguments, entryScript = process.argv[1], isSingleExecutable = isSea() }: {
   appArguments: readonly string[];
   entryScript?: string | undefined;
+  isSingleExecutable?: boolean;
 }) {
+  if (isSingleExecutable) {
+    return {
+      executable: process.execPath,
+      arguments: appArguments
+    } satisfies LaunchCommand;
+  }
+
   const isScriptMissing = entryScript === undefined;
   if (isScriptMissing) {
     throw new Error("relaunch and restartAfterCrash need a process started from a script");
