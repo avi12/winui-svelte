@@ -4556,6 +4556,170 @@ takes drops, through the handlers a real drop reaches, and resolves with the
 operation the control accepted (`0` when it refused); it sends no input, so an
 app can test its drop handling in a real window
 
+## Progress (`winui-svelte/progress`)
+
+One progress object for any long work: a download, a file read, a copy, an OCR
+pass; it is a promise, an `EventTarget` with the platform events, and
+reactive state, in one value
+Operations list themselves in an app-wide registry, so the taskbar button and
+the tray show them with no setup
+Opt-in: nothing is bundled until an app imports it, and importing does no work
+
+### Five call sites
+
+```svelte
+<script lang="ts">
+  import { Button, ProgressBar, TextBlock, Window } from "winui-svelte/components";
+  import { fetchToFile } from "winui-svelte/downloads";
+  import { TaskbarProgress } from "winui-svelte/progress";
+
+  // 1. A download with a bar: fetchToFile returns the operation at once
+  const download = fetchToFile({ url, handle });
+  download.then(size => console.log("saved", size));   // or: await download
+</script>
+
+<Window>
+  <TaskbarProgress />                           <!-- 4. the taskbar shows every running operation -->
+  <ProgressBar {...download.barProps} />        <!-- value, isIndeterminate, showPaused, showError -->
+  <TextBlock>{download.loaded} of {download.total ?? "?"}</TextBlock>
+  <Button onclick={() => download.cancel()}>Cancel</Button>
+</Window>
+```
+
+```ts
+// 2. Reading a file from disk, with progress and cancel
+const read = handle.read({ onprogress: event => console.log(event.loaded, event.total) });
+const file = await read;                 // a File, like getFile()
+read.cancel();                           // or abort the signal given in the options
+
+// 3. Any other long work: one call, no lifecycle code
+const copy = trackOperation({
+  label: "Copying photos",
+  group: "sync",
+  async run(operation) {
+    for await (const chunk of source) {
+      await write(chunk);
+      operation.update({ loaded: (written += chunk.byteLength), total });
+      operation.signal.throwIfAborted();
+    }
+  }
+});
+
+// 5. Retry: a failed fetchToFile continues where it stopped
+await fetchToFile({ url, handle, resume: true });
+```
+
+```svelte
+<!-- Tray menu, in tray.svelte markup -->
+<TrayMenu>
+  <TrayMenuProgress id="progress" />                  <!-- "setup.exe - 45%", hidden when idle -->
+  <TrayMenuOperations id="operations" label="Running" emptyLabel="Nothing running" />
+</TrayMenu>
+```
+
+`{...download.barProps}` spreads onto a `ProgressBar`; Svelte then cannot tell
+at build time whether a scoped class selector matches that bar, so write the
+five props out when the same component has a `<style>` rule for its siblings
+
+### Several windows and tray icons
+
+The registry is app-wide; what a taskbar button or a tray line shows is scoped
+by `group` (a name an operation is given) or by an operation or registry given
+as `of`
+A `<TaskbarProgress />` drives the taskbar button of the window it sits in;
+`window={handle}` picks another
+
+```svelte
+<script lang="ts">
+  const upload = trackOperation({ group: "uploads", run });
+  const download = fetchToFile({ url, handle, group: "downloads" });
+</script>
+
+<!-- Window A: its taskbar button shows the downloads only -->
+<Window bind:handle={windowA}>
+  <TaskbarProgress group="downloads" />
+</Window>
+
+<!-- Window B: its own button shows one upload; window A is not touched -->
+<Window>
+  <TaskbarProgress of={upload} />
+</Window>
+
+<!-- The main window drives window A from outside -->
+<TaskbarProgress window={windowA} group="downloads" />
+
+<!-- Two tray icons, each with its own menu and its own scope -->
+<TrayIcon>
+  <TrayMenu>
+    <TrayMenuProgress id="downloads" group="downloads" />
+  </TrayMenu>
+</TrayIcon>
+<TrayIcon>
+  <TrayMenu>
+    <TrayMenuOperations id="uploads" label="Uploads" group="uploads" />
+  </TrayMenu>
+</TrayIcon>
+```
+
+### `ProgressOperation`
+
+- It is `PromiseLike`: `await operation` gives the value passed to `complete`
+  and throws the reason of `fail` or `cancel` (an `AbortError` by default); an
+  operation nobody awaits raises no unhandled rejection
+- It is an `EventTarget` that fires `loadstart`, `progress`, `load`, `error`,
+  `abort` and `loadend` as `OperationProgressEvent` (`lengthComputable`,
+  `loaded`, `total`), in the order `XMLHttpRequest` and `FileReader` use, plus
+  `pause`, `resume` and `change`; `onprogress` and its kin work as properties
+  and as options
+- `value` (0 to 1), `loaded`, `total`, `state`, `isIndeterminate`,
+  `showPaused`, `showError`, `label` and `barProps` are reactive in markup and
+  in `$effect`, with the meaning `ProgressBar` gives them: a total that is
+  unknown is indeterminate
+- `$operation` works too: it has `subscribe` and so is a Svelte store
+- `signal` is an `AbortSignal` that aborts on `cancel()`; a `signal` given to
+  the constructor cancels the operation when it aborts
+- `start`, `update({ loaded, total })`, `pause`, `resume`, `complete(value)`
+  and `fail(reason)` are for the code doing the work; `resume` also retries an
+  errored operation (the other final states are final)
+- `ProgressState` is the closed set of states: `idle`, `running`, `paused`,
+  `complete`, `error`, `canceled`
+
+### Registry and scopes
+
+- `defaultProgressRegistry()` is the app-wide registry; an operation lists
+  itself there unless it gets `registry: otherRegistry` or `registry: false`
+- A finished or canceled operation leaves; a failed one stays so a red bar
+  is not lost, until `clearFailed()` or `remove(operation)`
+- `registry.where("sync")` or `registry.where(operation => ...)` is a scoped
+  registry that follows the first (call `dispose()` when done);
+  `<TaskbarProgress group>` and the tray components do this for you
+- `snapshot`, `value`, `count`, `state`, `isIndeterminate`, `showPaused` and
+  `showError` are the aggregate: the bar covers the operations that know their
+  total, and is indeterminate only when none does; `paused` when all that are
+  left are paused; `error` when only failed ones are left; `count` is the
+  number unfinished
+- `aggregateSnapshots` is that rule as a pure function
+
+### Taskbar and tray
+
+- `<TaskbarProgress of group window taskbar />` draws nothing and keeps the
+  taskbar button in step: a bar, a marquee when the total is unknown, paused
+  yellow, error red, gone when nothing is left; the shell is told only when the
+  bar moves by a thousandth
+- `bindTaskbarProgress({ source, taskbar })` is the same without markup (the
+  `taskbar` option of `Downloads.download` uses it); `taskbarOptionsOf` is the
+  mapping
+- `<TrayMenuProgress id of group />` is a command line with the text of
+  `progressText(snapshot)`, hidden while nothing runs; `onselect` is yours
+- `<TrayMenuOperations id label of group />` is a submenu with a line per
+  running operation; picking a line cancels it
+- `Downloads` gives each download an operation (`progress: registry` in its
+  options picks the registry, `group` in `download({ ... })` the group), and
+  `fetchToFile` returns one; `FileSystemFileHandle.read` is the extra (WinUI
+  only) that reads a file in 1 MiB chunks
+- `trackStream({ stream, operation })` passes a `ReadableStream` through and
+  reports the bytes; `trackOperation` is the whole lifecycle for any async work
+
 ## Incremental loading (`winui-svelte/incremental`)
 
 A list that loads its next batch as the user scrolls near the end, for
