@@ -200,6 +200,10 @@
       "svelte": "./dist/progress/index.js",
       "default": "./dist/progress/index.js"
     },
+    "./progress/core": {
+      "types": "./dist/progress/core.d.ts",
+      "default": "./dist/progress/core.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
