@@ -251,6 +251,20 @@ test("a window opens as its props say, follows them, and reports what happens to
     });
     assert.equal(owned["ownerId"], owned["expectedOwnerId"], "createWindow's owner is the window's owner");
 
+    const guarded = await example.ask({
+      command: {
+        cmd: "guardedWindow"
+      },
+      kind: "guardedRefused"
+    });
+    assert.equal(guarded["isClosed"], false, "createWindow's onclosing returning true keeps the window open");
+    assert.equal(
+      numberOf({
+        report: guarded,
+        field: "closeRequests"
+      }), 1, "createWindow's onclosing is asked when the window is closed"
+    );
+
     await example.ask({
       command: {
         cmd: "blockClose",

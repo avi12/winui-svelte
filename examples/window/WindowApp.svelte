@@ -276,6 +276,34 @@
       });
       owned.close();
     }],
+    ["guardedWindow", () => {
+      let isBlocking = true;
+      let closeRequests = 0;
+      let isClosed = false;
+      const guarded = createWindow({
+        control: new Grid(),
+        isBackground: true,
+        onclosing() {
+          closeRequests += 1;
+          return isBlocking;
+        }
+      });
+      guarded.onClosed(() => {
+        isClosed = true;
+        host.report({
+          kind: "guardedClosed",
+          closeRequests
+        });
+      });
+      guarded.close();
+      host.report({
+        kind: "guardedRefused",
+        closeRequests,
+        isClosed
+      });
+      isBlocking = false;
+      guarded.close();
+    }],
     ["tryClose", () => {
       handle?.close();
       report("closeTried");

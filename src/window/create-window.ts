@@ -21,6 +21,7 @@ interface WindowChrome extends Pick<
   | "isModal"
   | "isShownInSwitchers"
   | "isToolWindow"
+  | "onclosing"
   | "owner"
   | "anchor"
   | "sizeToContent"
@@ -120,6 +121,7 @@ export function createWindow<Props extends object>(options: WindowOptions<Props>
       activate: options.isBackground !== true,
       isCentered: false,
       owner: options.owner,
+      onclosing: options.onclosing,
       isModal: options.isModal,
       cornerRadius: options.cornerRadius,
       isActivatable: options.isActivatable,

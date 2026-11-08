@@ -752,6 +752,7 @@ type WindowOptions<Props> = {
   size?: { width: number; height: number };   // device pixels
   backdrop?: Backdrop;                        // "acrylic" | "acrylicBase" | "acrylicThin" | "mica" | "micaAlt" | "none" | "transparent"
   extendsIntoTitleBar?: boolean;
+  onclosing?: () => boolean | void;           // AppWindow.Closing: return true to keep the window open
   isBackground?: boolean;                     // shown without activating (tests, captures)
 } & ({ component: Component<Props>; props: Props } | { control: FrameworkElement });
 
