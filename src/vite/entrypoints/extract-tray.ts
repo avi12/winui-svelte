@@ -51,31 +51,31 @@ function keyNameOf(property: Node) {
   return key.type === "Identifier" ? String(key["name"]) : stringOf(key);
 }
 
-function optionsOf(source: string) {
-  const program = parseAst(source, { lang: "ts" });
-  const exported = program.body.filter(isNode).find(statement => statement.type === "ExportDefaultDeclaration");
-  const call = nodeOf(exported?.["declaration"]);
+function callOptionsOf(call: Node | undefined) {
   const isDefine = call?.type === "CallExpression" && nodeOf(call["callee"])?.["name"] === DEFINE_FUNCTION;
   const [options] = isDefine ? nodesOf(call["arguments"]) : [];
   const isObject = options?.type === "ObjectExpression";
   if (!isObject) {
-    throw new Error(`the tray entrypoint must be \`export default ${DEFINE_FUNCTION}({ ... })\` with an object literal`);
+    throw new Error(
+      `the tray entrypoint must be \`export default ${DEFINE_FUNCTION}({ ... })\`, or an array of them, with object literals`
+    );
   }
 
   return options;
 }
 
-/**
- * Reads `icon`, `tooltip` and `guid` from the literal properties of the
- * `defineTray({ ... })` a tray entrypoint default-exports, without running it.
- *
- * @param source - The text of `entrypoints/tray.ts`.
- * @returns The manifest.
- * @throws {Error} When the file is not that shape, or `icon` or `guid` is not a string literal.
- */
-export function extractTrayManifest(source: string) {
+function optionsOf(source: string) {
+  const program = parseAst(source, { lang: "ts" });
+  const exported = program.body.filter(isNode).find(statement => statement.type === "ExportDefaultDeclaration");
+  const declaration = nodeOf(exported?.["declaration"]);
+  const isList = declaration?.type === "ArrayExpression";
+  const calls = isList ? nodesOf(declaration["elements"]) : [declaration];
+  return calls.map(callOptionsOf);
+}
+
+function manifestOf(options: Node) {
   const literals = new Map<string, string>();
-  for (const property of nodesOf(optionsOf(source)["properties"])) {
+  for (const property of nodesOf(options["properties"])) {
     const name = keyNameOf(property);
     const value = nodeOf(property["value"]);
     const text = stringOf(value);
@@ -96,4 +96,30 @@ export function extractTrayManifest(source: string) {
   } catch {
     throw new Error("the tray entrypoint's `icon` and `guid` must be string literals (the build reads them without running the file)");
   }
+}
+
+/**
+ * Reads `icon`, `tooltip` and `guid` from the literal properties of each
+ * `defineTray({ ... })` a tray entrypoint default-exports (one call, or an
+ * array of them), without running it.
+ *
+ * @param source - The text of `entrypoints/tray.ts`.
+ * @returns The manifest of each tray, in the order of the file.
+ * @throws {Error} When the file is not that shape, an `icon` or `guid` is not a literal, or a `guid` repeats.
+ */
+export function extractTrayManifests(source: string) {
+  const trays = optionsOf(source).map(manifestOf);
+  const isEmpty = trays.length === 0;
+  if (isEmpty) {
+    throw new Error("the tray entrypoint's array must hold at least one defineTray");
+  }
+
+  const guids = trays.map(tray => tray.guid);
+  const duplicate = guids.find((guid, index) => guids.indexOf(guid) !== index);
+  const hasDuplicate = duplicate !== undefined;
+  if (hasDuplicate) {
+    throw new Error(`two trays of the entrypoint have the guid "${duplicate}"; a guid keeps one icon's place`);
+  }
+
+  return trays;
 }

@@ -11,7 +11,8 @@ const RESOLVED_ID = `\0${TRAY_VIRTUAL_ID}`;
 
 /**
  * The source of `tray.js` before bundling: it imports the user's default
- * export and starts it, once per `guid`, so `entrypoints/tray.ts` imports no
+ * export (one tray, or an array of them) and starts each, once per process,
+ * claimed by the first tray's `guid`, so `entrypoints/tray.ts` imports no
  * framework wiring.
  *
  * @param file - The absolute path of the user's `entrypoints/tray.ts`.
@@ -19,12 +20,15 @@ const RESOLVED_ID = `\0${TRAY_VIRTUAL_ID}`;
  */
 export function trayWrapperSource(file: string) {
   return [
-    `import tray from ${JSON.stringify(file)};`,
+    `import entrypoint from ${JSON.stringify(file)};`,
     `import { claimTrayInstance } from "winui-svelte/app";`,
     `import { createStandaloneTray } from "winui-svelte/tray/standalone";`,
     ``,
-    `if (claimTrayInstance({ guid: tray.guid })) {`,
-    `  createStandaloneTray({ ...tray, onclick: tray.onclick ?? tray.onactivate });`,
+    `const trays = [entrypoint].flat();`,
+    `if (claimTrayInstance({ guid: trays[0].guid })) {`,
+    `  for (const tray of trays) {`,
+    `    createStandaloneTray({ ...tray, onclick: tray.onclick ?? tray.onactivate });`,
+    `  }`,
     `}`,
     ``
   ].join("\n");

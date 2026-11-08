@@ -1,7 +1,7 @@
 import { activateOrLaunch } from "./activate.ts";
 import { currentUserSid, openPipe, pipeNameFor } from "./instance-pipe.ts";
 import { encodeRedirect } from "./redirect.ts";
-import { parseTrayManifest, TRAY_BUNDLE_FILE, TRAY_MANIFEST_FILE } from "#src/tray/tray-manifest.js";
+import { parseTrayManifestFile, processGuidOf, TRAY_BUNDLE_FILE, TRAY_MANIFEST_FILE } from "#src/tray/tray-manifest.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -19,8 +19,9 @@ export function trayInstanceKey(guid: string) {
 }
 
 /**
- * Claims the right to be the one tray process for `guid`: the built `tray.js`
- * calls it first. A second copy finds the first and gets false, and exits.
+ * Claims the right to be the one tray process for `guid` (the first tray's,
+ * when the entrypoint defines several): the built `tray.js` calls it first.
+ * A second copy finds the first and gets false, and exits.
  * Needs no window or UI thread.
  *
  * @param options - The tray's guid.
@@ -51,7 +52,7 @@ export interface StartTrayOptions {
 
 /**
  * Starts the built `tray.js` as a process of its own, once: when one runs for
- * the same `guid` nothing starts. Optional, and never needed by the app's
+ * the same process guid nothing starts. Optional, and never needed by the app's
  * code: an installer, a launcher or the app's own `main` may call it.
  *
  * @param options - The folder of the build.
@@ -59,7 +60,8 @@ export interface StartTrayOptions {
  * @throws {Error} When `tray.json` is missing or is not a tray manifest.
  */
 export function startTray({ directory = process.cwd(), activate = activateOrLaunch }: StartTrayOptions = {}) {
-  const { guid } = parseTrayManifest(JSON.parse(readFileSync(path.join(directory, TRAY_MANIFEST_FILE), "utf8")));
+  const manifest = JSON.parse(readFileSync(path.join(directory, TRAY_MANIFEST_FILE), "utf8"));
+  const guid = processGuidOf(parseTrayManifestFile(manifest));
   return activate({
     key: trayInstanceKey(guid),
     activation: {

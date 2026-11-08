@@ -1,8 +1,8 @@
 import { isInsideFolder } from "./discover.ts";
-import { extractTrayManifest } from "./extract-tray.ts";
+import { extractTrayManifests } from "./extract-tray.ts";
 import { TRAY_VIRTUAL_ID, trayModule } from "./tray-module.ts";
 import { traySourceOf } from "./tray-source.ts";
-import { TRAY_BUNDLE_FILE, TRAY_MANIFEST_FILE } from "#src/tray/tray-manifest.js";
+import { TRAY_BUNDLE_FILE, TRAY_MANIFEST_FILE, trayManifestFileOf } from "#src/tray/tray-manifest.js";
 import { hasSideEffects, NATIVE_MODULE } from "#src/vite/externals.js";
 import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -29,20 +29,24 @@ export interface BuildTrayOptions {
  * starts the tray in a process of its own, `tray.json` (what the build read
  * from the file's literals) and the icon, copied at the path the file wrote it,
  * relative to the file. Svelte and the window runtime are not in it.
+ * An entrypoint that defines several trays is still one `tray.js` and one
+ * process, with each tray's icon copied.
  *
  * @param options - The tray file and where to write.
  * @returns The names of the files written, relative to `outDirectory`.
- * @throws {Error} When the file is not a readable `defineTray`, or its icon leaves its folder.
+ * @throws {Error} When the file is not a readable `defineTray`, or an icon leaves its folder.
  */
 export async function buildTray({ root, file, outDirectory, isFirst, isMinified, config = {} }: BuildTrayOptions) {
-  const manifest = extractTrayManifest(traySourceOf(file));
-  const source = path.resolve(path.dirname(file), manifest.icon);
-  const isIconInside = isInsideFolder({
-    folder: path.dirname(file),
-    file: source
-  });
-  if (!isIconInside) {
-    throw new Error(`the tray icon "${manifest.icon}" must be a file inside the folder of the tray entrypoint`);
+  const manifests = extractTrayManifests(traySourceOf(file));
+  const icons = [...new Set(manifests.map(manifest => manifest.icon))];
+  for (const icon of icons) {
+    const isIconInside = isInsideFolder({
+      folder: path.dirname(file),
+      file: path.resolve(path.dirname(file), icon)
+    });
+    if (!isIconInside) {
+      throw new Error(`the tray icon "${icon}" must be a file inside the folder of the tray entrypoint`);
+    }
   }
 
   await build(
@@ -77,9 +81,12 @@ export async function buildTray({ root, file, outDirectory, isFirst, isMinified,
       }
     } satisfies InlineConfig, config)
   );
-  const iconTarget = path.join(outDirectory, manifest.icon);
-  mkdirSync(path.dirname(iconTarget), { recursive: true });
-  copyFileSync(source, iconTarget);
-  writeFileSync(path.join(outDirectory, TRAY_MANIFEST_FILE), `${JSON.stringify(manifest, undefined, 2)}\n`);
-  return [TRAY_BUNDLE_FILE, TRAY_MANIFEST_FILE, path.normalize(manifest.icon)];
+  for (const icon of icons) {
+    const target = path.join(outDirectory, icon);
+    mkdirSync(path.dirname(target), { recursive: true });
+    copyFileSync(path.resolve(path.dirname(file), icon), target);
+  }
+
+  writeFileSync(path.join(outDirectory, TRAY_MANIFEST_FILE), `${JSON.stringify(trayManifestFileOf(manifests), undefined, 2)}\n`);
+  return [TRAY_BUNDLE_FILE, TRAY_MANIFEST_FILE, ...icons.map(icon => path.normalize(icon))];
 }

@@ -1,9 +1,10 @@
 import { discoverEntrypoints } from "./discover.ts";
-import { extractTrayManifest } from "./extract-tray.ts";
+import { extractTrayManifests } from "./extract-tray.ts";
 import { TRAY_VIRTUAL_ID, trayWrapperSource } from "./tray-module.ts";
 import { restartTray, trayDevelopment } from "./tray-process.ts";
 import type { TrayProcessSeams } from "./tray-process.ts";
 import { startTray, trayInstanceKey } from "#src/app/tray-instance.js";
+import { parseTrayManifestFile, processGuidOf, trayManifestFileOf } from "#src/tray/tray-manifest.js";
 import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -62,35 +63,77 @@ test("extraction reads the literals and never runs the file", () => {
       menu: [{ id: "open", label: String(Windows) }]
     });
   `;
-  assert.deepEqual(extractTrayManifest(hostile), {
+  assert.deepEqual(extractTrayManifests(hostile), [{
     icon: "icons/tray.ico",
     tooltip: "My app",
     guid: "abc-123"
-  });
+  }]);
 });
 
 test("extraction leaves the tooltip out when there is none", () => {
-  const manifest = extractTrayManifest(`export default defineTray({ icon: "a.ico", guid: "g", menu: [] });`);
-  assert.deepEqual(manifest, {
+  const manifest = extractTrayManifests(`export default defineTray({ icon: "a.ico", guid: "g", menu: [] });`);
+  assert.deepEqual(manifest, [{
     icon: "a.ico",
     guid: "g"
-  });
+  }]);
 });
 
 test("extraction rejects an icon or guid that is not a literal, and a file that is not defineTray", () => {
-  assert.throws(() => extractTrayManifest(`export default defineTray({ icon: ICON, guid: "g" });`), /string literals/u);
-  assert.throws(() => extractTrayManifest(`const icon = "a"; export default defineTray({ icon, guid: "g" });`), /string literals/u);
-  assert.throws(() => extractTrayManifest(`export default defineTray({ icon: \`\${a}.ico\`, guid: "g" });`), /string literals/u);
-  assert.throws(() => extractTrayManifest(`export default { icon: "a", guid: "g" };`), /defineTray/u);
-  assert.throws(() => extractTrayManifest(`export const tray = defineTray({ icon: "a", guid: "g" });`), /defineTray/u);
+  assert.throws(() => extractTrayManifests(`export default defineTray({ icon: ICON, guid: "g" });`), /string literals/u);
+  assert.throws(() => extractTrayManifests(`const icon = "a"; export default defineTray({ icon, guid: "g" });`), /string literals/u);
+  assert.throws(() => extractTrayManifests(`export default defineTray({ icon: \`\${a}.ico\`, guid: "g" });`), /string literals/u);
+  assert.throws(() => extractTrayManifests(`export default { icon: "a", guid: "g" };`), /defineTray/u);
+  assert.throws(() => extractTrayManifests(`export const tray = defineTray({ icon: "a", guid: "g" });`), /defineTray/u);
 });
 
 test("the wrapper imports the user's default export and the framework, so the user file imports none of the wiring", () => {
   const source = trayWrapperSource("/app/entrypoints/tray.ts");
-  assert.match(source, /import tray from "\/app\/entrypoints\/tray\.ts";/u);
-  assert.match(source, /claimTrayInstance\(\{ guid: tray\.guid \}\)/u);
+  assert.match(source, /import entrypoint from "\/app\/entrypoints\/tray\.ts";/u);
+  assert.match(source, /const trays = \[entrypoint\]\.flat\(\);/u);
+  assert.match(source, /claimTrayInstance\(\{ guid: trays\[0\]\.guid \}\)/u);
   assert.match(source, /createStandaloneTray\(\{ \.\.\.tray, onclick: tray\.onclick \?\? tray\.onactivate \}\)/u);
   assert.equal(TRAY_VIRTUAL_ID, "virtual:winui-svelte/tray");
+});
+
+test("an array of defineTray calls gives one manifest each, in order", () => {
+  const manifests = extractTrayManifests(
+    `export default [
+    defineTray({ icon: "a.ico", guid: "g1", tooltip: "A", menu: [] }),
+    defineTray({ icon: "b.ico", guid: "g2", menu: [] })
+  ];`
+  );
+  assert.deepEqual(manifests, [
+    {
+      icon: "a.ico",
+      tooltip: "A",
+      guid: "g1"
+    },
+    {
+      icon: "b.ico",
+      guid: "g2"
+    }
+  ]);
+});
+
+test("a list with a repeated guid, an empty list or a spread is refused", () => {
+  assert.throws(() => extractTrayManifests(`export default [defineTray({ icon: "a", guid: "g" }), defineTray({ icon: "b", guid: "g" })];`), /guid "g"/u);
+  assert.throws(() => extractTrayManifests("export default [];"), /at least one/u);
+  assert.throws(() => extractTrayManifests(`export default [...others];`), /defineTray/u);
+});
+
+test("tray.json is the single manifest for one tray and { trays } for several, and the process guid is the first", () => {
+  const first = {
+    icon: "a.ico",
+    guid: "g1"
+  };
+  const second = {
+    icon: "b.ico",
+    guid: "g2"
+  };
+  assert.deepEqual(trayManifestFileOf([first]), first);
+  assert.deepEqual(trayManifestFileOf([first, second]), { trays: [first, second] });
+  assert.deepEqual(parseTrayManifestFile(trayManifestFileOf([first])), [first]);
+  assert.equal(processGuidOf(parseTrayManifestFile({ trays: [first, second] })), "g1");
 });
 
 function fakeSeams({ stale, imageName }: {

@@ -1,4 +1,4 @@
-import { extractTrayManifest } from "./extract-tray.ts";
+import { extractTrayManifests } from "./extract-tray.ts";
 import { lowerTraySvelte } from "./lower-tray-svelte.ts";
 import { MenuItemKind } from "#src/tray/menu/types.js";
 import type { MenuItem } from "#src/tray/menu/types.js";
@@ -96,11 +96,11 @@ test("the lowered module keeps the script, drops the component import, and the b
     markup: `<TrayMenu />`,
     instance: "  function openApp() {}"
   });
-  assert.deepEqual(extractTrayManifest(code), {
+  assert.deepEqual(extractTrayManifests(code), [{
     icon: "tray.ico",
     tooltip: "Recorder",
     guid: GUID
-  });
+  }]);
   assert.match(code, /function openApp\(\)/u);
   assert.match(code, /let isAutostart = false;/u);
   assert.doesNotMatch(code, /tray\/menu\/svelte|\$state/u);
