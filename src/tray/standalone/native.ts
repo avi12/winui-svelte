@@ -1,5 +1,3 @@
-import { createMenuTheme, MenuColorScheme } from "./menu-theme.ts";
-import type { MenuTheme } from "./menu-theme.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { MenuItemKind } from "#src/tray/menu/types.js";
 import type { ResolvedCheck, ResolvedCommand, ResolvedMenuItem, ResolvedRadio } from "#src/tray/menu/types.js";
@@ -183,17 +181,11 @@ export function createMenuBuilder() {
 }
 
 /**
- * The real popup menu, themed by `colorScheme`. Its Win32 functions are bound when this is called,
- * never when the module loads.
+ * The real popup menu. Its Win32 functions are bound when this is called, never when the module
+ * loads. It does not theme itself: the menu follows the process's preferred app mode, which the
+ * caller sets before `choose` (see `createMenuTheme`).
  */
-export function createNativeMenu({ colorScheme = MenuColorScheme.SYSTEM, theme }: {
-  /** What the menu follows; the system's light or dark by default. */
-  readonly colorScheme?: MenuColorScheme;
-
-  /** The menu theming; uxtheme's by default (a test's stand-in). */
-  readonly theme?: MenuTheme;
-} = {}) {
-  const menuTheme = theme ?? createMenuTheme();
+export function createNativeMenu() {
   const builder = createMenuBuilder();
   const { trackPopup, postMessage } = bindDll({
     dll: "user32.dll",
@@ -205,7 +197,6 @@ export function createNativeMenu({ colorScheme = MenuColorScheme.SYSTEM, theme }
 
   const native: NativeMenu = {
     choose({ owner, point, items }) {
-      menuTheme.apply(colorScheme);
       const built = builder.build({ items });
       try {
         const chosen = trackPopup(

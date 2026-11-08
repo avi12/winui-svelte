@@ -1,4 +1,5 @@
-import { MenuColorScheme } from "./menu-theme.ts";
+import { createMenuTheme, MenuColorScheme } from "./menu-theme.ts";
+import type { MenuTheme } from "./menu-theme.ts";
 import { createNativeMenu } from "./native.ts";
 import type { NativeChoice, NativeMenu } from "./native.ts";
 import { removeTrayIconsAtExit } from "#src/tray/exit-hook.js";
@@ -35,7 +36,10 @@ interface StandaloneMenuOptions<ItemId extends string, Extras extends readonly T
   /**
    * The menu's color scheme, with the meaning of the CSS `color-scheme` property: `"light dark"` (the
    * default) follows the system's app theme, so the menu is dark when Windows is; `"light"` and `"dark"`
-   * force one. It is read when the first menu opens.
+   * force one. It is the scheme of this tray's menu only: the system has one menu theme for the whole
+   * process, so it is set right before each of this tray's menus opens, and two trays with different
+   * schemes each get their own (only one menu is open at a time). The last one set stays until the next
+   * menu opens, so another popup menu of the same process (a window's) follows whichever tray spoke last.
    */
   readonly colorScheme?: MenuColorScheme;
 }
@@ -80,6 +84,9 @@ export interface StandaloneTraySeams {
   /** The popup menu; Windows' own by default. */
   readonly nativeMenu?: NativeMenu;
 
+  /** The call that sets the process's menu theme; uxtheme's by default. */
+  readonly menuTheme?: MenuTheme;
+
   /** The timer that polls the pointer; Node's `setInterval` by default. */
   readonly schedule?: TrayScheduler;
 
@@ -111,6 +118,7 @@ export function createStandaloneTray<
   const defer = options.defer ?? setImmediate;
   const { menu: source } = options;
   let menu = options.nativeMenu;
+  let theme = options.menuTheme;
 
   function resolved() {
     const { profile } = options;
@@ -125,12 +133,14 @@ export function createStandaloneTray<
     readonly x: number;
     readonly y: number;
   }) {
-    menu ??= createNativeMenu({ colorScheme: options.colorScheme ?? MenuColorScheme.SYSTEM });
+    menu ??= createNativeMenu();
+    theme ??= createMenuTheme();
     const owner = native.createOwnerWindow();
     let choice: NativeChoice | undefined;
     try {
       native.focusWindow(owner);
       do {
+        theme.apply(options.colorScheme ?? MenuColorScheme.SYSTEM);
         choice = menu.choose({
           owner,
           point,

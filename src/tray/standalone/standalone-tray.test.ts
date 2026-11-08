@@ -146,6 +146,9 @@ function start<const ItemId extends string>({ menu, picks, profile }: {
   const seams = {
     native: fake.native,
     nativeMenu,
+    menuTheme: {
+      apply: noop
+    },
     defer: (run: () => void) => deferred.push(run),
     schedule({ onTick }: { readonly onTick: () => void }) {
       tick = onTick;
