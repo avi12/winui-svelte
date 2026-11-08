@@ -2571,9 +2571,13 @@ An opt-in subpath: an app that does not import it does not bundle it
   redirects to it
   An app whose windows run in a worker thread passes `entryScript`, the script
   that starts the process, because `process.argv[1]` there is the worker's
+  A single executable application (a Node `node:sea` build, where
+  `process.execPath` is the app's own exe) is relaunched as the exe and
+  `arguments`, with no script and no Node flags
 - `restartAfterCrash({ arguments, conditions })` is
   `RegisterApplicationRestart`: Windows starts the same Node and entry
-  script with `arguments` after a crash, a hang, an update that closes the
+  script (a single executable: its own exe) with `arguments` after a crash,
+  a hang, an update that closes the
   app or a reboot for one; `conditions` is a subset of `RestartCondition`
   (`crash`, `hang`, `update`, `reboot`; all by default)
   Limits: no callback (a crashed Node cannot run code, so

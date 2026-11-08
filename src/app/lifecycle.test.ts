@@ -5,7 +5,7 @@ import { test } from "node:test";
 // flags that leave out what was not asked for, and the order of a relaunch.
 // A real registration and a real second copy are for test/app.test.ts.
 
-const { commandOf, joinCommandLine } = await import("./launch-command.ts");
+const { commandOf, joinCommandLine, launchCommand } = await import("./launch-command.ts");
 const { exclusionFlags, registerRestart, RestartCondition } = await import("./restart-after-crash.ts");
 const { relaunchWith } = await import("./relaunch.ts");
 
@@ -30,6 +30,18 @@ test("a launch command is Node, its flags, the script, then the arguments", () =
   assert.deepEqual(command, {
     executable: "node.exe",
     arguments: ["--no-warnings", "C:/app/main.ts", "--key", "k"]
+  });
+});
+
+test("a single executable relaunches itself: the exe and the arguments, no script and no Node flags", () => {
+  const command = launchCommand({
+    appArguments: ["--after-update"],
+    entryScript: undefined,
+    isSingleExecutable: true
+  });
+  assert.deepEqual(command, {
+    executable: process.execPath,
+    arguments: ["--after-update"]
   });
 });
 
