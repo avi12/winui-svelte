@@ -315,6 +315,7 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
     }
 
     native.destroyWindow(identity.owner);
+    native.stopReadingPointer?.();
   }
 
   if (isVisible) {

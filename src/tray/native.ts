@@ -1,3 +1,4 @@
+import { createPointerShare } from "./pointer-share.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import {
   bind,
@@ -116,6 +117,9 @@ export interface TrayNative {
   iconRect(identity: TrayIdentity): ScreenRect | null;
   readPointer(): PointerSample;
 
+  /** Leaves the pointer reading that icons of one process share; `readPointer` is not called after. */
+  stopReadingPointer?(): void;
+
   /**
    * Makes `hwnd` the foreground window. A process that was not just given the
    * foreground (a tray click it polled for rather than received) is refused by
@@ -173,6 +177,8 @@ const MONITOR_WORK_OFFSET = 20;
 const MONITOR_WORK_RIGHT = 8;
 const MONITOR_WORK_BOTTOM = 12;
 const MONITOR_DEFAULT_TO_NEAREST = 2;
+// One share per process: GetAsyncKeyState's "pressed since the last call" flag is process-wide.
+const pointerShare = createPointerShare();
 const TRAY_WINDOW_CLASSES: ReadonlySet<string> = new Set([
   "Shell_TrayWnd",
   "Shell_SecondaryTrayWnd",
@@ -403,6 +409,22 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     });
   }
 
+  function readRawPointer() {
+    user32.cursorPosition(pointBuffer);
+    const point = {
+      x: pointBuffer.readI32(0),
+      y: pointBuffer.readI32(DWORD_BYTES)
+    };
+    return {
+      ...point,
+      left: readButton(VK_LBUTTON),
+      right: readButton(VK_RBUTTON),
+      middle: readButton(VK_MBUTTON),
+      isOnTray: isTrayWindowAt(point)
+    };
+  }
+
+  const sharedPointer = pointerShare.join(readRawPointer);
   const native: TrayNative = {
     createOwnerWindow() {
       const classText = wideMemory("STATIC");
@@ -434,20 +456,8 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
       });
     },
     iconRect: readIconRect,
-    readPointer() {
-      user32.cursorPosition(pointBuffer);
-      const point = {
-        x: pointBuffer.readI32(0),
-        y: pointBuffer.readI32(DWORD_BYTES)
-      };
-      return {
-        ...point,
-        left: readButton(VK_LBUTTON),
-        right: readButton(VK_RBUTTON),
-        middle: readButton(VK_MBUTTON),
-        isOnTray: isTrayWindowAt(point)
-      };
-    },
+    readPointer: sharedPointer.read,
+    stopReadingPointer: sharedPointer.stop,
     focusWindow(hwnd) {
       bringWindowToFront(hwnd);
     }
