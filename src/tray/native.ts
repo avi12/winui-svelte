@@ -8,6 +8,7 @@ import {
   withMemory
 } from "#src/win32-calls.js";
 import { createIconFileCalls } from "#src/win32-icons.js";
+import { bringWindowToFront } from "#src/window/foreground-native.js";
 
 /** The Shell_NotifyIcon operations. */
 export const NotifyOperation = {
@@ -331,11 +332,7 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
       keyState: ["GetAsyncKeyState", ["i32"], "i32"],
       windowFromPoint: ["WindowFromPoint", ["i64"], "pointer"],
       ancestor: ["GetAncestor", ["pointer", "u32"], "pointer"],
-      className: ["GetClassNameW", ["pointer", "pointer", "i32"], "i32"],
-      foregroundWindow: ["GetForegroundWindow", [], "pointer"],
-      windowThread: ["GetWindowThreadProcessId", ["pointer", "pointer"], "u32"],
-      attachInput: ["AttachThreadInput", ["u32", "u32", "i32"], "i32"],
-      setForeground: ["SetForegroundWindow", ["pointer"], "i32"]
+      className: ["GetClassNameW", ["pointer", "pointer", "i32"], "i32"]
     }
   });
   const shell32 = bindDll({
@@ -343,12 +340,6 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     functions: {
       notify: ["Shell_NotifyIconW", ["u32", "pointer"], "i32"],
       iconRect: ["Shell_NotifyIconGetRect", ["pointer", "pointer"], "i32"]
-    }
-  });
-  const { currentThread } = bindDll({
-    dll: "kernel32.dll",
-    functions: {
-      currentThread: ["GetCurrentThreadId", [], "u32"]
     }
   });
   const icons = createIconFileCalls();
@@ -412,14 +403,6 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     });
   }
 
-  function takeForeground(hwnd: bigint) {
-    const foregroundThread = user32.windowThread(user32.foregroundWindow(), null);
-    const ownThread = currentThread();
-    user32.attachInput(ownThread, foregroundThread, 1);
-    user32.setForeground(hwnd);
-    user32.attachInput(ownThread, foregroundThread, 0);
-  }
-
   const native: TrayNative = {
     createOwnerWindow() {
       const classText = wideMemory("STATIC");
@@ -465,7 +448,9 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
         isOnTray: isTrayWindowAt(point)
       };
     },
-    focusWindow: takeForeground
+    focusWindow(hwnd) {
+      bringWindowToFront(hwnd);
+    }
   };
   return native;
 }
