@@ -23,6 +23,8 @@
     "src/vite/runner.ts",
     "src/vite/compile.ts",
     "src/vite/loader.ts",
+    "src/automation/index.ts",
+    "src/automation/worker-job.ts",
     "src/win2d/index.ts",
     "src/composition/index.ts",
     "src/data-transfer/index.ts",
