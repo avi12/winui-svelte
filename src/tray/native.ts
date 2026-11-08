@@ -121,8 +121,11 @@ export interface TrayNative {
    * foreground (a tray click it polled for rather than received) is refused by
    * a plain SetForegroundWindow, so this joins the foreground thread's input
    * state for the call. It sends no input.
+   *
+   * @returns True when `hwnd` ended in front. A popup menu needs it: a menu
+   * whose owner is not in front is not dismissed by a click elsewhere.
    */
-  focusWindow(hwnd: bigint): void;
+  focusWindow(hwnd: bigint): boolean;
 }
 
 const NOTIFY_ICON_DATA_SIZE = 976;
@@ -448,9 +451,7 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
         isOnTray: isTrayWindowAt(point)
       };
     },
-    focusWindow(hwnd) {
-      bringWindowToFront(hwnd);
-    }
+    focusWindow: bringWindowToFront
   };
   return native;
 }

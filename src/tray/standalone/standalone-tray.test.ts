@@ -41,6 +41,7 @@ function noop() {}
 
 function fakeNative() {
   const calls: string[] = [];
+  let isFocusable = true;
   let pointer: PointerSample = {
     x: 110,
     y: 112,
@@ -61,11 +62,17 @@ function fakeNative() {
     notify: () => true,
     iconRect: (_identity: TrayIdentity) => ICON_RECT,
     readPointer: () => pointer,
-    focusWindow: hwnd => calls.push(`focusWindow ${hwnd}`)
+    focusWindow(hwnd) {
+      calls.push(`focusWindow ${hwnd}`);
+      return isFocusable;
+    }
   };
   return {
     native,
     calls,
+    refuseFocus() {
+      isFocusable = false;
+    },
     press(button: "left" | "right") {
       pointer = {
         ...pointer,
@@ -295,6 +302,25 @@ test("the owner window exists only while the menu is open, and takes the foregro
   const before = calls.length;
   rightClick();
   assert.deepEqual(calls.slice(before), ["createOwnerWindow", `focusWindow ${OWNER}`, "choose", `destroyWindow ${OWNER}`]);
+  handle.remove();
+});
+
+test("a menu whose owner cannot take the foreground is not opened, so the thread is never held by it", () => {
+  const { calls, shown, refuseFocus, rightClick, handle } = start({
+    menu: [command({ id: "open" })],
+    picks: ["open"]
+  });
+  refuseFocus();
+  const before = calls.length;
+  rightClick();
+  assert.equal(shown.length, 0, "a menu that a click elsewhere cannot dismiss would block the process until a pick");
+  assert.deepEqual(calls.slice(before), [
+    "createOwnerWindow",
+    `focusWindow ${OWNER}`,
+    `focusWindow ${OWNER}`,
+    `focusWindow ${OWNER}`,
+    `destroyWindow ${OWNER}`
+  ]);
   handle.remove();
 });
 
