@@ -63,6 +63,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
 | `winui-svelte/store` | `src/store/index.ts` | `getAppLicense`, `watchLicense`, `checkForUpdates`, `watchPackages`, `getStartupTask`, `getPackageInfo`: the Store and package APIs, answering `hasPackage: false` outside a package (opt-in) |
 | `winui-svelte/accessibility`, `/accessibility/audit` | `src/accessibility/index.ts`, `src/accessibility/audit/index.ts` | `announce`, `liveRegion`, `LivePriority`; `auditAccessibility`, `accessibilityRules` (opt-in; see Accessibility) |
+| `winui-svelte/automation` | `src/automation/index.ts` | `withUiaClient`, `createUiaWorker`, `readWindowText`, `UiaControlType`: a UI Automation client that reads the text of another window (opt-in; see UI Automation client) |
 | `winui-svelte/devices` | `src/devices/index.ts` | device enumeration, input devices, Bluetooth, printers, power, network, display, audio, gamepads and sensors, each also at `winui-svelte/devices/<area>` (opt-in; see Windows devices) |
 
 The table is the source layout: `exports` point at `.ts` files so the monorepo
@@ -6330,6 +6331,78 @@ target and checks the pixels
 The working example is `examples/win2d` (`test/win2d.test.ts` runs it in a real
 window and checks the redraw; `src/win2d/win2d.test.ts` draws on a render
 target and checks the pixels)
+
+## UI Automation client (`winui-svelte/automation`)
+
+Read the exact text and headings of another window, instead of OCR; the
+counterpart of the Accessibility section, which provides automation to
+others, while this one consumes it; no web API reads another application's
+window, so this mirrors none; it is opt-in and bundles COM only when imported
+
+```ts
+import { createUiaWorker } from "winui-svelte/automation";
+
+const worker = createUiaWorker();
+const text = await worker.readText({
+  target: "foreground",
+  excludeProcessId: process.pid,
+  hardMilliseconds: 1500
+});
+// { title, blocks: [{ kind: "heading", level: 1, text }, ...], version, end }
+```
+
+`readText` runs in a worker thread in the multithreaded COM apartment; a target
+that hangs makes the call reject with `UiaTimeout` after `hardMilliseconds`,
+the worker is ended and the next call starts a new one (a blocked COM call
+cannot be cancelled); it resolves null when there is no window to read, the
+window is the excluded process's or an elevated one
+
+For the lower level, `withUiaClient` gives a client on the calling thread
+(call it from a thread that joined a COM apartment) and releases every COM
+pointer it made when the callback ends:
+
+```ts
+import { UiaControlType, withUiaClient } from "winui-svelte/automation";
+
+const lines = await withUiaClient(client => {
+  const root = client.elementFromHandle(hwnd);
+  if (root === null) {
+    return [];
+  }
+
+  const found: string[] = [];
+  const walk = client.walk({
+    root,
+    maxElements: 400,
+    maxMilliseconds: 400,
+    shouldVisit: ({ controlType, isOffscreen }) => !isOffscreen && controlType !== UiaControlType.button
+  });
+  for (const node of walk) {
+    const ranges = node.pattern("text")?.visibleRanges() ?? [];
+    found.push(...ranges.map(range => range.getText(1000)));
+  }
+
+  return found;
+});
+```
+
+| Call | What |
+|---|---|
+| `withUiaClient(use)` | creates `CUIAutomation`, runs `use(client)`, releases everything; an element used after that throws `UiaScopeEndedError` |
+| `client.elementFromHandle(hwnd)`, `client.focusedElement()` | an element, or null when it is gone or cannot be read |
+| `element.properties()` | `name`, `className`, `automationId`, `controlType`, `processId`, `isOffscreen`, `boundingRectangle`, `headingLevel` (0 for none, 1 to 9), `hasTextPattern`, `hasValuePattern` |
+| `client.walk({ root, maxElements, maxMilliseconds, shouldVisit })` | breadth first over the control view, one cached call per parent (`FindAllBuildCache`); `walk.end` is `complete`, `maxElements` or `deadline`; an element that went away is skipped; `node.skipSubtree()` prunes |
+| `element.pattern("text")` | `visibleRanges()`, `documentRange()`, and `range.getText(maxLength)` |
+| `element.pattern("value")` | `value` |
+| `readWindowText({ client, root })` | the headings and text of a window, skipping chrome and off screen elements (`UIA_CHROME_CONTROL_TYPES`); `version` changes when the text does |
+| `createUiaWorker()` | `readText({ target, excludeProcessId, hardMilliseconds, ... })` with the hard deadline; `close()` |
+| `UiaControlType`, `UiaPropertyId`, `UiaPatternName`, `HEADING_LEVEL_NONE`, `HEADING_LEVEL_FIRST` | the header's ids as `as const` sets and constants (the sets also under `winui-svelte/enums`) |
+| `UiaWalkEnd`, `TextBlockKind`, `UiaTarget` | the closed sets of a walk's end, a block's kind and a worker target (`foreground`, `focused`, or `{ hwnd }`) |
+| `UiaElementUnavailableError`, `UiaScopeEndedError`, `UiaTimeout` | the errors: an element went away, a client was used after its scope, a target did not answer in time |
+
+Elements an app cannot read (elevated windows) come back as null, never an
+exception; browsers and Electron build their tree when the first client asks,
+so the first walk of such a window can be slower
 
 ## Windows devices (`winui-svelte/devices`)
 

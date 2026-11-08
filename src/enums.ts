@@ -5,6 +5,7 @@
 // costs nothing.
 
 export { LivePriority } from "./accessibility/live-priority.ts";
+export { UiaControlType, UiaPatternName, UiaPropertyId } from "./automation/ids.ts";
 export { ActivationKind } from "./app/activation/kinds.ts";
 export { ShellFailure } from "./app/shell/kinds.ts";
 export { RestartCondition } from "./app/restart-after-crash.ts";

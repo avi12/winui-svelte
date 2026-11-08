@@ -63,6 +63,10 @@
       "types": "./dist/accessibility/audit/index.d.ts",
       "default": "./dist/accessibility/audit/index.js"
     },
+    "./automation": {
+      "types": "./dist/automation/index.d.ts",
+      "default": "./dist/automation/index.js"
+    },
     "./accessibility/rules.json": "./dist/accessibility/audit/accessibility-rules.json",
     "./enums": {
       "types": "./dist/enums.d.ts",
