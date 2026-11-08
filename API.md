@@ -3324,6 +3324,12 @@ createStandaloneTray({
   `bounds` when their extras are passed
   The icon keeps the process alive; `remove()` or the process ending takes it
   out of the tray
+- `colorScheme` is the menu's `color-scheme` as the web says it: `"light dark"`
+  (the default) makes the popup dark when Windows' app theme is, `"light"` and
+  `"dark"` force one; `MenuColorScheme` names the three values
+  It uses uxtheme's `SetPreferredAppMode` and `FlushMenuThemes` (ordinals 135
+  and 136), applied before each menu opens, so it affects the process's other
+  native menus too
 - The default is the smallest tray: an icon from one `.ico` path, clicks,
   `update`, `remove` and the menu
   Three parts are opt-in, each one import from the same entry, passed in

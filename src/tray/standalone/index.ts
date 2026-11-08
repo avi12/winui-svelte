@@ -1,5 +1,6 @@
 export type { LaunchOptions } from "#src/app/activate.js";
 export { activateInstance, activateOrLaunch, launchApp } from "#src/app/activate.js";
+export { MenuColorScheme } from "./menu-theme.ts";
 export type { NativeChoice, NativeMenu } from "./native.ts";
 export { resolveMenu } from "#src/tray/menu/resolve.js";
 export type { MenuResolver } from "#src/tray/menu/resolve-lite.js";

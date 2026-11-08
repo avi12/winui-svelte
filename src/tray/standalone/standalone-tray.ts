@@ -1,3 +1,4 @@
+import { MenuColorScheme } from "./menu-theme.ts";
 import { createNativeMenu } from "./native.ts";
 import type { NativeChoice, NativeMenu } from "./native.ts";
 import { removeTrayIconsAtExit } from "#src/tray/exit-hook.js";
@@ -31,6 +32,12 @@ interface StandaloneMenuOptions<ItemId extends string, Extras extends readonly T
    */
   readonly menu?: ReadonlyArray<MenuItem<ItemId>> | (() => ReadonlyArray<MenuItem<ItemId>>) | undefined;
 
+  /**
+   * The menu's color scheme, with the meaning of the CSS `color-scheme` property: `"light dark"` (the
+   * default) follows the system's app theme, so the menu is dark when Windows is; `"light"` and `"dark"`
+   * force one. It is read when the first menu opens.
+   */
+  readonly colorScheme?: MenuColorScheme;
 }
 
 /** Levels, a user profile and ordering: what `resolve: resolveMenu` adds to the default. */
@@ -118,7 +125,7 @@ export function createStandaloneTray<
     readonly x: number;
     readonly y: number;
   }) {
-    menu ??= createNativeMenu();
+    menu ??= createNativeMenu({ colorScheme: options.colorScheme ?? MenuColorScheme.SYSTEM });
     const owner = native.createOwnerWindow();
     let choice: NativeChoice | undefined;
     try {
