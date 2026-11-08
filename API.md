@@ -38,6 +38,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`; imports nothing of WinRT, safe on the host's main thread |
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
+| `winui-svelte/window/foreground` | `src/window/foreground.ts` | `trackForeground()`, `bringWindowToFront()`, `shouldRestore()` (opt-in; see Following the foreground app) |
 | `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()`, `startTray()`, `relaunch()`, `restartAfterCrash()` (opt-in; see App lifecycle) |
 | `winui-svelte/app/shell` | `src/app/shell/index.ts` | `trash()`, `openWith()`, `createShortcut()`, `readShortcut()`, `registerAppPath()`, `ShellFailure` (opt-in; see Shell verbs) |
 | `winui-svelte/app/activation` | `src/app/activation/index.ts` | `installProtocolHandlers()`, `registerFileTypes()`, `launchAtLogin()`, `startActivation()`, `ActivationKind` (opt-in; see Activation) |
@@ -2929,6 +2930,65 @@ const hotkey = registerHotkey({
 - `test/hotkeys.test.ts` registers `ctrl+alt+shift+f23` in a real window and
   posts `WM_HOTKEY` to the thread itself with `PostThreadMessageW`; no key is
   pressed
+
+### Following the foreground app (`winui-svelte/window/foreground`)
+
+Opt-in; nothing runs at import
+
+```ts
+import {
+  bringWindowToFront,
+  shouldRestore,
+  trackForeground
+} from "winui-svelte/window/foreground";
+
+const tracker = trackForeground({
+  ownWindows: () => [pillHwnd],
+  onChanged: ({ hwnd, isRealApp }) => {}
+});
+tracker.lastRealApp; // bigint | null, the last real app that was in front
+tracker.current; // bigint | null
+tracker.stop(); // idempotent
+
+const isBack = shouldRestore({
+  lastRealApp: tracker.lastRealApp,
+  foreground: tracker.foreground
+});
+if (isBack && tracker.lastRealApp !== null) {
+  bringWindowToFront(tracker.lastRealApp); // true when Windows took it
+}
+```
+
+- `trackForeground({ onChanged, ownWindows, ignoredClasses, tracking,
+  intervalMilliseconds })` runs on the UI thread of a `runWindow` app
+- `tracking: "events"` (default, `ForegroundTracking.events`): the shell posts
+  a message to a hidden window of the app on each change
+  (`RegisterShellHookWindow` and `SHELLHOOK`), the message pump reads it, and
+  `GetForegroundWindow` is read once; an idle foreground costs nothing
+  dynwinrt delivers no native callbacks, so `SetWinEventHook` cannot be used
+  If Windows refuses the registration, use `tracking: "polling"`
+- `tracking: "polling"`: one `GetForegroundWindow` per `intervalMilliseconds`
+  (100 by default, 16 at least); latency is one tick
+  The class and the process of a window are read once, when it is first seen
+- The filter: a real app is not the desktop, not a shell class
+  (`ForegroundShellClass`: `Progman`, `WorkerW`, `Shell_TrayWnd`,
+  `Shell_SecondaryTrayWnd`, `CopilotKeyPressFocusFrame`), not a window of
+  this process, and not in `ownWindows()` or `ignoredClasses`
+  `lastRealApp` changes only on a real app
+- `bringWindowToFront(hwnd)` joins this thread to the foreground thread's
+  input for `BringWindowToTop` and `SetForegroundWindow`, then detaches,
+  because a hotkey's key releases went to the app in front and Windows'
+  foreground lock refuses a plain call; it restores a minimized window first,
+  sends no input and returns whether the window ended in front
+  It is best effort: a foreground window of a higher integrity level or a hung
+  one still refuses; the tray menu window takes the foreground through it
+- Not measured yet: the idle cost of each mode (the tray's 30 Hz timer costs
+  about 2 percent of a core in an idle window)
+
+Manual checklist: press the app's hotkey from Notepad, then from the desktop,
+then from a browser on a second monitor; each time the key goes back to where
+it was; then Alt+Tab to another app while the overlay is up and confirm it is
+not pulled back
 
 ### System tray (`winui-svelte/tray`)
 
