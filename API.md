@@ -59,6 +59,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
 | `winui-svelte/win2d/context-2d` | `src/win2d/context-2d/index.ts` | `Canvas2D`, `createCanvas2D`, `CanvasElement`, `Context2D`, `Path2D` and the rest of the HTML Canvas 2D API over Win2D (opt-in; see Canvas 2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
+| `winui-svelte/progress/core` | `src/progress/core.ts` | `ProgressRegistry`, `defaultProgressRegistry()`, `ProgressOperation`, `trackOperation()`, `progressText()` and the types, with no Svelte component and no taskbar code, for a process with no window (opt-in; see Progress) |
 | `winui-svelte/tray/standalone` | `src/tray/standalone/index.ts` | `createStandaloneTray()`, `defineTray()`, its opt-in parts `balloons`, `bounds` and `themedIcon`, `MenuItemKind`, `MenuLevel`, and the `winui-svelte/app` calls that start or signal the app: a tray with no window, no WinUI and no components (opt-in; see Tray with no window) |
 | `winui-svelte/notice` | `src/notice/index.ts` | `showNotice()`, `NoticeIcon`, `NoticeButtons`, `NoticeButton`: a message box with no window or app (opt-in; see Notice with no app) |
 | `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
@@ -3445,8 +3446,8 @@ tray.notify({ title: "Ready" });
   here: Windows opens a submenu row without reporting a pick, and no pixel
   or file icon is drawn
   The menu is modal: the thread runs its own message loop until it closes
-  It does not follow a dark system theme, which a native popup menu does not
-  without an undocumented call; a menu that must match the theme belongs in
+  `colorScheme` makes it follow the system theme through an undocumented
+  uxtheme call; a menu that must be drawn in WinUI belongs in
   `winui-svelte/tray` with `TrayIcon`'s `menu` snippet
 - The same entry re-exports `activateInstance`, `activateOrLaunch` and
   `launchApp` from `winui-svelte/app` (App lifecycle), so a tray imports from
@@ -3456,6 +3457,76 @@ tray.notify({ title: "Ready" });
 - A test bundles it (`scripts/pack/tray-only.test.ts`) and fails if any
   component, window or renderer module, or a component's name, is in the
   output, or if it grows past its budget
+
+### Trays and windows are independent
+
+Neither needs the other
+A process can have zero windows and several tray icons, or windows and
+taskbar buttons and no tray; nothing is created for the part you leave out
+
+```ts
+// Zero windows, two icons, one Node process
+import { createStandaloneTray, MenuColorScheme, MenuItemKind } from "winui-svelte/tray/standalone";
+import { defaultProgressRegistry, progressText } from "winui-svelte/progress/core";
+
+createStandaloneTray({
+  icon: "recorder.ico",
+  tooltip: "Recorder",
+  colorScheme: MenuColorScheme.DARK,
+  menu: () => [{
+    kind: MenuItemKind.COMMAND,
+    id: "status",
+    label: progressText(defaultProgressRegistry().snapshot),
+    onselect() {}
+  }]
+});
+
+createStandaloneTray({
+  icon: "uploads.ico",
+  tooltip: "Uploads",
+  colorScheme: MenuColorScheme.LIGHT,
+  menu: [{ kind: MenuItemKind.COMMAND, id: "quit", label: "Quit", onselect: () => process.exit(0) }]
+});
+```
+
+```svelte
+<!-- Windows and a taskbar button, no tray -->
+<script lang="ts">
+  import { Window } from "winui-svelte/components";
+  import { TaskbarProgress } from "winui-svelte/progress";
+</script>
+
+<Window>
+  <TaskbarProgress />
+</Window>
+```
+
+- Each `createStandaloneTray` has an identity of its own (its own hidden owner
+  window and a unique id, and its own `guid` when you pass one), its own
+  timer, its own menu and its own state; `remove()` takes out that icon only
+  and the exit hook takes out all of them
+- Clicks are polled, and Windows keeps one "pressed since the last read"
+  flag for the whole process, which the first read clears; the trays of a
+  process share that read, so each icon hears a click shorter than its
+  polling interval (the flag can still be cleared by another process or by
+  other code of yours that calls `GetAsyncKeyState`)
+- The menu theme is one setting per process (uxtheme's preferred app mode);
+  a tray sets its own `colorScheme` right before each of its menus opens, so
+  two trays with different schemes each get theirs, because only one menu is
+  open at a time
+  The setting then stays until the next menu opens, so another popup menu in
+  the same process (a window's) shows in the scheme of the tray that spoke
+  last
+- `winui-svelte/progress/core` is the progress registry, operations and
+  `progressText` with no Svelte component and no taskbar code, so a
+  tray-only process can show progress; `winui-svelte/progress` adds
+  `TaskbarProgress` and `bindTaskbarProgress`, which are the only part that
+  needs a window
+- `scripts/pack/independence.test.ts` walks the imports and fails if the
+  standalone tray reaches a component, the renderer, the window runtime or
+  taskbar code, if the taskbar progress reaches a tray, or if a window
+  reaches a tray; `scripts/pack/tray-only.test.ts` bundles two trays with the
+  registry and fails on the same, or on a growing size
 
 ### Tray as an entrypoint (`entrypoints/tray.ts`)
 
@@ -3497,6 +3568,14 @@ export default defineTray({
 - `guid` is required: it keeps the icon's place in the tray and names the one
   tray process, so a second `tray.js` exits at once
 - `onactivate` runs on a left click when `onclick` is not given
+- `export default [defineTray({ ... }), defineTray({ ... })]` defines several
+  trays in one entrypoint: one `tray.js`, one process, each tray with its own
+  `guid`, icon, tooltip, menu and `colorScheme` (every `guid` must differ)
+  The first tray's `guid` names the process, so keep the order; `tray.json` is
+  the single manifest for one tray and `{ "trays": [ ... ] }` for several, and
+  `startTray()` reads the first `guid` from either
+  The markup form (`tray.svelte`) is one tray; use `tray.ts` for several
+  `examples/tray-multiple` is a two-icon entrypoint with no window
 - The build reads `icon`, `tooltip` and `guid` from the syntax tree, never by
   running the file, so a top-level import of WinRT in `tray.ts` does not
   execute at build; `icon` and `guid` must be string literals, and the icon a
