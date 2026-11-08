@@ -151,7 +151,7 @@ test("every picture prop in the data still names its owner and a member of it", 
 
 test("picture data lists the components that take the tray and window pictures, and the taskbar variants", () => {
   const icon = data.pictureProps.find(prop => prop.owner === "MenuLabelledItem" && prop.name === "icon");
-  assert.deepEqual(icon?.components, ["TrayMenuItem", "TrayMenuSubmenu"]);
+  assert.deepEqual(icon?.components, ["TrayMenuItem", "TrayMenuOperations", "TrayMenuProgress", "TrayMenuSubmenu"]);
   assert.deepEqual(icon?.forms, ["string", "pixels"]);
   assert.deepEqual(data.pictureProps.find(prop => prop.owner === "TrayIconOptions")?.forms, ["string", "pair"]);
   assert.equal(data.pictureProps.find(prop => prop.owner === "ImageProps")?.components[0], "Image");

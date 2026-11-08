@@ -264,7 +264,7 @@ export interface WindowProps {
    * `handle.close()`). Returning true keeps it open: ask the user, then close
    * it again from code. Anything else lets it close.
    */
-  onclosing?: () => boolean | void;
+  onclosing?: (() => boolean | void) | undefined;
   onclosed?: () => void;
 
   /**
