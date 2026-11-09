@@ -397,9 +397,25 @@ Both add-ons draw the picture beside a path or URL written in an `icon` or
 an image `source`, and a larger popup (name, pixel size, file size, the frames
 of an `.ico`); a light and dark taskbar pair is drawn side by side on the
 taskbar colors, a local file that is not there gets a marker and a warning, and
-a remote picture is fetched only when "Preview remote pictures" (WebStorm) or
-`winuiSvelte.previews.remotePictures` (VS Code) is on, with a timeout, a size
-cap and a cache on disk
+a remote picture is fetched unless "Preview remote pictures" (WebStorm) or
+`winuiSvelte.previews.remotePictures` (VS Code) is turned off
+
+The remote policy is in the spec (`remote`) and in `RemoteDownload.kt` and
+`picture-remote.ts`: http and https only, no credentials in the URL, none
+sent, no link-local host, redirects followed by hand and checked at every hop
+(never from https to http, at most `maxRedirects`), one timeout for the whole
+exchange, a streamed size cap, the format found from the first bytes and not
+from the URL, `maxConcurrent` fetches at a time off the editor thread, a
+cache on disk for `maxAgeHours`, a failure remembered for
+`failureRetryMinutes`, and nothing fetched in a project or workspace that is
+not trusted
+
+Besides a literal, a picture is found as `new URL("./x.png", import.meta.url)`
+and as a name that an image import or a `const` binds
+(`PictureBindings`, `picture-bindings.ts`), at the place the name is used;
+`file:` URLs, the `$lib/`, `@/` and `~/` aliases and a leading slash read
+under `public/` resolve like any path (`aliases` and `publicFolder` in the
+spec)
 
 No add-on knows a component: to make a new prop previewable, type it with
 `PictureSource` (`src/picture-source.ts`, exported from `winui-svelte/media`
