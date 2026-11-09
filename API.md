@@ -2567,6 +2567,13 @@ An opt-in subpath: an app that does not import it does not bundle it
 - `activateOrLaunch({ key, activation, launch })` is the two together: it
   activates the running copy, or else starts the app with `launch`, and
   resolves with true for the first and false for the second
+- `activateInstance` and `launchApp` first call `AllowSetForegroundWindow` for
+  any process, as does the standalone tray after a menu pick and before a
+  click's handler: Windows' foreground lock refuses the window of another
+  process, and only the process that received the user's input can lift it
+  `handle.bringToFront()` also joins the foreground thread's input (the same
+  call as `bringWindowToFront`), so a window asked from another process comes
+  to the front instead of flashing on the taskbar
 - `relaunch({ arguments })` starts the same Node with the same flags, entry
   script (`process.argv[1]`) and then `arguments`, detached, and calls
   `exitApplication`, so the new copy outlives this one

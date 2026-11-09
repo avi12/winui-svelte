@@ -8,6 +8,7 @@ import { createTaskbarButton } from "./taskbar.ts";
 import type { TaskbarButton } from "./taskbar.ts";
 import { WindowControlsOverlay, windowTitleBarSource } from "#src/web-apis/window-controls-overlay.js";
 import { WindowGeometry } from "#src/web-apis/window-geometry.js";
+import { bringWindowToFront } from "#src/win32-foreground.js";
 import type { Window } from "#src/winui.js";
 import {
   FileOpenPicker,
@@ -141,10 +142,17 @@ export class WindowHandle {
     this.presenter.restore();
   }
 
-  /** Restored, shown and focused: what launching an app again does. */
+  /**
+   * Restored, shown and focused: what launching an app again does. WinUI's
+   * activation alone is refused by Windows' foreground lock when this process
+   * was not just given the foreground (a tray menu in another process asked
+   * for the window), and the window then only flashes on the taskbar, so the
+   * window is also brought to the front the way `bringWindowToFront` does.
+   */
   bringToFront() {
     this.restore();
     this.activate();
+    bringWindowToFront(this.appWindow.id.value);
   }
 
   /**
