@@ -10,3 +10,4 @@ export type { ActivationOptions } from "./receive.ts";
 export { startActivation } from "./receive.ts";
 export type { PackagedActivation } from "./packaged.ts";
 export { packagedActivation } from "./packaged.ts";
+export { createWindowsRegistry } from "./native.ts";

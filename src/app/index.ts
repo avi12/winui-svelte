@@ -1,7 +1,9 @@
 export type { NotificationInvocation, NotifyOptions } from "./notify.ts";
 export { notify } from "./notify.ts";
-export type { Activation, SingleInstance, SingleInstanceOptions } from "./single-instance.ts";
-export { ensureSingleInstance } from "./single-instance.ts";
+export type { Activation, InstanceServer, InstanceSource, SingleInstance, SingleInstanceOptions } from "./single-instance.ts";
+export { claimInstance, createPipeSource, ensureSingleInstance } from "./single-instance.ts";
+export { currentUserSid, pipeNameFor } from "./instance-pipe.ts";
+export { isInstanceRunning } from "./instance-running.ts";
 export type { LaunchOptions } from "./activate.ts";
 export { activateInstance, activateOrLaunch, launchApp } from "./activate.ts";
 export type { RelaunchOptions } from "./relaunch.ts";
