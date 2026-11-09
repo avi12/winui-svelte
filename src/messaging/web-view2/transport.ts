@@ -1,4 +1,4 @@
-import { waitForCoreWebView2 } from "./core.ts";
+import { messageOf, waitForCoreWebView2 } from "./core.ts";
 import type { CoreWebView2Like, WebView2Like } from "./core.ts";
 import type { Frame } from "#src/messaging/frame.js";
 import { jsonSchema } from "#src/messaging/json.js";
@@ -19,10 +19,6 @@ function originOf(source: string) {
   } catch {
     return source;
   }
-}
-
-function messageOf(error: unknown) {
-  return error instanceof Error ? error.message : String(error);
 }
 
 /**

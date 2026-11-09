@@ -6,10 +6,15 @@ import type {
   NavigationArguments,
   PermissionArguments,
   WebMessageArguments,
+  WebResourceRequestedArguments,
   WebView2Like
 } from "./core.ts";
 import { addDocumentCreatedScript, executeScript } from "./core.ts";
+import { dispatchKey, dispatchMouseClick, TypeMode, typeText } from "./input.ts";
 import { onDownloadStarting, onNavigationStarting, onPermissionRequested, PermissionState } from "./policy.ts";
+import { callDevToolsMethod, onDevToolsEvent } from "./protocol.ts";
+import { ResourceContext, subscribeRequests } from "./requests.ts";
+import type { BodyStreams } from "./requests.ts";
 import { webView2Transport } from "./transport.ts";
 import { defineMessaging } from "#src/messaging/messaging.js";
 import { createPageTransport } from "#src/messaging/page.js";
@@ -46,8 +51,21 @@ function fakeCore() {
     message: new Set<(sender: unknown, args: WebMessageArguments) => void>(),
     navigation: new Set<(sender: unknown, args: NavigationArguments) => void>(),
     download: new Set<(sender: unknown, args: DownloadArguments) => void>(),
-    permission: new Set<(sender: unknown, args: PermissionArguments) => void>()
+    permission: new Set<(sender: unknown, args: PermissionArguments) => void>(),
+    resource: new Set<(sender: unknown, args: WebResourceRequestedArguments) => void>(),
+    protocolEvent: new Set<(sender: unknown, args: {
+      parameterObjectAsJson: string;
+    }) => void>()
   };
+  const protocolCalls: Array<{
+    method: string;
+    parameters: string;
+  }> = [];
+  const responses: Array<{
+    statusCode: number;
+    reasonPhrase: string;
+    headers: string;
+  }> = [];
   const cookies: CookieLike[] = [];
   const calls: string[] = [];
   const settings = { areHostObjectsAllowed: true };
@@ -65,6 +83,36 @@ function fakeCore() {
     addScriptToExecuteOnDocumentCreatedAsync: () => Promise.resolve("script-1"),
     removeScriptToExecuteOnDocumentCreated: id => calls.push(`remove ${id}`),
     openDevToolsWindow: () => calls.push("devtools"),
+    environment: {
+      createWebResourceResponse(_content, statusCode, reasonPhrase, headers) {
+        const response = {
+          statusCode,
+          reasonPhrase,
+          headers
+        };
+        responses.push(response);
+        return response;
+      }
+    },
+    addWebResourceRequestedFilter: (uri, context) => calls.push(`add ${uri} ${context}`),
+    removeWebResourceRequestedFilter: (uri, context) => calls.push(`remove ${uri} ${context}`),
+    callDevToolsProtocolMethodAsync(method, parameters) {
+      protocolCalls.push({
+        method,
+        parameters
+      });
+      return method === "Fails.method" ? Promise.reject(new Error("no such method")) : Promise.resolve(JSON.stringify({ method }));
+    },
+    getDevToolsProtocolEventReceiver: () => ({
+      onDevToolsProtocolEventReceived(callback) {
+        handlers.protocolEvent.add(callback);
+        return () => handlers.protocolEvent.delete(callback);
+      }
+    }),
+    onWebResourceRequested(callback) {
+      handlers.resource.add(callback);
+      return () => handlers.resource.delete(callback);
+    },
     onWebMessageReceived(callback) {
       handlers.message.add(callback);
       return () => handlers.message.delete(callback);
@@ -88,7 +136,9 @@ function fakeCore() {
     handlers,
     cookies,
     calls,
-    settings
+    settings,
+    protocolCalls,
+    responses
   };
 }
 
@@ -413,4 +463,213 @@ test("a navigation isAllowed refuses is cancelled", async () => {
 
   assert.equal(inside.cancel, false);
   assert.equal(outside.cancel, true);
+});
+
+const FAKE_STREAMS: BodyStreams = {
+  empty: () => "empty",
+  of: () => Promise.resolve("bytes")
+};
+
+function resourceArguments({ uri, resourceContext = 0 }: {
+  uri: string;
+  resourceContext?: number;
+}) {
+  const args: WebResourceRequestedArguments = {
+    request: {
+      uri,
+      method: "GET"
+    },
+    resourceContext,
+    response: undefined,
+    getDeferral: () => ({ complete: () => undefined })
+  };
+  return args;
+}
+
+test("a handler adds the filter once, answers the matches with an empty 204 and removes both", async () => {
+  const { control, handlers, calls, responses } = fakeControl();
+  const unblock = await subscribeRequests({
+    control,
+    filters: [{
+      uri: "https://accounts.example/Rotate*",
+      context: ResourceContext.FETCH
+    }],
+    respond: () => ({ statusCode: 204 }),
+    streams: FAKE_STREAMS
+  });
+  assert.deepEqual(calls, ["add https://accounts.example/Rotate* 8"]);
+
+  const matching = resourceArguments({
+    uri: "https://accounts.example/RotateCookies?x=1",
+    resourceContext: 8
+  });
+  const otherContext = resourceArguments({
+    uri: "https://accounts.example/RotateCookies",
+    resourceContext: 1
+  });
+  const otherUri = resourceArguments({
+    uri: "https://accounts.example/other",
+    resourceContext: 8
+  });
+  for (const handler of handlers.resource) {
+    handler(undefined, matching);
+    handler(undefined, otherContext);
+    handler(undefined, otherUri);
+  }
+
+  assert.deepEqual(responses, [{
+    statusCode: 204,
+    reasonPhrase: "No Content",
+    headers: ""
+  }]);
+  assert.notEqual(matching.response, undefined);
+  assert.equal(otherContext.response, undefined);
+  assert.equal(otherUri.response, undefined);
+  unblock();
+  assert.equal(handlers.resource.size, 0);
+  assert.deepEqual(calls.slice(1), ["remove https://accounts.example/Rotate* 8"]);
+});
+
+test("a respond that returns null lets the request through, a body holds it until written", async () => {
+  const { control, handlers, responses } = fakeControl();
+  await subscribeRequests({
+    control,
+    streams: FAKE_STREAMS,
+    filters: [{ uri: "https://example.com/*" }],
+    respond: request => request.uri.endsWith("/ads") ? null : {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "text/plain",
+        "X-A": "b"
+      },
+      body: "hi"
+    }
+  });
+  const passed = resourceArguments({ uri: "https://example.com/ads" });
+  const held = resourceArguments({ uri: "https://example.com/page" });
+  let isCompleted = false;
+  held.getDeferral = () => ({
+    complete() {
+      isCompleted = true;
+    }
+  });
+  for (const handler of handlers.resource) {
+    handler(undefined, passed);
+    handler(undefined, held);
+  }
+
+  assert.equal(passed.response, undefined);
+  assert.equal(held.response, undefined);
+  await new Promise(resolve => setTimeout(resolve, 200));
+  assert.equal(isCompleted, true);
+  assert.deepEqual(responses, [{
+    statusCode: 200,
+    reasonPhrase: "OK",
+    headers: "Content-Type: text/plain\r\nX-A: b"
+  }]);
+});
+
+test("a protocol method is called with JSON parameters, parsed, and an error rejects with its text", async () => {
+  const { control, protocolCalls } = fakeControl();
+  const result = await callDevToolsMethod({
+    control,
+    method: "Runtime.evaluate",
+    parameters: {
+      expression: "1"
+    }
+  });
+  assert.deepEqual(result, { method: "Runtime.evaluate" });
+  assert.deepEqual(protocolCalls, [{
+    method: "Runtime.evaluate",
+    parameters: "{\"expression\":\"1\"}"
+  }]);
+  await assert.rejects(
+    callDevToolsMethod({
+      control,
+      method: "Fails.method"
+    }), /Fails\.method: no such method/
+  );
+});
+
+test("a protocol event reaches the handler as parsed JSON until it is unsubscribed", async () => {
+  const { control, handlers } = fakeControl();
+  const seen: unknown[] = [];
+  const off = await onDevToolsEvent({
+    control,
+    event: "Network.requestWillBeSent",
+    handler: parameters => seen.push(parameters)
+  });
+  for (const handler of handlers.protocolEvent) {
+    handler(undefined, { parameterObjectAsJson: "{\"id\":\"1\"}" });
+  }
+
+  assert.deepEqual(seen, [{ id: "1" }]);
+  off();
+  assert.equal(handlers.protocolEvent.size, 0);
+});
+
+test("keys, clicks and typed text are built as Input protocol calls", async () => {
+  const { control, protocolCalls } = fakeControl();
+  await dispatchKey({
+    control,
+    key: "a",
+    type: "keyDown"
+  });
+  await dispatchKey({
+    control,
+    key: "a",
+    type: "keyUp"
+  });
+  await dispatchMouseClick({
+    control,
+    x: 5,
+    y: 6
+  });
+  assert.deepEqual(protocolCalls.map(call => [call.method, JSON.parse(call.parameters)]), [
+    ["Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: "a",
+      modifiers: 0,
+      text: "a"
+    }],
+    ["Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "a",
+      modifiers: 0
+    }],
+    ["Input.dispatchMouseEvent", {
+      type: "mousePressed",
+      x: 5,
+      y: 6,
+      button: "left",
+      clickCount: 1
+    }],
+    ["Input.dispatchMouseEvent", {
+      type: "mouseReleased",
+      x: 5,
+      y: 6,
+      button: "left",
+      clickCount: 1
+    }]
+  ]);
+
+  protocolCalls.length = 0;
+  await typeText({
+    control,
+    text: "hi"
+  });
+  assert.equal(protocolCalls.length, 4);
+
+  protocolCalls.length = 0;
+  await typeText({
+    control,
+    text: "hello",
+    mode: TypeMode.INSERT_AFTER_FIRST
+  });
+  assert.deepEqual(protocolCalls.map(call => call.method), [
+    "Input.dispatchKeyEvent",
+    "Input.dispatchKeyEvent",
+    "Input.insertText"
+  ]);
+  assert.deepEqual(JSON.parse(protocolCalls[2]?.parameters ?? ""), { text: "ello" });
 });

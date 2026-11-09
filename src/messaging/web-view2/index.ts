@@ -12,3 +12,7 @@ export type { PermissionRequest } from "./policy.ts";
 export { onDownloadStarting, onNavigationStarting, onPermissionRequested, PermissionKind, PermissionState } from "./policy.ts";
 export type { WebView2Transport } from "./transport.ts";
 export { webView2Transport } from "./transport.ts";
+export type { RequestFilter, WebRequest, WebResponse } from "./requests.ts";
+export { blockRequests, onWebResourceRequested, ResourceContext, StatusCode } from "./requests.ts";
+export { callDevToolsMethod, onDevToolsEvent } from "./protocol.ts";
+export { dispatchKey, dispatchMouseClick, keyEventParameters, KeyEventType, MouseButton, TypeMode, typeText } from "./input.ts";
