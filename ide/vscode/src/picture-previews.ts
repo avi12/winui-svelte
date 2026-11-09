@@ -1,8 +1,10 @@
 import { Setting, SVELTE_LANGUAGE } from "./ids.ts";
 import { scanAttributes, scanExpressionAttributes } from "./markup-scan.ts";
+import { pictureBindings } from "./picture-bindings.ts";
 import { isPictureAttribute, pictureNames, WRAPPER_TYPE } from "./picture-data.ts";
 import { pictureCaption } from "./picture-image.ts";
 import { loadPicture, PictureState } from "./picture-load.ts";
+import { createRemotePictures } from "./picture-remote.ts";
 import { pictureTables } from "./picture-spec.ts";
 import {
   expressionSpots,
@@ -31,16 +33,11 @@ const SVELTE = { language: SVELTE_LANGUAGE };
 const PICTURES = "picture";
 const REMOTE_PICTURES = "remotePictures";
 const INLINE_GAP = "0 3px 0 0";
-const HINT_COLOR = "#888888";
 const WARNING_SOURCE = "winui-svelte";
-
-const HINTS = {
-  [PictureState.MISSING]: "file not found",
-  [PictureState.REMOTE_OFF]: "remote picture, previews are off",
-  [PictureState.REMOTE_FAILED]: "remote picture not fetched",
-  [PictureState.TOO_LARGE]: "too large to preview",
-  [PictureState.SHOWN]: ""
-} as const satisfies Record<PictureState, string>;
+// A grey frame with a cross, drawn for a picture that is not there to show; the hover says why.
+const PLACEHOLDER = `data:image/svg+xml;base64,${Buffer.from(
+  "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><rect x=\"1.5\" y=\"1.5\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"#888\" stroke-width=\"1.2\"/><path d=\"M4 4l8 8M12 4l-8 8\" stroke=\"#888\" stroke-width=\"1.2\"/></svg>"
+).toString("base64")}`;
 
 type Resolved = Awaited<ReturnType<typeof resolvedSpots>>;
 
@@ -58,12 +55,13 @@ function isEnabled() {
 }
 
 function isRemoteEnabled() {
-  return configuration().get<boolean>(`${Setting.PREVIEWS}.${REMOTE_PICTURES}`, false);
+  return configuration().get<boolean>(`${Setting.PREVIEWS}.${REMOTE_PICTURES}`, true) && workspace.isTrusted;
 }
 
-async function attributeSpots({ text, file }: {
+async function attributeSpots({ text, file, bindings }: {
   text: string;
   file: string;
+  bindings: Map<string, string>;
 }) {
   const names = pictureNames();
   function isPicture({ tag, attribute }: {
@@ -101,16 +99,17 @@ async function attributeSpots({ text, file }: {
         attribute: found.attribute,
         expression: found.value,
         start: found.valueStart,
-        names
+        names,
+        bindings
       }) : [];
     })
   );
   return [...plain.flat(), ...expressions.flat()];
 }
 
-async function resolvedSpots({ document, cacheFolder }: {
+async function resolvedSpots({ document, remote }: {
   document: TextDocument;
-  cacheFolder: string;
+  remote: Parameters<typeof loadPicture>[0]["remote"];
 }) {
   const file = document.uri.fsPath;
   const isWinui = await isWinuiFile(file);
@@ -120,14 +119,17 @@ async function resolvedSpots({ document, cacheFolder }: {
 
   const text = document.getText();
   const root = await projectRootOf(file);
+  const bindings = pictureBindings(text);
   const spots = uniqueSpots([
     ...await attributeSpots({
       text,
-      file
+      file,
+      bindings
     }),
     ...keySpots({
       text,
-      names: pictureNames()
+      names: pictureNames(),
+      bindings
     })
   ]);
   return Promise.all(
@@ -138,7 +140,7 @@ async function resolvedSpots({ document, cacheFolder }: {
         file,
         root,
         isRemoteEnabled: isRemoteEnabled(),
-        cacheFolder
+        remote
       })
     }))
   );
@@ -156,7 +158,7 @@ function lineOf({ resolved, theme }: {
   const hasPicture = picture.state === PictureState.SHOWN && picture.dataUri !== undefined;
   if (!hasPicture) {
     const lookedIn = picture.candidates.length > 0 ? `, looked in ${picture.candidates.join(", ")}` : "";
-    return `**${picture.name}**${theme}: ${HINTS[picture.state]}${lookedIn}`;
+    return `**${picture.name}**${theme}: ${picture.note}${lookedIn}`;
   }
 
   const background = backgroundOf(spot.variant);
@@ -208,8 +210,9 @@ function beforeOf(resolved: Resolved[number]) {
   }
 
   return {
-    contentText: `[${HINTS[picture.state]}] `,
-    color: HINT_COLOR,
+    contentIconPath: Uri.parse(PLACEHOLDER),
+    width: `${pictureTables.limits.inlineSize}px`,
+    height: `${pictureTables.limits.inlineSize}px`,
     margin: INLINE_GAP
   } satisfies ThemableDecorationAttachmentRenderOptions;
 }
@@ -225,6 +228,10 @@ export function registerPictureViews(context: ExtensionContext) {
   const type = window.createTextEditorDecorationType({});
   const diagnostics = languages.createDiagnosticCollection("winui-svelte-pictures");
   const cacheFolder = path.join(context.globalStorageUri.fsPath, pictureTables.remote.cacheFolder);
+  const remote = createRemotePictures({
+    cacheFolder,
+    onSettled: refreshAll
+  });
 
   async function resolve(document: TextDocument) {
     const key = document.uri.toString();
@@ -236,7 +243,7 @@ export function registerPictureViews(context: ExtensionContext) {
 
     const resolved = isEnabled() ? await resolvedSpots({
       document,
-      cacheFolder
+      remote
     }) : [];
     cache.set(key, {
       version: document.version,

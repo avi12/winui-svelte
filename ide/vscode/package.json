@@ -142,12 +142,12 @@
         "winuiSvelte.previews.picture": {
           "type": "boolean",
           "default": true,
-          "description": "Show the picture beside the path of every prop, option or object key the library types as a picture (an icon, an image source), and a larger hover with its name, size and frames; a missing file gets a warning"
+          "description": "Show the picture beside the path of every prop, option or object key the library types as a picture (an icon, an image source), written as a path, a URL, new URL(...) or an imported or constant name, and a larger hover with its name, size and frames; a missing file gets a warning"
         },
         "winuiSvelte.previews.remotePictures": {
           "type": "boolean",
-          "default": false,
-          "description": "Preview remote pictures (http and https URLs): fetched with a timeout, a size cap and an on-disk cache; off by default so that nothing is fetched without your say"
+          "default": true,
+          "description": "Preview remote pictures (http and https URLs): fetched in the background with a timeout, a size cap, no credentials and an on-disk cache, and only in a trusted workspace"
         },
         "winuiSvelte.media.theme": {
           "type": "string",
