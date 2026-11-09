@@ -187,6 +187,10 @@ or to `ContentPreTranslateMessage` handling (run `examples/keys` or any app):
 - The touch keyboard appearing when a `TextBox` takes focus by touch
 - Alt+F style access keys showing their tips, and Enter and Escape in a
   `ContentDialog`
+- Click-through: run `examples/click-through` over Notepad, click and drag
+  through the ring and through the hole, and confirm the text caret moves in
+  Notepad (`test/click-through.test.ts` asks Windows who a click would reach
+  but sends none)
 
 Tests must never inject real input into the desktop of whoever runs them: no
 `SetCursorPos`, `mouse_event`, `SendInput`, `keybd_event`, no clicks on the

@@ -113,6 +113,7 @@
     "examples/fonts/main.ts",
     "examples/pill-ground/main.ts",
     "examples/transparent-window/main.ts",
+    "examples/click-through/main.ts",
     "examples/composition/main.ts",
     "**/*.test.ts",
     "src/state/test-support/echo-host.ts",

@@ -11,6 +11,7 @@ const HARNESS_FOLDER = path.join(import.meta.dirname, "..", "examples", "harness
 const SCRIPT = path.join(HARNESS_FOLDER, "window-pixels.ps1");
 const CAPTURE_SCRIPT = path.join(HARNESS_FOLDER, "window-capture.ps1");
 const SCREEN_CAPTURE_SCRIPT = path.join(HARNESS_FOLDER, "screen-capture.ps1");
+const HIT_TEST_SCRIPT = path.join(HARNESS_FOLDER, "hit-test.ps1");
 const SCREEN_AREAS_SCRIPT = path.join(HARNESS_FOLDER, "screen-areas.ps1");
 const PIXELS_TIMEOUT_MILLISECONDS = 60_000;
 const colorsSchema = z.array(z.string());
@@ -157,6 +158,39 @@ export function screenCapture({ rectangle, points, savePath = "" }: ScreenCaptur
       savePath
     ]
   });
+}
+
+const hitsSchema = z.array(
+  z.object({
+    pid: z.number(),
+    className: z.string()
+  })
+);
+
+/**
+ * Who a click at each point of the screen would reach, as Windows hit-tests it
+ * (`WindowFromPoint`, then the root of that window): the owning process and the
+ * class of the top-level window. Nothing is clicked or touched.
+ */
+export function hitTest(points: readonly Point[]) {
+  const result = spawnSync("powershell.exe", [
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    HIT_TEST_SCRIPT,
+    "-Points",
+    formatted(points)
+  ], {
+    encoding: "utf8",
+    timeout: PIXELS_TIMEOUT_MILLISECONDS
+  });
+  const isFailed = result.status !== 0;
+  if (isFailed) {
+    throw new Error(`hit-test.ps1 failed: ${result.stderr.trim() || result.stdout.trim()}`);
+  }
+
+  return hitsSchema.parse(JSON.parse(result.stdout.trim()));
 }
 
 const rectanglesSchema = z.array(

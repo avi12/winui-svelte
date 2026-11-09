@@ -2001,6 +2001,15 @@ exists on Windows 11 only
 A window on a desktop of its own (a hidden desktop) is never composed by
 Windows, so there is nothing to see through to: `test/transparent-window.test.ts`
 reads the screen of the ordinary desktop for that reason
+`isClickThrough` with `backdrop="transparent"` works on build 26300, measured
+by `test/click-through.test.ts` (examples/click-through, a 3 px ring drawn by
+content): the window stays clear (the hole reads the desktop, the ring its
+color, not black), and a click on the ring and one in the hole reach the window
+below, as Windows hit-tests it (`WindowFromPoint`, the root's owner); the same
+ring without `isClickThrough` answers itself, which is the control
+No region (`clipToRing`) is needed, and the host's own order of the frame and
+the backdrop is the one that was measured
+The test sends no click, so a person still confirms it in Notepad (CONTRIBUTING)
 Not checked: a filter or a drop shadow (`filter: drop-shadow()`) on content
 over a transparent window
 The window's own `cornerRadius` clips with an edge that is not anti-aliased, so
