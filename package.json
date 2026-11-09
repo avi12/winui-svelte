@@ -227,6 +227,10 @@
       "svelte": "./dist/win2d/index.js",
       "default": "./dist/win2d/index.js"
     },
+    "./win2d/manifest": {
+      "types": "./dist/win2d/manifest.d.ts",
+      "default": "./dist/win2d/manifest.js"
+    },
     "./win2d/context-2d": {
       "types": "./dist/win2d/context-2d/index.d.ts",
       "svelte": "./dist/win2d/context-2d/index.js",
