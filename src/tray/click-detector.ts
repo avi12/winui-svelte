@@ -1,4 +1,5 @@
 import type { ButtonSample, PointerSample, ScreenRect } from "./native.ts";
+import type { PointerButton } from "#src/win32-key-state.js";
 
 /** The gestures on a tray icon. */
 export const TrayGesture = {
@@ -17,9 +18,7 @@ export interface TrayPointerEvent {
   readonly y: number;
 }
 
-type ButtonName = "left" | "right" | "middle";
-
-const BUTTONS: readonly ButtonName[] = ["left", "right", "middle"];
+const BUTTONS: readonly PointerButton[] = ["left", "right", "middle"];
 const NOT_PRESSED = -1;
 const GESTURE_OF_BUTTON = {
   right: TrayGesture.contextMenu,
@@ -51,12 +50,12 @@ export function createClickDetector({ now, doubleClickMilliseconds, onGesture }:
   doubleClickMilliseconds: number;
   onGesture: (event: TrayPointerEvent) => void;
 }) {
-  const wasDown = new Map<ButtonName, boolean>();
-  const pressedOnIcon = new Map<ButtonName, boolean>();
+  const wasDown = new Map<PointerButton, boolean>();
+  const pressedOnIcon = new Map<PointerButton, boolean>();
   let lastClickAt = NOT_PRESSED;
 
   function release({ button, event }: {
-    button: ButtonName;
+    button: PointerButton;
     event: Omit<TrayPointerEvent, "gesture">;
   }) {
     const isLeft = button === "left";
@@ -86,7 +85,7 @@ export function createClickDetector({ now, doubleClickMilliseconds, onGesture }:
   }
 
   function step({ button, sample, isOverIcon }: {
-    button: ButtonName;
+    button: PointerButton;
     sample: ButtonSample;
     isOverIcon: boolean;
   }) {

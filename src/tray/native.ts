@@ -11,6 +11,7 @@ import {
 } from "#src/win32-calls.js";
 import { allowForeground, bringWindowToFront } from "#src/win32-foreground.js";
 import { createIconFileCalls } from "#src/win32-icons.js";
+import type { PointerButton } from "#src/win32-key-state.js";
 import { decodeKeyState, PointerButtonKey } from "#src/win32-key-state.js";
 
 /** The Shell_NotifyIcon operations. */
@@ -80,12 +81,9 @@ export interface ButtonSample {
 }
 
 /** The pointer and its buttons at one moment. */
-export interface PointerSample {
+export interface PointerSample extends Readonly<Record<PointerButton, ButtonSample>> {
   readonly x: number;
   readonly y: number;
-  readonly left: ButtonSample;
-  readonly right: ButtonSample;
-  readonly middle: ButtonSample;
 
   /** The pointer is over the taskbar or the overflow flyout, where tray icons live. */
   readonly isOnTray: boolean;

@@ -13,6 +13,9 @@ export const PointerButtonKey = {
   middle: 0x04
 } as const;
 
+/** One of the mouse buttons. */
+export type PointerButton = keyof typeof PointerButtonKey;
+
 /**
  * What `GetAsyncKeyState` returned, as two flags.
  *

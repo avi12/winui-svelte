@@ -1,7 +1,7 @@
 import type { ButtonSample, PointerSample } from "./native.ts";
+import type { PointerButton } from "#src/win32-key-state.js";
 
-type ButtonName = "left" | "right" | "middle";
-type PendingPresses = Record<ButtonName, boolean>;
+type PendingPresses = Record<PointerButton, boolean>;
 
 /**
  * Lets several readers poll a pointer whose "pressed since the last read" flag is cleared by the
@@ -27,7 +27,7 @@ export function createPointerShare() {
       readers.add(own);
 
       function shareButton({ button, sample }: {
-        button: ButtonName;
+        button: PointerButton;
         sample: PointerSample;
       }) {
         const { isDown, wasPressed: isPressedNow } = sample[button];
