@@ -46,6 +46,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
 | `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
+| `winui-svelte/security` | `src/security/index.ts` | `protectData()`, `unprotectData()`, `wipe()`, `ProtectionScope`, `DataProtectionError`: Windows DPAPI, compatible with .NET `ProtectedData` (opt-in; see Security) |
 | `winui-svelte/chrome/runtime` | `src/chrome/runtime/index.ts` | `Runtime` (`chrome.runtime`), `Port`, `InstallReason`, the native messaging codec (opt-in; see Chrome runtime) |
 | `winui-svelte/chrome/notifications` | `src/chrome/notifications/index.ts` | `ChromeNotifications` (`chrome.notifications`), `NotificationTemplateType`, `NotificationPermissionLevel` (opt-in; see Chrome notifications) |
 
@@ -3952,6 +3953,46 @@ const lines = menus.menu(ContextMenuSurface.TRAY);
 - Public exports: `ChromeContextMenus`, `ContextItemType`,
   `ContextMenuSurface`, `ContextType`, `ChromeEvent`, and the types
   `CreateProperties`, `OnClickData` and `UpdateProperties`
+
+## Security (`winui-svelte/security`)
+
+Windows DPAPI for secrets an app keeps on disk, with nothing to install: no
+native addon, no WinRT, only the Win32 calls through the package's own binder
+Opt-in: nothing is bundled until an app imports it (about 3 KB), and importing
+does no work
+
+The blob is the one .NET's `ProtectedData.Protect` makes, so a TypeScript app
+reads the files a .NET app wrote with `CurrentUser` scope, and the other way
+round; `ProtectionScope` is `DataProtectionScope`'s two values
+
+```ts
+import { ProtectionScope, protectData, unprotectData, wipe } from "winui-svelte/security";
+
+const sealed = protectData({
+  data: new TextEncoder().encode(apiKey),
+  scope: ProtectionScope.CURRENT_USER
+});
+await writeFile("settings.bin", sealed);
+
+const plain = unprotectData({ data: await readFile("settings.bin") });
+useKey(new TextDecoder().decode(plain));
+wipe(plain);
+```
+
+- `protectData({ data, entropy?, scope?, description? })` returns the sealed
+  bytes; `entropy` is mixed into the key and needed again to unseal
+- `unprotectData({ data, entropy?, scope? })` returns the plain bytes
+- `wipe(buffer)` zeroes a buffer; the native buffers the helper used are zeroed
+  before release, the copies you hold are yours to wipe, and a string cannot be
+  wiped, so keep secrets as bytes
+- `DataProtectionError` carries the Win32 `code` (87 for bytes that are no
+  blob, 13 for a corrupted blob or the wrong entropy); the message never holds
+  the data
+- `MAX_DATA_BYTES` (64 MiB) is the limit of one call; more throws `RangeError`
+- A UI prompt can never appear (`CRYPTPROTECT_UI_FORBIDDEN`)
+- DPAPI offers no recovery: keys follow the user's logon secret, so an
+  administrator's password reset can make old blobs unreadable; a packaged app
+  keeps the same user keys as an unpackaged one
 
 ## Downloads (`winui-svelte/downloads`)
 

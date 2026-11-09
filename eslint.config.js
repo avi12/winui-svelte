@@ -410,7 +410,7 @@ export default [
   },
   {
     // The files that bind Win32 exports.
-    files: ["src/window/native.ts", "src/notice/native.ts", "src/tray/native.ts", "src/tray/standalone/native.ts", "src/devices/native.ts", "src/web-apis/native.ts", "src/app/native.ts", "src/app/activation/native.ts", "src/app/jump-list/native.ts", "src/app/shell/native.ts", "src/app/hotkeys/native.ts", "examples/hotkeys/native.ts", "src/win32-calls.ts", "src/win32-icons.ts"],
+    files: ["src/window/native.ts", "src/notice/native.ts", "src/tray/native.ts", "src/tray/standalone/native.ts", "src/devices/native.ts", "src/web-apis/native.ts", "src/app/native.ts", "src/app/activation/native.ts", "src/app/jump-list/native.ts", "src/app/shell/native.ts", "src/app/hotkeys/native.ts", "src/security/native.ts", "examples/hotkeys/native.ts", "src/win32-calls.ts", "src/win32-icons.ts"],
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [

@@ -204,6 +204,10 @@
       "types": "./dist/progress/core.d.ts",
       "default": "./dist/progress/core.js"
     },
+    "./security": {
+      "types": "./dist/security/index.d.ts",
+      "default": "./dist/security/index.js"
+    },
     "./downloads": {
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
