@@ -104,7 +104,7 @@
   function connect(control: Parameters<typeof webView2Transport>[0]["control"]) {
     const transport = webView2Transport({ control });
     const bridge = defineMessaging<HeartbeatProtocol>({ transport });
-    bridge.onMessage("beat", message => {
+    bridge.onMessage("beat", async message => {
       beats.push(message.data);
     });
     closeBridge = () => {

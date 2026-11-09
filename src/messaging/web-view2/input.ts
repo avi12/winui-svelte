@@ -42,7 +42,7 @@ export function keyEventParameters({ type, key, text, modifiers = 0 }: {
   text?: string;
   modifiers?: number;
 }) {
-  const isSingleCharacter = [...key].length === 1;
+  const isSingleCharacter = Array.from(key).length === 1;
   const typed = text ?? (isSingleCharacter ? key : undefined);
   const hasText = typed !== undefined && TEXT_KEY_TYPES.has(type);
   return {
@@ -127,7 +127,7 @@ export async function typeText({ control, text, mode = TypeMode.KEYS }: {
   text: string;
   mode?: TypeMode;
 }) {
-  const characters = [...text];
+  const characters = Array.from(text);
   const isInsertingRest = mode === TypeMode.INSERT_AFTER_FIRST;
   const keyed = isInsertingRest ? characters.slice(0, 1) : characters;
   for (const character of keyed) {

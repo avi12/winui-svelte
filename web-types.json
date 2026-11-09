@@ -26667,6 +26667,14 @@
               }
             },
             {
+              "name": "isParked",
+              "description": "The window is shown, so its page runs at full speed, and never seen: a tool window that is not activatable, opens without taking focus and sits clear of every display (left of the virtual screen). `placement` and `width`/`height` give only the size. Dropped again, the window goes back where it was. Not the same as `isHidden`: a hidden window is a hidden page, and Chromium slows it down.",
+              "value": {
+                "kind": "expression",
+                "type": "boolean"
+              }
+            },
+            {
               "name": "isClickThrough",
               "description": "Clicks go to whatever is behind the window.",
               "value": {

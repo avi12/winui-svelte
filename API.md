@@ -1757,7 +1757,7 @@ const bridge = defineMessaging<AppProtocol>({ transport: createPageTransport() }
 | `onWebResourceRequested({ control, filters, respond })` | `respond(request)` returns `null` to let a request through or `{ statusCode, reasonPhrase, headers, body }` to answer it; `filters` are `{ uri, context }` with a `ResourceContext` |
 | `callDevToolsMethod({ control, method, parameters })` | calls a DevTools protocol method, resolves with its result as checked JSON, rejects with the protocol's error |
 | `onDevToolsEvent({ control, event, handler })` | hands the parsed parameters of a protocol event to `handler`; the domain must be enabled first (`Network.enable`) |
-| `dispatchKey`, `dispatchMouseClick`, `typeText` | trusted input through `Input.dispatchKeyEvent` and `Input.dispatchMouseEvent`; `typeText` takes a `TypeMode` (`keys`, or `insertAfterFirst`) |
+| `dispatchKey`, `dispatchMouseClick`, `typeText`, `keyEventParameters`, `KeyEventType`, `MouseButton` | trusted input through `Input.dispatchKeyEvent` and `Input.dispatchMouseEvent`; `typeText` takes a `TypeMode` (`keys`, or `insertAfterFirst`) |
 
 Request filters and the protocol
 
@@ -1802,7 +1802,7 @@ Porting a C# WebView2 host
 | `CookieManager` | `getCookies`, `setCookie`, `deleteCookie` |
 | `PermissionRequested` | `onPermissionRequested` |
 | `NavigationStarting` | `onNavigationStarting` |
-| `AddWebResourceRequestedFilter` and `WebResourceRequested` | `blockRequests`, `onWebResourceRequested` |
+| `AddWebResourceRequestedFilter` and `WebResourceRequested` | `StatusCode`, `blockRequests`, `onWebResourceRequested` |
 | `CallDevToolsProtocolMethodAsync` | `callDevToolsMethod`, `dispatchKey`, `dispatchMouseClick` |
 | `GetDevToolsProtocolEventReceiver` | `onDevToolsEvent` |
 
