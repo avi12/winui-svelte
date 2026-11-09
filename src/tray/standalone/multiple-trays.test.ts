@@ -107,7 +107,7 @@ function fakeTray({ name, rect, scheme, items }: {
     },
     iconRect: () => rect,
     readPointer: pointer,
-    focusWindow: noop
+    focusWindow: () => true
   };
   const nativeMenu: NativeMenu = {
     choose({ items: shown }) {
