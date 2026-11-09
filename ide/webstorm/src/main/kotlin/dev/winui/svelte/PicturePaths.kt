@@ -1,5 +1,7 @@
 package dev.winui.svelte
 
+import java.net.URLDecoder
+
 internal enum class PictureKind { LOCAL, APPX, DATA, REMOTE, NONE }
 
 internal data class PictureTarget(
@@ -17,6 +19,9 @@ internal object PicturePaths {
   private val mimeExtensions =
     mapOf("x-icon" to "ico", "vnd.microsoft.icon" to "ico", "svg+xml" to "svg", "jpeg" to "jpg")
 
+  /** Whether a value names something a picture preview draws: a file or URL of an image, or a data URI. */
+  fun isPicture(value: String) = targetOf(value, "/", "/").kind != PictureKind.NONE
+
   fun targetOf(
     value: String,
     file: String,
@@ -28,9 +33,8 @@ internal object PicturePaths {
           .find(value)
           ?.groupValues
           ?.get(1)
-          ?.lowercase()
           .orEmpty()
-      return PictureTarget(PictureKind.DATA, mimeExtensions[mime] ?: mime, emptyList())
+      return PictureTarget(PictureKind.DATA, extensionOfMime(mime), emptyList())
     }
 
     val isRemote = PictureSpec.remoteSchemes.any { value.lowercase().startsWith(it) }
@@ -38,23 +42,22 @@ internal object PicturePaths {
       return PictureTarget(PictureKind.REMOTE, extensionIn(value.replace(query, "")), emptyList())
     }
 
+    val isFileUrl = value.lowercase().startsWith(PictureSpec.fileScheme)
     val isAppx = value.startsWith(PictureSpec.appxScheme)
-    val path = value.removePrefix(PictureSpec.appxScheme).replace(query, "").replace('\\', '/')
+    val path =
+      when {
+        isFileUrl -> pathOfFileUrl(value)
+        else -> value.removePrefix(PictureSpec.appxScheme).replace(query, "").replace('\\', '/')
+      }
     val extension = extensionIn(path)
     if (extension !in PictureSpec.mimes) {
       return PictureTarget(PictureKind.NONE, "", emptyList())
     }
 
-    val isFromRoot = !isAppx && (path.startsWith("/") || windowsAbsolute.containsMatchIn(path))
-    val places =
-      when {
-        isAppx -> listOf(root, directoryOf(file))
-        else -> listOf(directoryOf(file), root)
-      }
     val candidates =
       when {
-        isFromRoot -> listOf(normalized(path))
-        else -> places.map { normalized("$it/$path") }
+        isFileUrl -> listOf(normalized(path))
+        else -> candidatesOf(path, isAppx, file, root)
       }
     val kind =
       when {
@@ -62,6 +65,65 @@ internal object PicturePaths {
         else -> PictureKind.LOCAL
       }
     return PictureTarget(kind, extension, candidates)
+  }
+
+  /** The extension of the format a MIME subtype names (`svg+xml` is `svg`), or the subtype itself. */
+  fun extensionOfMime(subtype: String): String {
+    val lowered = subtype.lowercase()
+    return mimeExtensions[lowered] ?: lowered
+  }
+
+  private fun pathOfFileUrl(value: String): String {
+    val rest = decoded(value.substring(PictureSpec.fileScheme.length).replace(query, ""))
+    return when {
+      windowsAbsolute.containsMatchIn(rest) -> rest
+      else -> "/$rest"
+    }
+  }
+
+  private fun decoded(text: String) =
+    try {
+      URLDecoder.decode(text.replace("+", "%2B"), Charsets.UTF_8)
+    } catch (_: IllegalArgumentException) {
+      text
+    }
+
+  // The places a path may name, in order: an alias under the project, a leading slash first under the public
+  // folder as a bundler serves it, a relative path beside the file and under the project.
+  private fun candidatesOf(
+    path: String,
+    isAppx: Boolean,
+    file: String,
+    root: String
+  ): List<String> {
+    val alias = PictureSpec.aliases.firstOrNull { path.startsWith(it.prefix) }
+    val isDrivePath = !isAppx && windowsAbsolute.containsMatchIn(path)
+    val isRootedPath = !isAppx && path.startsWith("/")
+    return when {
+      alias != null && !isAppx -> {
+        listOf(normalized("$root/${alias.folder}${path.removePrefix(alias.prefix)}"))
+      }
+
+      isDrivePath -> {
+        listOf(normalized(path))
+      }
+
+      isRootedPath -> {
+        listOf(
+          normalized("$root/${PictureSpec.publicFolder}$path"),
+          normalized("$root$path"),
+          normalized(path)
+        )
+      }
+
+      isAppx -> {
+        listOf(root, directoryOf(file)).map { normalized("$it/$path") }
+      }
+
+      else -> {
+        listOf(directoryOf(file), root).map { normalized("$it/$path") }
+      }
+    }
   }
 
   private fun extensionIn(path: String) =

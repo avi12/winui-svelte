@@ -32,8 +32,13 @@ does not depend on it
   frame sizes in the hover), `.png`, `.svg`, `.jpg`, `.gif`, `.bmp` and
   `.webp`; the hover shows the larger picture with its name, pixel size and
   file size, a light and dark taskbar pair side by side on their backgrounds,
-  and a missing file gets a warning; remote pictures are fetched only with
-  `winuiSvelte.previews.remotePictures` on
+  and a missing file gets a warning; a path, a `file:` URL, an `http(s)` URL,
+  `new URL("./x.png", import.meta.url)`, or a name bound by an image import
+  or a `const` all preview, in markup and in TypeScript; a picture that cannot
+  be drawn gets a placeholder icon and a hover that says why; remote pictures
+  are fetched in the background (timeout, size cap, no credentials, a cache on
+  disk, trusted workspaces only) unless
+  `winuiSvelte.previews.remotePictures` is off
 - **CSS and layout previews**: see the next section
 - **Convert to CSS**: a prop that has a CSS counterpart gets a quick fix
   (Ctrl+.) that moves it into the `<style>` block, or writes it as a `style:`

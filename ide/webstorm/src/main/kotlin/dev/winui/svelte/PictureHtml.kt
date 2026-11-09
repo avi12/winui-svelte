@@ -41,15 +41,17 @@ internal object PictureHtml {
         picture.name
       )}</b><br>${PictureImages.byteSizeText(picture.byteSize)}, too large to preview"
 
-      is Picture.RemoteOff -> "<b>${esc(
-        picture.name
-      )}</b><br>remote picture, previews are off<br>turn on \"$SETTING_NAME\" in Settings, winui-svelte"
+      is Picture.RemoteOff -> "<b>${esc(picture.name)}</b><br>${remoteOffNote(picture)}"
 
       is Picture.RemotePending -> "<b>${esc(picture.name)}</b><br>fetching"
 
-      is Picture.RemoteFailed -> "<b>${esc(
-        picture.name
-      )}</b><br>could not be fetched (timeout, over the size cap or not a picture)"
+      is Picture.RemoteFailed -> "<b>${esc(picture.name)}</b><br>not fetched: ${esc(picture.failure.note)}"
+    }
+
+  private fun remoteOffNote(picture: Picture.RemoteOff) =
+    when {
+      picture.isUntrusted -> "remote picture, not fetched: the project is not trusted"
+      else -> "remote picture, previews are off<br>turn on \"$SETTING_NAME\" in Settings, winui-svelte"
     }
 
   private fun shown(picture: Picture.Shown): String {

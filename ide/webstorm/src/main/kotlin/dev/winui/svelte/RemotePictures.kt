@@ -4,23 +4,30 @@ import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
+import com.intellij.util.concurrency.AppExecutorUtil
 import java.io.File
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import java.security.MessageDigest
-import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 
+/** A remote picture kept on disk: its bytes' file and the extension the sniffing found. */
+internal class CachedPicture(
+  val file: File,
+  val extension: String
+)
+
 /**
- * The one remote policy: a picture is fetched only when the setting is on, in the background, with a timeout and a
- * size cap, and kept on disk for the hours the spec says. Nothing is fetched while the setting is off.
+ * The one remote policy: a picture is fetched only when the setting is on, in the background on a pool of the
+ * spec's size, under [RemoteDownload]'s rules, and kept on disk for the hours the spec says. A failure is kept for
+ * some minutes so that a dead URL is not asked again on every pass.
  */
 internal object RemotePictures {
   private const val MILLIS_PER_HOUR = 3_600_000L
+  private const val MILLIS_PER_MINUTE = 60_000L
   private val inFlight = ConcurrentHashMap.newKeySet<String>()
-  private val failed = ConcurrentHashMap.newKeySet<String>()
+  private val failed = ConcurrentHashMap<String, Pair<RemoteFailure, Long>>()
+  private val pool by lazy {
+    AppExecutorUtil.createBoundedApplicationPoolExecutor("winui-svelte pictures", PictureSpec.remote.maxConcurrent)
+  }
 
   /** The folder the previews keep fetched pictures and the pictures drawn for the hover in. */
   val folder: File by lazy {
@@ -28,14 +35,19 @@ internal object RemotePictures {
   }
 
   /** The fresh copy of the picture on disk, none while it is not fetched yet. */
-  fun cached(url: String): File? {
-    val file = fileOf(url)
-    val age = System.currentTimeMillis() - file.lastModified()
-    val isFresh = file.isFile && age < PictureSpec.remote.maxAgeHours * MILLIS_PER_HOUR
-    return file.takeIf { isFresh }
+  fun cached(url: String): CachedPicture? {
+    val maxAge = PictureSpec.remote.maxAgeHours * MILLIS_PER_HOUR
+    return PictureSpec.mimes.keys
+      .map { CachedPicture(fileOf(url, it), it) }
+      .firstOrNull { it.file.isFile && System.currentTimeMillis() - it.file.lastModified() < maxAge }
   }
 
-  fun hasFailed(url: String) = url in failed
+  /** Why the picture was not fetched, none while it was not tried or the retry time has passed. */
+  fun failureOf(url: String): RemoteFailure? {
+    val (failure, at) = failed[url] ?: return null
+    val retryAfter = PictureSpec.remote.failureRetryMinutes * MILLIS_PER_MINUTE
+    return failure.takeIf { System.currentTimeMillis() - at < retryAfter }
+  }
 
   /** Fetches the picture off the editor thread, then asks the editors to look again. */
   fun fetchLater(
@@ -47,12 +59,9 @@ internal object RemotePictures {
       return
     }
 
-    ApplicationManager.getApplication().executeOnPooledThread {
+    pool.execute {
       try {
-        val isFetched = fetch(url)
-        if (!isFetched) {
-          failed.add(url)
-        }
+        settle(url)
       } finally {
         inFlight.remove(url)
         ApplicationManager.getApplication().invokeLater {
@@ -64,37 +73,24 @@ internal object RemotePictures {
     }
   }
 
-  private fun fileOf(url: String): File {
-    val digest = MessageDigest.getInstance("SHA-1").digest(url.toByteArray())
-    return File(folder, digest.joinToString("") { "%02x".format(it) })
-  }
-
-  private fun fetch(url: String): Boolean {
-    val policy = PictureSpec.remote
-    val client = HttpClient.newBuilder().connectTimeout(Duration.ofMillis(policy.timeoutMillis.toLong())).build()
-    val request =
-      HttpRequest
-        .newBuilder(URI.create(url))
-        .timeout(Duration.ofMillis(policy.timeoutMillis.toLong()))
-        .build()
-    return try {
-      val response = client.send(request, HttpResponse.BodyHandlers.ofInputStream())
-      val bytes = response.body().use { it.readNBytes(policy.maxBytes + 1) }
-      val isUsable = response.statusCode() == HTTP_OK && bytes.size <= policy.maxBytes
-      if (isUsable) {
-        fileOf(url).writeBytes(bytes)
+  private fun settle(url: String) {
+    when (val result = RemoteDownload.fetch(url)) {
+      is Download.Failed -> {
+        failed[url] = result.failure to System.currentTimeMillis()
       }
 
-      isUsable
-    } catch (_: java.io.IOException) {
-      false
-    } catch (_: InterruptedException) {
-      Thread.currentThread().interrupt()
-      false
-    } catch (_: IllegalArgumentException) {
-      false
+      is Download.Fetched -> {
+        failed.remove(url)
+        fileOf(url, result.extension).writeBytes(result.bytes)
+      }
     }
   }
 
-  private const val HTTP_OK = 200
+  private fun fileOf(
+    url: String,
+    extension: String
+  ): File {
+    val digest = MessageDigest.getInstance("SHA-1").digest(url.toByteArray())
+    return File(folder, "${digest.joinToString("") { "%02x".format(it) }}.$extension")
+  }
 }

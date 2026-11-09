@@ -23,8 +23,13 @@ does not depend on it
   frame sizes in the popup), `.png`, `.svg`, `.jpg`, `.gif` and `.bmp`;
   the popup shows the larger picture with its name, pixel size and file size,
   a light and dark taskbar pair side by side on their backgrounds, and a
-  missing file gets a warning; remote pictures are fetched only with
-  Settings, winui-svelte, "Preview remote pictures" on
+  missing file gets a warning; a path, a `file:` URL, an `http(s)` URL,
+  `new URL("./x.png", import.meta.url)`, or a name bound by an image import
+  or a `const` all preview, in markup and in TypeScript; a picture that cannot
+  be drawn gets a placeholder icon and a popup that says why; remote pictures
+  are fetched in the background (timeout, size cap, no credentials, a cache on
+  disk, trusted projects only) unless Settings, winui-svelte, "Preview remote
+  pictures" is off
 - **CSS and layout previews**: see the next section
 - **Convert to CSS**: Alt+Enter on a prop that has a CSS counterpart moves it into
   the `<style>` block or a `style:` directive

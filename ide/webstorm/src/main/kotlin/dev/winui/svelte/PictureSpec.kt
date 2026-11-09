@@ -12,7 +12,22 @@ internal data class RemotePolicy(
   val maxBytes: Int,
   val timeoutMillis: Int,
   val maxAgeHours: Int,
-  val cacheFolder: String
+  val cacheFolder: String,
+  val maxRedirects: Int,
+  val failureRetryMinutes: Int,
+  val maxConcurrent: Int,
+  val maxUrlLength: Int
+)
+
+internal data class PictureSignature(
+  val extension: String,
+  val offset: Int,
+  val hex: String
+)
+
+internal data class PathAlias(
+  val prefix: String,
+  val folder: String
 )
 
 /** The tables of `ide/picture-previews.spec.json`, which the VS Code extension reads too. */
@@ -33,6 +48,23 @@ internal object PictureSpec {
   }
 
   val appxScheme: String by lazy { tables.getAsJsonObject("schemes").get("appx").asString }
+
+  val fileScheme: String by lazy { tables.getAsJsonObject("schemes").get("file").asString }
+
+  val publicFolder: String by lazy { tables.get("publicFolder").asString }
+
+  val aliases: List<PathAlias> by lazy {
+    tables.getAsJsonArray("aliases").map {
+      PathAlias(it.asJsonObject.get("prefix").asString, it.asJsonObject.get("folder").asString)
+    }
+  }
+
+  val signatures: List<PictureSignature> by lazy {
+    tables.getAsJsonArray("signatures").map {
+      val entry = it.asJsonObject
+      PictureSignature(entry.get("extension").asString, entry.get("offset").asInt, entry.get("hex").asString)
+    }
+  }
 
   val dataScheme: String by lazy { tables.getAsJsonObject("schemes").get("data").asString }
 
@@ -55,7 +87,11 @@ internal object PictureSpec {
       remote.get("maxBytes").asInt,
       remote.get("timeoutMillis").asInt,
       remote.get("maxAgeHours").asInt,
-      remote.get("cacheFolder").asString
+      remote.get("cacheFolder").asString,
+      remote.get("maxRedirects").asInt,
+      remote.get("failureRetryMinutes").asInt,
+      remote.get("maxConcurrent").asInt,
+      remote.get("maxUrlLength").asInt
     )
   }
 

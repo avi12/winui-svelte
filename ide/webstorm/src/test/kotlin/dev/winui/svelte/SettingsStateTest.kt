@@ -49,4 +49,9 @@ class SettingsStateTest {
     assertEquals(false, state.isMediaReducedMotion)
     assertEquals(MediaDefaults.WIDTH to MediaDefaults.HEIGHT, state.mediaWidth to state.mediaHeight)
   }
+
+  @Test
+  fun `remote pictures are previewed by default`() {
+    assertEquals(true, SettingsState().isRemotePicturesEnabled)
+  }
 }
