@@ -1,6 +1,7 @@
 import { enumValue } from "./convert.ts";
 import type { FlagsInput } from "./convert.ts";
 import type { AttachedModules } from "./generated/attached/owners.ts";
+import { isStructureSyncing } from "#src/renderer/host/structure-sync.js";
 import { eventPropName } from "#src/renderer/tree/markup.js";
 import { guarded, reportUiError } from "#src/ui-errors.js";
 import { tick } from "svelte";
@@ -380,6 +381,13 @@ export class Linker {
     restore: () => void;
   }) {
     if (this.isWriting) {
+      return;
+    }
+
+    // The renderer changed the control's items: the app's value stands, and is
+    // written again once the items are in place.
+    if (isStructureSyncing()) {
+      void tick().then(() => this.isLinked && restore());
       return;
     }
 
