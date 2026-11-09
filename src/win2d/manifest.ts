@@ -15,8 +15,7 @@ const ANCHOR_CLASS = "microsoft/graphics/canvas/CanvasDevice";
 const ACTIVATION_PATTERN = /activationFactory\('(Microsoft\.Graphics\.Canvas\.[^']+)'/g;
 const THREADING_MODEL = "both";
 
-/** The category of the manifest extension that registers a class living in a DLL of the package. */
-export const IN_PROCESS_SERVER_CATEGORY = "windows.activatableClass.inProcessServer";
+const IN_PROCESS_SERVER_CATEGORY = "windows.activatableClass.inProcessServer";
 
 function bindingsFolder() {
   const anchor = fileURLToPath(import.meta.resolve(`#winui/${ANCHOR_CLASS}`));
