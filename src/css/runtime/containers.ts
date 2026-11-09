@@ -1,6 +1,6 @@
 import type { Viewport } from "#src/css/parse/media.js";
+import { identityOf } from "#src/native-identity.js";
 import type { NativeValue } from "#src/native-value.js";
-import { call, isRecord, read } from "#src/renderer/host/reflect.js";
 
 /** What finding and watching a container needs of WinUI: the seam's `read` and `subscribe`. */
 export interface ContainerNative {
@@ -21,25 +21,6 @@ const containers = new Map<unknown, {
 
 function isObject(value: NativeValue): value is object {
   return typeof value === "object" && value !== null;
-}
-
-// dynwinrt keeps the native object of a projection in a member of this name.
-const NATIVE_OBJECT_KEY = "_obj";
-
-// The native object's identity; null for a value that is not a projection.
-function nativeIdentityOf(value: object) {
-  const nativeObject = read(value, NATIVE_OBJECT_KEY);
-  const identity = isRecord(nativeObject) ? call(nativeObject, "identityRaw") : null;
-  return typeof identity === "number" ? identity : null;
-}
-
-/**
- * What tells one WinUI control from another: every read of `parent` projects
- * the native object into a new wrapper, so a control is known by the identity
- * of its native object.
- */
-function identityOf(control: object) {
-  return nativeIdentityOf(control) ?? control;
 }
 
 /** Makes `control` a container under these names (space separated; empty for none); returns what undoes it. */
