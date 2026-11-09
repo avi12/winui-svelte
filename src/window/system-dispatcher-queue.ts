@@ -1,4 +1,10 @@
-import { bind, numberOf, pointerOf, withMemory } from "#src/win32-calls.js";
+import {
+  bind,
+  numberOf,
+  POINTER_BYTES,
+  pointerOf,
+  withMemory
+} from "#src/win32-calls.js";
 
 // Windows.UI.Composition.Compositor (the system's, which the transparent
 // backdrop needs) refuses to be created on a thread with no
@@ -9,7 +15,6 @@ import { bind, numberOf, pointerOf, withMemory } from "#src/win32-calls.js";
 // makes it, as Microsoft's own MicaController samples do.
 
 const OPTIONS_BYTES = 12;
-const POINTER_BYTES = 8;
 const ALIGNMENT = 8;
 const THREAD_CURRENT = 2;
 const APARTMENT_NONE = 0;

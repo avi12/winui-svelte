@@ -3,6 +3,7 @@ import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 import type { DynWin32CallResult, DynWin32Value } from "@microsoft/dynwinrt/win32/unsafe";
 import {
   bind,
+  DWORD_BYTES,
   numberOf,
   pointerOf,
   WIDE_CHAR_BYTES,
@@ -23,7 +24,6 @@ const KEY_READ = 0x2_0019;
 const ERROR_SUCCESS = 0;
 const ERROR_FILE_NOT_FOUND = 2;
 const MAX_VALUE_BYTES = 65_536;
-const DWORD_BYTES = 4;
 const HANDLE_BYTES = 8;
 const DATA_OFFSET = 8;
 const QUERY_INFO_PARAMETERS = 12;

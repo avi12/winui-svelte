@@ -3,6 +3,7 @@ import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import {
   bind,
   bindDll,
+  DWORD_BYTES,
   pointerOf,
   WIDE_CHAR_BYTES,
   wideMemory,
@@ -182,7 +183,6 @@ const KEY_PRESSED_BIT = 0x1;
 const CLASS_NAME_CHARS = 128;
 const POINT_SHIFT = 32n;
 const POINT_MASK = 0xFFFFFFFFn;
-const DWORD_BYTES = 4;
 const MONITOR_INFO_SIZE = 40;
 const MONITOR_WORK_OFFSET = 20;
 const MONITOR_WORK_RIGHT = 8;

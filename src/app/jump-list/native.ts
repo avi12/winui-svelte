@@ -2,7 +2,7 @@ import type { JumpListBackend, ShellLinkSpec } from "./tasks.ts";
 import { DynWinRtValue, WinGuid } from "@microsoft/dynwinrt";
 import { DynCom, DynComMethodSig, DynComUnsafe } from "@microsoft/dynwinrt/com/unsafe";
 import { DynComRawMemory, DynComRawOwnedComPointer, DynComRawPointer } from "@microsoft/dynwinrt/com/unsafe/raw";
-import { bindDll, wideMemory } from "#src/win32-calls.js";
+import { bindDll, POINTER_BYTES, wideMemory } from "#src/win32-calls.js";
 
 // ICustomDestinationList, IObjectCollection, IShellLinkW and IPropertyStore
 // (shobjidl_core.h, propsys.h) have no WinRT form, so their methods are
@@ -33,7 +33,6 @@ const SET_PATH_SLOT = 20;
 const SET_VALUE_SLOT = 6;
 const COMMIT_SLOT = 7;
 
-const POINTER_BYTES = 8;
 const PROPERTY_KEY_BYTES = 24;
 const PROPVARIANT_BYTES = 24;
 const VT_LPWSTR = 31;
