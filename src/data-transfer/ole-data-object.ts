@@ -2,6 +2,7 @@ import { DataKind } from "./accept.ts";
 import { nativeFileAt } from "./native-file.ts";
 import { formatIdOf } from "./native.ts";
 import type { PackageSource } from "./package-io.ts";
+import { pathsOfShellIdList } from "./shell-items.ts";
 import { DynCom, DynComFormatEtc, DynComMethodSig, WinGuid } from "@microsoft/dynwinrt/com/unsafe";
 import type { DynWinRTValue } from "@microsoft/dynwinrt/com/unsafe";
 
@@ -16,6 +17,7 @@ const CF_UNICODETEXT = 13;
 const CF_HDROP = 15;
 const HTML_FORMAT_NAME = "HTML Format";
 const URL_FORMAT_NAME = "UniformResourceLocatorW";
+const SHELL_ID_LIST_FORMAT_NAME = "Shell IDList Array";
 const DROPFILES_WIDE_OFFSET = 16;
 const DROPFILES_PATHS_POINTER = 0;
 const WIDE_NULL = "\0";
@@ -38,6 +40,7 @@ function makeCalls() {
       "GetData",
       new DynComMethodSig().addIn(DynCom.formatEtcType()).addOut(DynCom.stgMediumType())
     ),
+    shellIdListFormat: formatIdOf(SHELL_ID_LIST_FORMAT_NAME),
     htmlFormat: formatIdOf(HTML_FORMAT_NAME),
     uriFormat: formatIdOf(URL_FORMAT_NAME)
   };
@@ -107,15 +110,17 @@ export function pathsOfDropFiles(bytes: Buffer) {
  */
 export function readerOf(data: DynWinRTValue) {
   const calls = callsOf();
-  const formatOfKind = new Map<DataKind, number | null>([
-    [DataKind.file, CF_HDROP],
-    [DataKind.directory, CF_HDROP],
-    [DataKind.text, CF_UNICODETEXT],
-    [DataKind.html, calls.htmlFormat],
-    [DataKind.uri, calls.uriFormat],
-    [DataKind.bitmap, null]
+  // Files come as a list of paths (CF_HDROP) or, from Explorer's address bar, as shell item ids.
+  const filesFormats = [CF_HDROP, calls.shellIdListFormat];
+  const formatsOfKind = new Map<DataKind, number[]>([
+    [DataKind.file, filesFormats],
+    [DataKind.directory, filesFormats],
+    [DataKind.text, [CF_UNICODETEXT]],
+    [DataKind.html, [calls.htmlFormat]],
+    [DataKind.uri, [calls.uriFormat]],
+    [DataKind.bitmap, []]
   ]);
-  const offered = new Map<DataKind, boolean>();
+  const offered = new Map<number, boolean>();
   function read(clipboardFormat: number) {
     return bytesOf({
       data,
@@ -123,25 +128,29 @@ export function readerOf(data: DynWinRTValue) {
     });
   }
 
-  return {
-    has(kind: DataKind) {
-      const isChecked = offered.has(kind);
-      if (isChecked) {
-        return offered.get(kind) === true;
-      }
+  function isOffered(clipboardFormat: number) {
+    const isChecked = offered.has(clipboardFormat);
+    if (!isChecked) {
+      offered.set(
+        clipboardFormat, isFormatOffered({
+          data,
+          clipboardFormat
+        })
+      );
+    }
 
-      const clipboardFormat = formatOfKind.get(kind) ?? null;
-      const isOffered = clipboardFormat !== null && isFormatOffered({
-        data,
-        clipboardFormat
-      });
-      offered.set(kind, isOffered);
-      return isOffered;
-    },
+    return offered.get(clipboardFormat) === true;
+  }
+
+  return {
+    has: (kind: DataKind) => (formatsOfKind.get(kind) ?? []).some(isOffered),
     text: () => wideTextOf(read(CF_UNICODETEXT)),
     html: () => read(calls.htmlFormat).toString("utf8"),
     uri: () => wideTextOf(read(calls.uriFormat)),
-    paths: () => pathsOfDropFiles(read(CF_HDROP))
+    paths() {
+      const hasPathList = isOffered(CF_HDROP);
+      return hasPathList ? pathsOfDropFiles(read(CF_HDROP)) : pathsOfShellIdList(read(calls.shellIdListFormat));
+    }
   } satisfies OleReader;
 }
 
