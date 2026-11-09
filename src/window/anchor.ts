@@ -108,6 +108,34 @@ export function dockedBounds({ area, size, anchor, inset }: {
   };
 }
 
+/**
+ * The bounds a window takes to cover `area` (a display's whole `outerBounds`)
+ * or, with `region`, a rectangle given in the display's own pixels from its
+ * top left. The region is not clipped to the display, so a frame drawn outside
+ * a region at the display's edge still lands where it was asked for.
+ */
+export function coveredBounds({ area, region }: {
+  area: WindowBounds;
+  region?: WindowBounds | undefined;
+}) {
+  const isWholeDisplay = region === undefined;
+  if (isWholeDisplay) {
+    return {
+      x: area.x,
+      y: area.y,
+      width: area.width,
+      height: area.height
+    };
+  }
+
+  return {
+    x: area.x + region.x,
+    y: area.y + region.y,
+    width: region.width,
+    height: region.height
+  };
+}
+
 function clamp({ value, least, most }: {
   value: number;
   least: number;
