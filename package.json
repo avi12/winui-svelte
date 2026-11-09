@@ -1275,6 +1275,12 @@
           ]
         },
         {
+          "namespace": "Windows.ApplicationModel.Activation",
+          "classes": [
+            "ProtocolActivatedEventArgs"
+          ]
+        },
+        {
           "namespace": "Windows.ApplicationModel.DataTransfer",
           "classes": [
             "Clipboard",
