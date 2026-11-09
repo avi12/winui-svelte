@@ -39,9 +39,11 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/window/foreground` | `src/window/foreground.ts` | `trackForeground()`, `bringWindowToFront()`, `shouldRestore()` (opt-in; see Following the foreground app) |
-| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()`, `startTray()`, `relaunch()`, `restartAfterCrash()` (opt-in; see App lifecycle) |
+| `winui-svelte/app` | `src/app/index.ts` | `ensureSingleInstance()`, `claimInstance()`, `isInstanceRunning()`, `notify()`, `activateInstance()`, `activateOrLaunch()`, `launchApp()`, `startTray()`, `relaunch()`, `restartAfterCrash()` (opt-in; see App lifecycle) |
 | `winui-svelte/app/shell` | `src/app/shell/index.ts` | `trash()`, `openWith()`, `createShortcut()`, `readShortcut()`, `registerAppPath()`, `ShellFailure` (opt-in; see Shell verbs) |
 | `winui-svelte/app/activation` | `src/app/activation/index.ts` | `installProtocolHandlers()`, `registerFileTypes()`, `launchAtLogin()`, `startActivation()`, `ActivationKind` (opt-in; see Activation) |
+| `winui-svelte/app/native-messaging` | `src/app/native-messaging/index.ts` | `registerNativeMessagingHost()`, `unregisterNativeMessagingHost()`, `NativeMessagingBrowser` (opt-in; see Native messaging host) |
+| `winui-svelte/win32` | `src/win32/index.ts` | `bindDll()`, `bind()`, `hasPackageIdentity()` and the memory helpers (opt-in escape hatch; see Win32 seam) |
 | `winui-svelte/app/jump-list` | `src/app/jump-list/index.ts` | `setJumpListTasks()`, `clearJumpList()` (opt-in; see Jump list tasks) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
@@ -2843,6 +2845,12 @@ An opt-in subpath: an app that does not import it does not bundle it
   The running copy's `onRedirect` receives `activation`
 - `launchApp({ command, arguments, workingDirectory })` starts a program
   that outlives the caller: detached, no console window, no shared handles
+- `claimInstance({ key, source, activation, runOnUiThread, onRedirect })` is `ensureSingleInstance` over any source of the link
+  Pass `createPipeSource()` to claim the pipe early on a plain main thread,
+  before any WinUI loads, so a second copy exits in about 50 ms; it needs no
+  dispatcher queue, and `runOnUiThread` relays `onRedirect` to the thread that
+  owns the windows (`pipeNameFor` and `currentUserSid` are the pipe's name
+  and its user)
 - `activateOrLaunch({ key, activation, launch })` is the two together: it
   activates the running copy, or else starts the app with `launch`, and
   resolves with true for the first and false for the second
@@ -3009,6 +3017,68 @@ if (!single.isPrimary) {
   removes them and checks nothing is left, even when it fails;
   `test/activation.test.ts` starts real second copies with a link, a file and
   nothing, and checks the first hears each as one event
+
+### Native messaging host (`winui-svelte/app/native-messaging`)
+
+Telling the browsers where a native messaging host lives, for the current user
+
+```ts
+import { registerNativeMessagingHost } from "winui-svelte/app/native-messaging";
+import { isInstanceRunning } from "winui-svelte/app";
+
+registerNativeMessagingHost({
+  name: "com.example.notes",
+  manifestPath: "C:\Users\me\AppData\Local\Notes\host.json",
+});
+
+const isAppUp = isInstanceRunning({ key: "com.example.notes" });
+```
+
+- `registerNativeMessagingHost({ name, manifestPath, browsers, registry })`
+  writes the manifest's path as the default value of
+  `HKCU\Software\<browser>\NativeMessagingHosts\<name>` for Chrome, Edge,
+  Brave and Chromium (`NativeMessagingBrowser`; pass `browsers` for fewer)
+  It writes the registry only: the JSON manifest is the caller's file
+  Calling it again rewrites the same values; a name other than lowercase
+  letters, digits, `_` and `.` between them, or a relative path, is a
+  `TypeError`
+- `unregisterNativeMessagingHost({ name, browsers, registry })` deletes the
+  host's own keys and each parent left empty; a key that holds anything else
+  stays
+- Under a package identity the write is virtualized unless the manifest
+  declares `desktop6:RegistryWriteVirtualization` as disabled and the
+  `unvirtualizedResources` capability; browsers read the real registry
+- `isInstanceRunning({ key })` is true while a copy serves `key`
+  (`ensureSingleInstance` or `claimInstance`); it asks the pipe's existence,
+  sends nothing and never starts or claims anything, so a host can ask
+  before it starts the app
+
+### Win32 seam (`winui-svelte/win32`)
+
+An escape hatch for a Win32 function that WinRT has no equivalent for, over
+the binder the package uses itself
+
+```ts
+import { bindDll, hasPackageIdentity } from "winui-svelte/win32";
+
+const user32 = bindDll({
+  dll: "user32.dll",
+  functions: { foreground: ["GetForegroundWindow", [], "pointer"] },
+});
+const hwnd = user32.foreground();
+```
+
+- `bindDll({ dll, functions })` takes one `[entryPoint, parameters,
+  returnType]` row per name and calls with plain values (numbers, bigints,
+  strings as wide text, memory, null) and gives back a number or an address
+- `bind(...)` is the lower level one, over `DynWin32` values
+  `pointerOf`, `wideMemory`, `numberOf`, `addressOf`, `withMemory` and
+  `WIDE_CHAR_BYTES` are its helpers; the caller owns the memory it allocates
+- `hasPackageIdentity()` tells a packaged process from plain Node
+- Types are strings and `@microsoft/dynwinrt` is a preview, so this entry may
+  change with it; the registry has its own typed entry
+  (`createWindowsRegistry` in `winui-svelte/app/activation`, string values of
+  the current user only)
 
 ### Jump list tasks (`winui-svelte/app/jump-list`)
 

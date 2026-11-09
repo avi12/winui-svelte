@@ -406,6 +406,14 @@
       "types": "./dist/app/activation/index.d.ts",
       "default": "./dist/app/activation/index.js"
     },
+    "./app/native-messaging": {
+      "types": "./dist/app/native-messaging/index.d.ts",
+      "default": "./dist/app/native-messaging/index.js"
+    },
+    "./win32": {
+      "types": "./dist/win32/index.d.ts",
+      "default": "./dist/win32/index.js"
+    },
     "./app/jump-list": {
       "types": "./dist/app/jump-list/index.d.ts",
       "default": "./dist/app/jump-list/index.js"

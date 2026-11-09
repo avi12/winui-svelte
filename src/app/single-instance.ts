@@ -73,7 +73,15 @@ function requireUiThread() {
   return dispatcher;
 }
 
-function pipeSource() {
+/**
+ * The named pipe as a source for `claimInstance`: the link `ensureSingleInstance`
+ * uses. It needs no UI thread, so a process can claim the key early on its
+ * main thread, before any WinUI loads, and a second copy exits in a few
+ * milliseconds.
+ *
+ * @returns A source over the user's pipe for the key.
+ */
+export function createPipeSource() {
   return {
     claim({ key, activation }) {
       const pipeName = pipeNameFor({
@@ -94,13 +102,6 @@ function pipeSource() {
 }
 
 function serverOf(pipe: PipeServer) {
-  try {
-    requireUiThread();
-  } catch (error) {
-    pipe.close();
-    throw error;
-  }
-
   return {
     isPrimary: true,
     close: () => pipe.close(),
@@ -111,9 +112,32 @@ function serverOf(pipe: PipeServer) {
   } satisfies InstanceServer;
 }
 
+function uiThreadSource(inner: InstanceSource) {
+  return {
+    claim(options) {
+      const claim = inner.claim(options);
+      if (!claim.isPrimary) {
+        return claim;
+      }
+
+      try {
+        requireUiThread();
+      } catch (error) {
+        claim.close();
+        throw error;
+      }
+
+      return claim;
+    }
+  } satisfies InstanceSource;
+}
+
 /**
  * Makes sure one copy of the app runs per key, over any source of the link:
- * `ensureSingleInstance` is this over a named pipe.
+ * `ensureSingleInstance` is this over a named pipe. For an early claim on the
+ * main thread, before any window exists, pass `createPipeSource()` and a
+ * `runOnUiThread` that relays the work to the thread that owns the windows
+ * (`onRedirect` and `window.bringToFront` run there).
  *
  * @param options - The key, what to do with a redirect, the link, this
  *   copy's own activation, and how to reach the UI thread.
@@ -187,7 +211,7 @@ export function claimInstance({ key, onRedirect, window, source, activation, run
 export function ensureSingleInstance(options: SingleInstanceOptions) {
   return claimInstance({
     ...options,
-    source: pipeSource(),
+    source: uiThreadSource(createPipeSource()),
     activation: {
       arguments: process.argv.slice(2),
       workingDirectory: process.cwd()

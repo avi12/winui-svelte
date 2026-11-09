@@ -17,7 +17,7 @@ const {
   removeProtocol,
   STARTUP_ARGUMENT
 } = registration;
-const { normalizeExtension, normalizeScheme, requireIdentifier } = await import("./scheme.ts");
+const { normalizeExtension, normalizeScheme, requireIdentifier, requireStartupName } = await import("./scheme.ts");
 
 const COMMAND = {
   program: "C:\\Program Files\\nodejs\\node.exe",
@@ -244,6 +244,40 @@ test("an identifier with a path or a quote in it is refused", () => {
   for (const id of ["", "a\\b", "a\"b", "..\\x", " lead"]) {
     assert.throws(() => requireIdentifier(id), TypeError, id);
   }
+});
+
+test("a startup name may hold spaces inside and nothing that is a path or a quote", () => {
+  assert.equal(requireStartupName("Cyber Journeys"), "Cyber Journeys");
+  assert.equal(requireStartupName("dev.example.notes"), "dev.example.notes");
+  for (const name of ["", " lead", "trail ", "a\b", "a\"b", "a/b", "x".repeat(65)]) {
+    assert.throws(() => requireStartupName(name), TypeError, name);
+  }
+});
+
+test("a startup entry named with a space is written, read and removed", () => {
+  const registry = createFakeRegistry();
+  const id = "Cyber Journeys";
+  enableLaunchAtLogin({
+    id,
+    registry,
+    command: COMMAND
+  });
+  assert.equal(
+    readLaunchAtLogin({
+      id,
+      registry
+    }).isEnabled, true
+  );
+  disableLaunchAtLogin({
+    id,
+    registry
+  });
+  assert.equal(
+    readLaunchAtLogin({
+      id,
+      registry
+    }).isEnabled, false
+  );
 });
 
 test("arguments are quoted so that CommandLineToArgvW reads them back", () => {
