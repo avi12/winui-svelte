@@ -70,6 +70,7 @@
     "src/web-apis/page.ts",
     "test/page-window.ts",
     "test/packaged-bootstrap-relay.ts",
+    "test/packaged-activation-relay.ts",
     "src/web-apis/animations.ts",
     "src/web-apis/view-transitions.ts",
     "src/web-apis/dialogs.ts",
