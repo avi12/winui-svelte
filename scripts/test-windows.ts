@@ -35,6 +35,7 @@ const DEFAULT_DESKTOP_TESTS = new Map([
   ["transparent-window.test.ts", "a desktop of its own is never composed, so a screen capture of it reads black and cannot show a window through another; the windows are never activated"],
   ["web-bridge.test.ts", "WebView2 needs an ordinary desktop session to start its browser"],
   ["parked-window.test.ts", "WebView2 needs an ordinary desktop session to start its browser; the window is never activated"],
+  ["web-profiles.test.ts", "WebView2 needs an ordinary desktop session to start its browser"],
   ["web-requests.test.ts", "WebView2 needs an ordinary desktop session to start its browser"],
   ["packaged-bootstrap.test.ts", "a registered package runs on the default desktop, and its WebView2 needs an ordinary desktop session"]
 ]);
