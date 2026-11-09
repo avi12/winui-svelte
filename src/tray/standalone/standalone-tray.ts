@@ -76,6 +76,10 @@ function isBalloons(extra: TrayExtra): extra is BalloonsExtra {
   return extra.kind === "balloons";
 }
 
+// The menu runs a message loop of its own on the only thread there is, and ends only when the user
+// picks a line or a click lands elsewhere; a click elsewhere is seen only when the owner is in front.
+const FOCUS_ATTEMPTS = 3;
+
 /** What `createStandaloneTray` takes beyond the options: a test's stand-ins. */
 export interface StandaloneTraySeams {
   /** The Win32 calls of the icon; the real ones by default. */
@@ -92,6 +96,20 @@ export interface StandaloneTraySeams {
 
   /** Runs a function on a later turn, once the menu is gone; Node's `setImmediate` by default. */
   readonly defer?: (run: () => void) => void;
+}
+
+function isFocusedWithin({ native, owner }: {
+  readonly native: TrayNative;
+  readonly owner: bigint;
+}) {
+  for (let attempt = 0; attempt < FOCUS_ATTEMPTS; attempt++) {
+    const isFocused = native.focusWindow(owner);
+    if (isFocused) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function scheduleWithNode({ milliseconds, onTick }: Parameters<TrayScheduler>[0]) {
@@ -138,7 +156,14 @@ export function createStandaloneTray<
     const owner = native.createOwnerWindow();
     let choice: NativeChoice | undefined;
     try {
-      native.focusWindow(owner);
+      const isFocused = isFocusedWithin({
+        native,
+        owner
+      });
+      if (!isFocused) {
+        return;
+      }
+
       do {
         theme.apply(options.colorScheme ?? MenuColorScheme.SYSTEM);
         choice = menu.choose({
