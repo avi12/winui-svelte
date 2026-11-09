@@ -1723,9 +1723,62 @@ const bridge = defineMessaging<AppProtocol>({ transport: createPageTransport() }
 | `onPermissionRequested({ control, decide })` | answers permission requests with a `PermissionState` (`default`, `allow`, `deny`) for a `PermissionKind` |
 | `onDownloadStarting({ control, pathFor })` | sends a download to a path with no dialog, or cancels it with `null` |
 | `onNavigationStarting({ control, isAllowed })` | cancels the navigations `isAllowed` refuses |
+| `blockRequests({ control, uri, context, statusCode })` | answers every request to a URI pattern (`*` and `?` wildcards) with an empty `204` until the returned function is called |
+| `onWebResourceRequested({ control, filters, respond })` | `respond(request)` returns `null` to let a request through or `{ statusCode, reasonPhrase, headers, body }` to answer it; `filters` are `{ uri, context }` with a `ResourceContext` |
+| `callDevToolsMethod({ control, method, parameters })` | calls a DevTools protocol method, resolves with its result as checked JSON, rejects with the protocol's error |
+| `onDevToolsEvent({ control, event, handler })` | hands the parsed parameters of a protocol event to `handler`; the domain must be enabled first (`Network.enable`) |
+| `dispatchKey`, `dispatchMouseClick`, `typeText` | trusted input through `Input.dispatchKeyEvent` and `Input.dispatchMouseEvent`; `typeText` takes a `TypeMode` (`keys`, or `insertAfterFirst`) |
+
+Request filters and the protocol
+
+```ts
+import {
+  blockRequests,
+  callDevToolsMethod,
+  ResourceContext,
+  typeText
+} from "winui-svelte/messaging/web-view2";
+
+const unblock = await blockRequests({
+  control,
+  uri: "https://accounts.google.com/RotateCookies*",
+  context: ResourceContext.ALL
+});
+await callDevToolsMethod({ control, method: "Runtime.evaluate", parameters: { expression: "document.title" } });
+await typeText({ control, text: "hello" });
+unblock();
+```
+
+- A filter added before the first navigation applies to it; one added later
+  does not apply to requests already in flight
+- Every handler hears the requests of every filter of the control, so each
+  checks its own filters; `respond` is a plain function (the answer is given
+  before the event's handler returns), and a body holds the request until it
+  is written to a stream
+- The empty answer uses an empty `InMemoryRandomAccessStream`; a `null` stream
+  for `createWebResourceResponse` was not tried
+- Typing 300 characters with `typeText` takes 5 to 7.5 seconds in a window on
+  this machine (two protocol calls per character, sent in order: sending them
+  all at once reorders the keys); `TypeMode.INSERT_AFTER_FIRST` takes about
+  0.1 second, but whether a page enables its Submit button from inserted text
+  is the page's
+- `coreWebView2` is not set yet inside `oncorewebview2initialized`; the helpers
+  that wait for it need a turn of the event loop first (`setTimeout`)
+
+Porting a C# WebView2 host
+
+| C# | Here |
+|---|---|
+| `CookieManager` | `getCookies`, `setCookie`, `deleteCookie` |
+| `PermissionRequested` | `onPermissionRequested` |
+| `NavigationStarting` | `onNavigationStarting` |
+| `AddWebResourceRequestedFilter` and `WebResourceRequested` | `blockRequests`, `onWebResourceRequested` |
+| `CallDevToolsProtocolMethodAsync` | `callDevToolsMethod`, `dispatchKey`, `dispatchMouseClick` |
+| `GetDevToolsProtocolEventReceiver` | `onDevToolsEvent` |
 
 `examples/web-bridge` is an app talking to a hosted page, and
-`test/web-bridge.test.ts` runs it in a real window; it needs an ordinary
+`test/web-bridge.test.ts` runs it in a real window; `examples/web-requests` and
+`test/web-requests.test.ts` do the same for a blocked request and typed input; it needs an ordinary
 desktop session (a sandboxed process cannot launch the browser, 0x8007139F)
 
 ### ListView and GridView
