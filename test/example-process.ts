@@ -100,6 +100,12 @@ export class ExampleProcess {
     return new ExampleProcess(child);
   }
 
+  // The first report of `kind` so far, as the launcher's `runtime` report, which comes before any command.
+  // fallow-ignore-next-line unused-class-member
+  reported(kind: string) {
+    return this.reports.find(report => report["kind"] === kind);
+  }
+
   send(command: Report) {
     this.child.stdin.write(`${JSON.stringify(command)}\n`);
   }

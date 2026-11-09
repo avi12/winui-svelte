@@ -1,8 +1,8 @@
-import { createPackageIdentityProbe } from "./native.ts";
 import type { NotificationContent, NotificationControl } from "./notification-content.ts";
 import { scheduleToast } from "./notification-schedule.ts";
 import type { NotificationBackend, NotificationSpec } from "./notify.ts";
 import { ticksOf } from "./windows-time.ts";
+import { hasPackageIdentity } from "#src/window/package-identity.js";
 import {
   AppNotificationBuilder,
   AppNotificationButton,
@@ -190,8 +190,6 @@ export function windowsNotificationSource() {
   function manager() {
     return AppNotificationManager.default_;
   }
-
-  const hasPackageIdentity = createPackageIdentityProbe();
 
   return {
     isSupported: () => AppNotificationManager.isSupported(),

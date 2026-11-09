@@ -12,8 +12,9 @@ import { MessageChannel, Worker } from "node:worker_threads";
 //     examples/harness/launch.ts <entry> [--name value ...]
 //
 // <entry> is a module of the package (examples/lists/main.ts) exporting
-// `start(host)`. The first line on stdout is `pid <n>`; then every message the
-// example reports, one JSON object per line. Each line on stdin is a command
+// `start(host)`. The first line on stdout is `pid <n>`, then a `runtime` report
+// (which way the Windows App SDK started, where WebView2 keeps its profile);
+// then every message the example reports, one JSON object per line. Each line on stdin is a command
 // for the example. The process ends when the window closes or stdin does.
 
 const WINDOWS_APP_SDK_MAJOR = 2;
@@ -58,12 +59,19 @@ if (IS_ENTRY_MISSING) {
   throw new Error("name the example's entry module, relative to the package");
 }
 
-initWindowsAppSdk({
+const runtime = initWindowsAppSdk({
   major: WINDOWS_APP_SDK_MAJOR,
   minor: WINDOWS_APP_SDK_MINOR,
   folders: [path.join(PACKAGE_ROOT, ".winapp", "bin", process.arch)]
 });
 process.stdout.write(`pid ${process.pid}\n`);
+process.stdout.write(
+  `${JSON.stringify({
+    kind: "runtime",
+    runtime: runtime.runtime,
+    webViewUserDataFolder: process.env["WEBVIEW2_USER_DATA_FOLDER"] ?? ""
+  })}\n`
+);
 
 const modules = new MessageChannel();
 const link = new MessageChannel();

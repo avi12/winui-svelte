@@ -1,40 +1,6 @@
 import { Package } from "./bindings.ts";
 import type { PackageInfo } from "./types.ts";
-import { bind, numberOf, pointerOf, withMemory } from "#src/win32-calls.js";
-
-// GetCurrentPackageFullName (appmodel.h) is the cheap check: called with a
-// zero length it answers APPMODEL_ERROR_NO_PACKAGE outside a package and
-// ERROR_INSUFFICIENT_BUFFER inside one, without the exception that
-// Package.Current throws.
-
-const NO_PACKAGE_ERROR = 15_700;
-const LENGTH_BYTES = 4;
-
-const getCurrentPackageFullName = bind({
-  dll: "kernel32.dll",
-  entryPoint: "GetCurrentPackageFullName",
-  parameters: ["pointer", "pointer"],
-  returnType: "i32"
-});
-
-/**
- * Whether this process has a package identity (MSIX, or a sparse package).
- *
- * @returns False for plain Node.js, Electron and `pnpm dev`.
- */
-export function hasPackageIdentity() {
-  return withMemory({
-    size: LENGTH_BYTES,
-    alignment: LENGTH_BYTES,
-    use(length) {
-      length.writeU32(0, 0);
-      const status = numberOf(
-        getCurrentPackageFullName.invoke([pointerOf(length), pointerOf(null)]).returnValue
-      );
-      return status !== NO_PACKAGE_ERROR;
-    }
-  });
-}
+import { hasPackageIdentity } from "#src/window/package-identity.js";
 
 /**
  * The running package, read from `Package.Current`. Call it only when
@@ -56,3 +22,5 @@ export function windowsPackageInfo() {
     isDevelopmentMode: current.isDevelopmentMode
   } satisfies PackageInfo;
 }
+
+export { hasPackageIdentity };

@@ -35,7 +35,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/runner` | `src/vite/runner.ts` | `createWindowModuleRunner()`, the window thread's side of the module server |
 | `winui-svelte/compile` | `src/vite/compile.ts` | `compileSvelte()` for bundlers (esbuild) and tests, `WINUI_COMPILE_OPTIONS`, `withElementAnimation()` |
 | `winui-svelte/testing` | `src/vite/loader.ts` | `svelteHooks()`: Node module hooks that run `.svelte` files, with Svelte's runtime read through the package's edits (pure tests) |
-| `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`, `processDpiAwareness()`, `DpiAwareness`; imports nothing of WinRT, safe on the host's main thread |
+| `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`, `hasPackageIdentity()`, `processDpiAwareness()`, `BootstrapMode`, `DpiAwareness`; imports nothing of WinRT, safe on the host's main thread |
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/window/foreground` | `src/window/foreground.ts` | `trackForeground()`, `bringWindowToFront()`, `shouldRestore()` (opt-in; see Following the foreground app) |
@@ -711,14 +711,28 @@ for tools; `compileSvelte()` throws an `Error` with that message
 // in on PATH (WebView2's native libraries are there) and initialises the
 // Windows App SDK. Sets WEBVIEW2_USER_DATA_FOLDER to `webViewUserDataFolder`
 // unless it is already set. Throws WindowsAppRuntimeMissing when the runtime is
-// not installed.
+// not installed. In a process whose package graph holds the Windows App SDK
+// (an MSIX whose manifest declares the PackageDependency) it skips the
+// bootstrapper, which refuses to run there with 0x80070032; the environment
+// and PATH steps still run, and the bootstrapper need not be found.
 function initWindowsAppSdk(options?: {
   major?: number;
   minor?: number;
   folders?: string[];
   webViewUserDataFolder?: string;
   dpiAwareness?: DpiAwareness | undefined;   // default "per-monitor-v2"; undefined leaves the process as it is
-}): void;
+  bootstrap?: BootstrapMode;                 // default "auto"
+}): { runtime: RuntimeSource };               // "package" or "bootstrapper", for a log line
+
+// auto: skip the bootstrapper when the package graph holds a Microsoft.WindowsAppRuntime
+// framework package, call it otherwise; always: call it (an error surfaces as
+// WindowsAppRuntimeMissing with the original in `cause`); never: skip it
+const BootstrapMode = { auto: "auto", always: "always", never: "never" } as const;
+const RuntimeSource = { bootstrapper: "bootstrapper", package: "package" } as const;
+
+// Whether this process has a package identity (MSIX or sparse package); cheap,
+// kernel32 only, no WinRT
+function hasPackageIdentity(): boolean;
 
 // The process's DPI awareness. node.exe is unaware, so every window reads 96
 // DPI (`scaleOf` 1) and screen captures and monitor rectangles are virtualized
@@ -734,10 +748,26 @@ const DpiAwareness = {
 type DpiAwareness = (typeof DpiAwareness)[keyof typeof DpiAwareness];
 function processDpiAwareness(): DpiAwareness;   // from GetThreadDpiAwarenessContext
 
-initWindowsAppSdk();                            // per-monitor v2
+const { runtime } = initWindowsAppSdk();        // per-monitor v2; "package" when packaged
+initWindowsAppSdk({ bootstrap: BootstrapMode.always });
 initWindowsAppSdk({ dpiAwareness: undefined }); // leave the process alone
 processDpiAwareness();                          // "per-monitor-v2"
 ```
+
+### Packaged apps
+
+An MSIX app whose manifest declares
+`<PackageDependency Name="Microsoft.WindowsAppRuntime.2" .../>` runs with the
+runtime already in its package graph, so WinRT and WinUI activate with no
+bootstrapper; `initWindowsAppSdk` sees that and skips it (`runtime: "package"`)
+A child process has the identity only when the packaged parent started it
+A package that has an identity but no such dependency (a sparse package) still
+calls the bootstrapper, which Windows refuses with `0x80070032` in any packaged
+process; declare the dependency
+`test/packaged-bootstrap.test.ts` proves it with a throwaway package
+(`WINUI_SVELTE_PACKAGED_TEST=1 pnpm test:windows test/packaged-bootstrap.test.ts`),
+and `test/support/test-package.ts` is the harness for any test that needs an
+identity: register a loose layout package, run a script under it, remove it
 
 An application manifest is the static route for a single executable: embed it
 as the `RT_MANIFEST` resource (id 1, type 24) with `<dpiAware>true/pm</dpiAware>`
