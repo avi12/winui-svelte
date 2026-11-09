@@ -112,7 +112,7 @@
       }))
     })],
     ["cookies", () => {
-      cookies().catch(error => host.report({
+      cookies().catch((error: unknown) => host.report({
         kind: "error",
         error: String(error)
       }));
