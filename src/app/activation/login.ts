@@ -53,7 +53,8 @@ export function unregisterFileTypes(options: Pick<RegistrationOptions, "registry
  * per-user Run key; Windows lists it under Settings, Apps, Startup. The start
  * reaches the app as a `startup` activation.
  *
- * @param options - A name for the entry (letters, digits, `.`, `_`, `-`),
+ * @param options - A name for the entry (letters, digits, `.`, `_`, `-` and spaces
+ *   inside, such as `Cyber Journeys`),
  *   whether it should exist, extra arguments, and the registry and command
  *   for a test or a bundled app.
  */

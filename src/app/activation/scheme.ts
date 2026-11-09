@@ -5,6 +5,7 @@ const MAX_SCHEME_LENGTH = 64;
 const MIN_SCHEME_LENGTH = 2;
 const IDENTIFIER_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*$/u;
 const MAX_IDENTIFIER_LENGTH = 64;
+const STARTUP_NAME_PATTERN = /^[A-Za-z0-9](?:[A-Za-z0-9._ -]*[A-Za-z0-9._-])?$/u;
 const EXTENSION_PATTERN = /^\.[a-z0-9_-]+$/u;
 const MAX_EXTENSION_LENGTH = 32;
 const RESERVED_PREFIXES = ["ms-", "microsoft", "windows", "ie."] as const;
@@ -107,6 +108,24 @@ export function requireIdentifier(identifier: string) {
   }
 
   return identifier;
+}
+
+/**
+ * Checks the name of a startup entry: an identifier that may also hold spaces
+ * inside (`Cyber Journeys`), because Windows lists the name in Settings, Apps,
+ * Startup. It never starts or ends with a space and has no path separator or quote.
+ *
+ * @param name - The name.
+ * @returns The same name.
+ * @throws {TypeError} When it is empty, too long or has another character.
+ */
+export function requireStartupName(name: string) {
+  const isValid = STARTUP_NAME_PATTERN.test(name) && name.length <= MAX_IDENTIFIER_LENGTH;
+  if (!isValid) {
+    throw new TypeError(`'${name}' is not a startup name: letters, digits, spaces, . _ and -, up to ${MAX_IDENTIFIER_LENGTH} characters`);
+  }
+
+  return name;
 }
 
 /**

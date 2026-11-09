@@ -1,7 +1,7 @@
 import { commandLineOf } from "./command.ts";
 import type { ProgramCommand } from "./command.ts";
 import type { RegistryBackend } from "./registry.ts";
-import { normalizeExtension, normalizeScheme, requireIdentifier } from "./scheme.ts";
+import { normalizeExtension, normalizeScheme, requireIdentifier, requireStartupName } from "./scheme.ts";
 import { DomErrorName, domException } from "#src/web-apis/dom-exception.js";
 
 // What the package writes under HKEY_CURRENT_USER so that Windows starts the
@@ -265,7 +265,7 @@ export function removeFileTypes({ id, extensions, registry }: Pick<RegistrationC
  * can tell a start at sign-in from a start by hand.
  *
  * @param options - The entry's name, extra arguments and the registry and command.
- * @throws {TypeError} For an `id` that is not an identifier.
+ * @throws {TypeError} For an `id` that is not a startup name.
  */
 export function enableLaunchAtLogin({ id, arguments: extra = [], registry, command }: RegistrationContext & {
   id: string;
@@ -273,7 +273,7 @@ export function enableLaunchAtLogin({ id, arguments: extra = [], registry, comma
 }) {
   registry.setString({
     key: RUN_KEY,
-    name: requireIdentifier(id),
+    name: requireStartupName(id),
     value: commandLineOf({
       command,
       extra: [STARTUP_ARGUMENT, ...extra]
@@ -285,12 +285,12 @@ export function enableLaunchAtLogin({ id, arguments: extra = [], registry, comma
  * Removes the app's entry from the per-user Run key.
  *
  * @param options - The entry's name and the registry.
- * @throws {TypeError} For an `id` that is not an identifier.
+ * @throws {TypeError} For an `id` that is not a startup name.
  */
 export function disableLaunchAtLogin({ id, registry }: Pick<RegistrationContext, "registry"> & { id: string }) {
   registry.deleteValue({
     key: RUN_KEY,
-    name: requireIdentifier(id)
+    name: requireStartupName(id)
   });
 }
 
@@ -299,12 +299,12 @@ export function disableLaunchAtLogin({ id, registry }: Pick<RegistrationContext,
  *
  * @param options - The entry's name and the registry.
  * @returns Whether it exists and what it runs.
- * @throws {TypeError} For an `id` that is not an identifier.
+ * @throws {TypeError} For an `id` that is not a startup name.
  */
 export function readLaunchAtLogin({ id, registry }: Pick<RegistrationContext, "registry"> & { id: string }) {
   const commandLine = registry.readString({
     key: RUN_KEY,
-    name: requireIdentifier(id)
+    name: requireStartupName(id)
   });
   return {
     isEnabled: commandLine !== undefined,
