@@ -65,6 +65,9 @@ function fakeNative() {
     focusWindow(hwnd) {
       calls.push(`focusWindow ${hwnd}`);
       return isFocusable;
+    },
+    allowForeground() {
+      calls.push("allowForeground");
     }
   };
   return {
@@ -305,6 +308,23 @@ test("the owner window exists only while the menu is open, and takes the foregro
   const before = calls.length;
   rightClick();
   assert.deepEqual(calls.slice(before), ["createOwnerWindow", `focusWindow ${OWNER}`, "choose", `destroyWindow ${OWNER}`]);
+  handle.remove();
+});
+
+test("a pick lets the process it starts take the foreground, while the menu's owner still has it", () => {
+  const { calls, rightClick, handle } = start({
+    menu: [command({ id: "open" })],
+    picks: ["open"]
+  });
+  const before = calls.length;
+  rightClick();
+  assert.deepEqual(calls.slice(before), [
+    "createOwnerWindow",
+    `focusWindow ${OWNER}`,
+    "choose",
+    "allowForeground",
+    `destroyWindow ${OWNER}`
+  ]);
   handle.remove();
 });
 

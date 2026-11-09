@@ -9,6 +9,7 @@ const ATTACH = 1;
 const DETACH = 0;
 const NO_WINDOW = 0n;
 const NO_THREAD = 0;
+const ASFW_ANY = 0xFFFFFFFF;
 
 function bindUser32() {
   return bindDll({
@@ -22,7 +23,8 @@ function bindUser32() {
       show: ["ShowWindow", ["pointer", "i32"], "i32"],
       attach: ["AttachThreadInput", ["u32", "u32", "i32"], "i32"],
       toTop: ["BringWindowToTop", ["pointer"], "i32"],
-      setForeground: ["SetForegroundWindow", ["pointer"], "i32"]
+      setForeground: ["SetForegroundWindow", ["pointer"], "i32"],
+      allow: ["AllowSetForegroundWindow", ["u32"], "i32"]
     }
   });
 }
@@ -73,4 +75,21 @@ export function bringWindowToFront(hwnd: bigint) {
   }
 
   return user32.foreground() === hwnd;
+}
+
+/**
+ * Lets another process take the foreground: `AllowSetForegroundWindow`. Windows
+ * refuses a process's `SetForegroundWindow` unless the foreground process
+ * allowed it, so the process that just received the user's click (a tray's
+ * menu pick) calls this before it starts or signals the process that shows the
+ * window. The right lasts until the next input event. It works only for a
+ * process that itself may take the foreground, and does nothing otherwise.
+ *
+ * @param options - The process to allow, or any process when left out.
+ * @returns True when Windows took the grant.
+ */
+export function allowForeground({ processId = ASFW_ANY }: {
+  processId?: number;
+} = {}) {
+  return bindUser32().allow(processId) !== 0;
 }

@@ -193,6 +193,10 @@ export function createStandaloneTray<
           choice.select();
         }
       } while (choice?.staysOpen);
+
+      if (choice) {
+        native.allowForeground();
+      }
     } finally {
       native.destroyWindow(owner);
     }

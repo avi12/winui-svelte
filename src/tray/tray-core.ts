@@ -1,4 +1,4 @@
-import { createClickDetector } from "./click-detector.ts";
+import { createClickDetector, TrayGesture } from "./click-detector.ts";
 import type { TrayPointerEvent } from "./click-detector.ts";
 import { NotifyOperation } from "./native.ts";
 import type {
@@ -182,6 +182,11 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
         contextMenu: options.oncontextmenu,
         middleClick: options.onmiddleclick
       };
+      const isMenu = event.gesture === TrayGesture.contextMenu;
+      if (!isMenu) {
+        native.allowForeground();
+      }
+
       handlers[event.gesture]?.(event);
     }
   });

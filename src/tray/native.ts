@@ -8,7 +8,7 @@ import {
   wideMemory,
   withMemory
 } from "#src/win32-calls.js";
-import { bringWindowToFront } from "#src/win32-foreground.js";
+import { allowForeground, bringWindowToFront } from "#src/win32-foreground.js";
 import { createIconFileCalls } from "#src/win32-icons.js";
 
 /** The Shell_NotifyIcon operations. */
@@ -130,6 +130,14 @@ export interface TrayNative {
    * whose owner is not in front is not dismissed by a click elsewhere.
    */
   focusWindow(hwnd: bigint): boolean;
+
+  /**
+   * Lets any process take the foreground until the next input event, so the
+   * process a click starts or signals (the window of the app) is not refused
+   * by Windows' foreground lock. Only a process that itself may take the
+   * foreground can grant it: the one that received a menu pick.
+   */
+  allowForeground(): void;
 }
 
 const NOTIFY_ICON_DATA_SIZE = 976;
@@ -461,7 +469,8 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     iconRect: readIconRect,
     readPointer: sharedPointer.read,
     stopReadingPointer: sharedPointer.stop,
-    focusWindow: bringWindowToFront
+    focusWindow: bringWindowToFront,
+    allowForeground
   };
   return native;
 }

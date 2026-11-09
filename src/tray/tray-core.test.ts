@@ -110,6 +110,10 @@ class FakeNative implements TrayNative {
     return true;
   }
 
+  allowForeground() {
+    this.calls.push("allowForeground");
+  }
+
   operations() {
     return this.notifications.map(({ operation }) => operation);
   }
@@ -247,6 +251,25 @@ test("a click over the icon reaches onclick with the pointer's coordinates", () 
     x: 110,
     y: 112
   }]);
+  handle.remove();
+});
+
+test("a click lets the process it starts take the foreground, before onclick runs", () => {
+  const { native, tick, handle } = start({ onclick: () => native.calls.push("onclick") });
+  native.pointer = {
+    ...native.pointer,
+    x: 110,
+    y: 112,
+    left: DOWN,
+    isOnTray: true
+  };
+  tick();
+  native.pointer = {
+    ...native.pointer,
+    left: RELEASED
+  };
+  tick();
+  assert.deepEqual(native.calls.slice(-2), ["allowForeground", "onclick"]);
   handle.remove();
 });
 

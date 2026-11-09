@@ -29,7 +29,7 @@ const BUILD_TIMEOUT_MILLISECONDS = 120_000;
 // theme calls the standalone tray now makes, and by 580 bytes of icon hooks in the popup menu).
 // About 85 000 of it is zod, which an app build bundles (the 15 000 byte
 // tray-only test leaves it external); the entry itself is the rest.
-const BUDGET_BYTES = 99_250;
+const BUDGET_BYTES = 99_500;
 const FORBIDDEN_PATTERNS = [/(?<![-\w])svelte\//u, /NavigationView|ComboBox|ScrollViewer|ContentDialog/u];
 
 test("the tray entrypoint builds to a small tray.js, a manifest and the icon", {
