@@ -10,7 +10,14 @@ import { createTrayNative } from "#src/tray/native.js";
 import type { TrayNative } from "#src/tray/native.js";
 import { createTrayCore } from "#src/tray/tray-core.js";
 import type { TrayIconOptions, TrayScheduler } from "#src/tray/tray-core.js";
-import type { BalloonsExtra, ImageOf, TrayExtra, TrayHandle } from "#src/tray/tray-extras.js";
+import type {
+  BalloonsExtra,
+  ImageOf,
+  MenuIconCalls,
+  MenuIconsExtra,
+  TrayExtra,
+  TrayHandle
+} from "#src/tray/tray-extras.js";
 
 /** The menu of `createStandaloneTray`; `ItemId` is the union of the ids of `menu`. */
 interface StandaloneMenuOptions<ItemId extends string, Extras extends readonly TrayExtra[]>
@@ -20,7 +27,8 @@ interface StandaloneMenuOptions<ItemId extends string, Extras extends readonly T
 
   /**
    * The optional parts of the icon, each one import: `balloons` adds `notify`, `bounds` adds `bounds`,
-   * `themedIcon` lets `icon` follow the taskbar theme. None of their code is in the bundle unless passed.
+   * `themedIcon` lets `icon` follow the taskbar theme, `menuIcons` draws the icons of the menu's lines.
+   * None of their code is in the bundle unless passed.
    */
   readonly extras?: Extras;
 
@@ -28,7 +36,8 @@ interface StandaloneMenuOptions<ItemId extends string, Extras extends readonly T
    * The menu a right click opens, in the model of `winui-svelte/tray/menu`: commands, checks, radios,
    * submenus to any depth, separators and headers. A separator needs an `id` like every line. On this
    * renderer a submenu's own `onselect` and `autoExpand` do nothing (Windows opens a submenu row and
-   * reports no pick) and an `icon` is not drawn. None means a right click does nothing. A function makes
+   * reports no pick) and an `icon` is drawn only with the `menuIcons` extra in `extras`. None means a right
+   * click does nothing. A function makes
    * the lines each time the menu opens, which is how a tray written as markup keeps its variables current.
    */
   readonly menu?: ReadonlyArray<MenuItem<ItemId>> | (() => ReadonlyArray<MenuItem<ItemId>>) | undefined;
@@ -74,6 +83,10 @@ export type StandaloneTrayOptions<
 
 function isBalloons(extra: TrayExtra): extra is BalloonsExtra {
   return extra.kind === "balloons";
+}
+
+function isMenuIcons(extra: TrayExtra): extra is MenuIconsExtra {
+  return extra.kind === "menuIcons";
 }
 
 // The menu runs a message loop of its own on the only thread there is, and ends only when the user
@@ -137,6 +150,7 @@ export function createStandaloneTray<
   const { menu: source } = options;
   let menu = options.nativeMenu;
   let theme = options.menuTheme;
+  let icons: MenuIconCalls | undefined;
 
   function resolved() {
     const { profile } = options;
@@ -151,7 +165,8 @@ export function createStandaloneTray<
     readonly x: number;
     readonly y: number;
   }) {
-    menu ??= createNativeMenu();
+    icons ??= extras.find(isMenuIcons)?.createCalls();
+    menu ??= createNativeMenu({ icons });
     theme ??= createMenuTheme();
     const owner = native.createOwnerWindow();
     let choice: NativeChoice | undefined;
@@ -165,10 +180,12 @@ export function createStandaloneTray<
       }
 
       do {
-        theme.apply(options.colorScheme ?? MenuColorScheme.SYSTEM);
+        const colorScheme = options.colorScheme ?? MenuColorScheme.SYSTEM;
+        theme.apply(colorScheme);
         choice = menu.choose({
           owner,
           point,
+          isDark: icons?.isDark(colorScheme) ?? false,
           items: resolved()
         });
 

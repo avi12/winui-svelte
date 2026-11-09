@@ -3194,8 +3194,13 @@ const lines = resolveMenu({
   labels and ticks only); `closeThenRun` (true unless set to false) runs
   `onselect` after the menu has closed, so that a dialog can open
 - A submenu may have its own `onselect` and `autoExpand`
-- `icon` is a path, a glyph or `IconPixels`; `shortcut` is display text only,
-  the menu does not bind the key
+- `icon` is a path, a glyph, `IconPixels`, `{ forLightMenu, forDarkMenu }` (one
+  picture for each menu theme) or `{ tinted }` (a single-color glyph that the
+  menu paints in its text color, so one picture serves both themes); each
+  renderer draws what it can (the popup menu of `winui-svelte/tray/standalone`
+  draws files and pixels, a flyout draws paths and glyphs, and takes the light
+  member of a pair)
+  `shortcut` is display text only, the menu does not bind the key
 - `MenuProfile` is plain JSON: `level`, `hidden` (ids the level shows that
   the user hid), `shown` (ids above the level that the user turned on) and
   `order` (child ids in the user order, keyed by parent id, `""` for the root)
@@ -3399,11 +3404,11 @@ createStandaloneTray({
   native menus too
 - The default is the smallest tray: an icon from one `.ico` path, clicks,
   `update`, `remove` and the menu
-  Three parts are opt-in, each one import from the same entry, passed in
+  Four parts are opt-in, each one import from the same entry, passed in
   `extras`, and none of their code is in the bundle unless passed:
-  `balloons` adds `notify`, `bounds` adds `bounds()`, and `themedIcon` lets
+  `balloons` adds `notify`, `bounds` adds `bounds()`, `themedIcon` lets
   `icon` be `{ forLightTaskbar, forDarkTaskbar }`, swapped as the taskbar theme
-  changes
+  changes, and `menuIcons` draws the icons of the menu's lines (below)
   The handle has `notify` or `bounds` only when its extra is passed, and a
   theme pair is accepted only with `themedIcon`; otherwise it fails to compile
   `createTrayIcon` and `TrayIcon` of `winui-svelte/tray` include all three
@@ -3442,9 +3447,26 @@ tray.notify({ title: "Ready" });
   labels and ticks, right after the line runs; `onselect` otherwise runs on
   the next turn after the menu is gone (`closeThenRun: false` runs it as the
   menu closes)
-  A submenu's own `onselect` and `autoExpand`, and every `icon`, do nothing
-  here: Windows opens a submenu row without reporting a pick, and no pixel
-  or file icon is drawn
+  A submenu's own `onselect` and `autoExpand` do nothing here: Windows opens a
+  submenu row without reporting a pick
+  Without `menuIcons` in `extras` no line shows an icon, and the roughly 6 KB
+  of the decoder and the bitmap code stay out of the bundle
+  With it, every `icon` is drawn as a bitmap beside the label, on commands,
+  checks, radios and submenu rows at any depth: a path to a png, ico, bmp, jpeg, gif
+  or tiff (decoded by GDI+, kept by path and modification time, so a menu that
+  opens again does not decode again), `IconPixels`, a `{ forLightMenu,
+  forDarkMenu }` pair, or `{ tinted }` for a monochrome glyph (only its alpha is
+  used, and it takes the menu's text color)
+  The theme is read each time the menu opens, by the rule `colorScheme` sets
+  (the system's app mode for `"light dark"`), so a pair and a tinted glyph
+  follow a theme change; the bitmap is a 32-bit premultiplied DIB section, the
+  size of the menu's check mark at the screen's scale (at least the small icon
+  size), and is freed with the menu
+  A disabled line gets a grey, fainter icon (Windows does not dim a bitmap),
+  and a ticked line or radio gets a frame around its icon, because Windows
+  draws the icon where the tick would be
+  A path that cannot be read leaves the line without an icon; the rest of the
+  menu opens as usual
   The menu is modal: the thread runs its own message loop until it closes
   `colorScheme` makes it follow the system theme through an undocumented
   uxtheme call; a menu that must be drawn in WinUI belongs in

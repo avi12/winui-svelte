@@ -162,7 +162,10 @@ const ITEMS = [
 ] satisfies MenuItem[];
 
 test("a resolved menu becomes real popup menu handles that read back as declared", () => {
-  const built = createMenuBuilder().build({ items: resolveMenu({ items: ITEMS }) });
+  const built = createMenuBuilder().build({
+    items: resolveMenu({ items: ITEMS }),
+    isDark: false
+  });
   try {
     const { menu } = built;
     assert.equal(countOf(menu), 7);

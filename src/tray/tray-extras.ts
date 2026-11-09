@@ -1,4 +1,6 @@
+import type { MenuIcon } from "./menu/types.ts";
 import type { Balloon, BalloonWriter, NotifyOperation, ScreenRect } from "./native.ts";
+import type { MenuColorScheme } from "./standalone/menu-theme.ts";
 import type { BalloonOptions, TrayIconImage } from "./tray-core.ts";
 
 /** What an extra may use of a live tray icon. */
@@ -37,8 +39,35 @@ export interface ThemedIconExtra {
   createReader(): () => boolean;
 }
 
-/** One of the three optional parts of a tray icon. */
-export type TrayExtra = BalloonsExtra | BoundsExtra | ThemedIconExtra;
+/** What the popup menu calls to draw the icon of a line. */
+export interface MenuIconCalls {
+  /** The side of a menu bitmap, in pixels, at the screen's scale. */
+  size(): number;
+
+  /** Whether a menu of this color scheme is dark now, read fresh on each call. */
+  isDark(colorScheme: MenuColorScheme): boolean;
+
+  /** Makes the premultiplied bitmap of an icon for the theme; 0n when the picture cannot be read. */
+  bitmapOf(options: {
+    readonly icon: MenuIcon;
+    readonly isDark: boolean;
+    readonly isEnabled: boolean;
+    readonly isChecked: boolean;
+    readonly size: number;
+  }): bigint;
+
+  /** Frees a bitmap `bitmapOf` made. */
+  free(bitmap: bigint): void;
+}
+
+/** The extra that draws the `icon` of the lines of a standalone tray's menu. Import `menuIcons`. */
+export interface MenuIconsExtra {
+  readonly kind: "menuIcons";
+  createCalls(): MenuIconCalls;
+}
+
+/** One of the four optional parts of a tray icon. */
+export type TrayExtra = BalloonsExtra | BoundsExtra | ThemedIconExtra | MenuIconsExtra;
 
 type HasExtra<Extras extends readonly TrayExtra[], Kind extends TrayExtra["kind"]> =
   [Extract<Extras[number], { readonly kind: Kind }>] extends [never] ? false : true;

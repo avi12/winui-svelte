@@ -5,7 +5,7 @@ export type { NativeChoice, NativeMenu } from "./native.ts";
 export { resolveMenu } from "#src/tray/menu/resolve.js";
 export type { MenuResolver } from "#src/tray/menu/resolve-lite.js";
 export { MenuItemKind, MenuLevel } from "#src/tray/menu/types.js";
-export type { MenuItem, MenuProfile } from "#src/tray/menu/types.js";
+export type { MenuIcon, MenuIconPair, MenuIconTinted, MenuItem, MenuProfile } from "#src/tray/menu/types.js";
 export type {
   StandaloneTrayOptions,
   StandaloneTraySeams
@@ -13,10 +13,13 @@ export type {
 export { createStandaloneTray } from "./standalone-tray.ts";
 export { balloons } from "#src/tray/balloons.js";
 export { bounds } from "#src/tray/bounds.js";
+export { menuIcons } from "./menu-icons.ts";
 export { themedIcon } from "#src/tray/themed-icon.js";
 export type {
   BalloonsExtra,
   BoundsExtra,
+  MenuIconCalls,
+  MenuIconsExtra,
   ThemedIconExtra,
   TrayExtra,
   TrayHandle
