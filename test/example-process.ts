@@ -36,11 +36,12 @@ export interface Exchange {
 export class ExampleProcess {
   readonly pid: number;
   readonly exited: Promise<number | null>;
-  private readonly child: ChildProcessByStdio<Writable, Readable, null>;
+  private readonly child: ChildProcessByStdio<Writable, Readable, Readable>;
   private readonly reports: Report[] = [];
+  private errorText = "";
   private readonly waiting: Array<() => void> = [];
 
-  private constructor(child: ChildProcessByStdio<Writable, Readable, null>) {
+  private constructor(child: ChildProcessByStdio<Writable, Readable, Readable>) {
     this.child = child;
     this.pid = child.pid ?? 0;
     createInterface({ input: child.stdout }).on("line", line => {
@@ -51,6 +52,10 @@ export class ExampleProcess {
           wake();
         }
       }
+    });
+    child.stderr.on("data", (chunk: Buffer) => {
+      this.errorText += chunk.toString();
+      process.stderr.write(chunk);
     });
     this.exited = new Promise(resolve => {
       child.on("exit", code => resolve(code));
@@ -94,10 +99,16 @@ export class ExampleProcess {
         ...backgroundEnvironment(),
         ...env
       },
-      stdio: ["pipe", "pipe", "inherit"],
+      stdio: ["pipe", "pipe", "pipe"],
       windowsHide: true
     });
     return new ExampleProcess(child);
+  }
+
+  // What the process has written to stderr so far, which is also passed on to this process's own.
+  // fallow-ignore-next-line unused-class-member
+  get stderr() {
+    return this.errorText;
   }
 
   // The first report of `kind` so far, as the launcher's `runtime` report, which comes before any command.

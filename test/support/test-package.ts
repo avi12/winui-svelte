@@ -71,20 +71,34 @@ export interface TestPackageOptions {
   /** Child elements of the application's `<Extensions>`, for a test of an activation. */
   readonly applicationExtensions?: string;
 
+  /** Child elements of the package's own `<Extensions>`, where `windows.activatableClass.inProcessServer` lives. */
+  readonly packageExtensions?: string;
+
   /** Restricted capabilities beyond `runFullTrust`, by name. */
   readonly capabilities?: readonly string[];
+
+  /** Files placed in the package folder, by path inside the package (a hard link where the volume allows). */
+  readonly files?: Readonly<Record<string, string>>;
 }
 
-function manifestOf({ identityName, hasWindowsAppRuntimeDependency, applicationExtensions, capabilities }: {
+function manifestOf({
+  identityName,
+  hasWindowsAppRuntimeDependency,
+  applicationExtensions,
+  packageExtensions,
+  capabilities
+}: {
   identityName: string;
   hasWindowsAppRuntimeDependency: boolean;
   applicationExtensions: string;
+  packageExtensions: string;
   capabilities: readonly string[];
 }) {
   const dependency = hasWindowsAppRuntimeDependency
     ? `<PackageDependency Name="${FRAMEWORK_NAME}" MinVersion="${FRAMEWORK_MIN_VERSION}" Publisher="${FRAMEWORK_PUBLISHER}" />`
     : "";
   const extensions = applicationExtensions === "" ? "" : `<Extensions>${applicationExtensions}</Extensions>`;
+  const packageLevel = packageExtensions === "" ? "" : `<Extensions>${packageExtensions}</Extensions>`;
   const restricted = capabilities.map(name => `<rescap:Capability Name="${name}" />`).join("");
   return `<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -120,6 +134,7 @@ function manifestOf({ identityName, hasWindowsAppRuntimeDependency, applicationE
     <rescap:Capability Name="unvirtualizedResources" />
     ${restricted}
   </Capabilities>
+  ${packageLevel}
 </Package>
 `;
 }
@@ -135,14 +150,23 @@ function quoted(text: string) {
   return `'${text.replaceAll("'", "''")}'`;
 }
 
+function placeFile({ source, target }: {
+  source: string;
+  target: string;
+}) {
+  try {
+    linkSync(source, target);
+  } catch {
+    copyFileSync(source, target);
+  }
+}
+
 function placeExecutable(folder: string) {
   const target = path.join(folder, EXECUTABLE_NAME);
-  try {
-    linkSync(process.execPath, target);
-  } catch {
-    copyFileSync(process.execPath, target);
-  }
-
+  placeFile({
+    source: process.execPath,
+    target
+  });
   return target;
 }
 
@@ -156,10 +180,20 @@ function layoutOf({ identityName, options }: {
       identityName,
       hasWindowsAppRuntimeDependency: options.hasWindowsAppRuntimeDependency ?? true,
       applicationExtensions: options.applicationExtensions ?? "",
+      packageExtensions: options.packageExtensions ?? "",
       capabilities: options.capabilities ?? []
     })
   );
   writeFileSync(path.join(folder, LOGO_NAME), LOGO_PNG);
+  for (const [inside, source] of Object.entries(options.files ?? {})) {
+    const target = path.join(folder, inside);
+    mkdirSync(path.dirname(target), { recursive: true });
+    placeFile({
+      source,
+      target
+    });
+  }
+
   return {
     folder,
     executable: placeExecutable(folder)
