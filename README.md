@@ -864,7 +864,7 @@ conditions on `exports`), which your Vite compiles (`winuiSvelte()`)
 | `winui-svelte/runner` | `createWindowModuleRunner()`, the window thread's side of the module server |
 | `winui-svelte/window` | `runWindow`, `createWindow`, `startTimer`, `exitApplication`, `systemSettings` |
 | `winui-svelte/thread` | `runOnUiThread`, the first call of the UI thread's worker |
-| `winui-svelte/bootstrap` | `initWindowsAppSdk`, for the host's main thread |
+| `winui-svelte/bootstrap` | `initWindowsAppSdk` (which also makes the process per-monitor DPI aware), `processDpiAwareness`, for the host's main thread |
 | `winui-svelte/testing` | Node module hooks that run `.svelte` files from source, for tests |
 | `winui-svelte/compile`, `/host`, `/keyed-list` | the compiler hook, the renderer, a keyed collection sync |
 | `winui-svelte/element-animation` | `enableElementAnimation` (the Vite plugin calls it for you; Svelte's `transition:` and `animate:` run on WinUI) |
