@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { dragPathOver } from "./ole-drag.ts";
   import type { ExampleCommand, ExampleHost } from "#examples/harness/contract.ts";
   import { dataTransferManagerOf } from "#src/data-transfer/share-interop.js";
   import type { Border as BorderControl } from "#winui/microsoft/ui/xaml/controls/Border";
@@ -98,6 +99,46 @@
     });
   }
 
+  const OLE_SETTLE_MILLISECONDS = 800;
+  const OLE_INSET = 4;
+  const OUTSIDE_DIPS = 250;
+
+  function oleDrag(command: ExampleCommand) {
+    const hwnd = handle?.appWindow.id.value ?? NO_WINDOW;
+    const scale = zone?.xamlRoot?.rasterizationScale ?? 1;
+    const zoneHeight = zone?.actualHeight ?? 0;
+    const rawHeight = rawZone?.actualHeight ?? 0;
+    const rows = new Map([
+      ["zone", OLE_INSET],
+      ["raw", zoneHeight + OLE_INSET],
+      ["text", zoneHeight + rawHeight + OLE_INSET],
+      ["outside", OUTSIDE_DIPS]
+    ]);
+    function point(name: string) {
+      return {
+        x: OLE_INSET * scale,
+        y: (rows.get(name) ?? OUTSIDE_DIPS) * scale
+      };
+    }
+
+    const result = dragPathOver({
+      hwnd,
+      path: String(command["path"] ?? ""),
+      enterAt: point(String(command["enterAt"] ?? "outside")),
+      overAt: point(String(command["overAt"] ?? "outside")),
+      shouldDrop: command["shouldDrop"] === true
+    });
+    setTimeout(() => {
+      flush();
+      host.report({
+        kind: "oleDragged",
+        ...result,
+        isOver,
+        log
+      });
+    }, OLE_SETTLE_MILLISECONDS);
+  }
+
   const commands = new Map<string, (command: ExampleCommand) => void>([
     ["state", reportState],
     ["drop", command => {
@@ -119,6 +160,7 @@
         message: String(error)
       }));
     }],
+    ["oleDrag", oleDrag],
     ["shareManager", () => {
       // GetForWindow only: ShowShareUIForWindow would open the real pane.
       try {
@@ -181,6 +223,10 @@
     >
       <text-block>A raw element</text-block>
     </border>
+    <Border {@attach dropzone({ accept: ["text"] })}
+    >
+      <TextBlock>Text only</TextBlock>
+    </Border>
     <TextBlock
       {@attach control<TextBlockControl>(native => {
         source = native;

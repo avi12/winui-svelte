@@ -99,3 +99,68 @@ test("a control takes drops through the dropzone and the web event names", {
     });
   }
 });
+
+test("a window takes the drags of other apps through an OLE drop target, in the zones only", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED,
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const folder = await mkdtemp(path.join(tmpdir(), "winui-svelte-ole-"));
+  const example = ExampleProcess.start({ entry: "examples/data-transfer/main.ts" });
+  function drag(command: Record<string, string | boolean>) {
+    return example.ask({
+      command: {
+        cmd: "oleDrag",
+        path: folder,
+        ...command
+      },
+      kind: "oleDragged"
+    });
+  }
+
+  try {
+    const inZone = await drag({
+      enterAt: "zone",
+      overAt: "zone",
+      shouldDrop: true
+    });
+    assert.equal(inZone["isRegistered"], true, "the window registered an OLE drop target");
+    assert.equal(inZone["enter"], COPY, "a folder over a zone that accepts directories shows copy");
+    assert.equal(inZone["over"], COPY);
+    assert.equal(inZone["drop"], COPY, "the drop is accepted as a copy");
+    const [first] = logOf(inZone);
+    const details = JSON.parse(String(first));
+    assert.deepEqual(details.files, [`${path.basename(folder)}:directory:`], "the handler read the folder");
+    assert.ok(details.types.includes("Files"));
+
+    const outside = await drag({
+      enterAt: "outside",
+      overAt: "outside",
+      shouldDrop: true
+    });
+    assert.equal(outside["enter"], 0, "no zone under the cursor shows the forbidden sign");
+    assert.equal(outside["over"], 0);
+    assert.equal(outside["drop"], 0);
+
+    const refused = await drag({
+      enterAt: "text",
+      overAt: "text",
+      shouldDrop: false
+    });
+    assert.equal(refused["over"], 0, "a zone that accepts only text refuses a folder");
+
+    const moved = await drag({
+      enterAt: "zone",
+      overAt: "outside",
+      shouldDrop: false
+    });
+    assert.equal(moved["enter"], COPY);
+    assert.equal(moved["over"], 0, "leaving the zone for the rest of the window refuses");
+    assert.equal(moved["isOver"], false, "the zone was told the drag left");
+  } finally {
+    example.kill();
+    await rm(folder, {
+      recursive: true,
+      force: true
+    });
+  }
+});

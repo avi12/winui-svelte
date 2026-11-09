@@ -8,6 +8,8 @@ import { DragEvent } from "./drag-event.ts";
 import type { DragEventHandler } from "./drag-event.ts";
 import type { PackageSource } from "./package-io.ts";
 import { previewOf, snapshotOf } from "./package-io.ts";
+import { joinWindow } from "./window-drop.ts";
+import type { WindowControl } from "./window-drop.ts";
 import { dataPackageOf, sourceOf } from "./winrt-package.ts";
 import type { DataPackageView } from "#winui/windows/application-model/data-transfer/DataPackageView";
 
@@ -26,7 +28,10 @@ export type DropEventType = (typeof DropEventType)[keyof typeof DropEventType];
 export interface DropArgs {
   acceptedOperation: number;
   readonly allowedOperations: number;
-  readonly dataView: DataPackageView;
+  /** What a WinUI drag carries; absent for a drag from another app, which brings `source`. */
+  readonly dataView?: DataPackageView;
+  /** What a drag from another app (OLE) carries, in the shape of a package view. */
+  readonly source?: PackageSource;
   readonly modifiers: number;
   readonly dragUIOverride: DragFeedback;
   handled: boolean;
@@ -37,11 +42,8 @@ export interface DropArgs {
 }
 
 /** The part of a WinUI control a drop target needs. */
-export interface DropControl {
+export interface DropControl extends WindowControl {
   allowDrop: boolean;
-  readonly xamlRoot?: {
-    readonly content: object | null;
-  } | null;
   onDragEnter(callback: (sender: unknown, args: unknown) => void): () => void;
   onDragOver(callback: (sender: unknown, args: unknown) => void): () => void;
   onDragLeave(callback: (sender: unknown, args: unknown) => void): () => void;
@@ -80,7 +82,8 @@ const ALL_KINDS = Object.values(DataKind);
 const ALL_OPERATIONS = allowedOperationsOf("all");
 
 function isDropArgs(value: unknown): value is DropArgs {
-  return typeof value === "object" && value !== null && "dataView" in value && "getDeferral" in value;
+  const isObject = typeof value === "object" && value !== null;
+  return isObject && ("dataView" in value || "source" in value) && "getDeferral" in value;
 }
 
 function reportError(error: unknown) {
@@ -113,6 +116,7 @@ class DropBinding {
   private readonly control: DropControl;
   private readonly stops: Array<() => void>;
   private readonly onEmpty: () => void;
+  private readonly leaveWindow: () => void;
 
   constructor({ control, onEmpty }: {
     control: DropControl;
@@ -121,6 +125,10 @@ class DropBinding {
     this.control = control;
     this.onEmpty = onEmpty;
     control.allowDrop = true;
+    this.leaveWindow = joinWindow({
+      control,
+      zone: this
+    });
     this.stops = [
       control.onDragEnter((_sender, args) => this.onOver({
         args,
@@ -130,7 +138,7 @@ class DropBinding {
         args,
         type: DropEventType.dragover
       })),
-      control.onDragLeave((_sender, args) => this.onLeave(args)),
+      control.onDragLeave((_sender, args) => this.leave(args)),
       control.onDrop((_sender, args) => {
         this.drop(args).catch(reportError);
       })
@@ -143,6 +151,7 @@ class DropBinding {
   }
 
   release() {
+    this.leaveWindow();
     for (const stop of this.stops) {
       stop();
     }
@@ -191,14 +200,23 @@ class DropBinding {
     });
   }
 
-  private sourceFor(view: DataPackageView) {
+  private sourceFor(args: DropArgs) {
+    const { dataView, source } = args;
+    if (source) {
+      return source;
+    }
+
+    if (!dataView) {
+      throw new Error("a drop carries neither a package view nor a source");
+    }
+
     for (const zone of this.zones) {
       if (zone.sourceOf) {
-        return zone.sourceOf(view);
+        return zone.sourceOf(dataView);
       }
     }
 
-    return sourceOf(view);
+    return sourceOf(dataView);
   }
 
   // The kinds the data holds are all a drag can be judged by; the files' names come with the drop.
@@ -220,6 +238,13 @@ class DropBinding {
     })));
   }
 
+  enter(args: unknown) {
+    this.onOver({
+      args,
+      type: DropEventType.dragenter
+    });
+  }
+
   over(args: unknown) {
     this.onOver({
       args,
@@ -235,7 +260,7 @@ class DropBinding {
       return;
     }
 
-    const source = this.sourceFor(args.dataView);
+    const source = this.sourceFor(args);
     const transfer = previewOf(source);
     transfer.effectAllowed = effectAllowedOf(args.allowedOperations);
     transfer.dropEffect = effectOf(args.allowedOperations);
@@ -259,17 +284,17 @@ class DropBinding {
     const isAccepted = this.isDragAccepted(source) && isAcceptedByPage;
     this.lastEffect = transfer.dropEffect;
     args.acceptedOperation = isAccepted ? operationOf(this.lastEffect) : 0;
-    args.handled = isAccepted;
+    args.handled = isAccepted || hasZones;
   }
 
-  private onLeave(args: unknown) {
+  leave(args: unknown) {
     this.setOver(false);
 
     if (!isDropArgs(args)) {
       return;
     }
 
-    const transfer = previewOf(this.sourceFor(args.dataView));
+    const transfer = previewOf(this.sourceFor(args));
     void this.dispatch({
       type: DropEventType.dragleave,
       event: this.makeEvent({
@@ -289,7 +314,7 @@ class DropBinding {
 
     const deferral = args.getDeferral();
     try {
-      const source = this.sourceFor(args.dataView);
+      const source = this.sourceFor(args);
       const customFormats = [...this.zones].flatMap(zone => zone.formats ?? []);
       const snapshot = await snapshotOf({
         source,

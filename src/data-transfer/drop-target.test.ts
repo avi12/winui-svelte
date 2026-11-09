@@ -236,6 +236,24 @@ test("accept refuses a drag whose kind it does not take, and tells the highlight
   assert.deepEqual(states, [true, false]);
 });
 
+test("a zone owns its area: it marks the drag handled even when it refuses, so an outer zone does not answer", () => {
+  const control = new FakeControl();
+  addDropzone({
+    control,
+    zone: {
+      accept: ".png",
+      sourceOf: () => fakeSource({ kinds: [DataKind.text] })
+    }
+  });
+  const args = new FakeArgs();
+  control.raise({
+    name: "over",
+    args
+  });
+  assert.equal(args.acceptedOperation, DataPackageOperation.None);
+  assert.equal(args.handled, true);
+});
+
 test("a drop reads the data, passes only what accept takes, and completes the deferral", async () => {
   const control = new FakeControl();
   const dropped: DragEvent[] = [];

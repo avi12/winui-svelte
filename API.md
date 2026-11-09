@@ -4665,6 +4665,36 @@ window's content to take drops anywhere on the window
 `onDragEnter`, `onDragOver`, `onDragLeave` and `onDrop` take the same
 `DragEvent` as the web names
 
+Which part of the window takes a drag (accepting selectively):
+
+- only a zone takes a drag; a point outside every zone shows the forbidden sign,
+  so a section of the window is the only place that accepts when it alone has
+  `dropzone`
+- the zone under the cursor answers; with nested zones the innermost one
+  decides, and a zone that refuses (its `accept` takes nothing the drag
+  carries) refuses for its whole area even when an outer zone would accept
+- a zone on the root element of the window is the window-wide default; put a
+  zone with a narrower `accept` (or one that refuses) on a section to
+  override it there
+- `accept` is judged per zone, so one window can have a folder-only zone and a
+  text-only zone side by side
+- a drag that started inside the window (a list reordering its own items)
+  carries no files, so a zone with `accept: ["directory", ".zip"]` leaves it to
+  the control
+
+A drag from another app (Explorer, a browser) reaches a WinUI 3 window as an OLE
+drag, and WinUI 3 registers no OLE drop target on its window: without one,
+Windows shows the forbidden sign over the whole window and no `dragenter` ever
+fires
+The first zone of a window registers one (`RegisterDragDrop` on the top-level
+window, `src/data-transfer/ole-drop-target.ts`), and it is revoked with the
+last zone or when the window is destroyed; each call is routed to the zone under
+the cursor by a hit test of the visual tree (`src/data-transfer/window-drop.ts`)
+The data object is read through the classic formats (files and folders as
+`CF_HDROP`, text, a link, HTML); a dragged picture from another app is not read
+yet
+`simulateDrop` stays the way to test a zone without any OLE call
+
 `draggable(options)`: `text`, `html`, `uri`, `files`, `bitmap`, `effectAllowed`,
 and `onDragStart` / `onDrag` / `onDragEnd`
 Drag out to Explorer works with `files` (paths become `StorageFile` and
