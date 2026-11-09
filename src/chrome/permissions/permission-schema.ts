@@ -1,4 +1,5 @@
 import { ALL_URLS } from "./permission-table.ts";
+import { parseOrThrow } from "#src/chrome/parse-or-throw.js";
 import { z } from "zod";
 
 const MATCH_PATTERN = /^(?:\*|https?|file|ftp|urn):\/\/(?:\*|\*\.[^/*]+|[^/*]*)\/.*$/u;
@@ -14,18 +15,6 @@ const permissionsSchema = z.object({
 });
 
 const requestSchema = permissionsSchema.extend({ openSettings: z.boolean().optional() });
-
-function parseOrThrow<T>({ schema, input }: {
-  schema: z.ZodType<T>;
-  input: unknown;
-}) {
-  const result = schema.safeParse(input);
-  if (!result.success) {
-    throw new Error(result.error.issues.map(issue => issue.message).join("; "));
-  }
-
-  return result.data;
-}
 
 const storedSchema = z.object({ granted: z.array(z.string()) });
 

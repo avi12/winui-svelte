@@ -1,5 +1,6 @@
 import { ContextItemType, ContextType } from "./context-menu-types.ts";
 import type { OnClickData } from "./context-menu-types.ts";
+import { parseOrThrow } from "#src/chrome/parse-or-throw.js";
 import { z } from "zod";
 
 const callbackSchema = z.custom<(info: OnClickData) => void>(value => typeof value === "function");
@@ -18,18 +19,6 @@ const updateSchema = z.strictObject({
 });
 
 const createSchema = updateSchema.extend({ id: z.string().min(1).optional() });
-
-function parseOrThrow<T>({ schema, input }: {
-  schema: z.ZodType<T>;
-  input: unknown;
-}) {
-  const result = schema.safeParse(input);
-  if (!result.success) {
-    throw new Error(result.error.issues.map(issue => issue.message).join("; "));
-  }
-
-  return result.data;
-}
 
 /** Checks the properties of `create` against Chrome's shape; throws an `Error` for an unknown key or a wrong type. */
 export function parseCreate(input: unknown) {
