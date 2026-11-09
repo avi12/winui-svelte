@@ -321,25 +321,38 @@ export class LanguageServer {
     return z.array(inlayHintSchema).nullable().parse(hints) ?? [];
   }
 
+  private requestAt({ method, file, line, character }: {
+    method: string;
+    file: string;
+    line: number;
+    character: number;
+  }) {
+    return this.request({
+      method,
+      params: {
+        textDocument: {
+          uri: pathToFileURL(this.inWorkspace(file)).href
+        },
+        position: {
+          line,
+          character
+        }
+      }
+    });
+  }
+
   // The labels the editor offers at a position (zero-based line and character).
   async completionsAt({ file, line, character }: {
     file: string;
     line: number;
     character: number;
   }) {
-    const params = {
-      textDocument: {
-        uri: pathToFileURL(this.inWorkspace(file)).href
-      },
-      position: {
+    const answer = completionSchema.parse(
+      await this.requestAt({
+        method: "textDocument/completion",
+        file,
         line,
         character
-      }
-    };
-    const answer = completionSchema.parse(
-      await this.request({
-        method: "textDocument/completion",
-        params
       })
     ) ?? [];
     const items = Array.isArray(answer) ? answer : answer.items;
@@ -353,19 +366,12 @@ export class LanguageServer {
     line: number;
     character: number;
   }) {
-    const params = {
-      textDocument: {
-        uri: pathToFileURL(this.inWorkspace(file)).href
-      },
-      position: {
+    const answer = hoverSchema.parse(
+      await this.requestAt({
+        method: "textDocument/hover",
+        file,
         line,
         character
-      }
-    };
-    const answer = hoverSchema.parse(
-      await this.request({
-        method: "textDocument/hover",
-        params
       })
     );
     const contents = answer?.contents ?? [];

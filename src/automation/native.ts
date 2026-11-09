@@ -5,6 +5,7 @@ import type { UiaControlType } from "./ids.ts";
 import { DynWinRtValue, WinGuid } from "@microsoft/dynwinrt";
 import { DynCom, DynComMethodSig, DynComUnsafe } from "@microsoft/dynwinrt/com/unsafe";
 import { DynComRawCleanup, DynComRawMemory, DynComRawPointer } from "@microsoft/dynwinrt/com/unsafe/raw";
+import { NO_ADDRESS, POINTER_BYTES } from "#src/win32-calls.js";
 
 // IUIAutomation and its neighbours (UIAutomationClient.h) have no WinRT form,
 // so the methods are declared at their vtable slots, counted in the order the
@@ -66,7 +67,6 @@ const GETTER_SLOTS = [
   ELEMENT_BOUNDING_RECTANGLE_SLOT
 ];
 const TREE_SCOPE_CHILDREN = 2;
-const POINTER_BYTES = 8;
 const RECT_BYTES = 16;
 const RECT_TOP_OFFSET = 4;
 const RECT_RIGHT_OFFSET = 8;
@@ -77,7 +77,6 @@ const BSTR_LENGTH_BYTES = 4;
 const VT_I4 = 3;
 const VT_BOOL = 11;
 const VT_EMPTY = 0;
-const NO_ADDRESS = 0n;
 const UIA_E_ELEMENTNOTAVAILABLE = "80040201";
 const UIA_E_ELEMENTNOTENABLED = "80040200";
 const MAX_BSTR_BYTES = 0x7fffffff;

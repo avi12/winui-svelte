@@ -2,6 +2,7 @@ import { DynWinRtValue } from "@microsoft/dynwinrt";
 import { DynComMethodSig, DynComUnsafe, WinGuid } from "@microsoft/dynwinrt/com/unsafe";
 import { DynComRawMemory, DynComRawOwnedComPointer } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { read } from "#src/renderer/host/reflect.js";
+import { POINTER_BYTES } from "#src/win32-calls.js";
 import type { IBuffer } from "#winui/windows/storage/streams/IBuffer";
 
 // A WinRT IBuffer has no member to write through: the way in is its
@@ -13,7 +14,6 @@ const IBUFFER_BYTE_ACCESS = WinGuid.parse("905a0fef-bc53-11df-8c49-001e4fc686da"
 const BUFFER_SLOT = 3;
 const NATIVE_OBJECT = "_obj";
 const BYTE_ALIGNMENT = 1;
-const POINTER_BYTES = 8;
 
 /**
  * Overwrites the start of a WinRT buffer with bytes.

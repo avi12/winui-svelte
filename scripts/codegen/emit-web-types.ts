@@ -84,32 +84,14 @@ function enumContributionOf({ enumNames, sets }: {
   };
 }
 
-function attributeOf({ level, key, kind, winName, inputType, displayType, enumNames, sets }: {
-  level: ClassModel;
-  key: string;
-  kind: string;
-  winName: string;
+function addTypeOf({ attribute, inputType, displayType, enumNames, sets }: {
+  attribute: Attribute;
   inputType: string | undefined;
   displayType: string | undefined;
   enumNames: string | undefined;
   sets: EnumSets;
 }) {
-  const text = level.documentation?.members.get(`${kind}:${winName}`);
-  const hasInputType = inputType !== undefined;
-  const description = descriptionParagraphsOf({
-    text,
-    kind,
-    winName,
-    inputType,
-    displayType
-  }).join("\n\n");
-  const attribute: Attribute = { name: key };
-  const isDescribed = description !== "";
-  if (isDescribed) {
-    attribute.description = description;
-  }
-
-  const offered = hasInputType ? OFFERED_INPUTS.get(inputType) : undefined;
+  const offered = inputType === undefined ? undefined : OFFERED_INPUTS.get(inputType);
   const enumContribution = offered === undefined ? enumContributionOf({
     enumNames,
     sets
@@ -125,6 +107,39 @@ function attributeOf({ level, key, kind, winName, inputType, displayType, enumNa
   if (hasValues) {
     attribute.values = values;
   }
+}
+
+function attributeOf({ level, key, kind, winName, inputType, displayType, enumNames, sets }: {
+  level: ClassModel;
+  key: string;
+  kind: string;
+  winName: string;
+  inputType: string | undefined;
+  displayType: string | undefined;
+  enumNames: string | undefined;
+  sets: EnumSets;
+}) {
+  const text = level.documentation?.members.get(`${kind}:${winName}`);
+  const description = descriptionParagraphsOf({
+    text,
+    kind,
+    winName,
+    inputType,
+    displayType
+  }).join("\n\n");
+  const attribute: Attribute = { name: key };
+  const isDescribed = description !== "";
+  if (isDescribed) {
+    attribute.description = description;
+  }
+
+  addTypeOf({
+    attribute,
+    inputType,
+    displayType,
+    enumNames,
+    sets
+  });
 
   const isDocumented = text !== undefined;
   if (isDocumented) {
@@ -159,22 +174,13 @@ function attachedAttributeOf({ attached, sets }: {
     attribute.description = description;
   }
 
-  const offered = inputType === undefined ? undefined : OFFERED_INPUTS.get(inputType);
-  const enumContribution = offered === undefined ? enumContributionOf({
+  addTypeOf({
+    attribute,
+    inputType,
+    displayType,
     enumNames: enumNamesTypeOf(attached),
     sets
-  }) : undefined;
-  const type = offered ?? enumContribution?.type ?? displayType;
-  const isTyped = type !== undefined;
-  if (isTyped) {
-    attribute.value = valueOf(type);
-  }
-
-  const values = enumContribution?.values;
-  const hasValues = values !== undefined;
-  if (hasValues) {
-    attribute.values = values;
-  }
+  });
 
   return attribute;
 }

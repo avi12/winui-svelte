@@ -13,7 +13,9 @@ export const POINTER_BYTES = 8;
 
 /** The size of a DWORD or a 32-bit integer, in bytes. */
 export const DWORD_BYTES = 4;
-const NO_ADDRESS = 0n;
+
+/** The address of a null pointer. */
+export const NO_ADDRESS = 0n;
 
 /** A Win32 function to bind: its DLL, name, parameter types and return type (`pointer`, `i32`, `u32`, `i64`). */
 interface BindOptions {

@@ -2,9 +2,9 @@ import { createSchema, getInfoSchema, updateSchema, windowIdSchema } from "./win
 import type { ChromeWindowSurface } from "./window-surface.ts";
 import { WINDOW_ID_CURRENT, WINDOW_ID_NONE, WindowState, WindowType } from "./window-types.ts";
 import type { ChromeWindow, CreateWindowData, GetWindowInfo, UpdateWindowInfo } from "./window-types.ts";
+import { parseOrThrow } from "#src/chrome/parse-or-throw.js";
 import { ChromeEvent } from "#src/downloads/chrome-event.js";
 import type { WindowBounds } from "#src/window/anchor.js";
-import type { z } from "zod";
 
 /** What `ChromeWindows` takes. */
 export interface ChromeWindowsOptions {
@@ -31,18 +31,6 @@ interface Entry {
   readonly id: number;
   readonly surface: ChromeWindowSurface;
   readonly stops: ReadonlyArray<() => void>;
-}
-
-function parseOrThrow<T>({ schema, input }: {
-  schema: z.ZodType<T>;
-  input: unknown;
-}) {
-  const result = schema.safeParse(input);
-  if (!result.success) {
-    throw new Error(result.error.issues.map(issue => issue.message).join("; "));
-  }
-
-  return result.data;
 }
 
 function definedSide({ key, value }: {
