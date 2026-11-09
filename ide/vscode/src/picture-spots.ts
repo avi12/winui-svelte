@@ -1,4 +1,4 @@
-import { PictureKind, pictureTargetOf } from "./picture-paths.ts";
+import { isPicture } from "./picture-paths.ts";
 
 export const Variant = {
   ANY: "any",
@@ -28,14 +28,6 @@ const IDENT = /[A-Za-z_$][\w$]*/gu;
 const KEY_BEFORE = /([A-Za-z_$][\w$]*)\s*:\s*$/u;
 const OPENING = "{";
 const CLOSING = "}";
-
-function isPicture(value: string) {
-  return pictureTargetOf({
-    value,
-    file: "/",
-    root: "/"
-  }).kind !== PictureKind.NONE;
-}
 
 function variantOf({ key, names }: {
   key: string;

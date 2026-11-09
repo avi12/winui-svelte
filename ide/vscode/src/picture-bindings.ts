@@ -1,15 +1,7 @@
-import { PictureKind, pictureTargetOf } from "./picture-paths.ts";
+import { isPicture } from "./picture-paths.ts";
 
 const IMPORT_DEFAULT = /\bimport\s+([A-Za-z_$][\w$]*)\s+from\s*(["'])([^"'\n]+)\2/gu;
-const CONSTANT = /\bconst\s+([A-Za-z_$][\w$]*)\s*(?::[^=\n]+)?=\s*(?:new\s+URL\(\s*)?(["\x60])([^"\x60$\n]*)\2/gu;
-
-function isPicture(value: string) {
-  return pictureTargetOf({
-    value,
-    file: "/",
-    root: "/"
-  }).kind !== PictureKind.NONE;
-}
+const CONSTANT = /\bconst\s+([A-Za-z_$][\w$]*)\s*(?::[^=\n]+)?=\s*(?:new\s+URL\(\s*)?(["'\x60])([^"'\x60$\n]*)\2/gu;
 
 /**
  * The names a file binds to a picture that is known without running it: a default import of an image

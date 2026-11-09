@@ -633,12 +633,13 @@
     "bindings": [
       {
         "name": "imports, constants and new URL",
-        "text": "import logo from \"./logo.png\";\nimport tray from '../tray.ico?url';\nimport helper from \"./helper.js\";\nconst remote = \"https://x.y/r.png\";\nconst here: URL = new URL(\"./h.png\", import.meta.url);\nconst label = \"Save\";\nlet moving = \"m.png\";",
+        "text": "import logo from \"./logo.png\";\nimport tray from '../tray.ico?url';\nimport helper from \"./helper.js\";\nconst remote = \"https://x.y/r.png\";\nconst here: URL = new URL(\"./h.png\", import.meta.url);\nconst label = \"Save\";\nlet moving = \"m.png\";\nconst quoted = 'q.png';",
         "expected": {
           "logo": "./logo.png",
           "tray": "../tray.ico?url",
           "remote": "https://x.y/r.png",
-          "here": "./h.png"
+          "here": "./h.png",
+          "quoted": "q.png"
         }
       }
     ],

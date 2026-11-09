@@ -111,6 +111,17 @@ export function mimeOf(extension: string) {
 }
 
 /**
+ * Whether a value names something a picture preview draws: a file or URL of an image, or a data URI.
+ */
+export function isPicture(value: string) {
+  return pictureTargetOf({
+    value,
+    file: "/",
+    root: "/"
+  }).kind !== PictureKind.NONE;
+}
+
+/**
  * What a picture value names: a file (the places to look for it, in order), an `ms-appx:///` file, a `data:` URI, a
  * remote URL, or nothing a picture preview draws (a glyph name, a text).
  */
