@@ -1,6 +1,8 @@
 import { classifyActivation } from "./classify.ts";
 import { ActivationKind } from "./kinds.ts";
 import type { ActivationEvent } from "./kinds.ts";
+import { packagedActivation, withPackagedActivation } from "./packaged.ts";
+import type { PackagedActivation } from "./packaged.ts";
 import { dispatchAlarm, dispatchStartup } from "#src/app/schedule/events.js";
 import { ensureSingleInstance } from "#src/app/single-instance.js";
 import type { Activation, SingleInstance, SingleInstanceOptions } from "#src/app/single-instance.js";
@@ -37,6 +39,12 @@ export interface ActivationOptions {
   /** This copy's own command line without the program; `process.argv` minus the first two entries by default. */
   readonly initialArguments?: readonly string[];
 
+  /**
+   * How Windows started this packaged process, read once for this copy's own
+   * start (see `packagedActivation`); the Windows App SDK's by default.
+   */
+  readonly packaged?: () => PackagedActivation | undefined;
+
   /** Stands in for `ensureSingleInstance`; the tests give one. */
   readonly claim?: (options: SingleInstanceOptions) => SingleInstance;
 }
@@ -60,14 +68,23 @@ function rethrowLater(error: unknown) {
  * `isPrimary` is false) and gets no event; the first copy gets one for it.
  * An `alarm` activation also reaches the `onAlarm` listeners and a `startup`
  * one the `onStartup` listeners of `winui-svelte/app/schedule`, before
- * `onActivation`. Events arrive in order, one at a time. Nothing is registered with Windows
- * here; see `installProtocolHandlers`, `registerFileTypes` and `launchAtLogin`.
+ * `onActivation`. In a packaged app this copy's own start also reads the Windows
+ * App SDK's activation: a protocol address the command line lacks, and a
+ * startup task (which passes no argument), become the same events. Events
+ * arrive in order, one at a time. Nothing is registered with Windows here;
+ * see `installProtocolHandlers`, `registerFileTypes` and `launchAtLogin`.
  *
  * @param options - The key, the listener and what to bring along.
  * @returns Whether this copy is the first one, and how to stop listening.
  */
 export function startActivation(options: ActivationOptions) {
-  const { onActivation, launchQueue, onError = rethrowLater, claim = ensureSingleInstance } = options;
+  const {
+    onActivation,
+    launchQueue,
+    onError = rethrowLater,
+    claim = ensureSingleInstance,
+    packaged = packagedActivation
+  } = options;
   const extensions = extensionSetOf(options.extensions);
   let tail: Promise<unknown> = Promise.resolve();
   function deliver({ activation, isRedirect }: {
@@ -109,7 +126,10 @@ export function startActivation(options: ActivationOptions) {
   if (single.isPrimary) {
     deliver({
       activation: {
-        arguments: [...options.initialArguments ?? process.argv.slice(2)],
+        arguments: [...withPackagedActivation({
+          values: options.initialArguments ?? process.argv.slice(2),
+          packaged: packaged()
+        })],
         workingDirectory: process.cwd()
       },
       isRedirect: false

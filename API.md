@@ -2837,10 +2837,12 @@ import {
   ActivationKind,
   installProtocolHandlers,
   launchAtLogin,
+  packagedActivation,
   registerFileTypes,
   startActivation,
 } from "winui-svelte/app/activation";
 
+const packaged = packagedActivation(); // { kind: "protocol", uri } or { kind: "startup" }
 installProtocolHandlers();
 navigator.registerProtocolHandler("note", "https://notes.example/open?uri=%s");
 registerFileTypes({ id: "com.example.notes", extensions: [".note"] });
@@ -2868,6 +2870,7 @@ if (!single.isPrimary) {
 | `unregisterFileTypes({ id, extensions })` | deletes both and the empty keys left | returns the extensions removed |
 | `launchAtLogin({ id, isEnabled, arguments })` | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` value `id` | listed in Settings, Apps, Startup; the start arrives as `startup` |
 | `getLaunchAtLogin({ id })` | reads that value | `{ isEnabled, commandLine }`; the user's switch in Settings is not read |
+| `packagedActivation()` | `AppInstance.getActivatedEventArgs()` | how a packaged process was started; `undefined` outside a package |
 | `startActivation({ key, onActivation })` | `ensureSingleInstance` and the command line | one `ActivationEvent` per start or redirect |
 
 - `ActivationEvent` is a union on `kind` (`ActivationKind`, also from
@@ -2907,12 +2910,48 @@ if (!single.isPrimary) {
   characters at most) and handed to your code, never run
   Windows can pass a quote in a link through `"%1"` unescaped, so treat the
   whole of `uri` as untrusted
+- Packaged apps: a package declares its scheme in the manifest, so
+  `installProtocolHandlers` is not needed; `startActivation` reads the start
+  from two places and merges them, the command line first
+  1. Route A, the command line: give the protocol `Parameters`, and Windows
+     passes the address as an argument, for a cold start
+
+     ```xml
+     <Extensions>
+       <uap3:Extension Category="windows.protocol" Executable="my-app.exe"
+           EntryPoint="Windows.FullTrustApplication">
+         <uap3:Protocol Name="my-scheme" Parameters="&quot;%1&quot;" />
+       </uap3:Extension>
+     </Extensions>
+     ```
+
+  2. Route B, the Windows App SDK: `packagedActivation()` reads
+     `AppInstance.getCurrent().getActivatedEventArgs()`; a `Protocol`
+     activation gives its address and a `StartupTask` activation is a
+     `startup` event, which Route A cannot say (a startup task takes no
+     `Parameters`)
+
+     ```xml
+     <desktop:Extension Category="windows.startupTask" Executable="my-app.exe"
+         EntryPoint="Windows.FullTrustApplication">
+       <desktop:StartupTask TaskId="Startup" Enabled="false" DisplayName="My app" />
+     </desktop:Extension>
+     ```
+
+  An address the command line holds wins over the activation's; a later
+  copy's address arrives through the single instance link as a redirect, as
+  everywhere, so never call `redirectActivationToAsync`
+  `packagedActivation()` answers `undefined` outside a package, for a plain
+  launch and for any failure; it never throws
+  Call `startActivation` after `initWindowsAppSdk` (`initWindowsAppSdk`)
 - Needs packaging for: the share target and a default-app claim (a package
   manifest declares them); unpackaged, the app is offered in Open with and the
   user picks the default
 - `installProtocolHandlers()` returns the function that removes the two
   navigator methods; the registrations stay until you unregister them
   Each registration function takes `registry` (a fake in tests) and `command`
+- `test/packaged-activation.test.ts` (opt in with `WINUI_SVELTE_PACKAGED_TEST=1`)
+  registers a throwaway package with both routes and starts it with a link
 - `src/app/activation/native.test.ts` registers a protocol, a file type and a
   startup entry under HKCU with a unique name, reads them with `reg query`,
   removes them and checks nothing is left, even when it fails;
