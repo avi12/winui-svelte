@@ -40,7 +40,8 @@
       "remote": [
         "https://",
         "http://"
-      ]
+      ],
+      "file": "file:///"
     },
     "limits": {
       "maxFileBytes": 2097152,
@@ -51,12 +52,63 @@
       "maxBytes": 2097152,
       "timeoutMillis": 5000,
       "maxAgeHours": 24,
-      "cacheFolder": "winui-svelte-pictures"
+      "cacheFolder": "winui-svelte-pictures",
+      "maxRedirects": 3,
+      "failureRetryMinutes": 5,
+      "maxConcurrent": 2,
+      "maxUrlLength": 2048
     },
     "backgrounds": {
       "light": "#f3f3f3",
       "dark": "#202020"
-    }
+    },
+    "signatures": [
+      {
+        "extension": "png",
+        "offset": 0,
+        "hex": "89504e47"
+      },
+      {
+        "extension": "gif",
+        "offset": 0,
+        "hex": "47494638"
+      },
+      {
+        "extension": "jpg",
+        "offset": 0,
+        "hex": "ffd8ff"
+      },
+      {
+        "extension": "bmp",
+        "offset": 0,
+        "hex": "424d"
+      },
+      {
+        "extension": "ico",
+        "offset": 0,
+        "hex": "00000100"
+      },
+      {
+        "extension": "webp",
+        "offset": 8,
+        "hex": "57454250"
+      }
+    ],
+    "aliases": [
+      {
+        "prefix": "$lib/",
+        "folder": "src/lib/"
+      },
+      {
+        "prefix": "@/",
+        "folder": "src/"
+      },
+      {
+        "prefix": "~/",
+        "folder": "src/"
+      }
+    ],
+    "publicFolder": "public"
   },
   "cases": {
     "resolutions": [
@@ -172,6 +224,81 @@
           "kind": "none",
           "extension": "",
           "candidates": []
+        }
+      },
+      {
+        "value": "file:///C:/art/f.png",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "local",
+          "extension": "png",
+          "candidates": [
+            "C:/art/f.png"
+          ]
+        }
+      },
+      {
+        "value": "file:///home/me/g%20h.svg",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "local",
+          "extension": "svg",
+          "candidates": [
+            "/home/me/g h.svg"
+          ]
+        }
+      },
+      {
+        "value": "$lib/icons/i.png",
+        "file": "/p/src/routes/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "local",
+          "extension": "png",
+          "candidates": [
+            "/p/src/lib/icons/i.png"
+          ]
+        }
+      },
+      {
+        "value": "@/img/j.png",
+        "file": "/p/src/routes/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "local",
+          "extension": "png",
+          "candidates": [
+            "/p/src/img/j.png"
+          ]
+        }
+      },
+      {
+        "value": "/logo.png",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "local",
+          "extension": "png",
+          "candidates": [
+            "/p/public/logo.png",
+            "/p/logo.png",
+            "/logo.png"
+          ]
+        }
+      },
+      {
+        "value": "./logo.png?url",
+        "file": "/p/src/App.svelte",
+        "root": "/p",
+        "expected": {
+          "kind": "local",
+          "extension": "png",
+          "candidates": [
+            "/p/src/logo.png",
+            "/p/logo.png"
+          ]
         }
       }
     ],
@@ -376,6 +503,275 @@
             "variant": "any"
           }
         ]
+      },
+      {
+        "kind": "expression",
+        "attribute": "icon",
+        "text": "{new URL(\"./x.png\", import.meta.url).href}",
+        "expected": [
+          {
+            "value": "./x.png",
+            "variant": "any"
+          }
+        ]
+      },
+      {
+        "kind": "expression",
+        "attribute": "icon",
+        "text": "{logo}",
+        "bindings": {
+          "logo": "./logo.png"
+        },
+        "expected": [
+          {
+            "value": "./logo.png",
+            "variant": "any",
+            "text": "logo"
+          }
+        ]
+      },
+      {
+        "kind": "expression",
+        "attribute": "icon",
+        "text": "{isOn ? onIcon : \"off.ico\"}",
+        "bindings": {
+          "onIcon": "on.ico"
+        },
+        "expected": [
+          {
+            "value": "on.ico",
+            "variant": "any",
+            "text": "onIcon"
+          },
+          {
+            "value": "off.ico",
+            "variant": "any"
+          }
+        ]
+      },
+      {
+        "kind": "expression",
+        "attribute": "icon",
+        "text": "{{ forLightTaskbar: light, forDarkTaskbar: dark }}",
+        "bindings": {
+          "light": "l.ico",
+          "dark": "d.ico"
+        },
+        "expected": [
+          {
+            "value": "l.ico",
+            "variant": "light",
+            "text": "light"
+          },
+          {
+            "value": "d.ico",
+            "variant": "dark",
+            "text": "dark"
+          }
+        ]
+      },
+      {
+        "kind": "expression",
+        "attribute": "icon",
+        "text": "{other.logo}",
+        "bindings": {
+          "logo": "./logo.png"
+        },
+        "expected": []
+      },
+      {
+        "kind": "keys",
+        "attribute": "",
+        "text": "createWindow({ icon: logo, title: \"x\" })",
+        "bindings": {
+          "logo": "./logo.png"
+        },
+        "expected": [
+          {
+            "value": "./logo.png",
+            "variant": "any",
+            "text": "logo"
+          }
+        ]
+      },
+      {
+        "kind": "keys",
+        "attribute": "",
+        "text": "createWindow({ icon: here.href })",
+        "bindings": {
+          "here": "./h.png"
+        },
+        "expected": [
+          {
+            "value": "./h.png",
+            "variant": "any",
+            "text": "here"
+          }
+        ]
+      },
+      {
+        "kind": "keys",
+        "attribute": "",
+        "text": "createStandaloneTray({ icon: new URL(\"./t.png\", import.meta.url) })",
+        "expected": [
+          {
+            "value": "./t.png",
+            "variant": "any"
+          }
+        ]
+      },
+      {
+        "kind": "keys",
+        "attribute": "",
+        "text": "f({ icon: logo(), image: unknown })",
+        "bindings": {
+          "logo": "./logo.png"
+        },
+        "expected": []
+      }
+    ],
+    "bindings": [
+      {
+        "name": "imports, constants and new URL",
+        "text": "import logo from \"./logo.png\";\nimport tray from '../tray.ico?url';\nimport helper from \"./helper.js\";\nconst remote = \"https://x.y/r.png\";\nconst here: URL = new URL(\"./h.png\", import.meta.url);\nconst label = \"Save\";\nlet moving = \"m.png\";",
+        "expected": {
+          "logo": "./logo.png",
+          "tray": "../tray.ico?url",
+          "remote": "https://x.y/r.png",
+          "here": "./h.png"
+        }
+      }
+    ],
+    "remoteUrls": [
+      {
+        "url": "https://example.com/a.png",
+        "expected": true
+      },
+      {
+        "url": "HTTPS://Example.com/A.png",
+        "expected": true
+      },
+      {
+        "url": "http://localhost:8080/a.png",
+        "expected": true
+      },
+      {
+        "url": "https://user:pw@example.com/a.png",
+        "expected": false
+      },
+      {
+        "url": "ftp://example.com/a.png",
+        "expected": false
+      },
+      {
+        "url": "https://",
+        "expected": false
+      },
+      {
+        "url": "http://169.254.169.254/latest",
+        "expected": false
+      },
+      {
+        "url": "https://[fe80::1]/a.png",
+        "expected": false
+      },
+      {
+        "url": "file:///x.png",
+        "expected": false
+      },
+      {
+        "url": "javascript:alert(1)",
+        "expected": false
+      }
+    ],
+    "redirects": [
+      {
+        "from": "https://a.b/x/y.png",
+        "location": "/z.png",
+        "expected": "https://a.b/z.png"
+      },
+      {
+        "from": "https://a.b/x/y.png",
+        "location": "../w.png",
+        "expected": "https://a.b/w.png"
+      },
+      {
+        "from": "http://a.b/x.png",
+        "location": "https://c.d/v.png",
+        "expected": "https://c.d/v.png"
+      },
+      {
+        "from": "https://a.b/x.png",
+        "location": "http://c.d/v.png",
+        "expected": null
+      },
+      {
+        "from": "https://a.b/x.png",
+        "location": "https://u:p@c.d/v.png",
+        "expected": null
+      },
+      {
+        "from": "https://a.b/x.png",
+        "location": "ftp://c.d/v.png",
+        "expected": null
+      }
+    ],
+    "sniffs": [
+      {
+        "name": "png bytes win",
+        "contentType": "text/html",
+        "urlExtension": "",
+        "hex": "89504e470d0a1a0a",
+        "expected": "png"
+      },
+      {
+        "name": "svg text",
+        "contentType": "",
+        "urlExtension": "",
+        "text": "<?xml version=\"1.0\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>",
+        "expected": "svg"
+      },
+      {
+        "name": "webp riff",
+        "contentType": "",
+        "urlExtension": "",
+        "hex": "52494646160000005745425056503858",
+        "expected": "webp"
+      },
+      {
+        "name": "content type with parameters",
+        "contentType": "image/webp; charset=binary",
+        "urlExtension": "",
+        "hex": "0102",
+        "expected": "webp"
+      },
+      {
+        "name": "content type alias",
+        "contentType": "image/vnd.microsoft.icon",
+        "urlExtension": "",
+        "hex": "0102",
+        "expected": "ico"
+      },
+      {
+        "name": "html is not a picture",
+        "contentType": "text/html",
+        "urlExtension": "png",
+        "hex": "0102",
+        "expected": ""
+      },
+      {
+        "name": "generic type falls back to the url",
+        "contentType": "application/octet-stream",
+        "urlExtension": "gif",
+        "hex": "0102",
+        "expected": "gif"
+      },
+      {
+        "name": "nothing says picture",
+        "contentType": "",
+        "urlExtension": "",
+        "hex": "0102",
+        "expected": ""
       }
     ]
   }

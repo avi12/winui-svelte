@@ -47,6 +47,62 @@ function withoutQuery(value: string) {
   return value.replace(/[?#].*$/u, "");
 }
 
+function decoded(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+// The file a `file:///` URL names: the drive path as it is, any other as an absolute path.
+function pathOfFileUrl(value: string) {
+  const rest = decoded(withoutQuery(value.slice(pictureTables.schemes.file.length)));
+  return WINDOWS_ABSOLUTE.test(rest) ? rest : `/${rest}`;
+}
+
+// The places a path may name, in order: an alias (`$lib/`) under the project, a leading slash first under the
+// project's public folder, as a bundler serves it.
+function candidatesOf({ path, isAppx, file, root }: {
+  path: string;
+  isAppx: boolean;
+  file: string;
+  root: string;
+}) {
+  const alias = pictureTables.aliases.find(entry => path.startsWith(entry.prefix));
+  const isAliased = alias !== undefined && !isAppx;
+  if (isAliased) {
+    return [normalized(`${root}/${alias.folder}${path.slice(alias.prefix.length)}`)];
+  }
+
+  const isDriveAbsolute = WINDOWS_ABSOLUTE.test(path);
+  const isRooted = path.startsWith("/");
+  const isDrivePath = !isAppx && isDriveAbsolute;
+  if (isDrivePath) {
+    return [normalized(path)];
+  }
+
+  const isRootedPath = !isAppx && isRooted;
+  if (isRootedPath) {
+    return [
+      normalized(`${root}/${pictureTables.publicFolder}${path}`),
+      normalized(`${root}${path}`),
+      normalized(path)
+    ];
+  }
+
+  const places = isAppx ? [root, directoryOf(file)] : [directoryOf(file), root];
+  return places.map(place => normalized(`${place}/${path}`));
+}
+
+/**
+ * The extension of the format a MIME subtype names (`svg+xml` is `svg`), or the subtype itself.
+ */
+export function extensionOfMime(subtype: string) {
+  const lowered = subtype.toLowerCase();
+  return MIME_EXTENSIONS.get(lowered) ?? lowered;
+}
+
 /**
  * The extension a format table knows, for the MIME type.
  */
@@ -65,10 +121,9 @@ export function pictureTargetOf({ value, file, root }: {
 }) {
   const { schemes } = pictureTables;
   if (value.startsWith(schemes.data)) {
-    const mime = DATA_MIME.exec(value)?.[1]?.toLowerCase() ?? "";
     return {
       kind: PictureKind.DATA,
-      extension: MIME_EXTENSIONS.get(mime) ?? mime,
+      extension: extensionOfMime(DATA_MIME.exec(value)?.[1] ?? ""),
       candidates: []
     };
   }
@@ -82,8 +137,10 @@ export function pictureTargetOf({ value, file, root }: {
     };
   }
 
+  const isFileUrl = value.toLowerCase().startsWith(schemes.file);
   const isAppx = value.startsWith(schemes.appx);
-  const path = withoutQuery(isAppx ? value.slice(schemes.appx.length) : value).replaceAll("\\", "/");
+  const stripped = isAppx ? value.slice(schemes.appx.length) : value;
+  const path = isFileUrl ? pathOfFileUrl(value) : withoutQuery(stripped).replaceAll("\\", "/");
   const extension = extensionOf(path);
   const isPicture = mimes.has(extension);
   if (!isPicture) {
@@ -94,12 +151,14 @@ export function pictureTargetOf({ value, file, root }: {
     };
   }
 
-  const isAbsolute = path.startsWith("/") || WINDOWS_ABSOLUTE.test(path);
-  const isFromRoot = isAbsolute && !isAppx;
-  const places = isAppx ? [root, directoryOf(file)] : [directoryOf(file), root];
   return {
     kind: isAppx ? PictureKind.APPX : PictureKind.LOCAL,
     extension,
-    candidates: isFromRoot ? [normalized(path)] : places.map(place => normalized(`${place}/${path}`))
+    candidates: isFileUrl ? [normalized(path)] : candidatesOf({
+      path,
+      isAppx,
+      file,
+      root
+    })
   };
 }
