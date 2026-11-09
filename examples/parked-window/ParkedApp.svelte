@@ -15,6 +15,7 @@
   const START_PAGE = "about:blank";
 
   interface Beat {
+    [key: string]: number | string;
     time: number;
     visibility: string;
     frames: number;
