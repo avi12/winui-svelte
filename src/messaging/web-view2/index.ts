@@ -2,10 +2,14 @@
 // Opt-in: nothing here loads until it is imported.
 
 export type {
+  ControllerOptionsLike,
   CoreWebView2Like,
+  EnvironmentLike,
   WebView2Like
 } from "./core.ts";
 export { addDocumentCreatedScript, executeScript, openDevTools, waitForCoreWebView2 } from "./core.ts";
+export type { WebView2EnvironmentInit } from "./environment.ts";
+export { createWebView2Environment, startWebView2 } from "./environment.ts";
 export type { Cookie, CookieInit } from "./cookies.ts";
 export { CookieSameSite, deleteCookie, getCookies, setCookie } from "./cookies.ts";
 export type { PermissionRequest } from "./policy.ts";
