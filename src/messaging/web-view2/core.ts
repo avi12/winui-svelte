@@ -35,6 +35,35 @@ export interface PermissionArguments {
   savesInProfile: boolean;
 }
 
+/** What `WebResourceRequested` hands over of the request. */
+export interface WebResourceRequestLike {
+  readonly uri: string;
+  readonly method: string;
+}
+
+/** What `WebResourceRequested` hands over; assigning `response` answers the request. */
+export interface WebResourceRequestedArguments {
+  readonly request: WebResourceRequestLike;
+  readonly resourceContext: number;
+  response: unknown;
+  getDeferral(): { complete(): void };
+}
+
+/** What `DevToolsProtocolEventReceived` hands over. */
+export interface DevToolsEventArguments {
+  readonly parameterObjectAsJson: string;
+}
+
+/** The subscription point of one DevTools protocol event. */
+export interface DevToolsEventReceiverLike {
+  onDevToolsProtocolEventReceived(callback: (sender: unknown, args: DevToolsEventArguments) => void): () => void;
+}
+
+/** The environment's part in answering a request; `content` is a WinRT stream. */
+export interface EnvironmentLike {
+  createWebResourceResponse(content: unknown, statusCode: number, reasonPhrase: string, headers: string): unknown;
+}
+
 /** One cookie of the browser profile. */
 export interface CookieLike {
   readonly name: string;
@@ -60,6 +89,7 @@ export interface CookieManagerLike {
 /** What the helpers use of `CoreWebView2`; every `on...` returns its unsubscribe. */
 export interface CoreWebView2Like {
   readonly cookieManager: CookieManagerLike;
+  readonly environment: EnvironmentLike;
   readonly settings: {
     areHostObjectsAllowed: boolean;
   };
@@ -68,10 +98,20 @@ export interface CoreWebView2Like {
   addScriptToExecuteOnDocumentCreatedAsync(javaScript: string): Promise<string>;
   removeScriptToExecuteOnDocumentCreated(id: string): void;
   openDevToolsWindow(): void;
+  addWebResourceRequestedFilter(uri: string, resourceContext: number): void;
+  removeWebResourceRequestedFilter(uri: string, resourceContext: number): void;
+  callDevToolsProtocolMethodAsync(methodName: string, parametersAsJson: string): Promise<string>;
+  getDevToolsProtocolEventReceiver(eventName: string): DevToolsEventReceiverLike;
+  onWebResourceRequested(callback: (sender: unknown, args: WebResourceRequestedArguments) => void): () => void;
   onWebMessageReceived(callback: (sender: unknown, args: WebMessageArguments) => void): () => void;
   onNavigationStarting(callback: (sender: unknown, args: NavigationArguments) => void): () => void;
   onDownloadStarting(callback: (sender: unknown, args: DownloadArguments) => void): () => void;
   onPermissionRequested(callback: (sender: unknown, args: PermissionArguments) => void): () => void;
+}
+
+/** The text of whatever a call threw. */
+export function messageOf(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
 }
 
 /** What the helpers use of the `WebView2` control. */
