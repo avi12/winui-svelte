@@ -21,6 +21,7 @@ function makeCalls() {
     ...bindDll({
       dll: "user32.dll",
       functions: {
+        findChildWindow: ["FindWindowExW", ["pointer", "pointer", "pointer", "pointer"], "pointer"],
         registerFormat: ["RegisterClipboardFormatW", ["pointer"], "u32"],
         screenToClient: ["ScreenToClient", ["pointer", "pointer"], "i32"]
       }
@@ -71,6 +72,19 @@ export function registerDropTarget({ hwnd, target, iid }: {
  */
 export function revokeDropTarget(hwnd: bigint) {
   callsOf().revokeDragDrop(hwnd);
+}
+
+/**
+ * The first child window of a class (`FindWindowEx`).
+ *
+ * @param options - The parent window and the window class name.
+ * @returns The child's handle; 0 when there is none.
+ */
+export function findChildWindow({ hwnd, className }: {
+  hwnd: bigint;
+  className: string;
+}) {
+  return callsOf().findChildWindow(hwnd, null, className, null);
 }
 
 /**

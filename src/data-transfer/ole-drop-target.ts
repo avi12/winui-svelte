@@ -1,13 +1,15 @@
-import { enterOle, registerDropTarget, revokeDropTarget } from "./native.ts";
+import { enterOle, findChildWindow, registerDropTarget, revokeDropTarget } from "./native.ts";
 import { DynCom, DynComMethodSig, DynWinRtValue, WinGuid } from "@microsoft/dynwinrt/com/unsafe";
 import type { DynWinRTValue } from "@microsoft/dynwinrt/com/unsafe";
 
 // WinUI 3 registers no OLE drop target on its window (no `OleDropTargetInterface`
 // property on any window of its tree), so Windows answers a drag from another
-// app with the forbidden sign. This registers one on the top-level window with
-// `RegisterDragDrop`, as every classic window that takes drops does, and hands
-// its four calls to a handler.
+// app with the forbidden sign. This registers one on the top-level window and
+// on the child window that holds its content, with `RegisterDragDrop`, as every
+// classic window that takes drops does, and hands its four calls to a handler.
 
+const CONTENT_WINDOW_CLASS = "Microsoft.UI.Content.DesktopChildSiteBridge";
+const NO_WINDOW = BigInt(0);
 const DROP_TARGET_IID = "00000122-0000-0000-c000-000000000046";
 const DATA_OBJECT_IID = "0000010e-0000-0000-c000-000000000046";
 /** The vtable slots of `IDropTarget` after the three of `IUnknown`. */
@@ -167,8 +169,25 @@ export function registerOleDropTarget({ hwnd, handler }: {
     return null;
   }
 
+  // Windows asks only the window under the cursor, and WinUI's content is a child window of its own
+  // (never the top-level), so the same target goes on it or a drag over the content finds none.
+  const content = findChildWindow({
+    hwnd,
+    className: CONTENT_WINDOW_CLASS
+  });
+  const hasContentWindow = content !== NO_WINDOW;
+  const isContentRegistered = hasContentWindow && registerDropTarget({
+    hwnd: content,
+    target: view,
+    iid: DROP_TARGET_IID
+  }) === SUCCESS;
   return () => {
     revokeDropTarget(hwnd);
+
+    if (isContentRegistered) {
+      revokeDropTarget(content);
+    }
+
     view.release();
     target.release();
   };
