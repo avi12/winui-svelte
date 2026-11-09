@@ -1,14 +1,23 @@
-import type { Report } from "./example-process.ts";
-import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED, numberOf } from "./example-process.ts";
+import {
+  boundsOf,
+  BRIGHT_GREEN,
+  brightRectangleOf,
+  BrightWindow,
+  FAR_AWAY,
+  isNear,
+  MARGIN_X,
+  MARGIN_Y,
+  placeCommand,
+  WINDOW_HEIGHT,
+  WINDOW_WIDTH
+} from "./bright-window.ts";
+import type { Color } from "./bright-window.ts";
+import { ExampleProcess, IS_WINDOWS_APP_SDK_RESTORED } from "./example-process.ts";
 import type { Rectangle } from "./window-pixels.ts";
 import { screenAreas, screenCapture } from "./window-pixels.ts";
 import assert from "node:assert/strict";
-import type { ChildProcessByStdio } from "node:child_process";
-import { spawn, spawnSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
-import { createInterface } from "node:readline";
-import type { Readable } from "node:stream";
 import type { TestContext } from "node:test";
 import { test } from "node:test";
 
@@ -26,127 +35,16 @@ import { test } from "node:test";
 // App SDK was not restored.
 
 const TIMEOUT_MILLISECONDS = 300_000;
-const BRIGHT_READY_MILLISECONDS = 30_000;
 const SETTLE_MILLISECONDS = 1500;
 const RETRY_MILLISECONDS = 500;
 const READ_ATTEMPTS = 8;
-const WINDOW_WIDTH = 400;
-const WINDOW_HEIGHT = 300;
-const MARGIN_X = 30;
-const MARGIN_Y = 31;
-const BRIGHT_WIDTH = WINDOW_WIDTH + 2 * MARGIN_X;
-const BRIGHT_HEIGHT = WINDOW_HEIGHT + 2 * MARGIN_Y;
-const FAR_AWAY = -30_000;
 const EDGE_PROBE = 8;
 const CORNER_PROBE = 1;
 const TOP_PROBE = 10;
-const COLOR_TOLERANCE = 12;
 const CARD_DARK_MAXIMUM = 90;
 const CARD_TINT_MINIMUM = 10;
-const BRIGHT_GREEN = {
-  r: 0,
-  g: 255,
-  b: 0
-};
 const CAPTURE_FOLDER = path.join(import.meta.dirname, "..", ".verify", "transparent-window");
-const BRIGHT_SCRIPT = path.join(import.meta.dirname, "..", "examples", "harness", "bright-window.ps1");
 const NOT_BACKGROUND = { WINUI_SVELTE_BACKGROUND: "" };
-
-interface Color {
-  r: number;
-  g: number;
-  b: number;
-}
-
-function isNear({ color, expected }: {
-  color: Color;
-  expected: Color;
-}) {
-  return Math.abs(color.r - expected.r) <= COLOR_TOLERANCE
-    && Math.abs(color.g - expected.g) <= COLOR_TOLERANCE
-    && Math.abs(color.b - expected.b) <= COLOR_TOLERANCE;
-}
-
-// A bright window that this test started and owns, ended by its pid.
-class BrightWindow {
-  private readonly child: ChildProcessByStdio<null, Readable, null>;
-
-  private constructor(child: ChildProcessByStdio<null, Readable, null>) {
-    this.child = child;
-  }
-
-  static async open(rectangle: Rectangle) {
-    const child = spawn("powershell.exe", [
-      "-NoProfile",
-      "-ExecutionPolicy",
-      "Bypass",
-      "-File",
-      BRIGHT_SCRIPT,
-      "-X",
-      String(rectangle.x),
-      "-Y",
-      String(rectangle.y),
-      "-Width",
-      String(rectangle.width),
-      "-Height",
-      String(rectangle.height)
-    ], {
-      stdio: ["ignore", "pipe", "inherit"],
-      windowsHide: true
-    });
-    const bright = new BrightWindow(child);
-    const ready = new Promise<void>(resolve => {
-      createInterface({ input: child.stdout }).on("line", line => {
-        const isReady = line.trim() === "ready";
-        if (isReady) {
-          resolve();
-        }
-      });
-    });
-    const timeout = new Promise<never>((_resolve, reject) => {
-      setTimeout(() => reject(new Error("the bright window did not open")), BRIGHT_READY_MILLISECONDS);
-    });
-    await Promise.race([ready, timeout]);
-    return bright;
-  }
-
-  close() {
-    spawnSync("taskkill", ["/PID", String(this.child.pid), "/T", "/F"]);
-  }
-}
-
-function boundsOf(report: Report) {
-  const { bounds } = report;
-  const isRecord = typeof bounds === "object" && bounds !== null && !Array.isArray(bounds);
-  if (!isRecord) {
-    throw new Error("the report carries bounds");
-  }
-
-  const record: Report = bounds;
-  function side(name: string) {
-    return numberOf({
-      report: record,
-      field: name
-    });
-  }
-
-  return {
-    x: side("x"),
-    y: side("y"),
-    width: side("width"),
-    height: side("height")
-  };
-}
-
-// The bottom-right corner of the display's work area.
-function brightRectangleOf(area: Rectangle) {
-  return {
-    x: area.x + area.width - BRIGHT_WIDTH,
-    y: area.y + area.height - BRIGHT_HEIGHT,
-    width: BRIGHT_WIDTH,
-    height: BRIGHT_HEIGHT
-  };
-}
 
 const PROBE_NAMES = ["corner", "topEdge", "farCorner", "card", "beside", "below"] as const;
 
@@ -193,16 +91,6 @@ function probesOf(placed: Rectangle) {
       x: left + middle,
       y: top + placed.height + EDGE_PROBE
     }
-  };
-}
-
-function placeCommand(rectangle: Rectangle) {
-  return {
-    command: {
-      cmd: "place",
-      ...rectangle
-    },
-    kind: "place"
   };
 }
 
