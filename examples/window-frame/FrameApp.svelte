@@ -3,12 +3,18 @@
   import type { Json } from "#src/messaging/json.js";
   import { clipSizeOf, ExtendedStyle, hasExtendedStyles, isExcludedFromCapture } from "#src/window/native.js";
   import type { WindowProps } from "#src/window/window-host.svelte.js";
-  import { Grid, projectAs } from "#src/winui.js";
+  import { DisplayArea, Grid, projectAs } from "#src/winui.js";
   import { elementSize, flush } from "winui-svelte";
   import { TextBlock, Window } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
   import { hideToTray, restoreFromTray } from "winui-svelte/tray";
-  import { exitApplication, exitWhenHostEnds, SizeToContent, WindowAnchor } from "winui-svelte/window";
+  import {
+    DockDisplay,
+    exitApplication,
+    exitWhenHostEnds,
+    SizeToContent,
+    WindowAnchor
+  } from "winui-svelte/window";
 
   type WindowFrame = Pick<
     WindowProps,
@@ -20,6 +26,7 @@
     | "isClickThrough"
     | "isExcludedFromCapture"
     | "isHidden"
+    | "isResizable"
     | "isShownInSwitchers"
     | "isToolWindow"
     | "sizeToContent"
@@ -160,6 +167,7 @@
         isClickThrough: optionalBoolean(command["isClickThrough"]),
         isExcludedFromCapture: optionalBoolean(command["isExcludedFromCapture"]),
         isHidden: optionalBoolean(command["isHidden"]),
+        isResizable: optionalBoolean(command["isResizable"]),
         isShownInSwitchers: optionalBoolean(command["isShownInSwitchers"]),
         isToolWindow: optionalBoolean(command["isToolWindow"])
       };
@@ -176,6 +184,36 @@
         inset: optionalNumber(command["inset"]) ?? 0
       });
       report("docked");
+    }],
+    ["cover", command => {
+      const hasRegion = command["region"] !== undefined;
+      const bounds = handle?.cover({
+        display: DockDisplay.primary,
+        ...(hasRegion ? {
+          region: {
+            x: optionalNumber(command["x"]) ?? 0,
+            y: optionalNumber(command["y"]) ?? 0,
+            width: optionalNumber(command["width"]) ?? 0,
+            height: optionalNumber(command["height"]) ?? 0
+          }
+        } : {})
+      });
+      const primary = DisplayArea.primary.outerBounds;
+      host.report({
+        kind: "covered",
+        ...frameReadback(),
+        target: bounds ?? null,
+        displayBounds: {
+          x: primary.x,
+          y: primary.y,
+          width: primary.width,
+          height: primary.height
+        },
+        clientSize: handle === undefined ? null : {
+          width: handle.appWindow.clientSize.width,
+          height: handle.appWindow.clientSize.height
+        }
+      });
     }],
     ["move", command => {
       handle?.geometry.moveBy(optionalNumber(command["x"]) ?? 0, optionalNumber(command["y"]) ?? 0);
@@ -217,6 +255,7 @@
   isClickThrough={frame.isClickThrough}
   isExcludedFromCapture={frame.isExcludedFromCapture}
   isHidden={frame.isHidden}
+  isResizable={frame.isResizable}
   isShownInSwitchers={frame.isShownInSwitchers}
   isToolWindow={frame.isToolWindow}
   onclosed={() => exitApplication()}

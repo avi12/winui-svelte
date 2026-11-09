@@ -1,5 +1,6 @@
 import {
   anchoredBounds,
+  coveredBounds,
   dockedBounds,
   fittedBounds,
   SizeToContent,
@@ -239,4 +240,73 @@ test("a fit stays within the limits", () => {
     limits
   });
   assert.equal(short?.height, shortest);
+});
+
+const LEFT_DISPLAY = {
+  x: -2560,
+  y: -200,
+  width: 2560,
+  height: 1440
+};
+const REGION = {
+  x: 240,
+  y: 120,
+  width: 800,
+  height: 600
+};
+
+test("covering a display with no region takes its whole bounds", () => {
+  assert.deepEqual(
+    coveredBounds({
+      area: {
+        x: 0,
+        y: 0,
+        width: 1920,
+        height: 1080
+      }
+    }), {
+      x: 0,
+      y: 0,
+      width: 1920,
+      height: 1080
+    }
+  );
+});
+
+test("covering a display left of the primary keeps its negative origin", () => {
+  assert.deepEqual(coveredBounds({ area: LEFT_DISPLAY }), LEFT_DISPLAY);
+});
+
+test("a region is placed from the top left of its display", () => {
+  assert.deepEqual(
+    coveredBounds({
+      area: LEFT_DISPLAY,
+      region: REGION
+    }), {
+      x: LEFT_DISPLAY.x + REGION.x,
+      y: LEFT_DISPLAY.y + REGION.y,
+      width: REGION.width,
+      height: REGION.height
+    }
+  );
+});
+
+test("a region partly off the display is kept, not clipped", () => {
+  const region = {
+    x: -4,
+    y: LEFT_DISPLAY.height - 10,
+    width: LEFT_DISPLAY.width + 8,
+    height: 20
+  };
+  assert.deepEqual(
+    coveredBounds({
+      area: LEFT_DISPLAY,
+      region
+    }), {
+      x: LEFT_DISPLAY.x - 4,
+      y: LEFT_DISPLAY.y + region.y,
+      width: region.width,
+      height: region.height
+    }
+  );
 });

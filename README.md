@@ -65,7 +65,8 @@ signature
 - **Overlays:** `sizeToContent` and `anchor` on `<Window>` size a window to its
   content with one corner pinned (a bottom-right pill grows upward),
   `isActivatable` can change while the window is open, and `handle.dock()`
-  puts a window against a corner of the active display's work area; the window's
+  puts a window against a corner of the active display's work area,
+  `handle.cover()` puts it over a whole display or a region of one; the window's
   own `outerWidth`, `screenX`, `resizeTo` and `moveBy` are on `handle.geometry`
   ([API.md](https://github.com/avi12/winui-svelte/blob/main/API.md))
 - **Window place:** `stateKey` on `<Window>` saves its bounds, maximized state

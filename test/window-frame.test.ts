@@ -292,6 +292,89 @@ test("a window follows its content's height with its bottom-right corner pinned"
   }
 });
 
+// A covering window is seen on the real desktop, so this test runs only when
+// asked for: WINUI_SVELTE_COVER_TEST=1.
+const IS_COVER_TEST_WANTED = process.env["WINUI_SVELTE_COVER_TEST"] === "1";
+const RESIZE_FRAME = 8;
+const REGION = {
+  x: 240,
+  y: 120,
+  width: 800,
+  height: 600
+};
+
+async function covered({ example, region }: {
+  example: ExampleProcess;
+  region?: typeof REGION;
+}) {
+  const report = await example.ask({
+    command: region === undefined ? { cmd: "cover" } : {
+      cmd: "cover",
+      region: true,
+      ...region
+    },
+    kind: "covered"
+  });
+  return {
+    bounds: boundsOf(report),
+    target: recordOf(report["target"]),
+    display: recordOf(report["displayBounds"]),
+    client: recordOf(report["clientSize"])
+  };
+}
+
+test("cover puts a borderless window exactly over the primary display, or a region of it", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED || !IS_COVER_TEST_WANTED && "set WINUI_SVELTE_COVER_TEST=1: the window covers the screen",
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const example = ExampleProcess.start({ entry: "examples/window-frame/main.ts" });
+  try {
+    await example.ask({
+      command: {
+        cmd: "frame",
+        isBorderless: true,
+        isResizable: false,
+        isActivatable: false,
+        isToolWindow: true
+      },
+      kind: "frame"
+    });
+    const whole = await covered({ example });
+    assert.deepEqual(whole.bounds, whole.display, "the window is exactly the display");
+    assert.deepEqual(whole.target, whole.display, "cover returns the bounds it applied");
+
+    const part = await covered({
+      example,
+      region: REGION
+    });
+    assert.deepEqual(part.bounds, {
+      x: Number(part.display["x"]) + REGION.x,
+      y: Number(part.display["y"]) + REGION.y,
+      width: REGION.width,
+      height: REGION.height
+    }, "the region is placed from the display's top left, in physical pixels");
+
+    await example.ask({
+      command: {
+        cmd: "frame",
+        isBorderless: true,
+        isResizable: true,
+        isActivatable: false,
+        isToolWindow: true
+      },
+      kind: "frame"
+    });
+    const resizable = await covered({ example });
+    const gap = resizable.bounds.width - Number(resizable.client["width"]);
+    assert.ok(gap > 0 && gap <= 2 * RESIZE_FRAME, "without isResizable={false} the resize frame shrinks the client area");
+
+    example.send({ cmd: "close" });
+    assert.equal(await example.exited, 0);
+  } finally {
+    example.kill();
+  }
+});
+
 test("a window process ends when the host process that started it is gone", {
   skip: !IS_WINDOWS_APP_SDK_RESTORED,
   timeout: TIMEOUT_MILLISECONDS
