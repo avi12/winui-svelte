@@ -158,3 +158,16 @@ test("never skips the bootstrapper without a package, the environment still set"
   assert.deepEqual(calls, []);
   assertEnvironment();
 });
+
+test("webViewUserDataFolder false leaves the variable alone", () => {
+  const { runtimeProcess } = stand({ hasRuntime: false });
+  startWindowsAppSdk({
+    runtimeProcess,
+    options: {
+      dpiAwareness: undefined,
+      webViewUserDataFolder: false,
+      folders: [nativeFolder]
+    }
+  });
+  assert.equal(process.env["WEBVIEW2_USER_DATA_FOLDER"], undefined);
+});

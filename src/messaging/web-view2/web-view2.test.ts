@@ -10,6 +10,7 @@ import type {
   WebView2Like
 } from "./core.ts";
 import { addDocumentCreatedScript, executeScript } from "./core.ts";
+import { startWebView2 } from "./environment.ts";
 import { dispatchKey, dispatchMouseClick, TypeMode, typeText } from "./input.ts";
 import { onDownloadStarting, onNavigationStarting, onPermissionRequested, PermissionState } from "./policy.ts";
 import { callDevToolsMethod, onDevToolsEvent } from "./protocol.ts";
@@ -83,7 +84,13 @@ function fakeCore() {
     addScriptToExecuteOnDocumentCreatedAsync: () => Promise.resolve("script-1"),
     removeScriptToExecuteOnDocumentCreated: id => calls.push(`remove ${id}`),
     openDevToolsWindow: () => calls.push("devtools"),
+    browserProcessId: 1,
     environment: {
+      userDataFolder: "folder",
+      createCoreWebView2ControllerOptions: () => ({
+        profileName: "",
+        isInPrivateModeEnabled: false
+      }),
       createWebResourceResponse(_content, statusCode, reasonPhrase, headers) {
         const response = {
           statusCode,
@@ -672,4 +679,70 @@ test("keys, clicks and typed text are built as Input protocol calls", async () =
     "Input.insertText"
   ]);
   assert.deepEqual(JSON.parse(protocolCalls[2]?.parameters ?? ""), { text: "ello" });
+});
+
+test("startWebView2 passes the environment and the controller options, and starts once", async () => {
+  const { core } = fakeCore();
+  const started: Array<{
+    environment: unknown;
+    options: {
+      profileName: string;
+      isInPrivateModeEnabled: boolean;
+    } | undefined;
+  }> = [];
+  const control: WebView2Like = {
+    coreWebView2: core,
+    ensureCoreWebView2Async(environment?: unknown, options?: {
+      profileName: string;
+      isInPrivateModeEnabled: boolean;
+    }) {
+      started.push({
+        environment,
+        options
+      });
+      return Promise.resolve();
+    }
+  };
+  const first = await startWebView2({
+    control,
+    environment: core.environment,
+    profileName: "home",
+    isInPrivateMode: true
+  });
+  const second = await startWebView2({
+    control,
+    environment: core.environment
+  });
+  assert.equal(first, core);
+  assert.equal(second, core);
+  assert.equal(started.length, 1);
+  assert.equal(started[0]?.environment, core.environment);
+  assert.deepEqual(started[0]?.options, {
+    profileName: "home",
+    isInPrivateModeEnabled: true
+  });
+});
+
+test("startWebView2 names both causes of 0x8007139F and lets a later call retry", async () => {
+  const { core } = fakeCore();
+  let attempts = 0;
+  const control: WebView2Like = {
+    coreWebView2: core,
+    ensureCoreWebView2Async() {
+      attempts += 1;
+      return attempts === 1 ? Promise.reject(new Error("HRESULT 0x8007139F")) : Promise.resolve();
+    }
+  };
+  await assert.rejects(
+    startWebView2({
+      control,
+      environment: core.environment
+    }), /ordinary desktop session.*different environment options/
+  );
+  assert.equal(
+    await startWebView2({
+      control,
+      environment: core.environment
+    }), core
+  );
 });

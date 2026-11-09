@@ -45,6 +45,15 @@ const { values, positionals } = parseArgs({
     hidden: {
       type: "string"
     },
+    ownFolders: {
+      type: "string"
+    },
+    first: {
+      type: "string"
+    },
+    second: {
+      type: "string"
+    },
     stateKey: {
       type: "string"
     },
@@ -62,7 +71,8 @@ if (IS_ENTRY_MISSING) {
 const runtime = initWindowsAppSdk({
   major: WINDOWS_APP_SDK_MAJOR,
   minor: WINDOWS_APP_SDK_MINOR,
-  folders: [path.join(PACKAGE_ROOT, ".winapp", "bin", process.arch)]
+  folders: [path.join(PACKAGE_ROOT, ".winapp", "bin", process.arch)],
+  ...values.ownFolders === "true" ? { webViewUserDataFolder: false } : {}
 });
 process.stdout.write(`pid ${process.pid}\n`);
 process.stdout.write(

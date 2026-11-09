@@ -59,8 +59,19 @@ export interface DevToolsEventReceiverLike {
   onDevToolsProtocolEventReceived(callback: (sender: unknown, args: DevToolsEventArguments) => void): () => void;
 }
 
-/** The environment's part in answering a request; `content` is a WinRT stream. */
+/** The controller options of one control: its profile inside the environment's folder. */
+export interface ControllerOptionsLike {
+  profileName: string;
+  isInPrivateModeEnabled: boolean;
+}
+
+/**
+ * The environment of a browser: its profile folder, and its part in answering a
+ * request (`content` is a WinRT stream).
+ */
 export interface EnvironmentLike {
+  readonly userDataFolder: string;
+  createCoreWebView2ControllerOptions(): ControllerOptionsLike;
   createWebResourceResponse(content: unknown, statusCode: number, reasonPhrase: string, headers: string): unknown;
 }
 
@@ -90,6 +101,7 @@ export interface CookieManagerLike {
 export interface CoreWebView2Like {
   readonly cookieManager: CookieManagerLike;
   readonly environment: EnvironmentLike;
+  readonly browserProcessId: number;
   readonly settings: {
     areHostObjectsAllowed: boolean;
   };
@@ -118,6 +130,8 @@ export function messageOf(error: unknown) {
 export interface WebView2Like {
   readonly coreWebView2: CoreWebView2Like;
   ensureCoreWebView2Async(): Promise<void>;
+  ensureCoreWebView2Async(environment: EnvironmentLike): Promise<void>;
+  ensureCoreWebView2Async(environment: EnvironmentLike, controllerOptions: ControllerOptionsLike): Promise<void>;
 }
 
 /**
@@ -125,6 +139,8 @@ export interface WebView2Like {
  * `CoreWebView2` once it is ready (`CoreWebView2Initialized` has been
  * raised); resolves at once when it already is
  * The control must be in a window for the browser to start
+ * It starts the default environment (the process's one profile folder, no
+ * flags); to use a custom environment, call `startWebView2` first
  */
 export async function waitForCoreWebView2(control: WebView2Like) {
   await control.ensureCoreWebView2Async();

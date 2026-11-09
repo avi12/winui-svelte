@@ -858,8 +858,8 @@ conditions on `exports`), which your Vite compiles (`winuiSvelte()`)
 | `winui-svelte/state` | the window's side of host state |
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
 | `winui-svelte/messaging` | `defineMessaging`: typed request and response messages over a transport, loadable in plain Node |
-| `winui-svelte/messaging/web-view2`, `/messaging/page` | `webView2Transport` and the `WebView2` helpers (scripts, cookies, downloads, permissions, request filters, the DevTools protocol, trusted input); the web page's end of the link, free of WinUI (both opt-in) |
-| `winui-svelte/messaging/web-view2`, `/messaging/page` | `webView2Transport` and the `WebView2` helpers (scripts, cookies, downloads, permissions, request filters, the DevTools protocol, trusted input); the web page's end of the link, free of WinUI (both opt-in) |
+| `winui-svelte/messaging/web-view2`, `/messaging/page` | `webView2Transport` and the `WebView2` helpers (scripts, cookies, downloads, permissions, request filters, the DevTools protocol, trusted input, an environment and profile folder per control); the web page's end of the link, free of WinUI (both opt-in) |
+| `winui-svelte/messaging/web-view2`, `/messaging/page` | `webView2Transport` and the `WebView2` helpers (scripts, cookies, downloads, permissions, request filters, the DevTools protocol, trusted input, an environment and profile folder per control); the web page's end of the link, free of WinUI (both opt-in) |
 | `winui-svelte/vite` | `winuiSvelte()` for `vite.config.ts`; `startModuleServer()` for hot reload; `buildApp()` for the production bundle |
 | `winui-svelte/dev` | `startDev()`, one call that opens a component in a window and keeps it live as the files are saved |
 | `winui-svelte/runner` | `createWindowModuleRunner()`, the window thread's side of the module server |
@@ -1054,6 +1054,12 @@ Stated plainly, so nobody finds them by surprise:
 - **`WebView2` needs an ordinary desktop session.** A process a sandbox or a
   service started cannot launch the browser (error 0x8007139F), and a `data:`
   URL cannot be the top frame
+- **One process folder, unless a control brings its own.** `WebView2` starts in
+  the folder `initWindowsAppSdk` sets through `WEBVIEW2_USER_DATA_FOLDER`, with
+  no Chromium switches; two profiles or switches in one process need
+  `createWebView2Environment` and `startWebView2` first, and the app must start
+  with `webViewUserDataFolder: false`, since the variable overrides the folder
+  of an environment
 - **Win2D effects on an element are built, not seen.** `applyEffect` puts a
   Win2D effect on an element as a Composition effect brush, but nothing reads
   pixels back from Composition without a screen capture, so only the drawing

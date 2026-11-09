@@ -710,7 +710,8 @@ for tools; `compileSvelte()` throws an `Error` with that message
 // match wins), sets WINAPPSDK_BOOTSTRAP_DLL_PATH, puts the folder it was found
 // in on PATH (WebView2's native libraries are there) and initialises the
 // Windows App SDK. Sets WEBVIEW2_USER_DATA_FOLDER to `webViewUserDataFolder`
-// unless it is already set. Throws WindowsAppRuntimeMissing when the runtime is
+// unless it is already set; `false` leaves it alone (the variable overrides the
+// folder of a createWebView2Environment). Throws WindowsAppRuntimeMissing when the runtime is
 // not installed. In a process whose package graph holds the Windows App SDK
 // (an MSIX whose manifest declares the PackageDependency) it skips the
 // bootstrapper, which refuses to run there with 0x80070032; the environment
@@ -719,7 +720,7 @@ function initWindowsAppSdk(options?: {
   major?: number;
   minor?: number;
   folders?: string[];
-  webViewUserDataFolder?: string;
+  webViewUserDataFolder?: string | false;
   dpiAwareness?: DpiAwareness | undefined;   // default "per-monitor-v2"; undefined leaves the process as it is
   bootstrap?: BootstrapMode;                 // default "auto"
 }): { runtime: RuntimeSource };               // "package" or "bootstrapper", for a log line
@@ -1749,6 +1750,8 @@ const bridge = defineMessaging<AppProtocol>({ transport: createPageTransport() }
 | `executeScript({ control, code })` | runs script in the page and resolves with its JSON value, checked |
 | `addDocumentCreatedScript({ control, code })` | runs script before every page script; resolves with the function that removes it |
 | `openDevTools(control)` | opens the developer tools window |
+| `createWebView2Environment({ browserExecutableFolder, userDataFolder, additionalBrowserArguments, language })` | builds an environment: a profile folder and Chromium switches (an array, joined with spaces) |
+| `startWebView2({ control, environment, profileName, isInPrivateMode })` | starts the control's browser in that environment and resolves with its `CoreWebView2`; a second call on the control resolves with the same core |
 | `getCookies`, `setCookie`, `deleteCookie` | the profile's cookies as plain data (`CookieSameSite`) |
 | `onPermissionRequested({ control, decide })` | answers permission requests with a `PermissionState` (`default`, `allow`, `deny`) for a `PermissionKind` |
 | `onDownloadStarting({ control, pathFor })` | sends a download to a path with no dialog, or cancels it with `null` |
@@ -1758,6 +1761,38 @@ const bridge = defineMessaging<AppProtocol>({ transport: createPageTransport() }
 | `callDevToolsMethod({ control, method, parameters })` | calls a DevTools protocol method, resolves with its result as checked JSON, rejects with the protocol's error |
 | `onDevToolsEvent({ control, event, handler })` | hands the parsed parameters of a protocol event to `handler`; the domain must be enabled first (`Network.enable`) |
 | `dispatchKey`, `dispatchMouseClick`, `typeText`, `keyEventParameters`, `KeyEventType`, `MouseButton` | trusted input through `Input.dispatchKeyEvent` and `Input.dispatchMouseEvent`; `typeText` takes a `TypeMode` (`keys`, or `insertAfterFirst`) |
+
+A profile folder and Chromium switches per control
+
+```ts
+import { createWebView2Environment, startWebView2 } from "winui-svelte/messaging/web-view2";
+
+const environment = await createWebView2Environment({
+  userDataFolder: path.join(process.env.LOCALAPPDATA, "MyApp", "WebView2Home"),
+  additionalBrowserArguments: ["--autoplay-policy=no-user-gesture-required"],
+  language: "en-US"
+});
+// control is the WebView2 (the sender of onloaded), already in a window
+const core = await startWebView2({ control, environment, profileName: "home" });
+```
+
+- The first start of a control wins: call `startWebView2` before anything that
+  starts it with the default environment (`waitForCoreWebView2` and every
+  helper that calls it); a second call resolves with the same core
+- `WEBVIEW2_USER_DATA_FOLDER` overrides the folder of an environment (measured:
+  with it set, two environments with two folders both ran in the variable's
+  folder), so the app starts with `initWindowsAppSdk({ webViewUserDataFolder: false })`
+  and the variable unset
+- One browser process runs per folder; two controls in one folder with different
+  options, or a process that cannot launch the browser, fail with 0x8007139F,
+  and a folder another browser has open with 0x800700AA; the rejection's message
+  names the causes
+- `additionalBrowserArguments` reach the browser process (the test reads its
+  command line); profiles of different folders share no cookies
+- `core.browserProcessId` and `core.environment.userDataFolder` are on
+  `CoreWebView2Like`
+- `examples/web-profiles` and `test/web-profiles.test.ts` run two controls in
+  one window with two folders; it needs an ordinary desktop session
 
 Request filters and the protocol
 
