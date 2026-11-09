@@ -2037,6 +2037,46 @@ at the size it has after Windows rescaled it
 The arithmetic is plain functions (`anchoredBounds`, `dockedBounds`,
 `fittedBounds` in `src/window/anchor.ts`) over device pixels
 
+### Covering a display
+
+```ts
+// the whole display the user is on, in physical pixels
+handle.cover({ display: DockDisplay.active })
+// a rectangle of the display, from its top left
+handle.cover({ display: DockDisplay.current, region: { x: 240, y: 120, width: 800, height: 600 } })
+// one display by the id that displays() lists
+handle.cover({ display: displayId })
+```
+
+A covering window needs `isBorderless` and `isResizable={false}`: without the
+second, the 8 device pixel resize frame stays, shrinks the client area and
+paints a strip along the top; `cover` does not set either, because a prop left
+out leaves the window as it is
+`dock` is a corner of the **work area** at the window's own size; `cover` is
+the **whole display** (or a part of it) at the display's size;
+`handle.geometry` is in CSS pixels at the window's scale and can do neither
+exactly
+`display` is a `DockDisplay` or a display id (a `bigint`); the active display by
+default
+`region` is in the target display's own physical pixels, relative to its top
+left, and is not clipped to it, so a frame drawn 4 pixels outside a region at
+the display's edge stays where it was asked for; a region measured on another
+display has to be mapped by the caller
+It returns the bounds it applied (`WindowBounds`), so a frame or a canvas can
+follow them
+A window sent to a display with another scale first goes to that display's
+origin, so Windows rescales it there, and is then placed once at the bounds in
+that display's pixels; a rescale that changed the size anyway is placed again
+(at most twice)
+`coverWindow({ appWindow, display, region })` (`winui-svelte/window`) does the
+same for a bare `AppWindow`, and `coveredBounds` in `src/window/anchor.ts` is
+the plain arithmetic
+`outerBounds` and `appWindow` are physical pixels only in a PerMonitorV2
+process
+Not verified: whether a topmost window that equals a monitor's bounds changes
+the taskbar for that monitor, and whether a `backdrop="transparent"` cover is
+see-through at its edge pixels; try both before shipping an overlay on them
+
 `handle.geometry` is the window's own `window.outerWidth`, `outerHeight`,
 `screenX`, `screenY`, `devicePixelRatio`, `resizeTo(width, height)`,
 `resizeBy`, `moveTo(x, y)` and `moveBy`, in CSS pixels (WinUI's
