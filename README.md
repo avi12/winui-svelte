@@ -964,6 +964,11 @@ Stated plainly, so nobody finds them by surprise:
   the supported platforms; no entry point does work when imported
   The
   Windows App SDK runtime must be installed; the package does not install it
+- **A window nobody sees is `<Window isParked>`, not `isHidden`.** A hidden
+  window is a hidden page: Chromium throttles its timers and audio
+  `isParked` shows the window left of the virtual screen as a tool window that
+  is never activated, so its page runs at full speed; the position is chosen
+  when the window opens, so a display layout change later is not followed
 - **Drag and drop has gaps WinUI leaves.** The `drag` event on a source is
   emulated by a 50 ms timer that reads the cursor (WinUI has none), `setDragImage`
   is accepted but WinUI draws its own preview of the data, `relatedTarget` is

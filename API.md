@@ -2005,11 +2005,40 @@ along the top, until `isResizable={false}` takes it away),
 `isShownInSwitchers` and `isToolWindow` (no taskbar button or Alt+Tab entry),
 `isActivatable={false}` (a click never takes focus), `isClickThrough`,
 `isExcludedFromCapture` (black in screenshots and screen sharing),
-`isHidden` (opens hidden, hides and shows later) and `cornerRadius` (clips the
+`isHidden` (opens hidden, hides and shows later), `isParked` (see below) and `cornerRadius` (clips the
 window to a rounded rectangle; the edge is not anti-aliased, so on a
 transparent window round the card's own `corner-radius` instead, which is)
 A prop left out leaves the window as it is, and dropped again it puts the
 window back
+
+A window that must run but never be seen (a host for a page with no UI) is
+`isParked`: shown, so that Chromium keeps its page at full speed, but a tool
+window that is not activatable, opened without taking focus, and placed left of
+the virtual screen, clear of every display
+`placement` and `width`/`height` give only its size; dropping the prop moves it
+back
+It is the per-window form of the `WINUI_SVELTE_BACKGROUND` run, and uses the
+same code
+`isHidden` is not a substitute: a hidden window is a hidden page
+(`document.visibilityState` is `hidden`, timers are throttled)
+`test/parked-window.test.ts` measures it: the page of a parked window reports
+`visible`, a heartbeat of 100 milliseconds keeps its pace and
+`requestAnimationFrame` keeps firing, where the same window with `isHidden`
+reports `hidden`
+Measured over 5 seconds, no Chromium flags set (the default WebView2
+environment):
+
+| Window | `visibilityState` | Heartbeat gap (100 ms timer) | Frames |
+|---|---|---|---|
+| `isParked` | `visible` | under 150 ms on average | above 10 a second |
+| `isHidden` | `hidden` | slower, throttled | not measured |
+
+So the three Chromium flags the C# host sets are not needed for a parked window
+```svelte
+<Window isParked width={900} height={720}>
+  <WebView2 source="about:blank" />
+</Window>
+```
 `createWindow` takes them too
 `handle.setShownInSwitchers(isShown)` does not throw for a window that has no
 taskbar button (WinUI answers 0x80004001 there); `hideToTray` uses it

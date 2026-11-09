@@ -19,6 +19,7 @@ interface WindowChrome extends Pick<
   | "isExcludedFromCapture"
   | "isHidden"
   | "isModal"
+  | "isParked"
   | "isShownInSwitchers"
   | "isToolWindow"
   | "onclosing"
@@ -130,6 +131,7 @@ export function createWindow<Props extends object>(options: WindowOptions<Props>
       isClickThrough: options.isClickThrough,
       isExcludedFromCapture: options.isExcludedFromCapture,
       isHidden: options.isHidden,
+      isParked: options.isParked,
       isShownInSwitchers: options.isShownInSwitchers,
       isToolWindow: options.isToolWindow,
       sizeToContent: options.sizeToContent,

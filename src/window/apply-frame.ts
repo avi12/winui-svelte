@@ -1,4 +1,3 @@
-import { isBackgroundRun } from "./background-mode.ts";
 import { changeExtendedStyles, makeLayeredOpaque } from "./native.ts";
 
 // Tells Windows what a window is besides WinUI's own frame (apply-chrome.ts):
@@ -12,7 +11,7 @@ export interface FrameStyle {
   /** Needs the window layered (and opaque) first, as click-through does. */
   isLayered?: boolean;
 
-  /** A background run (background.ts) has it on whatever the prop says. */
+  /** A window kept in the background has it on whatever the prop says. */
   isKeptInBackground?: boolean;
 }
 
@@ -21,10 +20,13 @@ export interface FrameStyle {
  * the app left the prop out); `applied` holds the styles this has turned on,
  * so that a prop that is dropped again puts the window back.
  */
-export function applyFrameStyle({ hwnd, style, isOn, applied }: {
+export function applyFrameStyle({ hwnd, style, isOn, isParked, applied }: {
   hwnd: bigint;
   style: FrameStyle;
   isOn: boolean | undefined;
+
+  /** The window is kept in the background (background.ts). */
+  isParked: boolean;
   applied: Set<bigint>;
 }) {
   const isGiven = isOn !== undefined;
@@ -33,7 +35,7 @@ export function applyFrameStyle({ hwnd, style, isOn, applied }: {
     return;
   }
 
-  const isKept = style.isKeptInBackground === true && isBackgroundRun();
+  const isKept = style.isKeptInBackground === true && isParked;
   const isWanted = isOn === true || isKept;
   const shouldLayer = isWanted && style.isLayered === true;
   if (shouldLayer) {

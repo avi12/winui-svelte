@@ -184,6 +184,16 @@ export interface WindowProps {
    */
   isActivatable?: boolean | undefined;
 
+  /**
+   * The window is shown, so its page runs at full speed, and never seen: a
+   * tool window that is not activatable, opens without taking focus and sits
+   * clear of every display (left of the virtual screen). `placement` and
+   * `width`/`height` give only the size. Dropped again, the window goes back
+   * where it was. Not the same as `isHidden`: a hidden window is a hidden
+   * page, and Chromium slows it down.
+   */
+  isParked?: boolean | undefined;
+
   /** Clicks go to whatever is behind the window. */
   isClickThrough?: boolean | undefined;
 
@@ -355,6 +365,12 @@ class WindowHost {
   private isBorderApplied = false;
   private isCaptureApplied = false;
   private isSwitcherApplied = false;
+  private unparkedBounds: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null = null;
   private isClipApplied = false;
   private isTopApplied = false;
   private hasShown = false;
@@ -392,7 +408,7 @@ class WindowHost {
       file: windowStateFile(stateKey)
     }) : null;
 
-    const isNewBackgroundWindow = isBackgroundRun() && !this.isTakenOver;
+    const isNewBackgroundWindow = this.isKeptInBackground && !this.isTakenOver;
     if (isNewBackgroundWindow) {
       keepInBackground(this.handle.appWindow.id.value);
     }
@@ -409,6 +425,7 @@ class WindowHost {
     this.keepInLine(() => this.syncPresentation());
     this.keepInLine(() => this.syncLimits());
     this.keepInLine(() => this.syncFrame());
+    $effect(() => this.syncParked());
     this.keepInLine(() => this.syncShape());
 
     if (!this.isTakenOver) {
@@ -630,6 +647,10 @@ class WindowHost {
     }
   }
 
+  private get isKeptInBackground() {
+    return isBackgroundRun() || this.props.isParked === true;
+  }
+
   private get isWindowed() {
     const presentation = this.props.presentation ?? WindowPresentation.windowed;
     return presentation === WindowPresentation.windowed;
@@ -650,7 +671,7 @@ class WindowHost {
       presentation: presentation ?? WindowPresentation.windowed
     });
 
-    if (isBackgroundRun()) {
+    if (this.isKeptInBackground) {
       // A presenter (full screen, compact overlay) puts the window on a display.
       this.handle.appWindow.moveAndResize(backgroundPlacement(this.handle.appWindow.size));
     }
@@ -711,6 +732,36 @@ class WindowHost {
     }
   }
 
+  // Parking after the window is open moves it off every display; dropping the
+  // prop moves it back. The first placement is placeFirst's.
+  private syncParked() {
+    const isParked = this.props.isParked === true && !isBackgroundRun();
+    const { appWindow } = this.handle;
+    if (!this.hasShown) {
+      return;
+    }
+
+    const isToPark = isParked && this.unparkedBounds === null;
+    if (isToPark) {
+      const { x, y } = appWindow.position;
+      const { width, height } = appWindow.size;
+      this.unparkedBounds = {
+        x,
+        y,
+        width,
+        height
+      };
+      appWindow.moveAndResize(backgroundPlacement(appWindow.size));
+      return;
+    }
+
+    const isToUnpark = !isParked && this.unparkedBounds !== null;
+    if (isToUnpark) {
+      appWindow.moveAndResize(this.unparkedBounds);
+      this.unparkedBounds = null;
+    }
+  }
+
   // The window styles, the borderless presenter and the capture affinity: all
   // left alone until the app names them.
   private syncFrame() {
@@ -745,6 +796,7 @@ class WindowHost {
         hwnd,
         style,
         isOn,
+        isParked: this.isKeptInBackground,
         applied: this.appliedStyles
       });
     }
@@ -893,7 +945,7 @@ class WindowHost {
         scale
       })
     };
-    if (isBackgroundRun()) {
+    if (this.isKeptInBackground) {
       appWindow.moveAndResize(
         backgroundPlacement({
           width: props.placement?.width ?? size.width,
@@ -1142,7 +1194,7 @@ class WindowHost {
 
   private showWindow() {
     const { window } = this.handle;
-    const isBackground = this.props.activate === false || isBackgroundRun();
+    const isBackground = this.props.activate === false || this.isKeptInBackground;
     if (isBackground) {
       window.appWindow.showWithActivation(false);
     } else {
