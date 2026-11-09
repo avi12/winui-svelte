@@ -1,4 +1,12 @@
-import { enterOle, findChildWindow, registerDropTarget, revokeDropTarget } from "./native.ts";
+import { createDragHelper } from "./drag-helper.ts";
+import type { DragHelper } from "./drag-helper.ts";
+import {
+  DATA_OBJECT_IID,
+  enterOle,
+  findChildWindow,
+  registerDropTarget,
+  revokeDropTarget
+} from "./native.ts";
 import { DynCom, DynComMethodSig, DynWinRtValue, WinGuid } from "@microsoft/dynwinrt/com/unsafe";
 import type { DynWinRTValue } from "@microsoft/dynwinrt/com/unsafe";
 
@@ -11,7 +19,6 @@ import type { DynWinRTValue } from "@microsoft/dynwinrt/com/unsafe";
 const CONTENT_WINDOW_CLASS = "Microsoft.UI.Content.DesktopChildSiteBridge";
 const NO_WINDOW = BigInt(0);
 const DROP_TARGET_IID = "00000122-0000-0000-c000-000000000046";
-const DATA_OBJECT_IID = "0000010e-0000-0000-c000-000000000046";
 /** The vtable slots of `IDropTarget` after the three of `IUnknown`. */
 export const DRAG_ENTER_SLOT = 3;
 export const DRAG_OVER_SLOT = 4;
@@ -127,6 +134,37 @@ function answer({ handler, slot, call }: {
   return slot === DRAG_ENTER_SLOT ? handler.enter(withData) : handler.drop(withData);
 }
 
+// The shell's drag helper hears each call with the effect answered, and draws the drag's picture for it.
+function tellHelper({ helper, slot, call, effect }: {
+  helper: DragHelper;
+  slot: number;
+  call: OleDragCall;
+  effect: OleEffect;
+}) {
+  const { data, point } = call;
+  const hasData = data !== null;
+  const isOver = slot === DRAG_OVER_SLOT;
+  const isEntering = hasData && slot === DRAG_ENTER_SLOT;
+  if (isOver) {
+    helper.over({
+      point,
+      effect
+    });
+  } else if (isEntering) {
+    helper.enter({
+      data,
+      point,
+      effect
+    });
+  } else if (hasData) {
+    helper.drop({
+      data,
+      point,
+      effect
+    });
+  }
+}
+
 /**
  * Makes a window take drags from other apps: registers an OLE drop target on
  * it that calls `handler`. Call it on the UI thread (it enters OLE there).
@@ -139,21 +177,33 @@ export function registerOleDropTarget({ hwnd, handler }: {
   readonly handler: OleDropHandler;
 }) {
   enterOle();
+  const helper = createDragHelper(hwnd);
   const target = DynCom.createComObject([dropTargetInterface()], (_iid, slot, ...args) => {
     const isLeaving = slot === DRAG_LEAVE_SLOT;
     if (isLeaving) {
+      helper?.leave();
       handler.leave();
       return SUCCESS;
     }
 
+    const call = callOf({
+      slot,
+      args
+    });
     const effect = answer({
       handler,
       slot,
-      call: callOf({
-        slot,
-        args
-      })
+      call
     });
+    if (helper) {
+      tellHelper({
+        helper,
+        slot,
+        call,
+        effect
+      });
+    }
+
     return [SUCCESS, DynWinRtValue.u32(effect)];
   });
   DynCom.bindComObject(target);
@@ -190,5 +240,6 @@ export function registerOleDropTarget({ hwnd, handler }: {
 
     view.release();
     target.release();
+    helper?.release();
   };
 }

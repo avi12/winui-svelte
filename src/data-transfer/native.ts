@@ -1,19 +1,43 @@
 import type { DynWinRTValue } from "@microsoft/dynwinrt/com/unsafe";
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
-import { bind, bindDll, DWORD_BYTES, withMemory } from "#src/win32-calls.js";
+import {
+  bind,
+  bindDll,
+  DWORD_BYTES,
+  NO_ADDRESS,
+  POINTER_BYTES,
+  withMemory
+} from "#src/win32-calls.js";
 
 // The flat Win32 calls of a drag from another app: OLE's registration of a
 // window as a drop target, the clipboard format ids and the cursor's place in
 // the window.
 
+/** The interface id of `IDataObject`, what a drag carries. */
+export const DATA_OBJECT_IID = "0000010e-0000-0000-c000-000000000046";
 const POINT_BYTES = 8;
 const HRESULT_FAILED = -1;
+const GUID_BYTES = 16;
+const GUID_DATA1_END = 4;
+const GUID_DATA2_END = 6;
+const GUID_DATA3_END = 8;
+const IN_PROCESS_SERVER = 1;
+
+// A GUID's first three fields are little-endian in memory, the rest are bytes.
+function guidBytesOf(guid: string) {
+  const bytes = Buffer.from(guid.replaceAll("-", ""), "hex");
+  bytes.subarray(0, GUID_DATA1_END).reverse();
+  bytes.subarray(GUID_DATA1_END, GUID_DATA2_END).reverse();
+  bytes.subarray(GUID_DATA2_END, GUID_DATA3_END).reverse();
+  return bytes;
+}
 
 function makeCalls() {
   return {
     ...bindDll({
       dll: "ole32.dll",
       functions: {
+        createInstance: ["CoCreateInstance", ["pointer", "pointer", "u32", "pointer", "pointer"], "i32"],
         oleInitialize: ["OleInitialize", ["pointer"], "i32"],
         revokeDragDrop: ["RevokeDragDrop", ["pointer"], "i32"]
       }
@@ -72,6 +96,37 @@ export function registerDropTarget({ hwnd, target, iid }: {
  */
 export function revokeDropTarget(hwnd: bigint) {
   callsOf().revokeDragDrop(hwnd);
+}
+
+/**
+ * Makes an in-process COM object (`CoCreateInstance`).
+ *
+ * @param options - The class id and the interface id wanted, as GUID strings.
+ * @returns The interface pointer's address, owned by the caller; 0 when the object could not be made.
+ */
+export function createInstanceOf({ classId, interfaceId }: {
+  classId: string;
+  interfaceId: string;
+}) {
+  return withMemory({
+    size: GUID_BYTES,
+    alignment: DWORD_BYTES,
+    use: clsid => withMemory({
+      size: GUID_BYTES,
+      alignment: DWORD_BYTES,
+      use: iid => withMemory({
+        size: POINTER_BYTES,
+        alignment: POINTER_BYTES,
+        use(out) {
+          clsid.writeBytes(0, guidBytesOf(classId));
+          iid.writeBytes(0, guidBytesOf(interfaceId));
+          const hresult = callsOf().createInstance(clsid, null, IN_PROCESS_SERVER, iid, out);
+          const isCreated = hresult === 0;
+          return isCreated ? out.readBytes(0, POINTER_BYTES).readBigUInt64LE(0) : NO_ADDRESS;
+        }
+      })
+    })
+  });
 }
 
 /**
