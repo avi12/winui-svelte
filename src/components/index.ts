@@ -42,6 +42,7 @@ export { goToState, installXaml, resourceDictionaryOf, xamlOf } from "./xaml.ts"
 export type { XamlSource } from "./xaml-source.ts";
 export { XamlKind } from "./xaml-source.ts";
 export type { CaptionButtonColors, IconShowOptions, TitleBarHeight, WindowPresentation, WindowRegion, WindowTheme } from "#src/window/chrome.js";
+export type { CoverOptions } from "#src/window/cover.js";
 export type { DockDisplay, DockOptions } from "#src/window/dock.js";
 export type { SizeToContent, WindowAnchor } from "#src/window/anchor.js";
 export type { WindowHandle } from "#src/window/window-handle.js";

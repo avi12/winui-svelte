@@ -1,4 +1,6 @@
 import { applyShownInSwitchers } from "./apply-chrome.ts";
+import type { CoverOptions } from "./cover.ts";
+import { coverWindow } from "./cover.ts";
 import type { DockOptions } from "./dock.ts";
 import { dockWindow } from "./dock.ts";
 import { scaleOf } from "./native.ts";
@@ -117,6 +119,24 @@ export class WindowHandle {
    */
   dock(options: DockOptions) {
     dockWindow({
+      appWindow: this.appWindow,
+      ...options
+    });
+  }
+
+  /**
+   * Covers a whole display, or a rectangle of one, in physical pixels, and
+   * returns the bounds it applied. A covering window needs `isBorderless` and
+   * `isResizable={false}`; `cover` leaves those props to you. `dock` is a
+   * corner of the work area at the window's own size, `cover` is the whole
+   * display at the display's size, and `geometry` is in CSS pixels and can do
+   * neither exactly.
+   *
+   * @param options - The display (the active one by default) and the region of
+   * it, from its top left (the whole display by default).
+   */
+  cover(options: CoverOptions = {}) {
+    return coverWindow({
       appWindow: this.appWindow,
       ...options
     });

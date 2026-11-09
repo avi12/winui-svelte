@@ -216,7 +216,7 @@ export interface WindowProps {
    * again when the window goes back to it.
    */
   presentation?: WindowPresentation | undefined;
-  isResizable?: boolean;
+  isResizable?: boolean | undefined;
   isMaximizable?: boolean;
   isMinimizable?: boolean;
 
