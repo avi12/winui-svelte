@@ -1,7 +1,6 @@
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 import { addressOf, bind, numberOf, pointerOf } from "#src/win32-calls.js";
 
-const KEY_DOWN_BIT = 0x8000;
 const INVALID_COLOR = 0xffffffff;
 const BYTE_MASK = 0xff;
 const GREEN_SHIFT = 8;
@@ -52,24 +51,5 @@ export function createScreenPixelReader() {
     } finally {
       releaseDeviceContext.invoke([pointerOf(null), DynWin32Unsafe.pointer(screen)]);
     }
-  };
-}
-
-/**
- * Reads whether a key or mouse button is held down, by virtual key code. It
- * only reads; nothing is sent.
- *
- * @returns A function from a virtual key code to whether it is down now.
- */
-export function createKeyStateReader() {
-  const keyState = bind({
-    dll: "user32.dll",
-    entryPoint: "GetAsyncKeyState",
-    parameters: ["i32"],
-    returnType: "i32"
-  });
-  return (virtualKey: number) => {
-    const state = numberOf(keyState.invoke([DynWin32.i32(virtualKey)]).returnValue);
-    return (state & KEY_DOWN_BIT) !== 0;
   };
 }

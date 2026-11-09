@@ -1,10 +1,10 @@
 import { DomErrorName, domException } from "./dom-exception.ts";
 import { defineProperty } from "./install.ts";
 import { createCursorReader } from "#src/tray/native.js";
-import { createKeyStateReader, createScreenPixelReader } from "#src/web-apis/native.js";
+import { createScreenPixelReader } from "#src/web-apis/native.js";
+import { createKeyStateReader, PointerButtonKey } from "#src/win32-key-state.js";
 
 const POLL_MILLISECONDS = 16;
-const VIRTUAL_KEY_LEFT_BUTTON = 0x01;
 const VIRTUAL_KEY_ESCAPE = 0x1b;
 const HEX_RADIX = 16;
 const HEX_DIGITS = 2;
@@ -69,11 +69,15 @@ function delay(milliseconds: number) {
 export function windowsScreenPicker() {
   const readCursor = createCursorReader();
   const readPixel = createScreenPixelReader();
-  const isDown = createKeyStateReader();
+  const readKey = createKeyStateReader();
+
+  function isDown(virtualKey: number) {
+    return readKey(virtualKey).isDown;
+  }
 
   return {
     async pick({ signal }) {
-      let isHeld = isDown(VIRTUAL_KEY_LEFT_BUTTON);
+      let isHeld = isDown(PointerButtonKey.left);
       for (;;) {
         signal?.throwIfAborted();
         const isCancelled = isDown(VIRTUAL_KEY_ESCAPE);
@@ -81,7 +85,7 @@ export function windowsScreenPicker() {
           return undefined;
         }
 
-        const isPressed = isDown(VIRTUAL_KEY_LEFT_BUTTON);
+        const isPressed = isDown(PointerButtonKey.left);
         const isNewPress = isPressed && !isHeld;
         isHeld = isPressed;
 
