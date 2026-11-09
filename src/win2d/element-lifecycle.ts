@@ -1,3 +1,4 @@
+import { win2dFailureMessage } from "./activation-failure.ts";
 import type { FrameworkElement } from "#winui/microsoft/ui/xaml/FrameworkElement";
 
 // What the controllers that draw on an element's Composition visual have in
@@ -74,7 +75,11 @@ export class ElementFollower {
         height
       });
     } catch (error) {
-      process.stderr.write(`winui-svelte css: ${error instanceof Error ? error.message : String(error)}${NEWLINE}`);
+      const message = win2dFailureMessage(error);
+      const isWritten = message !== null;
+      if (isWritten) {
+        process.stderr.write(`winui-svelte css: ${message}${NEWLINE}`);
+      }
     }
   }
 }
