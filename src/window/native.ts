@@ -9,6 +9,7 @@ import {
   addressOf,
   bind,
   numberOf,
+  POINTER_BYTES,
   pointerOf,
   wideMemory,
   withMemory
@@ -598,7 +599,6 @@ export function requestFineTimerResolution() {
 
 const LOOP_OFFSET = 8;
 const IOCP_OFFSET = 56;
-const POINTER_BYTES = 8;
 const POINTER_ALIGNMENT = 8;
 const OBJECT_TYPE_BUFFER_BYTES = 256;
 const OBJECT_TYPE_NAME_LENGTH_OFFSET = 0;

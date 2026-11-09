@@ -1,11 +1,11 @@
 import type { ForegroundSource } from "./foreground-filter.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
-import { bindDll, WIDE_CHAR_BYTES, wideMemory } from "#src/win32-calls.js";
+import { bindDll, DWORD_BYTES, WIDE_CHAR_BYTES, wideMemory } from "#src/win32-calls.js";
+import { FOREGROUND_QUERY_CALLS } from "#src/win32-foreground.js";
 
 // The Win32 calls behind foreground tracking. Bound when a function is called, never when the module loads.
 
 const CLASS_NAME_CHARS = 256;
-const DWORD_BYTES = 4;
 const WS_POPUP = 0x80000000;
 const NO_WINDOW = 0n;
 const SHELL_HOOK_MESSAGE = "SHELLHOOK";
@@ -15,10 +15,8 @@ function bindUser32() {
   return bindDll({
     dll: "user32.dll",
     functions: {
-      foreground: ["GetForegroundWindow", [], "pointer"],
+      ...FOREGROUND_QUERY_CALLS,
       className: ["GetClassNameW", ["pointer", "pointer", "i32"], "i32"],
-      threadOf: ["GetWindowThreadProcessId", ["pointer", "pointer"], "u32"],
-      isWindow: ["IsWindow", ["pointer"], "i32"],
       createWindow: [
         "CreateWindowExW",
         ["u32", "pointer", "pointer", "u32", "i32", "i32", "i32", "i32", "pointer", "pointer", "pointer", "pointer"],

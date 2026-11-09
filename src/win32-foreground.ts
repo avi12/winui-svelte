@@ -11,13 +11,18 @@ const NO_WINDOW = 0n;
 const NO_THREAD = 0;
 const ASFW_ANY = 0xFFFFFFFF;
 
+/** The user32 rows every foreground call shares: which window is in front, whose it is, whether it still exists. */
+export const FOREGROUND_QUERY_CALLS = {
+  foreground: ["GetForegroundWindow", [], "pointer"],
+  threadOf: ["GetWindowThreadProcessId", ["pointer", "pointer"], "u32"],
+  isWindow: ["IsWindow", ["pointer"], "i32"]
+} as const;
+
 function bindUser32() {
   return bindDll({
     dll: "user32.dll",
     functions: {
-      foreground: ["GetForegroundWindow", [], "pointer"],
-      threadOf: ["GetWindowThreadProcessId", ["pointer", "pointer"], "u32"],
-      isWindow: ["IsWindow", ["pointer"], "i32"],
+      ...FOREGROUND_QUERY_CALLS,
       isIconic: ["IsIconic", ["pointer"], "i32"],
       isHung: ["IsHungAppWindow", ["pointer"], "i32"],
       show: ["ShowWindow", ["pointer", "i32"], "i32"],

@@ -8,6 +8,11 @@ import type { DynWin32Value } from "@microsoft/dynwinrt/win32/unsafe";
 
 /** The size of a UTF-16 code unit, in bytes. */
 export const WIDE_CHAR_BYTES = 2;
+/** The size of a pointer, in bytes. */
+export const POINTER_BYTES = 8;
+
+/** The size of a DWORD or a 32-bit integer, in bytes. */
+export const DWORD_BYTES = 4;
 const NO_ADDRESS = 0n;
 
 /** A Win32 function to bind: its DLL, name, parameter types and return type (`pointer`, `i32`, `u32`, `i64`). */

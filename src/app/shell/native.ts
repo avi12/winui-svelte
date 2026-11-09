@@ -7,6 +7,7 @@ import { DynComRawMemory, DynComRawOwnedComPointer } from "@microsoft/dynwinrt/c
 import {
   bind,
   numberOf,
+  POINTER_BYTES,
   pointerOf,
   WIDE_CHAR_BYTES,
   wideMemory,
@@ -37,7 +38,6 @@ const SAVE_SLOT = 6;
 
 const MAX_PATH_CHARS = 32_768;
 const INFO_TIP_CHARS = 1024;
-const POINTER_BYTES = 8;
 const SLGP_RAWPATH = 4;
 const STGM_READ = 0;
 const STGM_SHARE_DENY_WRITE = 0x20;

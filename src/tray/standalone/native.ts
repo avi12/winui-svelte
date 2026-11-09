@@ -2,7 +2,7 @@ import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { MenuItemKind } from "#src/tray/menu/types.js";
 import type { ResolvedCheck, ResolvedCommand, ResolvedMenuItem, ResolvedRadio } from "#src/tray/menu/types.js";
 import type { MenuIconCalls } from "#src/tray/tray-extras.js";
-import { bindDll, wideMemory } from "#src/win32-calls.js";
+import { bindDll, POINTER_BYTES, wideMemory } from "#src/win32-calls.js";
 
 const MIIM_STATE = 0x1;
 const MIIM_ID = 0x2;
@@ -16,7 +16,6 @@ const MFS_GRAYED = 0x3;
 const MFS_CHECKED = 0x8;
 const MFS_DEFAULT = 0x1000;
 const MENU_ITEM_INFO_SIZE = 80;
-const POINTER_BYTES = 8;
 const OFFSET_MASK = 4;
 const OFFSET_TYPE = 8;
 const OFFSET_STATE = 12;

@@ -1,6 +1,5 @@
-import { bindDll, wideMemory, withMemory } from "#src/win32-calls.js";
+import { bindDll, DWORD_BYTES, wideMemory, withMemory } from "#src/win32-calls.js";
 
-const DWORD_BYTES = 4;
 const HKEY_CURRENT_USER = 0x80000001n;
 const REG_DWORD_ONLY = 0x10;
 const PERSONALIZE_KEY = String.raw`Software\Microsoft\Windows\CurrentVersion\Themes\Personalize`;

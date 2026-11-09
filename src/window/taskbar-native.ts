@@ -2,7 +2,7 @@ import type { TaskbarBackend } from "./taskbar.ts";
 import { DynWinRtValue, WinGuid } from "@microsoft/dynwinrt";
 import { DynCom, DynComMethodSig, DynComUnsafe } from "@microsoft/dynwinrt/com/unsafe";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
-import { bind, pointerOf } from "#src/win32-calls.js";
+import { bind, POINTER_BYTES, pointerOf } from "#src/win32-calls.js";
 import { createIconFileCalls, createPixelIconCalls } from "#src/win32-icons.js";
 
 // ITaskbarList3 (shobjidl_core.h) has no WinRT form, so its methods are
@@ -25,7 +25,6 @@ const OFFSET_TOP = 4;
 const OFFSET_RIGHT = 8;
 const OFFSET_BOTTOM = 12;
 const FLASH_INFO_SIZE = 32;
-const POINTER_BYTES = 8;
 const NO_ICON = 0n;
 const OFFSET_SIZE = 0;
 const OFFSET_HWND = 8;

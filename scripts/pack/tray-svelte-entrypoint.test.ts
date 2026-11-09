@@ -1,9 +1,15 @@
+import {
+  assertWithinBudget,
+  BUNDLE_TIMEOUT_MILLISECONDS,
+  IS_BUILT,
+  PACKAGE_ROOT,
+  TrayBudget
+} from "./bundle-support.ts";
 import { exportAliases, ExportTarget } from "#scripts/export-aliases.ts";
 import { buildTray } from "#src/vite/entrypoints/build-tray.js";
 import assert from "node:assert/strict";
 import {
   copyFileSync,
-  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -19,16 +25,9 @@ import { test } from "node:test";
 // large as the same tray written by hand in tray.ts. Both are built from the
 // example, minified, against the built package.
 
-const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const EXAMPLE_ROOT = path.join(PACKAGE_ROOT, "examples", "tray-entrypoint-svelte");
 const MARKUP_FILE = path.join(EXAMPLE_ROOT, "entrypoints", "tray.svelte");
 const ICON_FILE = path.join(EXAMPLE_ROOT, "entrypoints", "tray.ico");
-const IS_BUILT = existsSync(path.join(PACKAGE_ROOT, "dist"));
-const BUILD_TIMEOUT_MILLISECONDS = 120_000;
-
-// Measured: tray.js of the example today. Lower it when the bundle gets
-// smaller; never raise it to make a change pass.
-const BUDGET_BYTES = 100_100;
 
 // What lowering may add over the hand-written form: the menu function and
 // its spreads.
@@ -118,7 +117,7 @@ async function bytesOf({ file, root }: {
 
 test("a tray.svelte builds to a tray.js with no Svelte runtime, about the size of the hand-written tray.ts", {
   skip: !IS_BUILT,
-  timeout: BUILD_TIMEOUT_MILLISECONDS
+  timeout: BUNDLE_TIMEOUT_MILLISECONDS
 }, async () => {
   const handRoot = mkdtempSync(path.join(tmpdir(), "tray-svelte-hand-"));
   mkdirSync(path.join(handRoot, "entrypoints"));
@@ -143,7 +142,10 @@ test("a tray.svelte builds to a tray.js with no Svelte runtime, about the size o
     tooltip: "Tray entrypoint (Svelte) example",
     guid: "3b0e8f4a-6c52-4d1e-9a77-5c1d2e8b4f90"
   });
-  assert.ok(markup.bytes <= BUDGET_BYTES, `${markup.bytes} bytes is over the ${BUDGET_BYTES} budget`);
+  assertWithinBudget({
+    bytes: markup.bytes,
+    budget: TrayBudget.svelteEntrypoint
+  });
   assert.ok(markup.bytes <= hand.bytes + SLACK_BYTES, `${markup.bytes} bytes is more than ${SLACK_BYTES} over the hand-written ${hand.bytes}`);
   assert.deepEqual(FORBIDDEN_PATTERNS.filter(pattern => pattern.test(markup.code)), [], "Svelte or a component is in tray.js");
 });

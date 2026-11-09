@@ -3,6 +3,7 @@ import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import {
   bind,
   bindDll,
+  DWORD_BYTES,
   pointerOf,
   WIDE_CHAR_BYTES,
   wideMemory,
@@ -10,6 +11,8 @@ import {
 } from "#src/win32-calls.js";
 import { allowForeground, bringWindowToFront } from "#src/win32-foreground.js";
 import { createIconFileCalls } from "#src/win32-icons.js";
+import type { PointerButton } from "#src/win32-key-state.js";
+import { decodeKeyState, PointerButtonKey } from "#src/win32-key-state.js";
 
 /** The Shell_NotifyIcon operations. */
 export const NotifyOperation = {
@@ -78,12 +81,9 @@ export interface ButtonSample {
 }
 
 /** The pointer and its buttons at one moment. */
-export interface PointerSample {
+export interface PointerSample extends Readonly<Record<PointerButton, ButtonSample>> {
   readonly x: number;
   readonly y: number;
-  readonly left: ButtonSample;
-  readonly right: ButtonSample;
-  readonly middle: ButtonSample;
 
   /** The pointer is over the taskbar or the overflow flyout, where tray icons live. */
   readonly isOnTray: boolean;
@@ -174,15 +174,9 @@ const NOTIFY_VERSION_4 = 4;
 const CALLBACK_MESSAGE = 0x8001;
 const WS_POPUP = 0x80000000;
 const GA_ROOT = 2;
-const VK_LBUTTON = 1;
-const VK_RBUTTON = 2;
-const VK_MBUTTON = 4;
-const KEY_DOWN_BIT = 0x8000;
-const KEY_PRESSED_BIT = 0x1;
 const CLASS_NAME_CHARS = 128;
 const POINT_SHIFT = 32n;
 const POINT_MASK = 0xFFFFFFFFn;
-const DWORD_BYTES = 4;
 const MONITOR_INFO_SIZE = 40;
 const MONITOR_WORK_OFFSET = 20;
 const MONITOR_WORK_RIGHT = 8;
@@ -363,12 +357,8 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
   const pointBuffer = DynComRawMemory.allocate(POINT_BYTES, DWORD_BYTES);
   const classBuffer = DynComRawMemory.allocate(CLASS_NAME_CHARS * WIDE_CHAR_BYTES, WIDE_CHAR_BYTES);
 
-  function readButton(key: number) {
-    const state = user32.keyState(key);
-    return {
-      isDown: (state & KEY_DOWN_BIT) !== 0,
-      wasPressed: (state & KEY_PRESSED_BIT) !== 0
-    };
+  function readKey(virtualKey: number) {
+    return decodeKeyState(user32.keyState(virtualKey));
   }
 
   function isTrayWindowAt({ x, y }: {
@@ -428,9 +418,9 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     };
     return {
       ...point,
-      left: readButton(VK_LBUTTON),
-      right: readButton(VK_RBUTTON),
-      middle: readButton(VK_MBUTTON),
+      left: readKey(PointerButtonKey.left),
+      right: readKey(PointerButtonKey.right),
+      middle: readKey(PointerButtonKey.middle),
       isOnTray: isTrayWindowAt(point)
     };
   }

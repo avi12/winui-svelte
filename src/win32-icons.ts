@@ -1,4 +1,10 @@
-import { addressOf, bind, bindDll, pointerOf } from "./win32-calls.ts";
+import {
+  addressOf,
+  bind,
+  bindDll,
+  POINTER_BYTES,
+  pointerOf
+} from "./win32-calls.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 
@@ -15,7 +21,6 @@ const BITS_PER_PIXEL = 32;
 const MASK_ROW_ALIGNMENT_BITS = 16;
 const MASK_ROW_ALIGNMENT_BYTES = 2;
 const ICON_INFO_SIZE = 32;
-const POINTER_BYTES = 8;
 const OFFSET_IS_ICON = 0;
 const OFFSET_MASK = 16;
 const OFFSET_COLOR = 24;
